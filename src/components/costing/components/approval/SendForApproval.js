@@ -30,6 +30,7 @@ import { getApprovalTypeSelectList } from '../../../../actions/Common'
 import { reactLocalStorage } from 'reactjs-localstorage'
 import { transformApprovalItem } from '../../../common/CommonFunctions'
 import { checkSAPPoPrice } from '../../../simulation/actions/Simulation'
+import SAPApproval from '../../../SAPApproval'
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 const SendForApproval = (props) => {
@@ -47,6 +48,7 @@ const SendForApproval = (props) => {
 
   const partNo = useSelector((state) => state.costing.partNo)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
+  const { IsApprovalLevelFilterByPlant } = initialConfiguration
 
   const [selectedDepartment, setSelectedDepartment] = useState('')
   const [selectedApprover, setSelectedApprover] = useState('')
@@ -77,13 +79,14 @@ const SendForApproval = (props) => {
   // const [showDate,setDate] = useState(false)
   const userData = userDetails()
   const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
-  const [approvalType, setApprovalType] = useState({});
+  const [approvalType, setApprovalType] = useState('');
   const [technologyLevelsList, setTechnologyLevelsList] = useState({});
   const approvalTypeSelectList = useSelector(state => state.comman.approvalTypeSelectList)
   const [costingIdArray, setCostingIdArray] = useState([])
   const [isDisableSubmit, setIsDisableSubmit] = useState(false)
   const [count, setCount] = useState(0)
   const [approverIdList, setApproverIdList] = useState([])
+  const [noApprovalExistMessage, setNoApprovalExistMessage] = useState('')
 
   const apicall = (technologyId, depart, ApprovalTypeId, isdisable, levelsList) => {
 
@@ -124,7 +127,7 @@ const SendForApproval = (props) => {
         TechnologyId: technologyId,
         ReasonId: 0, // key only for minda
         ApprovalTypeId: ApprovalTypeId,
-        plantId: viewApprovalData[0]?.destinationPlantId ?? EMPTY_GUID
+        plantId: (IsApprovalLevelFilterByPlant && viewApprovalData[0]?.destinationPlantId) ? viewApprovalData[0]?.destinationPlantId : EMPTY_GUID
       }
       dispatch(getAllApprovalUserFilterByDepartment(requestObject, (res) => {
         let tempDropdownList = []
@@ -169,7 +172,7 @@ const SendForApproval = (props) => {
         TechnologyId: props.technologyId,
         ReasonId: 0, // key only for minda
         ApprovalTypeId: viewApprovalData[0]?.costingTypeId,
-        plantId: viewApprovalData[0]?.plantId ?? EMPTY_GUID
+        plantId: (IsApprovalLevelFilterByPlant && viewApprovalData[0]?.destinationPlantId) ? viewApprovalData[0]?.destinationPlantId : EMPTY_GUID
       }
       if (!initialConfiguration.IsReleaseStrategyConfigured) {
         dispatch(getAllApprovalUserFilterByDepartment(requestObject, (res) => {
@@ -199,7 +202,13 @@ const SendForApproval = (props) => {
       }
     }))
   }, [])
-
+  useEffect(() => {
+    if (deptList && deptList.length > 1 && approvalType) {
+      const filterDeprtment = deptList.filter(item => item.Value === userData.DepartmentId)
+      let temp = { label: filterDeprtment[0].Text, value: filterDeprtment[0].Value }
+      callCheckFinalUserApi(temp)
+    }
+  }, [deptList, approvalType])
   const userTechnology = (approvalTypeId, levelsList) => {
     let levelDetailsTemp = ''
     levelDetailsTemp = userTechnologyLevelDetails(approvalTypeId, levelsList?.TechnologyLevels)
@@ -338,7 +347,7 @@ const SendForApproval = (props) => {
 
 
   useEffect(() => {
-    if (approvalType.length > 0) {
+    if (approvalType?.length > 0) {
       handleDepartmentChange(getValues('dept'))
     }
   }, [approvalType])
@@ -347,73 +356,88 @@ const SendForApproval = (props) => {
    * @method handleDepartmentChange
    * @description  USED TO HANDLE DEPARTMENT CHANGE
    */
+
+  const callCheckFinalUserApi = (newValue) => {
+    const tempDropdownList = []
+    let requestObject = {
+      LoggedInUserId: userData.LoggedInUserId,
+      DepartmentId: newValue.value,
+      TechnologyId: props.technologyId,
+      ApprovalTypeId: approvalType,
+      plantId: (IsApprovalLevelFilterByPlant && viewApprovalData[0]?.destinationPlantId) ? viewApprovalData[0]?.destinationPlantId : EMPTY_GUID
+    }
+    let Data = []
+    let approverIdListTemp = []
+    let obj = {
+      DepartmentId: newValue?.value,
+      UserId: loggedInUserId(),
+      TechnologyId: props.technologyId,
+      Mode: 'costing',
+      approvalTypeId: approvalType,
+      plantId: (IsApprovalLevelFilterByPlant && viewApprovalData[0]?.destinationPlantId) ? viewApprovalData[0]?.destinationPlantId : EMPTY_GUID
+    }
+    dispatch(checkFinalUser(obj, (res) => {
+      const data = res?.data?.Data
+      if (data?.IsUserInApprovalFlow === true && data?.IsFinalApprover === false) {
+        dispatch(getAllApprovalUserFilterByDepartment(requestObject, (res) => {
+          Data = res.data.DataList[1] ? res.data.DataList[1] : []
+          setSelectedApprover(Data?.Value)
+          setSelectedApproverLevelId({ levelName: Data.LevelName, levelId: Data.LevelId })
+          res.data.DataList && res.data.DataList.map((item) => {
+            if (item.Value === '0') return false;
+            if (item.Value === EMPTY_GUID) return false;
+            tempDropdownList.push({ label: item.Text, value: item.Value, levelId: item.LevelId, levelName: item.LevelName })
+            approverIdListTemp.push(item.Value)
+            return null
+          })
+          if (tempDropdownList?.length === 0) {
+            setShowValidation(true)
+          } else {
+            setApprover(Data.Text ? Data.Text : '')
+            setValue('approver', { label: Data.Text ? Data.Text : '', value: Data.Value ? Data.Value : '', levelId: Data.LevelId ? Data.LevelId : '', levelName: Data.LevelName ? Data.LevelName : '' })
+          }
+          setApprovalDropDown(tempDropdownList)
+          setApproverIdList(approverIdListTemp)
+          setNoApprovalExistMessage('')
+        }))
+      } else if (data?.IsUserInApprovalFlow === false) {
+        setValue('approver', { label: '', value: '', levelId: '', levelName: '' })
+        setApprover('')
+        setSelectedApprover('')
+        setApprovalDropDown([])
+        setApproverIdList([])
+        Toaster.warning('This user is not in approval flow.')
+        setNoApprovalExistMessage('')
+        return false
+      } else if (data?.IsNextLevelUserExist === false && data?.IsUserInApprovalFlow === true) {
+        setValue('approver', { label: '', value: '', levelId: '', levelName: '' })
+        setApprover('')
+        setSelectedApprover('')
+        setApprovalDropDown([])
+        setApproverIdList([])
+        setNoApprovalExistMessage('There is no higher approver available for this user in this department.')
+        return false
+      } else if (data?.IsUserInApprovalFlow === false) {
+        setValue('approver', { label: '', value: '', levelId: '', levelName: '' })
+        setApprover('')
+        setSelectedApprover('')
+        setApprovalDropDown([])
+        setApproverIdList([])
+        Toaster.warning('This user is not in approval flow.')
+        setNoApprovalExistMessage('')
+        return false
+      }
+
+    }))
+  }
   const handleDepartmentChange = (newValue) => {
 
-    const tempDropdownList = []
     if (newValue && newValue !== '') {
       setValue('approver', '')
       setApprover('')
       setSelectedApprover('')
       setShowValidation(false)
-      let requestObject = {
-        LoggedInUserId: userData.LoggedInUserId,
-        DepartmentId: newValue.value,
-        TechnologyId: props.technologyId,
-        ApprovalTypeId: approvalType,
-        plantId: viewApprovalData[0]?.plantId ?? EMPTY_GUID
-      }
-      let Data = []
-      let approverIdListTemp = []
-      let obj = {
-        DepartmentId: newValue?.value,
-        UserId: loggedInUserId(),
-        TechnologyId: props.technologyId,
-        Mode: 'costing',
-        approvalTypeId: approvalType,
-        plantId: viewApprovalData[0]?.plantId ?? EMPTY_GUID
-      }
-      dispatch(checkFinalUser(obj, (res) => {
-        const data = res?.data?.Data
-        if (data?.IsUserInApprovalFlow === true && data?.IsFinalApprover === false) {
-          dispatch(getAllApprovalUserFilterByDepartment(requestObject, (res) => {
-            Data = res.data.DataList[1] ? res.data.DataList[1] : []
-            setSelectedApprover(Data?.Value)
-            setSelectedApproverLevelId({ levelName: Data.LevelName, levelId: Data.LevelId })
-            res.data.DataList && res.data.DataList.map((item) => {
-              if (item.Value === '0') return false;
-              if (item.Value === EMPTY_GUID) return false;
-              tempDropdownList.push({ label: item.Text, value: item.Value, levelId: item.LevelId, levelName: item.LevelName })
-              approverIdListTemp.push(item.Value)
-              return null
-            })
-            if (tempDropdownList?.length === 0) {
-              setShowValidation(true)
-            } else {
-              setApprover(Data.Text ? Data.Text : '')
-              setValue('approver', { label: Data.Text ? Data.Text : '', value: Data.Value ? Data.Value : '', levelId: Data.LevelId ? Data.LevelId : '', levelName: Data.LevelName ? Data.LevelName : '' })
-            }
-            setApprovalDropDown(tempDropdownList)
-            setApproverIdList(approverIdListTemp)
-          }))
-        } else if (data?.IsUserInApprovalFlow === true && data?.IsFinalApprover === true) {
-          setValue('approver', { label: '', value: '', levelId: '', levelName: '' })
-          setApprover('')
-          setSelectedApprover('')
-          setApprovalDropDown([])
-          setApproverIdList([])
-          Toaster.warning('Final level user cannot send costing for approval.')
-          return false
-        } else if (data?.IsUserInApprovalFlow === false) {
-          setValue('approver', { label: '', value: '', levelId: '', levelName: '' })
-          setApprover('')
-          setSelectedApprover('')
-          setApprovalDropDown([])
-          setApproverIdList([])
-          Toaster.warning('This user is not in approval flow.')
-          return false
-        }
-
-      }))
+      callCheckFinalUserApi(newValue)
       setSelectedDepartment(newValue)
     } else {
       setSelectedDepartment('')
@@ -734,6 +758,10 @@ const SendForApproval = (props) => {
       obj.MaterialGroup = SAPData.MaterialGroup?.label
       obj.DecimalOption = SAPData.DecimalOption?.value
       obj.ApprovalTypeId = approvalType
+      obj.InfoCategeory = data?.infoCategeory?.value ?? ''
+      obj.ValuationType = data?.evaluationType?.label ?? ''
+      obj.PlannedDelTime = data?.leadTime
+
 
       // debounce_fun()
       // 
@@ -1150,6 +1178,21 @@ const SendForApproval = (props) => {
                         />
                       </div>
                     </Row> */}
+                    {getConfigurationKey().IsSAPConfigured && !props.isRfq && <Row className="px-3">
+                      <Col md="12">
+                        <div className="left-border">{"SAP-Push Details"}</div>
+                      </Col>
+                      <div className="w-100">
+                        <SAPApproval
+                          Controller={Controller}
+                          register={register}
+                          errors={errors}
+                          control={control}
+                          plantCode={viewApprovalData[0]?.plantCode ?? EMPTY_GUID}
+                        />
+                      </div>
+                    </Row>}
+
                     <Row className="px-3">
                       <Col md="4">
                         <div className="left-border">{"Approver"}</div>
@@ -1215,8 +1258,9 @@ const SendForApproval = (props) => {
                             errors={errors.approver}
                           />}
                         {
-                          showValidation && <span className="warning-top"><WarningMessage title={approverMessage} dClass={`${errors.approver ? "mt-2" : ''} approver-warning`} message={approverMessage} /></span>
+                          !noApprovalExistMessage && showValidation && <span className="warning-top"><WarningMessage title={approverMessage} dClass={`${errors.approver ? "mt-2" : ''} approver-warning`} message={approverMessage} /></span>
                         }
+                        {noApprovalExistMessage && <span className="warning-top"><WarningMessage title={noApprovalExistMessage} message={noApprovalExistMessage} /></span>}
                       </Col >
 
                       {!props?.isRfq && viewApprovalData && viewApprovalData[0]?.costingTypeId === NCCTypeId && <><Col md="6">

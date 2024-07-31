@@ -62,13 +62,21 @@ import {
   SET_TOOL_COST_ICC,
   SET_OTHER_DISCOUNT_DATA,
   SET_REJECTION_RECOVERY_DATA,
+  GET_COSTING_PAYMENT_TERM_DETAIL,
+  SET_DISCOUNT_AND_OTHER_TAB_DATA,
+  SET_COMPONENT_PAYMENT_TERMS_DATA,
+  SET_PAYMENT_TERM_COST,
+  CHECK_IS_PAYMENT_TERMS_DATA_CHANGE,
+  GET_TCO_DATA,
   SET_COSTING_VIEW_DATA_FOR_ASSEMBLY,
+  SET_RFQ_COSTING_TYPE,
+  PARTSPECIFICATIONRFQDATA,
+  GET_SAP_EVALUATIONTYPE,
 } from '../../../config/constants'
-import { apiErrors, encodeQueryParams, encodeQueryParamsAndLog } from '../../../helper/util'
+import { apiErrors, encodeQueryParamsAndLog } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
 import Toaster from '../../common/Toaster'
 import { reactLocalStorage } from 'reactjs-localstorage'
-
 // let config() = config
 
 /**
@@ -548,6 +556,19 @@ export function setComponentDiscountOtherItemData(TabData, callback) {
     callback();
   }
 };
+/**
+ * @method setPaymentTermsDataInDiscountOtherTab
+ * @description SET COMPONENT PAYMENtERMS  DATA IN DISCOUNT OTHER ITEM DATA  
+ */
+export function setPaymentTermsDataInDiscountOtherTab(TabData, callback) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_COMPONENT_PAYMENT_TERMS_DATA,
+      payload: TabData,
+    });
+    callback();
+  }
+};
 
 /**
  * @method getBOPData
@@ -575,7 +596,7 @@ export function getBOPData(data, callback) {
  */
 export function getRMDrawerDataList(data, isNFR, rmNameList, callback) {
   return (dispatch) => {
-    const queryParams = `technologyId=${data.TechnologyId}&vendorPlantId=${data.VendorPlantId}&plantId=${data.PlantId}&effectiveDate=${data.EffectiveDate}&vendorId=${data.VendorId}&customerId=${data.CustomerId}&materialId=${data.material_id}&gradeId=${data.grade_id}&costingId=${data.CostingId}&costingTypeId=${data.CostingTypeId}`
+    const queryParams = `technologyId=${data.TechnologyId}&vendorPlantId=${data.VendorPlantId}&plantId=${data.PlantId}&effectiveDate=${data.EffectiveDate}&vendorId=${data.VendorId}&customerId=${data.CustomerId}&materialId=${data.material_id}&gradeId=${data.grade_id}&costingId=${data.CostingId}&costingTypeId=${data.CostingTypeId}&partId=${data.PartId}&isRFQ=${data.IsRFQ}&quotationPartId=${data.QuotationPartId}`
     //const queryParams = `${data.VendorId}/${data.TechnologyId}/${data.VendorPlantId}/${data.DestinationPlantId}/${data.EffectiveDate}/${data.material_id}/${data.grade_id}/${data.CostingId}`
     const request = axios.get(`${API.getRMDrawerDataList}?${queryParams}`, config());
     request.then((response) => {
@@ -849,6 +870,19 @@ export function setOverheadProfitData(TabData, callback) {
     callback();
   }
 };
+/**
+ * @method setDiscountAndOtherCostData
+ * @description SET DISCOUNT AND OTHER TAB DATA  
+ */
+export function setDiscountAndOtherCostData(TabData, callback) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_DISCOUNT_AND_OTHER_TAB_DATA,
+      payload: TabData || {},
+    });
+    callback();
+  }
+};
 
 /**
  * @method getOverheadProfitDataByModelType
@@ -1055,21 +1089,16 @@ export function getFreigtFullTruckCapacitySelectList() {
  */
 export function getRateCriteriaByCapacitySelectList(Capacity) {
   return (dispatch) => {
-    const request = axios.get(
-      `${API.getRateCriteriaByCapacitySelectList}/${Capacity}`,
-      config(),
-    )
-    request
-      .then((response) => {
-        dispatch({
-          type: GET_RATE_CRITERIA_BY_CAPACITY,
-          payload: response.data.SelectList,
-        })
+    const request = axios.get(`${API.getRateCriteriaByCapacitySelectList}/${Capacity}`, config())
+    request.then((response) => {
+      dispatch({
+        type: GET_RATE_CRITERIA_BY_CAPACITY,
+        payload: response.data.SelectList,
       })
-      .catch((error) => {
-        dispatch({ type: API_FAILURE })
-        apiErrors(error)
-      })
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE })
+      apiErrors(error)
+    })
   }
 }
 
@@ -1079,18 +1108,18 @@ export function getRateCriteriaByCapacitySelectList(Capacity) {
  */
 export function getRateByCapacityCriteria(data, callback) {
   return (dispatch) => {
-    const request = axios.get(
-      `${API.getRateByCapacityCriteria}/${data.Capacity}/${data.Criteria}`,
-      config(),
-    )
-    request
-      .then((response) => {
+    const request = axios.get(`${API.getRateByCapacityCriteria}?Capacity=${data?.Capacity}&Criteria=${data?.Criteria}&plantId=${data?.PlantId}&vendorId=${data?.VendorId}&customerId=${data?.CustomerId}&effectiveDate=${data?.EffectiveDate}&costingTypeId=${data?.CostingTypeId}&EFreightLoadType=${data?.EFreightLoadType}`, config(),)
+    request.then((response) => {
+      if (response?.data?.Result) {
         callback(response)
-      })
-      .catch((error) => {
-        dispatch({ type: API_FAILURE })
-        apiErrors(error)
-      })
+      } else if (response?.status === 204) {
+        Toaster.warning("There is no data for Freight.")
+        callback(response)
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE })
+      apiErrors(error)
+    })
   }
 }
 
@@ -1196,6 +1225,10 @@ export function getDiscountOtherCostTabData(data, callback) {
     const request = axios.get(`${API.getDiscountOtherCostTabData}/${data.CostingId}/${data.PartId}`, config());
     request.then((response) => {
       if (response.data.Result) {
+        // dispatch({
+        //   type: SET_DISCOUNT_AND_OTHER_TAB_DATA,
+        //   payload: response.data.Data,
+        // });
         callback(response);
       }
     }).catch((error) => {
@@ -2172,6 +2205,18 @@ export function isDiscountDataChange(isDataChange) {
     })
   }
 }
+/**
+ * @method isPaymentTermsDataChange
+ * @description THIS METHOD IS FOR CALLING PAYMENT TERMS API IF CHNAGES HAVE BEEN MADE 
+*/
+export function isPaymentTermsDataChange(isDataChange) {
+  return (dispatch) => {
+    dispatch({
+      type: CHECK_IS_PAYMENT_TERMS_DATA_CHANGE,
+      payload: isDataChange
+    })
+  }
+}
 
 /**
  * @method:setForgingCalculatorMachiningStockSection
@@ -2827,6 +2872,17 @@ export function setIncludeToolCostIcc(IsIncluded, callback) {
     callback();
   }
 };
+export function setPaymentTermCost(data, callback) {
+
+  return (dispatch) => {
+    dispatch({
+      type: SET_PAYMENT_TERM_COST,
+      payload: data || {},
+    });
+    callback();
+  }
+};
+
 
 /**
  * @method getAssemblyChildPartbyAsmCostingId
@@ -2865,6 +2921,68 @@ export function getProcessAndOperationbyAsmAndChildCostingId(asmCostingId, child
     })
   }
 }
+export function getCostingPaymentTermDetail(costingId, callback) {
+  return (dispatch) => {
+
+    const request = axios.get(`${API.getCostingPaymentTermDetail}/${costingId}`, config());
+    request.then((response) => {
+      if (response.data?.Data || response?.status === 204) {
+        const netCost = response.data?.Data?.PaymentTermDetail?.NetCost;
+        //const applicabilityCost = response.data?.Data?.ApplicabilityCost;
+        dispatch({
+          type: GET_COSTING_PAYMENT_TERM_DETAIL,
+          payload: response?.data?.Data || {},
+        });
+        dispatch({
+          type: SET_PAYMENT_TERM_COST,
+          payload: { NetCost: netCost/* , ApplicabilityCost: applicabilityCost  */ } || {},
+        });
+      } else {
+        Toaster.error(MESSAGES.SOME_ERROR);
+      }
+      callback(response)
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      apiErrors(error);
+
+    });
+  };
+}
+export function saveCostingPaymentTermDetail(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.saveCostingPaymentTermDetail, data, config())
+    request.then((response) => {
+      callback(response)
+    }).catch((error) => {
+      callback(error.response)
+      if (error.response.status === 412) {
+        Toaster.warning(error?.response?.data?.Message)
+        return false
+      }
+      apiErrors(error)
+    })
+  }
+}
+export function getCostingTcoDetails(costingId, callback) {
+  return (dispatch) => {
+    const request = axios.get(`${API.getCostingTcoDetails}?costingId=${costingId}`, config());
+    request.then((response) => {
+      if (response.data?.Data || response?.status === 204) {
+        dispatch({
+          type: GET_TCO_DATA,
+          payload: response?.data?.Data || {},
+        });
+      } else {
+        Toaster.error(MESSAGES.SOME_ERROR);
+      }
+      callback(response)
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      apiErrors(error);
+
+    });
+  };
+}
 
 export const setCostingViewDataForAssemblyTechnology = (data) => (dispatch) => {
   let temp = []
@@ -2875,4 +2993,95 @@ export const setCostingViewDataForAssemblyTechnology = (data) => (dispatch) => {
     type: SET_COSTING_VIEW_DATA_FOR_ASSEMBLY,
     payload: temp,
   })
+}
+export function setCostingtype(costingType) {
+
+  return (dispatch) => {
+    dispatch({
+      type: SET_RFQ_COSTING_TYPE,
+      payload: costingType || {},
+    });
+    // callback();
+  }
+}
+
+// export const getSpecificationDetailTco = () => {
+//   return (dispatch) => {
+//     dispatch({
+//       type: PARTSPECIFICATIONRFQDATA,
+//       payload:specification.Data // Dispatch mock or predefined data
+//     });
+//   };
+// };
+
+export function getSpecificationDetailTco(quotationId, baseCostingIds, callback) {
+  return (dispatch) => {
+    const url = `${API.getSpecificationDetailTco}`;
+    const requestData = {
+      QuotationId: quotationId,
+      BaseCostingIdList: baseCostingIds
+    };
+
+    axios.post(url, requestData, config())
+      .then((response) => {
+        if (response.data.Result || response.status === 204) {
+          dispatch({
+            type: PARTSPECIFICATIONRFQDATA,
+            payload: response.status === 204 ? [] : response.data.Data
+          });
+          callback(response);
+        }
+      })
+      .catch((error) => {
+        dispatch({ type: API_FAILURE });
+        // Handle errors
+      });
+  };
+}
+
+export function getSpecificationDetailBpo(quotationId, bopId, callback) {
+  return (dispatch) => {
+    const url = `${API.getSpecificationDetailBop}`;
+    const requestData = {
+      QuotationId: quotationId,
+      BoughtOutPartIdList: bopId
+    };
+
+    axios.post(url, requestData, config())
+      .then((response) => {
+        if (response.data.Result || response.status === 204) {
+          dispatch({
+            type: PARTSPECIFICATIONRFQDATA,
+            payload: response.status === 204 ? [] : response.data.Data
+          });
+          callback(response);
+        }
+      })
+      .catch((error) => {
+        dispatch({ type: API_FAILURE });
+        // Handle errors
+      });
+  };
+}
+/**
+ * @method getExternalIntegrationEvaluationType
+ * @description getExternalIntegrationEvaluationType
+ */
+export function getExternalIntegrationEvaluationType(data, callback) {
+
+  return (dispatch) => {
+    const request = axios.post(API.getEvaluationType, data, config())
+    request.then((response) => {
+      if (response.data.Result || response?.status === 204) {
+        dispatch({
+          type: GET_SAP_EVALUATIONTYPE,
+          payload: response?.status === 200 ? response?.data?.SelectList : [],
+        })
+        callback(response)
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE })
+      apiErrors(error)
+    })
+  }
 }

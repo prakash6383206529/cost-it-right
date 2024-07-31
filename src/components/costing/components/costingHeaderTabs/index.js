@@ -14,7 +14,7 @@ import BOMViewer from '../../../masters/part-master/BOMViewer';
 import {
   saveComponentCostingRMCCTab, setComponentItemData, saveComponentOverheadProfitTab, setComponentOverheadItemData,
   saveCostingPackageFreightTab, setComponentPackageFreightItemData, saveToolTab, setComponentToolItemData,
-  saveDiscountOtherCostTab, setComponentDiscountOtherItemData, setCostingEffectiveDate, CloseOpenAccordion, saveAssemblyPartRowCostingCalculation, isDataChange, saveAssemblyOverheadProfitTab, isToolDataChange, isOverheadProfitDataChange, setOverheadProfitData,
+  saveDiscountOtherCostTab, setComponentDiscountOtherItemData, setCostingEffectiveDate, CloseOpenAccordion, saveAssemblyPartRowCostingCalculation, isDataChange, saveAssemblyOverheadProfitTab, isToolDataChange, isOverheadProfitDataChange, setOverheadProfitData, saveCostingPaymentTermDetail,
 } from '../../actions/Costing';
 import { checkForNull, CheckIsCostingDateSelected, loggedInUserId } from '../../../../helper';
 import { LEVEL1, WACTypeId } from '../../../../config/constants';
@@ -34,19 +34,20 @@ import { Steps } from '../TourMessages';
 import { useTranslation } from 'react-i18next';
 import { getRMFromNFR, setOpenAllTabs } from '../../../masters/nfr/actions/nfr';
 import Toaster from '../../../common/Toaster';
-
+export const PreviousTabData = React.createContext();
 
 function CostingHeaderTabs(props) {
   const dispatch = useDispatch()
   const { t } = useTranslation("Costing");
   const { ComponentItemData, ComponentItemOverheadData, ComponentItemPackageFreightData, ComponentItemToolData,
-    ComponentItemDiscountData, IsIncludedSurfaceInOverheadProfit, costingData, CostingEffectiveDate,
+    ComponentItemDiscountData, PaymentTermDataDiscountTab, IsIncludedSurfaceInOverheadProfit, costingData, CostingEffectiveDate,
     IsCostingDateDisabled, CostingDataList, RMCCTabData, getAssemBOPCharge, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, DiscountCostData, checkIsDataChange, checkIsOverheadProfitChange, checkIsFreightPackageChange, checkIsToolTabChange, messageForAssembly, checkIsDiscountChange, ActualCostingDataList, IsIncludedSurfaceInRejection, IsIncludedToolCost, includeOverHeadProfitIcc, includeToolCostIcc } = useSelector(state => state.costing)
   const { ErrorObjRMCC, ErrorObjOverheadProfit, ErrorObjTools, ErrorObjDiscount, costingOpenCloseStatus } = useSelector(state => state.costing)
   const [isBOPExists, setIsBOPExists] = useState(false)
   const [isPartExists, setIsPartExists] = useState(false)
   const [ispartLocked, setIsPartLocked] = useState(false)
   const [activeTab, setActiveTab] = useState('1');
+  const [previousTab, setPreviousTab] = useState('1');
   const [IsOpenViewHirarchy, setIsOpenViewHirarchy] = useState(false);
   const [IsCalledAPI, setIsCalledAPI] = useState(true);
   const [multipleRMApplied, setMultipleRMApplied] = useState(false)
@@ -70,7 +71,7 @@ function CostingHeaderTabs(props) {
 
   const costingApprovalStatus = useContext(CostingStatusContext);
   const { nfrDetailsForDiscount } = useSelector(state => state.costing)
-
+  const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const ActualTotalCost = ActualCostingDataList && ActualCostingDataList.length > 0 && ActualCostingDataList[0].TotalCost !== undefined ? ActualCostingDataList[0].TotalCost : 0;
   useEffect(() => {
     setActiveTab(costingData?.TechnologyId !== LOGISTICS ? '1' : '4')
@@ -158,15 +159,13 @@ function CostingHeaderTabs(props) {
         "NetOverheadAndProfitCost": checkForNull(ComponentItemOverheadData?.CostingPartDetails?.OverheadCost) +
           checkForNull(ComponentItemOverheadData?.CostingPartDetails?.ProfitCost) +
           checkForNull(ComponentItemOverheadData?.CostingPartDetails?.RejectionCost) +
-          checkForNull(ComponentItemOverheadData?.CostingPartDetails?.ICCCost) +
-          checkForNull(ComponentItemOverheadData?.CostingPartDetails?.PaymentTermCost),
+          checkForNull(ComponentItemOverheadData?.CostingPartDetails?.ICCCost),
         "CostingPartDetails": {
           ...ComponentItemOverheadData?.CostingPartDetails,
           NetOverheadAndProfitCost: checkForNull(ComponentItemOverheadData?.CostingPartDetails?.OverheadCost) +
             checkForNull(ComponentItemOverheadData?.CostingPartDetails?.RejectionCost) +
             checkForNull(ComponentItemOverheadData?.CostingPartDetails?.ProfitCost) +
-            checkForNull(ComponentItemOverheadData?.CostingPartDetails?.ICCCost) +
-            checkForNull(ComponentItemOverheadData?.CostingPartDetails?.PaymentTermCost),
+            checkForNull(ComponentItemOverheadData?.CostingPartDetails?.ICCCost)
         },
         "BasicRate": discountAndOtherTabData?.BasicRateINR,
       }
@@ -264,7 +263,7 @@ function CostingHeaderTabs(props) {
       const bopData = _.find(tempArrForCosting, ['PartType', 'BOP'])
       if (data !== undefined || bopData !== undefined || lockedData !== undefined) {
 
-        let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 1, CostingEffectiveDate, '', '', isPartType)
+        let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 1, CostingEffectiveDate, '', '', isPartType, initialConfiguration?.IsAddPaymentTermInNetCost)
 
         dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
       }
@@ -272,7 +271,7 @@ function CostingHeaderTabs(props) {
       const surfaceData = _.find(surfaceArrForCosting, ['IsPartLocked', true])
       const surfaceLockedData = _.find(surfaceArrForCosting, ['IsLocked', true])
       if (surfaceData !== undefined || surfaceLockedData !== undefined) {
-        let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 2, CostingEffectiveDate, '', '', isPartType)
+        let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 2, CostingEffectiveDate, '', '', isPartType, initialConfiguration?.IsAddPaymentTermInNetCost)
         dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
       }
     }
@@ -299,6 +298,12 @@ function CostingHeaderTabs(props) {
       setMultipleRMApplied(true)
     }
   }, [RMCCTabData]);
+  // useEffect(() => {
+  //   if (activeTab && previousTab) {
+  //     InjectDiscountAPICall();
+  //   }
+  // }, [activeTab]);
+
   const callAssemblyAPi = (tabId) => {
     if (costData.IsAssemblyPart && IsCalledAPI && !CostingViewMode && !partType) {
       const tabData = RMCCTabData && RMCCTabData[0]
@@ -306,7 +311,7 @@ function CostingHeaderTabs(props) {
       const overHeadAndProfitTabData = OverheadProfitTabData && OverheadProfitTabData[0]
       const discountAndOtherTabData = DiscountCostData
 
-      let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, tabId, CostingEffectiveDate, '', '', isPartType)
+      let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, tabId, CostingEffectiveDate, '', '', isPartType, initialConfiguration?.IsAddPaymentTermInNetCost)
       dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
     }
   }
@@ -314,8 +319,12 @@ function CostingHeaderTabs(props) {
 
   const InjectDiscountAPICall = () => {
     if (!CostingViewMode && activeTab !== '6') {
+      dispatch(saveDiscountOtherCostTab({ ...ComponentItemDiscountData, CallingFrom: 1, /* BasicRate: DiscountCostData?.BasicRateINR */ }, res => {
+        if (Number(previousTab) === 6) {
+          dispatch(saveCostingPaymentTermDetail(PaymentTermDataDiscountTab, (res) => { }));
+        }
+      }));
 
-      dispatch(saveDiscountOtherCostTab({ ...ComponentItemDiscountData, CallingFrom: 1, BasicRate: DiscountCostData?.BasicRateINR }, res => { }))
     }
   }
 
@@ -333,8 +342,8 @@ function CostingHeaderTabs(props) {
     delete tempErrorObjRMCC?.bopGridFields
     // tourStartRef()
     if (errorCheck(ErrorObjRMCC) || errorCheckObject(tempErrorObjRMCC) || errorCheckObject(ErrorObjOverheadProfit) || errorCheckObject(ErrorObjTools) || errorCheckObject(ErrorObjDiscount)) return false;
-
     if (activeTab !== tab) {
+      setPreviousTab(activeTab)
       setActiveTab(tab);
 
       if (tab === '1') {
@@ -652,54 +661,63 @@ function CostingHeaderTabs(props) {
               </NavItem>
             }
           </Nav >
-          <TabContent activeTab={activeTab}>
-            <TabPane tabId="1">
-              {IdForMultiTechnology.includes(String(costingData?.TechnologyId)) || (costingData.CostingTypeId === WACTypeId) ? <TabAssemblyTechnology
-                setHeaderCost={props.setHeaderCost}
-                backBtn={props.backBtn}
-                activeTab={activeTab}
-              /> :
-                <TabRMCC
+          <PreviousTabData.Provider value={previousTab}>
+            <TabContent activeTab={activeTab}>
+              <TabPane tabId="1">
+                {IdForMultiTechnology.includes(String(costingData?.TechnologyId)) || (costingData.CostingTypeId === WACTypeId) ? <TabAssemblyTechnology
                   setHeaderCost={props.setHeaderCost}
                   backBtn={props.backBtn}
                   activeTab={activeTab}
-                />}
-            </TabPane>
-            <TabPane tabId="2">
-              <TabSurfaceTreatment
-                setHeaderCost={props.setHeaderCostSurfaceTab}
-                activeTab={activeTab}
-              />
-            </TabPane>
-            <TabPane tabId="3">
-              <TabOverheadProfit
-                activeTab={activeTab}
-                setHeaderCost={props.setHeaderOverheadProfitCostTab}
-                headCostRMCCBOPData={props.headCostRMCCBOPData}
-              />
-            </TabPane>
-            <TabPane tabId="4">
-              <TabPackagingFreight
-                activeTab={activeTab}
-                setHeaderCost={props.setHeaderPackageFreightTab}
-                toggle={props.toggle}
-              />
-            </TabPane>
-            <TabPane tabId="5">
-              <TabToolCost
-                activeTab={activeTab}
-                setHeaderCost={props.setHeaderCostToolTab}
-              />
-            </TabPane>
-            <TabPane tabId="6">
-              <TabDiscountOther
-                activeTab={activeTab}
-                setHeaderCost={props.setHeaderDiscountTab}
-                DiscountTabData={props.DiscountTabData}
-                toggle={props.toggle}
-              />
-            </TabPane>
-          </TabContent>
+                  previousTab={previousTab}
+                /> :
+                  <TabRMCC
+                    setHeaderCost={props.setHeaderCost}
+                    backBtn={props.backBtn}
+                    activeTab={activeTab}
+                    previousTab={previousTab}
+                  />}
+              </TabPane>
+              <TabPane tabId="2">
+                <TabSurfaceTreatment
+                  setHeaderCost={props.setHeaderCostSurfaceTab}
+                  activeTab={activeTab}
+                  previousTab={previousTab}
+                />
+              </TabPane>
+              <TabPane tabId="3">
+                <TabOverheadProfit
+                  activeTab={activeTab}
+                  setHeaderCost={props.setHeaderOverheadProfitCostTab}
+                  headCostRMCCBOPData={props.headCostRMCCBOPData}
+                  previousTab={previousTab}
+                />
+              </TabPane>
+              <TabPane tabId="4">
+                <TabPackagingFreight
+                  activeTab={activeTab}
+                  setHeaderCost={props.setHeaderPackageFreightTab}
+                  toggle={props.toggle}
+                  previousTab={previousTab}
+                />
+              </TabPane>
+              <TabPane tabId="5">
+                <TabToolCost
+                  activeTab={activeTab}
+                  setHeaderCost={props.setHeaderCostToolTab}
+                  previousTab={previousTab}
+                />
+              </TabPane>
+              <TabPane tabId="6">
+                <TabDiscountOther
+                  activeTab={activeTab}
+                  setHeaderCost={props.setHeaderDiscountTab}
+                  DiscountTabData={props.DiscountTabData}
+                  toggle={props.toggle}
+                  previousTab={previousTab}
+                />
+              </TabPane>
+            </TabContent>
+          </PreviousTabData.Provider>
         </div >
       </div >
 

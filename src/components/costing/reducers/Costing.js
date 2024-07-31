@@ -15,9 +15,17 @@ import {
   FORGING_CALCULATOR_MACHININGSTOCK_SECTION, SELECTED_IDS_OF_OPERATION_AND_OTHEROPERATION, SET_MASTER_BATCH_OBJ, SELECTED_IDS_OF_OPERATION, SELECTED_PROCESS_AND_GROUPCODE, SET_PROCESS_ID, SET_PROCESSGROUP_ID, GET_FG_WISE_IMPACT_DATA_FOR_COSTING, SAVE_PART_NUMBER_STOP_API_CALL, SET_PART_NUMBER_ARRAY_API_CALL, SET_MESSAGE_FOR_ASSEMBLY, SET_PROCESS_GROUP_GRID, SAVE_BOM_LEVEL_STOP_API_CALL, IMPORT, SAVE_ASSEMBLY_NUMBER_STOP_API_CALL, SET_ACTIVE_TAB, SET_OVERHEAD_PROFIT_ERRORS, SET_TOOLS_ERRORS, SET_DISCOUNT_ERRORS, SET_SURFACE_COST_FOR_REJECTION_DATA, SET_TOOL_COST_FOR_OVERHEAD_PROFIT, SET_NPV_DATA, NFR_DETAILS_FOR_DISCOUNT, SET_OVERHEAD_PROFIT_ICC, SET_YOY_COST_GRID, SET_OTHER_COST, RESET_EXCHANGE_RATE_DATA, SET_OPEN_ALL_TABS, SET_REJECTED_COSTING_VIEW_DATA, SET_CALL_ST_API, SET_BREAKUP_BOP, SET_IS_BREAKUP_BOUGHTOUTPART_COSTING_FROM_API, SET_COSTING_MODE, CORRUGATED_BOX, CORRUGATED_DATA, GET_EXTERNAL_INTEGRATION_FG_WISE_IMPACT_DATA, COSTING_ACC_OPEN_CLOSE_STATUS, SET_TOOL_COST_ICC,
   SET_OTHER_DISCOUNT_DATA,
   SET_REJECTION_RECOVERY_DATA,
-  SET_COSTING_VIEW_DATA_FOR_ASSEMBLY
+  SET_PAYMENT_TERM_COST,
+  GET_COSTING_PAYMENT_TERM_DETAIL,
+  SET_DISCOUNT_AND_OTHER_TAB_DATA,
+  SET_COMPONENT_PAYMENT_TERMS_DATA,
+  CHECK_IS_PAYMENT_TERMS_DATA_CHANGE,
+  GET_TCO_DATA,
+  SET_COSTING_VIEW_DATA_FOR_ASSEMBLY,
+  PARTSPECIFICATIONRFQDATA,
+  GET_SAP_EVALUATIONTYPE,
+  SET_RFQ_COSTING_TYPE
 } from '../../../config/constants';
-
 const initialState = {
   ComponentItemData: {},
   ComponentItemOverheadData: {},
@@ -56,18 +64,23 @@ const initialState = {
   otherCostData: { gridData: [], otherCostTotal: 0 },
   otherDiscountData: { gridData: [], totalCost: 0 },
   costingOpenCloseStatus: { RMC: false, overheadProfit: false },
-  rejectionRecovery: [
-    {
-      rejectionApplicabilityType: {},
-      rejectionRecoveryPercentage: '',
-      effectiveRecoveryPercentage: '',
-      recoveryCostApplicability: '',
-      rejectionRecoveryCost: '',
-    }
-  ]
+  rejectionRecovery:
+  {
+    BaseCostingIdRef: '',
+    ApplicabilityIdRef: 0,
+    ApplicabilityType: '',
+    Type: "",
+    Value: 0,
+    EffectiveRecoveryPercentage: '',
+    ApplicabilityCost: '',
+    RejectionRecoveryNetCost: ''
+  },
+  partSpecificationRFQData: [],
+  evaluationType: []
 }
 
 export default function costingReducer(state = initialState, action) {
+
   switch (action.type) {
     case API_REQUEST:
       return {
@@ -366,6 +379,12 @@ export default function costingReducer(state = initialState, action) {
         loading: false,
         OverheadProfitTabData: action.payload
       };
+    case SET_DISCOUNT_AND_OTHER_TAB_DATA:
+      return {
+        ...state,
+        loading: false,
+        DiscountAndOtherCostTabData: action.payload
+      };
     case SET_PACKAGE_AND_FREIGHT_TAB_DATA:
       return {
         ...state,
@@ -419,6 +438,12 @@ export default function costingReducer(state = initialState, action) {
         ...state,
         loading: false,
         ComponentItemDiscountData: action.payload
+      }
+    case SET_COMPONENT_PAYMENT_TERMS_DATA:
+      return {
+        ...state,
+        loading: false,
+        PaymentTermDataDiscountTab: action.payload
       }
     case GET_RM_DRAWER_DATA_LIST:
       // let isNFR = action?.isNFR
@@ -600,6 +625,12 @@ export default function costingReducer(state = initialState, action) {
         ...state,
         loading: false,
         checkIsDiscountChange: action.payload
+      }
+    case CHECK_IS_PAYMENT_TERMS_DATA_CHANGE:
+      return {
+        ...state,
+        loading: false,
+        checkIsPaymentTermsDataChange: action.payload
       }
     case FORGING_CALCULATOR_MACHININGSTOCK_SECTION:
       return {
@@ -814,12 +845,50 @@ export default function costingReducer(state = initialState, action) {
         loading: false,
         includeToolCostIcc: action.payload
       }
+    case GET_COSTING_PAYMENT_TERM_DETAIL:
+      return {
+        ...state,
+        loading: false,
+        getCostingPaymentDetails: action.payload
+      }
+    case SET_PAYMENT_TERM_COST:
+      return {
+        ...state,
+        loading: false,
+        UpdatePaymentTermCost: action.payload
+      }
+    case GET_TCO_DATA:
+      return {
+        ...state,
+        loading: false,
+        getTcoDetails: action.payload
+      }
     case SET_COSTING_VIEW_DATA_FOR_ASSEMBLY:
       return {
         ...state,
         loading: false,
-        viewCostingDetailDataForAssembly: action.payload,
+        viewCostingDetailDataForAssembly: action.payload
       }
+    case SET_RFQ_COSTING_TYPE:
+      return {
+        ...state,
+        IsRfqCostingType: action.payload
+      }
+    case PARTSPECIFICATIONRFQDATA:
+
+
+      return {
+        ...state,
+        loading: false,
+        partSpecificationRFQData: action.payload,
+      }
+    case GET_SAP_EVALUATIONTYPE:
+      return {
+        ...state,
+        loading: false,
+        evaluationType: action.payload,
+      }
+
     default:
       return state
   }

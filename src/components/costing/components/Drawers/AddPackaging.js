@@ -10,7 +10,7 @@ import { calculatePercentage, checkForDecimalAndNull, checkForNull, getConfigura
 import { useDispatch, useSelector } from 'react-redux';
 import WarningMessage from '../../../common/WarningMessage';
 import { number, percentageLimitValidation, checkWhiteSpaces, hashValidation, decimalNumberLimit6, decimalAndNumberValidationBoolean, NoSignNoDecimalMessage, isNumber } from "../../../../helper/validation";
-import { IdForMultiTechnology, LOGISTICS, STRINGMAXLENGTH } from '../../../../config/masterData';
+import { IdForMultiTechnology, LOGISTICS, PACK_AND_FREIGHT_PER_KG, STRINGMAXLENGTH } from '../../../../config/masterData';
 import _ from 'lodash';
 import { MESSAGES } from '../../../../config/message';
 import TooltipCustom from '../../../common/Tooltip';
@@ -33,11 +33,12 @@ function AddPackaging(props) {
   const defaultValues = {
     PackagingDetailId: rowObjData && rowObjData.PackagingDetailId !== undefined ? rowObjData.PackagingDetailId : '',
     PackagingDescription: rowObjData && rowObjData.PackagingDescription !== undefined ? rowObjData.PackagingDescription : '',
-    PackagingCostPercentage: rowObjData && rowObjData.PackagingCostPercentage !== undefined ? checkForDecimalAndNull(rowObjData.PackagingCostPercentage, getConfigurationKey().NoOfDecimalForPrice) : 0,
+    PackagingCostPercentage: rowObjData && rowObjData.PackagingCostPercentage !== undefined ? checkForDecimalAndNull(rowObjData.PackagingCostPercentage, getConfigurationKey().NoOfDecimalForPrice) : '',
     Applicability: rowObjData && rowObjData.Applicability !== undefined ? { label: rowObjData.Applicability, value: rowObjData.Applicability } : [],
     PackagingCost: rowObjData && rowObjData.PackagingCost !== undefined ? checkForDecimalAndNull(rowObjData.PackagingCost, getConfigurationKey().NoOfDecimalForPrice) : '',
-    Cost: rowObjData && rowObjData.PackagingCost !== undefined ? checkForDecimalAndNull(rowObjData.PackagingCost, getConfigurationKey().NoOfDecimalForPrice) : 0,
+    Cost: rowObjData && rowObjData.PackagingCost !== undefined ? checkForDecimalAndNull(rowObjData.PackagingCost, getConfigurationKey().NoOfDecimalForPrice) : '',
     crmHeadPackaging: rowObjData && rowObjData.PackagingCRMHead !== undefined ? { label: rowObjData.PackagingCRMHead, value: 1 } : [],
+    Rate: rowObjData && rowObjData.Rate !== undefined ? checkForDecimalAndNull(rowObjData.Rate, getConfigurationKey().NoOfDecimalForPrice) : '',
   }
 
   const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors } } = useForm({
@@ -58,13 +59,15 @@ function AddPackaging(props) {
   const [packagingCost, setPackagingCost] = useState(0)
   const costingHead = useSelector(state => state.comman.costingHead)
   const { CostingDataList, isBreakupBoughtOutPartCostingFromAPI } = useSelector(state => state.costing)
-  const [showCostError, setShowCostError] = useState(false)
   const [packagingCostDataFixed, setPackagingCostDataFixed] = useState(getValues('PackagingCost') ? getValues('PackagingCost') : '')
   const [errorMessage, setErrorMessage] = useState('')
+  const [removeApplicability, setRemoveApplicability] = useState([])
 
   const fieldValues = IsolateReRender(control)
   const { costingData, ComponentItemData } = useSelector(state => state.costing)
   const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId)
+
+  const { RMCCTabData } = useSelector(state => state.costing)
 
   const freightType = [
     { label: 'Origin THC', value: 'Origin THC' },
@@ -73,13 +76,33 @@ function AddPackaging(props) {
   ]
 
   useEffect(() => {
-    if (applicability && applicability.value !== undefined) {
-      calculateApplicabilityCost(applicability.label)
+    if (applicability?.value === PACK_AND_FREIGHT_PER_KG) {
+      let arr = _.map(RMCCTabData, 'CostingPartDetails.CostingRawMaterialsCost')
+      let totalFinishWeight = 0
+      arr && arr?.map(item => {
+        totalFinishWeight = item && item?.reduce((accummlator, el) => {
+          return accummlator + checkForNull(el?.FinishWeight)
+        }, 0)
+      })
+      // setTotalFinishWeight(totalFinishWeight)
+
+      setValue("Quantity", totalFinishWeight)
+
+    }
+  }, [RMCCTabData, applicability])
+
+  useEffect(() => {
+    if (applicability && applicability?.value !== undefined) {
+
+      calculateApplicabilityCost(applicability?.label)
     }
   }, [fieldValues]);
+
   useEffect(() => {
     let request = partType ? 'multiple technology assembly' : ''
     dispatch(fetchCostingHeadsAPI(request, false, (res) => { }))
+    const removeApplicabilityList = _.map(gridData, 'Applicability')
+    setRemoveApplicability(removeApplicabilityList)
   }, [])
 
   // useEffect(() => {
@@ -111,7 +134,9 @@ function AddPackaging(props) {
 
     if (label === 'Applicability') {
       costingHead && costingHead.map(item => {
+        if (removeApplicability?.includes(item.Text)) return false;
         if (item.Value === '0') return false;
+
         temp.push({ label: item.Text, value: item.Value })
         return null;
       });
@@ -121,6 +146,9 @@ function AddPackaging(props) {
         // tempList = removeBOPFromList([...temp])
       } else {
         tempList = [...temp]
+      }
+      if (!removeApplicability?.includes(PACK_AND_FREIGHT_PER_KG)) {
+        tempList.push({ label: PACK_AND_FREIGHT_PER_KG, value: PACK_AND_FREIGHT_PER_KG })
       }
       return tempList;
     }
@@ -149,7 +177,6 @@ function AddPackaging(props) {
     } else {
       setApplicability([])
     }
-    setShowCostError(false)
     setErrorMessage('')
   }
 
@@ -172,6 +199,7 @@ function AddPackaging(props) {
    */
   const calculateApplicabilityCost = (Text, applicablityDropDownChange = false) => {
 
+
     const { NetRawMaterialsCost, NetBoughtOutPartCost, } = headCostData;
 
     const ConversionCostForCalculation = costData.IsAssemblyPart ? checkForNull(headCostData.NetConversionCost) - checkForNull(headCostData.TotalOtherOperationCostPerAssembly) : headCostData.ProcessCostTotal + headCostData.OperationCostTotal
@@ -189,90 +217,99 @@ function AddPackaging(props) {
     switch (Text) {
       case 'RM':
       case 'Part Cost':
+
         if (!PackageType) {
           setValue('PackagingCost', '')
           setPackagingCost('')
         } else {
           totalPackagingCost = NetRawMaterialsCost * calculatePercentage(PackagingCostPercentage)
-          setValue('PackagingCost', checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice))
+          setValue('PackagingCost', totalPackagingCost ? checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice) : '')
           setPackagingCost(totalPackagingCost)
         }
         break;
       case 'BOP':
+
         if (!PackageType) {
           setValue('PackagingCost', '')
           setPackagingCost('')
         } else {
           totalPackagingCost = NetBoughtOutPartCost * calculatePercentage(PackagingCostPercentage)
-          setValue('PackagingCost', checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice))
+          setValue('PackagingCost', totalPackagingCost ? checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice) : '')
           setPackagingCost(totalPackagingCost)
         }
         break;
 
       case 'RM + CC':
       case 'Part Cost + CC':
+
         if (!PackageType) {
           setValue('PackagingCost', '')
           setPackagingCost('')
         } else {
           totalPackagingCost = RMCC * calculatePercentage(PackagingCostPercentage)
-          setValue('PackagingCost', checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice))
+          setValue('PackagingCost', totalPackagingCost ? checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice) : '')
           setPackagingCost(totalPackagingCost)
         }
         break;
       case 'BOP + CC':
+
         if (!PackageType) {
           setValue('PackagingCost', '')
           setPackagingCost('')
         } else {
           totalPackagingCost = BOPCC * calculatePercentage(PackagingCostPercentage)
-          setValue('PackagingCost', checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice))
+          setValue('PackagingCost', totalPackagingCost ? checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice) : '')
           setPackagingCost(totalPackagingCost)
         }
         break;
 
       case 'CC':
+
         if (!PackageType) {
           setValue('PackagingCost', '')
           setPackagingCost('')
         } else {
           totalPackagingCost = (ConversionCostForCalculation) * calculatePercentage(PackagingCostPercentage)
-          setValue('PackagingCost', checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice))
+          setValue('PackagingCost', totalPackagingCost ? checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice) : '')
           setPackagingCost(totalPackagingCost)
         }
         break;
 
       case 'RM + CC + BOP':
       case 'Part Cost + CC + BOP':
+
         if (!PackageType) {
           setValue('PackagingCost', '')
         } else {
           totalPackagingCost = (RMBOPCC) * calculatePercentage(PackagingCostPercentage)
-          setValue('PackagingCost', checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice))
+          setValue('PackagingCost', totalPackagingCost ? checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice) : '')
           setPackagingCost(totalPackagingCost)
         }
         break;
 
       case 'RM + BOP':
       case 'Part Cost + BOP':
+
         if (!PackageType) {
           setValue('PackagingCost', '')
         } else {
           totalPackagingCost = (RMBOP) * calculatePercentage(PackagingCostPercentage)
-          setValue('PackagingCost', checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice))
+          setValue('PackagingCost', totalPackagingCost ? checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice) : '')
           setPackagingCost(totalPackagingCost)
         }
         break;
       case 'Net Cost':
+
         if (!PackageType) {
           setValue('PackagingCost', '')
         } else {
           totalPackagingCost = (totalTabCost) * calculatePercentage(PackagingCostPercentage)
-          setValue('PackagingCost', checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice))
+          setValue('PackagingCost', totalPackagingCost ? checkForDecimalAndNull(totalPackagingCost, getConfigurationKey().NoOfDecimalForPrice) : '')
           setPackagingCost(totalPackagingCost)
         }
         break;
       case 'Fixed':
+
         if (!PackageType) {
           setValue('PackagingCost', PackagingCostPercentage)
         } else {
@@ -280,7 +317,7 @@ function AddPackaging(props) {
           // setValue('PackagingCost',PackagingCostPercentage)
           setPackagingCost(totalPackagingCost)
           if (applicablityDropDownChange) {
-            setValue('PackagingCost', 0)
+            setValue('PackagingCost', '')
             setPackagingCost(0)
           }
         }
@@ -288,12 +325,21 @@ function AddPackaging(props) {
       default:
         break;
     }
+    errors.PackagingCost = {}
+  }
+
+  const calculatePerKg = (rate, weight) => {
+    const packagingCost = checkForNull(rate) * checkForNull(weight)
+
+    setValue('PackagingCost', packagingCost ? checkForDecimalAndNull(packagingCost, getConfigurationKey().NoOfDecimalForPrice) : '')
+    setPackagingCost(packagingCost)
+    errors.PackagingCost = {}
   }
 
   /**
-  * @method addRow
-  * @description ADD ROW IN TO RM COST GRID
-  */
+ * @method addRow
+ * @description ADD ROW IN TO RM COST GRID
+ */
   const addRow = () => {
     //toggleDrawer('')
   }
@@ -307,28 +353,21 @@ function AddPackaging(props) {
     props.closeDrawer('', {})
   }
   const packingCostHandler = (e) => {
+
     let message = ''
     if (decimalNumberLimit6(e.target.value)) {
-      setShowCostError(true)
       message = MESSAGES.OTHER_VALIDATION_ERROR_MESSAGE
     } else if (!isNumber(e.target.value)) {
-      setShowCostError(true)
       message = NoSignNoDecimalMessage
     } else if (e.target.value === '') {
-      setShowCostError(true)
       message = 'This field is required'
     } else {
       setPackagingCostDataFixed(e.target.value)
-      setShowCostError(false)
       message = ''
     }
     setErrorMessage(message)
   }
   const onSubmit = data => {
-    if (showCostError || (applicability.label === 'Fixed' && (checkForNull(packagingCostDataFixed) === 0 || packagingCostDataFixed === ''))) {
-      setShowCostError(true)
-      return false
-    }
     let formData
     if (costingData.TechnologyId === LOGISTICS) {
       formData = {
@@ -344,13 +383,15 @@ function AddPackaging(props) {
     } else {
       formData = {
         PackagingDetailId: isEditFlag ? rowObjData.PackagingDetailId : '',
-        IsPackagingCostFixed: applicability.label === 'Fixed' ? false : true,
+        IsPackagingCostFixed: applicability?.label === 'Fixed' ? false : true,
         PackagingDescription: data.PackagingDescription,
         PackagingCostFixed: 0,
         PackagingCostPercentage: PackageType ? data.PackagingCostPercentage : 0,
-        PackagingCost: applicability.label === 'Fixed' ? getValues('PackagingCost') : packagingCost,
-        Applicability: applicability ? data.Applicability.label : '',
-        PackagingCRMHead: getValues('crmHeadPackaging') ? getValues('crmHeadPackaging').label : ''
+        PackagingCost: applicability?.label === 'Fixed' ? getValues('PackagingCost') : packagingCost,
+        Applicability: applicability ? data.Applicability?.label : '',
+        PackagingCRMHead: getValues('crmHeadPackaging') ? getValues('crmHeadPackaging').label : '',
+        Rate: getValues('Rate'),
+        Quantity: getValues('Quantity'),
       }
     }
 
@@ -437,7 +478,7 @@ function AddPackaging(props) {
                       control={control}
                       rules={{ required: PackageType ? true : false }}
                       register={register}
-                      defaultValue={applicability.length !== 0 ? applicability : ''}
+                      defaultValue={applicability?.length !== 0 ? applicability : ''}
                       options={renderListing('Applicability')}
                       mandatory={PackageType ? true : false}
                       handleChange={handleApplicabilityChange}
@@ -472,6 +513,46 @@ function AddPackaging(props) {
                   </Col>:
 
                   } */}
+                  {applicability?.label === PACK_AND_FREIGHT_PER_KG && <><Col md="12">
+                    <TextFieldHookForm
+                      label={'Rate'}
+                      name={'Rate'}
+                      Controller={Controller}
+                      control={control}
+                      register={register}
+                      mandatory={applicability?.label === PACK_AND_FREIGHT_PER_KG ? true : false}
+                      rules={{
+                        required: applicability?.label === PACK_AND_FREIGHT_PER_KG ? true : false,
+                        validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
+                      }}
+                      handleChange={(e) => calculatePerKg(e.target.value, getValues("Quantity"))}
+                      defaultValue={''}
+                      className=""
+                      customClassName={'withBorder'}
+                      errors={errors.Rate}
+                    // disabled={(applicability?.label === PACK_AND_FREIGHT_PER_KG) ? true : false}
+                    />
+                  </Col>
+                    <Col md="12">
+                      <TextFieldHookForm
+                        label={'Quantity'}
+                        name={'Quantity'}
+                        Controller={Controller}
+                        control={control}
+                        register={register}
+                        mandatory={applicability?.label === PACK_AND_FREIGHT_PER_KG ? true : false}
+                        rules={{
+                          required: applicability?.label === PACK_AND_FREIGHT_PER_KG ? true : false,
+                          validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
+                        }}
+                        handleChange={(e) => calculatePerKg(getValues("Rate"), e.target.value)}
+                        defaultValue={''}
+                        className=""
+                        customClassName={'withBorder'}
+                        errors={errors.Quantity}
+                      // disabled={(applicability?.label === PACK_AND_FREIGHT_PER_KG) ? true : false}
+                      />
+                    </Col></>}
 
                   {costingData.TechnologyId === LOGISTICS && <>
                     <Col md="12">
@@ -516,7 +597,7 @@ function AddPackaging(props) {
                   </>}
 
                   {costingData.TechnologyId !== LOGISTICS &&
-                    applicability.label !== 'Fixed' &&
+                    applicability?.label !== 'Fixed' && applicability?.label !== PACK_AND_FREIGHT_PER_KG &&
                     <Col md="12">
                       <TextFieldHookForm
                         id="Add_Packaging_Percentage"
@@ -553,19 +634,18 @@ function AddPackaging(props) {
                       Controller={Controller}
                       control={control}
                       register={register}
-                      mandatory={applicability.label === 'Fixed' ? true : false}
-                      // rules={{
-                      //   required: true,
-                      //   validate: { number, checkWhiteSpaces, decimalNumberLimit6 }
-                      // }}
+                      mandatory={applicability?.label === 'Fixed' ? true : false}
+                      rules={{
+                        required: true,
+                        validate: applicability?.label === 'Fixed' ? { number, checkWhiteSpaces, decimalNumberLimit6 } : {}
+                      }}
                       handleChange={packingCostHandler}
                       defaultValue={''}
                       className=""
                       customClassName={'withBorder mb-0'}
                       errors={errors.PackagingCost}
-                      disabled={applicability.label === 'Fixed' ? false : true}
+                      disabled={applicability?.label === 'Fixed' ? false : true}
                     />
-                    {applicability.label === 'Fixed' && (showCostError) && <WarningMessage dClass={"error-message"} textClass={"pl-0"} message={errorMessage} />}
                   </Col>
                   }
 

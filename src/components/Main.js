@@ -1,155 +1,231 @@
-import React, { Component, Suspense } from 'react'
-import { reactLocalStorage } from 'reactjs-localstorage'
-import { connect } from 'react-redux'
-import SideBar from './nav/NavBar'
-import { Route, Switch } from 'react-router-dom'
-import ReduxToastr from 'react-redux-toastr'
-import 'react-toastify/dist/ReactToastify.css';
-import Footer from './common/Footer'
-import Login from './login/Login'
-import NotFoundPage from './common/NotFoundPage'
-import User from './user'
-import Dashboard from './dashboard'
-import DashboardWithGraph from './dashboard/DashboardWithGraph'
-import { Loader } from '../../src/components/common/Loader'
-import PartMaster from './masters/part-master'
-import UOMMaster from './masters/uom-master'
-import RowMaterialMaster from './masters/material-master'
-import PlantMaster from './masters/plant-master/index'
-import SupplierMaster from './masters/supplier-master/VendorListing'
-import BOPMaster from './masters/bop-master'
-import FuelMaster from './masters/fuel-master'
-import FreightMaster from './masters/freight-master'
-import LabourListing from './masters/labour-master/LabourListing'
-import OverheadProfit from './masters/overhead-profit-master'
-import InterestRate from './masters/interest-rate-master/InterestRateListing'
-import MachineMaster from './masters/machine-master'
-import ReasonListing from './masters/reason-master/ReasonListing'
-import VolumeListing from './masters/volume-master/VolumeListing'
-import ClientMaster from './masters/client-master/AddClient'
-import ExchangeRateListing from './masters/exchange-rate-master/ExchangeRateListing'
-import TaxListing from './masters/tax-master/TaxListing'
-import LeftMenu from './nav/Leftsidemenu'
-import Breadcrumb from './nav/Breadcrumb'
-import CostingRoutes from './costing/Routes'
-import { showUserData, TokenAPI, AutoSignin } from '../actions/auth/AuthActions'
-import AuthMiddleware from '../AuthMiddleware'
+import React, { Component, Suspense } from "react";
+import { reactLocalStorage } from "reactjs-localstorage";
+import { connect } from "react-redux";
+import SideBar from "./nav/NavBar";
+import { Route, Switch } from "react-router-dom";
+import ReduxToastr from "react-redux-toastr";
+import "react-toastify/dist/ReactToastify.css";
+import Footer from "./common/Footer";
+import Login from "./login/Login";
+import NotFoundPage from "./common/NotFoundPage";
+import User from "./user";
+import Dashboard from "./dashboard";
+import DashboardWithGraph from "./dashboard/DashboardWithGraph";
+import { Loader } from "../../src/components/common/Loader";
+import PartMaster from "./masters/part-master";
+import UOMMaster from "./masters/uom-master";
+import RowMaterialMaster from "./masters/material-master";
+import PlantMaster from "./masters/plant-master/index";
+import SupplierMaster from "./masters/supplier-master/VendorListing";
+import BOPMaster from "./masters/bop-master";
+import FuelMaster from "./masters/fuel-master";
+import FreightMaster from "./masters/freight-master";
+import LabourListing from "./masters/labour-master/LabourListing";
+import OverheadProfit from "./masters/overhead-profit-master";
+import InterestRate from "./masters/interest-rate-master/InterestRateListing";
+import MachineMaster from "./masters/machine-master";
+import ReasonListing from "./masters/reason-master/ReasonListing";
+import VolumeListing from "./masters/volume-master/VolumeListing";
+import ClientMaster from "./masters/client-master/AddClient";
+import ExchangeRateListing from "./masters/exchange-rate-master/ExchangeRateListing";
+import TaxListing from "./masters/tax-master/TaxListing";
+import LeftMenu from "./nav/Leftsidemenu";
+import Breadcrumb from "./nav/Breadcrumb";
+import CostingRoutes from "./costing/Routes";
 import {
-  BOP, DASHBOARD, FREIGHT, FUEL_AND_POWER, INTEREST_RATE, LABOUR, MACHINE, OPERATION,
-  OVERHEAD_AND_PROFIT, PART, PLANT, RAW_MATERIAL, UOM, USER, VENDOR,
-  REASON, VOLUME, CLIENT, EXCHANGE_RATE, TAX, COSTING_PATH, APPROVAL_LISTING_PATH, COSTING_BREAKUP_DETAILS_REPORT, APPROVAL_APP,
-  APPROVAL_SUMMARY_PATH, COSTING_BULK_UPLOAD, COSTING_SUMMARY_, COSTING_SUMMARY, Simulation_Page, Simulation_Upload, API,
-  DASHBOARDWITHGRAPH_PATH, SIMULATION_APPROVAL_SUMMARY_PATH, DASHBOARD_PATH, DASHBOARD_PATH_SECOND, SHEET_METAL, SIMULATION_PATH, SIMULATION_HISTORY_PATH, USER_PATH, RFQ_LISTING, RFQ, COST_RATIO_REPORT, BUDGETING, NFR_LISTING, NFR, MASTER_BENCHMARK_REPORT, COST_MOVEMENT_REPORT, SUPPLIER_CONTRIBUTION_REPORT, SALE_PROVISION_REPORT, PURCHASE_PROVISION_REPORT, CUSTOMER_POAM_REPORT, HEAD_WISE_COSTING_GOT_GIVEN, PLANT_HEAD_WISE, PRODUCT_ROLLOUT, OUTSOURCING, COSTING_DETAIL, MASTER_COST_MOVEMENT_REPORT, RESET_PASSWORD, FORGET_PASSWORD, NFR_INSIGHT_DETAILS, INSIGHT_SIMULATION_REPORT, lOGIN_AUDIT, VENDOR_MANAGEMENT, SUPPLIER_MANAGEMENT, lOGIN_AUDITS, INITIATE_UNBLOCKING, LPS_RATING, SUPPLIER_APPROVAL_SUMMARY, APPROVAL_LISTING, VENDOR_MANAGEMENT_ROLE
-} from '../config/constants'
-import ApprovalSummary from './costing/components/approval/ApprovalSummary'
-import CostingSummaryBulkUpload from './costing/components/CostingSummaryBulkUpload'
-import SimulationUpload from './simulation/components/SimulationUpload'
-import { userDetails } from '../helper/auth'
-import { formatLoginResult } from '../helper/ApiResponse'
-import axios from 'axios';
-import CostingDetailReport from './report/components/CostingDetailReport'
-import SimulationApprovalSummary from './simulation/components/SimulationApprovalSummary'
-import OperationsMaster from './masters/operation/index'
-import CostingBenchmarkReport from './report/components/CostingBenchmarkReport'
-import ToasterBoXWrapper from './common/ToasterBoXWrapper'
-import SimulationInsights from './report/components/SimulationInsights'
-import SimulationRoutes from './simulation/Routes'
-import CommonApproval from './masters/material-master/CommonApproval'
-import RfqListing from './rfq/RfqListing'
-import CostMovementReport from './report/components/CostMovementReport/CostMovementReport'
-import CostRatioReport from './report/components/CostRatioReport/CostRatioReport'
-import SupplierContributionReport from './report/components/SupplierContribution'
-import NfrTabs from './masters/nfr'
-import SaleProvisionReport from './report/components/SaleProvisionReport/SaleProvisionReport'
-import PurchaseProvisionReport from './report/components/PurchaseProvisionReport/PurchaseProvisionReport'
-import CustomerPoamSummaryReport from './report/components/CustomerPoamSummaryReport/CustomerPoamSummaryReport'
-import HeadWiseCostingGotGiven from './report/components/HeadwiseCostingGotGiven/HeadWiseCostingGotGiven'
-import MasterCostMovement from './report/components/CostMovementByMaster/MasterCostMovement'
-import BudgetMaster from './masters/budget-master'
-import GotGivenReport from './report/components/GotGivenReport/GotGivenReport'
-import PipdReport from './report/components/PIPDReport/PipdReport'
-import PlantWiseCostingGotGiven from './report/components/PlantWiseCostingGotGiven/PlantWiseCostingGotGiven'
-import ProductRollout from './report/components/ProductRollout'
-import OutsourcingListing from './masters/outsourcing-master/OutsourcingListing'
-import CostingForm from './costing/components'
-import SimulationForm from './simulation/components'
-import ResetPassword from './login/ResetPassword'
-import LoginAudit from './audit/LoginAudit'
-import SAPDetailList from './masters/sap-detail/SAPDetailList'
-import NFRInsightsReport from './report/components/NFRInsightReportFolder/NFRInsightReport'
-import VendorManagement from './vendorManagement'
-import InitiateUnblocking from './vendorManagement/InitiateUnblocking'
-import LpsRatingListing from './vendorManagement/LpsRatingLisitng'
-import VendorMaster from './masters/supplier-master'
-
-
+  showUserData,
+  TokenAPI,
+  AutoSignin,
+} from "../actions/auth/AuthActions";
+import AuthMiddleware from "../AuthMiddleware";
+import {
+  BOP,
+  DASHBOARD,
+  FREIGHT,
+  FUEL_AND_POWER,
+  INTEREST_RATE,
+  LABOUR,
+  MACHINE,
+  OPERATION,
+  OVERHEAD_AND_PROFIT,
+  PART,
+  PLANT,
+  RAW_MATERIAL,
+  UOM,
+  USER,
+  VENDOR,
+  REASON,
+  VOLUME,
+  CLIENT,
+  EXCHANGE_RATE,
+  TAX,
+  COSTING_PATH,
+  APPROVAL_LISTING_PATH,
+  COSTING_BREAKUP_DETAILS_REPORT,
+  APPROVAL_APP,
+  APPROVAL_SUMMARY_PATH,
+  COSTING_BULK_UPLOAD,
+  COSTING_SUMMARY_,
+  COSTING_SUMMARY,
+  Simulation_Page,
+  Simulation_Upload,
+  API,
+  DASHBOARDWITHGRAPH_PATH,
+  SIMULATION_APPROVAL_SUMMARY_PATH,
+  DASHBOARD_PATH,
+  DASHBOARD_PATH_SECOND,
+  SHEET_METAL,
+  SIMULATION_PATH,
+  SIMULATION_HISTORY_PATH,
+  USER_PATH,
+  RFQ_LISTING,
+  AUCTION_LISTING,
+  RFQ,
+  COST_RATIO_REPORT,
+  BUDGETING,
+  NFR_LISTING,
+  NFR,
+  MASTER_BENCHMARK_REPORT,
+  COST_MOVEMENT_REPORT,
+  SUPPLIER_CONTRIBUTION_REPORT,
+  SALE_PROVISION_REPORT,
+  PURCHASE_PROVISION_REPORT,
+  CUSTOMER_POAM_REPORT,
+  HEAD_WISE_COSTING_GOT_GIVEN,
+  PLANT_HEAD_WISE,
+  PRODUCT_ROLLOUT,
+  OUTSOURCING,
+  COSTING_DETAIL,
+  MASTER_COST_MOVEMENT_REPORT,
+  RESET_PASSWORD,
+  FORGET_PASSWORD,
+  NFR_INSIGHT_DETAILS,
+  INSIGHT_SIMULATION_REPORT,
+  lOGIN_AUDIT,
+  VENDOR_MANAGEMENT,
+  SUPPLIER_MANAGEMENT,
+  lOGIN_AUDITS,
+  INITIATE_UNBLOCKING,
+  SUPPLIER_APPROVAL_SUMMARY,
+  APPROVAL_LISTING,
+  LPS,
+  INDEXATION,
+  ADD_AUCTION,
+} from "../config/constants";
+import ApprovalSummary from "./costing/components/approval/ApprovalSummary";
+import CostingSummaryBulkUpload from "./costing/components/CostingSummaryBulkUpload";
+import SimulationUpload from "./simulation/components/SimulationUpload";
+import { userDetails } from "../helper/auth";
+import { formatLoginResult } from "../helper/ApiResponse";
+import axios from "axios";
+import CostingDetailReport from "./report/components/CostingDetailReport";
+import SimulationApprovalSummary from "./simulation/components/SimulationApprovalSummary";
+import OperationsMaster from "./masters/operation/index";
+import CostingBenchmarkReport from "./report/components/CostingBenchmarkReport";
+import ToasterBoXWrapper from "./common/ToasterBoXWrapper";
+import SimulationInsights from "./report/components/SimulationInsights";
+import SimulationRoutes from "./simulation/Routes";
+import CommonApproval from "./masters/material-master/CommonApproval";
+import RfqListing from "./rfq/RfqListing";
+import CostMovementReport from "./report/components/CostMovementReport/CostMovementReport";
+import CostRatioReport from "./report/components/CostRatioReport/CostRatioReport";
+import SupplierContributionReport from "./report/components/SupplierContribution";
+import NfrTabs from "./masters/nfr";
+import SaleProvisionReport from "./report/components/SaleProvisionReport/SaleProvisionReport";
+import PurchaseProvisionReport from "./report/components/PurchaseProvisionReport/PurchaseProvisionReport";
+import CustomerPoamSummaryReport from "./report/components/CustomerPoamSummaryReport/CustomerPoamSummaryReport";
+import HeadWiseCostingGotGiven from "./report/components/HeadwiseCostingGotGiven/HeadWiseCostingGotGiven";
+import MasterCostMovement from "./report/components/CostMovementByMaster/MasterCostMovement";
+import BudgetMaster from "./masters/budget-master";
+import GotGivenReport from "./report/components/GotGivenReport/GotGivenReport";
+import PipdReport from "./report/components/PIPDReport/PipdReport";
+import PlantWiseCostingGotGiven from "./report/components/PlantWiseCostingGotGiven/PlantWiseCostingGotGiven";
+import ProductRollout from "./report/components/ProductRollout";
+import OutsourcingListing from "./masters/outsourcing-master/OutsourcingListing";
+import CostingForm from "./costing/components";
+import SimulationForm from "./simulation/components";
+import ResetPassword from "./login/ResetPassword";
+import LoginAudit from "./audit/LoginAudit";
+import SAPDetailList from "./masters/sap-detail/SAPDetailList";
+import NFRInsightsReport from "./report/components/NFRInsightReportFolder/NFRInsightReport";
+import VendorManagement from "./vendorManagement";
+import InitiateUnblocking from "./vendorManagement/InitiateUnblocking";
+import LpsRatingListing from "./vendorManagement/LpsRatingLisitng";
+import VendorMaster from "./masters/supplier-master";
+import VendorClassificationListing from "./vendorManagement/VendorClassificationListing";
+import Indexation from "./masters/indexation";
+import AuctionIndex from "./rfqAuction/AuctionIndex";
+import AddAuction from "./rfqAuction/AddAuction";
 
 const CustomHeader = {
-  'Content-Type': 'application/x-www-form-urlencoded',
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Credentials': 'true',
-  'Authorization': `Bearer NRIsJAXFS-IgPMtfW05J1EiTwhv4z37BnFCk2TynvAdVYMuBIal7dTYyfboxRFjvPJ1zPl4r4LfQJ8_1fKDnSxTmGmThhl6YabKHaGvzp2WDQ7P0wFZs2wW10Mcmkt4Xb4ybDGzwSLt6fwRuI1uGNRuyNMxKQz-s533rIF5Qx08vwumo5ogN5x_oyi__b4KXJWbUU_0qLaJGLwISEf4o3_4CPBoP6Gv_tAGIO1W250SzOF3zwYpTxi8LwghOtQse`,
-  'Access-From': 'WEB',
-  'Api-Key': `${process.env.REACT_APP_API_KEY}`,
-}
+  "Content-Type": "application/x-www-form-urlencoded",
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Credentials": "true",
+  Authorization: `Bearer NRIsJAXFS-IgPMtfW05J1EiTwhv4z37BnFCk2TynvAdVYMuBIal7dTYyfboxRFjvPJ1zPl4r4LfQJ8_1fKDnSxTmGmThhl6YabKHaGvzp2WDQ7P0wFZs2wW10Mcmkt4Xb4ybDGzwSLt6fwRuI1uGNRuyNMxKQz-s533rIF5Qx08vwumo5ogN5x_oyi__b4KXJWbUU_0qLaJGLwISEf4o3_4CPBoP6Gv_tAGIO1W250SzOF3zwYpTxi8LwghOtQse`,
+  "Access-From": "WEB",
+  "Api-Key": `${process.env.REACT_APP_API_KEY}`,
+};
 
-const Detail = userDetails()
+const Detail = userDetails();
 
 if (Detail && Object.keys(Detail).length > 0) {
   window.setInterval(() => {
     let reqParams = {
       IsRefreshToken: true,
-      refresh_token: JSON.parse(localStorage.getItem("userDetail")).RefreshToken,
-      ClientId: 'self',
-      grant_type: 'refresh_token',
-    }
+      refresh_token: JSON.parse(localStorage.getItem("userDetail"))
+        .RefreshToken,
+      ClientId: "self",
+      grant_type: "refresh_token",
+    };
 
     let queryParams = `refresh_token=${reqParams.refresh_token}&ClientId=${reqParams.ClientId}&grant_type=${reqParams.grant_type}`;
 
-    axios.post(API.login, queryParams, CustomHeader)
+    axios
+      .post(API.login, queryParams, CustomHeader)
       .then((response) => {
         if (response && response.status === 200) {
           let userDetail = formatLoginResult(response.data);
 
-          localStorage.setItem("userDetail", JSON.stringify(userDetail))
+          localStorage.setItem("userDetail", JSON.stringify(userDetail));
         }
-      }).catch((error) => {
-
-      });
+      })
+      .catch((error) => { });
   }, (Detail.expires_in - 60) * 1000);
 }
 
 class Main extends Component {
   constructor(props) {
-    super(props)
-    this.child = React.createRef()
+    super(props);
+    this.child = React.createRef();
     this.state = {
       visibelPageNotFound: false,
       breadcrumbTrail: {},
       isLoader: false,
-    }
+    };
   }
 
   UNSAFE_componentWillMount() {
     if (this?.props?.location?.search) {
-
-      if (reactLocalStorage.getObject('isUserLoggedIn') === true) return false;
-      this.setState({ isLoader: true })
+      if (reactLocalStorage.getObject("isUserLoggedIn") === true) return false;
+      this.setState({ isLoader: true });
       const queryParams = new URLSearchParams(this.props.location.search);
-      const token = queryParams.get('token')
-      const username = queryParams.get('username')
+      const token = queryParams.get("token");
+      const username = queryParams.get("username");
 
       let reqParams = {
         Token: token,
         UserName: username,
-      }
-      if (this.props.location.pathname === RESET_PASSWORD || this.props.location.pathname === FORGET_PASSWORD) {
-        this.setState({ isLoader: false })
+      };
+      if (
+        this.props.location.pathname === RESET_PASSWORD ||
+        this.props.location.pathname === FORGET_PASSWORD
+      ) {
+        this.setState({ isLoader: false });
       } else {
         this.props.AutoSignin(reqParams, (res) => {
           if (res && res.status === 200) {
             let userDetail = formatLoginResult(res.data.Data);
-            localStorage.setItem("userDetail", JSON.stringify(userDetail))
+            localStorage.setItem("userDetail", JSON.stringify(userDetail));
             //MIL DEPARTMENT RELATED CHANGE
             // let departmentList = ''
             // const dept = userDetail && userDetail.Department.map((item) => {
@@ -165,16 +241,14 @@ class Main extends Component {
             // reactLocalStorage.setObject("departmentList", departmentList);
             this.props.logUserIn();
             setTimeout(() => {
-              this.setState({ isLoader: false })
+              this.setState({ isLoader: false });
               window.location.replace("/");
-            }, 1000)
+            }, 1000);
           }
-        })
+        });
       }
     }
   }
-
-
 
   /**
    * @method handlePageNotFound
@@ -183,8 +257,8 @@ class Main extends Component {
   handlePageNotFound = () => {
     this.setState({
       visibelPageNotFound: true,
-    })
-  }
+    });
+  };
 
   /**
    * @method hidePageNotFound
@@ -193,37 +267,36 @@ class Main extends Component {
   hidePageNotFound = () => {
     this.setState({
       visibelPageNotFound: false,
-    })
-  }
+    });
+  };
 
   /**
    * @method handleUserData
    * @description Method used when refreshing browser then consistency of logged in user.
    */
   handleUserData = () => {
-
-    let userData = JSON.parse(localStorage.getItem('userDetail'))
-    this.props.showUserData(userData)
-  }
+    let userData = JSON.parse(localStorage.getItem("userDetail"));
+    this.props.showUserData(userData);
+  };
 
   setSidebarLinks = (linkText) => {
     this.setState({
       sidebarLinks: linkText,
-    })
-  }
+    });
+  };
 
   render() {
-    const { location } = this.props
-    let isLogin = false
-    let checkLogin = reactLocalStorage.getObject('isUserLoggedIn')
-    reactLocalStorage.set('location', location.pathname)
-    if (typeof checkLogin == 'object') {
-      isLogin = false
+    const { location } = this.props;
+    let isLogin = false;
+    let checkLogin = reactLocalStorage.getObject("isUserLoggedIn");
+    reactLocalStorage.set("location", location.pathname);
+    if (typeof checkLogin == "object") {
+      isLogin = false;
     }
     if (checkLogin === true) {
-      isLogin = true
+      isLogin = true;
     } else {
-      isLogin = false
+      isLogin = false;
     }
 
     const fullSizeClass =
@@ -240,16 +313,24 @@ class Main extends Component {
         location.pathname === SIMULATION_HISTORY_PATH ||
         location.pathname === USER_PATH ||
         location.pathname === RFQ_LISTING ||
+        location.pathname === AUCTION_LISTING ||
         location.pathname === PRODUCT_ROLLOUT ||
         location.pathname === SUPPLIER_MANAGEMENT ||
-        location.pathname === NFR_LISTING ? 'w-100' : ''
+        location.pathname === NFR_LISTING ||
+        location.pathname === ADD_AUCTION
+        ? "w-100"
+        : "";
 
     //  ADD DASHBPOARD CLASS FOR DASHBOARD PAGE ONLY
-    const DashboardPage = location.pathname === DASHBOARDWITHGRAPH_PATH ? 'Dashboard-page' : '';
-    const DashboardMainPage = location.pathname === DASHBOARD_PATH || location.pathname === DASHBOARD_PATH_SECOND || location.pathname === PRODUCT_ROLLOUT ? 'Dashboard-page' : ''
+    const DashboardPage =
+      location.pathname === DASHBOARDWITHGRAPH_PATH ? "Dashboard-page" : "";
+    const DashboardMainPage =
+      location.pathname === DASHBOARD_PATH ||
+        location.pathname === DASHBOARD_PATH_SECOND ||
+        location.pathname === PRODUCT_ROLLOUT
+        ? "Dashboard-page"
+        : "";
     //  ADD DASHBPOARD CLASS FOR DASHBOARD PAGE ONLY
-
-
 
     return (
       <Suspense fallback={<Loader />}>
@@ -281,8 +362,8 @@ class Main extends Component {
               </div>
             </div>
           )}
-          <div className={isLogin ? 'blue-box' : ''}>
-            <div className={isLogin ? 'main-section' : ''}>
+          <div className={isLogin ? "blue-box" : ""}>
+            <div className={isLogin ? "main-section" : ""}>
               {isLogin &&
                 !this.state.visibelPageNotFound &&
                 location.pathname !== COSTING_PATH &&
@@ -298,21 +379,30 @@ class Main extends Component {
                 location.pathname !== SIMULATION_HISTORY_PATH &&
                 location.pathname !== USER_PATH &&
                 location.pathname !== RFQ_LISTING &&
+                location.pathname !== AUCTION_LISTING &&
                 location.pathname !== NFR_LISTING &&
                 location.pathname !== PRODUCT_ROLLOUT &&
                 location.pathname !== SUPPLIER_MANAGEMENT &&
                 location.pathname !== lOGIN_AUDITS &&
                 location.pathname !== SUPPLIER_APPROVAL_SUMMARY &&
-
-                (
+                location.pathname !== ADD_AUCTION && (
                   <LeftMenu {...this.props} />
                 )}
 
-              <div className={isLogin ? `content-page ${fullSizeClass} ${DashboardPage} ${DashboardMainPage}` : ''}>
-                <div className={`${isLogin ? `middleContainer` : ''}`}>
+              <div
+                className={
+                  isLogin
+                    ? `content-page ${fullSizeClass} ${DashboardPage} ${DashboardMainPage}`
+                    : ""
+                }
+              >
+                <div className={`${isLogin ? `middleContainer` : ""}`}>
                   <Switch>
-
-                    <Route exact path="/" component={AuthMiddleware(Dashboard, DASHBOARD)} />
+                    <Route
+                      exact
+                      path="/"
+                      component={AuthMiddleware(Dashboard, DASHBOARD)}
+                    />
 
                     <Route
                       path="/login"
@@ -325,106 +415,345 @@ class Main extends Component {
                       )}
                     />
 
-                    <Route path="/users" component={AuthMiddleware(User, USER)} />
+                    <Route
+                      path="/users"
+                      component={AuthMiddleware(User, USER)}
+                    />
 
                     <Route path="/forget-password" component={ResetPassword} />
 
-                    <Route path="/dashboard" component={AuthMiddleware(Dashboard, DASHBOARD)} />
+                    <Route
+                      path="/dashboard"
+                      component={AuthMiddleware(Dashboard, DASHBOARD)}
+                    />
 
-                    <Route path="/dashboardWithGraph" component={AuthMiddleware(DashboardWithGraph, DASHBOARD)} />
+                    <Route
+                      path="/dashboardWithGraph"
+                      component={AuthMiddleware(DashboardWithGraph, DASHBOARD)}
+                    />
 
-                    <Route path="/part-master" component={AuthMiddleware(PartMaster, PART)} />
+                    <Route
+                      path="/part-master"
+                      component={AuthMiddleware(PartMaster, PART)}
+                    />
 
-                    <Route path="/UOM-Master" component={AuthMiddleware(UOMMaster, UOM)} />
+                    <Route
+                      path="/UOM-Master"
+                      component={AuthMiddleware(UOMMaster, UOM)}
+                    />
 
-                    <Route path="/raw-material-master" exact component={AuthMiddleware(RowMaterialMaster, RAW_MATERIAL,)} />
+                    <Route
+                      path="/raw-material-master"
+                      exact
+                      component={AuthMiddleware(
+                        RowMaterialMaster,
+                        RAW_MATERIAL
+                      )}
+                    />
 
-                    <Route path="/raw-material-master/raw-material-approval" component={AuthMiddleware(CommonApproval, RAW_MATERIAL)} />
+                    <Route
+                      path="/raw-material-master/raw-material-approval"
+                      component={AuthMiddleware(CommonApproval, RAW_MATERIAL)}
+                    />
 
-                    <Route path="/plant-master" component={AuthMiddleware(PlantMaster, PLANT)} />
+                    <Route
+                      path="/plant-master"
+                      component={AuthMiddleware(PlantMaster, PLANT)}
+                    />
 
-                    <Route path="/vendor-master" component={AuthMiddleware(VendorMaster, VENDOR)} />
+                    <Route
+                      path="/vendor-master"
+                      component={AuthMiddleware(VendorMaster, VENDOR)}
+                    />
 
-                    <Route path="/bop-master" component={AuthMiddleware(BOPMaster, BOP)} />
+                    <Route
+                      path="/bop-master"
+                      component={AuthMiddleware(BOPMaster, BOP)}
+                    />
 
-                    <Route path="/fuel-master" component={AuthMiddleware(FuelMaster, FUEL_AND_POWER)} />
+                    <Route
+                      path="/fuel-master"
+                      component={AuthMiddleware(FuelMaster, FUEL_AND_POWER)}
+                    />
 
-                    <Route path="/machine-master" component={AuthMiddleware(MachineMaster, MACHINE)} />
+                    <Route
+                      path="/machine-master"
+                      component={AuthMiddleware(MachineMaster, MACHINE)}
+                    />
 
-                    <Route path="/operation-master" component={AuthMiddleware(OperationsMaster, OPERATION)} />
+                    <Route
+                      path="/operation-master"
+                      component={AuthMiddleware(OperationsMaster, OPERATION)}
+                    />
 
-                    <Route path="/freight-master" component={AuthMiddleware(FreightMaster, FREIGHT)} />
+                    <Route
+                      path="/freight-master"
+                      component={AuthMiddleware(FreightMaster, FREIGHT)}
+                    />
 
-                    <Route path="/labour-master" component={AuthMiddleware(LabourListing, LABOUR)} />
+                    <Route
+                      path="/labour-master"
+                      component={AuthMiddleware(LabourListing, LABOUR)}
+                    />
 
-                    <Route path="/overhead-profits-master" component={AuthMiddleware(OverheadProfit, OVERHEAD_AND_PROFIT,)} />
+                    <Route
+                      path="/overhead-profits-master"
+                      component={AuthMiddleware(
+                        OverheadProfit,
+                        OVERHEAD_AND_PROFIT
+                      )}
+                    />
 
-                    <Route path="/interest-rate-master" component={AuthMiddleware(InterestRate, INTEREST_RATE)} />
+                    <Route
+                      path="/interest-rate-master"
+                      component={AuthMiddleware(InterestRate, INTEREST_RATE)}
+                    />
 
-                    <Route path="/costing" component={CostingRoutes} exact={true} />
-                    <Route path="/costing-summary" component={AuthMiddleware(CostingForm, COSTING_SUMMARY_)} />
+                    <Route
+                      path="/costing"
+                      component={CostingRoutes}
+                      exact={true}
+                    />
+                    <Route
+                      path="/costing-summary"
+                      component={AuthMiddleware(CostingForm, COSTING_SUMMARY_)}
+                    />
 
                     {/* <Route path="/approval-summary" component={AuthMiddleware(ApprovalSummary, Approval_Summary)} /> */}
-                    <Route path="/approval-summary" component={AuthMiddleware(ApprovalSummary, APPROVAL_APP)} />
+                    <Route
+                      path="/approval-summary"
+                      component={AuthMiddleware(ApprovalSummary, APPROVAL_APP)}
+                    />
 
-
-                    <Route path="/approval-listing" component={AuthMiddleware(CostingForm, APPROVAL_APP)} />
+                    <Route
+                      path="/approval-listing"
+                      component={AuthMiddleware(CostingForm, APPROVAL_APP)}
+                    />
                     {/* <Route path="/approval-listing" component={AuthMiddleware(ApprovalListing,Approval_Listing)} /> */}
 
-                    <Route path="/costing-bulkUpload" component={AuthMiddleware(CostingSummaryBulkUpload, SHEET_METAL)} />
+                    <Route
+                      path="/costing-bulkUpload"
+                      component={AuthMiddleware(
+                        CostingSummaryBulkUpload,
+                        SHEET_METAL
+                      )}
+                    />
 
-                    <Route path="/reason-master" component={AuthMiddleware(ReasonListing, REASON)} />
+                    <Route
+                      path="/reason-master"
+                      component={AuthMiddleware(ReasonListing, REASON)}
+                    />
 
-                    <Route path="/volume-master" component={AuthMiddleware(VolumeListing, VOLUME)} />
+                    <Route
+                      path="/volume-master"
+                      component={AuthMiddleware(VolumeListing, VOLUME)}
+                    />
 
-                    <Route path="/client-master" component={AuthMiddleware(ClientMaster, CLIENT)} />
+                    <Route
+                      path="/client-master"
+                      component={AuthMiddleware(ClientMaster, CLIENT)}
+                    />
 
-                    <Route path="/exchange-master" component={AuthMiddleware(ExchangeRateListing, EXCHANGE_RATE,)} />
+                    <Route
+                      path="/exchange-master"
+                      component={AuthMiddleware(
+                        ExchangeRateListing,
+                        EXCHANGE_RATE
+                      )}
+                    />
 
-                    <Route path="/tax-master" component={AuthMiddleware(TaxListing, TAX)} />
+                    <Route
+                      path="/tax-master"
+                      component={AuthMiddleware(TaxListing, TAX)}
+                    />
 
                     {/* <Route path="/simulation-history" component={AuthMiddleware(SimulationHistory, Simulation_History)} /> */}
 
                     {/* <Route path="/simulation-history" component={SimulationHistory} /> */}
-                    <Route path="/simulation-history" component={AuthMiddleware(SimulationForm, Simulation_Page)} />
+                    <Route
+                      path="/simulation-history"
+                      component={AuthMiddleware(
+                        SimulationForm,
+                        Simulation_Page
+                      )}
+                    />
 
-                    <Route path='/simulation-approval-summary' component={AuthMiddleware(SimulationApprovalSummary, Simulation_Page)} />
-                    <Route path="/simulation" component={SimulationRoutes} exact={true} />
-                    <Route path="/simulation-upload" component={AuthMiddleware(SimulationUpload, Simulation_Upload)} />
-                    <Route path="/costing-breakup-report" component={AuthMiddleware(CostingDetailReport, COSTING_BREAKUP_DETAILS_REPORT)} />
-                    <Route path="/cost-ratio-report" component={AuthMiddleware(CostRatioReport, COST_RATIO_REPORT)} />
-                    <Route path="/master-benchmarking-report" component={AuthMiddleware(CostingBenchmarkReport, MASTER_BENCHMARK_REPORT)} />
-                    <Route path="/cost-movement-report" component={AuthMiddleware(CostMovementReport, COST_MOVEMENT_REPORT)} />
-                    <Route path="/master-cost-movement-report" component={AuthMiddleware(MasterCostMovement, MASTER_COST_MOVEMENT_REPORT)} />
-                    <Route path="/supplier-contribution-report" component={AuthMiddleware(SupplierContributionReport, SUPPLIER_CONTRIBUTION_REPORT)} />
-                    <Route path="/sale-provision-report" component={AuthMiddleware(SaleProvisionReport, SALE_PROVISION_REPORT)} />
-                    <Route path="/purchase-provision-report" component={AuthMiddleware(PurchaseProvisionReport, PURCHASE_PROVISION_REPORT)} />
-                    <Route path="/customer-poam-summary-report" component={AuthMiddleware(CustomerPoamSummaryReport, CUSTOMER_POAM_REPORT)} />
-                    <Route path="/head-wise-costing-got-given" component={AuthMiddleware(HeadWiseCostingGotGiven, HEAD_WISE_COSTING_GOT_GIVEN)} />
-                    <Route path="/plant-head-wise" component={AuthMiddleware(PlantWiseCostingGotGiven, PLANT_HEAD_WISE)} />
+                    <Route
+                      path="/simulation-approval-summary"
+                      component={AuthMiddleware(
+                        SimulationApprovalSummary,
+                        Simulation_Page
+                      )}
+                    />
+                    <Route
+                      path="/simulation"
+                      component={SimulationRoutes}
+                      exact={true}
+                    />
+                    <Route
+                      path="/simulation-upload"
+                      component={AuthMiddleware(
+                        SimulationUpload,
+                        Simulation_Upload
+                      )}
+                    />
+                    <Route
+                      path="/costing-breakup-report"
+                      component={AuthMiddleware(
+                        CostingDetailReport,
+                        COSTING_BREAKUP_DETAILS_REPORT
+                      )}
+                    />
+                    <Route
+                      path="/cost-ratio-report"
+                      component={AuthMiddleware(
+                        CostRatioReport,
+                        COST_RATIO_REPORT
+                      )}
+                    />
+                    <Route
+                      path="/master-benchmarking-report"
+                      component={AuthMiddleware(
+                        CostingBenchmarkReport,
+                        MASTER_BENCHMARK_REPORT
+                      )}
+                    />
+                    <Route
+                      path="/cost-movement-report"
+                      component={AuthMiddleware(
+                        CostMovementReport,
+                        COST_MOVEMENT_REPORT
+                      )}
+                    />
+                    <Route
+                      path="/master-cost-movement-report"
+                      component={AuthMiddleware(
+                        MasterCostMovement,
+                        MASTER_COST_MOVEMENT_REPORT
+                      )}
+                    />
+                    <Route
+                      path="/supplier-contribution-report"
+                      component={AuthMiddleware(
+                        SupplierContributionReport,
+                        SUPPLIER_CONTRIBUTION_REPORT
+                      )}
+                    />
+                    <Route
+                      path="/sale-provision-report"
+                      component={AuthMiddleware(
+                        SaleProvisionReport,
+                        SALE_PROVISION_REPORT
+                      )}
+                    />
+                    <Route
+                      path="/purchase-provision-report"
+                      component={AuthMiddleware(
+                        PurchaseProvisionReport,
+                        PURCHASE_PROVISION_REPORT
+                      )}
+                    />
+                    <Route
+                      path="/customer-poam-summary-report"
+                      component={AuthMiddleware(
+                        CustomerPoamSummaryReport,
+                        CUSTOMER_POAM_REPORT
+                      )}
+                    />
+                    <Route
+                      path="/head-wise-costing-got-given"
+                      component={AuthMiddleware(
+                        HeadWiseCostingGotGiven,
+                        HEAD_WISE_COSTING_GOT_GIVEN
+                      )}
+                    />
+                    <Route
+                      path="/plant-head-wise"
+                      component={AuthMiddleware(
+                        PlantWiseCostingGotGiven,
+                        PLANT_HEAD_WISE
+                      )}
+                    />
                     <Route path="/pipd-report" component={PipdReport} />
                     <Route path="/product-rollout" component={ProductRollout} />
                     {/*  NEED TO ADD PATH FROM BACKEND */}
-                    <Route path="/simulation-insights" component={AuthMiddleware(SimulationInsights, INSIGHT_SIMULATION_REPORT)} />
-                    <Route path="/rfq-listing" component={AuthMiddleware(RfqListing, RFQ)} />
-                    <Route path="/nfr" component={AuthMiddleware(NfrTabs, NFR)} />
-                    <Route path="/budgeting" component={AuthMiddleware(BudgetMaster, BUDGETING)} />
-                    <Route path="/got-given-summary-details-report" component={GotGivenReport} />
-                    <Route path="/out-sourcing-master" component={AuthMiddleware(OutsourcingListing, OUTSOURCING)} />
+                    <Route
+                      path="/simulation-insights"
+                      component={AuthMiddleware(
+                        SimulationInsights,
+                        INSIGHT_SIMULATION_REPORT
+                      )}
+                    />
+                    <Route
+                      path="/rfq-listing"
+                      component={AuthMiddleware(RfqListing, RFQ)}
+                    />
+                    <Route
+                      path="/nfr"
+                      component={AuthMiddleware(NfrTabs, NFR)}
+                    />
+                    <Route
+                      path="/budgeting"
+                      component={AuthMiddleware(BudgetMaster, BUDGETING)}
+                    />
+                    <Route
+                      path="/got-given-summary-details-report"
+                      component={GotGivenReport}
+                    />
+                    <Route
+                      path="/out-sourcing-master"
+                      component={AuthMiddleware(
+                        OutsourcingListing,
+                        OUTSOURCING
+                      )}
+                    />
                     <Route path="/sap-push-detail" component={SAPDetailList} />
-                    <Route path="/nfr-insights-details" component={AuthMiddleware(NFRInsightsReport, NFR_INSIGHT_DETAILS)} />
-                    <Route path="/login-audit" component={AuthMiddleware(LoginAudit, lOGIN_AUDIT)} />
-                    <Route path="/initiate-unblocking" component={AuthMiddleware(VendorManagement, INITIATE_UNBLOCKING)} />
-                    {/* <Route path="/lps-rating" component={AuthMiddleware(LpsRatingListing, LPS_RATING)} /> */}
-                    <Route path="/supplier-approval-summary" component={(CommonApproval, APPROVAL_LISTING)} />
-                    <Route path='/initiate-unblocking ' component={AuthMiddleware(InitiateUnblocking, INITIATE_UNBLOCKING)} />
-                    {/* <Route path='/supplier-approval-summary' component={SummaryDrawer} /> */}
-                    {/* <Route path='/initiate-unblocking/vendor-classification' component={UnblockClassification} />
-                    <Route path='/initiate-unblocking/vendor-lps' component={UnblockClassificationLps} />
-                    <Route path='/initiate-unblocking/lps-rating' component={UnblockLPSRating} /> */}
-
-
-
+                    <Route
+                      path="/nfr-insights-details"
+                      component={AuthMiddleware(
+                        NFRInsightsReport,
+                        NFR_INSIGHT_DETAILS
+                      )}
+                    />
+                    <Route
+                      path="/login-audit"
+                      component={AuthMiddleware(LoginAudit, lOGIN_AUDIT)}
+                    />
+                    <Route
+                      path="/initiate-unblocking"
+                      component={AuthMiddleware(
+                        VendorManagement,
+                        INITIATE_UNBLOCKING
+                      )}
+                    />
+                    <Route
+                      path="/supplier-approval-summary"
+                      component={(CommonApproval, APPROVAL_LISTING)}
+                    />
+                    <Route
+                      path="/initiate-unblocking "
+                      component={AuthMiddleware(
+                        InitiateUnblocking,
+                        INITIATE_UNBLOCKING
+                      )}
+                    />
+                    <Route
+                      path="/vendor-classification"
+                      component={AuthMiddleware(
+                        VendorClassificationListing,
+                        VENDOR_MANAGEMENT
+                      )}
+                    />
+                    <Route
+                      path="/lps-rating"
+                      component={AuthMiddleware(LpsRatingListing, LPS)}
+                    />
+                    <Route
+                      path="/material-indexation"
+                      component={AuthMiddleware(Indexation, INDEXATION)}
+                    />
+                    <Route path="/auction" component={AuctionIndex} />
+                    <Route path="/add-auction" component={AddAuction} />
 
                     {/* <Route path='/simulation-approval-listing' component={SimulationApprovalListing} /> */}
 
@@ -440,18 +769,16 @@ class Main extends Component {
                         />
                       )}
                     />
-                  </Switch >
-                </div >
-              </div >
-
-            </div >
-          </div >
+                  </Switch>
+                </div>
+              </div>
+            </div>
+          </div>
           {!this.state.visibelPageNotFound && (
             <div>
               <Route path="/" component={Footer} />
             </div>
-          )
-          }
+          )}
           <ReduxToastr
             timeOut={2500}
             newestOnTop={false}
@@ -467,9 +794,9 @@ class Main extends Component {
           <ToasterBoXWrapper />
 
           {this.handleUserData()}
-        </div >
-      </Suspense >
-    )
+        </div>
+      </Suspense>
+    );
   }
 }
 
@@ -479,4 +806,4 @@ class Main extends Component {
  * @param {function} mapStateToProps
  * @param {function} mapDispatchToProps
  */
-export default connect(null, { showUserData, TokenAPI, AutoSignin })(Main)
+export default connect(null, { showUserData, TokenAPI, AutoSignin })(Main);

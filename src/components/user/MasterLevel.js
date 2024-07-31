@@ -44,7 +44,7 @@ const MasterLevelListing = (props) => {
     }, []);
 
     useEffect(() => {
-        if (isCallApi === true)
+        if (isCallApi === true || props.tab !== '')
             setTimeout(() => {
                 getMasterDataList();
             }, 100);

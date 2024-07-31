@@ -8,6 +8,7 @@ import { TextFieldHookForm, SearchableSelectHookForm } from '../../../../layout/
 import { number, percentageLimitValidation, checkWhiteSpaces, decimalNumberLimit6, checkForNull, checkForDecimalAndNull } from "../../../../../helper/validation";
 import { REJECTION_RECOVERY_APPLICABILITY } from '../../../../../config/masterData';
 import { setRejectionRecoveryData } from '../../../actions/Costing';
+import TooltipCustom from '../../../../common/Tooltip';
 
 function AddRejectionRecovery(props) {
 
@@ -24,27 +25,17 @@ function AddRejectionRecovery(props) {
     });
     const { rejectionRecovery, RMCCTabData } = useSelector(state => state.costing)
     const { CostingPartDetails } = RMCCTabData[0]
-
     const [state, setState] = useState({
-        rejectionApplicabilityType: rejectionRecovery.rejectionApplicabilityType,
-        rejectionRecoveryPercentage: rejectionRecovery.rejectionRecoveryPercentage,
-        effectiveRecoveryPercentage: rejectionRecovery.effectiveRecoveryPercentage,
-        recoveryCostApplicability: rejectionRecovery.recoveryCostApplicability,
-        netRejectionRecovery: rejectionRecovery.rejectionRecoveryCost,
+        rejectionApplicabilityTypeValue: rejectionRecovery.ApplicabilityIdRef,
+        rejectionApplicabilityType: rejectionRecovery.ApplicabilityType,
+        rejectionRecoveryPercentage: rejectionRecovery.Value,
+        effectiveRecoveryPercentage: rejectionRecovery.EffectiveRecoveryPercentage,
+        recoveryCostApplicability: rejectionRecovery.ApplicabilityCost,
+        netRejectionRecovery: rejectionRecovery.RejectionRecoveryNetCost,
     }
     )
     const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
     const dispatch = useDispatch()
-
-    const headCostData = useContext(netHeadCostContext)
-    const costData = useContext(costingInfoContext);
-
-    const costingHead = useSelector(state => state.comman.costingHead)
-
-
-
-
-
 
     const toggleDrawer = (event, formData = {}) => {
         if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
@@ -53,50 +44,39 @@ function AddRejectionRecovery(props) {
         closeDrawer('', formData)
     };
 
-
-
-
-
-
-    /**
-     * @method calculateCost
-     * @description APPLICABILITY CALCULATION
-     */
-    // MAY BE USED LATER 
-
-    /**
-     * @method calculateApplicabilityCost
-     * @description APPLICABILITY CALCULATION
-     */
-
-    // WILL BE USED LATER FOR OTHER RADIO BUTON CALCULATION
-    /**
-      * @method IsPartTruckToggle
-      * @description FREIGHT TYPE 
-      */
-
-
-    /**
-    * @method onPressHeads
-    * @description FREIGHT FLAG
-    */
-
-
-    /**
-    * @method cancel
-    * @description used to Reset form
-    */
     const HandleRejectionRecovery = (e) => {
+        if (e !== null) {
+            setState({
+                ...state,
+                rejectionApplicabilityType: e.label,
+                rejectionApplicabilityTypeValue: e.value,
+            })
+            if (e.label === 'Fixed') {
+                setValue('RejectionRecoveryPercentage', '')
+                setValue('EffectiveRecoveryPercentage', '')
+                setValue('RecoveryCostApplicability', '')
+            }
+        } else {
+            setState({
+                ...state,
+                rejectionApplicabilityTypeValue: '',
+                rejectionApplicabilityType: '',
+                rejectionRecoveryPercentage: '',
+                effectiveRecoveryPercentage: '',
+                recoveryCostApplicability: '',
+                netRejectionRecovery: '',
+            })
+        }
 
     }
 
     useEffect(() => {
         if (Object.keys(rejectionRecovery).length > 0) {
-            setValue('RejectionRecoveryApplicability', rejectionRecovery.rejectionApplicabilityType && rejectionRecovery.rejectionApplicabilityType.label, initialConfiguration.NoOfDecimalForPrice)
-            setValue('RejectionRecoveryPercentage', checkForDecimalAndNull(rejectionRecovery.rejectionRecoveryPercentage, initialConfiguration.NoOfDecimalForPrice))
-            setValue('EffectiveRecoveryPercentage', checkForDecimalAndNull(rejectionRecovery.effectiveRecoveryPercentage, initialConfiguration.NoOfDecimalForPrice))
-            setValue('RecoveryCostApplicability', checkForDecimalAndNull(rejectionRecovery.recoveryCostApplicability, initialConfiguration.NoOfDecimalForPrice))
-            setValue('NetRejectionRecovery', checkForDecimalAndNull(rejectionRecovery.rejectionRecoveryCost, initialConfiguration.NoOfDecimalForPrice))
+            setValue('RejectionRecoveryApplicability', { label: rejectionRecovery.ApplicabilityType, value: rejectionRecovery.ApplicabilityType })
+            setValue('RejectionRecoveryPercentage', checkForDecimalAndNull(rejectionRecovery.Value, initialConfiguration.NoOfDecimalForPrice))
+            setValue('EffectiveRecoveryPercentage', checkForDecimalAndNull(rejectionRecovery.EffectiveRecoveryPercentage, initialConfiguration.NoOfDecimalForPrice))
+            setValue('RecoveryCostApplicability', checkForDecimalAndNull(rejectionRecovery.ApplicabilityCost, initialConfiguration.NoOfDecimalForPrice))
+            setValue('NetRejectionRecovery', checkForDecimalAndNull(rejectionRecovery.RejectionRecoveryNetCost, initialConfiguration.NoOfDecimalForPrice))
         }
     }, [rejectionRecovery])
 
@@ -112,7 +92,6 @@ function AddRejectionRecovery(props) {
 
         setState({
             ...state,
-            rejectionApplicabilityType: getValues('RejectionRecoveryApplicability'),
             rejectionRecoveryPercentage: e.target.value,
             effectiveRecoveryPercentage: EffectiveRecovery,
             recoveryCostApplicability: CostApplicability,
@@ -120,19 +99,50 @@ function AddRejectionRecovery(props) {
         })
         // props.calculateRecoveryCost(rejectionPercentage, e.target.value)
     }
+    const handleNetrejectionCost = (e) => {
+        setState({
+            ...state,
+            rejectionRecoveryPercentage: '',
+            effectiveRecoveryPercentage: '',
+            recoveryCostApplicability: '',
+            netRejectionRecovery: e.target.value
+        })
+    }
     const onSubmit = data => {
         closeDrawer('submit', state.netRejectionRecovery)
         dispatch(setRejectionRecoveryData({
-            rejectionApplicabilityType: state.rejectionApplicabilityType,
-            rejectionRecoveryPercentage: state.rejectionRecoveryPercentage,
-            effectiveRecoveryPercentage: state.effectiveRecoveryPercentage,
-            recoveryCostApplicability: state.recoveryCostApplicability,
-            rejectionRecoveryCost: state.netRejectionRecovery,
+            ApplicabilityIdRef: state.rejectionApplicabilityTypeValue,
+            ApplicabilityType: state.rejectionApplicabilityType,
+            Value: Number(state.rejectionRecoveryPercentage),
+            EffectiveRecoveryPercentage: state.effectiveRecoveryPercentage,
+            ApplicabilityCost: state.recoveryCostApplicability,
+            RejectionRecoveryNetCost: state.netRejectionRecovery
         }))
     }
 
     const cancel = () => {
         closeDrawer('cancel')
+    }
+    const ResetAndSave = () => {
+        closeDrawer('submit', 0)
+        dispatch(setRejectionRecoveryData({
+            ApplicabilityIdRef: 0,
+            ApplicabilityType: '',
+            Value: '',
+            EffectiveRecoveryPercentage: '',
+            ApplicabilityCost: '',
+            RejectionRecoveryNetCost: ''
+        }))
+    }
+    const applicabilityTooltip = () => {
+        const rmData = CostingPartDetails.CostingRawMaterialsCost;
+        if (rmData.length === 0) {
+            return { tooltipText: false, width: '0' };
+        } else if (rmData.length === 1) {
+            return { tooltipText: `Cost Applicability = RM Scrap Rate (${rmData[0].ScrapRate}) * RM Finish Weight (${rmData[0].FinishWeight}${rmData[0].UOMSymbol})`, width: '280px' };
+        } else {
+            return { tooltipText: `Cost Applicability = (RM Scrap Rate (${rmData[0].ScrapRate}) * RM Finish Weight (${rmData[0].FinishWeight}${rmData[0].UOMSymbol})) + (RM Scrap Rate (${rmData[1].ScrapRate}) * RM Finish Weight (${rmData[1].FinishWeight}${rmData[1].UOMSymbol}))...`, width: '380px' };
+        }
     }
     return (
         <div>
@@ -164,6 +174,7 @@ function AddRejectionRecovery(props) {
                                             control={control}
                                             rules={{ required: true }}
                                             register={register}
+                                            isClearable={true}
                                             defaultValue={''}
                                             options={REJECTION_RECOVERY_APPLICABILITY}
                                             mandatory={true}
@@ -179,9 +190,9 @@ function AddRejectionRecovery(props) {
                                             Controller={Controller}
                                             control={control}
                                             register={register}
-                                            mandatory={true}
+                                            mandatory={state.rejectionApplicabilityType !== 'Fixed'}
                                             rules={{
-                                                required: true,
+                                                required: state.rejectionApplicabilityType !== 'Fixed',
                                                 validate: number, checkWhiteSpaces, percentageLimitValidation,
                                                 max: {
                                                     value: 100,
@@ -193,15 +204,17 @@ function AddRejectionRecovery(props) {
                                             className=""
                                             customClassName={'withBorder'}
                                             errors={errors.RejectionRecoveryPercentage}
-                                            disabled={false}
+                                            disabled={state.rejectionApplicabilityType === 'Fixed'}
                                         />
                                     </Col>
 
 
                                     <Col md="12">
+                                        {state.rejectionApplicabilityType !== 'Fixed' && <TooltipCustom disabledIcon={true} width="280px" tooltipClass={""} id={'EffectiveRecoveryPercentage'} tooltipText={'Effective Recovery = Rejection Percentage * Recovery Percentage / 100'} />}
                                         <TextFieldHookForm
-                                            label="Effective Recovery %"
+                                            label="Effective Recovery (%)"
                                             name={'EffectiveRecoveryPercentage'}
+                                            id={'EffectiveRecoveryPercentage'}
                                             Controller={Controller}
                                             control={control}
                                             register={register}
@@ -218,9 +231,11 @@ function AddRejectionRecovery(props) {
                                         />
                                     </Col>
                                     <Col md="12">
+                                        {applicabilityTooltip().tooltipText && state.rejectionApplicabilityType !== 'Fixed' && <TooltipCustom disabledIcon={true} width={applicabilityTooltip().width} tooltipClass={""} id={'RecoveryCostApplicability'} tooltipText={applicabilityTooltip().tooltipText} />}
                                         <TextFieldHookForm
-                                            label="Cost (Applicability)"
+                                            label="Cost Applicability"
                                             name={'RecoveryCostApplicability'}
+                                            id={'RecoveryCostApplicability'}
                                             Controller={Controller}
                                             control={control}
                                             register={register}
@@ -237,9 +252,11 @@ function AddRejectionRecovery(props) {
                                         />
                                     </Col>
                                     <Col md="12">
+                                        {state.rejectionApplicabilityType !== 'Fixed' && <TooltipCustom disabledIcon={true} tooltipClass={""} id={'NetRejectionRecovery'} width="280px" tooltipText={"Net Rejection Recovery = Cost Applicability * Effective Recovery Percentage / 100"} />}
                                         <TextFieldHookForm
                                             label="Net Rejection Recovery Cost"
                                             name={'NetRejectionRecovery'}
+                                            id="NetRejectionRecovery"
                                             Controller={Controller}
                                             control={control}
                                             register={register}
@@ -247,34 +264,45 @@ function AddRejectionRecovery(props) {
                                                 required: false,
                                                 validate: { number, checkWhiteSpaces, decimalNumberLimit6 }
                                             }}
-                                            handleChange={() => { }}
+                                            handleChange={(e) => handleNetrejectionCost(e)}
                                             defaultValue={''}
                                             className=""
                                             customClassName={'withBorder'}
                                             errors={errors.NetRejectionRecovery}
-                                            disabled={true}
+                                            disabled={state.rejectionApplicabilityType !== 'Fixed'}
                                         />
                                     </Col>
 
                                 </Row>
 
                                 <Row className="sf-btn-footer no-gutters justify-content-between ml-0">
-                                    <div className="col-sm-12 text-right bluefooter-butn">
+                                    <div className="col-sm-12 d-flex justify-content-between bluefooter-butn">
                                         <button
-                                            id="AddRejectionRecovery_Cancel"
+                                            id="AddRejectionRecovery_Reset"
                                             type={'button'}
-                                            className="reset mr15 cancel-btn"
-                                            onClick={cancel} >
-                                            <div className={"cancel-icon"}></div> {'Cancel'}
+                                            className="undo cancel-btn"
+                                            onClick={ResetAndSave} >
+                                            <div className={"undo-icon"}></div> {'Reset & Save'}
                                         </button>
 
-                                        <button
-                                            id="AddRejectionRecovery_Save"
-                                            type={'submit'}
-                                            className="submit-button save-btn">
-                                            <div className={"save-icon"}></div>
-                                            {'Save'}
-                                        </button>
+                                        <div>
+                                            <button
+                                                id="AddRejectionRecovery_Cancel"
+                                                type={'button'}
+                                                className="reset mr15 cancel-btn"
+                                                onClick={cancel} >
+                                                <div className={"cancel-icon"}></div> {'Cancel'}
+                                            </button>
+
+                                            <button
+                                                id="AddRejectionRecovery_Save"
+                                                type={'submit'}
+                                                className="submit-button save-btn">
+                                                <div className={"save-icon"}></div>
+                                                {'Save'}
+                                            </button>
+                                        </div>
+
                                     </div>
                                 </Row>
                             </>

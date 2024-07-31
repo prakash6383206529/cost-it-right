@@ -44,7 +44,18 @@ export function PaginationWrappers(props) {
             case 'Approval':
                 getDataList(newSkip, numericPageSize, true, floatingFilterData, true)
                 break;
-
+            case 'IndexCommodity':
+                getDataList(newSkip, numericPageSize, true)
+                break;
+            case 'CommodityInIndex':
+                getDataList(newSkip, numericPageSize, true)
+                break;
+            case 'StandardizedCommodity':
+                getDataList(newSkip, numericPageSize, true)
+                break;
+            case 'IndexData':
+                getDataList(newSkip, numericPageSize, true)
+                break;
 
             default:
                 break;

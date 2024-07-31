@@ -53,7 +53,8 @@ const RMListing = (props) => {
     noData: false,
     dataCount: 0,
     render: false,
-    showExtraData: false
+    showExtraData: false,
+    isViewFlag: false
   });
   useEffect(() => {
     getListData();
@@ -104,13 +105,14 @@ const RMListing = (props) => {
     setState((prevState) => ({ ...prevState, isOpenAssociation: false }));
     getListData();
   };
+
   /**
-   * @method editItemDetails
-   * @description edit Raw Material
-   */
-  const editItemDetails = (Id) => {
+ * @method viewItemDetails
+ * @description View Raw Material
+ */
+  const viewOrEditItemDetails = (Id, rowData = {}, isViewMode) => {
     setState((prevState) => ({
-      ...prevState, isEditFlag: true, isOpen: true, ID: Id,
+      ...prevState, isViewFlag: isViewMode, isOpen: true, ID: Id, isEditFlag: true
     }));
   };
   /**
@@ -159,7 +161,7 @@ const RMListing = (props) => {
 
   const openModel = () => {
     setState((prevState) => ({
-      ...prevState, isOpen: true, isEditFlag: false,
+      ...prevState, isOpen: true, isEditFlag: false, isViewFlag: false
     }));
   };
 
@@ -180,17 +182,27 @@ const RMListing = (props) => {
     let isEditbale = false
     let isDeleteButton = false
     isEditbale = permissions.Edit;
+    let isViewButton = permissions.View
     isDeleteButton = (showExtraData && props.rowIndex === 0) || (permissions.Delete);
 
     return (
       <>
+        {isViewButton && (
+          <Button
+            title="View"
+            variant="View"
+            id={`addSpecificationList_view${props?.rowIndex}`}
+            className="mr-2 Tour_List_View"
+            onClick={() => viewOrEditItemDetails(cellValue, rowData, true)}
+          />
+        )}
         {isEditbale && (
           <Button
             title="Edit"
             variant="Edit"
             id={`addSpecificationList_edit${props?.rowIndex}`}
             className="mr-2 Tour_List_Edit"
-            onClick={() => editItemDetails(cellValue, rowData)}
+            onClick={() => viewOrEditItemDetails(cellValue, rowData, false)}
           />
         )}
         {isDeleteButton && (
@@ -422,6 +434,7 @@ const RMListing = (props) => {
           isEditFlag={isEditFlag}
           ID={ID}
           anchor={"right"}
+          isViewFlag={state.isViewFlag}
         />
       )}
       {state.isOpenAssociation && (

@@ -7,6 +7,7 @@ import { checkForDecimalAndNull, checkForNull } from './validation'
 import {
   PLASTIC, SHEET_METAL, WIRING_HARNESS, PLATING, SPRINGS, HARDWARE, NON_FERROUS_LPDDC, MACHINING,
   ELECTRONICS, RIVET, NON_FERROUS_HPDC, RUBBER, NON_FERROUS_GDC, FORGINGNAME, FASTNERS, RIVETS, RMDOMESTIC, RMIMPORT, BOPDOMESTIC, BOPIMPORT, COMBINED_PROCESS, PROCESS, OPERATIONS, SURFACETREATMENT, MACHINERATE, OVERHEAD, PROFIT, EXCHNAGERATE, DISPLAY_G, DISPLAY_KG, DISPLAY_MG, VARIANCE, EMPTY_GUID, ZBCTypeId, DIECASTING, MECHANICAL_PROPRIETARY, ELECTRICAL_PROPRIETARY, LOGISTICS, CORRUGATEDBOX, FABRICATION, FERROUSCASTING, WIREFORMING, ELECTRONICSNAME, ELECTRIC, Assembly, ASSEMBLYNAME, PLASTICNAME,
+  RAWMATERIALINDEX,
 } from '../config/constants'
 import { IsShowFreightAndShearingCostFields, getConfigurationKey, showBopLabel } from './auth'
 import _ from 'lodash';
@@ -555,7 +556,164 @@ export function getNetSurfaceAreaBothSide(data) {
   return checkForNull(value)
 }
 
+export const calculationOnTco = (data) => {
+  let sum = 0;
+  for (const key in data) {
+    if (Object.prototype.hasOwnProperty.call(data, key)) {
+      const value = parseFloat(data[key]);
+      if (!isNaN(value)) {
+        sum += checkForNull(value);
+      }
+    }
+  }
+
+  return sum;
+}
+
+export const TotalTCOCostCal = (tcoData, paymentData) => {
+  let sum = 0;
+  sum = checkForNull(tcoData?.CalculatedIncoTermValue) + checkForNull(tcoData?.CalculatedQualityPPMValue) + checkForNull(tcoData?.CalculatedWarrantyValue) + checkForNull(paymentData?.NetPaymentTermCost)
+
+  return sum
+}
+
 export function formViewData(costingSummary, header = '', isBestCost = false) {
+  const setDynamicKeys = (list, value) => {
+    let datalist = list && list?.filter(element => element?.Type === 'Other' && element?.SubHeader === value)
+    let arr = []
+    datalist && datalist?.map(item => {
+      let obj = {}
+      obj.DynamicHeader = item?.Description
+      obj.DynamicApplicabilityCost = item?.ApplicabilityCost
+      obj.DynamicPercentage = item?.Value
+      obj.DynamicNetCost = item?.NetCost
+      arr.push(obj)
+    })
+    return arr;
+  }
+  const dummyData = [
+    {
+      SubHeader: "OverHead",
+      Type: "Other",
+      ApplicabilityType: "CC",
+      ApplicabilityIdRef: 2,
+      Description: "Test 9",
+      Value: 1,
+      ApplicabilityCost: 1,
+      NetCost: 1,
+      CRMHead: null
+    },
+    {
+      SubHeader: "OverHead",
+      Type: "Other",
+      ApplicabilityType: "CC",
+      ApplicabilityIdRef: 2,
+      Description: "Test 10",
+      Value: 1,
+      ApplicabilityCost: 1,
+      NetCost: 1,
+      CRMHead: null
+    },
+    {
+      SubHeader: "OverHead",
+      Type: "Other",
+      ApplicabilityType: "CC",
+      ApplicabilityIdRef: 2,
+      Description: "Test 11",
+      Value: 1,
+      ApplicabilityCost: 1,
+      NetCost: 1,
+      CRMHead: "-"
+    },
+    {
+      SubHeader: "OverHead",
+      Type: "Other",
+      ApplicabilityType: "CC",
+      ApplicabilityIdRef: 2,
+      Description: "Test 2",
+      Value: 1,
+      ApplicabilityCost: 1,
+      NetCost: 1,
+      CRMHead: null
+    },
+    {
+      SubHeader: "OverHead",
+      Type: "Other",
+      ApplicabilityType: "CC",
+      ApplicabilityIdRef: 2,
+      Description: "Test 3",
+      Value: 1,
+      ApplicabilityCost: 1,
+      NetCost: 1,
+      CRMHead: null
+    },
+    {
+      SubHeader: "OverHead",
+      Type: "Other",
+      ApplicabilityType: "CC",
+      ApplicabilityIdRef: 2,
+      Description: "Test 12",
+      Value: 1,
+      ApplicabilityCost: 1,
+      NetCost: 1,
+      CRMHead: null
+    },
+    {
+      SubHeader: "OverHead",
+      Type: "Other",
+      ApplicabilityType: "Fixed",
+      ApplicabilityIdRef: null,
+      Description: "Test 13",
+      Value: 1,
+      ApplicabilityCost: 1,
+      NetCost: 1,
+      CRMHead: null
+    },
+    {
+      SubHeader: "OverHead",
+      Type: "Other",
+      ApplicabilityType: "CC",
+      ApplicabilityIdRef: 2,
+      Description: "Test 1",
+      Value: 1,
+      ApplicabilityCost: 14,
+      NetCost: 1,
+      CRMHead: "-"
+    },
+    {
+      SubHeader: "Process",
+      Type: "Other",
+      ApplicabilityType: "CC",
+      ApplicabilityIdRef: 2,
+      Description: "Test Process 3",
+      Value: 1,
+      ApplicabilityCost: 1,
+      NetCost: 1,
+      CRMHead: "-"
+    },
+    {
+      SubHeader: "Process",
+      Type: "Other",
+      ApplicabilityType: "Fixed",
+      ApplicabilityIdRef: null,
+      Description: "Test Process 2",
+      Value: 1,
+      ApplicabilityCost: 1,
+      NetCost: 1,
+      CRMHead: null
+    },
+    {
+      SubHeader: "OverHead",
+      Type: "Other",
+      ApplicabilityType: "CC",
+      ApplicabilityIdRef: 2,
+      Description: "Test 15",
+      Value: 1,
+      ApplicabilityCost: 1,
+      NetCost: 1,
+      CRMHead: "-"
+    }
+  ]
   let temp = []
   let dataFromAPI = costingSummary
   let obj = {}
@@ -575,7 +733,7 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
   obj.pCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetProcessCost ? dataFromAPI?.CostingPartDetails?.NetProcessCost : 0
   obj.oCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetOperationCost ? dataFromAPI?.CostingPartDetails?.NetOperationCost : 0
   obj.sTreatment = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.SurfaceTreatmentCost ? dataFromAPI?.CostingPartDetails?.SurfaceTreatmentCost : 0
-  obj.nsTreamnt = dataFromAPI && dataFromAPI.NetSurfaceTreatmentCost !== undefined ? dataFromAPI.NetSurfaceTreatmentCost : 0
+  obj.nsTreamnt = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetSurfaceTreatmentCost !== undefined ? dataFromAPI?.CostingPartDetails?.NetSurfaceTreatmentCost : 0
   obj.tCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetTransportationCost ? dataFromAPI?.CostingPartDetails?.NetTransportationCost : 0
   obj.nConvCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetConversionCost ? dataFromAPI?.CostingPartDetails?.NetConversionCost : 0
   obj.nTotalRMBOPCC = dataFromAPI?.CostingPartDetails && dataFromAPI.NetTotalRMBOPCC ? dataFromAPI.NetTotalRMBOPCC : 0
@@ -631,13 +789,18 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
     ICCRemark: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.Remark !== null ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.Remark : '-',
   }
 
+
+  const paymentTermDetail = dataFromAPI?.CostingPartDetails?.CostingPaymentTermDetails?.PaymentTermDetail;
+
   obj.paymentTerms = {
-    paymentTitle: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.PaymentTermApplicability ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.PaymentTermApplicability : '-',
-    paymentValue: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.NetCost ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.NetCost : 0,
-    paymentPercentage: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.InterestRate ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.InterestRate : '-',
-    PaymentTermCRMHead: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.PaymentTermCRMHead ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.PaymentTermCRMHead : '-',
-    PaymentTermRemark: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.Remark ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.Remark : '-',
-  }
+    paymentTitle: paymentTermDetail?.PaymentTermApplicability || '-',
+    paymentValue: paymentTermDetail?.NetCost || 0,
+    paymentPercentage: paymentTermDetail?.InterestRate || '-',
+    PaymentTermCRMHead: paymentTermDetail?.PaymentTermCRMHead || '-',
+    PaymentTermRemark: paymentTermDetail?.Remark || '-',
+  };
+
+  obj.CostingRejectionRecoveryDetails = (dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails.CostingRejectionDetail && dataFromAPI?.CostingPartDetails.CostingRejectionDetail?.CostingRejectionRecoveryDetails) ?? {}
 
   obj.nOverheadProfit = isBestCost ? (dataFromAPI && dataFromAPI?.NetOverheadAndProfitCost !== undefined ? dataFromAPI?.NetOverheadAndProfitCost : 0) :
     dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetOverheadAndProfitCost ? dataFromAPI?.CostingPartDetails?.NetOverheadAndProfitCost : 0
@@ -664,8 +827,10 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
     toolTitle: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse.length > 0 && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolCostType !== null ? dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolCostType : "-",
     toolValue: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse.length > 0 && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolApplicabilityCost !== null ? dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolApplicabilityCost : 0,
   }
-
+  obj.TotalInvestmentcost = calculationOnTco((dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails) ? dataFromAPI?.CostingPartDetails?.CostingTCOResponse : {})
   obj.toolAmortizationCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse.length > 0 && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolAmortizationCost !== null ? dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolAmortizationCost : 0
+
+  obj.TotalTCOCost = dataFromAPI?.CostingPartDetails?.CostingTCOResponse ? TotalTCOCostCal((dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails) ? dataFromAPI?.CostingPartDetails?.CostingTCOResponse : {}, dataFromAPI?.CostingPartDetails?.CostingPaymentTermDetails ?? {}) + checkForNull(dataFromAPI.NetPOPrice) + checkForNull(dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetNpvCost) : 0
 
   obj.totalToolCost = isBestCost ? (dataFromAPI && dataFromAPI?.NetToolCost !== undefined ? dataFromAPI?.NetToolCost : 0) :
     dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetToolCost !== null ? dataFromAPI?.CostingPartDetails?.NetToolCost : 0
@@ -775,8 +940,8 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
   obj.rejectionApplicablityValue = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingRejectionDetail.RejectionTotalCost !== null ? dataFromAPI?.CostingPartDetails?.CostingRejectionDetail.RejectionTotalCost : 0
   obj.iccApplicablity = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.ICCApplicability !== null ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.ICCApplicability : '-'
   obj.iccApplicablityValue = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.NetCost !== null ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.NetCost : 0
-  obj.paymentApplicablity = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.PaymentTermApplicability ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.PaymentTermApplicability : '-'
-  obj.paymentcApplicablityValue = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.NetCost ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.NetCost : 0
+  obj.paymentApplicablity = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingPaymentTermDetails?.PaymentTermDetail?.PaymentTermApplicability ? dataFromAPI?.CostingPartDetails?.CostingPaymentTermDetails?.PaymentTermDetail?.PaymentTermApplicability : '-'
+  obj.paymentcApplicablityValue = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingPaymentTermDetails?.PaymentTermDetail?.NetCost ? dataFromAPI?.CostingPartDetails?.CostingPaymentTermDetails?.PaymentTermDetail?.NetCost : 0
   obj.toolMaintenanceCostApplicablity = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse.length > 0 && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolCostType !== null ? dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolCostType : 0
   obj.toolMaintenanceCostApplicablityValue = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse.length > 0 && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolApplicabilityCost !== null ? dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolApplicabilityCost : 0
   obj.otherDiscountType = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.OtherCostDetails.DiscountCostType !== null ? dataFromAPI?.CostingPartDetails?.OtherCostDetails.DiscountCostType : 0
@@ -827,6 +992,11 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
   obj.isToolCostProcessWise = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.IsToolCostProcessWise
   obj.ScrapRecoveryPercentage = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.ScrapRecoveryPercentage
   obj.IsScrapRecoveryPercentageApplied = dataFromAPI?.CostingPartDetails?.CostingRawMaterialsCost && dataFromAPI?.CostingPartDetails?.CostingRawMaterialsCost[0]?.IsScrapRecoveryPercentageApplied
+  obj.isToolCostProcessWise = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.IsToolCostProcessWise
+  obj.IsScrapRecoveryPercentageApplied = dataFromAPI?.CostingPartDetails?.CostingRawMaterialsCost && dataFromAPI?.CostingPartDetails?.CostingRawMaterialsCost[0]?.IsScrapRecoveryPercentageApplied
+  obj.OtherCostDetailsOverhead = setDynamicKeys(dataFromAPI?.CostingPartDetails?.OtherCostDetails, 'OverHead')
+  obj.OtherCostDetailsProcess = setDynamicKeys(dataFromAPI?.CostingPartDetails?.OtherCostDetails, 'Process')
+  obj.CalculatorType = dataFromAPI?.CostingPartDetails?.CalculatorType ?? ''
   temp.push(obj)
   return temp
 }
@@ -973,7 +1143,7 @@ export function CheckApprovalApplicableMaster(number) {
 
 // THIS FUNCTION WILL BE USED IF WE FOR EDITING OF SIMUALTION,WE DON'T NEED ANY FILTER
 export function applyEditCondSimulation(master) {
-  const ApplyEditCondition = [RMDOMESTIC, RMIMPORT, BOPDOMESTIC, BOPIMPORT, PROCESS, OPERATIONS, SURFACETREATMENT, MACHINERATE, OVERHEAD, PROFIT, EXCHNAGERATE]
+  const ApplyEditCondition = [RMDOMESTIC, RMIMPORT, BOPDOMESTIC, BOPIMPORT, PROCESS, OPERATIONS, SURFACETREATMENT, MACHINERATE, OVERHEAD, PROFIT, EXCHNAGERATE, RAWMATERIALINDEX]
   return ApplyEditCondition.includes(String(master))
 }
 
@@ -1173,6 +1343,7 @@ export const checkForSameFileUpload = (master, fileHeads, isBOP = false, isRm = 
 
   if (isRm) {
     const hasNote = fileHeads.includes('Note') || bulkUploadArray.includes('Note');
+
     if (hasNote) {
       fileHeads = fileHeads.filter(header => header !== 'Note');
       bulkUploadArray = bulkUploadArray.filter(header => header !== 'Note');
@@ -1460,4 +1631,108 @@ export const changeBOPLabel = (arr, bopReplacement) => {
     tempArr.push(element?.replace(bopRegex, bopReplacement))
   })
   return tempArr
+}
+export const getFilteredDropdownOptions = (options, selectedValues) => {
+  return options.filter(option => !selectedValues.includes(option.value));
+};
+
+export const extenstionTime = (length = 5, timeGap = 1, TimeCategory = 'min') => {
+  let temp = [];
+  for (let i = 1; i <= length; i++) {
+    if (i % timeGap === 0) {
+      temp.push({ label: `${i} (${TimeCategory})`, value: i });
+    }
+  }
+  return temp;
+}
+
+export function calculateEndDateTime(startDateTime, duration) {
+
+
+  if (!startDateTime || !duration) return null;
+
+  // Parse startDateTime
+  const startDate = new Date(startDateTime);
+
+
+  // Adjust for UTC+05:30 (India Standard Time)
+  const adjustedStartDate = new Date(startDate.getTime() + (5.5 * 60 * 60 * 1000));
+
+
+  // Parse duration (HH:MM)
+  const [durationHours, durationMinutes] = duration.split(':').map(Number);
+
+  // Calculate endDateTime
+  const endDateTime = new Date(adjustedStartDate);
+  endDateTime.setHours(adjustedStartDate.getHours() + durationHours);
+  endDateTime.setMinutes(adjustedStartDate.getMinutes() + durationMinutes);
+
+  // Format endDateTime as a string (YYYY-MM-DD HH:mm:ss)
+  const formattedEndDateTime = endDateTime.toISOString().slice(0, 19).replace('T', ' ');
+
+  return formattedEndDateTime;
+}
+export function calculateTime(input) {
+  // Check if input is a string
+  if (typeof input !== 'string') {
+    throw new Error('Input must be a string.');
+  }
+
+  // Extract the numeric value and the unit from the input string
+  const match = input.match(/^(\d+)\s+\(min\)$/);
+  if (match) {
+    // If input matches "<number> (min)"
+    const mins = parseInt(match[1]); // Extract the numeric value as minutes
+
+    // Format minutes to always have 2 digits
+    let minsStr = mins.toString().padStart(2, '0');
+
+    // Return the formatted time string in HH:MM format
+    return `00:${minsStr}`;
+  }
+
+  // Extract the numeric value and the unit from the input string
+  const match2 = input.match(/^(\d+(\.\d+)?)\s+\(hours?\)$/);
+  if (match2) {
+    // If input matches "<number> (hours)" or "<number> (hrs)"
+    const value = parseFloat(match2[1]); // Extract the numeric value
+    const hours = Math.floor(value); // Extract the integer part as hours
+    const mins = Math.round((value - hours) * 60); // Convert decimal part to minutes
+
+    // Format hours and minutes to always have 2 digits
+    let hoursStr = hours.toString().padStart(2, '0');
+    let minsStr = mins.toString().padStart(2, '0');
+
+    // Return the formatted time string in HH:MM format
+    return `${hoursStr}:${minsStr}`;
+  }
+
+  throw new Error('Invalid input format. Use "<number> (min)" or "<number> (hours)" or "<number> (hrs)".');
+}
+
+
+export function addTime(time1, time2) {
+  // Parse time1
+  const [hours1, mins1] = time1.split(':').map(num => num ? parseInt(num) : 0);
+  // Parse time2
+  const [hours2, mins2] = time2.split(':').map(num => num ? parseInt(num) : 0);
+
+  // Calculate total minutes
+  let totalMins = mins1 + mins2;
+  let totalHours = hours1 + hours2;
+
+  // Handle overflow of minutes into hours
+  if (totalMins >= 60) {
+    totalMins -= 60;
+    totalHours += 1;
+  }
+
+  // Format hours and minutes to always have 2 digits
+  let hoursStr = totalHours.toString().padStart(2, '0');
+  let minsStr = totalMins.toString().padStart(2, '0');
+
+  // Combine hours and minutes in HH:MM format
+  let timeStr = `${hoursStr}:${minsStr}`;
+
+  return timeStr;
 }

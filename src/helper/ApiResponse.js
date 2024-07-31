@@ -117,7 +117,7 @@ export function formatGetPlanResult(result) {
 }
 
 
-export function formatRMSimulationObject(simulationDetail, selectedRowData, costingArr) {
+export function formatRMSimulationObject(simulationDetail, selectedRowData, costingArr, isRMIndexationSimulation = false) {
     if (simulationDetail && selectedRowData && costingArr) {
         let temp = []
         let tempFinal = []
@@ -133,13 +133,13 @@ export function formatRMSimulationObject(simulationDetail, selectedRowData, cost
             })
             if (count === 0) {                                              // NOT EQUAL
                 item.IsChecked = false
-                tempFinal.push({ CostingId: item.CostingId, CostingNumber: item.CostingNumber, IsChecked: checked, LineNumber: item.LineNumber, SANumber: item.SANumber })
+                tempFinal.push({ CostingId: item?.CostingId ?? null, CostingNumber: item?.CostingNumber ?? null, IsChecked: checked, LineNumber: item?.LineNumber, SANumber: item?.SANumber, RawMaterialId: item?.OldRawMaterialId ?? null })
             }
             return null
         })
 
         selectedRowData.forEach(object => {
-            temp.push({ CostingId: object.CostingId, CostingNumber: object.CostingNumber, IsChecked: true, LineNumber: object.LineNumber, SANumber: object.SANumber })
+            temp.push({ CostingId: object?.CostingId ?? null, CostingNumber: object.CostingNumber ?? null, IsChecked: true, LineNumber: object?.LineNumber, SANumber: object?.SANumber, RawMaterialId: object?.OldRawMaterialId ?? null })
         });
         let apiArray = [...temp, ...tempFinal]
 
@@ -164,7 +164,7 @@ export function formatRMSimulationObject(simulationDetail, selectedRowData, cost
             Remark: "",
             LoggedInUserId: userDetails().LoggedInUserId,
             IsPartialSaved: selectedRowData.length === costingArr.length ? false : true,
-            SelectedCostings: uniqueArr,
+            SelectedCostings: isRMIndexationSimulation ? apiArray : uniqueArr,
         };
         return simulationObj;
     }

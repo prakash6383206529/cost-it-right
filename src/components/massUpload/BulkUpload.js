@@ -6,6 +6,7 @@ import { checkForNull, getJsDateFromExcel, isDateFormatter } from "../../helper/
 import {
     bulkUploadRM, bulkfileUploadRM, bulkUploadRMSpecification,
 } from '../masters/actions/Material';
+import { bulkUploadCommodityInIndex, bulkUploadCommodityStandard, bulkUploadIndex, bulkUploadIndexData, bulkUploadStandardizedCommodity } from '../masters/actions/Indexation'
 import { bulkUploadMachine, bulkUploadMachineMoreZBC } from '../masters/actions/MachineMaster';
 import { fuelBulkUpload } from '../masters/actions/Fuel';
 import { labourBulkUpload } from '../masters/actions/Labour';
@@ -23,10 +24,28 @@ import { ExcelRenderer } from 'react-excel-renderer';
 import Drawer from '@material-ui/core/Drawer';
 import Downloadxls, { checkInterestRateConfigure, checkLabourRateConfigure, checkRM_Process_OperationConfigurable, checkVendorPlantConfig } from './Downloadxls';
 import cloudImg from '../../assests/images/uploadcloud.png';
-import { ACTUALVOLUMEBULKUPLOAD, ADDRFQ, BOPDOMESTICBULKUPLOAD, BOPIMPORTBULKUPLOAD, BOP_MASTER_ID, BUDGETBULKUPLOAD, BUDGETEDVOLUMEBULKUPLOAD, CBCADDMORE, CBCADDMOREOPERATION, CBCTypeId, ENTRY_TYPE_IMPORT, FUELBULKUPLOAD, INTERESTRATEBULKUPLOAD, LABOURBULKUPLOAD, MACHINEBULKUPLOAD, MACHINE_MASTER_ID, OPERAIONBULKUPLOAD, OPERATIONS_ID, PARTCOMPONENTBULKUPLOAD, PRODUCTCOMPONENTBULKUPLOAD, RMDOMESTICBULKUPLOAD, RMIMPORTBULKUPLOAD, RMSPECIFICATION, RM_MASTER_ID, VBCADDMORE, VBCADDMOREOPERATION, VBCTypeId, VENDORBULKUPLOAD, ZBCADDMORE, ZBCADDMOREOPERATION, ZBCTypeId } from '../../config/constants';
+import {
+    ACTUALVOLUMEBULKUPLOAD, ADDRFQ, BOPDOMESTICBULKUPLOAD, BOPIMPORTBULKUPLOAD, BOP_MASTER_ID, BUDGETBULKUPLOAD, BUDGETEDVOLUMEBULKUPLOAD, CBCADDMORE, CBCADDMOREOPERATION, CBCTypeId, ENTRY_TYPE_IMPORT, FUELBULKUPLOAD, INTERESTRATEBULKUPLOAD, LABOURBULKUPLOAD, MACHINEBULKUPLOAD, MACHINE_MASTER_ID, OPERAIONBULKUPLOAD, OPERATIONS_ID, PARTCOMPONENTBULKUPLOAD, PRODUCTCOMPONENTBULKUPLOAD, RMDOMESTICBULKUPLOAD, RMIMPORTBULKUPLOAD, RMSPECIFICATION, RM_MASTER_ID, VBCADDMORE, VBCADDMOREOPERATION, VBCTypeId, VENDORBULKUPLOAD, ZBCADDMORE, ZBCADDMOREOPERATION, ZBCTypeId, RMMATERIALBULKUPLOAD,
+    INDEXCOMMODITYBULKUPLOAD, COMMODITYININDEXBULKUPLOAD, COMMODITYSTANDARDIZATION,
+    RMMASTER,
+    COMMODITYSTANDARD,
+    OVERHEADBULKUPLOAD,
+    PROFITBULKUPLOAD
+} from '../../config/constants';
 //MINDA
 // import { ACTUALVOLUMEBULKUPLOAD, ADDRFQ, BOPDOMESTICBULKUPLOAD, BOPIMPORTBULKUPLOAD, BOP_MASTER_ID, BUDGETBULKUPLOAD, BUDGETEDVOLUMEBULKUPLOAD, CBCADDMORE, CBCADDMOREOPERATION, CBCTypeId, ENTRY_TYPE_IMPORT, FUELBULKUPLOAD, INSERTDOMESTICBULKUPLOAD, INSERTIMPORTBULKUPLOAD, INTERESTRATEBULKUPLOAD, LABOURBULKUPLOAD, MACHINEBULKUPLOAD, MACHINE_MASTER_ID, OPERAIONBULKUPLOAD, OPERATIONS_ID, PARTCOMPONENTBULKUPLOAD, PRODUCTCOMPONENTBULKUPLOAD, VBCADDMORE, RMDOMESTICBULKUPLOAD, RMIMPORTBULKUPLOAD, RMSPECIFICATION, RM_MASTER_ID, VBCADDMOREOPERATION, VBCTypeId, VENDORBULKUPLOAD, ZBCADDMORE, ZBCADDMOREOPERATION, ZBCTypeId } from '../../config/constants';
-import { AddRFQUpload, BOP_CBC_DOMESTIC, BOP_CBC_IMPORT, BOP_DETAILED_DOMESTIC, BOP_DETAILED_IMPORT, BOP_VBC_DOMESTIC, BOP_VBC_IMPORT, BOP_ZBC_DOMESTIC, BOP_ZBC_IMPORT, BUDGET_CBC, BUDGET_VBC, BUDGET_ZBC, CBCInterestRate, CBCOperation, CBCOperationSmallForm, DETAILED_BOP, Fuel, Labour, MachineCBC, MachineVBC, MachineZBC, MHRMoreZBC, PartComponent, ProductComponent, RMDomesticCBC, RMDomesticVBC, RMDomesticZBC, RMImportCBC, RMImportVBC, RMImportZBC, RMSpecification, VBCInterestRate, VBCOperation, VBCOperationSmallForm, Vendor, VOLUME_ACTUAL_CBC, VOLUME_ACTUAL_VBC, VOLUME_ACTUAL_ZBC, VOLUME_BUDGETED_CBC, VOLUME_BUDGETED_VBC, VOLUME_BUDGETED_ZBC, ZBCOperation, ZBCOperationSmallForm } from '../../config/masterData';
+import {
+    AddRFQUpload, BOP_CBC_DOMESTIC, BOP_CBC_IMPORT, BOP_DETAILED_DOMESTIC, BOP_DETAILED_IMPORT, BOP_VBC_DOMESTIC, BOP_VBC_IMPORT, BOP_ZBC_DOMESTIC, BOP_ZBC_IMPORT, BUDGET_CBC, BUDGET_VBC, BUDGET_ZBC, CBCInterestRate, CBCOperation, CBCOperationSmallForm, DETAILED_BOP, Fuel, Labour, MachineCBC, MachineVBC, MachineZBC, MHRMoreZBC, PartComponent, ProductComponent, RMDomesticCBC, RMDomesticVBC, RMDomesticZBC, RMImportCBC, RMImportVBC, RMImportZBC, RMSpecification, VBCInterestRate, VBCOperation, VBCOperationSmallForm, Vendor, VOLUME_ACTUAL_CBC, VOLUME_ACTUAL_VBC, VOLUME_ACTUAL_ZBC, VOLUME_BUDGETED_CBC, VOLUME_BUDGETED_VBC, VOLUME_BUDGETED_ZBC, ZBCOperation, ZBCOperationSmallForm,
+    IndexCommodityListing, CommodityInIndexListing, StandardizedCommodityNameListing,
+    IndexDataListing,
+    OverheadVBC,
+    Overhead,
+    OverheadCBC,
+    ProfitVBC,
+    Profit,
+    ProfitCBC,
+    CommodityStandard
+} from '../../config/masterData';
 import { CheckApprovalApplicableMaster, checkForSameFileUpload, updateBOPValues, userTechnologyDetailByMasterId } from '../../helper';
 import LoaderCustom from '../common/LoaderCustom';
 import PopupMsgWrapper from '../common/PopupMsgWrapper';
@@ -40,11 +59,11 @@ import { ENTRY_TYPE_DOMESTIC } from '../../config/constants';
 import DayTime from '../common/DayTimeWrapper';
 import { checkSAPCodeinExcel } from './DownloadUploadBOMxls';
 import WarningMessage from '../common/WarningMessage';
+import Switch from 'react-switch'
 const bopMasterName = showBopLabel();
 
 class BulkUpload extends Component {
     constructor(props) {
-
 
         super(props);
         this.child = React.createRef()
@@ -61,7 +80,8 @@ class BulkUpload extends Component {
             bulkUploadLoader: false,
             costingTypeId: props?.fileName === "Interest Rate" ? VBCTypeId : ZBCTypeId,
             showPopup: false,
-            bopType: ''
+            bopType: '',
+            isImport: false,
         }
     }
 
@@ -247,27 +267,27 @@ class BulkUpload extends Component {
                     const { fileName } = this.props;
 
                     switch (String(this.props.fileName)) {
-                        case String(RMDOMESTICBULKUPLOAD):
-                            if (this.state.costingTypeId === ZBCTypeId) {
-                                checkForFileHead = checkForSameFileUpload(checkRM_Process_OperationConfigurable(RMDomesticZBC, ZBCTypeId), fileHeads, true)
-                            }
-                            else if (this.state.costingTypeId === VBCTypeId) {
-                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(RMDomesticVBC, VBCTypeId), fileHeads, true)
-                            }
-                            else if (this.state.costingTypeId === CBCTypeId) {
-                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(RMDomesticCBC, CBCTypeId), fileHeads, true)
-                            }
-                            break;
-                        case String(RMIMPORTBULKUPLOAD):
-
-                            if (this.state.costingTypeId === ZBCTypeId) {
-                                checkForFileHead = checkForSameFileUpload(checkRM_Process_OperationConfigurable(RMImportZBC), fileHeads, true)
-                            }
-                            else if (this.state.costingTypeId === VBCTypeId) {
-                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(RMImportVBC, VBCTypeId), fileHeads, true)
-                            }
-                            else if (this.state.costingTypeId === CBCTypeId) {
-                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(RMImportCBC, CBCTypeId), fileHeads, true)
+                        case String(RMMASTER):
+                            if (!this.state.isImport) {
+                                if (this.state.costingTypeId === ZBCTypeId) {
+                                    checkForFileHead = checkForSameFileUpload(checkRM_Process_OperationConfigurable(RMDomesticZBC, ZBCTypeId), fileHeads, true)
+                                }
+                                else if (this.state.costingTypeId === VBCTypeId) {
+                                    checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(RMDomesticVBC, VBCTypeId), fileHeads, true)
+                                }
+                                else if (this.state.costingTypeId === CBCTypeId) {
+                                    checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(RMDomesticCBC, CBCTypeId), fileHeads, true)
+                                }
+                            } else {
+                                if (this.state.costingTypeId === ZBCTypeId) {
+                                    checkForFileHead = checkForSameFileUpload(checkRM_Process_OperationConfigurable(RMImportZBC), fileHeads, true)
+                                }
+                                else if (this.state.costingTypeId === VBCTypeId) {
+                                    checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(RMImportVBC, VBCTypeId), fileHeads, true)
+                                }
+                                else if (this.state.costingTypeId === CBCTypeId) {
+                                    checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(RMImportCBC, CBCTypeId), fileHeads, true)
+                                }
                             }
                             break;
                         case String(RMSPECIFICATION):
@@ -413,6 +433,43 @@ class BulkUpload extends Component {
                         case String(ADDRFQ):
                             checkForFileHead = checkForSameFileUpload(AddRFQUpload, fileHeads)
                             break;
+                        case String(OVERHEADBULKUPLOAD):
+                            if (this.state.costingTypeId === VBCTypeId) {
+                                checkForFileHead = checkForSameFileUpload(OverheadVBC, fileHeads)
+                            }
+                            else if (this.state.costingTypeId === ZBCTypeId) {
+                                checkForFileHead = checkForSameFileUpload(Overhead, fileHeads)
+                            }
+                            else if (this.state.costingTypeId === CBCTypeId) {
+                                checkForFileHead = checkForSameFileUpload(OverheadCBC, fileHeads)
+                            }
+                            break;
+                        case String(PROFITBULKUPLOAD):
+                            if (this.state.costingTypeId === VBCTypeId) {
+                                checkForFileHead = checkForSameFileUpload(ProfitVBC, fileHeads)
+                            }
+                            else if (this.state.costingTypeId === ZBCTypeId) {
+                                checkForFileHead = checkForSameFileUpload(Profit, fileHeads)
+                            }
+                            else if (this.state.costingTypeId === CBCTypeId) {
+                                checkForFileHead = checkForSameFileUpload(ProfitCBC, fileHeads)
+                            }
+                            break;
+                        case String(RMMATERIALBULKUPLOAD):
+                            checkForFileHead = checkForSameFileUpload(IndexDataListing, fileHeads)
+                            break;
+                        case String(INDEXCOMMODITYBULKUPLOAD):
+                            checkForFileHead = checkForSameFileUpload(IndexCommodityListing, fileHeads)
+                            break;
+                        case String(COMMODITYININDEXBULKUPLOAD):
+                            checkForFileHead = checkForSameFileUpload(CommodityInIndexListing, fileHeads)
+                            break;
+                        case String(COMMODITYSTANDARDIZATION):
+                            checkForFileHead = checkForSameFileUpload(StandardizedCommodityNameListing, fileHeads)
+                            break;
+                        case String(COMMODITYSTANDARD):
+                            checkForFileHead = checkForSameFileUpload(CommodityStandard, fileHeads)
+                            break;
                         default:
                             break;
                     }
@@ -424,8 +481,7 @@ class BulkUpload extends Component {
                     // fileHeads = ["SerialNumber", "BillNumber"]
 
                     let fileData = [];
-                    resp.rows.map((val, index) => {
-
+                    resp?.rows?.map((val, index) => {
 
                         if (index > 0 && val?.length > 0) {
                             // BELOW CODE FOR HANDLE EMPTY CELL VALUE
@@ -434,7 +490,7 @@ class BulkUpload extends Component {
                                 val[i] = '';
                             }
 
-                            if (val.length === 1) {
+                            if ((fileName === 'Operation' || fileName === 'RM' || fileName === 'RM Domestic' || fileName === 'RM Import') && val.length === 1) {
                                 return null
                             }
 
@@ -442,7 +498,7 @@ class BulkUpload extends Component {
                             val.map((el, i) => {
 
 
-                                if ((fileHeads[i] === 'EffectiveDate' || fileHeads[i] === 'DateOfPurchase') && typeof el === 'string' && el !== '') {
+                                if ((fileHeads[i] === 'EffectiveDate' || fileHeads[i] === 'DateOfPurchase' || fileHeads[i] === 'Indexed On') && typeof el === 'string' && el !== '') {
                                     if (isDateFormatter(el)) {
                                         el = el.replaceAll('/', '-')
                                         let str = el.substring(el.indexOf("-") + 1);
@@ -453,7 +509,7 @@ class BulkUpload extends Component {
                                         el = dateTemp
                                     }
                                 }
-                                if ((fileHeads[i] === 'EffectiveDate' || fileHeads[i] === 'DateOfPurchase' || fileHeads[i] === 'DateOfModification') && typeof el === 'number') {
+                                if ((fileHeads[i] === 'EffectiveDate' || fileHeads[i] === 'DateOfPurchase' || fileHeads[i] === 'DateOfModification' || fileHeads[i] === 'Indexed On') && typeof el === 'number') {
                                     el = getJsDateFromExcel(el)
                                     const date = new Date();
                                     const shortDateFormat = date.toLocaleDateString(undefined, { dateStyle: 'short' });
@@ -472,16 +528,16 @@ class BulkUpload extends Component {
                                 }
                                 else if (fileHeads[i] === 'Spec') {
                                     fileHeads[i] = 'RMSpec'
-                                } else if ((fileName === 'RM Domestic' || fileName === 'RM Import') && fileHeads[i] === 'CircleScrapRate') {
+                                } else if ((fileName === 'RM Domestic' || fileName === 'RM Import' || fileName === 'RM') && fileHeads[i] === 'CircleScrapRate') {
                                     fileHeads[i] = 'JaliScrapCost'
-                                } else if ((fileName === 'RM Domestic' || fileName === 'RM Import') && fileHeads[i] === 'ScrapRate/JaliScrapRate/ForgingScrapRate') {
+                                } else if ((fileName === 'RM Domestic' || fileName === 'RM Import' || fileName === 'RM') && fileHeads[i] === 'ScrapRate/JaliScrapRate/ForgingScrapRate') {
                                     fileHeads[i] = 'ScrapRate'
-                                } else if ((fileName === 'RM Domestic' || fileName === 'RM Import') && fileHeads[i] === 'ScrapRatePerScrapUOM/JaliScrapRatePerScrapUOM/ForgingScrapRatePerScrapUOM') {
+                                } else if ((fileName === 'RM Domestic' || fileName === 'RM Import' || fileName === 'RM') && fileHeads[i] === 'ScrapRatePerScrapUOM/JaliScrapRatePerScrapUOM/ForgingScrapRatePerScrapUOM') {
                                     fileHeads[i] = 'ScrapRatePerScrapUOM'
-                                } else if ((fileName === 'RM Domestic' || fileName === 'RM Import' || fileName === `${showBopLabel()} Domestic` || fileName === `${showBopLabel()} Import`) && fileHeads[i] === 'PlantCode') {
+                                } else if ((fileName === 'RM Domestic' || fileName === 'RM Import' || fileName === 'RM' || fileName === `${showBopLabel()} Domestic` || fileName === `${showBopLabel()} Import`) && fileHeads[i] === 'PlantCode') {
                                     // } else if ((fileName === 'RM Domestic' || fileName === 'RM Import' || fileName === 'BOP Domestic' || fileName === 'BOP Import' || fileName === 'Insert Domestic' || fileName === 'Insert Import') && fileHeads[i] === 'PlantCode') {
                                     fileHeads[i] = 'DestinationPlantCode'
-                                } else if ((fileName === 'RM Domestic' || fileName === 'RM Import') && fileHeads[i] === 'PlantName') {
+                                } else if ((fileName === 'RM Domestic' || fileName === 'RM Import' || fileName === 'RM') && fileHeads[i] === 'PlantName') {
                                     fileHeads[i] = 'DestinationPlantName'
                                 } else if ((fileName === `${showBopLabel()} Domestic` || fileName === `${showBopLabel()} Import`) && fileHeads[i] === 'MinimumOrderQuantity') {
                                     fileHeads[i] = 'NumberOfPieces'
@@ -511,7 +567,7 @@ class BulkUpload extends Component {
                                 }
                                 else if (fileHeads[i] === 'Spec') {
                                     fileHeads[i] = 'RMSpec'
-                                } else if ((fileName === 'RM Domestic' || fileName === 'RM Import') && fileHeads[i] === 'Code') {
+                                } else if ((fileName === 'RM Domestic' || fileName === 'RM Import' || fileName === 'RM') && fileHeads[i] === 'Code') {
                                     fileHeads[i] = 'RawMaterialCode'
                                 }
                                 if (fileName === 'Vendor' && fileHeads[i] === 'PlantCode') {
@@ -544,7 +600,33 @@ class BulkUpload extends Component {
                                 if (fileName === 'Operation' && fileHeads[i] === 'LabourRate') {
                                     fileHeads[i] = 'LabourRatePerUOM'
                                 }
-
+                                if (fileHeads[i] === 'Index') {
+                                    fileHeads[i] = 'IndexExchangeName'
+                                }
+                                if (fileHeads[i] === 'Commodity (In Index)' || fileHeads[i] === 'Commodity Name (In Index)') {
+                                    fileHeads[i] = 'CommodityName'
+                                }
+                                if (fileHeads[i] === 'Commodity Name (Standard)' || fileHeads[i] === 'Commodity Name (In CIR)') {
+                                    fileHeads[i] = 'CommodityStandardName'
+                                }
+                                if (fileHeads[i] === 'Index Rate (From Currency)') {
+                                    fileHeads[i] = 'Rate'
+                                }
+                                if (fileHeads[i] === 'Index UOM') {
+                                    fileHeads[i] = 'UOM'
+                                }
+                                if (fileHeads[i] === 'Conversion Rate (INR)') {
+                                    fileHeads[i] = 'RateConversion'
+                                }
+                                if (fileHeads[i] === 'Indexed On') {
+                                    fileHeads[i] = 'EffectiveDate'
+                                }
+                                if (fileHeads[i] === 'From Currency') {
+                                    fileHeads[i] = 'FromCurrency'
+                                }
+                                if (fileHeads[i] === 'To Currency') {
+                                    fileHeads[i] = 'ToCurrency'
+                                }
                                 obj[fileHeads[i]] = el;
                                 return null;
                             })
@@ -617,6 +699,7 @@ class BulkUpload extends Component {
     onSubmit = (values) => {
         const { fileData, costingTypeId, IsFinalApprover, bopType } = this.state;
         const { fileName, typeOfEntryId } = this.props;
+
         if (fileData.length === 0) {
             Toaster.warning('Please select a file to upload.')
             return false
@@ -643,7 +726,7 @@ class BulkUpload extends Component {
             LoggedInUserId: loggedInUserId(),
             IsFinalApprover: !this.props.initialConfiguration.IsMasterApprovalAppliedConfigure ? true : IsFinalApprover,
             CostingTypeId: costingTypeId,
-            TypeOfEntry: typeOfEntryId ? typeOfEntryId : 0
+            TypeOfEntry: this.props.masterId === RM_MASTER_ID && this.state.isImport ? ENTRY_TYPE_IMPORT : typeOfEntryId ? typeOfEntryId : 0
         }
         if (costingTypeId === ZBCADDMORE || costingTypeId === ZBCADDMOREOPERATION) {
             masterUploadData.CostingTypeId = ZBCTypeId
@@ -658,7 +741,7 @@ class BulkUpload extends Component {
         } else if (fileName === 'Budgeted Volume') {
             uploadData.TypeOfEntry = ENTRY_TYPE_IMPORT
         }
-        if (fileName === 'RM Domestic' || fileName === 'RM Import') {
+        if (fileName === 'RM') {
             this.props.bulkUploadRM(masterUploadData, (res) => {
                 this.setState({ setDisable: false })
                 this.responseHandler(res)
@@ -678,7 +761,40 @@ class BulkUpload extends Component {
                 this.responseHandler(res)
             });
 
-        } else if (fileName === 'Vendor') {
+        } else if (fileName === 'Index') {
+            this.props.bulkUploadIndex(uploadData, (res) => {
+                this.setState({ setDisable: false })
+                this.responseHandler(res)
+            });
+
+        }
+        else if (fileName === 'Commodity (In Index)') {
+            this.props.bulkUploadCommodityInIndex(uploadData, (res) => {
+                this.setState({ setDisable: false })
+                this.responseHandler(res)
+            });
+
+        }
+        else if (fileName === 'Commodity Standardization') {
+            this.props.bulkUploadStandardizedCommodity(uploadData, (res) => {
+                this.setState({ setDisable: false })
+                this.responseHandler(res)
+            });
+
+        }
+        else if (fileName === 'Index Data') {
+            this.props.bulkUploadIndexData(uploadData, (res) => {
+                this.setState({ setDisable: false })
+                this.responseHandler(res)
+            });
+
+        } else if (fileName === 'Commodity Standard') {
+            this.props.bulkUploadCommodityStandard(uploadData, (res) => {
+                this.setState({ setDisable: false })
+                this.responseHandler(res)
+            });
+        }
+        else if (fileName === 'Vendor') {
             this.props.vendorBulkUpload(uploadData, (res) => {
                 this.setState({ setDisable: false })
                 this.responseHandler(res)
@@ -777,6 +893,15 @@ class BulkUpload extends Component {
         }
 
     }
+    /**
+* @method onRmToggle
+* @description RM TOGGLE
+*/
+    onRmToggle = () => {
+        this.setState({
+            isImport: !this.state.isImport,
+        })
+    }
 
     /**
      * @method render
@@ -794,6 +919,7 @@ class BulkUpload extends Component {
                 failedData={failedData}
                 costingTypeId={costingTypeId}
                 bopType={bopType}
+                isImport={this.state.isImport}
             />
         }
         return (
@@ -817,7 +943,30 @@ class BulkUpload extends Component {
                                         </div>
                                     </Col>
                                 </Row>
-
+                                <Row>
+                                    {fileName === 'RM' &&
+                                        <Col md="4" className="switch mb15">
+                                            <label className="switch-level">
+                                                <div className={"left-title"}>Domestic</div>
+                                                <Switch
+                                                    onChange={this.onRmToggle}
+                                                    checked={this.state.isImport}
+                                                    id="normal-switch"
+                                                    disabled={false}
+                                                    background="#4DC771"
+                                                    onColor="#4DC771"
+                                                    onHandleColor="#ffffff"
+                                                    offColor="#4DC771"
+                                                    uncheckedIcon={false}
+                                                    checkedIcon={false}
+                                                    height={20}
+                                                    width={46}
+                                                />
+                                                <div className={"right-title"}>Import</div>
+                                            </label>
+                                        </Col>
+                                    }
+                                </Row>
                                 <Row className="pl-3">
                                     {isZBCVBCTemplate &&
                                         <Col md="12">
@@ -932,6 +1081,7 @@ class BulkUpload extends Component {
                                             isFailedFlag={false}
                                             costingTypeId={costingTypeId}
                                             bopType={bopType}
+                                            isImport={this.state.isImport}
                                         />
                                     </div>
 
@@ -1145,7 +1295,12 @@ export default connect(mapStateToProps, {
     bulkUploadBudgetMaster,
     checkRFQBulkUpload,
     getUsersMasterLevelAPI,
-    checkFinalUser
+    checkFinalUser,
+    bulkUploadIndex,
+    bulkUploadCommodityInIndex,
+    bulkUploadIndexData,
+    bulkUploadStandardizedCommodity,
+    bulkUploadCommodityStandard
 })(reduxForm({
     form: 'BulkUpload',
     enableReinitialize: true,

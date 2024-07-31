@@ -18,6 +18,12 @@ import CommonApproval from './CommonApproval';
 import { MESSAGES } from '../../../config/message';
 import { setSelectedRowForPagination } from '../../simulation/actions/Simulation'
 import { resetStatePagination } from '../../common/Pagination/paginationAction';
+import AddRMMaster from './AddRMMaster';
+import Switch from 'react-switch'
+import RMIndexationListing from './RMIndexationListing';
+import RMDetailListing from './RMDetailListing';
+import IndexCommodityListing from './IndexCommodityListing';
+import CommodityInIndexListing from './CommodityInIndexListing';
 export const ApplyPermission = React.createContext();
 function RowMaterialMaster(props) {
 
@@ -38,6 +44,8 @@ function RowMaterialMaster(props) {
     const [AddAccessibilityRMANDGRADE, setAddAccessibilityRMANDGRADE] = useState(false);
     const [EditAccessibilityRMANDGRADE, setEditAccessibilityRMANDGRADE] = useState(false);
     const [isRMAssociated, setIsRMAssociated] = useState(false);
+    const [isImport, setIsImport] = useState(false);
+    const [hideTabs, setHideTabs] = useState(false);
 
     const topAndLeftMenuData = useSelector((state) => state.auth.topAndLeftMenuData)
     const disabledClass = useSelector((state) => state.comman.disabledClass)
@@ -179,8 +187,8 @@ function RowMaterialMaster(props) {
     // const { isRMDomesticForm, isRMImportForm, data, ViewRMAccessibility, AddAccessibilityRMANDGRADE,
     //     EditAccessibilityRMANDGRADE, } = this.state;
 
-    if (isRMDomesticForm === true) {
-        return <AddRMDomestic
+    if (isRMDomesticForm === true || isRMImportForm === true) {
+        return <AddRMMaster
             data={data}
             hideForm={hideForm}
             AddAccessibilityRMANDGRADE={AddAccessibilityRMANDGRADE}
@@ -189,17 +197,17 @@ function RowMaterialMaster(props) {
         />
     }
 
-    if (isRMImportForm === true) {
-        return <AddRMImport
-            data={data}
-            hideForm={hideForm}
-            AddAccessibilityRMANDGRADE={AddAccessibilityRMANDGRADE}
-            EditAccessibilityRMANDGRADE={EditAccessibilityRMANDGRADE}
-            isRMAssociated={isRMAssociated}
-        />
+    /**
+     * @method onRmToggle
+     * @description RM TOGGLE
+    */
+    const onRmToggle = () => {
+        setIsImport(!isImport)
     }
 
-
+    const isOpenCallback = (params) => {
+        setHideTabs(params)
+    }
     return (
 
         <Container fluid>
@@ -210,19 +218,19 @@ function RowMaterialMaster(props) {
                 <Col>
                     {Object.keys(permissionData).length > 0 && (
                         <div>
-                            <Nav tabs className="subtabs mt-0 p-relative">
+                            {!hideTabs && <Nav tabs className="subtabs mt-0 p-relative">
                                 {disabledClass && <div title={MESSAGES.DOWNLOADING_MESSAGE} className="disabled-overflow"></div>}
 
                                 {<NavItem>
                                     <NavLink className={classnames({ active: activeTab === '1' })} onClick={() => { toggle('1'); }}>
-                                        Manage Raw Material (Domestic)
+                                        Manage Raw Material
                                     </NavLink>
                                 </NavItem>}
-                                {<NavItem>
+                                {/* {<NavItem>
                                     <NavLink className={classnames({ active: activeTab === '2' })} onClick={() => { toggle('2'); }}>
                                         Manage Raw Material (Import)
                                     </NavLink>
-                                </NavItem>}
+                                </NavItem>} */}
                                 {<NavItem>
                                     <NavLink className={classnames({ active: activeTab === '3' })} onClick={() => { toggle('3'); }}>
                                         Manage Specification
@@ -233,6 +241,7 @@ function RowMaterialMaster(props) {
                                         Manage Material
                                     </NavLink>
                                 </NavItem>}
+
                                 {/* SHOW THIS TAB IF KEY IS COMING TRUE FROM CONFIGURATION (CONNDITIONAL TAB) */}
                                 {/* uncomment below line after cherry-pick to Minda  TODO */}
                                 {(CheckApprovalApplicableMaster(RM_MASTER_ID)) && <NavItem>
@@ -244,7 +253,29 @@ function RowMaterialMaster(props) {
                                         Approval Status
                                     </NavLink>
                                 </NavItem>}
-                            </Nav>
+                            </Nav>}
+                            {activeTab === '1' && <Row>
+                                <Col md="4" className="switch mt-3">
+                                    <label className="switch-level">
+                                        <div className={"left-title"}>Domestic</div>
+                                        <Switch
+                                            onChange={onRmToggle}
+                                            checked={isImport}
+                                            id="normal-switch"
+                                            disabled={false}
+                                            background="#4DC771"
+                                            onColor="#4DC771"
+                                            onHandleColor="#ffffff"
+                                            offColor="#4DC771"
+                                            uncheckedIcon={false}
+                                            checkedIcon={false}
+                                            height={20}
+                                            width={46}
+                                        />
+                                        <div className={"right-title"}>Import</div>
+                                    </label>
+                                </Col>
+                            </Row>}
                             <ApplyPermission.Provider value={permissionData}>
                                 <TabContent activeTab={activeTab}>
 
@@ -252,42 +283,42 @@ function RowMaterialMaster(props) {
 
                                     {Number(activeTab) === 1 &&
                                         <TabPane tabId="1">
-                                            <RMDomesticListing
-                                                formToggle={displayDomesticForm}
-                                                getDetails={getDetails}
-                                                toggle={toggle}
-                                                ViewRMAccessibility={ViewRMAccessibility}
-                                                AddAccessibility={AddAccessibility}
-                                                EditAccessibility={EditAccessibility}
-                                                DeleteAccessibility={DeleteAccessibility}
-                                                BulkUploadAccessibility={BulkUploadAccessibility}
-                                                DownloadAccessibility={DownloadAccessibility}
-                                                stopApiCallOnCancel={stopApiCallOnCancel}
-                                                selectionForListingMasterAPI='Master'
-                                                approvalStatus={APPROVAL_CYCLE_STATUS_MASTER}
-                                            //MINDA
-                                            // approvalStatus={APPROVED_STATUS_MASTER}
-                                            />
-                                        </TabPane>}
+                                            {!isImport ?
+                                                <RMDomesticListing
+                                                    formToggle={displayDomesticForm}
+                                                    getDetails={getDetails}
+                                                    toggle={toggle}
+                                                    ViewRMAccessibility={ViewRMAccessibility}
+                                                    AddAccessibility={AddAccessibility}
+                                                    EditAccessibility={EditAccessibility}
+                                                    DeleteAccessibility={DeleteAccessibility}
+                                                    BulkUploadAccessibility={BulkUploadAccessibility}
+                                                    DownloadAccessibility={DownloadAccessibility}
+                                                    stopApiCallOnCancel={stopApiCallOnCancel}
+                                                    selectionForListingMasterAPI='Master'
+                                                    approvalStatus={APPROVAL_CYCLE_STATUS_MASTER}
+                                                /> :
+                                                <RMImportListing
+                                                    formToggle={displayImportForm}
+                                                    getDetails={getDetailsImport}
+                                                    toggle={toggle}
+                                                    ViewRMAccessibility={ViewRMAccessibility}
+                                                    AddAccessibility={AddAccessibility}
+                                                    EditAccessibility={EditAccessibility}
+                                                    DeleteAccessibility={DeleteAccessibility}
+                                                    BulkUploadAccessibility={BulkUploadAccessibility}
+                                                    DownloadAccessibility={DownloadAccessibility}
+                                                    stopApiCallOnCancel={stopApiCallOnCancel}
+                                                    selectionForListingMasterAPI='Master'
+                                                    approvalStatus={APPROVAL_CYCLE_STATUS_MASTER}
+                                                />
+                                            }
+                                        </TabPane>
+                                    }
 
                                     {Number(activeTab) === 2 &&
                                         <TabPane tabId="2">
-                                            <RMImportListing
-                                                formToggle={displayImportForm}
-                                                getDetails={getDetailsImport}
-                                                toggle={toggle}
-                                                ViewRMAccessibility={ViewRMAccessibility}
-                                                AddAccessibility={AddAccessibility}
-                                                EditAccessibility={EditAccessibility}
-                                                DeleteAccessibility={DeleteAccessibility}
-                                                BulkUploadAccessibility={BulkUploadAccessibility}
-                                                DownloadAccessibility={DownloadAccessibility}
-                                                stopApiCallOnCancel={stopApiCallOnCancel}
-                                                selectionForListingMasterAPI='Master'
-                                                approvalStatus={APPROVAL_CYCLE_STATUS_MASTER}
-                                            //MINDA
-                                            // approvalStatus={APPROVED_STATUS_MASTER}
-                                            />
+
                                         </TabPane>}
 
                                     {Number(activeTab) === 3 &&
@@ -308,15 +339,10 @@ function RowMaterialMaster(props) {
 
                                             />
                                         </TabPane>}
+
                                     {Number(activeTab) === 5 &&
                                         <TabPane tabId="5">
-                                            {/* {
-                                            this.props.history.push({ pathname: '/raw-material-master/raw-material-approval' })
-                                        } */}
 
-                                            {/* <Link to="/raw-material-approval"></Link> */}
-                                            {/* <Route path="/raw-material-approval">
-                                        </Route> */}
                                             <CommonApproval
                                                 AddAccessibility={AddAccessibility}
                                                 EditAccessibility={EditAccessibility}

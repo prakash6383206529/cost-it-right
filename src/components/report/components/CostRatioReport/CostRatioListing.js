@@ -258,11 +258,11 @@ const CostRatioListing = (props) => {
                                     <div className='column-data'>Profit Cost (%)</div>
                                     <div className='column-data'>Rejection Cost (%)</div>
                                     <div className='column-data'>ICC Cost (%)</div>
-                                    <div className='column-data'>Payment Term Cost (%)</div>
                                     <div className='column-data'>Packaging & Freight Cost (%)</div>
                                     <div className='column-data'>Other Cost (%)</div>
                                     <div className='column-data'>Tool Cost (%)</div>
                                     <div className='column-data'>Discount Cost (%)</div>
+                                    <div className='column-data'>Payment Term Cost (%)</div>
                                 </td>
                                 {tableData && tableData.map(item => {
                                     return <>
@@ -278,11 +278,11 @@ const CostRatioListing = (props) => {
                                             <div className='column-data'>{checkForDecimalAndNull(item.NetProfitCost, initialConfiguration.NoOfDecimalForPrice)}({checkForDecimalAndNull(item.NetProfitCostPercentage, 2)})</div>
                                             <div className='column-data'>{checkForDecimalAndNull(item.NetRejectionCost, initialConfiguration.NoOfDecimalForPrice)}({checkForDecimalAndNull(item.NetRejectionCostPercentage, 2)})</div>
                                             <div className='column-data'>{checkForDecimalAndNull(item.NetRejectionCost, initialConfiguration.NoOfDecimalForPrice)}({checkForDecimalAndNull(item.NetICCCostPercentage, 2)})</div>
-                                            <div className='column-data'>{checkForDecimalAndNull(item.NetPaymentTermCost, initialConfiguration.NoOfDecimalForPrice)}({checkForDecimalAndNull(item.NetPaymentTermCostPercentage, 2)})</div>
                                             <div className='column-data'>{checkForDecimalAndNull(item.NetPackagingAndFreightCost, initialConfiguration.NoOfDecimalForPrice)}({checkForDecimalAndNull(item.NetPackagingAndFreightCostPercentage, 2)})</div>
                                             <div className='column-data'>{checkForDecimalAndNull(item.NetOtherCost, initialConfiguration.NoOfDecimalForPrice)}({checkForDecimalAndNull(item.NetOtherCostPercentage, 2)})</div>
                                             <div className='column-data'>{checkForDecimalAndNull(item.NetToolCost, initialConfiguration.NoOfDecimalForPrice)}({checkForDecimalAndNull(item.NetToolCostPercentage, 2)})</div>
                                             <div className='column-data'>{checkForDecimalAndNull(item.NetDiscountCostPercentage, initialConfiguration.NoOfDecimalForPrice)}({checkForDecimalAndNull(item.NetDiscountCostPercentage, 2)})</div>
+                                            <div className='column-data'>{checkForDecimalAndNull(item.NetPaymentTermCost, initialConfiguration.NoOfDecimalForPrice)}({checkForDecimalAndNull(item.NetPaymentTermCostPercentage, 2)})</div>
                                         </td>
                                     </>
                                 })}

@@ -52,7 +52,7 @@ const errorFunc = (errors, field) => {
 }
 
 export const TextFieldHookForm = (field) => {
-  const { label, Controller, control, register, name, defaultValue, mandatory, errors, rules, handleChange, hidden, isLoading, disableErrorOverflow, id } = field
+  const { label, Controller, placeholder, control, register, name, defaultValue, mandatory, errors, rules, handleChange, hidden, isLoading, disableErrorOverflow, id } = field
   //const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""} ${touched && error ? "has-danger" : ""}`;
   const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""} ${hidden ? 'd-none' : ''}`;
   const InputClassName = `form-control ${field.className ? field.className : ""}`;
@@ -90,7 +90,7 @@ export const TextFieldHookForm = (field) => {
                     name={name}
                     className={InputClassName}
                     disabled={isDisabled}
-                    placeholder={isDisabled ? '-' : 'Enter'}
+                    placeholder={isDisabled ? '-' : placeholder || 'Enter'}
                     value={value}
                     onChange={(e) => {
                       handleChange(e);
@@ -279,7 +279,7 @@ export const NumberFieldHookForm = (field) => {
 
 export const SearchableSelectHookForm = (field) => {
   const { name, label, Controller, mandatory, disabled, options, handleChange, rules, placeholder, defaultValue,
-    control, errors, register, isLoading, customClassName, isMulti, buttonCross, title, dropdownHeight, dropDownClass, onFocus, isClearable, id } = field;
+    control, errors, register, isLoading, customClassName, isMulti, buttonCross, title, dropdownHeight, dropDownClass, onFocus, isClearable, id, tooltipId } = field;
   let isDisable = (disabled && disabled === true) ? true : false;
   let isLoader = (isLoading && isLoading?.isLoader === true) ? true : false;
   let isMultiple = (isMulti === true) ? true : false;
@@ -341,7 +341,7 @@ export const SearchableSelectHookForm = (field) => {
             updatedValue = ''
           }
           return (
-            <div className={className} title={title ? title : isDisable ? value?.label : ''}>
+            <div id={tooltipId ?? ''} className={className} title={title ? title : isDisable ? value?.label : ''}>
               <Select
                 {...field}
                 id={containerId}
@@ -386,8 +386,20 @@ export const SearchableSelectHookForm = (field) => {
 
       {/* {errors && errors.type === 'required' ? <div className="text-help">'This field is required'</div> : ""} */}
       {/* {errors && errors.type === 'required' ? '<div className="text-help">This field is required</div>' : ""} */}
-      {errors && errors.type === 'required' ? <div className="text-help">This field is required</div>
-        : errors && errors.type !== 'required' ? <div className="text-help">{(errors.message || errors.type)}</div> : ''}
+      {/*    {errors && errors.type === 'required' ? <div className="text-help">This field is required</div>
+        : errors && errors.type !== 'required' ? <div className="text-help">{(errors.message || errors.type)}</div> : ''} */}
+      {/* {errors && errors.type === 'required' ? <div className="text-help">This field is required</div>
+        : errors && errors.type !== 'required' ? <div className="text-help">{(errors.message || errors.type)}</div> : ''} */}
+      {errors !== undefined ? (errors.type === 'required' && !errors.ref?.value ? (<div className="text-help">This field is required</div>) : errors.ref?.value ? (null
+      ) : errors.message || errors.type ? (<div className="text-help">{errors.message || errors.type}</div>) : null
+      ) : null}
+
+
+
+
+
+
+
 
     </div>
   )
@@ -775,7 +787,7 @@ export const AllApprovalField = (props) => {
   let value = approverList.length !== 0 ? `${approverList[0].label} ${approverList.length > 1 ? '...' : ''}` : '-';
   return (
     <>
-      <div className={'form-group'}>
+      <div className={'form-group all-approval'}>
 
         <label className={label === false ? 'd-none' : ''}>
           {label}

@@ -62,15 +62,28 @@ import {
   GET_APPROVAL_TYPE_SELECT_LIST,
   GET_DATA_WHILE_LOADING,
   GET_DATA_FROM_REPORT,
-  TOUR_START_DATA
+  TOUR_START_DATA,
+  GET_APPROVAL_TYPE_SELECT_LIST_COSTING,
+  GET_APPROVAL_TYPE_SELECT_LIST_SIMULATION,
+  GET_APPROVAL_TYPE_SELECT_LIST_MASTER,
+  GET_APPROVAL_TYPE_SELECT_LIST_ONBOARDING,
+  GET_RM_EXCHANGE_RATE_SOURCE,
+  GET_COST_FREQUENCY_SETTLEMENT
 } from '../config/constants';
 
 const initialState = {
   technologyList: [],
+  exchangeRateSourceList: [],
+
   tourStartData: {
     showExtraData: false
-  }
+  },
+  approvalTypeCosting: [],
+  approvalTypeSimulation: [],
+  approvalTypeMaster: [],
+  approvalTypeOnboarding: [],
 };
+
 
 
 export default function commanReducer(state = initialState, action) {
@@ -494,6 +507,26 @@ export default function commanReducer(state = initialState, action) {
         ...state,
         approvalTypeSelectList: action.payload
       }
+    case GET_APPROVAL_TYPE_SELECT_LIST_COSTING:
+      return {
+        ...state,
+        approvalTypeCosting: action.payload
+      }
+    case GET_APPROVAL_TYPE_SELECT_LIST_SIMULATION:
+      return {
+        ...state,
+        approvalTypeSimulation: action.payload
+      }
+    case GET_APPROVAL_TYPE_SELECT_LIST_MASTER:
+      return {
+        ...state,
+        approvalTypeMaster: action.payload
+      }
+    case GET_APPROVAL_TYPE_SELECT_LIST_ONBOARDING:
+      return {
+        ...state,
+        approvalTypeOnboarding: action.payload
+      }
     case GET_DATA_FROM_REPORT:
       return {
         ...state,
@@ -504,6 +537,24 @@ export default function commanReducer(state = initialState, action) {
         ...state,
         tourStartData: action.payload
       }
+
+    case GET_RM_EXCHANGE_RATE_SOURCE:
+
+
+      return {
+        ...state,
+        loading: false,
+        error: true,
+        exchangeRateSourceList: action.payload
+      };
+    case GET_COST_FREQUENCY_SETTLEMENT:
+
+      return {
+        ...state,
+        loading: false,
+        error: true,
+        frequencyOfSettlement: action.payload
+      };
     default:
       return state;
   }

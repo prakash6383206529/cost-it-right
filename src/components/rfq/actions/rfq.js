@@ -10,6 +10,21 @@ import {
     SELECTED_ROW_ARRAY,
     SET_QUOTATION_ID_FOR_RFQ,
     GET_NFR_SELECT_LIST,
+    GET_RFQ_VENDOR_DETAIL,
+    GET_TARGET_PRICE,
+    GET_ASSEMBLY_CHILD_PART,
+    GET_RFQ_PART_DETAILS,
+    GET_RFQ_RAISE_NUMBER,
+    GET_QUOTATION_DETAILS_LIST,
+    GET_PART_IDENTITY,
+    GET_QUOTATION_ID_FOR_RFQ,
+    SET_RM_SPECIFIC_ROW_DATA,
+    SELECT_PURCHASE_REQUISITION,
+    SELECT_BOP_NUMBER,
+    SELECT_BOP_CATEGORY,
+    SET_BOP_SPECIFIC_ROW_DATA,
+    GET_BOP_PR_QUOTATION_DETAILS,
+    SET_BOP_PR_QUOTATION_IDENTITY,
 } from '../../../config/constants';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId, userDetails } from '../../../helper';
@@ -20,7 +35,7 @@ import Toaster from '../../common/Toaster';
 export function getQuotationList(DepartmentCode, Timezone, callback) {
     return (dispatch) => {
 
-        const request = axios.get(`${API.getQuotationList}?DepartmentCode=${''}&LoggedInUserId=${loggedInUserId()}&Timezone=${Timezone}`, config());
+        const request = axios.get(`${API.getQuotationList}?DepartmentCode=${""}&LoggedInUserId=${loggedInUserId()}&Timezone=${Timezone}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
 
@@ -43,9 +58,14 @@ export function getQuotationList(DepartmentCode, Timezone, callback) {
 
 export function createRfqQuotation(data, callback) {
 
+
     return (dispatch) => {
         const request = axios.post(API.createRfqQuotation, data, config());
         request.then((response) => {
+            dispatch({
+                type: GET_QUOTATION_ID_FOR_RFQ,
+                payload: response.status === 204 ? "" : response.data.Identity
+            })
             if (response.data.Result) {
                 callback(response);
             }
@@ -96,6 +116,7 @@ export function getQuotationById(id, callback) {
             .then((response) => {
                 callback(response)
             }).catch((error) => {
+
                 dispatch({ type: API_FAILURE });
                 apiErrors(error);
             });
@@ -108,6 +129,7 @@ export function getQuotationById(id, callback) {
  * @description File Upload Quotation
  */
 export function fileUploadQuotation(data, callback) {
+
     return (dispatch) => {
         const request = axios.post(API.fileUploadQuotation, data, config())
         request.then((response) => {
@@ -173,7 +195,19 @@ export function getContactPerson(vendorId, callback) {
     };
 }
 
+export function deleteQuotationPartDetail(partId, callback) {
+    const quotationPartId = Number(partId)
+    return (dispatch) => {
+        axios.delete(`${API.deleteQuotationPartDetail}?quotationPartId=${quotationPartId}`, config())
+            .then((response) => {
+                callback(response)
+            }).catch((error) => {
+                apiErrors(error)
+                dispatch({ type: API_FAILURE })
+            })
 
+    };
+}
 
 export function getQuotationDetailsList(id, callback) {
 
@@ -181,6 +215,7 @@ export function getQuotationDetailsList(id, callback) {
         const request = axios.get(`${API.getQuotationDetailsList}?quotationId=${id}&loggedInUserId=${loggedInUserId()}`, config());
         request.then((response) => {
             if (response.data.Result) {
+                dispatch({ type: GET_QUOTATION_DETAILS_LIST, payload: response.data.DataList })
                 callback(response);
             } else {
                 callback(response.status)
@@ -216,12 +251,10 @@ export function getMultipleCostingDetails(selectedRows, callback) {
             } else {
                 Toaster.error(MESSAGES.SOME_ERROR)
             }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE })
+            apiErrors(error)
         })
-            .catch((error) => {
-
-                dispatch({ type: API_FAILURE })
-                apiErrors(error)
-            })
     }
 }
 
@@ -254,6 +287,24 @@ export function checkExistCosting(data, callback) {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
             callback(error)
+        });
+    };
+}
+
+//CHECK FOR VENDOR AND PLANT FOR LPS AND SCN
+export function checkLPSAndSCN(data, callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getVendorPlantClassificationLpsratingForRFQ}?vendorId=${data.VendorId}&plantId=${data.PlantId}`, config());
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            } else {
+                callback({ error: 'Unexpected result format' });
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+            callback({ error });
         });
     };
 }
@@ -414,3 +465,288 @@ export function getPartNFRRMList(nfrId, partId, callback) {
         });
     };
 }
+export function getTargetPrice(plantId, partId, technologyId, callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getTargetPrice}?plantId=${plantId}&partId=${partId}&technologyId=${technologyId}`, config());
+        request.then((response) => {
+            if (response.data.Result || response.status === 204) {
+
+                dispatch({
+                    type: GET_TARGET_PRICE,
+                    payload: response.status === 204 ? [] : response?.data?.Data
+                })
+
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+export function setVendorDetails(data) {
+    return (dispatch) => {
+        dispatch({
+            type: GET_RFQ_VENDOR_DETAIL,
+            payload: data || {},
+        });
+    }
+};
+export function setTargetPriceDetail(data) {
+    return (dispatch) => {
+        dispatch({
+            type: GET_TARGET_PRICE,
+            payload: data || {},
+        });
+    }
+};
+export function setRfqPartDetails(data) {
+    return (dispatch) => {
+        dispatch({
+            type: GET_RFQ_PART_DETAILS,
+            payload: data || {},
+        });
+    }
+};
+export function getAssemblyChildpart(partId, callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getAssemblyChildpart}?partId=${partId}`, config());
+        request.then((response) => {
+
+            if (response.data.Result || response.status === 204) {
+
+                dispatch({
+                    type: GET_ASSEMBLY_CHILD_PART,
+                    payload: response.status === 204 ? [] : response?.data?.DataList
+                })
+
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+export function getrRqVendorDetails(vendorId, callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getrRqVendorDetails}?vendorId=${vendorId}`, config());
+        request.then((response) => {
+            if (response.data.Result || response.status === 204) {
+
+                dispatch({
+                    type: GET_RFQ_VENDOR_DETAIL,
+                    payload: response.status === 204 ? [] : response?.data?.Data
+                })
+
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+export function saveRfqPartDetails(data, callback) {
+
+    return (dispatch) => {
+        const request = axios.post(API.saveRfqPartDetails, data, config());
+        request.then((response) => {
+
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_PART_IDENTITY,
+                    payload: response.status === 204 ? [] : response?.data?.Identity
+                })
+                callback(response);
+            }
+        }).catch((error) => {
+
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+            callback(error)
+        });
+    };
+}
+
+export function getRfqPartDetails(partId, callback) {
+
+    const quotationPartId = Number(partId)
+
+    return (dispatch) => {
+        dispatch({
+            type: GET_RFQ_PART_DETAILS,
+            payload: []
+        })
+        const request = axios.get(`${API.getRfqPartDetails}?quotationPartId=${quotationPartId}`, config());
+        request.then((response) => {
+            if (response.data.Result || response.status === 204) {
+
+                dispatch({
+                    type: GET_RFQ_PART_DETAILS,
+                    payload: response.status === 204 ? [] : response?.data?.Data
+                })
+
+                callback(response);
+            }
+        }).catch((error) => {
+
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+export function setQuotationIdForRfq(data) {
+    return (dispatch) => {
+        dispatch({
+            type: GET_QUOTATION_ID_FOR_RFQ,
+            payload: data || "",
+        });
+    }
+};
+export function checkRegisteredVendor(vendorId, callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.checkRegisteredVendor}?vendorId=${vendorId}`, config());
+        request.then((response) => {
+            if (response.data.Result || response.status === 204) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+export function setRmSpecificRowData(data) {
+
+    return (dispatch) => {
+        dispatch({
+            type: SET_RM_SPECIFIC_ROW_DATA,
+            payload: data || [],
+        });
+    }
+};
+export function getPurchaseRequisitionSelectList(callback) {
+
+
+    return (dispatch) => {
+        dispatch({
+            type: SELECT_PURCHASE_REQUISITION,
+            payload: []
+        })
+        const request = axios.get(`${API.getPurchaseRequisitionSelectList}`, config());
+        request.then((response) => {
+
+            if (response.data.Result || response.status === 204) {
+
+                dispatch({
+                    type: SELECT_PURCHASE_REQUISITION,
+                    payload: response.status === 204 ? [] : response?.data?.SelectList
+                })
+
+                callback(response);
+            }
+        }).catch((error) => {
+
+
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+export function getBopNumberSelectList(callback) {
+
+    return (dispatch) => {
+        dispatch({
+            type: SELECT_BOP_NUMBER,
+            payload: []
+        })
+        const request = axios.get(`${API.getRfqBopNumberSelectList}`, config());
+        request.then((response) => {
+
+            if (response.data.Result || response.status === 204) {
+
+                dispatch({
+                    type: SELECT_BOP_NUMBER,
+                    payload: response.status === 204 ? [] : response?.data?.SelectList
+                })
+
+                callback(response);
+            }
+        }).catch((error) => {
+
+
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+export function getBopCategorySelectList(boughtOutPartChildId, callback) {
+    return (dispatch) => {
+        dispatch({
+            type: SELECT_BOP_CATEGORY,
+            payload: []
+        })
+        const request = axios.get(`${API.getRfqBOPCategorySelectList}/${boughtOutPartChildId}`, config());
+        request.then((response) => {
+            if (response.data.Result || response.status === 204) {
+
+                dispatch({
+                    type: SELECT_BOP_CATEGORY,
+                    payload: response.status === 204 ? [] : response?.data?.SelectList
+                })
+
+                callback(response);
+            }
+        }).catch((error) => {
+
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+export function setBopSpecificRowData(data) {
+
+    return (dispatch) => {
+        dispatch({
+            type: SET_BOP_SPECIFIC_ROW_DATA,
+            payload: data || [],
+        });
+    }
+};
+export function createQuotationPrParts(data, callback) {
+    const prNumbersId = Number(data.prNumbersId)
+    return (dispatch) => {
+        const request = axios.post(API.createQuotationPrParts, data, config());
+        request.then((response) => {
+
+            if (response.data.Result) {
+                dispatch({
+                    type: SET_BOP_PR_QUOTATION_IDENTITY,
+                    payload: response.status === 204 ? [] : response?.data?.Identity
+                })
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+            callback(error)
+        });
+    };
+};
+// return (dispatch) => {
+//     const request = axios.post(`${API.createQuotationPrParts}?prNumbersId=${prNumbersId}&quotationId=${obj.quotationId}&loggedInUserId=${obj.loggedInUserId}`, config());
+//     request.then((response) => {
+//         if (response.data.Result) {
+//             callback(response);
+//         }
+//     }).catch((error) => {
+//         dispatch({ type: API_FAILURE });
+//         apiErrors(error);
+//         callback(error)
+//     });
+// };
+//}

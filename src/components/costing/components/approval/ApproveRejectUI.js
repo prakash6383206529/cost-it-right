@@ -3,11 +3,11 @@ import { Container, Row, Col } from 'reactstrap'
 import { useForm, Controller } from 'react-hook-form'
 import Drawer from '@material-ui/core/Drawer'
 import { useDispatch, useSelector } from 'react-redux'
-import { getReasonSelectList } from '../../../costing/actions/Approval'
+import { getReasonSelectList, setSAPData } from '../../../costing/actions/Approval'
 import { TextAreaHookForm, SearchableSelectHookForm, AllApprovalField } from '../../../layout/HookFormInputs'
 import { getConfigurationKey, handleDepartmentHeader, loggedInUserId, userDetails } from '../../../../helper'
 import PushButtonDrawer from './PushButtonDrawer'
-import { FILE_URL, REASON_ID, RELEASESTRATEGYTYPEID1, RELEASESTRATEGYTYPEID2, RELEASESTRATEGYTYPEID3, RELEASESTRATEGYTYPEID4, RELEASESTRATEGYTYPEID6 } from '../../../../config/constants'
+import { FILE_URL, RAWMATERIALINDEX, REASON_ID, RELEASESTRATEGYTYPEID1, RELEASESTRATEGYTYPEID2, RELEASESTRATEGYTYPEID3, RELEASESTRATEGYTYPEID4, RELEASESTRATEGYTYPEID6 } from '../../../../config/constants'
 import { uploadSimulationAttachment } from '../../../simulation/actions/Simulation'
 import DayTime from '../../../common/DayTimeWrapper'
 import DatePicker from "react-datepicker";
@@ -19,16 +19,13 @@ import LoaderCustom from '../../../common/LoaderCustom';
 import Toaster from '../../../common/Toaster'
 import WarningMessage from '../../../common/WarningMessage'
 import { getApprovalTypeSelectList } from '../../../../actions/Common'
-import { updateCostingIdFromRfqToNfrPfs } from '../../actions/Costing'
-import { pushNfrOnSap } from '../../../masters/nfr/actions/nfr'
-import { MESSAGES } from '../../../../config/message'
-import PopupMsgWrapper from '../../../common/PopupMsgWrapper'
-import PushSection from '../../../common/PushSection'
 import { transformApprovalItem } from '../../../common/CommonFunctions'
 import Button from '../../../layout/Button'
 import { submit } from 'redux-form'
+import SAPApproval from '../../../SAPApproval'
 
 function ApproveRejectUI(props) {
+  
   // ********* INITIALIZE REF FOR DROPZONE ********
   const dropzone = useRef(null);
   const { type, approvalData, showMessage, setDataFromSummary, disableReleaseStrategy, IsNotFinalLevel, isSimulation, dataSend, simulationDetail, isSimulationApprovalListing, dataInFields, approvalDropDown, handleDepartmentChange, onSubmit, callbackSetDataInFields, showApprovalTypeDropdown, releaseStrategyDetails, reasonId } = props
@@ -330,6 +327,27 @@ function ApproveRejectUI(props) {
               </Row>
 
               <Row className="ml-0">
+                {
+                  type === 'Sender' && getConfigurationKey().IsSAPConfigured &&
+
+                  <Col md="12" className="simulation-sap-approval">
+                    <Row >
+                      <Col md="12">
+                        <div className="left-border">{"SAP-Push Details"}</div>
+                      </Col>
+                      <SAPApproval
+                        isSimulation={true}
+                        Controller={Controller}
+                        register={register}
+                        errors={errors}
+                        control={control}
+                        plantId={props?.plantId}
+                      />
+
+                    </Row>
+                  </Col>
+                }
+
                 {getConfigurationKey().IsReleaseStrategyConfigured && showApprovalTypeDropdown && <Col md="6">
                   <SearchableSelectHookForm
                     label={"Approval Type"}
@@ -458,7 +476,7 @@ function ApproveRejectUI(props) {
                             errors={errors.reason}
                           />
                         </div>
-                        {!isSimulationApprovalListing &&
+                        {(!isSimulationApprovalListing && (String(props?.SimulationTechnologyId) !== RAWMATERIALINDEX)) &&
                           <div className="input-group form-group col-md-12">
                             <label>Effective Date<span className="asterisk-required">*</span></label>
                             <div className="inputbox date-section">

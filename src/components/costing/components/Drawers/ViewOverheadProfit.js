@@ -10,7 +10,7 @@ import { useSelector } from 'react-redux'
 import TooltipCustom from '../../../common/Tooltip'
 import { IdForMultiTechnology } from '../../../../config/masterData'
 function ViewOverheadProfit(props) {
-  const { overheadData, profitData, rejectAndModelType, iccPaymentData, isPDFShow } = props
+  const { overheadData, profitData, rejectAndModelType, iccPaymentData, isPDFShow, viewRejectionRecovery } = props
   const { rejectData, modelType, isRmCutOffApplicable, rawMaterialCostWithCutOff, isIncludeToolCostWithOverheadAndProfit, isIncludeSurfaceTreatmentWithRejection, isIncludeSurfaceTreatmentWithOverheadAndProfit, isIncludeOverheadAndProfitInICC, isIncludeToolCostInCCForICC } = rejectAndModelType;
   const showTooltipForOH = [isRmCutOffApplicable, isIncludeToolCostWithOverheadAndProfit, isIncludeSurfaceTreatmentWithOverheadAndProfit]
   const showToolTipForICC = [isIncludeOverheadAndProfitInICC, isIncludeToolCostInCCForICC]
@@ -335,13 +335,14 @@ function ViewOverheadProfit(props) {
         {/*REJECTION RENDERING */}
 
         <Col md="12">
-          <Table className="table cr-brdr-main add-min-width" size="sm">
+          <Table className="table cr-brdr-main" size="sm">
             <thead>
               <tr>
 
                 <th>{`Applicability`}</th>
                 <th>{`Rejection ${rejectData?.RejectionApplicability === 'Fixed' ? '' : '(%)'}`}</th>
                 <th><div className='w-fit'>Cost (Applicability){isIncludeSurfaceTreatmentWithRejection && !isPDFShow && <TooltipCustom width="250px" customClass="mt-1 ml-1" id="rejection-table" tooltipText={'Surface Treatment Cost Included'} />}</div></th>
+                <th>{`Rejection`}</th>
                 <th>{`Net Rejection`}</th>
                 {initialConfiguration.IsShowCRMHead && <th>{`CRM Head`}</th>}
                 <th>{`Remark`}</th>
@@ -359,11 +360,47 @@ function ViewOverheadProfit(props) {
                     <td>{rejectData.RejectionApplicability ? rejectData.RejectionApplicability : '-'}</td>
                     <td>{rejectData.RejectionApplicability === "Fixed" ? rejectData.RejectionCost : rejectData.RejectionPercentage ? checkForDecimalAndNull(rejectData.RejectionPercentage, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
                     <td>{rejectData.RejectionApplicability === "Fixed" ? '-' : rejectData.RejectionCost ? checkForDecimalAndNull(rejectData.RejectionCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+                    <td>{rejectData.NetCost ? checkForDecimalAndNull(rejectData.NetCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
                     <td>{rejectData.RejectionTotalCost ? checkForDecimalAndNull(rejectData.RejectionTotalCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
                     {initialConfiguration.IsShowCRMHead && <td>{rejectData.RejectionCRMHead}</td>}
                     <td>{rejectData.Remark ? rejectData.Remark : "-"}</td>
                   </tr>
               }
+            </tbody>
+          </Table>
+        </Col>
+      </Row></>
+  }
+  const rejectRecoveryTableData = () => {
+    return <>
+      <Row>
+        <Col md="10">
+          <div className="left-border">{"Rejection Recovery:"}</div>
+        </Col>
+      </Row>
+      <Row>
+        {/*REJECTION RENDERING */}
+
+        <Col md="12">
+          <Table className="table cr-brdr-main " size="sm">
+            <thead>
+              <tr>
+
+                <th>Applicability</th>
+                <th>Recovery Percentage</th>
+                <th>Effective Recovery Percentage</th>
+                <th>Rejection Applicability Cost</th>
+                <th>Rejection Recovery Cost</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>{viewRejectionRecovery?.ApplicabilityType}</td>
+                <td>{viewRejectionRecovery?.Value ? checkForDecimalAndNull(viewRejectionRecovery?.Value, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+                <td>{viewRejectionRecovery?.EffectiveRecoveryPercentage ? checkForDecimalAndNull(viewRejectionRecovery?.EffectiveRecoveryPercentage, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+                <td>{viewRejectionRecovery?.ApplicabilityCost ? checkForDecimalAndNull(viewRejectionRecovery?.ApplicabilityCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+                <td>{viewRejectionRecovery?.RejectionRecoveryNetCost ? checkForDecimalAndNull(viewRejectionRecovery?.RejectionRecoveryNetCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+              </tr>
             </tbody>
           </Table>
         </Col>
@@ -501,12 +538,18 @@ function ViewOverheadProfit(props) {
                 </div>
                 <br />
                 <div>
-                  {iccTableData()}
+                  {viewRejectionRecovery && rejectRecoveryTableData()}
+                </div>
+                <br />
+                <div>
+                  {/* //COMMENTED CODE DUE TO PAGE BLANK, ONCE FIXED IT BY ADITI IT WILL BE UNCOMMENT */}
+                  {/* {iccTableData()} */}
                 </div>
 
                 <br />
                 <div>
-                  {paymentTableData()}
+                  {/* //COMMENTED CODE DUE TO PAGE BLANK, ONCE FIXED IT BY ADITI IT WILL BE UNCOMMENT */}
+                  {/* {paymentTableData()} */}
                 </div>
 
               </div>
@@ -521,9 +564,10 @@ function ViewOverheadProfit(props) {
             {(viewProfitData.IsProfitFixedApplicable || viewProfitData.IsProfitRMApplicable || viewProfitData.IsProfitBOPApplicable || viewProfitData.IsProfitCCApplicable || viewProfitData.IsProfitCombined) ? profitTableData() : ""}
           </div>
           {rejectData.RejectionApplicability != null && rejectTableData()}
-          {iccPaymentData.ICCApplicabilityDetail.ICCApplicability != null && iccTableData()}
-          {iccPaymentData.PaymentTermDetail.PaymentTermApplicability != null && paymentTableData()}
-
+          {/* //COMMENTED CODE DUE TO PAGE BLANK, ONCE FIXED IT BY ADITI IT WILL BE UNCOMMENT */}
+          {/* {iccPaymentData.ICCApplicabilityDetail.ICCApplicability != null && iccTableData()} */}
+          {/* {iccPaymentData.PaymentTermDetail.PaymentTermApplicability != null && paymentTableData()} */}
+          {viewRejectionRecovery && rejectRecoveryTableData()}
         </>
 
       }

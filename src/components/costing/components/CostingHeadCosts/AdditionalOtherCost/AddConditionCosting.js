@@ -52,14 +52,14 @@ function AddConditionCosting(props) {
     })
 
     useEffect(() => {
-        if (tableData.length === 0) {
+        if (tableData?.length === 0) {
             setDisableEntryType(false)
             setValue('ConditionEntryType', '')
         }
     }, [tableData]);
 
     useEffect(() => {
-        const hasCostingConditionEntryTypeId = tableData.some(item => item.CostingConditionEntryTypeId !== undefined);
+        const hasCostingConditionEntryTypeId = tableData?.some(item => item.CostingConditionEntryTypeId !== undefined);
 
         if (hasCostingConditionEntryTypeId || props.costingConditionEntryType !== undefined) {
             const conditionEntryTypeId = hasCostingConditionEntryTypeId ? tableData[0]?.CostingConditionEntryTypeId : props.costingConditionEntryType;
@@ -79,7 +79,7 @@ function AddConditionCosting(props) {
                         ? tableData[0].CostingConditionEntryTypeId
                         : props?.costingConditionEntryType;
 
-            dispatch(getCostingCondition(entryTypeId, (res) => {
+            dispatch(getCostingCondition(entryTypeId, '', (res) => {
                 if (res?.data?.DataList) {
                     const temp = res.data.DataList.map(item => ({
                         label: `${item.Description} (${item.CostingConditionNumber})`,
@@ -157,7 +157,7 @@ function AddConditionCosting(props) {
     const onConditionEntryTypeChange = (e) => {
         if (e) {
             setCostingConditionEntryType(e.value)
-            dispatch(getCostingCondition(e.value, (res) => {
+            dispatch(getCostingCondition(e.value, '', (res) => {
                 if (res?.data?.DataList) {
                     let Data = res?.data?.DataList
                     let temp = []
@@ -384,7 +384,7 @@ function AddConditionCosting(props) {
         setValue('CostPerQuantityConversion', checkForDecimalAndNull(ConditionCostPerQuantityConversion, initialConfiguration.NoOfDecimalForPrice))
     }
 
-    const checkCondtionDisabled = props.ViewMode || (tableData.length === 0 && !props.isFromMaster && (costingConditionEntryType === '' || costingConditionEntryType === undefined || costingConditionEntryType === null))
+    const checkCondtionDisabled = props.ViewMode || (tableData && tableData?.length === 0 && !props.isFromMaster && (costingConditionEntryType === '' || costingConditionEntryType === undefined || costingConditionEntryType === null))
     return (
 
         <div>

@@ -10,11 +10,11 @@ import LoaderCustom from '../../common/LoaderCustom'
 import YOYCost from '../../costing/components/CostingHeadCosts/AdditionalOtherCost/YOYCost'
 import NoContentFound from '../../common/NoContentFound'
 import { EMPTY_DATA } from '../../../config/constants'
-import { checkForDecimalAndNull, checkForNull } from '../../../helper'
+import { checkForDecimalAndNull, checkForNull, getConfigurationKey } from '../../../helper'
 import { reactLocalStorage } from 'reactjs-localstorage'
 
 function ViewOtherCostDrawer(props) {
-    const { partId, vendorId, costingIndex } = props
+    const { partId, vendorId, costingIndex, CostingPaymentTermDetails, npvCostData } = props
     const [tableData, setTableData] = useState(props.tableData)
     const [conditionTableData, seConditionTableData] = useState([])
     const [costingSummary, setCostingSummary] = useState(props.costingSummary ? props.costingSummary : false)
@@ -173,6 +173,100 @@ function ViewOtherCostDrawer(props) {
             </Col>
         </>)
     }
+    const paymentTableData = () => {
+        return <>
+            <Row>
+                <Col md="12">
+                    <div className="left-border">{"Payment Terms:"}</div>
+                </Col>
+            </Row>
+            <Row>
+                {/*REJECTION RENDERING */}
+
+                <Col md="12">
+                    <Table className="table cr-brdr-main add-min-width" size="sm">
+                        <thead>
+                            <tr>
+
+                                <th>{`Applicability`}</th>
+                                <th>{`Repayment Period (No. of days)`}</th>
+                                <th>{`Interest Rate ${CostingPaymentTermDetails?.PaymentTermDetail?.PaymentTermApplicability === 'Fixed' ? '' : '(%)'}`}</th>
+                                <th>{`Cost`}</th>
+                                {initialConfiguration.IsShowCRMHead && <th>{`CRM Head`}</th>}
+                                <th>{`Remark`}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {
+                                (CostingPaymentTermDetails?.PaymentTermDetail?.PaymentTermApplicability === null) ?
+                                    <tr>
+                                        <td colSpan={8}>
+                                            <NoContentFound title={EMPTY_DATA} />
+                                        </td>
+                                    </tr> :
+                                    <tr>
+                                        <td>{CostingPaymentTermDetails?.PaymentTermDetail?.PaymentTermApplicability ? CostingPaymentTermDetails?.PaymentTermDetail?.PaymentTermApplicability : '-'}</td>
+                                        <td>{CostingPaymentTermDetails?.PaymentTermDetail?.PaymentTermApplicability === 'Fixed' ? '-' : CostingPaymentTermDetails?.PaymentTermDetail?.RepaymentPeriod ? checkForDecimalAndNull(CostingPaymentTermDetails?.PaymentTermDetail?.RepaymentPeriod, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+                                        <td>{CostingPaymentTermDetails?.PaymentTermDetail?.InterestRate ? checkForDecimalAndNull(CostingPaymentTermDetails?.PaymentTermDetail?.InterestRate, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+                                        <td>{CostingPaymentTermDetails?.PaymentTermDetail?.NetCost ? checkForDecimalAndNull(CostingPaymentTermDetails?.PaymentTermDetail?.NetCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+                                        {initialConfiguration.IsShowCRMHead && <td>{CostingPaymentTermDetails?.PaymentTermDetail?.PaymentTermCRMHead}</td>}
+                                        <td>{CostingPaymentTermDetails?.PaymentTermDetail?.Remark ? CostingPaymentTermDetails?.PaymentTermDetail?.Remark : '-'}</td>
+                                    </tr>
+                            }
+
+                        </tbody>
+                    </Table>
+                </Col>
+            </Row></>
+    }
+    const NpvCost = () => {
+        return <>
+            <Row>
+                <Col md="12">
+                    <div className="left-border">{"NPV Cost:"}</div>
+                </Col>
+            </Row>
+            <Row>
+                {/*REJECTION RENDERING */}
+
+                <Col md="12">
+                    <Table className="table cr-brdr-main add-min-width" size="sm">
+                        <thead>
+                            <tr className='thead'>
+                                <th>{`Type of Investment`}</th>
+                                {<th>{`Percentage (%)`}</th>}
+                                {<th>{`Quantity`}</th>}
+                                {<th>{`Total`}</th>}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {npvCostData &&
+                                npvCostData.map((item, index) => {
+                                    return (
+
+                                        <tr key={index}>
+                                            <td>{item.NpvType} </td>
+                                            {<td>{checkForDecimalAndNull(item.NpvPercentage, getConfigurationKey().NoOfDecimalForPrice)}</td>}
+                                            {<td>{checkForDecimalAndNull(item?.NpvQuantity)}</td>}
+                                            {<td>{checkForDecimalAndNull(item?.NpvCost, getConfigurationKey().NoOfDecimalForPrice)}</td>}
+
+                                        </tr>
+
+                                    )
+                                })}
+                            {npvCostData && npvCostData.length === 0 && (
+                                <tr>
+                                    <td colspan="15">
+                                        <NoContentFound title={EMPTY_DATA} />
+                                    </td>
+                                </tr>
+                            )}
+
+                        </tbody>
+                    </Table>
+                </Col>
+            </Row></>
+    }
     return (
 
         <div>
@@ -197,6 +291,8 @@ function ViewOtherCostDrawer(props) {
                             <div className='hidepage-size'>
                                 {costingSummary && DiscountCost()}
                                 {costingSummary && OtherCost()}
+                                {costingSummary && paymentTableData()}
+                                {costingSummary && npvCostData && NpvCost()}
                                 {/* {initialConfiguration?.IsShowNpvCost && costingSummary &&
                                     <>
                                         <Col md="12" className='mt-4'>

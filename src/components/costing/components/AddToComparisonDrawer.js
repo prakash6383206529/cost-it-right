@@ -11,7 +11,7 @@ import { SearchableSelectHookForm, RadioHookForm, } from '../../layout/HookFormI
 import { APPROVED, REJECTED, HISTORY, ZBC, APPROVED_BY_SIMULATION, VARIANCE, ZBCTypeId, VBCTypeId, CBCTypeId, EMPTY_GUID, NCCTypeId, ZBC_COSTING, VBC_COSTING, NCC_COSTING, CBC_COSTING, COSTING } from '../../../config/constants'
 import Toaster from '../../common/Toaster'
 import { getConfigurationKey, isUserLoggedIn } from '../../../helper/auth'
-import { checkForDecimalAndNull, checkForNull } from '../../../helper'
+import { TotalTCOCostCal, checkForDecimalAndNull, checkForNull } from '../../../helper'
 import DayTime from '../../common/DayTimeWrapper'
 
 function AddToComparisonDrawer(props) {
@@ -292,6 +292,131 @@ function AddToComparisonDrawer(props) {
         if (res.data.Data) {
           // let temp = viewCostingData;
           let dataFromAPI = res.data.Data
+          const setDynamicKeys = (list, value) => {
+            let datalist = list && list?.filter(element => element?.Type === 'Other' && element?.SubHeader === value)
+            let arr = []
+            datalist && datalist?.map(item => {
+              let obj = {}
+              obj.DynamicHeader = item?.Description
+              obj.DynamicApplicabilityCost = item?.ApplicabilityCost
+              obj.DynamicPercentage = item?.Value
+              obj.DynamicNetCost = item?.NetCost
+              arr.push(obj)
+            })
+            return arr;
+          }
+          const dummyData = [
+            {
+              SubHeader: "OverHead",
+              Type: "Other",
+              ApplicabilityType: "CC",
+              ApplicabilityIdRef: 2,
+              Description: "Test 1",
+              Value: 2,
+              ApplicabilityCost: 2,
+              NetCost: 2,
+              CRMHead: null
+            },
+            {
+              SubHeader: "OverHead",
+              Type: "Other",
+              ApplicabilityType: "CC",
+              ApplicabilityIdRef: 2,
+              Description: "Test 2",
+              Value: 2,
+              ApplicabilityCost: 2,
+              NetCost: 2,
+              CRMHead: "-"
+            },
+            {
+              SubHeader: "OverHead",
+              Type: "Other",
+              ApplicabilityType: "CC",
+              ApplicabilityIdRef: 3,
+              Description: "Test 3",
+              Value: 2,
+              ApplicabilityCost: 2,
+              NetCost: 2,
+              CRMHead: null
+            },
+            {
+              SubHeader: "OverHead",
+              Type: "Other",
+              ApplicabilityType: "CC",
+              ApplicabilityIdRef: 2,
+              Description: "Test 4",
+              Value: 2,
+              ApplicabilityCost: 2,
+              NetCost: 2,
+              CRMHead: null
+            },
+            {
+              SubHeader: "OverHead",
+              Type: "Other",
+              ApplicabilityType: "CC",
+              ApplicabilityIdRef: 2,
+              Description: "Test 5",
+              Value: 2,
+              ApplicabilityCost: 2,
+              NetCost: 2,
+              CRMHead: null
+            },
+            {
+              SubHeader: "OverHead",
+              Type: "Other",
+              ApplicabilityType: "Fixed",
+              ApplicabilityIdRef: null,
+              Description: "Test 6",
+              Value: 2,
+              ApplicabilityCost: 2,
+              NetCost: 2,
+              CRMHead: null
+            },
+            {
+              SubHeader: "OverHead",
+              Type: "Other",
+              ApplicabilityType: "CC",
+              ApplicabilityIdRef: 2,
+              Description: "Test 7",
+              Value: 2,
+              ApplicabilityCost: 2,
+              NetCost: 2,
+              CRMHead: "-"
+            },
+            {
+              SubHeader: "Process",
+              Type: "Other",
+              ApplicabilityType: "CC",
+              ApplicabilityIdRef: 2,
+              Description: "Test Process 1",
+              Value: 2,
+              ApplicabilityCost: 2,
+              NetCost: 2,
+              CRMHead: "-"
+            },
+            {
+              SubHeader: "Process",
+              Type: "Other",
+              ApplicabilityType: "Fixed",
+              ApplicabilityIdRef: null,
+              Description: "Test Process 2",
+              Value: 2,
+              ApplicabilityCost: 2,
+              NetCost: 2,
+              CRMHead: null
+            },
+            {
+              SubHeader: "OverHead",
+              Type: "Other",
+              ApplicabilityType: "CC",
+              ApplicabilityIdRef: 8,
+              Description: "Test 8",
+              Value: 2,
+              ApplicabilityCost: 2,
+              NetCost: 2,
+              CRMHead: "-"
+            }
+          ]
           let obj = {}
 
           obj.zbc = dataFromAPI.TypeOfCosting || dataFromAPI.TypeOfCosting === 0 ? dataFromAPI.TypeOfCosting : '-'
@@ -366,14 +491,16 @@ function AddToComparisonDrawer(props) {
             ICCRemark: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.Remark !== null ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.Remark : '-',
           }
 
-          obj.paymentTerms = {
-            paymentTitle: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.PaymentTermApplicability ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.PaymentTermApplicability : '-',
-            paymentValue: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.NetCost ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.NetCost : 0,
-            paymentPercentage: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.InterestRate ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.InterestRate : '-',
-            PaymentTermCRMHead: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.PaymentTermCRMHead ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.PaymentTermCRMHead : '-',
-            PaymentTermRemark: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.Remark ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.Remark : '-',
-          }
+          const paymentTermDetail = dataFromAPI?.CostingPartDetails?.CostingPaymentTermDetails?.PaymentTermDetail;
 
+          obj.paymentTerms = {
+            paymentTitle: paymentTermDetail?.PaymentTermApplicability || '-',
+            paymentValue: paymentTermDetail?.NetCost || 0,
+            paymentPercentage: paymentTermDetail?.InterestRate || '-',
+            PaymentTermCRMHead: paymentTermDetail?.PaymentTermCRMHead || '-',
+            PaymentTermRemark: paymentTermDetail?.Remark || '-',
+          };
+          obj.CostingRejectionRecoveryDetails = (dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails.CostingRejectionDetail && dataFromAPI?.CostingPartDetails.CostingRejectionDetail?.CostingRejectionRecoveryDetails) ?? {}
 
           obj.nOverheadProfit = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetOverheadAndProfitCost ? dataFromAPI?.CostingPartDetails?.NetOverheadAndProfitCost : 0
 
@@ -398,6 +525,7 @@ function AddToComparisonDrawer(props) {
             toolValue: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse.length > 0 && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolApplicabilityCost !== null ? dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolApplicabilityCost : 0,
           }
 
+          obj.TotalTCOCost = dataFromAPI?.CostingPartDetails?.CostingTCOResponse ? TotalTCOCostCal((dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails) ? dataFromAPI?.CostingPartDetails?.CostingTCOResponse : {}, dataFromAPI?.CostingPartDetails?.CostingPaymentTermDetails ?? {}) + checkForNull(dataFromAPI?.NetPOPrice) + checkForNull(dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetNpvCost) : 0
 
           obj.toolAmortizationCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse.length > 0 && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolAmortizationCost !== null ? dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolAmortizationCost : 0
           obj.totalToolCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetToolCost !== null ? dataFromAPI?.CostingPartDetails?.NetToolCost : 0
@@ -506,8 +634,8 @@ function AddToComparisonDrawer(props) {
           obj.rejectionApplicablityValue = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingRejectionDetail.RejectionTotalCost !== null ? dataFromAPI?.CostingPartDetails?.CostingRejectionDetail.RejectionTotalCost : 0
           obj.iccApplicablity = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.ICCApplicability !== null ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.ICCApplicability : '-'
           obj.iccApplicablityValue = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.NetCost !== null ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.NetCost : 0
-          obj.paymentApplicablity = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.PaymentTermApplicability ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.PaymentTermApplicability : '-'
-          obj.paymentcApplicablityValue = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.NetCost ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.NetCost : 0
+          obj.paymentApplicablity = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingPaymentTermDetails?.PaymentTermDetail?.PaymentTermApplicability ? dataFromAPI?.CostingPartDetails?.CostingPaymentTermDetails?.PaymentTermDetail?.PaymentTermApplicability : '-'
+          obj.paymentcApplicablityValue = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingPaymentTermDetails?.PaymentTermDetail?.NetCost ? dataFromAPI?.CostingPartDetails?.CostingPaymentTermDetails?.PaymentTermDetail?.NetCost : 0
           obj.toolMaintenanceCostApplicablity = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse.length > 0 && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolCostType !== null ? dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolCostType : 0
           obj.toolMaintenanceCostApplicablityValue = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse.length > 0 && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolApplicabilityCost !== null ? dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolApplicabilityCost : 0
           obj.otherDiscountType = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.OtherCostDetails.DiscountCostType !== null ? dataFromAPI?.CostingPartDetails?.OtherCostDetails.DiscountCostType : 0
@@ -557,6 +685,9 @@ function AddToComparisonDrawer(props) {
           obj.ScrapRecoveryPercentage = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.ScrapRecoveryPercentage
           obj.IsShowCheckBoxForApproval = dataFromAPI?.IsShowCheckBoxForApproval
           obj.IsScrapRecoveryPercentageApplied = dataFromAPI?.IsScrapRecoveryPercentageApplied
+          obj.OtherCostDetailsOverhead = setDynamicKeys(dataFromAPI?.CostingPartDetails?.OtherCostDetails, 'OverHead')
+          obj.OtherCostDetailsProcess = setDynamicKeys(dataFromAPI?.CostingPartDetails?.OtherCostDetails, 'Process')
+          obj.CalculatorType = dataFromAPI?.CostingPartDetails?.CalculatorType ?? ''
           // temp.push(VIEW_COSTING_DATA)
           if (index >= 0) {
 

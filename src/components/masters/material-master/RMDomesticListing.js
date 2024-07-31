@@ -34,6 +34,7 @@ import { resetStatePagination, updateCurrentRowIndex, updateGlobalTake, updatePa
 import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from '../../common/Tour/TourMessages';
 import { useTranslation } from 'react-i18next';
+import BulkUpload from '../../massUpload/BulkUpload';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -380,18 +381,13 @@ function RMDomesticListing(props) {
 
         setFloatingFilterData(floatingFilterData)
         setWarningMessage(false)
-        // setPageNo(1)
         dispatch(updatePageNumber(1))
-
         setPageNoNew(1)
         dispatch(updateCurrentRowIndex(10))
-        // setCurrentRowIndex(0)
         getDataList(null, null, null, null, null, 0, 0, 10, true, floatingFilterData, true)
         dispatch(setSelectedRowForPagination([]))
         dispatch(updateGlobalTake(10))
-        // setGlobalTake(10)
         dispatch(updatePageSize({ pageSize10: true, pageSize50: false, pageSize100: false }))
-        // setPageSize(prevState => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false }))
         setDataCount(0)
         reactLocalStorage.setObject('selectedRow', {})
         if (isSimulation) {
@@ -471,7 +467,7 @@ function RMDomesticListing(props) {
         if (showExtraData && props.rowIndex === 0) {
             isDeleteButton = true
         } else {
-            if (DeleteAccessibility && !rowData.IsRMAssociated) {
+            if (DeleteAccessibility && !rowData?.IsRMAssociated) {
                 isDeleteButton = true
             }
         }
@@ -714,6 +710,7 @@ function RMDomesticListing(props) {
     const onRowSelect = (event) => {
 
         let selectedRowForPagination = reactLocalStorage.getObject('selectedRow').selectedRow
+
         var selectedRows = gridApi && gridApi?.getSelectedRows();
         if (selectedRows === undefined || selectedRows === null) {    //CONDITION FOR FIRST RENDERING OF COMPONENT
             selectedRows = selectedRowForPagination
@@ -852,7 +849,7 @@ function RMDomesticListing(props) {
             {(loader && !props.isMasterSummaryDrawer) ? <LoaderCustom customClass="simulation-Loader" /> :
                 <>
                     {disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
-                    <Row className={`filter-row-large ${props?.isSimulation ? 'zindex-0 ' : ''} ${props?.isMasterSummaryDrawer ? '' : 'pt-4'}`}>
+                    <Row className={`filter-row-large ${props?.isSimulation ? 'zindex-0 ' : ''} ${props?.isMasterSummaryDrawer ? '' : 'pt-2'}`}>
                         <Col md="3" lg="3" className='mb-2'>
                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
                             {(!props.isSimulation && !props.benchMark && !props?.isMasterSummaryDrawer) && (<TourWrapper
@@ -1002,6 +999,7 @@ function RMDomesticListing(props) {
                                         <AgGridColumn field="VendorName" headerName="Vendor (Code)"></AgGridColumn>
                                         {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
                                         {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                                        {getConfigurationKey()?.IsShowSourceVendorInRawMaterial && <AgGridColumn field="SourceVendorName" headerName="Source Vendor Name" cellRenderer='hyphenFormatter'></AgGridColumn>}
                                         <AgGridColumn field="UnitOfMeasurementName" headerName='UOM'></AgGridColumn>
 
                                         <AgGridColumn field="BasicRatePerUOM" headerName='Basic Rate' cellRenderer='commonCostFormatter'></AgGridColumn>
@@ -1045,14 +1043,14 @@ function RMDomesticListing(props) {
                 {/* <MyLazyComponent /> */}
                 {
                     isBulkUpload && (
-                        <MyLazyComponent
+                        <BulkUpload
                             isOpen={isBulkUpload}
                             closeDrawer={closeBulkUploadDrawer}
                             isEditFlag={false}
                             densityAlert={densityAlert}
-                            fileName={"RM Domestic"}
+                            fileName={"RM"}
                             isZBCVBCTemplate={true}
-                            messageLabel={"RM Domestic"}
+                            messageLabel={"RM"}
                             anchor={"right"}
                             masterId={RM_MASTER_ID}
                             typeOfEntryId={ENTRY_TYPE_DOMESTIC}

@@ -325,40 +325,66 @@ export const trimFourDecimalPlace = (floatValue) => {
 }
 
 export const trimDecimalPlace = (floatValue, decimalPlaces) => {
-    if (floatValue !== null && !isNaN(floatValue)) {
-        const roundedValue = new BigNumber(floatValue)?.decimalPlaces(decimalPlaces);
-        return roundedValue && roundedValue?.toNumber();
+    if (floatValue !== null && !isNaN(floatValue) && typeof decimalPlaces === 'number' && decimalPlaces >= 0) {
+        try {
+
+            const value = new BigNumber(floatValue ?? 0)
+            const roundedValue = value?.decimalPlaces(decimalPlaces);
+            const finalValue = roundedValue?.toNumber()
+            return finalValue;
+        } catch (error) {
+            return floatValue;  // or handle the error accordingly
+        }
     }
-    return floatValue;
 };
 
+
+
 export const checkForDecimalAndNull = (floatValue, decimalPlaces) => {
-    const localStorage = reactLocalStorage.getObject('InitialConfiguration');
+    const localStorageConfig = reactLocalStorage.getObject('InitialConfiguration');
 
     // Ensure floatValue is wrapped in a BigNumber, even if null or undefined
     let value = new BigNumber(floatValue ?? 0);
 
-    if (localStorage && localStorage.IsRoundingVisible) {
+    if (localStorageConfig && localStorageConfig.IsRoundingVisible) {
         // Make sure decimalPlaces is a valid number before rounding
         if (typeof decimalPlaces === 'number' && decimalPlaces >= 0) {
-            value = value.decimalPlaces(decimalPlaces);
+            try {
+                value = value.decimalPlaces(decimalPlaces);
+            } catch (error) {
+                // Handle the error when the decimalPlaces method fails
+                return value
+            }
         }
     } else {
-        // Ensure trimDecimalPlace returns BigNumber and use decimalPlaces method
-        // Assuming trimDecimalPlace is supposed to handle null or undefined values inside
-        value = new BigNumber(trimDecimalPlace(value.toNumber(), decimalPlaces));
+        try {
+            // Assuming trimDecimalPlace is supposed to handle null or undefined values inside
+            value = new BigNumber(trimDecimalPlace(value.toNumber(), decimalPlaces));
+        } catch (error) {
+            // Handle the error when creating a new BigNumber fails
+            return value
+        }
     }
 
     // Convert the resulting BigNumber to a number and use checkForNull to validate
-    const number = value.toNumber();
-    return checkForNull(number);
+    try {
+        const number = value.toNumber();
+        return checkForNull(number);
+    } catch (error) {
+        // Handle the error when converting BigNumber to a number fails
+        return value
+    }
 };
-export const checkForNull = (ele) => {
+export const checkForNull = (ele = 0) => {
     if (ele == null || ele === '' || isNaN(Number(ele)) || ele === undefined || ele === Infinity || ele === -Infinity) {
         return 0; // Return zero directly if the input is not a valid number.
     } else {
-        // Enforce a maximum number of decimal places that can be safely operated on.
-        return Number(new BigNumber(ele).toFixed(16)); // Change 16 to however many decimal places you deem safe.
+        try {
+            // Enforce a maximum number of decimal places that can be safely operated on.
+            return Number(new BigNumber(ele).toFixed(16)); // Change 16 to however many decimal places you deem safe.
+        } catch {
+            return 0
+        }
     }
 };
 
@@ -415,7 +441,7 @@ export const decimalAndNumberValidationBoolean = (value) => {
 
 export const nonZero = value =>
     value && (Number(value) === 0)
-        ? 'Invalid Number.' : undefined;
+        ? 'Please enter a value greater than 0' : undefined;
 
 export const decimalNumberLimit6 = value => {
     let tempValue = value && Number('0' + String(value)?.replace(/^0+/, ''))
@@ -488,3 +514,7 @@ export const decimalNumberLimit13 = value => {
     return tempValue && !/^[0-9][0-9]{0,12}(\.\d{0,2})?$/.test(tempValue)
         ? 'Maximum length for integer is 13 and for decimal is 2' : undefined;
 }
+export const integerOnly = value =>
+    value && !/^\d*$/.test(value)
+        ? 'Only integer values are allowed'
+        : undefined;

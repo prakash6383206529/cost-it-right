@@ -16,6 +16,8 @@ import {
   saveAssemblyNumber,
   setIsBreakupBoughtOutPartCostingFromAPI,
   openCloseStatus,
+  saveCostingPaymentTermDetail,
+
 
 } from '../../../actions/Costing';
 import { checkForDecimalAndNull, checkForNull, loggedInUserId, CheckIsCostingDateSelected } from '../../../../../helper';
@@ -25,16 +27,17 @@ import { MESSAGES } from '../../../../../config/message';
 import { IsPartType, IsNFR, ViewCostingContext } from '../../CostingDetails';
 import { createToprowObjAndSave, errorCheck, errorCheckObject, findSurfaceTreatmentData } from '../../../CostingUtil';
 import _ from 'lodash';
-
+import { PreviousTabData } from '../../CostingHeaderTabs';
 function PartCompoment(props) {
 
   const { rmData, bopData, ccData, item } = props;
 
   const [IsOpen, setIsOpen] = useState(false);
   const [totalFinishWeight, setTotalFinishWeight] = useState(0);
+  const [totalGrossWeight, setTotalGrossWeight] = useState(0);
   const [Count, setCount] = useState(0);
   const { CostingEffectiveDate, partNumberAssembly, partNumberArrayAPICall, bomLevel, assemblyNumber } = useSelector(state => state.costing)
-  const { ComponentItemData, RMCCTabData, checkIsDataChange, DiscountCostData, OverheadProfitTabData, SurfaceTabData, ToolTabData, PackageAndFreightTabData, getAssemBOPCharge, isBreakupBoughtOutPartCostingFromAPI } = useSelector(state => state.costing)
+  const { ComponentItemData, RMCCTabData, checkIsDataChange, DiscountCostData, OverheadProfitTabData, SurfaceTabData, ToolTabData, PackageAndFreightTabData, getAssemBOPCharge, isBreakupBoughtOutPartCostingFromAPI, PaymentTermDataDiscountTab } = useSelector(state => state.costing)
 
   const dispatch = useDispatch()
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
@@ -45,7 +48,7 @@ function PartCompoment(props) {
   const netPOPrice = useContext(NetPOPriceContext);
   const isNFR = useContext(IsNFR);
   const isPartType = useContext(IsPartType);
-
+  const previousTab = useContext(PreviousTabData) || 0;
 
   const toggle = (BOMLevel, PartNumber, IsOpen, AssemblyPartNumber) => {
     let isOpen = IsOpen
@@ -118,11 +121,18 @@ function PartCompoment(props) {
   }
   useEffect(() => {
     let totalFinishWeight = 0
+    let totalGrossWeight = 0
+
     totalFinishWeight = rmData && rmData.reduce((accummlator, el) => {
       return accummlator + checkForNull(el.FinishWeight)
     }, 0)
-    setTotalFinishWeight(totalFinishWeight)
 
+    totalGrossWeight = rmData && rmData.reduce((accummlator, el) => {
+      return accummlator + checkForNull(el.GrossWeight)
+    }, 0)
+
+    setTotalFinishWeight(totalFinishWeight)
+    setTotalGrossWeight(totalGrossWeight)
   }, [rmData])
 
   useEffect(() => {
@@ -162,7 +172,7 @@ function PartCompoment(props) {
         "PartId": item.PartId,                              //ROOT ID
         "CostingNumber": costData.CostingNumber,            //ROOT    
         "PartNumber": item.PartNumber,                      //ROOT
-
+        "CalculatorType": item.CalculatorType ?? '',
         // "AssemblyCostingId": item.BOMLevel === LEVEL1 ? costData.CostingId : item.AssemblyCostingId,                  //IF ITS L1 PART THEN ROOT ID ELSE JUST PARENT SUB ASSEMBLY ID
         "AssemblyCostingNumber": item.BOMLevel === LEVEL1 ? costData.CostingNumber : item.AssemblyCostingNumber,      //IF ITS L1 PART THEN ROOT ID ELSE JUST PARENT SUB ASSEMBLY ID
         "AssemblyPartId": item.BOMLevel === LEVEL1 ? item.PartId : item.AssemblyPartId,                               //IF ITS L1 PART THEN ROOT ID ELSE JUST PARENT SUB ASSEMBLY ID
@@ -190,7 +200,7 @@ function PartCompoment(props) {
         const overHeadAndProfitTabData = OverheadProfitTabData[0]
         const discountAndOtherTabData = DiscountCostData
 
-        let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 1, CostingEffectiveDate, '', '', isPartType)
+        let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 1, CostingEffectiveDate, '', '', isPartType, initialConfiguration?.IsAddPaymentTermInNetCost)
 
         dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
       }
@@ -211,7 +221,11 @@ function PartCompoment(props) {
   }, [IsOpen])
 
   const InjectDiscountAPICall = () => {
-    dispatch(saveDiscountOtherCostTab(ComponentItemDiscountData, res => { }))
+    dispatch(saveDiscountOtherCostTab(ComponentItemDiscountData, res => {
+      if (Number(previousTab) === 6) {
+        dispatch(saveCostingPaymentTermDetail(PaymentTermDataDiscountTab, (res) => { }));
+      }
+    }))
   }
 
   /**
@@ -262,6 +276,7 @@ function PartCompoment(props) {
                 index={props.index}
                 data={ccData}
                 rmFinishWeight={rmData && rmData.length > 0 && rmData[0].FinishWeight !== undefined ? totalFinishWeight : 0}
+                rmGrossWeight={rmData && rmData.length > 0 && rmData[0].GrossWeight !== undefined ? totalGrossWeight : 0}
                 setConversionCost={props.setConversionCost}
                 item={item}
                 isAssemblyTechnology={false}

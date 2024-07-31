@@ -1,8 +1,8 @@
-import React, { Fragment, useState, useEffect, useContext } from 'react'
+import React, { Fragment, useState, useEffect } from 'react'
 import { Row, Col, Table } from 'reactstrap'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch, useSelector, } from 'react-redux'
-import { SearchableSelectHookForm, NumberFieldHookForm, TextFieldHookForm, } from '../../../layout/HookFormInputs'
+import { SearchableSelectHookForm, TextFieldHookForm, } from '../../../layout/HookFormInputs'
 import NoContentFound from '../../../common/NoContentFound'
 import { EMPTY_DATA } from '../../../../config/constants'
 import { checkForDecimalAndNull, checkForNull, findLostWeight, getConfigurationKey, decimalNumberLimit3 } from '../../../../helper'
@@ -13,7 +13,8 @@ import TooltipCustom from '../../../common/Tooltip'
 import { number, percentageLimitValidation, checkWhiteSpaces } from "../../../../helper/validation";
 import { FORGING } from '../../../../config/masterData'
 function LossStandardTable(props) {
-  const { rmRowData, isLossStandard, isNonFerrous, NonFerrousErrors, disableAll, ferrousErrors, isFerrous } = props
+  
+  const { rmRowData, isLossStandard, isNonFerrous, disableAll, isFerrous, fieldsEnabled, resetTrigger,onLossDelete } = props;
   const trimValue = getConfigurationKey()
   const trim = trimValue.NoOfDecimalForInputOutput
   const [lossWeight, setLossWeight] = useState('')
@@ -26,7 +27,44 @@ function LossStandardTable(props) {
     reValidateMode: 'onChange',
   })
   const { ComponentItemData, costingData, CostingDataList } = useSelector(state => state.costing)
-
+  useEffect(() => {
+    if (resetTrigger) {
+      resetTable();
+    }
+  }, [resetTrigger]);
+  const resetTable = () => {
+    setTableData([]);
+    setNetWeight(0);
+    setBurningWeight('');
+    setLossWeight('');
+    setDisableLossType(false);
+    setDisableFlashType(false);
+    setUseformula(false);
+    setFlashLossType(false);
+    setBarCuttingAllowanceLossType(false);
+    setPercentage(true);
+    setIsDisable(false);
+    setIsBarBlade(false);
+    setIsFlashParametersDisable(false);
+    
+    reset({
+      LossPercentage: '',
+      FlashLength: '',
+      FlashThickness: '',
+      FlashWidth: '',
+      BarDiameter: '',
+      BladeThickness: '',
+      LossOfType: '',
+      LossWeight: '',
+      FlashLoss: '',
+    });
+  
+    props.tableValue([]);
+    props.calculation(0);
+    if (props.burningLoss) {
+      props.burningLoss(0);
+    }
+  };
   const fieldValues = useWatch({
     control,
     name: ['LossPercentage', 'FlashLength', 'FlashThickness', 'FlashWidth', 'BarDiameter', 'BladeThickness',],
@@ -58,9 +96,20 @@ function LossStandardTable(props) {
   const [isBarBlade, setIsBarBlade] = useState(false)
 
   const [isFlashParametersDisable, setIsFlashParametersDisable] = useState(false)
-
   useEffect(() => {
-    setTableData(props.sendTable ? props.sendTable : [])
+    if (props.castingWeightChanged) {
+        resetTable();
+        props.calculation(0);
+    }
+}, [props.castingWeightChanged]);
+  useEffect(() => {
+    if(isFerrous ){
+      setTableData( (props?.sendTable.length !== 0 && props?.sendTable[0]?.LossWeight !==0 ) ? props?.sendTable : [])
+    }
+    else{
+
+      setTableData(props?.sendTable ? props?.sendTable : [])
+    }
 
 
     if (props?.sendTable?.length === 0) {
@@ -475,6 +524,10 @@ function LossStandardTable(props) {
 
     setTableData(tempData)
     cancelUpdate()
+
+    
+    onLossDelete(tempData);
+
   }
 
   const getLossTypeName = (number) => {
@@ -518,7 +571,7 @@ function LossStandardTable(props) {
             className=""
             customClassName={'withBorder'}
             errors={errors.LossOfType}
-            disabled={props.CostingViewMode || disableLossType || disableAll}
+            disabled={props.CostingViewMode || disableLossType || disableAll || (isFerrous ? !fieldsEnabled :fieldsEnabled) }
           />
         </Col>
 
@@ -693,7 +746,7 @@ function LossStandardTable(props) {
             className=""
             customClassName={'withBorder'}
             errors={errors.LossWeight}
-            disabled={props.CostingViewMode || isDisable || disableAll}
+            disabled={props.CostingViewMode || isDisable || disableAll || !fieldsEnabled  }
           />
         </Col>
         <Col md="3" className="pr-0">
@@ -723,14 +776,14 @@ function LossStandardTable(props) {
                   type="button"
                   className={'user-btn mt30 pull-left'}
                   onClick={addRow}
-                  disabled={props.CostingViewMode || disableAll}
+                  disabled={props.CostingViewMode || disableAll || (isFerrous ? !fieldsEnabled : fieldsEnabled)}
                 >
                   <div className={'plus'}></div>ADD
                 </button>
                 <button
                   type="button"
                   className={"mr15 ml-1 mt30 reset-btn"}
-                  disabled={props.CostingViewMode || disableAll}
+                  disabled={props.CostingViewMode || disableAll || (isFerrous ? !fieldsEnabled : fieldsEnabled)}  
                   onClick={rateTableReset}
                 >
                   Reset
@@ -757,7 +810,7 @@ function LossStandardTable(props) {
             </thead>
             <tbody>
               {tableData &&
-                tableData.map((item, index) => {
+                tableData?.map((item, index) => {
                   return (
                     <Fragment>
                       <tr key={index}>
@@ -808,18 +861,20 @@ function LossStandardTable(props) {
           <div className="col-md-12 text-right bluefooter-butn border">
             {props.isPlastic &&
               <span className="w-50 d-inline-block text-left">
-                {`Burning Loss Weight: `}
+                {`${props.isStamping ? "Total" : "Burning"} Loss Weight: `}
                 {checkForDecimalAndNull(burningWeight, trim)}
               </span>}
-            <span className="w-50 d-inline-block">
+            {!props.isStamping && <span className="w-50 d-inline-block">
               {`${props.isPlastic ? 'Other' : 'Net'} Loss Weight: `}
               {checkForDecimalAndNull(findLostWeight(tableData), trim)}
-            </span>
+            </span>}
           </div>
         </Col>
       </Row>
     </Fragment>
   )
 }
-
+LossStandardTable.defualtProps = {
+  isStamping: false
+}
 export default React.memo(LossStandardTable)

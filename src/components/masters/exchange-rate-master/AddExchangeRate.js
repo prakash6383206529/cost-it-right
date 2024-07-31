@@ -19,7 +19,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import AsyncSelect from 'react-select/async';
 import { autoCompleteDropdown, getCostingTypeIdByCostingPermission } from '../../common/CommonFunctions';
 import { getClientSelectList, } from '../actions/Client';
-import { getVendorNameByVendorSelectList } from '../../../actions/Common';
+import { getExchangeRateSource, getVendorNameByVendorSelectList } from '../../../actions/Common';
 const
   selector = formValueSelector('AddExchangeRate');
 
@@ -45,7 +45,9 @@ class AddExchangeRate extends Component {
       customer: [],
       vendorName: [],
       vendorFilterList: [],
-      budgeting: false
+      budgeting: false,
+      exchangeRateSource: [],
+      toCurrency: []
     }
   }
 
@@ -56,11 +58,12 @@ class AddExchangeRate extends Component {
   componentDidMount() {
     this.setState({ costingTypeId: getCostingTypeIdByCostingPermission() })
     if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
-      this.props.getCurrencySelectList(() => { })
+      this.props.getCurrencySelectList(true, () => { })
     }
     if (getCostingTypeIdByCostingPermission() === CBCTypeId) {
       this.props.getClientSelectList(() => { })
     }
+    this.props.getExchangeRateSource((res) => { })
     this.getDetail()
   }
 
@@ -103,7 +106,7 @@ class AddExchangeRate extends Component {
   * @description Used show listing of unit of measurement
   */
   renderListing = (label) => {
-    const { currencySelectList, clientSelectList } = this.props;
+    const { currencySelectList, clientSelectList, exchangeRateSourceList } = this.props;
     const temp = [];
     if (label === 'currency') {
       currencySelectList && currencySelectList.map(item => {
@@ -121,6 +124,15 @@ class AddExchangeRate extends Component {
       });
       return temp;
     }
+    if (label === 'exchangeSource') {
+      exchangeRateSourceList && exchangeRateSourceList.map((item) => {
+        if (item.Value === '--Exchange Rate Source Name--') return false
+
+        temp.push({ label: item.Text, value: item.Value })
+        return null
+      })
+      return temp
+    }
   }
 
   /**
@@ -134,6 +146,30 @@ class AddExchangeRate extends Component {
       this.setState({ currency: [], })
     }
   };
+
+  /**
+  * @method handleToCurrency
+  * @description called
+  */
+  handleToCurrency = (newValue, actionMeta) => {
+    if (newValue && newValue !== '') {
+      this.setState({ toCurrency: newValue, });
+    } else {
+      this.setState({ toCurrency: [], })
+    }
+  };
+  /**
+* @method handleExchangeRateSource
+* @description called
+*/
+  handleExchangeRateSource = (newValue, actionMeta) => {
+    if (newValue && newValue !== '') {
+      this.setState({ exchangeRateSource: newValue, });
+    } else {
+      this.setState({ exchangeRateSource: [], })
+    }
+  };
+
 
   /**
   * @method handleChange
@@ -255,7 +291,7 @@ class AddExchangeRate extends Component {
   * @description Used to Submit the form
   */
   onSubmit = debounce((values) => {
-    const { isEditFlag, currency, effectiveDate, ExchangeRateId, DataToChange, DropdownChanged, customer, costingTypeId, vendorName, budgeting } = this.state;
+    const { isEditFlag, currency, effectiveDate, ExchangeRateId, DataToChange, DropdownChanged, customer, costingTypeId, vendorName, budgeting, toCurrency, exchangeRateSource } = this.state;
 
     /** Update existing detail of exchange master **/
     if (isEditFlag) {
@@ -278,8 +314,8 @@ class AddExchangeRate extends Component {
       this.setState({ setDisable: true })
       let updateData = {
         ExchangeRateId: ExchangeRateId,
-        CurrencyId: currency.value,
-        Currency: currency.label,
+        FromCurrencyId: currency.value,
+        FromCurrency: currency.label,
         CurrencyExchangeRate: values.CurrencyExchangeRate,
         BankRate: values.BankRate,
         CustomRate: values.CustomRate,
@@ -291,7 +327,9 @@ class AddExchangeRate extends Component {
         CustomerId: customer.value,
         CostingHeadId: costingTypeId,
         VendorId: vendorName.value,
-        IsBudgeting: budgeting
+        IsBudgeting: budgeting,
+        ToCurrencyId: toCurrency.value,
+        ExchangeRateSourceName: exchangeRateSource.label
       }
       if (isEditFlag) {
         this.props.updateExchangeRate(updateData, (res) => {
@@ -307,7 +345,7 @@ class AddExchangeRate extends Component {
 
       this.setState({ setDisable: true })
       let formData = {
-        CurrencyId: currency.value,
+        FromCurrencyId: currency.value,
         CurrencyExchangeRate: values.CurrencyExchangeRate,
         BankRate: values.BankRate,
         CustomRate: values.CustomRate,
@@ -317,9 +355,10 @@ class AddExchangeRate extends Component {
         CustomerId: customer.value,
         CostingHeadId: costingTypeId,
         VendorId: vendorName.value,
-        IsBudgeting: budgeting
+        IsBudgeting: budgeting,
+        ToCurrencyId: toCurrency.value,
+        ExchangeRateSourceName: exchangeRateSource.label
       }
-
       this.props.createExchangeRate(formData, (res) => {
         this.setState({ setDisable: false })
         if (res?.data?.Result) {
@@ -525,11 +564,13 @@ class AddExchangeRate extends Component {
                           />
                         </Col>
                       )}
+
+
                       <Col md="3">
                         <Field
                           name="Currency"
                           type="text"
-                          label="Currency"
+                          label="From Currency"
                           component={searchableSelect}
                           placeholder={isEditFlag ? '-' : "Select"}
                           onChange={this.onFinancialDataChange}
@@ -544,6 +585,43 @@ class AddExchangeRate extends Component {
                           required={true}
                           handleChangeDescription={this.handleCurrency}
                           valueDescription={this.state.currency}
+                          disabled={isEditFlag ? true : false}
+                        />
+                      </Col>
+                      <Col md="3">
+                        <Field
+                          name="ToCurrency"
+                          type="text"
+                          label="To Currency"
+                          component={searchableSelect}
+                          placeholder={isEditFlag ? '-' : "Select"}
+                          onChange={this.onFinancialDataChange}
+                          options={this.renderListing("currency")}
+                          //onKeyUp={(e) => this.changeItemDesc(e)}
+                          validate={
+                            this.state.toCurrency == null ||
+                              this.state.toCurrency.length === 0
+                              ? [required]
+                              : []
+                          }
+                          required={true}
+                          handleChangeDescription={this.handleToCurrency}
+                          valueDescription={this.state.toCurrency}
+                          disabled={isEditFlag ? true : false}
+                        />
+                      </Col>
+                      <Col md="3">
+                        <Field
+                          name="ExchangeSource"
+                          type="text"
+                          label="Exchange Rate Source"
+                          component={searchableSelect}
+                          placeholder={isEditFlag ? '-' : "Select"}
+                          onChange={(e) => { }}
+                          options={this.renderListing("exchangeSource")}
+                          //onKeyUp={(e) => this.changeItemDesc(e)}
+                          required={false}
+                          handleChangeDescription={this.handleExchangeRateSource}
                           disabled={isEditFlag ? true : false}
                         />
                       </Col>
@@ -686,10 +764,11 @@ class AddExchangeRate extends Component {
 * @param {*} state
 */
 function mapStateToProps(state) {
-  const { exchangeRate, client } = state;  //why not selector jere......from
+  const { exchangeRate, client, comman } = state;  //why not selector jere......from
   const filedObj = selector(state, 'OperationCode', 'EffectiveDate', 'BankCommissionPercentage', 'BankRate', 'CustomRate', 'CurrencyExchangeRate');
   const { exchangeRateData, currencySelectList } = exchangeRate;
   const { clientSelectList } = client;
+  const { exchangeRateSourceList } = comman
 
   let initialValues = {};
   if (exchangeRateData && exchangeRateData !== undefined) {
@@ -699,7 +778,7 @@ function mapStateToProps(state) {
       CustomRate: exchangeRateData.CustomRate ? exchangeRateData.CustomRate : '',
     }
   }
-  return { exchangeRateData, currencySelectList, filedObj, initialValues, clientSelectList }
+  return { exchangeRateData, currencySelectList, filedObj, initialValues, clientSelectList, exchangeRateSourceList }
 }
 
 /**
@@ -713,7 +792,8 @@ export default connect(mapStateToProps, {
   updateExchangeRate,
   getExchangeRateData,
   getCurrencySelectList,
-  getClientSelectList
+  getClientSelectList,
+  getExchangeRateSource
 })(reduxForm({
   form: 'AddExchangeRate',
   enableReinitialize: true,

@@ -9,25 +9,24 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from './TourMessages';
 import { useTranslation } from 'react-i18next';
-import { loggedInUserId } from "../../../helper/auth";
+import { getConfigurationKey, loggedInUserId } from "../../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
 import { debounce } from 'lodash';
-import Button from '../../layout/Button';
 import { MESSAGES } from '../../../config/message';
 import { acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, decimalLengthFour, hashValidation, positiveAndDecimalNumber, required } from '../../../helper';
 import AddMaterialTypeDetail from './AddMaterialTypeDetail';
-import { RMIndex } from '../../../config/constants';
 
-const AddMaterialType = ({ isEditFlag, ID, isOpen, closeDrawer, anchor }) => {
+const AddMaterialType = ({ isEditFlag, ID, isOpen, closeDrawer, anchor, isViewFlag }) => {
   const { t } = useTranslation("RawMaterialMaster");
   const dispatch = useDispatch();
-
+  const RMIndex = getConfigurationKey()?.IsShowMaterialIndexation
   const [state, setState] = useState({
     isShowForm: false,
     MaterialTypeId: '',
     DataToChange: [],
     setDisable: false,
     showPopup: false,
+    tableData: []
   });
 
   const materialTypeData = useSelector(state => state.material);
@@ -46,29 +45,29 @@ const AddMaterialType = ({ isEditFlag, ID, isOpen, closeDrawer, anchor }) => {
 
   useEffect(() => {
     const fetchData = () => {
-      const materialId = isEditFlag ? ID : ''; // Use a default value for ID
-      dispatch(getMaterialTypeDataAPI(materialId, res => {
+      const materialId = isEditFlag || isViewFlag ? ID : ''; // Use a default value for ID
+      dispatch(getMaterialTypeDataAPI(materialId, '', res => {
         const data = res?.data?.Data;
-
         if (data) {
           const defaultValues = {
             MaterialType: data.MaterialType,
             CalculatedDensityValue: data.Density,
           };
-
+          setState((prevState) => ({ ...prevState, tableData: data.MaterialCommodityStandardDetails }));
           Object.entries(defaultValues).forEach(([key, value]) => {
             setValue(key, value);
           });
         }
       }));
-    };
-
-    fetchData();
-  }, [isEditFlag, ID, dispatch, setValue]);
+    }
+    if (isEditFlag) {
+      fetchData();
+    }
+  }, [isEditFlag, isViewFlag, ID, dispatch, setValue]);
 
   const cancel = (type) => {
     reset();
-    dispatch(getMaterialTypeDataAPI('', res => { }));
+    dispatch(getMaterialTypeDataAPI('', '', res => { }));
     toggleDrawer('', '', type);
   };
 
@@ -98,7 +97,7 @@ const AddMaterialType = ({ isEditFlag, ID, isOpen, closeDrawer, anchor }) => {
 
   const onSubmit = debounce(values => {
     if (isEditFlag) {
-      if (Number(materialTypeData?.materialTypeData?.Density) === Number(values.CalculatedDensityValue) && materialTypeData?.materialTypeData?.MaterialType === values.MaterialType) {
+      if (Number(materialTypeData?.materialTypeData?.Density) === Number(values.CalculatedDensityValue) && materialTypeData?.materialTypeData?.MaterialType === values.MaterialType && materialTypeData?.materialTypeData?.MaterialCommodityStandardDetails?.length === state.tableData?.length) {
         cancel('cancel');
         return false;
       }
@@ -112,13 +111,14 @@ const AddMaterialType = ({ isEditFlag, ID, isOpen, closeDrawer, anchor }) => {
         MaterialType: values.MaterialType,
         CalculatedDensityValue: values.CalculatedDensityValue,
         IsActive: true,
+        MaterialCommodityStandardDetails: state.tableData
       };
 
       dispatch(updateMaterialtypeAPI(updateData, res => {
         setState(prevState => ({ ...prevState, setDisable: false }));
         if (res?.data?.Result) {
           Toaster.success(MESSAGES.MATERIAL_UPDATE_SUCCESS);
-          dispatch(getMaterialTypeDataAPI('', res => { }));
+          dispatch(getMaterialTypeDataAPI('', '', res => { }));
           reset();
           toggleDrawer('', updateData, 'submit');
         }
@@ -131,13 +131,14 @@ const AddMaterialType = ({ isEditFlag, ID, isOpen, closeDrawer, anchor }) => {
         CalculatedDensityValue: values.CalculatedDensityValue,
         CreatedBy: loggedInUserId(),
         IsActive: true,
+        MaterialCommodityStandardDetails: state.tableData
       };
 
       dispatch(createMaterialTypeAPI(formData, res => {
         setState(prevState => ({ ...prevState, setDisable: false }));
         if (res?.data?.Result) {
           Toaster.success(MESSAGES.MATERIAL_ADDED_SUCCESS);
-          dispatch(getMaterialTypeDataAPI('', res => { }));
+          dispatch(getMaterialTypeDataAPI('', '', res => { }));
           reset();
           toggleDrawer('', formData, 'submit');
         }
@@ -150,7 +151,9 @@ const AddMaterialType = ({ isEditFlag, ID, isOpen, closeDrawer, anchor }) => {
       e.preventDefault();
     }
   };
-
+  const tableData = (data) => {
+    setState(prevState => ({ ...prevState, tableData: data }));
+  }
   const { setDisable } = state;
   return (
     <div>
@@ -200,6 +203,7 @@ const AddMaterialType = ({ isEditFlag, ID, isOpen, closeDrawer, anchor }) => {
                       validate: { required, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, hashValidation },
                     }}
                     errors={errors.MaterialType}
+                    disabled={isViewFlag}
                   />
                 </Col>
                 <Col md={RMIndex ? "6" : "12"}>
@@ -219,10 +223,12 @@ const AddMaterialType = ({ isEditFlag, ID, isOpen, closeDrawer, anchor }) => {
                     control={control}
                     errors={errors.CalculatedDensityValue}
                     register={register}
+                    disabled={isViewFlag}
                   />
                 </Col>
               </Row>
-              {RMIndex && <AddMaterialTypeDetail/>}
+              { }
+              {RMIndex && <AddMaterialTypeDetail tableData={tableData} tableDataState={state.tableData} isViewFlag={isViewFlag} isEditFlag={isEditFlag} />}
               <Row className=" no-gutters justify-content-between">
                 <div className="col-md-12">
                   <div className="text-right ">
@@ -237,7 +243,7 @@ const AddMaterialType = ({ isEditFlag, ID, isOpen, closeDrawer, anchor }) => {
                       <div className={"cancel-icon"}></div>
                       CANCEL
                     </button>
-                    <button
+                    {!isViewFlag && <button
                       id="AddMaterialType_Save"
                       type="submit"
                       className="user-btn save-btn"
@@ -246,7 +252,7 @@ const AddMaterialType = ({ isEditFlag, ID, isOpen, closeDrawer, anchor }) => {
                       {" "}
                       <div className={"save-icon"}></div>
                       {isEditFlag ? "UPDATE" : "SAVE"}
-                    </button>
+                    </button>}
                   </div>
                 </div>
               </Row>

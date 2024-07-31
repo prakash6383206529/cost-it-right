@@ -40,7 +40,7 @@ const CostingLevelListing = (props) => {
     }, []);
 
     useEffect(() => {
-        if (isCallApi === true)
+        if (isCallApi === true || props.tab !== '')
             setTimeout(() => {
                 getLevelsListData();
             }, 100);

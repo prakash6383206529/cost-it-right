@@ -409,7 +409,9 @@ const ExchangeRateListing = (props) => {
                                 <AgGridColumn field="CostingHead" headerName="Costing Head" ></AgGridColumn>
                                 <AgGridColumn field="vendorWithCode" headerName="Vendor (Code)" ></AgGridColumn>
                                 {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="customerWithCode" headerName="Customer (Code)" ></AgGridColumn>}
-                                <AgGridColumn field="Currency" headerName="Currency" minWidth={135}></AgGridColumn>
+                                <AgGridColumn field="FromCurrency" headerName="From Currency" minWidth={135}></AgGridColumn>
+                                <AgGridColumn field="ToCurrency" headerName="To Currency" minWidth={135}></AgGridColumn>
+                                <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source" minWidth={135}></AgGridColumn>
                                 <AgGridColumn suppressSizeToFit="true" field="CurrencyExchangeRate" headerName={`Exchange Rate (${reactLocalStorage.getObject("baseCurrency")}) `} minWidth={160} cellRenderer={'commonCostFormatter'}></AgGridColumn>
                                 <AgGridColumn field="BankRate" headerName={`Bank Rate (${reactLocalStorage.getObject("baseCurrency")})`} minWidth={150} cellRenderer={'commonCostFormatter'}></AgGridColumn>
                                 <AgGridColumn suppressSizeToFit="true" field="BankCommissionPercentage" headerName="Bank Commission (%) " minWidth={160} cellRenderer={'hyphenFormatter'}></AgGridColumn>

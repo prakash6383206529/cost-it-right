@@ -122,7 +122,7 @@ class AddOverhead extends Component {
       'OverheadApplicability',
       'OverheadPercentage',
       'OverheadRMPercentage',
-      'OverheadMachiningCCPercentage',
+      'OverheadCCPercentage',
       'OverheadBOPPercentage',
       'RawMaterialGradeId',
       'RawMaterialId',
@@ -355,12 +355,12 @@ class AddOverhead extends Component {
       const { filedObj } = this.props;
       const OverheadPercentage = filedObj && filedObj.OverheadPercentage !== undefined && filedObj.OverheadPercentage !== '' && filedObj.OverheadPercentage !== null ? true : false;
       const OverheadRMPercentage = filedObj && filedObj.OverheadRMPercentage !== undefined && filedObj.OverheadRMPercentage !== '' && filedObj.OverheadRMPercentage !== null ? true : false;
-      const OverheadMachiningCCPercentage = filedObj && filedObj.OverheadMachiningCCPercentage !== undefined && filedObj.OverheadMachiningCCPercentage !== '' && filedObj.OverheadMachiningCCPercentage !== null ? true : false;
+      const OverheadCCPercentage = filedObj && filedObj.OverheadCCPercentage !== undefined && filedObj.OverheadCCPercentage !== '' && filedObj.OverheadCCPercentage !== null ? true : false;
       const OverheadBOPPercentage = filedObj && filedObj.OverheadBOPPercentage !== undefined && filedObj.OverheadBOPPercentage !== '' && filedObj.OverheadBOPPercentage !== null ? true : false;
 
       if (OverheadPercentage) {
         this.setState({ isRM: true, isCC: true, isBOP: true, })
-      } else if (OverheadRMPercentage || OverheadMachiningCCPercentage || OverheadBOPPercentage) {
+      } else if (OverheadRMPercentage || OverheadCCPercentage || OverheadBOPPercentage) {
         this.setState({ isOverheadPercent: true })
       } else {
         this.checkOverheadFields()
@@ -443,7 +443,7 @@ class AddOverhead extends Component {
   */
   handleChangeOverheadPercentageCC = (newValue) => {
     if (this.state.isEditFlag) {
-      if (String(newValue) === String(this.state.DataToChange.OverheadMachiningCCPercentage) &&
+      if (String(newValue) === String(this.state.DataToChange.OverheadCCPercentage) &&
         String(this.state.overheadAppli.label) === String(this.state.DataToChange.OverheadApplicabilityType) &&
         String(this.state.ModelType.label) === String(this.state.DataToChange.ModelType)) {
         this.setState({ IsFinancialDataChanged: false })
@@ -511,7 +511,7 @@ class AddOverhead extends Component {
 
   resetFields = () => {
     this.props.change('OverheadPercentage', '')
-    this.props.change('OverheadMachiningCCPercentage', '')
+    this.props.change('OverheadCCPercentage', '')
     this.props.change('OverheadBOPPercentage', '')
     this.props.change('OverheadRMPercentage', '')
   }
@@ -797,8 +797,8 @@ class AddOverhead extends Component {
       if (values.OverheadRMPercentage === '') {
         values.OverheadRMPercentage = null
       }
-      if (values.OverheadMachiningCCPercentage === '') {
-        values.OverheadMachiningCCPercentage = null
+      if (values.OverheadCCPercentage === '') {
+        values.OverheadCCPercentage = null
       }
       if (values.OverheadBOPPercentage === '') {
         values.OverheadBOPPercentage = null
@@ -806,7 +806,7 @@ class AddOverhead extends Component {
 
       if (
         (JSON.stringify(files) === JSON.stringify(DataToChange.Attachements)) && DropdownNotChanged && Number(DataToChange.OverheadPercentage) === Number(values.OverheadPercentage) && Number(DataToChange.OverheadRMPercentage) === Number(values.OverheadRMPercentage)
-        && Number(DataToChange.OverheadMachiningCCPercentage) === Number(values.OverheadMachiningCCPercentage) && Number(DataToChange.OverheadBOPPercentage) === Number(values.OverheadBOPPercentage)
+        && Number(DataToChange.OverheadCCPercentage) === Number(values.OverheadCCPercentage) && Number(DataToChange.OverheadBOPPercentage) === Number(values.OverheadBOPPercentage)
         && String(DataToChange.Remark) === String(values.Remark) && uploadAttachements) {
         this.cancel('cancel')
         return false
@@ -825,7 +825,7 @@ class AddOverhead extends Component {
         ModelType: ModelType.label,
         IsCombinedEntry: !isOverheadPercent ? true : false,
         OverheadPercentage: values.OverheadPercentage,
-        OverheadMachiningCCPercentage: values.OverheadMachiningCCPercentage,
+        OverheadMachiningCCPercentage: values.OverheadCCPercentage,
         OverheadBOPPercentage: values.OverheadBOPPercentage,
         OverheadRMPercentage: values.OverheadRMPercentage,
         Remark: remarks,
@@ -868,7 +868,7 @@ class AddOverhead extends Component {
         CostingTypeId: costingTypeId,
         IsCombinedEntry: !isOverheadPercent ? true : false,
         OverheadPercentage: !isOverheadPercent ? values.OverheadPercentage : '',
-        OverheadMachiningCCPercentage: !isCC ? values.OverheadMachiningCCPercentage : '',
+        OverheadMachiningCCPercentage: !isCC ? values.OverheadCCPercentage : '',
         OverheadBOPPercentage: !isBOP ? values.OverheadBOPPercentage : '',
         OverheadRMPercentage: !isRM ? values.OverheadRMPercentage : '',
         Remark: remarks,
@@ -1262,7 +1262,7 @@ class AddOverhead extends Component {
                           <Col md="3">
                             <Field
                               label={`Overhead on CC (%)`}
-                              name={"OverheadMachiningCCPercentage"}
+                              name={"OverheadCCPercentage"}
                               type="text"
                               placeholder={isCC || isViewMode ? "-" : "Enter"}
                               validate={!isCC ? [required, number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation] : []}
@@ -1460,7 +1460,7 @@ class AddOverhead extends Component {
 */
 function mapStateToProps(state) {
   const { comman, overheadProfit, client, supplier, material } = state;
-  const filedObj = selector(state, 'OverheadPercentage', 'OverheadRMPercentage', 'OverheadMachiningCCPercentage',
+  const filedObj = selector(state, 'OverheadPercentage', 'OverheadRMPercentage', 'OverheadCCPercentage',
     'OverheadBOPPercentage')
 
   const { modelTypes, costingHead, plantSelectList } = comman;
@@ -1473,7 +1473,7 @@ function mapStateToProps(state) {
     initialValues = {
       OverheadPercentage: overheadProfitData.OverheadPercentage !== null ? overheadProfitData.OverheadPercentage : '',
       OverheadRMPercentage: overheadProfitData.OverheadRMPercentage !== null ? overheadProfitData.OverheadRMPercentage : '',
-      OverheadMachiningCCPercentage: overheadProfitData.OverheadMachiningCCPercentage !== null ? overheadProfitData.OverheadMachiningCCPercentage : '',
+      OverheadCCPercentage: overheadProfitData.OverheadMachiningCCPercentage !== null ? overheadProfitData.OverheadMachiningCCPercentage : '',
       OverheadBOPPercentage: overheadProfitData.OverheadBOPPercentage !== null ? overheadProfitData.OverheadBOPPercentage : '',
       Remark: overheadProfitData.Remark,
     }

@@ -2,7 +2,7 @@ import React from 'react';
 import { useState, useEffect, } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, } from 'reactstrap';
-import { APPROVED, CANCELLED, DRAFT, EMPTY_DATA, FILE_URL, RECEIVED, REJECTED, RETURNED, RFQ, SENT, SUBMITTED, UNDER_APPROVAL, UNDER_REVISION, } from '../.././config/constants'
+import { APPROVED, CANCELLED, DRAFT, EMPTY_DATA, FILE_URL, PREDRAFT, RECEIVED, REJECTED, RETURNED, RFQ, RFQVendor, SENT, SUBMITTED, UNDER_APPROVAL, UNDER_REVISION, } from '../.././config/constants'
 import NoContentFound from '.././common/NoContentFound';
 import { MESSAGES } from '../.././config/message';
 import Toaster from '.././common/Toaster';
@@ -25,7 +25,12 @@ import { agGridStatus, getGridHeight, isResetClick, showQuotationDetails } from 
 import TourWrapper from '../common/Tour/TourWrapper';
 import { Steps } from '../common/Tour/TourMessages';
 import { useTranslation } from 'react-i18next';
+import { filterParams } from '../common/DateFilter';
+import CustomCellRenderer from './CommonDropdown';
+import { useHistory, useLocation } from "react-router-dom/cjs/react-router-dom";
+export const ApplyPermission = React.createContext();
 const gridOptions = {};
+
 
 
 function RfqListing(props) {
@@ -51,9 +56,16 @@ function RfqListing(props) {
     const { t } = useTranslation("Common");
     const [showExtraData, setShowExtraData] = useState(false)
     const [render, setRender] = useState(false)
+    const [permissionDataPart, setPermissionDataPart] = useState()
+    const [permissionDataVendor, setPermissionDataVendor] = useState()
+    const [permissionData, setPermissionData] = useState()
+
+
     const { topAndLeftMenuData } = useSelector(state => state.auth);
     const agGridRef = useRef(null);
     const statusColumnData = useSelector((state) => state.comman.statusColumnData);
+    const history = useHistory();
+    const location = useLocation();
     const handleFilterChange = () => {
         if (agGridRef.current) {
 
@@ -89,7 +101,7 @@ function RfqListing(props) {
         notPagination: true
     }
     useEffect(() => {
-        setloader(true)
+        // setloader(true)
         getDataList()
         applyPermission(topAndLeftMenuData)
     }, [topAndLeftMenuData])
@@ -102,6 +114,28 @@ function RfqListing(props) {
             gridApi?.setQuickFilter(statusColumnData?.data);
         }
     }, [statusColumnData])
+    useEffect(() => {
+        const { source, quotationId } = location.state || {};
+
+        if (source === 'auction') {
+            if (rowData && rowData.length !== 0) {
+                const fiterRowData = rowData.find(item => item.QuotationId === quotationId);
+                viewDetails(fiterRowData);
+            }
+        }
+    }, [rowData])
+    useEffect(() => {
+        const handleBeforeUnload = (event) => {
+            history.push({
+                pathname: '/rfq-listing',
+                state: { source: 'rfq' }
+            })
+        };
+        window.addEventListener('beforeunload', handleBeforeUnload);
+        return () => {
+            window.removeEventListener('beforeunload', handleBeforeUnload);
+        };
+    }, []);
     /**
       * @method applyPermission
       * @description ACCORDING TO PERMISSION HIDE AND SHOW, ACTION'S
@@ -111,8 +145,16 @@ function RfqListing(props) {
             const Data = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === RFQ);
             const accessData = Data && Data.Pages.find(el => el.PageName === RFQ)
             const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
+            const accessDataVendor = Data && Data.Pages.find(el => el.PageName === RFQVendor)
+            const permmisionDataVendor = accessDataVendor && accessDataVendor.Actions && checkPermission(accessDataVendor.Actions)
 
-            if (permmisionData !== undefined) {
+            if (permmisionData !== undefined || permmisionDataVendor !== undefined) {
+                setPermissionData({
+                    permissionDataPart: permmisionData,
+                    permissionDataVendor: permmisionDataVendor
+                });
+                setPermissionDataPart(permmisionData);
+                setPermissionDataVendor(permmisionDataVendor)
                 setAddAccessibility(permmisionData && permmisionData.Add ? permmisionData.Add : false)
                 setEditAccessibility(permmisionData && permmisionData.Edit ? permmisionData.Edit : false)
                 setViewAccessibility(permmisionData && permmisionData.View ? permmisionData.View : false)
@@ -125,6 +167,7 @@ function RfqListing(props) {
     */
     const getDataList = () => {
         const Timezone = getTimeZone()
+        setloader(true)
         dispatch(getQuotationList(userDetails()?.DepartmentCode, Timezone, (res) => {
             let temp = []
             res?.data?.DataList && res?.data?.DataList.map((item) => {
@@ -157,6 +200,9 @@ function RfqListing(props) {
                         break;
                     case RETURNED:
                         item.tooltipText = 'Quotation has been returned.'
+                        break;
+                    case PREDRAFT:
+                        item.tooltipText = 'Quotation pre-drafted, parts details saved.'
                         break;
                     default:
                         break;
@@ -238,8 +284,8 @@ function RfqListing(props) {
 
         return (
             <>
-                {viewAccessibility && <button title='View' className="View mr-1 Tour_List_View" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
-                {((status !== APPROVED && status !== CANCELLED) && editAccessibility) && <button title='Edit' className="Edit mr-1 Tour_List_Edit" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
+                {(viewAccessibility || permissionData?.permissionDataVendor?.View) && <button title='View' className="View mr-1 Tour_List_View" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
+                {((status !== APPROVED && status !== CANCELLED) && (editAccessibility || permissionData?.permissionDataVendor?.Edit)) && <button title='Edit' className="Edit mr-1 Tour_List_Edit" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
                 {(status !== APPROVED && status !== UNDER_APPROVAL && status !== CANCELLED && status !== RECEIVED) && rowData?.IsShowCancelIcon && <button title='Cancel' className="CancelIcon mr-1  Tour_List_Cancel" type={'button'} onClick={() => cancelItem(cellValue)} />}
             </>
         )
@@ -425,7 +471,16 @@ function RfqListing(props) {
         filter: true,
         sortable: false,
     };
+    const hyphenFormatter = (props) => {
 
+        const cellValue = props?.value;
+        return cellValue !== " " &&
+            cellValue !== null &&
+            cellValue !== "" &&
+            cellValue !== undefined
+            ? cellValue
+            : "-";
+    };
 
     const frameworkComponents = {
         totalValueRenderer: buttonFormatter,
@@ -438,12 +493,14 @@ function RfqListing(props) {
         dashFormatter: dashFormatter,
         dateTimeFormatter: dateTimeFormatter,
         valuesFloatingFilter: SingleDropdownFloationFilter,
+        hyphenFormatter: hyphenFormatter,
+        cellRendererFramework: CustomCellRenderer
     }
 
 
     return (
         <>
-            {!addRfq &&
+            {!addRfq && permissionData !== undefined &&
                 <div className={`ag-grid-react report-grid p-relative  ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "" : ""} ${true ? "show-table-btn" : ""} ${false ? 'simulation-height' : props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
                     {(loader ? <LoaderCustom customClass="simulation-Loader" /> : !viewRfq && (
                         <>
@@ -464,7 +521,7 @@ function RfqListing(props) {
                                         <>
                                             <div className="d-flex justify-content-end bd-highlight w100">
                                                 <>
-                                                    {addAccessibility && (<button
+                                                    {(addAccessibility || permissionData?.permissionDataVendor?.Add) && (<button
                                                         type="button"
                                                         className={"user-btn mr5 Tour_List_Add"}
                                                         onClick={formToggle}
@@ -515,21 +572,27 @@ function RfqListing(props) {
                                             >
                                                 <AgGridColumn cellClass="has-checkbox" field="QuotationNumber" headerName='RFQ No.' cellRenderer={'linkableFormatter'} ></AgGridColumn>
                                                 {/* <AgGridColumn field="NfrId" headerName='NFR Id' width={150}></AgGridColumn> */}
-                                                <AgGridColumn field="PartNumber" tooltipField="PartNumber" headerName="Part No." width={150}></AgGridColumn>
-                                                <AgGridColumn field="NoOfQuotationReceived" headerName='No. of Quotation Received' maxWidth={150} cellRenderer={'quotationReceiveFormatter'}></AgGridColumn>
-                                                <AgGridColumn field="VendorName" tooltipField="VendorName" headerName='Vendor (Code)'></AgGridColumn>
+                                                <AgGridColumn field="PartType" headerName="Part Type" width={150} cellRenderer={"hyphenFormatter"}></AgGridColumn>
+                                                <AgGridColumn field="PartNumber" tooltipField="PartNumber" headerName="Part No." width={150} cellRendererFramework={CustomCellRenderer} />
+                                                <AgGridColumn field="RawMaterial" tooltipField="PartNumber" headerName="Raw Material Name-Grade-Specification" width={230} cellRenderer={"hyphenFormatter"}></AgGridColumn>
+                                                <AgGridColumn field="PRNumber" headerName="PR No." width={150} cellRenderer={"hyphenFormatter"}></AgGridColumn>
+
+                                                <AgGridColumn field="NoOfQuotationReceived" headerName='Quotation Received (No.)' maxWidth={150} cellRenderer={'quotationReceiveFormatter'}></AgGridColumn>
+                                                <AgGridColumn field="VendorName" tooltipField="VendorName" headerName='Vendor (Code)' cellRenderer={"hyphenFormatter"}></AgGridColumn>
                                                 <AgGridColumn field="PlantName" tooltipField="PlantName" headerName='Plant (Code)'></AgGridColumn>
                                                 <AgGridColumn field="TechnologyName" width={"160px"} headerName='Technology'></AgGridColumn>
-                                                <AgGridColumn field="Remark" tooltipField="Remark" headerName='Notes'></AgGridColumn>
                                                 <AgGridColumn field="RaisedBy" width={"160px"} headerName='Raised By'></AgGridColumn>
-                                                <AgGridColumn field="RaisedOn" width={"145px"} headerName='Raised On' cellRenderer='dateFormatter'></AgGridColumn>
+                                                <AgGridColumn field="RaisedOn" width={"145px"} headerName='Raised On' cellRenderer='dateFormatter' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
+                                                <AgGridColumn field="PartDataSentDate" width={"145px"} headerName='RFI Date' cellRenderer='dateFormatter' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
+
                                                 <AgGridColumn field="VisibilityMode" width={"200px"} headerName='Visibility Mode' cellRenderer='dashFormatter'></AgGridColumn>
                                                 <AgGridColumn field="VisibilityDate" width={"160px"} headerName='Visibility Date' cellRenderer='dateTimeFormatter'></AgGridColumn>
                                                 <AgGridColumn field="VisibilityDuration" width={"150px"} headerName='Visibility Duration' cellRenderer='dashFormatter'></AgGridColumn>
-                                                <AgGridColumn field="TimeZone" width={"150px"} headerName='Time Zone' cellRenderer='timeZoneFormatter'></AgGridColumn>
-                                                <AgGridColumn field="LastSubmissionDate" width={"160px"} headerName='Last Submission Date' cellRenderer='dateFormatter'></AgGridColumn>
-                                                <AgGridColumn field="QuotationNumber" headerName='Attachments' cellRenderer='attachmentFormatter'></AgGridColumn>
-                                                <AgGridColumn field="Status" tooltipField="tooltipText" headerName="Status" headerClass="justify-content-center" cellClass="text-center" cellRenderer="statusFormatter" floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterRFQ}></AgGridColumn>
+                                                {/* <AgGridColumn field="TimeZone" width={"150px"} headerName='Time Zone' cellRenderer='timeZoneFormatter'></AgGridColumn> */}
+                                                <AgGridColumn field="LastSubmissionDate" width={"160px"} headerName='Quote Submission Date' cellRenderer='dateFormatter' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
+                                                {/* <AgGridColumn field="QuotationNumber" headerName='Attachments' cellRenderer='attachmentFormatter'></AgGridColumn> */}
+                                                <AgGridColumn field="Remark" tooltipField="Remark" headerName='Notes' cellRenderer={"hyphenFormatter"}></AgGridColumn>
+                                                <AgGridColumn field="Status" tooltipField="tooltipText" pinned="right" headerName="Status" headerClass="justify-content-center" cellClass="text-center" cellRenderer="statusFormatter" floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterRFQ}></AgGridColumn>
                                                 {<AgGridColumn field="QuotationId" width={180} cellClass="ag-grid-action-container rfq-listing-action" pinned="right" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
 
                                             </AgGridReact>
@@ -547,6 +610,7 @@ function RfqListing(props) {
                         <ViewRfq
                             data={viewRfqData}
                             isOpen={viewRfq}
+                            partType={'BOP'}
                             closeDrawer={closeDrawerViewRfq}
                         />
 
@@ -558,22 +622,25 @@ function RfqListing(props) {
 
                 </div >
             }
+            <ApplyPermission.Provider value={permissionData}>
 
-            {addRfq &&
+                {addRfq &&
 
-                <AddRfq
-                    data={addRfqData}
-                    //hideForm={hideForm}
-                    AddAccessibilityRMANDGRADE={true}
-                    EditAccessibilityRMANDGRADE={true}
-                    isRMAssociated={true}
-                    isOpen={addRfq}
-                    anchor={"right"}
-                    isEditFlag={isEdit}
-                    closeDrawer={closeDrawer}
-                />
+                    <AddRfq
+                        data={addRfqData}
+                        //hideForm={hideForm}
+                        AddAccessibilityRMANDGRADE={true}
+                        EditAccessibilityRMANDGRADE={true}
+                        isRMAssociated={true}
+                        isOpen={addRfq}
+                        anchor={"right"}
+                        isEditFlag={isEdit}
+                        closeDrawer={closeDrawer}
+                    />
 
-            }
+                }
+            </ApplyPermission.Provider>
+
             {
                 attachment && (
                     <Attachament

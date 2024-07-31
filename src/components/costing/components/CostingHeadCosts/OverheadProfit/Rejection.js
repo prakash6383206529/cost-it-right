@@ -18,6 +18,7 @@ import Popup from 'reactjs-popup';
 import Toaster from '../../../../common/Toaster';
 import Button from '../../../../layout/Button';
 import AddRejectionRecovery from './AddRejectionRecovery';
+import PopupMsgWrapper from '../../../../common/PopupMsgWrapper';
 
 
 let counter = 0;
@@ -34,10 +35,12 @@ function Rejection(props) {
     const [rejectionObj, setRejectionObj] = useState(CostingRejectionDetail)
     const [applicability, setApplicability] = useState(CostingRejectionDetail && CostingRejectionDetail.RejectionApplicability !== null ? { label: CostingRejectionDetail.RejectionApplicability, value: CostingRejectionDetail.RejectionApplicabilityId } : [])
     const [IsChangedApplicability, setIsChangedApplicability] = useState(false)
+    const [showRejectionPopup, setShowRejectionPopup] = useState(false)
     const [percentageLimit, setPercentageLimit] = useState(false)
+    const [storedApplicability, setStoredApplicability] = useState(CostingRejectionDetail && CostingRejectionDetail.RejectionApplicability !== null ? { label: CostingRejectionDetail.RejectionApplicability, value: CostingRejectionDetail.RejectionApplicabilityId } : [])
     const { IsIncludedSurfaceInRejection, isBreakupBoughtOutPartCostingFromAPI } = useSelector(state => state.costing)
     const { SurfaceTabData, rejectionRecovery, RMCCTabData } = useSelector(state => state.costing)
-    const { CostingPartDetails } = RMCCTabData[0]
+    const { CostingPartDetails, PartType } = RMCCTabData[0]
     const [errorMessage, setErrorMessage] = useState('')
     const [isOpenRecoveryDrawer, setIsOpenRecoveryDrawer] = useState(false);
 
@@ -65,6 +68,7 @@ function Rejection(props) {
         setValue('RejectionPercentage', rejectionObj?.RejectionApplicability === "Fixed" ? rejectionObj?.RejectionCost : rejectionObj?.RejectionPercentage)
         setValue('crmHeadRejection', rejectionObj && rejectionObj.RejectionCRMHead && { label: rejectionObj.RejectionCRMHead, value: 1 })
         setValue('rejectionRemark', rejectionObj && rejectionObj.Remark ? rejectionObj.Remark : '')
+        dispatch(setRejectionRecoveryData(CostingRejectionDetail.CostingRejectionRecoveryDetails ?? rejectionRecovery))
     }, [])
 
     useEffect(() => {
@@ -81,27 +85,44 @@ function Rejection(props) {
 
 
     useEffect(() => {
-        setValue('NetRejectionCost', checkForDecimalAndNull(rejectionObj.RejectionTotalCost - rejectionRecovery.rejectionRecoveryCost, initialConfiguration.NoOfDecimalForPrice))
-    }, [rejectionObj, rejectionRecovery.rejectionRecoveryCost])
+        setValue('NetRejectionCost', checkForDecimalAndNull(rejectionObj.RejectionTotalCost - checkForNull(rejectionRecovery.RejectionRecoveryNetCost), initialConfiguration.NoOfDecimalForPrice))
+        setValue('RejectionRecovery', checkForDecimalAndNull(rejectionRecovery.RejectionRecoveryNetCost, initialConfiguration.NoOfDecimalForPrice))
+    }, [rejectionObj, rejectionRecovery.RejectionRecoveryNetCost])
+
 
     useEffect(() => {
         setTimeout(() => {
+            let rejectionRecoveryObj = {}
+            if (rejectionRecovery.ApplicabilityType !== '') {
+                const { ApplicabilityIdRef, ApplicabilityType, Value, EffectiveRecoveryPercentage, ApplicabilityCost, RejectionRecoveryNetCost } = rejectionRecovery
+                rejectionRecoveryObj.BaseCostingIdRef = CostingPartDetails.CostingId
+                rejectionRecoveryObj.ApplicabilityIdRef = ApplicabilityIdRef ?? 0
+                rejectionRecoveryObj.ApplicabilityType = ApplicabilityType
+                rejectionRecoveryObj.Type = ""
+                rejectionRecoveryObj.Value = Value
+                rejectionRecoveryObj.EffectiveRecoveryPercentage = EffectiveRecoveryPercentage
+                rejectionRecoveryObj.ApplicabilityCost = ApplicabilityCost
+                rejectionRecoveryObj.RejectionRecoveryNetCost = RejectionRecoveryNetCost
+            }
             let tempObj = {
                 "RejectionApplicabilityId": applicability ? applicability.value : '',
                 "RejectionApplicability": applicability ? applicability.label : '',
                 "RejectionPercentage": applicability.label === 'Fixed' ? '' : getValues('RejectionPercentage'),
                 "RejectionCost": applicability ? rejectionObj.RejectionCost : '',
-                "RejectionTotalCost": applicability ? rejectionObj.RejectionTotalCost : '',
+                "RejectionTotalCost": applicability ? checkForNull(rejectionObj.RejectionTotalCost) - checkForNull(rejectionRecovery.RejectionRecoveryNetCost) : '',
                 "IsSurfaceTreatmentApplicable": true,
+                "NetCost": applicability ? rejectionObj.RejectionTotalCost : '',
                 "RejectionCRMHead": getValues('crmHeadRejection') ? getValues('crmHeadRejection').label : '',
-                "Remark": rejectionObj.Remark ? rejectionObj.Remark : ''
+                "Remark": rejectionObj.Remark ? rejectionObj.Remark : '',
+                "IsRejectionRecoveryApplicable": rejectionRecovery.ApplicabilityType !== '' ? true : false,
+                "CostingRejectionRecoveryDetails": rejectionRecoveryObj && rejectionRecovery.RejectionRecoveryNetCost ? rejectionRecoveryObj : null
             }
 
             if (!CostingViewMode) {
                 props.setRejectionDetail(tempObj, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
             }
         }, 200)
-    }, [rejectionObj])
+    }, [rejectionObj, rejectionRecovery])
 
 
     /**
@@ -329,22 +350,16 @@ function Rejection(props) {
         const rejectionRecoveryCost = CostApplicability * EffectiveRecovery / 100
         setValue('RejectionRecovery', checkForDecimalAndNull(rejectionRecoveryCost, initialConfiguration.NoOfDecimalForPrice))
         dispatch(setRejectionRecoveryData({
-            // rejectionApplicability: CostApplicability,
-            rejectionRecoveryPercentage: recoveryPerantage,
-            effectiveRecoveryPercentage: EffectiveRecovery,
-            recoveryCostApplicability: CostApplicability,
-            rejectionRecoveryCost: rejectionRecoveryCost,
+            ...rejectionRecovery,
+            EffectiveRecoveryPercentage: EffectiveRecovery,
+            RejectionRecoveryNetCost: rejectionRecoveryCost
         }))
     }
-
-    /**
-      * @method handleApplicabilityChange
-      * @description  USED TO HANDLE APPLICABILITY CHANGE FOR REJECTION
-      */
-    const handleApplicabilityChange = (newValue) => {
+    const handleRejectionPercentageChangeRef = (newValue) => {
         if (newValue && newValue !== '') {
             setValue('RejectionPercentage', '')
             setApplicability(newValue)
+            setStoredApplicability(newValue)
             checkRejectionApplicability(newValue.label)
             setIsChangedApplicability(!IsChangedApplicability)
             clearErrors()
@@ -360,6 +375,35 @@ function Rejection(props) {
         }
         setPercentageLimit(false)
         dispatch(isOverheadProfitDataChange(true))
+    }
+    /**
+      * @method handleApplicabilityChange
+      * @description  USED TO HANDLE APPLICABILITY CHANGE FOR REJECTION
+      */
+    const handleApplicabilityChange = (newValue) => {
+        const { ApplicabilityType } = rejectionRecovery
+        if (newValue && !newValue.label.includes('RM') && ((ApplicabilityType && ApplicabilityType !== ''))) {
+            setApplicability(newValue ?? {})
+            setShowRejectionPopup(true)
+        } else {
+            handleRejectionPercentageChangeRef(newValue)
+            if (newValue === null) {
+                dispatch(setRejectionRecoveryData({}))
+            }
+        }
+
+    }
+    const onPopupConfirm = () => {
+        setShowRejectionPopup(false)
+        handleRejectionPercentageChangeRef(applicability)
+        setStoredApplicability(applicability)
+        dispatch(setRejectionRecoveryData({}))
+
+    }
+    const closePopUp = () => {
+        setShowRejectionPopup(false)
+        setApplicability(storedApplicability)
+        setValue('Applicability', storedApplicability)
     }
     const handleCrmHeadChange = (e) => {
         if (e) {
@@ -397,10 +441,10 @@ function Rejection(props) {
         button.click()
     }
     const handleRejectionRecovery = () => {
-        if (!(applicability.label && applicability.label.includes('RM'))) {
+        if (PartType !== 'Assembly' && !(applicability && applicability.label && applicability.label.includes('RM'))) {
             Toaster.warning('Applicability should be RM')
             return false
-        } else if (!getValues('RejectionPercentage')) {
+        } else if (PartType !== 'Assembly' && !getValues('RejectionPercentage')) {
             Toaster.warning('Enter the Rejection Percentage')
             return false
         } else {
@@ -413,9 +457,9 @@ function Rejection(props) {
         } else if (type === 'submit') {
             setIsOpenRecoveryDrawer(false)
             setValue('RejectionRecovery', checkForDecimalAndNull(cost, initialConfiguration.NoOfDecimalForPrice))
-            setValue('NetRejectionCost', 0)
         }
     }
+
     const viewAddButtonIcon = (data, type) => {
 
         let className = ''
@@ -561,7 +605,7 @@ function Rejection(props) {
                                         },
                                     }}
                                     handleChange={(e) => {
-                                        calculateRecoveryCost(e.target.value, rejectionRecovery.rejectionRecoveryPercentage)
+                                        calculateRecoveryCost(e.target.value, rejectionRecovery.Value)
                                         dispatch(isOverheadProfitDataChange(true))
                                     }}
                                     defaultValue={''}
@@ -636,7 +680,7 @@ function Rejection(props) {
                                     handleChange={() => { }}
                                     defaultValue={''}
                                     className=""
-                                    customClassName={'withBorder w-100'}
+                                    customClassName={'withBorder mr-2'}
                                     errors={errors.RejectionRecovery}
                                     disabled={true}
                                 />
@@ -698,6 +742,7 @@ function Rejection(props) {
                                 </Row>
                             </Popup>
                         </Col>
+                        {showRejectionPopup && <PopupMsgWrapper isOpen={showRejectionPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`If 'RM' is not selected in the applicability, you will loss rejection recovery cost.`} />}
                     </div>
                 </Col>
             </Row>

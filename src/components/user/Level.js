@@ -1,80 +1,91 @@
-import React, { Component } from "react";
-import { Field, reduxForm, clearFields } from "redux-form";
+import React, { useEffect, useState } from "react";
+import { Field } from "redux-form";
+import { useDispatch, useSelector } from "react-redux";
 import Toaster from "../common/Toaster";
-import { connect } from "react-redux";
 import { required, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, maxLength80, postiveNumber, maxLength2 } from "../../helper/validation";
-import { renderText, searchableSelect } from "../layout/FormInputs";
-import {
-  addUserLevelAPI, getUserLevelAPI, getAllLevelAPI, updateUserLevelAPI, setEmptyLevelAPI, setApprovalLevelForTechnology, getAllTechnologyAPI,
-  getLevelMappingAPI, updateLevelMappingAPI, getSimulationTechnologySelectList, addSimulationLevel, updateSimulationLevel, getSimulationLevel, getMastersSelectList,
-  addMasterLevel, updateMasterLevel, getMasterLevel, addOnboardingLevel, updateOnboardingLevel, getOnboardingLevel, manageLevelTabApi
-} from "../../actions/auth/AuthActions";
+import { renderText } from "../layout/FormInputs";
 import { MESSAGES } from "../../config/message";
 import { getConfigurationKey, loggedInUserId } from "../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
 import { Container, Row, Col, Label, } from 'reactstrap';
 import LoaderCustom from "../common/LoaderCustom";
-import { getApprovalTypeSelectList } from '../../actions/Common'
-import { CUSTOMER_BASED, NCCTypeId, NFRAPPROVALTYPEID, PROVISIONAL, PROVISIONALAPPROVALTYPEIDFULL, RELEASESTRATEGYTYPEID1, RELEASESTRATEGYTYPEID2, RELEASESTRATEGYTYPEID3, RELEASESTRATEGYTYPEID4, RELEASESTRATEGYTYPEID6, WACAPPROVALTYPEID, NEW_COMPONENT, RELEASE_STRATEGY_B1, RELEASE_STRATEGY_B2, RELEASE_STRATEGY_B3, RELEASE_STRATEGY_B4, VENDORNEEDFORMID, ONBOARDINGNAME, LPSAPPROVALTYPEID, CLASSIFICATIONAPPROVALTYPEID } from "../../config/constants";
-import { reactLocalStorage } from "reactjs-localstorage";
-import { transformApprovalItem } from "../common/CommonFunctions";
+import { COST, COSTING_LEVEL, MASTER_LEVEL, ONBOARDINGID, ONBOARDINGNAME, ONBOARDING_MANAGEMENT_LEVEL, SIMULATION_LEVEL } from "../../config/constants";
 import TourWrapper from "../common/Tour/TourWrapper";
 import { Steps } from "./TourMessages";
-import { withTranslation } from "react-i18next";
+import { getApprovalModuleSelectList, getApprovalTypeSelectList } from "../../actions/Common";
+import { addMasterLevel, addOnboardingLevel, addSimulationLevel, addUserLevelAPI, getAllLevelAPI, getAllLevelMappingAPI, getAllTechnologyAPI, getLevelMappingAPI, getMasterLevel, getMasterLevelDataList, getOnboardingLevel, getOnboardingLevelDataList, getSimulationLevel, getSimulationLevelDataList, getSimulationTechnologySelectList, getUserLevelAPI, manageLevelTabApi, setApprovalLevelForTechnology, setEmptyLevelAPI, updateLevelMappingAPI, updateMasterLevel, updateOnboardingLevel, updateSimulationLevel, updateUserLevelAPI } from "../../actions/auth/AuthActions";
+import { useTranslation } from "react-i18next";
+import { Controller, useForm } from "react-hook-form";
+import { SearchableSelectHookForm } from "../layout/HookFormInputs";
 
 /**************************************THIS FILE IS FOR ADDING LEVEL MAPPING*****************************************/
-class Level extends Component {
-  constructor(props) {
-    super(props);
-    //this.child = React.createRef();
-    //this.childMapping = React.createRef();
-    this.state = {
-      isLoader: true,
-      isSubmitted: false,
-      isEditFlag: false,
-      isEditMappingFlag: false,
-      isShowForm: false,
-      isShowTechnologyForm: false,
-      technology: [],
-      level: [],
-      levelType: 'Costing',
-      dataToCheck: [],
-      approvalTypeObject: [],
-    };
-  }
-
+const Level = (props) => {
+  const { t } = useTranslation("Level");
+  const { register, control, setValue, handleSubmit, getValues, reset, formState: { errors }, } = useForm({
+    mode: 'onChange',
+    reValidateMode: 'onChange',
+  });
+  const dispatch = useDispatch();
+  const [state, setState] = useState({
+    isLoader: true,
+    isSubmitted: false,
+    isEditFlag: false,
+    isEditMappingFlag: false,
+    isShowForm: false,
+    isShowTechnologyForm: false,
+    technology: [],
+    level: [],
+    levelType: Number(props?.activeTab),
+    dataToCheck: [],
+    approvalTypeObject: [],
+    modules: [],
+  });
+  const technologyList = useSelector(state => state?.auth?.technologyList)
+  const simulationTechnologyList = useSelector(state => state?.auth?.simulationTechnologyList)
+  const approvalTypeSelectList = useSelector(state => state?.comman?.approvalTypeSelectList)
+  const levelList = useSelector(state => state?.auth.levelList)
+  const { isOpen, isShowForm, isShowMappingForm, closeDrawer, isEditFlag, TechnologyId, anchor, approvalTypeId } = props
+  const isEditlevelType = props?.isEditedlevelType === 'Costing' ? COSTING_LEVEL : props?.isEditedlevelType === 'Simulation' ? SIMULATION_LEVEL : props?.isEditedlevelType === 'Master' ? MASTER_LEVEL : props?.isEditedlevelType === 'Onboarding' ? ONBOARDING_MANAGEMENT_LEVEL : null
   /**
   * @method componentDidMount
   * @description used to called after mounting component
   */
-  componentDidMount() {
-    this.setState({ levelType: this.props.activeTab === '1' ? "Costing" : this.props.activeTab === '2' ? "Simulation" : this.props.activeTab === '3' ? "Master" : "Onboarding" })
-    this.props.getApprovalTypeSelectList(() => { })
-    if (this.props.isEditFlag) {
-      this.props.getAllLevelAPI(() => { this.setState({ isLoader: this.props.isEditFlag ? true : false }) })
-      this.getLevelDetail()
-      this.getLevelMappingDetails()
-    } else {
-      if (this.state.levelType === 'Costing') {
-        this.props.getAllTechnologyAPI(() => { }, '', true)
-      } else if (this.state.levelType === 'Simulation') {
-        this.props.getSimulationTechnologySelectList(() => { })
+
+  useEffect(() => {
+    dispatch(getApprovalModuleSelectList((res) => {
+      if (res && res.data && res.data.Result) {
+        const filteredModules = res?.data?.SelectList?.filter(item => item.Value !== '0');
+        setState((prevState) => ({ ...prevState, modules: filteredModules }))
       }
-      this.props.getAllLevelAPI(() => { this.setState({ isLoader: this.props.isEditFlag ? true : false }) })
-      this.getLevelDetail()
-      this.getLevelMappingDetails()
+    }))
+    if (isEditFlag) {
+
+      dispatch(getAllLevelAPI(() => {
+        setState((prevState) => ({ ...prevState, isLoader: isEditFlag ? true : false }))
+      }))
+      getLevelDetail()
+      getLevelMappingDetails()
+    } else {
+      if (Number(state?.levelType) === COSTING_LEVEL) {
+
+        dispatch(getAllTechnologyAPI(() => { }, '', true))
+      } else if (Number(state?.levelType) === SIMULATION_LEVEL) {
+        dispatch(getSimulationTechnologySelectList(() => { }))
+      }
+      onPressRadioLevel(state?.levelType)
+      dispatch(getAllLevelAPI(() => { setState((prevState) => ({ ...prevState, isLoader: isEditFlag ? true : false })) }))
+      getLevelDetail()
+      getLevelMappingDetails()
     }
-  }
+  }, [])
 
   /**
   * @method getLevelDetail
   * @description used to get level detail
   */
-  getLevelDetail = () => {
-    const { isShowForm, isEditFlag, TechnologyId } = this.props;
+  const getLevelDetail = () => {
     if (isEditFlag && isShowForm) {
-      //$('html, body').animate({ scrollTop: 0 }, 'slow');
-      this.props.getUserLevelAPI(TechnologyId, () => { })
+      dispatch(getUserLevelAPI(TechnologyId, () => { }))
     }
   }
 
@@ -82,108 +93,87 @@ class Level extends Component {
   * @method getLevelMappingDetails
   * @description used to get level detail
   */
-  getLevelMappingDetails = () => {
-    const { isShowMappingForm, isEditFlag, TechnologyId, isEditedlevelType, approvalTypeId } = this.props;
 
-    // WHEN COSTING LEVEL DETAILS GET
-    if (isEditFlag && isShowMappingForm && isEditedlevelType === 'Costing') {
-      this.props.getLevelMappingAPI(TechnologyId, approvalTypeId.Costing, (res) => {
+  const getLevelMappingDetails = () => {
+    const handleResponse = (res, isEditlevelType, dataKey) => {
+      if (res && res.data && res.data.Data) {
+        let Data = dataKey ? res.data.Data[0] : res.data.Data;
+        setValue('LevelId', { label: Data?.Level, value: Data?.LevelId });
+        setValue('ApprovalType', { label: Data?.ApprovalType, value: Data?.ApprovalTypeId });
+        setValue('TechnologyId', Number(isEditlevelType) === MASTER_LEVEL ? { label: Data?.Master, value: Data?.MasterId } : { label: Data?.Technology, value: Data?.TechnologyId });
+        setTimeout(() => {
+          setState((prevState) => ({
+            ...prevState,
+            isEditMappingFlag: true,
+            isShowTechnologyForm: true,
+            technology: Number(isEditlevelType) === MASTER_LEVEL ? { label: Data?.Master, value: Data?.MasterId } : { label: Data?.Technology, value: Data?.TechnologyId },
+            level: { label: Data?.Level, value: Data?.LevelId },
+            levelType: isEditlevelType,
+            isLoader: false,
+            dataToCheck: { label: Data?.Level, value: Data?.LevelId }
+          }),);
+          // setState((prevState) => ({ ...prevState, dataToCheck: { label: Data?.Level, value: Data?.LevelId } }));
+          // 
+          setState((prevState) => ({ ...prevState, approvalTypeObject: { label: Data?.ApprovalType, value: Data?.ApprovalTypeId } }));
+        }, 100);
+      }
+    };
 
-        if (res && res.data && res.data.Data) {
-          let Data = res.data.Data;
-          setTimeout(() => {
-            this.setState({
-              isEditMappingFlag: true,
-              isShowTechnologyForm: true,
-              technology: { label: Data?.Technology, value: Data?.TechnologyId },
-              level: { label: Data?.Level, value: Data?.LevelId },
-              levelType: isEditedlevelType,
-              isLoader: false,
-              updateApi: !this.state.updateApi
-            })
-            this.setState({ dataToCheck: this.state.level })
-            this.setState({ approvalTypeObject: { label: Data?.ApprovalType, value: Data?.ApprovalTypeId } })
-          }, 500)
 
+    if (isEditFlag && isShowMappingForm) {
+      let apiFunction;
+      let approvalType;
+      let dataKey = false;
+
+      switch (Number(isEditlevelType)) {
+        case COSTING_LEVEL:
+          apiFunction = getLevelMappingAPI;
+          approvalType = approvalTypeId.Costing;
+          break;
+        case SIMULATION_LEVEL:
+          apiFunction = getSimulationLevel;
+          approvalType = approvalTypeId.Simulation;
+          break;
+        case MASTER_LEVEL:
+          apiFunction = getMasterLevel;
+          approvalType = approvalTypeId.Master;
+          break;
+        case ONBOARDING_MANAGEMENT_LEVEL:
+
+          apiFunction = getOnboardingLevel;
+          approvalType = approvalTypeId.Onboarding;
+          dataKey = true;
+          break;
+        default:
+          return;
+      }
+
+      const dispatchFunction = (apiFunction, approvalType, dataKey) => {
+        if (Number(isEditlevelType) === ONBOARDING_MANAGEMENT_LEVEL) {
+          dispatch(apiFunction(approvalType, (res) => {
+            handleResponse(res, isEditlevelType, dataKey);
+          }));
+        } else {
+          dispatch(apiFunction(TechnologyId, approvalType, (res) => {
+            handleResponse(res, isEditlevelType, dataKey);
+          }));
         }
+      };
 
-      })
+      dispatchFunction(apiFunction, approvalType, dataKey);
     }
-
-    // WHEN SIMULATION LEVEL DETAILS GET
-    if (isEditFlag && isShowMappingForm && isEditedlevelType === 'Simulation') {
-      this.props.getSimulationLevel(TechnologyId, approvalTypeId.Simulation, (res) => {
-
-        if (res && res.data && res.data.Data) {
-          let Data = res.data.Data;
-          setTimeout(() => {
-            this.setState({
-              isEditMappingFlag: true,
-              isShowTechnologyForm: true,
-              technology: { label: Data?.Technology, value: Data?.TechnologyId },
-              level: { label: Data?.Level, value: Data?.LevelId },
-              levelType: isEditedlevelType,
-              isLoader: false
-            })
-            this.setState({ dataToCheck: this.state.level })
-            this.setState({ approvalTypeObject: { label: Data?.ApprovalType, value: Data?.ApprovalTypeId } })
-          }, 500)
-        }
-      })
-    }
-
-    // WHEN MASTER LEVEL DETAILS GET
-    if (isEditFlag && isShowMappingForm && isEditedlevelType === 'Master') {
-      this.props.getMasterLevel(TechnologyId, approvalTypeId.Master, (res) => {
-        if (res && res.data && res.data.Data) {
-          let Data = res.data.Data;
-
-          setTimeout(() => {
-            this.setState({
-              isEditMappingFlag: true,
-              isShowTechnologyForm: true,
-              technology: { label: Data?.Master, value: Data?.MasterId },
-              level: { label: Data?.Level, value: Data?.LevelId },
-              levelType: isEditedlevelType,
-              isLoader: false
-            })
-            this.setState({ dataToCheck: this.state.level })
-            this.setState({ approvalTypeObject: { label: Data?.ApprovalType, value: Data?.ApprovalTypeId } })
-          }, 500)
-        }
-      })
-    }
-    if (isEditFlag && isShowMappingForm && isEditedlevelType === 'Onboarding') {
-      this.props.getOnboardingLevel(approvalTypeId.Onboarding, (res) => {
-        if (res && res.data && res.data.Data) {
-          let Data = res.data.Data[0];
-          setTimeout(() => {
-            this.setState({
-              isEditMappingFlag: true,
-              isShowTechnologyForm: true,
-              level: { label: Data?.Level, value: Data?.LevelId },
-              levelType: isEditedlevelType,
-              isLoader: false
-            })
-            this.setState({ dataToCheck: this.state.level })
-            this.setState({ approvalTypeObject: { label: Data?.ApprovalType, value: Data?.ApprovalTypeId } })
-          }, 500)
-        }
-      })
-    }
-  }
+  };
 
   /**
   * @method selectType
   * @description Used show listing of unit of measurement
   */
-  searchableSelectType = (label) => {
-    const { technologyList, levelList, simulationTechnologyList, approvalTypeSelectList } = this.props;
+  const searchableSelectType = (label) => {
     const temp = [];
-
     // RENDER WHEN COSTING TECHNOLOGY LIST IN USE
-    if (label === 'technology' && this.state.levelType === 'Costing') {
-      technologyList && technologyList.map(item => {
+    if (label === 'technology' && Number(state?.levelType) === COSTING_LEVEL) {
+      technologyList && technologyList?.map(item => {
+
         if (item.Value === '0') return false
         temp.push({ label: item.Text, value: item.Value })
         return null;
@@ -192,8 +182,9 @@ class Level extends Component {
     }
 
     // RENDER WHEN SIMULATION TECHNOLOGY LIST IN USE
-    if (label === 'technology' && this.state.levelType === 'Simulation') {
+    if (label === 'technology' && Number(state?.levelType) === SIMULATION_LEVEL) {
       simulationTechnologyList && simulationTechnologyList.map(item => {
+
         if (item.Value === '0') return false
         temp.push({ label: item.Text, value: item.Value })
         return null;
@@ -201,8 +192,7 @@ class Level extends Component {
       return temp;
     }
 
-    if (label === 'technology' && this.state.levelType === 'Master') {
-
+    if (label === 'technology' && Number(state?.levelType) === MASTER_LEVEL) {
       let arrayOfTechnology = []
       const myArray = getConfigurationKey().ApprovalMasterArrayList.split(",");
       myArray && myArray.map((item) => {
@@ -217,9 +207,6 @@ class Level extends Component {
     }
 
     if (label === 'level') {
-      // for (let i = 1; i <= level; i++) {
-      //   temp.push({ label: `L-${i}`, value: i })
-      // }
       levelList && levelList.map(item => {
         if (item.Value === '0') return false
         temp.push({ label: item.Text, value: item.Value })
@@ -229,19 +216,12 @@ class Level extends Component {
     }
 
     // RENDER WHEN COSTING TECHNOLOGY LIST IN USE
+
     if (label === 'ApprovalType') {
       approvalTypeSelectList && approvalTypeSelectList.map(item => {
         if (item.Value === '0') return false
-        if ((Number(item.Value) === Number(RELEASESTRATEGYTYPEID1) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID2) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID6) || Number(item.Value) === Number(WACAPPROVALTYPEID) || Number(item.Value) === Number(NCCTypeId) || Number(item.Value) === Number(NFRAPPROVALTYPEID)) && this.state.levelType === 'Simulation') return false
-        if ((Number(item.Value) === Number(PROVISIONALAPPROVALTYPEIDFULL) || (!getConfigurationKey().IsNFRConfigured && Number(item.Value) === Number(NFRAPPROVALTYPEID))) && this.state.levelType === 'Costing') return false
-        if ((Number(item.Value) === Number(RELEASESTRATEGYTYPEID1) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID2) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID3) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID4) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID6) || Number(item.Value) === Number(WACAPPROVALTYPEID) || Number(item.Value) === Number(PROVISIONALAPPROVALTYPEIDFULL) || Number(item.Value) === Number(NFRAPPROVALTYPEID) || Number(item.Value) === Number(NCCTypeId)) && this.state.levelType === 'Master') return false
-        if (item.Text === CUSTOMER_BASED && !(reactLocalStorage.getObject('CostingTypePermission').cbc)) return false
-        if (this.state.levelType === 'Onboarding' && Number(item.Value) !== VENDORNEEDFORMID && Number(item.Value) !== LPSAPPROVALTYPEID && Number(item.Value) !== CLASSIFICATIONAPPROVALTYPEID) return false;
-        if ((this.state.levelType === 'Simulation' || this.state.levelType === 'Master' || this.state.levelType === 'Costing') && Number(item.Value) === VENDORNEEDFORMID) return true
-        const transformedText = transformApprovalItem(item);
-        temp.push({ label: transformedText, value: item.Value });
-
-        return null;
+        temp.push({ label: item.Text, value: item.Value })
+        return null
       });
       return temp;
     }
@@ -251,11 +231,11 @@ class Level extends Component {
       * @method technologyHandler
       * @description Used to handle 
       */
-  technologyHandler = (newValue, actionMeta) => {
+  const technologyHandler = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ technology: newValue });
+      setState((prevState) => ({ ...prevState, technology: newValue }));
     } else {
-      this.setState({ technology: [] });
+      setState((prevState) => ({ ...prevState, technology: [] }));
     }
   };
 
@@ -263,11 +243,12 @@ class Level extends Component {
   * @method approvalTypeHandler
   * @description Used to handle 
   */
-  approvalTypeHandler = (newValue, actionMeta) => {
+  const approvalTypeHandler = (newValue, actionMeta) => {
+
     if (newValue && newValue !== '') {
-      this.setState({ approvalTypeObject: newValue });
+      setState((prevState) => ({ ...prevState, approvalTypeObject: newValue }));
     } else {
-      this.setState({ approvalTypeObject: [] });
+      setState((prevState) => ({ ...prevState, approvalTypeObject: [] }));
     }
   };
 
@@ -275,11 +256,11 @@ class Level extends Component {
   * @method levelHandler
   * @description Used to handle 
   */
-  levelHandler = (newValue, actionMeta) => {
+  const levelHandler = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ level: newValue });
+      setState((prevState) => ({ ...prevState, level: newValue }));
     } else {
-      this.setState({ level: [] });
+      setState((prevState) => ({ ...prevState, level: [] }));
     }
   };
 
@@ -287,102 +268,92 @@ class Level extends Component {
   * @method onPressRadioLevel
   * @description LEVEL TYPE HANDLING
   */
-  onPressRadioLevel = (label) => {
+  const onPressRadioLevel = (label) => {
 
-    const fieldsToClear = ['ApprovalType', 'TechnologyId', 'LevelId'];
-    fieldsToClear.forEach(fieldName => {
-      this.props.dispatch(clearFields('Level', false, false, fieldName));
-    });
+    dispatch(getApprovalTypeSelectList(() => { }), label)
+    reset();
+    setValue('ApprovalType', '');
+    setValue('TechnologyId', '');
+    setValue('LevelId', '');
+    if (Number(label) === COSTING_LEVEL) {
 
-    if (label === 'Costing') {
-      this.props.getAllTechnologyAPI(() => { })
-    } else if (label === 'Simulation') {
-      this.props.getSimulationTechnologySelectList(() => { })
+      dispatch(getAllTechnologyAPI(() => { }))
+    } else if (Number(label) === SIMULATION_LEVEL) {
+
+      dispatch(getSimulationTechnologySelectList(() => { }))
     }
-    this.setState({ levelType: label });
-    this.setState({ technology: [], level: [], approvalTypeObject: [] });
+    setState((prevState) => ({ ...prevState, levelType: label, technology: [], level: [], approvalTypeObject: [] }));
   };
 
   /**
   * @method cancel
   * @description used to cancel level edit
   */
-  cancel = () => {
-    const { reset } = this.props;
+  const cancel = () => {
     reset();
-    this.setState({
+    resetForm()
+    setState((prevState) => ({
+      ...prevState,
       technology: [],
       level: [],
-    })
-    this.props.setEmptyLevelAPI('', () => { })
-    this.toggleDrawer('cancel', this.state.levelType)
+    }))
+    dispatch(setEmptyLevelAPI('', () => { }))
+    toggleDrawer('cancel', state?.levelType)
   }
 
   /**
    * @method resetForm
    * @description used to Reset form
    */
-  resetForm = () => {
-    const { reset } = this.props;
+  const resetForm = () => {
     reset();
-    this.props.setEmptyLevelAPI('', () => { })
+    dispatch(setEmptyLevelAPI('', () => { }))
   }
 
   /**
    * @method resetMappingForm
    * @description used to Reset Mapping form
    */
-  resetMappingForm = () => {
-    const { reset } = this.props;
+  const resetMappingForm = () => {
     reset();
-    this.setState({
+    setState((prevState) => ({
+      ...prevState,
       technology: [],
       level: [],
-    })
+    }))
   }
 
-  toggleDrawer = (event, levelTypeData, update = false) => {
+  const toggleDrawer = (event, levelTypeData, update = false, res = '') => {
 
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return;
     }
-    this.setState({
+    setState((prevState) => ({
+      ...prevState,
       technology: [],
       level: [],
-    })
-
-    this.props.setEmptyLevelAPI('', () => { })
+    }))
+    dispatch(setEmptyLevelAPI('', () => { }))
     if (event === 'cancel') {
-
-      this.props.closeDrawer('cancel', "")
-    } else {
-
-
-      this.props.closeDrawer('', levelTypeData, update)
-
+      closeDrawer('cancel', "")
     }
-
+    else {
+      closeDrawer('', levelTypeData, update)
+    }
   };
-
-  submitLevelTechnology = () => {
-    this.setState({ isLoader: true })
-  }
-
   /**
    * @name onSubmit
    * @param values
    * @desc Submit the signup form values.
    * @returns {{}}
    */
-  onSubmit(values) {
-    const { isShowForm, isShowMappingForm, isEditFlag, TechnologyId, reset } = this.props;
+  const onSubmit = (values) => {
 
-    const { technology, level, approvalTypeObject } = this.state;
-    this.setState({ isLoader: true })
+    const { technology, level, approvalTypeObject } = state;
+
 
     if (isShowForm) {
       if (isEditFlag) {
-
         let formReq = {
           LevelId: TechnologyId,
           IsActive: true,
@@ -392,111 +363,132 @@ class Level extends Component {
           Sequence: values.Sequence,
         }
 
-        this.props.updateUserLevelAPI(formReq, (res) => {
-
+        dispatch(updateUserLevelAPI(formReq, (res) => {
           if (res && res.data && res.data.Result) {
             Toaster.success(MESSAGES.UPDATE_LEVEL_SUCCESSFULLY)
           }
-          this.toggleDrawer('')
+          toggleDrawer('')
           reset();
-          this.setState({ isLoader: false, })
-        })
+          setState((prevState) => ({ ...prevState, isLoader: false, }))
+        }))
 
       } else {
 
-        this.props.addUserLevelAPI(values, (res) => {
+        dispatch(addUserLevelAPI(values, (res) => {
           if (res && res.data && res.data.Result) {
             Toaster.success(MESSAGES.ADD_LEVEL_SUCCESSFULLY)
           }
-          this.toggleDrawer('')
+          toggleDrawer('')
           reset();
-          this.setState({ isLoader: false })
-        })
+          setState((prevState) => ({ ...prevState, isLoader: false }))
+        }))
       }
 
     }
 
     if (isShowMappingForm) {
       if (isEditFlag) {
-        if (this.state.levelType === 'Costing') {
+
+        if (Number(state?.levelType) === COSTING_LEVEL) {
           // UPDATE COSTING LEVEL
           let formReq = {
             TechnologyId: technology.value,
             LevelId: level.value,
-            Technology: technology.value,
+            Technology: technology.label,
             Level: level.label,
             ModifiedBy: loggedInUserId(),
-            ApprovalTypeId: approvalTypeObject?.value
+            ApprovalTypeId: approvalTypeObject?.value,
+            ApprovalType: approvalTypeObject?.label
           }
 
-          if (this.state.dataToCheck.label === formReq.Level) {
-            this.toggleDrawer('')
+
+
+          if (state?.dataToCheck.label === formReq.Level) {
+
+            toggleDrawer('')
             return false
           }
-          this.props.updateLevelMappingAPI(formReq, (res) => {
+
+
+          dispatch(updateLevelMappingAPI(formReq, (res) => {
             if (res && res.data && res.data.Result) {
               Toaster.success(MESSAGES.UPDATE_LEVEL_TECHNOLOGY_USER_SUCCESSFULLY)
               reset();
-              this.setState({
+              setState((prevState) => ({
+                ...prevState,
                 isLoader: false,
                 technology: [],
                 level: [],
-              })
-              this.toggleDrawer('', this.state.levelType, true)
-              this.props.manageLevelTabApi(true)
+              }))
+              toggleDrawer('', state?.levelType, true, res.status)
+              dispatch(manageLevelTabApi(true))
             }
-          })
+          }))
         }
 
-        if (this.state.levelType === 'Simulation') {
+        if (Number(state?.levelType) === SIMULATION_LEVEL) {
           // UPDATE SIMULATION LEVEL
           let formReq = {
             TechnologyId: technology.value,
             LevelId: level.value,
-            Technology: technology.value,
+            Technology: technology.label,
             Level: level.label,
             ModifiedBy: loggedInUserId(),
-            ApprovalTypeId: approvalTypeObject?.value
+            ApprovalTypeId: approvalTypeObject?.value,
+            ApprovalType: approvalTypeObject?.label
           }
-          if (this.state.dataToCheck.label === formReq.Level) {
-            this.toggleDrawer('')
+
+          if (state?.dataToCheck.label === formReq.Level) {
+            toggleDrawer('')
             return false
           }
-          this.props.updateSimulationLevel(formReq, (res) => {
+          dispatch(updateSimulationLevel(formReq, (res) => {
             if (res && res.data && res.data.Result) {
               Toaster.success(MESSAGES.UPDATE_LEVEL_SUCCESSFULLY)
-            }
-            this.toggleDrawer('', this.state.levelType)
-            this.props.manageLevelTabApi(true)
-            reset();
 
-          })
+              setState((prevState) => ({
+                ...prevState,
+                isLoader: false,
+                technology: [],
+                level: [],
+              }))
+              toggleDrawer('', state?.levelType, '', res.status)
+              dispatch(manageLevelTabApi(true))
+              reset();
+            }
+          }))
         }
-        if (this.state.levelType === 'Master') {
-          // this.props.manageLevelTabApi(true)
+
+        if (Number(state?.levelType) === MASTER_LEVEL) {
+          // manageLevelTabApi(true)
           // UPDATE SIMULATION LEVEL
           let formReq = {
+
             MasterId: technology.value,
             LevelId: level.value,
-            Master: technology.value,
+            Master: technology.label,
             Level: level.label,
             ModifiedBy: loggedInUserId(),
-            ApprovalTypeId: approvalTypeObject?.value
+            ApprovalTypeId: approvalTypeObject?.value,
+            ApprovedType: approvalTypeObject?.label
           }
-          if (this.state.dataToCheck.label === formReq.Level) {
-            this.toggleDrawer('', this.state.levelType)
+
+          if (state?.dataToCheck.label === formReq.Level) {
+            toggleDrawer('', state?.levelType)
             return false
           }
-          this.props.updateMasterLevel(formReq, (res) => {
+          dispatch(updateMasterLevel(formReq, (res) => {
+
             if (res && res.data && res.data.Result) {
               Toaster.success(MESSAGES.UPDATE_LEVEL_SUCCESSFULLY)
+              toggleDrawer('', state?.levelType, '', res.status)
+              dispatch(manageLevelTabApi(true))
+              setState((prevState) => ({ ...prevState, isLoader: false }))
+              reset();
             }
-            this.toggleDrawer('', this.state.levelType)
-            this.props.manageLevelTabApi(true)
-            reset();
-          })
+          }))
         }
-        if (this.state.levelType === 'Onboarding') {
+        if (Number(state?.levelType) === ONBOARDING_MANAGEMENT_LEVEL) {
           let formReq = {
             LevelId: level.value,
             Level: level.label,
@@ -506,62 +498,66 @@ class Level extends Component {
             OnboardingApprovalId: 1,
             OnboardingApprovalName: ONBOARDINGNAME,
           }
-          if (this.state.dataToCheck.label === formReq.Level) {
-            this.toggleDrawer('', this.state.levelType)
+          if (state?.dataToCheck.label === formReq.Level) {
+            toggleDrawer('', state?.levelType)
             return false
           }
-          this.props.updateOnboardingLevel(formReq, (res) => {
+          dispatch(updateOnboardingLevel(formReq, (res) => {
             if (res && res.data && res.data.Result) {
               Toaster.success(MESSAGES.UPDATE_LEVEL_ONBOARDING_USER_SUCCESSFULLY)
+
+              toggleDrawer('', state?.levelType, '', res.status)
+              dispatch(manageLevelTabApi(true))
+              reset();
             }
-            this.toggleDrawer('', this.state.levelType)
-            this.props.manageLevelTabApi(true)
-            reset();
-          })
+          }))
         }
 
-      } else {
-
+      }
+      else {
         let formData = {
           LevelId: level.value,
           TechnologyId: technology.value,
           ApprovalTypeId: approvalTypeObject?.value
-
         }
-
-        if (this.state.levelType === 'Costing') {
-          this.props.setApprovalLevelForTechnology(formData, (res) => {
+        if (Number(state?.levelType) === COSTING_LEVEL) {
+          dispatch(setApprovalLevelForTechnology(formData, (res) => {
             if (res && res.data && res.data.Result) {
               Toaster.success(MESSAGES.ADD_LEVEL_TECHNOLOGY_USER_SUCCESSFULLY)
+              toggleDrawer('', state?.levelType, '')
+              dispatch(manageLevelTabApi(true))
             }
-            this.props.reset();
-            this.setState({
+            reset();
+            setState((prevState) => ({
+              ...prevState,
               isLoader: false,
               technology: [],
               level: [],
-            })
-            this.toggleDrawer('', this.state.levelType)
-            this.props.manageLevelTabApi(true)
-          })
+            }))
+
+          }))
         }
 
-        if (this.state.levelType === 'Simulation') {
+        if (Number(state?.levelType) === SIMULATION_LEVEL) {
           // ADD SIMULATION NEW LEVEL
-          this.props.addSimulationLevel(formData, (res) => {
+          dispatch(addSimulationLevel(formData, (res) => {
             if (res && res.data && res.data.Result) {
               Toaster.success(MESSAGES.ADD_LEVEL_TECHNOLOGY_USER_SUCCESSFULLY)
+              toggleDrawer('', state?.levelType, '')
+              dispatch(manageLevelTabApi(true))
             }
-            this.props.reset();
-            this.setState({
+
+            reset();
+            setState((prevState) => ({
+              ...prevState,
               isLoader: false,
               technology: [],
               level: [],
-            })
-            this.toggleDrawer('', this.state.levelType)
-            this.props.manageLevelTabApi(true)
-          })
+            }))
+
+          }))
         }
-        if (this.state.levelType === 'Master') {
+        if (Number(state?.levelType) === MASTER_LEVEL) {
           let masterData = {
             LevelId: level.value,
             MasterId: technology.value,
@@ -569,322 +565,252 @@ class Level extends Component {
             ApprovalTypeId: approvalTypeObject?.value
           }
           // ADD MASTER NEW LEVEL
-          this.props.addMasterLevel(masterData, (res) => {
+          dispatch(addMasterLevel(masterData, (res) => {
+
             if (res && res.data && res.data.Result) {
               Toaster.success(MESSAGES.ADD_LEVEL_TECHNOLOGY_USER_SUCCESSFULLY)
+              toggleDrawer('', state?.levelType, '')
+              dispatch(manageLevelTabApi(true))
             }
-            this.props.reset();
-            this.setState({
+            reset();
+            setState((prevState) => ({
+              ...prevState,
               isLoader: false,
               technology: [],
               level: [],
-            })
-            this.toggleDrawer('', this.state.levelType)
-            this.props.manageLevelTabApi(true)
-          })
+            }))
+
+          }))
         }
-        if (this.state.levelType === 'Onboarding') {
+        if (Number(state?.levelType) === ONBOARDING_MANAGEMENT_LEVEL) {
           let OnboardingData = {
             LevelId: level.value,
             UserId: loggedInUserId(),
             ApprovalTypeId: approvalTypeObject?.value,
-            OnboardingApprovalMasterId: 1
+            OnboardingApprovalMasterId: ONBOARDINGID
           }
-          this.props.addOnboardingLevel(OnboardingData, (res) => {
+          dispatch(addOnboardingLevel(OnboardingData, (res) => {
+
             if (res && res.data && res.data.Result) {
               Toaster.success(MESSAGES.ADD_LEVEL_ONBOARDING_USER_SUCCESSFULLY)
+              // dispatch(getOnboardingLevelDataList(res))
+              toggleDrawer('', state?.levelType, '')
+              dispatch(manageLevelTabApi(true))
             }
-            this.props.reset();
-            this.setState({
+            reset();
+            setState((prevState) => ({
+              ...prevState,
               isLoader: false,
               technology: [],
               level: [],
-            })
-            this.toggleDrawer('', this.state.levelType)
-            this.props.manageLevelTabApi(true)
-          })
+            }))
+          }))
         }
+
       }
     }
 
   }
 
 
-  render() {
-    const { handleSubmit, isShowForm, isEditFlag, t } = this.props;
-    const { isLoader, isSubmitted } = this.state;
+  return (
+    <div>
+      <Drawer className="add-update-level-drawer" anchor={anchor} open={isOpen}
+      >
+        <Container>
+          {state.isLoader && <LoaderCustom />}
+          <div className={'drawer-wrapper'}>
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              handleSubmit(onSubmit)(e);
+            }} noValidate>
+              <Row className="drawer-heading">
+                <Col className="d-flex">
+                  {
+                    isShowForm ?
+                      <div className={'header-wrapper left'}>
+                        <h3>{isEditFlag ? 'Update Level' : 'Add Level'}</h3>
+                      </div>
+                      :
+                      <div className={'header-wrapper left'}>
+                        <h3>{isEditFlag ? 'Update Highest Level of Approvals' : 'Set Highest Level of Approvals'}
+                          <TourWrapper
+                            buttonSpecificProp={{ id: "Add_Hightest_Level_Form" }}
+                            stepsSpecificProp={{
+                              steps: Steps(t, { isEditFlag: isEditFlag }).ADD_LEVEL_MAPPING
+                            }} />
+                        </h3>
+                      </div>
+                  }
 
-    return (
-      <div>
-        <Drawer className="add-update-level-drawer" anchor={this.props.anchor} open={this.props.isOpen}
-        // onClose={(e) => this.toggleDrawer(e)}
-        >
-          <Container>
-            {isLoader && <LoaderCustom />}
-            <div className={'drawer-wrapper'}>
-              <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
-                <Row className="drawer-heading">
-                  <Col className="d-flex">
-                    {
-                      isShowForm ?
-                        <div className={'header-wrapper left'}>
-                          <h3>{isEditFlag ? 'Update Level' : 'Add Level'}</h3>
-                        </div>
-                        :
-                        <div className={'header-wrapper left'}>
-                          <h3>{isEditFlag ? 'Update Highest Level of Approvals' : 'Set Highest Level of Approvals'}
-                            <TourWrapper
-                              buttonSpecificProp={{ id: "Add_Hightest_Level_Form" }}
-                              stepsSpecificProp={{
-                                steps: Steps(t, { isEditFlag: isEditFlag }).ADD_LEVEL_MAPPING
-                              }} />
-                          </h3>
-                        </div>
-                    }
+                  <div
+                    onClick={(e) => toggleDrawer(e)}
+                    className={'close-button right'}>
+                  </div>
+                </Col>
+              </Row>
+              <div className="drawer-body">
 
-                    <div
-                      onClick={(e) => this.toggleDrawer(e)}
-                      className={'close-button right'}>
+                {isShowForm &&
+                  <div className="row pr-0">
+                    <div className="col-md-12 input-withouticon" >
+                      <Field
+                        label="Level Name"
+                        name={"LevelName"}
+                        type="text"
+                        placeholder={'Enter'}
+                        validate={[required, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, maxLength80]}
+                        component={renderText}
+                        required={true}
+                        maxLength={26}
+                        customClassName={'withBorder'}
+                      />
                     </div>
-                  </Col>
-                </Row>
-                <div className="drawer-body">
+                    <div className="col-md-12 input-withouticon mb-0" >
+                      <Field
+                        label="Sequence"
+                        name={"Sequence"}
+                        type="text"
+                        placeholder={'Enter'}
+                        validate={[postiveNumber, maxLength2]}
+                        component={renderText}
+                        required={false}
+                        // maxLength={26}
+                        customClassName={'withBorder'}
+                      />
+                    </div>
+                    <div className="text-right mt-0 col-md-12">
+                      <button
+                        //disabled={pristine || submitting}
+                        onClick={cancel}
+                        type="button"
+                        value="CANCEL"
+                        className="mr15 cancel-btn">
+                        <div className={"cancel-icon"}></div> CANCEL</button>
+                      <button
+                        type="submit"
+                        disabled={state?.isSubmitted ? true : false}
+                        className="user-btn save-btn"
+                      >
+                        <div className={"save-icon"}></div>
+                        {state?.isEditFlag ? 'Update' : 'Save'}
+                      </button>
+                    </div>
+                  </div>}
 
-                  {this.props.isShowForm &&
-                    <div className="row pr-0">
-                      <div className="col-md-12 input-withouticon" >
-                        <Field
-                          label="Level Name"
-                          name={"LevelName"}
-                          type="text"
-                          placeholder={'Enter'}
-                          validate={[required, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, maxLength80]}
-                          component={renderText}
-                          required={true}
-                          maxLength={26}
-                          customClassName={'withBorder'}
-                        />
-                      </div>
-                      <div className="col-md-12 input-withouticon mb-0" >
-                        <Field
-                          label="Sequence"
-                          name={"Sequence"}
-                          type="text"
-                          placeholder={'Enter'}
-                          validate={[postiveNumber, maxLength2]}
-                          component={renderText}
-                          required={false}
-                          // maxLength={26}
-                          customClassName={'withBorder'}
-                        />
-                      </div>
-
-
-                      <div className="text-right mt-0 col-md-12">
-                        <button
-                          //disabled={pristine || submitting}
-                          onClick={this.cancel}
-                          type="button"
-                          value="CANCEL"
-                          className="mr15 cancel-btn">
-                          <div className={"cancel-icon"}></div> CANCEL</button>
-
-
-                        <button
-                          type="submit"
-                          disabled={isSubmitted ? true : false}
-                          className="user-btn save-btn"
-                        >
-                          <div className={"save-icon"}></div>
-                          {this.state.isEditFlag ? 'Update' : 'Save'}
-                        </button>
-
-
-                      </div>
-
-
-                    </div>}
-
-                  {/* *********************************THIS IS LEVEL MAPPING FORM*************************************************** */}
-                  {this.props.isShowMappingForm &&
-                    <>
-                      <Row>
-                        <Col md="12">
-                          <Label id="AddApproval_CostingLevel" className={'pl0 radio-box mb-0 pb-3 d-inline-block pr-3 w-auto'} check>
-                            <input
-                              type="radio"
-                              name="levelType"
-                              checked={this.state.levelType === 'Costing' ? true : false}
-                              onClick={() => this.onPressRadioLevel('Costing')}
-                              disabled={this.props.isEditFlag}
-                            />{' '}
-                            <span>Costing</span>
-                          </Label>
-                          <Label id="AddApproval_SimulationLevel" className={'pl0  radio-box mb-0 pb-3 d-inline-block pr-3 w-auto'} check>
-                            <input
-                              type="radio"
-                              name="levelType"
-                              checked={this.state.levelType === 'Simulation' ? true : false}
-                              onClick={() => this.onPressRadioLevel('Simulation')}
-                              disabled={this.props.isEditFlag}
-                            />{' '}
-                            <span>Simulation</span>
-                          </Label>
-
-                          {getConfigurationKey().IsMasterApprovalAppliedConfigure &&
-                            <Label id="AddApproval_MasterLevel" className={'pl0  radio-box mb-0 pb-3 d-inline-block Onboarding pr-3 w-auto'} check>
+                {/* *********************************THIS IS LEVEL MAPPING FORM*************************************************** */}
+                {isShowMappingForm &&
+                  <>
+                    <Row>
+                      <Col md="12">
+                        {state?.modules?.map((module) => {
+                          if (
+                            (Number(module.Value) === MASTER_LEVEL && !getConfigurationKey().IsMasterApprovalAppliedConfigure) ||
+                            (Number(module.Value) === ONBOARDING_MANAGEMENT_LEVEL && !getConfigurationKey().IsShowOnboarding)
+                          ) {
+                            return null;
+                          }
+                          return (
+                            <Label
+                              key={module.Value}
+                              id={`AddApproval_${module.Value}Level`}
+                              className={'pl0 radio-box mb-0 pb-3 d-inline-block pr-3 w-auto'}
+                              check
+                            >
                               <input
                                 type="radio"
                                 name="levelType"
-                                checked={this.state.levelType === 'Master' ? true : false}
-                                onClick={() => this.onPressRadioLevel('Master')}
-                                disabled={this.props.isEditFlag}
+                                checked={state?.levelType === Number(module.Value)}
+                                onClick={() => onPressRadioLevel(Number(module.Value))}
+                                disabled={isEditFlag}
                               />{' '}
-                              <span>Master</span>
+                              <span>{module.Text}</span>
                             </Label>
-                          }
-                          {getConfigurationKey().IsShowOnboarding && <Label id="AddApproval_OnBoardingLevel" className={'pl0  radio-box mb-0 pb-3 d-inline-block w-auto'} check>
-                            <input
-                              type="radio"
-                              name="levelType"
-                              checked={this.state.levelType === 'Onboarding' ? true : false}
-                              onClick={() => this.onPressRadioLevel('Onboarding')}
-                              disabled={this.props.isEditFlag}
-                            />{' '}
-                            <span>Onboarding & Management</span>
-                          </Label>}
-                        </Col>
-                      </Row >
-                      <div className="row pr-0">
-                        <div className="input-group  form-group col-md-12 input-withouticon" >
-                          <Field
-                            name="ApprovalType"
-                            type="text"
-                            label="Approval Type"
-                            placeholder="Select"
-                            className="w-100"
-                            component={searchableSelect}
-                            options={this.searchableSelectType('ApprovalType')}
-                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                            validate={(this.state.approvalTypeObject == null || this.state.approvalTypeObject.length === 0) ? [required] : []}
-                            required={true}
-                            handleChangeDescription={this.approvalTypeHandler}
-                            valueDescription={this.state.approvalTypeObject}
-                            disabled={isEditFlag ? true : false}
-                          />
-                        </div>
-                        {this.state.levelType !== 'Onboarding' && <div className="input-group  form-group col-md-12 input-withouticon" >
-                          <Field
-                            name="TechnologyId"
-                            type="text"
-                            label="Technology/Heads"
-                            className="w-100"
-                            component={searchableSelect}
-                            options={this.searchableSelectType('technology')}
-                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                            validate={(this.state.technology == null || this.state.technology.length === 0) ? [required] : []}
-                            placeholder={"Select"}
-                            required={true}
-                            handleChangeDescription={this.technologyHandler}
-                            valueDescription={this.state.technology}
-                            disabled={isEditFlag ? true : false}
-                          />
-                        </div>}
-                        <div className="input-group col-md-12  form-group input-withouticon" >
-                          <Field
-                            name="LevelId"
-                            type="text"
-                            label="Highest Approval Level"
-                            className="w-100"
-                            component={searchableSelect}
-                            options={this.searchableSelectType('level')}
-                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                            validate={(this.state.level == null || this.state.level.length === 0) ? [required] : []}
-                            required={true}
-                            placeholder={"Select"}
-                            handleChangeDescription={this.levelHandler}
-                            valueDescription={this.state.level}
-                          />
-                        </div>
-                        <div className="text-right mt-0 col-md-12">
-                          <button
-                            id="AddApproval_Cancel"
-                            //disabled={pristine || submitting}
-                            onClick={this.cancel}
-                            type="button"
-                            value="CANCEL"
-                            className="reset mr15 cancel-btn">
-                            <div className={"cancel-icon"}></div> CANCEL</button>
-                          <button
-                            id="AddApproval_Save"
-                            type="submit"
-                            disabled={isSubmitted ? true : false}
-                            className="btn-primary save-btn"
-                          >
-                            <div className={"save-icon"}></div>
-                            {isEditFlag ? 'Update' : 'Save'}
-                          </button>
-                        </div>
+                          );
+                        })}
+                      </Col>
+                    </Row>
+                    <div className="row pr-0">
+                      <div className="input-group  form-group col-md-12 input-withouticon" >
+                        <SearchableSelectHookForm
+                          label={'Approval Type'}
+                          name={'ApprovalType'}
+                          placeholder='Select'
+                          Controller={Controller}
+                          control={control}
+                          rules={{ required: true }}
+                          register={register}
+                          options={searchableSelectType('ApprovalType')}
+                          validate={(state?.approvalTypeObject == null || state?.approvalTypeObject.length === 0) ? [required] : []}
+                          handleChange={approvalTypeHandler}
+                          disabled={isEditFlag ? true : false}
+                        //MINDA
+                        // disabled={!(userData.Department.length > 1 && reasonId !== REASON_ID) || disableSR ? true : false}
+                        // errors={errors.approver}
+                        />
                       </div>
-                    </>}
+                      {Number(state?.levelType) !== ONBOARDING_MANAGEMENT_LEVEL && <div className="input-group  form-group col-md-12 input-withouticon" >
+                        <SearchableSelectHookForm
+                          name={"TechnologyId"}
+                          label={"Technology/Heads"}
+                          Controller={Controller}
+                          control={control}
+                          rules={{ required: true }}
+                          register={register}
+                          options={searchableSelectType('technology')}
+                          validate={(state?.technology == null || state?.technology.length === 0) ? [required] : []}
+                          placeholder={"Select"}
+                          handleChange={technologyHandler}
+                          valueDescription={state?.technology}
+                          disabled={isEditFlag ? true : false}
+                        />
+                      </div>}
+                      <div className="input-group col-md-12  form-group input-withouticon" >
+                        <SearchableSelectHookForm
+                          name={"LevelId"}
+                          label={"Highest Approval Level"}
+                          Controller={Controller}
+                          control={control}
+                          rules={{ required: true }}
+                          register={register}
+                          options={searchableSelectType('level')}
+                          validate={(state?.level == null || state?.level.length === 0) ? [required] : []}
+                          placeholder={"Select"}
+                          handleChange={(value) => {
 
-                </div >
-
-              </form >
-            </div >
-          </Container >
-        </Drawer >
-      </div >
-    );
-  }
+                            levelHandler(value);
+                          }}
+                          valueDescription={state?.level}
+                        />
+                      </div>
+                      <div className="text-right mt-0 col-md-12">
+                        <button
+                          id="AddApproval_Cancel"
+                          //disabled={pristine || submitting}
+                          onClick={cancel}
+                          type="button"
+                          value="CANCEL"
+                          className="reset mr15 cancel-btn">
+                          <div className={"cancel-icon"}></div> CANCEL</button>
+                        <button
+                          id="AddApproval_Save"
+                          type="submit"
+                          disabled={state?.isSubmitted ? true : false}
+                          className="btn-primary save-btn"
+                        >
+                          <div className={"save-icon"}></div>
+                          {isEditFlag ? 'Update' : 'Save'}
+                        </button>
+                      </div>
+                    </div>
+                  </>}
+              </div >
+            </form >
+          </div >
+        </Container >
+      </Drawer >
+    </div >
+  );
 }
 
-
-/**
-* @method mapStateToProps
-* @description return state to component as props
-* @param {*} state
-*/
-const mapStateToProps = (state) => {
-  const { auth, comman } = state
-  const { technologyList, levelList, simulationTechnologyList } = auth;
-  const { approvalTypeSelectList } = comman;
-  let initialValues = {};
-
-  return { technologyList, levelList, simulationTechnologyList, initialValues, approvalTypeSelectList };
-};
-
-/**
- * @method connect
- * @description connect with redux
-* @param {function} mapStateToProps
-* @param {function} mapDispatchToProps
-*/
-export default connect(mapStateToProps, {
-  addUserLevelAPI,
-  getUserLevelAPI,
-  getAllLevelAPI,
-  updateUserLevelAPI,
-  setEmptyLevelAPI,
-  getAllTechnologyAPI,
-  setApprovalLevelForTechnology,
-  getLevelMappingAPI,
-  updateLevelMappingAPI,
-  getSimulationTechnologySelectList,
-  addSimulationLevel,
-  updateSimulationLevel,
-  getSimulationLevel,
-  getMastersSelectList,
-  addMasterLevel,
-  updateMasterLevel,
-  getMasterLevel,
-  getApprovalTypeSelectList,
-  addOnboardingLevel,
-  updateOnboardingLevel,
-  getOnboardingLevel,
-  manageLevelTabApi
-})(reduxForm({
-  form: 'Level',
-  enableReinitialize: true,
-  touchOnChange: true
-})(withTranslation(['UserRegistration'])(Level)));
+export default Level

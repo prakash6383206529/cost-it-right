@@ -17,6 +17,7 @@ import HeaderTitle from '../../../../common/HeaderTitle'
 import LoaderCustom from '../../../../common/LoaderCustom'
 import YOYCost from './YOYCost'
 import TooltipCustom from '../../../../common/Tooltip'
+import Tco from './Tco'
 
 function AddNpvCost(props) {
     const { partId, vendorId } = props
@@ -32,9 +33,11 @@ function AddNpvCost(props) {
     const [totalCost, setTotalCost] = useState('')
     const [isLoader, setIsLoader] = useState(false)
     let IsEnterToolCostManually = false
-    const { ToolTabData } = useSelector(state => state.costing)
+    const { ToolTabData, IsRfqCostingType } = useSelector(state => state.costing)
     const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
+    const isRfqCostingTypeDefined = IsRfqCostingType && (IsRfqCostingType?.costingType || IsRfqCostingType?.isRfqCosting);
+    const label = props?.totalCostFromSummary ? 'TCO Cost' : !(isRfqCostingTypeDefined) ? 'Add NPV:' : 'View TCO:';
 
     const { register, control, setValue, getValues, formState: { errors }, } = useForm({
         mode: 'onChange',
@@ -282,9 +285,11 @@ function AddNpvCost(props) {
 
                                 <Row className="drawer-heading">
                                     <Col className='pl-0'>
-                                        {!costingSummary && <div className={'header-wrapper left'}>
-                                            <h3>{'Add NPV:'}</h3>
-                                        </div>}
+                                        {/* !costingSummary && */
+                                            <div className={'header-wrapper left'}>
+
+                                                <h3>{label}</h3>
+                                            </div>}
                                         <div
                                             onClick={cancel}
                                             className={'close-button right'}>
@@ -292,7 +297,7 @@ function AddNpvCost(props) {
                                     </Col>
                                 </Row>
                                 <div className='hidepage-size'>
-                                    {!costingSummary && <Row>
+                                    {!costingSummary && initialConfiguration?.IsShowNpvCost && <Row>
 
                                         <Col md="3" className='pr-1'>
                                             <SearchableSelectHookForm
@@ -388,6 +393,7 @@ function AddNpvCost(props) {
                                                 type="button"
                                                 className={"user-btn  pull-left mt-1"}
                                                 onClick={addData}
+                                                disabled={props.CostingViewMode}
                                             >
                                                 <div className={"plus"}></div>{isEditMode ? "UPDATE" : 'ADD'}
                                             </button>
@@ -395,23 +401,29 @@ function AddNpvCost(props) {
                                                 type="button"
                                                 className={"reset-btn pull-left mt-1 ml5"}
                                                 onClick={resetData}
+                                                disabled={props.CostingViewMode}
                                             >
                                                 Reset
                                             </button>
                                         </Col>
                                     </Row>}
-
+                                    {/* 
                                     {initialConfiguration?.IsShowNpvCost && costingSummary &&
                                         <>
                                             <Col md="12">
                                                 <HeaderTitle className="border-bottom"
-                                                    title={'NPV Cost'}
+                                                    title={props?.totalCostFromSummary ? 'TCO Cost' : 'NPV Cost'}
                                                     customClass={'underLine-title'}
                                                 />
                                             </Col>
                                         </>
-                                    }
-                                    {initialConfiguration?.IsShowNpvCost && <NpvCost showAddButton={false} tableData={tableData} hideAction={costingSummary} editData={editData} />}
+                                    } */}
+                                    {initialConfiguration?.IsShowNpvCost && !props?.totalCostFromSummary && <NpvCost showAddButton={false} tableData={tableData} hideAction={costingSummary} editData={editData} />}
+                                    {(props?.totalCostFromSummary || (initialConfiguration?.IsShowTCO && (IsRfqCostingType?.isRfqCosting || IsRfqCostingType?.costingType))) ? (
+                                        <Tco costingId={props?.costingId} />
+                                    ) : null}
+
+
                                     {initialConfiguration?.IsBasicRateAndCostingConditionVisible && costingSummary &&
                                         <div className='firefox-spaces'>
                                             <Col md="12" className={'mt25 firefox-spaces'}>
@@ -423,7 +435,7 @@ function AddNpvCost(props) {
                                             <ConditionCosting hideAction={true} tableData={conditionTableData} />
                                         </div>}
 
-                                    {costingSummary && props?.isRfqCosting &&
+                                    {/* {costingSummary && props?.isRfqCosting &&
                                         <div className={'mt25 pb-15'}>
                                             <Col md="12" className={'mt25 pb-15'}>
                                                 <HeaderTitle className="border-bottom"
@@ -444,7 +456,7 @@ function AddNpvCost(props) {
                                                 vendorId={vendorId}
                                                 hideAddButton={true}
                                             />
-                                        </div >}
+                                        </div >} */}
                                 </div >
                                 {!costingSummary && <Row className="sf-btn-footer no-gutters drawer-sticky-btn justify-content-between mx-0">
                                     <div className="col-sm-12 text-left bluefooter-butn d-flex justify-content-end">

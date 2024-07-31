@@ -57,8 +57,16 @@ const PaginationControls = ({ totalRecordCount, getDataList, floatingFilterData,
             case 'SupplierManangement':
                 getDataList(newSkip, pageSizeValue, true, floatingFilterData, true)
                 break;
+                case 'IndexData':
+                    getDataList(newSkip, pageSizeValue, true)
+                    break;
+                    case 'CommodityInIndex':
+                        getDataList(newSkip, pageSizeValue, true)
+                        break;
             // audit             getDataList(skip, pageSize, true, filterDataObj);
-
+            // case 'IndexCommodity':
+            //     getDataList(newSkip, pageSizeValue, true)
+            //     break;
 
             default:
                 break;

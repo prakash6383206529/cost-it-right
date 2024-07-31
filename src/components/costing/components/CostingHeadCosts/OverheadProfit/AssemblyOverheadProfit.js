@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { checkForDecimalAndNull, checkForNull, loggedInUserId, } from '../../../../../helper';
-import { getOverheadProfitTabData, gridDataAdded, isOverheadProfitDataChange, saveAssemblyOverheadProfitTab, saveAssemblyPartRowCostingCalculation, saveDiscountOtherCostTab, setComponentOverheadItemData, setOverheadProfitData } from '../../../actions/Costing';
+import { getOverheadProfitTabData, gridDataAdded, isOverheadProfitDataChange, saveAssemblyOverheadProfitTab, saveAssemblyPartRowCostingCalculation, saveCostingPaymentTermDetail, saveDiscountOtherCostTab, setComponentOverheadItemData, setOverheadProfitData } from '../../../actions/Costing';
 import { costingInfoContext, NetPOPriceContext } from '../../CostingDetailStepTwo';
 import OverheadProfit from '.';
 import Toaster from '../../../../common/Toaster';
@@ -11,7 +11,7 @@ import { IsPartType, ViewCostingContext } from '../../CostingDetails';
 import { IdForMultiTechnology, PART_TYPE_ASSEMBLY } from '../../../../../config/masterData';
 import { updateMultiTechnologyTopAndWorkingRowCalculation } from '../../../actions/SubAssembly';
 import { WACTypeId } from '../../../../../config/constants';
-
+import { PreviousTabData } from '../../CostingHeaderTabs';
 function AssemblyOverheadProfit(props) {
   const { item } = props;
 
@@ -24,12 +24,12 @@ function AssemblyOverheadProfit(props) {
   const CostingViewMode = useContext(ViewCostingContext);
   const isPartType = useContext(IsPartType);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const { CostingEffectiveDate, RMCCTabData, SurfaceTabData, PackageAndFreightTabData, DiscountCostData, ToolTabData, getAssemBOPCharge, checkIsOverheadProfitChange, ComponentItemDiscountData } = useSelector(state => state.costing)
+  const { CostingEffectiveDate, RMCCTabData, SurfaceTabData, PackageAndFreightTabData, DiscountCostData, ToolTabData, getAssemBOPCharge, checkIsOverheadProfitChange, ComponentItemDiscountData, PaymentTermDataDiscountTab } = useSelector(state => state.costing)
   const OverheadProfitTabData = useSelector(state => state.costing.OverheadProfitTabData)
 
   const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
   const partType = (IdForMultiTechnology.includes(String(costData.TechnologyId)) || costData.CostingTypeId === WACTypeId)
-
+  const previousTab = useContext(PreviousTabData) || 0;
   const dispatch = useDispatch()
 
   const toggle = (BOMLevel, PartNumber, IsCollapse) => {
@@ -94,7 +94,11 @@ function AssemblyOverheadProfit(props) {
         checkForNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost) + checkForNull(DiscountCostData?.AnyOtherCost) - checkForNull(DiscountCostData?.HundiOrDiscountValue)
     }
 
-    dispatch(saveDiscountOtherCostTab({ ...ComponentItemDiscountData, CallingFrom: 3, BasicRate: basicRate }, res => { }))
+    dispatch(saveDiscountOtherCostTab({ ...ComponentItemDiscountData, CallingFrom: 3, BasicRate: basicRate }, res => {
+      if (Number(previousTab) === 6) {
+        dispatch(saveCostingPaymentTermDetail(PaymentTermDataDiscountTab, (res) => { }));
+      }
+    }))
   }
 
   /**
@@ -122,11 +126,10 @@ function AssemblyOverheadProfit(props) {
       "NetOverheadAndProfitCost": checkForNull(item?.CostingPartDetails?.OverheadCost) +
         checkForNull(item?.CostingPartDetails?.ProfitCost) +
         checkForNull(item?.CostingPartDetails?.RejectionCost) +
-        checkForNull(item?.CostingPartDetails?.ICCCost) +
-        checkForNull(item?.CostingPartDetails?.PaymentTermCost),
+        checkForNull(item?.CostingPartDetails?.ICCCost),
       "CostingPartDetails": {
         ...item?.CostingPartDetails,
-        NetOverheadAndProfitCost: checkForNull(item?.CostingPartDetails?.OverheadCost) + checkForNull(item?.CostingPartDetails?.RejectionCost) + checkForNull(item?.CostingPartDetails?.ProfitCost) + checkForNull(item?.CostingPartDetails?.ICCCost) + checkForNull(item?.CostingPartDetails?.PaymentTermCost),
+        NetOverheadAndProfitCost: checkForNull(item?.CostingPartDetails?.OverheadCost) + checkForNull(item?.CostingPartDetails?.RejectionCost) + checkForNull(item?.CostingPartDetails?.ProfitCost) + checkForNull(item?.CostingPartDetails?.ICCCost),
       },
       "EffectiveDate": CostingEffectiveDate,
       "TotalCost": netPOPrice,
@@ -135,27 +138,28 @@ function AssemblyOverheadProfit(props) {
 
     if (!CostingViewMode && checkIsOverheadProfitChange) {
       if (!IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId) {
-        let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 3, CostingEffectiveDate, '', '', isPartType)
+        let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 3, CostingEffectiveDate, '', '', isPartType, initialConfiguration?.IsAddPaymentTermInNetCost)
 
         dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
       }
       if (partType) {
         let tempsubAssemblyTechnologyArray = subAssemblyTechnologyArray[0]
-        tempsubAssemblyTechnologyArray.CostingPartDetails.NetOverheadAndProfitCost = checkForNull(item?.CostingPartDetails?.OverheadCost) + checkForNull(item?.CostingPartDetails?.RejectionCost) + checkForNull(item?.CostingPartDetails?.ProfitCost) + checkForNull(item?.CostingPartDetails?.ICCCost) + checkForNull(item?.CostingPartDetails?.PaymentTermCost)
+        tempsubAssemblyTechnologyArray.CostingPartDetails.NetOverheadAndProfitCost = checkForNull(item?.CostingPartDetails?.OverheadCost) + checkForNull(item?.CostingPartDetails?.RejectionCost) + checkForNull(item?.CostingPartDetails?.ProfitCost) + checkForNull(item?.CostingPartDetails?.ICCCost) +
 
-        setTimeout(() => {
-          let totalCost = ((checkForNull(tempsubAssemblyTechnologyArray?.CostingPartDetails?.TotalCalculatedRMBOPCCCost) +
-            checkForNull(surfaceTabData?.CostingPartDetails?.NetSurfaceTreatmentCost) +
-            checkForNull(packageAndFreightTabData?.CostingPartDetails?.NetFreightPackagingCost) +
-            checkForNull(toolTabData?.CostingPartDetails?.TotalToolCost)
-            + checkForNull(tempsubAssemblyTechnologyArray?.CostingPartDetails?.NetOverheadAndProfitCost) +
-            checkForNull(DiscountCostData?.AnyOtherCost) + checkForNull(DiscountCostData?.totalConditionCost)) -
-            checkForNull(DiscountCostData?.HundiOrDiscountValue))
+          setTimeout(() => {
+            let totalCost = ((checkForNull(tempsubAssemblyTechnologyArray?.CostingPartDetails?.TotalCalculatedRMBOPCCCost) +
+              checkForNull(surfaceTabData?.CostingPartDetails?.NetSurfaceTreatmentCost) +
+              checkForNull(packageAndFreightTabData?.CostingPartDetails?.NetFreightPackagingCost) +
+              checkForNull(toolTabData?.CostingPartDetails?.TotalToolCost)
+              + checkForNull(tempsubAssemblyTechnologyArray?.CostingPartDetails?.NetOverheadAndProfitCost) +
+              checkForNull(DiscountCostData?.AnyOtherCost) + checkForNull(DiscountCostData?.totalConditionCost)) +
+              (initialConfiguration?.IsAddPaymentTermInNetCost ? checkForNull(DiscountCostData?.paymentTermCost) : 0) -
+              checkForNull(DiscountCostData?.HundiOrDiscountValue))
 
-          let request = formatMultiTechnologyUpdate(subAssemblyTechnologyArray[0], totalCost, surfaceTabData, overHeadAndProfitTabData, packageAndFreightTabData, toolTabData, DiscountCostData, CostingEffectiveDate)
-          dispatch(updateMultiTechnologyTopAndWorkingRowCalculation(request, res => { }))
-          dispatch(gridDataAdded(true))
-        }, 500);
+            let request = formatMultiTechnologyUpdate(subAssemblyTechnologyArray[0], totalCost, surfaceTabData, overHeadAndProfitTabData, packageAndFreightTabData, toolTabData, DiscountCostData, CostingEffectiveDate, initialConfiguration?.IsAddPaymentTermInNetCost)
+            dispatch(updateMultiTechnologyTopAndWorkingRowCalculation(request, res => { }))
+            dispatch(gridDataAdded(true))
+          }, 500);
       }
       dispatch(saveAssemblyOverheadProfitTab(reqData, res => {
         if (res.data.Result) {
@@ -196,7 +200,6 @@ function AssemblyOverheadProfit(props) {
         <td>{item?.CostingPartDetails && item?.CostingPartDetails?.ProfitCost !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.ProfitCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
         <td>{item?.CostingPartDetails && item?.CostingPartDetails?.RejectionCost !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.RejectionCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
         <td>{item?.CostingPartDetails && item?.CostingPartDetails?.ICCCost !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.ICCCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
-        <td className="costing-border-right">{item?.CostingPartDetails && item?.CostingPartDetails?.PaymentTermCost !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.PaymentTermCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
       </tr>
       {item.IsOpen && <tr>
         <td colSpan={8} className="cr-innerwrap-td overhead-profit-container">
@@ -211,7 +214,6 @@ function AssemblyOverheadProfit(props) {
                 setProfitDetail={props.setProfitDetail}
                 setRejectionDetail={props.setRejectionDetail}
                 setICCDetail={props.setICCDetail}
-                setPaymentTermsDetail={props.setPaymentTermsDetail}
                 saveCosting={saveCosting}
               />
             </div>

@@ -59,9 +59,17 @@ import {
   GET_APPROVAL_TYPE_SELECT_LIST,
   GET_DATA_WHILE_LOADING,
   GET_DATA_FROM_REPORT,
-  TOUR_START_DATA
+  TOUR_START_DATA,
+  GET_APPROVAL_MODULE_SELECT_LIST,
+  GET_APPROVAL_TYPE_SELECT_LIST_COSTING,
+  GET_APPROVAL_TYPE_SELECT_LIST_SIMULATION,
+  GET_APPROVAL_TYPE_SELECT_LIST_MASTER,
+  GET_APPROVAL_TYPE_SELECT_LIST_ONBOARDING,
+  GET_RM_EXCHANGE_RATE_SOURCE,
+  GET_COST_FREQUENCY_SETTLEMENT,
+  GET_COMMODITY_INDEX_RATE_AVERAGE
 } from '../config/constants';
-import { apiErrors } from '../helper/util';
+import { apiErrors, encodeQueryParamsAndLog } from '../helper/util';
 import { MESSAGES } from '../config/message';
 import Toaster from '../components/common/Toaster';
 
@@ -1577,20 +1585,90 @@ export function getCostMovementReport(data, callback) {
   }
 }
 
+
+/**
+ * @method selectApprovalType
+ * @description Used to fetch Labour type selectlist
+ */
+export function getApprovalModuleSelectList(callback) {
+  return (dispatch) => {
+    //dispatch({ type: API_REQUEST });
+    const request = axios.get(`${API.getApprovalModuleSelectList}`, config());
+    request.then((response) => {
+      if (response.data.Result) {
+        dispatch({
+          type: GET_APPROVAL_MODULE_SELECT_LIST,
+          payload: response.data.SelectList,
+        });
+        callback(response);
+      }
+    }).catch((error) => {
+      callback(error);
+      apiErrors(error);
+    });
+  };
+}
+
 /**
  * @method getApprovalTypeSelectList
  * @description Used to fetch Labour type selectlist
  */
-export function getApprovalTypeSelectList(callback) {
+export function getApprovalTypeSelectList(callback, id = '') {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getApprovalTypeSelectList}`, config());
-    request.then((response) => {
+    let querryParam = encodeQueryParamsAndLog({ id: id })
+    const request = axios.get(`${API.getApprovalTypeSelectList}?${querryParam}`, config()); request.then((response) => {
       if (response.data.Result) {
         dispatch({
           type: GET_APPROVAL_TYPE_SELECT_LIST,
           payload: response.data.SelectList,
         });
+        callback(response);
+      }
+    }).catch((error) => {
+      callback(error);
+      apiErrors(error);
+    });
+  };
+}
+
+export function getApprovalTypeSelectListUserModule(callback, id = '') {
+  return (dispatch) => {
+    let querryParam = encodeQueryParamsAndLog({ id: id });
+    const request = axios.get(`${API.getApprovalTypeSelectList}?${querryParam}`, config());
+
+    request.then((response) => {
+      if (response.data.Result) {
+        const selectList = response.data.SelectList;
+        // Dispatch actions based on id
+        switch (id) {
+          case '1':
+            dispatch({
+              type: GET_APPROVAL_TYPE_SELECT_LIST_COSTING,
+              payload: selectList,
+            });
+            break;
+          case '2':
+            dispatch({
+              type: GET_APPROVAL_TYPE_SELECT_LIST_SIMULATION,
+              payload: selectList,
+            });
+            break;
+          case '3':
+            dispatch({
+              type: GET_APPROVAL_TYPE_SELECT_LIST_MASTER,
+              payload: selectList,
+            });
+            break;
+          case '4':
+            dispatch({
+              type: GET_APPROVAL_TYPE_SELECT_LIST_ONBOARDING,
+              payload: selectList,
+            });
+            break;
+          default:
+            break;
+        }
         callback(response);
       }
     }).catch((error) => {
@@ -1678,10 +1756,10 @@ export function getConditionDetails(costingId, callback) {
   };
 }
 
-export function getCostingCondition(CostingConditionEntryTypeId, callback) {
+export function getCostingCondition(CostingConditionEntryTypeId, costingConditionTypeId, callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getCostingCondition}?CostingConditionEntryTypeId=${CostingConditionEntryTypeId}`, config());
+    const request = axios.get(`${API.getCostingCondition}?CostingConditionEntryTypeId=${CostingConditionEntryTypeId}&costingConditionTypeId=${costingConditionTypeId}`, config());
     request.then((response) => {
       if (response.data.Result) {
         callback(response);
@@ -1725,4 +1803,75 @@ export function TourStartAction(data) {
       payload: data
     })
   }
+}
+export function getExchangeRateSource(callback) {
+  return (dispatch) => {
+    const request = axios.get(`${API.getExchangeRateSource}`, config());
+    request.then((response) => {
+      if (response?.data.Result || response?.status === 204) {
+        const payload = response?.status === 204 ? [] : response?.data.SelectList;
+
+        dispatch({
+          type: GET_RM_EXCHANGE_RATE_SOURCE,
+          payload: payload,
+        });
+        callback(response);
+
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+      apiErrors(error);
+    });
+  };
+}
+
+export function getFrequencySettlement(callback) {
+  return (dispatch) => {
+    const request = axios.get(`${API.getFrequencySettlement}`, config());
+    request.then((response) => {
+      if (response?.data.Result || response?.status === 204) {
+        const payload = response?.status === 204 ? [] : response?.data.SelectList;
+
+        dispatch({
+          type: GET_COST_FREQUENCY_SETTLEMENT,
+          payload: payload,
+        });
+        callback(response);
+
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+      apiErrors(error);
+    });
+  };
+}
+
+// /**
+//  * @method getMaterialTypeDataAPI
+//  * @description get material type data
+//  */
+export function getCommodityIndexRateAverage(materialTypeId, indexExchangeId, unitOfMeasurementId, currencyId, exchangeRateSourceName, fromDate, toDate, callback) {
+  return (dispatch) => {
+    if (materialTypeId || indexExchangeId || exchangeRateSourceName) {
+      axios.get(`${API.getCommodityIndexRateAverage}?materialTypeId=${materialTypeId}&indexExchangeId=${indexExchangeId}&unitOfMeasurementId=${''}&toCurrencyId=${currencyId ?? ''}&exchangeRateSourceName=${exchangeRateSourceName}&fromDate=${fromDate}&toDate=${toDate}`, config())
+        .then((response) => {
+          dispatch({
+            type: GET_COMMODITY_INDEX_RATE_AVERAGE,
+            payload: response?.data.Data,
+          });
+          callback(response)
+        }).catch((error) => {
+          dispatch({ type: API_FAILURE });
+          apiErrors(error);
+        });
+    } else {
+      dispatch({
+        type: GET_COMMODITY_INDEX_RATE_AVERAGE,
+        payload: {},
+      });
+      callback()
+    }
+  };
 }

@@ -2,13 +2,13 @@ import React, { useState, useEffect, useContext } from 'react';
 import { Col, Row, Table } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import NoContentFound from '../../../../common/NoContentFound';
-import { EMPTY_DATA } from '../../../../../config/constants';
+import { EMPTY_DATA, Per_Kg_Load } from '../../../../../config/constants';
 import AddFreight from '../../Drawers/AddFreight';
 import { Fixed, FullTruckLoad, PartTruckLoad, Percentage } from '../../../../../config/constants';
 import { ViewCostingContext } from '../../CostingDetails';
 import { gridDataAdded, isPackageAndFreightDataChange } from '../../../actions/Costing';
 import { checkForDecimalAndNull, CheckIsCostingDateSelected } from '../../../../../helper';
-import { LOGISTICS } from '../../../../../config/masterData';
+import { LOGISTICS, PACK_AND_FREIGHT_PER_KG } from '../../../../../config/masterData';
 import Button from '../../../../layout/Button';
 
 function FreightCost(props) {
@@ -18,6 +18,7 @@ function FreightCost(props) {
   const [editIndex, setEditIndex] = useState('')
   const [isEditFlag, setIsEditFlag] = useState(false)
   const [isDrawerOpen, setDrawerOpen] = useState(false)
+  const [isAddFlag, setIsAddFlag] = useState(false)
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
 
   const dispatch = useDispatch()
@@ -37,7 +38,9 @@ function FreightCost(props) {
   */
   const DrawerToggle = () => {
     if (costingData.TechnologyId === LOGISTICS && CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
+    setRowObjData({})
     setDrawerOpen(true)
+    setIsAddFlag(true)
     setIsEditFlag(false)
   }
 
@@ -52,12 +55,14 @@ function FreightCost(props) {
         setGridData(tempArr)
         setEditIndex('')
         setIsEditFlag(false)
+        setIsAddFlag(false)
         setRowObjData(tempArr)
       } else {
         let tempArr = [...gridData, rowData]
         setGridData(tempArr)
         setEditIndex('')
         setIsEditFlag(false)
+        setIsAddFlag(false)
         setRowObjData(tempArr)
       }
       dispatch(gridDataAdded(true))
@@ -77,6 +82,7 @@ function FreightCost(props) {
     let tempArr = gridData && gridData.find((el, i) => i === index)
     setEditIndex(index)
     setIsEditFlag(true)
+    setIsAddFlag(false)
     setRowObjData(tempArr)
     setDrawerOpen(true)
   }
@@ -131,16 +137,16 @@ function FreightCost(props) {
 
                         if (item.EFreightLoadType === Fixed) EFreightLoadTypeText = 'Fixed';
                         if (item.EFreightLoadType === Percentage) EFreightLoadTypeText = 'Percentage';
-                        if (item.EFreightLoadType === FullTruckLoad) EFreightLoadTypeText = 'FTL';
-                        if (item.EFreightLoadType === PartTruckLoad) EFreightLoadTypeText = 'PTL';
+                        if (item.EFreightLoadType === FullTruckLoad) EFreightLoadTypeText = 'Full Truck Load';
+                        if (item.EFreightLoadType === PartTruckLoad) EFreightLoadTypeText = 'Part Truck Load';
 
                         return (
                           <tr key={index}>
                             <td>{EFreightLoadTypeText}</td>
-                            <td>{item.EFreightLoadType === Fixed || item.EFreightLoadType === Percentage ? '-' : item.Capacity}</td>
-                            <td>{item.EFreightLoadType === Fixed ? '-' : (item.EFreightLoadType === Percentage ? item.Criteria : '-')}</td>
-                            <td>{item.EFreightLoadType === Fixed ? '-' : (item.EFreightLoadType === Percentage ? item.Rate : '-')}</td>
-                            <td>{item.EFreightLoadType === Fixed || item.EFreightLoadType === Percentage ? '-' : item.Quantity}</td>
+                            <td>{item.Capacity ? item.Capacity : '-'}</td>
+                            <td>{item.Criteria ? item.Criteria : '-'}</td>
+                            <td>{item.Rate ? item.Rate : '-'}</td>
+                            <td>{item.Quantity ? item.Quantity : '-'}</td>
                             <td>{checkForDecimalAndNull(item.FreightCost, initialConfiguration.NoOfDecimalForPrice)}</td>
                             {initialConfiguration.IsShowCRMHead && <td>{item?.FreightCRMHead}</td>}
                             <td style={{ textAlign: "right" }}>
@@ -174,6 +180,8 @@ function FreightCost(props) {
         editIndex={editIndex}
         rowObjData={rowObjData}
         anchor={'right'}
+        isAddFlag={isAddFlag}
+        gridData={gridData}
       />}
     </ >
   );

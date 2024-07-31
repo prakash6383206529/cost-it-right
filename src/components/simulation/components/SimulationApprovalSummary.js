@@ -11,11 +11,11 @@ import {
     LastGridForTokenSummary, OperationGridForTokenSummary, RMGridForTokenSummary, STGridForTokenSummary,
     SIMULATIONAPPROVALSUMMARYDOWNLOADST, ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl, CPGridForTokenSummary, SIMULATIONAPPROVALSUMMARYDOWNLOADOPERATION, SIMULATIONAPPROVALSUMMARYDOWNLOADMR, MRGridForTokenSummary, SIMULATIONAPPROVALSUMMARYDOWNLOADASSEMBLYTECHNOLOGY, ASSEMBLY_TECHNOLOGY_MASTER, SIMULATIONAPPROVALSUMMARYDOWNLOADCP, SIMULATIONAPPROVALSUMMARYDOWNLOADBOPWITHOUTCOSTING, SIMULATIONAPPROVALSUMMARYDOWNLOADER
 } from '../../../config/masterData';
-import { getApprovalSimulatedCostingSummary, getComparisionSimulationData, getImpactedMasterData, getLastSimulationData, uploadSimulationAttachment, getSimulatedAssemblyWiseImpactDate } from '../actions/Simulation'
+import { getApprovalSimulatedCostingSummary, getComparisionSimulationData, getImpactedMasterData, getLastSimulationData, uploadSimulationAttachment, getSimulatedAssemblyWiseImpactDate, getApprovalSimulatedRawMaterialSummary } from '../actions/Simulation'
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
 import Toaster from '../../common/Toaster';
-import { EXCHNAGERATE, RMDOMESTIC, RMIMPORT, FILE_URL, COMBINED_PROCESS, SURFACETREATMENT, OPERATIONS, BOPDOMESTIC, BOPIMPORT, AssemblyWiseImpactt, ImpactMaster, defaultPageSize, MACHINERATE, VBCTypeId, CBCTypeId, ZBCTypeId, } from '../../../config/constants';
+import { EXCHNAGERATE, RMDOMESTIC, RMIMPORT, FILE_URL, COMBINED_PROCESS, SURFACETREATMENT, OPERATIONS, BOPDOMESTIC, BOPIMPORT, AssemblyWiseImpactt, ImpactMaster, defaultPageSize, MACHINERATE, VBCTypeId, CBCTypeId, ZBCTypeId, RAWMATERIALINDEX, } from '../../../config/constants';
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
 import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter, handleDepartmentHeader, showSaLineNumber, showBopLabel } from '../../../helper';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -46,6 +46,7 @@ import { hideColumnFromExcel, hideMultipleColumnFromExcel } from '../../common/C
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { costingTypeIdToApprovalTypeIdFunction } from '../../common/CommonFunctions';
 import SimulationApproveReject from '../../costing/components/approval/SimulationApproveReject';
+import RMIndexationSimulation from './SimulationPages/RMIndexationSimulation';
 
 const gridOptions = {};
 const ExcelFile = ReactExport.ExcelFile;
@@ -54,7 +55,7 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 function SimulationApprovalSummary(props) {
     const { isbulkUpload } = props;
-    const { approvalNumber, approvalId, SimulationTechnologyId } = props?.location?.state
+    const { approvalNumber, approvalId, SimulationTechnologyId, simulationId } = props?.location?.state
     const [showImpactedData, setshowImpactedData] = useState(false)
     const [fgWiseDataAcc, setFgWiseDataAcc] = useState(true)
     const [assemblyWiseAcc, setAssemblyWiseAcc] = useState(true)
@@ -156,127 +157,159 @@ function SimulationApprovalSummary(props) {
             approvalId: approvalId,
             loggedInUserId: loggedInUserId(),
         }
+        const params = {
+            simulationId: simulationId,
+            loggedInUserId: loggedInUserId(),
+        }
         setLoader(false)
-        dispatch(getApprovalSimulatedCostingSummary(reqParams, res => {
-            const { SimulationSteps, SimulatedCostingList, SimulationApprovalProcessId, Token, NumberOfCostings, IsSent, IsFinalLevelButtonShow,
-                IsPushedButtonShow, SimulationTechnologyId, SimulationApprovalProcessSummaryId, DepartmentCode, EffectiveDate, SimulationId, MaterialGroup, PurchasingGroup, DecimalOption,
-                SenderReason, ImpactedMasterDataList, AmendmentDetails, Attachements, SenderReasonId, DepartmentId, TotalImpactPerQuarter, SimulationHeadId, TotalBudgetedPriceImpactPerQuarter, PartType, IsSimulationWithOutCosting, ApprovalTypeId } = res.data.Data
-            setApprovalTypeId(ApprovalTypeId)
-            let uniqueArr
-            setSimulationData(res?.data?.Data)
-            setDataForFetchingAllApprover({
-                processId: SimulationApprovalProcessId,
-                levelId: SimulationSteps[SimulationSteps.length - 1].LevelId,
-                mode: 'Simulation'
-            })
-            if (IsSimulationWithOutCosting) {
-                uniqueArr = SimulatedCostingList
-            } else {
-                uniqueArr = _.uniqBy(SimulatedCostingList, function (o) {
-                    return o.CostingId;
-                });
-            }
-            setCostingSummary(false)
-            setTimeout(() => {
-                setCostingSummary(true)
-            }, 100);
-
-            setCostingList(uniqueArr)
-            setDataForDownload(SimulatedCostingList)
-            setApprovalLevelStep(SimulationSteps)
-            setEffectiveDate(res.data.Data.EffectiveDate)
-
-            setSimulationDetail({
-                SimulationApprovalProcessId: SimulationApprovalProcessId, Token: Token, NumberOfCostings: NumberOfCostings,
-                SimulationTechnologyId: SimulationTechnologyId, SimulationApprovalProcessSummaryId: SimulationApprovalProcessSummaryId,
-                DepartmentCode: DepartmentCode, EffectiveDate: EffectiveDate, SimulationId: SimulationId, SenderReason: SenderReason,
-                ImpactedMasterDataList: ImpactedMasterDataList, AmendmentDetails: AmendmentDetails, MaterialGroup: MaterialGroup,
-                PurchasingGroup: PurchasingGroup, DecimalOption: DecimalOption, Attachements: Attachements, SenderReasonId: SenderReasonId, DepartmentId: DepartmentId
-                , TotalImpactPerQuarter: TotalImpactPerQuarter, SimulationHeadId: SimulationHeadId, TotalBudgetedPriceImpactPerQuarter: TotalBudgetedPriceImpactPerQuarter
-                , PartType: PartType, ApprovalTypeId: ApprovalTypeId
-            })
-            let requestObject = {}
-
-            requestObject.IsCreate = false
-            requestObject.CostingId = []
-            setCostingIdArray(requestObject)
-            setFiles(Attachements)
-            // dispatch(setAttachmentFileData(Attachements, () => { }))               //RE
-            setIsApprovalDone(IsSent)
-            // setIsApprovalDone(false)
-            setShowFinalLevelButton(IsFinalLevelButtonShow)
-            /****************************************WHENEVER WE ENABLE PUSH BUTTON UNCOMMENT THIS********************************************/
-            setShowPushButton(IsPushedButtonShow)
-
-            // SimulatedCostingList CONTAINS LIST TO SHOW ON UI | SUMMARY BLOCK
-            if (SimulatedCostingList !== undefined && (Object.keys(SimulatedCostingList).length !== 0 || SimulatedCostingList.length > 0)) {
-                let requestData = []
-                let isAssemblyInDraft = false
-
-                // UNIQUE LIST BY CostingId 
-                let uniqueArr = _.uniqBy(SimulatedCostingList, function (o) {
-                    return o.CostingId;
-                });
-
-                // CREATE OBJECT FOR ASSEMBLY WISE IMPACT API
-                uniqueArr && uniqueArr.map(item => {
-                    requestData.push({ CostingId: item.CostingId, delta: item.POVariance, IsSinglePartImpact: false, SimulationId: SimulationId })
-                    return null
+        if (Number(SimulationTechnologyId) === Number(RAWMATERIALINDEX)) {
+            dispatch(getApprovalSimulatedRawMaterialSummary(params, res => {
+                const { SimulationSteps, SimulatedCostingList, SimulationApprovalProcessId, Token, NumberOfCostings, IsSent, IsFinalLevelButtonShow,
+                    IsPushedButtonShow, SimulationTechnologyId, SimulationApprovalProcessSummaryId, DepartmentCode, EffectiveDate, SimulationId, MaterialGroup, PurchasingGroup, DecimalOption,
+                    SenderReason, ImpactedMasterDataList, AmendmentDetails, Attachements, SenderReasonId, DepartmentId, TotalImpactPerQuarter, SimulationHeadId, TotalBudgetedPriceImpactPerQuarter, PartType, IsSimulationWithOutCosting, ApprovalTypeId } = res.data.Data
+                setSimulationData(res?.data?.Data)
+                setApprovalTypeId(ApprovalTypeId)
+                setDataForFetchingAllApprover({
+                    processId: SimulationApprovalProcessId,
+                    levelId: SimulationSteps[SimulationSteps.length - 1].LevelId,
+                    mode: 'Simulation'
                 })
+                setApprovalLevelStep(SimulationSteps)
+                setSimulationDetail({
+                    SimulationApprovalProcessId: SimulationApprovalProcessId, Token: Token, NumberOfCostings: NumberOfCostings,
+                    SimulationTechnologyId: SimulationTechnologyId, SimulationApprovalProcessSummaryId: SimulationApprovalProcessSummaryId,
+                    DepartmentCode: DepartmentCode, EffectiveDate: EffectiveDate, SimulationId: SimulationId, SenderReason: SenderReason,
+                    ImpactedMasterDataList: ImpactedMasterDataList, AmendmentDetails: AmendmentDetails, MaterialGroup: MaterialGroup,
+                    PurchasingGroup: PurchasingGroup, DecimalOption: DecimalOption, Attachements: Attachements, SenderReasonId: SenderReasonId, DepartmentId: DepartmentId
+                    , TotalImpactPerQuarter: TotalImpactPerQuarter, SimulationHeadId: SimulationHeadId, TotalBudgetedPriceImpactPerQuarter: TotalBudgetedPriceImpactPerQuarter
+                    , PartType: PartType, ApprovalTypeId: ApprovalTypeId
+                })
+                setIsApprovalDone(IsSent)
+                setShowFinalLevelButton(IsFinalLevelButtonShow)
+                setFiles(Attachements)
+            }))
+        } else {
+            dispatch(getApprovalSimulatedCostingSummary(reqParams, res => {
+                const { SimulationSteps, SimulatedCostingList, SimulationApprovalProcessId, Token, NumberOfCostings, IsSent, IsFinalLevelButtonShow,
+                    IsPushedButtonShow, SimulationTechnologyId, SimulationApprovalProcessSummaryId, DepartmentCode, EffectiveDate, SimulationId, MaterialGroup, PurchasingGroup, DecimalOption,
+                    SenderReason, ImpactedMasterDataList, AmendmentDetails, Attachements, SenderReasonId, DepartmentId, TotalImpactPerQuarter, SimulationHeadId, TotalBudgetedPriceImpactPerQuarter, PartType, IsSimulationWithOutCosting, ApprovalTypeId } = res.data.Data
+                setApprovalTypeId(ApprovalTypeId)
+                let uniqueArr
+                setSimulationData(res?.data?.Data)
+                setDataForFetchingAllApprover({
+                    processId: SimulationApprovalProcessId,
+                    levelId: SimulationSteps[SimulationSteps.length - 1].LevelId,
+                    mode: 'Simulation'
+                })
+                if (IsSimulationWithOutCosting) {
+                    uniqueArr = SimulatedCostingList
+                } else {
+                    uniqueArr = _.uniqBy(SimulatedCostingList, function (o) {
+                        return o.CostingId;
+                    });
+                }
+                setCostingSummary(false)
+                setTimeout(() => {
+                    setCostingSummary(true)
+                }, 100);
 
-                dispatch(getSimulatedAssemblyWiseImpactDate(requestData, isAssemblyInDraft, (res) => {
-                }))
-            }
+                setCostingList(uniqueArr)
+                setDataForDownload(SimulatedCostingList)
+                setApprovalLevelStep(SimulationSteps)
+                setEffectiveDate(res.data.Data.EffectiveDate)
 
-            // const valueTemp = {
-            //     CostingHead: SimulatedCostingList[0].CostingHead === 'VBC' ? 1 : 0,
-            //     impactPartNumber: SimulatedCostingList[0].PartNo,
-            //     plantCode: SimulatedCostingList[0].PlantCode,
-            //     vendorId: SimulatedCostingList[0].CostingHead === 'VBC' ? SimulatedCostingList[0].VendorId : EMPTY_GUID,
-            //     delta: SimulatedCostingList[0].Variance,
-            //     quantity: 1
-            // }
-            setdataForAssemblyImpactForFg(SimulatedCostingList)
+                setSimulationDetail({
+                    SimulationApprovalProcessId: SimulationApprovalProcessId, Token: Token, NumberOfCostings: NumberOfCostings,
+                    SimulationTechnologyId: SimulationTechnologyId, SimulationApprovalProcessSummaryId: SimulationApprovalProcessSummaryId,
+                    DepartmentCode: DepartmentCode, EffectiveDate: EffectiveDate, SimulationId: SimulationId, SenderReason: SenderReason,
+                    ImpactedMasterDataList: ImpactedMasterDataList, AmendmentDetails: AmendmentDetails, MaterialGroup: MaterialGroup,
+                    PurchasingGroup: PurchasingGroup, DecimalOption: DecimalOption, Attachements: Attachements, SenderReasonId: SenderReasonId, DepartmentId: DepartmentId
+                    , TotalImpactPerQuarter: TotalImpactPerQuarter, SimulationHeadId: SimulationHeadId, TotalBudgetedPriceImpactPerQuarter: TotalBudgetedPriceImpactPerQuarter
+                    , PartType: PartType, ApprovalTypeId: ApprovalTypeId
+                })
+                let requestObject = {}
 
-            // if (initialConfiguration.IsReleaseStrategyConfigured) {
-            //     let requestObject = {
-            //         "RequestFor": "SIMULATION",
-            //         "TechnologyId": SimulationTechnologyId,
-            //         "LoggedInUserId": loggedInUserId(),
-            //         "ReleaseStrategyApprovalDetails": [{ SimulationId: SimulationId }]
-            //     }
-            //     dispatch(getReleaseStrategyApprovalDetails(requestObject, (res) => {
-            //         setReleaseStrategyDetails(res?.data?.Data)
-            //         if (res?.data?.Data?.IsUserInApprovalFlow && !res?.data?.Data?.IsFinalApprover) {
+                requestObject.IsCreate = false
+                requestObject.CostingId = []
+                setCostingIdArray(requestObject)
+                setFiles(Attachements)
+                // dispatch(setAttachmentFileData(Attachements, () => { }))               //RE
+                setIsApprovalDone(IsSent)
+                // setIsApprovalDone(false)
+                setShowFinalLevelButton(IsFinalLevelButtonShow)
+                /****************************************WHENEVER WE ENABLE PUSH BUTTON UNCOMMENT THIS********************************************/
+                setShowPushButton(IsPushedButtonShow)
 
-            //         } else if (res?.data?.Data?.IsPFSOrBudgetingDetailsExist === false) {
-            //             let obj = {
-            //                 DepartmentId: DepartmentId,
-            //                 UserId: loggedInUserId(),
-            //                 TechnologyId: SimulationTechnologyId,
-            //                 Mode: 'simulation',
-            //                 approvalTypeId: ApprovalTypeId,
-            //             }
-            //             dispatch(checkFinalUser(obj, res => {
-            //                 if (res && res.data && res.data.Result) {
-            //                     setFinalLevelUser(res.data.Data.IsFinalApprover)
-            //                 }
-            //             }))
-            //         } else if (res?.data?.Data?.IsFinalApprover) {
-            //             setFinalLevelUser(res?.data?.Data?.IsFinalApprover)
-            //             return false
-            //         } else if (res?.data?.Result === false) {
-            //         } else {
-            //         }
-            //     }))
-            // } else {
-        }))
+                // SimulatedCostingList CONTAINS LIST TO SHOW ON UI | SUMMARY BLOCK
+                if (SimulatedCostingList !== undefined && (Object.keys(SimulatedCostingList).length !== 0 || SimulatedCostingList.length > 0)) {
+                    let requestData = []
+                    let isAssemblyInDraft = false
+
+                    // UNIQUE LIST BY CostingId 
+                    let uniqueArr = _.uniqBy(SimulatedCostingList, function (o) {
+                        return o.CostingId;
+                    });
+
+                    // CREATE OBJECT FOR ASSEMBLY WISE IMPACT API
+                    uniqueArr && uniqueArr.map(item => {
+                        requestData.push({ CostingId: item.CostingId, delta: item.POVariance, IsSinglePartImpact: false, SimulationId: SimulationId })
+                        return null
+                    })
+
+                    dispatch(getSimulatedAssemblyWiseImpactDate(requestData, isAssemblyInDraft, (res) => {
+                    }))
+                }
+
+                // const valueTemp = {
+                //     CostingHead: SimulatedCostingList[0].CostingHead === 'VBC' ? 1 : 0,
+                //     impactPartNumber: SimulatedCostingList[0].PartNo,
+                //     plantCode: SimulatedCostingList[0].PlantCode,
+                //     vendorId: SimulatedCostingList[0].CostingHead === 'VBC' ? SimulatedCostingList[0].VendorId : EMPTY_GUID,
+                //     delta: SimulatedCostingList[0].Variance,
+                //     quantity: 1
+                // }
+                setdataForAssemblyImpactForFg(SimulatedCostingList)
+
+                // if (initialConfiguration.IsReleaseStrategyConfigured) {
+                //     let requestObject = {
+                //         "RequestFor": "SIMULATION",
+                //         "TechnologyId": SimulationTechnologyId,
+                //         "LoggedInUserId": loggedInUserId(),
+                //         "ReleaseStrategyApprovalDetails": [{ SimulationId: SimulationId }]
+                //     }
+                //     dispatch(getReleaseStrategyApprovalDetails(requestObject, (res) => {
+                //         setReleaseStrategyDetails(res?.data?.Data)
+                //         if (res?.data?.Data?.IsUserInApprovalFlow && !res?.data?.Data?.IsFinalApprover) {
+
+                //         } else if (res?.data?.Data?.IsPFSOrBudgetingDetailsExist === false) {
+                //             let obj = {
+                //                 DepartmentId: DepartmentId,
+                //                 UserId: loggedInUserId(),
+                //                 TechnologyId: SimulationTechnologyId,
+                //                 Mode: 'simulation',
+                //                 approvalTypeId: ApprovalTypeId,
+                //             }
+                //             dispatch(checkFinalUser(obj, res => {
+                //                 if (res && res.data && res.data.Result) {
+                //                     setFinalLevelUser(res.data.Data.IsFinalApprover)
+                //                 }
+                //             }))
+                //         } else if (res?.data?.Data?.IsFinalApprover) {
+                //             setFinalLevelUser(res?.data?.Data?.IsFinalApprover)
+                //             return false
+                //         } else if (res?.data?.Result === false) {
+                //         } else {
+                //         }
+                //     }))
+                // } else {
+            }))
+        }
         return () => {
             dispatch(storePartNumber(''))
         }
     }, [])
     useEffect(() => {
-        if (simulationData && Object.keys(simulationData)?.length > 0) {
+        if ((simulationData && Object.keys(simulationData)?.length > 0)) {
             let technologyIdTemp = simulationData?.SimulationTechnologyId
             if (simulationData?.IsExchangeRateSimulation) {
                 if (String(simulationData?.SimulationTechnologyId) === String(RMIMPORT) || String(simulationData?.SimulationTechnologyId) === String(BOPIMPORT)) {
@@ -290,12 +323,12 @@ function SimulationApprovalSummary(props) {
                 UserId: loggedInUserId(),
                 TechnologyId: technologyIdTemp,
                 Mode: 'simulation',
-                approvalTypeId: approvalTypeId,
+                approvalTypeId: approvalTypeId === null ? simulationData.ApprovalTypeId : approvalTypeId,
 
                 // approvalTypeId: costingTypeIdToApprovalTypeIdFunction(simulationData.SimulationHeadId),
-                plantId: simulationData?.SimulatedCostingList[0]?.PlantId
+                plantId: simulationData?.SimulatedCostingList && simulationData?.SimulatedCostingList[0]?.PlantId ? simulationData?.SimulatedCostingList[0]?.PlantId : null
             }
-            if (initialConfiguration?.IsMultipleUserAllowForApproval ? simulationData?.SimulatedCostingList[0]?.PlantId : true) {
+            if (initialConfiguration?.IsMultipleUserAllowForApproval ? simulationData?.SimulatedCostingList && simulationData?.SimulatedCostingList[0]?.PlantId ? simulationData?.SimulatedCostingList[0]?.PlantId : true : true) {
                 dispatch(checkFinalUser(obj, res => {
                     if (res && res.data && res.data.Result) {
                         setFinalLevelUser(res.data.Data.IsFinalApprover)
@@ -329,17 +362,14 @@ function SimulationApprovalSummary(props) {
         setShowExchangeRateColumn(keysForDownloadSummary?.IsExchangeRateSimulation === true ? true : false)
         setShowMachineRateColumn(keysForDownloadSummary?.IsMachineProcessSimulation === true ? true : false)
         setShowCombinedProcessColumn(keysForDownloadSummary?.IsCombinedProcessSimulation === true ? true : false)
-
         setTimeout(() => {
-
-            setLoader(true)
+            setLoader(false)
         }, 500);
 
     }
 
     useEffect(() => {
         hideColumn()
-
     }, [keysForDownloadSummary])
 
     useEffect(() => {
@@ -1135,8 +1165,8 @@ function SimulationApprovalSummary(props) {
             {showListing === false &&
                 <>
                     <CalculatorWrapper />
-                    {!loader && <LoaderCustom />}
-                    <div className={`container-fluid  smh-approval-summary-page ${!loader === true ? 'loader-wrapper' : ''}`} id="go-to-top">
+                    {/* {!loader && <LoaderCustom />} */}
+                    <div className={`container-fluid  smh-approval-summary-page ${!loader === true ? '' : ''}`} id="go-to-top">
                         {getConfigurationKey()?.IsSAPConfigured && costingList[0]?.CostingId && <ErrorMessage isCosting={false} approvalNumber={approvalNumber} />}
                         <h2 className="heading-main">Approval Summary</h2>
                         <ScrollToTop pointProp={"go-to-top"} />
@@ -1188,16 +1218,18 @@ function SimulationApprovalSummary(props) {
                                         <tr>
                                             <th>Token No:</th>
                                             {isMasterAssociatedWithCosting && <th>Technology:</th>}
-                                            <th>Parts Supplied:</th>
+                                            {Number(SimulationTechnologyId) !== Number(RAWMATERIALINDEX) && <th>Parts Supplied:</th>}
                                             <th>{handleDepartmentHeader()} Code:</th>
-                                            {String(SimulationTechnologyId) !== EXCHNAGERATE && <th>Costing Head:</th>}
-                                            {simulationDetail?.SimulationHeadId !== CBCTypeId && simulationDetail?.SimulationHeadId !== ZBCTypeId && <th>Vendor (Code):</th>}
-                                            {simulationDetail?.SimulationHeadId === ZBCTypeId && <th>Plant (Code):</th>}
-                                            {simulationDetail?.SimulationHeadId === CBCTypeId && <th>Customer (Code):</th>}
-                                            <th>Impacted Parts:</th>
+                                            {Number(SimulationTechnologyId) !== Number(RAWMATERIALINDEX) && <>
+                                                {String(SimulationTechnologyId) !== EXCHNAGERATE && <th>Costing Head:</th>}
+                                                {simulationDetail?.SimulationHeadId !== CBCTypeId && simulationDetail?.SimulationHeadId !== ZBCTypeId && <th>Vendor (Code):</th>}
+                                                {simulationDetail?.SimulationHeadId === ZBCTypeId && <th>Plant (Code):</th>}
+                                                {simulationDetail?.SimulationHeadId === CBCTypeId && <th>Customer (Code):</th>}
+                                                <th>Impacted Parts:</th>
+                                            </>}
                                             <th>Reason:</th>
                                             <th>Master:</th>
-                                            <th>Effective Date:</th>
+                                            {Number(SimulationTechnologyId) !== Number(RAWMATERIALINDEX) && <th>Effective Date:</th>}
                                             {isMasterAssociatedWithCosting && <th>Impact/Quarter (w.r.t. Existing):</th>}
                                             {isMasterAssociatedWithCosting && <th>Impact/Quarter (w.r.t. Budgeted Price):</th>}
                                         </tr >
@@ -1206,16 +1238,18 @@ function SimulationApprovalSummary(props) {
                                         <tr>
                                             <td>{simulationDetail && simulationDetail?.AmendmentDetails?.TokenNumber}</td>
                                             {isMasterAssociatedWithCosting && <td>{simulationDetail && simulationDetail?.AmendmentDetails?.Technology}</td>}
-                                            <td>{simulationDetail && simulationDetail?.AmendmentDetails?.PartsSupplied}</td>
+                                            {Number(SimulationTechnologyId) !== Number(RAWMATERIALINDEX) && <td>{simulationDetail && simulationDetail?.AmendmentDetails?.PartsSupplied}</td>}
                                             <td>{simulationDetail && simulationDetail?.DepartmentCode ? simulationDetail?.DepartmentCode : '-'}</td>
-                                            {String(SimulationTechnologyId) !== EXCHNAGERATE && <td>{simulationDetail && simulationDetail?.AmendmentDetails?.CostingHead}</td>}
-                                            {simulationDetail?.SimulationHeadId !== CBCTypeId && simulationDetail?.SimulationHeadId !== ZBCTypeId && <td>{simulationDetail && simulationDetail?.AmendmentDetails?.VendorName}</td>}
-                                            {simulationDetail?.SimulationHeadId === ZBCTypeId && <td>{simulationDetail && simulationDetail?.AmendmentDetails?.PlantName}</td>}
-                                            {simulationDetail?.SimulationHeadId === CBCTypeId && <td>{simulationDetail && simulationDetail?.AmendmentDetails?.CustomerName}</td>}
-                                            <td>{simulationDetail && simulationDetail?.AmendmentDetails?.ImpactParts}</td>
+                                            {Number(SimulationTechnologyId) !== Number(RAWMATERIALINDEX) && <>
+                                                {String(SimulationTechnologyId) !== EXCHNAGERATE && <td>{simulationDetail && simulationDetail?.AmendmentDetails?.CostingHead}</td>}
+                                                {simulationDetail?.SimulationHeadId !== CBCTypeId && simulationDetail?.SimulationHeadId !== ZBCTypeId && <td>{simulationDetail && simulationDetail?.AmendmentDetails?.VendorName}</td>}
+                                                {simulationDetail?.SimulationHeadId === ZBCTypeId && <td>{simulationDetail && simulationDetail?.AmendmentDetails?.PlantName}</td>}
+                                                {simulationDetail?.SimulationHeadId === CBCTypeId && <td>{simulationDetail && simulationDetail?.AmendmentDetails?.CustomerName}</td>}
+                                                <td>{simulationDetail && simulationDetail?.AmendmentDetails?.ImpactParts}</td>
+                                            </>}
                                             <td>{simulationDetail && simulationDetail?.AmendmentDetails?.Reason}</td>
                                             <td>{simulationDetail && simulationDetail?.AmendmentDetails?.SimulationTechnology}</td>
-                                            <td>{simulationDetail && DayTime(simulationDetail?.AmendmentDetails?.EffectiveDate).format('DD/MM/YYYY')}</td>
+                                            {Number(SimulationTechnologyId) !== Number(RAWMATERIALINDEX) && <td>{simulationDetail && DayTime(simulationDetail?.AmendmentDetails?.EffectiveDate).format('DD/MM/YYYY')}</td>}
                                             {isMasterAssociatedWithCosting && <td>{simulationDetail && (simulationDetail?.TotalImpactPerQuarter ? checkForDecimalAndNull(simulationDetail?.TotalImpactPerQuarter, initialConfiguration?.NoOfDecimalForPrice) : '-')}</td>}
                                             {isMasterAssociatedWithCosting && <td>{simulationDetail && (simulationDetail?.TotalBudgetedPriceImpactPerQuarter ? checkForDecimalAndNull(simulationDetail?.TotalBudgetedPriceImpactPerQuarter, initialConfiguration?.NoOfDecimalForPrice) : '-')}</td>}
                                         </tr >
@@ -1225,7 +1259,7 @@ function SimulationApprovalSummary(props) {
                         </Row >
                         {/* } */}
 
-                        < Row className='reset-btn-container' >
+                        {Number(SimulationTechnologyId) !== Number(RAWMATERIALINDEX) && < Row className='reset-btn-container' >
                             <Col md="6"><div className="left-border ">{'Impacted Master Data:'}</div></Col>
                             <Col md="6" className="text-right">
                                 <div className={'right-details'}>
@@ -1250,7 +1284,7 @@ function SimulationApprovalSummary(props) {
 
                             </div> */}
 
-                        </Row >
+                        </Row >}
 
                         {/* FG wise Impact section start */}
                         {isMasterAssociatedWithCosting && <>
@@ -1319,7 +1353,7 @@ function SimulationApprovalSummary(props) {
                         }
 
                         {
-                            costingSummary && keysForDownloadSummary && Object.keys(keysForDownloadSummary)?.length > 0 &&
+                            costingSummary && keysForDownloadSummary && Object.keys(keysForDownloadSummary)?.length > 0 && Number(SimulationTechnologyId) !== Number(RAWMATERIALINDEX) &&
                             <>
                                 <div className={`ag-grid-react`}>
                                     { }
@@ -1472,6 +1506,10 @@ function SimulationApprovalSummary(props) {
                                     </Row >
                                 </div >
                             </>
+                        }
+                        {
+                            Number(SimulationTechnologyId) === Number(RAWMATERIALINDEX) &&
+                            <RMIndexationSimulation isApprovalSummary={true} />
                         }
                         {
                             assemblyImpactButtonTrue && <>
@@ -1710,7 +1748,7 @@ function SimulationApprovalSummary(props) {
 
                     </div >
 
-                    {!isApprovalDone && loader &&
+                    {!isApprovalDone &&
                         <Row className="sf-btn-footer no-gutters justify-content-between">
                             <div className="col-sm-12 text-right bluefooter-butn">
                                 <Fragment>

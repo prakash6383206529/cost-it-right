@@ -213,11 +213,17 @@ export default function authReducer(state = initialState, action) {
                 userDataList: commonUserFunction(arr)
             };
         case GET_RFQ_USER_DATA_SUCCESS:
+            let arrRFQ = [];
+            arrRFQ = action.payload && action.payload.filter((item) => {
+                item.CreatedDateExcel = item.CreatedDate ? DayTime(item.CreatedDate).format('DD/MM/YYYY HH:mm:ss') : ""
+                item.ModifiedDateExcel = item.ModifiedDate ? DayTime(item.ModifiedDate).format('DD/MM/YYYY HH:mm:ss') : ""
+                return item
+            })
             return {
                 ...state,
                 loading: false,
                 error: true,
-                rfqUserList: commonUserFunction(action.payload)
+                rfqUserList: commonUserFunction(arrRFQ)
             };
         case GET_USER_UNIT_DATA_SUCCESS:
             return {

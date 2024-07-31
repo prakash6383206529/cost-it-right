@@ -87,6 +87,11 @@
 .View {
     @include icons("../../images/Group-8858.svg", $shadowColor: #0cbeeb, $borderColor: #bbe8f9);
     @include extra-icon-styles;
+
+    &.small {
+        width: 20px !important;
+        height: 20px !important;
+    }
 }
 
 .additional-add {
@@ -122,6 +127,31 @@
     @include extra-icon-styles;
 }
 
+.undo-icon {
+    @include icons("../../images/undo-red.png", 20px, 17px);
+    margin-bottom: 1px !important;
+}
+
+.undo.cancel-btn {
+    color: #fc5774;
+    border: 1px solid #fc5774;
+
+    &:hover,
+    &:focus,
+    &:active {
+        background-color: #fc5774 !important;
+        border: 1px solid #fc5774 !important;
+        color: #fff;
+        transition: all 0.3s ease-in-out;
+
+        .undo-icon {
+            transition: all 0.3s ease-in-out;
+            @include icons("../../images/undo-white.png", 20px, 17px);
+            margin-bottom: 1px !important;
+        }
+    }
+}
+
 .CalculatorIcon {
     @include icons("../../images/tool.svg", $shadowColor: #256bd1, $borderColor: #256bd1);
     background-color: #ffffff;
@@ -154,6 +184,11 @@
 
     &:is(div) {
         margin-left: 0;
+    }
+
+    &:disabled {
+        border: none !important;
+        opacity: 0.5;
     }
 }
 

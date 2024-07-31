@@ -23,17 +23,15 @@ import activeCosting from '../../assests/images/costing-active.svg'
 import activeSimulation from '../../assests/images/simulation-active.svg'
 import activeUser from '../../assests/images/user-active.svg'
 import activeAudit from '../../assests/images/audit-active.svg'
-import Logo from '../../assests/images/logo/company-logo.svg'
-//MINDA
-// import Logo from '../../assests/images/logo/company-logo.png'
 import cirLogo from '../../assests/images/logo/CIRlogo.svg'
 import logoutImg from '../../assests/images/logout.svg'
 import activeReport from '../../assests/images/report-active.svg'
 import activeRFQ from '../../assests/images/rfqActive.svg'
+import Logo from '../../assests/images/logo/company-logo.svg'
 import RFQ from '../../assests/images/rfq.svg'
 import PopupMsgWrapper from "../common/PopupMsgWrapper";
 // import Calculator from "../common/Calculator/component/Calculator";
-import { CBC_COSTING, COSTING, SIMULATION, VBC_COSTING, VERSION, ZBC_COSTING } from '../../config/constants';
+import { CBC_COSTING, COSTING, SIMULATION, VBC_COSTING, VERSION, ZBC_COSTING, showLogoFromDataBase } from '../../config/constants';
 import _ from "lodash";
 import { reactLocalStorage } from "reactjs-localstorage";
 import { MESSAGES } from "../../config/message";
@@ -238,8 +236,8 @@ class SideBar extends Component {
         } else {
           break;
         }
-      case "NFR":
-        return this.renderNFR(module, LandingPageURL);
+      case "Auction":
+        return this.renderAuction(module, LandingPageURL);
       default:
         return null
     }
@@ -371,7 +369,9 @@ class SideBar extends Component {
                   <ul>
                     {
                       el && el.Pages && el.Pages.map((item, i) => {
-                        if (item.Sequence === 22) return false;
+                        // if (item.Sequence === 22) return false;
+                        if (item.Sequence === 0) return false
+
                         return (
                           <li key={i} className={`mb5`}>
                             <Link
@@ -965,6 +965,43 @@ class SideBar extends Component {
     );
   };
 
+  renderAuction = (module) => {
+    const { topAndLeftMenuData } = this.props
+    return (
+      topAndLeftMenuData &&
+      topAndLeftMenuData.map((el, i) => {
+        if (el.ModuleName === module) {
+          return (
+            <li>
+              <Link
+                key={i}
+                id={this.getSpecificIdForElement(el)}
+                className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''} AUCTION_NavBar`}
+                onClick={() => this.setLeftMenu(el.ModuleId)}
+                to={{
+                  pathname: el.LandingPageURL,
+                  state: {
+                    ModuleId: el.ModuleId,
+                    PageName: "Auction",
+                    PageURL: el.LandingPageURL,
+                  },
+                }}
+              >
+                <img
+                  className=""
+                  src={reactLocalStorage.get("ModuleId") === el.ModuleId ? activeRFQ : RFQ}
+                  alt={module + " icon"}
+                />
+                <span className="rfq">{el.ModuleName}</span>
+              </Link>
+            </li>
+          );
+        }
+        return null
+      })
+    );
+  };
+
   tourStart = () => {
     const { location, TourStartAction } = this.props;
     const { showTour } = this.state;
@@ -1019,8 +1056,7 @@ class SideBar extends Component {
               <div className="logo-container">
                 <div className="py-1">
                   <img
-                    src={Logo}
-                    alt="Softude"
+                    src={showLogoFromDataBase ? getConfigurationKey().LogoURL : Logo} alt={showLogoFromDataBase ? getConfigurationKey().ClientName ?? "LOGO" : 'Softude'}
                     // alt="Royal Enfield"     //RE
                     // MINDA
                     // alt="Minda"

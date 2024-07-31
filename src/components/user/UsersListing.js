@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col } from 'reactstrap';
-import { getAllUserDataAPI, getAllDepartmentAPI, getAllRoleAPI, activeInactiveUser } from '../../actions/auth/AuthActions';
+import { getAllUserDataAPI, getAllRoleAPI, activeInactiveUser } from '../../actions/auth/AuthActions';
 import $ from 'jquery';
 import Toaster from '../common/Toaster';
 import { MESSAGES } from '../../config/message';
@@ -9,7 +9,7 @@ import { defaultPageSize, EMPTY_DATA, RFQUSER } from '../../config/constants';
 import { USER } from '../../config/constants';
 import NoContentFound from '../common/NoContentFound';
 import Switch from "react-switch";
-import { handleDepartmentHeader, loggedInUserId } from '../../helper/auth';
+import { IsSendQuotationToPointOfContact, handleDepartmentHeader, loggedInUserId } from '../../helper/auth';
 import ViewUserDetails from './ViewUserDetails';
 import { checkPermission, searchNocontentFilter, setLoremIpsum, showTitleForActiveToggle } from '../../helper/util';
 import LoaderCustom from '../common/LoaderCustom';
@@ -27,7 +27,7 @@ import DayTime from '../common/DayTimeWrapper';
 import TourWrapper from '../common/Tour/TourWrapper';
 import { Steps } from '../common/Tour/TourMessages';
 import { useTranslation } from 'react-i18next'
-
+import { hideMultipleColumnFromExcel } from '../../components/common/CommonFunctions';
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -103,19 +103,6 @@ const UsersListing = (props) => {
 				}
 			}
 		}
-
-		//Get Department Listing
-		dispatch(getAllDepartmentAPI((res) => {
-			if (res && res.data && res.data.DataList) {
-				let Data = res.data.DataList;
-				let obj = {}
-				Data && Data.map((el, i) => {
-					obj[el.DepartmentId] = el.DepartmentName
-					return null
-				})
-				setState((prevState) => ({ ...prevState, departmentType: obj, }))
-			}
-		}))
 
 		// Get roles listing
 		dispatch(getAllRoleAPI((res) => {
@@ -198,20 +185,40 @@ const UsersListing = (props) => {
 	}
 
 	const onBtExport = () => {
-		let tempArr = []
-		tempArr = state.gridApi && state.gridApi?.getSelectedRows()
-		tempArr = (tempArr && tempArr.length > 0) ? tempArr : (userDataList ? userDataList : [])
+		let tempArr = state.gridApi?.getSelectedRows() || [];
+		if (tempArr.length === 0) {
+			tempArr = props.RFQUser ? rfqUserList : userDataList;
+		}
 		return returnExcelColumn(USER_LISTING_DOWNLOAD_EXCEl, tempArr)
 	};
 
 	const returnExcelColumn = (data = [], TempData) => {
-		let temp = []
-		temp = TempData && TempData.map((item) => {
-			return temp;
-		})
+
+		let filteredData = [...data];
+
+		if (TempData != null && (TempData === userDataList || TempData.length > 0)) {
+			if (!props.RFQUser) {
+
+				filteredData = hideMultipleColumnFromExcel(data, ["PointOfContact", "VendorName", "CreatedDate", "ModifiedDate"]);
+			}
+			else {
+				filteredData = hideMultipleColumnFromExcel(data, ["CreatedDateExcel", "ModifiedDateExcel"]);
+				TempData = TempData.map(item => {
+					if (item.CreatedDate?.includes('T')) {
+						item.CreatedDate = DayTime(item.CreatedDate).format('DD/MM/YYYY HH:mm:ss');
+					}
+					if (item.ModifiedDate?.includes('T')) {
+						item.ModifiedDate = DayTime(item.ModifiedDate).format('DD/MM/YYYY HH:mm:ss');
+					}
+					return item;
+				});
+			}
+		}
+
+
 		return (
 			<ExcelSheet data={TempData} name={UserListing}>
-				{data && data.map((ele, index) => <ExcelColumn key={index} label={(ele.label === "Department") ? `${handleDepartmentHeader()}` : ele.label} value={ele.value} style={ele.style} />)}
+				{filteredData && filteredData.map((ele, index) => <ExcelColumn key={index} label={(ele.label === "Department") ? `${handleDepartmentHeader()}` : ele.label} value={ele.value} style={ele.style} />)}
 			</ExcelSheet>);
 	}
 	/**
@@ -256,7 +263,7 @@ const UsersListing = (props) => {
 		if (rowData?.UserId === loggedInUserId()) return null;
 		return (
 			<div className="">
-				{EditAccessibility && <Button id={`userListing_edit${props.rowIndex}`} className={"Edit Tour_List_Edit"} variant="Edit" onClick={() => editItemDetails(rowData?.UserId, false)} />}
+				{EditAccessibility && <Button id={`userListing_edit${props.rowIndex}`} className={"Edit Tour_List_Edit"} variant="Edit" onClick={() => editItemDetails(rowData?.UserId, false)} title={"Edit"} />}
 			</div>
 		)
 	}
@@ -310,7 +317,7 @@ const UsersListing = (props) => {
 	}
 	const dateRenderer = (props) => {
 		const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-		return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY HH:mm:ss') : '';
+		return cellValue != null ? cellValue : '';
 	}
 
 	const closeUserDetails = () => {
@@ -456,7 +463,9 @@ const UsersListing = (props) => {
 								{!getConfigurationKey().IsMultipleDepartmentAllowed && <AgGridColumn sort={true} field="DepartmentName" headerName="Company"></AgGridColumn>} */}
 							<AgGridColumn field="DepartmentName" tooltipField="DepartmentName" headerName={`${handleDepartmentHeader()}`}></AgGridColumn>
 							{/* //RE    */}
-							{props?.RFQUser && <AgGridColumn field="PointOfContact" tooltipField="PointOfContact" headerName="Points of Contact"></AgGridColumn>}
+
+							{IsSendQuotationToPointOfContact() && props?.RFQUser && (<AgGridColumn field="PointOfContact" tooltipField="PointOfContact" headerName="Point of Contact" />
+							)}
 							<AgGridColumn field="CreatedBy" headerName="Created By" cellRenderer={'hyphenFormatter'}></AgGridColumn>
 							<AgGridColumn field="CreatedDate" width={props?.RFQUser ? 220 : ''} headerName="Created Date (Created Time)" cellRenderer={'dateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
 							<AgGridColumn field="ModifiedDate" width={props?.RFQUser ? 220 : ''} headerName="Modified Date (Modified Time)" cellRenderer={'dateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>

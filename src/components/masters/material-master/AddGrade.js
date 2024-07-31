@@ -6,6 +6,7 @@ import { required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, hash
 import { renderText, } from "../../layout/FormInputs";
 import { createRMGradeAPI, getRMGradeDataAPI, updateRMGradeAPI, getMaterialTypeSelectList } from '../actions/Material';
 import { getRawMaterialSelectList } from '../../../actions/Common';
+import { createCommodityCustomName, createIndex, getCommodityInIndexDataListAPI, getCommodityIndexDataListAPI, updateIndex } from '../actions/Indexation';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId } from "../../../helper/auth";
@@ -17,6 +18,7 @@ class AddGrade extends Component {
     super(props);
     this.state = {
       MaterialId: '',
+      indexId: '',
     }
   }
 
@@ -26,8 +28,15 @@ class AddGrade extends Component {
   */
   componentDidMount() {
     const { ID, isEditFlag } = this.props;
-    if (isEditFlag) {
+    if (isEditFlag && !this.props.isShowCommodity && !this.props.isShowIndex) {
       this.props.getRMGradeDataAPI(ID, res => { });
+    } else if (isEditFlag && this.props.isShowIndex) {
+      this.props.getCommodityIndexDataListAPI(ID, '', '', '', true, res => {
+        const data = res.data.DataList
+        this.props.change('Index', data[0].IndexExchangeName)
+        this.setState({ indexId: data[0].IndexExchangeId })
+
+      });
     } else {
       this.props.getRMGradeDataAPI('', res => { });
     }
@@ -59,35 +68,78 @@ class AddGrade extends Component {
   */
   onSubmit = (values) => {
     const { ID, isEditFlag, RawMaterial, } = this.props;
-
-    if (isEditFlag) {
-      let formData = {
-        GradeId: ID,
-        Grade: values.Grade,
-        IsActive: true,
-        CreatedDate: '',
-        CreatedBy: loggedInUserId(),
-        RawMaterialSpecificationId: this.props?.specificationId
-      }
-      this.props.reset()
-      this.props.updateRMGradeAPI(formData, (res) => {
-        if (res.data.Result) {
-          Toaster.success(MESSAGES.RM_GRADE_UPDATE_SUCCESS);
-          this.toggleDrawer('', formData, 'submit')
+    if (!this.props.isShowCommodity && !this.props.isShowIndex) {
+      if (isEditFlag) {
+        let formData = {
+          GradeId: ID,
+          Grade: values.Grade,
+          IsActive: true,
+          CreatedDate: '',
+          CreatedBy: loggedInUserId(),
+          RawMaterialSpecificationId: this.props?.specificationId
         }
-      })
-    } else {
+        this.props.reset()
+        this.props.updateRMGradeAPI(formData, (res) => {
+          if (res.data.Result) {
+            Toaster.success(MESSAGES.RM_GRADE_UPDATE_SUCCESS);
+            this.toggleDrawer('', formData, 'submit')
+          }
+        })
+      }
+      else {
+        values.RawMaterialId = RawMaterial.value;
+        values.CreatedBy = loggedInUserId();
 
-      values.RawMaterialId = RawMaterial.value;
-      values.CreatedBy = loggedInUserId();
+        this.props.reset()
+        this.props.createRMGradeAPI(values, (res) => {
+          if (res.data.Result) {
+            Toaster.success(MESSAGES.GRADE_ADD_SUCCESS);
+            this.toggleDrawer('', values, 'submit')
+          }
+        });
 
-      this.props.reset()
-      this.props.createRMGradeAPI(values, (res) => {
-        if (res.data.Result) {
-          Toaster.success(MESSAGES.GRADE_ADD_SUCCESS);
-          this.toggleDrawer('', values, 'submit')
+      }
+    }
+    else if (this.props.isShowCommodity) {
+      let obj = {
+        LoggedInUserId: loggedInUserId(),
+        CommodityStandardName: values.MaterialName
+      }
+      this.props.reset();
+      this.props.createCommodityCustomName(obj, (res) => {
+        if (res?.data?.Result) {
+          Toaster.success(MESSAGES.INDEX_ADD_SUCCESS);
+          this.toggleDrawer('', obj, 'submit');
         }
       });
+    }
+    else if (this.props.isShowIndex) {
+
+      if (isEditFlag) {
+        let formData = {
+          LoggedInUserId: loggedInUserId(),
+          IndexExchangeName: values.Index,
+          IndexExchangeId: this.state.indexId
+        }
+        this.props.updateIndex(formData, (res) => {
+          if (res.data.Result) {
+            Toaster.success(MESSAGES.INDEX_UPDATE_SUCCESS);
+            this.toggleDrawer('', formData, 'submit')
+          }
+        })
+      } else {
+        let formData = {
+          LoggedInUserId: loggedInUserId(),
+          IndexExchangeName: values.Index
+        }
+        this.props.reset()
+        this.props.createIndex(formData, (res) => {
+          if (res.data.Result) {
+            Toaster.success(MESSAGES.INDEX_ADD_SUCCESS);
+            this.toggleDrawer('', formData, 'submit')
+          }
+        });
+      }
     }
   }
 
@@ -122,7 +174,7 @@ class AddGrade extends Component {
                   <Col>
                     <div className={"header-wrapper left"}>
                       <h3>
-                        {isEditFlag ? "Update RM Grade" : "Add RM Grade"}
+                        {this.props.isShowCommodity ? "Add Commodity" : this.props.isShowIndex ? 'Add Index' : isEditFlag ? "Update RM Grade" : "Add RM Grade"}
                       </h3>
                     </div>
                     <div
@@ -132,7 +184,7 @@ class AddGrade extends Component {
                   </Col>
                 </Row>
 
-                <Col md="12">
+                {!this.props.isShowCommodity && !this.props.isShowIndex && <Col md="12">
                   <Field
                     label={`Grade`}
                     name={"Grade"}
@@ -144,7 +196,33 @@ class AddGrade extends Component {
                     className=" "
                     customClassName=" withBorder"
                   />
-                </Col>
+                </Col>}
+                {this.props.isShowCommodity && <Col md="12">
+                  <Field
+                    label={`Commodity Name (In CIR)`}
+                    name={"MaterialName"}
+                    type="text"
+                    placeholder={"Enter"}
+                    validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength80, checkWhiteSpaces, hashValidation]}
+                    component={renderText}
+                    required={true}
+                    className=" "
+                    customClassName=" withBorder"
+                  />
+                </Col>}
+                {this.props.isShowIndex && <Col md="12">
+                  <Field
+                    label={`Index`}
+                    name={"Index"}
+                    type="text"
+                    placeholder={"Enter"}
+                    validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength80, checkWhiteSpaces, hashValidation]}
+                    component={renderText}
+                    required={true}
+                    className=" "
+                    customClassName=" withBorder"
+                  />
+                </Col>}
 
 
                 <Row className="sf-btn-footer no-gutters justify-content-between">
@@ -207,6 +285,10 @@ export default connect(mapStateToProps,
     getMaterialTypeSelectList,
     getRMGradeDataAPI,
     updateRMGradeAPI,
+    createCommodityCustomName,
+    createIndex,
+    updateIndex,
+    getCommodityIndexDataListAPI
   })(reduxForm({
     form: 'AddGrade',
     enableReinitialize: true,

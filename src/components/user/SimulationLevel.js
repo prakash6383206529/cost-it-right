@@ -40,7 +40,7 @@ const SimulationLevelListing = (props) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
     useEffect(() => {
-        if (isCallApi === true)
+        if (isCallApi === true || props.tab !== '')
             setTimeout(() => {
                 getSimulationDataList();
             }, 100);

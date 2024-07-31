@@ -12,7 +12,7 @@ import {
 import { fetchRMGradeAPI } from '../../../actions/Common';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { GUIDE_BUTTON_SHOW, SPECIFICATION } from '../../../config/constants';
+import { SPECIFICATION } from '../../../config/constants';
 import { getConfigurationKey, loggedInUserId } from "../../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
 import AddGrade from './AddGrade';
@@ -168,7 +168,7 @@ class AddSpecification extends Component {
   }
 
   setDensity = (ID) => {
-    this.props.getMaterialTypeDataAPI(ID, res => {
+    this.props.getMaterialTypeDataAPI(ID, '', res => {
       if (res && res.data && res.data.Data) {
         let Data = res.data.Data;
         this.props.change('Density', Data.Density)

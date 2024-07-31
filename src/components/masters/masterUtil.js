@@ -345,36 +345,8 @@ export const ProcessGroup = (props) => {
 
 export const rmQueryParms = (isPagination, skip, take, obj) => {
 
-    let queryParamsSecond = encodeQueryParamsAndLog({
-        VendorId: obj.VendorId !== undefined ? obj.VendorId : EMPTY_GUID,
-        PlantId: obj.PlantId !== undefined ? obj.PlantId : EMPTY_GUID,
-        RMChildId: obj.RMChildId !== undefined ? obj.RMChildId : EMPTY_GUID,
-        GradeId: obj.GradeId !== undefined ? obj.GradeId : EMPTY_GUID,
-        CustomerId: obj.CustomerId !== undefined ? obj.CustomerId : EMPTY_GUID,
-        RawMaterialEntryType: obj.RawMaterialEntryType,
-        CostingHead: obj.CostingHead !== undefined ? obj.CostingHead : "",
-        Technology: obj.TechnologyName !== undefined ? obj.TechnologyName : "",
-        RMName: obj.RawMaterialName !== undefined ? obj.RawMaterialName : "",
-        RMGrade: obj.RawMaterialGradeName !== undefined ? obj.RawMaterialGradeName : "",
-        RMSpecs: obj.RawMaterialSpecificationName !== undefined ? obj.RawMaterialSpecificationName : "",
-        RMCode: obj.RawMaterialCode !== undefined ? obj.RawMaterialCode : "",
-        RMCategory: obj.Category !== undefined ? obj.Category : "",
-        Plant: obj.DestinationPlantName !== undefined ? obj.DestinationPlantName : "",
-        Vendor: obj.VendorName !== undefined ? obj.VendorName : "",
-        UOM: obj.UnitOfMeasurementName !== undefined ? obj.UnitOfMeasurementName : "",
-        Currency: obj.Currency !== undefined ? obj.Currency : "",
-        NetCostCurrency: obj.NetLandedCost !== undefined ? obj.NetLandedCost : "",
-        BasicRate: obj.BasicRatePerUOM !== undefined ? obj.BasicRatePerUOM : "",
-        ScrapRate: obj.ScrapRate !== undefined ? obj.ScrapRate : "",
-        FreightCost: obj.RMFreightCost !== undefined ? obj.RMFreightCost : "",
-        ShearingCost: obj.RMShearingCost !== undefined ? obj.RMShearingCost : "",
-        EffectiveDate: obj.EffectiveDate !== undefined ? (obj.dateArray && obj.dateArray.length > 1 ? "" : obj.EffectiveDate) : "",
-        MaterialType: obj.MaterialType !== undefined ? obj.MaterialType : "",
-        NetCostWithoutConditionCost: obj.NetCostWithoutConditionCost !== undefined ? obj.NetCostWithoutConditionCost : "",
-        applyPagination: isPagination,
-        skip: skip,
-        take: take
-    }); return queryParamsSecond
+    let queryParamsSecond = `VendorId=${obj.VendorId !== undefined ? obj.VendorId : EMPTY_GUID}&PlantId=${obj.PlantId !== undefined ? obj.PlantId : EMPTY_GUID}&RMChildId=${obj.RMChildId !== undefined ? obj.RMChildId : EMPTY_GUID}&GradeId=${obj.GradeId !== undefined ? obj.GradeId : EMPTY_GUID}&CustomerId=${obj.CustomerId !== undefined ? obj.CustomerId : EMPTY_GUID}&RawMaterialEntryType=${obj?.RawMaterialEntryType}&CostingHead=${obj.CostingHead !== undefined ? obj.CostingHead : ""}&Technology=${obj.TechnologyName !== undefined ? obj.TechnologyName : ""}&RMName=${obj.RawMaterialName !== undefined ? obj.RawMaterialName : ""}&RMGrade=${obj.RawMaterialGradeName !== undefined ? obj.RawMaterialGradeName : ""}&RMSpecs=${obj.RawMaterialSpecificationName !== undefined ? obj.RawMaterialSpecificationName : ""}&RMCode=${obj.RawMaterialCode !== undefined ? obj.RawMaterialCode : ""}&RMCategory=${obj.Category !== undefined ? obj.Category : ""}&Plant=${obj.DestinationPlantName !== undefined ? obj.DestinationPlantName : ""}&Vendor=${obj.VendorName !== undefined ? obj.VendorName : ""}&UOM=${obj.UnitOfMeasurementName !== undefined ? obj.UnitOfMeasurementName : ""}&Currency=${obj.Currency !== undefined ? obj.Currency : ""}&NetCostCurrency=${obj.NetLandedCost !== undefined ? obj.NetLandedCost : ""}&BasicRate=${obj.BasicRatePerUOM !== undefined ? obj.BasicRatePerUOM : ""}&ScrapRate=${obj.ScrapRate !== undefined ? obj.ScrapRate : ""}&FreightCost=${obj.RMFreightCost !== undefined ? obj.RMFreightCost : ""}&ShearingCost=${obj.RMShearingCost !== undefined ? obj.RMShearingCost : ""}&EffectiveDate=${obj.EffectiveDate !== undefined ? (obj.dateArray && obj.dateArray.length > 1 ? "" : obj.EffectiveDate) : ""}&MaterialType=${obj.MaterialType !== undefined ? obj.MaterialType : ""}&NetCostWithoutConditionCost=${obj.NetCostWithoutConditionCost !== undefined ? obj.NetCostWithoutConditionCost : ""}&applyPagination=${isPagination}&skip=${skip}&take=${take}`
+    return queryParamsSecond
 
 }
 
@@ -410,7 +382,8 @@ export const bopQueryParms = (isPagination, skip, take, obj) => {
         take: take,
         NumberOfPieces: obj.NumberOfPieces !== undefined ? obj.NumberOfPieces : "",
         VendorId: obj?.VendorId !== undefined ? obj?.VendorId : "",
-        CustomerId: obj?.CustomerId !== undefined ? obj?.CustomerId : ""
+        CustomerId: obj?.CustomerId !== undefined ? obj?.CustomerId : "",
+        SAPCode: obj?.SAPCode !== undefined ? obj?.SAPCode : ""
     });
 
     return queryParams;

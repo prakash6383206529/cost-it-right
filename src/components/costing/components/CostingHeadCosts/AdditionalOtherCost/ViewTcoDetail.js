@@ -1,62 +1,155 @@
-// AdditionalInfoComponent.js
-import React from 'react';
+import React, { useState } from 'react';
 import { VARIANCE } from '../../../../../config/constants';
-import { viewCostingData } from './TcoDummyData';
-const AdditionalTcoInfo = ({ isApproval, /* viewCostingData */isRfqCosting, highlighter, displayValueWithSign, tableDataClass }) => {
+import { useSelector } from 'react-redux';
+import { checkForDecimalAndNull } from '../../../../../helper';
+import PartSpecificationDrawer from '../../PartSpecificationDrawer';
+
+const ViewTcoDetail = ({ isApproval, viewCostingData, isRfqCosting, highlighter, displayValueWithSign, tableDataClass, pdfHead }) => {
+    const { initialConfiguration } = useSelector(state => state.auth)
+    const [openSpecificationDrawer, setOpenSpecificationDrawer] = useState(false);
+    const [baseCostingId, setBaseCostingId] = useState([])
+
+    const renderSpan = (text) => (
+        <span className={`w-50 text-wrapped small-grey-text ${isApproval && viewCostingData?.length > 1 ? '' : ''}`}>
+            <span title={text}>{text}</span>
+        </span>
+    );
+
+    const renderDiv = (content) => (
+        <div style={pdfHead ? { marginTop: '-4px' } : {}} className={`d-flex ${highlighter(["overheadOn", "overheadValue"], "multiple-key")}`}>
+            {content}
+        </div>
+    );
+    const handleOpenSpecificationDrawerMutiple = () => {
+        let costingIds = viewCostingData
+            .map(item => item.AssemblyCostingId)
+            .filter(id => id !== null && id !== undefined && id !== '-');
+        setBaseCostingId(costingIds)
+        setOpenSpecificationDrawer(true);
+    };
+    const handleOpenSpecificationDrawerSingle = (id) => {
+        setBaseCostingId([id])
+        setOpenSpecificationDrawer(true);
+    }
+    const closeSpecificationDrawer = () => {
+        setOpenSpecificationDrawer(false);
+    };
 
     return (
         <>
             <tr>
-                <td >
-                    <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1} `}>Inco Terms </span>
-                    <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1} `}>Payment Terms </span>
-                    <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1} `}>Warranty Year</span>
-                    <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1}`}>Quality PPM</span>
-                    <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1}`}>MOQ</span>
-                    <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1}`}>SPQ</span>
-                    <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1}`}>Lead Time</span>
-                    <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1}`}>Ld Clause</span>
-                    <span className={`d-block small-grey-text ${isApproval && viewCostingData?.length > 1}`}>Available Capacity</span>
+                <td>
+                    <span className="d-block small-grey-text p-relative">
+                        Part Specification
+                        <button className="Balance mb-0 button-stick" type="button" onClick={() => handleOpenSpecificationDrawerMutiple()} >
+                        </button>
+                    </span>
+                    <span className="d-block small-grey-text"></span>
+                    <span className="d-block small-grey-text"></span>
+                    <>
+
+                        <span className="d-block small-grey-text">Inco Terms</span>
+                        <span className="d-block small-grey-text">Payment Term</span>
+                        <span className="d-block small-grey-text">Warranty Year</span>
+                        <span className="d-block small-grey-text">Quality PPM</span>
+                        <span className="d-block small-grey-text">MOQ</span>
+                        <span className="d-block small-grey-text">SPQ</span>
+                        <span className="d-block small-grey-text">Lead Time</span>
+                        <span className="d-block small-grey-text">LD Clause</span>
+                        <span className="d-block small-grey-text">UOM</span>
+                        <span className="d-block small-grey-text">Available Capacity</span>
+                        <span className="d-block small-grey-text">Investment Cost</span>
+                    </>
                 </td>
-                {viewCostingData &&
-                    viewCostingData?.map((data) => {
-                        return (
-                            <td className={tableDataClass(data)}>
+                {viewCostingData && viewCostingData.map((data, index) => {
 
-                                <div style={{ width: '95%' }} className={`d-flex justify-content-between`}>
-                                    <div>
-                                        <div className=''>Applicability</div>
-                                        <div className={""}>{data?.CostingHeading !== VARIANCE && data?.tcoValues?.TotalCostDetails?.length > 0 && (data?.tcoValues?.TotalCostDetails[0]?.ApplicabilityType ?? '-')}</div>
+                    const { CostingTCOResponse, CostingPaymentTermDetails } = data?.CostingPartDetails || {};
 
-                                    </div>
-                                    <div>
-                                        <div>Percentage (%)</div>
-                                        <div className={""}>{data?.CostingHeading !== VARIANCE && data?.tcoValues?.TotalCostDetails?.length > 0 && (data?.tcoValues?.TotalCostDetails[0]?.ApplicabilityType ?? '-')}</div>
+                    const { PaymentTermDetail } = CostingPaymentTermDetails || {}
 
-                                    </div>
-                                    <div className='mr-2'>
-                                        <div>Value</div>
-                                        <div className={""}>{data?.CostingHeading !== VARIANCE && data?.tcoValues?.TotalCostDetails?.length > 0 && (data?.tcoValues?.TotalCostDetails[0]?.NetCost ?? '-')}</div>
 
-                                    </div>
-                                </div>
-                                {/* <span className="d-block">{(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.tcoValues?.IncoTerms : '')}</span> */}
-                                <span className="d-block">{(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.tcoValues?.PayTerms : '')}</span>
-                                <span className="d-block">{(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.tcoValues?.WarrantyYears : '')}</span>
-                                <span className="d-block">{(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.tcoValues?.QualityPPM : '')}</span>
-                                <span className="d-block">{(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.tcoValues?.MOQ : '')}</span>
-                                <span className="d-block">{(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.tcoValues?.SPQ : '')}</span>
-                                <span className="d-block">{(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.tcoValues?.LeadTime : '')}</span>
-                                <span className="d-block">{(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.tcoValues?.LdClause : '')}</span>
-                                <span className="d-block">{(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.tcoValues?.AvailableCapacity : '')}</span>
+                    return (
+                        <td className={tableDataClass(data)} key={index}>
+                            {renderDiv([
+                                renderSpan(data?.bestCost === true ? ' ' : (data?.CostingHeading !== VARIANCE
+                                    ? <div onClick={() => handleOpenSpecificationDrawerSingle(data.AssemblyCostingId)} className={'link'}>View Specifications</div>
+                                    : '-'))
+                            ])}
+                            <div className="d-flex">
+                                {renderSpan((data?.bestCost === true ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.aValue.applicability : '-')))}
+                                {renderSpan((data?.bestCost === true ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.aValue.percentage : '-')))}
+                                {renderSpan((data?.bestCost === true ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.aValue.value : '-')))}
+                            </div>
 
-                            </td>
-                        )
-                    })}
+                            {renderDiv([
+                                renderSpan(data?.bestCost === true ? ' ' : (data?.CostingHeading !== VARIANCE ? (CostingTCOResponse && CostingTCOResponse?.IncoTerms) ?? '-' : '')),
+                                renderSpan(data?.bestCost === true ? ' ' : (data?.CostingHeading !== VARIANCE ? (CostingTCOResponse && CostingTCOResponse?.IncoTermsValue) ?? '-' : '')),
+                                renderSpan(data?.bestCost === true ? ' ' : (data?.CostingHeading !== VARIANCE ? (CostingTCOResponse && checkForDecimalAndNull(CostingTCOResponse?.CalculatedIncoTermValue, initialConfiguration.NoOfDecimalForPrice)) ?? '-' : ''))
+                            ])}
+                            {renderDiv([
+                                renderSpan(data?.bestCost === true ? '' : (data?.CostingHeading !== VARIANCE ? (PaymentTermDetail && PaymentTermDetail?.PaymentTermApplicability) ? PaymentTermDetail?.PaymentTermApplicability : '-' : '-')),
+                                renderSpan(data?.bestCost === true ? ' ' : (data?.CostingHeading !== VARIANCE ? (PaymentTermDetail && PaymentTermDetail?.RepaymentPeriod) ? PaymentTermDetail?.RepaymentPeriod + " Days" : '-' : '')),
+                                renderSpan(data?.bestCost === true ? ' ' : (data?.CostingHeading !== VARIANCE ? (PaymentTermDetail && checkForDecimalAndNull(PaymentTermDetail?.NetCost, initialConfiguration.NoOfDecimalForPrice)) ?? '-' : ''))
+                            ])}
+                            {renderDiv([
+                                renderSpan(data?.bestCost === true ? ' ' : (data?.CostingHeading !== VARIANCE ? (CostingTCOResponse && CostingTCOResponse?.WarrantyYearCount) ? CostingTCOResponse.WarrantyYearCount + " Years" : '-' : '')),
+                                renderSpan(data?.bestCost === true ? ' ' : (data?.CostingHeading !== VARIANCE ? (CostingTCOResponse && CostingTCOResponse?.PreferredWarrantyYear) ?? '-' : '')),
+                                renderSpan(data?.bestCost === true ? ' ' : (data?.CostingHeading !== VARIANCE ? (CostingTCOResponse && checkForDecimalAndNull(CostingTCOResponse?.CalculatedWarrantyValue, initialConfiguration.NoOfDecimalForPrice)) ?? '-' : ''))
+                            ])}
+                            {renderDiv([
+                                renderSpan(data?.bestCost === true ? ' ' : (data?.CostingHeading !== VARIANCE ? (CostingTCOResponse && CostingTCOResponse?.QualityPPM) ? CostingTCOResponse?.QualityPPM : '-' : '')),
+
+                                renderSpan(data?.bestCost === true ? ' ' : (data?.CostingHeading !== VARIANCE ? '-' : '')),
+                                renderSpan(data?.bestCost === true ? ' ' : (data?.CostingHeading !== VARIANCE ? (CostingTCOResponse && checkForDecimalAndNull(CostingTCOResponse?.CalculatedQualityPPMValue, initialConfiguration.NoOfDecimalForPrice)) ?? '-' : ''))])}
+                            {renderDiv([
+                                renderSpan(data?.bestCost === true ? ' ' : (data?.CostingHeading !== VARIANCE ? '-' : '')),
+                                renderSpan(data?.bestCost === true ? ' ' : (data?.CostingHeading !== VARIANCE ? '-' : '')),
+                                renderSpan(data?.bestCost === true ? ' ' : (data?.CostingHeading !== VARIANCE ? (CostingTCOResponse && CostingTCOResponse?.MOQ) ?? '-' : ''))
+                            ])}
+                            {renderDiv([
+                                renderSpan(data?.bestCost === true ? ' ' : (data?.CostingHeading !== VARIANCE ? '-' : '')),
+                                renderSpan(data?.bestCost === true ? ' ' : (data?.CostingHeading !== VARIANCE ? '-' : '')),
+                                renderSpan(data?.bestCost === true ? ' ' : (data?.CostingHeading !== VARIANCE ? (CostingTCOResponse && CostingTCOResponse?.SPQ) ?? '-' : ''))
+                            ])}
+                            {renderDiv([
+                                renderSpan(data?.bestCost === true ? ' ' : (data?.CostingHeading !== VARIANCE ? '-' : '')),
+                                renderSpan(data?.bestCost === true ? ' ' : (data?.CostingHeading !== VARIANCE ? '-' : '')),
+                                renderSpan(data?.bestCost === true ? ' ' : (data?.CostingHeading !== VARIANCE ? (CostingTCOResponse && CostingTCOResponse?.LeadTime) ?? '-' : ''))
+                            ])}
+                            {renderDiv([
+                                renderSpan(data?.bestCost === true ? ' ' : (data?.CostingHeading !== VARIANCE ? '-' : '')),
+                                renderSpan(data?.bestCost === true ? ' ' : (data?.CostingHeading !== VARIANCE ? '-' : '')),
+                                renderSpan(data?.bestCost === true ? ' ' : (data?.CostingHeading !== VARIANCE ? (CostingTCOResponse && CostingTCOResponse?.LdClause) ?? '-' : ''))
+                            ])}
+                            {renderDiv([
+                                renderSpan(data?.bestCost === true ? ' ' : (data?.CostingHeading !== VARIANCE ? '-' : '')),
+                                renderSpan(data?.bestCost === true ? ' ' : (data?.CostingHeading !== VARIANCE ? '-' : '')),
+                                renderSpan(data?.bestCost === true ? ' ' : (data?.CostingHeading !== VARIANCE ? (CostingTCOResponse && CostingTCOResponse?.UOMSymbol) ?? '-' : ''))
+                            ])}
+                            {renderDiv([
+                                renderSpan(data?.bestCost === true ? ' ' : (data?.CostingHeading !== VARIANCE ? '-' : '')),
+                                renderSpan(data?.bestCost === true ? ' ' : (data?.CostingHeading !== VARIANCE ? '-' : '')),
+                                renderSpan(data?.bestCost === true ? ' ' : (data?.CostingHeading !== VARIANCE ? (CostingTCOResponse && CostingTCOResponse?.AvailableCapacity) ?? '-' : ''))
+                            ])}
+                            {renderDiv([
+                                renderSpan(data?.bestCost === true ? ' ' : (data?.CostingHeading !== VARIANCE ? '-' : '')),
+                                renderSpan(data?.bestCost === true ? ' ' : (data?.CostingHeading !== VARIANCE ? '-' : '')),
+                                renderSpan(data?.bestCost === true ? ' ' : (data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.netNpvCost, initialConfiguration.NoOfDecimalForPrice) ?? '-' : ''))
+                            ])}
+                        </td>
+                    );
+                })}
             </tr>
-
+            {openSpecificationDrawer && <PartSpecificationDrawer
+                isOpen={openSpecificationDrawer}
+                closeDrawer={closeSpecificationDrawer}
+                anchor={'right'}
+                baseCostingId={baseCostingId}
+            />
+            }
         </>
+
     );
 };
 
-export default AdditionalTcoInfo;
+export default ViewTcoDetail;

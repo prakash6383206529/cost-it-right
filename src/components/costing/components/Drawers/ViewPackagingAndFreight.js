@@ -45,6 +45,8 @@ function ViewPackagingAndFreight(props) {
                 <th>{`${isLogisticsTechnology ? 'Charges' : 'Packaging Description'}`}</th>
                 <th>{`Criteria/Applicability`}</th>
                 <th>{`${isLogisticsTechnology ? 'Freight' : 'Packaging'} Type/Percentage`}</th>
+                <th>{`Rate`}</th>
+                <th>{`Quantity`}</th>
                 <th className={initialConfiguration.IsShowCRMHead ? "" : 'costing-border-right'}>{`Cost`}</th>
                 {initialConfiguration.IsShowCRMHead && <th className="costing-border-right">{`CRM Head`}</th>}
               </tr>
@@ -57,11 +59,11 @@ function ViewPackagingAndFreight(props) {
                       </td>
                       {!isLogisticsTechnology && <td>{item.Applicability ? item.Applicability : '-'}</td>}
                       {!isLogisticsTechnology && <td>
-                        {item.IsPackagingCostFixed && item.IsPackagingCostFixed ? item.PackagingCostPercentage : 'Fixed'}
+                        {item.IsPackagingCostFixed ? (item.PackagingCostPercentage ? item.PackagingCostPercentage : '-') : 'Fixed'}
                       </td>}
-                      <td>
-                        {item.PackagingCost ? checkForDecimalAndNull(item.PackagingCost, initialConfiguration.NoOfDecimalForPrice) : '-'}
-                      </td>
+                      <td>{item.Rate ? checkForDecimalAndNull(item.Rate, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+                      <td>{item.Quantity ? checkForDecimalAndNull(item.Quantity, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+                      <td>{item.PackagingCost ? checkForDecimalAndNull(item.PackagingCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
                       {initialConfiguration.IsShowCRMHead && <td>{item.PackagingCRMHead ? item.PackagingCRMHead : '-'}</td>}
                     </tr>
                   )
@@ -94,8 +96,9 @@ function ViewPackagingAndFreight(props) {
             <tbody>
               <tr className='thead'>
                 <th>{`Freight Type`}</th>
-                <th>{`Criteria`}</th>
-                <th>{`Rate`}</th>
+                <th>{`Criteria/Applicability`}</th>
+                <th>{`Capacity`}</th>
+                <th>{`Rate/Percentage`}</th>
                 <th>{`Quantity`}</th>
                 <th className={initialConfiguration.IsShowCRMHead ? "" : 'costing-border-right'}>{`Cost`}</th>
                 {initialConfiguration.IsShowCRMHead && <th className="costing-border-right">{`CRM Head`}</th>}
@@ -106,6 +109,7 @@ function ViewPackagingAndFreight(props) {
                     <tr key={index}>
                       <td>{item.FreightType ? item.FreightType : '-'}</td>
                       <td>{item.Criteria ? item.Criteria : '-'}</td>
+                      <td>{item.Capacity ? item.Capacity : '-'}</td>
                       <td>{item.Rate ? checkForDecimalAndNull(item.Rate, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
                       <td>{item.Quantity ? item.Quantity : '-'}</td>
                       <td>

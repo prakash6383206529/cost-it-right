@@ -891,7 +891,7 @@ function RMImportListing(props) {
       {(loader && !props?.isMasterSummaryDrawer) ? <LoaderCustom customClass="simulation-Loader" /> :
         <>
           {disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
-          <Row className={`filter-row-large pt-4 ${isSimulation ? "zindex-0" : ""}`}>
+          <Row className={`filter-row-large pt-2 ${isSimulation ? "zindex-0" : ""}`}>
             <Col md="3" lg="3">
               <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
               {(!props.isSimulation && !props.benchMark && !props?.isMasterSummaryDrawer) && (<TourWrapper
@@ -935,7 +935,7 @@ function RMImportListing(props) {
                         icon={"filter"}
                         disabled={disableFilter}
                       />
-
+                      {/* 
                       {AddAccessibility && (
 
                         <Button
@@ -954,7 +954,7 @@ function RMImportListing(props) {
                           title={"Bulk Upload"}
                           icon={"upload"}
                         />
-                      )}
+                      )} */}
                       {
                         DownloadAccessibility &&
                         <>

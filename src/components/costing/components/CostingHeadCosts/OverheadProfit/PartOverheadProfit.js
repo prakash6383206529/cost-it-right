@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { checkForDecimalAndNull, checkForNull, loggedInUserId } from '../../../../../helper';
 import {
   getOverheadProfitTabData, saveComponentOverheadProfitTab, setComponentOverheadItemData,
-  saveDiscountOtherCostTab, isOverheadProfitDataChange, openCloseStatus, setOverheadProfitData
+  saveDiscountOtherCostTab, isOverheadProfitDataChange, openCloseStatus, setOverheadProfitData, saveCostingPaymentTermDetail
 } from '../../../actions/Costing';
 import { costingInfoContext, NetPOPriceContext } from '../../CostingDetailStepTwo';
 import OverheadProfit from '.';
@@ -11,7 +11,7 @@ import Toaster from '../../../../common/Toaster';
 import { MESSAGES } from '../../../../../config/message';
 import { IsPartType } from '../../CostingDetails';
 import { PART_TYPE_ASSEMBLY } from '../../../../../config/masterData';
-
+import { PreviousTabData } from '../../CostingHeaderTabs';
 function PartOverheadProfit(props) {
 
   const { item } = props;
@@ -20,14 +20,14 @@ function PartOverheadProfit(props) {
   const dispatch = useDispatch()
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const { ComponentItemDiscountData, CostingEffectiveDate, checkIsOverheadProfitChange, OverheadProfitTabData } = useSelector(state => state.costing)
+  const { ComponentItemDiscountData, CostingEffectiveDate, checkIsOverheadProfitChange, OverheadProfitTabData, PaymentTermDataDiscountTab } = useSelector(state => state.costing)
   const { DiscountCostData, RMCCTabData, SurfaceTabData, PackageAndFreightTabData, ToolTabData } = useSelector(state => state.costing)
 
 
   const costData = useContext(costingInfoContext);
   const netPOPrice = useContext(NetPOPriceContext);
   const isPartType = useContext(IsPartType);
-
+  const previousTab = useContext(PreviousTabData) || 0;
   const toggle = (BOMLevel, PartNumber) => {
     const Params = {
       index: props.index,
@@ -84,11 +84,11 @@ function PartOverheadProfit(props) {
         "IsIncludeToolCostWithOverheadAndProfit": props?.IsIncludeToolCost,
         "IsIncludeOverheadAndProfitInICC": props?.IncludeOverheadProfitInIcc,
         "IsIncludeToolCostInCCForICC": props?.IncludeToolcostInCCForICC,
-        "NetOverheadAndProfitCost": checkForNull(item?.CostingPartDetails?.OverheadCost) + checkForNull(item?.CostingPartDetails?.RejectionCost) + checkForNull(item?.CostingPartDetails?.ProfitCost) + checkForNull(item?.CostingPartDetails?.ICCCost) + checkForNull(item?.CostingPartDetails?.PaymentTermCost),
+        "NetOverheadAndProfitCost": checkForNull(item?.CostingPartDetails?.OverheadCost) + checkForNull(item?.CostingPartDetails?.RejectionCost) + checkForNull(item?.CostingPartDetails?.ProfitCost) + checkForNull(item?.CostingPartDetails?.ICCCost),
         "BasicRate": basicRate,
         "CostingPartDetails": {
           ...item?.CostingPartDetails,
-          NetOverheadAndProfitCost: checkForNull(item?.CostingPartDetails?.OverheadCost) + checkForNull(item?.CostingPartDetails?.RejectionCost) + checkForNull(item?.CostingPartDetails?.ProfitCost) + checkForNull(item?.CostingPartDetails?.ICCCost) + checkForNull(item?.CostingPartDetails?.PaymentTermCost),
+          NetOverheadAndProfitCost: checkForNull(item?.CostingPartDetails?.OverheadCost) + checkForNull(item?.CostingPartDetails?.RejectionCost) + checkForNull(item?.CostingPartDetails?.ProfitCost) + checkForNull(item?.CostingPartDetails?.ICCCost),
         },
         "EffectiveDate": CostingEffectiveDate,
         "TotalCost": netPOPrice,
@@ -119,7 +119,11 @@ function PartOverheadProfit(props) {
         checkForNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost) + checkForNull(DiscountCostData?.AnyOtherCost) - checkForNull(DiscountCostData?.HundiOrDiscountValue)
     }
 
-    dispatch(saveDiscountOtherCostTab({ ...ComponentItemDiscountData, BasicRate: basicRate }, res => { }))
+    dispatch(saveDiscountOtherCostTab({ ...ComponentItemDiscountData, BasicRate: basicRate }, res => {
+      if (Number(previousTab) === 6) {
+        dispatch(saveCostingPaymentTermDetail(PaymentTermDataDiscountTab, (res) => { }));
+      }
+    }))
   }
 
   useEffect(() => {
@@ -146,7 +150,6 @@ function PartOverheadProfit(props) {
         <td>{item?.CostingPartDetails && item?.CostingPartDetails?.ProfitCost !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.ProfitCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
         <td>{item?.CostingPartDetails && item?.CostingPartDetails?.RejectionCost !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.RejectionCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
         <td>{item?.CostingPartDetails && item?.CostingPartDetails?.ICCCost !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.ICCCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
-        <td className="costing-border-right">{item?.CostingPartDetails && item?.CostingPartDetails?.PaymentTermCost !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.PaymentTermCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
       </tr>
       {item.IsOpen && <tr>
         <td colSpan={8} className="cr-innerwrap-td overhead-profit-container">
