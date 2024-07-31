@@ -834,7 +834,7 @@ class AddProfit extends Component {
         CostingTypeId: costingTypeId,
         IsCombinedEntry: !isProfitPercent ? true : false,
         ProfitPercentage: values.ProfitPercentage,
-        ProfitCCPercentage: values.ProfitCCPercentage,
+        ProfitMachiningCCPercentage: values.ProfitCCPercentage,
         ProfitBOPPercentage: values.ProfitBOPPercentage,
         ProfitRMPercentage: values.ProfitRMPercentage,
         Remark: remarks,
@@ -877,7 +877,7 @@ class AddProfit extends Component {
         CostingTypeId: costingTypeId,
         IsCombinedEntry: !isProfitPercent ? true : false,
         ProfitPercentage: !isProfitPercent ? values.ProfitPercentage : '',
-        ProfitCCPercentage: !isCC ? values.ProfitCCPercentage : '',
+        ProfitMachiningCCPercentage: !isCC ? values.ProfitCCPercentage : '',
         ProfitBOPPercentage: !isBOP ? values.ProfitBOPPercentage : '',
         ProfitRMPercentage: !isRM ? values.ProfitRMPercentage : '',
         Remark: remarks,
@@ -1495,7 +1495,7 @@ function mapStateToProps(state) {
     initialValues = {
       ProfitPercentage: overheadProfitData.ProfitPercentage !== null ? overheadProfitData.ProfitPercentage : '',
       ProfitRMPercentage: overheadProfitData.ProfitRMPercentage !== null ? overheadProfitData.ProfitRMPercentage : '',
-      ProfitCCPercentage: overheadProfitData.ProfitCCPercentage !== null ? overheadProfitData.ProfitCCPercentage : '',
+      ProfitCCPercentage: overheadProfitData.ProfitMachiningCCPercentage !== null ? overheadProfitData.ProfitMachiningCCPercentage : '',
       ProfitBOPPercentage: overheadProfitData.ProfitBOPPercentage !== null ? overheadProfitData.ProfitBOPPercentage : '',
       Remark: overheadProfitData.Remark,
     }

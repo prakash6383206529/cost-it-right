@@ -18,6 +18,7 @@ function FreightCost(props) {
   const [editIndex, setEditIndex] = useState('')
   const [isEditFlag, setIsEditFlag] = useState(false)
   const [isDrawerOpen, setDrawerOpen] = useState(false)
+  const [isAddFlag, setIsAddFlag] = useState(false)
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
 
   const dispatch = useDispatch()
@@ -37,7 +38,9 @@ function FreightCost(props) {
   */
   const DrawerToggle = () => {
     if (costingData.TechnologyId === LOGISTICS && CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
+    setRowObjData({})
     setDrawerOpen(true)
+    setIsAddFlag(true)
     setIsEditFlag(false)
   }
 
@@ -52,12 +55,14 @@ function FreightCost(props) {
         setGridData(tempArr)
         setEditIndex('')
         setIsEditFlag(false)
+        setIsAddFlag(false)
         setRowObjData(tempArr)
       } else {
         let tempArr = [...gridData, rowData]
         setGridData(tempArr)
         setEditIndex('')
         setIsEditFlag(false)
+        setIsAddFlag(false)
         setRowObjData(tempArr)
       }
       dispatch(gridDataAdded(true))
@@ -77,6 +82,7 @@ function FreightCost(props) {
     let tempArr = gridData && gridData.find((el, i) => i === index)
     setEditIndex(index)
     setIsEditFlag(true)
+    setIsAddFlag(false)
     setRowObjData(tempArr)
     setDrawerOpen(true)
   }
@@ -174,6 +180,8 @@ function FreightCost(props) {
         editIndex={editIndex}
         rowObjData={rowObjData}
         anchor={'right'}
+        isAddFlag={isAddFlag}
+        gridData={gridData}
       />}
     </ >
   );
