@@ -119,8 +119,10 @@ const RaiseRfqBopDetails = (props) => {
         const temp = []
         if (label === 'bopNumber') {
             SelectBopNumber && SelectBopNumber?.map((item) => {
+                const match = item?.Text.match(/\(([^)]+)\)/);
+                const valueInsideBrackets = match ? match[1] : '';
                 if (item.Value === '0') return false
-                temp.push({ label: item.Text, value: item.Value })
+                temp.push({ label: valueInsideBrackets, value: item?.Value })
                 return null
             })
             return temp
@@ -138,9 +140,6 @@ const RaiseRfqBopDetails = (props) => {
 
     }
     const handleBopNo = (newValue, actionMeta) => {
-
-
-
         if (newValue && newValue !== '') {
 
             delete errors.RawMaterialCode
@@ -153,8 +152,6 @@ const RaiseRfqBopDetails = (props) => {
             dispatch(getBopCategorySelectList(newValue?.value, () => { }))
         } else {
             setBopNumber([])
-
-
             dispatch(getBopCategorySelectList(newValue?.value, () => { }))
 
         }

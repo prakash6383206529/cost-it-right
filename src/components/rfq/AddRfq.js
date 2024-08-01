@@ -196,7 +196,8 @@ function AddRfq(props) {
     const [isLoader, setIsLoader] = useState(false)
     const [prNumber, setPrNumber] = useState([])
     const [isDisabled, setIsDisabled] = useState(false)
-
+    const [selectedPartType, setSelectedPartType] = useState('')
+    const [drawerViewMode, setDrawerViewMode] = useState(false)
     const showOnlyFirstModule = initialConfiguration.IsManageSeparateUserPemissionForPartAndVendorInRaiseRFQ;
 
 
@@ -761,6 +762,7 @@ function AddRfq(props) {
                 dispatch(setBopSpecificRowData(bopList))
             }
         }))
+        setDrawerViewMode(true)
         setDrawerOpen(true)
 
     }
@@ -921,15 +923,15 @@ function AddRfq(props) {
 
         switch (selectedOption) {
             case "BOP":
-                warningMessgae = 'Select a part, then add Specification, and Attachments for each BOP'
+                warningMessgae = 'Select a BOP, then add specification and attachment documents'
                 title = 'BOP'
                 break
             case "RM":
-                warningMessgae = 'Select a part, then add Attachments for each RM'
+                warningMessgae = 'Select a RM, then add attachment doucments'
                 title = 'RM'
                 break
             case "componentAssembly":
-                warningMessgae = "Select a part, then add RM, Specification, and Attachments for each part"
+                warningMessgae = "Select a part, then add raw material, specification, and attachment documents"
                 title = 'Part'
                 break
             default:
@@ -939,7 +941,41 @@ function AddRfq(props) {
     }
     const onSubmit = (data, e, isPartDetailsSent) => {
 
+        switch (selectedOption) {
+            case "BOP":
+                if (bopDataList.length === 0) {
+                    Toaster.warning("Please add at least one BOP.");
+                    return false;
+                }
+                break;
 
+            case "RM":
+                if (rmDataList.length === 0) {
+                    Toaster.warning("Please add at least one RM.");
+                    return false;
+                }
+                break;
+
+            case "componentAssembly":
+                if (partList.length === 0) {
+                    Toaster.warning("Please add at least one part.");
+                    return false;
+                }
+                break;
+
+            default:
+                return false;
+        }
+        if ((!showVendorSection && !isConditionalVisible)) {
+            Toaster.warning("Visibility of price field is mandatory.");
+            return false
+        }
+
+
+        if ((!showVendorSection && getValues("VisibilityMode") === "")) {
+            Toaster.warning("Please select Visibility Mode.");
+            return false
+        }
         if (!showVendorSection && (getValues('remark') === "" || getValues('remark') === null)) {
             Toaster.warning("Notes field is mandatory.");
             return false
@@ -1252,6 +1288,9 @@ function AddRfq(props) {
             obj
         ]);
     }
+    const handleDrawer = (value) => {
+        setDrawerViewMode(value)
+    }
     const addRowPartNoTable = () => {
         setResetRmFields(false)
         setResetBopFields(false)
@@ -1436,7 +1475,8 @@ function AddRfq(props) {
 
                     Toaster.warning("Please select all the mandatory fields");
                     return false
-                } else if (selectedOption === "RM" && (RawMaterialList[0]?.RawMaterialReamrk === '' || RawMaterialList[0]?.RawMaterialAttachments?.length === 0)) {
+                }
+                else if (selectedOption === "RM" && (RawMaterialList[0]?.RawMaterialReamrk === '' || RawMaterialList[0]?.RawMaterialAttachments?.length === 0)) {
                     Toaster.warning('Please fill the remark and attachment documents!');
                     return false;
                 }
@@ -1458,13 +1498,18 @@ function AddRfq(props) {
                 //     Toaster.warning(message);
                 // }
             } else if (selectedOption === "componentAssembly") {
-                if (getValues('HavellsDesignPart') === "") {
+
+                if (getValues("partNumber") === "") {
+                    Toaster.warning("Please select all the mandatory fields");
+                    return false
+                }
+                else if (getValues('HavellsDesignPart') === undefined) {
                     Toaster.warning("Please select Havells Design part");
                     return false;
-                } if (["", "-"].includes(getValues('TargetPrice')) && getValues("HavellsDesignPart")?.label === HAVELLS_DESIGN_PARTS) {
+                } else if (["", "-"].includes(getValues('TargetPrice')) && getValues("HavellsDesignPart")?.label === HAVELLS_DESIGN_PARTS) {
                     Toaster.warning("ZBC costing approval is required for this plant to raise a quote.");
                     return false;
-                } if ((remark === '' || childPartFiles?.length === 0)) {
+                } else if ((remark === '' || childPartFiles?.length === 0)) {
                     Toaster.warning('Please fill the remark and attachment documents!');
                     return;
                 }
@@ -1479,13 +1524,11 @@ function AddRfq(props) {
                     Toaster.warning('Remarks and Attachments are required!');
                     return false;
                 }
-            } if (requirementDate === "") {
-                Toaster.warning("Please select Requirement Date");
-                return false;
             } if (getValues('UOM')?.label === "" || getValues('UOM')?.label === undefined) {
-
-
                 Toaster.warning("Please select UOM");
+                return false;
+            } if (requirementDate === "") {
+                Toaster.warning("Please select N-100 Timelin");
                 return false;
             }
             if (nfrId && nfrId.value !== null) {//CHECK_NFR
@@ -2150,8 +2193,10 @@ function AddRfq(props) {
             setValue('PartNumber', '')
             setPart('')
             setPartTypeforRM(newValue.value)
+            setSelectedPartType(newValue?.label)
         } else {
             setPartType([])
+            setSelectedPartType("")
         }
         setPartName([])
         reactLocalStorage.setObject('PartData', [])
@@ -2822,10 +2867,10 @@ function AddRfq(props) {
                                         </Row>
                                     </>}
                                     {loader && <LoaderCustom customClass="Rfq-Loader" />}
-                                    {quationType === 'RM' && <AddRfqRmDetails updateRawMaterialList={updateRawMaterialList} resetRmFields={resetRmFields} rmSpecificRowData={rmSpecificRowData} updateButtonPartNoTable={updateButtonPartNoTable} dataProps={dataProps} isEditFlag={editQuotationPart} isViewFlag={viewQuotationPart} setViewQuotationPart={setViewQuotationPart} disabledPartUid={disabledPartUid} technology={technology} setDisabled={setDisabled} isDisabled={isDisabled} heading={heading} />}
+                                    {quationType === 'RM' && <AddRfqRmDetails updateRawMaterialList={updateRawMaterialList} resetRmFields={resetRmFields} rmSpecificRowData={rmSpecificRowData} updateButtonPartNoTable={updateButtonPartNoTable} dataProps={dataProps} isEditFlag={editQuotationPart} isViewFlag={viewQuotationPart} setViewQuotationPart={setViewQuotationPart} disabledPartUid={disabledPartUid} technology={technology} setDisabled={setDisabled} isDisabled={isDisabled} heading={heading} dataProp={dataProps} />}
                                     <Row>
 
-                                        {quationType === 'BOP' && <RaiseRfqBopDetails updateButtonPartNoTable={updateButtonPartNoTable} dataProps={dataProps} isEditFlag={editQuotationPart} isViewFlag={viewQuotationPart} setViewQuotationPart={setViewQuotationPart} updateBopList={updateBopList} resetBopFields={resetBopFields} plant={plant} prNumber={prNumber} disabledPartUid={disabledPartUid} heading={heading} />}
+                                        {quationType === 'BOP' && <RaiseRfqBopDetails updateButtonPartNoTable={updateButtonPartNoTable} dataProps={dataProps} isEditFlag={editQuotationPart} isViewFlag={viewQuotationPart} setViewQuotationPart={setViewQuotationPart} updateBopList={updateBopList} resetBopFields={resetBopFields} plant={plant} prNumber={prNumber} disabledPartUid={disabledPartUid} heading={heading} dataProp={dataProps} />}
 
                                         {!havellsKey && (
                                             checkForNull(technology?.value) !== LOGISTICS && (
@@ -3299,7 +3344,7 @@ function AddRfq(props) {
 
                                         <Row className="mt-3 conditional-date">
                                             <Col md="2">
-                                                < div id="checkbox_container" className="custom-check1">
+                                                < div id="checkbox_container" className="custom-check1 visibility-container">
                                                     <label
                                                         className="custom-checkbox mb-0"
                                                         onChange={() => checkBoxHandler()}
@@ -3309,12 +3354,16 @@ function AddRfq(props) {
                                                             type="checkbox"
                                                             value={"All"}
                                                             checked={isConditionalVisible}
+
                                                             disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll)}
                                                         />
+
                                                         <span className=" before-box"
                                                             checked={isConditionalVisible}
                                                         />
                                                     </label>
+                                                    <span className="asterisk-required">*</span>
+
                                                 </div>
                                             </Col>
                                             {(isConditionalVisible && dataProps) &&
@@ -3599,6 +3648,8 @@ function AddRfq(props) {
                                             effectiveMinDate={effectiveMinDate}
                                             quationType={selectedOption}
                                             rmSpecificRowData={rmSpecificRowData}
+                                            drawerViewMode={drawerViewMode}
+                                            handleDrawer={handleDrawer}
                                         />
                                     )
                                 }
