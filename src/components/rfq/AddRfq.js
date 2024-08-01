@@ -196,7 +196,8 @@ function AddRfq(props) {
     const [isLoader, setIsLoader] = useState(false)
     const [prNumber, setPrNumber] = useState([])
     const [isDisabled, setIsDisabled] = useState(false)
-
+    const [selectedPartType, setSelectedPartType] = useState('')
+    const [drawerViewMode, setDrawerViewMode] = useState(false)
     const showOnlyFirstModule = initialConfiguration.IsManageSeparateUserPemissionForPartAndVendorInRaiseRFQ;
 
 
@@ -761,6 +762,7 @@ function AddRfq(props) {
                 dispatch(setBopSpecificRowData(bopList))
             }
         }))
+        setDrawerViewMode(true)
         setDrawerOpen(true)
 
     }
@@ -968,7 +970,9 @@ function AddRfq(props) {
             Toaster.warning("Visibility of price field is mandatory.");
             return false
         }
-        if ((!showVendorSection && getValues("VisibilityMode") === undefined)) {
+
+
+        if ((!showVendorSection && getValues("VisibilityMode") === "")) {
             Toaster.warning("Please select Visibility Mode.");
             return false
         }
@@ -1283,6 +1287,9 @@ function AddRfq(props) {
         setBopList(prevList => [
             obj
         ]);
+    }
+    const handleDrawer = (value) => {
+        setDrawerViewMode(value)
     }
     const addRowPartNoTable = () => {
         setResetRmFields(false)
@@ -2186,8 +2193,10 @@ function AddRfq(props) {
             setValue('PartNumber', '')
             setPart('')
             setPartTypeforRM(newValue.value)
+            setSelectedPartType(newValue?.label)
         } else {
             setPartType([])
+            setSelectedPartType("")
         }
         setPartName([])
         reactLocalStorage.setObject('PartData', [])
@@ -2858,10 +2867,10 @@ function AddRfq(props) {
                                         </Row>
                                     </>}
                                     {loader && <LoaderCustom customClass="Rfq-Loader" />}
-                                    {quationType === 'RM' && <AddRfqRmDetails updateRawMaterialList={updateRawMaterialList} resetRmFields={resetRmFields} rmSpecificRowData={rmSpecificRowData} updateButtonPartNoTable={updateButtonPartNoTable} dataProps={dataProps} isEditFlag={editQuotationPart} isViewFlag={viewQuotationPart} setViewQuotationPart={setViewQuotationPart} disabledPartUid={disabledPartUid} technology={technology} setDisabled={setDisabled} isDisabled={isDisabled} heading={heading} />}
+                                    {quationType === 'RM' && <AddRfqRmDetails updateRawMaterialList={updateRawMaterialList} resetRmFields={resetRmFields} rmSpecificRowData={rmSpecificRowData} updateButtonPartNoTable={updateButtonPartNoTable} dataProps={dataProps} isEditFlag={editQuotationPart} isViewFlag={viewQuotationPart} setViewQuotationPart={setViewQuotationPart} disabledPartUid={disabledPartUid} technology={technology} setDisabled={setDisabled} isDisabled={isDisabled} heading={heading} dataProp={dataProps} />}
                                     <Row>
 
-                                        {quationType === 'BOP' && <RaiseRfqBopDetails updateButtonPartNoTable={updateButtonPartNoTable} dataProps={dataProps} isEditFlag={editQuotationPart} isViewFlag={viewQuotationPart} setViewQuotationPart={setViewQuotationPart} updateBopList={updateBopList} resetBopFields={resetBopFields} plant={plant} prNumber={prNumber} disabledPartUid={disabledPartUid} heading={heading} />}
+                                        {quationType === 'BOP' && <RaiseRfqBopDetails updateButtonPartNoTable={updateButtonPartNoTable} dataProps={dataProps} isEditFlag={editQuotationPart} isViewFlag={viewQuotationPart} setViewQuotationPart={setViewQuotationPart} updateBopList={updateBopList} resetBopFields={resetBopFields} plant={plant} prNumber={prNumber} disabledPartUid={disabledPartUid} heading={heading} dataProp={dataProps} />}
 
                                         {!havellsKey && (
                                             checkForNull(technology?.value) !== LOGISTICS && (
@@ -3335,7 +3344,7 @@ function AddRfq(props) {
 
                                         <Row className="mt-3 conditional-date">
                                             <Col md="2">
-                                                < div id="checkbox_container" className="custom-check1">
+                                                < div id="checkbox_container" className="custom-check1 visibility-container">
                                                     <label
                                                         className="custom-checkbox mb-0"
                                                         onChange={() => checkBoxHandler()}
@@ -3639,6 +3648,8 @@ function AddRfq(props) {
                                             effectiveMinDate={effectiveMinDate}
                                             quationType={selectedOption}
                                             rmSpecificRowData={rmSpecificRowData}
+                                            drawerViewMode={drawerViewMode}
+                                            handleDrawer={handleDrawer}
                                         />
                                     )
                                 }

@@ -42,7 +42,10 @@ function ViewDrawer(props) {
         { sop: 'SOP5' },
     ]
 
-    const { type, isOpen, anchor, isEditFlag, isViewFlag, AssemblyPartNumber, tableData, setTableData, specificationList, setSpecificationList, setRemark, setChildPartFiles, remark, partListData, sopQuantityList, setSopQuantityList, sopdate, setSOPDate, effectiveMinDate, childPartFiles, rmSpecificRowData, partType, bopNumber } = props
+    const { type, isOpen, anchor, isEditFlag, isViewFlag, AssemblyPartNumber, tableData, setTableData, specificationList, setSpecificationList, setRemark, setChildPartFiles, remark, partListData, sopQuantityList, setSopQuantityList, sopdate, setSOPDate, effectiveMinDate, childPartFiles, rmSpecificRowData, partType, bopNumber, handleDrawer, drawerViewMode } = props
+
+
+
 
 
     const { register, handleSubmit, setValue, getValues, formState: { errors }, control } = useForm({
@@ -116,10 +119,10 @@ function ViewDrawer(props) {
             }
     }, [partType])
     useEffect(() => {
-        if (partType === "component") {
+        if (partType === "component" || partType === "Assembly") {
             if ((isEditFlag || isViewFlag) && getRfqPartDetails && getRfqPartDetails?.PartList) {
                 const partList = getRfqPartDetails?.PartList || [];
-
+                let accumulatedRMDetails = [];
                 const sopDate = partList[0]?.SOPDate
 
                 setSOPDate(sopDate || '')
@@ -132,45 +135,44 @@ function ViewDrawer(props) {
                             const allSopQuantityDetails = part?.SOPQuantityDetails || []
                             setSopQuantityList(sopQuantityList => allSopQuantityDetails)
                         }
+                        if (index === 0) {
+                            const allSpecifications = (part.PartSpecification || []).map(detail => ({
+                                ...detail,
+                                PartId: PartId,
+                                PartNumber: PartNumber,
+                                uniqueKey: `${PartId}-${detail.Specification}` //QuotationPartSpecificationIdRef
+                            }));
 
-                        const allSpecifications = (part.PartSpecification || []).map(detail => ({
-                            ...detail,
-                            PartId: PartId,
-                            PartNumber: PartNumber,
-                            uniqueKey: `${PartId}-${detail.Specification}` //QuotationPartSpecificationIdRef
-                        }));
-
-
-
-                        arr.push(...allSpecifications)
+                            arr.push(...allSpecifications)
 
 
-                        const allRMDetails = (part.RMDetails || []).map(detail => ({
-                            ...detail,
-                            PartId: PartId,
-                            PartNumber: PartNumber,
-                            uniqueKey: `${PartId}-${detail.RawMaterialSpecificationId}`
-                        }));
+                            const remarks = part.Remarks || '';
+                            setValue('remark', remarks);
+                            setRemark(remarks);
+                            const allFiles = part.Attachments || [];
 
-                        setTableData(tableData => _.uniqBy([...allRMDetails], 'RawMaterialChildId'));
-                        const remarks = part.Remarks || '';
-                        setValue('remark', remarks);
-                        setRemark(remarks);
+                            setFiles(files => [...allFiles]);
+                            setChildPartFiles(childPartFiles => [...allFiles]);
+                        }
+                        if (part.RMDetails && part.RMDetails.length > 0) {
+                            const allRMDetails = part.RMDetails.map(detail => ({
+                                ...detail,
+                                PartId: PartId,
+                                PartNumber: PartNumber,
+                                uniqueKey: `${PartId}-${detail.RawMaterialSpecificationId}`
+                            }));
 
-                        const allFiles = part.Attachments || [];
-                        setFiles(files => [...allFiles]);
-                        setChildPartFiles(childPartFiles => [...allFiles]);
+                            accumulatedRMDetails = [...accumulatedRMDetails, ...allRMDetails];
+
+                        }
+
+
+                        // setTableData(tableData => _.uniqBy([...allRMDetails], 'RawMaterialChildId'));
+                        setTableData(tableData => _.uniqBy(accumulatedRMDetails, 'PartId'));
+
                     });
                     setSpecificationList(specificationList => _.uniqBy([...arr], 'QuotationPartSpecificationIdRef'));
                 }
-            } else {
-                setTableData([])
-                setSpecificationList([])
-                setSopQuantityList([])
-                setSOPDate('')
-                setRemark('')
-                setFiles([])
-                setChildPartFiles([])
             }
         }
     }, [getRfqPartDetails, isViewFlag, isEditFlag]);
@@ -237,9 +239,11 @@ function ViewDrawer(props) {
     }, [sopdate])
     useEffect(() => {
         if (!isViewFlag && !isEditFlag) {
+            if (childPartFiles.length > 0 || remark !== "") {
+                setValue("remark", remark)
+                setFiles(childPartFiles)
+            }
 
-            setValue("remark", remark)
-            setFiles(childPartFiles)
         }
     }, [isEditFlag, isViewFlag])
     useEffect(() => {
@@ -291,6 +295,16 @@ function ViewDrawer(props) {
         }
         props?.setViewQuotationPart(false)
         props.closeDrawer('', false)
+        if (drawerViewMode) {
+            setTableData([])
+            setSpecificationList([])
+            setSopQuantityList([])
+            setSOPDate('')
+            setRemark('')
+            setFiles([])
+            setChildPartFiles([])
+            handleDrawer(false)
+        }
     }
     const renderListingRM = (label) => {
 
@@ -302,6 +316,9 @@ function ViewDrawer(props) {
                 // if (item.Value === '0') return false;
                 opts1.push({ label: item.Text, value: item.Value })
             });
+            const selectedValues = tableData.map(data => data.PartId);
+
+
             return getFilteredDropdownOptions(opts1, selectedValues);
         }
         if (label === 'rmname') {
@@ -391,7 +408,7 @@ function ViewDrawer(props) {
         setRemark(newValue);
     }
     const resetFormAndDropdowns = () => {
-        if (type !== "2") {
+        if (type !== Component) {
             setValue('partNumber', '')
         }
         setValue('RMName', '')
@@ -516,22 +533,26 @@ function ViewDrawer(props) {
         // }
 
 
-        if (partType === "component" || partType === "Assembly") {
+        if (partType === "component") {
             const dropdownTexts = _.map(getChildParts, 'Text');
             const tableTexts = _.map(tableData, 'PartNumber');
             const allPresent = _.every(dropdownTexts, text => _.includes(tableTexts, text));
             const hasNonZeroQuantity = sopQuantityList && sopQuantityList.some(item => item.Quantity !== 0);
-            if (!allPresent) {
-                Toaster.warning('RM Name, RM Grade, and RM Specification are required for each part.')
-                return false
-            }
 
-            else if (sopQuantityList.length === 0 || !hasNonZeroQuantity) {
+            if (type !== Component) {
+                if (!allPresent) {
+                    Toaster.warning('RM Name, RM Grade, and RM Specification are required for each part.');
+                    return false;
+                }
+            } else if (type === Component && (tableData.length === 0)) {
+                Toaster.warning('RM Name, RM Grade, and RM Specification are required.');
+                return false;
+            }
+            if (_.isEmpty(sopQuantityList) || !hasNonZeroQuantity) {
                 Toaster.warning("Select SOP date and fill at least one year's quantity.");
-                return false
+                return false;
             }
         }
-
 
         if (getValues('remark') === '' || files.length === 0) {
             Toaster.warning('Please fill the remarks and attachments documents.');
@@ -579,7 +600,6 @@ function ViewDrawer(props) {
 
     }
     const cancelUpdate = () => {
-
         setIsEdit(false);
         // setTableData([]);
         // setSpecificationList([]);
