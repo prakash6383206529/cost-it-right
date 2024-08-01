@@ -177,9 +177,9 @@ function CostingBenchmarkReport(props) {
 
         if (label === 'masters') {
             masterList && masterList.map((item) => {
-                if (item.Value === '0') return false
+                if (item.Value === '0' || item.Value === '11') return false
 
-                if (item.Text !== 'Assembly' && item.Text !== 'Exchange Rates' && item.Text !== 'Combined Process') {
+                if (item.Text !== 'Assembly' && item.Text !== 'Exchange Rates' && item.Text !== 'Combined Process' && item.Text !== 'Raw Materials') {
                     temp.push({ label: item.Text, value: item.Value })
                 }
                 return null

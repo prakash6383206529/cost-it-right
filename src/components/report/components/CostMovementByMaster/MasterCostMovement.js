@@ -500,7 +500,7 @@ function MasterCostMovement() {
                     }
                     else if (label === 'masters') {
 
-                        if (item.Value === '3' || item.Value === '8' || item.Value === '10') {
+                        if (item.Value === '3' || item.Value === '8' || item.Value === '10' || item.Value === '11') {
                             return false;
                         }
                         else {
