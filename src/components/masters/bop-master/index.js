@@ -311,7 +311,7 @@ const BOPMaster = () => {
                   )}
 
                   {Number(state.activeTab) === 5 && (
-                    <TabPane tabId="">
+                    <TabPane tabId="5">
                       <CommonApproval
                         AddAccessibility={state.AddAccessibility}
                         EditAccessibility={state.EditAccessibility}

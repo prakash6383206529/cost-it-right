@@ -142,6 +142,7 @@ function AddOtherCostDrawer(props) {
         setValue('CostCurrency', selectedData.NetCost);
         setValue('CostBaseCurrency', selectedData.NetCostConversion);
         setValue('CostDescription', selectedData.Description);
+        setValue('Remark', selectedData.Remark);
         setRawMaterialCommodityIndexRateAndOtherCostDetailsId(selectedData?.RawMaterialCommodityIndexRateAndOtherCostDetailsId ?? null)
         // setTotalCostCurrency(selectedData.CostCurrency);
         // setType(selectedData.ConditionType);
@@ -350,9 +351,10 @@ function AddOtherCostDrawer(props) {
         const percentage = Number(getValues('Percentage'));
         const costBaseCurrency = getValues('CostBaseCurrency');
         const applicabilityBaseCost = getValues('ApplicabilityBaseCost');
+        const remark = getValues('Remark');
 
         // If 'Type' is not provided, return false
-        if (!type || !cost) { Toaster.warning('Please enter all details to add a row.'); return false };
+        if (!type || !cost || !remark) { Toaster.warning('Please enter all mandatory details to add a row.'); return false };
         if (type.label === "Percentage") {
             // If 'Type' is 'percentage', check for 'Applicability' and 'Percentage'
             if (!applicability || !applicabilityBaseCost || !percentage || percentage === 0) {
@@ -377,6 +379,7 @@ function AddOtherCostDrawer(props) {
             NetCostConversion: getValues('CostBaseCurrency'),
             Description: getValues('CostDescription') ? getValues('CostDescription') : '-',
             CostingConditionMasterId: getValues('Cost') ? getValues('Cost').value : '-',
+            Remark: getValues('Remark')
         };
 
         // If the CostHeaderName is 'Discount Cost', prepend '-' sign
@@ -445,6 +448,7 @@ function AddOtherCostDrawer(props) {
                 CostCurrency: '',
                 CostBaseCurrency: '',
                 CostDescription: '',
+                Remark: ''
             });
         };
         commonReset();
@@ -694,7 +698,27 @@ function AddOtherCostDrawer(props) {
                                                 disabled={type?.label === 'Percentage' ? true : false || state.disableCostBaseCurrency || props.ViewMode}
                                             />
                                         </Col>
-
+                                        <Col md="3" className='px-2'>
+                                            <TextFieldHookForm
+                                                label="Remark"
+                                                name={"Remark"}
+                                                Controller={Controller}
+                                                control={control}
+                                                register={register}
+                                                mandatory={true}
+                                                rules={{
+                                                    required: true,
+                                                    validate: { checkWhiteSpaces, hashValidation },
+                                                    maxLength: 80
+                                                }}
+                                                handleChange={() => { }}
+                                                defaultValue={""}
+                                                className=""
+                                                customClassName={"withBorder"}
+                                                errors={errors.OtherCostDescription}
+                                                disabled={props.ViewMode}
+                                            />
+                                        </Col>
                                         <Col md="3" className={toggleCondition()}>
                                             <button
                                                 type="button"
@@ -727,6 +751,7 @@ function AddOtherCostDrawer(props) {
                                                     <th>{`Percentage (%)`}</th>
                                                     {!props.rawMaterial && <th>{`Cost (Currency)`}</th>}
                                                     <th>{`Cost (${reactLocalStorage.getObject("baseCurrency")})`}</th>
+                                                    <th>{`Remark`}</th>
                                                     {!props.hideAction && <th className='text-right'>{`Action`}</th>}
                                                 </tr>
 
@@ -742,6 +767,7 @@ function AddOtherCostDrawer(props) {
                                                             <td>{item.Value !== '-' ? checkForDecimalAndNull(item.Value, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
                                                             {!props.rawMaterial && <td>{item.NetCost !== '-' ? item.NetCost : '-'}</td>}
                                                             <td>{item.NetCostConversion !== '-' ? item.NetCostConversion : '-'}</td>
+                                                            <td>{item.Remark}</td>
                                                             {!props.hideAction && (
                                                                 <td>
                                                                     <div className='text-right'>

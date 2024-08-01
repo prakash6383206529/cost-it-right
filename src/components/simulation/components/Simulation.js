@@ -1511,7 +1511,7 @@ function Simulation(props) {
 
                 if (type?.label === "Indexed") {
                     return <ApplyPermission.Provider value={permissionData}>
-                        <RMIndexationSimulation isCostingSimulation={true} backToSimulation={backToSimulation} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData} master={master.label} tokenForMultiSimulation={tempObject} />
+                        <RMIndexationSimulation isCostingSimulation={true} backToSimulation={backToSimulation} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData} master={master.label} tokenForMultiSimulation={tempObject} technology={technology.label} technologyId={technology.value} />
                     </ApplyPermission.Provider>
                 } else {
                     return <ApplyPermission.Provider value={permissionData}>
@@ -1547,7 +1547,7 @@ function Simulation(props) {
                     return ''
                 }
             case String(RAWMATERIALINDEX):
-                return <RMIndexationSimulation backToSimulation={backToSimulation} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData} master={master.label} tokenForMultiSimulation={tempObject} />
+                return <RMIndexationSimulation backToSimulation={backToSimulation} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData} master={master.label} tokenForMultiSimulation={tempObject} technology={technology.label} technologyId={technology.value} />
             default:
                 break;
         }

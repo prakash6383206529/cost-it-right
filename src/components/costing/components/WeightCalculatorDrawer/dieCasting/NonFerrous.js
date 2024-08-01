@@ -116,7 +116,7 @@ function NonFerrous(props) {
         }
     }, [getValues('castingWeight'), lostWeight])
     const handlGrossWeight = () => {
-        const grossWeight = checkForNull(Number(getValues('castingWeight'))) + dataToSend.burningValue + lostWeight
+        const grossWeight = checkForNull(Number(getValues('castingWeight'))) + checkForNull(dataToSend?.burningValue) + lostWeight
         const updatedValue = dataToSend
         updatedValue.grossWeight = grossWeight
         setDataToSend(updatedValue)
@@ -127,7 +127,7 @@ function NonFerrous(props) {
     const calculateRemainingCalculation = (lostSum = 0) => {
         let scrapWeight = 0
         const castingWeight = Number(getValues("castingWeight"))
-        const grossWeight = checkForNull(Number(getValues('castingWeight'))) + dataToSend.burningValue + lostSum
+        const grossWeight = checkForNull(Number(getValues('castingWeight'))) + checkForNull(dataToSend?.burningValue) + lostSum
         const finishedWeight = checkForNull(Number(getValues('finishedWeight')))
 
         if (finishedWeight !== 0) {
@@ -364,7 +364,7 @@ function NonFerrous(props) {
 
                             <Row className={'mt25'}>
                                 <Col md="3" >
-                                    <TooltipCustom disabledIcon={true} id={'gross-weight-nonferrous'} tooltipText={'Gross Weight = (Casting Weight + Burning Value + Net Loss Weight)'} />
+                                    <TooltipCustom disabledIcon={true} id={'gross-weight-nonferrous'} tooltipText={`Gross Weight = (Casting Weight ${isHpdc ? '+ Burning Value' : ''} + Net Loss Weight)`} />
                                     <TextFieldHookForm
                                         label={`Gross Weight(Kg)`}
                                         name={'grossWeight'}

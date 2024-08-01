@@ -344,7 +344,6 @@ function ApproveRejectDrawer(props) {
     //THIS OBJ IS FOR SAVE SIMULATION
     if (type === 'Sender' && !isSaveDone && !isSimulationApprovalListing) {
       let simObj = formatRMSimulationObject(simulationDetail, costingArr, apiData)
-
       //THIS CONDITION IS FOR SAVE SIMULATION
       dispatch(saveSimulationForRawMaterial(simObj, res => {
         if (res?.data?.Result) {

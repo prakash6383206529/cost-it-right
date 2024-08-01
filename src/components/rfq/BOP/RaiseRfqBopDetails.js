@@ -167,7 +167,8 @@ const RaiseRfqBopDetails = (props) => {
 
     return (
         <div className='bop-details-wrapper'>
-            <HeaderTitle title={'BOP:'} />
+            {/* <HeaderTitle title={'BOP:'} /> */}
+            {props.heading()}
             <Row className="part-detail-wrapper">
                 <Col md="3">
                     <SearchableSelectHookForm

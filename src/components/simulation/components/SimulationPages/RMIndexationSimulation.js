@@ -33,6 +33,7 @@ import CommoditySimulationDrawer from './CommoditySimulationDrawer';
 import AddOtherCostDrawer from '../../../masters/material-master/AddOtherCostDrawer';
 import SimulationApproveReject from '../../../costing/components/approval/SimulationApproveReject';
 import { Redirect } from 'react-router-dom/cjs/react-router-dom';
+import CustomCellRenderer from '../../../rfq/CommonDropdown';
 
 const gridOptions = {
 
@@ -395,22 +396,24 @@ function RMIndexationSimulation(props) {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const value = beforeSaveCell(cell, props, "basicRate")
         let PercentageCalc = 0
+        let classGreen = ''
         if (row.Percentage) {
             PercentageCalc = (row?.BasicRatePerUOM + (Number(row?.BasicRatePerUOM) * Number(row?.Percentage) / 100))
             if (isNaN(PercentageCalc)) {
                 PercentageCalc = row?.BasicRatePerUOM
             }
         }
+        classGreen = (row?.NewBasicRatePerUOM > row?.OldBasicRatePerUOM) ? 'red-value form-control' : (row?.NewBasicRatePerUOM < row?.OldBasicRatePerUOM) ? 'green-value form-control' : 'form-class'
         return (
             <>
                 {
                     isImpactedMaster ?
                         checkForDecimalAndNull(row.NewBasicRate, getConfigurationKey().NoOfDecimalForPrice) :
-                        <span id={`newBasicRate-${props.rowIndex}`} className={`${!isbulkUpload ? 'form-control-disabled' : ''} ${row?.Percentage && Number(row?.Percentage) !== 0 && !row?.NewBasicRate ? 'disabled' : ''} basicRate_revised`} title={cell && value ? Number(cell) : Number(row.BasicRatePerUOM)}>{cell && value ? Number(cell) : row.Percentage ? PercentageCalc : isbulkUpload ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : checkForDecimalAndNull(row.BasicRatePerUOM, getConfigurationKey().NoOfDecimalForPrice)} </span>
+                        <span id={`newBasicRate-${props.rowIndex}`} className={`${classGreen} with-button`} title={cell && value ? Number(cell) : Number(row.BasicRatePerUOM)}>{cell && value ? Number(cell) : row.Percentage ? PercentageCalc : isbulkUpload ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : checkForDecimalAndNull(row.BasicRatePerUOM, getConfigurationKey().NoOfDecimalForPrice)} </span>
                 }
                 {!isCostingSimulation && <button
                     type="button"
-                    className={`${(isRunSimulationClicked || isApprovalSummary || row?.IsSourceVendor === true) ? 'View small' : ' add-out-sourcing'} `}
+                    className={`${(isRunSimulationClicked || isApprovalSummary || row?.IsSourceVendor === true) ? 'View small' : ' add-out-sourcing'} ml-1`}
                     onClick={() => CommodityDetailDrawer(value, row, props.rowIndex, 'New')}
                     title="Add"
                 >
@@ -720,8 +723,8 @@ function RMIndexationSimulation(props) {
         const row = props?.valueFormatted ? props.valueFormatted : isCostingSimulation ? props.data.NewRawMaterialIndexationDetails : props?.data;
         const rowValue = isCostingSimulation ? row.NetLandedCost : row?.NewNetLandedCost
 
-        return rowValue ? <span title={checkForDecimalAndNull(rowValue, getConfigurationKey().NoOfDecimalForPrice)}>{checkForDecimalAndNull(rowValue, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
-        // checkForDecimalAndNull(NewBasicRate, getConfigurationKey().NoOfDecimalForPrice)
+        const classGreen = (row?.NewNetLandedCost > row?.OldNetLandedCost) ? 'red-value form-control' : (row?.NewNetLandedCost < row?.OldNetLandedCost) ? 'green-value form-control' : 'form-class'
+        return rowValue ? <span title={checkForDecimalAndNull(rowValue, getConfigurationKey().NoOfDecimalForPrice)} className={`${classGreen} with-button`}>{checkForDecimalAndNull(rowValue, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
     const revisedBasicRateHeader = (props) => {
         return (
@@ -905,17 +908,18 @@ function RMIndexationSimulation(props) {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const value = beforeSaveCell(cell, props, 'otherCost')
         const showValue = cell && value ? checkForDecimalAndNull(Number(cell), getConfigurationKey().NoOfDecimalForPrice) : checkForDecimalAndNull(Number(row.BasicRatePerUOM), getConfigurationKey().NoOfDecimalForPrice)
+        const classGreen = (row?.NewOtherNetCost > row?.OldOtherNetCost) ? 'red-value form-control' : (row?.NewOtherNetCost < row?.OldOtherNetCost) ? 'green-value form-control' : 'form-class'
         return (
             <>
                 {
                     isImpactedMaster ?
                         row.OldBasicRate :
-                        <span title={showValue}>{showValue} </span>
+                        <span title={showValue} className={`${classGreen} with-button`}>{showValue} </span>
 
                 }
                 {!isCostingSimulation && <button
                     type="button"
-                    className={`${(isRunSimulationClicked || isApprovalSummary) ? 'View small' : ' add-out-sourcing'} `}
+                    className={`${(isRunSimulationClicked || isApprovalSummary) ? 'View small ml-1' : ' add-out-sourcing ml-1'} `}
                     onClick={() => otherCostDrawer(cell, row, props.rowIndex, 'New')}
                     title="Add"
                 >
@@ -1096,7 +1100,8 @@ function RMIndexationSimulation(props) {
                                                 <AgGridColumn width={columnWidths.RawMaterialGradeName} field={props.isCostingSimulation ? 'RawMaterialGrade' : "RawMaterialGradeName"} tooltipField='RawMaterialGradeName' editable='false' headerName="Grade" ></AgGridColumn>
                                                 <AgGridColumn width={columnWidths.RawMaterialSpecificationName} field={props.isCostingSimulation ? 'RawMaterialSpecs' : "RawMaterialSpecificationName"} tooltipField='RawMaterialSpecificationName' editable='false' headerName="Spec"></AgGridColumn>
                                                 <AgGridColumn width={columnWidths.RawMaterialCode} field="RawMaterialCode" tooltipField='RawMaterialCode' editable='false' headerName='Code' cellRenderer='hyphenFormatter'></AgGridColumn>
-                                                {getConfigurationKey()?.IsShowSourceVendorInRawMaterial && <AgGridColumn width={columnWidths.SourceVendorName} field="SourceVendorName" tooltipField='SourceVendorName' editable='false' headerName='Source Vendor Name' cellRenderer='hyphenFormatter'></AgGridColumn>}
+                                                {getConfigurationKey()?.IsShowSourceVendorInRawMaterial && !props.isCostingSimulation && <AgGridColumn field="SourceVendorAssociatedAsRawMaterialVendors" width={250} headerName='Raw Material Code (Source Vendor Code)' cellRendererFramework={CustomCellRenderer}></AgGridColumn>}
+                                                {getConfigurationKey()?.IsShowSourceVendorInRawMaterial && <AgGridColumn width={columnWidths.SourceVendorName} field="SourceVendorName" tooltipField='SourceVendorName' editable='false' headerName='Source Vendor (Code)' cellRenderer='hyphenFormatter'></AgGridColumn>}
                                                 {!isImpactedMaster && <AgGridColumn width={columnWidths.RawMaterialCategoryName} field={props.isCostingSimulation ? 'Category' : "RawMaterialCategoryName"} tooltipField='RawMaterialCategoryName' editable='false' headerName="Category"></AgGridColumn>}
                                                 {!isImpactedMaster && <AgGridColumn width={columnWidths.TechnologyName} field={props.isCostingSimulation ? 'Technology' : "TechnologyName"} tooltipField='TechnologyName' editable='false' headerName="Technology" ></AgGridColumn>}
                                                 {!isImpactedMaster && list && list[0]?.CostingTypeId !== CBCTypeId && <AgGridColumn width={columnWidths.VendorCod} field={props.isCostingSimulation ? 'VendorCode' : "Vendor (Code)"} tooltipField='Vendor (Code)' editable='false' headerName="Vendor (Code)" cellRenderer='vendorFormatter'></AgGridColumn>}

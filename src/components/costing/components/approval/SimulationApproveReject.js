@@ -22,7 +22,7 @@ import { reactLocalStorage } from 'reactjs-localstorage'
 function SimulationApproveReject(props) {
   // ********* INITIALIZE REF FOR DROPZONE ********
   const dropzone = useRef(null);
-
+  const hasCalledAPI = useRef(false);
   const { type, technologyId, approvalTypeIdValue, approvalData, IsFinalLevel, IsPushDrawer, dataSend, reasonId, simulationDetail, selectedRowData, costingArr, isSaveDone, Attachements, vendorId, SimulationTechnologyId, SimulationType, isSimulationApprovalListing, apiData, TechnologyId, releaseStrategyDetails, IsExchangeRateSimulation, isRMIndexationSimulation } = props
 
   const userLoggedIn = loggedInUserId()
@@ -124,7 +124,6 @@ function SimulationApproveReject(props) {
     //THIS OBJ IS FOR SAVE SIMULATION
     if (initialConfiguration?.IsSAPConfigured && type === 'Sender' && !isSaveDone && !isSimulationApprovalListing) {
       let simObj = formatRMSimulationObject(simulationDetail, costingArr, apiData, isRMIndexationSimulation)
-
       //THIS CONDITION IS FOR SAVE SIMULATION
       dispatch(saveSimulationForRawMaterial(simObj, res => {
         if (res?.data?.Result) {
@@ -376,23 +375,22 @@ function SimulationApproveReject(props) {
   }
 
   useEffect(() => {
-    if (type === 'Sender' && !isSaveDone && !isSimulationApprovalListing) {
-      let simObj = formatRMSimulationObject(simulationDetail, costingArr, apiData, isRMIndexationSimulation)
+    if (type === 'Sender' && !isSaveDone && !isSimulationApprovalListing && !hasCalledAPI.current) {
+      let simObj = formatRMSimulationObject(simulationDetail, costingArr, apiData, isRMIndexationSimulation);
       //THIS CONDITION IS FOR SAVE SIMULATION
-      setLoader(true)
+      setLoader(true);
+      hasCalledAPI.current = true; // Set the ref to true to prevent future calls
       dispatch(saveSimulationForRawMaterial(simObj, res => {
         if (res?.data?.Result) {
-          reactLocalStorage.setObject('isSaveSimualtionCalled', true)
-          // Toaster.success('Simulation saved successfully.')
+          reactLocalStorage.setObject('isSaveSimualtionCalled', true);
+          Toaster.success('Simulation saved successfully.');
           setTimeout(() => {
-
-            setLoader(false)
+            setLoader(false);
           }, 500);
-
         }
-      }))
+      }));
     }
-  }, [simulationDetail])
+  }, [simulationDetail]);
 
   const closePushButton = () => {
     setOpenPushButton(false)
