@@ -663,6 +663,24 @@ function AddRMDetails(props) {
                             />
                         </Col>
                         <Col className="col-md-15">
+                            <SearchableSelectHookForm
+                                label={`RM Code`}
+                                name={'RawMaterialCode'}
+                                placeholder={'Select'}
+                                options={renderListing("code")}
+                                Controller={Controller}
+                                control={control}
+                                register={register}
+                                rules={{ required: true }}
+                                mandatory={true}
+                                // defaultValue={state.rmCode.length !== 0 ? state.rmCode : ""}
+                                handleChange={handleCode}
+                                isClearable={true}
+                                disabled={isEditFlag || isViewFlag || state.isCodeDisabled}
+                                errors={errors.RawMaterialCode}
+                            />
+                        </Col>
+                        <Col className="col-md-15">
                             <div className="d-flex justify-space-between align-items-center inputwith-icon">
                                 <div className="fullinput-icon">
                                     <SearchableSelectHookForm
@@ -750,24 +768,7 @@ function AddRMDetails(props) {
                                 errors={errors.RawMaterialCategory}
                             />
                         </Col>
-                        <Col className="col-md-15">
-                            <SearchableSelectHookForm
-                                label={`Code`}
-                                name={'RawMaterialCode'}
-                                placeholder={'Select'}
-                                options={renderListing("code")}
-                                Controller={Controller}
-                                control={control}
-                                register={register}
-                                rules={{ required: true }}
-                                mandatory={true}
-                                // defaultValue={state.rmCode.length !== 0 ? state.rmCode : ""}
-                                handleChange={handleCode}
-                                isClearable={true}
-                                disabled={isEditFlag || isViewFlag || state.isCodeDisabled}
-                                errors={errors.RawMaterialCode}
-                            />
-                        </Col>
+
                         {((states.costingTypeId === ZBCTypeId || (states.costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (states.costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant)) && (<>
                             <Col className="col-md-15">
                                 <SearchableSelectHookForm
