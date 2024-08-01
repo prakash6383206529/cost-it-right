@@ -6,7 +6,7 @@ import { Controller, useForm } from 'react-hook-form'
 import NoContentFound from '../common/NoContentFound'
 import { Assembly, Component, EMPTY_DATA, FILE_URL, searchCount } from '../../config/constants'
 import { useSelector, useDispatch } from 'react-redux'
-import { getRMGradeSelectListByRawMaterial } from '../masters/actions/Material'
+import { getRawMaterialNameChild, getRMGradeSelectListByRawMaterial, getRMSpecificationDataAPI, getRMSpecificationDataList } from '../masters/actions/Material'
 import { fetchSpecificationDataAPI } from '../../actions/Common'
 import { getPartSelectListWtihRevNo } from '../masters/actions/Volume'
 import { autoCompleteDropdownPart } from '../common/CommonFunctions'
@@ -27,6 +27,7 @@ import _ from 'lodash';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import DatePicker from 'react-datepicker'
 import DayTime from '../common/DayTimeWrapper';
+import TooltipCustom from '../common/Tooltip'
 
 const gridOptionsPart = {}
 function ViewDrawer(props) {
@@ -41,7 +42,10 @@ function ViewDrawer(props) {
         { sop: 'SOP5' },
     ]
 
-    const { type, isOpen, anchor, isEditFlag, isViewFlag, AssemblyPartNumber, tableData, setTableData, specificationList, setSpecificationList, setRemark, setChildPartFiles, remark, partListData, sopQuantityList, setSopQuantityList, sopdate, setSOPDate, effectiveMinDate, childPartFiles, rmSpecificRowData, partType, bopNumber } = props
+    const { type, isOpen, anchor, isEditFlag, isViewFlag, AssemblyPartNumber, tableData, setTableData, specificationList, setSpecificationList, setRemark, setChildPartFiles, remark, partListData, sopQuantityList, setSopQuantityList, sopdate, setSOPDate, effectiveMinDate, childPartFiles, rmSpecificRowData, partType, bopNumber, handleDrawer, drawerViewMode } = props
+
+
+
 
 
     const { register, handleSubmit, setValue, getValues, formState: { errors }, control } = useForm({
@@ -52,8 +56,7 @@ function ViewDrawer(props) {
     const gradeSelectList = useSelector(state => state?.material?.gradeSelectList);
     const rmSpecification = useSelector(state => state?.comman?.rmSpecification);
     const { getChildParts, getRfqPartDetails, bopSpecificRowData } = useSelector(state => state?.rfq);
-
-
+    const rmSpecificationList = useSelector((state) => state.material.rmSpecificationList)
     // const [sopQuantityList, setSopQuantityList] = useState([]);
 
 
@@ -89,6 +92,8 @@ function ViewDrawer(props) {
     const [showTooltip, setShowTooltip] = useState(false)
     const [viewTooltip, setViewTooltip] = useState(false)
     const [partRemark, setPartRemark] = useState('')
+    const [rmCode, setRMCode] = useState([])
+    const [disabled, setDisabled] = useState(false)
 
     useEffect(() => {
 
@@ -107,10 +112,17 @@ function ViewDrawer(props) {
 
     }, [AssemblyPartNumber, bopNumber])
     useEffect(() => {
-        if (partType === "component") {
+        if (partType === "component")
+            if (!isViewFlag) {
+                dispatch(getRawMaterialNameChild(() => { }))
+                dispatch(getRMSpecificationDataList({ GradeId: null }, () => { }))
+            }
+    }, [partType])
+    useEffect(() => {
+        if (partType === "component" || partType === "Assembly") {
             if ((isEditFlag || isViewFlag) && getRfqPartDetails && getRfqPartDetails?.PartList) {
                 const partList = getRfqPartDetails?.PartList || [];
-
+                let accumulatedRMDetails = [];
                 const sopDate = partList[0]?.SOPDate
 
                 setSOPDate(sopDate || '')
@@ -123,34 +135,41 @@ function ViewDrawer(props) {
                             const allSopQuantityDetails = part?.SOPQuantityDetails || []
                             setSopQuantityList(sopQuantityList => allSopQuantityDetails)
                         }
+                        if (index === 0) {
+                            const allSpecifications = (part.PartSpecification || []).map(detail => ({
+                                ...detail,
+                                PartId: PartId,
+                                PartNumber: PartNumber,
+                                uniqueKey: `${PartId}-${detail.Specification}` //QuotationPartSpecificationIdRef
+                            }));
 
-                        const allSpecifications = (part.PartSpecification || []).map(detail => ({
-                            ...detail,
-                            PartId: PartId,
-                            PartNumber: PartNumber,
-                            uniqueKey: `${PartId}-${detail.Specification}` //QuotationPartSpecificationIdRef
-                        }));
-
-
-
-                        arr.push(...allSpecifications)
+                            arr.push(...allSpecifications)
 
 
-                        const allRMDetails = (part.RMDetails || []).map(detail => ({
-                            ...detail,
-                            PartId: PartId,
-                            PartNumber: PartNumber,
-                            uniqueKey: `${PartId}-${detail.RawMaterialSpecificationId}`
-                        }));
+                            const remarks = part.Remarks || '';
+                            setValue('remark', remarks);
+                            setRemark(remarks);
+                            const allFiles = part.Attachments || [];
 
-                        setTableData(tableData => _.uniqBy([...allRMDetails], 'RawMaterialChildId'));
-                        const remarks = part.Remarks || '';
-                        setValue('remark', remarks);
-                        setRemark(remarks);
+                            setFiles(files => [...allFiles]);
+                            setChildPartFiles(childPartFiles => [...allFiles]);
+                        }
+                        if (part.RMDetails && part.RMDetails.length > 0) {
+                            const allRMDetails = part.RMDetails.map(detail => ({
+                                ...detail,
+                                PartId: PartId,
+                                PartNumber: PartNumber,
+                                uniqueKey: `${PartId}-${detail.RawMaterialSpecificationId}`
+                            }));
 
-                        const allFiles = part.Attachments || [];
-                        setFiles(files => [...allFiles]);
-                        setChildPartFiles(childPartFiles => [...allFiles]);
+                            accumulatedRMDetails = [...accumulatedRMDetails, ...allRMDetails];
+
+                        }
+
+
+                        // setTableData(tableData => _.uniqBy([...allRMDetails], 'RawMaterialChildId'));
+                        setTableData(tableData => _.uniqBy(accumulatedRMDetails, 'PartId'));
+
                     });
                     setSpecificationList(specificationList => _.uniqBy([...arr], 'QuotationPartSpecificationIdRef'));
                 }
@@ -220,9 +239,11 @@ function ViewDrawer(props) {
     }, [sopdate])
     useEffect(() => {
         if (!isViewFlag && !isEditFlag) {
+            if (childPartFiles.length > 0 || remark !== "") {
+                setValue("remark", remark)
+                setFiles(childPartFiles)
+            }
 
-            setValue("remark", remark)
-            setFiles(childPartFiles)
         }
     }, [isEditFlag, isViewFlag])
     useEffect(() => {
@@ -274,6 +295,16 @@ function ViewDrawer(props) {
         }
         props?.setViewQuotationPart(false)
         props.closeDrawer('', false)
+        if (drawerViewMode) {
+            setTableData([])
+            setSpecificationList([])
+            setSopQuantityList([])
+            setSOPDate('')
+            setRemark('')
+            setFiles([])
+            setChildPartFiles([])
+            handleDrawer(false)
+        }
     }
     const renderListingRM = (label) => {
 
@@ -285,6 +316,9 @@ function ViewDrawer(props) {
                 // if (item.Value === '0') return false;
                 opts1.push({ label: item.Text, value: item.Value })
             });
+            const selectedValues = tableData.map(data => data.PartId);
+
+
             return getFilteredDropdownOptions(opts1, selectedValues);
         }
         if (label === 'rmname') {
@@ -327,6 +361,20 @@ function ViewDrawer(props) {
             }
             return opts1
         }
+        if (label === 'rmcode') {
+            if (rmSpecificationList?.length > 0) {
+
+                let opts = [...rmSpecificationList]
+                opts && opts?.map(item => {
+                    if (item.Value === '0') return false
+                    item.label = item.RawMaterialCode
+                    item.value = item.SpecificationId
+                    opts1.push(item)
+                    return null
+                })
+            }
+            return opts1
+        }
     }
     const handleChildPart = (newValue) => {
 
@@ -351,6 +399,8 @@ function ViewDrawer(props) {
 
     const handleRMSpecification = (newValue) => {
         setRMSpecification({ label: newValue?.label, value: newValue?.value })
+        setRMCode({ label: newValue.RawMaterialCode, value: newValue.SpecificationId })
+        setValue('rmcode', { label: newValue.RawMaterialCode, value: newValue.value })
     }
     const handleRemarkChange = (newValue) => {
 
@@ -358,12 +408,15 @@ function ViewDrawer(props) {
         setRemark(newValue);
     }
     const resetFormAndDropdowns = () => {
-        setValue('partNumber', '')
+        if (type !== Component) {
+            setValue('partNumber', '')
+        }
         setValue('RMName', '')
         setValue('RMGrade', '')
         setValue('RMSpecification', '')
         setValue('Specification', '')
         setValue('Value', '')
+        setValue("rmcode", "")
         if (!isViewFlag && !isEditFlag) {
 
             setValue('remark', '')
@@ -443,7 +496,12 @@ function ViewDrawer(props) {
             const { label } = getValues('RMName') || {};
             const isRMGradeMissing = !getValues('RMGrade');
             const isRMSpecificationMissing = !getValues('RMSpecification');
-            if (label !== undefined && (isRMGradeMissing || isRMSpecificationMissing)) {
+
+            if (label === undefined) {
+                Toaster.warning("Please select a raw material name");
+
+            }
+            else if (label !== undefined && (isRMGradeMissing || isRMSpecificationMissing)) {
                 const missingRequirements = [];
                 if (isRMGradeMissing) {
                     missingRequirements.push('RM Grade');
@@ -456,7 +514,7 @@ function ViewDrawer(props) {
             } else {
 
                 setTableData(prevData => [...prevData, obj]);
-
+                setDisabled(false)
                 resetFormAndDropdowns();
             }
         }
@@ -468,12 +526,36 @@ function ViewDrawer(props) {
         resetFormAndDropdowns();
     }
     const handleCloseDrawer = () => {
+        //tableData
         // if (isViewFlag || isEditFlag) {
         //     saveRfqPartsData()
 
         // }
+
+
+        if (partType === "component") {
+            const dropdownTexts = _.map(getChildParts, 'Text');
+            const tableTexts = _.map(tableData, 'PartNumber');
+            const allPresent = _.every(dropdownTexts, text => _.includes(tableTexts, text));
+            const hasNonZeroQuantity = sopQuantityList && sopQuantityList.some(item => item.Quantity !== 0);
+
+            if (type !== Component) {
+                if (!allPresent) {
+                    Toaster.warning('RM Name, RM Grade, and RM Specification are required for each part.');
+                    return false;
+                }
+            } else if (type === Component && (tableData.length === 0)) {
+                Toaster.warning('RM Name, RM Grade, and RM Specification are required.');
+                return false;
+            }
+            if (_.isEmpty(sopQuantityList) || !hasNonZeroQuantity) {
+                Toaster.warning("Select SOP date and fill at least one year's quantity.");
+                return false;
+            }
+        }
+
         if (getValues('remark') === '' || files.length === 0) {
-            Toaster.warning('Before saving, please add remarks and attachments.');
+            Toaster.warning('Please fill the remarks and attachments documents.');
             return;
         }
 
@@ -518,7 +600,6 @@ function ViewDrawer(props) {
 
     }
     const cancelUpdate = () => {
-
         setIsEdit(false);
         // setTableData([]);
         // setSpecificationList([]);
@@ -691,6 +772,37 @@ function ViewDrawer(props) {
 
         return value
     }
+    const handleCode = (newValue) => {
+        if (newValue && newValue !== '') {
+            setRMCode(newValue)
+            setDisabled(true)
+            delete errors.RawMaterialName
+            dispatch(getRMSpecificationDataAPI(newValue.value, true, (res) => {
+                if (res.status === 204) {
+
+                    setRMGrade({ label: '', value: '', })
+                    setRMSpecification({ label: '', value: '', })
+                    setRMName({ label: '', value: '', })
+                    Toaster.warning("The Raw Material Grade and Specification has set as unspecified. First update the Grade and Specification against this Raw Material Code from Manage Specification tab.")
+                    return false
+                }
+                let Data = res?.data?.Data
+
+                setRMGrade({ label: Data.GradeName, value: Data.GradeId })
+                setRMSpecification({ label: Data.Specification, value: Data.SpecificationId })
+                setRMName({ label: Data.RawMaterialName, value: Data.RawMaterialId, })
+                setValue('RMName', { label: Data.RawMaterialName, value: Data.RawMaterialId, })
+                setValue('RMGrade', { label: Data.GradeName, value: Data.GradeId })
+                setValue('RMSpecification', { label: Data.Specification, value: Data.SpecificationId })
+            }))
+        } else {
+            setValue('RMName', '')
+            setValue('RMGrade', '')
+            setValue('RMSpecification', '')
+            setDisabled(false)
+
+        }
+    }
     // const quantityHeader = (props) => {
     //     return (
     //         <div className='ag-header-cell-label'>
@@ -862,9 +974,9 @@ function ViewDrawer(props) {
                                             customClassName="costing-version"
                                             // defaultValue={costingOptionsSelectedObject[indexInside] ? costingOptionsSelectedObject[indexInside] : ''}
                                             options={renderListingRM('rmname')}
-                                            mandatory={false}
+                                            mandatory={true}
                                             handleChange={(newValue) => handleRMName(newValue)}
-                                            disabled={(isViewFlag || (isEditFlag && type === Component && tableData.length > 0)) ? true : false /* || (isEdit ? false : !isEditFlag ? false : true) */}
+                                            disabled={disabled || (isViewFlag || (isEditFlag && type === Component && tableData.length > 0)) ? true : false /* || (isEdit ? false : !isEditFlag ? false : true) */}
                                         // errors={`${indexInside} CostingVersion`}
                                         />
                                     </Col>
@@ -881,9 +993,9 @@ function ViewDrawer(props) {
                                             customClassName="costing-version"
                                             // defaultValue={costingOptionsSelectedObject[indexInside] ? costingOptionsSelectedObject[indexInside] : ''}
                                             options={renderListingRM('rmgrade')}
-                                            mandatory={rmNameSelected}
+                                            mandatory={true}
                                             handleChange={(newValue) => handleRMGrade(newValue)}
-                                            disabled={(isViewFlag || (isEditFlag && type === Component && tableData.length > 0)) ? true : false /* isEdit ? false : !isEditFlag ? false : true */}
+                                            disabled={disabled || (isViewFlag || (isEditFlag && type === Component && tableData.length > 0)) ? true : false /* isEdit ? false : !isEditFlag ? false : true */}
                                         />
                                     </Col>
                                     <Col md="3">
@@ -899,9 +1011,27 @@ function ViewDrawer(props) {
                                             customClassName="costing-version"
                                             // defaultValue={costingOptionsSelectedObject[indexInside] ? costingOptionsSelectedObject[indexInside] : ''}
                                             options={renderListingRM('rmspecification')}
-                                            mandatory={rmNameSelected}
+                                            mandatory={true}
                                             handleChange={(newValue) => handleRMSpecification(newValue)}
-                                            disabled={(isViewFlag || (isEditFlag && type === Component && tableData.length > 0)) ? true : false /* || (isEdit ? false : !isEditFlag ? false : true) */}
+                                            disabled={disabled || (isViewFlag || (isEditFlag && type === Component && tableData.length > 0)) ? true : false /* || (isEdit ? false : !isEditFlag ? false : true) */}
+                                        />
+                                    </Col>
+                                    <Col md="3" className='d-flex align-items-center col-md-3'>
+                                        <SearchableSelectHookForm
+                                            label={"Code"}
+                                            name={"rmcode"}
+                                            placeholder={'Select'}
+                                            options={renderListingRM("rmcode")}
+                                            Controller={Controller}
+                                            control={control}
+                                            register={register}
+                                            rules={{ required: true }}
+                                            mandatory={true}
+                                            // defaultValue={state.rmCode.length !== 0 ? state.rmCode : ""}
+                                            handleChange={handleCode}
+                                            isClearable={true}
+                                            errors={errors.Code}
+                                            disabled={(isViewFlag || (isEditFlag && type === Component && tableData.length > 0)) ? true : false}
                                         />
                                     </Col>
 
@@ -1004,6 +1134,8 @@ function ViewDrawer(props) {
                                     </Col>
                                 </Row>
                                 <Col md="6" className="height152-label">
+                                    <TooltipCustom id="uploadFile" tooltipText="Upload upto 4 file, size of each file upto 20MB" />
+
                                     <label>Upload Attachment (upload up to 4 files)<span className="asterisk-required">*</span></label>
                                     <div className={`alert alert-danger mt-2 ${files?.length === 4 ? '' : 'd-none'}`} role="alert">
                                         Maximum file upload limit has been reached.
