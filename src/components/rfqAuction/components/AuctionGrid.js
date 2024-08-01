@@ -15,7 +15,7 @@ import { hyphenFormatter } from "../../masters/masterUtil";
 
 const gridOptions = {};
 const AuctionGrid = (props) => {
-    const { auctionlistId } = props
+    const { auctionlistId, ViewRMAccessibility, AddAccessibility } = props
     const { AuctionList } = useSelector(state => state.Auction);
     const [state, setState] = useState({
         gridApi: null,
@@ -71,13 +71,18 @@ const AuctionGrid = (props) => {
 
     const buttonFormatter = (props) => {
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-        return <Button
-            id={`auction_view${props.rowIndex}`}
-            className={"mr-1 Tour_List_View"}
-            variant="View"
-            onClick={() => viewBid(rowData.QuotationAuctionId)}
-            title={"View"}
-        />
+
+        return (
+            ViewRMAccessibility && (
+                <Button
+                    id={`auction_view${props.rowIndex}`}
+                    className={"mr-1 Tour_List_View"}
+                    variant="View"
+                    onClick={() => viewBid(rowData.QuotationAuctionId)}
+                    title={"View"}
+                />
+            )
+        );
     };
     const dateAndTimeFormatter = (props, cell, row, enumObject, rowIndex) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -127,7 +132,7 @@ const AuctionGrid = (props) => {
                         onChange={(e) => onFilterTextBoxChanged(e)}
                     /></Col>
                     <Col md="6"><div className="d-flex justify-content-end">
-                        {auctionlistId === AuctionLiveId && <Button
+                        {auctionlistId === AuctionLiveId && AddAccessibility && <Button
                             id="rmDomesticListing_add"
                             className={"mr5 Tour_List_Add"}
                             onClick={props.formToggle}

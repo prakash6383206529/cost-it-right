@@ -8,6 +8,7 @@ import AuctionGrid from "./AuctionGrid";
 
 
 const AuctionScheduled = (props) => {
+  const { AddAccessibility, ViewRMAccessibility } = props;
   const dispatch = useDispatch();
   const [state, setState] = useState({
     isLoader: false
@@ -25,7 +26,7 @@ const AuctionScheduled = (props) => {
     <>
       <div className={`ag-grid-react`}>
         {state.isLoader && <LoaderCustom />}
-        <AuctionGrid auctionlistId={AuctionScheduledId} />
+        <AuctionGrid auctionlistId={AuctionScheduledId} ViewRMAccessibility={ViewRMAccessibility} />
       </div>
     </>
   );

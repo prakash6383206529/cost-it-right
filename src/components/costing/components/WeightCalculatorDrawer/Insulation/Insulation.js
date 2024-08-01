@@ -2,9 +2,9 @@
 import React, { useState, useEffect } from 'react'
 import { Row, Col, } from 'reactstrap'
 import { useForm, Controller, useWatch } from 'react-hook-form'
-import { useDispatch, useSelector } from 'react-redux'
-import { SearchableSelectHookForm, TextFieldHookForm, } from '../../../../layout/HookFormInputs'
-import { checkForDecimalAndNull, checkForNull, loggedInUserId, calculateWeight, setValueAccToUOM, number, checkWhiteSpaces, decimalAndNumberValidation, percentageLimitValidation, calculateScrapWeight, calculatePercentage } from '../../../../../helper'
+import { useDispatch } from 'react-redux'
+import { TextFieldHookForm, } from '../../../../layout/HookFormInputs'
+import { checkForDecimalAndNull, checkForNull, loggedInUserId, number, checkWhiteSpaces, decimalAndNumberValidation, } from '../../../../../helper'
 import TooltipCustom from '../../../../common/Tooltip'
 import { nonZero } from '../../../../../helper/validation'
 import { reactLocalStorage } from 'reactjs-localstorage'
@@ -215,10 +215,9 @@ function InsulationCalculator(props) {
                                     Controller={Controller}
                                     control={control}
                                     register={register}
-                                    //mandatory={true}
                                     rules={{
-                                        required: true,
-                                        validate: { number, nonZero, checkWhiteSpaces, decimalAndNumberValidation }
+                                        required: false,
+                                        validate: { number, checkWhiteSpaces, decimalAndNumberValidation }
                                     }}
                                     handleChange={() => { }}
                                     defaultValue=""
@@ -235,9 +234,8 @@ function InsulationCalculator(props) {
                                     Controller={Controller}
                                     control={control}
                                     register={register}
-                                    //mandatory={true}
                                     rules={{
-                                        required: true,
+                                        required: false,
                                         validate: { number, nonZero, checkWhiteSpaces, decimalAndNumberValidation }
                                     }}
                                     handleChange={() => { }}

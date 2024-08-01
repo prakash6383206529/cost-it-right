@@ -14,6 +14,7 @@ import { useHistory } from 'react-router-dom';
 const gridOptions = {};
 
 const AuctionDetails = (props) => {
+  const { AddAccessibility, ViewRMAccessibility } = props;
   const dispatch = useDispatch();
   const history = useHistory();
   const [state, setState] = useState({
@@ -50,7 +51,7 @@ const AuctionDetails = (props) => {
       {!addAuction && (
         <div>
           {state.isLoader && <LoaderCustom />}
-          <AuctionGrid auctionlistId={AuctionLiveId} formToggle={formToggle} />
+          <AuctionGrid auctionlistId={AuctionLiveId} formToggle={formToggle} ViewRMAccessibility={ViewRMAccessibility} AddAccessibility={AddAccessibility} />
         </div>
       )}
       {addAuction && (
