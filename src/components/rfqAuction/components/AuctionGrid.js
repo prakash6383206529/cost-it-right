@@ -14,7 +14,7 @@ import DayTime from "../../common/DayTimeWrapper";
 
 const gridOptions = {};
 const AuctionGrid = (props) => {
-    const { auctionlistId } = props
+    const { auctionlistId, ViewRMAccessibility } = props
     const { AuctionList } = useSelector(state => state.Auction);
     const [state, setState] = useState({
         gridApi: null,
@@ -70,13 +70,18 @@ const AuctionGrid = (props) => {
 
     const buttonFormatter = (props) => {
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-        return <Button
-            id={`auction_view${props.rowIndex}`}
-            className={"mr-1 Tour_List_View"}
-            variant="View"
-            onClick={() => viewBid(rowData.QuotationAuctionId)}
-            title={"View"}
-        />
+
+        return (
+            ViewRMAccessibility && (
+                <Button
+                    id={`auction_view${props.rowIndex}`}
+                    className={"mr-1 Tour_List_View"}
+                    variant="View"
+                    onClick={() => viewBid(rowData.QuotationAuctionId)}
+                    title={"View"}
+                />
+            )
+        );
     };
     const dateAndTimeFormatter = (props, cell, row, enumObject, rowIndex) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;

@@ -2130,6 +2130,7 @@ export const ONBOARDING = 'Onboarding & Management'
 export const VENDOR_MANAGEMENT = 'Vendor Classification Status'
 export const LPS = 'LPS Rating Status'
 export const RFQVendor = 'RFQ-Vendor'
+export const AUCTION = 'Auction'
 
 
 export const APPROVAL_LISTING = 'Approval Listing'

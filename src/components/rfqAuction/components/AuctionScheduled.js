@@ -9,6 +9,7 @@ import AuctionGrid from "./AuctionGrid";
 const gridOptions = {};
 
 const AuctionScheduled = (props) => {
+  const { AddAccessibility, ViewRMAccessibility, EditAccessibility, initialConfiguration } = props;
   const dispatch = useDispatch();
 
   const [state, setState] = useState({
@@ -54,7 +55,9 @@ const AuctionScheduled = (props) => {
             </Col>
           </Row>
         </form>
-        <AuctionGrid auctionlistId={AuctionScheduledId} />
+        <AuctionGrid
+          auctionlistId={AuctionScheduledId}
+          ViewRMAccessibility={ViewRMAccessibility} />
       </div>
     </>
   );

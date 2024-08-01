@@ -13,6 +13,7 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
 
 const AuctionClosed = (props) => {
+  const { AddAccessibility, ViewRMAccessibility, EditAccessibility, initialConfiguration } = props;
   const dispatch = useDispatch();
   const [state, setState] = useState({
 
@@ -58,7 +59,9 @@ const AuctionClosed = (props) => {
             </Col>
           </Row>
         </form>
-        <AuctionGrid auctionlistId={AuctionClosedId} />
+        <AuctionGrid
+          auctionlistId={AuctionClosedId}
+          ViewRMAccessibility={ViewRMAccessibility} />
       </div>
     </>
   );

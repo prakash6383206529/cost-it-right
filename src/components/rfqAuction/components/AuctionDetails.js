@@ -14,6 +14,7 @@ import { useHistory } from 'react-router-dom';
 const gridOptions = {};
 
 const AuctionDetails = (props) => {
+  const { AddAccessibility, ViewRMAccessibility, EditAccessibility, initialConfiguration } = props;
   const dispatch = useDispatch();
   const history = useHistory();
   const [state, setState] = useState({
@@ -69,13 +70,15 @@ const AuctionDetails = (props) => {
                 <div className="d-flex justify-content-end bd-highlight w100">
                   <div>
 
-                    <Button
-                      id="rmDomesticListing_add"
-                      className={"mr5 Tour_List_Add"}
-                      onClick={formToggle}
-                      title={"Add"}
-                      icon={"plus"}
-                    />
+                    {AddAccessibility && (
+                      <Button
+                        id="rmDomesticListing_add"
+                        className={"mr5 Tour_List_Add"}
+                        onClick={formToggle}
+                        title={"Add"}
+                        icon={"plus"}
+                      />
+                    )}
                     <button
                       type="button"
                       className="user-btn Tour_List_Reset "
@@ -89,7 +92,10 @@ const AuctionDetails = (props) => {
               </Col>
             </Row>
           </form>
-          <AuctionGrid auctionlistId={AuctionLiveId} />
+          <AuctionGrid
+            auctionlistId={AuctionLiveId}
+            ViewRMAccessibility={ViewRMAccessibility}
+          />
         </div>
       )}
       {addAuction && (

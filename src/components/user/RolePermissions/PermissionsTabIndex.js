@@ -5,7 +5,7 @@ import {
 } from "../../../actions/auth/AuthActions";
 import {
     DASHBOARD_AND_AUDIT, MASTERS, ADDITIONAL_MASTERS, COSTING, SIMULATION, REPORTS_AND_ANALYTICS,
-    USERS, AUDIT, RFQ, NFR, VENDOR_MANAGEMENT_ROLE,
+    USERS, AUDIT, RFQ, NFR, VENDOR_MANAGEMENT_ROLE, AUCTION
 } from "../../../config/constants";
 import { TabContent, TabPane, Nav, NavItem, NavLink, } from 'reactstrap';
 import classnames from 'classnames';
@@ -19,7 +19,7 @@ import ReportsTab from "./ReportsTab";
 import AuditTab from "./AuditTab";
 import LoaderCustom from "../../common/LoaderCustom";
 import RfqTab from "./RfqTab";
-import AuctionTab from "./Auction";
+import AuctionTab from "./AuctionTab";
 import { getConfigurationKey, scrollReset } from "../../../helper";
 import NfrTab from "./NfrTab";
 import TourWrapper from "../../common/Tour/TourWrapper";
@@ -44,7 +44,8 @@ class PermissionsTabIndex extends Component {
             audit: [],
             scrollReset: false,
             supplierManagement: [],
-            counter: 0
+            counter: 0,
+            auction: []
         };
     }
 
@@ -130,6 +131,7 @@ class PermissionsTabIndex extends Component {
         let rfqObj = Data && Data.filter(el => el.ModuleName === RFQ)
         let nfrObj = Data && Data.filter(el => el.ModuleName === NFR)
         let supperilerObj = Data && Data.filter(el => el.ModuleName === VENDOR_MANAGEMENT_ROLE)
+        let auctionObj = Data && Data.filter(el => el.ModuleName === AUCTION)
 
         this.setState({
             actionData: Data,
@@ -145,6 +147,7 @@ class PermissionsTabIndex extends Component {
             rfq: rfqObj && rfqObj?.length > 0 ? rfqObj[0].Pages : [],
             nfr: nfrObj && nfrObj?.length > 0 ? nfrObj[0].Pages : [],
             supplierManagement: supperilerObj && supperilerObj?.length > 0 ? supperilerObj[0].Pages : [],
+            auction: auctionObj && auctionObj?.length > 0 ? auctionObj[0].Pages : []
         }, () => {
 
             this.permissionHandler(this.state.dashoard, DASHBOARD_AND_AUDIT)
@@ -158,7 +161,7 @@ class PermissionsTabIndex extends Component {
             this.permissionHandler(this.state.rfq, RFQ)
             this.permissionHandler(this.state.nfr, NFR)
             this.permissionHandler(this.state.supplierManagement, VENDOR_MANAGEMENT_ROLE)
-
+            this.permissionHandler(this.state.auction, AUCTION)
         })
     }
 
@@ -358,14 +361,14 @@ class PermissionsTabIndex extends Component {
                                             </NavLink>
                                         </NavItem>
                                     }
-                                    {/* {
-                                        this.state.supplierManagement?.length > 0 &&
+                                    {
+                                        this.state.auction?.length > 0 &&
                                         <NavItem>
                                             <NavLink className={classnames({ active: this.state.activeTab === '12' })} onClick={() => { this.toggle('12'); }}>
                                                 Auction
                                             </NavLink>
                                         </NavItem>
-                                    } */}
+                                    }
                                 </Nav>
                                 <TabContent className="pr-tab-content" activeTab={this.state.activeTab}>
 
@@ -465,14 +468,14 @@ class PermissionsTabIndex extends Component {
                                             permissions={this.permissionHandler}
                                         />
                                     </TabPane>
-                                    {/* <TabPane tabId="12">
+                                    <TabPane tabId="12">
                                         <AuctionTab
-                                            data={this.state.supplierManagement}
+                                            data={this.state.auction}
                                             actionData={this.state.actionData}
                                             actionSelectList={this.props.actionSelectList}
                                             permissions={this.permissionHandler}
                                         />
-                                    </TabPane> */}
+                                    </TabPane>
 
                                 </TabContent>
                             </div>
