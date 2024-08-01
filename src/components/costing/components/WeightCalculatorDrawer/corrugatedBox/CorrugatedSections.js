@@ -32,6 +32,14 @@ export const RMSection = (props) => {
         name: ['no_of_ply', 'gsm', 'bursting_factor'],
     })
     useEffect(() => {
+        if (props.CostingViewMode && WeightCalculatorRequest) {
+            props.setValue('no_of_ply', checkForDecimalAndNull(WeightCalculatorRequest.NoOfPly, initialConfiguration.NoOfDecimalForInputOutput))
+            props.setValue('gsm', checkForDecimalAndNull(WeightCalculatorRequest.GSM, initialConfiguration.NoOfDecimalForInputOutput))
+            props.setValue('bursting_factor', checkForDecimalAndNull(WeightCalculatorRequest.BurstingFactor, initialConfiguration.NoOfDecimalForInputOutput))
+            props.setValue('bursting_strength', checkForDecimalAndNull(WeightCalculatorRequest.BurstingStrength, initialConfiguration.NoOfDecimalForInputOutput))
+        }
+    }, [])
+    useEffect(() => {
         setBurstingStrength()
     }, [fieldValues])
     const setBurstingStrength = () => {
@@ -144,6 +152,7 @@ export const RMSection = (props) => {
 export const BoxDetails = (props) => {
     const { CostingViewMode, WeightCalculatorRequest, errors, control, Controller, register } = props
     const { corrugatedDataObj } = useSelector(state => state.costing)
+    const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
     const dispatch = useDispatch()
     const defaultValues = {
         length_box: WeightCalculatorRequest && WeightCalculatorRequest.LengthBox !== null ? WeightCalculatorRequest.LengthBox : '',
@@ -170,6 +179,15 @@ export const BoxDetails = (props) => {
             setWidthSheet_LengthSheet()//
         }
     }, [fieldValues])
+
+    useEffect(() => {
+        if (props.CostingViewMode && WeightCalculatorRequest) {
+            props.setValue('length_box', checkForDecimalAndNull(WeightCalculatorRequest.LengthBox, initialConfiguration.NoOfDecimalForInputOutput))
+            props.setValue('width_box', checkForDecimalAndNull(WeightCalculatorRequest.WidthBox, initialConfiguration.NoOfDecimalForInputOutput))
+            props.setValue('height_box', checkForDecimalAndNull(WeightCalculatorRequest.HeightBox, initialConfiguration.NoOfDecimalForInputOutput))
+            props.setValue('stiching_length', checkForDecimalAndNull(WeightCalculatorRequest.StitchingLengthInchPerJoint, initialConfiguration.NoOfDecimalForInputOutput))
+        }
+    }, [])
     const setWidthSheet_LengthSheet = () => {
         let data = {
             lengthBox: Number(getValues('length_box')),
