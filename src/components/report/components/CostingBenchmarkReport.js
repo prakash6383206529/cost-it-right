@@ -6,7 +6,7 @@ import { Row, Col } from 'reactstrap'
 import { Controller, useForm } from 'react-hook-form';
 import { getSelectListOfMasters, setMasterForSimulation } from '../../simulation/actions/Simulation'
 import { useDispatch, useSelector } from 'react-redux';
-import { APPROVED_STATUS, BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT } from '../../../config/constants'
+import { APPROVED_STATUS, BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, MACHINERATE, OPERATIONS, RAWMATERIALINDEX, RMDOMESTIC, RMIMPORT, SURFACETREATMENT } from '../../../config/constants'
 import { getCostingTechnologySelectList } from '../../costing/actions/Costing'
 import MachineRateListing from '../../masters/machine-master/MachineRateListing'
 import BOPDomesticListing from '../../masters/bop-master/BOPDomesticListing'
@@ -177,7 +177,7 @@ function CostingBenchmarkReport(props) {
 
         if (label === 'masters') {
             masterList && masterList.map((item) => {
-                if (item.Value === '0' || item.Value === '11') return false
+                if (item.Value === '0' || item.Value === RAWMATERIALINDEX) return false
 
                 if (item.Text !== 'Assembly' && item.Text !== 'Exchange Rates' && item.Text !== 'Combined Process' && item.Text !== 'Raw Materials') {
                     temp.push({ label: item.Text, value: item.Value })
