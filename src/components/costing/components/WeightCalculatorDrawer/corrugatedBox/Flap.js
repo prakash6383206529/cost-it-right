@@ -143,8 +143,8 @@ const Flap = (props) => {
         <>
             <form noValidate className="form"
                 onKeyDown={(e) => { handleKeyDown(e, onSubmit.bind(this)); }}>
-                <RMSection WeightCalculatorRequest={WeightCalculatorRequest} CostingViewMode={CostingViewMode} errors={errors} Controller={Controller} register={register} control={control} />
-                <BoxDetails CostingViewMode={CostingViewMode} WeightCalculatorRequest={WeightCalculatorRequest} errors={errors} Controller={Controller} register={register} control={control} />
+                <RMSection WeightCalculatorRequest={WeightCalculatorRequest} CostingViewMode={CostingViewMode} errors={errors} Controller={Controller} register={register} control={control} setValue={setValue} />
+                <BoxDetails CostingViewMode={CostingViewMode} WeightCalculatorRequest={WeightCalculatorRequest} errors={errors} Controller={Controller} register={register} control={control} setValue={setValue} />
                 <Row className="mt-3 corrugated-box-label-wrapper">
                     <Col md="12" className={''}>
                         <HeaderTitle className="border-bottom"
