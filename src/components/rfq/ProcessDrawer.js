@@ -417,13 +417,13 @@ function ViewDrawer(props) {
         setValue('Specification', '')
         setValue('Value', '')
         setValue("rmcode", "")
-        if (!isViewFlag && !isEditFlag) {
+        // if (!isViewFlag && !isEditFlag) {
 
-            setValue('remark', '')
-            setFiles([])
-            setChildPartFiles([])
-            setRemark('')
-        }
+        //     setValue('remark', '')
+        //     setFiles([])
+        //     setChildPartFiles([])
+        //     setRemark('')
+        // }
     };
 
     const handleSpecification = (newValue) => {
@@ -447,6 +447,8 @@ function ViewDrawer(props) {
         const rmSpecificationId = formData.RMSpecification?.value || '-';
         const rmGradeLabel = formData.RMGrade?.label || '-';
         const rmSpecificationLabel = formData.RMSpecification?.label || '-';
+        const rmCodeLabel = formData.rmcode?.label || '-';
+        const rmCodeValue = formData.rmcode?.value || '-';
         const specificationValue = formData.Specification || '-';
         const value = formData.Value || '-';
 
@@ -459,6 +461,8 @@ function ViewDrawer(props) {
             RawMaterialGradeId: rmGradeId,
             RawMaterialSpecificationId: rmSpecificationId,
             RawMaterialSpecification: rmSpecificationLabel,
+            RawMaterialCode: rmCodeLabel,
+            RawMaterialCodeId: rmCodeValue,
             childPart: true,
         };
         const specificationObj = {
@@ -468,12 +472,15 @@ function ViewDrawer(props) {
         }
 
         if (isEdit) {
-            const newspecificationData = [...specificationList]
-            newspecificationData[editIndex] = specificationObj
-            setSpecificationList(newspecificationData);
-            const newData = [...tableData];
-            newData[editIndex] = obj;
-            setTableData(newData);
+            if (activeTab === "2") {
+                const newspecificationData = [...specificationList]
+                newspecificationData[editIndex] = specificationObj
+                setSpecificationList(newspecificationData);
+            } else {
+                const newData = [...tableData];
+                newData[editIndex] = obj;
+                setTableData(newData);
+            }
             setIsEdit(false);
             setEditIndex(null);
             resetFormAndDropdowns();
@@ -643,6 +650,8 @@ function ViewDrawer(props) {
             setValue('RMName', { label: tempObj.RawMaterialName, value: tempObj.RawMaterialChildId });
             setValue('RMGrade', { label: tempObj.RawMaterialGrade, value: tempObj.RawMaterialGradeId });
             setValue('RMSpecification', { label: tempObj.RawMaterialSpecification, value: tempObj.RawMaterialSpecificationId });
+            setValue('rmcode', { label: tempObj.RawMaterialCode, value: tempObj.RawMaterialCodeId });
+
         }
 
         setEditIndex(index);

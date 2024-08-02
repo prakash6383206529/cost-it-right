@@ -816,7 +816,7 @@ function AddRfq(props) {
             Attachments: /* files && files.length > 0 ? files : */[],
             NfrId: nfrId?.value || null,
             PartList: [],
-            PrNumberId: prNumber?.value || 0,
+            PrNumberId: prNumber?.value || null,
             // QuotationPartIdList: uniquePartList,
             PartDataSentOn: null,
             IsPartDetailsSent: IsPartDetailsSent,
@@ -2688,7 +2688,7 @@ function AddRfq(props) {
                                 <form>
 
                                     <Row className="part-detail-wrapper">
-                                        {quationType !== 'BOP' && (
+                                        {(quationType !== 'BOP' && quationType !== 'Tooling') && (
                                             <Col md="3">
                                                 <SearchableSelectHookForm
                                                     label={"Technology"}
@@ -2710,7 +2710,7 @@ function AddRfq(props) {
 
                                         {quationType === 'BOP' && <Col md="3" className={isRmSelected ? 'd-none' : ''}>
                                             <SearchableSelectHookForm
-                                                label={quationType === 'BOP' ? "PR No." : "NFR No."}
+                                                label={(quationType === 'BOP' || quationType === 'Tooling') ? "PR No." : "NFR No."}
                                                 name={quationType === 'BOP' ? "prId" : "nfrId"}
                                                 isClearable={true}
                                                 placeholder={"Select"}
@@ -3030,7 +3030,7 @@ function AddRfq(props) {
                                                         type="button"
                                                         className={'user-btn pull-left'}
                                                         onClick={() => addRowPartNoTable()}
-                                                        disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll) || disabledPartUid}
+                                                        disabled={dataProps?.isAddFlag ? (prNumber.length !== 0 ? true : false) : (dataProps?.isViewFlag || !isEditAll) || disabledPartUid}
                                                     >
                                                         <div className={'plus'}></div>{!updateButtonPartNoTable ? "ADD" : "UPDATE"}
                                                     </button>
@@ -3040,7 +3040,7 @@ function AddRfq(props) {
                                                         type="button"
                                                         value="CANCEL"
                                                         className="reset ml-2 mr5"
-                                                        disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll) || disabledPartUid}
+                                                        disabled={dataProps?.isAddFlag ? (prNumber.length !== 0 ? true : false) : (dataProps?.isViewFlag || !isEditAll) || disabledPartUid}
                                                     >
                                                         <div className={''}></div>
                                                         RESET
