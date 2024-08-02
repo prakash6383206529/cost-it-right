@@ -522,6 +522,8 @@ function AddRfq(props) {
                 })
                 setPlant({ label: data.PlantName, value: data.PlantId })
                 setValue("prId", { label: data.PRNumber, value: data.PRNumberId })
+                setPrNumber({ label: data.PRNumber, value: data.PRNumberId })
+
                 dispatch(setQuotationIdForRfq(data?.QuotationId))
                 setTechnology({ label: data.TechnologyName, value: data.TechnologyId })
                 // setInitialFiles(data?.Attachments)
@@ -814,6 +816,7 @@ function AddRfq(props) {
             Attachments: /* files && files.length > 0 ? files : */[],
             NfrId: nfrId?.value || null,
             PartList: [],
+            PrNumberId: prNumber?.value || 0,
             // QuotationPartIdList: uniquePartList,
             PartDataSentOn: null,
             IsPartDetailsSent: IsPartDetailsSent,
@@ -1074,6 +1077,7 @@ function AddRfq(props) {
 
             setQuotationIdentity(res?.data?.Identity)
             if (res?.data?.Result) {
+                setPrNumber([])
                 dispatch(setQuotationIdForRfq(""))
                 dispatch(setTargetPriceDetail({}))
                 if ((!showSendButton === "") && (!(showSendButton === DRAFT) || !(showSendButton === PREDRAFT))) {
@@ -1086,8 +1090,6 @@ function AddRfq(props) {
                 cancel()
             }
         }))
-
-
 
         dispatch(setVendorDetails({}))
     }
