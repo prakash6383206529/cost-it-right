@@ -299,6 +299,7 @@ function RfqListing(props) {
                 partTypes.forEach(type => {
                     switch (type.trim()) {
                         case 'Component':
+                        case 'Assembly':
                             temp = item.filter(el => el.CostingId !== null);
                             break;
                         case 'RawMaterial':
@@ -859,7 +860,6 @@ function RfqListing(props) {
     }
 
     const checkCostingSelected = (list, index) => {
-        console.log('list, index: ', list, index);
 
         setState(prevState => ({ ...prevState, approvalObj: list }));
         setIndex(index);
@@ -1121,7 +1121,7 @@ function RfqListing(props) {
 
 
         setDisableApproveRejectButton(isApproval.length > 0)
-        let costingIdList = [...selectedRows[0]?.ShouldCostings, ...selectedRows]
+        let costingIdList = selectedRows?.length > 0 ? [...selectedRows[0]?.ShouldCostings, ...selectedRows] : selectedRows
         setSelectedCostingList([])
         const partTypes = partType.split(',');
         partTypes.forEach(type => {
@@ -1208,7 +1208,8 @@ function RfqListing(props) {
                     data = partNumber.map(item => rowData?.filter(el => el.BoughtOutPart === item))             // SELECTED ALL COSTING ON THE CLICK ON PART
 
                     break;
-                case 'Component' || 'Assembly':
+                case 'Component':
+                case 'Assembly':
                     selectedRows?.map(item => partNumber?.push(item.PartNo))
                     data = partNumber.map(item => rowData?.filter(el => el.PartNumber === item))             // SELECTED ALL COSTING ON THE CLICK ON PART
                     break;
@@ -1643,7 +1644,7 @@ function RfqListing(props) {
                         approvalObj={state.approvalObj}
                         costingTypeId={ZBCTypeId}
                         levelDetails={state.levelDetails}
-                        partType = {partType}
+                        partType={partType}
                     />
                 }
 
