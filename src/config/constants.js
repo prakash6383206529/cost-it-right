@@ -3207,7 +3207,7 @@ export const showDynamicKeys = false
 export const hideDetailOfRubbercalci = true
 
 //VERSION 
-export const VERSION = "V3.0.17";
+export const VERSION = "V3.0.18";
 
 
 
