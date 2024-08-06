@@ -64,8 +64,12 @@ function ComparsionAuction(props) {
     isTimerRunning: false,
     showClosedAuction: false,
     isLoader: false,
+    awarded: false,
+    vendorIdList: [],
+    vendorNameList: [],
     live: props.AuctionStatusId === AuctionLiveId ? true : false
   })
+  const [checkBoxState, setCheckBoxState] = useState({})
   const handleSubmitClick = (data, e, isPartDetailSent) => {
     //handleSubmit(() => onSubmit(data, e, isSent))()
     onSubmit(data, e, isPartDetailSent);
@@ -73,6 +77,7 @@ function ComparsionAuction(props) {
 
   useEffect(() => {
     setState(prevState => ({ ...prevState, bidData: bidDetails ?? {} }))
+
   }, [bidDetails])
   useEffect(() => {
     setState(prevState => ({ ...prevState, isLoader: true }))
@@ -80,7 +85,7 @@ function ComparsionAuction(props) {
       if (!state.live) {
         dispatch(auctionBidDetails(props.quotationAuctionId, () => { }))
       }
-      if (res && res.data.Result) {
+      if (res && res.data && res.data.Result) {
         let data = res.data.Data;
         setState(prevState => ({ ...prevState, PartType: data?.PartType, headerDetails: data }))
         setTimeout(() => {
@@ -175,6 +180,7 @@ function ComparsionAuction(props) {
     let obj = {
       QuotationAuctionId: props.quotationAuctionId,
       LoggedInUserId: loggedInUserId(),
+      AwardedVendorIdList: state.vendorIdList
     }
     dispatch(closeAuction(obj, (res) => {
       if (res.data.Result) {
@@ -182,6 +188,21 @@ function ComparsionAuction(props) {
         dispatch(ShowBidWindow({ showBidWindow: false, QuotationAuctionId: '' }))
       }
     }))
+  }
+  const awardedCosting = (index, item) => {
+    let vendorIdList = []
+    let vendorNameList = []
+    if (checkBoxState[index]) {
+      setCheckBoxState(prevState => ({ ...prevState, [index]: false }))
+    } else {
+      if (!vendorIdList.includes(item.QuotationAuctionVendorId)) {
+        vendorIdList.push(item.QuotationAuctionVendorId)
+        vendorNameList.push(item.VendorName)
+      }
+      setCheckBoxState(prevState => ({ ...prevState, [index]: true }))
+      setState(prevState => ({ ...prevState, vendorIdList: vendorIdList, vendorNameList: vendorNameList }))
+    }
+
   }
   const labels = {
     rfqNumberLabel: "RFQ No",
@@ -198,6 +219,8 @@ function ComparsionAuction(props) {
     bopCategoryLabel: "Category",
   };
   const { headerDetails } = state
+  const vendorName = state.vendorNameList.join(',')
+  const popupMessage = state.vendorIdList.length === 0 ? 'You have not awarded any vendor. Do you still want to close the auction?' : `You have awarded .${vendorName} Do you want to close the auction?`
   return (
     <div className="container-fluid">
       {state.isLoader && <LoaderCustom />}
@@ -315,22 +338,29 @@ function ComparsionAuction(props) {
                             >
                               <div className="header-name-button-container">
                                 <div className="element d-inline-flex align-items-center">
-                                  <span
-                                    className="checkbox-text"
-                                    title={`BhuVendorTwo(SOB: 0%)`}
-                                  >
-                                    <div>
-                                      <strong>{item.Rank}</strong>
-                                      <span className="ml-2">{item.VendorName}</span>
-                                    </div>
-                                  </span>
+                                  <div>
+                                    <span className={`rank mr-2 ${item.PriceColourZone}`}>#{item.Rank}</span>
+                                    {state.live && <label className="custom-checkbox w-auto mb-3"
+                                      onChange={() => awardedCosting(index, item)}>
+                                      <input
+                                        type="checkbox"
+                                        value={"All"}
+                                        id={`checkbox-diplay${index + 1}`}
+                                        checked={checkBoxState[index]}
+                                      />
+                                      <span className="before-box p-0"
+                                        onChange={() => awardedCosting(index, item)}
+
+                                      ></span>
+                                    </label>}
+                                    <span className="ml-2">{item.VendorName}</span>
+                                  </div>
                                 </div>
                                 <div className="action text-right">
-                                  <button
-                                    type="button"
-                                    className="CancelIcon mb-0 align-middle"
-                                    title="Discard"
-                                  ></button>
+                                  {item.IsAwarded && <div
+                                    className="Award mb-0 align-middle"
+                                    title="Awarded"
+                                  ></div>}
                                 </div>
                               </div>
                             </th>
@@ -480,19 +510,6 @@ function ComparsionAuction(props) {
               {"Extend Time"}
             </button>
           </>}
-          <button
-            type="button"
-            className="submit-button save-btn"
-            value="send"
-            id="addRFQ_send"
-            onClick={(data, e) =>
-              handleSubmitClick(data, e, true)
-            }
-            disabled={false}
-          >
-            <div className="send-for-approval mr-1"></div>
-            {"Send for Approval"}
-          </button>
         </div>
       </Row>
       {state.showCounterPopup && (
@@ -530,7 +547,7 @@ function ComparsionAuction(props) {
           isOpen={state.showClosedAuction}
           closePopUp={closePopUp}
           confirmPopup={onPopupConfirmForCloseAuction}
-          message={"Do you want to close this auction?"}
+          message={popupMessage}
         />
       )}
     </div>
