@@ -27,8 +27,10 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import InitiateUnblocking from '../vendorManagement/InitiateUnblocking';
 
 function SummaryDrawer(props) {
+    
 
     const { approvalData } = props
+    
 
     const dispatch = useDispatch()
     /**
@@ -73,6 +75,8 @@ function SummaryDrawer(props) {
     const [mastersPlantId, setMastersPlantId] = useState('')
     const [isOnboardingApproval, setIsOnboardingApproval] = useState(false)
     const [onBoardingData, setOnBoardingData] = useState({})
+    const [isRfq , setIsRfq] = useState(false)
+    const [quotationId , setQuotationId] = useState('')
 
 
 
@@ -84,7 +88,9 @@ function SummaryDrawer(props) {
         dispatch(getMasterApprovalSummary(approvalData.approvalNumber, approvalData.approvalProcessId, props?.masterId, props?.OnboardingApprovalId, res => {
 
             const Data = res.data.Data
-
+          const QuotationId = Data?.QuotationId 
+setQuotationId(QuotationId)
+setIsRfq(QuotationId  !== null ? true : false)
             setApprovalLevelStep(Data?.MasterSteps)
             setApprovalDetails({ IsSent: Data?.IsSent, IsFinalLevelButtonShow: Data?.IsFinalLevelButtonShow, ApprovalProcessId: Data?.ApprovalProcessId, MasterApprovalProcessSummaryId: Data?.ApprovalProcessSummaryId, Token: Data?.Token, MasterId: Data?.MasterId, OnboardingId: Data?.OnboardingId, ApprovalTypeId: Data?.ApprovalTypeId })
             setLoader(false)
@@ -247,7 +253,7 @@ function SummaryDrawer(props) {
                                         {showImport ?
                                             <BOPImportListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' isDataInMaster={isDataInMaster} approvalStatus={APPROVED_STATUS} stopApiCallOnCancel={true} costingTypeId={approvalData?.costingTypeId} />
                                             :
-                                            <BOPDomesticListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' isDataInMaster={isDataInMaster} approvalStatus={APPROVED_STATUS} stopApiCallOnCancel={true} costingTypeId={approvalData?.costingTypeId} />
+                                            <BOPDomesticListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' isDataInMaster={isDataInMaster} approvalStatus={APPROVED_STATUS} stopApiCallOnCancel={true} costingTypeId={approvalData?.costingTypeId} isRfq={true} quotationId={quotationId} bopDataResponse={bopDataResponse} />
                                         }
                                     </>
                                     }

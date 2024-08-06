@@ -48,9 +48,11 @@ const gridOptionsPart = {}
 const gridOptionsVendor = {}
 
 function AddRfq(props) {
+    
 
     const [isRmSelected, setIsRmSelected] = useState(false); // State to track if "RM" is selected
     const [selectedOption, setSelectedOption] = useState('componentAssembly');
+    
 
     const permissions = useContext(ApplyPermission);
     const Vendor = permissions.permissionDataVendor
@@ -189,6 +191,7 @@ function AddRfq(props) {
     // const [rmSpecificRowData, setRmSpecificRowData] = useState([])
     const [rmDataList, setRmDataList] = useState([])
     const [bopDataList, setBopDataList] = useState([])
+    
 
 
     const [editRawMaterialId, setEditRawMaterialId] = useState("")
@@ -219,7 +222,7 @@ function AddRfq(props) {
     };
 
     useEffect(() => {
-        if (selectedOption === "BOP") {
+        if (selectedOption === "Bought Out Part") {
             dispatch(getPurchaseRequisitionSelectList(() => { }))
         }
     }, [selectedOption])
@@ -230,17 +233,17 @@ function AddRfq(props) {
             partTypes.forEach(partType => {
                 switch (partType.trim()) {
                     case 'RawMaterial':
-                        setSelectedOption('RM');
-                        setQuationType("RM");
+                        setSelectedOption('Raw Material');
+                        setQuationType("Raw Material");
                         break;
                     case 'Assembly':
                     case 'Component':
                         setSelectedOption('componentAssembly');
                         setQuationType("Component/Assembly");
                         break;
-                    case 'BoughtOutPart':
-                        setSelectedOption('BOP');
-                        setQuationType("BOP");
+                    case 'Bought Out Part':
+                        setSelectedOption("Bought Out Part");
+                        setQuationType("Bought Out Part");
                         break;
                     default:
                         break;
@@ -306,7 +309,7 @@ function AddRfq(props) {
         dispatch(getSelectListPartType((res) => {
             setPartTypeList(res?.data?.SelectList)
         }))
-        if (selectedOption === "BOP") {
+        if (selectedOption === "Bought Out Part") {
             dispatch(getPurchaseRequisitionSelectList(() => { }))
         }
         dispatch(getRawMaterialNameChild(() => { }))
@@ -469,6 +472,7 @@ function AddRfq(props) {
     }
 
     const convertToBopList = (bopListTemp, isnfr) => {
+        
 
 
         let tempArr = []
@@ -671,14 +675,14 @@ function AddRfq(props) {
 
 
         dispatch(deleteQuotationPartDetail(rowData?.QuotationPartId, (res) => {
-            const type = selectedOption === 'RM' ? 'RM' : selectedOption === 'BOP' ? 'BOP' : 'Part';
+            const type = selectedOption === 'Raw Material' ? 'Raw Material' : selectedOption === "Bought Out Part" ? "Bought Out Part" : 'Part';
             Toaster.success(`${type} has been deleted successfully.`);
 
         }))
         if (selectedOption === "componentAssembly") {
             let arr = final && final.filter(item => item.PartId !== rowData?.PartId)
             setPartList(arr)
-        } else if (selectedOption === "RM") {
+        } else if (selectedOption === "Raw Material") {
             let arr = final && final.filter(item => item.RawMaterialChildId !== rowData?.RawMaterialChildId)
             setRmDataList(arr)
         } else {
@@ -712,7 +716,7 @@ function AddRfq(props) {
                 setRequirementDate(rowData?.TimeLine || '')
                 setAssemblyPartNumber({ label: rowData?.PartNumber, value: rowData?.PartId })
             }, 200);
-        } else if (selectedOption === "RM") {
+        } else if (selectedOption === "Raw Material") {
             setValue('UOM', { label: rowData?.UOM, value: rowData?.UnitOfMeasurementId })
             setRequirementDate(rowData?.TimeLine || '')
             setEditRawMaterialId(rowData?.RawMaterialChildId
@@ -731,7 +735,7 @@ function AddRfq(props) {
                 const PartList = res?.data?.Data?.PartList
                 setStorePartsDetail(PartList)
 
-            } else if (selectedOption === "RM") {
+            } else if (selectedOption === "Raw Material") {
                 const RawMaterialList = res?.data?.Data?.RawMaterialList
 
                 dispatch(setRmSpecificRowData(RawMaterialList))
@@ -752,11 +756,11 @@ function AddRfq(props) {
     const ViewItemPartTable = (rowData, final, viewMode) => {
         setViewQuotationPart(true)
         dispatch(getRfqPartDetails(rowData?.QuotationPartId, res => {
-            if (selectedOption === "RM") {
+            if (selectedOption === "Raw Material") {
                 const RawMaterialList = res?.data?.Data?.RawMaterialList
 
                 dispatch(setRmSpecificRowData(RawMaterialList))
-            } else if (selectedOption === "BOP") {
+            } else if (selectedOption === "Bought Out Part") {
                 const bopList = res?.data?.Data?.BoughtOutPartList
 
                 dispatch(setBopSpecificRowData(bopList))
@@ -876,6 +880,7 @@ function AddRfq(props) {
         }
         if (label === 'PartType') {
             partTypeList && partTypeList.map((item) => {
+                
 
                 if (item.Value === '0') return false
                 if (item.Value === PRODUCT_ID) return false
@@ -922,11 +927,11 @@ function AddRfq(props) {
         let title = ""
 
         switch (selectedOption) {
-            case "BOP":
+            case "Bought Out Part":
                 warningMessgae = 'Select a BOP, then add specification and attachment documents'
                 title = 'BOP'
                 break
-            case "RM":
+            case "Raw Material":
                 warningMessgae = 'Select a RM, then add attachment doucments'
                 title = 'RM'
                 break
@@ -942,14 +947,14 @@ function AddRfq(props) {
     const onSubmit = (data, e, isPartDetailsSent) => {
 
         switch (selectedOption) {
-            case "BOP":
+            case "Bought Out Part":
                 if (bopDataList.length === 0) {
                     Toaster.warning("Please add at least one BOP.");
                     return false;
                 }
                 break;
 
-            case "RM":
+            case "Raw Material":
                 if (rmDataList.length === 0) {
                     Toaster.warning("Please add at least one RM.");
                     return false;
@@ -1126,7 +1131,7 @@ function AddRfq(props) {
         let final = _.map(props?.node?.rowModel?.rowsToDisplay, 'data')
         const show = selectedOption === "componentAssembly"
             ? (rowData?.PartNumber !== undefined)
-            : (selectedOption === "BOP" ? rowData?.BoughtOutPartChildId !== undefined : rowData?.RawMaterialChildId !== undefined)
+            : (selectedOption === "Bought Out Part" ? rowData?.BoughtOutPartChildId !== undefined : rowData?.RawMaterialChildId !== undefined)
 
         const row = props?.data;
         const isSendButtonVisible = dataProps?.isViewFlag || (dataProps?.isAddFlag ? false : (dataProps?.isEditFlag && showSendButton === PREDRAFT ? false : true))
@@ -1469,14 +1474,14 @@ function AddRfq(props) {
             let objTemp = {};
             let arrTemp = [];
             let Data = {}
-            if (selectedOption === "RM") {
+            if (selectedOption === "Raw Material") {
 
                 if (RawMaterialList.length === 0) {
 
                     Toaster.warning("Please select all the mandatory fields");
                     return false
                 }
-                else if (selectedOption === "RM" && (RawMaterialList[0]?.RawMaterialReamrk === '' || RawMaterialList[0]?.RawMaterialAttachments?.length === 0)) {
+                else if (selectedOption === "Raw Material" && (RawMaterialList[0]?.RawMaterialReamrk === '' || RawMaterialList[0]?.RawMaterialAttachments?.length === 0)) {
                     Toaster.warning('Please fill the remark and attachment documents!');
                     return false;
                 }
@@ -1513,14 +1518,14 @@ function AddRfq(props) {
                     Toaster.warning('Please fill the remark and attachment documents!');
                     return;
                 }
-            } else if (selectedOption === "BOP") {
+            } else if (selectedOption ==="Bought Out Part") {
 
                 if (bopList.length === 0) {
 
 
                     Toaster.warning("Please select all the mandatory fields");
                     return false
-                } else if (selectedOption === "BOP" && (bopList[0]?.BopReamrk === "" || bopList[0]?.BopAttachments?.length === 0)) {
+                } else if (selectedOption === "Bought Out Part" && (bopList[0]?.BopReamrk === "" || bopList[0]?.BopAttachments?.length === 0)) {
                     Toaster.warning('Remarks and Attachments are required!');
                     return false;
                 }
@@ -1629,7 +1634,7 @@ function AddRfq(props) {
                 newObjTemp.Description = getValues('Description') || "";
                 newObjTemp.SOPQuantityDetails = sopQuantityList;
 
-                if (selectedOption === "RM") {
+                if (selectedOption === "Raw Material") {
                     // Set properties specific to Raw Material
                     newObjTemp.RawMaterialGrade = RawMaterialList[0]?.RawMaterialGrade
                     newObjTemp.RawMaterialName = RawMaterialList[0]?.RawMaterialName
@@ -1645,7 +1650,7 @@ function AddRfq(props) {
                     // Set properties specific to Component Assembly
                     newObjTemp.PartNumber = partNumber?.label;
                     newObjTemp.PartId = getValues('partNumber')?.value;
-                } else if (selectedOption === "BOP") {
+                } else if (selectedOption === "Bought Out Part") {
                     newObjTemp.BoughtOutPartName = bopList[0]?.BoughtOutPartName
                     newObjTemp.BoughtOutPartCategoryName = bopList[0]?.BoughtOutPartCategoryName
                     newObjTemp.BoughtOutPartCategoryId = bopList[0]?.BoughtOutPartCategoryId
@@ -1657,7 +1662,7 @@ function AddRfq(props) {
                 let arr
 
                 if (updateButtonPartNoTable) {
-                    if (selectedOption === "RM") {
+                    if (selectedOption === "Raw Material") {
                         arr = rmDataList.map(item => {
                             return item.RawMaterialChildId === editRawMaterialId ? { ...item, ...arrTemp[0] } : item;
                         });
@@ -1672,7 +1677,7 @@ function AddRfq(props) {
                         });
                     }
                 } else {
-                    if (selectedOption === "RM") {
+                    if (selectedOption === "Raw Material") {
                         arr = [...rmDataList, ...arrTemp];
 
                     } else if (selectedOption === "componentAssembly") {
@@ -1847,7 +1852,7 @@ function AddRfq(props) {
                         obj.RawMaterialList = []
                         obj.BoughtOutPartList = []
                         break;
-                    case 'RM':
+                    case 'Raw Material':
 
                         let tempRmArr = [];
                         let rmIdList = _.uniq(_.map(RawMaterialList, 'RawMaterialChildId'));
@@ -1881,7 +1886,7 @@ function AddRfq(props) {
                         obj.RawMaterialList = tempRmArr;
                         obj.BoughtOutPartList = [];
                         break;
-                    case 'BOP':
+                    case "Bought Out Part":
                         let tempBopArr = [];
                         let bopIdList = _.uniq(_.map(bopList, 'BoughtOutPartChildId'));
                         bopIdList && bopIdList.forEach((bopId) => {
@@ -1947,7 +1952,7 @@ function AddRfq(props) {
                 dispatch(saveRfqPartDetails(obj, (res) => {
                     if (res?.data?.Result) {
                         setIsLoader(false)
-                        const type = selectedOption === 'RM' ? 'RM' : selectedOption === 'BOP' ? 'BOP' : 'Part';
+                        const type = selectedOption === 'Raw Material' ? 'Raw Material' : selectedOption === "Bought Out Part" ? "Bought Out Part" : 'Part';
                         const action = updateButtonPartNoTable ? 'updated' : 'added';
                         Toaster.success(`${type} Details have been ${action} successfully.`);
                         setPartIdentity(res?.data?.Identity);
@@ -1964,7 +1969,7 @@ function AddRfq(props) {
                         //     return obj;
                         // });
                         let updatedArr = arr.map(obj => {
-                            if (selectedOption === "RM") {
+                            if (selectedOption === "Raw Material") {
                                 if (obj.RawMaterialChildId === RawMaterialList[0]?.RawMaterialChildId) {
                                     return { ...obj, QuotationPartId: res?.data?.Identity };
                                 }
@@ -1982,7 +1987,7 @@ function AddRfq(props) {
 
 
                         // State update should be outside the map function
-                        if (selectedOption === "RM") {
+                        if (selectedOption === "Raw Material") {
                             setRmDataList(updatedArr);
                         } else if (selectedOption === "componentAssembly") {
                             setPartList(updatedArr);
@@ -2639,9 +2644,9 @@ function AddRfq(props) {
                                                 className=''
                                                 id='rawMaterial'
                                                 checked={
-                                                    selectedOption === 'RM' ? true : false
+                                                    selectedOption === 'Raw Material' ? true : false
                                                 }
-                                                onClick={handleRadioChange("RM")
+                                                onClick={handleRadioChange("Raw Material")
                                                 }
                                                 disabled={props?.isAddFlag ? Object.keys(plant).length !== 0 : (props?.isEditFlag || props?.isViewFlag)}
                                             />{" "}
@@ -2655,9 +2660,9 @@ function AddRfq(props) {
                                                 className=''
                                                 id='bougthOutPart'
                                                 checked={
-                                                    selectedOption === 'BOP' ? true : false
+                                                    selectedOption === "Bought Out Part" ? true : false
                                                 }
-                                                onClick={handleRadioChange("BOP")
+                                                onClick={handleRadioChange("Bought Out Part")
                                                 }
                                                 disabled={props?.isAddFlag ? Object.keys(plant).length !== 0 : (props?.isEditFlag || props?.isViewFlag)}
                                             />{" "}
@@ -2686,7 +2691,7 @@ function AddRfq(props) {
                                 <form>
 
                                     <Row className="part-detail-wrapper">
-                                        {quationType !== 'BOP' && (
+                                        {quationType !== "Bought Out Part" && (
                                             <Col md="3">
                                                 <SearchableSelectHookForm
                                                     label={"Technology"}
@@ -2706,10 +2711,10 @@ function AddRfq(props) {
                                                 />
                                             </Col>)}
 
-                                        {quationType === 'BOP' && <Col md="3" className={isRmSelected ? 'd-none' : ''}>
+                                        {quationType === "Bought Out Part" && <Col md="3" className={isRmSelected ? 'd-none' : ''}>
                                             <SearchableSelectHookForm
-                                                label={quationType === 'BOP' ? "PR No." : "NFR No."}
-                                                name={quationType === 'BOP' ? "prId" : "nfrId"}
+                                                label={quationType === "Bought Out Part" ? "PR No." : "NFR No."}
+                                                name={quationType === "Bought Out Part" ? "prId" : "nfrId"}
                                                 isClearable={true}
                                                 placeholder={"Select"}
                                                 Controller={Controller}
@@ -2717,7 +2722,7 @@ function AddRfq(props) {
                                                 rules={{ required: false }}
                                                 register={register}
                                                 defaultValue={nfrId?.length !== 0 ? nfrId : ""}
-                                                options={renderListing(quationType === 'BOP' ? "prNo" : "nfrId")}
+                                                options={renderListing(quationType === "Bought Out Part" ? "prNo" : "nfrId")}
                                                 mandatory={false}
                                                 handleChange={handleNfrChnage}
                                                 errors={errors.nfrId}
@@ -2867,10 +2872,10 @@ function AddRfq(props) {
                                         </Row>
                                     </>}
                                     {loader && <LoaderCustom customClass="Rfq-Loader" />}
-                                    {quationType === 'RM' && <AddRfqRmDetails updateRawMaterialList={updateRawMaterialList} resetRmFields={resetRmFields} rmSpecificRowData={rmSpecificRowData} updateButtonPartNoTable={updateButtonPartNoTable} dataProps={dataProps} isEditFlag={editQuotationPart} isViewFlag={viewQuotationPart} setViewQuotationPart={setViewQuotationPart} disabledPartUid={disabledPartUid} technology={technology} setDisabled={setDisabled} isDisabled={isDisabled} heading={heading} dataProp={dataProps} />}
+                                    {quationType === 'Raw Material' && <AddRfqRmDetails updateRawMaterialList={updateRawMaterialList} resetRmFields={resetRmFields} rmSpecificRowData={rmSpecificRowData} updateButtonPartNoTable={updateButtonPartNoTable} dataProps={dataProps} isEditFlag={editQuotationPart} isViewFlag={viewQuotationPart} setViewQuotationPart={setViewQuotationPart} disabledPartUid={disabledPartUid} technology={technology} setDisabled={setDisabled} isDisabled={isDisabled} heading={heading} dataProp={dataProps} />}
                                     <Row>
 
-                                        {quationType === 'BOP' && <RaiseRfqBopDetails updateButtonPartNoTable={updateButtonPartNoTable} dataProps={dataProps} isEditFlag={editQuotationPart} isViewFlag={viewQuotationPart} setViewQuotationPart={setViewQuotationPart} updateBopList={updateBopList} resetBopFields={resetBopFields} plant={plant} prNumber={prNumber} disabledPartUid={disabledPartUid} heading={heading} dataProp={dataProps} />}
+                                        {quationType === "Bought Out Part" && <RaiseRfqBopDetails updateButtonPartNoTable={updateButtonPartNoTable} dataProps={dataProps} isEditFlag={editQuotationPart} isViewFlag={viewQuotationPart} setViewQuotationPart={setViewQuotationPart} updateBopList={updateBopList} resetBopFields={resetBopFields} plant={plant} prNumber={prNumber} disabledPartUid={disabledPartUid} heading={heading} dataProp={dataProps} />}
 
                                         {!havellsKey && (
                                             checkForNull(technology?.value) !== LOGISTICS && (
@@ -3097,7 +3102,7 @@ function AddRfq(props) {
                                                                     floatingFilter={false}
                                                                     domLayout='autoHeight'
                                                                     // columnDefs={c}
-                                                                    rowData={selectedOption === "RM" ? rmDataList : (selectedOption === "BOP" ? bopDataList : partList)}
+                                                                    rowData={selectedOption === "Raw Material" ? rmDataList : (selectedOption === "Bought Out Part" ? bopDataList : partList)}
 
                                                                     //pagination={true}
                                                                     paginationPageSize={10}
@@ -3113,10 +3118,10 @@ function AddRfq(props) {
                                                                     suppressColumnVirtualisation={true}
                                                                     enableBrowserTooltips={true}
                                                                 >
-                                                                    {selectedOption === "RM" && <AgGridColumn width={"230px"} field="RawMaterialName" headerName="Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
-                                                                    {selectedOption === "RM" && <AgGridColumn width={"230px"} field="RawMaterialGrade" headerName="Grade" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
-                                                                    {selectedOption === "RM" && <AgGridColumn width={"230px"} field="RawMaterialSpecification" headerName="Specification" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
-                                                                    {selectedOption === "RM" && <AgGridColumn width={"230px"} field="RawMaterialCode" headerName="Code" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                                                                    {selectedOption === "Raw Material" && <AgGridColumn width={"230px"} field="RawMaterialName" headerName="Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                                                                    {selectedOption === "Raw Material" && <AgGridColumn width={"230px"} field="RawMaterialGrade" headerName="Grade" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                                                                    {selectedOption === "Raw Material" && <AgGridColumn width={"230px"} field="RawMaterialSpecification" headerName="Specification" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                                                                    {selectedOption === "Raw Material" && <AgGridColumn width={"230px"} field="RawMaterialCode" headerName="Code" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
 
                                                                     {selectedOption === "componentAssembly" && <AgGridColumn width={"230px"} field="PartNumber" headerName="Part No" tooltipField="PartNumber" cellRenderer={'partNumberFormatter'}></AgGridColumn>}
                                                                     {/* {checkForNull(technology?.value) !== LOGISTICS && <AgGridColumn width={"230px"} field="RMName" tooltipField="RMName" headerName="RM Name" cellClass={"colorWhite"}></AgGridColumn>}
@@ -3128,11 +3133,11 @@ function AddRfq(props) {
 
                                                                     {(selectedOption === 'componentAssembly' /* || quationType === 'RM' */) && <AgGridColumn width={"230px"} field="TargetPrice" headerName="Target Price" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
 
-                                                                    {quationType === "BOP" && <AgGridColumn width={"190px"} field="BoughtOutPartNumber" headerName="BOP No." cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                                                                    {quationType === "Bought Out Part" && <AgGridColumn width={"190px"} field="BoughtOutPartNumber" headerName="BOP No." cellRenderer={'hyphenFormatter'}></AgGridColumn>}
 
-                                                                    {quationType === "BOP" && <AgGridColumn width={"190px"} field="BoughtOutPartName" headerName="BOP Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                                                                    {quationType === "Bought Out Part" && <AgGridColumn width={"190px"} field="BoughtOutPartName" headerName="BOP Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
 
-                                                                    {quationType === "BOP" && <AgGridColumn width={"190px"} field="BoughtOutPartCategoryName" headerName="Category" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                                                                    {quationType === "Bought Out Part" && <AgGridColumn width={"190px"} field="BoughtOutPartCategoryName" headerName="Category" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
 
 
                                                                     {/* {(quationType === "BOP" || quationType === 'RM' || quationType === 'componentAssembly') && <AgGridColumn width={"190px"} field="UOM" cellClass="ag-grid-action-container" headerName="UOM" floatingFilter={false} type="" cellRenderer={'buttonFormatterFirst'}></AgGridColumn>} */}
@@ -3141,11 +3146,11 @@ function AddRfq(props) {
                                                                     <AgGridColumn width={"230px"} field="UOM" headerName="UOM" ></AgGridColumn>
 
                                                                     <AgGridColumn width={"230px"} field="TimeLine" headerName="N-100 Timeline" cellRenderer={'effectiveDateFormatter'} ></AgGridColumn>
-                                                                    {(selectedOption === 'componentAssembly' === "componentAssembly" || selectedOption === 'componentAssembly' === 'RM' || selectedOption === 'componentAssembly' === 'BOP') && <AgGridColumn width={"230px"} field="VendorListExisting" headerName="Existing Vendor" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                                                                    {(selectedOption === 'componentAssembly' === "componentAssembly" || selectedOption === 'componentAssembly' === 'Raw Material' || selectedOption === 'componentAssembly' === "Bought Out Part") && <AgGridColumn width={"230px"} field="VendorListExisting" headerName="Existing Vendor" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
 
                                                                     {selectedOption === "componentAssembly" && (<AgGridColumn width={"190px"} field="PartId" cellClass="ag-grid-action-container text-right" headerName="Action" floatingFilter={false} type="rightAligned" cellRenderer={'buttonFormatterFirst'} />)}
-                                                                    {selectedOption === "RM" && (<AgGridColumn width={"190px"} field="RawMaterialChildId" cellClass="ag-grid-action-container text-right" headerName="Action" floatingFilter={false} type="rightAligned" cellRenderer={'buttonFormatterFirst'} />)}
-                                                                    {selectedOption === "BOP" && (<AgGridColumn width={"190px"} field="BoughtOutPartChildId" cellClass="ag-grid-action-container text-right" headerName="Action" floatingFilter={false} type="rightAligned" cellRenderer={'buttonFormatterFirst'} />)}
+                                                                    {selectedOption === "Raw Material" && (<AgGridColumn width={"190px"} field="RawMaterialChildId" cellClass="ag-grid-action-container text-right" headerName="Action" floatingFilter={false} type="rightAligned" cellRenderer={'buttonFormatterFirst'} />)}
+                                                                    {selectedOption === "Bought Out Part" && (<AgGridColumn width={"190px"} field="BoughtOutPartChildId" cellClass="ag-grid-action-container text-right" headerName="Action" floatingFilter={false} type="rightAligned" cellRenderer={'buttonFormatterFirst'} />)}
 
                                                                 </AgGridReact>
                                                             }
@@ -3636,7 +3641,7 @@ function AddRfq(props) {
                                             childPartFiles={childPartFiles}
                                             setRemark={setRemark}
                                             remark={remark}
-                                            partType={selectedOption === 'componentAssembly' ? 'component' : (selectedOption === 'BOP' ? 'BOP' : 'RM')}
+                                            partType={selectedOption === 'componentAssembly' ? 'Component' : (selectedOption === "Bought Out Part" ? "Bought Out Part" : 'Raw Material')}
                                             isViewFlag={viewQuotationPart}
                                             partListData={partList}
                                             setViewQuotationPart={setViewQuotationPart}

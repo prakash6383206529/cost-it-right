@@ -24,8 +24,10 @@ import { getLastRevisionRawMaterialDetails } from './actions/Indexation';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import HeaderTitle from '../common/HeaderTitle';
 import NoContentFound from '../common/NoContentFound';
+import { rfqSaveBestCosting } from '../rfq/actions/rfq';
 
 function MasterSendForApproval(props) {
+    console.log('props: ', props);
     
     const { type, IsFinalLevel, IsPushDrawer, reasonId, masterId, OnboardingId, approvalObj, isBulkUpload, IsImportEntry, approvalDetails, IsFinalLevelButtonShow, approvalData, levelDetails, Technology, showScrapKeys } = props
         const RFQPlantId = props.partType === 'RawMaterial' ? (approvalObj && approvalObj[0]?.Plant && approvalObj[0]?.Plant[0]?.PlantId)  : approvalObj[0]?.PlantId
@@ -33,12 +35,6 @@ function MasterSendForApproval(props) {
     // const RFQPlantId = approvalObj ? approvalObj[0]?.Plant[0]?.PlantId : ''
     
     
- 
-    useEffect(() => {
-    if(props.isRFQ){
-        
-    }
-}, [props.isRFQ])
     const { register, control, formState: { errors }, handleSubmit, setValue, getValues, reset, } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
@@ -242,7 +238,7 @@ function MasterSendForApproval(props) {
                 })
 
             }
-
+          
             //THIS OBJ IS FOR MASTER SEND FOR APPROVAL
             let senderObj = {}
             senderObj.ReasonId = reason ? reason.value : 0
@@ -252,8 +248,8 @@ function MasterSendForApproval(props) {
             senderObj.DepartmentName = dept && dept.label ? dept.label : ''
             senderObj.ApproverLevelId = approver && approver.levelId ? approver.levelId : ''
             senderObj.ApproverDepartmentId = dept && dept.value ? dept.value : ''
-            senderObj.ApproverLevel = approver && approver.levelName ? approver.levelName : ''
             senderObj.ApproverDepartmentName = dept && dept.label ? dept.label : ''
+            senderObj.ApproverLevel = approver && approver.levelName ? approver.levelName : ''
             // senderObj.ApproverId = approver && approver.value ? approver.value : ''
             senderObj.ApproverIdList = initialConfiguration?.IsMultipleUserAllowForApproval ? approverIdList : [approver && approver.value ? approver.value : '']
             senderObj.SenderLevelId = levelDetails?.LevelId
@@ -475,6 +471,43 @@ function MasterSendForApproval(props) {
 
         }
         else {
+            if (props.isRFQ && (checkForNull(masterId) === 1 || checkForNull(masterId) === 2)) {
+                let data = {
+                    CostingBestCostRequest: {},
+                    RawMaterialBestCostRequest: {},
+                    BoughtOutPartBestCostRequest: {}
+                };
+            
+                switch (checkForNull(masterId)) {
+                    case 1: // Raw Material
+                        data.RawMaterialBestCostRequest = {
+                            "QuotationPartId": approvalObj[0]?.QuotationPartId ?? "0",
+                            "NetRawMaterialsCost": approvalObj[0]?.NetLandedCost ?? "0",
+                            "OtherCost": approvalObj[0]?.OtherNetCost ?? "0",
+                            "BasicRate": approvalObj[0]?.BasicRatePerUOM ?? "0",
+                        };
+                        break;
+            
+                    case 2: // Bought Out Part
+                        data.BoughtOutPartBestCostRequest = {
+                            "QuotationPartId": approvalObj[0]?.QuotationPartId ?? '0',
+                            "NetBoughtOutPartCost": approvalObj[0]?.NetLandedCost ?? '0',
+                            "OtherCost": approvalObj[0].OtherNetCost ?? '',
+                            "BasicRate": approvalObj[0]?.BasicRate ?? '',
+                        };
+                        break;
+            
+                    default:
+                        console.error("Invalid masterId for RFQ");
+                        return; // Exit if masterId is neither 1 nor 2
+                }
+            console.log(data);
+                setIsLoader(true);
+                dispatch(rfqSaveBestCosting(data, res =>  {
+                    console.log('res: ', res);
+                  setIsLoader(false)
+                }))
+            }
             // let obj = {}
             // obj.ApprovalProcessSummaryId = approvalDetails.MasterApprovalProcessSummaryId
             // obj.ApprovalProcessId = approvalDetails.ApprovalProcessId
