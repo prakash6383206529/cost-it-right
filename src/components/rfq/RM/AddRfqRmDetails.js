@@ -17,7 +17,7 @@ import { DRAFT, PREDRAFT, SENT } from "../../../config/constants";
 
 
 const AddRfqRmDetails = (props) => {
-    const { updateRawMaterialList, resetRmFields, updateButtonPartNoTable, rmSpecificRowData, dataProps, isEditFlag, isViewFlag, setViewQuotationPart, disabledPartUid, technology, setDisabled, isDisabled } = props
+    const { updateRawMaterialList, resetRmFields, updateButtonPartNoTable, rmSpecificRowData, dataProps, isEditFlag, isViewFlag, setViewQuotationPart, disabledPartUid, technology, setDisabled, isDisabled, resetDrawer } = props
 
     const { register, handleSubmit, setValue, getValues, formState: { errors }, control } = useForm({ mode: 'onChange', reValidateMode: 'onChange', defaultValues: { radioOption: false, } });
     const [rmName, setRmName] = useState([]);
@@ -363,7 +363,7 @@ const AddRfqRmDetails = (props) => {
                             anchor={"right"}
                             closeDrawer={closeDrawer}
                             partType={'Raw Material'}
-                            quationType={'Raw Material'}
+                            quotationType={'Raw Material'}
                             setViewQuotationPart={setViewQuotationPart}
                             setChildPartFiles={setRmAttchment}
                             childPartFiles={rmAttchment}
@@ -372,6 +372,7 @@ const AddRfqRmDetails = (props) => {
                             rmSpecificRowData={rmSpecificRowData}
                             isEditFlag={isEditFlag}
                             isViewFlag={isViewFlag}
+                            resetDrawer={resetDrawer}
 
                         />
                     )

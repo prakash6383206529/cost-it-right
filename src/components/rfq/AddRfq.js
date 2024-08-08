@@ -7,7 +7,7 @@ import { getReporterList, getVendorNameByVendorSelectList, getPlantSelectListByT
 import { getCostingSpecificTechnology, getExistingCosting, getPartInfo, } from '../costing/actions/Costing'
 import { IsSendQuotationToPointOfContact, addDays, checkPermission, getConfigurationKey, getTimeZone, loggedInUserId } from '../.././helper';
 import { checkForNull, checkForDecimalAndNull } from '../.././helper/validation'
-import { BOUGHTOUTPARTSPACING, BoughtOutPart, COMPONENT_PART, DRAFT, EMPTY_DATA, FILE_URL, HAVELLS_DESIGN_PARTS, PREDRAFT, PRODUCT_ID, RFQ, RFQVendor, VBC_VENDOR_TYPE, ZBC, searchCount } from '../.././config/constants';
+import { BOUGHTOUTPARTSPACING, BoughtOutPart, COMPONENT_PART, DRAFT, EMPTY_DATA, FILE_URL, HAVELLS_DESIGN_PARTS, PREDRAFT, PRODUCT_ID, RFQ, RFQVendor, TOOLING, VBC_VENDOR_TYPE, ZBC, searchCount } from '../.././config/constants';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
@@ -15,7 +15,7 @@ import Dropzone from 'react-dropzone-uploader'
 import 'react-dropzone-uploader/dist/styles.css'
 import Toaster from '../common/Toaster';
 import { MESSAGES } from '../../config/message';
-import { createRfqQuotation, fileUploadQuotation, getQuotationById, updateRfqQuotation, getContactPerson, checkExistCosting, setRFQBulkUpload, getNfrSelectList, getNfrAnnualForecastQuantity, getNFRRMList, getPartNFRRMList, checkLPSAndSCN, getrRqVendorDetails, getTargetPrice, setVendorDetails, getAssemblyChildpart, getRfqRaiseNumber, saveRfqPartDetails, getRfqPartDetails, deleteQuotationPartDetail, setRfqPartDetails, setQuotationIdForRfq, setTargetPriceDetail, checkRegisteredVendor, setRmSpecificRowData, getPurchaseRequisitionSelectList, setBopSpecificRowData, createQuotationPrParts } from './actions/rfq';
+import { createRfqQuotation, fileUploadQuotation, getQuotationById, updateRfqQuotation, getContactPerson, checkExistCosting, setRFQBulkUpload, getNfrSelectList, getNfrAnnualForecastQuantity, getNFRRMList, getPartNFRRMList, checkLPSAndSCN, getrRqVendorDetails, getTargetPrice, setVendorDetails, getAssemblyChildpart, getRfqRaiseNumber, saveRfqPartDetails, getRfqPartDetails, deleteQuotationPartDetail, setRfqPartDetails, setQuotationIdForRfq, setTargetPriceDetail, checkRegisteredVendor, setRmSpecificRowData, getPurchaseRequisitionSelectList, setBopSpecificRowData, createQuotationPrParts, getRfqToolingDetails } from './actions/rfq';
 import PopupMsgWrapper from '../common/PopupMsgWrapper';
 import LoaderCustom from '../common/LoaderCustom';
 import redcrossImg from '../../assests/images/red-cross.png'
@@ -26,7 +26,7 @@ import { autoCompleteDropdown, autoCompleteDropdownPart } from '../common/Common
 import BulkUpload from '../massUpload/BulkUpload';
 import _ from 'lodash';
 import { getPartSelectListWtihRevNo } from '../masters/actions/Volume';
-import { ASSEMBLY, AcceptableRMUOM, DATE_STRING, DURATION_STRING, LOGISTICS, REMARKMAXLENGTH, visibilityModeDropdownArray } from '../../config/masterData';
+import { ASSEMBLY, AcceptableRMUOM, DATE_STRING, DURATION_STRING, LOGISTICS, REMARKMAXLENGTH, TOOLING_ID, visibilityModeDropdownArray } from '../../config/masterData';
 import DayTime from '../common/DayTimeWrapper';
 import DatePicker from 'react-datepicker'
 import { setHours, setMinutes } from 'date-fns';
@@ -43,16 +43,13 @@ import AddRm from './RM/AddRfqRmDetails';
 import AddRfqRmDetails from './RM/AddRfqRmDetails';
 import RaiseRfqBopDetails from './BOP/RaiseRfqBopDetails';
 import TooltipCustom from '../common/Tooltip';
-
 const gridOptionsPart = {}
 const gridOptionsVendor = {}
 
 function AddRfq(props) {
-    
 
     const [isRmSelected, setIsRmSelected] = useState(false); // State to track if "RM" is selected
     const [selectedOption, setSelectedOption] = useState('componentAssembly');
-    
 
     const permissions = useContext(ApplyPermission);
     const Vendor = permissions.permissionDataVendor
@@ -63,7 +60,7 @@ function AddRfq(props) {
 
 
     const dropzone = useRef(null);
-    const { register, handleSubmit, setValue, getValues, formState: { errors }, control } = useForm({
+    const { register, handleSubmit, setValue, getValues, formState: { errors }, control, reset } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
         defaultValues: {
@@ -181,7 +178,7 @@ function AddRfq(props) {
     const [sopdate, setSOPDate] = useState('')
     const [disabledVendoUi, setDisabledVendoUId] = useState(false)
     const [showVendorSection, setShowVendorSection] = useState(true)
-    const [quationType, setQuationType] = useState('componentAssembly')
+    const [quotationType, setQuotationType] = useState('componentAssembly')
     const [RawMaterialList, setRawMaterialList] = useState([])
     const [bopList, setBopList] = useState([])
 
@@ -191,8 +188,7 @@ function AddRfq(props) {
     // const [rmSpecificRowData, setRmSpecificRowData] = useState([])
     const [rmDataList, setRmDataList] = useState([])
     const [bopDataList, setBopDataList] = useState([])
-    
-
+    const [toolingList, setToolingList] = useState([])
 
     const [editRawMaterialId, setEditRawMaterialId] = useState("")
     const [editBopId, setEditBopId] = useState("")
@@ -201,6 +197,7 @@ function AddRfq(props) {
     const [isDisabled, setIsDisabled] = useState(false)
     const [selectedPartType, setSelectedPartType] = useState('')
     const [drawerViewMode, setDrawerViewMode] = useState(false)
+    const [resetDrawer, setResetDrawer] = useState(false)
     const showOnlyFirstModule = initialConfiguration.IsManageSeparateUserPemissionForPartAndVendorInRaiseRFQ;
 
 
@@ -211,7 +208,9 @@ function AddRfq(props) {
     const handleRadioChange = (type) => () => {
         setSelectedOption(type);
         // Update state based on radio button selection
-        setQuationType(type);
+        setQuotationType(type);
+        setValue('Technology', '');
+
         // if (type !== selectedOption) {
         //     setTableData([]);
         //     setSpecificationList([]);
@@ -230,20 +229,20 @@ function AddRfq(props) {
         if (dataProps?.rowData && dataProps?.rowData?.PartType !== "") {
             const partTypes = dataProps?.rowData?.PartType?.split(',');
 
-            partTypes.forEach(partType => {
+            partTypes && partTypes?.forEach(partType => {
                 switch (partType.trim()) {
                     case 'Raw Material':
                         setSelectedOption('Raw Material');
-                        setQuationType("Raw Material");
+                        setQuotationType("Raw Material");
                         break;
                     case 'Assembly':
                     case 'Component':
                         setSelectedOption('componentAssembly');
-                        setQuationType("Component/Assembly");
+                        setQuotationType("Component/Assembly");
                         break;
                     case 'Bought Out Part':
                         setSelectedOption("Bought Out Part");
-                        setQuationType("Bought Out Part");
+                        setQuotationType("Bought Out Part");
                         break;
                     default:
                         break;
@@ -289,7 +288,7 @@ function AddRfq(props) {
         setTimeout(() => {
             setShowGrid(true)
         }, 10);
-    }, [quationType])
+    }, [quotationType])
     useEffect(() => {
         const partTypeString = initialConfiguration?.HavellsPartTypeList;
         if (partTypeString) {
@@ -329,6 +328,12 @@ function AddRfq(props) {
             dispatch(setRFQBulkUpload([]))
         }
     }, []);
+    // useEffect(() => {
+    //     if ((prNumber.length !== 0)) {
+
+    //         //dispatch(getRfqToolingDetails(prNumber.value, () => { }))
+    //     }
+    // }, [prNumber])
 
     // useEffect(() => {
     //     const filteredArray = selectedparts.filter((obj) => {
@@ -336,7 +341,12 @@ function AddRfq(props) {
     //     });
     //     setSelectedParts(filteredArray)
     // }, [deleteToggle])
-
+    useEffect(() => {
+        if (selectedOption === 'Tooling') {
+            setPartNoDisable(false)
+            setValue("technology", { label: TOOLING, value: TOOLING_ID })
+        }
+    }, [selectedOption])
     useEffect(() => {
         let tempp = _.unionBy(partList, checkRFQPartBulkUpload?.SuccessfulRecord, 'PartNumber');
         setPartList(tempp)
@@ -472,12 +482,18 @@ function AddRfq(props) {
     }
 
     const convertToBopList = (bopListTemp, isnfr) => {
-        
-
-
         let tempArr = []
-
         bopListTemp && bopListTemp?.map((item) => {
+            tempArr.push(item)
+            return null
+        })
+
+        return tempArr
+
+    }
+    const convertToToolingList = (toolingListTemp, isnfr) => {
+        let tempArr = []
+        toolingListTemp && toolingListTemp?.map((item) => {
             tempArr.push(item)
             return null
         })
@@ -525,7 +541,11 @@ function AddRfq(props) {
                     label: data.PlantName, value: data.PlantId
                 })
                 setPlant({ label: data.PlantName, value: data.PlantId })
-                setValue("prId", { label: data.PRNumber, value: data.PRNumberId })
+                setValue("prId", { label: data?.PRNumber, value: data?.PRNumberId })
+                if (data?.PRNumber !== null) {
+                    setPrNumber({ label: data?.PRNumber, value: data?.PRNumberId })
+                }
+
                 dispatch(setQuotationIdForRfq(data?.QuotationId))
                 setTechnology({ label: data.TechnologyName, value: data.TechnologyId })
                 // setInitialFiles(data?.Attachments)
@@ -540,12 +560,18 @@ function AddRfq(props) {
                 setPartList(convertToPartList(data.PartList, data?.NfrId ? true : false))
                 setRmDataList(convertToRmList(data.RawMaterialList, data?.NfrId ? true : false))
                 setBopDataList(convertToBopList(data.BoughtOutPartList, data?.NfrId ? true : false))
+                // setToolingList(convertToToolingList(data.ToolingList, data?.NfrId ? true : false))
                 setVendorList(data.VendorList)
                 setValue("remark", data.Remark)
                 setValue("nfrId", { label: data?.NfrNumber, value: data?.NfrId })
                 setNfrId({ label: data?.NfrNumber, value: data?.NfrId })
                 setData(data)
                 setIsNFRFlow(data?.NfrId ? true : false)
+                dispatch(setTargetPriceDetail({
+                    TargetPrice: data?.PartList[0]?.TargetPrice
+                }))
+                //dispatch(getTargetPrice(plant?.value, value?.value, Number(technology?.value), (res) => {}))
+
             }
             setTimeout(() => {
                 setLoader(false)
@@ -685,10 +711,14 @@ function AddRfq(props) {
         } else if (selectedOption === "Raw Material") {
             let arr = final && final.filter(item => item.RawMaterialChildId !== rowData?.RawMaterialChildId)
             setRmDataList(arr)
-        } else {
+        } else if (selectedOption === "Bought Out Part") {
             let arr = final && final.filter(item => item?.BoughtOutPartChildId !== rowData?.BoughtOutPartChildId)
             setBopDataList(arr)
         }
+        //else{
+        //     let arr = final && final.filter(item => item?.toolingPartId !== rowData?.toolingPartId)
+        //     setToolingList(arr)
+        // }
 
         setDeleteToggle({ deleteToggle: !deleteToggle, rowData: rowData })
 
@@ -701,6 +731,7 @@ function AddRfq(props) {
         setResetRmFields(false)
         setResetBopFields(false)
         setUpdateButtonPartNoTable(true)
+        setResetDrawer(false)
 
         if (selectedOption === "componentAssembly") {
             setTimeout(() => {
@@ -734,6 +765,11 @@ function AddRfq(props) {
             if (selectedOption === "componentAssembly") {
                 const PartList = res?.data?.Data?.PartList
                 setStorePartsDetail(PartList)
+                if (!ProcessDrawer) {
+                    setRemark(PartList?.Remarks)
+                    setChildPartFiles(PartList?.Attachments || [])
+                }
+
 
             } else if (selectedOption === "Raw Material") {
                 const RawMaterialList = res?.data?.Data?.RawMaterialList
@@ -767,6 +803,7 @@ function AddRfq(props) {
             }
         }))
         setDrawerViewMode(true)
+        setResetDrawer(false)
         setDrawerOpen(true)
 
     }
@@ -818,6 +855,7 @@ function AddRfq(props) {
             Attachments: /* files && files.length > 0 ? files : */[],
             NfrId: nfrId?.value || null,
             PartList: [],
+            PrNumberId: prNumber?.value || null,
             // QuotationPartIdList: uniquePartList,
             PartDataSentOn: null,
             IsPartDetailsSent: IsPartDetailsSent,
@@ -880,7 +918,6 @@ function AddRfq(props) {
         }
         if (label === 'PartType') {
             partTypeList && partTypeList.map((item) => {
-                
 
                 if (item.Value === '0') return false
                 if (item.Value === PRODUCT_ID) return false
@@ -918,6 +955,7 @@ function AddRfq(props) {
         props.closeDrawer('', {})
         setResetRmFields(false)
         setResetBopFields(false)
+        setResetDrawer(false)
         dispatch(setQuotationIdForRfq(""))
         dispatch(setTargetPriceDetail({}))
 
@@ -938,6 +976,10 @@ function AddRfq(props) {
             case "componentAssembly":
                 warningMessgae = "Select a part, then add raw material, specification, and attachment documents"
                 title = 'Part'
+                break
+            case "Tooling":
+                warningMessgae = "Select a PR Number, then add raw material, specification, and attachment documents"
+                title = 'Tooling'
                 break
             default:
                 return <HeaderTitle customClass="d-flex" title={title}><WarningMessage dClass={"mt-1 ml-3"} message={warningMessgae} /></HeaderTitle>
@@ -967,7 +1009,12 @@ function AddRfq(props) {
                     return false;
                 }
                 break;
-
+            // case "Tooling":
+            //     if (toolingList.length === 0) {
+            //         Toaster.warning("Please add at least one part.");
+            //         return false;
+            //     }
+            //     break;
             default:
                 return false;
         }
@@ -1079,6 +1126,7 @@ function AddRfq(props) {
 
             setQuotationIdentity(res?.data?.Identity)
             if (res?.data?.Result) {
+                setPrNumber([])
                 dispatch(setQuotationIdForRfq(""))
                 dispatch(setTargetPriceDetail({}))
                 if ((!showSendButton === "") && (!(showSendButton === DRAFT) || !(showSendButton === PREDRAFT))) {
@@ -1091,8 +1139,6 @@ function AddRfq(props) {
                 cancel()
             }
         }))
-
-
 
         dispatch(setVendorDetails({}))
     }
@@ -1508,17 +1554,19 @@ function AddRfq(props) {
                     Toaster.warning("Please select all the mandatory fields");
                     return false
                 }
-                else if (getValues('HavellsDesignPart') === undefined) {
+
+                else if (!getValues('HavellsDesignPart')) {
                     Toaster.warning("Please select Havells Design part");
                     return false;
-                } else if (["", "-"].includes(getValues('TargetPrice')) && getValues("HavellsDesignPart")?.label === HAVELLS_DESIGN_PARTS) {
+                }
+                else if (["", "-"].includes(getValues('TargetPrice')) && getValues("HavellsDesignPart")?.label === HAVELLS_DESIGN_PARTS) {
                     Toaster.warning("ZBC costing approval is required for this plant to raise a quote.");
                     return false;
                 } else if ((remark === '' || childPartFiles?.length === 0)) {
                     Toaster.warning('Please fill the remark and attachment documents!');
                     return;
                 }
-            } else if (selectedOption ==="Bought Out Part") {
+            } else if (selectedOption === "Bought Out Part") {
 
                 if (bopList.length === 0) {
 
@@ -1529,11 +1577,15 @@ function AddRfq(props) {
                     Toaster.warning('Remarks and Attachments are required!');
                     return false;
                 }
-            } if (getValues('UOM')?.label === "" || getValues('UOM')?.label === undefined) {
-                Toaster.warning("Please select UOM");
-                return false;
+            }
+            if (selectedOption !== "Tooling") {
+                if (getValues('UOM')?.label === "" || getValues('UOM')?.label === undefined) {
+                    Toaster.warning("Please select UOM");
+                    return false;
+                }
+
             } if (requirementDate === "") {
-                Toaster.warning("Please select N-100 Timelin");
+                Toaster.warning("Please select N-100 Timeline");
                 return false;
             }
             if (nfrId && nfrId.value !== null) {//CHECK_NFR
@@ -1937,7 +1989,7 @@ function AddRfq(props) {
                         obj.RawMaterialList = [];
                         obj.BoughtOutPartList = tempBopArr;
                         break;
-                    case 'tooling':
+                    case 'Tooling':
 
                         obj.PartList = [];
                         break;
@@ -1991,9 +2043,12 @@ function AddRfq(props) {
                             setRmDataList(updatedArr);
                         } else if (selectedOption === "componentAssembly") {
                             setPartList(updatedArr);
-                        } else {
+                        } else if (selectedOption === "Bought Out Part") {
                             setBopDataList(updatedArr);
                         }
+                        // else {
+                        //     setToolingList(updatedArr);
+                        // }
 
 
                         // 
@@ -2081,6 +2136,7 @@ function AddRfq(props) {
         setSOPDate('')
         setStorePartsDetail([]);
         setIsDisabled(false)
+        setResetDrawer(true)
 
         // setValue('technology', "")
     }
@@ -2558,6 +2614,7 @@ function AddRfq(props) {
     const DrawerToggle = () => {
         // if (CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
         setDrawerOpen(true)
+        setResetDrawer(false)
     }
     const closeDrawer = (e, isUpdate) => {
         setIsPartDeailUpdate(isUpdate)
@@ -2578,7 +2635,14 @@ function AddRfq(props) {
         }));
 
     }
-
+    const getPartType = (option) => {
+        const map = {
+            "componentAssembly": 'Component',
+            "Bought Out Part": "Bought Out Part",
+            "Tooling": 'Tooling'
+        };
+        return map[option] || 'Raw Material';
+    };
 
     const effectiveDateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -2674,11 +2738,11 @@ function AddRfq(props) {
                                                 type="radio"
                                                 name="radioGroup"
                                                 className=''
-                                                id='tooling'
+                                                id='Tooling'
                                                 checked={
-                                                    selectedOption === 'tooling' ? true : false
+                                                    selectedOption === 'Tooling' ? true : false
                                                 }
-                                                onClick={handleRadioChange("tooling")
+                                                onClick={handleRadioChange("Tooling")
                                                 }
                                                 disabled={props?.isAddFlag ? Object.keys(plant).length !== 0 : (props?.isEditFlag || props?.isViewFlag)}
                                             />{" "}
@@ -2691,7 +2755,7 @@ function AddRfq(props) {
                                 <form>
 
                                     <Row className="part-detail-wrapper">
-                                        {quationType !== "Bought Out Part" && (
+                                        {quotationType !== "Bought Out Part" && (
                                             <Col md="3">
                                                 <SearchableSelectHookForm
                                                     label={"Technology"}
@@ -2706,15 +2770,15 @@ function AddRfq(props) {
                                                     mandatory={true}
                                                     handleChange={handleTechnologyChange}
                                                     errors={errors.technology}
-                                                    disabled={((dataProps?.isViewFlag || isEditAll) ? true : false)
+                                                    disabled={selectedOption === 'Tooling' || ((dataProps?.isViewFlag) ? true : false)
                                                         || (partList?.length !== 0 || rmDataList?.length !== 0 || bopDataList?.length !== 0 || vendorList?.length !== 0)}
                                                 />
                                             </Col>)}
 
-                                        {quationType === "Bought Out Part" && <Col md="3" className={isRmSelected ? 'd-none' : ''}>
+                                        {(quotationType === "Bought Out Part" || quotationType === 'Tooling') && <Col md="3" className={isRmSelected ? 'd-none' : ''}>
                                             <SearchableSelectHookForm
-                                                label={quationType === "Bought Out Part" ? "PR No." : "NFR No."}
-                                                name={quationType === "Bought Out Part" ? "prId" : "nfrId"}
+                                                label={(quotationType === "Bought Out Part" || quotationType === 'Tooling') ? "PR No." : "NFR No."}
+                                                name={quotationType === "Bought Out Part" ? "prId" : "nfrId"}
                                                 isClearable={true}
                                                 placeholder={"Select"}
                                                 Controller={Controller}
@@ -2722,12 +2786,13 @@ function AddRfq(props) {
                                                 rules={{ required: false }}
                                                 register={register}
                                                 defaultValue={nfrId?.length !== 0 ? nfrId : ""}
-                                                options={renderListing(quationType === "Bought Out Part" ? "prNo" : "nfrId")}
-                                                mandatory={false}
+                                                options={renderListing(quotationType === "Bought Out Part" ? "prNo" : "nfrId")}
+                                                mandatory={quotationType === 'Tooling' ? true : false}
+
                                                 handleChange={handleNfrChnage}
                                                 errors={errors.nfrId}
-                                                disabled={Object.keys(prNumber).length !== 0 || ((dataProps?.isViewFlag || dataProps?.isEditFlag) ? true : false)
-                                                    || (partList?.length !== 0)}
+                                                disabled={Object.keys(prNumber).length !== 0 || ((dataProps?.isViewFlag /* || dataProps?.isEditFlag */ || showSendButton === DRAFT) ? true : false)
+                                                    || (partList?.length !== 0 || bopDataList?.length !== 0 || vendorList?.length !== 0)}
                                             // isLoading={VendorLoaderObj}
                                             />
                                         </Col>}
@@ -2747,10 +2812,12 @@ function AddRfq(props) {
                                                 errors={errors.plant}
                                                 // disabled={((dataProps?.isViewFlag || isEditAll) ? true : false)
                                                 //     || (partList?.length !== 0 || vendorList?.length !== 0)}
-                                                disabled={Object.keys(prNumber).length !== 0 || ((partList?.length !== 0 || rmDataList?.length !== 0 || bopDataList?.length !== 0 || vendorList?.length !== 0) || showSendButton === PREDRAFT /* || showSendButton === DRAFT */ || (dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll || disabledPartUid)))}
+                                                //     selectedOption === 'Tooling' || ((dataProps?.isViewFlag ) ? true : false)
+                                                // || (partList?.length !== 0 || rmDataList?.length !== 0 || bopDataList?.length !== 0 || vendorList?.length !== 0)
+                                                disabled={Object.keys(prNumber).length !== 0 || ((partList?.length !== 0 || rmDataList?.length !== 0 || bopDataList?.length !== 0 || vendorList?.length !== 0) /* || showSendButton === PREDRAFT  */ || (dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll || disabledPartUid)))}
                                             />
                                         </Col>
-                                        <Col md="3">
+                                        {quotationType !== 'Tooling' && <Col md="3">
                                             <div className="inputbox date-section">
                                                 <div className="form-group">
                                                     <label>Quote Submission Date</label>
@@ -2780,10 +2847,10 @@ function AddRfq(props) {
                                                     </div>
                                                 </div>
                                             </div>
-                                        </Col>
+                                        </Col>}
                                     </Row>
 
-                                    {selectedOption === 'componentAssembly' && <>
+                                    {(selectedOption === 'componentAssembly' || selectedOption === 'Tooling') && <>
                                         {heading()}
                                         <Row className="part-detail-wrapper">
                                             {havellsKey && <Col md="3">
@@ -2800,7 +2867,7 @@ function AddRfq(props) {
                                                     mandatory={true}
                                                     handleChange={handlePartTypeChange}
                                                     errors={errors.Part}
-                                                    disabled={(dataProps?.isViewFlag) ? true : false || (technology.length === 0) ? true : false || updateButtonPartNoTable || disabledPartUid}
+                                                    disabled={Object.keys(prNumber).length !== 0 || (dataProps?.isViewFlag) ? true : false || (technology.length === 0) ? true : false || updateButtonPartNoTable || disabledPartUid}
                                                 />
                                             </Col>}
                                             <Col md="3" className='d-flex align-items-center' >
@@ -2817,7 +2884,7 @@ function AddRfq(props) {
                                                     mandatory={true}
                                                     handleChange={(newValue) => handlePartNoChange(newValue)}
                                                     errors={errors.partNumber}
-                                                    disabled={disabledPartUid || (dataProps?.isAddFlag ? partNoDisable : (dataProps?.isViewFlag || !isEditAll)) || updateButtonPartNoTable}
+                                                    disabled={Object.keys(prNumber).length !== 0 || disabledPartUid || (dataProps?.isAddFlag ? partNoDisable : (dataProps?.isViewFlag || !isEditAll)) || updateButtonPartNoTable}
                                                     isLoading={plantLoaderObj}
                                                     asyncOptions={(inputValue) => partFilterList(inputValue, partTypeforRM)}
                                                     NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
@@ -2851,7 +2918,7 @@ function AddRfq(props) {
 
                                             }
 
-                                            {havellsKey && <Col md="3">
+                                            {havellsKey && quotationType !== 'Tooling' && <Col md="3">
                                                 <SearchableSelectHookForm
                                                     label={"Havells Design part /Proprietary part"}
                                                     name={"HavellsDesignPart"}
@@ -2872,10 +2939,10 @@ function AddRfq(props) {
                                         </Row>
                                     </>}
                                     {loader && <LoaderCustom customClass="Rfq-Loader" />}
-                                    {quationType === 'Raw Material' && <AddRfqRmDetails updateRawMaterialList={updateRawMaterialList} resetRmFields={resetRmFields} rmSpecificRowData={rmSpecificRowData} updateButtonPartNoTable={updateButtonPartNoTable} dataProps={dataProps} isEditFlag={editQuotationPart} isViewFlag={viewQuotationPart} setViewQuotationPart={setViewQuotationPart} disabledPartUid={disabledPartUid} technology={technology} setDisabled={setDisabled} isDisabled={isDisabled} heading={heading} dataProp={dataProps} />}
+                                    {quotationType === 'Raw Material' && <AddRfqRmDetails updateRawMaterialList={updateRawMaterialList} resetRmFields={resetRmFields} rmSpecificRowData={rmSpecificRowData} updateButtonPartNoTable={updateButtonPartNoTable} dataProps={dataProps} isEditFlag={editQuotationPart} isViewFlag={viewQuotationPart} setViewQuotationPart={setViewQuotationPart} disabledPartUid={disabledPartUid} technology={technology} setDisabled={setDisabled} isDisabled={isDisabled} heading={heading} dataProp={dataProps} resetDrawer={resetDrawer} />}
                                     <Row>
 
-                                        {quationType === "Bought Out Part" && <RaiseRfqBopDetails updateButtonPartNoTable={updateButtonPartNoTable} dataProps={dataProps} isEditFlag={editQuotationPart} isViewFlag={viewQuotationPart} setViewQuotationPart={setViewQuotationPart} updateBopList={updateBopList} resetBopFields={resetBopFields} plant={plant} prNumber={prNumber} disabledPartUid={disabledPartUid} heading={heading} dataProp={dataProps} />}
+                                        {quotationType === "Bought Out Part" && <RaiseRfqBopDetails updateButtonPartNoTable={updateButtonPartNoTable} dataProps={dataProps} isEditFlag={editQuotationPart} isViewFlag={viewQuotationPart} setViewQuotationPart={setViewQuotationPart} updateBopList={updateBopList} resetBopFields={resetBopFields} plant={plant} prNumber={prNumber} disabledPartUid={disabledPartUid} heading={heading} dataProp={dataProps} resetDrawer={resetDrawer} />}
 
                                         {!havellsKey && (
                                             checkForNull(technology?.value) !== LOGISTICS && (
@@ -2944,7 +3011,7 @@ function AddRfq(props) {
 
                                             <Row>
 
-                                                {UOMSelectList && havellsKey &&
+                                                {UOMSelectList && havellsKey && selectedOption !== 'Tooling' &&
 
 
                                                     <Col md="3">
@@ -2965,7 +3032,7 @@ function AddRfq(props) {
                                                         />
                                                     </Col>
                                                 }
-                                                {havellsKey && selectedOption === 'componentAssembly' &&
+                                                {havellsKey && (selectedOption === 'componentAssembly' || selectedOption === 'Tooling') &&
 
 
                                                     <Col md="3">
@@ -2988,52 +3055,52 @@ function AddRfq(props) {
                                                         />
                                                     </Col>
                                                 }
-                                                {
-                                                    <Col md="3">
-                                                        <div className="inputbox date-section h-auto">
-                                                            <div className="form-group">
-                                                                <TooltipCustom id="timeline" tooltipText="Part Rediness timeline for Quality, N10 & N-100" />
 
-                                                                <label>N-100 Timeline<span className="asterisk-required">*</span></label>
-                                                                <div id="addRFQDate_container" className="inputbox date-section">
-                                                                    <DatePicker
+                                                <Col md="3">
+                                                    <div className="inputbox date-section h-auto">
+                                                        <div className="form-group">
+                                                            <TooltipCustom id="timeline" tooltipText="Part Rediness timeline for Quality, N-10 & N-100" />
 
-                                                                        name={'RequirementDate'}
-                                                                        placeholder={'Select'}
-                                                                        //selected={submissionDate}
-                                                                        selected={DayTime(requirementDate).isValid() ? new Date(requirementDate) : ''}
-                                                                        onChange={handleRequirementDateChange}
-                                                                        showMonthDropdown
-                                                                        showYearDropdown
-                                                                        dropdownMode='select'
-                                                                        minDate={new Date()}
-                                                                        dateFormat="dd/MM/yyyy"
-                                                                        placeholderText="Select date"
-                                                                        className="withBorder"
-                                                                        autoComplete={"off"}
-                                                                        mandatory={true}
-                                                                        disabled={Object.keys(prNumber).length !== 0 ? !updateButtonPartNoTable/* :(!updateButtonPartNoTable && dataProps?.isAddFlag) ? Object.keys(prNumber).length !== 0  */ : (dataProps?.isViewFlag) ? true : false || disabledPartUid}
-                                                                        errors={errors.RequirementDate}
-                                                                        disabledKeyboardNavigation
-                                                                        onChangeRaw={(e) => e.preventDefault()}
-                                                                    // disabled={dataProps?.isAddFlag ? partNoDisable : (dataProps?.isViewFlag || !isEditAll)}
-                                                                    />
-                                                                    {isWarningMessageShow && <WarningMessage dClass={"error-message"} textClass={"pt-1"} message={"Please select effective date"} />}
-                                                                </div>
+                                                            <label>N-100 Timeline<span className="asterisk-required">*</span></label>
+                                                            <div id="addRFQDate_container" className="inputbox date-section">
+                                                                <DatePicker
+
+                                                                    name={'RequirementDate'}
+                                                                    placeholder={'Select'}
+                                                                    //selected={submissionDate}
+                                                                    selected={DayTime(requirementDate).isValid() ? new Date(requirementDate) : ''}
+                                                                    onChange={handleRequirementDateChange}
+                                                                    showMonthDropdown
+                                                                    showYearDropdown
+                                                                    dropdownMode='select'
+                                                                    minDate={new Date()}
+                                                                    dateFormat="dd/MM/yyyy"
+                                                                    placeholderText="Select date"
+                                                                    className="withBorder"
+                                                                    autoComplete={"off"}
+                                                                    mandatory={true}
+                                                                    disabled={Object.keys(prNumber).length !== 0 ? !updateButtonPartNoTable/* :(!updateButtonPartNoTable && dataProps?.isAddFlag) ? Object.keys(prNumber).length !== 0  */ : (dataProps?.isViewFlag) ? true : false || disabledPartUid}
+                                                                    errors={errors.RequirementDate}
+                                                                    disabledKeyboardNavigation
+                                                                    onChangeRaw={(e) => e.preventDefault()}
+                                                                // disabled={dataProps?.isAddFlag ? partNoDisable : (dataProps?.isViewFlag || !isEditAll)}
+                                                                />
+                                                                {isWarningMessageShow && <WarningMessage dClass={"error-message"} textClass={"pt-1"} message={"Please select effective date"} />}
                                                             </div>
                                                         </div>
+                                                    </div>
 
-                                                    </Col>
+                                                </Col>
 
 
-                                                }
+
                                                 <Col md="3" className='d-flex align-items-center pb-1'>
                                                     <button
                                                         id="add_part"
                                                         type="button"
                                                         className={'user-btn pull-left'}
                                                         onClick={() => addRowPartNoTable()}
-                                                        disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll) || disabledPartUid}
+                                                        disabled={dataProps?.isAddFlag ? (prNumber.length !== 0 ? true : false) : (dataProps?.isViewFlag || !isEditAll) || disabledPartUid}
                                                     >
                                                         <div className={'plus'}></div>{!updateButtonPartNoTable ? "ADD" : "UPDATE"}
                                                     </button>
@@ -3043,7 +3110,7 @@ function AddRfq(props) {
                                                         type="button"
                                                         value="CANCEL"
                                                         className="reset ml-2 mr5"
-                                                        disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll) || disabledPartUid}
+                                                        disabled={dataProps?.isAddFlag ? (prNumber.length !== 0 ? true : false) : (dataProps?.isViewFlag || !isEditAll) || disabledPartUid}
                                                     >
                                                         <div className={''}></div>
                                                         RESET
@@ -3122,8 +3189,11 @@ function AddRfq(props) {
                                                                     {selectedOption === "Raw Material" && <AgGridColumn width={"230px"} field="RawMaterialGrade" headerName="Grade" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                                                                     {selectedOption === "Raw Material" && <AgGridColumn width={"230px"} field="RawMaterialSpecification" headerName="Specification" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                                                                     {selectedOption === "Raw Material" && <AgGridColumn width={"230px"} field="RawMaterialCode" headerName="Code" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                                                                    {selectedOption === "Tooling" && <AgGridColumn width={"230px"} field="PartType" headerName="Part Type" tooltipField="PartNumber" cellRenderer={'partNumberFormatter'}></AgGridColumn>}
 
-                                                                    {selectedOption === "componentAssembly" && <AgGridColumn width={"230px"} field="PartNumber" headerName="Part No" tooltipField="PartNumber" cellRenderer={'partNumberFormatter'}></AgGridColumn>}
+                                                                    {(selectedOption === "componentAssembly" || selectedOption === 'Tooling') && <AgGridColumn width={"230px"} field="PartNumber" headerName="Part No" tooltipField="PartNumber" cellRenderer={'partNumberFormatter'}></AgGridColumn>}
+                                                                    {selectedOption === "Tooling" && <AgGridColumn width={"230px"} field="Description" headerName="Part Description" tooltipField="PartNumber" cellRenderer={'partNumberFormatter'}></AgGridColumn>}
+
                                                                     {/* {checkForNull(technology?.value) !== LOGISTICS && <AgGridColumn width={"230px"} field="RMName" tooltipField="RMName" headerName="RM Name" cellClass={"colorWhite"}></AgGridColumn>}
                                                                     {checkForNull(technology?.value) !== LOGISTICS && <AgGridColumn width={"230px"} field="RMGrade" headerName="RM Grade" cellClass={"colorWhite"}></AgGridColumn>}
                                                                     {checkForNull(technology?.value) !== LOGISTICS && <AgGridColumn width={"230px"} field="RMSpecification" headerName="RM Specification" cellClass={"colorWhite"}></AgGridColumn>} */}
@@ -3131,24 +3201,24 @@ function AddRfq(props) {
                                                                     <AgGridColumn width={"230px"} field="Quantity" headerName="Annual Forecast Quantity" headerComponent={'quantityHeader'} cellRenderer={'afcFormatter'} editable={EditableCallback} colId="Quantity"></AgGridColumn> */}
                                                                     <AgGridColumn width={"0px"} field="PartId" headerName="Part Id" hide={true} ></AgGridColumn>
 
-                                                                    {(selectedOption === 'componentAssembly' /* || quationType === 'RM' */) && <AgGridColumn width={"230px"} field="TargetPrice" headerName="Target Price" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                                                                    {(selectedOption === 'componentAssembly' || selectedOption === 'Tooling') && <AgGridColumn width={"230px"} field="TargetPrice" headerName="Target Price" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
 
-                                                                    {quationType === "Bought Out Part" && <AgGridColumn width={"190px"} field="BoughtOutPartNumber" headerName="BOP No." cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                                                                    {quotationType === "Bought Out Part" && <AgGridColumn width={"190px"} field="BoughtOutPartNumber" headerName="BOP No." cellRenderer={'hyphenFormatter'}></AgGridColumn>}
 
-                                                                    {quationType === "Bought Out Part" && <AgGridColumn width={"190px"} field="BoughtOutPartName" headerName="BOP Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                                                                    {quotationType === "Bought Out Part" && <AgGridColumn width={"190px"} field="BoughtOutPartName" headerName="BOP Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
 
-                                                                    {quationType === "Bought Out Part" && <AgGridColumn width={"190px"} field="BoughtOutPartCategoryName" headerName="Category" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                                                                    {quotationType === "Bought Out Part" && <AgGridColumn width={"190px"} field="BoughtOutPartCategoryName" headerName="Category" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
 
 
-                                                                    {/* {(quationType === "BOP" || quationType === 'RM' || quationType === 'componentAssembly') && <AgGridColumn width={"190px"} field="UOM" cellClass="ag-grid-action-container" headerName="UOM" floatingFilter={false} type="" cellRenderer={'buttonFormatterFirst'}></AgGridColumn>} */}
+                                                                    {/* {(quotationType=== "BOP" || quotationType=== 'RM' || quotationType=== 'componentAssembly') && <AgGridColumn width={"190px"} field="UOM" cellClass="ag-grid-action-container" headerName="UOM" floatingFilter={false} type="" cellRenderer={'buttonFormatterFirst'}></AgGridColumn>} */}
                                                                     {selectedOption === "componentAssembly" && <AgGridColumn width={"230px"} field="HavellsDesignPart" headerName="Havells Design Part" ></AgGridColumn>}
 
-                                                                    <AgGridColumn width={"230px"} field="UOM" headerName="UOM" ></AgGridColumn>
+                                                                    {selectedOption !== 'Tooling' && <AgGridColumn width={"230px"} field="UOM" headerName="UOM" ></AgGridColumn>}
 
                                                                     <AgGridColumn width={"230px"} field="TimeLine" headerName="N-100 Timeline" cellRenderer={'effectiveDateFormatter'} ></AgGridColumn>
                                                                     {(selectedOption === 'componentAssembly' === "componentAssembly" || selectedOption === 'componentAssembly' === 'Raw Material' || selectedOption === 'componentAssembly' === "Bought Out Part") && <AgGridColumn width={"230px"} field="VendorListExisting" headerName="Existing Vendor" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
 
-                                                                    {selectedOption === "componentAssembly" && (<AgGridColumn width={"190px"} field="PartId" cellClass="ag-grid-action-container text-right" headerName="Action" floatingFilter={false} type="rightAligned" cellRenderer={'buttonFormatterFirst'} />)}
+                                                                    {(selectedOption === "componentAssembly" || selectedOption === 'Tooling') && (<AgGridColumn width={"190px"} field="PartId" cellClass="ag-grid-action-container text-right" headerName="Action" floatingFilter={false} type="rightAligned" cellRenderer={'buttonFormatterFirst'} />)}
                                                                     {selectedOption === "Raw Material" && (<AgGridColumn width={"190px"} field="RawMaterialChildId" cellClass="ag-grid-action-container text-right" headerName="Action" floatingFilter={false} type="rightAligned" cellRenderer={'buttonFormatterFirst'} />)}
                                                                     {selectedOption === "Bought Out Part" && (<AgGridColumn width={"190px"} field="BoughtOutPartChildId" cellClass="ag-grid-action-container text-right" headerName="Action" floatingFilter={false} type="rightAligned" cellRenderer={'buttonFormatterFirst'} />)}
 
@@ -3641,7 +3711,7 @@ function AddRfq(props) {
                                             childPartFiles={childPartFiles}
                                             setRemark={setRemark}
                                             remark={remark}
-                                            partType={selectedOption === 'componentAssembly' ? 'Component' : (selectedOption === "Bought Out Part" ? "Bought Out Part" : 'Raw Material')}
+                                            partType={getPartType(selectedOption)}
                                             isViewFlag={viewQuotationPart}
                                             partListData={partList}
                                             setViewQuotationPart={setViewQuotationPart}
@@ -3651,10 +3721,11 @@ function AddRfq(props) {
                                             sopdate={sopdate}
                                             setSOPDate={setSOPDate}
                                             effectiveMinDate={effectiveMinDate}
-                                            quationType={selectedOption}
+                                            quotationType={selectedOption}
                                             rmSpecificRowData={rmSpecificRowData}
                                             drawerViewMode={drawerViewMode}
                                             handleDrawer={handleDrawer}
+                                            resetDrawer={resetDrawer}
                                         />
                                     )
                                 }
