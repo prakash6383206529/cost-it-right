@@ -329,7 +329,7 @@ function Simulation(props) {
         setPlant('')
         setValue('Plant', '')
         setShowDropdown({})
-        if ((IdForMultiTechnology.includes(String(value?.value)) && Number(master?.value) === Number(ASSEMBLY_TECHNOLOGY_MASTER)) || Number(master.value) === Number(COMBINED_PROCESS) || Number(master.value) === Number(RMDOMESTIC)) {
+        if ((IdForMultiTechnology.includes(String(value?.value)) && Number(master?.value) === Number(ASSEMBLY_TECHNOLOGY_MASTER)) || Number(master.value) === Number(COMBINED_PROCESS) || (Number(master.value) === Number(RMDOMESTIC) && getConfigurationKey.IsShowMaterialIndexation)) {
             setTechnology(value)
             setShowMasterList(false)
             dispatch(setTechnologyForSimulation(value))
