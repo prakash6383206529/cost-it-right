@@ -47,10 +47,6 @@ function ViewDrawer(props) {
 
 
 
-
-
-
-
     const { register, handleSubmit, setValue, getValues, formState: { errors }, control } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
@@ -73,7 +69,7 @@ function ViewDrawer(props) {
     const [storeNfrId, setStoreNfrId] = useState('')
     const [inputLoader, setInputLoader] = useState(false)
     const [isEdit, setIsEdit] = useState(false)
-    const [activeTab, setActiveTab] = useState(props.partType === 'RM' ? "5" : props.partType === 'BOP' ? '2' : '1');
+    const [activeTab, setActiveTab] = useState(props.partType === 'Raw Material' ? "5" : props.partType === 'Bought Out Part' ? '2' : '1');
 
     const [specification, setSpecification] = useState("")
     const [editIndex, setEditIndex] = useState(null);  // To keep track of the index being edited
@@ -101,7 +97,7 @@ function ViewDrawer(props) {
 
     useEffect(() => {
 
-        if (partType === 'component') {
+        if (partType === 'Component') {
             setValue('AssemblyPartNumber', { label: AssemblyPartNumber?.label, value: AssemblyPartNumber?.value })
             if (type === Component) {
                 setValue('partNumber', { label: AssemblyPartNumber?.label, value: AssemblyPartNumber?.value })
@@ -110,20 +106,20 @@ function ViewDrawer(props) {
                     dispatch(getAssemblyChildpart(AssemblyPartNumber?.value, (res) => { }))
                 }
             }
-        } else if (partType === 'BOP') {
+        } else if (partType === "Bought Out Part") {
             setValue('AssemblyPartNumber', { label: bopNumber?.label, value: bopNumber?.value })
         }
 
     }, [AssemblyPartNumber, bopNumber])
     useEffect(() => {
-        if (partType === "component")
+        if (partType === "Component")
             if (!isViewFlag) {
                 dispatch(getRawMaterialNameChild(() => { }))
                 dispatch(getRMSpecificationDataList({ GradeId: null }, () => { }))
             }
     }, [partType])
     useEffect(() => {
-        if (partType === "component" || partType === "Assembly") {
+        if (partType === "Component" || partType === "Assembly") {
             if ((isEditFlag || isViewFlag) && getRfqPartDetails && getRfqPartDetails?.PartList) {
                 const partList = getRfqPartDetails?.PartList || [];
                 let accumulatedRMDetails = [];
@@ -181,7 +177,7 @@ function ViewDrawer(props) {
         }
     }, [getRfqPartDetails, isViewFlag, isEditFlag]);
     useEffect(() => {
-        if (partType === 'RM') {
+        if (partType === 'Raw Material') {
             if ((isEditFlag || isViewFlag) && rmSpecificRowData.length > 0) {
                 setValue('remark', rmSpecificRowData[0].Remarks);
                 setRemark(rmSpecificRowData[0].Remarks)
@@ -253,7 +249,7 @@ function ViewDrawer(props) {
     useEffect(() => {
 
 
-        if (partType === "BOP") {
+        if (partType === "Bought Out Part") {
             if ((isEditFlag || isViewFlag) && bopSpecificRowData && bopSpecificRowData.length > 0) {
                 setValue('AssemblyPartNumber', { label: bopSpecificRowData[0]?.BoughtOutPartNumber, value: bopSpecificRowData[0]?.BoughtOutPartChildId })
                 const BoughtOutPartChildId = bopSpecificRowData[0]?.BoughtOutPartChildId
@@ -271,7 +267,7 @@ function ViewDrawer(props) {
         }
     }, [bopSpecificRowData, isViewFlag, isEditFlag, partType]);
     useEffect(() => {
-        if (resetDrawer && partType === "component") {
+        if (resetDrawer && partType === "Component") {
             setTableData([])
             setSpecificationList([])
             setSopQuantityList([])
@@ -554,7 +550,7 @@ function ViewDrawer(props) {
         // }
 
 
-        if (partType === "component") {
+        if (partType === "Component") {
             const dropdownTexts = _.map(getChildParts, 'Text');
             const tableTexts = _.map(tableData, 'PartNumber');
             const allPresent = _.every(dropdownTexts, text => _.includes(tableTexts, text));
@@ -583,7 +579,7 @@ function ViewDrawer(props) {
         props?.closeDrawer('', true);
         props?.setViewQuotationPart(false)
         dispatch(setRfqPartDetails({}));
-        if (partType === "RM") {
+        if (partType === "Raw Material") {
             const attachment = files;  // Assume files is the new value for Attachments
             const updatedRemark = getValues('remark') || null;  // Assume getValues('remark') gets the new value for Remarks
 
@@ -597,7 +593,7 @@ function ViewDrawer(props) {
                 const updatedArray = [updatedObject];
                 dispatch(setRmSpecificRowData(updatedArray));
             }
-        } else if (partType === "BOP") {
+        } else if (partType === "Bought Out Part") {
             const attachment = files;
 
             const updatedRemark = getValues('remark') || null;
@@ -863,11 +859,14 @@ function ViewDrawer(props) {
     }
     const afcFormatter = (props) => {
 
+
         let final = _.map(props?.node?.rowModel?.rowsToDisplay, 'data')
+
 
         const cell = props?.value;
 
         const value = beforeSaveCell(cell)
+
 
         setSopQuantityList(final)
         // setPartList(final)
@@ -898,23 +897,26 @@ function ViewDrawer(props) {
         setSOPDate(DayTime(value).format('YYYY-MM-DD HH:mm:ss'))
     }
     function shouldShowButtons(activeTab, propsPartType) {
-        if (propsPartType === 'tooling') {
+        if (propsPartType === 'Tooling') {
             return !(activeTab === 1 || activeTab === 3 || activeTab === 4);
         }
 
-        if (propsPartType === "component") {
+        if (propsPartType === "Component") {
             return activeTab === 1 || activeTab === 2 || activeTab === 5;
         }
 
         return true;
     }
     function shouldShowTableButtons(activeTab, propsPartType) {
-        if (propsPartType === 'tooling') {
+        if (propsPartType === 'Tooling') {
             return Number(activeTab) === 2;
         }
 
-        if (propsPartType === "component") {
+        if (propsPartType === "Component") {
             return activeTab === 1 || activeTab === 2;
+        }
+        if (propsPartType === "Bought Out Part") {
+            return activeTab === 2;
         }
 
         return false;
@@ -938,7 +940,7 @@ function ViewDrawer(props) {
                         <Row className="drawer-heading sticky-top-0">
                             <Col>
                                 <div className={'header-wrapper left'}>
-                                    <h3> {partType === "RM" ? "Add Remark & Attachment" : (partType === "component" ? "Add RM & Specification" : "Add Specification & Attachment")}</h3>
+                                    <h3> {partType === "Raw Material" ? "Add Remark & Attachment" : (partType === "Component" ? "Add RM & Specification" : "Add Specification & Attachment")}</h3>
                                 </div>
 
                                 <div
@@ -948,7 +950,7 @@ function ViewDrawer(props) {
                             </Col>
                         </Row>
                         <Nav tabs className="subtabs cr-subtabs-head ">
-                            {(props?.partType === 'component' || props?.partType === 'tooling') && <NavItem>
+                            {(props?.partType === 'Component' || props?.partType === 'Tooling') && <NavItem>
                                 <NavLink
                                     className={classnames({ active: activeTab === "1" })}
                                     onClick={() => setActiveTab("1")
@@ -957,16 +959,16 @@ function ViewDrawer(props) {
                                     RM
                                 </NavLink>
                             </NavItem>}
-                            {(props?.partType !== 'RM' || props?.partType === 'BOP' || props?.partType === 'tooling') && <NavItem>
+                            {(props?.partType !== 'Raw Material' || props?.partType === 'Bought Out Part' || props?.partType === 'Tooling') && <NavItem>
                                 <NavLink
                                     className={classnames({ active: activeTab === "2" })}
                                     onClick={() => setActiveTab("2")
                                     }
                                 >
-                                    {props?.partType === 'tooling' ? 'Tooling Specification' : ' Specification'}
+                                    {props?.partType === 'Tooling' ? 'Tooling Specification' : ' Specification'}
                                 </NavLink>
                             </NavItem>}
-                            {(props?.partType === 'tooling') && <NavItem>
+                            {(props?.partType === 'Tooling') && <NavItem>
                                 <NavLink
                                     className={classnames({ active: activeTab === "3" })}
                                     onClick={() => setActiveTab("3")
@@ -975,7 +977,7 @@ function ViewDrawer(props) {
                                     Tooling Details
                                 </NavLink>
                             </NavItem>}
-                            {(props?.partType === 'tooling') && <NavItem>
+                            {(props?.partType === 'Tooling') && <NavItem>
                                 <NavLink
                                     className={classnames({ active: activeTab === "4" })}
                                     onClick={() => setActiveTab("4")
@@ -996,7 +998,7 @@ function ViewDrawer(props) {
                         <TabContent activeTab={activeTab}>
                             {Number(activeTab) === 1 && (
                                 <TabPane tabId="1">
-                                    {props.partType !== 'tooling' && (
+                                    {props.partType !== 'Tooling' && (
                                         <>
                                             <HeaderTitle title={'Add RM'} customClass="mt-3" />
 
@@ -1105,7 +1107,7 @@ function ViewDrawer(props) {
                                         <Row>
                                             <Col md="3">
                                                 <AsyncSearchableSelectHookForm
-                                                    label={partType === "BOP" ? "BOP Part No" : "Assembly Part No"}
+                                                    label={partType === "Bought Out Part" ? "BOP Part No" : "Assembly Part No"}
                                                     name={"AssemblyPartNumber"}
                                                     placeholder={"Select"}
                                                     Controller={Controller}
@@ -1166,11 +1168,11 @@ function ViewDrawer(props) {
                                     </div>
                                 </TabPane>
                             )}
-                            {Number(activeTab) === 3 && partType === "tooling" &&
+                            {Number(activeTab) === 3 && partType === 'Tooling' &&
                                 (<TabPane tabId="3">
                                     <AddToolingRfq />
                                 </TabPane>)}
-                            {Number(activeTab) === 4 && partType === "tooling" &&
+                            {Number(activeTab) === 4 && partType === 'Tooling' &&
                                 (<TabPane tabId="4">
                                     <ToolingPartDetails />
                                 </TabPane>)}
@@ -1275,55 +1277,54 @@ function ViewDrawer(props) {
                             </TabPane>)}
                         </TabContent>
 
+
                         {shouldShowTableButtons(Number(activeTab), props.partType) && (
+                            <>
+                                <Col md="3" className='d-flex align-items-center pb-1'>
+                                    <div className='ml-1 mt5'> {/* Add margin to separate the reset button */}
+                                        {isEdit ? (
+                                            <>
+                                                <button
+                                                    type="button"
+                                                    className={'btn btn-primary mt30 pull-left mr5'}
+                                                    onClick={() => addRow(activeTab)}
+                                                >
+                                                    Update
+                                                </button>
 
-                            props.partType !== 'tooling' && (
-                                <>
-                                    <Col md="3" className='d-flex align-items-center pb-1'>
-                                        <div className='ml-1 mt5'> {/* Add margin to separate the reset button */}
-                                            {isEdit ? (
-                                                <>
-                                                    <button
-                                                        type="button"
-                                                        className={'btn btn-primary mt30 pull-left mr5'}
-                                                        onClick={() => addRow(activeTab)}
-                                                    >
-                                                        Update
-                                                    </button>
+                                                <button
+                                                    type="button"
+                                                    className="mt30 cancel-btn"
+                                                    onClick={() => cancelUpdate()}
+                                                >
+                                                    <div className={"cancel-icon"}></div>
+                                                    Cancel
+                                                </button>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <button
+                                                    type="button"
+                                                    className={'user-btn mt30 pull-left'}
+                                                    onClick={() => addRow(activeTab)}
+                                                    disabled={isViewFlag || !isEditFlag ? (type === Component && activeTab === "1" ? tableData.length > 0 : false) : false}                                        // errors={`${indexInside} CostingVersion`}
+                                                >
+                                                    <div className={'plus'}></div>ADD
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    className={"mr15 ml-1 mt30 reset-btn"}
+                                                    disabled={isViewFlag || !isEditFlag ? (type === Component && activeTab === "1" ? tableData.length > 0 : false) : false}
+                                                    onClick={rateTableReset}
+                                                >
+                                                    Reset
+                                                </button>
+                                            </>
+                                        )}
+                                    </div>
+                                </Col>
+                            </>
 
-                                                    <button
-                                                        type="button"
-                                                        className="mt30 cancel-btn"
-                                                        onClick={() => cancelUpdate()}
-                                                    >
-                                                        <div className={"cancel-icon"}></div>
-                                                        Cancel
-                                                    </button>
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <button
-                                                        type="button"
-                                                        className={'user-btn mt30 pull-left'}
-                                                        onClick={() => addRow(activeTab)}
-                                                        disabled={isViewFlag || !isEditFlag ? (type === Component && activeTab === "1" ? tableData.length > 0 : false) : false}                                        // errors={`${indexInside} CostingVersion`}
-                                                    >
-                                                        <div className={'plus'}></div>ADD
-                                                    </button>
-                                                    <button
-                                                        type="button"
-                                                        className={"mr15 ml-1 mt30 reset-btn"}
-                                                        disabled={isViewFlag || !isEditFlag ? (type === Component && activeTab === "1" ? tableData.length > 0 : false) : false}
-                                                        onClick={rateTableReset}
-                                                    >
-                                                        Reset
-                                                    </button>
-                                                </>
-                                            )}
-                                        </div>
-                                    </Col>
-                                </>
-                            )
                         )}
 
                         {Number(activeTab) !== 5 && Number(activeTab) !== 3 && Number(activeTab) !== 4 && (
@@ -1334,25 +1335,25 @@ function ViewDrawer(props) {
                                             {activeTab === "2" && (<th>Specification Description</th>)}
                                             {activeTab === "2" && (<th>Value</th>)}
 
-                                            {(activeTab === "1" && props.partType !== 'tooling') && (<th>Part Number</th>)}
-                                            {(activeTab === "1" && props.partType === 'tooling') && (<th>Part Name</th>)}
+                                            {(activeTab === "1" && props.partType !== 'Tooling') && (<th>Part Number</th>)}
+                                            {(activeTab === "1" && props.partType === 'Tooling') && (<th>Part Name</th>)}
                                             {activeTab === "1" && (<th>RM Name</th>)}
-                                            {(activeTab === "1" && props.partType !== 'tooling') && <th>RM Grade</th>}
-                                            {(activeTab === "1" && props.partType !== 'tooling') && <th>RM Specification</th>}
+                                            {(activeTab === "1" && props.partType !== 'Tooling') && <th>RM Grade</th>}
+                                            {(activeTab === "1" && props.partType !== 'Tooling') && <th>RM Specification</th>}
 
-                                            {props.partType !== 'tooling' && <th>Action</th>}
+                                            {props.partType !== 'Tooling' && <th>Action</th>}
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {activeTab === "1" && tableData && tableData.length > 0 ? (
                                             tableData?.map((item, index) => (
                                                 <tr key={index}>
-                                                    {props.partType !== 'tooling' && <td>{item.PartNumber !== null ? item.PartNumber : '-'}</td>}
-                                                    {props.partType === 'tooling' && <td>{item.PartName !== null ? item.PartName : '-'}</td>}
+                                                    {props.partType !== 'Tooling' && <td>{item.PartNumber !== null ? item.PartNumber : '-'}</td>}
+                                                    {props.partType === 'Tooling' && <td>{item.PartName !== null ? item.PartName : '-'}</td>}
                                                     <td>{item.RawMaterialName !== null ? item.RawMaterialName : '-'}</td>
-                                                    {props.partType !== 'tooling' && <td>{item.RawMaterialGrade !== null ? item.RawMaterialGrade : '-'}</td>}
-                                                    {props.partType !== 'tooling' && <td>{item.RawMaterialSpecification !== null ? item.RawMaterialSpecification : '-'}</td>}
-                                                    {props.partType !== 'tooling' &&
+                                                    {props.partType !== 'Tooling' && <td>{item.RawMaterialGrade !== null ? item.RawMaterialGrade : '-'}</td>}
+                                                    {props.partType !== 'Tooling' && <td>{item.RawMaterialSpecification !== null ? item.RawMaterialSpecification : '-'}</td>}
+                                                    {props.partType !== 'Tooling' &&
                                                         <td>
                                                             <button
                                                                 className="Edit mr-2"
@@ -1405,7 +1406,7 @@ function ViewDrawer(props) {
                                     </tbody>
                                 </Table>
 
-                                {activeTab === "2" && props.partType !== 'BOP' && (
+                                {activeTab === "2" && props.partType !== "Bought Out Part" && (
                                     <>
                                         <HeaderTitle title={'Add Volume'} customClass="mt-5" />
                                         <Row className='mt-3 mb-1'>

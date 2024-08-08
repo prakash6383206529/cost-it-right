@@ -254,7 +254,7 @@ const RaiseRfqBopDetails = (props) => {
                             isOpen={drawerOpen}
                             anchor={"right"}
                             closeDrawer={closeDrawer}
-                            partType={'BOP'}
+                            partType={'Bought Out Part'}
                             setViewQuotationPart={setViewQuotationPart}
                             specificationList={bopSpecificationList}
                             setSpecificationList={setBopSpecificationList}
