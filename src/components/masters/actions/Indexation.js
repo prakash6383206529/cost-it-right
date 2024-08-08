@@ -635,11 +635,10 @@ export function deleteCommodityStandard(commodityStandardId, callback) {
  * @method deleteIndexDetailData
  * @description delete Index Detail Data API
  */
-export function deleteIndexDetailData(commodityIndexRateDetailId, callback) {
+export function deleteIndexDetailData(data, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const queryParams = `commodityIndexRateDetailId=${commodityIndexRateDetailId}&loggedInUserId=${userDetails().LoggedInUserId}`
-        axios.delete(`${API.deleteIndexDetailData}?${queryParams}`, config())
+        axios.put(API.deleteIndexDetailData, data, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
