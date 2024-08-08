@@ -917,9 +917,8 @@ function ViewDrawer(props) {
             return activeTab === 1 || activeTab === 2;
         }
 
-        return true;
+        return false;
 
-        return true;
     }
     const frameworkComponents = {
         buttonFormatterFirst: buttonFormatterFirst,
