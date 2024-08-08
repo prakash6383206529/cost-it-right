@@ -299,6 +299,7 @@ function RfqListing(props) {
                 partTypes.forEach(type => {
                     switch (type.trim()) {
                         case 'Component':
+                        case 'Assembly':
                             temp = item.filter(el => el.CostingId !== null);
                             break;
                         case 'RawMaterial':
@@ -1643,7 +1644,7 @@ function RfqListing(props) {
                         approvalObj={state.approvalObj}
                         costingTypeId={ZBCTypeId}
                         levelDetails={state.levelDetails}
-                        partType = {partType}
+                        partType={partType}
                     />
                 }
 

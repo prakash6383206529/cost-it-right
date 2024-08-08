@@ -11,7 +11,7 @@ import { getBopCategorySelectList, getBopNumberSelectList } from '../actions/rfq
 import { DRAFT, PREDRAFT, SENT } from "../../../config/constants";
 
 const RaiseRfqBopDetails = (props) => {
-    const { setViewQuotationPart, updateBopList, isEditFlag, isViewFlag, updateButtonPartNoTable, dataProps, resetBopFields, plant, prNumber, disabledPartUid } = props
+    const { setViewQuotationPart, updateBopList, isEditFlag, isViewFlag, updateButtonPartNoTable, dataProps, resetBopFields, plant, prNumber, disabledPartUid, resetDrawer } = props
 
     const [drawerOpen, setDrawerOpen] = useState(false);
     const { register, handleSubmit, setValue, getValues, formState: { errors }, control } = useForm({
@@ -150,10 +150,13 @@ const RaiseRfqBopDetails = (props) => {
 
             setBopName(name);
             dispatch(getBopCategorySelectList(newValue?.value, () => { }))
+            setBopCategory([])
+            setValue("Category", "")
+
         } else {
             setBopNumber([])
             dispatch(getBopCategorySelectList(newValue?.value, () => { }))
-
+            setBopCategory([])
         }
     }
     const handleBopCategory = (newValue, actionMeta) => {
@@ -262,6 +265,7 @@ const RaiseRfqBopDetails = (props) => {
                             setChildPartFiles={setBopAttchment}
                             childPartFiles={bopAttchment}
                             bopNumber={bopNumber}
+                            resetDrawer={resetDrawer}
                         />
                     )
                 }

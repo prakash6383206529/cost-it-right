@@ -59,7 +59,13 @@ export const Masters = [
     },
 ];
 
+export const Technology = [
+    {
+        label: 'Tooling',
+        value: "27"
+    },
 
+];
 /** 
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
