@@ -41,6 +41,7 @@ import MasterSendForApproval from '../masters/MasterSendForApproval';
 import { getUsersMasterLevelAPI } from '../../actions/auth/AuthActions';
 import { costingTypeIdToApprovalTypeIdFunction } from '../common/CommonFunctions';
 import { useHistory, useLocation } from 'react-router-dom/cjs/react-router-dom';
+import { ASSEMBLY } from '../../config/masterData';
 export const QuotationId = React.createContext();
 
 const gridOptions = {};
@@ -116,7 +117,7 @@ function RfqListing(props) {
         costingTypeId: ZBCTypeId
     })
     const userMasterLevelAPI = useSelector((state) => state.auth.userMasterLevelAPI)
-
+    const isAssemblyTechnology = rowData && rowData?.length > 0 ? rowData[0]?.TechnologyId === ASSEMBLY : false
     let arr = []
     const history = useHistory();
     const location = useLocation();
@@ -1043,11 +1044,17 @@ function RfqListing(props) {
             return [];
         } else {
             // Define an array of keys to check when finding the "best cost"
-            const keysToCheck = ["netRM", "netBOP", "pCost", "oCost", "sTreatment", "nPackagingAndFreight", "totalToolCost", "nsTreamnt", "tCost", "nConvCost", "nTotalRMBOPCC", "netSurfaceTreatmentCost", "nOverheadProfit", "nPoPriceCurrency", "nPOPrice", "nPOPriceWithCurrency", "TotalTCOCost"];
-            const keysToCheckSum = ["netRM", "netBOP", "nPackagingAndFreight", "totalToolCost", "nConvCost", "netSurfaceTreatmentCost", "nOverheadProfit", "TotalTCOCost"];
+            let keysToCheck = []
+            let keysToCheckSum = []
             const keysToAvoid = ["TotalTCOCost"];
             // const keysToCheck = ["nPOPriceWithCurrency"];
-
+            if (isAssemblyTechnology) {
+                keysToCheck = ["nTotalRMBOPCC", "sTreatment", "nPackagingAndFreight", "totalToolCost", "nsTreamnt", "tCost", "nConvCost", "netSurfaceTreatmentCost", "nOverheadProfit", "nPoPriceCurrency", "nPOPrice", "nPOPriceWithCurrency", "TotalTCOCost"];
+                keysToCheckSum = ["nTotalRMBOPCC", "nPackagingAndFreight", "totalToolCost", "nConvCost", "netSurfaceTreatmentCost", "nOverheadProfit", "TotalTCOCost"];
+            } else {
+                keysToCheck = ["netRM", "netBOP", "pCost", "oCost", "sTreatment", "nPackagingAndFreight", "totalToolCost", "nsTreamnt", "tCost", "nConvCost", "nTotalRMBOPCC", "netSurfaceTreatmentCost", "nOverheadProfit", "nPoPriceCurrency", "nPOPrice", "nPOPriceWithCurrency", "TotalTCOCost"];
+                keysToCheckSum = ["netRM", "netBOP", "nPackagingAndFreight", "totalToolCost", "nConvCost", "netSurfaceTreatmentCost", "nOverheadProfit", "TotalTCOCost"];
+            }
             // Create a new object to represent the "best cost" and set it to the first object in the input array
             let minObject = _.cloneDeep(finalArrayList[0]);
 
