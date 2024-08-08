@@ -908,6 +908,19 @@ function ViewDrawer(props) {
 
         return true;
     }
+    function shouldShowTableButtons(activeTab, propsPartType) {
+        if (propsPartType === 'tooling') {
+            return Number(activeTab) === 2;
+        }
+
+        if (propsPartType === "component") {
+            return activeTab === 1 || activeTab === 2;
+        }
+
+        return true;
+
+        return true;
+    }
     const frameworkComponents = {
         buttonFormatterFirst: buttonFormatterFirst,
         customNoRowsOverlay: NoContentFound,
@@ -1263,7 +1276,7 @@ function ViewDrawer(props) {
                             </TabPane>)}
                         </TabContent>
 
-                        {Number(activeTab) !== 5 && Number(activeTab) !== 3 && Number(activeTab) !== 4 && (
+                        {shouldShowTableButtons(Number(activeTab), props.partType) && (
 
                             props.partType !== 'tooling' && (
                                 <>
