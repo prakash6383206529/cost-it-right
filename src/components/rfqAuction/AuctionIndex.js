@@ -12,7 +12,9 @@ import AuctionClosed from "./components/AuctionClosed";
 import AuctionScheduled from "./components/AuctionScheduled";
 import ComparsionAuction from "./ComparsionAuction";
 import { getLiveAndScheduledCount } from "./actions/RfqAuction";
-
+import { AUCTION } from '../../config/constants';
+import { checkPermission } from '../../helper/util';
+export const ApplyPermission = React.createContext();
 function AuctionIndex(props) {
   let history = useHistory();
   const [activeTab, setActiveTab] = useState("1");
@@ -22,8 +24,25 @@ function AuctionIndex(props) {
     Scheduled: 0,
     Closed: 0
   })
+  const [permissionData, setPermissionData] = useState({});
+  const [ViewRMAccessibility, setViewRMAccessibility] = useState(false);
+  const [AddAccessibility, setAddAccessibility] = useState(false);
+  const [EditAccessibility, setEditAccessibility] = useState(false);
   const { showHideBidWindow } = useSelector(state => state.Auction);
+  const topAndLeftMenuData = useSelector((state) => state.auth.topAndLeftMenuData)
+
   const dispatch = useDispatch()
+
+  /**
+         * @method componentDidMount
+         * @description SET PERMISSION FOR ADD, VIEW, EDIT
+         */
+  useEffect(() => {
+
+    applyPermission(topAndLeftMenuData);
+
+  }, [topAndLeftMenuData])
+
 
   useEffect(() => {
     dispatch(getLiveAndScheduledCount(res => {
@@ -46,6 +65,29 @@ function AuctionIndex(props) {
     setHideNavBar(data);
   };
 
+  /**
+ * @method applyPermission
+ * @description ACCORDING TO PERMISSION HIDE AND SHOW, ACTION'S
+ */
+  const applyPermission = (topAndLeftMenuData) => {
+    if (topAndLeftMenuData !== undefined) {
+      const Data = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === AUCTION);
+
+      const accessData = Data && Data.Pages.find(el => el.PageName === AUCTION)
+      const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
+
+
+      const accessDataRMANDGRADE = Data && Data.Pages.find(el => el.PageName === AUCTION)
+      const permmisionDataRMANDGRADE = accessDataRMANDGRADE && accessDataRMANDGRADE.Actions && checkPermission(accessDataRMANDGRADE.Actions)
+
+      if (permmisionData !== undefined) {
+        setPermissionData(permmisionData);
+        setViewRMAccessibility(permmisionData && permmisionData.View ? permmisionData.View : false);
+        setAddAccessibility(permmisionData && permmisionData.Add ? permmisionData.Add : false);
+        setEditAccessibility(permmisionData && permmisionData.Edit ? permmisionData.Edit : false);
+      }
+    }
+  }
   // const dispatch = useDispatch();
   // useEffect(() => {
 
@@ -150,24 +192,42 @@ function AuctionIndex(props) {
               </NavItem>
             </Nav>
           )}
-          {!showHideBidWindow.showBidWindow &&
-            <TabContent activeTab={activeTab}>
-              {activeTab === "1" && (
-                <TabPane tabId="1">
-                  <AuctionDetails toggle={toggle} hide={formToggle} />
-                </TabPane>
-              )}
-              {activeTab === "2" && (
-                <TabPane tabId="2">
-                  <AuctionScheduled activeTab={activeTab} />
-                </TabPane>
-              )}
-              {activeTab === "3" && (
-                <TabPane tabId="3">
-                  <AuctionClosed activeTab={activeTab} />
-                </TabPane>
-              )}
-            </TabContent>}
+          <ApplyPermission.Provider value={permissionData}>
+            {!showHideBidWindow.showBidWindow &&
+              <TabContent activeTab={activeTab}>
+                {activeTab === "1" && (
+                  <TabPane tabId="1">
+                    <AuctionDetails
+                      toggle={toggle}
+                      hide={formToggle}
+                      ViewRMAccessibility={ViewRMAccessibility}
+                      AddAccessibility={AddAccessibility}
+                      EditAccessibility={EditAccessibility}
+                    />
+                  </TabPane>
+                )}
+                {activeTab === "2" && (
+                  <TabPane tabId="2">
+                    <AuctionScheduled activeTab={activeTab}
+                      ViewRMAccessibility={ViewRMAccessibility}
+                      AddAccessibility={AddAccessibility}
+                      EditAccessibility={EditAccessibility}
+                    />
+                  </TabPane>
+                )}
+                {activeTab === "3" && (
+                  <TabPane tabId="3">
+                    <AuctionClosed
+                      activeTab={activeTab}
+                      ViewRMAccessibility={ViewRMAccessibility}
+                      AddAccessibility={AddAccessibility}
+                      EditAccessibility={EditAccessibility}
+                    />
+                  </TabPane>
+                )}
+              </TabContent>}
+          </ApplyPermission.Provider>
+
         </div>
       </div>
       {showHideBidWindow.showBidWindow && <ComparsionAuction quotationAuctionId={showHideBidWindow.QuotationAuctionId} AuctionStatusId={showHideBidWindow.AuctionStatusId} />}

@@ -1543,7 +1543,7 @@ function RawMaterialCost(props) {
                                       }}
                                       errors={errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].GrossWeight : ''}
                                       disabled={(CostingViewMode || IsLocked || isMultiCalculatorData || (item?.RawMaterialCalculatorId && costData?.TechnologyId === MACHINING &&
-                                        item?.UOM === "Meter") || item?.dataFromNFRAPI || disabledForMonoCartonCorrugated || costData?.TechnologyId === INSULATION) ? true : false}
+                                        item?.UOM === "Meter") || item?.dataFromNFRAPI || disabledForMonoCartonCorrugated || (item?.RawMaterialCalculatorId && costData?.TechnologyId === INSULATION)) ? true : false}
                                     />
                                   </div>
                                 </td>
@@ -1572,7 +1572,7 @@ function RawMaterialCost(props) {
                                         handleFinishWeightChange(e?.target?.value, index)
                                       }}
                                       errors={errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].FinishWeight : ''}
-                                      disabled={(CostingViewMode || IsLocked || isMultiCalculatorData || (!initialConfiguration?.IsCopyCostingFinishAndGrossWeightEditable && item.IsRMCopied) || (item?.RawMaterialCalculatorId && costData?.TechnologyId === MACHINING && item?.UOM === "Meter") || item?.dataFromNFRAPI || disabledForMonoCartonCorrugated || costData?.TechnologyId === INSULATION) ? true : false}
+                                      disabled={(CostingViewMode || IsLocked || isMultiCalculatorData || (!initialConfiguration?.IsCopyCostingFinishAndGrossWeightEditable && item.IsRMCopied) || (item?.RawMaterialCalculatorId && costData?.TechnologyId === MACHINING && item?.UOM === "Meter") || item?.dataFromNFRAPI || disabledForMonoCartonCorrugated || (item?.RawMaterialCalculatorId && costData?.TechnologyId === INSULATION)) ? true : false}
                                     />
                                   </div>
                                 </td>
