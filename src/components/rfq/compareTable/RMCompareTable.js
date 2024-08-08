@@ -233,8 +233,9 @@ const RMCompareTable = (props) => {
     }
 
     useEffect(() => {
+        if(!props.compare)
 
-        props.checkCostingSelected(selectedItems, selectedIndices)
+      {  props.checkCostingSelected(selectedItems, selectedIndices)}
     }, [selectedItems, selectedIndices])
     // const checkBoxHanlde = (item , index) => {
     //     setCheckBoxCheck(prevState => ({ ...prevState, index: true }))
