@@ -59,13 +59,6 @@ export const Masters = [
     },
 ];
 
-export const Technology = [
-    {
-        label: 'Tooling',
-        value: "27"
-    },
-
-];
 /** 
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
@@ -4447,6 +4440,7 @@ export const LOGISTICS = 24
 export const WIREFORMING = 25
 export const ELECTRICAL_STAMPING = 26
 export const INSULATION = 28
+export const TOOLING_ID = 27
 
 // PART TYPE
 export const PART_TYPE_ASSEMBLY = 1

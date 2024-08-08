@@ -2238,6 +2238,7 @@ export const FERROUSCASTING = 'Ferrous Casting'
 export const WIREFORMING = 'Wire Forming'
 export const ELECTRIC = 'Electric'
 export const ELECTRONICSNAME = 'Electronics'
+export const TOOLING = 'Tooling'
 
 export const COMBINED_PROCESS_NAME = 'Combined Process';          						//RE
 export const ZBC_COSTING = 'Costing - ZBC';

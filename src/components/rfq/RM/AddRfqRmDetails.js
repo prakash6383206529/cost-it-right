@@ -363,7 +363,7 @@ const AddRfqRmDetails = (props) => {
                             anchor={"right"}
                             closeDrawer={closeDrawer}
                             partType={'RM'}
-                            quationType={'RM'}
+                            quotationType={'RM'}
                             setViewQuotationPart={setViewQuotationPart}
                             setChildPartFiles={setRmAttchment}
                             childPartFiles={rmAttchment}
