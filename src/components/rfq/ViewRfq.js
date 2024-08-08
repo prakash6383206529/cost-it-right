@@ -1310,6 +1310,7 @@ function RfqListing(props) {
         setSendForApproval(false)
         if (type !== "Cancel") {
             getDataList()
+            history.push('/rfq-listing');
         }
     }
     const getRowStyle = () => {
@@ -1644,6 +1645,7 @@ function RfqListing(props) {
                         costingTypeId={ZBCTypeId}
                         levelDetails={state.levelDetails}
                         partType={partType}
+                        selectedRows = {selectedRows}
                     />
                 }
 

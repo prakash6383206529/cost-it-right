@@ -43,7 +43,7 @@ const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
 const BOPDomesticListing = (props) => {
-  console.log('props: ', props);
+  
   const permissions = useContext(ApplyPermission);
   const dispatch = useDispatch();
   const searchRef = useRef(null);
@@ -451,6 +451,7 @@ const BOPDomesticListing = (props) => {
   */
   const { benchMark ,isRfq,isMasterSummaryDrawer} = props
   const buttonFormatter = (props) => {
+    
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
     let isEditbale = false
@@ -461,11 +462,11 @@ const BOPDomesticListing = (props) => {
       isEditbale = false
     }
 
-    console.log('props.isRfq && props.isMasterSummaryDrawer: ', isRfq , isMasterSummaryDrawer);
+    
     if (isRfq && isMasterSummaryDrawer) {
       return (
         <button className="Balance mb-0 button-stick" type="button" onClick={() => handleCompareDrawer(rowData)}>
-          Compare
+          
         </button>
       );
     }
@@ -493,7 +494,7 @@ const BOPDomesticListing = (props) => {
   };
  
   const handleCompareDrawer = (data) => {
-    console.log('data: ', data);
+    
     setState((prevState) => ({ ...prevState, compareDrawer: true,rowDataForCompare : [data] }))
   }
 
@@ -569,6 +570,12 @@ const BOPDomesticListing = (props) => {
     )
 
   }
+  const closeCompareDrawer = (event, type) => {
+    setState((prevState) => ({ ...prevState, compareDrawer: false}));
+    if (type !== 'cancel') {
+        resetState()
+    }
+}
   const formToggle = () => {
     if (checkMasterCreateByCostingPermission()) {
       props.displayForm()
@@ -941,8 +948,10 @@ const BOPDomesticListing = (props) => {
         isOpen={state.compareDrawer}
         anchor={'right'}
         selectedRows={props.bopDataResponse}
-        type={'BoughtOutPart'}
-        bopDataResponse = {props.bopDataResponse}
+        type={'Bought Out Part'}
+        quotationId ={props.quotationId}
+        closeDrawer = {closeCompareDrawer}
+        // selectedRow = {props.bopDataResponse}
         />
 
     }

@@ -27,12 +27,8 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import InitiateUnblocking from '../vendorManagement/InitiateUnblocking';
 
 function SummaryDrawer(props) {
-    
-
-    const { approvalData } = props
-    
-
-    const dispatch = useDispatch()
+        const { approvalData } = props
+        const dispatch = useDispatch()
     /**
     * @method toggleDrawer
     * @description TOGGLE DRAWER
@@ -69,6 +65,7 @@ function SummaryDrawer(props) {
     const [isBudgetApproval, setIsBudgetApproval] = useState(false)
     const [showImport, setShowImport] = useState(false)
     const [bopDataResponse, setBopDataResponse] = useState([])
+    const [rmDataResponse, setRmDataResponse ] = useState([])
     const [showPushButton, setShowPushButton] = useState(false) // This is for showing push button when master is approved and need to push it for scheduling
     // const { rmDomesticListing, rmImportListing, bopDomesticList, bopImportList } = useSelector(state => state.material)
     const [dataForFetchingAllApprover, setDataForFetchingAllApprover] = useState({})
@@ -98,6 +95,7 @@ setIsRfq(QuotationId  !== null ? true : false)
             if (checkForNull(props?.masterId) === RM_MASTER_ID) {
                 CostingTypeId = Data?.ImpactedMasterDataList.RawMaterialListResponse[0]?.CostingTypeId
                 setFiles(Data?.ImpactedMasterDataList.RawMaterialListResponse[0].Attachements)
+                setRmDataResponse(Data?.ImpactedMasterDataList.RawMaterialListResponse)
                 masterPlantId = Data?.ImpactedMasterDataList.RawMaterialListResponse[0]?.MasterApprovalPlantId
                 Data?.ImpactedMasterDataList?.RawMaterialListResponse.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
                 if (Data?.ImpactedMasterDataList.RawMaterialListResponse[0]?.Currency === reactLocalStorage.getObject("baseCurrency")) {
@@ -246,7 +244,7 @@ setIsRfq(QuotationId  !== null ? true : false)
                                         {showImport ?
                                             <RMImportListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' isDataInMaster={isDataInMaster} approvalStatus={APPROVED_STATUS} stopApiCallOnCancel={true} costingTypeId={approvalData?.costingTypeId} />
                                             :
-                                            <RMDomesticListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' isDataInMaster={isDataInMaster} approvalStatus={APPROVED_STATUS} stopApiCallOnCancel={true} costingTypeId={approvalData?.costingTypeId} />
+                                            <RMDomesticListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' isDataInMaster={isDataInMaster} approvalStatus={APPROVED_STATUS} stopApiCallOnCancel={true} costingTypeId={approvalData?.costingTypeId} isRfq={true} quotationId={quotationId} rmDataResponse={rmDataResponse} />
                                         }
                                     </>}
                                     {isBOPApproval && <>
@@ -318,6 +316,7 @@ setIsRfq(QuotationId  !== null ? true : false)
                     IsFinalLevelButtonShow={finalLevelUser}
                     costingTypeId={costingTypeId}
                     levelDetails={levelDetails}
+                    // approvalObj={approvalObj}
                 />
             }
         </div >

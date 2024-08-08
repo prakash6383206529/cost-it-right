@@ -362,8 +362,8 @@ const AddRfqRmDetails = (props) => {
                             isOpen={drawerOpen}
                             anchor={"right"}
                             closeDrawer={closeDrawer}
-                            partType={'RM'}
-                            quationType={'RM'}
+                            partType={'Raw Material'}
+                            quationType={'Raw Material'}
                             setViewQuotationPart={setViewQuotationPart}
                             setChildPartFiles={setRmAttchment}
                             childPartFiles={rmAttchment}

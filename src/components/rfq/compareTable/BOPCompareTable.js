@@ -11,13 +11,8 @@ import ProcessDrawer from '../ProcessDrawer';
 import PartSpecificationDrawer from '../../costing/components/PartSpecificationDrawer';
 import WarningMessage from '../../common/WarningMessage';
 const BOPCompareTable = (props) => {
-    console.log('props: ', props);
-
-
     const dispatch = useDispatch()
     const { viewBOPDetails } = useSelector((state) => state.boughtOutparts);
-    console.log('viewBOPDetails: ', viewBOPDetails);
-
     const [openSpecification, setOpenSpecification] = useState(false)
     const [selectedBopId, setSelectedBopId] = useState(null) // [setSelectedBopId, setSelectedBopId]
 
@@ -34,13 +29,11 @@ const BOPCompareTable = (props) => {
         let temp = []
         const uniqueShouldCostingIdArr = props?.uniqueShouldCostingId || [];
         const idArr = props?.selectedRows.map(item => item?.BoughtOutPartId);
-        console.log('idArr: ', idArr);
         const combinedArr = Array.from(new Set([...uniqueShouldCostingIdArr, ...idArr]));
-        console.log('combinedArr: ', combinedArr);
 
         dispatch(getViewBOPDetails(combinedArr, res => {
-
             setIsLoader(false)
+
             if (res) {
                 res?.data?.DataList?.map((item) => {
                     temp.push(item)
@@ -266,8 +259,8 @@ const BOPCompareTable = (props) => {
 
 
     useEffect(() => {
-
-        props?.checkCostingSelected(selectedItems, selectedIndices)
+if(!props.compare)
+      {  props?.checkCostingSelected(selectedItems, selectedIndices)}
     }, [selectedItems, selectedIndices])
     // const checkBoxHanlde = (item , index) => {
     //     setCheckBoxCheck(prevState => ({ ...prevState, index: true }))

@@ -232,7 +232,7 @@ function AddRfq(props) {
 
             partTypes.forEach(partType => {
                 switch (partType.trim()) {
-                    case 'RawMaterial':
+                    case 'Raw Material':
                         setSelectedOption('Raw Material');
                         setQuationType("Raw Material");
                         break;
