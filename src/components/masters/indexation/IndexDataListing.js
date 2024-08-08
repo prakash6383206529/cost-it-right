@@ -10,7 +10,7 @@ import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
 import PopupMsgWrapper from "../../common/PopupMsgWrapper";
 import LoaderCustom from "../../common/LoaderCustom";
-import { checkForDecimalAndNull, getConfigurationKey, searchNocontentFilter } from "../../../helper";
+import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId, searchNocontentFilter, userDetails } from "../../../helper";
 import Button from "../../layout/Button";
 import { ApplyPermission } from ".";
 import TourWrapper from "../../common/Tour/TourWrapper";
@@ -205,8 +205,20 @@ const IndexDataListing = (props) => {
     };
 
     const confirmDelete = (ID) => {
+        let tempArr = [];
+        let tempObj = {}
+        if (selectedRowForPagination) {
+            selectedRowForPagination.forEach(item => {
+                const CommodityIndexRateDetailId = item.CommodityIndexRateDetailId;
+                tempArr.push(CommodityIndexRateDetailId);
+                tempObj = {
+                    LoggedInUserId: userDetails().LoggedInUserId,
+                    CommodityIndexRateDetailIds: tempArr
+                }
+            });
+        }
         dispatch(
-            deleteIndexDetailData(ID, (res) => {
+            deleteIndexDetailData(tempObj, (res) => {
                 if (res && res.data && res.data.Result === true) {
                     Toaster.success(MESSAGES.INDEX_DELETE_SUCCESS);
                     setState((prevState) => ({ ...prevState, dataCount: 0 }));
@@ -313,8 +325,8 @@ const IndexDataListing = (props) => {
         reactLocalStorage.setObject('selectedRow', { selectedRow: uniqeArray }) //SETTING CHECKBOX STATE DATA IN LOCAL STORAGE
         setDataCount(uniqeArray.length)
         dispatch(setSelectedRowForPagination(uniqeArray))              //SETTING CHECKBOX STATE DATA IN REDUCER
-
     }
+    console.log('selectedRowForPagination: ', selectedRowForPagination);
     const checkBoxRenderer = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         if (selectedRowForPagination?.length > 0) {
