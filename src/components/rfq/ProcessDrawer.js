@@ -41,12 +41,7 @@ function ViewDrawer(props) {
         { sop: 'SOP4' },
         { sop: 'SOP5' },
     ]
-
     const { type, isOpen, anchor, isEditFlag, isViewFlag, AssemblyPartNumber, tableData, setTableData, specificationList, setSpecificationList, setRemark, setChildPartFiles, remark, partListData, sopQuantityList, setSopQuantityList, sopdate, setSOPDate, effectiveMinDate, childPartFiles, rmSpecificRowData, partType, bopNumber, handleDrawer, drawerViewMode } = props
-
-
-
-
 
     const { register, handleSubmit, setValue, getValues, formState: { errors }, control } = useForm({
         mode: 'onChange',
@@ -70,7 +65,7 @@ function ViewDrawer(props) {
     const [storeNfrId, setStoreNfrId] = useState('')
     const [inputLoader, setInputLoader] = useState(false)
     const [isEdit, setIsEdit] = useState(false)
-    const [activeTab, setActiveTab] = useState(props.partType === 'RM' ? "3" : props.partType === 'BOP' ? '2' : '1');
+    const [activeTab, setActiveTab] = useState(props.partType === 'Raw Material' ? "3" : props.partType === "Bought Out Part" ? '2' : '1');
     const [specification, setSpecification] = useState("")
     const [editIndex, setEditIndex] = useState(null);  // To keep track of the index being edited
     const [files, setFiles] = useState([]);  // State for files
@@ -97,7 +92,7 @@ function ViewDrawer(props) {
 
     useEffect(() => {
 
-        if (partType === 'component') {
+        if (partType === 'Component') {
             setValue('AssemblyPartNumber', { label: AssemblyPartNumber?.label, value: AssemblyPartNumber?.value })
             if (type === Component) {
                 setValue('partNumber', { label: AssemblyPartNumber?.label, value: AssemblyPartNumber?.value })
@@ -106,20 +101,20 @@ function ViewDrawer(props) {
                     dispatch(getAssemblyChildpart(AssemblyPartNumber?.value, (res) => { }))
                 }
             }
-        } else if (partType === 'BOP') {
+        } else if (partType === "Bought Out Part") {
             setValue('AssemblyPartNumber', { label: bopNumber?.label, value: bopNumber?.value })
         }
 
     }, [AssemblyPartNumber, bopNumber])
     useEffect(() => {
-        if (partType === "component")
+        if (partType === "Component")
             if (!isViewFlag) {
                 dispatch(getRawMaterialNameChild(() => { }))
                 dispatch(getRMSpecificationDataList({ GradeId: null }, () => { }))
             }
     }, [partType])
     useEffect(() => {
-        if (partType === "component" || partType === "Assembly") {
+        if (partType === "Component" || partType === "Assembly") {
             if ((isEditFlag || isViewFlag) && getRfqPartDetails && getRfqPartDetails?.PartList) {
                 const partList = getRfqPartDetails?.PartList || [];
                 let accumulatedRMDetails = [];
@@ -177,7 +172,7 @@ function ViewDrawer(props) {
         }
     }, [getRfqPartDetails, isViewFlag, isEditFlag]);
     useEffect(() => {
-        if (partType === 'RM') {
+        if (partType === 'Raw Material') {
             if ((isEditFlag || isViewFlag) && rmSpecificRowData.length > 0) {
                 setValue('remark', rmSpecificRowData[0].Remarks);
                 setRemark(rmSpecificRowData[0].Remarks)
@@ -249,7 +244,7 @@ function ViewDrawer(props) {
     useEffect(() => {
 
 
-        if (partType === "BOP") {
+        if (partType === "Bought Out Part") {
             if ((isEditFlag || isViewFlag) && bopSpecificRowData && bopSpecificRowData.length > 0) {
                 setValue('AssemblyPartNumber', { label: bopSpecificRowData[0]?.BoughtOutPartNumber, value: bopSpecificRowData[0]?.BoughtOutPartChildId })
                 const BoughtOutPartChildId = bopSpecificRowData[0]?.BoughtOutPartChildId
@@ -533,7 +528,7 @@ function ViewDrawer(props) {
         // }
 
 
-        if (partType === "component") {
+        if (partType === "Component") {
             const dropdownTexts = _.map(getChildParts, 'Text');
             const tableTexts = _.map(tableData, 'PartNumber');
             const allPresent = _.every(dropdownTexts, text => _.includes(tableTexts, text));
@@ -563,7 +558,7 @@ function ViewDrawer(props) {
         props?.closeDrawer('', true);
         props?.setViewQuotationPart(false)
         dispatch(setRfqPartDetails({}));
-        if (partType === "RM") {
+        if (partType === "Raw Material") {
             const attachment = files;  // Assume files is the new value for Attachments
             const updatedRemark = getValues('remark') || null;  // Assume getValues('remark') gets the new value for Remarks
 
@@ -577,7 +572,7 @@ function ViewDrawer(props) {
                 const updatedArray = [updatedObject];
                 dispatch(setRmSpecificRowData(updatedArray));
             }
-        } else if (partType === "BOP") {
+        } else if (partType ==="Bought Out Part") {
             const attachment = files;
 
             const updatedRemark = getValues('remark') || null;
@@ -840,12 +835,15 @@ function ViewDrawer(props) {
         return cellValue ? cellValue : '-'
     }
     const afcFormatter = (props) => {
+        
 
         let final = _.map(props?.node?.rowModel?.rowsToDisplay, 'data')
+        
 
         const cell = props?.value;
 
         const value = beforeSaveCell(cell)
+        
 
         setSopQuantityList(final)
         // setPartList(final)
@@ -894,7 +892,7 @@ function ViewDrawer(props) {
                         <Row className="drawer-heading sticky-top-0">
                             <Col>
                                 <div className={'header-wrapper left'}>
-                                    <h3> {partType === "RM" ? "Add Remark & Attachment" : (partType === "component" ? "Add RM & Specification" : "Add Specification & Attachment")}</h3>
+                                    <h3> {partType === "Raw Material" ? "Add Remark & Attachment" : (partType === "Component" ? "Add RM & Specification" : "Add Specification & Attachment")}</h3>
                                 </div>
 
                                 <div
@@ -904,7 +902,7 @@ function ViewDrawer(props) {
                             </Col>
                         </Row>
                         <Nav tabs className="subtabs cr-subtabs-head ">
-                            {(props.partType === 'component') && <NavItem>
+                            {(props.partType === 'Component') && <NavItem>
                                 <NavLink
                                     className={classnames({ active: activeTab === "1" })}
                                     onClick={() => setActiveTab("1")
@@ -913,7 +911,7 @@ function ViewDrawer(props) {
                                     RM
                                 </NavLink>
                             </NavItem>}
-                            {(props.partType !== 'RM' || props.partType === 'BOP') && <NavItem>
+                            {(props.partType !== 'Raw Material' || props.partType ==="Bought Out Part") && <NavItem>
                                 <NavLink
                                     className={classnames({ active: activeTab === "2" })}
                                     onClick={() => setActiveTab("2")
@@ -922,7 +920,7 @@ function ViewDrawer(props) {
                                     Specification
                                 </NavLink>
                             </NavItem>}
-                            {(props.partType !== 'RM' || props.partType === 'BOP') && <NavItem>
+                            {(props.partType !== 'Raw Material' || props.partType === "Bought Out Part") && <NavItem>
                                 <NavLink
                                     className={classnames({ active: activeTab === "3" })}
                                     onClick={() => setActiveTab("3")
@@ -1044,7 +1042,7 @@ function ViewDrawer(props) {
                                         <Row>
                                             <Col md="3">
                                                 <AsyncSearchableSelectHookForm
-                                                    label={partType === "BOP" ? "BOP Part No" : "Assembly Part No"}
+                                                    label={partType ==="Bought Out Part" ? "BOP Part No" : "Assembly Part No"}
                                                     name={"AssemblyPartNumber"}
                                                     placeholder={"Select"}
                                                     Controller={Controller}
@@ -1325,7 +1323,7 @@ function ViewDrawer(props) {
                                     </tbody>
                                 </Table>
 
-                                {activeTab === "2" && props.partType !== 'BOP' && (
+                                {activeTab === "2" && props.partType !== "Bought Out Part" && (
                                     <>
                                         <HeaderTitle title={'Add Volume'} customClass="mt-5" />
                                         <Row className='mt-3 mb-1'>
