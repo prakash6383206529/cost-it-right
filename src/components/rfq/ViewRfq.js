@@ -59,6 +59,7 @@ function RfqListing(props) {
     const [addRfqData, setAddRfqData] = useState({});
     const [isEdit, setIsEdit] = useState(false);
     const [rowData, setRowData] = useState([])
+    
     const [noData, setNoData] = useState(false)
     const [sendForApproval, setSendForApproval] = useState(false)
     const [rejectDrawer, setRejectDrawer] = useState(false)
@@ -123,9 +124,9 @@ function RfqListing(props) {
         getDataList()
     }, [])
     useEffect(() => {
-        if (partType === 'RawMaterial' || partType === 'BoughtOutPart') {
+        if (partType === 'Raw Material' || partType === 'Bought Out Part') {
 
-            dispatch(getUsersMasterLevelAPI(loggedInUserId(), partType === 'RawMaterial' ? RM_MASTER_ID : BOP_MASTER_ID, (res) => {
+            dispatch(getUsersMasterLevelAPI(loggedInUserId(), partType === 'Raw Material' ? RM_MASTER_ID : BOP_MASTER_ID, (res) => {
 
 
                 setTimeout(() => {
@@ -184,7 +185,7 @@ function RfqListing(props) {
                         });
                     });
                     break;
-                case 'BoughtOutPart':
+                case 'Bought Out Part':
                     filteredArr = _.map(viewBOPDetails, 'BoughtOutPartId');
                     filteredArr.forEach(item => {
                         selectedRows.filter(el => {
@@ -194,7 +195,7 @@ function RfqListing(props) {
                         });
                     });
                     break;
-                case 'RawMaterial':
+                case 'Raw Material':
                     filteredArr = _.map(viewRmDetails, 'RawMaterialId');
                     filteredArr.forEach(item => {
                         selectedRows.filter(el => {
@@ -236,7 +237,7 @@ function RfqListing(props) {
 
                     partTypes.forEach(type => {
                         switch (type.trim()) {
-                            case 'RawMaterial':
+                            case 'Raw Material':
                                 unique = _.uniq(_.map(item.ShouldRawMaterial, 'RawMaterialId'));
                                 uniqueShouldCostId.push(...unique);
                                 break;
@@ -245,7 +246,7 @@ function RfqListing(props) {
                                 unique = _.uniq(_.map(item.ShouldCostings, 'CostingId'));
                                 uniqueShouldCostId.push(...unique);
                                 break;
-                            case 'BoughtOutPart':
+                            case 'Bought Out Part':
                                 unique = _.uniq(_.map(item.ShouldBoughtOutPart, 'BoughtOutPartId'));
                                 uniqueShouldCostId.push(...unique);
                                 break;
@@ -266,11 +267,12 @@ function RfqListing(props) {
 
             // Grouping data based on PartType
             res?.data?.DataList?.map(item => {
-                if (item.PartType === 'RawMaterial') {
+                
+                if (item.PartType === 'Raw Material') {
                     partNumberFech = 'RawMaterial';
                 } else if (item.PartType === 'Component' || item.PartType === 'Assembly') {
                     partNumberFech = 'PartNumber';
-                } else if (item.PartType === 'BoughtOutPart') {
+                } else if (item.PartType === 'Bought Out Part') {
                     partNumberFech = 'BoughtOutPart';
                 }
             })
@@ -301,10 +303,10 @@ function RfqListing(props) {
                         case 'Component':
                             temp = item.filter(el => el.CostingId !== null);
                             break;
-                        case 'RawMaterial':
+                        case 'Raw Material':
                             temp = item.filter(el => el.RawMaterialId !== null);
                             break;
-                        case 'BoughtOutPart':
+                        case 'Bought Out Part':
                             temp = item.filter(el => el.BoughtOutPartId !== null);
                             break;
                         default:
@@ -392,15 +394,15 @@ function RfqListing(props) {
     const commonFunction = (type, plantId = EMPTY_GUID) => {
 
         const { costingTypeId } = state
-        if (type === 'RawMaterial' || type === 'BoughtOutPart') {
+        if (type === 'Raw Material' || type === 'Bought Out Part') {
 
-            let levelDetailsTemp = userTechnologyDetailByMasterId(costingTypeId, type === 'RawMaterial' ? RM_MASTER_ID : BOP_MASTER_ID, userMasterLevelAPI);
+            let levelDetailsTemp = userTechnologyDetailByMasterId(costingTypeId, type === 'Raw Material' ? RM_MASTER_ID : BOP_MASTER_ID, userMasterLevelAPI);
             setState(prevState => ({ ...prevState, levelDetails: levelDetailsTemp }));
 
             let obj = {
                 DepartmentId: userDetails().DepartmentId,
                 UserId: loggedInUserId(),
-                TechnologyId: type === 'RawMaterial' ? RM_MASTER_ID : BOP_MASTER_ID,
+                TechnologyId: type === 'Raw Material' ? RM_MASTER_ID : BOP_MASTER_ID,
                 Mode: 'master',
                 approvalTypeId: costingTypeIdToApprovalTypeIdFunction(costingTypeId),
                 plantId: plantId
@@ -484,7 +486,7 @@ function RfqListing(props) {
     * @description approveDetails
     */
     const approveDetails = (Id, rowData = {}) => {
-        if (partType === "BoughtOutPart" || partType === "RawMaterial") {
+        if (partType === "Bought Out Part" || partType === "Raw Material") {
             setApproveDrawer(true)
             setActionType('Approve')
         }
@@ -532,7 +534,7 @@ function RfqListing(props) {
     * @description rejectDetailsClick
     */
     const rejectDetailsClick = (Id, rowData = {}) => {
-        if (partType === "BoughtOutPart" || partType === "RawMaterial") {
+        if (partType === "Bought Out Part" || partType === "Raw Material") {
             setMasterRejectDrawer(true)
             setActionType('Reject')
             return
@@ -559,7 +561,7 @@ function RfqListing(props) {
 
     }
     const returnDetailsClick = (Id, rowData = {}) => {
-        if (partType === "BoughtOutPart" || partType === "RawMaterial") {
+        if (partType === "Bought Out Part" || partType === "Raw Material") {
             setMasterRejectDrawer(true)
             setActionType('Return')
             return
@@ -859,7 +861,7 @@ function RfqListing(props) {
     }
 
     const checkCostingSelected = (list, index) => {
-        console.log('list, index: ', list, index);
+        
 
         setState(prevState => ({ ...prevState, approvalObj: list }));
         setIndex(index);
@@ -884,7 +886,7 @@ function RfqListing(props) {
                         return matchedItem ? matchedItem.Status : null;
                     });
                     break
-                case 'BoughtOutPart':
+                case 'Bought Out Part':
                     filteredArr = _.map(viewBOPDetails, 'BoughtOutPartId')
                     filteredArr.map(item => selectedRows.filter(el => {
                         if (el.BoughtOutPartId === item) {
@@ -897,7 +899,7 @@ function RfqListing(props) {
                     });
                     break
 
-                case 'RawMaterial':
+                case 'Raw Material':
 
                     filteredArr = _.map(viewRmDetails, 'RawMaterialId')
                     filteredArr.map(item => selectedRows.filter(el => {
@@ -1150,12 +1152,12 @@ function RfqListing(props) {
                         setCompareButtonPressed(false)
                     }))
                     break;
-                case 'RawMaterial':
+                case 'Raw Material':
                     setViewRMCompare(true)
                     setaddComparisonToggle(true)
                     setViewBOPCompare(false)
                     break
-                case 'BoughtOutPart':
+                case 'Bought Out Part':
                     setViewBOPCompare(true)
                     setViewRMCompare(false)
 
@@ -1198,12 +1200,12 @@ function RfqListing(props) {
         const partTypes = selectedRows[0]?.PartType.split(',');
         partTypes.forEach(type => {
             switch (type.trim()) {
-                case 'RawMaterial':
+                case 'Raw Material':
                     selectedRows?.map(item => partNumber?.push(item.RawMaterial))
                     data = partNumber.map(item => rowData?.filter(el => el.RawMaterial === item))
                     // SELECTED ALL COSTING ON THE CLICK ON PARTbreak;
                     break;
-                case 'BoughtOutPart':
+                case 'Bought Out Part':
                     selectedRows?.map(item => partNumber.push(item.BoughtOutPart))
                     data = partNumber.map(item => rowData?.filter(el => el.BoughtOutPart === item))             // SELECTED ALL COSTING ON THE CLICK ON PART
 
@@ -1276,9 +1278,6 @@ function RfqListing(props) {
 
     const partNumberFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-
-
-
         if (props?.rowIndex === selectedRowIndex) {
             props.node.setSelected(true)
         }
@@ -1311,6 +1310,7 @@ function RfqListing(props) {
         setSendForApproval(false)
         if (type !== "Cancel") {
             getDataList()
+            history.push('/rfq-listing');
         }
     }
     const getRowStyle = () => {
@@ -1337,10 +1337,10 @@ function RfqListing(props) {
 
         partTypes.forEach(type => {
             switch (type.trim()) {
-                case 'RawMaterial':
+                case 'Raw Material':
                     headerName = "RM Name";
                     break;
-                case 'BoughtOutPart':
+                case 'Bought Out Part':
                     headerName = "BOP Name";
                     break;
                 case 'Component':
@@ -1353,6 +1353,7 @@ function RfqListing(props) {
         });
 
         return headerName;
+
     }
 
 
@@ -1472,8 +1473,8 @@ function RfqListing(props) {
                                             <AgGridColumn cellClass={cellClass} field="PartNo" headerName={headerPartType()} cellRenderer={'partNumberFormatter'}></AgGridColumn>
                                             <AgGridColumn field="PartTypes" cellClass={cellClass} headerName="Part Type" width={150} cellRenderer={seperateHyphenFormatter}></AgGridColumn>
                                             {initialConfiguration.IsNFRConfigured && <AgGridColumn cellClass={cellClass} field="NfrNo" headerName='NFR No.' cellRenderer={seperateHyphenFormatter}></AgGridColumn>}
-                                            {partType !== 'BoughtOutPart' && <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>}
-                                            {partType === 'BoughtOutPart' && <AgGridColumn cellClass={cellClass} field="PRNo" headerName='PR Number' cellRenderer={seperateHyphenFormatter}></AgGridColumn>}
+                                            {partType !== 'Bought Out Part' && <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>}
+                                            {partType === 'Bought Out Part' && <AgGridColumn cellClass={cellClass} field="PRNo" headerName='PR Number' cellRenderer={seperateHyphenFormatter}></AgGridColumn>}
 
                                             <AgGridColumn field="VendorName" tooltipField="VendorName" headerName='Vendor (Code)'></AgGridColumn>
                                             <AgGridColumn field="PlantName" tooltipField="PlantName" headerName='Plant (Code)'></AgGridColumn>
@@ -1636,14 +1637,15 @@ function RfqListing(props) {
                         type={actionType}
                         closeDrawer={closeApprovalDrawer}
                         isEditFlag={false}
-                        masterId={partType === "RawMaterial" ? RM_MASTER_ID : BOP_MASTER_ID}
+                        masterId={partType === "Raw Material" ? RM_MASTER_ID : BOP_MASTER_ID}
                         isRFQ={true}
                         anchor={"right"}
                         approvalDetails={state.approvalObj}
                         approvalObj={state.approvalObj}
                         costingTypeId={ZBCTypeId}
                         levelDetails={state.levelDetails}
-                        partType = {partType}
+                        partType={partType}
+                        selectedRows = {selectedRows}
                     />
                 }
 

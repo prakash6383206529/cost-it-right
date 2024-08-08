@@ -11,11 +11,8 @@ import ProcessDrawer from '../ProcessDrawer';
 import PartSpecificationDrawer from '../../costing/components/PartSpecificationDrawer';
 import WarningMessage from '../../common/WarningMessage';
 const BOPCompareTable = (props) => {
-
-
     const dispatch = useDispatch()
     const { viewBOPDetails } = useSelector((state) => state.boughtOutparts);
-
     const [openSpecification, setOpenSpecification] = useState(false)
     const [selectedBopId, setSelectedBopId] = useState(null) // [setSelectedBopId, setSelectedBopId]
 
@@ -26,17 +23,17 @@ const BOPCompareTable = (props) => {
     const [selectedIndices, setSelectedIndices] = useState([])
 
     const [isLoader, setIsLoader] = useState(false)
-    const showCheckbox = viewBOPDetails && viewBOPDetails?.some(item => item.IsShowCheckBoxForApproval === true);
+    const showCheckbox = viewBOPDetails && viewBOPDetails?.some(item => item?.IsShowCheckBoxForApproval === true);
     useEffect(() => {
         setIsLoader(true)
         let temp = []
-        const uniqueShouldCostingIdArr = props.uniqueShouldCostingId || [];
-        const idArr = props.selectedRows.map(item => item.BoughtOutPartId);
+        const uniqueShouldCostingIdArr = props?.uniqueShouldCostingId || [];
+        const idArr = props?.selectedRows.map(item => item?.BoughtOutPartId);
         const combinedArr = Array.from(new Set([...uniqueShouldCostingIdArr, ...idArr]));
 
         dispatch(getViewBOPDetails(combinedArr, res => {
-
             setIsLoader(false)
+
             if (res) {
                 res?.data?.DataList?.map((item) => {
                     temp.push(item)
@@ -69,49 +66,49 @@ const BOPCompareTable = (props) => {
             let mainHeader = []
             viewBOPDetails.map((item, index) => {
                 //section one data start
-                const effectiveDate = item.EffectiveDate
-                    ? (item.EffectiveDate !== "-" ? DayTime(item.EffectiveDate).format('DD/MM/YYYY') : '-') : '-';
+                const effectiveDate = item?.EffectiveDate
+                    ? (item?.EffectiveDate !== "-" ? DayTime(item?.EffectiveDate).format('DD/MM/YYYY') : '-') : '-';
                 const formattedDataOne = [
-                    item.BoughtOutPartNumber,
-                    item.BoughtOutPartName,
-                    item.BoughtOutPartCategory,
-                    item.UOM,
-                    /*  item.BoughtOutPartSpecificationName, */
-                    item.Plants,
-                    item.Vendor,
+                    item?.BoughtOutPartNumber,
+                    item?.BoughtOutPartName,
+                    item?.BoughtOutPartCategory,
+                    item?.UOM,
+                    /*  item?.BoughtOutPartSpecificationName, */
+                    item?.Plants,
+                    item?.Vendor,
                     effectiveDate,
-                    item.BasicRate
+                    item?.BasicRate
                 ];
                 sectionOne.push(formattedDataOne);
 
                 //section two data start
                 const formattedDataTwo = [
-                    item.NumberOfPieces,
-                    item.NetLandedCost
+                    item?.NumberOfPieces,
+                    item?.NetLandedCost
                 ]
                 sectionTwo.push(formattedDataTwo)
 
                 //section Three
-                // sectionThree.push([item.Remark])
+                // sectionThree.push([item?.Remark])
                 sectionThree = viewBOPDetails.map(item => [
-                    item.bestCost === true ? ' ' : (
-                        <div onClick={() => handleOpenSpecificationDrawerSingle(item.BoughtOutPartId)} className={'link'}>
+                    item?.bestCost === true ? ' ' : (
+                        <div onClick={() => handleOpenSpecificationDrawerSingle(item?.BoughtOutPartId)} className={'link'}>
                             View Specifications
                         </div>
                     ),
-                    item.Remark
+                    item?.Remark
                 ]);
 
                 //mainheader data start
                 const mainHeaderObj = {
-                    vendorName: item.Vendor,
+                    vendorName: item?.Vendor,
                     onChange: () => checkBoxHandle(item, index),
                     checked: checkBoxCheck[index],
-                    isCheckBox: item.bestCost ? false : item.IsShowCheckBoxForApproval,
-                    bestCost: item.bestCost,
-                    shouldCost: props.uniqueShouldCostingId?.includes(item.RawMaterialId) ? "Should Cost" : "",
-                    costingType: item.CostingType === "Zero Based" ? "ZBC" : item.costingType === "Vendor Based" ? "VBC" : "",
-                    vendorCode: item.VendorCode,
+                    isCheckBox: item?.bestCost ? false : item?.IsShowCheckBoxForApproval,
+                    bestCost: item?.bestCost,
+                    shouldCost: props?.uniqueShouldCostingId?.includes(item?.RawMaterialId) ? "Should Cost" : "",
+                    costingType: item?.CostingType === "Zero Based" ? "ZBC" : item?.costingType === "Vendor Based" ? "VBC" : "",
+                    vendorCode: item?.VendorCode,
 
 
                 }
@@ -142,7 +139,7 @@ const BOPCompareTable = (props) => {
 
     const handleOpenSpecificationDrawerMultiple = () => {
         let ids = viewBOPDetails
-            .map(item => item.BoughtOutPartId)
+            .map(item => item?.BoughtOutPartId)
             .filter(id => id !== null && id !== undefined && id !== '-');
         setSelectedBopId(ids);
         setOpenSpecification(true);
@@ -157,7 +154,7 @@ const BOPCompareTable = (props) => {
         let finalArrayList = [...arrayList];
 
         // Check if the input array is empty or null
-        if (!finalArrayList || finalArrayList.length === 0) {
+        if (!finalArrayList || finalArrayList?.length === 0) {
             // If so, return an empty array
             return [];
         } else {
@@ -241,8 +238,8 @@ const BOPCompareTable = (props) => {
 
         setSelectedItems(prevItems => {
             let newItems
-            if (prevItems.some(i => i.BoughtOutPartId === item.BoughtOutPartId)) {
-                newItems = prevItems.filter(i => i.BoughtOutPartId !== item.RawMaterialId)
+            if (prevItems.some(i => i.BoughtOutPartId === item?.BoughtOutPartId)) {
+                newItems = prevItems.filter(i => i.BoughtOutPartId !== item?.RawMaterialId)
             } else {
                 newItems = [...prevItems, item]
             }
@@ -262,12 +259,12 @@ const BOPCompareTable = (props) => {
 
 
     useEffect(() => {
-
-        props.checkCostingSelected(selectedItems, selectedIndices)
+if(!props.compare)
+      {  props?.checkCostingSelected(selectedItems, selectedIndices)}
     }, [selectedItems, selectedIndices])
     // const checkBoxHanlde = (item , index) => {
     //     setCheckBoxCheck(prevState => ({ ...prevState, index: true }))
-    //     props.checkCostingSelected(item,index)
+    //     props?.checkCostingSelected(item,index)
     // }
     return (
         <div>

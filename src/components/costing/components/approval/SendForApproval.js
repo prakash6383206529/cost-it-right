@@ -581,12 +581,8 @@ const SendForApproval = (props) => {
           "NetPOPrice": tempData?.nPOPrice,
           "NetPOPriceOtherCurrency": tempData?.nPoPriceCurrency
         },
-        RawMaterialBestCostRequest: {
-
-        },
-        BoughtOutPartBestCostRequest: {
-
-        }
+        RawMaterialBestCostRequest: null,
+        BoughtOutPartBestCostRequest: null
       }
       setIsLoader(true)
       dispatch(rfqSaveBestCosting(data, res => {
