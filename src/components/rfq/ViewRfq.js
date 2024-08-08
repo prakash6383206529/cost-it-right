@@ -1670,7 +1670,7 @@ function RfqListing(props) {
                         onClick={handleInitiateAuction}
                     >
                         <div className={"save-icon"}></div>
-                        {"Initiate Auction"}
+                        {"Initiate Reverse Auction"}
                     </button>)}
                     {(matchedStatus?.length !== 0 || matchedStatus?.includes(RECEIVED)) && (
                         <button type={'button'} disabled={costingsDifferentStatus} className="mr5 approve-reject-btn" onClick={() => returnDetailsClick("", selectedRows)} >
