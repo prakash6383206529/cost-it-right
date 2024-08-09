@@ -12,6 +12,7 @@ import { EMPTY_GUID_0, searchCount, VBC_VENDOR_TYPE, ZBC } from '../../../config
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { autoCompleteDropdown } from '../../common/CommonFunctions';
 import { MESSAGES } from '../../../config/message';
+import TooltipCustom from '../../common/Tooltip';
 
 function AddVendorDrawer(props) {
 
@@ -25,6 +26,8 @@ function AddVendorDrawer(props) {
   const [inputLoader, setInputLoader] = useState(false)
   const [VendorInputLoader, setVendorInputLoader] = useState(false)
   const [vendorName, setVendorName] = useState('')
+  const [infoCategory, setInfoCategory] = useState([])
+  const [isInfoCategorySelected, setIsInfoCategorySelected] = useState(false)
   const dispatch = useDispatch()
 
   const vendorSelectList = useSelector(state => state.comman.vendorWithVendorCodeSelectList)
@@ -45,6 +48,11 @@ function AddVendorDrawer(props) {
       reactLocalStorage?.setObject('vendorData', [])
     }
   }, []);
+
+  useEffect(() => {
+    setInfoCategory(initialConfiguration?.InfoCategories)
+  }, [initialConfiguration])
+
   /**
   * @method toggleDrawer
   * @description TOGGLE DRAWER
@@ -61,7 +69,9 @@ function AddVendorDrawer(props) {
         DestinationPlantId: initialConfiguration && initialConfiguration.IsDestinationPlantConfigure ? DestinationPlant.value : EMPTY_GUID_0,
         DestinationPlantName: initialConfiguration && initialConfiguration.IsDestinationPlantConfigure ? DestinationPlant.label : '',                 //PlantName
         DestinationPlant: DestinationPlant,
-        VendorName: `${data.VendorName} (${data.VendorCode})`
+        VendorName: `${data.VendorName} (${data.VendorCode})`,
+        InfoCategory: isInfoCategorySelected === true ? infoCategory[0]?.Text : infoCategory[1]?.Text,
+        InfoCategoryObj: isInfoCategorySelected === true ? infoCategory[0] : infoCategory[1]
       })
   };
 
@@ -169,6 +179,11 @@ function AddVendorDrawer(props) {
       }
     }
   };
+
+  const categoryTypeOnChange = (e) => {
+    setIsInfoCategorySelected(!isInfoCategorySelected)
+  }
+
   /**
   * @method render
   * @description Renders the component
@@ -237,6 +252,31 @@ function AddVendorDrawer(props) {
                       isLoading={plantLoaderObj}
                     />
                   </Col>}
+                <Col md="12">
+                  <span className="d-inline-block">
+                    <label
+                      className={`custom-checkbox mb-0`}
+                      onChange={(e) => categoryTypeOnChange(e)}
+                      selected={isInfoCategorySelected}
+                      id={'category'}
+                    >
+                      Category
+                      <input
+                        type="checkbox"
+                      />
+                      <span
+                        className=" before-box"
+                        onChange={(e) => categoryTypeOnChange(e)}
+                        selected={isInfoCategorySelected}
+                      />
+                    </label>
+                    <TooltipCustom
+                      disabledIcon={false}
+                      id={`category`}
+                      tooltipText={infoCategory && `If checkbox is selected then category will be ${infoCategory[0]?.Text}, otherwise category will be ${infoCategory[1]?.Text}.`}
+                    />
+                  </span>
+                </Col>
               </Row>
               {/* //RE */}
               {/* <Row>    

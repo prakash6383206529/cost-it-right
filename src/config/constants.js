@@ -2324,6 +2324,7 @@ export const VIEW_COSTING_DATA = {
   // costingName: '',
   costingVersion: 'Costing Version',
   PoPriceWithDate: 'Net Cost (Effective from)',
+  InfoCategory: 'Category',
   partType: 'Part Type',
   partNumber: 'Part Number',
   partName: 'Part Name',

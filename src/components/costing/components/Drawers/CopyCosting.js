@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Label } from 'reactstrap';
 import { useForm, Controller } from 'react-hook-form';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Drawer from '@material-ui/core/Drawer';
 import { DatePickerHookForm, SearchableSelectHookForm, TextFieldHookForm, } from '../../../layout/HookFormInputs';
 import { saveCopyCosting, checkDataForCopyCosting } from '../../actions/Costing';
@@ -13,6 +13,7 @@ import PopupMsgWrapper from '../../../common/PopupMsgWrapper';
 import _, { debounce } from 'lodash';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import LoaderCustom from '../../../common/LoaderCustom';
+import TooltipCustom from '../../../common/Tooltip';
 function CopyCosting(props) {
   const { copyCostingData, partNo, type, zbcPlantGrid, vbcVendorGrid, nccGrid, cbcGrid } = props
 
@@ -42,6 +43,9 @@ function CopyCosting(props) {
   const [nccVendor, setNccVendor] = useState({})
   const [nccPlant, setNccPlant] = useState({})
   const [isLoader, setIsLoader] = useState(false)
+  const [infoCategory, setInfoCategory] = useState([])
+  const [isInfoCategorySelected, setIsInfoCategorySelected] = useState(false)
+  const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
 
   useEffect(() => {
     setCostingTypeId(type)
@@ -113,6 +117,9 @@ function CopyCosting(props) {
     setMinDate(date[0]?.LastApproveEffectiveDate ? date[0].LastApproveEffectiveDate : date[0]?.PartEffectiveDate)
   }, [])
 
+  useEffect(() => {
+    setInfoCategory(initialConfiguration?.InfoCategories)
+  }, [initialConfiguration])
 
   /**
    * @method handleToVendorName
@@ -168,6 +175,7 @@ function CopyCosting(props) {
     copyCostingObj.EffectiveDate = DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss')
     copyCostingObj.LoggedInUserId = loggedInUserId()
     copyCostingObj.IsDuplicate = getConfigurationKey().IsExactCopyCosting
+    copyCostingObj.InfoCategory = isInfoCategorySelected === true ? infoCategory[0]?.Text : infoCategory[1]?.Text
     setIsLoader(true)
     dispatch(checkDataForCopyCosting(checkCostingObj, (res) => {
       setIsLoader(false)
@@ -241,6 +249,11 @@ function CopyCosting(props) {
     setValue('toCustomer', '')
     setValue('toPlant', '')
   }
+
+  const categoryTypeOnChange = (e) => {
+    setIsInfoCategorySelected(!isInfoCategorySelected)
+  }
+
   return (
     <>
       <Drawer
@@ -457,7 +470,7 @@ function CopyCosting(props) {
               {
                 ((costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) || (costingTypeId === VBCTypeId || costingTypeId === NCCTypeId || costingTypeId === ZBCTypeId)) && (
                   <Row className="pl-3">
-                    <div className="form-group mb-1 col-md-12">
+                    <div className="form-group mb-2 col-md-12">
                       <SearchableSelectHookForm
                         label={`${costingTypeId === VBCTypeId || costingTypeId === NCCTypeId ? 'Destination Plant (Code)' : 'Plant (Code)'}`}
                         name={"toPlant"}
@@ -476,6 +489,32 @@ function CopyCosting(props) {
                   </Row>
                 )
               }
+              <Row className="pl-3">
+                <span className="d-inline-block">
+                  <label
+                    className={`custom-checkbox mb-4`}
+                    onChange={(e) => categoryTypeOnChange(e)}
+                    selected={isInfoCategorySelected}
+                    id={'category'}
+                  >
+                    Category
+                    <input
+                      type="checkbox"
+                    />
+                    <span
+                      className=" before-box"
+                      onChange={(e) => categoryTypeOnChange(e)}
+                      selected={isInfoCategorySelected}
+                    />
+                  </label>
+                  <TooltipCustom
+                    disabledIcon={false}
+                    id={`category`}
+                    tooltipText={infoCategory && `If checkbox is selected then category will be ${infoCategory[0]?.Text}, otherwise category will be ${infoCategory[1]?.Text}.`}
+                  />
+                </span>
+              </Row>
+              {/* //ss */}
               <div className="form-group mb-0 col-md-12 pl-2 pr-4 ml-1 mr-2">
                 <div className="inputbox date-section">
                   <DatePickerHookForm
