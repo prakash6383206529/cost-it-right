@@ -309,8 +309,9 @@ function RfqListing(props) {
 
     }
 
-    const closeDrawerViewRfq = () => {
-        setViewRfq(false)
+    const closeDrawerViewRfq = (value) => {
+        value === true ? setViewRfq(true) : setViewRfq(false)
+        // setViewRfq(false)
         getDataList()
 
     }
