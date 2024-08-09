@@ -326,7 +326,6 @@ const IndexDataListing = (props) => {
         setDataCount(uniqeArray.length)
         dispatch(setSelectedRowForPagination(uniqeArray))              //SETTING CHECKBOX STATE DATA IN REDUCER
     }
-    console.log('selectedRowForPagination: ', selectedRowForPagination);
     const checkBoxRenderer = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         if (selectedRowForPagination?.length > 0) {

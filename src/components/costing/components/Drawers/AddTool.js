@@ -208,7 +208,7 @@ function AddTool(props) {
         const isDuplicate = gridData.some(item => {
           return (
             (item?.OperationIdRef === processOrOperation || item?.OperationChildIdRef === processOrOperation || item?.ProcessIdRef === processOrOperation) &&
-            item?.ChildPartNumber === partNumber
+            item?.ChildPartNumber === partNumber && item?.ToolName === getValues('ToolName')
           );
         });
         if (isDuplicate) {
