@@ -489,6 +489,14 @@ function VerifySimulation(props) {
         return isMasterAssociatedWithCosting ? (row?.OldBoughtOutPartRate ? row?.OldBoughtOutPartRate : '-') : (row?.OldBOPRate ? row?.OldBOPRate : '-')
     }
 
+    /**
+     * @method hyphenFormatter
+     */
+    const hyphenFormatter = (props) => {
+        const cellValue = props?.value;
+        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
+    }
+
     const onRowSelect = () => {
         var selectedRows = gridApi.getSelectedRows();
         setSelectedRowData(selectedRows)
@@ -803,7 +811,8 @@ function VerifySimulation(props) {
         existingBasicFormatter: existingBasicFormatter,
         newRMBasicRateFormatter: newRMBasicRateFormatter,
         partTypeFormatter: partTypeFormatter,
-        combinedProcessCostFormatter: combinedProcessCostFormatter
+        combinedProcessCostFormatter: combinedProcessCostFormatter,
+        hyphenFormatter: hyphenFormatter
     };
     function getOperationTypes(list) {
         return list && list?.map(item => item.ForType);
@@ -877,6 +886,7 @@ function VerifySimulation(props) {
                                             {isMasterAssociatedWithCosting && <AgGridColumn width={120} field="PartName" tooltipField="PartName" cellRenderer='descriptionFormatter' headerName="Part Name"></AgGridColumn>}
                                             {isMasterAssociatedWithCosting && <AgGridColumn width={120} field="PartType" tooltipField="PartType" cellRenderer='partTypeFormatter' headerName="Part Type"></AgGridColumn>}
                                             {isMasterAssociatedWithCosting && <AgGridColumn width={130} field="RevisionNumber" tooltipField="RevisionNumber" cellRenderer='revisionFormatter' headerName="Revision No."></AgGridColumn>}
+                                            {isMasterAssociatedWithCosting && <AgGridColumn width={160} field="InfoCategory" tooltipField="InfoCategory" cellRenderer='hyphenFormatter' headerName="Category"></AgGridColumn>}
                                             {isRMDomesticOrRMImport === true && <AgGridColumn width={120} field="RMName" tooltipField="RMName" headerName="RM Name" ></AgGridColumn>}
                                             {isRMDomesticOrRMImport === true && <AgGridColumn width={120} field="RMGrade" tooltipField="RMGrade" headerName="Grade" ></AgGridColumn>}
                                             {isMachineRate && <AgGridColumn width={145} field="ProcessName" tooltipField="ProcessName" headerName="Process Name"></AgGridColumn>}

@@ -754,7 +754,7 @@ function CostingDetails(props) {
   const closeVendorDrawer = (e = '', vendorData = {}) => {
     if (Object.keys(vendorData).length > 0) {
       //CONDITION TO CHECK DUPLICATE ENTRY IN GRID
-      const isExist = vbcVendorGrid.findIndex(el => (el.VendorId === vendorData.VendorId && el.DestinationPlantId === vendorData.DestinationPlantId))
+      const isExist = vbcVendorGrid.findIndex(el => (el.VendorId === vendorData.VendorId && el.DestinationPlantId === vendorData.DestinationPlantId && el.InfoCategory === vendorData.InfoCategory))
       if (isExist !== -1) {
         Toaster.warning('Already added, Please select another plant.')
         return false;
@@ -1091,6 +1091,7 @@ function CostingDetails(props) {
             CostingTypeId: type,
             CustomerId: type === CBCTypeId ? tempData.CustomerId : EMPTY_GUID,
             CustomerName: type === CBCTypeId ? tempData.CustomerName : '',
+            InfoCategory: vbcVendorGrid[index]?.InfoCategory,
           }
           if (IdForMultiTechnology.includes(technology?.value) || (type === WACTypeId)) {
             data.Technology = technology.label
@@ -2645,6 +2646,7 @@ function CostingDetails(props) {
                                       <tr>
                                         <th className='vendor'>{`Vendor (Code)`}</th>
                                         {initialConfiguration?.IsDestinationPlantConfigure && <th className="destination-plant">{`Destination Plant (Code)`}</th>}
+                                        <th className=' '>{`Category`}</th>
                                         <th className="share-of-business">{`SOB (%)`}{SOBAccessibility && vbcVendorGrid.length > 0 && <button className="edit-details-btn ml5" type={"button"} onClick={updateVBCState} />}</th>
                                         <th className="costing-version">{`Costing Version`}</th>
                                         <th className="text-center costing-status">{`Status`}</th>
@@ -2664,6 +2666,7 @@ function CostingDetails(props) {
                                           <tr key={index}>
                                             <td className='break-word'>{item.VendorName}</td>
                                             {initialConfiguration?.IsDestinationPlantConfigure && <td className='break-word'>{item?.DestinationPlantName ? `${item.DestinationPlantName}` : ''}</td>}
+                                            <td className='break-word'>{item?.InfoCategory}</td>
                                             <td className="w-100px cr-select-height costing-error-container">
                                               <TextFieldHookForm
                                                 label=""
