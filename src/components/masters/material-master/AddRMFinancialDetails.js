@@ -93,7 +93,8 @@ function AddRMFinancialDetails(props) {
         totalOtherCost: 0,
         isShowIndexCheckBox: false,
         exchange: [],
-        index: []
+        index: [],
+        enableHalfMonthDays: false,
 
     });
     const [showScrapKeys, setShowScrapKeys] = useState({
@@ -633,6 +634,7 @@ function AddRMFinancialDetails(props) {
         }
 
     };
+
     const handleFrequencyChange = (selectedOption) => {
         if (selectedOption && selectedOption !== '') {
             setState(prevState => ({
@@ -640,6 +642,7 @@ function AddRMFinancialDetails(props) {
                 frequencyOfSettlement: selectedOption.label,
                 toDate: '',
                 fromDate: '',
+                enableHalfMonthDays: selectedOption?.label === 'Half Month Avg'
             }));
             if (selectedOption?.label === 'As and When') {
                 setState(prevState => ({ ...prevState, disableToDate: false }));
@@ -665,6 +668,18 @@ function AddRMFinancialDetails(props) {
             case 'Fortnightly':
                 // Add 13 days for a fortnight's duration
                 validToDate = addDays(date, 13);
+                break;
+            case 'Half Month Avg':
+                if (getDate(date) === 1) {
+                    validToDate = addDays(date, 14); // 15th of the month
+                } else if (getDate(date) === 16) {
+                    validToDate = endOfMonth(date); // Last day of the month
+                } else {
+                    validToDate = null; // Invalid selection, reset the date
+                    setValue('fromDate', '');
+                    setValue('toDate', '');
+                    return;
+                }
                 break;
             case 'Monthly':
                 if (getDate(date) === 1) {
@@ -942,7 +957,13 @@ function AddRMFinancialDetails(props) {
         }
         dispatch(SetCommodityIndexAverage('', 0, '', 0, newValue?.value, '', ''))
     };
-
+    const filterDates = (date) => {
+        if (state.enableHalfMonthDays) {
+            const day = getDate(date);
+            return day === 1 || day === 16;
+        }
+        return true;
+    };
     return (
         <Fragment>
             {/* <Row >
@@ -1079,6 +1100,7 @@ function AddRMFinancialDetails(props) {
                                             disabled={disableAll || isEditFlag || isViewFlag}
                                             mandatory={true}
                                             errors={errors && errors.fromDate}
+                                            filterDate={filterDates}
                                         />
                                     </div>
                                 </Col>
