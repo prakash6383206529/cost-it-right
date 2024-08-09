@@ -2648,6 +2648,9 @@ function AddRfq(props) {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
     }
+    function shouldEnableRadioButton(partList, rmDataList, bopDataList) {
+        return (partList?.length !== 0 || rmDataList?.length !== 0 || bopDataList?.length !== 0);
+    }
 
     const frameworkComponents = {
         hyphenFormatter: hyphenFormatter,
@@ -2697,7 +2700,7 @@ function AddRfq(props) {
                                                 id='componentAssembly'
                                                 checked={selectedOption === 'componentAssembly' ? true : false}
                                                 onClick={handleRadioChange("componentAssembly")}
-                                                disabled={props?.isAddFlag ? Object.keys(plant).length !== 0 : (props?.isEditFlag || props?.isViewFlag)}
+                                                disabled={/* props?.isAddFlag ? Object.keys(plant).length !== 0 : (props?.isEditFlag || props?.isViewFlag) ||  */props?.isViewFlag || shouldEnableRadioButton(partList, rmDataList, bopDataList)}
                                             />{" "}
                                             <span> Component/Assembly</span>
                                         </Label>
@@ -2712,7 +2715,7 @@ function AddRfq(props) {
                                                 }
                                                 onClick={handleRadioChange("Raw Material")
                                                 }
-                                                disabled={props?.isAddFlag ? Object.keys(plant).length !== 0 : (props?.isEditFlag || props?.isViewFlag)}
+                                                disabled={/* props?.isAddFlag ? Object.keys(plant).length !== 0 : (props?.isEditFlag || props?.isViewFlag) ||  */props?.isViewFlag || shouldEnableRadioButton(partList, rmDataList, bopDataList)}
                                             />{" "}
                                             <span> RM</span>
                                         </Label>
@@ -2728,7 +2731,7 @@ function AddRfq(props) {
                                                 }
                                                 onClick={handleRadioChange("Bought Out Part")
                                                 }
-                                                disabled={props?.isAddFlag ? Object.keys(plant).length !== 0 : (props?.isEditFlag || props?.isViewFlag)}
+                                                disabled={/* props?.isAddFlag ? Object.keys(plant).length !== 0 : (props?.isEditFlag || props?.isViewFlag) || */ props?.isViewFlag || shouldEnableRadioButton(partList, rmDataList, bopDataList)}
                                             />{" "}
                                             <span> BOP</span>
                                         </Label>
@@ -2744,7 +2747,7 @@ function AddRfq(props) {
                                                 }
                                                 onClick={handleRadioChange("Tooling")
                                                 }
-                                                disabled={props?.isAddFlag ? Object.keys(plant).length !== 0 : (props?.isEditFlag || props?.isViewFlag)}
+                                                disabled={/* (props?.isAddFlag ? Object.keys(plant).length !== 0 : props?.isViewFlag)  */props?.isViewFlag || shouldEnableRadioButton(partList, rmDataList, bopDataList)}
                                             />{" "}
                                             <span>Tooling</span>
                                         </Label>
