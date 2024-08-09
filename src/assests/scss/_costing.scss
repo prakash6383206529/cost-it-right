@@ -765,15 +765,43 @@
     position: absolute;
   }
 }
-  .hide-error {
-    .text-help {
-      display: none;
-    }
+
+.hide-error {
+  .text-help {
+    display: none;
   }
+}
 
 .simulation-sap-approval {
 
   .row {
     padding-right: 0 !important;
   }
+}
+
+.rm-container-input {
+  border: 1px solid $borderColor;
+  max-height: 50px;
+  overflow-y: auto;
+  font-size: 14px;
+  border-radius: 5px;
+  padding: 3px 5px;
+  min-height: 40px;
+  margin-bottom: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+
+  button {
+    border-radius: 5px;
+    margin-left: 2px;
+
+    &:hover {
+      background-color: $negativeBackground;
+    }
+  }
+}
+
+.paper-corrugated::before {
+  right: -18px !important;
 }
