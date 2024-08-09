@@ -41,6 +41,7 @@ import MasterSendForApproval from '../masters/MasterSendForApproval';
 import { getUsersMasterLevelAPI } from '../../actions/auth/AuthActions';
 import { costingTypeIdToApprovalTypeIdFunction } from '../common/CommonFunctions';
 import { useHistory, useLocation } from 'react-router-dom/cjs/react-router-dom';
+import { ASSEMBLY } from '../../config/masterData';
 export const QuotationId = React.createContext();
 
 const gridOptions = {};
@@ -59,7 +60,7 @@ function RfqListing(props) {
     const [addRfqData, setAddRfqData] = useState({});
     const [isEdit, setIsEdit] = useState(false);
     const [rowData, setRowData] = useState([])
-    
+
     const [noData, setNoData] = useState(false)
     const [sendForApproval, setSendForApproval] = useState(false)
     const [rejectDrawer, setRejectDrawer] = useState(false)
@@ -116,7 +117,7 @@ const [shouldRedirect, setShouldRedirect] = useState(false)
         costingTypeId: ZBCTypeId
     })
     const userMasterLevelAPI = useSelector((state) => state.auth.userMasterLevelAPI)
-
+    const isAssemblyTechnology = rowData && rowData?.length > 0 ? rowData[0]?.TechnologyId === ASSEMBLY : false
     let arr = []
     const history = useHistory();
     const location = useLocation();
@@ -267,7 +268,7 @@ const [shouldRedirect, setShouldRedirect] = useState(false)
 
             // Grouping data based on PartType
             res?.data?.DataList?.map(item => {
-                
+
                 if (item.PartType === 'Raw Material') {
                     partNumberFech = 'RawMaterial';
                 } else if (item.PartType === 'Component' || item.PartType === 'Assembly') {
@@ -301,6 +302,7 @@ const [shouldRedirect, setShouldRedirect] = useState(false)
                 partTypes.forEach(type => {
                     switch (type.trim()) {
                         case 'Component':
+                        case 'Assembly':
                             temp = item.filter(el => el.CostingId !== null);
                             break;
                         case 'Raw Material':
@@ -861,7 +863,7 @@ const [shouldRedirect, setShouldRedirect] = useState(false)
     }
 
     const checkCostingSelected = (list, index) => {
-        
+
 
         setState(prevState => ({ ...prevState, approvalObj: list }));
         setIndex(index);
@@ -1048,11 +1050,17 @@ useEffect(() => {
             return [];
         } else {
             // Define an array of keys to check when finding the "best cost"
-            const keysToCheck = ["netRM", "netBOP", "pCost", "oCost", "sTreatment", "nPackagingAndFreight", "totalToolCost", "nsTreamnt", "tCost", "nConvCost", "nTotalRMBOPCC", "netSurfaceTreatmentCost", "nOverheadProfit", "nPoPriceCurrency", "nPOPrice", "nPOPriceWithCurrency", "TotalTCOCost"];
-            const keysToCheckSum = ["netRM", "netBOP", "nPackagingAndFreight", "totalToolCost", "nConvCost", "netSurfaceTreatmentCost", "nOverheadProfit", "TotalTCOCost"];
+            let keysToCheck = []
+            let keysToCheckSum = []
             const keysToAvoid = ["TotalTCOCost"];
             // const keysToCheck = ["nPOPriceWithCurrency"];
-
+            if (isAssemblyTechnology) {
+                keysToCheck = ["nTotalRMBOPCC", "sTreatment", "nPackagingAndFreight", "totalToolCost", "nsTreamnt", "tCost", "nConvCost", "netSurfaceTreatmentCost", "nOverheadProfit", "nPoPriceCurrency", "nPOPrice", "nPOPriceWithCurrency", "TotalTCOCost"];
+                keysToCheckSum = ["nTotalRMBOPCC", "nPackagingAndFreight", "totalToolCost", "nConvCost", "netSurfaceTreatmentCost", "nOverheadProfit", "TotalTCOCost"];
+            } else {
+                keysToCheck = ["netRM", "netBOP", "pCost", "oCost", "sTreatment", "nPackagingAndFreight", "totalToolCost", "nsTreamnt", "tCost", "nConvCost", "nTotalRMBOPCC", "netSurfaceTreatmentCost", "nOverheadProfit", "nPoPriceCurrency", "nPOPrice", "nPOPriceWithCurrency", "TotalTCOCost"];
+                keysToCheckSum = ["netRM", "netBOP", "nPackagingAndFreight", "totalToolCost", "nConvCost", "netSurfaceTreatmentCost", "nOverheadProfit", "TotalTCOCost"];
+            }
             // Create a new object to represent the "best cost" and set it to the first object in the input array
             let minObject = _.cloneDeep(finalArrayList[0]);
 
@@ -1129,7 +1137,7 @@ useEffect(() => {
 
 
         setDisableApproveRejectButton(isApproval.length > 0)
-        let costingIdList = [...selectedRows[0]?.ShouldCostings, ...selectedRows]
+        let costingIdList = selectedRows?.length > 0 ? [...selectedRows[0]?.ShouldCostings, ...selectedRows] : selectedRows
         setSelectedCostingList([])
         const partTypes = partType.split(',');
         partTypes.forEach(type => {
@@ -1216,7 +1224,8 @@ useEffect(() => {
                     data = partNumber.map(item => rowData?.filter(el => el.BoughtOutPart === item))             // SELECTED ALL COSTING ON THE CLICK ON PART
 
                     break;
-                case 'Component' || 'Assembly':
+                case 'Component':
+                case 'Assembly':
                     selectedRows?.map(item => partNumber?.push(item.PartNo))
                     data = partNumber.map(item => rowData?.filter(el => el.PartNumber === item))             // SELECTED ALL COSTING ON THE CLICK ON PART
                     break;
@@ -1654,7 +1663,7 @@ useEffect(() => {
                         costingTypeId={ZBCTypeId}
                         levelDetails={state.levelDetails}
                         partType={partType}
-                        selectedRows = {selectedRows}
+                        selectedRows={selectedRows}
                     />
                 }
 
@@ -1670,7 +1679,7 @@ useEffect(() => {
                         onClick={handleInitiateAuction}
                     >
                         <div className={"save-icon"}></div>
-                        {"Initiate Auction"}
+                        {"Initiate Reverse Auction"}
                     </button>)}
                     {(matchedStatus?.length !== 0 || matchedStatus?.includes(RECEIVED)) && (
                         <button type={'button'} disabled={costingsDifferentStatus} className="mr5 approve-reject-btn" onClick={() => returnDetailsClick("", selectedRows)} >

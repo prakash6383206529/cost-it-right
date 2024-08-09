@@ -303,3 +303,25 @@
 .comparation-auction {
     min-height: calc(100vh - 256px);
 }
+
+.rank {
+    font-size: 20px;
+    width: 40px;
+    border-radius: 5px;
+    padding: 5px;
+
+    &.Green {
+        background-color: #00C82826;
+        color: #009C27;
+    }
+
+    &.Red {
+        background-color: #DE000024;
+        color: #D60006;
+    }
+
+    &.Yellow {
+        background-color: #FFFF253B;
+        color: #F2D200;
+    }
+}

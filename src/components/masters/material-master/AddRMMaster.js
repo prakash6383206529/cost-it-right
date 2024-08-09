@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useState } from "react"
+import React, { Fragment, useEffect, useRef, useState } from "react"
 import { Row, Col, Label } from 'reactstrap';
 import AddRMDetails from "./AddRMDetails"
 import AddRMFinancialDetails from "./AddRMFinancialDetails"
@@ -65,7 +65,6 @@ function AddRMMaster(props) {
         sourceVendorRawMaterialId: null,
         isSourceVendor: false,
     })
-
     const isViewFlag = data?.isViewFlag === true ? true : false
     const rawMaterailDetails = useSelector((state) => state.material.rawMaterailDetails)
 
@@ -74,9 +73,9 @@ function AddRMMaster(props) {
 
     const avgValues = useWatch({
         control,
-        name: ['Material', 'Index', 'ExchangeSource', 'fromDate', 'toDate']
+        name: ['Index', 'ExchangeSource', 'fromDate']
     })
-    const soruceVendorValues = useWatch({
+    const sourceVendorValues = useWatch({
         control,
         name: ['RawMaterialSpecification', 'Technology', 'sourceVendorName']
     })
@@ -88,7 +87,7 @@ function AddRMMaster(props) {
     useEffect(() => {
 
         if (!isViewFlag && !state.sourceVendorRawMaterialId && rawMaterailDetails?.SourceVendor?.value && getValues('RawMaterialSpecification') && getValues('Technology')) {
-
+            setState(prevState => ({ ...prevState, disableSendForApproval: true }));
             let data = {
                 rawMaterialSpecificationId: getValues('RawMaterialSpecification')?.value,
                 sourceVendorId: rawMaterailDetails?.SourceVendor?.value,
@@ -97,7 +96,7 @@ function AddRMMaster(props) {
                 costingHeadId: state.costingTypeId
             }
             dispatch(getRawMaterialDataBySourceVendor(data, (res) => {
-
+                setState(prevState => ({ ...prevState, disableSendForApproval: false }));
                 let Data = res?.data?.Data
 
                 if (res?.status === 200) {
@@ -108,7 +107,8 @@ function AddRMMaster(props) {
                         DataToChange: Data,
                         disableAll: true,
                         isLoader: false,
-                        commodityDetails: Data?.MaterialCommodityIndexRateDetails
+                        commodityDetails: Data?.MaterialCommodityIndexRateDetails,
+                        disableSendForApproval: false
                     }))
                     dispatch(setOtherCostDetails(Data?.RawMaterialOtherCostDetails))
                     dispatch(setCommodityDetails(Data?.MaterialCommodityIndexRateDetails))
@@ -122,10 +122,10 @@ function AddRMMaster(props) {
                 }
             }))
         }
-    }, [soruceVendorValues, rawMaterailDetails?.SourceVendor, rawMaterailDetails?.isShowIndexCheckBox, state.costingTypeId])
+    }, [sourceVendorValues, rawMaterailDetails?.SourceVendor, rawMaterailDetails?.isShowIndexCheckBox, state.costingTypeId])
 
     useEffect(() => {
-        if (!isViewFlag && state.callAvgApi === true && getValues('Material')?.value !== null && getValues('Index')?.value !== null && getValues('ExchangeSource') && getValues('fromDate') && getValues('toDate') && !state?.isSourceVendorApiCalled) {
+        if (!isViewFlag && state.callAvgApi === true && getValues('Index')?.value !== null && getValues('ExchangeSource') && getValues('fromDate') && !state?.isSourceVendorApiCalled) {
             dispatch(getCommodityIndexRateAverage(
                 getValues('Material')?.value,
                 getValues('Index').value,

@@ -80,6 +80,7 @@ function RunSimulationDrawer(props) {
     const showCheckBox = !(simulationApplicability?.value === APPLICABILITY_PART_SIMULATION)
     const [otherCostApplicabilityListing, setOtherCostApplicabilityListing] = useState([])
     const [remainingApplicabilityListing, setRemainingApplicabilityListing] = useState([])
+    const { applicabilityHeadListSimulation } = useSelector(state => state.simulation)
 
     useEffect(() => {
         dispatch(getSelectListOfSimulationApplicability(() => { }))
@@ -142,9 +143,13 @@ function RunSimulationDrawer(props) {
             })
         }
     }, [topAndLeftMenuData])
-
+    useEffect(() => {
+        if (applicabilityHeadListSimulation && applicabilityHeadListSimulation.length > 0) {
+            const result = applicabilityHeadListSimulation.slice(1, 11).map(item => item.Text);
+            setSelectedData(result)
+        }
+    }, [applicabilityHeadListSimulation])
     // const costingHead = useSelector(state => state.comman.costingHead)
-    const { applicabilityHeadListSimulation } = useSelector(state => state.simulation)
     const toggleDrawer = (event, mode = false) => {
         if (runSimulationDisable) {
             return false
@@ -162,9 +167,15 @@ function RunSimulationDrawer(props) {
 
     const handleApplicabilityChange = (elementObj) => {
 
-
         let temp = multipleHeads
         let temp1 = selectedData
+        if (selectedData.includes(elementObj.Text)) {
+            temp1 = selectedData.filter((el) => el !== elementObj.Text)
+            setSelectedData(temp1)
+        } else {
+            temp1 = [...selectedData, elementObj.Text]
+            setSelectedData(temp1)
+        }
         if (temp && temp.findIndex(el => el.SimulationApplicabilityId === elementObj.Value) !== -1) {
             const ind = multipleHeads.findIndex((el) => el.SimulationApplicabilityId === elementObj.Value)
             const indexForCheck = selectedData.findIndex((el) => el === elementObj.Text)
@@ -177,6 +188,7 @@ function RunSimulationDrawer(props) {
             temp.push({ SimulationApplicabilityName: elementObj.Text, SimulationApplicabilityId: elementObj.Value })
             temp1.push(elementObj.Text)
         }
+
         setMultipleHeads(temp)
         setSelectedData(temp1)
         setIsOpposite(!opposite)
@@ -289,8 +301,10 @@ function RunSimulationDrawer(props) {
         if (id === "Latest Exchange Rate" && selectedMasterForSimulation?.value === EXCHNAGERATE) {
             return true
         }
+        if (selectedData.includes(id)) {
+            return true
+        }
     }
-
 
     const checkForResponse = (res) => {
         setRunSimulationDisable(false)
