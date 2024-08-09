@@ -34,6 +34,7 @@ const gridOptions = {};
 
 
 function RfqListing(props) {
+
     const [gridApi, setgridApi] = useState(null);                      // DONT DELETE THIS STATE , IT IS USED BY AG GRID
     const [gridColumnApi, setgridColumnApi] = useState(null);          // DONT DELETE THIS STATE , IT IS USED BY AG GRID
     const [loader, setloader] = useState(false);
@@ -610,7 +611,7 @@ function RfqListing(props) {
                         <ViewRfq
                             data={viewRfqData}
                             isOpen={viewRfq}
-                            partType={'BOP'}
+                            getDataList={getDataList}
                             closeDrawer={closeDrawerViewRfq}
                         />
 
