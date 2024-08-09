@@ -102,7 +102,7 @@ function RfqListing(props) {
     const [masterRejectDrawer, setMasterRejectDrawer] = useState(false)
     const [actionType, setActionType] = useState('');
     const statusColumnData = useSelector((state) => state.comman.statusColumnData);
-
+const [shouldRedirect, setShouldRedirect] = useState(false)
     const { viewRmDetails } = useSelector(state => state.material)
     const { viewBOPDetails } = useSelector((state) => state.boughtOutparts);
     const [state, setState] = useState({
@@ -976,7 +976,12 @@ function RfqListing(props) {
         )
     };
 
-
+// Add this effect
+useEffect(() => {
+    if (shouldRedirect) {
+        history.push('/rfq-listing');
+    }
+}, [shouldRedirect, history]);
     const closeDrawer = (e = '', type) => {
         setAddRfqData({})
         setAddRfq(false)
@@ -984,6 +989,7 @@ function RfqListing(props) {
         setReturnDrawer(false)
         if (type !== 'cancel') {
             getDataList()
+            setShouldRedirect(true)
         }
     }
 
@@ -1317,9 +1323,11 @@ function RfqListing(props) {
 
     const closeSendForApproval = (e = '', type) => {
         setSendForApproval(false)
+        // history.push('/rfq-listing');
+        // <RfqListing />
+
         if (type !== "Cancel") {
             getDataList()
-            history.push('/rfq-listing');
         }
     }
     const getRowStyle = () => {
@@ -1365,16 +1373,17 @@ function RfqListing(props) {
 
     }
 
-
+   
     const closeApprovalDrawer = (e = '', type) => {
-        setApproveDrawer(false)
-        setMasterRejectDrawer(false)
-
-        if (type === 'submit') {
-            this.clearForm('submit')
-            this.cancel('submit')
+            setApproveDrawer(false);
+            setMasterRejectDrawer(false);
+        
+            if (type !== "Cancel") {
+                props.closeDrawer(true); // Pass true to indicate that data should be refreshed
+            } else {
+                props.closeDrawer(false); // Pass false if no refresh is needed
+            }
         }
-    }
     const handleInitiateAuction = () => {
         history.push({
             pathname: '/add-auction',
