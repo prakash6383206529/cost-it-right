@@ -13,12 +13,12 @@ import { getCostingCondition } from '../../../actions/Common'
 import { getRMCostIds } from '../../common/CommonFunctions'
 
 function AddOtherCostDrawer(props) {
-
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
     const dispatch = useDispatch();
 
     const { currency, rmBasicRate, isFromImport, isFromMaster, RowData, RowIndex } = props
-
+    const Currency = props?.RowData?.IndexCurrency
+    const UOM = props?.RowData?.IndexUOM
     const [tableData, setTableData] = useState([]);
     const [disableTotalCost, setDisableTotalCost] = useState(true)
     const [disableAllFields, setDisableAllFields] = useState(true)
@@ -185,7 +185,7 @@ function AddOtherCostDrawer(props) {
             }
         } else {
             if (type === "") {
-                cssClass = 'mb-3';
+                cssClass = 'mt-4 pt-1';
             } else if (type === "Fixed") {
                 cssClass = 'mb-3';
             } else {
@@ -201,7 +201,6 @@ function AddOtherCostDrawer(props) {
         }
         return cssClass
     }
-
     const applicabilityChange = (e) => {
 
         // Handle Basic Rate separately
@@ -322,6 +321,7 @@ function AddOtherCostDrawer(props) {
         { label: "Shipping Line Charges", value: "Shipping Line Charges" },
         { label: "Processing Cost", value: "Processing Cost" },
         { label: "Import Freight", value: "Import Freight" },
+        { label: "Yield Loss", value: "Yield Loss" },
     ];
 
     const combinations = [];
@@ -352,9 +352,10 @@ function AddOtherCostDrawer(props) {
         const costBaseCurrency = getValues('CostBaseCurrency');
         const applicabilityBaseCost = getValues('ApplicabilityBaseCost');
         const remark = getValues('Remark');
+        const costDescription = getValues('CostDescription');
 
         // If 'Type' is not provided, return false
-        if (!type || !cost || !remark) { Toaster.warning('Please enter all mandatory details to add a row.'); return false };
+        if (!type || !cost || !remark || !costDescription) { Toaster.warning('Please enter all mandatory details to add a row.'); return false };
         if (type.label === "Percentage") {
             // If 'Type' is 'percentage', check for 'Applicability' and 'Percentage'
             if (!applicability || !applicabilityBaseCost || !percentage || percentage === 0) {
@@ -524,9 +525,9 @@ function AddOtherCostDrawer(props) {
                                                 Controller={Controller}
                                                 control={control}
                                                 register={register}
-                                                mandatory={false}
+                                                mandatory={true}
                                                 rules={{
-                                                    required: false,
+                                                    required: true,
                                                     validate: { checkWhiteSpaces, hashValidation },
                                                     maxLength: 80
                                                 }}
@@ -584,7 +585,7 @@ function AddOtherCostDrawer(props) {
                                                 {!props.rawMaterial && <Col md={3} className={'px-2'}>
 
                                                     <TextFieldHookForm
-                                                        label={`Applicability Cost (Currency)`}
+                                                        label={`Applicability Cost (${Currency}/${UOM})`}
                                                         name={'ApplicabilityCostCurrency'}
                                                         id={'cost-by-percent'}
                                                         Controller={Controller}
@@ -655,7 +656,7 @@ function AddOtherCostDrawer(props) {
                                         {!props.rawMaterial && <Col md={3} className={'px-2'}>
 
                                             <TextFieldHookForm
-                                                label={`Cost (Currency)`}
+                                                label={`Cost (${Currency}/${UOM})`}
                                                 name={'CostCurrency'}
                                                 id={'cost-by-percent'}
                                                 Controller={Controller}
@@ -746,10 +747,10 @@ function AddOtherCostDrawer(props) {
                                                     <th>{`Cost Description`}</th>
                                                     <th>{`Type`}</th>
                                                     <th>{`Applicability`}</th>
-                                                    {!props.rawMaterial && <th>{`Applicability Cost (Currency)`}</th>}
+                                                    {!props.rawMaterial && <th>{`Applicability Cost (${Currency}/${UOM})`}</th>}
                                                     <th>{`Applicability Cost (${reactLocalStorage.getObject("baseCurrency")})`}</th>
                                                     <th>{`Percentage (%)`}</th>
-                                                    {!props.rawMaterial && <th>{`Cost (Currency)`}</th>}
+                                                    {!props.rawMaterial && <th>{`Cost (${Currency}/${UOM})`}</th>}
                                                     <th>{`Cost (${reactLocalStorage.getObject("baseCurrency")})`}</th>
                                                     <th>{`Remark`}</th>
                                                     {!props.hideAction && <th className='text-right'>{`Action`}</th>}

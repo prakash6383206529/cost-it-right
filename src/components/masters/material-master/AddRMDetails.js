@@ -981,47 +981,47 @@ function AddRMDetails(props) {
                         </>
                     )}
                 </Row>}
-                {
-                    state.isRMDrawerOpen && (
-                        <AddSpecification
-                            isOpen={state.isRMDrawerOpen}
-                            closeDrawer={closeRMDrawer}
-                            isEditFlag={false}
-                            ID={""}
-                            anchor={"right"}
-                            AddAccessibilityRMANDGRADE={props.AddAccessibilityRMANDGRADE}
-                            EditAccessibilityRMANDGRADE={props.EditAccessibilityRMANDGRADE}
-                            RawMaterial={""}
-                            RMGrade={""}
-                            isRMDomesticSpec={true}
-                            Technology={state.Technology?.value}
-                        />
-                    )
-                }
-                {
-                    state.isOpenVendor && (
-                        <AddVendorDrawer
-                            isOpen={state.isOpenVendor}
-                            isRM={true}
-                            closeDrawer={closeVendorDrawer}
-                            isEditFlag={false}
-                            ID={""}
-                            anchor={"right"}
-                        />
-                    )
-                }
-                {
-                    state.isOpenAssociation && (
-                        <Association
-                            isOpen={state.isOpenAssociation}
-                            closeDrawer={closeAssociationDrawer}
-                            isEditFlag={false}
-                            ID={""}
-                            anchor={"right"}
-                        />
-                    )
-                }
             </Row>}
+            {
+                state.isRMDrawerOpen && (
+                    <AddSpecification
+                        isOpen={state.isRMDrawerOpen}
+                        closeDrawer={closeRMDrawer}
+                        isEditFlag={false}
+                        ID={""}
+                        anchor={"right"}
+                        AddAccessibilityRMANDGRADE={props.AddAccessibilityRMANDGRADE}
+                        EditAccessibilityRMANDGRADE={props.EditAccessibilityRMANDGRADE}
+                        RawMaterial={""}
+                        RMGrade={""}
+                        isRMDomesticSpec={true}
+                        Technology={state.Technology?.value}
+                    />
+                )
+            }
+            {
+                state.isOpenVendor && (
+                    <AddVendorDrawer
+                        isOpen={state.isOpenVendor}
+                        isRM={true}
+                        closeDrawer={closeVendorDrawer}
+                        isEditFlag={false}
+                        ID={""}
+                        anchor={"right"}
+                    />
+                )
+            }
+            {
+                state.isOpenAssociation && (
+                    <Association
+                        isOpen={state.isOpenAssociation}
+                        closeDrawer={closeAssociationDrawer}
+                        isEditFlag={false}
+                        ID={""}
+                        anchor={"right"}
+                    />
+                )
+            }
         </Fragment>
     )
 }

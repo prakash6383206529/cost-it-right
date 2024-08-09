@@ -2648,7 +2648,13 @@ function AddRfq(props) {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
     }
-
+    function shouldEnableRadioButton(partList, rmDataList, bopDataList) {
+        return (partList?.length !== 0 || rmDataList?.length !== 0 || bopDataList?.length !== 0);
+    }
+    function ShowLdClause(partType) {
+        const partTypesToReturnFalse = ['Component', 'Assembly', 'componentAssembly', 'Raw Material'];
+        return !partTypesToReturnFalse.includes(partType);
+    }
     const frameworkComponents = {
         hyphenFormatter: hyphenFormatter,
         buttonFormatterFirst: buttonFormatterFirst,
@@ -2697,7 +2703,7 @@ function AddRfq(props) {
                                                 id='componentAssembly'
                                                 checked={selectedOption === 'componentAssembly' ? true : false}
                                                 onClick={handleRadioChange("componentAssembly")}
-                                                disabled={props?.isAddFlag ? Object.keys(plant).length !== 0 : (props?.isEditFlag || props?.isViewFlag)}
+                                                disabled={/* props?.isAddFlag ? Object.keys(plant).length !== 0 : (props?.isEditFlag || props?.isViewFlag) ||  */props?.isViewFlag || shouldEnableRadioButton(partList, rmDataList, bopDataList)}
                                             />{" "}
                                             <span> Component/Assembly</span>
                                         </Label>
@@ -2712,7 +2718,7 @@ function AddRfq(props) {
                                                 }
                                                 onClick={handleRadioChange("Raw Material")
                                                 }
-                                                disabled={props?.isAddFlag ? Object.keys(plant).length !== 0 : (props?.isEditFlag || props?.isViewFlag)}
+                                                disabled={/* props?.isAddFlag ? Object.keys(plant).length !== 0 : (props?.isEditFlag || props?.isViewFlag) ||  */props?.isViewFlag || shouldEnableRadioButton(partList, rmDataList, bopDataList)}
                                             />{" "}
                                             <span> RM</span>
                                         </Label>
@@ -2728,7 +2734,7 @@ function AddRfq(props) {
                                                 }
                                                 onClick={handleRadioChange("Bought Out Part")
                                                 }
-                                                disabled={props?.isAddFlag ? Object.keys(plant).length !== 0 : (props?.isEditFlag || props?.isViewFlag)}
+                                                disabled={/* props?.isAddFlag ? Object.keys(plant).length !== 0 : (props?.isEditFlag || props?.isViewFlag) || */ props?.isViewFlag || shouldEnableRadioButton(partList, rmDataList, bopDataList)}
                                             />{" "}
                                             <span> BOP</span>
                                         </Label>
@@ -2744,7 +2750,7 @@ function AddRfq(props) {
                                                 }
                                                 onClick={handleRadioChange("Tooling")
                                                 }
-                                                disabled={props?.isAddFlag ? Object.keys(plant).length !== 0 : (props?.isEditFlag || props?.isViewFlag)}
+                                                disabled={/* (props?.isAddFlag ? Object.keys(plant).length !== 0 : props?.isViewFlag)  */props?.isViewFlag || shouldEnableRadioButton(partList, rmDataList, bopDataList)}
                                             />{" "}
                                             <span>Tooling</span>
                                         </Label>
@@ -3324,28 +3330,30 @@ function AddRfq(props) {
                                                         placeholder="-"
                                                     />
                                                 </Col>
-                                                <Col md="3">
-                                                    <TextFieldHookForm
-                                                        // title={titleObj.descriptionTitle}
-                                                        label="LD Clause"
-                                                        name={'LDClause'}
-                                                        Controller={Controller}
-                                                        control={control}
-                                                        register={register}
-                                                        rules={{
-                                                            required: true,
-                                                            maxLength: 80
-                                                        }}
-                                                        mandatory={false}
-                                                        handleChange={() => { }}
-                                                        defaultValue={''}
-                                                        className=""
-                                                        customClassName={'withBorder'}
-                                                        errors={errors.LDClause}
-                                                        disabled={(dataProps?.isViewFlag) ? true : false || disabledVendoUi}
+                                                {ShowLdClause(selectedOption) && (
+                                                    <Col md="3">
+                                                        <TextFieldHookForm
+                                                            // title={titleObj.descriptionTitle}
+                                                            label="LD Clause"
+                                                            name={'LDClause'}
+                                                            Controller={Controller}
+                                                            control={control}
+                                                            register={register}
+                                                            rules={{
+                                                                required: true,
+                                                                maxLength: 80
+                                                            }}
+                                                            mandatory={false}
+                                                            handleChange={() => { }}
+                                                            defaultValue={''}
+                                                            className=""
+                                                            customClassName={'withBorder'}
+                                                            errors={errors.LDClause}
+                                                            disabled={(dataProps?.isViewFlag) ? true : false || disabledVendoUi}
 
-                                                    />
-                                                </Col>
+                                                        />
+                                                    </Col>
+                                                )}
                                             </>)
                                             }
                                             <Col md="3" className='d-flex align-items-center pb-1'>
@@ -3403,7 +3411,7 @@ function AddRfq(props) {
                                                                         <AgGridColumn width={"270px"} field="ContactPerson" headerName="Point of Contact" ></AgGridColumn>)}
                                                                     {vendorList && havellsKey && <AgGridColumn field='IncoTerms' header='Inco Terms' cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                                                                     {vendorList && havellsKey && <AgGridColumn field='PaymentTerms' header='Payment Terms' cellRenderer={'hyphenFormatter'} ></AgGridColumn>}
-                                                                    {vendorList && havellsKey && <AgGridColumn field='LDClause' header='LD Clause' cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                                                                    {vendorList && havellsKey && ShowLdClause(selectedOption) && <AgGridColumn field='LDClause' header='LD Clause' cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                                                                     <AgGridColumn width={"270px"} field="VendorId" headerName="Vendor Id" hide={true} ></AgGridColumn>
                                                                     <AgGridColumn width={"180px"} field="VendorId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'buttonFormatterVendorTable'}></AgGridColumn>
                                                                 </AgGridReact>
