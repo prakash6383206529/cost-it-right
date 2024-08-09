@@ -251,7 +251,7 @@ function AddIndexationMaterialListing(props) {
                                                                 <AgGridColumn width={150} field="BasicRateConversion" headerName={`Basic Rate (${reactLocalStorage.getObject('baseCurrency')})`} editable={false} cellRenderer='priceFormatter'></AgGridColumn>
                                                                 <AgGridColumn width={225} field="OtherCostBaseCurrency" headerName={`Other Cost (${reactLocalStorage.getObject('baseCurrency')})`} editable={false} cellRenderer='otherCostBaseCurrencyFormatter'></AgGridColumn>
                                                                 <AgGridColumn width={180} field="BasicRateConversion" headerName={`Total Cost (${reactLocalStorage.getObject('baseCurrency')})`} cellRenderer='buttonFormatter' editable={false} ></AgGridColumn>
-                                                                <AgGridColumn width={180} field="BasicRateConversion" headerName={`Total Cost (${reactLocalStorage.getObject('baseCurrency')}) by %`} cellRenderer='totalFormatter' editable={false} ></AgGridColumn>
+                                                                <AgGridColumn width={225} field="BasicRateConversion" headerName={`Weighted Total Cost (${reactLocalStorage.getObject('baseCurrency')})`} cellRenderer='totalFormatter' editable={false} ></AgGridColumn>
                                                             </AgGridReact>
                                                         </>)}
                                                 </div>
