@@ -581,7 +581,7 @@ function RfqListing(props) {
                                                 <AgGridColumn field="VendorName" tooltipField="VendorName" headerName='Vendor (Code)' cellRenderer={"hyphenFormatter"}></AgGridColumn>
                                                 <AgGridColumn field="PlantName" tooltipField="PlantName" headerName='Plant (Code)'></AgGridColumn>
                                                 <AgGridColumn field="TechnologyName" width={"160px"} headerName='Technology'></AgGridColumn>
-                                                <AgGridColumn field="RaisedBy" width={"160px"} headerName='Raised By'></AgGridColumn>
+                                                <AgGridColumn field="RaisedBy" width={"160px"} headerName='Initiated by'></AgGridColumn>
                                                 <AgGridColumn field="RaisedOn" width={"145px"} headerName='Raised On' cellRenderer='dateFormatter' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                                                 <AgGridColumn field="PartDataSentDate" width={"145px"} headerName='RFI Date' cellRenderer='dateFormatter' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
 

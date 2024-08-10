@@ -2041,6 +2041,7 @@ export const GET_BOP_PR_QUOTATION_DETAILS = "GET_BOP_PR_QUOTATION_DETAILS"
 export const SET_BOP_PR_QUOTATION_IDENTITY = "SET_BOP_PR_QUOTATION_IDENTITY"
 export const GET_RFQ_TOOLING_DETAILS = "GET_RFQ_TOOLING_DETAILS"
 export const UPDATED_TOOLING_DATA = "UPDATED_TOOLING_DATA"
+export const SET_TOOLING_SPECIFIC_ROW_DATA = "SET_TOOLING_SPECIFIC_ROW_DATA"
 
 //AUCTION 
 export const SET_AUCTION_DATA = 'SET_AUCTION_DATA'
@@ -3209,6 +3210,7 @@ export const showPaperCorrugatedBox = true
 
 export const showDynamicKeys = false
 export const hideDetailOfRubbercalci = true
+export const havellsConditionKey = true
 
 //VERSION 
 export const VERSION = "V3.0.20";

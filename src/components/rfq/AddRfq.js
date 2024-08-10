@@ -2655,6 +2655,13 @@ function AddRfq(props) {
         const partTypesToReturnFalse = ['Component', 'Assembly', 'componentAssembly', 'Raw Material'];
         return !partTypesToReturnFalse.includes(partType);
     }
+    function ShowQuoteSubmissionDate(partType) {
+        return havellsKey
+            ? (partType !== 'Tooling' && !showVendorSection && showSendButton && showSendButton !== 'PREDRAFT')
+            : true;
+    }
+
+
     const frameworkComponents = {
         hyphenFormatter: hyphenFormatter,
         buttonFormatterFirst: buttonFormatterFirst,
@@ -2823,7 +2830,7 @@ function AddRfq(props) {
                                                 disabled={Object.keys(prNumber).length !== 0 || ((partList?.length !== 0 || rmDataList?.length !== 0 || bopDataList?.length !== 0 || vendorList?.length !== 0) /* || showSendButton === PREDRAFT  */ || (dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll || disabledPartUid)))}
                                             />
                                         </Col>
-                                        {quotationType !== 'Tooling' && <Col md="3">
+                                        {ShowQuoteSubmissionDate(quotationType) && <Col md="3">
                                             <div className="inputbox date-section">
                                                 <div className="form-group">
                                                     <label>Quote Submission Date</label>

@@ -3348,7 +3348,10 @@ const CostingSummaryTable = (props) => {
                       }
                       {initialConfiguration?.IsShowTCO && <ViewTcoDetail isApproval={isApproval} viewCostingData={viewCostingData} isRfqCosting={props?.isRfqCosting} highlighter={highlighter} displayValueWithSign={displayValueWithSign} tableDataClass={tableDataClass} loader={loader} setLoader={setLoader} />}
                       {initialConfiguration?.IsShowTCO && <tr className={highlighter("nPackagingAndFreight", "main-row")}>
-                        <th>Total TCO </th>
+
+                        <th>Total TCO Cost <TooltipCustom id="tco_cost" tooltipText="calculation made upon Payment term, Warranty, Quality PPM, Incoterm and Investment" />
+                        </th>
+
                         {viewCostingData &&
                           viewCostingData?.map((data, index) => {
                             return (
