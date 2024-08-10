@@ -997,6 +997,7 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
   obj.OtherCostDetailsOverhead = setDynamicKeys(dataFromAPI?.CostingPartDetails?.OtherCostDetails, 'OverHead')
   obj.OtherCostDetailsProcess = setDynamicKeys(dataFromAPI?.CostingPartDetails?.OtherCostDetails, 'Process')
   obj.CalculatorType = dataFromAPI?.CostingPartDetails?.CalculatorType ?? ''
+  obj.InfoCategory = dataFromAPI?.InfoCategory ? dataFromAPI?.InfoCategory : '-'
   temp.push(obj)
   return temp
 }

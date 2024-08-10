@@ -29,9 +29,7 @@ import { rfqSaveBestCosting } from '../rfq/actions/rfq';
 function MasterSendForApproval(props) {
 
     const { type, IsFinalLevel, IsPushDrawer, reasonId, masterId, selectedRows, OnboardingId, approvalObj, isBulkUpload, IsImportEntry, approvalDetails, IsFinalLevelButtonShow, approvalData, levelDetails, Technology, showScrapKeys } = props
-    // const RFQPlantId = props.partType === 'Raw Material' ? (approvalObj && approvalObj[0]?.Plant && approvalObj[0]?.Plant[0]?.PlantId)  : approvalObj[0]?.PlantId
     const RFQPlantId = props?.partType === 'Raw Material' && props.isRFQ ? (approvalObj && approvalObj[0]?.Plant && approvalObj[0]?.Plant[0]?.PlantId) : approvalObj && approvalObj[0]?.PlantId
-    // const RFQPlantId = approvalObj ? approvalObj[0]?.Plant[0]?.PlantId : ''
 
 
     const { register, control, formState: { errors }, handleSubmit, setValue, getValues, reset, } = useForm({
@@ -579,7 +577,7 @@ function MasterSendForApproval(props) {
                     } else {
                         Toaster.success(`Token ${type === 'Reject' ? 'Rejected' : "Returned"}`);
                     }
-                    props.closeDrawer('', 'submit');
+                    props.closeDrawer('', `${type === 'Reject' ? 'reject' : "submit"}`);
                 })
                 .catch((error) => {
                     setIsDisable(false);

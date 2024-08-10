@@ -52,6 +52,7 @@ const BOPDomesticListing = (props) => {
   const { selectedRowForPagination } = useSelector(state => state.simulation)
   const { globalTakes } = useSelector((state) => state.pagination);
   const tourStartData = useSelector(state => state.comman.tourStartData);
+  const isRfq = props?.quotationId !== null || props?.quotationId !== '' || props?.quotationId !== undefined ? true : false
 
   const { t } = useTranslation("common")
 
@@ -449,7 +450,7 @@ const BOPDomesticListing = (props) => {
   * @method buttonFormatter
   * @description Renders buttons
   */
-  const { benchMark ,isRfq,isMasterSummaryDrawer} = props
+  const { benchMark ,isMasterSummaryDrawer} = props
   const buttonFormatter = (props) => {
     
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -924,7 +925,7 @@ const BOPDomesticListing = (props) => {
                 {initialConfiguration?.IsBoughtOutPartCostingConfigured && <AgGridColumn field="IsBreakupBoughtOutPart" headerName={`Detailed ${showBopLabel()}`}></AgGridColumn>}
                 {initialConfiguration?.IsBoughtOutPartCostingConfigured && <AgGridColumn field="TechnologyName" headerName="Technology" cellRenderer={'hyphenFormatter'} ></AgGridColumn>}
                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams} ></AgGridColumn>
-                {((!props?.isSimulation && !props?.isMasterSummaryDrawer) || (props.isRfq  && props?.isMasterSummaryDrawer)) && <AgGridColumn field="BoughtOutPartId" width={170} pinned="right" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                {((!props?.isSimulation && !props?.isMasterSummaryDrawer) || (isRfq  && props?.isMasterSummaryDrawer)) && <AgGridColumn field="BoughtOutPartId" width={170} pinned="right" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                          {props.isMasterSummaryDrawer && <AgGridColumn field="Attachements" headerName='Attachments' cellRenderer={'attachmentFormatter'}></AgGridColumn>}
                 {props.isMasterSummaryDrawer && <AgGridColumn field="Remark" tooltipField="Remark" ></AgGridColumn>}
               </AgGridReact>}

@@ -2325,6 +2325,7 @@ export const VIEW_COSTING_DATA = {
   // costingName: '',
   costingVersion: 'Costing Version',
   PoPriceWithDate: 'Net Cost (Effective from)',
+  InfoCategory: 'Category',
   partType: 'Part Type',
   partNumber: 'Part Number',
   partName: 'Part Name',
@@ -3213,7 +3214,7 @@ export const hideDetailOfRubbercalci = true
 export const havellsConditionKey = true
 
 //VERSION 
-export const VERSION = "V3.0.20";
+export const VERSION = "V3.1.0";
 
 
 
