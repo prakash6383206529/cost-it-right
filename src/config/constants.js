@@ -3214,7 +3214,7 @@ export const hideDetailOfRubbercalci = true
 export const havellsConditionKey = true
 
 //VERSION 
-export const VERSION = "V3.1.0";
+export const VERSION = "V3.1.1";
 
 
 
