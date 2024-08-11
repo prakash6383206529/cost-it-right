@@ -103,7 +103,7 @@ function RfqListing(props) {
     const [masterRejectDrawer, setMasterRejectDrawer] = useState(false)
     const [actionType, setActionType] = useState('');
     const statusColumnData = useSelector((state) => state.comman.statusColumnData);
-const [shouldRedirect, setShouldRedirect] = useState(false)
+    const [shouldRedirect, setShouldRedirect] = useState(false)
     const { viewRmDetails } = useSelector(state => state.material)
     const { viewBOPDetails } = useSelector((state) => state.boughtOutparts);
     const [state, setState] = useState({
@@ -995,12 +995,12 @@ const [shouldRedirect, setShouldRedirect] = useState(false)
         )
     };
 
-// Add this effect
-useEffect(() => {
-    if (shouldRedirect) {
-        history.push('/rfq-listing');
-    }
-}, [shouldRedirect, history]);
+    // Add this effect
+    useEffect(() => {
+        if (shouldRedirect) {
+            history.push('/rfq-listing');
+        }
+    }, [shouldRedirect, history]);
     const closeDrawer = (e = '', type) => {
         setAddRfqData({})
         setAddRfq(false)
@@ -1392,17 +1392,17 @@ useEffect(() => {
 
     }
 
-   
+
     const closeApprovalDrawer = (e = '', type) => {
-            setApproveDrawer(false);
-            setMasterRejectDrawer(false);
-        
-            if (type !== "Cancel") {
-                props.closeDrawer(true); // Pass true to indicate that data should be refreshed
-            } else {
-                props.closeDrawer(false); // Pass false if no refresh is needed
-            }
+        setApproveDrawer(false);
+        setMasterRejectDrawer(false);
+
+        if (type !== "Cancel") {
+            props.closeDrawer(true); // Pass true to indicate that data should be refreshed
+        } else {
+            props.closeDrawer(false); // Pass false if no refresh is needed
         }
+    }
     const handleInitiateAuction = () => {
         history.push({
             pathname: '/add-auction',
@@ -1434,7 +1434,7 @@ useEffect(() => {
                                 </h3>
                             </Col>
                             <Col md="6" className='d-flex justify-content-end align-items-center mb-2 mt-1'>
-                                <div className='d-flex  align-items-center'><div className='w-min-fit'>{havellsConditionKey ? "Initiated by:" : "Raised by:"}</div>
+                                <div className='d-flex  align-items-center'><div className='w-min-fit'>{havellsConditionKey ? "Initiated by:" : "Raised By:"}</div>
                                     <input
                                         type="text"
                                         className="form-control mx-2 defualt-input-value"
