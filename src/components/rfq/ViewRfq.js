@@ -42,6 +42,7 @@ import { getUsersMasterLevelAPI } from '../../actions/auth/AuthActions';
 import { costingTypeIdToApprovalTypeIdFunction } from '../common/CommonFunctions';
 import { useHistory, useLocation } from 'react-router-dom/cjs/react-router-dom';
 import { ASSEMBLY } from '../../config/masterData';
+import { havellsConditionKey } from '../.././config/constants';
 export const QuotationId = React.createContext();
 
 const gridOptions = {};
@@ -102,7 +103,7 @@ function RfqListing(props) {
     const [masterRejectDrawer, setMasterRejectDrawer] = useState(false)
     const [actionType, setActionType] = useState('');
     const statusColumnData = useSelector((state) => state.comman.statusColumnData);
-const [shouldRedirect, setShouldRedirect] = useState(false)
+    const [shouldRedirect, setShouldRedirect] = useState(false)
     const { viewRmDetails } = useSelector(state => state.material)
     const { viewBOPDetails } = useSelector((state) => state.boughtOutparts);
     const [state, setState] = useState({
@@ -488,6 +489,24 @@ const [shouldRedirect, setShouldRedirect] = useState(false)
     * @description approveDetails
     */
     const approveDetails = (Id, rowData = {}) => {
+        if (partType !== "Bought Out Part" && partType !== "Raw Material") {
+
+            const filteredData = viewCostingData.filter(item => selectedCostingList.includes(item.costingId));
+
+            // Check if the total share of business is 100%
+            const totalShareOfBusiness = filteredData
+                .map(item => item.shareOfBusinessPercent)
+                .reduce((total, percent) => total + percent, 0);
+
+
+            if (totalShareOfBusiness !== 100) {
+                Toaster.warning("The total share of business must be 100%.");
+                return false;
+            }
+        }
+
+
+
         if (partType === "Bought Out Part" || partType === "Raw Material") {
             setApproveDrawer(true)
             setActionType('Approve')
@@ -976,12 +995,12 @@ const [shouldRedirect, setShouldRedirect] = useState(false)
         )
     };
 
-// Add this effect
-useEffect(() => {
-    if (shouldRedirect) {
-        history.push('/rfq-listing');
-    }
-}, [shouldRedirect, history]);
+    // Add this effect
+    useEffect(() => {
+        if (shouldRedirect) {
+            history.push('/rfq-listing');
+        }
+    }, [shouldRedirect, history]);
     const closeDrawer = (e = '', type) => {
         setAddRfqData({})
         setAddRfq(false)
@@ -1373,17 +1392,17 @@ useEffect(() => {
 
     }
 
-   
+
     const closeApprovalDrawer = (e = '', type) => {
-            setApproveDrawer(false);
-            setMasterRejectDrawer(false);
-        
-            if (type !== "Cancel") {
-                props.closeDrawer(true); // Pass true to indicate that data should be refreshed
-            } else {
-                props.closeDrawer(false); // Pass false if no refresh is needed
-            }
+        setApproveDrawer(false);
+        setMasterRejectDrawer(false);
+
+        if (type !== "Cancel") {
+            props.closeDrawer(true); // Pass true to indicate that data should be refreshed
+        } else {
+            props.closeDrawer(false); // Pass false if no refresh is needed
         }
+    }
     const handleInitiateAuction = () => {
         history.push({
             pathname: '/add-auction',
@@ -1415,7 +1434,7 @@ useEffect(() => {
                                 </h3>
                             </Col>
                             <Col md="6" className='d-flex justify-content-end align-items-center mb-2 mt-1'>
-                                <div className='d-flex  align-items-center'><div className='w-min-fit'>Raised By:</div>
+                                <div className='d-flex  align-items-center'><div className='w-min-fit'>{havellsConditionKey ? "Initiated by:" : "Raised By:"}</div>
                                     <input
                                         type="text"
                                         className="form-control mx-2 defualt-input-value"

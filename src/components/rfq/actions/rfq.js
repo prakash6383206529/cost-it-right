@@ -27,6 +27,7 @@ import {
     SET_BOP_PR_QUOTATION_IDENTITY,
     GET_RFQ_TOOLING_DETAILS,
     UPDATED_TOOLING_DATA,
+    SET_TOOLING_SPECIFIC_ROW_DATA,
 } from '../../../config/constants';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId, userDetails } from '../../../helper';
@@ -627,6 +628,15 @@ export function setRmSpecificRowData(data) {
     return (dispatch) => {
         dispatch({
             type: SET_RM_SPECIFIC_ROW_DATA,
+            payload: data || [],
+        });
+    }
+};
+export function setToolingSpecificRowData(data) {
+
+    return (dispatch) => {
+        dispatch({
+            type: SET_TOOLING_SPECIFIC_ROW_DATA,
             payload: data || [],
         });
     }
