@@ -1058,6 +1058,7 @@ function ReportListing(props) {
                             <AgGridColumn field="TechnologyName" headerName="Technology" cellRenderer='hyphenFormatter'></AgGridColumn>
                             <AgGridColumn field='Plant' headerName='Plant (Code)' cellRenderer='hyphenFormatter'></AgGridColumn>
                             <AgGridColumn field='Vendor' headerName='Vendor (Code)' cellRenderer='hyphenFormatter'></AgGridColumn>
+                            <AgGridColumn field='InfoCategory' headerName='Category' cellRenderer='hyphenFormatter'></AgGridColumn>
                             {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field='Customer' headerName='Customer (Code)' cellRenderer='hyphenFormatter'></AgGridColumn>}
                             <AgGridColumn field='PartNumber' headerName='Part Number' cellRenderer='hyphenFormatter'></AgGridColumn>
                             <AgGridColumn field='PartName' headerName='Part Name' cellRenderer='hyphenFormatter'></AgGridColumn>

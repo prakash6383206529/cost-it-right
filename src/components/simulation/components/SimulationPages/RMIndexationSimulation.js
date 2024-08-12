@@ -344,7 +344,6 @@ function RMIndexationSimulation(props) {
     }
 
     const cancelVerifyPage = () => {
-        console.log('here cancel');
         setShowVerifyPage(false)
     }
     const resetState = () => {

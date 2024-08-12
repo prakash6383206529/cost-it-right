@@ -13,6 +13,7 @@ import Toaster from '../../common/Toaster'
 import { getConfigurationKey, isUserLoggedIn } from '../../../helper/auth'
 import { TotalTCOCostCal, checkForDecimalAndNull, checkForNull } from '../../../helper'
 import DayTime from '../../common/DayTimeWrapper'
+import TooltipCustom from '../../common/Tooltip'
 
 function AddToComparisonDrawer(props) {
   const loggedIn = isUserLoggedIn()
@@ -64,6 +65,9 @@ function AddToComparisonDrawer(props) {
   const clientSelectList = useSelector((state) => state.client.clientSelectList)
   const DestinationplantSelectList = useSelector(state => state.comman.plantSelectList);
   const { topAndLeftMenuData } = useSelector(state => state.auth);
+  const [infoCategory, setInfoCategory] = useState([])
+  const [isInfoCategorySelected, setIsInfoCategorySelected] = useState(false)
+  const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
 
 
   /* For getting part no for costing dropdown */
@@ -97,7 +101,7 @@ function AddToComparisonDrawer(props) {
       dispatch(getPartCostingPlantSelectList(partNo.value !== undefined ? partNo.value : partNo.partId, (res) => {
         // dispatch(getCostingSummaryByplantIdPartNo('', '', () => { }))
         dispatch(getPartCostingVendorSelectList(partNo.value !== undefined ? partNo.value : partNo.partId, () => { }))
-        dispatch(getCostingByVendorAndVendorPlant('', '', '', '', '', '', () => { }))
+        dispatch(getCostingByVendorAndVendorPlant('', '', '', '', '', '', '', () => { }))
       }),
       )
     }
@@ -146,10 +150,14 @@ function AddToComparisonDrawer(props) {
     setShowCostingSection({ ZBC: ZBCAccessData ? ZBCAccessData?.IsChecked : false, VBC: VBCAccessData ? VBCAccessData?.IsChecked : false, NCC: NCCAccessData ? NCCAccessData?.IsChecked : false, CBC: CBCAccessData ? CBCAccessData?.IsChecked : false })
   }, [])
 
+  useEffect(() => {
+    setInfoCategory(initialConfiguration?.InfoCategories)
+  }, [initialConfiguration])
+
   /* for showing vendor name dropdown */
   useEffect(() => {
     // dispatch(getCostingSummaryByplantIdPartNo('', '', () => { }))
-    dispatch(getCostingByVendorAndVendorPlant('', '', '', '', '', '', () => { }))
+    dispatch(getCostingByVendorAndVendorPlant('', '', '', '', '', '', '', () => { }))
     // setIsZbcSelected(false)
     // setIsVbcSelected(true)
     // setisCbcSelected(false)
@@ -157,7 +165,8 @@ function AddToComparisonDrawer(props) {
 
   const commonApiCall = (costingTypeId) => {
     if (((costingTypeId === VBCTypeId || costingTypeId === NCCTypeId) && VendorId && destinationPlantId) || (costingTypeId === CBCTypeId && customerId && destinationPlantId) || (costingTypeId === VBCTypeId && destinationPlantId)) {
-      dispatch(getCostingByVendorAndVendorPlant(partNo.partId, VendorId, vendorPlantId, destinationPlantId, customerId, costingTypeId, () => { }))
+      const infoCategoryValue = isInfoCategorySelected === true ? infoCategory[0]?.Text : infoCategory[1]?.Text
+      dispatch(getCostingByVendorAndVendorPlant(partNo.partId, VendorId, vendorPlantId, destinationPlantId, customerId, costingTypeId, costingTypeId === VBCTypeId ? infoCategoryValue : '', () => { }))
     }
   }
 
@@ -266,7 +275,7 @@ function AddToComparisonDrawer(props) {
       setCustomerId(value.value)
     }, 500);
     if (!getConfigurationKey().IsCBCApplicableOnPlant) {
-      dispatch(getCostingByVendorAndVendorPlant(partNo.partId, VendorId, vendorPlantId, userDetails.Plants[0].PlantId, customerId, costingTypeId, () => { }))
+      dispatch(getCostingByVendorAndVendorPlant(partNo.partId, VendorId, vendorPlantId, userDetails.Plants[0].PlantId, customerId, costingTypeId, '', () => { }))
     }
     dispatch(getPlantSelectListByType(ZBC, "COSTING", '', () => { }))
   }
@@ -688,6 +697,7 @@ function AddToComparisonDrawer(props) {
           obj.OtherCostDetailsOverhead = setDynamicKeys(dataFromAPI?.CostingPartDetails?.OtherCostDetails, 'OverHead')
           obj.OtherCostDetailsProcess = setDynamicKeys(dataFromAPI?.CostingPartDetails?.OtherCostDetails, 'Process')
           obj.CalculatorType = dataFromAPI?.CostingPartDetails?.CalculatorType ?? ''
+          obj.InfoCategory = dataFromAPI?.InfoCategory ? dataFromAPI?.InfoCategory : '-'
           // temp.push(VIEW_COSTING_DATA)
           if (index >= 0) {
 
@@ -743,13 +753,13 @@ function AddToComparisonDrawer(props) {
     setPlant(value)
     if (isZbcSelected) {
       dispatch(
-        getCostingByVendorAndVendorPlant(partNo.value !== undefined ? partNo.value : partNo.partId, '', '', value.value, '', ZBCTypeId, (res) => {
+        getCostingByVendorAndVendorPlant(partNo.value !== undefined ? partNo.value : partNo.partId, '', '', value.value, '', ZBCTypeId, '', (res) => {
           setValue('costings', '')
         }),
       )
     }
     else if (isCbcSelected) {
-      dispatch(getCostingByVendorAndVendorPlant(partNo.value !== undefined ? partNo.value : partNo.partId, '', '', value.value, CustomerId, CBCTypeId, (res) => {
+      dispatch(getCostingByVendorAndVendorPlant(partNo.value !== undefined ? partNo.value : partNo.partId, '', '', value.value, CustomerId, CBCTypeId, '', (res) => {
         setValue('costings', '')
       }),
       )
@@ -766,7 +776,8 @@ function AddToComparisonDrawer(props) {
       value = '00000000-0000-0000-0000-000000000000'
     }
     // dispatch(getCostingByVendorAndVendorPlant(partNo.partId, VendorId, vendorPlantId, destinationPlantId, customerId, costingTypeId, () => { }))
-    dispatch(getCostingByVendorAndVendorPlant(partNo.partId, value, '', '', '', costingTypeId, (res) => {
+    const infoCategoryValue = isInfoCategorySelected === true ? infoCategory[0]?.Text : infoCategory[1]?.Text
+    dispatch(getCostingByVendorAndVendorPlant(partNo.partId, value, '', '', '', costingTypeId, infoCategoryValue, (res) => {
       setValue('costings', '')
     }),
     )
@@ -783,10 +794,10 @@ function AddToComparisonDrawer(props) {
       value = '00000000-0000-0000-0000-000000000000'
     }
     if (isVbcSelected) {
-      dispatch(getCostingByVendorAndVendorPlant(partNo.partId, vendorId, '', value.value, '', VBCTypeId, (res) => {
+      const infoCategoryValue = isInfoCategorySelected === true ? infoCategory[0]?.Text : infoCategory[1]?.Text
+      dispatch(getCostingByVendorAndVendorPlant(partNo.partId, vendorId, '', value.value, '', VBCTypeId, infoCategoryValue, (res) => {
         setValue('costings', '')
-      }),
-      )
+      }))
     }
 
   }
@@ -801,7 +812,7 @@ function AddToComparisonDrawer(props) {
   }
   const handleVendorChangeForNCC = ({ value }) => {
     // setValue('destinationPlant', '')
-    dispatch(getCostingByVendorAndVendorPlant(partNo.partId, value, '', '', '', costingTypeId, (res) => {
+    dispatch(getCostingByVendorAndVendorPlant(partNo.partId, value, '', '', '', costingTypeId, '', (res) => {
       setValue('costings', '')
     }),
     )
@@ -872,6 +883,18 @@ function AddToComparisonDrawer(props) {
         return null
       })
       return temp
+    }
+  }
+
+  const categoryTypeOnChange = (e) => {
+    setIsInfoCategorySelected(!isInfoCategorySelected)
+    if (isVbcSelected) {
+      const infoCategoryValue = !isInfoCategorySelected === true ? infoCategory[0]?.Text : infoCategory[1]?.Text
+      setTimeout(() => {
+        dispatch(getCostingByVendorAndVendorPlant(partNo.partId, vendorId, '', plant?.value, '', VBCTypeId, infoCategoryValue, (res) => {
+          setValue('costings', '')
+        }))
+      }, 50);
     }
   }
 
@@ -1110,6 +1133,31 @@ function AddToComparisonDrawer(props) {
                     />
                   </Col>
                 </>}
+                {isVbcSelected && <Col md="12">
+                  <span className="d-inline-block">
+                    <label
+                      className={`custom-checkbox mb-0`}
+                      onChange={(e) => categoryTypeOnChange(e)}
+                      selected={isInfoCategorySelected}
+                      id={'category'}
+                    >
+                      Category
+                      <input
+                        type="checkbox"
+                      />
+                      <span
+                        className=" before-box"
+                        onChange={(e) => categoryTypeOnChange(e)}
+                        selected={isInfoCategorySelected}
+                      />
+                    </label>
+                    <TooltipCustom
+                      disabledIcon={false}
+                      id={`category`}
+                      tooltipText={infoCategory && `If checkbox is selected then category will be ${infoCategory[0]?.Text}, otherwise category will be ${infoCategory[1]?.Text}.`}
+                    />
+                  </span>
+                </Col>}
                 <Col md="12">
                   <SearchableSelectHookForm
                     label={"Costing Version"}

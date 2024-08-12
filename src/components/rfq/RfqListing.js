@@ -34,6 +34,7 @@ const gridOptions = {};
 
 
 function RfqListing(props) {
+
     const [gridApi, setgridApi] = useState(null);                      // DONT DELETE THIS STATE , IT IS USED BY AG GRID
     const [gridColumnApi, setgridColumnApi] = useState(null);          // DONT DELETE THIS STATE , IT IS USED BY AG GRID
     const [loader, setloader] = useState(false);
@@ -308,8 +309,9 @@ function RfqListing(props) {
 
     }
 
-    const closeDrawerViewRfq = () => {
-        setViewRfq(false)
+    const closeDrawerViewRfq = (value) => {
+        value === true ? setViewRfq(true) : setViewRfq(false)
+        // setViewRfq(false)
         getDataList()
 
     }
@@ -581,7 +583,7 @@ function RfqListing(props) {
                                                 <AgGridColumn field="VendorName" tooltipField="VendorName" headerName='Vendor (Code)' cellRenderer={"hyphenFormatter"}></AgGridColumn>
                                                 <AgGridColumn field="PlantName" tooltipField="PlantName" headerName='Plant (Code)'></AgGridColumn>
                                                 <AgGridColumn field="TechnologyName" width={"160px"} headerName='Technology'></AgGridColumn>
-                                                <AgGridColumn field="RaisedBy" width={"160px"} headerName='Raised By'></AgGridColumn>
+                                                <AgGridColumn field="RaisedBy" width={"160px"} headerName='Initiated By'></AgGridColumn>
                                                 <AgGridColumn field="RaisedOn" width={"145px"} headerName='Raised On' cellRenderer='dateFormatter' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                                                 <AgGridColumn field="PartDataSentDate" width={"145px"} headerName='RFI Date' cellRenderer='dateFormatter' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
 
@@ -610,7 +612,7 @@ function RfqListing(props) {
                         <ViewRfq
                             data={viewRfqData}
                             isOpen={viewRfq}
-                            partType={'BOP'}
+                            getDataList={getDataList}
                             closeDrawer={closeDrawerViewRfq}
                         />
 

@@ -577,7 +577,7 @@ function MasterSendForApproval(props) {
                     } else {
                         Toaster.success(`Token ${type === 'Reject' ? 'Rejected' : "Returned"}`);
                     }
-                    props.closeDrawer('', 'submit');
+                    props.closeDrawer('', `${type === 'Reject' ? 'reject' : "submit"}`);
                 })
                 .catch((error) => {
                     setIsDisable(false);

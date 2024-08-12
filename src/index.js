@@ -10,7 +10,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { msalConfig } from "./authConfig";
 import { PublicClientApplication, EventType } from "@azure/msal-browser";
 import Toaster from './components/common/Toaster';
-
+import { clientName } from './config/constants';
 const msalInstance = new PublicClientApplication(msalConfig);
 
 const createStoreWithMiddleware = applyMiddleware(ReduxThunk)(createStore);
@@ -69,7 +69,8 @@ const store = createStoreWithMiddleware(reducers, window.__REDUX_DEVTOOLS_EXTENS
 ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
-      <App instance={msalInstance} />
+      <App instance={msalInstance}
+        client={clientName} />
     </Provider>
   </React.StrictMode>,
   document.getElementById('root')

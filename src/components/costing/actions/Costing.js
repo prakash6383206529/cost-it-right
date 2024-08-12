@@ -1803,10 +1803,10 @@ export const setCostingApprovalData = (data) => (dispatch) => {
   })
 }
 
-export function getCostingByVendorAndVendorPlant(partId, VendorId, VendorPlantId, destinationPlantId, customerId, costingTypeId, callback) {
+export function getCostingByVendorAndVendorPlant(partId, VendorId, VendorPlantId, destinationPlantId, customerId, costingTypeId, infoCategory, callback) {
   return (dispatch) => {
     if (partId !== '') {
-      const queryParams = `partId=${partId}&VendorId=${VendorId}&vendorPlantId=${VendorPlantId}&destinationPlantId=${!destinationPlantId ? EMPTY_GUID : destinationPlantId}&customerId=${!customerId ? EMPTY_GUID : customerId}&costingTypeId=${costingTypeId}`
+      const queryParams = `partId=${partId}&VendorId=${VendorId}&vendorPlantId=${VendorPlantId}&destinationPlantId=${!destinationPlantId ? EMPTY_GUID : destinationPlantId}&customerId=${!customerId ? EMPTY_GUID : customerId}&costingTypeId=${costingTypeId}&infoCategory=${infoCategory}`
       const request = axios.get(`${API.getCostingByVendorVendorPlant}?${queryParams}`, config());
       request.then((response) => {
         if (response.data.Result || response.status === 204) {

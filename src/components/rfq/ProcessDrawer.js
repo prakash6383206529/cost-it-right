@@ -1180,6 +1180,8 @@ function ViewDrawer(props) {
                                 <HeaderTitle title={'Remarks and Attachments:'} customClass="mt-3" />
                                 <Row className='part-detail-wrapper'>
                                     <Col md="12">
+                                        <TooltipCustom id="remark_tooltip" tooltipText="This remark is for internal reference and is not accessible to the supplier" />
+
                                         <TextAreaHookForm
                                             label={"Remarks"}
                                             name={"remark"}
