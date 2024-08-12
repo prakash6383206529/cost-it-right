@@ -173,7 +173,7 @@ function RfqListing(props) {
         let filteredArr = [];
         let arr = []
         const partTypes = partType?.split(',');
-        partTypes.forEach(type => {
+        partTypes?.forEach(type => {
 
             switch (type.trim()) {
                 case 'Component':
@@ -226,7 +226,7 @@ function RfqListing(props) {
     */
     const getDataList = () => {
         setloader(true)
-        dispatch(getQuotationDetailsList(data.QuotationId, (res) => {
+        dispatch(getQuotationDetailsList(data?.QuotationId, (res) => {
             if (res === 204) {
                 setloader(false)
                 return false;
@@ -235,9 +235,9 @@ function RfqListing(props) {
             res?.data?.DataList && res?.data?.DataList.map(item => {
                 let unique
                 res?.data?.DataList && res?.data?.DataList.map(item => {
-                    const partTypes = item?.PartType.split(',');
+                    const partTypes = item?.PartType?.split(',');
 
-                    partTypes.forEach(type => {
+                    partTypes?.forEach(type => {
                         switch (type.trim()) {
                             case 'Raw Material':
                                 unique = _.uniq(_.map(item?.ShouldRawMaterial, 'RawMaterialId'));
@@ -298,9 +298,9 @@ function RfqListing(props) {
             // SET ROW DATA FOR GRID
             data.map((item) => {
                 newArray = [...newArray, ...item]
-                const partTypes = item[0].PartType.split(',');
+                const partTypes = item[0].PartType?.split(',');
                 let temp
-                partTypes.forEach(type => {
+                partTypes?.forEach(type => {
                     switch (type.trim()) {
                         case 'Component':
                         case 'Assembly':
@@ -892,7 +892,7 @@ function RfqListing(props) {
         let arr = [];
         let filteredArr = [];
         let matchedStatus
-        partTypes.forEach(type => {
+        partTypes?.forEach(type => {
             switch (type.trim()) {
                 case 'Component':
                 case 'Assembly':
@@ -957,6 +957,7 @@ function RfqListing(props) {
     * @description Renders buttons
     */
     const buttonFormatter = (props) => {
+        console.log('props: ', props);
 
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
@@ -965,7 +966,9 @@ function RfqListing(props) {
         let showReminderIcon = false
         let showRemarkHistory = false
 
-        if (rowData?.CostingNumber === null) {
+        console.log('rowData: ', rowData,rowData?.CostingId);
+        console.log('rowData?.CostingNumber === null || rowData?.RawMaterialId === null || rowData?.BoughtOutPartId : ', rowData?.CostingNumber === null ,rowData?.RawMaterialId === null || rowData?.BoughtOutPartId );
+        if (rowData?.CostingNumber === null && rowData?.RawMaterialId === null && rowData?.BoughtOutPartId ) {
             showReminderIcon = true
 
         } else {
@@ -973,12 +976,13 @@ function RfqListing(props) {
             showRemarkHistory = true
             if (rowData.ShowApprovalButton) {
                 showActionIcons = true
-
+                
             } else {
-
+                
                 showActionIcons = false
             }
         }
+        console.log('showRemarkHistory: ', showRemarkHistory);
 
         let reminderCount = rowData?.RemainderCount
 
@@ -1159,7 +1163,7 @@ function RfqListing(props) {
         let costingIdList = selectedRows?.length > 0 ? [...selectedRows[0]?.ShouldCostings, ...selectedRows] : selectedRows
         setSelectedCostingList([])
         const partTypes = partType?.split(',');
-        partTypes.forEach(type => {
+        partTypes?.forEach(type => {
             switch (type.trim()) {
                 case 'Component':
                 case 'Assembly':
@@ -1231,7 +1235,7 @@ function RfqListing(props) {
         let partNumber = []
         let data
         const partTypes = selectedRows[0]?.PartType.split(',');
-        partTypes.forEach(type => {
+        partTypes?.forEach(type => {
             switch (type.trim()) {
                 case 'Raw Material':
                     selectedRows?.map(item => partNumber?.push(item?.RawMaterial))
@@ -1371,7 +1375,7 @@ function RfqListing(props) {
         const partTypes = partType?.split(',');
         let headerName = "";
 
-        partTypes.forEach(type => {
+        partTypes?.forEach(type => {
             switch (type.trim()) {
                 case 'Raw Material':
                     headerName = "RM Name";
