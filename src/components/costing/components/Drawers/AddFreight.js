@@ -59,6 +59,7 @@ function AddFreight(props) {
 
   const [freightCost, setFreightCost] = useState(rowObjData.Rate ? rowObjData.Rate : '')
   const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId)
+  const [totalRMGrossWeight, setTotalRMGrossWeight] = useState('')
 
   useEffect(() => {
     setTimeout(() => {
@@ -75,13 +76,18 @@ function AddFreight(props) {
     if (!isEditFlag && (freightType === FullTruckLoad || freightType === PartTruckLoad)) {
       let arr = _.map(RMCCTabData, 'CostingPartDetails.CostingRawMaterialsCost')
       let totalFinishWeight = 0
+      let totalGrossWeight = 0
       arr && arr?.map(item => {
         totalFinishWeight = item && item?.reduce((accummlator, el) => {
           return accummlator + checkForNull(el?.FinishWeight)
         }, 0)
+        totalGrossWeight = item && item?.reduce((accummlator, el) => {
+          return accummlator + checkForNull(el?.GrossWeight)
+        }, 0)
       })
       // setTotalFinishWeight(totalFinishWeight)
       setValue("Quantity", totalFinishWeight)
+      setTotalRMGrossWeight(totalGrossWeight)
 
     }
   }, [RMCCTabData, applicability])
@@ -398,7 +404,13 @@ function AddFreight(props) {
   // MAY BE USED LATER 
   const handleQuantityChange = (event) => {
     if (!isNaN(event.target.value)) {
-      calculateCostValue(event.target.value, getValues('Rate'))
+      if ((freightType === FullTruckLoad || freightType === PartTruckLoad) && event.target.value > totalRMGrossWeight) {
+        Toaster.warning("Enter value less than gross weight.")
+        setTimeout(() => {
+          setValue('Quantity', '')
+        }, 50);
+        return false
+      } calculateCostValue(event.target.value, getValues('Rate'))
     }
   }
 
