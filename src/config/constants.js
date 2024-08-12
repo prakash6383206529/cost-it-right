@@ -3209,6 +3209,7 @@ export const showPaperCorrugatedBox = true
 
 export const showDynamicKeys = false
 export const hideDetailOfRubbercalci = true
+export const countDownBlickingTime = 2
 
 //VERSION 
 export const VERSION = "V3.0.20";
