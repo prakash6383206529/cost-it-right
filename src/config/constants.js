@@ -3213,6 +3213,8 @@ export const showDynamicKeys = false
 export const hideDetailOfRubbercalci = true
 export const havellsConditionKey = true
 
+export const clientName = 'Havells'
+
 //VERSION 
 export const VERSION = "V3.1.1";
 
