@@ -220,7 +220,8 @@ function OtherCostingSimulation(props) {
         })
         dispatch(getComparisionSimulationData(obj, res => {
             const Data = res.data.Data
-            const obj1 = formViewData(Data.OldCosting)
+
+            const obj1 = [...formViewData(Data.OldCosting), ...formViewData(Data.NewCosting), ...formViewData(Data.Variance)]
             dispatch(setCostingViewData(obj1))
             runCostingDetailSimulation()
         }))

@@ -25,6 +25,9 @@ import {
     SET_BOP_SPECIFIC_ROW_DATA,
     GET_BOP_PR_QUOTATION_DETAILS,
     SET_BOP_PR_QUOTATION_IDENTITY,
+    GET_RFQ_TOOLING_DETAILS,
+    UPDATED_TOOLING_DATA,
+    SET_TOOLING_SPECIFIC_ROW_DATA,
 } from '../../../config/constants';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId, userDetails } from '../../../helper';
@@ -629,6 +632,15 @@ export function setRmSpecificRowData(data) {
         });
     }
 };
+export function setToolingSpecificRowData(data) {
+
+    return (dispatch) => {
+        dispatch({
+            type: SET_TOOLING_SPECIFIC_ROW_DATA,
+            payload: data || [],
+        });
+    }
+};
 export function getPurchaseRequisitionSelectList(callback) {
 
 
@@ -750,3 +762,38 @@ export function createQuotationPrParts(data, callback) {
 //     });
 // };
 //}
+export function getRfqToolingDetails(PrNumber, callback) {
+
+    const prNumberId = Number(PrNumber)
+
+    return (dispatch) => {
+        dispatch({
+            type: GET_RFQ_TOOLING_DETAILS,
+            payload: []
+        })
+        const request = axios.get(`${API.getRfqPartDetails}?prNumberId=${prNumberId}`, config());
+        request.then((response) => {
+            if (response.data.Result || response.status === 204) {
+
+                dispatch({
+                    type: GET_RFQ_TOOLING_DETAILS,
+                    payload: response.status === 204 ? [] : response?.data?.Data
+                })
+
+                callback(response);
+            }
+        }).catch((error) => {
+
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+export function updatedToolingData(data) {
+    return (dispatch) => {
+        dispatch({
+            type: GET_RFQ_TOOLING_DETAILS,
+            payload: data,
+        });
+    };
+}

@@ -2039,6 +2039,9 @@ export const SELECT_BOP_CATEGORY = "SELECT_BOP_CATEGORY"
 export const SET_BOP_SPECIFIC_ROW_DATA = "SET_BOP_SPECIFIC_ROW_DATA"
 export const GET_BOP_PR_QUOTATION_DETAILS = "GET_BOP_PR_QUOTATION_DETAILS"
 export const SET_BOP_PR_QUOTATION_IDENTITY = "SET_BOP_PR_QUOTATION_IDENTITY"
+export const GET_RFQ_TOOLING_DETAILS = "GET_RFQ_TOOLING_DETAILS"
+export const UPDATED_TOOLING_DATA = "UPDATED_TOOLING_DATA"
+export const SET_TOOLING_SPECIFIC_ROW_DATA = "SET_TOOLING_SPECIFIC_ROW_DATA"
 
 //AUCTION 
 export const SET_AUCTION_DATA = 'SET_AUCTION_DATA'
@@ -2236,6 +2239,7 @@ export const FERROUSCASTING = 'Ferrous Casting'
 export const WIREFORMING = 'Wire Forming'
 export const ELECTRIC = 'Electric'
 export const ELECTRONICSNAME = 'Electronics'
+export const TOOLING = 'Tooling'
 
 export const COMBINED_PROCESS_NAME = 'Combined Process';          						//RE
 export const ZBC_COSTING = 'Costing - ZBC';
@@ -2321,6 +2325,7 @@ export const VIEW_COSTING_DATA = {
   // costingName: '',
   costingVersion: 'Costing Version',
   PoPriceWithDate: 'Net Cost (Effective from)',
+  InfoCategory: 'Category',
   partType: 'Part Type',
   partNumber: 'Part Number',
   partName: 'Part Name',
@@ -3206,11 +3211,12 @@ export const showPaperCorrugatedBox = true
 
 export const showDynamicKeys = false
 export const hideDetailOfRubbercalci = true
+export const havellsConditionKey = true
 
 export const clientName = 'Havells'
 
 //VERSION 
-export const VERSION = "V3.0.17";
+export const VERSION = "V3.1.1";
 
 
 

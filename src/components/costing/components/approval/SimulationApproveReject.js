@@ -122,27 +122,29 @@ function SimulationApproveReject(props) {
 
   useEffect(() => {
     //THIS OBJ IS FOR SAVE SIMULATION
-    if (initialConfiguration?.IsSAPConfigured && type === 'Sender' && !isSaveDone && !isSimulationApprovalListing) {
+    if (type === 'Sender' && !isSaveDone && !isSimulationApprovalListing) {
       let simObj = formatRMSimulationObject(simulationDetail, costingArr, apiData, isRMIndexationSimulation)
       //THIS CONDITION IS FOR SAVE SIMULATION
       dispatch(saveSimulationForRawMaterial(simObj, res => {
         if (res?.data?.Result) {
           Toaster.success('Simulation has been saved successfully')
           setLoader(true)
-          dispatch(checkSAPPoPrice(simulationDetail?.SimulationId, '', res => {
-            let status = 200
-            if ('response' in res) {
+          if (initialConfiguration?.IsSAPConfigured) {
+            dispatch(checkSAPPoPrice(simulationDetail?.SimulationId, '', res => {
+              let status = 200
+              if ('response' in res) {
 
-              status = res && res?.response?.status
-            }
+                status = res && res?.response?.status
+              }
 
-            if (status !== undefined && status === 200) {
-              setIsDisableSubmit(false)
-            } else {
-              setIsDisableSubmit(true)
-            }
-            setLoader(false)
-          }))
+              if (status !== undefined && status === 200) {
+                setIsDisableSubmit(false)
+              } else {
+                setIsDisableSubmit(true)
+              }
+            }))
+          }
+          setLoader(false)
         }
       }))
     }
@@ -196,10 +198,6 @@ function SimulationApproveReject(props) {
       ...dataInFieldTemp,
       ApprovalType: { label: releaseStrategyData?.ApprovalTypeId, value: releaseStrategyData?.ApprovalTypeId }
     })
-
-
-
-
   }
 
   const checkFinalLevelAPI = () => {
@@ -374,23 +372,23 @@ function SimulationApproveReject(props) {
 
   }
 
-  useEffect(() => {
-    if (type === 'Sender' && !isSaveDone && !isSimulationApprovalListing && !hasCalledAPI.current) {
-      let simObj = formatRMSimulationObject(simulationDetail, costingArr, apiData, isRMIndexationSimulation);
-      //THIS CONDITION IS FOR SAVE SIMULATION
-      setLoader(true);
-      hasCalledAPI.current = true; // Set the ref to true to prevent future calls
-      dispatch(saveSimulationForRawMaterial(simObj, res => {
-        if (res?.data?.Result) {
-          reactLocalStorage.setObject('isSaveSimualtionCalled', true);
-          Toaster.success('Simulation saved successfully.');
-          setTimeout(() => {
-            setLoader(false);
-          }, 500);
-        }
-      }));
-    }
-  }, [simulationDetail]);
+  // useEffect(() => {
+  //   if (type === 'Sender' && !isSaveDone && !isSimulationApprovalListing && !hasCalledAPI.current) {
+  //     let simObj = formatRMSimulationObject(simulationDetail, costingArr, apiData, isRMIndexationSimulation);
+  //     //THIS CONDITION IS FOR SAVE SIMULATION
+  //     setLoader(true);
+  //     hasCalledAPI.current = true; // Set the ref to true to prevent future calls
+  //     dispatch(saveSimulationForRawMaterial(simObj, res => {
+  //       if (res?.data?.Result) {
+  //         reactLocalStorage.setObject('isSaveSimualtionCalled', true);
+  //         Toaster.success('Simulation saved successfully.');
+  //         setTimeout(() => {
+  //           setLoader(false);
+  //         }, 500);
+  //       }
+  //     }));
+  //   }
+  // }, [simulationDetail]);
 
   const closePushButton = () => {
     setOpenPushButton(false)

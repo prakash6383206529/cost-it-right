@@ -20,7 +20,8 @@ function PaperCorrugatedBox(props) {
     const [state, setState] = useState({
         tableData: [],
         totalGSM: 0,
-        showPopup: false
+        showPopup: false,
+        RmContainer: []
     })
     const [calculationState, setCalculationState] = useState({
         SheetDeclePerInch: 0,
@@ -65,9 +66,9 @@ function PaperCorrugatedBox(props) {
         let tempGSM = [];
         let tempFlute = [];
         for (let i = 0; i < data.length; i++) {
-            tempGSM.push(`GSM${data[i].value}`)
+            tempGSM.push(`GSM${data[i].value}${i}`)
             if (i % 2 !== 0) {
-                tempFlute.push(`fluteValue${data[i].value}`)
+                tempFlute.push(`fluteValue${data[i].value}${i}`)
             }
         }
         return [...tempGSM, ...tempFlute]
@@ -90,17 +91,17 @@ function PaperCorrugatedBox(props) {
             })
 
             let tableDataTemp = []
-            WeightCalculatorRequest?.CostingCorrugatedAndMonoCartonBoxAdditionalRawMaterial?.length !== 0 && WeightCalculatorRequest?.CostingCorrugatedAndMonoCartonBoxAdditionalRawMaterial?.map(item => {
-                setValueCalculatorForm(`GSM${item.RawMaterialIdRef}`, checkForDecimalAndNull(item.GSM, NoOfDecimalForPrice))
-                setValueCalculatorForm(`flutePercentage${item.RawMaterialIdRef}`, checkForDecimalAndNull(item.FlutePercentage, NoOfDecimalForPrice))
-                setValueTableForm(`fluteValue${item.RawMaterialIdRef}`, checkForDecimalAndNull(item.FluteValue, NoOfDecimalForPrice))
+            WeightCalculatorRequest?.CostingCorrugatedAndMonoCartonBoxAdditionalRawMaterial?.length !== 0 && WeightCalculatorRequest?.CostingCorrugatedAndMonoCartonBoxAdditionalRawMaterial?.map((item, index) => {
+                setValueCalculatorForm(`GSM${item.RawMaterialIdRef}${index}`, checkForDecimalAndNull(item.GSM, NoOfDecimalForPrice))
+                setValueCalculatorForm(`flutePercentage${item.RawMaterialIdRef}${index}`, checkForDecimalAndNull(item.FlutePercentage, NoOfDecimalForPrice))
+                setValueTableForm(`fluteValue${item.RawMaterialIdRef}${index}`, checkForDecimalAndNull(item.FluteValue, NoOfDecimalForPrice))
                 tableDataTemp.push({ label: item.RawMaterialNameAndGrade, value: item.RawMaterialIdRef, RawMaterialRate: item.RawMaterialRate })
             })
             setValueCalculatorForm('NosOfPly', WeightCalculatorRequest.NosOfPly)
             setValueCalculatorForm('TypeOfBox', WeightCalculatorRequest.TypeOfBox)
-            setValueTableForm('RawMaterial', tableDataTemp)
+            setValueTableForm('RawMaterial', '')
             setState((prevState) => ({
-                ...prevState, totalGSM: WeightCalculatorRequest.TotalGsmAndFluteValue, tableData: tableDataTemp
+                ...prevState, totalGSM: WeightCalculatorRequest.TotalGsmAndFluteValue, tableData: tableDataTemp, RmContainer: tableDataTemp
             }))
             setCalculationState(prevState => ({
                 ...prevState,
@@ -151,23 +152,23 @@ function PaperCorrugatedBox(props) {
 
     const addDataOnTable = (data) => {
         const getNoofPly = checkForNull(getValuesCalculatorForm('NosOfPly'))
-        if (getNoofPly !== data.RawMaterial.length) {
+        if (getNoofPly !== state.RmContainer.length) {
             Toaster.warning('Number of RM should be equal to nos of ply')
             return false;
         }
-        setState((prevState) => ({ ...prevState, tableData: data.RawMaterial }))
+        setState((prevState) => ({ ...prevState, tableData: state.RmContainer }))
     }
-    const calculateFluteValue = (index, gsmVal, flutePer) => {
+    const calculateFluteValue = (value, index, gsmVal, flutePer) => {
         const calculation = gsmVal * flutePer / 100
-        setValueTableForm(`fluteValue${index}`, checkForDecimalAndNull(calculation, NoOfDecimalForPrice))
+        setValueTableForm(`fluteValue${value}${index}`, checkForDecimalAndNull(calculation, NoOfDecimalForPrice))
     }
     const calculateGSM = () => {
         let totalGSM = 0;
         let BoardCost = 0
 
         for (let i = 0; i < state.tableData.length; i++) {
-            const singleGSMValue = checkForNull(getValuesCalculatorForm(`GSM${state.tableData[i].value}`));
-            const singleFluteValue = checkForNull(getValuesTableForm(`fluteValue${state.tableData[i].value}`));
+            const singleGSMValue = checkForNull(getValuesCalculatorForm(`GSM${state.tableData[i].value}${i}`));
+            const singleFluteValue = checkForNull(getValuesTableForm(`fluteValue${state.tableData[i].value}${i}`));
             totalGSM += singleGSMValue + singleFluteValue;
             let singleGSM = singleGSMValue + singleFluteValue;
             BoardCost += ((singleGSM * checkForNull(state.tableData[i].RawMaterialRate)) / 1000)
@@ -224,9 +225,9 @@ function PaperCorrugatedBox(props) {
                 "CostingRawMaterialCorrugatedAndMonoCartonBoxCalculationDetailIdRef": 0,
                 "RawMaterialIdRef": item.value,
                 "LayerNo": index + 1,
-                "GSM": getValuesCalculatorForm(`GSM${item.value}`) ?? 0,
-                "FlutePercentage": getValuesCalculatorForm(`flutePercentage${item.value}`) ?? 0,
-                "FluteValue": getValuesTableForm(`fluteValue${item.value}`) ?? 0
+                "GSM": getValuesCalculatorForm(`GSM${item.value}${index}`) ?? 0,
+                "FlutePercentage": getValuesCalculatorForm(`flutePercentage${item.value}${index}`) ?? 0,
+                "FluteValue": getValuesTableForm(`fluteValue${item.value}${index}`) ?? 0
             })
             return null;
         })
@@ -269,10 +270,10 @@ function PaperCorrugatedBox(props) {
     }
     const resetTable = () => {
         state.tableData.length !== 0 && state.tableData.map((item, index) => {
-            setValueCalculatorForm(`GSM${item.value}`, '')
+            setValueCalculatorForm(`GSM${item.value}${index}`, '')
             if (index % 2 !== 0) {
-                setValueCalculatorForm(`flutePercentage${item.value}`, '')
-                setValueTableForm(`fluteValue${item.value}`, '')
+                setValueCalculatorForm(`flutePercentage${item.value}${index}`, '')
+                setValueTableForm(`fluteValue${item.value}${index}`, '')
             }
         })
     }
@@ -283,7 +284,7 @@ function PaperCorrugatedBox(props) {
             }
         }
         if (getValuesCalculatorForm('RMCost') === 0 || getValuesCalculatorForm('RMCost') === undefined || getValuesCalculatorForm('RMCost') === null) {
-            setState((prevState) => ({ ...prevState, tableData: [] }))
+            setState((prevState) => ({ ...prevState, tableData: [], RmContainer: [] }))
             resetTable()
             return false
         } else {
@@ -292,12 +293,25 @@ function PaperCorrugatedBox(props) {
     }
 
     const onPopupConfirm = () => {
-        setState((prevState) => ({ ...prevState, tableData: [], showPopup: false }))
+        setState((prevState) => ({ ...prevState, tableData: [], RmContainer: [], showPopup: false }))
         resetTable()
     }
     const closePopUp = () => {
         setState((prevState) => ({ ...prevState, showPopup: false }))
     }
+    const rmHandleChange = (e) => {
+        let temp = state.RmContainer;
+        temp.push(e);
+        setState((prevState) => ({ ...prevState, RmContainer: temp }))
+    }
+
+    const removeFromList = (index) => {
+        setState((prevState) => ({
+            ...prevState,
+            RmContainer: prevState.RmContainer.filter((_, ind) => ind !== index)
+        }));
+    }
+    const headerInputDisabled = props?.CostingViewMode ? props?.CostingViewMode : state.tableData.length !== 0 ? true : false
     return (
         <Fragment>
             <Row className={'mt-3'}>
@@ -320,7 +334,7 @@ function PaperCorrugatedBox(props) {
                                 className=""
                                 customClassName={'withBorder'}
                                 errors={errorsCalculatorForm.NosOfPly}
-                                disabled={props.CostingViewMode ? props.CostingViewMode : state.tableData.length !== 0 ? true : false}
+                                disabled={headerInputDisabled}
                             />
                         </Col>
                         <Col md="3">
@@ -341,13 +355,13 @@ function PaperCorrugatedBox(props) {
                                 className=""
                                 customClassName={'withBorder'}
                                 errors={errorsCalculatorForm.TypeOfBox}
-                                disabled={props.CostingViewMode ? props.CostingViewMode : state.tableData.length !== 0 ? true : false}
+                                disabled={headerInputDisabled}
                             />
                         </Col>
                         <Col md="7">
                             <Row className={"align-items-center"}>
-                                <Col md="7">
-                                    <TooltipCustom id="typeOfBox" tooltipText="Please add RM in sequence to the Flute." />
+                                <Col md="5">
+                                    <TooltipCustom id="typeOfBox" customClass="ml-2 paper-corrugated" tooltipText="Please add RM in sequence to the Flute." />
                                     {state.tableData.length !== 0 && <TooltipCustom tooltipClass="show-multi-dropdown-data" id="RawMaterial" placement="bottom" tooltipText={state.tableData.map((item, index) => <p>{index + 1}. {item.label
                                     }</p>)} />}
                                     <SearchableSelectHookForm
@@ -362,29 +376,24 @@ function PaperCorrugatedBox(props) {
                                         defaultValue={""}
                                         options={renderListing('RawMaterial')}
                                         mandatory={true}
-                                        isMulti={true}
+                                        isMulti={false}
                                         errors={errorsTableForm.RawMaterial}
                                         disabled={props?.CostingViewMode ? props?.CostingViewMode : state.tableData.length !== 0 ? true : false}
-                                        handleChange={() => { }}
+                                        handleChange={(e) => rmHandleChange(e)}
                                     />
                                 </Col>
-                                <Col md="5">
+                                <Col md="5" className={`rm-container-input ${headerInputDisabled ? 'disabled' : ''}`}>
+                                    {state.RmContainer.map((item, index) => <div className='item' key={item.value}>{item.label}<button type='button' disabled={headerInputDisabled} onClick={() => removeFromList(index)} >x</button></div>)}
+                                </Col>
+
+                                <Col md="1">
                                     <div className='d-flex'>
-                                        {/* <Button
-                                            id="PaperCorrugatedBox_cancel"
-                                            className="mr-2 mt-0"
-                                            variant={"cancel-btn"}
-                                            // disabled={setDisable}
-                                            // onClick={this.cancelHandler}
-                                            icon={""}
-                                            buttonName={"Reset"}
-                                        /> */}
                                         <Button
                                             id="PaperCorrugatedBox_save"
                                             type="submit"
                                             className="mr5 mb-2"
                                             icon={"plus"}
-                                            disabled={props.CostingViewMode ? props.CostingViewMode : state.tableData.length !== 0 ? true : false}
+                                            disabled={headerInputDisabled}
                                             buttonName={"Add"}
                                         />
                                     </div></Col>
@@ -422,7 +431,7 @@ function PaperCorrugatedBox(props) {
                                     <td>{item.RawMaterialRate}</td>
                                     <td> <TextFieldHookForm
                                         label={false}
-                                        name={`GSM${item.value}`}
+                                        name={`GSM${item.value}${index}`}
                                         Controller={Controller}
                                         control={controlCalculatorForm}
                                         register={registerCalculatorForm}
@@ -431,41 +440,41 @@ function PaperCorrugatedBox(props) {
                                             required: true,
                                             validate: { number, checkWhiteSpaces, maxLength7 },
                                         }}
-                                        handleChange={(e) => { calculateFluteValue(item.value, e.target.value, checkForNull(getValuesCalculatorForm(`flutePercentage${item.value}`))) }}
+                                        handleChange={(e) => { calculateFluteValue(item.value, index, e.target.value, checkForNull(getValuesCalculatorForm(`flutePercentage${item.value}${index}`))) }}
                                         defaultValue={''}
                                         className=""
                                         customClassName={'withBorder paper-corrugated-box-flute mb-0'}
-                                        errors={errorsCalculatorForm[`GSM${item.value}`]}
+                                        errors={errorsCalculatorForm[`GSM${item.value}${index}`]}
                                         disabled={props.CostingViewMode ? props.CostingViewMode : false}
                                     /></td>
                                     <td>{index % 2 !== 0 ? <TextFieldHookForm
                                         label={false}
-                                        name={`flutePercentage${item.value}`}
+                                        name={`flutePercentage${item.value}${index}`}
                                         Controller={Controller}
                                         control={controlCalculatorForm}
                                         register={registerCalculatorForm}
                                         mandatory={false}
                                         rules={{
-                                            required: !(props.CostingViewMode ? props.CostingViewMode : !getValuesCalculatorForm(`GSM${item.value}`)),
+                                            required: !(props.CostingViewMode ? props.CostingViewMode : !getValuesCalculatorForm(`GSM${item.value}${index}`)),
                                             validate: { number, checkWhiteSpaces, maxPercentageValue, maxLength7 },
                                             max: {
                                                 value: 100,
                                                 message: 'Percentage value should be equal to 100'
                                             },
                                         }}
-                                        handleChange={(e) => { calculateFluteValue(item.value, checkForNull(getValuesCalculatorForm(`GSM${item.value}`)), e.target.value) }}
+                                        handleChange={(e) => { calculateFluteValue(item.value, index, checkForNull(getValuesCalculatorForm(`GSM${item.value}${index}`)), e.target.value) }}
                                         defaultValue={''}
                                         className=""
-                                        customClassName={`withBorder mb-0 paper-corrugated-box-flute ${(props.CostingViewMode ? props.CostingViewMode : !getValuesCalculatorForm(`GSM${item.value}`)) ? 'hide-error' : ''}`}
-                                        errors={errorsCalculatorForm[`flutePercentage${item.value}`]}
-                                        disabled={props.CostingViewMode ? props.CostingViewMode : !getValuesCalculatorForm(`GSM${item.value}`)}
+                                        customClassName={`withBorder mb-0 paper-corrugated-box-flute ${(props.CostingViewMode ? props.CostingViewMode : !getValuesCalculatorForm(`GSM${item.value}${index}`)) ? 'hide-error' : ''}`}
+                                        errors={errorsCalculatorForm[`flutePercentage${item.value}${index}`]}
+                                        disabled={props.CostingViewMode ? props.CostingViewMode : !getValuesCalculatorForm(`GSM${item.value}${index}`)}
                                     /> : '-'}</td>
                                     <td>{index % 2 !== 0 ? <>
-                                        <TooltipCustom id={`fluteValue${item.value}`} disabledIcon={true} tooltipText={`Flute Value = GSM * Flute Percentage / 100`} />
+                                        <TooltipCustom id={`fluteValue${item.value}${index}`} disabledIcon={true} tooltipText={`Flute Value = GSM * Flute Percentage / 100`} />
                                         <TextFieldHookForm
                                             label={false}
-                                            name={`fluteValue${item.value}`}
-                                            id={`fluteValue${item.value}`}
+                                            name={`fluteValue${item.value}${index}`}
+                                            id={`fluteValue${item.value}${index}`}
                                             Controller={Controller}
                                             control={controlTableForm}
                                             register={registerTableForm}

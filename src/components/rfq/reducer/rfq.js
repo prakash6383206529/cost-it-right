@@ -1,4 +1,4 @@
-import { CHECK_RFQ_BULK_UPLOAD, GET_ASSEMBLY_CHILD_PART, GET_BOP_PR_QUOTATION_DETAILS, GET_NFR_SELECT_LIST, GET_PART_IDENTITY, GET_QUOTATION_DETAILS_LIST, GET_QUOTATION_ID_FOR_RFQ, GET_RFQ_PART_DETAILS, GET_RFQ_RAISE_NUMBER, GET_RFQ_VENDOR_DETAIL, GET_TARGET_PRICE, SELECTED_ROW_ARRAY, SELECT_BOP_CATEGORY, SELECT_BOP_NUMBER, SELECT_PURCHASE_REQUISITION, SET_BOP_PR_QUOTATION_IDENTITY, SET_BOP_SPECIFIC_ROW_DATA, SET_QUOTATION_ID_FOR_RFQ, SET_RM_SPECIFIC_ROW_DATA } from "../../../config/constants";
+import { CHECK_RFQ_BULK_UPLOAD, GET_ASSEMBLY_CHILD_PART, GET_BOP_PR_QUOTATION_DETAILS, GET_NFR_SELECT_LIST, GET_PART_IDENTITY, GET_QUOTATION_DETAILS_LIST, GET_QUOTATION_ID_FOR_RFQ, GET_RFQ_PART_DETAILS, GET_RFQ_RAISE_NUMBER, GET_RFQ_TOOLING_DETAILS, GET_RFQ_VENDOR_DETAIL, GET_TARGET_PRICE, SELECTED_ROW_ARRAY, SELECT_BOP_CATEGORY, SELECT_BOP_NUMBER, SELECT_PURCHASE_REQUISITION, SET_BOP_PR_QUOTATION_IDENTITY, SET_BOP_SPECIFIC_ROW_DATA, SET_QUOTATION_ID_FOR_RFQ, SET_RM_SPECIFIC_ROW_DATA, SET_TOOLING_SPECIFIC_ROW_DATA } from "../../../config/constants";
 
 const initialState = {
     checkRFQPartBulkUpload: [],
@@ -11,7 +11,10 @@ const initialState = {
     SelectBopCategory: [],
     bopSpecificRowData: [],
     getBopPrQuotationDetails: [],
-    getBopPrQuotationIdentity: ""
+    getBopPrQuotationIdentity: "",
+    getRfqToolingData: [],
+    getTargetprice: {},
+    toolingSpecificRowData: []
 
 };
 
@@ -132,6 +135,20 @@ export default function RFQReducer(state = initialState, action) {
                 ...state,
                 loading: false,
                 getBopPrQuotationIdentity: action.payload,
+            }
+        case GET_RFQ_TOOLING_DETAILS:
+
+            return {
+                ...state,
+                loading: false,
+                getRfqToolingData: action.payload,
+            }
+        case SET_TOOLING_SPECIFIC_ROW_DATA:
+
+            return {
+                ...state,
+                loading: false,
+                toolingSpecificRowData: action.payload,
             }
         default:
             return state;

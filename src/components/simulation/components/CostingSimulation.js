@@ -611,7 +611,7 @@ function CostingSimulation(props) {
         })
         dispatch(getComparisionSimulationData(obj, res => {
             const Data = res.data.Data
-            const obj1 = formViewData(Data.OldCosting)
+            const obj1 = [...formViewData(Data.OldCosting, 'Old Costing'), ...formViewData(Data.NewCosting, 'New Costing'), ...formViewData(Data.Variance, 'Variance')]
             dispatch(setCostingViewData(obj1))
             setCostingDetailDrawer(true)
         }))
@@ -1697,6 +1697,7 @@ function CostingSimulation(props) {
                                                     {amendmentDetails?.SimulationHeadId !== CBCTypeId && <AgGridColumn width={150} field="VendorName" tooltipField='VendorName' headerName='Vendor (Code)'></AgGridColumn>}
                                                     {amendmentDetails?.SimulationHeadId === CBCTypeId && <AgGridColumn width={150} field="CustomerName" tooltipField='CustomerName' headerName='Customer (Code)'></AgGridColumn>}
                                                     {isSimulationWithCosting && <AgGridColumn width={150} field="PlantName" tooltipField='PlantName' cellRenderer='plantFormatter' headerName='Plant (Code)'></AgGridColumn>}
+                                                    {isSimulationWithCosting && <AgGridColumn width={150} field="InfoCategory" tooltipField='InfoCategory' cellRenderer='hyphenFormatter' headerName='Category'></AgGridColumn>}
                                                     {isSimulationWithCosting && <AgGridColumn width={140} field="BudgetedPrice" tooltipField='BudgetedPrice' headerName='Budgeted Price' cellRenderer='impactPerQuarterFormatter'></AgGridColumn>}
 
 

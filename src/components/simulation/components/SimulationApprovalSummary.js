@@ -1424,6 +1424,7 @@ function SimulationApprovalSummary(props) {
                                                                 {isMasterAssociatedWithCosting && <AgGridColumn width={150} field="ECNNumber" headerName='ECN No.' cellRenderer='ecnFormatter'></AgGridColumn>}
                                                                 {isMasterAssociatedWithCosting && <AgGridColumn width={150} field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>}
                                                                 {costingList[0]?.CostingHeadId !== CBCTypeId && <AgGridColumn width={150} field="VendorName" tooltipField='VendorName' headerName="Vendor (Code)"></AgGridColumn>}
+                                                                {costingList[0]?.CostingHeadId !== CBCTypeId && <AgGridColumn width={150} field="InfoCategory" tooltipField='InfoCategory' headerName="Category"></AgGridColumn>}
                                                                 {isMasterAssociatedWithCosting && showSaLineNumber() && <AgGridColumn width={150} field="SANumber" headerName="SA Number"></AgGridColumn>}
                                                                 {isMasterAssociatedWithCosting && showSaLineNumber() && <AgGridColumn width={150} field="LineNumber" headerName="Line Number"></AgGridColumn>}
                                                                 {costingList[0]?.CostingHeadId === CBCTypeId && <AgGridColumn width={150} field="CustomerName" tooltipField='CustomerName' headerName="Customer (Code)"></AgGridColumn>}
@@ -1558,7 +1559,14 @@ function SimulationApprovalSummary(props) {
 
                                 <Row>
                                     <Col md="12" className="costing-summary-row">
-                                        {compareCosting && <CostingSummaryTable viewMode={true} id={id} simulationMode={true} isApproval={true} costingIdExist={true} selectedTechnology={technologyName} simulationId={simulationDetail?.SimulationId} />}
+                                        {compareCosting && <CostingSummaryTable
+                                            viewMode={true}
+                                            id={id}
+                                            simulationMode={true}
+                                            isApproval={true}
+                                            costingIdExist={true}
+                                            selectedTechnology={technologyName}
+                                            simulationId={simulationDetail?.SimulationId} />}
                                     </Col>
                                 </Row>
                             </>

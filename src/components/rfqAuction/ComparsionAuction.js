@@ -27,9 +27,10 @@ import { ASSEMBLY, BOP, COMPONENT, RM } from "./AddAuction";
 import DayTime from "../common/DayTimeWrapper";
 import PopupMsgWrapper from "../common/PopupMsgWrapper";
 import { TextFieldHookForm } from "../layout/HookFormInputs";
-import { addTime, calculateEndDateTime, calculateTime, checkForNull, loggedInUserId } from "../../helper";
+import { addTime, calculateEndDateTime, calculateTime, checkForDecimalAndNull, checkForNull, loggedInUserId } from "../../helper";
 import Toaster from "../common/Toaster";
 import { AuctionLiveId } from "../../config/constants";
+import TooltipCustom from "../common/Tooltip";
 
 
 function ComparsionAuction(props) {
@@ -64,8 +65,13 @@ function ComparsionAuction(props) {
     isTimerRunning: false,
     showClosedAuction: false,
     isLoader: false,
+    awarded: false,
+    vendorIdList: [],
+    vendorNameList: [],
     live: props.AuctionStatusId === AuctionLiveId ? true : false
   })
+  const [checkBoxState, setCheckBoxState] = useState({})
+  const { NoOfDecimalForPrice } = useSelector((state) => state.auth?.initialConfiguration) || {}
   const handleSubmitClick = (data, e, isPartDetailSent) => {
     //handleSubmit(() => onSubmit(data, e, isSent))()
     onSubmit(data, e, isPartDetailSent);
@@ -73,6 +79,7 @@ function ComparsionAuction(props) {
 
   useEffect(() => {
     setState(prevState => ({ ...prevState, bidData: bidDetails ?? {} }))
+
   }, [bidDetails])
   useEffect(() => {
     setState(prevState => ({ ...prevState, isLoader: true }))
@@ -80,7 +87,7 @@ function ComparsionAuction(props) {
       if (!state.live) {
         dispatch(auctionBidDetails(props.quotationAuctionId, () => { }))
       }
-      if (res && res.data.Result) {
+      if (res && res.data && res.data.Result) {
         let data = res.data.Data;
         setState(prevState => ({ ...prevState, PartType: data?.PartType, headerDetails: data }))
         setTimeout(() => {
@@ -175,6 +182,7 @@ function ComparsionAuction(props) {
     let obj = {
       QuotationAuctionId: props.quotationAuctionId,
       LoggedInUserId: loggedInUserId(),
+      AwardedVendorIdList: state.vendorIdList
     }
     dispatch(closeAuction(obj, (res) => {
       if (res.data.Result) {
@@ -183,21 +191,28 @@ function ComparsionAuction(props) {
       }
     }))
   }
-  const labels = {
-    rfqNumberLabel: "RFQ No",
-    auctionNameLabel: "Auction Name",
-    partTypeLabel: "Part Type",
-    partNumberLabel: "Part No",
-    rmNameLabel: "RM Name Grade Specification",
-    rmCodeLabel: "RM Code",
-    timeLabel: "Time",
-    durationLabel: "Duration",
-    endTimeLabel: "End Time",
-    remainingTimeLabel: "Remaining Time",
-    bopNumberLabel: "BOP No",
-    bopCategoryLabel: "Category",
-  };
+  const awardedCosting = (index, item) => {
+    let vendorIdList = state.vendorIdList
+    let vendorNameList = state.vendorNameList
+    if (checkBoxState[index]) {
+      const filterIdList = vendorIdList.filter(el => el !== item.VendorId)
+      const filterNameList = vendorNameList.filter(el => el !== item.VendorName)
+      setCheckBoxState(prevState => ({ ...prevState, [index]: false }))
+      setState(prevState => ({ ...prevState, vendorIdList: filterIdList, vendorNameList: filterNameList }))
+    } else {
+      if (!vendorIdList.includes(item.VendorId)) {
+        vendorIdList.push(item.VendorId)
+        vendorNameList.push(item.VendorName)
+      }
+      setCheckBoxState(prevState => ({ ...prevState, [index]: true }))
+      setState(prevState => ({ ...prevState, vendorIdList: vendorIdList, vendorNameList: vendorNameList }))
+    }
+
+  }
   const { headerDetails } = state
+  const vendorName = state.vendorNameList.join(',')
+  const popupMessage = state.vendorIdList.length === 0 ? 'You have not awarded any vendor. Do you still want to close the auction?' : `You have awarded ${vendorName}. Do you want to close the auction?`
+  const isExtendedTime = (headerDetails?.TotalAuctionExtensionDuration && headerDetails?.TotalAuctionExtensionDuration !== "00:00") ? true : false
   return (
     <div className="container-fluid">
       {state.isLoader && <LoaderCustom />}
@@ -219,85 +234,53 @@ function ComparsionAuction(props) {
             </div>
           </div>}
         <div>
-          <Row className="comparison-row">
-            <Col md="2" className="mb-2">
-              <div className="view-label">
-                <label>{labels.rfqNumberLabel}:</label>
-                <span>{headerDetails.RfqNumber ?? '-'}</span>
-              </div>
-            </Col>
-            <Col md="2" className="mb-2">
-              <div className="view-label">
-                <label>{labels.auctionNameLabel}:</label>
-                <span>{headerDetails.AuctionName ?? '-'}</span>
-              </div>
-            </Col>
-            <Col md="2" className="mb-2">
-              <div className="view-label">
-                <label>{labels.partTypeLabel}:</label>
-                <span>{headerDetails.PartType ?? '-'}</span>
-              </div>
-            </Col>
-            {(state.PartType === COMPONENT || state.PartType === ASSEMBLY) &&
-              <Col md="2" className="mb-2">
-                <div className="view-label">
-                  <label>{labels.partNumberLabel}:</label>
-                  <span>{headerDetails.PartNumber ?? '-'}</span>
-                </div>
-              </Col>}
-            {state.PartType === RM && <><Col md="2" className="mb-2">
-              <div className="view-label">
-                <label>{labels.rmNameLabel}:</label>
-                <span>{headerDetails.RawMaterial ?? '-'}</span>
-              </div>
-            </Col>
-              <Col md="2" className="mb-2">
-                <div className="view-label">
-                  <label>{labels.rmCodeLabel}:</label>
-                  <span>{headerDetails.RawMaterialCode ?? '-'}</span>
-                </div>
-              </Col>
-            </>}
-            {state.PartType === BOP && <><Col md="2" className="mb-2">
-              <div className="view-label">
-                <label>{labels.bopNumberLabel}:</label>
-                <span>{headerDetails.BoughtOutPart ?? '-'}</span>
-              </div>
-            </Col>
-              <Col md="2" className="mb-2">
-                <div className="view-label">
-                  <label>{labels.bopCategoryLabel}:</label>
-                  <span>{headerDetails.Category ?? '-'}</span>
-                </div>
-              </Col>
-            </>}
-            {state.PartType !== BOP && <Col md="2">
-              <div className="view-label">
-                <label>Technology:</label>
-                <span>{headerDetails.Technology ?? '-'}</span>
-              </div>
-            </Col>}
-          </Row>
-          <Row className="comparison-time-row">
-            <Col md="2" className="mb-2">
-              <div className="view-label">
-                <label>Start Time:</label>
-                <span>{DayTime(headerDetails.AuctionStartDateTime).isValid() ? DayTime(headerDetails.AuctionStartDateTime).format('YYYY-MM-DD HH:mm') : '-'}</span>
-              </div>
-            </Col>
-            <Col md="2" className="mb-2">
-              <div className="view-label">
-                <label>Duration(HH:MM):</label>
-                <span>{headerDetails.AuctionDuration ?? '-'}{headerDetails.TotalAuctionExtensionDuration !== "00:00" ? '+' + headerDetails.TotalAuctionExtensionDuration : ''}</span>
-              </div>
-            </Col>
-            <Col md="2" className="mb-2">
-              <div className="view-label">
-                <label>End Time:</label>
-                <span>{DayTime(headerDetails.AuctionEndDateTime).isValid() ? DayTime(headerDetails.AuctionEndDateTime).format('YYYY-MM-DD HH:mm') : '-'}</span>
-              </div>
-            </Col>
-          </Row>
+          <table className="table cr-brdr-main mt-3">
+            <thead>
+              <tr>
+                <th>Auction Name</th>
+                <th>RFQ Number</th>
+                <th>Part Type</th>
+                {(state.PartType === COMPONENT || state.PartType === ASSEMBLY) && <th>Part Number</th>}
+                {state.PartType !== BOP && <th>Technology</th>}
+                {state.PartType === RM && <>
+                  <th>RM Name Grade Specification</th>
+                  <th>RM Code</th>
+                </>}
+                {(state.PartType === BOP) && <>
+                  <th>Bought Out Part</th>
+                  <th>BOP Category</th>
+                </>}
+                <th>Start Date Time</th>
+                <th><div className="w-fit">Duration{isExtendedTime && <>+Extened Time <TooltipCustom width="280px" id="extensionTime" customClass="mt-1 ml-2" tooltipText="The actual auction time and the extended time are both displayed separately here. Ref: (Actual Time(HH:MM) + Extended Time(HH:MM)) " /></>}</div></th>
+                <th>End Date Time </th>
+                <th>Base Price </th>
+                <th>Min Reduction Price</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>{headerDetails?.AuctionName ?? '-'}</td>
+                <td>{headerDetails?.RfqNumber ?? '-'}</td>
+                <td>{headerDetails?.PartType ?? '-'}</td>
+                {(state.PartType === COMPONENT || state.PartType === ASSEMBLY) && <td>{headerDetails?.PartNumber ?? '-'}</td>}
+                {state.PartType !== BOP && <td>{headerDetails?.Technology ?? '-'}</td>}
+                {state.PartType === RM && <>
+                  <td>{headerDetails?.RawMaterial ?? '-'}</td>
+                  <td>{headerDetails?.RawMaterialCode ?? '-'}</td>
+                </>}
+                {(state.PartType === BOP) && <>
+                  <td>{headerDetails?.BoughtOutPart ?? '-'}</td>
+                  <td>{headerDetails?.Category ?? '-'}</td>
+                </>}
+                <td>{headerDetails?.AuctionStartDateTime ? DayTime(headerDetails?.AuctionStartDateTime).format('DD/MM/YYYY HH:MM') : '-'}</td>
+                <td>{headerDetails?.AuctionDuration ?? '-'}{isExtendedTime ? '+' + headerDetails?.TotalAuctionExtensionDuration : ''}</td>
+                <td>{headerDetails?.AuctionEndDateTime ? DayTime(headerDetails?.AuctionEndDateTime).format('DD/MM/YYYY HH:MM') : '-'}</td>
+                <td>{checkForDecimalAndNull(headerDetails?.BasePrice, NoOfDecimalForPrice) ?? '-'}</td>
+                <td>{checkForDecimalAndNull(headerDetails?.ReductionPrice, NoOfDecimalForPrice) ?? '-'}</td>
+              </tr>
+            </tbody>
+          </table>
+
           <div className="rfq-part-list mt-4">
             {/* {showTooltip && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={viewTooltip} toggle={tooltipToggle} target={"quantity-tooltip"} >{"To edit the quantity please double click on the field."}</Tooltip>} */}
             {!loader ? (
@@ -315,22 +298,29 @@ function ComparsionAuction(props) {
                             >
                               <div className="header-name-button-container">
                                 <div className="element d-inline-flex align-items-center">
-                                  <span
-                                    className="checkbox-text"
-                                    title={`BhuVendorTwo(SOB: 0%)`}
-                                  >
-                                    <div>
-                                      <strong>{item.Rank}</strong>
-                                      <span className="ml-2">{item.VendorName}</span>
-                                    </div>
-                                  </span>
+                                  <div>
+                                    {item.Rank && <span className={`rank mr-2 ${item.PriceColourZone}`}>#{item.Rank}</span>}
+                                    {state.live ? <label className="custom-checkbox w-auto"
+                                      onChange={() => awardedCosting(index, item)}>
+                                      {item.VendorName}
+                                      <input
+                                        type="checkbox"
+                                        value={"All"}
+                                        id={`checkbox-diplay${index + 1}`}
+                                        checked={checkBoxState[index]}
+                                      />
+                                      <span className="before-box p-0"
+                                        onChange={() => awardedCosting(index, item)}
+
+                                      ></span>
+                                    </label> : item.VendorName}
+                                  </div>
                                 </div>
                                 <div className="action text-right">
-                                  <button
-                                    type="button"
-                                    className="CancelIcon mb-0 align-middle"
-                                    title="Discard"
-                                  ></button>
+                                  {item.IsAwarded && <div
+                                    className="Award mb-0 align-middle"
+                                    title="Awarded"
+                                  ></div>}
                                 </div>
                               </div>
                             </th>
@@ -480,19 +470,6 @@ function ComparsionAuction(props) {
               {"Extend Time"}
             </button>
           </>}
-          <button
-            type="button"
-            className="submit-button save-btn"
-            value="send"
-            id="addRFQ_send"
-            onClick={(data, e) =>
-              handleSubmitClick(data, e, true)
-            }
-            disabled={false}
-          >
-            <div className="send-for-approval mr-1"></div>
-            {"Send for Approval"}
-          </button>
         </div>
       </Row>
       {state.showCounterPopup && (
@@ -530,7 +507,7 @@ function ComparsionAuction(props) {
           isOpen={state.showClosedAuction}
           closePopUp={closePopUp}
           confirmPopup={onPopupConfirmForCloseAuction}
-          message={"Do you want to close this auction?"}
+          message={popupMessage}
         />
       )}
     </div>

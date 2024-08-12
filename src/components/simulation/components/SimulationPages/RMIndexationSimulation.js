@@ -128,6 +128,7 @@ function RMIndexationSimulation(props) {
             setIsViewFlag(true)
         }
     }, [isApprovalSummary])
+
     useEffect(() => {
         if ((!props?.isFromApprovalListing && !isApprovalSummary && !isCostingSimulation)) {
             setIsLoader(true)
@@ -214,10 +215,9 @@ function RMIndexationSimulation(props) {
 
 
     const verifySimulation = debounce((e, type) => {
-        setIsDisable(true)
-        setIsLoader(true)
         if (type !== 'verify') {
-
+            setIsLoader(true)
+            setIsDisable(true)
             let obj = {
                 LoggedInUserId: loggedInUserId(),
                 SimulationId: simulationId,
@@ -260,6 +260,11 @@ function RMIndexationSimulation(props) {
                 }
             }))
         } else {
+            if (!isEffectiveDateSelected) {
+                setIsWarningMessageShow(true)
+                setIsDisable(true)
+                return false
+            }
             let obj = {}
             obj.Technology = technology
             obj.SimulationTechnologyId = selectedMasterForSimulation.value
@@ -339,7 +344,6 @@ function RMIndexationSimulation(props) {
     }
 
     const cancelVerifyPage = () => {
-
         setShowVerifyPage(false)
     }
     const resetState = () => {
@@ -488,7 +492,6 @@ function RMIndexationSimulation(props) {
 
     const calculateAndSave = (basicRate = 0, data = [], totalBase = 0, type = '') => {
         const selectedRow = indexedRMForSimulation[editIndex]
-
         setIsLoader(true)
         let updatedOtherCostTotal = []
         let totalOtherCost = 0
@@ -617,7 +620,7 @@ function RMIndexationSimulation(props) {
                 {
                     (isImpactedMaster || isRunSimulationClicked || isApprovalSummary || isCostingSimulation) ?
                         checkForDecimalAndNull(isCostingSimulation ? row.ScrapRate : row.NewScrapRate, getConfigurationKey().NoOfDecimalForPrice) :
-                        <span id={`newScrapRate-${props.rowIndex}`} className={`${!isbulkUpload ? 'form-control' : ''} ${row.IsScrapUOMApply === 'Yes' ? 'disabled' : ''}`} title={cell && value ? Number(cell) : Number(row.ScrapRate)} >{cell && value ? Number(cell) : Number(row.ScrapRate)}</span>
+                        <span id={`newScrapRate-${props.rowIndex}`} className={`${!isbulkUpload ? 'form-control' : ''} ${row.IsScrapUOMApply === 'Yes' ? 'disabled' : ''}`} title={cell && value ? Number(cell) : Number(row.NewScrapRate)} >{cell && value ? Number(cell) : Number(row.NewScrapRate)}</span>
                 }
             </>
         )
@@ -651,7 +654,7 @@ function RMIndexationSimulation(props) {
                 {
                     isImpactedMaster ?
                         row.OldScrapRate :
-                        <span title={cell && value ? Number(cell) : Number(row.ScrapRate)}>{cell && value ? Number(cell) : Number(row.ScrapRate)}</span>
+                        <span title={cell && value ? Number(cell) : Number(row.OldScrapRate)}>{cell && value ? Number(cell) : Number(row.OldScrapRateScrapRate)}</span>
                 }
             </>
         )
@@ -791,6 +794,7 @@ function RMIndexationSimulation(props) {
         setEffectiveDate(date)
         setIsEffectiveDateSelected(true)
         setIsWarningMessageShow(false)
+        setIsDisable(false)
     }
 
     const EditableCallbackForNewScrapRate = (props) => {
@@ -1034,7 +1038,7 @@ function RMIndexationSimulation(props) {
                         {showTooltip && !isImpactedMaster && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={basicRateviewTooltip} toggle={basicRatetooltipToggle} target={"basicRate-tooltip"} >{"To edit revised basic rate please double click on the field."}</Tooltip>}
                         {showTooltip && !isImpactedMaster && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={scrapRateviewTooltip} toggle={scrapRatetooltipToggle} target={"scrapRate-tooltip"} >{"To edit revised scrap rate please double click on the field."}</Tooltip>}
                         <Row>
-                            <Col className="add-min-height mb-3 sm-edit-page">
+                            <Col className={`${props.isApprovalSummary ? "" : "add-min-height sm-edit-page"}  mb-3 `}>
                                 <div className={`ag-grid-wrapper height-width-wrapper reset-btn-container ${(list && list?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                                     <div className="ag-grid-header d-flex justify-content-between">
                                         <div className='d-flex align-items-center'>
@@ -1054,14 +1058,13 @@ function RMIndexationSimulation(props) {
                                                     <label>Token No: </label>
                                                     <p className='technology ml-1' title={tokenNumber}>{tokenNumber}</p>
                                                 </div>
-                                                {
-                                                    !props?.isFromApprovalListing && !isApprovalSummary &&
-                                                    <button type="button" className={"apply ml-2 back_simulationPage"} id="simulation-back" onClick={props?.backToSimulation} disabled={isDisable}> <div className={'back-icon'}></div>Back</button>
-                                                }
+
                                             </div>}
+                                            {
+                                                !props?.isFromApprovalListing && !isApprovalSummary &&
+                                                <button type="button" className={"apply ml-2 back_simulationPage"} id="simulation-back" onClick={props?.backToSimulation} disabled={isDisable}> <div className={'back-icon'}></div>Back</button>
+                                            }
                                         </div>
-
-
                                     </div>
                                     <div className="ag-theme-material p-relative" style={{ width: '100%' }}>
                                         {/* {isLoader && <LoaderCustom />} */}

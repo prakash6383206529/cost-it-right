@@ -265,6 +265,7 @@ export function ProcessListingSimulation(props) {
                                 {/* <AgGridColumn field="TechnologyName" editable='false' headerName="Technology" minWidth={190}></AgGridColumn> */}
                                 <AgGridColumn field="CostingNumber" editable='false' headerName="Costing Number" minWidth={190}></AgGridColumn>
                                 {!isImpactedMaster && <AgGridColumn field="PlantName" editable='false' headerName="Plant" minWidth={190}></AgGridColumn>}
+                                <AgGridColumn field="InfoCategory" editable='false' headerName="Category" minWidth={190}></AgGridColumn>
                                 {!isImpactedMaster && <AgGridColumn field="PartName" editable='false' headerName="Part Name" minWidth={190}></AgGridColumn>}
                                 <AgGridColumn field="PartNumber" editable='false' headerName="Part Number" minWidth={190}></AgGridColumn>
                                 {!isImpactedMaster && <AgGridColumn suppressSizeToFit="true" editable='false' field="ConversionCost" headerName="Net CC" minWidth={190} cellRenderer='DecimalFormatter'></AgGridColumn>}

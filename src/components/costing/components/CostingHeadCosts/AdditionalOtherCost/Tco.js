@@ -117,7 +117,7 @@ const Tco = (props) => {
                 <TooltipCustom id="paymentDays" tooltipText="The preferred payment term is 90 days." />
                 <TextFieldHookForm
                     id="paymentDays_Container"
-                    label={`Payment Term (No)`}
+                    label={`Payment Term (Days)`}
                     name={'PaymentDays'}
                     Controller={Controller}
                     control={control}
@@ -219,7 +219,7 @@ const Tco = (props) => {
             </Col>
             <Col md="3">
                 <TextFieldHookForm
-                    label={`Available Capacity (No)`}
+                    label={`Available Monthly Capacity (No)`}
                     name={'AvailableCapacity'}
                     Controller={Controller}
                     id={'AvailableCapacity_Container'}
