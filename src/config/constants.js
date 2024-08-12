@@ -3207,6 +3207,8 @@ export const showPaperCorrugatedBox = true
 export const showDynamicKeys = false
 export const hideDetailOfRubbercalci = true
 
+export const clientName = 'Havells'
+
 //VERSION 
 export const VERSION = "V3.0.17";
 
