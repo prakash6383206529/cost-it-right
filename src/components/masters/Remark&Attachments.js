@@ -249,7 +249,6 @@ function RemarksAndAttachments(props) {
             <Col md="3">
                 <div className={"attachment-wrapper"}>
                     {state.attachmentLoader && <LoaderCustom customClass="attachment-loader" />}
-                    {console.log('files: ', files)}
                     {files &&
                         files.map((f) => {
                             const withOutTild = f.FileURL.replace(
