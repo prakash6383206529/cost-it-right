@@ -363,18 +363,18 @@ function AddRfq(props) {
             partListTemp && partListTemp?.map((item, index) => {
                 let listWithSOPData = []
 
-                item.SOPQuantity.map((ele, ind) => {
+                item?.SOPQuantity.map((ele, ind) => {
                     let obj = {}
-                    obj.PartNo = item.PartNumber
+                    obj.PartNo = item?.PartNumber
                     obj.PartId = item?.PartId
                     obj.Quantity = ele?.Quantity
                     obj.YearName = ele?.YearName
                     if (ind === 2) {
-                        obj.PartNumber = item.PartNumber
-                        obj.VendorListExisting = item.VendorList
-                        obj.TargetPrice = item.TargetPrice
-                        obj.UOM = item.UOMSymbol
-                        obj.RequirementDate = item.TimeLine
+                        obj.PartNumber = item?.PartNumber
+                        obj.VendorListExisting = item?.VendorList
+                        obj.TargetPrice = item?.TargetPrice
+                        obj.UOM = item?.UOMSymbol
+                        obj.RequirementDate = item?.TimeLine
 
                     }
                     listWithSOPData.push(obj)
@@ -398,7 +398,7 @@ function AddRfq(props) {
                 //     }
                 // })
                 let obj = {
-                    partName: { label: item.PartNumber, value: item.PartId, RevisionNumber: item.RevisionNumber },
+                    partName: { label: item?.PartNumber, value: item?.PartId, RevisionNumber: item?.RevisionNumber },
                     RmList: listFinal,
                 }
                 apiListForRM.push(obj)
@@ -410,7 +410,7 @@ function AddRfq(props) {
                 listtt = [...listtt, ...item]
             })
             tempArr = listtt
-            let rmListTemp = listtt && listtt?.filter(item => item.IsRMAdded)
+            let rmListTemp = listtt && listtt?.filter(item => item?.IsRMAdded)
             let ListTemp = []
             rmListTemp && rmListTemp?.map(item => {
                 let obj = {
@@ -436,7 +436,7 @@ function AddRfq(props) {
         } else {
             partListTemp && partListTemp?.map((item) => {
 
-                // item.SOPQuantity.map((ele, ind) => {
+                // item?.SOPQuantity.map((ele, ind) => {
                 //     if (ind !== 2) {
                 //         ele.PartNo = ele.PartNumber
                 //         ele.PartId = item?.PartId
@@ -586,12 +586,12 @@ function AddRfq(props) {
             return false
         }
         if (FileId != null) {
-            let tempArr = files.filter((item) => item.FileId !== FileId)
+            let tempArr = files.filter((item) => item?.FileId !== FileId)
             setFiles(tempArr);
             setIsOpen(!IsOpen)
         }
         if (FileId == null) {
-            let tempArr = files && files.filter(item => item.FileName !== OriginalFileName)
+            let tempArr = files && files.filter(item => item?.FileName !== OriginalFileName)
             setFiles(tempArr)
             setIsOpen(!IsOpen)
         }
@@ -631,7 +631,7 @@ function AddRfq(props) {
 
         if (status === 'removed') {
             const removedFileName = file.name;
-            let tempArr = files && files.filter(item => item.OriginalFileName !== removedFileName)
+            let tempArr = files && files.filter(item => item?.OriginalFileName !== removedFileName)
             setFiles(tempArr)
             setIsOpen(!IsOpen)
         }
@@ -706,10 +706,10 @@ function AddRfq(props) {
 
         }))
         if (selectedOption === "componentAssembly") {
-            let arr = final && final.filter(item => item.PartId !== rowData?.PartId)
+            let arr = final && final.filter(item => item?.PartId !== rowData?.PartId)
             setPartList(arr)
         } else if (selectedOption === "Raw Material") {
-            let arr = final && final.filter(item => item.RawMaterialChildId !== rowData?.RawMaterialChildId)
+            let arr = final && final.filter(item => item?.RawMaterialChildId !== rowData?.RawMaterialChildId)
             setRmDataList(arr)
         } else if (selectedOption === "Bought Out Part") {
             let arr = final && final.filter(item => item?.BoughtOutPartChildId !== rowData?.BoughtOutPartChildId)
@@ -823,7 +823,7 @@ function AddRfq(props) {
 
     const editItemVendorTable = (gridData, props) => {
 
-        setSelectedVendorTable(props.node.data)
+        setSelectedVendorTable(props?.node.data)
 
         setUpdateButtonVendorTable(true)
         setValue('vendor', { label: props?.node?.data?.Vendor, value: props?.node?.data?.VendorId })
@@ -873,18 +873,18 @@ function AddRfq(props) {
         const temp = [];
         if (label === 'UOM') {
             UOMSelectList && UOMSelectList?.map(item => {
-                const accept = AcceptableRMUOM.includes(item.Type)
+                const accept = AcceptableRMUOM.includes(item?.Type)
                 if (accept === false) return false
-                if (item.Value === '0') return false
-                temp.push({ label: item.Display, value: item.Value })
+                if (item?.Value === '0') return false
+                temp.push({ label: item?.Display, value: item?.Value })
                 return null
             });
             return temp;
         }
         if (label === 'plant') {
             plantSelectList && plantSelectList.map((item) => {
-                if (item.PlantId === '0') return false
-                temp.push({ label: item.PlantNameCode, value: item.PlantId })
+                if (item?.PlantId === '0') return false
+                temp.push({ label: item?.PlantNameCode, value: item?.PlantId })
                 return null
             })
             return temp
@@ -892,16 +892,16 @@ function AddRfq(props) {
 
         if (label === 'technology') {
             technologySelectList && technologySelectList.map((item) => {
-                if (item.Value === '0') return false
-                temp.push({ label: item.Text, value: item.Value })
+                if (item?.Value === '0') return false
+                temp.push({ label: item?.Text, value: item?.Value })
                 return null
             })
             return temp
         }
         if (label === 'nfrId') {
             nfrSelectList && nfrSelectList.map((item) => {
-                if (item.Value === '0') return false
-                temp.push({ label: item.Text, value: item.Value })
+                if (item?.Value === '0') return false
+                temp.push({ label: item?.Text, value: item?.Value })
                 return null
             })
             return temp
@@ -910,8 +910,8 @@ function AddRfq(props) {
         if (label === 'reporter') {
 
             getReporterListDropDown && getReporterListDropDown.map(item => {
-                if (item.Value === '0') return false
-                temp.push({ label: item.Text, value: item.Value })
+                if (item?.Value === '0') return false
+                temp.push({ label: item?.Text, value: item?.Value })
                 return null
             })
             return temp;
@@ -919,19 +919,19 @@ function AddRfq(props) {
         if (label === 'PartType') {
             partTypeList && partTypeList.map((item) => {
 
-                if (item.Value === '0') return false
-                if (item.Value === PRODUCT_ID) return false
-                if (!getConfigurationKey()?.IsBoughtOutPartCostingConfigured && item.Text === BOUGHTOUTPARTSPACING) return false
-                if (String(technology?.value) === String(ASSEMBLY) && ((item.Text === COMPONENT_PART) || (item.Text === BOUGHTOUTPARTSPACING))) return false
-                temp.push({ label: item.Text, value: item.Value })
+                if (item?.Value === '0') return false
+                if (item?.Value === PRODUCT_ID) return false
+                if (!getConfigurationKey()?.IsBoughtOutPartCostingConfigured && item?.Text === BOUGHTOUTPARTSPACING) return false
+                if (String(technology?.value) === String(ASSEMBLY) && ((item?.Text === COMPONENT_PART) || (item?.Text === BOUGHTOUTPARTSPACING))) return false
+                temp.push({ label: item?.Text, value: item?.Value })
                 return null
             })
             return temp
         }
         if (label === 'prNo') {
             SelectPurchaseRequisition && SelectPurchaseRequisition.map((item) => {
-                if (item.Value === '0') return false
-                temp.push({ label: item.Text, value: item.Value })
+                if (item?.Value === '0') return false
+                temp.push({ label: item?.Text, value: item?.Value })
                 return null
             })
             return temp
@@ -952,7 +952,7 @@ function AddRfq(props) {
     * @description used to Reset form
     */
     const cancel = () => {
-        props.closeDrawer('', {})
+        props?.closeDrawer('', {})
         setResetRmFields(false)
         setResetBopFields(false)
         setResetDrawer(false)
@@ -1034,7 +1034,7 @@ function AddRfq(props) {
         }
         //dispatch(getTargetPrice(plant, technology, assemblyPartNumber, (res) => { }))
         // dispatch(getRfqPartDetails( (res) => {
-        //const quotationPartIds = res?.data?.Data.map(item => item.QuotationPartId);
+        //const quotationPartIds = res?.data?.Data.map(item => item?.QuotationPartId);
         //  }))
 
 
@@ -1172,7 +1172,7 @@ function AddRfq(props) {
 
     const buttonFormatterFirst = (props) => {
 
-        const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const rowData = props?.valueFormatted ? props?.valueFormatted : props?.data;
 
         let final = _.map(props?.node?.rowModel?.rowsToDisplay, 'data')
         const show = selectedOption === "componentAssembly"
@@ -1205,7 +1205,7 @@ function AddRfq(props) {
         let data = {}
         let temp = []
         partList && partList.map((item) => {
-            temp.push(item.PartId)
+            temp.push(item?.PartId)
             return null
         })
         data.PartIdList = _.uniq(temp)
@@ -1270,7 +1270,7 @@ function AddRfq(props) {
 
                     if (!updateButtonVendorTable) {
                         vendorList && vendorList.map((item) => {
-                            if (item.VendorId === obj.VendorId) {
+                            if (item?.VendorId === obj.VendorId) {
                                 isDuplicateEntry = true
                             }
                             return null
@@ -1296,7 +1296,7 @@ function AddRfq(props) {
                         })
 
                         arr.map((item) => {
-                            if (item.VendorId === obj.VendorId) {
+                            if (item?.VendorId === obj.VendorId) {
                                 isDuplicateEntry = true
                             }
                             return null
@@ -1461,12 +1461,12 @@ function AddRfq(props) {
                     list[list.length - 1].RmList && list[list.length - 1].RmList?.map((item, index) => {
 
                         let obj = arrTemp[index] ?? {}
-                        obj.RMGrade = item.RawMaterialGrade
-                        obj.RawMaterialGradeId = item.RawMaterialGradeId
-                        obj.RMName = item.RawMaterialName
-                        obj.RawMaterialChildId = item.RawMaterialChildId
-                        obj.RMSpecification = item.RawMaterialSpecification
-                        obj.RawMaterialSpecificationId = item.RawMaterialSpecificationId
+                        obj.RMGrade = item?.RawMaterialGrade
+                        obj.RawMaterialGradeId = item?.RawMaterialGradeId
+                        obj.RMName = item?.RawMaterialName
+                        obj.RawMaterialChildId = item?.RawMaterialChildId
+                        obj.RMSpecification = item?.RawMaterialSpecification
+                        obj.RawMaterialSpecificationId = item?.RawMaterialSpecificationId
 
                         if (index > arrTemp?.length - 1) {
                             obj.PartId = arrTemp[0].PartId
@@ -1716,16 +1716,16 @@ function AddRfq(props) {
                 if (updateButtonPartNoTable) {
                     if (selectedOption === "Raw Material") {
                         arr = rmDataList.map(item => {
-                            return item.RawMaterialChildId === editRawMaterialId ? { ...item, ...arrTemp[0] } : item;
+                            return item?.RawMaterialChildId === editRawMaterialId ? { ...item, ...arrTemp[0] } : item;
                         });
                     } else if (selectedOption === "componentAssembly") {
                         arr = partList.map(item => {
                             // Check PartId for componentAssembly
-                            return item.PartId === getValues('partNumber')?.value ? { ...item, ...arrTemp[0] } : item;
+                            return item?.PartId === getValues('partNumber')?.value ? { ...item, ...arrTemp[0] } : item;
                         });
                     } else {
                         arr = bopDataList.map(item => {
-                            return item.BoughtOutPartChildId === editBopId ? { ...item, ...arrTemp[0] } : item;
+                            return item?.BoughtOutPartChildId === editBopId ? { ...item, ...arrTemp[0] } : item;
                         });
                     }
                 } else {
@@ -2314,7 +2314,7 @@ function AddRfq(props) {
         const filteredArray = arr.filter((item) => {
 
             return !selectedparts.some((element) => {
-                return element.value === item.value;
+                return element.value === item?.value;
             });
         });
         return filteredArray
@@ -2331,7 +2331,7 @@ function AddRfq(props) {
         if (updateButtonPartNoTable) {
             setStorePartsDetail((prevDetails) => {
                 return prevDetails.map((item) => {
-                    if (item.PartId === getValues('partNumber')?.value) {
+                    if (item?.PartId === getValues('partNumber')?.value) {
                         return {
                             ...item,
                             UnitOfMeasurementId: getValues('UOM')?.value || null,
@@ -2414,7 +2414,7 @@ function AddRfq(props) {
         setPartList(final)
         let isEnable
         if (getValues('nfrId')) {
-            isEnable = dataProps?.isAddFlag && props.data.isEdit ? true : dataProps?.isViewFlag ? false : isEditAll && props.data.isEdit ? true : false
+            isEnable = dataProps?.isAddFlag && props?.data.isEdit ? true : dataProps?.isViewFlag ? false : isEditAll && props?.data.isEdit ? true : false
         } else {
             isEnable = dataProps?.isAddFlag ? true : dataProps?.isViewFlag ? false : isEditAll ? true : false
         }
@@ -2495,7 +2495,7 @@ function AddRfq(props) {
         if (updateButtonPartNoTable && !isPartDetailUpdate) {
             setStorePartsDetail((prevDetails) => {
                 return prevDetails?.map((item) => {
-                    if (item.PartId === getValues('partNumber')?.value) {
+                    if (item?.PartId === getValues('partNumber')?.value) {
                         return {
                             ...item,
                             UnitOfMeasurementId: getValues('UOM')?.value || null,
@@ -2522,9 +2522,9 @@ function AddRfq(props) {
             if (rawMaterialNameSelectList?.length > 0) {
                 let opts = [...rawMaterialNameSelectList]
                 opts && opts?.map(item => {
-                    if (item.Value === '0') return false
-                    item.label = item.Text
-                    item.value = item.Value
+                    if (item?.Value === '0') return false
+                    item.label = item?.Text
+                    item.value = item?.Value
                     opts1.push(item)
                     return null
                 })
@@ -2534,9 +2534,9 @@ function AddRfq(props) {
             if (gradeSelectList?.length > 0) {
                 let opts = [...gradeSelectList]
                 opts && opts?.map(item => {
-                    if (item.Value === '0') return false
-                    item.label = item.Text
-                    item.value = item.Value
+                    if (item?.Value === '0') return false
+                    item.label = item?.Text
+                    item.value = item?.Value
                     opts1.push(item)
                     return null
                 })
@@ -2547,9 +2547,9 @@ function AddRfq(props) {
             if (rmSpecification?.length > 0) {
                 let opts = [...rmSpecification]
                 opts && opts?.map(item => {
-                    if (item.Value === '0') return false
-                    item.label = item.Text
-                    item.value = item.Value
+                    if (item?.Value === '0') return false
+                    item.label = item?.Text
+                    item.value = item?.Value
                     opts1.push(item)
                     return null
                 })
@@ -2582,7 +2582,7 @@ function AddRfq(props) {
         if (updateButtonPartNoTable) {
             setStorePartsDetail((prevDetails) => {
                 return prevDetails.map((item) => {
-                    if (item.PartId === getValues('partNumber')?.value) {
+                    if (item?.PartId === getValues('partNumber')?.value) {
                         return {
                             ...item,
                             UnitOfMeasurementId: newValue?.value || null,
@@ -2604,7 +2604,7 @@ function AddRfq(props) {
     const EditableCallback = (props) => {
         let value
         if (getValues('nfrId')) {
-            value = dataProps?.isAddFlag && props.data.isEdit ? true : dataProps?.isViewFlag ? false : isEditAll && props.data.isEdit ? true : false
+            value = dataProps?.isAddFlag && props?.data.isEdit ? true : dataProps?.isViewFlag ? false : isEditAll && props?.data.isEdit ? true : false
         } else {
             value = dataProps?.isAddFlag ? true : dataProps?.isViewFlag ? false : isEditAll ? true : false
         }
@@ -2645,7 +2645,7 @@ function AddRfq(props) {
     };
 
     const effectiveDateFormatter = (props) => {
-        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const cellValue = props?.valueFormatted ? props?.valueFormatted : props?.value;
         return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
     }
     function shouldEnableRadioButton(partList, rmDataList, bopDataList) {

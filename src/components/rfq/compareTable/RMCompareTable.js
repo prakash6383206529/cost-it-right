@@ -22,8 +22,8 @@ const RMCompareTable = (props) => {
     useEffect(() => {
         setIsLoader(true)
         let temp = []
-        const uniqueShouldCostingIdArr = props.uniqueShouldCostingId || [];
-        const idArr = props.selectedRows.map(item => item.RawMaterialId);
+        const uniqueShouldCostingIdArr = props?.uniqueShouldCostingId || [];
+        const idArr = props?.selectedRows.map(item => item.RawMaterialId);
         const combinedArr = Array.from(new Set([...uniqueShouldCostingIdArr, ...idArr]));
         dispatch(getViewRawMaterialDetails(combinedArr, res => {
 
@@ -90,10 +90,10 @@ const RMCompareTable = (props) => {
                     vendorName: item.VendorName,
                     onChange: () => checkBoxHandle(item, index),
                     checked: checkBoxCheck[index],
-                    isCheckBox: item.bestCost ? false : item.IsShowCheckBoxForApproval,
+                    isCheckBox:!props?.compare?  item.bestCost ? false : item.IsShowCheckBoxForApproval : false,
                     // isCheckBox:true,
                     bestCost: item.bestCost,
-                    shouldCost: props.uniqueShouldCostingId?.includes(item.RawMaterialId) ? "Should Cost" : "",
+                    shouldCost: props?.uniqueShouldCostingId?.includes(item.RawMaterialId) ? "Should Cost" : "",
                     costingType: item.CostingType === "Zero Based" ? "ZBC" : item.costingType === "Vendor Based" ? "VBC" : "",
                     vendorCode: item.VendorCode,
 
@@ -233,18 +233,18 @@ const RMCompareTable = (props) => {
     }
 
     useEffect(() => {
-        if(!props.compare)
+        if(!props?.compare)
 
-      {  props.checkCostingSelected(selectedItems, selectedIndices)}
+      {  props?.checkCostingSelected(selectedItems, selectedIndices)}
     }, [selectedItems, selectedIndices])
     // const checkBoxHanlde = (item , index) => {
     //     setCheckBoxCheck(prevState => ({ ...prevState, index: true }))
-    //     props.checkCostingSelected(item,index)
+    //     props?.checkCostingSelected(item,index)
     // }
     return (
         <div>
-            {showCheckbox && < WarningMessage dClass={"float-right justify-content-end"} message={'Click the checkbox to approve, reject, or return the quotation'} />}
-            <Table headerData={mainHeadingData} sectionData={sectionData} uniqueShouldCostingId={props.uniqueShouldCostingId}>
+            {showCheckbox &&!props?.compare&& < WarningMessage dClass={"float-right justify-content-end"} message={'Click the checkbox to approve, reject, or return the quotation'} />}
+            <Table headerData={mainHeadingData} sectionData={sectionData} uniqueShouldCostingId={props?.uniqueShouldCostingId}>
                 {isLoader && <LoaderCustom customClass="" />}
             </Table>
         </div>
