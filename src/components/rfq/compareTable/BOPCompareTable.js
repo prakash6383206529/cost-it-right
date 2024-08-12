@@ -104,7 +104,7 @@ const BOPCompareTable = (props) => {
                     vendorName: item?.Vendor,
                     onChange: () => checkBoxHandle(item, index),
                     checked: checkBoxCheck[index],
-                    isCheckBox: item?.bestCost ? false : item?.IsShowCheckBoxForApproval,
+                    isCheckBox: !props.compare ?item?.bestCost ? false : item?.IsShowCheckBoxForApproval : false,
                     bestCost: item?.bestCost,
                     shouldCost: props?.uniqueShouldCostingId?.includes(item?.RawMaterialId) ? "Should Cost" : "",
                     costingType: item?.CostingType === "Zero Based" ? "ZBC" : item?.costingType === "Vendor Based" ? "VBC" : "",

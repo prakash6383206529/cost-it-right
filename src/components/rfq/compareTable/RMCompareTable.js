@@ -90,7 +90,7 @@ const RMCompareTable = (props) => {
                     vendorName: item.VendorName,
                     onChange: () => checkBoxHandle(item, index),
                     checked: checkBoxCheck[index],
-                    isCheckBox: item.bestCost ? false : item.IsShowCheckBoxForApproval,
+                    isCheckBox:!props.compare?  item.bestCost ? false : item.IsShowCheckBoxForApproval : false,
                     // isCheckBox:true,
                     bestCost: item.bestCost,
                     shouldCost: props.uniqueShouldCostingId?.includes(item.RawMaterialId) ? "Should Cost" : "",
@@ -243,7 +243,7 @@ const RMCompareTable = (props) => {
     // }
     return (
         <div>
-            {showCheckbox && < WarningMessage dClass={"float-right justify-content-end"} message={'Click the checkbox to approve, reject, or return the quotation'} />}
+            {showCheckbox &&!props.compare&& < WarningMessage dClass={"float-right justify-content-end"} message={'Click the checkbox to approve, reject, or return the quotation'} />}
             <Table headerData={mainHeadingData} sectionData={sectionData} uniqueShouldCostingId={props.uniqueShouldCostingId}>
                 {isLoader && <LoaderCustom customClass="" />}
             </Table>

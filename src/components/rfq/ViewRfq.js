@@ -1398,10 +1398,11 @@ function RfqListing(props) {
         setMasterRejectDrawer(false);
 
         if (type !== "Cancel") {
-            props.closeDrawer(true); // Pass true to indicate that data should be refreshed
-        } else {
-            props.closeDrawer(false); // Pass false if no refresh is needed
-        }
+            props.closeDrawer(false); // Pass true to indicate that data should be refreshed
+        } 
+        // else {
+        //     props.closeDrawer(true); // Pass false if no refresh is needed
+        // }
     }
     const handleInitiateAuction = () => {
         history.push({
