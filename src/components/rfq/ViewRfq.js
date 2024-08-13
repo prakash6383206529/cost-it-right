@@ -103,7 +103,7 @@ function RfqListing(props) {
     const [masterRejectDrawer, setMasterRejectDrawer] = useState(false)
     const [actionType, setActionType] = useState('');
     const statusColumnData = useSelector((state) => state.comman.statusColumnData);
-const [shouldRedirect, setShouldRedirect] = useState(false)
+    const [shouldRedirect, setShouldRedirect] = useState(false)
     const { viewRmDetails } = useSelector(state => state.material)
     const { viewBOPDetails } = useSelector((state) => state.boughtOutparts);
     const [state, setState] = useState({
@@ -489,23 +489,17 @@ const [shouldRedirect, setShouldRedirect] = useState(false)
     * @description approveDetails
     */
     const approveDetails = (Id, rowData = {}) => {
-        if (partType !== "Bought Out Part" && partType !== "Raw Material") {
-
+        if (havellsConditionKey && (partType !== "Bought Out Part" && partType !== "Raw Material")) {
             const filteredData = viewCostingData.filter(item => selectedCostingList.includes(item.costingId));
-
             // Check if the total share of business is 100%
             const totalShareOfBusiness = filteredData
                 .map(item => item.shareOfBusinessPercent)
                 .reduce((total, percent) => total + percent, 0);
-
-
             if (totalShareOfBusiness !== 100) {
                 Toaster.warning("The total share of business must be 100%.");
                 return false;
             }
         }
-
-
 
         if (partType === "Bought Out Part" || partType === "Raw Material") {
             setApproveDrawer(true)
@@ -995,12 +989,12 @@ const [shouldRedirect, setShouldRedirect] = useState(false)
         )
     };
 
-// Add this effect
-useEffect(() => {
-    if (shouldRedirect) {
-        history.push('/rfq-listing');
-    }
-}, [shouldRedirect, history]);
+    // Add this effect
+    useEffect(() => {
+        if (shouldRedirect) {
+            history.push('/rfq-listing');
+        }
+    }, [shouldRedirect, history]);
     const closeDrawer = (e = '', type) => {
         setAddRfqData({})
         setAddRfq(false)
@@ -1392,17 +1386,17 @@ useEffect(() => {
 
     }
 
-   
+
     const closeApprovalDrawer = (e = '', type) => {
-            setApproveDrawer(false);
-            setMasterRejectDrawer(false);
-        
-            if (type !== "Cancel") {
-                props.closeDrawer(true); // Pass true to indicate that data should be refreshed
-            } else {
-                props.closeDrawer(false); // Pass false if no refresh is needed
-            }
+        setApproveDrawer(false);
+        setMasterRejectDrawer(false);
+
+        if (type !== "Cancel") {
+            props.closeDrawer(true); // Pass true to indicate that data should be refreshed
+        } else {
+            props.closeDrawer(false); // Pass false if no refresh is needed
         }
+    }
     const handleInitiateAuction = () => {
         history.push({
             pathname: '/add-auction',

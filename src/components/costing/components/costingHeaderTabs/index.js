@@ -17,7 +17,7 @@ import {
   saveDiscountOtherCostTab, setComponentDiscountOtherItemData, setCostingEffectiveDate, CloseOpenAccordion, saveAssemblyPartRowCostingCalculation, isDataChange, saveAssemblyOverheadProfitTab, isToolDataChange, isOverheadProfitDataChange, setOverheadProfitData, saveCostingPaymentTermDetail,
 } from '../../actions/Costing';
 import { checkForNull, CheckIsCostingDateSelected, loggedInUserId } from '../../../../helper';
-import { LEVEL1, WACTypeId, ZBCTypeId } from '../../../../config/constants';
+import { havellsConditionKey, LEVEL1, WACTypeId, ZBCTypeId } from '../../../../config/constants';
 import { EditCostingContext, ViewCostingContext, CostingStatusContext, IsPartType, IsNFR } from '../CostingDetails';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -578,7 +578,7 @@ function CostingHeaderTabs(props) {
                   dateFormat="dd/MM/yyyy"
                   //maxDate={new Date()}
                   // USER SHOULD NOT BE ABLE TO SELECT EFFECTIVE DATE, OF BEFORE THE PART WAS CREATED
-                  minDate={costingData.CostingTypeId === ZBCTypeId ? new Date() : dateFunction()}
+                  minDate={(havellsConditionKey && costingData.CostingTypeId === ZBCTypeId) ? new Date() : dateFunction()}
 
                   placeholderText="Select date"
                   className="withBorder"
