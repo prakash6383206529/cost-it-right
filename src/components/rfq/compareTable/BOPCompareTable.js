@@ -104,7 +104,7 @@ const BOPCompareTable = (props) => {
                     vendorName: item?.Vendor,
                     onChange: () => checkBoxHandle(item, index),
                     checked: checkBoxCheck[index],
-                    isCheckBox: item?.bestCost ? false : item?.IsShowCheckBoxForApproval,
+                    isCheckBox: !props?.compare ?item?.bestCost ? false : item?.IsShowCheckBoxForApproval : false,
                     bestCost: item?.bestCost,
                     shouldCost: props?.uniqueShouldCostingId?.includes(item?.RawMaterialId) ? "Should Cost" : "",
                     costingType: item?.CostingType === "Zero Based" ? "ZBC" : item?.costingType === "Vendor Based" ? "VBC" : "",
@@ -259,7 +259,7 @@ const BOPCompareTable = (props) => {
 
 
     useEffect(() => {
-if(!props.compare)
+if(!props?.compare)
       {  props?.checkCostingSelected(selectedItems, selectedIndices)}
     }, [selectedItems, selectedIndices])
     // const checkBoxHanlde = (item , index) => {
@@ -268,7 +268,7 @@ if(!props.compare)
     // }
     return (
         <div>
-            {showCheckbox && < WarningMessage dClass={"float-right justify-content-end"} message={'Click the checkbox to approve, reject, or return the quotation'} />}
+            {showCheckbox &&  !props?.compare&&  < WarningMessage dClass={"float-right justify-content-end"} message={'Click the checkbox to approve, reject, or return the quotation'} />}
 
             <Table headerData={mainHeadingData} sectionData={sectionData}>
                 {isLoader && <LoaderCustom customClass="" />}

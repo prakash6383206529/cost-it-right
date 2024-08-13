@@ -120,7 +120,7 @@ function RfqListing(props) {
 
         if (source === 'auction') {
             if (rowData && rowData.length !== 0) {
-                const fiterRowData = rowData.find(item => item.QuotationId === quotationId);
+                const fiterRowData = rowData.find(item => item?.QuotationId === quotationId);
                 viewDetails(fiterRowData);
             }
         }
@@ -172,12 +172,12 @@ function RfqListing(props) {
         dispatch(getQuotationList(userDetails()?.DepartmentCode, Timezone, (res) => {
             let temp = []
             res?.data?.DataList && res?.data?.DataList.map((item) => {
-                if (item.IsActive === false) {
+                if (item?.IsActive === false) {
                     item.Status = "Cancelled"
                 }
 
                 item.tooltipText = ''
-                switch (item.Status) {
+                switch (item?.Status) {
                     case APPROVED:
                         item.tooltipText = 'Total no. of parts for which costing has been approved from that quotation / Total no. of parts exist in that quotation'
                         break;
@@ -279,8 +279,8 @@ function RfqListing(props) {
     */
     const buttonFormatter = (props) => {
 
-        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cellValue = props?.valueFormatted ? props?.valueFormatted : props?.value;
+        const rowData = props?.valueFormatted ? props?.valueFormatted : props?.data;
         let status = rowData?.Status
 
         return (
@@ -338,8 +338,8 @@ function RfqListing(props) {
 
     const linkableFormatter = (props) => {
 
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
 
         if (row?.IsActive) {
             return (
@@ -359,8 +359,8 @@ function RfqListing(props) {
     }
     const quotationReceiveFormatter = (props) => {
 
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
 
         if (row?.IsActive) {
             return (
@@ -379,8 +379,8 @@ function RfqListing(props) {
     }
     const statusFormatter = (props) => {
         dispatch(getGridHeight({ value: agGridRef.current.rowRenderer.allRowCons.length, component: 'RFQ' }))
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         let tempStatus = '-'
         if (row?.Status === APPROVED || row?.Status === UNDER_REVISION || row?.Status === RECEIVED || row?.Status === SUBMITTED || row?.Status === UNDER_APPROVAL) {
             tempStatus = row?.DisplayStatus + ' (' + row?.CostingReceived + '/' + row?.TotalCostingCount + ')'
@@ -408,12 +408,12 @@ function RfqListing(props) {
     }
 
     const dateFormatter = (props) => {
-        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const cellValue = props?.valueFormatted ? props?.valueFormatted : props?.value;
         return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '-';
     }
 
     const dateTimeFormatter = (props) => {
-        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const cellValue = props?.valueFormatted ? props?.valueFormatted : props?.value;
         return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY  hh:mm') : '-';
     }
     const onFloatingFilterChanged = (value) => {
@@ -423,7 +423,7 @@ function RfqListing(props) {
     }
 
     const attachmentFormatter = (props) => {
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         let files = row?.Attachments
 
         return (
@@ -519,7 +519,7 @@ function RfqListing(props) {
                                 <Col md="9" lg="9" className="mb-3 d-flex justify-content-end">
                                     {
                                         // SHOW FILTER BUTTON ONLY FOR RM MASTER NOT FOR SIMULATION AMD MASTER APPROVAL SUMMARY
-                                        (!props.isMasterSummaryDrawer) &&
+                                        (!props?.isMasterSummaryDrawer) &&
                                         <>
                                             <div className="d-flex justify-content-end bd-highlight w100">
                                                 <>
@@ -583,7 +583,7 @@ function RfqListing(props) {
                                                 <AgGridColumn field="VendorName" tooltipField="VendorName" headerName='Vendor (Code)' cellRendererFramework={CustomCellRenderer}></AgGridColumn>
                                                 <AgGridColumn field="PlantName" tooltipField="PlantName" headerName='Plant (Code)'></AgGridColumn>
                                                 <AgGridColumn field="TechnologyName" width={"160px"} headerName='Technology'></AgGridColumn>
-                                                <AgGridColumn field="RaisedBy" width={"160px"} headerName='Initiated by'></AgGridColumn>
+                                                <AgGridColumn field="RaisedBy" width={"160px"} headerName='Initiated By'></AgGridColumn>
                                                 <AgGridColumn field="RaisedOn" width={"145px"} headerName='Raised On' cellRenderer='dateFormatter' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                                                 <AgGridColumn field="PartDataSentDate" width={"145px"} headerName='RFI Date' cellRenderer='dateFormatter' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
 

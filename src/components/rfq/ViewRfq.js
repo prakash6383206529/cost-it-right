@@ -172,8 +172,8 @@ function RfqListing(props) {
 
         let filteredArr = [];
         let arr = []
-        const partTypes = partType.split(',');
-        partTypes.forEach(type => {
+        const partTypes = partType?.split(',');
+        partTypes?.forEach(type => {
 
             switch (type.trim()) {
                 case 'Component':
@@ -212,10 +212,10 @@ function RfqListing(props) {
             }
         });
 
-        const isApproval = arr.filter(item => item.ShowApprovalButton)
+        const isApproval = arr.filter(item => item?.ShowApprovalButton)
 
 
-        const disableApproveButton = isApproval.some(item => String(item.Status) === String(RETURNED));
+        const disableApproveButton = isApproval.some(item => String(item?.Status) === String(RETURNED));
         setDisableApproveRejectButton(isApproval.length > 0)
 
     }, [viewCostingData, selectedCostingList, selectedRows, viewBOPDetails, viewRmDetails, partType])
@@ -226,7 +226,7 @@ function RfqListing(props) {
     */
     const getDataList = () => {
         setloader(true)
-        dispatch(getQuotationDetailsList(data.QuotationId, (res) => {
+        dispatch(getQuotationDetailsList(data?.QuotationId, (res) => {
             if (res === 204) {
                 setloader(false)
                 return false;
@@ -235,21 +235,21 @@ function RfqListing(props) {
             res?.data?.DataList && res?.data?.DataList.map(item => {
                 let unique
                 res?.data?.DataList && res?.data?.DataList.map(item => {
-                    const partTypes = item.PartType.split(',');
+                    const partTypes = item?.PartType?.split(',');
 
-                    partTypes.forEach(type => {
+                    partTypes?.forEach(type => {
                         switch (type.trim()) {
                             case 'Raw Material':
-                                unique = _.uniq(_.map(item.ShouldRawMaterial, 'RawMaterialId'));
+                                unique = _.uniq(_.map(item?.ShouldRawMaterial, 'RawMaterialId'));
                                 uniqueShouldCostId.push(...unique);
                                 break;
                             case 'Component':
                             case 'Assembly':
-                                unique = _.uniq(_.map(item.ShouldCostings, 'CostingId'));
+                                unique = _.uniq(_.map(item?.ShouldCostings, 'CostingId'));
                                 uniqueShouldCostId.push(...unique);
                                 break;
                             case 'Bought Out Part':
-                                unique = _.uniq(_.map(item.ShouldBoughtOutPart, 'BoughtOutPartId'));
+                                unique = _.uniq(_.map(item?.ShouldBoughtOutPart, 'BoughtOutPartId'));
                                 uniqueShouldCostId.push(...unique);
                                 break;
                             default:
@@ -270,11 +270,11 @@ function RfqListing(props) {
             // Grouping data based on PartType
             res?.data?.DataList?.map(item => {
 
-                if (item.PartType === 'Raw Material') {
+                if (item?.PartType === 'Raw Material') {
                     partNumberFech = 'RawMaterial';
-                } else if (item.PartType === 'Component' || item.PartType === 'Assembly') {
+                } else if (item?.PartType === 'Component' || item?.PartType === 'Assembly') {
                     partNumberFech = 'PartNumber';
-                } else if (item.PartType === 'Bought Out Part') {
+                } else if (item?.PartType === 'Bought Out Part') {
                     partNumberFech = 'BoughtOutPart';
                 }
             })
@@ -298,19 +298,19 @@ function RfqListing(props) {
             // SET ROW DATA FOR GRID
             data.map((item) => {
                 newArray = [...newArray, ...item]
-                const partTypes = item[0].PartType.split(',');
+                const partTypes = item[0].PartType?.split(',');
                 let temp
-                partTypes.forEach(type => {
+                partTypes?.forEach(type => {
                     switch (type.trim()) {
                         case 'Component':
                         case 'Assembly':
-                            temp = item.filter(el => el.CostingId !== null);
+                            temp = item?.filter(el => el.CostingId !== null);
                             break;
                         case 'Raw Material':
-                            temp = item.filter(el => el.RawMaterialId !== null);
+                            temp = item?.filter(el => el.RawMaterialId !== null);
                             break;
                         case 'Bought Out Part':
-                            temp = item.filter(el => el.BoughtOutPartId !== null);
+                            temp = item?.filter(el => el.BoughtOutPartId !== null);
                             break;
                         default:
                             break;
@@ -320,7 +320,7 @@ function RfqListing(props) {
 
 
                 if (temp?.length > 0) {
-                    item[Math.round(item.length / 2) - 1].ShowCheckBox = true;                      // SET CHECKBOX FOR CREATED COSTINGS
+                    item[Math.round(item?.length / 2) - 1].ShowCheckBox = true;                      // SET CHECKBOX FOR CREATED COSTINGS
                 }
             })
 
@@ -350,11 +350,11 @@ function RfqListing(props) {
 
             if (gridApi) {
 
-                const displayedRowCount = gridApi.getDisplayedRowCount();
+                const displayedRowCount = gridApi?.getDisplayedRowCount();
 
                 const allRowData = [];
                 for (let i = 0; i < displayedRowCount; i++) {
-                    const rowNode = gridApi.getDisplayedRowAtIndex(i);
+                    const rowNode = gridApi?.getDisplayedRowAtIndex(i);
                     if (rowNode) {
 
                         allRowData.push(rowNode.data);
@@ -375,8 +375,8 @@ function RfqListing(props) {
     const resetState = () => {
         gridOptions?.columnApi?.resetColumnState(null);
         gridOptions?.api?.setFilterModel(null);
-        window.screen.width > 1600 && gridApi.sizeColumnsToFit();
-        gridApi.deselectAll()
+        window.screen.width > 1600 && gridApi?.sizeColumnsToFit();
+        gridApi?.deselectAll()
         dispatch(agGridStatus("", ""))
         dispatch(isResetClick(true, "status"))
         setNoData(false)
@@ -493,7 +493,7 @@ function RfqListing(props) {
             const filteredData = viewCostingData.filter(item => selectedCostingList.includes(item.costingId));
             // Check if the total share of business is 100%
             const totalShareOfBusiness = filteredData
-                .map(item => item.shareOfBusinessPercent)
+                .map(item => item?.shareOfBusinessPercent)
                 .reduce((total, percent) => total + percent, 0);
             if (totalShareOfBusiness !== 100) {
                 Toaster.warning("The total share of business must be 100%.");
@@ -881,12 +881,12 @@ function RfqListing(props) {
         setState(prevState => ({ ...prevState, approvalObj: list }));
         setIndex(index);
         setSelectedCostingList(list);
-        const partTypes = partType.split(',');
+        const partTypes = partType?.split(',');
 
         let arr = [];
         let filteredArr = [];
         let matchedStatus
-        partTypes.forEach(type => {
+        partTypes?.forEach(type => {
             switch (type.trim()) {
                 case 'Component':
                 case 'Assembly':
@@ -897,7 +897,7 @@ function RfqListing(props) {
                         }
                     }))
                     matchedStatus = list?.map(selectedItem => {
-                        const matchedItem = arr.find(item => item.CostingId === selectedItem);
+                        const matchedItem = arr.find(item => item?.CostingId === selectedItem);
                         return matchedItem ? matchedItem.Status : null;
                     });
                     break
@@ -909,7 +909,7 @@ function RfqListing(props) {
                         }
                     }))
                     matchedStatus = list?.map(selectedItem => {
-                        const matchedItem = arr.find(item => item.BoughtOutPartId === selectedItem);
+                        const matchedItem = arr.find(item => item?.BoughtOutPartId === selectedItem);
                         return matchedItem ? matchedItem.Status : null;
                     });
                     break
@@ -923,7 +923,7 @@ function RfqListing(props) {
                         }
                     }))
                     matchedStatus = list?.map(selectedItem => {
-                        const matchedItem = arr.find(item => item.RawMaterialId === selectedItem);
+                        const matchedItem = arr.find(item => item?.RawMaterialId === selectedItem);
                         return matchedItem ? matchedItem.Status : null;
                     });
                     break
@@ -951,6 +951,7 @@ function RfqListing(props) {
     * @description Renders buttons
     */
     const buttonFormatter = (props) => {
+        console.log('props: ', props);
 
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
@@ -959,7 +960,9 @@ function RfqListing(props) {
         let showReminderIcon = false
         let showRemarkHistory = false
 
-        if (rowData?.CostingNumber === null) {
+        console.log('rowData: ', rowData, rowData?.CostingId);
+        console.log('rowData?.CostingNumber === null || rowData?.RawMaterialId === null || rowData?.BoughtOutPartId : ', rowData?.CostingNumber === null, rowData?.RawMaterialId === null || rowData?.BoughtOutPartId);
+        if (rowData?.CostingNumber === null && rowData?.RawMaterialId === null && rowData?.BoughtOutPartId) {
             showReminderIcon = true
 
         } else {
@@ -973,6 +976,7 @@ function RfqListing(props) {
                 showActionIcons = false
             }
         }
+        console.log('showRemarkHistory: ', showRemarkHistory);
 
         let reminderCount = rowData?.RemainderCount
 
@@ -1020,7 +1024,7 @@ function RfqListing(props) {
 
 
     const onPageSizeChanged = (newPageSize) => {
-        gridApi.paginationSetPageSize(Number(newPageSize));
+        gridApi?.paginationSetPageSize(Number(newPageSize));
 
     };
 
@@ -1144,7 +1148,7 @@ function RfqListing(props) {
         setCostingListToShow(arr)
         let temp = []
         let tempObj = {}
-        const isApproval = selectedRows.filter(item => item.ShowApprovalButton)
+        const isApproval = selectedRows.filter(item => item?.ShowApprovalButton)
 
 
 
@@ -1152,8 +1156,8 @@ function RfqListing(props) {
         setDisableApproveRejectButton(isApproval.length > 0)
         let costingIdList = selectedRows?.length > 0 ? [...selectedRows[0]?.ShouldCostings, ...selectedRows] : selectedRows
         setSelectedCostingList([])
-        const partTypes = partType.split(',');
-        partTypes.forEach(type => {
+        const partTypes = partType?.split(',');
+        partTypes?.forEach(type => {
             switch (type.trim()) {
                 case 'Component':
                 case 'Assembly':
@@ -1217,7 +1221,7 @@ function RfqListing(props) {
         } else {
             setaddComparisonToggle(false)
             setSelectedRowIndex('')
-            gridApi.deselectAll()
+            gridApi?.deselectAll()
         }
 
 
@@ -1225,21 +1229,21 @@ function RfqListing(props) {
         let partNumber = []
         let data
         const partTypes = selectedRows[0]?.PartType.split(',');
-        partTypes.forEach(type => {
+        partTypes?.forEach(type => {
             switch (type.trim()) {
                 case 'Raw Material':
-                    selectedRows?.map(item => partNumber?.push(item.RawMaterial))
+                    selectedRows?.map(item => partNumber?.push(item?.RawMaterial))
                     data = partNumber.map(item => rowData?.filter(el => el.RawMaterial === item))
                     // SELECTED ALL COSTING ON THE CLICK ON PARTbreak;
                     break;
                 case 'Bought Out Part':
-                    selectedRows?.map(item => partNumber.push(item.BoughtOutPart))
+                    selectedRows?.map(item => partNumber.push(item?.BoughtOutPart))
                     data = partNumber.map(item => rowData?.filter(el => el.BoughtOutPart === item))             // SELECTED ALL COSTING ON THE CLICK ON PART
 
                     break;
                 case 'Component':
                 case 'Assembly':
-                    selectedRows?.map(item => partNumber?.push(item.PartNo))
+                    selectedRows?.map(item => partNumber?.push(item?.PartNo))
                     data = partNumber.map(item => rowData?.filter(el => el.PartNumber === item))             // SELECTED ALL COSTING ON THE CLICK ON PART
                     break;
                 default:
@@ -1350,7 +1354,7 @@ function RfqListing(props) {
     }
     const onFirstDataRendered = () => {
         if (gridApi) {
-            window.screen.width > 1600 && gridApi.sizeColumnsToFit();
+            window.screen.width > 1600 && gridApi?.sizeColumnsToFit();
 
         }
     };
@@ -1359,13 +1363,13 @@ function RfqListing(props) {
 
         setaddComparisonToggle(false)
         setSelectedRowIndex('')
-        gridApi.deselectAll()
+        gridApi?.deselectAll()
     }
     const headerPartType = () => {
-        const partTypes = partType.split(',');
+        const partTypes = partType?.split(',');
         let headerName = "";
 
-        partTypes.forEach(type => {
+        partTypes?.forEach(type => {
             switch (type.trim()) {
                 case 'Raw Material':
                     headerName = "RM Name";
@@ -1392,10 +1396,11 @@ function RfqListing(props) {
         setMasterRejectDrawer(false);
 
         if (type !== "Cancel") {
-            props.closeDrawer(true); // Pass true to indicate that data should be refreshed
-        } else {
-            props.closeDrawer(false); // Pass false if no refresh is needed
+            props.closeDrawer(false); // Pass true to indicate that data should be refreshed
         }
+        // else {
+        //     props.closeDrawer(true); // Pass false if no refresh is needed
+        // }
     }
     const handleInitiateAuction = () => {
         history.push({
@@ -1428,7 +1433,7 @@ function RfqListing(props) {
                                 </h3>
                             </Col>
                             <Col md="6" className='d-flex justify-content-end align-items-center mb-2 mt-1'>
-                                <div className='d-flex  align-items-center'><div className='w-min-fit'>{havellsConditionKey ? "Initiated by:" : "Raised by:"}</div>
+                                <div className='d-flex  align-items-center'><div className='w-min-fit'>{havellsConditionKey ? "Initiated by:" : "Raised By:"}</div>
                                     <input
                                         type="text"
                                         className="form-control mx-2 defualt-input-value"

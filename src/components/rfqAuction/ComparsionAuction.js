@@ -159,7 +159,7 @@ function ComparsionAuction(props) {
   };
 
   const checkTimerShop = (value) => {
-    setState(prevState => ({ ...prevState, isTimerRunning: value }))
+    setState(prevState => ({ ...prevState, isTimerRunning: false }))
   }
 
   const showVendorRank = (data, check) => {

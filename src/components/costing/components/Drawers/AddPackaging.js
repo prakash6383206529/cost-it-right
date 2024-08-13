@@ -16,6 +16,7 @@ import { MESSAGES } from '../../../../config/message';
 import TooltipCustom from '../../../common/Tooltip';
 import { CRMHeads, WACTypeId } from '../../../../config/constants';
 import { fetchCostingHeadsAPI } from '../../../../actions/Common';
+import Toaster from '../../../common/Toaster';
 
 function IsolateReRender(control) {
   const values = useWatch({
@@ -62,6 +63,7 @@ function AddPackaging(props) {
   const [packagingCostDataFixed, setPackagingCostDataFixed] = useState(getValues('PackagingCost') ? getValues('PackagingCost') : '')
   const [errorMessage, setErrorMessage] = useState('')
   const [removeApplicability, setRemoveApplicability] = useState([])
+  const [totalRMGrossWeight, setTotalRMGrossWeight] = useState('')
 
   const fieldValues = IsolateReRender(control)
   const { costingData, ComponentItemData } = useSelector(state => state.costing)
@@ -79,15 +81,19 @@ function AddPackaging(props) {
     if (applicability?.value === PACK_AND_FREIGHT_PER_KG) {
       let arr = _.map(RMCCTabData, 'CostingPartDetails.CostingRawMaterialsCost')
       let totalFinishWeight = 0
+      let totalGrossWeight = 0
       arr && arr?.map(item => {
         totalFinishWeight = item && item?.reduce((accummlator, el) => {
           return accummlator + checkForNull(el?.FinishWeight)
+        }, 0)
+        totalGrossWeight = item && item?.reduce((accummlator, el) => {
+          return accummlator + checkForNull(el?.GrossWeight)
         }, 0)
       })
       // setTotalFinishWeight(totalFinishWeight)
 
       setValue("Quantity", totalFinishWeight)
-
+      setTotalRMGrossWeight(totalGrossWeight)
     }
   }, [RMCCTabData, applicability])
 
@@ -329,6 +335,13 @@ function AddPackaging(props) {
   }
 
   const calculatePerKg = (rate, weight) => {
+    if (applicability?.label === PACK_AND_FREIGHT_PER_KG && weight > totalRMGrossWeight) {
+      Toaster.warning("Enter value less than gross weight.")
+      setTimeout(() => {
+        setValue('Quantity', '')
+      }, 50);
+      return false
+    }
     const packagingCost = checkForNull(rate) * checkForNull(weight)
 
     setValue('PackagingCost', packagingCost ? checkForDecimalAndNull(packagingCost, getConfigurationKey().NoOfDecimalForPrice) : '')

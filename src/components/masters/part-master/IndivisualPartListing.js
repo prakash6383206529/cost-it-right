@@ -798,12 +798,12 @@ const IndivisualPartListing = (props) => {
           <div
             className={`ag-theme-material ${state.isLoader && "max-loader-height"}`}
           >
-            {state.noData && (
+            {(state.noData && newPartsListing.length !== 0) ? (
               <NoContentFound
                 title={EMPTY_DATA}
                 customClassName="no-content-found"
               />
-            )}
+            ) : <></>}
             {!state.isLoader &&
               <AgGridReact
                 defaultColDef={defaultColDef}

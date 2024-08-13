@@ -3212,9 +3212,11 @@ export const showPaperCorrugatedBox = true
 export const showDynamicKeys = false
 export const hideDetailOfRubbercalci = true
 export const havellsConditionKey = true
+export const countDownBlickingTime = 2
+export const clientName = 'Havells'
 
 //VERSION 
-export const VERSION = "V3.1.0";
+export const VERSION = "V3.1.1";
 
 
 
