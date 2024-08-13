@@ -31,6 +31,7 @@ import AddIndexationMaterialListing from "./AddIndexationMaterialListing"
 import HeaderTitle from "../../common/HeaderTitle"
 import Association from "./Association"
 import { getAssociatedMaterial, getAssociatedMaterialDetails, getIndexSelectList } from "../actions/Indexation"
+import { useTranslation } from "react-i18next"
 
 function AddRMDetails(props) {
     const { Controller, control, register, setValue, getValues, errors, reset, useWatch, states, data, disableAll } = props
@@ -86,7 +87,7 @@ function AddRMDetails(props) {
     const rmSpecificationList = useSelector((state) => state.material.rmSpecificationList)
     const cityList = useSelector((state) => state.comman.cityList)
     const RMIndex = getConfigurationKey()?.IsShowMaterialIndexation
-
+    const { t } = useTranslation('master');
 
 
     useEffect(() => {
@@ -855,7 +856,7 @@ function AddRMDetails(props) {
                 {<Row className={`align-items-center mb-3 ${state.isVendorAccOpen ? '' : 'd-none'}`}>
                     {states.costingTypeId !== CBCTypeId && (<>
                         <Col md="3">
-                            <label>{"Vendor (Code)"}<span className="asterisk-required">*</span></label>
+                            <label>{t(states.costingTypeId === ZBCTypeId ? 'RMZeroBasedVendorLabel' : 'RMVendorBasedVendorLabel') ?? "Vendor"}<span className="asterisk-required">*</span></label>
                             <div className="d-flex justify-space-between align-items-center p-relative async-select">
                                 <div className="fullinput-icon p-relative">
                                     {state.inputLoader && <LoaderCustom customClass={`input-loader`} />}

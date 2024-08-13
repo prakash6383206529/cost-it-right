@@ -1430,7 +1430,7 @@ class AddBOPDomestic extends Component {
                                 <div className="left-border">{"Vendor:"}</div>
                               </Col>
                               <Col md="3" className='mb-4'>
-                                <label>{"Vendor (Code)"}<span className="asterisk-required">*</span></label>
+                                <label>{t(costingTypeId === ZBCTypeId ? 'BOPZeroBasedVendorLabel' : 'BOPVendorBasedVendorLabel', { ns: 'master' })}<span className="asterisk-required">*</span></label>
                                 <div className="d-flex justify-space-between align-items-center async-select">
                                   <div className="fullinput-icon p-relative">
                                     {this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
@@ -1937,4 +1937,4 @@ export default connect(mapStateToProps, {
     focusOnError(errors)
   },
   enableReinitialize: true,
-})(withTranslation(['BOPMaster'])(AddBOPDomestic)));
+})(withTranslation(['BOPMaster', 'master'])(AddBOPDomestic)));

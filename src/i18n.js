@@ -3,7 +3,6 @@ import i18n from 'i18next';
 import Backend from 'i18next-http-backend';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import { initReactI18next } from 'react-i18next';
-import { clientName } from '../src/config/constants'; // Ensure this import is 
 
 // Define the default load path
 const defaultLoadPath = '/locales/{{lng}}/{{ns}}.json';
@@ -35,7 +34,7 @@ i18n
             'VendorMaster',
             'Costing',
             'Dashboard',
-            'labels'
+            'master'
         ],
         defaultNS: 'common',
 
@@ -50,29 +49,24 @@ i18n
     });
 
 // Function to manually fetch and merge client-specific translations
-const loadClientTranslations = async () => {
-    if (!clientName) return;
+const loadClientTranslations = () => {
 
-    const namespaces = i18n.options.ns || [];
+    const namespaces = ['master'];
     const lng = i18n.language || 'en';
 
-    // Fetch translations from client-specific paths
-    await Promise.all(
-        namespaces.map(async (ns) => {
-            const clientPath = `/locales/client/${clientName}/RmMaster/${ns}.json`;
-
-            try {
-                const response = await fetch(clientPath);
-                if (response.ok) {
-                    const data = await response.json();
-                    // Add client-specific translations to i18n
-                    i18n.addResourceBundle(lng, ns, data, true, true);
-                }
-            } catch (error) {
-                console.error('Error loading client-specific translations:', error);
+    namespaces.map(async (ns) => {
+        const clientPath = `/locales/Labels/${ns}.json`;
+        try {
+            const response = await fetch(clientPath);
+            if (response.ok) {
+                const data = await response.json();
+                // Add client-specific translations to i18n
+                i18n.addResourceBundle(lng, ns, data, true, true);
             }
-        })
-    );
+        } catch (error) {
+            console.error('Error loading client-specific translations:', error);
+        }
+    })
 };
 
 // Load client-specific translations after i18next is initialized
