@@ -5917,7 +5917,7 @@ export const INDIVIDUALPART_DOWNLOAD_EXCEl = [
     { label: "Technology", value: "Technology", },
     { label: "Part No.", value: "PartNumber", },
     { label: "Name", value: "PartName", },
-    // { label: "SAP Code", value: "SAPCode", },
+    { label: "SAP Code", value: "SAPCode", },
     { label: "ECN No.", value: "ECNNumber", },
     { label: "Revision No.", value: "RevisionNumber", },
     { label: "Drawing No.", value: "DrawingNumber", },
