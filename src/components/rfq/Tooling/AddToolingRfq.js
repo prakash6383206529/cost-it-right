@@ -5,7 +5,6 @@ import HeaderTitle from '../../common/HeaderTitle';
 import TooltipCustom from '../../common/Tooltip';
 import { AgGridReact } from 'ag-grid-react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getRfqToolingDetails, updatedToolingData } from '../actions/rfq';
 import { Controller, useForm } from 'react-hook-form'
 function AddToolingRfq() {
     const { register, handleSubmit, setValue, getValues, formState: { errors }, control } = useForm({
@@ -13,40 +12,12 @@ function AddToolingRfq() {
         reValidateMode: 'onChange',
     });
     // const { getRfqToolingData } = useSelector(state => state?.rfq);
+    const { toolingSpecificRowData } = useSelector(state => state?.rfq);
 
-    const getRfqToolingData = {
-        partName: 'Tool A',
-        toolingType: 'Injection Mold',
-        partRM: 'Aluminum',
-        toolTechnology: 'Advanced',
-        toolLife: '5000 Cycles',
-        machineTonage: '10 Ton',
-        noOfCavity: '10',
-        toolRunLoc: 'India',
-    };
-    const [formData, setFormData] = useState(getRfqToolingData);
+    const [formData, setFormData] = useState(toolingSpecificRowData[0]?.ToolData);
 
-    const [rowData, setRowData] = useState([
-
-    ]);
-
+    const [rowData, setRowData] = useState([]);
     const dispatch = useDispatch()
-    // useEffect(() => {
-    //     dispatch(getRfqToolingDetails(() => { }))
-    // }, [])
-    // useEffect(() => {
-    //     // Update local state when toolingRfqData is updated
-    //     if (getRfqToolingData) {
-    //         // Assuming toolingRfqData contains both editable and disabled fields
-    //         setRowData(getRfqToolingData.specifications || []);
-    //         // Additional logic to handle form data if needed
-    //     }
-    // }, [toolingRfqData]);
-
-    // useEffect(() => {
-
-    //     dispatch(updatedToolingData((formData) => { }))
-    // }, [])
     const toolingDetailsInputFields = [
         { name: 'toolingType', label: 'Tooling Type', editable: false, tooltip: 'Tooling Type', mandatory: false },
         { name: 'toolTechnology', label: 'Tool Technology', editable: false, tooltip: 'Tool Technology', mandatory: false },
@@ -62,16 +33,14 @@ function AddToolingRfq() {
 
 
     useEffect(() => {
-        setValue("noOfCavity", getRfqToolingData?.noOfCavity)
-        setValue("machineTonage", getRfqToolingData?.machineTonage)
-        setValue("partName", getRfqToolingData?.partName)
-        setValue("toolingType", getRfqToolingData?.toolingType)
-        setValue("partRM", getRfqToolingData?.partRM)
-        setValue("toolTechnology", getRfqToolingData?.toolTechnology)
-        setValue("toolLife", getRfqToolingData?.toolLife)
-        setValue("toolRunLoc", getRfqToolingData?.toolRunLoc)
-
-    }, [])
+        const toolData = toolingSpecificRowData[0]?.ToolData
+        setValue("noOfCavity", toolData?.NoOfCavity)
+        setValue("machineTonage", toolData?.MachineTonnage)
+        setValue("toolingType", toolData?.ToolType)
+        setValue("toolTechnology", toolData?.ToolTechnology)
+        setValue("toolLife", toolData?.ToolLife)
+        setValue("toolRunLoc", toolData?.ToolRunningLocation)
+    }, [toolingSpecificRowData])
     const handleInputChange = (name, value) => {
 
 

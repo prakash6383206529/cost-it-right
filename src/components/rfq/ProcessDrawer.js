@@ -22,7 +22,7 @@ import { HAVELLSREMARKMAXLENGTH, REMARKMAXLENGTH } from '../../config/masterData
 import Dropzone from 'react-dropzone-uploader'
 import LoaderCustom from '../common/LoaderCustom'
 import Toaster from '../common/Toaster'
-import { fileUploadQuotation, getAssemblyChildpart, getRfqPartDetails, setBopSpecificRowData, setRfqPartDetails, setRmSpecificRowData } from './actions/rfq'
+import { fileUploadQuotation, getAssemblyChildpart, getRfqPartDetails, setBopSpecificRowData, setRfqPartDetails, setRmSpecificRowData, setToolingSpecificRowData } from './actions/rfq'
 import _ from 'lodash';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import DatePicker from 'react-datepicker'
@@ -47,6 +47,7 @@ function ViewDrawer(props) {
 
 
 
+
     const { register, handleSubmit, setValue, getValues, formState: { errors }, control } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
@@ -54,7 +55,9 @@ function ViewDrawer(props) {
     const rawMaterialNameSelectList = useSelector(state => state?.material?.rawMaterialNameSelectList);
     const gradeSelectList = useSelector(state => state?.material?.gradeSelectList);
     const rmSpecification = useSelector(state => state?.comman?.rmSpecification);
-    const { getChildParts, getRfqPartDetails, bopSpecificRowData } = useSelector(state => state?.rfq);
+    const { getChildParts, getRfqPartDetails, bopSpecificRowData, toolingSpecificRowData } = useSelector(state => state?.rfq);
+
+
     const rmSpecificationList = useSelector((state) => state.material.rmSpecificationList)
     // const [sopQuantityList, setSopQuantityList] = useState([]);
 
@@ -95,6 +98,7 @@ function ViewDrawer(props) {
     const [rmCode, setRMCode] = useState([])
     const [disabled, setDisabled] = useState(false)
 
+
     useEffect(() => {
 
         if (partType === 'Component') {
@@ -120,7 +124,10 @@ function ViewDrawer(props) {
     }, [partType])
     useEffect(() => {
         if (partType === "Component" || partType === "Assembly") {
+
+
             if ((isEditFlag || isViewFlag) && getRfqPartDetails && getRfqPartDetails?.PartList) {
+
                 const partList = getRfqPartDetails?.PartList || [];
                 let accumulatedRMDetails = [];
                 const sopDate = partList[0]?.SOPDate
@@ -147,9 +154,11 @@ function ViewDrawer(props) {
 
 
                             const remarks = part.Remarks || '';
+
                             setValue('remark', remarks);
                             setRemark(remarks);
                             const allFiles = part.Attachments || [];
+
 
                             setFiles(files => [...allFiles]);
                             setChildPartFiles(childPartFiles => [...allFiles]);
@@ -239,7 +248,7 @@ function ViewDrawer(props) {
     }, [sopdate])
     useEffect(() => {
         if (!isViewFlag && !isEditFlag) {
-            if (childPartFiles.length > 0 || remark !== "") {
+            if ((tableData.length > 0) && (childPartFiles.length > 0 || remark !== "")) {
                 setValue("remark", remark)
                 setFiles(childPartFiles)
             }
@@ -277,6 +286,58 @@ function ViewDrawer(props) {
             setChildPartFiles([])
         }
     }, [resetDrawer])
+    useEffect(() => {
+        if (partType === "Tooling") {
+            if ((isEditFlag || isViewFlag) && toolingSpecificRowData && toolingSpecificRowData.length > 0) {
+
+                let accumulatedRMDetails = [];
+                // const sopDate = toolingSpecificRowData[0]?.SOPDate
+
+                // setSOPDate(sopDate || '')
+                if (toolingSpecificRowData.length > 0) {
+                    let arr = []
+                    toolingSpecificRowData.forEach((part, index) => {
+
+                        const PartId = part.ToolId || '';
+
+                        if (index === 0) {
+                            const allSpecifications = (part.ToolSpecificationList || []).map(detail => ({
+                                ...detail,
+                                PartId: PartId,
+                                uniqueKey: `${PartId}-${detail.Specification}` //QuotationPartSpecificationIdRef
+                            }));
+
+                            arr.push(...allSpecifications)
+
+
+                            const remarks = part.Remarks || '';
+                            setValue('remark', remarks);
+                            setRemark(remarks);
+                            const allFiles = part.Attachments || [];
+
+                            setFiles(files => [...allFiles]);
+                            setChildPartFiles(childPartFiles => [...allFiles]);
+                        }
+                        if (part.ToolChildList && part.ToolChildList.length > 0) {
+                            const allRMDetails = part.ToolChildList.map(detail => ({
+                                ...detail,
+                            }));
+
+
+                            accumulatedRMDetails = [...accumulatedRMDetails, ...allRMDetails];
+
+                        }
+
+
+                        // setTableData(tableData => _.uniqBy([...allRMDetails], 'RawMaterialChildId'));
+                        setTableData(tableData => _.uniqBy(accumulatedRMDetails, 'PartId'));
+
+                    });
+                    setSpecificationList(specificationList => _.uniqBy([...arr], 'QuotationPartSpecificationIdRef'));
+                }
+            }
+        }
+    }, [isViewFlag, isEditFlag, partType, toolingSpecificRowData])
 
     const removeAddedParts = (arr) => {
         const filteredArray = arr.filter((item) => {
@@ -554,7 +615,7 @@ function ViewDrawer(props) {
             const dropdownTexts = _.map(getChildParts, 'Text');
             const tableTexts = _.map(tableData, 'PartNumber');
             const allPresent = _.every(dropdownTexts, text => _.includes(tableTexts, text));
-            const hasNonZeroQuantity = sopQuantityList && sopQuantityList.length > 0 && sopQuantityList[0].Quantity !== 0;
+            const hasNonZeroQuantity = sopQuantityList && sopQuantityList.length > 0 && sopQuantityList[0].Quantity !== 0 && sopQuantityList[0].Quantity !== '0';
             if (type !== Component) {
                 if (!allPresent) {
                     Toaster.warning('RM Name, RM Grade, and RM Specification are required for each part.');
@@ -609,6 +670,54 @@ function ViewDrawer(props) {
                 };
                 const updatedArray = [updatedObject];
                 dispatch(setBopSpecificRowData(updatedArray));
+            }
+        }
+        // if (partType === "Component") {
+        //     const attachment = files;
+        //     const updatedRemark = getValues('remark') || null;
+        //     const specification = specificationList;
+        //     const sopQuantityDetails = sopQuantityList || []; // Assuming you're retrieving this from the form
+        //     const rmDetails = tableData || []
+
+
+        //     if (getRfqPartDetails && getRfqPartDetails.PartList.length > 0) {
+        //         const updatedObject = {
+        //             ...getRfqPartDetails?.PartList[0],
+        //             Attachments: attachment,
+        //             Remarks: updatedRemark,
+        //             PartSpecification: specification,
+        //             SOPQuantityDetails: sopQuantityDetails,
+        //         };
+        //         const updatedArray = [updatedObject];
+        //         let obj = {
+        //             ...getRfqPartDetails,
+        //             PartList: updatedArray
+        //         }
+
+
+        //         dispatch(setRfqPartDetails({
+        //             ...getRfqPartDetails,
+        //             PartList: updatedArray
+        //         }));
+        //     }
+        // }
+
+        else {
+            const attachment = files;
+
+            const updatedRemark = getValues('remark') || null;
+
+            const specification = specificationList
+
+            if (Array.isArray(toolingSpecificRowData) && toolingSpecificRowData.length > 0) {
+                const updatedObject = {
+                    ...toolingSpecificRowData[0],
+                    Attachments: attachment,
+                    Remarks: updatedRemark,
+                    PartSpecification: specification
+                };
+                const updatedArray = [updatedObject];
+                dispatch(setToolingSpecificRowData(updatedArray));
             }
         }
 
@@ -1309,14 +1418,14 @@ function ViewDrawer(props) {
                                                     type="button"
                                                     className={'user-btn mt30 pull-left'}
                                                     onClick={() => addRow(activeTab)}
-                                                    disabled={isViewFlag || !isEditFlag ? (type === Component && activeTab === "1" ? tableData.length > 0 : false) : false}                                        // errors={`${indexInside} CostingVersion`}
+                                                    disabled={isViewFlag || (!isEditFlag ? (type === Component && activeTab === "1" ? tableData.length > 0 : false) : false)}                                        // errors={`${indexInside} CostingVersion`}
                                                 >
                                                     <div className={'plus'}></div>ADD
                                                 </button>
                                                 <button
                                                     type="button"
                                                     className={"mr15 ml-1 mt30 reset-btn"}
-                                                    disabled={isViewFlag || !isEditFlag ? (type === Component && activeTab === "1" ? tableData.length > 0 : false) : false}
+                                                    disabled={isViewFlag || (!isEditFlag ? (type === Component && activeTab === "1" ? tableData.length > 0 : false) : false)}
                                                     onClick={rateTableReset}
                                                 >
                                                     Reset
@@ -1352,7 +1461,8 @@ function ViewDrawer(props) {
                                                 <tr key={index}>
                                                     {props.partType !== 'Tooling' && <td>{item.PartNumber !== null ? item.PartNumber : '-'}</td>}
                                                     {props.partType === 'Tooling' && <td>{item.PartName !== null ? item.PartName : '-'}</td>}
-                                                    <td>{item.RawMaterialName !== null ? item.RawMaterialName : '-'}</td>
+                                                    {props.partType === 'Tooling' && <td>{item.RawMaterial !== null ? item.RawMaterial : '-'}</td>}
+                                                    {props.partType !== 'Tooling' && <td>{item.RawMaterialName !== null ? item.RawMaterialName : '-'}</td>}
                                                     {props.partType !== 'Tooling' && <td>{item.RawMaterialGrade !== null ? item.RawMaterialGrade : '-'}</td>}
                                                     {props.partType !== 'Tooling' && <td>{item.RawMaterialSpecification !== null ? item.RawMaterialSpecification : '-'}</td>}
                                                     {props.partType !== 'Tooling' &&
@@ -1408,7 +1518,7 @@ function ViewDrawer(props) {
                                     </tbody>
                                 </Table>
 
-                                {activeTab === "2" && props.partType !== "Bought Out Part" && (
+                                {activeTab === "2" && (props.partType !== "Bought Out Part" && props.partType !== "Tooling") && (
                                     <>
                                         <HeaderTitle title={'Add Volume'} customClass="mt-5" />
                                         <Row className='mt-3 mb-1'>
@@ -1435,7 +1545,7 @@ function ViewDrawer(props) {
                                                             errors={errors.SOPDate}
                                                             disabledKeyboardNavigation
                                                             onChangeRaw={(e) => e.preventDefault()}
-                                                            disabled={false}
+                                                            disabled={isViewFlag}
                                                         />
                                                     </div>
                                                 </div>

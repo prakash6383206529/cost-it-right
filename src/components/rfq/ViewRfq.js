@@ -489,23 +489,17 @@ function RfqListing(props) {
     * @description approveDetails
     */
     const approveDetails = (Id, rowData = {}) => {
-        if (partType !== "Bought Out Part" && partType !== "Raw Material") {
-
-            const filteredData = viewCostingData.filter(item => selectedCostingList.includes(item?.costingId));
-
+        if (havellsConditionKey && (partType !== "Bought Out Part" && partType !== "Raw Material")) {
+            const filteredData = viewCostingData.filter(item => selectedCostingList.includes(item.costingId));
             // Check if the total share of business is 100%
             const totalShareOfBusiness = filteredData
                 .map(item => item?.shareOfBusinessPercent)
                 .reduce((total, percent) => total + percent, 0);
-
-
             if (totalShareOfBusiness !== 100) {
                 Toaster.warning("The total share of business must be 100%.");
                 return false;
             }
         }
-
-
 
         if (partType === "Bought Out Part" || partType === "Raw Material") {
             setApproveDrawer(true)
@@ -966,9 +960,9 @@ function RfqListing(props) {
         let showReminderIcon = false
         let showRemarkHistory = false
 
-        console.log('rowData: ', rowData,rowData?.CostingId);
-        console.log('rowData?.CostingNumber === null || rowData?.RawMaterialId === null || rowData?.BoughtOutPartId : ', rowData?.CostingNumber === null ,rowData?.RawMaterialId === null || rowData?.BoughtOutPartId );
-        if (rowData?.CostingNumber === null && rowData?.RawMaterialId === null && rowData?.BoughtOutPartId ) {
+        console.log('rowData: ', rowData, rowData?.CostingId);
+        console.log('rowData?.CostingNumber === null || rowData?.RawMaterialId === null || rowData?.BoughtOutPartId : ', rowData?.CostingNumber === null, rowData?.RawMaterialId === null || rowData?.BoughtOutPartId);
+        if (rowData?.CostingNumber === null && rowData?.RawMaterialId === null && rowData?.BoughtOutPartId) {
             showReminderIcon = true
 
         } else {
@@ -976,9 +970,9 @@ function RfqListing(props) {
             showRemarkHistory = true
             if (rowData.ShowApprovalButton) {
                 showActionIcons = true
-                
+
             } else {
-                
+
                 showActionIcons = false
             }
         }
@@ -1403,7 +1397,7 @@ function RfqListing(props) {
 
         if (type !== "Cancel") {
             props.closeDrawer(false); // Pass true to indicate that data should be refreshed
-        } 
+        }
         // else {
         //     props.closeDrawer(true); // Pass false if no refresh is needed
         // }
