@@ -491,23 +491,17 @@ function RfqListing(props) {
     * @description approveDetails
     */
     const approveDetails = (Id, rowData = {}) => {
-        if (partType !== "Bought Out Part" && partType !== "Raw Material") {
-
-            const filteredData = viewCostingData.filter(item => selectedCostingList.includes(item?.costingId));
-
+        if (havellsConditionKey && (partType !== "Bought Out Part" && partType !== "Raw Material")) {
+            const filteredData = viewCostingData.filter(item => selectedCostingList.includes(item.costingId));
             // Check if the total share of business is 100%
             const totalShareOfBusiness = filteredData
                 .map(item => item?.shareOfBusinessPercent)
                 .reduce((total, percent) => total + percent, 0);
-
-
             if (totalShareOfBusiness !== 100) {
                 Toaster.warning("The total share of business must be 100%.");
                 return false;
             }
         }
-
-
 
         if (partType === "Bought Out Part" || partType === "Raw Material") {
             setApproveDrawer(true)

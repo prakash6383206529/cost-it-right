@@ -136,13 +136,7 @@ export default function RFQReducer(state = initialState, action) {
                 loading: false,
                 getBopPrQuotationIdentity: action.payload,
             }
-        case GET_RFQ_TOOLING_DETAILS:
 
-            return {
-                ...state,
-                loading: false,
-                getRfqToolingData: action.payload,
-            }
         case SET_TOOLING_SPECIFIC_ROW_DATA:
 
             return {

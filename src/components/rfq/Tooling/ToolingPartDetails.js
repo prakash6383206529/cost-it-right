@@ -5,72 +5,37 @@ import HeaderTitle from '../../common/HeaderTitle';
 import TooltipCustom from '../../common/Tooltip';
 import { AgGridReact } from 'ag-grid-react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getRfqToolingDetails, updatedToolingData } from '../actions/rfq';
 import { Controller, useForm } from 'react-hook-form'
 function ToolingPartDetails() {
     const { register, handleSubmit, setValue, getValues, formState: { errors }, control } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
     });
-    // const { getRfqToolingData } = useSelector(state => state?.rfq);
-    const [noOfCavity, setNoOfCavity] = useState("")
-    const [machineTonage, setMachineTonage] = useState("")
-    const getRfqToolingData = {
-        partName: 'Tool A',
-        partRM: 'Aluminum',
+    const { toolingSpecificRowData } = useSelector(state => state?.rfq);
 
-        specifications: [
-            { specification: 'Material Type', value: 'Steel' },
-            { specification: 'Heat Treatment', value: 'Tempered' },
-            { specification: 'Surface Finish', value: 'Polished' },
-            { specification: 'Dimensions', value: '10x20x30 mm' },
-        ],
-    };
-    const [formData, setFormData] = useState(getRfqToolingData);
-
-    const [rowData, setRowData] = useState([
-
-    ]);
+    const [formData, setFormData] = useState(toolingSpecificRowData[0]?.ToolPartData);
+    const [rowData, setRowData] = useState([]);
 
     const dispatch = useDispatch()
-    // useEffect(() => {
-    //     dispatch(getRfqToolingDetails(() => { }))
-    // }, [])
-    // useEffect(() => {
-    //     // Update local state when toolingRfqData is updated
-    //     if (getRfqToolingData) {
-    //         // Assuming toolingRfqData contains both editable and disabled fields
-    //         setRowData(getRfqToolingData.specifications || []);
-    //         // Additional logic to handle form data if needed
-    //     }
-    // }, [toolingRfqData]);
-
-    // useEffect(() => {
-
-    //     dispatch(updatedToolingData((formData) => { }))
-    // }, [])
     const toolingDetailsInputFields = [
         { name: 'partName', label: 'Part Name', editable: false, tooltip: 'Part Name', mandatory: false },
         { name: 'partRM', label: 'Part RM', editable: false, tooltip: 'Part RM', mandatory: false },
 
     ];
     const columnDefs = [
-        { headerName: 'Specification', field: 'specification', editable: false },
-        { headerName: 'Value', field: 'value', editable: false },
+        { headerName: 'Specification', field: 'Specification', editable: false },
+        { headerName: 'Value', field: 'Value', editable: false },
     ];
 
 
     useEffect(() => {
-
-        setValue("partName", getRfqToolingData?.partName)
-        setValue("partRM", getRfqToolingData?.partRM)
-        setRowData(getRfqToolingData?.specifications || [])
+        const toolPartData = toolingSpecificRowData[0]?.ToolPartData
+        setValue("partName", toolPartData?.ToolPartName)
+        setValue("partRM", toolPartData?.ToolPartRawMaterial)
+        setRowData(toolPartData?.ToolPartSpecificationList || [])
 
     }, [])
     const handleInputChange = (name, value) => {
-
-
-        // Update form data in state
         setFormData(prev => ({ ...prev, [name]: value }));
     };
     return (
