@@ -10,6 +10,7 @@ import { EMPTY_DATA } from "../../../config/constants";
 import { COSTING, } from "../../../config/constants";
 import { renderActionCommon } from '../userUtil';
 import { costingTypeLabel } from '../../../config/constants';
+import { withTranslation } from 'react-i18next';
 
 class CostingTab extends Component {
   constructor(props) {
@@ -351,7 +352,7 @@ class CostingTab extends Component {
                     })}
                   <tr>
                     <td>
-                      <h6 className='inner-tab-heading'>Costing Technology List</h6>
+                      <h6 className='inner-tab-heading'>Costing {this.props.t('commonFields.technology', { ns: 'MasterLabels', defaultValue: 'Technology' })} List</h6>
                     </td>
                   </tr>
                   {this.state.Modules &&
@@ -448,4 +449,4 @@ export default connect(mapStateToProps, {
   getModuleSelectList,
   getActionHeadsSelectList,
   getModuleActionInit,
-})(CostingTab);
+})(withTranslation(['MasterLabels'])(CostingTab));

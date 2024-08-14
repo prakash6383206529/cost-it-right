@@ -32,6 +32,7 @@ import HeaderTitle from "../../common/HeaderTitle"
 import Association from "./Association"
 import { getAssociatedMaterial, getAssociatedMaterialDetails, getIndexSelectList } from "../actions/Indexation"
 import { useTranslation } from "react-i18next"
+import { useLabels } from "../../../helper/core"
 
 function AddRMDetails(props) {
     const { Controller, control, register, setValue, getValues, errors, reset, useWatch, states, data, disableAll } = props
@@ -76,7 +77,7 @@ function AddRMDetails(props) {
     });
 
     const dispatch = useDispatch()
-
+    const { technologyLabel } = useLabels();
     const plantSelectList = useSelector(state => state.comman.plantSelectList);
     const customerSelectList = useSelector((state) => state.client.clientSelectList)
     const technologySelectList = useSelector((state) => state.costing.costingSpecifiTechnology)
@@ -648,7 +649,7 @@ function AddRMDetails(props) {
                     <div className={`accordian-content row mx-0 w-100 ${state.isRmOpen ? '' : 'd-none'}`} >
                         <Col className="col-md-15">
                             <SearchableSelectHookForm
-                                label={"Technology"}
+                                label={technologyLabel}
                                 name={"Technology"}
                                 placeholder={"Select"}
                                 Controller={Controller}

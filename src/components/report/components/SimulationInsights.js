@@ -15,6 +15,7 @@ import { getSimulationInsightReport } from '../actions/ReportListing';
 import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from '../../common/Tour/TourMessages';
 import { useTranslation } from "react-i18next"
+import { useLabels } from '../../../helper/core';
 
 
 
@@ -48,7 +49,7 @@ function SimulationInsights(props) {
   const [globalTake, setGlobalTake] = useState(defaultPageSize)
   const [dataCount, setDataCount] = useState(0)
 
-
+  const { technologyLabel } = useLabels();
   var filterParams = {
     comparator: function (filterLocalDateAtMidnight, cellValue) {
       // var dateAsString = cellValue != null ? DayTime(cellValue).format('MM/DD/YYYY') : '';
@@ -477,7 +478,7 @@ function SimulationInsights(props) {
               {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.</AgGridColumn> */}
               <AgGridColumn field="TokenNumber" headerName="Token No"></AgGridColumn>
               <AgGridColumn field="CostingHead" headerName="Costing Head"></AgGridColumn>
-              <AgGridColumn field="Technology" headerName="Technology"></AgGridColumn>
+              <AgGridColumn field="Technology" headerName={technologyLabel}></AgGridColumn>
               <AgGridColumn field="VendorName" headerName="Simulated By"></AgGridColumn>
               <AgGridColumn field="ImpactCosting" headerName="Impacted Costing" ></AgGridColumn>
               <AgGridColumn field="ImpactParts" headerName="Impacted Parts "></AgGridColumn>

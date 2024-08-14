@@ -7,6 +7,7 @@ import { AgGridReact } from 'ag-grid-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getRfqToolingDetails, updatedToolingData } from '../actions/rfq';
 import { Controller, useForm } from 'react-hook-form'
+import { useLabels } from '../../../helper/core';
 function AddToolingRfq() {
     const { register, handleSubmit, setValue, getValues, formState: { errors }, control } = useForm({
         mode: 'onChange',
@@ -25,7 +26,7 @@ function AddToolingRfq() {
         toolRunLoc: 'India',
     };
     const [formData, setFormData] = useState(getRfqToolingData);
-
+    const { technologyLabel } = useLabels();
     const [rowData, setRowData] = useState([
 
     ]);
@@ -49,7 +50,7 @@ function AddToolingRfq() {
     // }, [])
     const toolingDetailsInputFields = [
         { name: 'toolingType', label: 'Tooling Type', editable: false, tooltip: 'Tooling Type', mandatory: false },
-        { name: 'toolTechnology', label: 'Tool Technology', editable: false, tooltip: 'Tool Technology', mandatory: false },
+        { name: 'toolTechnology', label: `Tool ${technologyLabel}`, editable: false, tooltip: 'Tool Technology', mandatory: false },
         { name: 'toolLife', label: 'Tool Life', editable: false, tooltip: 'Tool Life', mandatory: false },
         { name: 'noOfCavity', label: 'No. of Cavity', editable: false, tooltip: 'No of Cavity', mandatory: false },
         { name: 'machineTonage', label: 'Machine Tonnage', editable: false, tooltip: 'Machine Tonnage', mandatory: false },

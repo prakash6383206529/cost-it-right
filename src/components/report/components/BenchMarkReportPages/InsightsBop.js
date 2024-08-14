@@ -14,6 +14,7 @@ import { PaginationWrapper } from '../../../common/commonPagination';
 import { getCostingBenchMarkBopReport } from '../../actions/ReportListing';
 import DayTime from '../../../common/DayTimeWrapper';
 import { checkForDecimalAndNull } from '../../../../helper';
+import { useLabels } from '../../../../helper/core';
 
 function InsightsBop(props) {
     const { register, handleSubmit, control, formState: { errors } } = useForm({
@@ -38,7 +39,7 @@ function InsightsBop(props) {
     const [vendor, setVendor] = useState([])
     const [plantName, setPlantName] = useState([])
     const [uniqueVendors, setUniqueVendors] = useState([])
-
+    const { technologyLabel } = useLabels();
     const [labelArray, setLabelArray] = useState([])
 
     const gridOptions = {};
@@ -698,7 +699,7 @@ function InsightsBop(props) {
                         {false && <Row className="pt-4">
                             <Col md="12" className="filter-block">
                                 <div className="d-inline-flex justify-content-start align-items-center mr-3">
-                                    <div className="flex-fills label">Technology:</div>
+                                    <div className="flex-fills label">{technologyLabel}:</div>
                                     <div className="hide-label flex-fills pl-0 w-auto">
                                         <SearchableSelectHookForm
                                             label={''}

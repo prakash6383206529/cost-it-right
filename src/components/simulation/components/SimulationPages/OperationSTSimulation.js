@@ -24,6 +24,7 @@ import { getMaxDate } from '../../SimulationUtils';
 import ReactExport from 'react-export-excel';
 import { OPERATION_IMPACT_DOWNLOAD_EXCEl } from '../../../../config/masterData';
 import { simulationContext } from '..';
+import { useLabels } from '../../../../helper/core';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -52,7 +53,7 @@ function OperationSTSimulation(props) {
     const [basicRateviewTooltip, setBasicRateViewTooltip] = useState(false)
     const [textFilterSearch, setTextFilterSearch] = useState('')
     const gridRef = useRef();
-
+    const { technologyLabel } = useLabels();
     const { register, control, setValue, formState: { errors }, } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
@@ -545,7 +546,7 @@ function OperationSTSimulation(props) {
                                                     </>}
                                                 {!isImpactedMaster && <div className={`d-flex align-items-center simulation-label-container`}>
                                                     <div className='d-flex pl-3'>
-                                                        <label>Technology: </label>
+                                                        <label>{technologyLabel}: </label>
                                                         <p className='technology ml-1' title={list[0].Technology}>{list[0].Technology}</p>
                                                     </div>
                                                     {list[0].CostingTypeId !== CBCTypeId && <div className='d-flex pl-3'>

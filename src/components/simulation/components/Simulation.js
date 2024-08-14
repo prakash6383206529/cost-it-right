@@ -46,6 +46,7 @@ import { simulationContext } from '.';
 import RMIndexationSimulationListing from './SimulationPages/RMIndexationSimulationListing';
 import RMIndexationSimulation from './SimulationPages/RMIndexationSimulation';
 import { setCommodityDetails } from '../../masters/actions/Indexation';
+import { useLabels } from '../../../helper/core';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -102,7 +103,7 @@ function Simulation(props) {
     const [plant, setPlant] = useState('')
     const [type, setType] = useState('')
     const [rawMaterialIds, setRawMaterialIds] = useState([])
-
+    const { technologyLabel } = useLabels();
     const dispatch = useDispatch()
     const vendorSelectList = useSelector(state => state.comman.vendorWithVendorCodeSelectList)
     useEffect(() => {
@@ -1713,7 +1714,7 @@ function Simulation(props) {
                                     (association !== '' && association?.value !== NON_ASSOCIATED)) &&
                                     getTechnologyForSimulation.includes(master.value) &&
                                     <div className="d-inline-flex justify-content-start align-items-center mr-2 mb-3 zindex-unset">
-                                        <div className="flex-fills label">Technology:</div>
+                                        <div className="flex-fills label">{technologyLabel}:</div>
                                         <div className="flex-fills hide-label pl-0">
                                             <SearchableSelectHookForm
                                                 label={''}

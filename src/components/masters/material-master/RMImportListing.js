@@ -39,6 +39,7 @@ import { resetStatePagination, updateCurrentRowIndex, updateGlobalTake, updatePa
 import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from '../../common/Tour/TourMessages';
 import { useTranslation } from 'react-i18next';
+import { useLabels } from '../../../helper/core';
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -94,6 +95,7 @@ function RMImportListing(props) {
   const { t } = useTranslation("common")
   const netCostHeader = `Net Cost (${reactLocalStorage.getObject("baseCurrency")})`
   const { tokenForSimulation, selectedMasterForSimulation } = useSelector(state => state.simulation)
+  const { technologyLabel } = useLabels();
   const headerNames = {
     BasicRate: `Basic Rate (${reactLocalStorage.getObject("baseCurrency")})`,
     ScrapRate: `Scrap Rate (${reactLocalStorage.getObject("baseCurrency")})`,
@@ -802,7 +804,7 @@ function RMImportListing(props) {
       if (uniqueArrayNew.length > 1) {
         dispatch(setSelectedRowForPagination([]))
         gridApi.deselectAll()
-        Toaster.warning("Technology & Raw material should be same")
+        Toaster.warning(`${technologyLabel} & Raw material should be same`)
       }
     }
 
@@ -1017,7 +1019,7 @@ function RMImportListing(props) {
                     suppressRowClickSelection={true}
                   >
                     <AgGridColumn cellClass="has-checkbox" field="CostingHead" headerName='Costing Head' cellRenderer={checkBoxRenderer}></AgGridColumn>
-                    <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>
+                    <AgGridColumn field="TechnologyName" headerName={technologyLabel}></AgGridColumn>
                     <AgGridColumn field="RawMaterialName" headerName='Raw Material' ></AgGridColumn>
                     <AgGridColumn field="RawMaterialGradeName" headerName='Grade'></AgGridColumn>
                     <AgGridColumn field="RawMaterialSpecificationName" headerName='Spec'></AgGridColumn>

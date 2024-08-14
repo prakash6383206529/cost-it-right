@@ -32,6 +32,7 @@ import TourWrapper from "../common/Tour/TourWrapper";
 import { useTranslation } from "react-i18next";
 import { Steps } from "./TourMessages";
 import TooltipCustom from "../common/Tooltip";
+import { useLabels } from "../../helper/core";
 
 
 var CryptoJS = require('crypto-js')
@@ -129,7 +130,7 @@ function UserRegistration(props) {
     plant: false
   })
   const dispatch = useDispatch()
-
+  const { technologyLabel } = useLabels();
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
   const cityList = useSelector(state => state.comman.cityList)
   const departmentList = useSelector(state => state.auth.departmentList)
@@ -1183,7 +1184,7 @@ function UserRegistration(props) {
     let tempArray = [];
 
     if (technology.length === 0 || level.length === 0 || Object.keys(costingApprovalType).length === 0) {
-      Toaster.warning('Please select Technology, Approval Type and Level')
+      Toaster.warning(`Please select ${technologyLabel}, Approval Type and Level`)
       return false;
     }
 
@@ -3092,7 +3093,7 @@ function UserRegistration(props) {
                               <SearchableSelectHookForm
                                 name="TechnologyId"
                                 type="text"
-                                label="Technology"
+                                label={technologyLabel}
                                 errors={errors.TechnologyId}
                                 Controller={Controller}
                                 control={control}
@@ -3196,7 +3197,7 @@ function UserRegistration(props) {
                                       // onFilterModified={onFloatingFilterChanged}
                                       enableBrowserTooltips={true}
                                     >
-                                      <AgGridColumn field="Technology" headerName="Technology" />
+                                      <AgGridColumn field="Technology" headerName={technologyLabel} />
                                       <AgGridColumn field="ApprovalType" headerName="Approval Type" />
                                       <AgGridColumn field="Level" headerName="Level" />
                                       <AgGridColumn field="Technology" headerName='Actions' type="rightAligned" cellRenderer={'onAction'} ></AgGridColumn>

@@ -23,6 +23,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import BOMViewerProduct from './BOMViewerProduct';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import { withTranslation } from 'react-i18next';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -452,7 +453,7 @@ class AssemblyProductListing extends Component {
                             }}
                             frameworkComponents={frameworkComponents}
                         >
-                            <AgGridColumn field="Technology" headerName="Technology" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
+                            <AgGridColumn field="Technology" headerName={this.props.t('commonFields.technology', { ns: 'MasterLabels', defaultValue: 'Technology' })} cellRenderer={'costingHeadFormatter'}></AgGridColumn>
                             <AgGridColumn field="BOMNumber" headerName="BOM NO."></AgGridColumn>
                             <AgGridColumn field="PartNumber" headerName="Part No."></AgGridColumn>
                             <AgGridColumn field="PartName" headerName="Name"></AgGridColumn>
@@ -522,4 +523,4 @@ export default connect(mapStateToProps,
     {
         getAssemblyPartDataList,
         deleteAssemblyPart,
-    })(AssemblyProductListing);
+    })(withTranslation(['MasterLabels'])(AssemblyProductListing));

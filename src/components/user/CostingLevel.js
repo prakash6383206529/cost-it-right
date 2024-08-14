@@ -13,6 +13,7 @@ import { ApplyPermission } from './LevelsListing';
 import { useContext } from 'react';
 import Button from '../layout/Button';
 import { searchNocontentFilter } from '../../helper';
+import { useLabels } from '../../helper/core';
 const gridOptions = {};
 const defaultPageSize = 5;
 const CostingLevelListing = (props) => {
@@ -33,7 +34,7 @@ const CostingLevelListing = (props) => {
     const permissions = useContext(ApplyPermission);
     const { isCallApi } = useSelector((state) => state.auth)
     const dispatch = useDispatch();
-
+    const { technologyLabel } = useLabels();
     useEffect(() => {
         getLevelsListData()
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -164,7 +165,7 @@ const CostingLevelListing = (props) => {
                                 >
                                     {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
                                     <AgGridColumn field="ApprovalType" headerName="Approval Type"></AgGridColumn>
-                                    <AgGridColumn field="Technology" headerName="Technology"></AgGridColumn>
+                                    <AgGridColumn field="Technology" headerName={technologyLabel}></AgGridColumn>
                                     <AgGridColumn field="Level" headerName="Highest Approval Level"></AgGridColumn>
                                     <AgGridColumn field="TechnologyId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                                 </AgGridReact>}

@@ -26,6 +26,7 @@ import LoaderCustom from "../../common/LoaderCustom";
 import Dropzone from "react-dropzone-uploader";
 import imgRedcross from '../../../assests/images/red-cross.png';
 import TooltipCustom from "../../common/Tooltip";
+import { useLabels } from "../../../helper/core";
 
 function AddMoreOperation(props) {
     const { addMoreDetailObj, isEditFlag, detailObject, isViewMode } = props
@@ -60,7 +61,7 @@ function AddMoreOperation(props) {
     const dropzone = useRef(null);
     const dispatch = useDispatch();
     const operationSelectList = useSelector(state => state.otherOperation.operationSelectList)
-
+    const { technologyLabel } = useLabels();
     let defaultValues = {
         remark: detailObject && detailObject.Remark ? detailObject.Remark : '',
         crmHeadWireRate: detailObject && detailObject.MaterialWireCRMHead && { label: detailObject.MaterialWireCRMHead, value: 1 },
@@ -841,7 +842,7 @@ function AddMoreOperation(props) {
                                         <SearchableSelectHookForm
                                             name="technology"
                                             type="text"
-                                            label="Technology"
+                                            label={technologyLabel}
                                             errors={errors.technology}
                                             Controller={Controller}
                                             control={control}

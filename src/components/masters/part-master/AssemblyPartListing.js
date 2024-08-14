@@ -27,6 +27,7 @@ import { useTranslation } from "react-i18next";
 import { TourStartAction } from "../../../actions/Common";
 import { showTitleForActiveToggle } from '../../../../src/helper/util';
 import Switch from "react-switch";
+import { useLabels } from "../../../helper/core";
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -46,7 +47,7 @@ const AssemblyPartListing = React.memo((props) => {
   const [searchText, setSearchText] = useState("");
   const { t } = useTranslation("common")
   const tourStartData = useSelector(state => state.comman.tourStartData);
-
+  const { technologyLabel } = useLabels();
   const [state, setState] = useState({
     isEditFlag: false,
     isOpen: false,
@@ -578,7 +579,7 @@ const AssemblyPartListing = React.memo((props) => {
               onFilterModified={onFloatingFilterChanged}
               suppressRowClickSelection={true}
             >
-              <AgGridColumn cellClass="has-checkbox" field="Technology" headerName="Technology" cellRenderer={"checkBoxRenderer"}              ></AgGridColumn>
+              <AgGridColumn cellClass="has-checkbox" field="Technology" headerName={technologyLabel} cellRenderer={"checkBoxRenderer"}              ></AgGridColumn>
               <AgGridColumn field="BOMNumber" headerName="BOM No."              ></AgGridColumn>
               <AgGridColumn field="PartNumber" headerName="Part No."              ></AgGridColumn>
               <AgGridColumn field="PartName" headerName="Name"></AgGridColumn>

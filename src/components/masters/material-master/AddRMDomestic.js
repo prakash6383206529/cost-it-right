@@ -1710,7 +1710,7 @@ class AddRMDomestic extends Component {
                           </Col>
                           <Col md="3">
                             <Field
-                              label="Technology"
+                              label={t('commonFields.technology', { ns: 'MasterLabels', defaultValue: 'Technology' })}
                               type="text"
                               name="TechnologyId"
                               component={searchableSelect}
@@ -2708,5 +2708,5 @@ export default connect(mapStateToProps, {
     onSubmitFail: (errors) => {
       focusOnError(errors)
     },
-  })(withTranslation(['RawMaterialMaster'])(AddRMDomestic)),
+  })(withTranslation(['RawMaterialMaster', 'MasterLabels'])(AddRMDomestic)),
 )

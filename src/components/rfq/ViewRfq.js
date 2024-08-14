@@ -43,6 +43,7 @@ import { costingTypeIdToApprovalTypeIdFunction } from '../common/CommonFunctions
 import { useHistory, useLocation } from 'react-router-dom/cjs/react-router-dom';
 import { ASSEMBLY } from '../../config/masterData';
 import { havellsConditionKey } from '../.././config/constants';
+import { useLabels } from '../../helper/core';
 export const QuotationId = React.createContext();
 
 const gridOptions = {};
@@ -120,6 +121,7 @@ function RfqListing(props) {
     const userMasterLevelAPI = useSelector((state) => state.auth.userMasterLevelAPI)
     const isAssemblyTechnology = rowData && rowData?.length > 0 ? rowData[0]?.TechnologyId === ASSEMBLY : false
     let arr = []
+    const { technologyLabel } = useLabels();
     const history = useHistory();
     const location = useLocation();
     useEffect(() => {
@@ -966,9 +968,9 @@ function RfqListing(props) {
         let showReminderIcon = false
         let showRemarkHistory = false
 
-        console.log('rowData: ', rowData,rowData?.CostingId);
-        console.log('rowData?.CostingNumber === null || rowData?.RawMaterialId === null || rowData?.BoughtOutPartId : ', rowData?.CostingNumber === null ,rowData?.RawMaterialId === null || rowData?.BoughtOutPartId );
-        if (rowData?.CostingNumber === null && rowData?.RawMaterialId === null && rowData?.BoughtOutPartId ) {
+        console.log('rowData: ', rowData, rowData?.CostingId);
+        console.log('rowData?.CostingNumber === null || rowData?.RawMaterialId === null || rowData?.BoughtOutPartId : ', rowData?.CostingNumber === null, rowData?.RawMaterialId === null || rowData?.BoughtOutPartId);
+        if (rowData?.CostingNumber === null && rowData?.RawMaterialId === null && rowData?.BoughtOutPartId) {
             showReminderIcon = true
 
         } else {
@@ -976,9 +978,9 @@ function RfqListing(props) {
             showRemarkHistory = true
             if (rowData.ShowApprovalButton) {
                 showActionIcons = true
-                
+
             } else {
-                
+
                 showActionIcons = false
             }
         }
@@ -1403,7 +1405,7 @@ function RfqListing(props) {
 
         if (type !== "Cancel") {
             props.closeDrawer(false); // Pass true to indicate that data should be refreshed
-        } 
+        }
         // else {
         //     props.closeDrawer(true); // Pass false if no refresh is needed
         // }
@@ -1515,7 +1517,7 @@ function RfqListing(props) {
                                             <AgGridColumn cellClass={cellClass} field="PartNo" headerName={headerPartType()} cellRenderer={'partNumberFormatter'}></AgGridColumn>
                                             <AgGridColumn field="PartTypes" cellClass={cellClass} headerName="Part Type" width={150} cellRenderer={seperateHyphenFormatter}></AgGridColumn>
                                             {initialConfiguration.IsNFRConfigured && <AgGridColumn cellClass={cellClass} field="NfrNo" headerName='NFR No.' cellRenderer={seperateHyphenFormatter}></AgGridColumn>}
-                                            {partType !== 'Bought Out Part' && <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>}
+                                            {partType !== 'Bought Out Part' && <AgGridColumn field="TechnologyName" headerName={technologyLabel}></AgGridColumn>}
                                             {partType === 'Bought Out Part' && <AgGridColumn cellClass={cellClass} field="PRNo" headerName='PR Number' cellRenderer={seperateHyphenFormatter}></AgGridColumn>}
 
                                             <AgGridColumn field="VendorName" tooltipField="VendorName" headerName='Vendor (Code)'></AgGridColumn>

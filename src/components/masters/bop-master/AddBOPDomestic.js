@@ -41,6 +41,7 @@ import Button from '../../layout/Button';
 import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from './TourMessages';
 import { withTranslation } from 'react-i18next';
+import { useLabels } from '../../../helper/core';
 
 
 const selector = formValueSelector('AddBOPDomestic');
@@ -1355,7 +1356,7 @@ class AddBOPDomestic extends Component {
                               </Col>
                               {isTechnologyVisible && <Col md="3">
                                 <Field
-                                  label="Technology"
+                                  label={t('commonFields.technology', { ns: 'MasterLabels', defaultValue: 'Technology' })}
                                   type="text"
                                   name="Technology"
                                   component={searchableSelect}

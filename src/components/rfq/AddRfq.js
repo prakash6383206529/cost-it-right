@@ -43,6 +43,7 @@ import AddRm from './RM/AddRfqRmDetails';
 import AddRfqRmDetails from './RM/AddRfqRmDetails';
 import RaiseRfqBopDetails from './BOP/RaiseRfqBopDetails';
 import TooltipCustom from '../common/Tooltip';
+import { useLabels } from '../../helper/core';
 const gridOptionsPart = {}
 const gridOptionsVendor = {}
 
@@ -58,7 +59,7 @@ function AddRfq(props) {
     const { t } = useTranslation("Rfq")
     const { data: dataProps } = props
 
-
+    const { technologyLabel } = useLabels();
     const dropzone = useRef(null);
     const { register, handleSubmit, setValue, getValues, formState: { errors }, control, reset } = useForm({
         mode: 'onChange',
@@ -2771,7 +2772,7 @@ function AddRfq(props) {
                                         {quotationType !== "Bought Out Part" && (
                                             <Col md="3">
                                                 <SearchableSelectHookForm
-                                                    label={"Technology"}
+                                                    label={technologyLabel}
                                                     name={"technology"}
                                                     placeholder={"Select"}
                                                     Controller={Controller}
