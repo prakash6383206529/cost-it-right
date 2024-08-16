@@ -1,7 +1,7 @@
 import React, { Fragment, useEffect, useState } from 'react'
 import { Row, Col, Table } from 'reactstrap'
 import NoContentFound from '../../../../common/NoContentFound'
-import { EMPTY_DATA } from '../../../../../config/constants'
+import { EMPTY_DATA, isShowTaxCode } from '../../../../../config/constants'
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey } from '../../../../../helper'
 import { useSelector } from 'react-redux'
 import { reactLocalStorage } from 'reactjs-localstorage'
@@ -32,12 +32,12 @@ function ConditionCosting(props) {
                             <tr className='thead'>
                                 <th>{`Condition`}</th>
                                 {<th>{`Type`}</th>}
-                                {<th>{`Percentage (%)`}</th>}
-                                {<th>{`Quantity`}</th>}
-                                {isFromImport && <th style={{ minWidth: '100px' }}>{`Cost (${currency?.label})`}</th>}
-                                {<th style={{ minWidth: '100px' }}>{`Cost (${reactLocalStorage.getObject("baseCurrency")})`}</th>}
-                                {isFromImport && <th style={{ minWidth: '100px' }}>{`Cost/Pc (${currency?.label})`}</th>}
-                                {<th>{`Cost/Pc (${reactLocalStorage.getObject("baseCurrency")})`}</th>}
+                                {!isShowTaxCode && <th>{`Percentage (%)`}</th>}
+                                {!isShowTaxCode && <th>{`Quantity`}</th>}
+                                {(isFromImport && !isShowTaxCode) && <th style={{ minWidth: '100px' }}>{`Cost (${currency?.label})`}</th>}
+                                {!isShowTaxCode && <th style={{ minWidth: '100px' }}>{`Cost (${reactLocalStorage.getObject("baseCurrency")})`}</th>}
+                                {(isFromImport && !isShowTaxCode) && <th style={{ minWidth: '100px' }}>{`Cost/Pc (${currency?.label})`}</th>}
+                                {!isShowTaxCode && <th>{`Cost/Pc (${reactLocalStorage.getObject("baseCurrency")})`}</th>}
                                 {!props.hideAction && <th className='text-right'>{`Action`}</th>}
 
                             </tr>
@@ -48,12 +48,12 @@ function ConditionCosting(props) {
                                             <tr key={index}>
                                                 <td>{item.condition ? item.condition : item.Description} </td>
                                                 {<td>{item.ConditionType}</td>}
-                                                {<td>{item.Percentage ? checkForDecimalAndNull(item?.Percentage, getConfigurationKey().NoOfDecimalForPrice) : '-'}</td>}
-                                                {<td>{item.ConditionQuantity ? checkForDecimalAndNull(item?.ConditionQuantity, getConfigurationKey().NoOfDecimalForPrice) : '-'}</td>}
-                                                {<td>{checkForDecimalAndNull(item?.ConditionCost, getConfigurationKey().NoOfDecimalForPrice)}</td>}
-                                                {isFromImport && <td>{checkForDecimalAndNull(item?.ConditionCostConversion, getConfigurationKey().NoOfDecimalForPrice)}</td>}
-                                                {<td>{item?.ConditionCostPerQuantity ? checkForDecimalAndNull(item?.ConditionCostPerQuantity, getConfigurationKey().NoOfDecimalForPrice) : '-'}</td>}
-                                                {isFromImport && <td>{item?.ConditionCostPerQuantityConversion ? checkForDecimalAndNull(item?.ConditionCostPerQuantityConversion, getConfigurationKey().NoOfDecimalForPrice) : '-'}</td>}
+                                                {!isShowTaxCode && <td>{item.Percentage ? checkForDecimalAndNull(item?.Percentage, getConfigurationKey().NoOfDecimalForPrice) : '-'}</td>}
+                                                {!isShowTaxCode && <td>{item.ConditionQuantity ? checkForDecimalAndNull(item?.ConditionQuantity, getConfigurationKey().NoOfDecimalForPrice) : '-'}</td>}
+                                                {!isShowTaxCode && <td>{checkForDecimalAndNull(item?.ConditionCost, getConfigurationKey().NoOfDecimalForPrice)}</td>}
+                                                {(isFromImport && !isShowTaxCode) && <td>{checkForDecimalAndNull(item?.ConditionCostConversion, getConfigurationKey().NoOfDecimalForPrice)}</td>}
+                                                {!isShowTaxCode && <td>{item?.ConditionCostPerQuantity ? checkForDecimalAndNull(item?.ConditionCostPerQuantity, getConfigurationKey().NoOfDecimalForPrice) : '-'}</td>}
+                                                {(isFromImport && !isShowTaxCode) && <td>{item?.ConditionCostPerQuantityConversion ? checkForDecimalAndNull(item?.ConditionCostPerQuantityConversion, getConfigurationKey().NoOfDecimalForPrice) : '-'}</td>}
                                                 {!props.hideAction && <td><div className='text-right'>
                                                     <button title='Edit' className="Edit mr-1" type={'button'} onClick={() => editDeleteData(index, 'edit')} disabled={props.ViewMode} />
                                                     <button title='Delete' className="Delete mr-1" type={'button'} onClick={() => editDeleteData(index, 'delete')} disabled={props.ViewMode} />
@@ -70,14 +70,14 @@ function ConditionCosting(props) {
                                     </td>
                                 </tr>
                             )}
-                            <tr className='table-footer'>
+                            {!isShowTaxCode && <tr className='table-footer'>
 
                                 <td colSpan={isFromImport ? 6 : 5} className="text-right font-weight-600 fw-bold">{`${isFromMaster ? 'Total Cost:' : `Total Cost (${reactLocalStorage.getObject("baseCurrency")}):`}`}</td>
                                 <td colSpan={isFromImport ? 1 : 3}><div className='d-flex justify-content-between'>{checkForDecimalAndNull(totalCostCurrency, initialConfiguration.NoOfDecimalForPrice)} {isFromMaster ? `(${isFromImport ? currency?.label : reactLocalStorage.getObject("baseCurrency")})` : ''}</div></td>
                                 {isFromImport && <>
                                     <td colSpan={4} className="text-left"> {checkForDecimalAndNull(totalCostBase, initialConfiguration.NoOfDecimalForPrice)} ({reactLocalStorage.getObject("baseCurrency")})</td>
                                 </>}
-                            </tr>
+                            </tr>}
                         </tbody>
                     </Table>
                 </Col>

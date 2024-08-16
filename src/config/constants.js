@@ -1225,7 +1225,7 @@ export const API = {
   // getSAPDetailById: `${BASE_URL}/sap-sync/get-sap-push-details-by-id`
 
   //SAP API FOR APPROVAL PUSH
-  getEvaluationType: `${BASE_URL}/ExternalIntegration/select-list-of-valuations`
+  getEvaluationType: `${BASE_URL}/ExternalIntegration/select-list-of-valuations`,
 
 }
 //VENDOR MANAGEMENT
@@ -3214,6 +3214,7 @@ export const hideDetailOfRubbercalci = true
 export const havellsConditionKey = true
 export const countDownBlickingTime = 2
 export const clientName = 'Havells'
+export const isShowTaxCode = false
 
 //VERSION 
 export const VERSION = "V3.1.2";

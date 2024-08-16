@@ -3070,7 +3070,7 @@ export function getSpecificationDetailBpo(quotationId, bopId, callback) {
 export function getExternalIntegrationEvaluationType(data, callback) {
 
   return (dispatch) => {
-    const request = axios.post(API.getEvaluationType, data, config())
+    const request = axios.get(`${API.getEvaluationType}?plantCode=${data?.plantCode}&partNumber=${data?.partNumber}`, config())
     request.then((response) => {
       if (response.data.Result || response?.status === 204) {
         dispatch({
