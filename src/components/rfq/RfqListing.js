@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { useState, useEffect, } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
-import { Row, Col, } from 'reactstrap';
+import { Row, Col, Button, } from 'reactstrap';
 import { APPROVED, CANCELLED, DRAFT, EMPTY_DATA, FILE_URL, PREDRAFT, RECEIVED, REJECTED, RETURNED, RFQ, RFQVendor, SENT, SUBMITTED, UNDER_APPROVAL, UNDER_REVISION, } from '../.././config/constants'
 import NoContentFound from '.././common/NoContentFound';
 import { MESSAGES } from '../.././config/message';
@@ -16,7 +16,7 @@ import { PaginationWrapper } from '.././common/commonPagination'
 import { getQuotationList, cancelRfqQuotation } from './actions/rfq';
 import ViewRfq from './ViewRfq';
 import AddRfq from './AddRfq';
-import { checkPermission, getTimeZone, searchNocontentFilter, setLoremIpsum, userDetails } from '../../helper';
+import { checkPermission, encodeQueryParamsAndLog, getConfigurationKey, getTimeZone, loggedInUserId, searchNocontentFilter, setLoremIpsum, userDetails } from '../../helper';
 import DayTime from '../common/DayTimeWrapper';
 import Attachament from '../costing/components/Drawers/Attachament';
 import { useRef } from 'react';
@@ -26,8 +26,15 @@ import TourWrapper from '../common/Tour/TourWrapper';
 import { Steps } from '../common/Tour/TourMessages';
 import { useTranslation } from 'react-i18next';
 import { filterParams } from '../common/DateFilter';
+
 import CustomCellRenderer from './CommonDropdown';
 import { useHistory, useLocation } from "react-router-dom/cjs/react-router-dom";
+import { PaginationWrappers } from '../common/Pagination/PaginationWrappers';
+import PaginationControls from '../common/Pagination/PaginationControls';
+import {resetStatePagination, updateCurrentRowIndex, updateGlobalTake, updatePageNumber, updatePageSize  } from '../common/Pagination/paginationAction';
+import { reactLocalStorage } from 'reactjs-localstorage';
+import { setSelectedRowForPagination } from '../simulation/actions/Simulation';
+import WarningMessage from '../common/WarningMessage';
 export const ApplyPermission = React.createContext();
 const gridOptions = {};
 
@@ -43,7 +50,7 @@ function RfqListing(props) {
     const [addRfqData, setAddRfqData] = useState({});
     const [isEdit, setIsEdit] = useState(false);
     const [rowData, setRowData] = useState([])
-
+    const [totalRecordCount, setTotalRecordCount] = useState(0)
     const [noData, setNoData] = useState(false)
     const [viewRfq, setViewRfq] = useState(false)
     const [viewRfqData, setViewRfqData] = useState("")
@@ -60,47 +67,54 @@ function RfqListing(props) {
     const [permissionDataPart, setPermissionDataPart] = useState()
     const [permissionDataVendor, setPermissionDataVendor] = useState()
     const [permissionData, setPermissionData] = useState()
-
+    const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false)
+    const { globalTakes } = useSelector((state) => state.pagination);
+    const [warningMessage, setWarningMessage] = useState(false)
+const [disableFilter , setDisableFilter] = useState(false)
+    const [floatingFilterData, setFloatingFilterData] = useState({
+        QuotationNumber: "",
+        PartType: "",
+        PartNumber: "",
+        RawMaterial: "",
+        PRNumber: "",
+        NoOfQuotationReceived: "",
+        VendorName: "",
+        PlantName: "",
+        TechnologyName: "",
+        RaisedBy: "",
+        RaisedOn: "",
+        PartDataSentDate: "",
+        VisibilityMode: "",
+        VisibilityDate: "",
+        VisibilityDuration: "",
+        LastSubmissionDate: "",
+        Remark: "",
+        Status: ""
+      });
+      const [filterModel, setFilterModel] = useState({});
 
     const { topAndLeftMenuData } = useSelector(state => state.auth);
     const agGridRef = useRef(null);
     const statusColumnData = useSelector((state) => state.comman.statusColumnData);
     const history = useHistory();
     const location = useLocation();
-    const handleFilterChange = () => {
-        if (agGridRef.current) {
-
-            //MINDA
-            setTimeout(() => {
-                if (!agGridRef.current.rowRenderer.allRowCons.length) {
-                    setNoData(true)
-                    // dispatch(getGridHeight({ value: 3, component: 'RFQ' }))
-                } else {
-                    setNoData(false)
-                }
-            }, 100);
-
-            const gridApi = agGridRef.current.api;
-            if (gridApi) {
-                const displayedRowCount = gridApi.getDisplayedRowCount();
-                const allRowData = [];
-                for (let i = 0; i < displayedRowCount; i++) {
-                    const rowNode = gridApi.getDisplayedRowAtIndex(i);
-                    if (rowNode) {
-                        allRowData.push(rowNode.data);
-                    }
-                }
-                setNoData(!allRowData.length)
-            }
+   
+    useEffect(() => {
+        return () => {
+          dispatch(setSelectedRowForPagination([]))
+          dispatch(resetStatePagination());
         }
-    };
-    const floatingFilterRFQ = {
-        maxValue: 11,
-        suppressFilterButton: true,
-        component: "RFQ",
-        onFilterChange: handleFilterChange,
-        notPagination: true
-    }
+      }, [])
+
+    useEffect(() => {
+        if (rowData?.length > 0) {
+          console.log('rowData: ', rowData);
+          setTotalRecordCount(rowData[0].TotalRecordCount)
+        } else {
+          setTotalRecordCount(0);
+        //   setNoData(true);
+        }
+      }, [rowData])
     useEffect(() => {
         // setloader(true)
         getDataList()
@@ -109,9 +123,6 @@ function RfqListing(props) {
 
     useEffect(() => {
         if (statusColumnData) {
-
-
-
             gridApi?.setQuickFilter(statusColumnData?.data);
         }
     }, [statusColumnData])
@@ -162,69 +173,208 @@ function RfqListing(props) {
             }
         }
     }
+  
+    const getDataList = useCallback((skip = 0, take = 10, isPagination = true) => {
+        console.log('skip = 0, take = globalTakes, isPagination = true: ', skip , take, isPagination );
+        const Timezone = getTimeZone()
+        if (isPagination === true) {
+          setloader(true)
+        }
+        
+        const queryParams = encodeQueryParamsAndLog({
+          DepartmentCode: userDetails()?.DepartmentCode,
+          Timezone: Timezone,
+          LoggedInUserId: loggedInUserId(),
+          skip: skip,
+          take: take,
+          isApplyPagination: isPagination,
+          ...floatingFilterData
+        });
+    
+        // Convert dates to the required format if needed
+        console.log('floatingFilterData: ', floatingFilterData);
+        if (floatingFilterData.RaisedOn) {
+          queryParams.RaisedOn = DayTime(floatingFilterData.RaisedOn).format('DD/MM/YYYY');
+        }
+        if (floatingFilterData.PartDataSentDate) {
+          queryParams.PartDataSentDate = DayTime(floatingFilterData.PartDataSentDate).format('DD/MM/YYYY');
+        }
+        if (floatingFilterData.LastSubmissionDate) {
+          queryParams.LastSubmissionDate = DayTime(floatingFilterData.LastSubmissionDate).format('DD/MM/YYYY');
+        }
+    
+        dispatch(getQuotationList(queryParams, (res) => {
+          if (res && res.status === 200) {
+            let temp = res?.data?.DataList?.map(item => ({
+              ...item,
+              Status: item?.IsActive === false ? "Cancelled" : item.Status,
+              tooltipText: getTooltipText(item?.Status)
+            })) || []
+            
+            setRowData(temp)
+            setloader(false)
+    
+            if (res && res.status === 204) {
+              setTotalRecordCount(0)
+              dispatch(updatePageNumber(0))
+            }
+    
+            if (res) {
+              let isReset = !Object.values(floatingFilterData).some(value => value !== "")
+              setTimeout(() => {
+                isReset ? gridOptions?.api?.setFilterModel({}) : gridOptions?.api?.setFilterModel(filterModel)
+              }, 300);
+              setWarningMessage(false)
+              setIsFilterButtonClicked(false)
+            }
+          } else {
+            setloader(false);
+          }
+        }))
+      }, [floatingFilterData, globalTakes, filterModel])
+    
+      const getTooltipText = useMemo(() => (status) => {
+        switch (status) {
+          case APPROVED: return 'Total no. of parts for which costing has been approved from that quotation / Total no. of parts exist in that quotation'
+          case RECEIVED: return 'Total no. of costing received / Total no. of expected costing in that quotation'
+          case UNDER_REVISION: return 'Total no. of costing under revision / Total no. of expected costing in that quotation'
+          case DRAFT: return 'The token is pending to send for approval from your side.'
+          case CANCELLED: return 'Quotation has been cancelled.'
+          case SENT: return 'Costing under the quotation has been sent.'
+          case REJECTED: return 'Quotation has been rejected.'
+          case RETURNED: return 'Quotation has been returned.'
+          case PREDRAFT: return 'Quotation pre-drafted, parts details saved.'
+          default: return ''
+        }
+      }, [])
+    
+      const onFloatingFilterChanged = useCallback((value) => {
+        setTimeout(() => {
+          if (rowData.length !== 0) {
+            setNoData(searchNocontentFilter(value, noData))
+          }
+        }, 500);
+        setDisableFilter(false)
+
+        const model = gridOptions?.api?.getFilterModel();
+        setFilterModel(model);
+        if (!isFilterButtonClicked) {
+            setWarningMessage(true)
+        }
+        if (value?.filterInstance?.appliedModel === null || value?.filterInstance?.appliedModel?.filter === "") {
+          let isFilterEmpty = true;
+          if (model !== undefined && model !== null) {
+            if (Object.keys(model).length > 0) {
+              isFilterEmpty = false;
+      
+              setFloatingFilterData(prevState => ({
+                ...prevState,
+                [value.column.colId]: ""
+              }));
+            }
+      
+            if (isFilterEmpty) {
+              setFloatingFilterData({
+                QuotationNumber: "",
+                PartType: "",
+                PartNumber: "",
+                RawMaterial: "",
+                PRNumber: "",
+                NoOfQuotationReceived: "",
+                VendorName: "",
+                PlantName: "",
+                TechnologyName: "",
+                RaisedBy: "",
+                RaisedOn: "",
+                PartDataSentDate: "",
+                VisibilityMode: "",
+                VisibilityDate: "",
+                VisibilityDuration: "",
+                LastSubmissionDate: "",
+                Remark: "",
+                Status: ""
+              });
+            }
+          }
+        } else {
+          if (value.column.colId === "RaisedOn" || value.column.colId === "PartDataSentDate" || value.column.colId === "LastSubmissionDate") {
+            return false;
+          }
+          setFloatingFilterData(prevState => ({
+            ...prevState,
+            [value.column.colId]: value.filterInstance.appliedModel.filter
+          }));
+        }
+      }, [rowData, noData, filterModel])
+    
+      const resetState = () => {
+        setNoData(false)
+        // setinRangeDate([])
+        setIsFilterButtonClicked(false)
+        gridOptions?.columnApi?.resetColumnState(null);
+        gridOptions?.api?.setFilterModel(null);
+
+        for (var prop in floatingFilterData) {
+
+            if (getConfigurationKey().IsCompanyConfigureOnPlant) {
+                if (prop !== "DepartmentName") {
+                    floatingFilterData[prop] = ""
+                }
+            } else {
+                floatingFilterData[prop] = ""
+            }
+        }
+
+        setFloatingFilterData(floatingFilterData)
+        setWarningMessage(false)
+        dispatch(updatePageNumber(1))
+        // setPageNoNew(1)
+        dispatch(updateCurrentRowIndex(10))
+getDataList(0, globalTakes, true)
+        dispatch(setSelectedRowForPagination([]))
+        dispatch(updateGlobalTake(10))
+        dispatch(updatePageSize({ pageSize10: true, pageSize50: false, pageSize100: false }))
+        // setDataCount(0)
+        reactLocalStorage.setObject('selectedRow', {})
+        // if (isSimulation) {
+        //     props.isReset()
+        // }
+    }
+    
+      const onSearch = useCallback(() => {
+        setNoData(false)
+        setWarningMessage(false)
+        setIsFilterButtonClicked(true)
+        dispatch(updatePageNumber(1))
+        dispatch(updateCurrentRowIndex(10))
+        gridOptions?.columnApi?.resetColumnState();
+        getDataList(0, globalTakes, true)
+      }, [globalTakes, getDataList])
     /**
     * @method hideForm
     * @description HIDE DOMESTIC, IMPORT FORMS
     */
-    const getDataList = () => {
-        const Timezone = getTimeZone()
-        setloader(true)
-        dispatch(getQuotationList(userDetails()?.DepartmentCode, Timezone, (res) => {
-            let temp = []
-            res?.data?.DataList && res?.data?.DataList.map((item) => {
-                if (item?.IsActive === false) {
-                    item.Status = "Cancelled"
-                }
-
-                item.tooltipText = ''
-                switch (item?.Status) {
-                    case APPROVED:
-                        item.tooltipText = 'Total no. of parts for which costing has been approved from that quotation / Total no. of parts exist in that quotation'
-                        break;
-                    case RECEIVED:
-                        item.tooltipText = 'Total no. of costing received / Total no. of expected costing in that quotation'
-                        break;
-                    case UNDER_REVISION:
-                        item.tooltipText = 'Total no. of costing under revision / Total no. of expected costing in that quotation'
-                        break;
-                    case DRAFT:
-                        item.tooltipText = 'The token is pending to send for approval from your side.'
-                        break;
-                    case CANCELLED:
-                        item.tooltipText = 'Quotation has been cancelled.'
-                        break;
-                    case SENT:
-                        item.tooltipText = 'Costing under the quotation has been sent.'
-                        break;
-                    case REJECTED:
-                        item.tooltipText = 'Quotation has been rejected.'
-                        break;
-                    case RETURNED:
-                        item.tooltipText = 'Quotation has been returned.'
-                        break;
-                    case PREDRAFT:
-                        item.tooltipText = 'Quotation pre-drafted, parts details saved.'
-                        break;
-                    default:
-                        break;
-                }
-                temp.push(item)
-                return null
-            })
-            setRowData(temp)
-            setloader(false)
-        }))
-    }
-
-    const resetState = () => {
-
-        gridOptions?.columnApi?.resetColumnState(null);
-        gridOptions?.api?.setFilterModel(null);
-        gridApi.deselectAll()
-        dispatch(agGridStatus("", ""))
-        dispatch(isResetClick(true, "status"))
-        setNoData(false)
-    }
+ 
+    const handleFilterChange = () => {
+        if (agGridRef.current) {
+          setTimeout(() => {
+              console.log('agGridRef: ', agGridRef);
+            if (!agGridRef.current.rowRenderer.allRowCons.length) {
+              setNoData(true)
+              dispatch(getGridHeight({ value: 3, component: 'RFQ' }))
+            } else {
+              setNoData(false)
+            }
+          }, 100);
+    
+        }
+      };
+      const floatingFilterRFQ = {
+        maxValue: 3,
+        suppressFilterButton: true,
+        component: "RFQ",
+        onFilterChange: handleFilterChange,
+      }
     //**  HANDLE TOGGLE EXTRA DATA */
     const toggleExtraData = (showTour) => {
         setRender(true)
@@ -235,6 +385,7 @@ function RfqListing(props) {
 
 
     }
+  
 
     /**
     * @method editItemDetails
@@ -416,11 +567,11 @@ function RfqListing(props) {
         const cellValue = props?.valueFormatted ? props?.valueFormatted : props?.value;
         return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY  hh:mm') : '-';
     }
-    const onFloatingFilterChanged = (value) => {
-        setTimeout(() => {
-            rowData.length !== 0 && setNoData(searchNocontentFilter(value, noData))
-        }, 500);
-    }
+    // const onFloatingFilterChanged = (value) => {
+    //     setTimeout(() => {
+    //         rowData.length !== 0 && setNoData(searchNocontentFilter(value, noData))
+    //     }, 500);
+    // }
 
     const attachmentFormatter = (props) => {
         const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
@@ -509,6 +660,7 @@ function RfqListing(props) {
                             <Row className={`filter-row-large pt-2 ${props?.isSimulation ? 'zindex-0 ' : ''}`}>
 
                                 <Col md="3" lg="3" className='mb-2'>
+                                
                                     <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
                                     <TourWrapper
                                         buttonSpecificProp={{ id: "Rfq_listing_Tour", onClick: toggleExtraData }}
@@ -523,6 +675,23 @@ function RfqListing(props) {
                                         <>
                                             <div className="d-flex justify-content-end bd-highlight w100">
                                                 <>
+                                                {(props?.isMasterSummaryDrawer === undefined || this.props?.isMasterSummaryDrawer === false) &&
+                                                    <div className="warning-message d-flex align-items-center">
+                                                        {warningMessage  && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
+                                                    </div>
+                                                }
+                                                {
+
+                                                    <Button
+                                                        id="rmDomesticListing_filter"
+                                                        className={"mr5 Tour_List_Filter"}
+                                                        onClick={() => onSearch()}
+                                                        title={"Filtered data"}
+                                                        icon={"filter"}
+                                                        disabled={disableFilter}
+                                                    />
+                                                }
+
                                                     {(addAccessibility || permissionData?.permissionDataVendor?.Add) && (<button
                                                         type="button"
                                                         className={"user-btn mr5 Tour_List_Add"}
@@ -549,6 +718,9 @@ function RfqListing(props) {
                                     <div className={`ag-grid-wrapper ${(props?.isDataInMaster && noData) ? 'master-approval-overlay' : ''} ${(rowData && rowData?.length <= 0) || noData ? 'overlay-contain' : ''}`}>
                                         <div className={`ag-theme-material ${(loader) && "max-loader-height"}`}>
                                             {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
+                                          
+      {render ? <LoaderCustom customClass="loader-center" /> :
+
                                             <AgGridReact
                                                 style={{ height: '100%', width: '100%' }}
                                                 defaultColDef={defaultColDef}
@@ -556,9 +728,8 @@ function RfqListing(props) {
                                                 ref={agGridRef}
                                                 domLayout='autoHeight'
                                                 rowData={showExtraData ? [...setLoremIpsum(rowData[0]), ...rowData] : rowData}
-
-                                                pagination={true}
-                                                paginationPageSize={10}
+                                                // pagination={true}
+                                                paginationPageSize={globalTakes}
                                                 onGridReady={onGridReady}
                                                 gridOptions={gridOptions}
                                                 noRowsOverlayComponent={'customNoRowsOverlay'}
@@ -594,11 +765,18 @@ function RfqListing(props) {
                                                 <AgGridColumn field="LastSubmissionDate" width={"160px"} headerName='Quote Submission Date' cellRenderer='dateFormatter' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                                                 {/* <AgGridColumn field="QuotationNumber" headerName='Attachments' cellRenderer='attachmentFormatter'></AgGridColumn> */}
                                                 <AgGridColumn field="Remark" tooltipField="Remark" headerName='Notes' cellRenderer={"hyphenFormatter"}></AgGridColumn>
-                                                <AgGridColumn field="Status" tooltipField="tooltipText" pinned="right" headerName="Status" headerClass="justify-content-center" cellClass="text-center" cellRenderer="statusFormatter" floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterRFQ}></AgGridColumn>
+                                                <AgGridColumn field="Status" tooltipField="tooltipText"pinned="right"  headerName="Status" headerClass="justify-content-center" cellClass="text-center" cellRenderer="statusFormatter" floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterRFQ}></AgGridColumn>
                                                 {<AgGridColumn field="QuotationId" width={180} cellClass="ag-grid-action-container rfq-listing-action" pinned="right" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
 
-                                            </AgGridReact>
-                                            <PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={10} />
+                                            </AgGridReact>}
+                                            <div className='button-wrapper'>
+                                        {<PaginationWrappers gridApi={gridApi} totalRecordCount={totalRecordCount} getDataList={getDataList} floatingFilterData={floatingFilterData} module="RFQ" />}
+                                        {/* {(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) && */}
+                                            <PaginationControls totalRecordCount={totalRecordCount} getDataList={getDataList} floatingFilterData={floatingFilterData} module="RFQ" />
+
+                                        {/* } */}
+
+                                    </div>
                                         </div>
                                     </div>
                                 </Col>
@@ -660,5 +838,5 @@ function RfqListing(props) {
     );
 }
 
-export default RfqListing;
+export default React.memo(RfqListing);
 
