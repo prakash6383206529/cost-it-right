@@ -56,6 +56,9 @@ export function PaginationWrappers(props) {
             case 'IndexData':
                 getDataList(newSkip, numericPageSize, true)
                 break;
+                case 'RFQ' :
+                    getDataList(newSkip, numericPageSize, true)
+                    break;
 
             default:
                 break;

@@ -957,7 +957,6 @@ function RfqListing(props) {
     * @description Renders buttons
     */
     const buttonFormatter = (props) => {
-        console.log('props: ', props);
 
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
@@ -966,9 +965,7 @@ function RfqListing(props) {
         let showReminderIcon = false
         let showRemarkHistory = false
 
-        console.log('rowData: ', rowData,rowData?.CostingId);
-        console.log('rowData?.CostingNumber === null || rowData?.RawMaterialId === null || rowData?.BoughtOutPartId : ', rowData?.CostingNumber === null ,rowData?.RawMaterialId === null || rowData?.BoughtOutPartId );
-        if (rowData?.CostingNumber === null && rowData?.RawMaterialId === null && rowData?.BoughtOutPartId ) {
+        if (rowData?.CostingNumber === null || rowData?.RawMaterialId === null || rowData?.BoughtOutPartId === null ) {
             showReminderIcon = true
 
         } else {
@@ -976,13 +973,12 @@ function RfqListing(props) {
             showRemarkHistory = true
             if (rowData.ShowApprovalButton) {
                 showActionIcons = true
-                
+
             } else {
-                
+
                 showActionIcons = false
             }
         }
-        console.log('showRemarkHistory: ', showRemarkHistory);
 
         let reminderCount = rowData?.RemainderCount
 
@@ -1403,7 +1399,7 @@ function RfqListing(props) {
 
         if (type !== "Cancel") {
             props.closeDrawer(false); // Pass true to indicate that data should be refreshed
-        } 
+        }
         // else {
         //     props.closeDrawer(true); // Pass false if no refresh is needed
         // }
