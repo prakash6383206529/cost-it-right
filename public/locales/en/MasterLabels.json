@@ -5,6 +5,6 @@
     "BOPZeroBasedVendorLabel": "BOP Vendor (Code)",
     "BOPVendorBasedVendorLabel": "Vendor (Code)",
     "commonFields": {
-        "technology": "Category"
+        "technology": "Technology"
     }
 }

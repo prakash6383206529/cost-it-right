@@ -3216,7 +3216,7 @@ export const countDownBlickingTime = 2
 export const clientName = 'Havells'
 
 //VERSION 
-export const VERSION = "V3.1.1";
+export const VERSION = "V3.1.2";
 
 
 
