@@ -5829,6 +5829,7 @@ export const COMMODITYSTANDARD_DOWNLOAD_EXCEl = [
 export const RMMATERIALISTING_DOWNLOAD_EXCEl = [
     { label: "Index", value: "IndexExchangeName", },
     { label: "Commodity Name", value: "CommodityName", },
+    { label: "Commodity Name (In CIR)", value: "CommodityStandardName", },
     { label: "Index UOM", value: "IndexUOM", },
     { label: "UOM", value: "UOM", },
     { label: "From Currency", value: "FromCurrency", },

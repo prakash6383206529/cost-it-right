@@ -125,13 +125,13 @@ function AddRMMaster(props) {
     }, [sourceVendorValues, rawMaterailDetails?.SourceVendor, rawMaterailDetails?.isShowIndexCheckBox, state.costingTypeId])
 
     useEffect(() => {
-        if (!isViewFlag && state.callAvgApi === true && getValues('Index')?.value !== null && getValues('ExchangeSource') && getValues('fromDate') && !state?.isSourceVendorApiCalled) {
+        if (!isViewFlag && state.callAvgApi === true && getValues('Index')?.value !== null && getValues('fromDate') && !state?.isSourceVendorApiCalled) {
             dispatch(getCommodityIndexRateAverage(
                 getValues('Material')?.value,
                 getValues('Index').value,
                 '',
                 '',
-                getValues('ExchangeSource')?.label,
+                getValues('ExchangeSource')?.label ?? '',
                 DayTime(getValues('fromDate')).format('YYYY-MM-DD'),
                 DayTime(getValues('toDate')).format('YYYY-MM-DD'),
                 (res) => {
