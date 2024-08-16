@@ -593,6 +593,7 @@ const IndexDataListing = (props) => {
                             >
                                 <AgGridColumn cellClass='has-checkbox' field="IndexExchangeName" cellRenderer={checkBoxRenderer} headerName="Index"></AgGridColumn>
                                 <AgGridColumn field="CommodityName" headerName="Commodity Name" ></AgGridColumn>
+                                <AgGridColumn width={250} field="CommodityStandardName" headerName="Commodity Name (In CIR)" ></AgGridColumn>
                                 <AgGridColumn field="IndexUOM" headerName="Index UOM"></AgGridColumn>
                                 <AgGridColumn field="ConvertedUOM" headerName="UOM"></AgGridColumn>
                                 <AgGridColumn field="FromCurrency" headerName="From Currency"></AgGridColumn>

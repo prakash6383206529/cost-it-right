@@ -261,8 +261,8 @@ function AddRMFinancialDetails(props) {
             return obj
         } else {
             let obj = {
-                toolTipTextNetCostSelectedCurrency: `Net Cost (${state.currency?.label === undefined ? 'Currency' : state.currency?.label}) = Basic Rate (${state.currency?.label === undefined ? 'Currency' : state.currency?.label})${IsShowFreightAndShearingCostFields() ? ` + Freight Cost (${state.currency?.label === undefined ? 'Currency' : state.currency?.label}) + Shearing Cost (${state.currency?.label === undefined ? 'Currency' : state.currency?.label})` : ''}`,
-                toolTipTextNetCostBaseCurrency: `Net Cost (${reactLocalStorage.getObject("baseCurrency")}) = Basic Rate (${reactLocalStorage.getObject("baseCurrency")}) ${IsShowFreightAndShearingCostFields() ? `+ Freight Cost (${reactLocalStorage.getObject("baseCurrency")}) + Shearing Cost (${reactLocalStorage.getObject("baseCurrency")})` : ''}`
+                toolTipTextNetCostSelectedCurrency: `Net Cost (${state.currency?.label === undefined ? 'Currency' : state.currency?.label}) = Basic Rate (${state.currency?.label === undefined ? 'Currency' : state.currency?.label})${IsShowFreightAndShearingCostFields() ? ` + Freight Cost (${state.currency?.label === undefined ? 'Currency' : state.currency?.label}) + Shearing Cost (${state.currency?.label === undefined ? 'Currency' : state.currency?.label})` : ''} + Other Cost (${state.currency?.label === undefined ? 'Currency' : state.currency?.label})`,
+                toolTipTextNetCostBaseCurrency: `Net Cost (${reactLocalStorage.getObject("baseCurrency")}) = Basic Rate (${reactLocalStorage.getObject("baseCurrency")}) ${IsShowFreightAndShearingCostFields() ? `+ Freight Cost (${reactLocalStorage.getObject("baseCurrency")}) + Shearing Cost (${reactLocalStorage.getObject("baseCurrency")})` : ''} + Other Cost (${reactLocalStorage.getObject("baseCurrency")})`
             }
             return obj
         }
@@ -1028,8 +1028,8 @@ function AddRMFinancialDetails(props) {
                                         Controller={Controller}
                                         control={control}
                                         register={register}
-                                        mandatory={true}
-                                        rules={{ required: true }}
+                                        mandatory={false}
+                                        rules={{ required: false }}
                                         placeholder={'Select'}
                                         options={renderListing("ExchangeSource")}
                                         handleChange={handleExchangeRate}
