@@ -28,6 +28,7 @@ import { pushNfrOnSap } from '../../../masters/nfr/actions/nfr'
 import { MESSAGES } from '../../../../config/message'
 import CostingApproveReject from './CostingApproveReject'
 import { ErrorMessage } from '../../../simulation/SimulationUtils'
+import { useLabels } from '../../../../helper/core'
 
 
 function ApprovalSummary(props) {
@@ -77,7 +78,7 @@ function ApprovalSummary(props) {
   const [dataForFetchingAllApprover, setDataForFetchingAllApprover] = useState({})
   const [approvalType, setApprovalType] = useState('');
   const [isRFQCostingApproval, setIsRFQCostingApproval] = useState(false);
-
+  const { technologyLabel } = useLabels();
   const headerName = ['Revision No.', 'Name', 'Existing Cost/Pc', 'Revised Cost/Pc', 'Quantity', 'Impact/Pc', 'Volume/Year', 'Impact/Quarter', 'Impact/Year']
   const parentField = ['PartNumber', '-', 'PartName', '-', '-', '-', 'VariancePerPiece', 'VolumePerYear', 'ImpactPerQuarter', 'ImpactPerYear']
   const childField = ['PartNumber', 'ECNNumber', 'PartName', 'ExistingCost', 'RevisedCost', 'Quantity', 'VariancePerPiece', '-', '-', '-']
@@ -547,7 +548,7 @@ function ApprovalSummary(props) {
                 <Table responsive className="table cr-brdr-main sub-table" size="sm">  {/* sub table class is alternative className which will use in future for added styles */}
                   <thead>
                     <tr>
-                      <th>Technology:</th>
+                      <th>{technologyLabel}:</th>
                       <th>Part Type:</th>
                       <th>Assembly/Part No:</th>
                       <th>Assembly/Part Name:</th>

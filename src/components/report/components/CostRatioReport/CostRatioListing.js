@@ -13,6 +13,7 @@ import NoContentFound from '../../../common/NoContentFound';
 import { colorArray } from '../../../dashboard/ChartsDashboard';
 import { Costratiograph } from '../../../dashboard/CostRatioGraph';
 import { getCostRatioReport, getFormGridData } from '../../actions/ReportListing';
+import { useLabels } from '../../../../helper/core';
 
 const CostRatioListing = (props) => {
     const [tableData, setTableData] = useState([])
@@ -30,7 +31,7 @@ const CostRatioListing = (props) => {
     let gridData = costReportFormData && costReportFormData.gridData ? costReportFormData.gridData : [];
     let startDate = costReportFormData && costReportFormData.fromDate
     let endDate = costReportFormData && costReportFormData.toDate
-
+    const { technologyLabel } = useLabels();
 
 
     useEffect(() => {
@@ -212,7 +213,7 @@ const CostRatioListing = (props) => {
                                 <th>
                                     <div className='column-data'> Costing Head</div>
                                     <div className='column-data'>Costing Number</div>
-                                    <div className='column-data'>Technology</div>
+                                    <div className='column-data'>{technologyLabel}</div>
                                     <div className='column-data'>Effective Date</div>
                                     <div className='column-data'>Part No.</div>
                                     <div className='column-data'>Revision No.</div>

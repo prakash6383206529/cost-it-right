@@ -28,6 +28,7 @@ import { hideMultipleColumnFromExcel } from '../../common/CommonFunctions'
 import TourWrapper from '../../common/Tour/TourWrapper'
 import { Steps } from '../../common/Tour/TourMessages'
 import { useTranslation } from 'react-i18next'
+import { useLabels } from '../../../helper/core'
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -73,6 +74,7 @@ function ReportListing(props) {
     const statusColumnData = useSelector((state) => state.comman.statusColumnData);
     const [dataCount, setDataCount] = useState(0)
     const [applicabilityDropdown, setApplicabilityDropdown] = useState([])
+    const { technologyLabel } = useLabels();
     const { selectedRowForPagination } = useSelector((state => state.simulation))
     var filterParams = {
         comparator: function (filterLocalDateAtMidnight, cellValue) {
@@ -1055,7 +1057,7 @@ function ReportListing(props) {
 
                             <AgGridColumn field="CostingNumber" headerName="Costing Version" cellRenderer={'hyperLinkableFormatter'}></AgGridColumn>
                             <AgGridColumn field='CostingHead' headerName='Costing head' cellRenderer='hyphenFormatter'></AgGridColumn>
-                            <AgGridColumn field="TechnologyName" headerName="Technology" cellRenderer='hyphenFormatter'></AgGridColumn>
+                            <AgGridColumn field="TechnologyName" headerName={technologyLabel} cellRenderer='hyphenFormatter'></AgGridColumn>
                             <AgGridColumn field='Plant' headerName='Plant (Code)' cellRenderer='hyphenFormatter'></AgGridColumn>
                             <AgGridColumn field='Vendor' headerName='Vendor (Code)' cellRenderer='hyphenFormatter'></AgGridColumn>
                             <AgGridColumn field='InfoCategory' headerName='Category' cellRenderer='hyphenFormatter'></AgGridColumn>

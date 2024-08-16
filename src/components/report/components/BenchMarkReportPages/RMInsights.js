@@ -14,6 +14,7 @@ import { PaginationWrapper } from '../../../common/commonPagination';
 import { getCostingBenchMarkRmReport } from '../../actions/ReportListing';
 import DayTime from '../../../common/DayTimeWrapper';
 import { checkForDecimalAndNull } from '../../../../helper';
+import { useLabels } from '../../../../helper/core';
 
 function Insights(props) {
     const { register, handleSubmit, control, formState: { errors } } = useForm({
@@ -39,7 +40,7 @@ function Insights(props) {
     const [vendor, setVendor] = useState([])
 
     const [labelArray, setLabelArray] = useState([])
-
+    const { technologyLabel } = useLabels();
     const gridOptions = {};
 
     // const [technology, setTechnology] = useState({})
@@ -976,7 +977,7 @@ function Insights(props) {
                         {false && <Row className="pt-4">
                             <Col md="12" className="filter-block">
                                 <div className="d-inline-flex justify-content-start align-items-center mr-3">
-                                    <div className="flex-fills label">Technology:</div>
+                                    <div className="flex-fills label">{technologyLabel}:</div>
                                     <div className="hide-label flex-fills pl-0 w-auto">
                                         <SearchableSelectHookForm
                                             label={''}

@@ -20,6 +20,7 @@ import { getPlantSelectListByType, getVendorNameByVendorSelectList } from "../..
 import TourWrapper from "../../../common/Tour/TourWrapper"
 import { Steps } from "../TourMessages"
 import { useTranslation } from "react-i18next"
+import { useLabels } from "../../../../helper/core"
 
 const GotGivenReport = (props) => {
     const { t } = useTranslation("Reports")
@@ -36,7 +37,7 @@ const GotGivenReport = (props) => {
         mode: 'onChange',
         reValidateMode: 'onChange',
     })
-
+    const { technologyLabel } = useLabels();
     const productGroupSelectList = useSelector(state => state.part.productGroupSelectList)
     const technologySelectList = useSelector((state) => state.costing.costingSpecifiTechnology)
     const clientSelectList = useSelector((state) => state.client.clientSelectList)
@@ -231,7 +232,7 @@ const GotGivenReport = (props) => {
 
                             <Col md="3">
                                 <SearchableSelectHookForm
-                                    label={"Technology"}
+                                    label={technologyLabel}
                                     name={"Technology"}
                                     placeholder={"Select"}
                                     Controller={Controller}

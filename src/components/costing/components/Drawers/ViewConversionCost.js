@@ -12,6 +12,7 @@ import { getProcessDefaultCalculation, getProcessMachiningCalculation } from '..
 import { MACHINING } from '../../../../config/masterData'
 import { getCostingLabourDetails } from '../../actions/Costing'
 import ViewDetailedForms from './ViewDetailedForms'
+import { useLabels } from '../../../../helper/core'
 
 function ViewConversionCost(props) {
 
@@ -55,7 +56,7 @@ function ViewConversionCost(props) {
   const [openMachineForm, setOpenMachineForm] = useState(false)
 
   const dispatch = useDispatch()
-
+  const { technologyLabel } = useLabels();
   useEffect(() => {
     // if (IsShowToolCost) {
     //   setIsShowToolCost(IsShowToolCost)
@@ -293,7 +294,7 @@ function ViewConversionCost(props) {
                 {partNumberList.length === 0 && (IsAssemblyCosting && isPDFShow) && <th>{`Part No`}</th>}
                 <th style={{ width: "150px" }}>{`Process`}</th>
                 {processGroup && <th>{`Sub Process`}</th>}
-                <th>{`Technology`}</th>
+                <th>{technologyLabel}</th>
                 <th>{`Machine Name`}</th>
                 <th>{`Tonnage`}</th>
                 <th>{`UOM`}</th>

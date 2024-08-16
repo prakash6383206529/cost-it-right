@@ -15,6 +15,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { checkForDecimalAndNull, getConfigurationKey, searchNocontentFilter } from '../../../../helper';
 import { PaginationWrapper } from '../../../common/commonPagination';
 import _ from 'lodash';
+import { useLabels } from '../../../../helper/core';
 const gridOptions = {};
 
 
@@ -27,7 +28,7 @@ function AddSurfaceTreatment(props) {
   const [noData, setNoData] = useState(false);
 
   const dispatch = useDispatch()
-
+  const { technologyLabel } = useLabels();
   const costData = useContext(costingInfoContext)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const { CostingEffectiveDate } = useSelector(state => state.costing)
@@ -242,7 +243,7 @@ function AddSurfaceTreatment(props) {
                         <AgGridColumn field="OperationId" hide={true}></AgGridColumn>
                         <AgGridColumn field="OperationName" headerName="Operation Name"></AgGridColumn>
                         <AgGridColumn field="OperationCode" headerName="Operation Code"></AgGridColumn>
-                        <AgGridColumn field="Technology" headerName="Technology"></AgGridColumn>
+                        <AgGridColumn field="Technology" headerName={technologyLabel}></AgGridColumn>
                         <AgGridColumn field="UnitOfMeasurement" headerName="UOM"></AgGridColumn>
                         <AgGridColumn field="Rate" cellRenderer={'rateFormat'}></AgGridColumn>
                         {initialConfiguration && initialConfiguration.IsOperationLabourRateConfigure && <AgGridColumn field="LabourRate" headerName='Labour Rate' ></AgGridColumn>}

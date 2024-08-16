@@ -44,6 +44,7 @@ import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from './TourMessages';
 import Button from '../../layout/Button';
 import { setOpenAllTabs } from '../../masters/nfr/actions/nfr';
+import { useLabels } from '../../../helper/core';
 
 export const ViewCostingContext = React.createContext()
 export const EditCostingContext = React.createContext()
@@ -132,7 +133,7 @@ function CostingDetails(props) {
   const [clientDrawer, setClientDrawer] = useState(false)
   // client based costing
   const [partDropdown, setPartDropdown] = useState([])
-
+  const { technologyLabel } = useLabels();
   IsolateReRender(control);
   const [showPopup, setShowPopup] = useState(false)
   const [costingObj, setCostingObj] = useState({
@@ -2158,7 +2159,7 @@ function CostingDetails(props) {
                       </Col>
                       <Col className="col-md-15">
                         <SearchableSelectHookForm
-                          label={"Technology"}
+                          label={technologyLabel}
                           name={"Technology"}
                           placeholder={"Select"}
                           Controller={Controller}

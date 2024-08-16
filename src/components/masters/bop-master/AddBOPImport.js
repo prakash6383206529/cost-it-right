@@ -1657,7 +1657,7 @@ class AddBOPImport extends Component {
                               </Col >
                               {isTechnologyVisible && <Col md="3">
                                 <Field
-                                  label="Technology"
+                                  label={t('commonFields.technology', { ns: 'MasterLabels', defaultValue: 'Technology' })}
                                   type="text"
                                   name="Technology"
                                   component={searchableSelect}
@@ -2353,4 +2353,4 @@ export default connect(mapStateToProps, {
     focusOnError(errors)
   },
   enableReinitialize: true,
-})(withTranslation(['BOPMaster'])(AddBOPImport)));
+})(withTranslation(['BOPMaster', 'MasterLabels'])(AddBOPImport)));

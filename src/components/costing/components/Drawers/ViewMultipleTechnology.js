@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import EditPartCost from '../CostingHeadCosts/SubAssembly/EditPartCost'
 import { reactLocalStorage } from 'reactjs-localstorage'
 import { setCostingViewData } from '../../actions/Costing'
+import { useLabels } from '../../../../helper/core'
 
 function ViewMultipleTechnology(props) {
     const { multipleTechnologyData, isPDFShow } = props
@@ -19,7 +20,7 @@ function ViewMultipleTechnology(props) {
     const partNumber = useSelector(state => state.costing.partNo);
     const [costingTypeId, setCostingTypeId] = useState(props?.costingTypeId)
     const dispatch = useDispatch()
-
+    const { technologyLabel } = useLabels();
     useEffect(() => {
         setViewMultiCost(multipleTechnologyData)
     }, [])
@@ -69,7 +70,7 @@ function ViewMultipleTechnology(props) {
                                 <th>{`Part Number`}</th>
                                 <th>{`Name`}</th>
                                 <th>{`Part Type`}</th>
-                                <th>{`Technology`}</th>
+                                <th>{technologyLabel}</th>
                                 <th>{`Quantity`}</th>
                                 <th>{`Part Cost/Pc`}</th>
                                 <th>{`${showBopLabel()} Cost`}</th>
@@ -142,7 +143,7 @@ function ViewMultipleTechnology(props) {
                             <Row className="drawer-heading">
                                 <Col>
                                     <div className={'header-wrapper left'}>
-                                        <h3>{'View Multiple Technology cost:'}</h3>
+                                        <h3>{`View Multiple ${technologyLabel} cost:`}</h3>
                                     </div>
                                     <div
                                         onClick={(e) => toggleDrawer(e)}

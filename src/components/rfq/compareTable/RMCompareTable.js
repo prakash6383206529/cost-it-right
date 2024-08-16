@@ -8,6 +8,7 @@ import LoaderCustom from '../../common/LoaderCustom';
 import { checkForNull } from '../../../helper';
 import _, { isNumber } from 'lodash';
 import WarningMessage from '../../common/WarningMessage';
+import { useLabels } from '../../../helper/core';
 
 const RMCompareTable = (props) => {
     const dispatch = useDispatch()
@@ -18,6 +19,7 @@ const RMCompareTable = (props) => {
     const [selectedItems, setSelectedItems] = useState([])
     const [selectedIndices, setSelectedIndices] = useState([])
     const [isLoader, setIsLoader] = useState(false)
+    const { technologyLabel } = useLabels();
     const showCheckbox = viewRmDetails && viewRmDetails?.some(item => item.IsShowCheckBoxForApproval === true);
     useEffect(() => {
         setIsLoader(true)
@@ -48,7 +50,7 @@ const RMCompareTable = (props) => {
             let sectionTwo = [];
             let sectionThree = []
             let sectionFour = []
-            let sectionOneHeader = ['Technology', 'Plant (Code)', 'RM Code', 'RM Name-Grade', 'RM Specification', 'Category', 'Effective Date', 'Basic Rate']
+            let sectionOneHeader = [`${technologyLabel}`, 'Plant (Code)', 'RM Code', 'RM Name-Grade', 'RM Specification', 'Category', 'Effective Date', 'Basic Rate']
             let sectionTwoHeader = ['RM Other Cost',]
             let sectionThreeHeader = ['CutOff Price', 'Scrap Rate', 'RM Net Cost']
             let sectionFourhHeader = ['Remark']
@@ -90,7 +92,7 @@ const RMCompareTable = (props) => {
                     vendorName: item.VendorName,
                     onChange: () => checkBoxHandle(item, index),
                     checked: checkBoxCheck[index],
-                    isCheckBox:!props?.compare?  item.bestCost ? false : item.IsShowCheckBoxForApproval : false,
+                    isCheckBox: !props?.compare ? item.bestCost ? false : item.IsShowCheckBoxForApproval : false,
                     // isCheckBox:true,
                     bestCost: item.bestCost,
                     shouldCost: props?.uniqueShouldCostingId?.includes(item.RawMaterialId) ? "Should Cost" : "",
@@ -233,9 +235,7 @@ const RMCompareTable = (props) => {
     }
 
     useEffect(() => {
-        if(!props?.compare)
-
-      {  props?.checkCostingSelected(selectedItems, selectedIndices)}
+        if (!props?.compare) { props?.checkCostingSelected(selectedItems, selectedIndices) }
     }, [selectedItems, selectedIndices])
     // const checkBoxHanlde = (item , index) => {
     //     setCheckBoxCheck(prevState => ({ ...prevState, index: true }))
@@ -243,7 +243,7 @@ const RMCompareTable = (props) => {
     // }
     return (
         <div>
-            {showCheckbox &&!props?.compare&& < WarningMessage dClass={"float-right justify-content-end"} message={'Click the checkbox to approve, reject, or return the quotation'} />}
+            {showCheckbox && !props?.compare && < WarningMessage dClass={"float-right justify-content-end"} message={'Click the checkbox to approve, reject, or return the quotation'} />}
             <Table headerData={mainHeadingData} sectionData={sectionData} uniqueShouldCostingId={props?.uniqueShouldCostingId}>
                 {isLoader && <LoaderCustom customClass="" />}
             </Table>

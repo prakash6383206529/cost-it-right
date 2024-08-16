@@ -36,6 +36,7 @@ import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from '../../common/Tour/TourMessages';
 import { useTranslation } from 'react-i18next';
 import RfqMasterApprovalDrawer from '../material-master/RfqMasterApprovalDrawer';
+import { useLabels } from '../../../helper/core';
 
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -43,7 +44,7 @@ const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
 const BOPDomesticListing = (props) => {
-  
+
   const permissions = useContext(ApplyPermission);
   const dispatch = useDispatch();
   const searchRef = useRef(null);
@@ -55,7 +56,7 @@ const BOPDomesticListing = (props) => {
   const isRfq = props?.quotationId !== null || props?.quotationId !== '' || props?.quotationId !== undefined ? true : false
 
   const { t } = useTranslation("common")
-
+  const { technologyLabel } = useLabels();
   const [state, setState] = useState({
     isOpen: false,
     isEditFlag: false,
@@ -94,8 +95,8 @@ const BOPDomesticListing = (props) => {
     attachment: false,
     viewAttachment: [],
     render: false,
-    compareDrawer : false,
-    rowDataForCompare : [],
+    compareDrawer: false,
+    rowDataForCompare: [],
 
   });
   useEffect(() => {
@@ -450,9 +451,9 @@ const BOPDomesticListing = (props) => {
   * @method buttonFormatter
   * @description Renders buttons
   */
-  const { benchMark ,isMasterSummaryDrawer} = props
+  const { benchMark, isMasterSummaryDrawer } = props
   const buttonFormatter = (props) => {
-    
+
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
     let isEditbale = false
@@ -463,11 +464,11 @@ const BOPDomesticListing = (props) => {
       isEditbale = false
     }
 
-    
+
     if (isRfq && isMasterSummaryDrawer) {
       return (
         <button className="Balance mb-0 button-stick" type="button" onClick={() => handleCompareDrawer(rowData)}>
-          
+
         </button>
       );
     }
@@ -480,9 +481,9 @@ const BOPDomesticListing = (props) => {
     }
     return (
       <>
-<Button id={`bopDomesticListing_movement${props.rowIndex}`} className={"mr-1 Tour_List_Cost_Movement"} variant="cost-movement" onClick={() => showAnalytics(cellValue, rowData)} title={"Cost Movement"} />
+        <Button id={`bopDomesticListing_movement${props.rowIndex}`} className={"mr-1 Tour_List_Cost_Movement"} variant="cost-movement" onClick={() => showAnalytics(cellValue, rowData)} title={"Cost Movement"} />
 
-        {(!benchMark ) && (
+        {(!benchMark) && (
           <>
             {permissions?.View && <Button id={`bopDomesticListing_view${props.rowIndex}`} className={"mr-1 Tour_List_View"} variant="View" onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} title={"View"} />}
             {isEditbale && <Button id={`bopDomesticListing_edit${props.rowIndex}`} className={"mr-1 Tour_List_Edit"} variant="Edit" onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} title={"Edit"} />}
@@ -493,10 +494,10 @@ const BOPDomesticListing = (props) => {
       </>
     )
   };
- 
+
   const handleCompareDrawer = (data) => {
-    
-    setState((prevState) => ({ ...prevState, compareDrawer: true,rowDataForCompare : [data] }))
+
+    setState((prevState) => ({ ...prevState, compareDrawer: true, rowDataForCompare: [data] }))
   }
 
   /**
@@ -572,11 +573,11 @@ const BOPDomesticListing = (props) => {
 
   }
   const closeCompareDrawer = (event, type) => {
-    setState((prevState) => ({ ...prevState, compareDrawer: false}));
+    setState((prevState) => ({ ...prevState, compareDrawer: false }));
     if (type !== 'cancel') {
-        resetState()
+      resetState()
     }
-}
+  }
   const formToggle = () => {
     if (checkMasterCreateByCostingPermission()) {
       props.displayForm()
@@ -923,10 +924,10 @@ const BOPDomesticListing = (props) => {
 
                 <AgGridColumn field="NetLandedCost" headerName="Net Cost" cellRenderer={'commonCostFormatter'} ></AgGridColumn>
                 {initialConfiguration?.IsBoughtOutPartCostingConfigured && <AgGridColumn field="IsBreakupBoughtOutPart" headerName={`Detailed ${showBopLabel()}`}></AgGridColumn>}
-                {initialConfiguration?.IsBoughtOutPartCostingConfigured && <AgGridColumn field="TechnologyName" headerName="Technology" cellRenderer={'hyphenFormatter'} ></AgGridColumn>}
+                {initialConfiguration?.IsBoughtOutPartCostingConfigured && <AgGridColumn field="TechnologyName" headerName={technologyLabel} cellRenderer={'hyphenFormatter'} ></AgGridColumn>}
                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams} ></AgGridColumn>
-                {((!props?.isSimulation && !props?.isMasterSummaryDrawer) || (isRfq  && props?.isMasterSummaryDrawer)) && <AgGridColumn field="BoughtOutPartId" width={170} pinned="right" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
-                         {props.isMasterSummaryDrawer && <AgGridColumn field="Attachements" headerName='Attachments' cellRenderer={'attachmentFormatter'}></AgGridColumn>}
+                {((!props?.isSimulation && !props?.isMasterSummaryDrawer) || (isRfq && props?.isMasterSummaryDrawer)) && <AgGridColumn field="BoughtOutPartId" width={170} pinned="right" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                {props.isMasterSummaryDrawer && <AgGridColumn field="Attachements" headerName='Attachments' cellRenderer={'attachmentFormatter'}></AgGridColumn>}
                 {props.isMasterSummaryDrawer && <AgGridColumn field="Remark" tooltipField="Remark" ></AgGridColumn>}
               </AgGridReact>}
               <div className={`button-wrapper ${props?.isMasterSummaryDrawer ? 'mb-5' : ''}`}>
@@ -944,21 +945,21 @@ const BOPDomesticListing = (props) => {
       {state.showPopup && <PopupMsgWrapper isOpen={state.showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.BOP_DELETE_ALERT}`} />}
       {initialConfiguration?.IsBoughtOutPartCostingConfigured && !props.isSimulation && initialConfiguration.IsMasterApprovalAppliedConfigure && !props.isMasterSummaryDrawer && <WarningMessage dClass={'w-100 justify-content-end'} message={`${MESSAGES.BOP_BREAKUP_WARNING}`} />}
       {
-      state.compareDrawer && 
-      <RfqMasterApprovalDrawer
-        isOpen={state.compareDrawer}
-        anchor={'right'}
-        selectedRows={props.bopDataResponse}
-        type={'Bought Out Part'}
-        quotationId ={props.quotationId}
-        closeDrawer = {closeCompareDrawer}
+        state.compareDrawer &&
+        <RfqMasterApprovalDrawer
+          isOpen={state.compareDrawer}
+          anchor={'right'}
+          selectedRows={props.bopDataResponse}
+          type={'Bought Out Part'}
+          quotationId={props.quotationId}
+          closeDrawer={closeCompareDrawer}
         // selectedRow = {props.bopDataResponse}
         />
 
-    }
+      }
     </div >
 
-  
+
   );
 };
 

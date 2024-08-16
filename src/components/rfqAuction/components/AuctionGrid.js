@@ -12,6 +12,7 @@ import Button from "../../layout/Button";
 import { ShowBidWindow } from "../actions/RfqAuction";
 import DayTime from "../../common/DayTimeWrapper";
 import { hyphenFormatter } from "../../masters/masterUtil";
+import { useLabels } from "../../../helper/core";
 
 const gridOptions = {};
 const AuctionGrid = (props) => {
@@ -24,6 +25,7 @@ const AuctionGrid = (props) => {
         noData: false,
     });
     const dispatch = useDispatch()
+    const { technologyLabel } = useLabels();
     const onFloatingFilterChanged = (value) => {
 
     };
@@ -184,7 +186,7 @@ const AuctionGrid = (props) => {
                             <AgGridColumn field="AuctionEndDateTime" headerName="Auction End" cellRenderer={"dateAndTimeFormatter"} ></AgGridColumn>
                             <AgGridColumn field="AuctionDuration" headerName="Auction Duration" cellRenderer={"durationFormatter"} ></AgGridColumn>
                             <AgGridColumn field="AuctionStartDateTime" headerName="Date" cellRenderer={"dateFormatter"}></AgGridColumn>
-                            <AgGridColumn field="Technology" headerName="Technology" cellRenderer={"hyphenFormatter"} ></AgGridColumn>
+                            <AgGridColumn field="Technology" headerName={technologyLabel} cellRenderer={"hyphenFormatter"} ></AgGridColumn>
                             <AgGridColumn field="PartType" headerName="Part Type" cellRenderer={"hyphenFormatter"} ></AgGridColumn>
                             <AgGridColumn field="PartNumber" headerName="Part No." cellRenderer={"hyphenFormatter"} ></AgGridColumn>
                             <AgGridColumn field="RawMaterial" headerName="RM Name" cellRenderer={"hyphenFormatter"}></AgGridColumn>

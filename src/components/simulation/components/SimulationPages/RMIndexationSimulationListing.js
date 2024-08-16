@@ -36,6 +36,7 @@ import { RMDOMESTIC } from '../../../../config/constants';
 import { deleteRawMaterialAPI, getAllrmIndexationSimulationList } from '../../../masters/actions/Material';
 import AnalyticsDrawer from '../../../masters/material-master/AnalyticsDrawer';
 import CustomCellRenderer from '../../../rfq/CommonDropdown';
+import { useLabels } from '../../../../helper/core';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -82,7 +83,7 @@ function RMIndexationSimulationListing(props) {
     const [showExtraData, setShowExtraData] = useState(false)
     const [render, setRender] = useState(false)
     const { t } = useTranslation("common")
-
+    const { technologyLabel } = useLabels();
 
     var filterParams = {
         date: "", inRangeInclusive: true, filterOptions: ['equals', 'inRange'],
@@ -758,7 +759,7 @@ function RMIndexationSimulationListing(props) {
             if (uniqueArrayNew.length > 1) {
                 dispatch(setSelectedRowForPagination([]))
                 gridApi.deselectAll()
-                Toaster.warning("Technology & Raw material should be same")
+                Toaster.warning(`${technologyLabel} & Raw material should be same`)
             }
         }
     }
@@ -995,7 +996,7 @@ function RMIndexationSimulationListing(props) {
                                         enableBrowserTooltips={true}
                                     >
                                         <AgGridColumn cellClass="has-checkbox" field="CostingHead" headerName='Costing Head' cellRenderer={checkBoxRenderer}></AgGridColumn>
-                                        <AgGridColumn field={props.isCostingSimulation ? 'Technology' : 'TechnologyName'} headerName='Technology'></AgGridColumn>
+                                        <AgGridColumn field={props.isCostingSimulation ? 'Technology' : 'TechnologyName'} headerName={technologyLabel}></AgGridColumn>
                                         <AgGridColumn field="RawMaterialName" headerName='Raw Material'></AgGridColumn>
                                         <AgGridColumn field={props.isCostingSimulation ? 'RawMaterialGrade' : "RawMaterialGradeName"} headerName="Grade"></AgGridColumn>
                                         <AgGridColumn field={props.isCostingSimulation ? 'RawMaterialSpecs' : "RawMaterialSpecificationName"} headerName="Spec"></AgGridColumn>

@@ -28,6 +28,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from './TourMessages';
 import { useTranslation } from 'react-i18next';
+import { useLabels } from '../../../helper/core';
 const gridOptions = {};
 
 
@@ -68,6 +69,7 @@ function NfrPartsListing(props) {
     const [render, setRender] = useState(false)
     const [editNfr, setEditNfr] = useState(false)
     const [fetchData, setFetchData] = useState(false)
+    const { technologyLabel } = useLabels();
     useEffect(() => {
         setloader(true)
         applyPermission(topAndLeftMenuData)
@@ -480,7 +482,7 @@ function NfrPartsListing(props) {
                                                 enableBrowserTooltips={true}
                                             >
                                                 {/* <AgGridColumn cellClass="has-checkbox" field="QuotationNumber" headerName='RFQ No.' cellRenderer={'linkableFormatter'} ></AgGridColumn> */}
-                                                <AgGridColumn field="Technology" headerName="Technology" width={150} cellRenderer={hyphenFormatter}></AgGridColumn>
+                                                <AgGridColumn field="Technology" headerName={technologyLabel} width={150} cellRenderer={hyphenFormatter}></AgGridColumn>
                                                 <AgGridColumn field="PartType" headerName='Part Type' width={150} cellRenderer={partTypeFormater}></AgGridColumn>
                                                 <AgGridColumn field="PartNumber" headerName='Part No.' cellRenderer={hyphenFormatter}></AgGridColumn>
                                                 <AgGridColumn field="PartName" headerName='Part Name' cellRenderer={hyphenFormatter}></AgGridColumn>

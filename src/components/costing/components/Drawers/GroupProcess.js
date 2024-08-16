@@ -8,6 +8,7 @@ import { CBCTypeId, EMPTY_DATA, EMPTY_GUID, NCCTypeId, VBC, VBCTypeId, ZBC, ZBCT
 import LoaderCustom from "../../../common/LoaderCustom";
 import NoContentFound from "../../../common/NoContentFound";
 import { DIE_CASTING, Ferrous_Casting, FORGING, MACHINING } from "../../../../config/masterData";
+import { useLabels } from "../../../../helper/core";
 
 
 function GroupProcess(props) {
@@ -18,7 +19,7 @@ function GroupProcess(props) {
     const [tableData, setTableDataList] = useState([])
     const costData = useContext(costingInfoContext)
     const dispatch = useDispatch()
-
+    const { technologyLabel } = useLabels();
 
 
     useEffect(() => {
@@ -102,7 +103,7 @@ function GroupProcess(props) {
                     <thead>
                         <tr>
                             <th>Process Group</th>
-                            <th>Technology</th>
+                            <th>{technologyLabel}</th>
                             <th>Machine Name</th>
                             <th>MachineTonnage</th>
                         </tr>

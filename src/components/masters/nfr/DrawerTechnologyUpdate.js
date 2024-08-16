@@ -12,6 +12,7 @@ import { loggedInUserId } from '../../../helper';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
 import DayTime from '../../common/DayTimeWrapper';
+import { useLabels } from '../../../helper/core';
 
 function DrawerTechnologyUpdate(props) {
     const { rowDataFortechnologyUpdate, closeDrawer } = props
@@ -25,7 +26,7 @@ function DrawerTechnologyUpdate(props) {
     const [isTechnologyUpdateRequired, setIsTechnologyUpdateRequired] = useState(false)
     const [disable, setDisable] = useState(false)
     const dispatch = useDispatch();
-
+    const { technologyLabel } = useLabels();
     useEffect(() => {
         dispatch(getPartData(rowDataFortechnologyUpdate?.PartId, (res) => { }))
         dispatch(getCostingSpecificTechnology(loggedInUserId(), () => { }))
@@ -94,7 +95,7 @@ function DrawerTechnologyUpdate(props) {
                         <Row className="drawer-heading sticky-top-0">
                             <Col >
                                 <div className={'header-wrapper left'}>
-                                    <h3>{`Technology Update`}</h3>
+                                    <h3>{`${technologyLabel} Update`}</h3>
                                 </div>
                                 <div
                                     onClick={(e) => closeDrawer('close')}
@@ -124,7 +125,7 @@ function DrawerTechnologyUpdate(props) {
                                 <Row className='mt-2'>
                                     <Col md="12">
                                         <SearchableSelectHookForm
-                                            label={"Technology"}
+                                            label={technologyLabel}
                                             name={"Technology"}
                                             placeholder={"Select"}
                                             Controller={Controller}

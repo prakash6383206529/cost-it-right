@@ -32,6 +32,7 @@ import { Steps } from "../../common/Tour/TourMessages";
 import { useTranslation } from "react-i18next";
 import { showTitleForActiveToggle } from '../../../../src/helper/util';
 import Switch from "react-switch";
+import { useLabels } from "../../../helper/core";
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
@@ -71,6 +72,7 @@ const IndivisualPartListing = (props) => {
     showPopupToggle: false,
     showPopupToggle2: false,
   });
+  const { technologyLabel } = useLabels();
   const [searchText, setSearchText] = useState('');
   const { newPartsListing, allNewPartsListing } = useSelector((state) => state.part);
   const { initialConfiguration } = useSelector((state) => state.auth);
@@ -826,7 +828,7 @@ const IndivisualPartListing = (props) => {
                 frameworkComponents={frameworkComponents}
                 suppressRowClickSelection={true}
               >
-                <AgGridColumn field="Technology" headerName="Technology" cellRenderer={checkBoxRenderer} ></AgGridColumn>
+                <AgGridColumn field="Technology" headerName={technologyLabel} cellRenderer={checkBoxRenderer} ></AgGridColumn>
                 <AgGridColumn field="PartNumber" headerName="Part No." ></AgGridColumn>
                 <AgGridColumn field="PartName" headerName="Name"></AgGridColumn>
                 {initialConfiguration?.IsSAPCodeRequired && (

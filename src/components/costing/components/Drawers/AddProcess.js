@@ -20,6 +20,7 @@ import { getConfigurationKey, searchNocontentFilter } from '../../../../helper';
 import { PaginationWrapper } from '../../../common/commonPagination';
 import { hyphenFormatter } from '../../../masters/masterUtil';
 import { ViewCostingContext } from '../CostingDetails';
+import { useLabels } from '../../../../helper/core';
 
 const gridOptions = {};
 
@@ -41,7 +42,7 @@ function AddProcess(props) {
   const { processDrawerList, CostingEffectiveDate, selectedProcessAndGroup, selectedProcessId, selectedProcessGroupId } = useSelector(state => state.costing)
   const { initialConfiguration } = useSelector(state => state.auth)
   const CostingViewMode = useContext(ViewCostingContext);
-
+  const { technologyLabel } = useLabels();
   /**
   * @method toggleDrawer
   * @description TOGGLE DRAWER
@@ -384,7 +385,7 @@ function AddProcess(props) {
                                 >
                                   <AgGridColumn field="MachineRateId" hide={true}></AgGridColumn>
                                   <AgGridColumn cellClass="has-checkbox" field="ProcessName" headerName="Process Name" cellRenderer={checkBoxRenderer}  ></AgGridColumn>
-                                  <AgGridColumn field='Technologies' headerName='Technology'></AgGridColumn>
+                                  <AgGridColumn field='Technologies' headerName={technologyLabel}></AgGridColumn>
                                   <AgGridColumn field="MachineNumber" headerName="Machine No."></AgGridColumn>
                                   <AgGridColumn field="MachineName" headerName="Machine Name" cellRenderer={"hyphenFormatter"}></AgGridColumn>
                                   <AgGridColumn field="MachineTypeName" headerName="Machine Type"></AgGridColumn>

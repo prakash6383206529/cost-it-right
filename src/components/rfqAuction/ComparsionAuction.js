@@ -31,6 +31,7 @@ import { addTime, calculateEndDateTime, calculateTime, checkForDecimalAndNull, c
 import Toaster from "../common/Toaster";
 import { AuctionLiveId } from "../../config/constants";
 import TooltipCustom from "../common/Tooltip";
+import { useLabels } from "../../helper/core";
 
 
 function ComparsionAuction(props) {
@@ -51,7 +52,7 @@ function ComparsionAuction(props) {
     reValidateMode: "onChange",
   });
 
-
+  const { technologyLabel } = useLabels();
   const [isViewFlag, setIsViewFlag] = useState(false);
   const [loader, setLoader] = useState(false);
   const [openDropdowns, setOpenDropdowns] = useState({});
@@ -241,7 +242,7 @@ function ComparsionAuction(props) {
                 <th>RFQ Number</th>
                 <th>Part Type</th>
                 {(state.PartType === COMPONENT || state.PartType === ASSEMBLY) && <th>Part Number</th>}
-                {state.PartType !== BOP && <th>Technology</th>}
+                {state.PartType !== BOP && <th>{technologyLabel}</th>}
                 {state.PartType === RM && <>
                   <th>RM Name Grade Specification</th>
                   <th>RM Code</th>

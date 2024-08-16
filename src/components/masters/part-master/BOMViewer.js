@@ -12,6 +12,7 @@ import { getRandomSixDigit } from '../../../helper/util';
 import VisualAdDrawer from './VisualAdDrawer';
 import _, { debounce } from 'lodash'
 import LoaderCustom from '../../common/LoaderCustom';
+import { withTranslation } from 'react-i18next';
 
 class BOMViewer extends Component {
   constructor(props) {
@@ -513,7 +514,7 @@ class BOMViewer extends Component {
                                 Part Type:<strong title={el?.PartType}>{el?.PartType}</strong>
                               </p>
                               <p>
-                                Technology:<strong title={el?.PartType === BOUGHTOUTPARTSPACING ? '-' : el?.Technology}>{el?.PartType === BOUGHTOUTPARTSPACING ? '-' : el?.Technology || '-'}</strong>
+                                {this.props.t('commonFields.technology', { defaultValue: 'Technology' })}:<strong title={el?.PartType === BOUGHTOUTPARTSPACING ? '-' : el?.Technology}>{el?.PartType === BOUGHTOUTPARTSPACING ? '-' : el?.Technology || '-'}</strong>
                               </p>
                               <p>
                                 Revision No:<strong title={el?.PartType === BOUGHTOUTPARTSPACING ? '-' : el?.RevisionNo}>{el?.PartType === BOUGHTOUTPARTSPACING ? '-' : el?.RevisionNo || '-'}</strong>
@@ -604,4 +605,4 @@ export default connect(mapStateToProps, {
   form: 'BOMViewer',
   enableReinitialize: true,
   touchOnChange: true
-})(BOMViewer));
+})(withTranslation(['MasterLabels'])(BOMViewer)));

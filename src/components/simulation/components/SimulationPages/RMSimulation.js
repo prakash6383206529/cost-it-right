@@ -28,6 +28,7 @@ import { createMultipleExchangeRate } from '../../../masters/actions/ExchangeRat
 import LoaderCustom from '../../../common/LoaderCustom';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { simulationContext } from '..';
+import { useLabels } from '../../../../helper/core';
 
 const gridOptions = {
 
@@ -67,7 +68,7 @@ function RMSimulation(props) {
         reValidateMode: 'onChange',
     })
 
-
+    const { technologyLabel } = useLabels();
     const dispatch = useDispatch()
 
     const currencySelectList = useSelector(state => state.comman.currencySelectList)
@@ -856,7 +857,7 @@ function RMSimulation(props) {
                                                     </>}
                                                 {!isImpactedMaster && list && <div className={`d-flex align-items-center simulation-label-container`}>
                                                     <div className='d-flex'>
-                                                        <label>Technology: </label>
+                                                        <label>{technologyLabel}: </label>
                                                         <p className='technology ml-1' title={list[0]?.TechnologyName}>{list[0]?.TechnologyName}</p>
                                                     </div>
                                                     {list[0]?.CostingTypeId !== CBCTypeId && <div className='d-flex pl-3'>
@@ -910,7 +911,7 @@ function RMSimulation(props) {
                                                 <AgGridColumn width={columnWidths.RawMaterialSpecificationName} field="RawMaterialSpecificationName" tooltipField='RawMaterialSpecificationName' editable='false' headerName="Spec"></AgGridColumn>
                                                 <AgGridColumn width={columnWidths.RawMaterialCode} field="RawMaterialCode" tooltipField='RawMaterialCode' editable='false' headerName='Code' cellRenderer='hyphenFormatter'></AgGridColumn>
                                                 {!isImpactedMaster && <AgGridColumn width={columnWidths.Category} field="Category" tooltipField='Category' editable='false' headerName="Category"></AgGridColumn>}
-                                                {!isImpactedMaster && <AgGridColumn width={columnWidths.TechnologyName} field="TechnologyName" tooltipField='TechnologyName' editable='false' headerName="Technology" ></AgGridColumn>}
+                                                {!isImpactedMaster && <AgGridColumn width={columnWidths.TechnologyName} field="TechnologyName" tooltipField='TechnologyName' editable='false' headerName={technologyLabel} ></AgGridColumn>}
                                                 {!isImpactedMaster && list[0]?.CostingTypeId !== CBCTypeId && <AgGridColumn width={columnWidths.VendorCod} field="Vendor (Code)" tooltipField='Vendor (Code)' editable='false' headerName="Vendor (Code)" cellRenderer='vendorFormatter'></AgGridColumn>}
                                                 {!isImpactedMaster && list[0]?.CostingTypeId === CBCTypeId && <AgGridColumn width={columnWidths.CustomerName} field="CustomerName" tooltipField='CustomerName' editable='false' headerName="Customer (Code)" cellRenderer='customerFormatter'></AgGridColumn>}
                                                 {!isImpactedMaster && <AgGridColumn width={columnWidths.PlantCode} field="Plant (Code)" editable='false' headerName="Plant (Code)" tooltipField='Plant (Code)' cellRenderer='plantFormatter' ></AgGridColumn>}

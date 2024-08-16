@@ -28,6 +28,7 @@ import { useTranslation } from 'react-i18next';
 import { filterParams } from '../common/DateFilter';
 import CustomCellRenderer from './CommonDropdown';
 import { useHistory, useLocation } from "react-router-dom/cjs/react-router-dom";
+import { useLabels } from '../../helper/core';
 export const ApplyPermission = React.createContext();
 const gridOptions = {};
 
@@ -60,7 +61,7 @@ function RfqListing(props) {
     const [permissionDataPart, setPermissionDataPart] = useState()
     const [permissionDataVendor, setPermissionDataVendor] = useState()
     const [permissionData, setPermissionData] = useState()
-
+    const { technologyLabel } = useLabels();
 
     const { topAndLeftMenuData } = useSelector(state => state.auth);
     const agGridRef = useRef(null);
@@ -582,7 +583,7 @@ function RfqListing(props) {
                                                 <AgGridColumn field="NoOfQuotationReceived" headerName='Quotation Received (No.)' maxWidth={150} cellRenderer={'quotationReceiveFormatter'}></AgGridColumn>
                                                 <AgGridColumn field="VendorName" tooltipField="VendorName" headerName='Vendor (Code)' cellRendererFramework={CustomCellRenderer}></AgGridColumn>
                                                 <AgGridColumn field="PlantName" tooltipField="PlantName" headerName='Plant (Code)'></AgGridColumn>
-                                                <AgGridColumn field="TechnologyName" width={"160px"} headerName='Technology'></AgGridColumn>
+                                                <AgGridColumn field="TechnologyName" width={"160px"} headerName={technologyLabel}></AgGridColumn>
                                                 <AgGridColumn field="RaisedBy" width={"160px"} headerName='Initiated By'></AgGridColumn>
                                                 <AgGridColumn field="RaisedOn" width={"145px"} headerName='Raised On' cellRenderer='dateFormatter' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                                                 <AgGridColumn field="PartDataSentDate" width={"145px"} headerName='RFI Date' cellRenderer='dateFormatter' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
