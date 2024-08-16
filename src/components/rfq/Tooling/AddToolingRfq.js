@@ -19,6 +19,7 @@ function AddToolingRfq() {
 
     const [rowData, setRowData] = useState([]);
     const dispatch = useDispatch()
+    const { technologyLabel } = useLabels();
     const toolingDetailsInputFields = [
         { name: 'toolingType', label: 'Tooling Type', editable: false, tooltip: 'Tooling Type', mandatory: false },
         { name: 'toolTechnology', label: `Tool ${technologyLabel}`, editable: false, tooltip: 'Tool Technology', mandatory: false },
