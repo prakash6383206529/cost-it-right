@@ -95,7 +95,7 @@ function RMImportListing(props) {
   const { t } = useTranslation("common")
   const netCostHeader = `Net Cost (${reactLocalStorage.getObject("baseCurrency")})`
   const { tokenForSimulation, selectedMasterForSimulation } = useSelector(state => state.simulation)
-  const { technologyLabel } = useLabels();
+  const { technologyLabel, RMCategoryLabel } = useLabels();
   const headerNames = {
     BasicRate: `Basic Rate (${reactLocalStorage.getObject("baseCurrency")})`,
     ScrapRate: `Scrap Rate (${reactLocalStorage.getObject("baseCurrency")})`,
@@ -1024,7 +1024,7 @@ function RMImportListing(props) {
                     <AgGridColumn field="RawMaterialGradeName" headerName='Grade'></AgGridColumn>
                     <AgGridColumn field="RawMaterialSpecificationName" headerName='Spec'></AgGridColumn>
                     <AgGridColumn field="RawMaterialCode" headerName='Code' cellRenderer='hyphenFormatter'></AgGridColumn>
-                    <AgGridColumn field="Category"></AgGridColumn>
+                    <AgGridColumn field="Category" headerName={RMCategoryLabel}></AgGridColumn>
                     <AgGridColumn field="MaterialType"></AgGridColumn>
                     <AgGridColumn field="DestinationPlantName" headerName="Plant (Code)"></AgGridColumn>
                     <AgGridColumn field="VendorName" headerName="Vendor (Code)"></AgGridColumn>

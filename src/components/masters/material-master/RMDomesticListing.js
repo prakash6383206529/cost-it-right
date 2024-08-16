@@ -84,7 +84,7 @@ function RMDomesticListing(props) {
     const [showExtraData, setShowExtraData] = useState(false)
     const [render, setRender] = useState(false)
     const { t } = useTranslation("common")
-    const { technologyLabel } = useLabels();
+    const { technologyLabel, RMCategoryLabel } = useLabels();
     const [compareDrawer, setCompareDrawer] = useState(false)
     const [rowDataForCompare, setRowDataForCompare] = useState([])
     const isRfq = props?.quotationId !== null || props?.quotationId !== '' || props?.quotationId !== undefined ? true : false
@@ -853,6 +853,10 @@ function RMDomesticListing(props) {
         )
 
     }
+    const headerCategory = (props) => {
+        console.log("COMING HERE");
+        return t('RMCategoryLabel', { defaultValue: 'Category' })
+    }
     const frameworkComponents = {
         totalValueRenderer: buttonFormatter,
         effectiveDateRenderer: effectiveDateFormatter,
@@ -1015,7 +1019,7 @@ function RMDomesticListing(props) {
                                         <AgGridColumn field="RawMaterialGradeName" headerName="Grade"></AgGridColumn>
                                         <AgGridColumn field="RawMaterialSpecificationName" headerName="Spec"></AgGridColumn>
                                         <AgGridColumn field="RawMaterialCode" headerName='Code' cellRenderer='hyphenFormatter'></AgGridColumn>
-                                        <AgGridColumn field="Category"></AgGridColumn>
+                                        <AgGridColumn field="Category" headerName={RMCategoryLabel}></AgGridColumn>
                                         <AgGridColumn field="MaterialType"></AgGridColumn>
                                         <AgGridColumn field="DestinationPlantName" headerName="Plant (Code)"></AgGridColumn>
                                         <AgGridColumn field="VendorName" headerName="Vendor (Code)"></AgGridColumn>
