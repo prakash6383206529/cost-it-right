@@ -757,7 +757,7 @@ function AddRMDetails(props) {
                             <TooltipCustom id="category" tooltipText="Category will come here like CutToFit, CutToLength." />
                             <SearchableSelectHookForm
                                 name="RawMaterialCategory"
-                                label="Category"
+                                label={t('RMCategoryLabel', { defaultValue: 'Category' })}
                                 placeholder={"Select"}
                                 Controller={Controller}
                                 control={control}

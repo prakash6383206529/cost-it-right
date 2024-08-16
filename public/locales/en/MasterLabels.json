@@ -4,6 +4,7 @@
     "RMVendorBasedVendorLabel": "Vendor (Code)",
     "BOPZeroBasedVendorLabel": "BOP Vendor (Code)",
     "BOPVendorBasedVendorLabel": "Vendor (Code)",
+    "RMCategoryLabel": "Category",
     "commonFields": {
         "technology": "Technology"
     }
