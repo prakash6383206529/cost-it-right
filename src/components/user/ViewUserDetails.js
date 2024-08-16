@@ -483,7 +483,7 @@ class ViewUserDetails extends Component {
                                       // onFilterModified={onFloatingFilterChanged}
                                       enableBrowserTooltips={true}
                                     >
-                                      <AgGridColumn field="Technology" headerName="Technology" />
+                                      <AgGridColumn field="Technology" headerName={this.props.t('commonFields.technology', { ns: 'MasterLabels', defaultValue: 'Technology' })} />
                                       <AgGridColumn field="ApprovalType" headerName="Approval Type" />
                                       <AgGridColumn field="Level" headerName="Level" />
                                     </AgGridReact>
@@ -724,4 +724,4 @@ export default connect(mapStateToProps,
     getUsersSimulationTechnologyLevelAPI,
     getUsersMasterLevelAPI,
     getUsersOnboardingLevelAPI
-  })(withTranslation(['UserRegistration'])(ViewUserDetails));
+  })(withTranslation(['UserRegistration', 'MasterLabels'])(ViewUserDetails));

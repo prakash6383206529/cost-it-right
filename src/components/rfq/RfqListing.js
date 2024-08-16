@@ -35,6 +35,7 @@ import {resetStatePagination, updateCurrentRowIndex, updateGlobalTake, updatePag
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { setSelectedRowForPagination } from '../simulation/actions/Simulation';
 import WarningMessage from '../common/WarningMessage';
+import { useLabels } from '../../helper/core';
 export const ApplyPermission = React.createContext();
 const gridOptions = {};
 
@@ -92,6 +93,7 @@ const [disableFilter , setDisableFilter] = useState(false)
         Status: ""
       });
       const [filterModel, setFilterModel] = useState({});
+    const { technologyLabel } = useLabels();
 
     const { topAndLeftMenuData } = useSelector(state => state.auth);
     const agGridRef = useRef(null);
@@ -747,9 +749,9 @@ getDataList(0, globalTakes, true)
                                                 <AgGridColumn field="PRNumber" headerName="PR No." width={150} cellRenderer={"hyphenFormatter"}></AgGridColumn>
 
                                                 <AgGridColumn field="NoOfQuotationReceived" headerName='Quotation Received (No.)' maxWidth={150} cellRenderer={'quotationReceiveFormatter'}></AgGridColumn>
-                                                <AgGridColumn field="VendorName" tooltipField="VendorName" headerName='Vendor (Code)' cellRenderer={"hyphenFormatter"}></AgGridColumn>
+                                                <AgGridColumn field="VendorName" tooltipField="VendorName" headerName='Vendor (Code)' cellRendererFramework={CustomCellRenderer}></AgGridColumn>
                                                 <AgGridColumn field="PlantName" tooltipField="PlantName" headerName='Plant (Code)'></AgGridColumn>
-                                                <AgGridColumn field="TechnologyName" width={"160px"} headerName='Technology'></AgGridColumn>
+                                                <AgGridColumn field="TechnologyName" width={"160px"} headerName={technologyLabel}></AgGridColumn>
                                                 <AgGridColumn field="RaisedBy" width={"160px"} headerName='Initiated By'></AgGridColumn>
                                                 <AgGridColumn field="RaisedOn" width={"145px"} headerName='Raised On' cellRenderer='dateFormatter' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                                                 <AgGridColumn field="PartDataSentDate" width={"145px"} headerName='RFI Date' cellRenderer='dateFormatter' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>

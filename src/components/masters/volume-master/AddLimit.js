@@ -12,6 +12,7 @@ import { createVolumeLimit, getVolumeLimit, updateVolumeLimit } from "../actions
 import PopupMsgWrapper from "../../common/PopupMsgWrapper";
 import { MESSAGES } from "../../../config/message";
 import { number, percentageLimitValidation, checkWhiteSpaces } from "../../../helper/validation";
+import { useLabels } from "../../../helper/core";
 
 const AddLimit = (props) => {
     const {
@@ -33,7 +34,7 @@ const AddLimit = (props) => {
         (state) => state.costing.costingSpecifiTechnology
     );
     //const technologySelectList  = useSelector((state) => state.comman)
-
+    const { technologyLabel } = useLabels();
     useEffect(() => {
         setValue("Technology", "");
         setValue("Part", "");
@@ -193,7 +194,7 @@ const AddLimit = (props) => {
                             <Row className="pl-3">
                                 <Col md="12">
                                     <SearchableSelectHookForm
-                                        label={"Technology"}
+                                        label={technologyLabel}
                                         name={"Technology"}
                                         placeholder={"Select"}
                                         Controller={Controller}

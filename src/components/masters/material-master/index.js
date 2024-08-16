@@ -51,7 +51,7 @@ function RowMaterialMaster(props) {
     const topAndLeftMenuData = useSelector((state) => state.auth.topAndLeftMenuData)
     const disabledClass = useSelector((state) => state.comman.disabledClass)
     const dispatch = useDispatch();
-    const { t } = useTranslation('label');
+    const { t } = useTranslation('MasterLabels');
 
     /**
         * @method componentDidMount
@@ -225,7 +225,7 @@ function RowMaterialMaster(props) {
 
                                 {<NavItem>
                                     <NavLink className={classnames({ active: activeTab === '1' })} onClick={() => { toggle('1'); }}>
-                                        {t('heading')}
+                                        {t('RMMaster', { defaultValue: 'Manage Raw Material' })}
                                     </NavLink>
                                 </NavItem>}
                                 {/* {<NavItem>

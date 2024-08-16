@@ -35,6 +35,7 @@ import { useTranslation } from 'react-i18next';
 import { agGridStatus, getGridHeight, isResetClick } from '../../actions/Common';
 import SingleDropdownFloationFilter from '../masters/material-master/SingleDropdownFloationFilter';
 import WarningMessage from '../common/WarningMessage';
+import { useLabels } from '../../helper/core';
 export const QuotationId = React.createContext();
 
 const gridOptions = {};
@@ -88,7 +89,7 @@ function RfqListing(props) {
     const [matchedStatus, setMatchedStatus] = useState([])
     const statusColumnData = useSelector((state) => state.comman.statusColumnData);
     let arr = []
-
+    const { technologyLabel } = useLabels();
     useEffect(() => {
         getDataList()
 
@@ -1115,7 +1116,7 @@ function RfqListing(props) {
                                         >
                                             <AgGridColumn cellClass={cellClass} field="PartNo" tooltipField="PartNo" headerName='Part No' cellRenderer={'partNumberFormatter'}></AgGridColumn>
                                             {initialConfiguration.IsNFRConfigured && <AgGridColumn cellClass={cellClass} field="NfrNo" headerName='NFR No.' cellRenderer={seperateHyphenFormatter}></AgGridColumn>}
-                                            <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>
+                                            <AgGridColumn field="TechnologyName" headerName={technologyLabel}></AgGridColumn>
                                             <AgGridColumn field="VendorName" tooltipField="VendorName" headerName='Vendor (Code)'></AgGridColumn>
                                             <AgGridColumn field="PlantName" tooltipField="PlantName" headerName='Plant (Code)'></AgGridColumn>
                                             {/* <AgGridColumn field="PartNumber" headerName="Attachment "></AgGridColumn> */}
@@ -1221,29 +1222,29 @@ function RfqListing(props) {
                 {
                     <div id='rfq-compare-drawer'>
                         {addComparisonToggle && (
-                        <QuotationId.Provider value={data?.QuotationId}>
+                            <QuotationId.Provider value={data?.QuotationId}>
 
-                            <CostingSummaryTable
-                                viewMode={true}
-                                isRfqCosting={true}
-                                // costingID={approvalDetails.CostingId}
-                                approvalMode={true}
-                                // isApproval={approvalData.LastCostingId !== EMPTY_GUID ? true : false}
-                                simulationMode={false}
-                                uniqueShouldCostingId={uniqueShouldCostingId}
-                                costingIdExist={true}
-                                bestCostObjectFunction={bestCostObjectFunction}
-                                crossButton={hideSummaryHandler}
-                                costingIdList={costingListToShow}
-                                isFromViewRFQ={true}
-                                checkCostingSelected={checkCostingSelected}
-                                disableApproveRejectButton={disableApproveRejectButton}
-                                compareButtonPressed={compareButtonPressed}
-                                showEditSOBButton={addComparisonToggle && disableApproveRejectButton && viewCostingData.length > 0}
-                                selectedTechnology={viewCostingData && viewCostingData.length > 0 && viewCostingData[0].technology}
-                                costingsDifferentStatus={costingsDifferentStatus}
-                            />
-                        </QuotationId.Provider>
+                                <CostingSummaryTable
+                                    viewMode={true}
+                                    isRfqCosting={true}
+                                    // costingID={approvalDetails.CostingId}
+                                    approvalMode={true}
+                                    // isApproval={approvalData.LastCostingId !== EMPTY_GUID ? true : false}
+                                    simulationMode={false}
+                                    uniqueShouldCostingId={uniqueShouldCostingId}
+                                    costingIdExist={true}
+                                    bestCostObjectFunction={bestCostObjectFunction}
+                                    crossButton={hideSummaryHandler}
+                                    costingIdList={costingListToShow}
+                                    isFromViewRFQ={true}
+                                    checkCostingSelected={checkCostingSelected}
+                                    disableApproveRejectButton={disableApproveRejectButton}
+                                    compareButtonPressed={compareButtonPressed}
+                                    showEditSOBButton={addComparisonToggle && disableApproveRejectButton && viewCostingData.length > 0}
+                                    selectedTechnology={viewCostingData && viewCostingData.length > 0 && viewCostingData[0].technology}
+                                    costingsDifferentStatus={costingsDifferentStatus}
+                                />
+                            </QuotationId.Provider>
                         )}
                     </div>
                 }

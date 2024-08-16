@@ -1923,7 +1923,7 @@ class AddRMImport extends Component {
                           </Col>
                           <Col md="3">
                             <Field
-                              label="Technology"
+                              label={t('commonFields.technology', { ns: 'MasterLabels', defaultValue: 'Technology' })}
                               type="text"
                               name="TechnologyId"
                               component={searchableSelect}
@@ -3181,5 +3181,5 @@ export default connect(mapStateToProps, {
   form: 'AddRMImport',
   enableReinitialize: true,
   touchOnChange: true
-})(withTranslation(['RawMaterialMaster'])(AddRMImport)),
+})(withTranslation(['RawMaterialMaster', 'MasterLabels'])(AddRMImport)),
 )

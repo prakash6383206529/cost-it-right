@@ -623,7 +623,7 @@ class AddIndivisualPart extends Component {
 
                           <Col md="3">
                             <Field
-                              label="Technology"
+                              label={t('commonFields.technology', { ns: 'MasterLabels', defaultValue: 'Technology' })}
                               type="text"
                               name="TechnologyId"
                               component={searchableSelect}
@@ -868,5 +868,5 @@ export default connect(mapStateToProps, {
   onSubmitFail: (errors) => {
     focusOnError(errors)
   },
-})(withTranslation(['PartMaster'])(AddIndivisualPart)),
+})(withTranslation(['PartMaster', 'MasterLabels'])(AddIndivisualPart)),
 )

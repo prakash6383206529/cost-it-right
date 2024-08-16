@@ -35,6 +35,7 @@ import { costingTypeIdToApprovalTypeIdFunction } from '../../../common/CommonFun
 import TourWrapper from '../../../common/Tour/TourWrapper'
 import { Steps } from '../TourMessages'
 import { useTranslation } from 'react-i18next';
+import { useLabels } from '../../../../helper/core'
 
 const gridOptions = {};
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
@@ -82,7 +83,7 @@ function ApprovalListing(props) {
   const isApproval = props.isApproval;
   let approvalGridData = isDashboard ? approvalList : approvalListDraft
   const statusColumnData = useSelector((state) => state.comman.statusColumnData);
-
+  const { technologyLabel } = useLabels();
   var floatingFilterStatus = {
     maxValue: 1,
     suppressFilterButton: true,
@@ -659,7 +660,7 @@ function ApprovalListing(props) {
       // return Toaster.warning("Purchase Group should be same for sending multiple costing for approval")   //RE
     } else if (!allEqual(technologyArray)) {
       gridApi.deselectAll()
-      Toaster.warning("Technology should be same for sending costings for approval")
+      Toaster.warning(`${technologyLabel} should be same for sending costings for approval`)
     } else if (!allEqual(vendorArray)) {
       gridApi.deselectAll()
       Toaster.warning("Vendor should be same for sending costings for approval")
@@ -1124,7 +1125,7 @@ function ApprovalListing(props) {
                           <AgGridColumn field="VendorName" cellRenderer='renderVendor' headerName="Vendor (Code)"></AgGridColumn>
                           <AgGridColumn field="PlantName" cellRenderer='renderPlant' headerName="Plant (Code)"></AgGridColumn>
                           {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="Customer" cellRenderer='renderCustomer' headerName="Customer (Code)"></AgGridColumn>}
-                          <AgGridColumn field='TechnologyName' headerName="Technology"></AgGridColumn>
+                          <AgGridColumn field='TechnologyName' headerName={technologyLabel}></AgGridColumn>
                           {initialConfiguration?.IsBasicRateAndCostingConditionVisible && <AgGridColumn field="BasicRate" cellRenderer='basicRateFormatter' headerName="Basic Price"></AgGridColumn>}
                           <AgGridColumn field="OldPOPriceNew" cellRenderer='oldpriceFormatter' headerName="Existing Net Cost"></AgGridColumn>
                           <AgGridColumn field="NetPOPriceNew" cellRenderer='priceFormatter' headerName="Revised Net Cost"></AgGridColumn>

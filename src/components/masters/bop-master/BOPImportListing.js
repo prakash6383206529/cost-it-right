@@ -34,6 +34,7 @@ import { resetStatePagination, updateCurrentRowIndex, updateGlobalTake, updatePa
 import TourWrapper from "../../common/Tour/TourWrapper";
 import { Steps } from "../../common/Tour/TourMessages";
 import { useTranslation } from "react-i18next";
+import { useLabels } from "../../../helper/core";
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
@@ -116,7 +117,7 @@ const BOPImportListing = (props) => {
 
   const { initialConfiguration } = useSelector((state) => state.auth);
   const tourStartData = useSelector(state => state.comman.tourStartData);
-
+  const { technologyLabel } = useLabels();
   const { selectedRowForPagination, tokenForSimulation } = useSelector(
     (state) => state.simulation
   );
@@ -1060,7 +1061,7 @@ const BOPImportListing = (props) => {
                         {getConfigurationKey().IsMinimumOrderQuantityVisible && (<AgGridColumn field="NumberOfPieces" headerName="Minimum Order Quantity"></AgGridColumn>)}
                         {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
                         {initialConfiguration?.IsBoughtOutPartCostingConfigured && (<AgGridColumn field="IsBreakupBoughtOutPart" headerName={`Detailed ${showBopLabel()}`}></AgGridColumn>)}
-                        {initialConfiguration?.IsBoughtOutPartCostingConfigured && (<AgGridColumn field="TechnologyName" headerName="Technology" cellRenderer={"hyphenFormatter"}></AgGridColumn>)}
+                        {initialConfiguration?.IsBoughtOutPartCostingConfigured && (<AgGridColumn field="TechnologyName" headerName={technologyLabel} cellRenderer={"hyphenFormatter"}></AgGridColumn>)}
                         <AgGridColumn field="Currency"></AgGridColumn>
                         <AgGridColumn field="BasicRate" headerName="Basic Rate (Currency)" cellRenderer={"commonCostFormatter"} ></AgGridColumn>
                         <AgGridColumn field="BasicRateConversion" headerName={headerNames?.BasicRate} cellRenderer={"commonCostFormatter"}></AgGridColumn>

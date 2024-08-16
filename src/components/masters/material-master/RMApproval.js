@@ -18,6 +18,7 @@ import { debounce } from 'lodash'
 import Toaster from '../../common/Toaster'
 import { masterFinalLevelUser } from '../actions/Material'
 import { PaginationWrapper } from '../../common/commonPagination';
+import { useLabels } from '../../../helper/core';
 
 const gridOptions = {};
 
@@ -35,7 +36,7 @@ function RMApproval(props) {
     const [loader, setLoader] = useState(true)
     const [isFinalApprover, setIsFinalApprover] = useState(false)
     const dispatch = useDispatch()
-
+    const { technologyLabel } = useLabels();
     useEffect(() => {
         getTableData()
         let obj = {
@@ -374,7 +375,7 @@ function RMApproval(props) {
                                     <AgGridColumn width="145" cellClass="has-checkbox" field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Token No."></AgGridColumn>
                                     <AgGridColumn width="145" field="CostingHead" headerName='Head'></AgGridColumn>
                                     <AgGridColumn width="145" field="ApprovalProcessId" hide></AgGridColumn>
-                                    <AgGridColumn width="145" field="TechnologyName" headerName='Technology'></AgGridColumn>
+                                    <AgGridColumn width="145" field="TechnologyName" headerName={technologyLabel}></AgGridColumn>
                                     <AgGridColumn width="145" field="RawMaterial" ></AgGridColumn>
                                     <AgGridColumn width="145" field="RMGrade"></AgGridColumn>
                                     <AgGridColumn width="150" field="RMSpec"></AgGridColumn>

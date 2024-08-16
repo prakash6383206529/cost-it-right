@@ -985,7 +985,7 @@ class AddVendorDrawer extends Component {
                                             <Col md="4">
                                                 <div className='vendor-drawer'>
                                                     <Field
-                                                        label="Technology"
+                                                        label={t('commonFields.technology', { ns: 'MasterLabels', defaultValue: 'Technology' })}
                                                         name="Technology"
                                                         placeholder={"Select"}
                                                         selection={this.state.Technology == null || this.state.Technology.length === 0 ? [] : this.state.Technology}
@@ -1033,7 +1033,7 @@ class AddVendorDrawer extends Component {
                                                 <thead>
                                                     <tr>
                                                         <th className='border'>{`Plant (Code)`}</th>
-                                                        <th>{`Technology`}</th>
+                                                        <th>{`${t('commonFields.technology', { ns: 'MasterLabels', defaultValue: 'Technology' })}`}</th>
                                                         <th className='border text-right'>{`Action`}</th>
                                                     </tr>
                                                 </thead>
@@ -1164,4 +1164,4 @@ export default connect(mapStateToProps, {
     onSubmitFail: (errors) => {
         focusOnError(errors)
     },
-})(withTranslation(['VendorMaster'])(AddVendorDrawer)));
+})(withTranslation(['VendorMaster', 'MasterLabels'])(AddVendorDrawer)));

@@ -5829,6 +5829,7 @@ export const COMMODITYSTANDARD_DOWNLOAD_EXCEl = [
 export const RMMATERIALISTING_DOWNLOAD_EXCEl = [
     { label: "Index", value: "IndexExchangeName", },
     { label: "Commodity Name", value: "CommodityName", },
+    { label: "Commodity Name (In CIR)", value: "CommodityStandardName", },
     { label: "Index UOM", value: "IndexUOM", },
     { label: "UOM", value: "UOM", },
     { label: "From Currency", value: "FromCurrency", },
@@ -5917,7 +5918,7 @@ export const INDIVIDUALPART_DOWNLOAD_EXCEl = [
     { label: "Technology", value: "Technology", },
     { label: "Part No.", value: "PartNumber", },
     { label: "Name", value: "PartName", },
-    // { label: "SAP Code", value: "SAPCode", },
+    { label: "SAP Code", value: "SAPCode", },
     { label: "ECN No.", value: "ECNNumber", },
     { label: "Revision No.", value: "RevisionNumber", },
     { label: "Drawing No.", value: "DrawingNumber", },

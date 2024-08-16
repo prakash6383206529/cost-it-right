@@ -17,6 +17,7 @@ import { addMasterLevel, addOnboardingLevel, addSimulationLevel, addUserLevelAPI
 import { useTranslation } from "react-i18next";
 import { Controller, useForm } from "react-hook-form";
 import { SearchableSelectHookForm } from "../layout/HookFormInputs";
+import { useLabels } from "../../helper/core";
 
 /**************************************THIS FILE IS FOR ADDING LEVEL MAPPING*****************************************/
 const Level = (props) => {
@@ -50,7 +51,7 @@ const Level = (props) => {
   * @method componentDidMount
   * @description used to called after mounting component
   */
-
+  const { technologyLabel } = useLabels();
   useEffect(() => {
     dispatch(getApprovalModuleSelectList((res) => {
       if (res && res.data && res.data.Result) {
@@ -752,7 +753,7 @@ const Level = (props) => {
                       {Number(state?.levelType) !== ONBOARDING_MANAGEMENT_LEVEL && <div className="input-group  form-group col-md-12 input-withouticon" >
                         <SearchableSelectHookForm
                           name={"TechnologyId"}
-                          label={"Technology/Heads"}
+                          label={`${technologyLabel}/Heads`}
                           Controller={Controller}
                           control={control}
                           rules={{ required: true }}

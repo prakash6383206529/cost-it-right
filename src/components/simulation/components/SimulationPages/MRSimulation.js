@@ -27,6 +27,7 @@ import { getMaxDate } from '../../SimulationUtils';
 import ReactExport from 'react-export-excel';
 import { MACHINE_IMPACT_DOWNLOAD_EXCEl } from '../../../../config/masterData';
 import { simulationContext } from '..';
+import { useLabels } from '../../../../helper/core';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -54,12 +55,11 @@ function MRSimulation(props) {
     const [textFilterSearch, setTextFilterSearch] = useState('')
     const gridRef = useRef();
 
-
+    const { technologyLabel } = useLabels();
     const { register, control, setValue, formState: { errors }, } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
     })
-
 
     const dispatch = useDispatch()
 
@@ -472,7 +472,7 @@ function MRSimulation(props) {
                                                     </>}
                                                 {!isImpactedMaster && <div className={`d-flex align-items-center simulation-label-container`}>
                                                     <div className='d-flex pl-3'>
-                                                        <label>Technology: </label>
+                                                        <label>{technologyLabel}: </label>
                                                         <p className='technology ml-1' title={list[0].Technology}>{list[0].Technology}</p>
                                                     </div>
                                                     {list[0].CostingTypeId !== CBCTypeId && <div className='d-flex pl-3'>
@@ -511,7 +511,7 @@ function MRSimulation(props) {
                                                 onCellValueChanged={onCellValueChanged}
                                                 enableBrowserTooltips={true}
                                             >
-                                                {!isImpactedMaster && <AgGridColumn field="Technology" tooltipField='Technology' editable='false' headerName="Technology" minWidth={columnWidths.Technology}></AgGridColumn>}
+                                                {!isImpactedMaster && <AgGridColumn field="Technology" tooltipField='Technology' editable='false' headerName={technologyLabel} minWidth={columnWidths.Technology}></AgGridColumn>}
                                                 {costingAndPartNo && <AgGridColumn field="CostingNumber" tooltipField='CostingNumber' editable='false' headerName="Costing No" minWidth={columnWidths.CostingNumber}></AgGridColumn>}
                                                 {costingAndPartNo && <AgGridColumn field="PartNo" tooltipField='PartNo' editable='false' headerName="Part No" minWidth={columnWidths.PartNo}></AgGridColumn>}
                                                 <AgGridColumn field="MachineName" tooltipField='MachineName' editable='false' headerName="Machine Name" minWidth={columnWidths.MachineName}></AgGridColumn>

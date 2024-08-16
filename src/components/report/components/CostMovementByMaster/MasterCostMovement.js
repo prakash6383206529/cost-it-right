@@ -24,6 +24,7 @@ import { getProcessesSelectList } from '../../../masters/actions/MachineMaster';
 import TourWrapper from '../../../common/Tour/TourWrapper';
 import { Steps } from '../TourMessages';
 import { useTranslation } from "react-i18next"
+import { useLabels } from '../../../../helper/core';
 
 function MasterCostMovement() {
     const { t } = useTranslation("Reports")
@@ -66,7 +67,7 @@ function MasterCostMovement() {
     const processSelectList = useSelector(state => state.machine.processSelectList)
 
 
-
+    const { technologyLabel } = useLabels();
 
     const dispatch = useDispatch()
 
@@ -799,7 +800,7 @@ function MasterCostMovement() {
                         </Col>
                         {showTechnologyField && <Col md="3">
                             <SearchableSelectHookForm
-                                label={'Technology'}
+                                label={technologyLabel}
                                 name={'Technology'}
                                 placeholder={'Technology'}
                                 Controller={Controller}

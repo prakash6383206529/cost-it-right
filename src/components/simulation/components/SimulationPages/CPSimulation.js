@@ -22,6 +22,7 @@ import Toaster from '../../../common/Toaster';
 import DatePicker from "react-datepicker";
 import WarningMessage from '../../../common/WarningMessage';
 import { getMaxDate } from '../../SimulationUtils';
+import { useLabels } from '../../../../helper/core';
 
 const gridOptions = {
 
@@ -41,7 +42,7 @@ function CPSimulation(props) {
     const [isWarningMessageShow, setIsWarningMessageShow] = useState(false)
     const [maxDate, setMaxDate] = useState('');
 
-
+    const { technologyLabel } = useLabels();
     const { register, control, setValue, formState: { errors }, } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
@@ -374,7 +375,7 @@ function CPSimulation(props) {
                                                 // frameworkComponents={frameworkComponents}
                                                 onSelectionChanged={onRowSelect}
                                             >
-                                                <AgGridColumn field="TechnologyName" editable='false' headerName="Technology" minWidth={190}></AgGridColumn>
+                                                <AgGridColumn field="TechnologyName" editable='false' headerName={technologyLabel} minWidth={190}></AgGridColumn>
                                                 {!isImpactedMaster && <AgGridColumn field="PartName" editable='false' headerName="Part Name" minWidth={190}></AgGridColumn>}
                                                 <AgGridColumn field="PartNumber" editable='false' headerName="Part No" minWidth={190}></AgGridColumn>
                                                 {

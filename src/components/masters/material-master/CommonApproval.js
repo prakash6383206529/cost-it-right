@@ -33,6 +33,7 @@ import { PaginationWrappers } from '../../common/Pagination/PaginationWrappers';
 import PaginationControls from '../../common/Pagination/PaginationControls';
 import { resetStatePagination, updateCurrentRowIndex, updatePageNumber } from '../../common/Pagination/paginationAction';
 import SendForApproval from '../../vendorManagement/approval/SendForApproval';
+import { useLabels } from '../../../helper/core';
 
 const gridOptions = {};
 
@@ -71,7 +72,7 @@ function CommonApproval(props) {
     const { globalTakes } = useSelector((state) => state.pagination)
     const statusColumnData = useSelector((state) => state.comman.statusColumnData);
     const netCostHeader = `Net Cost (${reactLocalStorage.getObject("baseCurrency")})`
-
+    const { technologyLabel } = useLabels();
     useEffect(() => {
         dispatch(agGridStatus("", ""))
         dispatch(setSelectedRowForPagination([]))
@@ -912,7 +913,7 @@ function CommonApproval(props) {
                                     {(props?.MasterId === RM_MASTER_ID || props?.MasterId === BOP_MASTER_ID) && <AgGridColumn width="145" field="EntryType" headerName='Entry Type'></AgGridColumn>}
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="145" field="CostingHead" headerName='Costing Head'></AgGridColumn>}
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="145" field="ApprovalProcessId" hide></AgGridColumn>}
-                                    {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="145" field="TechnologyName" headerName='Technology'></AgGridColumn>}
+                                    {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="145" field="TechnologyName" headerName={technologyLabel}></AgGridColumn>}
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="145" field="RawMaterialName" headerName='Raw Material'></AgGridColumn>}
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="145" field="RawMaterialGradeName" headerName='Grade'></AgGridColumn>}
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="150" field="RawMaterialSpecificationName" headerName='Spec'></AgGridColumn>}
@@ -968,7 +969,7 @@ function CommonApproval(props) {
                                     {/* {props?.MasterId === BOP_MASTER_ID && !props?.isApproval && <AgGridColumn headerClass="justify-content-center" pinned="right" cellClass="text-center" field="DisplayStatus" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>} */}
                                     {props?.MasterId === MACHINE_MASTER_ID && <AgGridColumn width="145" field="CostingHead" headerName='Costing Head'></AgGridColumn>}
                                     {props?.MasterId === MACHINE_MASTER_ID && <AgGridColumn width="145" field="ApprovalProcessId" hide></AgGridColumn>}
-                                    {props?.MasterId === MACHINE_MASTER_ID && <AgGridColumn width="145" field="Technology" headerName='Technology'></AgGridColumn>}
+                                    {props?.MasterId === MACHINE_MASTER_ID && <AgGridColumn width="145" field="Technology" headerName={technologyLabel}></AgGridColumn>}
                                     {props?.MasterId === MACHINE_MASTER_ID && <AgGridColumn width="145" field="VendorName" headerName='Vendor (Code)'></AgGridColumn>}
                                     {props?.MasterId === MACHINE_MASTER_ID && reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="CustomerName" headerName="Customer (Code)"></AgGridColumn>}
                                     {props?.MasterId === MACHINE_MASTER_ID && <AgGridColumn width="145" field="Plants" headerName='Plant (Code)'></AgGridColumn>}
@@ -981,7 +982,7 @@ function CommonApproval(props) {
 
                                     {props?.MasterId === OPERATIONS_ID && <AgGridColumn width="145" field="CostingHead" headerName='Costing Head'></AgGridColumn>}
                                     {props?.MasterId === OPERATIONS_ID && <AgGridColumn width="145" field="ApprovalProcessId" hide></AgGridColumn>}
-                                    {props?.MasterId === OPERATIONS_ID && <AgGridColumn width="145" field="TechnologyName" tooltipField='Technology' headerName='Technology'></AgGridColumn>}
+                                    {props?.MasterId === OPERATIONS_ID && <AgGridColumn width="145" field="TechnologyName" tooltipField='Technology' headerName={technologyLabel}></AgGridColumn>}
                                     {props?.MasterId === OPERATIONS_ID && <AgGridColumn width="145" field="OperationName" headerName='Operation Name'></AgGridColumn>}
                                     {props?.MasterId === OPERATIONS_ID && <AgGridColumn width="145" field="OperationCode" headerName='Operation Code'></AgGridColumn>}
                                     {props?.MasterId === OPERATIONS_ID && <AgGridColumn width="180" field="VendorName" headerName='Vendor (Code)'></AgGridColumn>}
@@ -1006,7 +1007,7 @@ function CommonApproval(props) {
                                     {props?.OnboardingApprovalId === ONBOARDINGID && <AgGridColumn width="160" field="DeviationDuration" headerName='Deviation Duration' ></AgGridColumn>}
                                     {/* {props?.OnboardingApprovalId === ONBOARDINGID && <AgGridColumn width="145" field="Department" headerName={`${handleDepartmentHeader()} (Code)`}></AgGridColumn>} */}
                                     {getConfigurationKey().IsBoughtOutPartCostingConfigured && props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="150" field="IsBreakupBoughtOutPart" cellRenderer='breakupFormatter' headerName={`Breakup ${showBopLabel()} `}></AgGridColumn>}
-                                    {getConfigurationKey().IsBoughtOutPartCostingConfigured && props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="150" field="TechnologyName" cellRenderer='technologyFormatter' headerName="Technology"></AgGridColumn>}
+                                    {getConfigurationKey().IsBoughtOutPartCostingConfigured && props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="150" field="TechnologyName" cellRenderer='technologyFormatter' headerName={technologyLabel}></AgGridColumn>}
                                     <AgGridColumn width="150" field="RequestedBy" cellRenderer='createdOnFormatter' headerName="Initiated By"></AgGridColumn>
                                     {props?.MasterId !== 0 && <AgGridColumn width="150" field="CreatedByName" cellRenderer='createdOnFormatter' headerName="Created By"></AgGridColumn>}
                                     <AgGridColumn width="200" field="LastApprovedBy" cellRenderer='requestedOnFormatter' headerName="Last Approved/Rejected By"></AgGridColumn>

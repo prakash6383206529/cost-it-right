@@ -26,6 +26,7 @@ import { ASSEMBLY } from "../../../config/masterData"
 import TourWrapper from "../../common/Tour/TourWrapper"
 import { Steps } from "./TourMessages"
 import { useTranslation } from "react-i18next"
+import { useLabels } from "../../../helper/core"
 
 
 
@@ -54,7 +55,7 @@ function CostReportForm(props) {
     const [partTypeList, setPartTypeList] = useState([])
 
     const dispatch = useDispatch()
-
+    const { technologyLabel } = useLabels();
     const technologySelectList = useSelector((state) => state.costing.costingSpecifiTechnology)
     const vendorSelectList = useSelector((state) => state.costing.costingVendorList)
     const DestinationplantSelectList = useSelector(state => state.comman.plantSelectList);
@@ -584,7 +585,7 @@ function CostReportForm(props) {
 
                         {!plantWiseGotGiven && <Col md="3">
                             <SearchableSelectHookForm
-                                label={"Technology"}
+                                label={technologyLabel}
                                 name={"Technology"}
                                 placeholder={"Select"}
                                 Controller={Controller}

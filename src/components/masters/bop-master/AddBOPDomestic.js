@@ -41,6 +41,7 @@ import Button from '../../layout/Button';
 import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from './TourMessages';
 import { withTranslation } from 'react-i18next';
+import { useLabels } from '../../../helper/core';
 
 
 const selector = formValueSelector('AddBOPDomestic');
@@ -1355,7 +1356,7 @@ class AddBOPDomestic extends Component {
                               </Col>
                               {isTechnologyVisible && <Col md="3">
                                 <Field
-                                  label="Technology"
+                                  label={t('commonFields.technology', { ns: 'MasterLabels', defaultValue: 'Technology' })}
                                   type="text"
                                   name="Technology"
                                   component={searchableSelect}
@@ -1430,7 +1431,7 @@ class AddBOPDomestic extends Component {
                                 <div className="left-border">{"Vendor:"}</div>
                               </Col>
                               <Col md="3" className='mb-4'>
-                                <label>{"Vendor (Code)"}<span className="asterisk-required">*</span></label>
+                                <label>{t(costingTypeId === ZBCTypeId ? 'BOPZeroBasedVendorLabel' : 'BOPVendorBasedVendorLabel', { ns: 'MasterLabels', defaultValue: 'Vendor (Code)' })}<span className="asterisk-required">*</span></label>
                                 <div className="d-flex justify-space-between align-items-center async-select">
                                   <div className="fullinput-icon p-relative">
                                     {this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
@@ -1937,4 +1938,4 @@ export default connect(mapStateToProps, {
     focusOnError(errors)
   },
   enableReinitialize: true,
-})(withTranslation(['BOPMaster'])(AddBOPDomestic)));
+})(withTranslation(['BOPMaster', 'MasterLabels'])(AddBOPDomestic)));

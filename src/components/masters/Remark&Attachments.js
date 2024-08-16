@@ -98,12 +98,11 @@ function RemarksAndAttachments(props) {
 
         if (status === 'removed') {
             const removedFileName = file.name
-            let fileArray = [...files]
-            let tempArr = fileArray.filter(
+            let tempArr = files.filter(
                 (item) => item.OriginalFileName !== removedFileName,
             )
-            setState(prevState => ({ ...prevState, isOpen: !state.isOpen }))
             setFiles(tempArr)
+            setState(prevState => ({ ...prevState, isOpen: !state.isOpen }))
         }
 
         if (status === 'done') {
@@ -117,10 +116,9 @@ function RemarksAndAttachments(props) {
                 }
                 else {
                     let Data = res.data[0]
-                    let fileArray = [...files]
-                    fileArray.push(Data)
+                    files.push(Data)
                     setState(prevState => ({ ...prevState, attachmentLoader: false }))
-                    setFiles(fileArray)
+                    setFiles(files)
                     setTimeout(() => {
                         setState(prevState => ({ ...prevState, isOpen: !state.isOpen }))
                     }, 500);

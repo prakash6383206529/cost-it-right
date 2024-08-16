@@ -21,6 +21,7 @@ import { auctionRfqSelectList, checkQuatationForAuction, createAuction, saveAuct
 import { EMPTY_GUID, EMPTY_GUID_0 } from "../../config/constants";
 import Toaster from "../common/Toaster";
 import { useHistory, useLocation } from "react-router-dom/cjs/react-router-dom";
+import { useLabels } from "../../helper/core";
 export const RM = 'RawMaterial'
 export const BOP = 'BoughtOutPart'
 export const COMPONENT = 'Component'
@@ -84,7 +85,7 @@ function AddAuction(props) {
     minMinutes: currentMinutes,
 
   })
-
+  const { technologyLabel } = useLabels();
   // useSelectors
   const { RFQSelectlist } = useSelector(state => state.Auction);
   const { NoOfDecimalForPrice } = useSelector((state) => state.auth?.initialConfiguration) || {}
@@ -567,7 +568,7 @@ function AddAuction(props) {
                         </Col></>}
                       {!state.PartType === BOP && <Col md="3">
                         <TextFieldHookForm
-                          label={"Technology"}
+                          label={technologyLabel}
                           name={"Technology"}
                           Controller={Controller}
                           control={control}
