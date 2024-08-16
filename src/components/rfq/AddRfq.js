@@ -180,6 +180,7 @@ function AddRfq(props) {
     const [showVendorSection, setShowVendorSection] = useState(true)
     const [quotationType, setQuotationType] = useState('componentAssembly')
     const [RawMaterialList, setRawMaterialList] = useState([])
+    console.log('RawMaterialList: ', RawMaterialList);
     const [bopList, setBopList] = useState([])
 
 
