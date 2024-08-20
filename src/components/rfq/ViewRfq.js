@@ -209,6 +209,16 @@ function RfqListing(props) {
                         });
                     });
                     break;
+                case 'Tooling':
+                    filteredArr = _.map(viewCostingData, 'toolId');
+                    filteredArr.forEach(item => {
+                        selectedRows.filter(el => {
+                            if (el.CostingId === item) {
+                                arr.push(el);
+                            }
+                        });
+                    });
+                    break;
                 default:
                     break;
             }
@@ -254,6 +264,10 @@ function RfqListing(props) {
                                 unique = _.uniq(_.map(item?.ShouldBoughtOutPart, 'BoughtOutPartId'));
                                 uniqueShouldCostId.push(...unique);
                                 break;
+                            case 'Tooling':
+                                unique = _.uniq(_.map(item?.ShouldCostings, 'CostingId'));
+                                uniqueShouldCostId.push(...unique);
+                                break;
                             default:
                                 break;
                         }
@@ -278,6 +292,8 @@ function RfqListing(props) {
                     partNumberFech = 'PartNumber';
                 } else if (item?.PartType === 'Bought Out Part') {
                     partNumberFech = 'BoughtOutPart';
+                } else if (item?.PartType === 'Tooling') {
+                    partNumberFech = 'PartNumber';
                 }
             })
             let grouped_data = _.groupBy(res?.data?.DataList, partNumberFech)                                        // GROUPING OF THE ROWS FOR SEPERATE PARTS
@@ -313,6 +329,9 @@ function RfqListing(props) {
                             break;
                         case 'Bought Out Part':
                             temp = item?.filter(el => el.BoughtOutPartId !== null);
+                            break;
+                        case 'Tooling':
+                            temp = item?.filter(el => el.CostingId !== null);
                             break;
                         default:
                             break;
@@ -929,6 +948,17 @@ function RfqListing(props) {
                         return matchedItem ? matchedItem.Status : null;
                     });
                     break
+                case 'Tooling':
+                    filteredArr = _.map(viewCostingData, 'costingId')
+                    filteredArr.map(item => selectedRows.filter(el => {
+                        if (el.CostingId === item) {
+                            arr.push(el)
+                        }
+                    }))
+                    matchedStatus = list?.map(selectedItem => {
+                        const matchedItem = arr.find(item => item?.CostingId === selectedItem);
+                        return matchedItem ? matchedItem.Status : null;
+                    })
                 default:
                     break
 
@@ -953,7 +983,7 @@ function RfqListing(props) {
     * @description Renders buttons
     */
     const buttonFormatter = (props) => {
-        console.log('props: ', props);
+
 
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
@@ -962,8 +992,8 @@ function RfqListing(props) {
         let showReminderIcon = false
         let showRemarkHistory = false
 
-        console.log('rowData: ', rowData, rowData?.CostingId);
-        console.log('rowData?.CostingNumber === null || rowData?.RawMaterialId === null || rowData?.BoughtOutPartId : ', rowData?.CostingNumber === null, rowData?.RawMaterialId === null || rowData?.BoughtOutPartId);
+
+
         if (rowData?.CostingNumber === null && rowData?.RawMaterialId === null && rowData?.BoughtOutPartId) {
             showReminderIcon = true
 
@@ -978,7 +1008,7 @@ function RfqListing(props) {
                 showActionIcons = false
             }
         }
-        console.log('showRemarkHistory: ', showRemarkHistory);
+
 
         let reminderCount = rowData?.RemainderCount
 
@@ -1196,6 +1226,29 @@ function RfqListing(props) {
 
                     setaddComparisonToggle(true)
                     break
+                case 'Tooling':
+                    setloader(true)
+                    dispatch(getMultipleCostingDetails(costingIdList, (res) => {
+                        if (res) {
+                            res?.map((item) => {
+                                tempObj = formViewData(item?.data?.Data)
+                                temp.push(tempObj[0])
+                                return null
+                            })
+                            let dat = [...temp]
+                            let tempArrToSend = _.uniqBy(dat, 'costingId')
+                            let arr = bestCostObjectFunction(tempArrToSend)
+                            setMultipleCostingDetails([...arr])
+                            dispatch(setCostingViewData([...arr]))
+
+                            setaddComparisonToggle(true)
+                            setloader(false)
+                            setViewRMCompare(false)
+                            setViewBOPCompare(false)
+                        }
+                        setCompareButtonPressed(false)
+                    }))
+                    break;
                 default:
                     break;
             }
@@ -1246,6 +1299,13 @@ function RfqListing(props) {
                 case 'Component':
                 case 'Assembly':
                     selectedRows?.map(item => partNumber?.push(item?.PartNo))
+                    data = partNumber.map(item => rowData?.filter(el => el.PartNumber === item))             // SELECTED ALL COSTING ON THE CLICK ON PART
+                    break;
+                case 'Tooling':
+
+
+                    selectedRows?.map(item => partNumber?.push(item?.PartNo))
+
                     data = partNumber.map(item => rowData?.filter(el => el.PartNumber === item))             // SELECTED ALL COSTING ON THE CLICK ON PART
                     break;
                 default:
@@ -1383,6 +1443,9 @@ function RfqListing(props) {
                 case 'Assembly':
                     headerName = "Part Name";
                     break;
+                case 'Tooling':
+                    headerName = "Tool Name";
+                    break;
                 default:
                     break;
             }
@@ -1509,7 +1572,7 @@ function RfqListing(props) {
                                         >
 
                                             <AgGridColumn cellClass={cellClass} field="PartNo" headerName={headerPartType()} cellRenderer={'partNumberFormatter'}></AgGridColumn>
-                                            <AgGridColumn field="PartTypes" cellClass={cellClass} headerName="Part Type" width={150} cellRenderer={seperateHyphenFormatter}></AgGridColumn>
+                                            <AgGridColumn field="PartTypes" cellClass={cellClass} headerName={`${partType === 'Tooling' ? 'Tool' : 'Part'} Type`} width={150} cellRenderer={seperateHyphenFormatter}></AgGridColumn>
                                             {initialConfiguration.IsNFRConfigured && <AgGridColumn cellClass={cellClass} field="NfrNo" headerName='NFR No.' cellRenderer={seperateHyphenFormatter}></AgGridColumn>}
                                             {partType !== 'Bought Out Part' && <AgGridColumn field="TechnologyName" headerName={technologyLabel}></AgGridColumn>}
                                             {partType === 'Bought Out Part' && <AgGridColumn cellClass={cellClass} field="PRNo" headerName='PR Number' cellRenderer={seperateHyphenFormatter}></AgGridColumn>}

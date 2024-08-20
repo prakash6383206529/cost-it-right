@@ -92,6 +92,7 @@ function AddRfq(props) {
     const [showPopup, setShowPopup] = useState(false)
     const [selectedRowVendorTable, setSelectedVendorTable] = useState({})
     const [files, setFiles] = useState([])
+    
 
     const [IsOpen, setIsOpen] = useState(false);
     const [apiData, setData] = useState({});
@@ -267,6 +268,7 @@ function AddRfq(props) {
             dispatch(setTargetPriceDetail({}))
             setTimeout(() => {
                 const obj = createQuotationObject(null);
+                
                 dispatch(createRfqQuotation(obj, (res) => {
 
                     setQuotationIdentity(res?.data?.Identity)
@@ -677,7 +679,7 @@ function AddRfq(props) {
         }
 
         if (status === 'rejected_file_type') {
-            Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
+            Toaster.warning('Allowed only xls, doc, docx, pptx jpeg, pdf, zip files.');
         } else if (status === 'error_file_size') {
             setDisableFalseFunction()
             setAttachmentLoader(false)
@@ -877,7 +879,7 @@ function AddRfq(props) {
             LastSubmissionDate: submissionDate ? DayTime(submissionDate).format('YYYY-MM-DD HH:mm:ss') : null,
             VendorList: vendorList && vendorList.length > 0 ? vendorList : null,
             Timezone: getTimeZone() || null,
-            Attachments: /* files && files.length > 0 ? files : */[],
+            Attachments: files && files.length > 0 ? files : [],
             NfrId: nfrId?.value || null,
             PartList: [],
             PrNumberId: prNumber?.value || null,
@@ -1015,27 +1017,27 @@ function AddRfq(props) {
 
         switch (selectedOption) {
             case "Bought Out Part":
-                if (bopDataList.length === 0) {
+                if (bopDataList?.length === 0) {
                     Toaster.warning("Please add at least one BOP.");
                     return false;
                 }
                 break;
 
             case "Raw Material":
-                if (rmDataList.length === 0) {
+                if (rmDataList?.length === 0) {
                     Toaster.warning("Please add at least one RM.");
                     return false;
                 }
                 break;
 
             case "componentAssembly":
-                if (partList.length === 0) {
+                if (partList?.length === 0) {
                     Toaster.warning("Please add at least one part.");
                     return false;
                 }
                 break;
             case "Tooling":
-                if (toolingList.length === 0) {
+                if (toolingList?.length === 0) {
                     Toaster.warning("Please add at least one part.");
                     return false;
                 }
@@ -1308,7 +1310,10 @@ function AddRfq(props) {
                         Toaster.warning("This vendor is already added.")
                         return false;
                     }
-
+                    else if (selectedOption === TOOLING && !showVendorSection && !getValues('LDClause')) {
+                        Toaster.warning("Please enter LD Clause.");
+                        return false
+                    }
                     let arr = [...vendorList, obj]
 
                     if (updateButtonVendorTable) {       //EDIT CASE
@@ -1612,7 +1617,7 @@ function AddRfq(props) {
                 }
 
             } if (requirementDate === "") {
-                Toaster.warning("Please select N-100 Timeline");
+                Toaster.warning(`Please select ${selectedOption === 'TOOLING' ? 'T0 Timeline' : 'N - 100 Timeline'}`);
                 return false;
             }
             if (nfrId && nfrId.value !== null) {//CHECK_NFR
@@ -2067,7 +2072,9 @@ function AddRfq(props) {
                             temppartObj.UnitOfMeasurementId = null
                             temppartObj.ExistingVendor = vendorList.join(',') || '';
                             temppartObj.Description = getValues('Description') || ""
-                            temppartObj.SopDate = null
+                            temppartObj.SopDate = sopdate || null
+                            temppartObj.SOPQuantity = sopQuantityList || [];
+
                             temppartObj.ToolNumber = toolingSpecificRowData[0]?.ToolNumber
                             temppartObj.ToolName = toolingSpecificRowData[0]?.ToolName
                             temppartObj.ToolDescription = toolingSpecificRowData[0]?.ToolDescription
@@ -2787,12 +2794,14 @@ function AddRfq(props) {
         return (partList?.length !== 0 || rmDataList?.length !== 0 || bopDataList?.length !== 0 || toolingList?.length !== 0);
     }
     function ShowLdClause(partType) {
+
         const partTypesToReturnFalse = ['Component', 'Assembly', 'componentAssembly', 'Raw Material'];
+        
         return !partTypesToReturnFalse.includes(partType);
     }
     function ShowQuoteSubmissionDate(partType) {
         return havellsKey
-            ? (partType !== 'Tooling' && !showVendorSection && showSendButton && showSendButton !== 'PREDRAFT')
+            ? /* (partType !== 'Tooling' && */ (!showVendorSection && showSendButton && showSendButton !== 'PREDRAFT')
             : true;
     }
 
@@ -3003,7 +3012,7 @@ function AddRfq(props) {
                                         <Row className="part-detail-wrapper">
                                             {havellsKey && <Col md="3">
                                                 <SearchableSelectHookForm
-                                                    label={"Part Type"}
+                                                    label={`${selectedOption === TOOLING ? 'Tool' : 'Part'} Type`}
                                                     name={"PartType"}
                                                     placeholder={"Select"}
                                                     Controller={Controller}
@@ -3021,7 +3030,7 @@ function AddRfq(props) {
                                             <Col md="3" className='d-flex align-items-center' >
 
                                                 <AsyncSearchableSelectHookForm
-                                                    label={"Part No"}
+                                                    label={`${selectedOption === TOOLING ? 'Tool' : 'Part'} No`}
                                                     name={"partNumber"}
                                                     placeholder={"Select"}
                                                     Controller={Controller}
@@ -3047,7 +3056,8 @@ function AddRfq(props) {
                                             {havellsKey && <Col md="3">
                                                 <TextFieldHookForm
                                                     // title={titleObj.descriptionTitle}
-                                                    label="Assembly/Part Description"
+                                                    label={selectedOption === TOOLING ? 'Assembly/Tool Description' : 'Assembly/Part Description'}
+
                                                     name={'Description'}
                                                     Controller={Controller}
                                                     control={control}
@@ -3209,7 +3219,7 @@ function AddRfq(props) {
                                                         <div className="form-group">
                                                             <TooltipCustom id="timeline" tooltipText="Part Rediness timeline for Quality, N-10 & N-100" />
 
-                                                            <label>N-100 Timeline<span className="asterisk-required">*</span></label>
+                                                            <label>{selectedOption === TOOLING ? "T0 Timeline" : "N - 100 Timeline"}<span className="asterisk-required">*</span></label>
                                                             <div id="addRFQDate_container" className="inputbox date-section">
                                                                 <DatePicker
 
@@ -3339,10 +3349,10 @@ function AddRfq(props) {
                                                                     {selectedOption === "Raw Material" && <AgGridColumn width={"230px"} field="RawMaterialGrade" headerName="Grade" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                                                                     {selectedOption === "Raw Material" && <AgGridColumn width={"230px"} field="RawMaterialSpecification" headerName="Specification" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                                                                     {selectedOption === "Raw Material" && <AgGridColumn width={"230px"} field="RawMaterialCode" headerName="Code" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
-                                                                    {selectedOption === "Tooling" && <AgGridColumn width={"230px"} field="PartType" headerName="Part Type" tooltipField="PartNumber" cellRenderer={'partNumberFormatter'}></AgGridColumn>}
+                                                                    {selectedOption === "Tooling" && <AgGridColumn width={"230px"} field="PartType" headerName={`${selectedOption === 'Tooling' ? 'Tool' : 'Part'} Type`} tooltipField="PartNumber" cellRenderer={'partNumberFormatter'}></AgGridColumn>}
 
-                                                                    {(selectedOption === "componentAssembly" || selectedOption === 'Tooling') && <AgGridColumn width={"230px"} field="PartNumber" headerName="Part No" tooltipField="PartNumber" cellRenderer={'partNumberFormatter'}></AgGridColumn>}
-                                                                    {selectedOption === "Tooling" && <AgGridColumn width={"230px"} field="Description" headerName="Part Description" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                                                                    {(selectedOption === "componentAssembly" || selectedOption === 'Tooling') && <AgGridColumn width={"230px"} field="PartNumber" headerName={`${selectedOption === 'Tooling' ? 'Tool' : 'Part'} No`} tooltipField="PartNumber" cellRenderer={'partNumberFormatter'}></AgGridColumn>}
+                                                                    {selectedOption === "Tooling" && <AgGridColumn width={"230px"} field="Description" headerName={`${selectedOption === 'Tooling' ? 'Tool' : 'Part'} Description`} cellRenderer={'hyphenFormatter'}></AgGridColumn>}
 
                                                                     {/* {checkForNull(technology?.value) !== LOGISTICS && <AgGridColumn width={"230px"} field="RMName" tooltipField="RMName" headerName="RM Name" cellClass={"colorWhite"}></AgGridColumn>}
                                                                     {checkForNull(technology?.value) !== LOGISTICS && <AgGridColumn width={"230px"} field="RMGrade" headerName="RM Grade" cellClass={"colorWhite"}></AgGridColumn>}
@@ -3365,7 +3375,7 @@ function AddRfq(props) {
 
                                                                     {selectedOption !== 'Tooling' && <AgGridColumn width={"230px"} field="UOM" headerName="UOM" ></AgGridColumn>}
 
-                                                                    <AgGridColumn width={"230px"} field="TimeLine" headerName="N-100 Timeline" cellRenderer={'effectiveDateFormatter'} ></AgGridColumn>
+                                                                    <AgGridColumn width={"230px"} field="TimeLine" headerName={selectedOption === TOOLING ? "T0 Timeline" : "N - 100 Timeline"} cellRenderer={'effectiveDateFormatter'} ></AgGridColumn>
                                                                     {(selectedOption === 'componentAssembly' === "componentAssembly" || selectedOption === 'componentAssembly' === 'Raw Material' || selectedOption === 'componentAssembly' === "Bought Out Part") && <AgGridColumn width={"230px"} field="VendorListExisting" headerName="Existing Vendor" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
 
                                                                     {(selectedOption === "componentAssembly" || selectedOption === 'Tooling') && (<AgGridColumn width={"190px"} field="PartId" cellClass="ag-grid-action-container text-right" headerName="Action" floatingFilter={false} type="rightAligned" cellRenderer={'buttonFormatterFirst'} />)}
@@ -3487,7 +3497,7 @@ function AddRfq(props) {
                                                                 required: true,
                                                                 maxLength: 80
                                                             }}
-                                                            mandatory={false}
+                                                            mandatory={selectedOption === TOOLING ? true : false}
                                                             handleChange={() => { }}
                                                             defaultValue={''}
                                                             className=""
@@ -3719,76 +3729,77 @@ function AddRfq(props) {
                                                 // isLoading={plantLoaderObj}
                                                 />
                                             </Col>
+                                            <Col md="4" className="height152-label">
+                                                <TooltipCustom id="uploadFile" tooltipText="Upload upto 4 file, size of each file upto 20MB" />
 
-                                            {/* <Col md="4" className="height152-label">
-                                            <label>Upload Attachment (upload up to 4 files)<span className="asterisk-required">*</span></label>
-                                            <div className={`alert alert-danger mt-2 ${files?.length === 4 ? '' : 'd-none'}`} role="alert">
-                                                Maximum file upload limit has been reached.
-                                            </div>
-                                            <div id="addRFQ_uploadFile" className={`${files?.length >= 4 ? 'd-none' : ''}`}>
-                                                <Dropzone
-                                                    ref={dropzone}
-                                                    onChangeStatus={handleChangeStatus}
-                                                    PreviewComponent={Preview}
-                                                    //onSubmit={this.handleSubmit}
-                                                    accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx"
-                                                    initialFiles={[]}
-                                                    maxFiles={4}
-                                                    maxSizeBytes={2000000}
-                                                    inputContent={(files, extra) =>
-                                                        extra.reject ? (
-                                                            "Image, audio and video files only"
-                                                        ) : (
-                                                            <div className="text-center">
-                                                                <i className="text-primary fa fa-cloud-upload"></i>
-                                                                <span className="d-block">
-                                                                    Drag and Drop or{" "}
-                                                                    <span className="text-primary">Browse</span>
-                                                                    <br />
-                                                                    file to upload
-                                                                </span>
-                                                            </div>
-                                                        )
-                                                    }
-                                                    styles={{
-                                                        dropzoneReject: {
-                                                            borderColor: "red",
-                                                            backgroundColor: "#DAA",
-                                                        },
-                                                        inputLabel: (files, extra) =>
-                                                            extra.reject ? { color: "red" } : {},
-                                                    }}
-                                                    classNames="draper-drop"
-                                                    disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll)}
-                                                />
-                                            </div>
-                                        </Col>
-                                        <Col md="4" className=' p-relative'>
-                                            <div className={"attachment-wrapper"}>
-                                                {attachmentLoader && <LoaderCustom customClass="attachment-loader" />}
-                                                {files &&
-                                                    files.map((f) => {
-                                                        const withOutTild = f.FileURL?.replace("~", "");
-                                                        const fileURL = `${FILE_URL}${withOutTild}`;
-                                                        return (
-                                                            <div className={"attachment images"}>
-                                                                <a href={fileURL} target="_blank" rel="noreferrer">
-                                                                    {f.OriginalFileName}
-                                                                </a>
-                                                                {
-                                                                    !isViewFlag &&
-                                                                    <img
-                                                                        alt={""}
-                                                                        className="float-right"
-                                                                        onClick={() => deleteFile(f.FileId, f.FileName)}
-                                                                        src={redcrossImg}
-                                                                    ></img>
-                                                                }
-                                                            </div>
-                                                        );
-                                                    })}
-                                            </div>
-                                        </Col> */}
+                                                <label>Upload Attachment (upload up to 4 files){/* <span className="asterisk-required"></span> */}</label>
+                                                <div className={`alert alert-danger mt-2 ${files?.length === 4 ? '' : 'd-none'}`} role="alert">
+                                                    Maximum file upload limit has been reached.
+                                                </div>
+                                                <div id="addRFQ_uploadFile" className={`${files?.length >= 4 ? 'd-none' : ''}`}>
+                                                    <Dropzone
+                                                        ref={dropzone}
+                                                        onChangeStatus={handleChangeStatus}
+                                                        PreviewComponent={Preview}
+                                                        //onSubmit={this.handleSubmit}
+                                                        accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx,.zip, .docx,.pptx"
+                                                        initialFiles={[]}
+                                                        maxFiles={4}
+                                                        maxSizeBytes={20000000}  // 20 MB in bytes
+                                                        inputContent={(files, extra) =>
+                                                            extra.reject ? (
+                                                                "Image, audio and video files only"
+                                                            ) : (
+                                                                <div className="text-center">
+                                                                    <i className="text-primary fa fa-cloud-upload"></i>
+                                                                    <span className="d-block">
+                                                                        Drag and Drop or{" "}
+                                                                        <span className="text-primary">Browse</span>
+                                                                        <br />
+                                                                        file to upload
+                                                                    </span>
+                                                                </div>
+                                                            )
+                                                        }
+                                                        styles={{
+                                                            dropzoneReject: {
+                                                                borderColor: "red",
+                                                                backgroundColor: "#DAA",
+                                                            },
+                                                            inputLabel: (files, extra) =>
+                                                                extra.reject ? { color: "red" } : {},
+                                                        }}
+                                                        classNames="draper-drop"
+                                                        disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll)}
+                                                    />
+                                                </div>
+                                            </Col>
+                                            <Col md="4" className=' p-relative'>
+                                                <div className={"attachment-wrapper"}>
+                                                    {attachmentLoader && <LoaderCustom customClass="attachment-loader" />}
+                                                    {files &&
+                                                        files.map((f) => {
+                                                            const withOutTild = f.FileURL?.replace("~", "");
+                                                            const fileURL = `${FILE_URL}${withOutTild}`;
+                                                            return (
+                                                                <div className={"attachment images"}>
+                                                                    <a href={fileURL} target="_blank" rel="noreferrer">
+                                                                        {f.OriginalFileName}
+                                                                    </a>
+                                                                    {
+                                                                        !isViewFlag &&
+                                                                        <img
+                                                                            alt={""}
+                                                                            className="float-right"
+                                                                            onClick={() => deleteFile(f.FileId, f.FileName)}
+                                                                            src={redcrossImg}
+                                                                        ></img>
+                                                                    }
+                                                                </div>
+                                                            );
+                                                        })}
+                                                </div>
+                                            </Col>
                                         </Row>
                                     </>)}
                                     <Row className="justify-content-between sf-btn-footer no-gutters justify-content-between bottom-footer sticky-btn-footer">

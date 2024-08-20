@@ -29,7 +29,7 @@ import _, { debounce } from 'lodash'
 import ReactExport from 'react-export-excel';
 import ExcelIcon from '../../../assests/images/excel.svg';
 import Logo from '../../../assests/images/logo/company-logo.svg';
-import { DIE_CASTING, IdForMultiTechnology, PLASTIC } from '../../../config/masterData'
+import { DIE_CASTING, IdForMultiTechnology, PLASTIC, TOOLING_ID } from '../../../config/masterData'
 import ViewMultipleTechnology from './Drawers/ViewMultipleTechnology'
 import TooltipCustom from '../../common/Tooltip'
 import { Costratiograph } from '../../dashboard/CostRatioGraph'
@@ -88,6 +88,7 @@ const CostingSummaryTable = (props) => {
   /*Constants for sending data in drawer*/
   const [viewBOPData, setViewBOPData] = useState([])
   const [viewConversionCostData, setViewConversionCostData] = useState([])
+
   const [viewRMData, setViewRMData] = useState([])
   const [viewOverheadData, setViewOverheadData] = useState([])
   const [viewRejectionRecoveryData, setViewRejectionRecoveryData] = useState([])
@@ -130,6 +131,7 @@ const CostingSummaryTable = (props) => {
   const [showPieChartObj, setShowPieChartObj] = useState([])
   const [releaseStrategyDetails, setReleaseStrategyDetails] = useState({})
   const [viewCostingData, setViewCostingData] = useState([])
+
   const [viewButton, setViewButton] = useState(true)
   const [editButton, setEditButton] = useState(true)
   const [pieChartButton, setPieChartButton] = useState(false)
@@ -221,6 +223,7 @@ const CostingSummaryTable = (props) => {
   useEffect(() => {
     if (viewCostingDetailData && viewCostingDetailData.length > 0 && !props?.isRejectedSummaryTable) {
       setViewCostingData(viewCostingDetailData)
+      checkTechnologyIdAndRfq()
     } else if (viewRejectedCostingDetailData && viewRejectedCostingDetailData.length > 0 && props?.isRejectedSummaryTable) {
       setViewCostingData(viewRejectedCostingDetailData)
     }
@@ -2043,6 +2046,25 @@ const CostingSummaryTable = (props) => {
     })
     return arr
   }
+  function checkTechnologyIdAndRfq() {
+    let foundMismatch = false;
+
+    for (const data of viewCostingData) {
+
+      if (data.technologyId === TOOLING_ID) {
+
+        foundMismatch = true;
+        break; // Return true if there's a mismatch
+      } else if (data.technologyId === '-') {
+
+
+        continue; // Skip if the technologyId is '-'
+      }
+    }
+    //hideDrawerTables(foundMismatch)
+    return foundMismatch;
+  }
+
 
   return (
     <Fragment>
@@ -2431,6 +2453,7 @@ const CostingSummaryTable = (props) => {
                                   index={index}
                                   isPDFShow={true}
                                   processShow={true}
+                                  hideProcessAndOtherCostTable={checkTechnologyIdAndRfq()}
                                 />
                               </th>
                             </tr>}
@@ -2445,6 +2468,8 @@ const CostingSummaryTable = (props) => {
                                   isPDFShow={true}
                                   stCostShow={false}
                                   operationShow={true}
+                                  hideProcessAndOtherCostTable={checkTechnologyIdAndRfq()}
+
                                 /></th></tr>}
                             {drawerDetailPDF && <tr>
                               <th colSpan={2} className='py-0'>
@@ -2624,9 +2649,9 @@ const CostingSummaryTable = (props) => {
                               {
                                 !drawerDetailPDF ? <tr>
                                   <td>
-                                    <span className={highlighter("pCost")}>Process Cost</span>
+                                    {(viewCostingData?.technologyId !== TOOLING_ID && !rfqCosting) && <span className={highlighter("pCost")}>Process Cost</span>}
                                     <span className={highlighter("oCost")}>Operation Cost</span>
-                                    <span className={highlighter("netOtherOperationCost")}>Other Operation Cost</span>
+                                    {(viewCostingData?.technologyId !== TOOLING_ID && !rfqCosting) && <span className={highlighter("netOtherOperationCost")}>Other Operation Cost</span>}
                                     {showLabourData && <span className={highlighter("NetLabourCost")}>Net Labour Cost</span>}
                                     {showLabourData && <span className={highlighter("IndirectLaborCost")}>Indirect Labor Cost</span>}
                                     {showLabourData && <span className={highlighter("StaffCost")}>Staff Cost</span>}
@@ -2639,15 +2664,15 @@ const CostingSummaryTable = (props) => {
                                     viewCostingData?.map((data, indexInside) => {
                                       return (
                                         <td className={tableDataClass(data)}>
-                                          <span className={highlighter("pCost")}>
+                                          {(viewCostingData?.technologyId !== TOOLING_ID && !rfqCosting) && <span className={highlighter("pCost")}>
                                             {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? (data?.IsAssemblyCosting === true ? "Multiple Process" : <span title={checkForDecimalAndNull(data?.pCost, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.pCost, initialConfiguration.NoOfDecimalForPrice)}</span>) : '')}
-                                          </span>
+                                          </span>}
                                           <span className={highlighter('oCost')}>
                                             {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? (data?.IsAssemblyCosting === true ? "Multiple Operation" : <span title={checkForDecimalAndNull(data?.oCost, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.oCost, initialConfiguration.NoOfDecimalForPrice)}</span>) : '')}
                                           </span>
-                                          <span className={highlighter('netOtherOperationCost')}>
+                                          {(viewCostingData?.technologyId !== TOOLING_ID && !rfqCosting) && <span className={highlighter('netOtherOperationCost')}>
                                             {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? (data?.IsAssemblyCosting === true ? "Multiple Other Operation" : <span title={checkForDecimalAndNull(data?.netOtherOperationCost, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.netOtherOperationCost, initialConfiguration.NoOfDecimalForPrice)}</span>) : '')}
-                                          </span>
+                                          </span>}
 
                                           {
                                             showLabourData && <span className={highlighter('NetLabourCost')}>
@@ -2680,6 +2705,8 @@ const CostingSummaryTable = (props) => {
                                     index={index}
                                     isPDFShow={true}
                                     stCostShow={false}
+                                    hideProcessAndOtherCostTable={checkTechnologyIdAndRfq()}
+
 
                                   />
                                 </th></tr>
@@ -2743,6 +2770,8 @@ const CostingSummaryTable = (props) => {
                                 index={index}
                                 isPDFShow={true}
                                 stCostShow={true}
+                                hideProcessAndOtherCostTable={checkTechnologyIdAndRfq()}
+
                               />
                             </th></tr>
                           }
@@ -2962,78 +2991,99 @@ const CostingSummaryTable = (props) => {
                               })}
                           </tr>
 
-                          {
-                            !drawerDetailPDF ? <tr>
-                              <td>
-                                <span className="d-block small-grey-text pt-3"></span>
-                                <span className={highlighter("toolMaintenanceCost")}>Tool Maintenance Cost on</span>
-                                <span className={highlighter("toolPrice")}>Tool Price</span>
-                                <span className={highlighter("amortizationQty")}>Amortization Quantity (Tool Life)</span>
-                                <span className={highlighter("toolAmortizationCost")}>Tool Amortization Cost</span>
-                              </td>
-                              {viewCostingData &&
-                                viewCostingData?.map((data) => {
-                                  return (
-                                    <td className={`${tableDataClass(data)} ${pdfHead || drawerDetailPDF ? '' : ''}`}>
-                                      <div className={`d-flex`}>
-                                        <span className="d-inline-block p-0 w-50">
-                                          {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.toolApplicability.applicability : '')}
-                                        </span>{' '}
-                                        &nbsp;{' '}
-                                        <span className="d-inline-block p-0 w-50">
-                                          {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.toolApplicability.value : '')}
-                                        </span>
-                                      </div>
-                                      <div className={`${highlighter("toolMaintenanceCost")} d-flex`}>
-                                        <span className="d-inline-block w-50 ">{(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.toolApplicabilityValue.toolTitle : '')}</span> &nbsp;{' '}
-                                        <span className="d-inline-block w-50 "> {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.toolMaintenanceCost, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.toolMaintenanceCost, initialConfiguration.NoOfDecimalForPrice)}</span> : '')}</span>
-                                      </div>
 
-                                      <span className={highlighter("toolPrice")}>
-                                        {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.toolPrice, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.toolPrice, initialConfiguration.NoOfDecimalForPrice)}</span> : '')}
-                                      </span>
-                                      <span className={highlighter("amortizationQty")}>
-                                        {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.amortizationQty : '')}
-                                      </span>
-                                      <span className={highlighter("toolAmortizationCost")}>
-                                        {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.toolAmortizationCost : '')}
-                                      </span>
+                          {
+                            viewCostingData?.some(data => {
+                              // Console log the technologyId
+                              return data.technologyId !== TOOLING_ID && data.technologyId !== '-';
+                            }) && rfqCosting && (
+                              <>
+                                {!drawerDetailPDF ? (
+                                  <tr>
+                                    <td>
+                                      <span className="d-block small-grey-text pt-3"></span>
+                                      <span className={highlighter("toolMaintenanceCost")}>Tool Maintenance Cost on</span>
+                                      <span className={highlighter("toolPrice")}>Tool Price</span>
+                                      <span className={highlighter("amortizationQty")}>Amortization Quantity (Tool Life)</span>
+                                      <span className={highlighter("toolAmortizationCost")}>Tool Amortization Cost</span>
                                     </td>
-                                  )
-                                })}
-                            </tr> : <tr><th colSpan={2} className='py-0'> <ViewToolCost
-                              isOpen={isViewToolCost}
-                              viewToolCost={viewToolCost}
-                              closeDrawer={closeViewDrawer}
-                              anchor={'right'}
-                              isPDFShow={true}
-                            /> </th> </tr>
+                                    {viewCostingData.map((data) => (
+                                      <td className={`${tableDataClass(data)} ${pdfHead || drawerDetailPDF ? '' : ''}`}>
+                                        <div className={`d-flex`}>
+                                          <span className="d-inline-block p-0 w-50">
+                                            {data?.bestCost === true ? ' ' : data?.CostingHeading !== VARIANCE ? data?.toolApplicability.applicability : ''}
+                                          </span>
+                                          &nbsp;
+                                          <span className="d-inline-block p-0 w-50">
+                                            {data?.bestCost === true ? ' ' : data?.CostingHeading !== VARIANCE ? data?.toolApplicability.value : ''}
+                                          </span>
+                                        </div>
+                                        <div className={`${highlighter("toolMaintenanceCost")} d-flex`}>
+                                          <span className="d-inline-block w-50">
+                                            {data?.bestCost === true ? ' ' : data?.CostingHeading !== VARIANCE ? data?.toolApplicabilityValue.toolTitle : ''}
+                                          </span>
+                                          &nbsp;
+                                          <span className="d-inline-block w-50">
+                                            {data?.bestCost === true ? ' ' : data?.CostingHeading !== VARIANCE ? (
+                                              <span title={checkForDecimalAndNull(data?.toolMaintenanceCost, initialConfiguration.NoOfDecimalForPrice)}>
+                                                {checkForDecimalAndNull(data?.toolMaintenanceCost, initialConfiguration.NoOfDecimalForPrice)}
+                                              </span>
+                                            ) : ''}
+                                          </span>
+                                        </div>
+                                        <span className={highlighter("toolPrice")}>
+                                          {data?.bestCost === true ? ' ' : data?.CostingHeading !== VARIANCE ? (
+                                            <span title={checkForDecimalAndNull(data?.toolPrice, initialConfiguration.NoOfDecimalForPrice)}>
+                                              {checkForDecimalAndNull(data?.toolPrice, initialConfiguration.NoOfDecimalForPrice)}
+                                            </span>
+                                          ) : ''}
+                                        </span>
+                                        <span className={highlighter("amortizationQty")}>
+                                          {data?.bestCost === true ? ' ' : data?.CostingHeading !== VARIANCE ? data?.amortizationQty : ''}
+                                        </span>
+                                        <span className={highlighter("toolAmortizationCost")}>
+                                          {data?.bestCost === true ? ' ' : data?.CostingHeading !== VARIANCE ? data?.toolAmortizationCost : ''}
+                                        </span>
+                                      </td>
+                                    ))}
+                                  </tr>
+                                ) : (
+                                  <tr>
+                                    <th colSpan={2} className="py-0">
+                                      <ViewToolCost
+                                        isOpen={isViewToolCost}
+                                        viewToolCost={viewToolCost}
+                                        closeDrawer={closeViewDrawer}
+                                        anchor="right"
+                                        isPDFShow={true}
+                                      />
+                                    </th>
+                                  </tr>
+                                )}
+
+                                {/* Net Tool Cost Row */}
+                                <tr className={highlighter("totalToolCost", "main-row")}>
+                                  <th>Net Tool Cost</th>
+                                  {viewCostingData.map((data, index) => (
+                                    <td className={tableDataClass(data)}>
+                                      {displayValueWithSign(data, "totalToolCost")}
+                                      {data?.bestCost !== true && data?.CostingHeading !== VARIANCE && !pdfHead && !drawerDetailPDF && (
+                                        <button
+                                          id="view_toolCost"
+                                          type="button"
+                                          title="View"
+                                          className="float-right mb-0 View"
+                                          onClick={() => viewToolCostData(index)}
+                                        ></button>
+                                      )}
+                                    </td>
+                                  ))}
+                                </tr>
+                              </>
+                            )
                           }
 
-                          <tr className={highlighter("totalToolCost", "main-row")}>
-                            <th>Net Tool Cost</th>
-                            {viewCostingData &&
-                              viewCostingData?.map((data, index) => {
-                                return (
-                                  <td className={tableDataClass(data)}>
-                                    {displayValueWithSign(data, 'totalToolCost')}
-                                    {
-                                      (data?.bestCost !== true) && (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&
-                                      <button
-                                        id="view_toolCost"
 
-                                        type="button"
-                                        title='View'
-                                        className="float-right mb-0 View "
-                                        onClick={() => viewToolCostData(index)}
-                                      >
-
-                                      </button>
-                                    }
-                                  </td>
-                                )
-                              })}
-                          </tr>
                           <tr className='border-right'>
                             <td>
                               <span className="d-block small-grey-text">
@@ -3527,6 +3577,8 @@ const CostingSummaryTable = (props) => {
             anchor={'right'}
             index={index}
             isPDFShow={false}
+            hideProcessAndOtherCostTable={checkTechnologyIdAndRfq()}
+
           />
         )
       }
@@ -3539,6 +3591,8 @@ const CostingSummaryTable = (props) => {
             anchor={'right'}
             index={index}
             isPDFShow={false}
+            hideProcessAndOtherCostTable={checkTechnologyIdAndRfq()}
+
           />
         )
       }
@@ -3567,6 +3621,8 @@ const CostingSummaryTable = (props) => {
             index={index}
             isPDFShow={false}
             fromCostingSummary={props.fromCostingSummary}
+            hideProcessAndOtherCostTable={checkTechnologyIdAndRfq()}
+
           />
         )
       }

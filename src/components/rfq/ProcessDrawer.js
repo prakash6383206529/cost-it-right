@@ -295,12 +295,20 @@ function ViewDrawer(props) {
 
                 // setSOPDate(sopDate || '')
                 if (toolingSpecificRowData.length > 0) {
+
                     let arr = []
                     toolingSpecificRowData.forEach((part, index) => {
+
 
                         const PartId = part.ToolId || '';
 
                         if (index === 0) {
+                            const sopDate = part?.SOPDate
+                            const allSopQuantityDetails = part?.SOPQuantity || []
+                            setSOPDate(sopDate || '')
+
+                            setSopQuantityList(sopQuantityList => allSopQuantityDetails)
+
                             const allSpecifications = (part.ToolSpecificationList || []).map(detail => ({
                                 ...detail,
                                 PartId: PartId,
@@ -611,12 +619,12 @@ function ViewDrawer(props) {
         // }
 
 
-        if (partType === "Component") {
+        if (partType === "Component" || partType === "Tooling") {
             const dropdownTexts = _.map(getChildParts, 'Text');
             const tableTexts = _.map(tableData, 'PartNumber');
             const allPresent = _.every(dropdownTexts, text => _.includes(tableTexts, text));
             const hasNonZeroQuantity = sopQuantityList && sopQuantityList.length > 0 && sopQuantityList[0].Quantity !== 0 && sopQuantityList[0].Quantity !== '0';
-            if (type !== Component) {
+            if (type !== Component && partType !== "Tooling") {
                 if (!allPresent) {
                     Toaster.warning('RM Name, RM Grade, and RM Specification are required for each part.');
                     return false;
@@ -1518,7 +1526,7 @@ function ViewDrawer(props) {
                                     </tbody>
                                 </Table>
 
-                                {activeTab === "2" && (props.partType !== "Bought Out Part" && props.partType !== "Tooling") && (
+                                {activeTab === "2" && (props.partType !== "Bought Out Part") && (
                                     <>
                                         <HeaderTitle title={'Add Volume'} customClass="mt-5" />
                                         <Row className='mt-3 mb-1'>

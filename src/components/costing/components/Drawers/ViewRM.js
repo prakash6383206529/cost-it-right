@@ -16,10 +16,12 @@ import _ from 'lodash';
 function ViewRM(props) {
 
   const { viewRMData, rmMBDetail, isAssemblyCosting, isPDFShow, simulationMode, isSimulationDone } = props
+
   const dispatch = useDispatch()
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
   const [viewCostingData, setViewCostingData] = useState([])
+
 
   const { viewCostingDetailData, viewRejectedCostingDetailData, viewCostingDetailDataForAssembly } = useSelector((state) => state.costing)
 
@@ -38,6 +40,7 @@ function ViewRM(props) {
   }, [viewCostingDetailData, viewRejectedCostingDetailData, viewCostingDetailDataForAssembly])
 
   const [viewRM, setViewRM] = useState(viewRMData)
+
   const [index, setIndex] = useState('')
   const [weightCalculatorDrawer, setWeightCalculatorDrawer] = useState(false)
   const [calciData, setCalciData] = useState({})
@@ -230,6 +233,8 @@ function ViewRM(props) {
             <tr>
               {isAssemblyCosting && <th>{`Part No`}</th>}
               <th>{`RM Name -Grade`}</th>
+              <th>{`Updated RM Name`}</th>
+
               <th>{`RM Code`}</th>
               <th>{`RM Rate`}</th>
               <th>{`Scrap Rate`}</th>
@@ -250,11 +255,13 @@ function ViewRM(props) {
             </tr>
           </thead>
           <tbody>
-            {viewRM && viewRM.length > 0 && viewRM?.map((item, index) => {
+            {viewRM && viewRM?.length > 0 && viewRM?.map((item, index) => {
               return (
                 <tr key={index}>
                   {isAssemblyCosting && <td className={`${isPDFShow ? '' : 'text-overflow'}`}> <span title={item?.PartNumber !== null || item?.PartNumber !== "" ? item?.PartNumber : ""}>{item?.PartNumber !== null || item?.PartNumber !== "" ? item?.PartNumber : ""}</span></td>}
                   <td className={`${isPDFShow ? '' : 'text-overflow'}`}><span title={item?.RMName}>{item?.RMName}</span></td>
+                  <td>{item?.UpdatedRawMaterialName ? item?.UpdatedRawMaterialName : '-'}</td>
+
                   <td>{item?.RMCode ? item?.RMCode : '-'}</td>
                   <td>{checkForDecimalAndNull(item?.RMRate, initialConfiguration.NoOfDecimalForPrice)}</td>
                   <td>{checkForDecimalAndNull(item?.ScrapRate, initialConfiguration.NoOfDecimalForPrice)}</td>
@@ -298,7 +305,7 @@ function ViewRM(props) {
       </Col >
 
       {
-        viewCostingData[props.index]?.isApplyMasterBatch && !isAssemblyCosting &&
+        viewCostingData[props?.index]?.isApplyMasterBatch && !isAssemblyCosting &&
         <>
           < Col md="12">
             <div className="left-border mt-4 mb-3">Master Batch</div>
@@ -315,12 +322,12 @@ function ViewRM(props) {
               </thead>
               <tbody>
                 <tr key={index}>
-                  <td>{viewCostingData[props.index]?.masterBatchRMName}</td>
-                  <td>{checkForDecimalAndNull(viewCostingData[props.index]?.masterBatchRMPrice, initialConfiguration.NoOfDecimalForPrice)}</td>
-                  <td>{checkForDecimalAndNull(viewCostingData[props.index]?.masterBatchPercentage, initialConfiguration.NoOfDecimalForPrice)}</td>
-                  <td>{checkForDecimalAndNull(viewCostingData[props.index]?.masterBatchTotal, initialConfiguration.NoOfDecimalForInputOutput)}</td>
+                  <td>{viewCostingData[props?.index]?.masterBatchRMName}</td>
+                  <td>{checkForDecimalAndNull(viewCostingData[props?.index]?.masterBatchRMPrice, initialConfiguration.NoOfDecimalForPrice)}</td>
+                  <td>{checkForDecimalAndNull(viewCostingData[props?.index]?.masterBatchPercentage, initialConfiguration.NoOfDecimalForPrice)}</td>
+                  <td>{checkForDecimalAndNull(viewCostingData[props?.index]?.masterBatchTotal, initialConfiguration.NoOfDecimalForInputOutput)}</td>
                 </tr>
-                {viewRM.length === 0 && (
+                {viewRM?.length === 0 && (
                   <tr>
                     <td colSpan={13}>
                       <NoContentFound title={EMPTY_DATA} />
@@ -334,7 +341,7 @@ function ViewRM(props) {
       }
 
       {
-        isAssemblyCosting && masterBatchList.length > 0 && (!isSimulationDone === false ? isSimulationDone : (simulationMode ? simulationMode : false)) &&
+        isAssemblyCosting && masterBatchList?.length > 0 && (!isSimulationDone === false ? isSimulationDone : (simulationMode ? simulationMode : false)) &&
         <>
           < Col md="12">
             <div className="left-border mt-4 mb-3">Master Batch</div>
@@ -365,7 +372,7 @@ function ViewRM(props) {
                   )
                 })
                 }
-                {masterBatchList.length === 0 && (
+                {masterBatchList?.length === 0 && (
                   <tr>
                     <td colSpan={13}>
                       <NoContentFound title={EMPTY_DATA} />
