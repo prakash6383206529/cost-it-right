@@ -212,7 +212,7 @@ function SurfaceTreatmentCost(props) {
   const handleSurfaceAreaChange = (event, index) => {
     let tempArr = [];
     let tempData = gridData[index];
-    if (tempData?.UOMType === MASS && event?.target?.value > rmGrossWeight) {
+    if (checkForNull(rmGrossWeight) !== 0 && tempData?.UOMType === MASS && event?.target?.value > rmGrossWeight) {
       Toaster.warning("Enter value less than gross weight.")
       setTimeout(() => {
         setValue(`${OperationGridFields}.${index}.SurfaceArea`, '')

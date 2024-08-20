@@ -2209,8 +2209,6 @@ const CostingSummaryTable = (props) => {
                                       </label>
                                     </div>
                                     }
-
-
                                     {
                                       (isApproval && data?.CostingHeading !== '-') ? <span>{data?.CostingHeading}</span> :
                                         (data?.bestCost === true) ? "" :

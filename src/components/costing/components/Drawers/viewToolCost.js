@@ -27,7 +27,7 @@ function ViewToolCost(props) {
                 <th>{`Part Type`}</th>
                 <th>{`Process/Operation`}</th>
                 <th>{`Process/Operation Type`}</th>
-                <th>{`Process/Operation Quantity`}</th>
+                {/* <th>{`Process/Operation Quantity`}</th> */}
                 <th>{`Tool Name`}</th>
                 <th>{`Tool Cost`}</th>
                 <th>{`Quantity`}</th>
