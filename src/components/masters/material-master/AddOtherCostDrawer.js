@@ -13,12 +13,12 @@ import { getCostingCondition } from '../../../actions/Common'
 import { getRMCostIds } from '../../common/CommonFunctions'
 
 function AddOtherCostDrawer(props) {
-
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
     const dispatch = useDispatch();
 
     const { currency, rmBasicRate, isFromImport, isFromMaster, RowData, RowIndex } = props
-
+    const Currency = props?.RowData?.IndexCurrency
+    const UOM = props?.RowData?.IndexUOM
     const [tableData, setTableData] = useState([]);
     const [disableTotalCost, setDisableTotalCost] = useState(true)
     const [disableAllFields, setDisableAllFields] = useState(true)
@@ -122,7 +122,7 @@ function AddOtherCostDrawer(props) {
         let selectedData = tableData[indexValue];
         setValue('Cost', {
             label: selectedData.CostHeaderName,
-            value: selectedData.CostHeaderName
+            value: selectedData.CostingConditionMasterId
         });
         setValue('Type', {
             label: selectedData.Type,
@@ -142,6 +142,7 @@ function AddOtherCostDrawer(props) {
         setValue('CostCurrency', selectedData.NetCost);
         setValue('CostBaseCurrency', selectedData.NetCostConversion);
         setValue('CostDescription', selectedData.Description);
+        setValue('Remark', selectedData.Remark);
         setRawMaterialCommodityIndexRateAndOtherCostDetailsId(selectedData?.RawMaterialCommodityIndexRateAndOtherCostDetailsId ?? null)
         // setTotalCostCurrency(selectedData.CostCurrency);
         // setType(selectedData.ConditionType);
@@ -184,7 +185,7 @@ function AddOtherCostDrawer(props) {
             }
         } else {
             if (type === "") {
-                cssClass = 'mb-3';
+                cssClass = 'mt-4 pt-1';
             } else if (type === "Fixed") {
                 cssClass = 'mb-3';
             } else {
@@ -200,7 +201,6 @@ function AddOtherCostDrawer(props) {
         }
         return cssClass
     }
-
     const applicabilityChange = (e) => {
 
         // Handle Basic Rate separately
@@ -321,6 +321,7 @@ function AddOtherCostDrawer(props) {
         { label: "Shipping Line Charges", value: "Shipping Line Charges" },
         { label: "Processing Cost", value: "Processing Cost" },
         { label: "Import Freight", value: "Import Freight" },
+        { label: "Yield Loss", value: "Yield Loss" },
     ];
 
     const combinations = [];
@@ -350,9 +351,11 @@ function AddOtherCostDrawer(props) {
         const percentage = Number(getValues('Percentage'));
         const costBaseCurrency = getValues('CostBaseCurrency');
         const applicabilityBaseCost = getValues('ApplicabilityBaseCost');
+        const remark = getValues('Remark');
+        const costDescription = getValues('CostDescription');
 
         // If 'Type' is not provided, return false
-        if (!type || !cost) { Toaster.warning('Please enter all details to add a row.'); return false };
+        if (!type || !cost || !remark || !costDescription) { Toaster.warning('Please enter all mandatory details to add a row.'); return false };
         if (type.label === "Percentage") {
             // If 'Type' is 'percentage', check for 'Applicability' and 'Percentage'
             if (!applicability || !applicabilityBaseCost || !percentage || percentage === 0) {
@@ -370,13 +373,14 @@ function AddOtherCostDrawer(props) {
             Type: getValues('Type') ? getValues('Type').label : '-',
             CostHeaderName: getValues('Cost') ? getValues('Cost').label : '-',
             Applicability: getValues('Applicability') ? getValues('Applicability').label : '-',
-            ApplicabilityCost: getValues('ApplicabilityCostCurrency') ? getValues('ApplicabilityCostCurrency') : '-',
+            ApplicabilityCost: props.rawMaterial ? getValues('ApplicabilityBaseCost') : getValues('ApplicabilityCostCurrency') ? getValues('ApplicabilityCostCurrency') : '-',
             ApplicabilityCostConversion: getValues('ApplicabilityBaseCost') ? getValues('ApplicabilityBaseCost') : '-',
             Value: getValues('Percentage') ? getValues('Percentage') : '-',
-            NetCost: getValues('CostCurrency') ? getValues('CostCurrency') : '-',
+            NetCost: props.rawMaterial ? getValues('CostBaseCurrency') : getValues('CostCurrency') ? getValues('CostCurrency') : '-',
             NetCostConversion: getValues('CostBaseCurrency'),
             Description: getValues('CostDescription') ? getValues('CostDescription') : '-',
             CostingConditionMasterId: getValues('Cost') ? getValues('Cost').value : '-',
+            Remark: getValues('Remark')
         };
 
         // If the CostHeaderName is 'Discount Cost', prepend '-' sign
@@ -445,6 +449,7 @@ function AddOtherCostDrawer(props) {
                 CostCurrency: '',
                 CostBaseCurrency: '',
                 CostDescription: '',
+                Remark: ''
             });
         };
         commonReset();
@@ -455,6 +460,10 @@ function AddOtherCostDrawer(props) {
             setType(type);
             setValue('CostCurrency', '')
             setValue('CostBaseCurrency', '')
+            setValue('Percentage', '')
+            setValue('Applicability', '')
+            setValue('ApplicabilityCostCurrency', '')
+            setValue('ApplicabilityBaseCost', '')
             if (type?.label === "Percentage") {
                 setState(prevState => ({ ...prevState, disableApplicability: false }));
             } else {
@@ -506,7 +515,7 @@ function AddOtherCostDrawer(props) {
                                                 className=""
                                                 customClassName={'withBorder'}
                                                 errors={errors.Condition}
-                                                disabled={props.ViewMode}
+                                                disabled={props.ViewMode || isEditMode}
                                             />
                                         </Col>
                                         <Col md="3" className='px-2'>
@@ -516,9 +525,9 @@ function AddOtherCostDrawer(props) {
                                                 Controller={Controller}
                                                 control={control}
                                                 register={register}
-                                                mandatory={false}
+                                                mandatory={true}
                                                 rules={{
-                                                    required: false,
+                                                    required: true,
                                                     validate: { checkWhiteSpaces, hashValidation },
                                                     maxLength: 80
                                                 }}
@@ -576,7 +585,7 @@ function AddOtherCostDrawer(props) {
                                                 {!props.rawMaterial && <Col md={3} className={'px-2'}>
 
                                                     <TextFieldHookForm
-                                                        label={`Applicability Cost (Currency)`}
+                                                        label={`Applicability Cost (${Currency}/${UOM})`}
                                                         name={'ApplicabilityCostCurrency'}
                                                         id={'cost-by-percent'}
                                                         Controller={Controller}
@@ -647,7 +656,7 @@ function AddOtherCostDrawer(props) {
                                         {!props.rawMaterial && <Col md={3} className={'px-2'}>
 
                                             <TextFieldHookForm
-                                                label={`Cost (Currency)`}
+                                                label={`Cost (${Currency}/${UOM})`}
                                                 name={'CostCurrency'}
                                                 id={'cost-by-percent'}
                                                 Controller={Controller}
@@ -690,7 +699,27 @@ function AddOtherCostDrawer(props) {
                                                 disabled={type?.label === 'Percentage' ? true : false || state.disableCostBaseCurrency || props.ViewMode}
                                             />
                                         </Col>
-
+                                        <Col md="3" className='px-2'>
+                                            <TextFieldHookForm
+                                                label="Remark"
+                                                name={"Remark"}
+                                                Controller={Controller}
+                                                control={control}
+                                                register={register}
+                                                mandatory={true}
+                                                rules={{
+                                                    required: true,
+                                                    validate: { checkWhiteSpaces, hashValidation },
+                                                    maxLength: 80
+                                                }}
+                                                handleChange={() => { }}
+                                                defaultValue={""}
+                                                className=""
+                                                customClassName={"withBorder"}
+                                                errors={errors.OtherCostDescription}
+                                                disabled={props.ViewMode}
+                                            />
+                                        </Col>
                                         <Col md="3" className={toggleCondition()}>
                                             <button
                                                 type="button"
@@ -718,11 +747,12 @@ function AddOtherCostDrawer(props) {
                                                     <th>{`Cost Description`}</th>
                                                     <th>{`Type`}</th>
                                                     <th>{`Applicability`}</th>
-                                                    {!props.rawMaterial && <th>{`Applicability Cost (Currency)`}</th>}
+                                                    {!props.rawMaterial && <th>{`Applicability Cost (${Currency}/${UOM})`}</th>}
                                                     <th>{`Applicability Cost (${reactLocalStorage.getObject("baseCurrency")})`}</th>
                                                     <th>{`Percentage (%)`}</th>
-                                                    {!props.rawMaterial && <th>{`Cost (Currency)`}</th>}
+                                                    {!props.rawMaterial && <th>{`Cost (${Currency}/${UOM})`}</th>}
                                                     <th>{`Cost (${reactLocalStorage.getObject("baseCurrency")})`}</th>
+                                                    <th>{`Remark`}</th>
                                                     {!props.hideAction && <th className='text-right'>{`Action`}</th>}
                                                 </tr>
 
@@ -738,6 +768,7 @@ function AddOtherCostDrawer(props) {
                                                             <td>{item.Value !== '-' ? checkForDecimalAndNull(item.Value, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
                                                             {!props.rawMaterial && <td>{item.NetCost !== '-' ? item.NetCost : '-'}</td>}
                                                             <td>{item.NetCostConversion !== '-' ? item.NetCostConversion : '-'}</td>
+                                                            <td>{item.Remark}</td>
                                                             {!props.hideAction && (
                                                                 <td>
                                                                     <div className='text-right'>

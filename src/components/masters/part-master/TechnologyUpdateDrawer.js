@@ -17,6 +17,7 @@ import { autoCompleteDropdown, autoCompleteDropdownPart } from '../../common/Com
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { getPartSelectListWtihRevNo } from '../actions/Volume';
 import { getUnassociatedPartNumber } from '../../../actions/auth/AuthActions';
+import { useLabels } from '../../../helper/core';
 
 function TechnologyUpdateDrawer(props) {
     const { rowDataFortechnologyUpdate, closeDrawer } = props
@@ -32,7 +33,7 @@ function TechnologyUpdateDrawer(props) {
     const [partName, setpartName] = useState('')
     const [partTypeId, setPartTypeId] = useState('')
     const dispatch = useDispatch();
-
+    const { technologyLabel } = useLabels();
     useEffect(() => {
 
         dispatch(getCostingSpecificTechnology(loggedInUserId(), () => { }))
@@ -132,7 +133,7 @@ function TechnologyUpdateDrawer(props) {
                         <Row className="drawer-heading sticky-top-0">
                             <Col >
                                 <div className={'header-wrapper left'}>
-                                    <h3>{`Technology Update`}</h3>
+                                    <h3>{`${technologyLabel} Update`}</h3>
                                 </div>
                                 <div
                                     onClick={(e) => closeDrawer('close')}
@@ -167,7 +168,7 @@ function TechnologyUpdateDrawer(props) {
                                 <Row className='mt-2'>
                                     <Col md="12">
                                         <SearchableSelectHookForm
-                                            label={"Technology"}
+                                            label={technologyLabel}
                                             name={"Technology"}
                                             placeholder={"Select"}
                                             Controller={Controller}

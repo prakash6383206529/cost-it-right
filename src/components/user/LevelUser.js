@@ -10,6 +10,7 @@ import {
     assignUserLevelAPI
 } from "../../actions/auth/AuthActions";
 import { MESSAGES } from "../../config/message";
+import { withTranslation } from "react-i18next";
 
 class LevelUser extends Component {
     constructor(props) {
@@ -156,7 +157,7 @@ class LevelUser extends Component {
                                         name="TechnologyId"
                                         type="text"
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
-                                        label="Technology"
+                                        label={this.props.t('commonFields.technology', { ns: 'MasterLabels', defaultValue: 'Technology' })}
                                         component={searchableSelect}
                                         //validate={[required, maxLength50]}
                                         options={this.searchableSelectType('technology')}
@@ -250,4 +251,4 @@ export default connect(mapStateToProps, {
     },
     enableReinitialize: true,
     touchOnChange: true
-})(LevelUser));
+})(withTranslation(['MasterLabels'])(LevelUser)));

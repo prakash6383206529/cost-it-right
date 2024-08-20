@@ -5,11 +5,12 @@ import { Row, Col, Table, } from 'reactstrap';
 import {
   getDiscountOtherCostTabData, saveDiscountOtherCostTab, fileUploadCosting, fileDeleteCosting,
   getExchangeRateByCurrency, setDiscountCost, setComponentDiscountOtherItemData, saveAssemblyPartRowCostingCalculation, saveAssemblyBOPHandlingCharge, setDiscountErrors, gridDataAdded, isDiscountDataChange, setNPVData, setPOPrice, resetExchangeRateData, setOtherCostData,
-  setOtherDiscountData, getCostingPaymentTermDetail, setDiscountAndOtherCostData, saveCostingPaymentTermDetail, setPaymentTermsDataInDiscountOtherTab, isPaymentTermsDataChange, getCostingTcoDetails, setPaymentTermCost
+  setOtherDiscountData, getCostingPaymentTermDetail, setDiscountAndOtherCostData, saveCostingPaymentTermDetail, setPaymentTermsDataInDiscountOtherTab, isPaymentTermsDataChange, getCostingTcoDetails, setPaymentTermCost,
+  getExternalIntegrationEvaluationType
 } from '../../actions/Costing';
 import { fetchCostingHeadsAPI, getConditionDetails, getCurrencySelectList, getNpvDetails, saveCostingDetailCondition, saveCostingDetailNpv, } from '../../../../actions/Common';
 import { costingInfoContext, netHeadCostContext, NetPOPriceContext } from '../CostingDetailStepTwo';
-import { calculatePercentage, checkForDecimalAndNull, checkForNull, loggedInUserId, removeBOPfromApplicability, maxLength20, showSaLineNumber, showBopLabel } from '../../../../helper';
+import { calculatePercentage, checkForDecimalAndNull, checkForNull, loggedInUserId, removeBOPfromApplicability, maxLength20, showSaLineNumber, showBopLabel, getConfigurationKey } from '../../../../helper';
 //MINDA
 // import {  removeBOPFromList} from '../../../../helper';
 import { debounce } from 'lodash';
@@ -17,7 +18,7 @@ import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
 import { Redirect, useHistory } from "react-router-dom";
 import redcrossImg from '../../../../assests/images/red-cross.png';
-import { ATTACHMENT, CAPACITY, CRMHeads, FEASIBILITY, FILE_URL, NFRTypeId, TIMELINE, VBCTypeId, WACTypeId } from '../../../../config/constants';
+import { ATTACHMENT, CAPACITY, CRMHeads, FEASIBILITY, FILE_URL, isShowTaxCode, NFRTypeId, TIMELINE, VBCTypeId, WACTypeId } from '../../../../config/constants';
 import { IdForMultiTechnology } from '../../../../config/masterData';
 import { MESSAGES } from '../../../../config/message';
 import DayTime from '../../../common/DayTimeWrapper';
@@ -40,6 +41,8 @@ import OtherCostDrawer from '../CostingHeadCosts/AdditionalOtherCost/OtherCostDr
 import PaymentTerms from '../CostingHeadCosts/OverheadProfit/PaymentTerms';
 import AddNpvCost from '../CostingHeadCosts/AdditionalOtherCost/AddNpvCost';
 import NpvCost from '../CostingHeadCosts/AdditionalOtherCost/NpvCost';
+import { setSAPData } from '../../actions/Approval';
+
 let counter = 0;
 function TabDiscountOther(props) {
   // ********* INITIALIZE REF FOR DROPZONE ********
@@ -138,8 +141,10 @@ function TabDiscountOther(props) {
   const [paymentTerms, setPaymentTerms] = useState(false)
   const [paymentTermsWarning, setPaymentTermsWarning] = useState(false)
   const { getCostingPaymentDetails } = useSelector(state => state.costing);
+  const { evaluationType } = useSelector((state) => state?.costing)
 
 
+  const SAPData = useSelector(state => state.approval.SAPObj)
 
 
   const fieldValues = useWatch({
@@ -182,6 +187,15 @@ function TabDiscountOther(props) {
   useEffect(() => {
     let request = partType ? 'multiple technology assembly' : ''
     dispatch(fetchCostingHeadsAPI(request, false, (res) => { }))
+    if (getConfigurationKey().IsSAPConfigured) {
+
+      let data = {
+        plantCode: costData?.PlantCode,
+        partNumber: costData?.PartNumber
+      }
+
+      dispatch(getExternalIntegrationEvaluationType(data, res => { }))
+    }
   }, [])
   useEffect(() => {
     dispatch(getCostingPaymentTermDetail(costData?.CostingId, (res) => {
@@ -302,29 +316,55 @@ function TabDiscountOther(props) {
     </div>
   }, [otherDiscountData])
 
+
   const costingConditionUI = useMemo(() => {
     const sum = conditionTableData.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCostPerQuantity), 0);
+    console.log('conditionTableData: ', conditionTableData);
     setValue('ConditionCosting', checkForDecimalAndNull(sum, initialConfiguration.NoOfDecimalForPrice))
+    setValue('TaxCode', conditionTableData[0]?.Description)
 
     return <Col md="3">
       <div className='d-flex align-items-center'>
-        <TooltipCustom disabledIcon={true} width="280px" id="costingCondition" tooltipText={"Condition Cost = Sum of condition cost added in condition drawer"} />
-        <TextFieldHookForm
-          label="Condition"
-          name={'ConditionCosting'}
-          Controller={Controller}
-          id="costingCondition"
-          control={control}
-          register={register}
-          mandatory={false}
-          rules={{}}
-          handleChange={() => { }}
-          defaultValue={sum}
-          className=""
-          customClassName={'withBorder w-100'}
-          errors={errors.ConditionCosting}
-          disabled={true}
-        />
+        {
+          isShowTaxCode ?
+            <TextFieldHookForm
+              label="Tax Code"
+              name={'TaxCode'}
+              Controller={Controller}
+              id="TaxCode"
+              control={control}
+              register={register}
+              mandatory={true}
+              rules={{ required: true }}
+              handleChange={() => { }}
+              defaultValue={''}
+              className=""
+              customClassName={'withBorder w-100'}
+              errors={errors.TaxCode}
+              disabled={true}
+            /> :
+            <>
+
+              <TooltipCustom disabledIcon={true} width="280px" id="costingCondition" tooltipText={"Condition Cost = Sum of condition cost added in condition drawer"} />
+              <TextFieldHookForm
+                label="Condition"
+                name={'ConditionCosting'}
+                Controller={Controller}
+                id="costingCondition"
+                control={control}
+                register={register}
+                mandatory={false}
+                rules={{}}
+                handleChange={() => { }}
+                defaultValue={sum}
+                className=""
+                customClassName={'withBorder w-100'}
+                errors={errors.ConditionCosting}
+                disabled={true}
+              />
+            </>
+        }
+
         <Button
           id="tabDiscount_condition"
           onClick={() => openAndCloseAddConditionCosting('Open')}
@@ -372,7 +412,7 @@ function TabDiscountOther(props) {
         }))
       }
 
-      if (initialConfiguration?.IsBasicRateAndCostingConditionVisible) {
+      if (initialConfiguration?.IsBasicRateAndCostingConditionVisible || isShowTaxCode) {
         dispatch(getConditionDetails(RMCCTabData && RMCCTabData[0]?.CostingId, (res) => {
           if (res?.data?.Data) {
             let Data = res?.data?.Data.ConditionsData
@@ -507,6 +547,8 @@ function TabDiscountOther(props) {
       },
       "SANumber": getValues('SANumber'),
       "LineNumber": getValues('LineNumber'),
+      "ValuationType": SAPData?.evaluationType,
+      "IsValuationValid": SAPData?.isValuationValid,
       "Attachements": updatedFiles,
       "IsChanged": true,
     }
@@ -548,6 +590,7 @@ function TabDiscountOther(props) {
         if (res && res.data && res.data.Result) {
           let Data = res.data.Data;
 
+
           if (Data && Data?.CostingPartDetails && Data?.CostingPartDetails?.GrandTotalCost !== null) {
             let costDetail = Data?.CostingPartDetails
             let attachmentList = filterAttachments(Data.Attachements, null)
@@ -572,6 +615,9 @@ function TabDiscountOther(props) {
             //MINDA
             setValue('SANumber', Data.SANumber !== null ? Data.SANumber : '')
             setValue('LineNumber', Data.LineNumber !== null ? Data.LineNumber : '')
+            setValue("evaluationType", Data?.ValuationType ? { label: Data?.ValuationType, value: Data?.ValuationType } : "")
+
+            dispatch(setSAPData({ ...SAPData, evaluationType: Data?.ValuationType ?? '', isValuationValid: Data?.IsValuationValid ?? false }))
 
             setEffectiveDate(DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
             setValue('AnyOtherCost', costDetail.NetOtherCost !== null ? checkForDecimalAndNull(costDetail.NetOtherCost, initialConfiguration?.NoOfDecimalForPrice) : '')
@@ -973,6 +1019,14 @@ function TabDiscountOther(props) {
       }
       return tempList;
     }
+    if (label === 'evaluationType') {
+      evaluationType && evaluationType.map((item) => {
+        if (item.Value === '0') return false
+        temp.push({ label: item.Text, value: item.Value })
+        return null
+      })
+      return temp
+    }
 
   }
 
@@ -1109,6 +1163,11 @@ function TabDiscountOther(props) {
   const onSubmit = debounce((values, val, gotoNextValue) => {
     setPaymentTermsWarning(false)
     if (errorCheckObject(ErrorObjDiscount)) return false;
+    console.log('conditionTableData: ', conditionTableData);
+    if (conditionTableData.length === 0) {
+      Toaster.warning("Tax code is mandatory.Please add from the drawer")
+      return false
+    }
     if (!getValues('discountDescriptionRemark') && discountCostApplicability?.value) {
       errors.discountDescriptionRemark = {
         "type": "required",
@@ -1202,6 +1261,8 @@ function TabDiscountOther(props) {
       },
       "SANumber": getValues('SANumber'),
       "LineNumber": getValues('LineNumber'),
+      "ValuationType": SAPData?.evaluationType,
+      "IsValuationValid": SAPData?.isValuationValid,
       "Attachements": updatedFiles
     }
     let obj = {
@@ -1810,6 +1871,12 @@ function TabDiscountOther(props) {
     dispatch(setDiscountAndOtherCostData(data, () => { }));
   };
 
+  const handleValuationType = (value) => {
+
+
+    dispatch(setSAPData({ ...SAPData, evaluationType: value?.label ?? '', isValuationValid: evaluationType.length > 0 ? true : false }))
+  }
+
   return (
     <>
       {!nfrListing && <div className="login-container signup-form">
@@ -1905,7 +1972,7 @@ function TabDiscountOther(props) {
                             validate: { number, checkWhiteSpaces, percentageLimitValidation },
                             max: {
                               value: 100,
-                              message: 'Percentage cannot be greater than 100'
+                              message: 'Percentage cannot be greater than 100.'
                             },
                           }}
                           handleChange={(e) => {
@@ -2034,7 +2101,7 @@ function TabDiscountOther(props) {
                           disabled={true}
                         />
                       </Col >}
-                    {initialConfiguration?.IsBasicRateAndCostingConditionVisible ? costingConditionUI : ''}
+                    {(initialConfiguration?.IsBasicRateAndCostingConditionVisible || isShowTaxCode) ? costingConditionUI : ''}
                     {
                       isConditionCostingOpen && <AddConditionCosting
                         isOpen={isConditionCostingOpen}
@@ -2115,7 +2182,26 @@ function TabDiscountOther(props) {
                             disabled={CostingViewMode ? true : false}
                           />
                         </Col></>}
-
+                    {
+                      getConfigurationKey().IsSAPConfigured &&
+                      <Col md={"2"}>
+                        <SearchableSelectHookForm
+                          label={"Valuation Type"}
+                          name={"evaluationType"}
+                          placeholder={"Select"}
+                          Controller={Controller}
+                          control={control}
+                          rules={{ required: false }}
+                          register={register}
+                          defaultValue={""}
+                          options={renderListing("evaluationType")}
+                          mandatory={false}
+                          handleChange={handleValuationType}
+                          errors={errors.evaluationType}
+                          isClearable={true}
+                          disabled={CostingViewMode ? true : false} />
+                      </Col>
+                    }
                   </Row >
                   <Row className="mt-2">
                     <Col md="3" className={`mt20 pt-3`}>
@@ -2199,7 +2285,7 @@ function TabDiscountOther(props) {
                           validate: { checkWhiteSpaces },
                           maxLength: {
                             value: 500,
-                            message: "Remark should be less than 500 words"
+                            message: "Remark should be less than 500 words."
                           },
                         }}
                         handleChange={() => { dispatch(isDiscountDataChange(true)) }}

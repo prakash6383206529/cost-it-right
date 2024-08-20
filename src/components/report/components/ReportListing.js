@@ -18,6 +18,7 @@ import LoaderCustom from '../common/LoaderCustom';
 import WarningMessage from '../common/WarningMessage'
 import { handleDepartmentHeader, showBopLabel } from '../../../helper'
 import { reactLocalStorage } from 'reactjs-localstorage'
+import { useLabels } from '../../../helper/core'
 
 
 
@@ -72,7 +73,7 @@ function ReportListing(props) {
 
 
     const dispatch = useDispatch()
-
+    const { technologyLabel } = useLabels();
     const { register, handleSubmit, control, setValue, formState: { errors }, getValues } = useForm({
         mode: 'onBlur',
         reValidateMode: 'onChange',
@@ -509,7 +510,7 @@ function ReportListing(props) {
                     >
 
                         <AgGridColumn field="CostingNumber" headerName="Costing Version"></AgGridColumn>
-                        <AgGridColumn field="TechnologyName" headerName="Technology"></AgGridColumn>
+                        <AgGridColumn field="TechnologyName" headerName={technologyLabel}></AgGridColumn>
                         <AgGridColumn field="DepartmentName" headerName={`${handleDepartmentHeader()}`} cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field="PlantName" headerName="Plant(Code)" cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field="NetPOPrice" headerName="PO Price"></AgGridColumn>

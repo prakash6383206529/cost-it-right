@@ -24,6 +24,7 @@ import RMIndexationListing from './RMIndexationListing';
 import RMDetailListing from './RMDetailListing';
 import IndexCommodityListing from './IndexCommodityListing';
 import CommodityInIndexListing from './CommodityInIndexListing';
+import { useTranslation } from 'react-i18next';
 export const ApplyPermission = React.createContext();
 function RowMaterialMaster(props) {
 
@@ -50,6 +51,7 @@ function RowMaterialMaster(props) {
     const topAndLeftMenuData = useSelector((state) => state.auth.topAndLeftMenuData)
     const disabledClass = useSelector((state) => state.comman.disabledClass)
     const dispatch = useDispatch();
+    const { t } = useTranslation('MasterLabels');
 
     /**
         * @method componentDidMount
@@ -223,7 +225,7 @@ function RowMaterialMaster(props) {
 
                                 {<NavItem>
                                     <NavLink className={classnames({ active: activeTab === '1' })} onClick={() => { toggle('1'); }}>
-                                        Manage Raw Material
+                                        {t('RMMaster', { defaultValue: 'Manage Raw Material' })}
                                     </NavLink>
                                 </NavItem>}
                                 {/* {<NavItem>

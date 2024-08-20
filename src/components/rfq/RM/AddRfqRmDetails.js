@@ -17,7 +17,8 @@ import { DRAFT, PREDRAFT, SENT } from "../../../config/constants";
 
 
 const AddRfqRmDetails = (props) => {
-    const { updateRawMaterialList, resetRmFields, updateButtonPartNoTable, rmSpecificRowData, dataProps, isEditFlag, isViewFlag, setViewQuotationPart, disabledPartUid, technology } = props
+    const { updateRawMaterialList, resetRmFields, updateButtonPartNoTable, rmSpecificRowData, dataProps, isEditFlag, isViewFlag, setViewQuotationPart, disabledPartUid, technology, setDisabled, isDisabled, resetDrawer } = props
+
     const { register, handleSubmit, setValue, getValues, formState: { errors }, control } = useForm({ mode: 'onChange', reValidateMode: 'onChange', defaultValues: { radioOption: false, } });
     const [rmName, setRmName] = useState([]);
     const [rmGrade, setRmGrade] = useState([]);
@@ -28,7 +29,6 @@ const AddRfqRmDetails = (props) => {
     const dispatch = useDispatch()
     const [rmRemark, setRmRemark] = useState("");
     const showStatus = dataProps?.rowData?.Status || ""
-    const [isDisabled, setIsDisabled] = useState(false)
 
     // const [viewQuotationPart, setViewQuotationPart] = useState(false)
     const rawMaterialNameSelectList = useSelector((state) => state.material.rawMaterialNameSelectList)
@@ -48,12 +48,12 @@ const AddRfqRmDetails = (props) => {
         setRmData()
     }, [rmName, rmGrade, rmSpec, rmCode, rmAttchment, rmRemark])
 
-
     useEffect(() => {
         if (resetRmFields) {
-            onResetRmFields()
+            onResetRmFields();
         }
-    }, [resetRmFields])
+    }, [resetRmFields]);
+
     useEffect(() => {
         if (updateButtonPartNoTable) {
             let obj = {
@@ -232,7 +232,7 @@ const AddRfqRmDetails = (props) => {
 
         if (newValue && newValue !== '') {
             setRmCode(newValue)
-            setIsDisabled(true)
+            setDisabled(true)
             delete errors.RawMaterialName
             dispatch(getRMSpecificationDataAPI(newValue.value, true, (res) => {
                 if (res.status === 204) {
@@ -256,7 +256,7 @@ const AddRfqRmDetails = (props) => {
             setValue('RmName', '')
             setValue('Grade', '')
             setValue('Specifications', '')
-            setIsDisabled(false)
+            setDisabled(false)
 
         }
     }
@@ -265,7 +265,8 @@ const AddRfqRmDetails = (props) => {
     return (
 
         <>
-            <HeaderTitle title={'RM:'} />
+            {/* <HeaderTitle title={'RM:'} /> */}
+            {props.heading()}
             <Row className="part-detail-wrapper">
                 <Col md="3">
                     <SearchableSelectHookForm
@@ -361,8 +362,8 @@ const AddRfqRmDetails = (props) => {
                             isOpen={drawerOpen}
                             anchor={"right"}
                             closeDrawer={closeDrawer}
-                            partType={'RM'}
-                            quationType={'RM'}
+                            partType={'Raw Material'}
+                            quotationType={'Raw Material'}
                             setViewQuotationPart={setViewQuotationPart}
                             setChildPartFiles={setRmAttchment}
                             childPartFiles={rmAttchment}
@@ -371,6 +372,7 @@ const AddRfqRmDetails = (props) => {
                             rmSpecificRowData={rmSpecificRowData}
                             isEditFlag={isEditFlag}
                             isViewFlag={isViewFlag}
+                            resetDrawer={resetDrawer}
 
                         />
                     )

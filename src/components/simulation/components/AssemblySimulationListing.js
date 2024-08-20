@@ -301,6 +301,7 @@ function AssemblySimulationListing(props) {
                                             <AgGridColumn field="CostingNumber" editable='false' headerName="Costing Number" minWidth={140}></AgGridColumn>
                                             <AgGridColumn field="PlantName" editable='false' headerName="Plant Name" minWidth={140}></AgGridColumn>
                                             <AgGridColumn field="PlantCode" editable='false' headerName="Plant Code" minWidth={140}></AgGridColumn>
+                                            <AgGridColumn field="InfoCategory" editable='false' headerName="Category" minWidth={140}></AgGridColumn>
                                             <AgGridColumn field="PartName" editable='false' headerName="Part Name" minWidth={140}></AgGridColumn>
                                             <AgGridColumn field="PartNumber" editable='false' headerName="Part Number" minWidth={140}></AgGridColumn>
                                             <AgGridColumn field="POPrice" editable='false' headerName="Current PO" minWidth={140}></AgGridColumn>

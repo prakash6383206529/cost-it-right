@@ -141,6 +141,7 @@ const CostingSummaryTable = (props) => {
   const [otherCostDetailsProcess, setOtherCostDetailsProcess] = useState([])
 
   const { viewCostingDetailData, viewRejectedCostingDetailData, viewCostingDetailDataForAssembly } = useSelector((state) => state.costing)
+  const showCheckbox = viewCostingData && viewCostingData.some(item => item.IsShowCheckBoxForApproval === true);
 
   useEffect(() => {
     if (viewCostingDetailData && viewCostingDetailData?.length > 0 && !props?.isRejectedSummaryTable && !props?.isFromAssemblyTechnology) {
@@ -1815,7 +1816,7 @@ const CostingSummaryTable = (props) => {
 
   const showReturnCosting = (index) => {
     setLoader(true)
-    dispatch(getCostingByVendorAndVendorPlant(viewCostingData[index]?.partId, viewCostingData[index]?.vendorId, '', viewCostingData[index]?.destinationPlantId, '', VBCTypeId, (res) => {
+    dispatch(getCostingByVendorAndVendorPlant(viewCostingData[index]?.partId, viewCostingData[index]?.vendorId, '', viewCostingData[index]?.destinationPlantId, '', VBCTypeId, initialConfiguration?.InfoCategories[0]?.Text, (res) => {
       if (res?.data?.Result) {
         let list = [...res?.data?.DataList]
         let rejectedCostingList = list.filter(element => element?.DisplayStatus === REJECTED)
@@ -2066,8 +2067,9 @@ const CostingSummaryTable = (props) => {
             )}
 
             {<Col md={simulationMode || props.isRfqCosting || isApproval ? "12" : "8"} className="text-right">
-              <div className='d-flex justify-content-end'>
-                <div className='d-flex justify-content-end'>
+              <div className='d-flex justify-content-end mb-2'>
+                <div className='d-flex justify-content-end align-items-center'>
+                  {props.isRfqCosting && !isApproval && showCheckbox && <WarningMessage dClass={"justify-content-end mr-2"} message={'Click the checkbox to approve, reject, or return the quotation'} />}
 
                   {downloadAccessibility && <ExcelFile filename={'Costing Summary'} fileExtension={'.xls'} element={<button type="button" className={'user-btn excel-btn mr5 mb-2'} id="costingSummary_excel" title="Excel"><img src={ExcelIcon} alt="download" /></button>}>
 
@@ -2207,8 +2209,6 @@ const CostingSummaryTable = (props) => {
                                       </label>
                                     </div>
                                     }
-
-
                                     {
                                       (isApproval && data?.CostingHeading !== '-') ? <span>{data?.CostingHeading}</span> :
                                         (data?.bestCost === true) ? "" :
@@ -2238,6 +2238,7 @@ const CostingSummaryTable = (props) => {
                               <span className={`d-block mt-${props.isFromViewRFQ ? 4 : 2}`}>Net Cost (Effective from)</span>
                               <span className="d-block">Vendor (Code)</span>
                               {(reactLocalStorage.getObject('CostingTypePermission').cbc) && <span className="d-block">Customer (Code)</span>}
+                              <span className="d-block">Category</span>
                               <span className="d-block">Part Type</span>
                               <span className="d-block">Part Number</span>
                               <span className="d-block">Part Name</span>
@@ -2299,6 +2300,7 @@ const CostingSummaryTable = (props) => {
                                     {/* USE PART NUMBER KEY HERE */}
                                     <span className="d-block">{(data?.bestCost === true) ? ' ' : (data?.costingTypeId !== ZBCTypeId || data?.costingTypeId !== CBCTypeId || data?.costingTypeId !== WACTypeId) ? data?.vendor : ''}</span>
                                     {(reactLocalStorage.getObject('CostingTypePermission').cbc) && <span className="d-block">{(data?.bestCost === true) ? ' ' : data?.costingTypeId === CBCTypeId ? data?.customer : '-'}</span>}
+                                    <span className="d-block">{(data?.bestCost === true) ? ' ' : data?.InfoCategory}</span>
                                     <span className="d-block">{(data?.bestCost === true) ? ' ' : data?.partType}</span>
                                     <span className="d-block">{(data?.bestCost === true) ? ' ' : data?.partNumber}</span>
                                     <span className="d-block">{(data?.bestCost === true) ? ' ' : data?.partName}</span>
@@ -2393,17 +2395,18 @@ const CostingSummaryTable = (props) => {
                                 viewCostingData?.map((data, index) => {
                                   return (
                                     <td className={tableDataClass(data)}>
-                                      <span className="d-block small-grey-text">{data?.CostingHeading !== VARIANCE ? data?.netChildPartsCost : ''}</span>
-                                      <span className={highlighter("rmRate")}>
-                                        <button type='button' className='btn-hyper-link' onClick={() => DrawerOpen('BOP', index)}>{data?.CostingHeading !== VARIANCE ? data?.netBoughtOutPartCost : ''}</button>
-                                      </span>
-                                      <span className={highlighter("scrapRate")}>
-                                        <button type='button' className='btn-hyper-link' onClick={() => DrawerOpen('process', index)}>{data?.CostingHeading !== VARIANCE ? data?.netProcessCost : ''}</button>
-                                      </span>
-                                      <span className={highlighter("", "rm-reducer")}>
-                                        <button type='button' className='btn-hyper-link' onClick={() => DrawerOpen('operation', index)}>{data?.CostingHeading !== VARIANCE ? data?.netOperationCost : ''}</button>
-                                      </span>
-
+                                      {data?.bestCost !== true && <>
+                                        <span className="d-block small-grey-text">{data?.CostingHeading !== VARIANCE ? data?.netChildPartsCost : ''}</span>
+                                        <span className={highlighter("rmRate")}>
+                                          <button type='button' className='btn-hyper-link' onClick={() => DrawerOpen('BOP', index)}>{data?.CostingHeading !== VARIANCE ? data?.netBoughtOutPartCost : ''}</button>
+                                        </span>
+                                        <span className={highlighter("scrapRate")}>
+                                          <button type='button' className='btn-hyper-link' onClick={() => DrawerOpen('process', index)}>{data?.CostingHeading !== VARIANCE ? data?.netProcessCost : ''}</button>
+                                        </span>
+                                        <span className={highlighter("", "rm-reducer")}>
+                                          <button type='button' className='btn-hyper-link' onClick={() => DrawerOpen('operation', index)}>{data?.CostingHeading !== VARIANCE ? data?.netOperationCost : ''}</button>
+                                        </span>
+                                      </>}
                                     </td>
                                   )
                                 })}
@@ -2465,7 +2468,7 @@ const CostingSummaryTable = (props) => {
                                     <td className={tableDataClass(data)}>
                                       {displayValueWithSign(data, "nTotalRMBOPCC")}
                                       {
-                                        (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&
+                                        (data?.bestCost !== true) && (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&
                                         <button
                                           id="view_multiple_technology"
                                           type="button"
@@ -3346,7 +3349,10 @@ const CostingSummaryTable = (props) => {
                       }
                       {initialConfiguration?.IsShowTCO && <ViewTcoDetail isApproval={isApproval} viewCostingData={viewCostingData} isRfqCosting={props?.isRfqCosting} highlighter={highlighter} displayValueWithSign={displayValueWithSign} tableDataClass={tableDataClass} loader={loader} setLoader={setLoader} />}
                       {initialConfiguration?.IsShowTCO && <tr className={highlighter("nPackagingAndFreight", "main-row")}>
-                        <th>Total TCO </th>
+
+                        <th>Total TCO Cost <TooltipCustom id="tco_cost" tooltipText="Calculation made upon Payment term, Warranty, Quality PPM, Incoterm and Investment" />
+                        </th>
+
                         {viewCostingData &&
                           viewCostingData?.map((data, index) => {
                             return (

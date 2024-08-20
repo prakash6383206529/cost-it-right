@@ -1803,10 +1803,10 @@ export const setCostingApprovalData = (data) => (dispatch) => {
   })
 }
 
-export function getCostingByVendorAndVendorPlant(partId, VendorId, VendorPlantId, destinationPlantId, customerId, costingTypeId, callback) {
+export function getCostingByVendorAndVendorPlant(partId, VendorId, VendorPlantId, destinationPlantId, customerId, costingTypeId, infoCategory, callback) {
   return (dispatch) => {
     if (partId !== '') {
-      const queryParams = `partId=${partId}&VendorId=${VendorId}&vendorPlantId=${VendorPlantId}&destinationPlantId=${!destinationPlantId ? EMPTY_GUID : destinationPlantId}&customerId=${!customerId ? EMPTY_GUID : customerId}&costingTypeId=${costingTypeId}`
+      const queryParams = `partId=${partId}&VendorId=${VendorId}&vendorPlantId=${VendorPlantId}&destinationPlantId=${!destinationPlantId ? EMPTY_GUID : destinationPlantId}&customerId=${!customerId ? EMPTY_GUID : customerId}&costingTypeId=${costingTypeId}&infoCategory=${infoCategory}`
       const request = axios.get(`${API.getCostingByVendorVendorPlant}?${queryParams}`, config());
       request.then((response) => {
         if (response.data.Result || response.status === 204) {
@@ -3038,6 +3038,31 @@ export function getSpecificationDetailTco(quotationId, baseCostingIds, callback)
       });
   };
 }
+
+export function getSpecificationDetailBpo(quotationId, bopId, callback) {
+  return (dispatch) => {
+    const url = `${API.getSpecificationDetailBop}`;
+    const requestData = {
+      QuotationId: quotationId,
+      BoughtOutPartIdList: bopId
+    };
+
+    axios.post(url, requestData, config())
+      .then((response) => {
+        if (response.data.Result || response.status === 204) {
+          dispatch({
+            type: PARTSPECIFICATIONRFQDATA,
+            payload: response.status === 204 ? [] : response.data.Data
+          });
+          callback(response);
+        }
+      })
+      .catch((error) => {
+        dispatch({ type: API_FAILURE });
+        // Handle errors
+      });
+  };
+}
 /**
  * @method getExternalIntegrationEvaluationType
  * @description getExternalIntegrationEvaluationType
@@ -3045,7 +3070,7 @@ export function getSpecificationDetailTco(quotationId, baseCostingIds, callback)
 export function getExternalIntegrationEvaluationType(data, callback) {
 
   return (dispatch) => {
-    const request = axios.post(API.getEvaluationType, data, config())
+    const request = axios.get(`${API.getEvaluationType}?plantCode=${data?.plantCode}&partNumber=${data?.partNumber}`, config())
     request.then((response) => {
       if (response.data.Result || response?.status === 204) {
         dispatch({

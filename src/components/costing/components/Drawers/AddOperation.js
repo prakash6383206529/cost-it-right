@@ -15,6 +15,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { checkForDecimalAndNull, getConfigurationKey, searchNocontentFilter } from '../../../../helper';
 import { PaginationWrapper } from '../../../common/commonPagination';
 import _ from 'lodash';
+import { useLabels } from '../../../../helper/core';
 const gridOptions = {};
 
 function AddOperation(props) {
@@ -31,7 +32,7 @@ function AddOperation(props) {
   const { selectedIdsOfOperationAndOtherOperation, selectedIdsOfOperation } = useSelector(state => state.costing)
   let selectedIds = [...selectedIdsOfOperation, ...selectedIdsOfOperationAndOtherOperation]
 
-
+  const { technologyLabel } = useLabels();
   /**
   * @method toggleDrawer
   * @description TOGGLE DRAWER
@@ -231,7 +232,7 @@ function AddOperation(props) {
                         <AgGridColumn field="OperationId" hide={true}></AgGridColumn>
                         <AgGridColumn cellClass="has-checkbox" field="OperationName" headerName="Operation Name"></AgGridColumn>
                         <AgGridColumn field="OperationCode" headerName="Operation Code"></AgGridColumn>
-                        <AgGridColumn field="Technology" headerName="Technology"></AgGridColumn>
+                        <AgGridColumn field="Technology" headerName={technologyLabel}></AgGridColumn>
                         <AgGridColumn field="UnitOfMeasurement" headerName="UOM"></AgGridColumn>
                         <AgGridColumn field="Rate" cellRenderer={'rateFormat'}></AgGridColumn>
                         {initialConfiguration && initialConfiguration.IsOperationLabourRateConfigure && <AgGridColumn field="LabourRate" headerName='Labour Rate' ></AgGridColumn>}

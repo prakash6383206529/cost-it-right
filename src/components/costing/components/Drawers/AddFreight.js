@@ -18,7 +18,7 @@ import { getFreigtRateCriteriaSelectList } from '../../../masters/actions/Freigh
 
 function AddFreight(props) {
 
-  const { rowObjData, isEditFlag } = props;
+  const { rowObjData, isEditFlag, gridData } = props;
 
   const defaultValues = {
     FreightDetailId: rowObjData && rowObjData.FreightDetailId !== undefined ? rowObjData.FreightDetailId : '',
@@ -57,8 +57,9 @@ function AddFreight(props) {
 
   const { RMCCTabData, CostingEffectiveDate } = useSelector(state => state.costing)
 
-  const [freightCost, setFreightCost] = useState('')
+  const [freightCost, setFreightCost] = useState(rowObjData.Rate ? rowObjData.Rate : '')
   const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId)
+  const [totalRMGrossWeight, setTotalRMGrossWeight] = useState('')
 
   useEffect(() => {
     setTimeout(() => {
@@ -75,13 +76,18 @@ function AddFreight(props) {
     if (!isEditFlag && (freightType === FullTruckLoad || freightType === PartTruckLoad)) {
       let arr = _.map(RMCCTabData, 'CostingPartDetails.CostingRawMaterialsCost')
       let totalFinishWeight = 0
+      let totalGrossWeight = 0
       arr && arr?.map(item => {
         totalFinishWeight = item && item?.reduce((accummlator, el) => {
           return accummlator + checkForNull(el?.FinishWeight)
         }, 0)
+        totalGrossWeight = item && item?.reduce((accummlator, el) => {
+          return accummlator + checkForNull(el?.GrossWeight)
+        }, 0)
       })
       // setTotalFinishWeight(totalFinishWeight)
       setValue("Quantity", totalFinishWeight)
+      setTotalRMGrossWeight(totalGrossWeight)
 
     }
   }, [RMCCTabData, applicability])
@@ -231,7 +237,13 @@ function AddFreight(props) {
   }
 
   const callFreightAPI = (capacityValue, criteriaValue) => {
-    if (Object.keys(capacityValue)?.length > 0 && Object.keys(criteriaValue)?.length > 0) {
+    let callAPI = false
+    if (freightType === FullTruckLoad) {
+      callAPI = Object.keys(capacityValue)?.length > 0 && Object.keys(criteriaValue)?.length > 0
+    } else if (freightType === PartTruckLoad) {
+      callAPI = Object.keys(criteriaValue)?.length > 0
+    }
+    if (callAPI) {
       const data = {
         Capacity: capacityValue?.value ? capacityValue?.value : null,
         Criteria: criteriaValue?.value ? criteriaValue?.value : null,
@@ -247,8 +259,11 @@ function AddFreight(props) {
           let Data = res?.data?.Data;
           setValue('Rate', Data?.Rate)
           setFullTruckLoadId(Data?.FullTruckLoadId)
+          calculateCostValue(getValues('Quantity'), Data?.Rate)
           errors.Rate = {}
         } else {
+          setValue('FreightCost', '')
+          setFreightCost('')
           setValue('Rate', '')
         }
       }))
@@ -285,15 +300,16 @@ function AddFreight(props) {
   }
 
   const calculateCostForPerKg = () => {
-    const RateAsPercentage = getValues('Rate');
+    const RateAsPercentage = freightCost;
     let arr = _.map(RMCCTabData, 'CostingPartDetails.CostingRawMaterialsCost')
-    let perKgFinishWeight = 0
-    arr && arr?.map(item => {
-      perKgFinishWeight = item && item?.reduce((accummlator, el) => {
-        return accummlator + checkForNull(el?.FinishWeight)
-      }, 0)
-    })
-    // setTotalFinishWeight(perKgFinishWeight)
+    let perKgFinishWeight = getValues('Quantity') ? getValues('Quantity') : rowObjData?.Quantity;
+    if (freightCost === '') {
+      arr && arr?.map(item => {
+        perKgFinishWeight = item && item?.reduce((accummlator, el) => {
+          return accummlator + checkForNull(el?.FinishWeight)
+        }, 0)
+      })
+    }
     let totalFreightCost = checkForNull(perKgFinishWeight) * checkForNull(RateAsPercentage)
     setValue('FreightCost', totalFreightCost ? checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice) : '')
     errors.FreightCost = {}
@@ -375,18 +391,26 @@ function AddFreight(props) {
     errors.FreightCost = {}
   }
 
+  const calculateCostValue = (value, rate) => {
+    const Rate = rate
+    if (Rate !== '') {
+      const cost = checkForNull(Rate) * checkForNull(value);
+      setValue('FreightCost', cost ? checkForDecimalAndNull(cost, getConfigurationKey().NoOfDecimalForPrice) : '');
+    } else {
+      setValue('FreightCost', '');
+    }
+  }
+
   // MAY BE USED LATER 
   const handleQuantityChange = (event) => {
     if (!isNaN(event.target.value)) {
-      const Rate = getValues('Rate')
-      if (Rate !== '') {
-        const cost = checkForNull(Rate) * checkForNull(event.target.value);
-        setValue('FreightCost', cost ? checkForDecimalAndNull(cost, getConfigurationKey().NoOfDecimalForPrice) : '');
-      } else {
-        setValue('FreightCost', '');
-      }
-    } else {
-      Toaster.warning('Please enter valid number.')
+      if (checkForNull(totalRMGrossWeight) !== 0 && (freightType === FullTruckLoad || freightType === PartTruckLoad) && event.target.value > totalRMGrossWeight) {
+        Toaster.warning("Enter value less than gross weight.")
+        setTimeout(() => {
+          setValue('Quantity', '')
+        }, 50);
+        return false
+      } calculateCostValue(event.target.value, getValues('Rate'))
     }
   }
 
@@ -435,6 +459,40 @@ function AddFreight(props) {
     props.closeDrawer('', {})
   }
 
+  const doesObjectExist = (array, obj) => {
+    switch (obj.FreightType) {
+      case 'Fixed':
+        // Check if any existing entry has FreightType as 'Fixed'
+        return array.some(item => item.FreightType === 'Fixed');
+
+      case 'Percentage':
+        // Check if any existing entry matches the applicability for 'Percentage'
+        return array.some(item =>
+          item.FreightType === 'Percentage' &&
+          item.Criteria === obj.Criteria
+        );
+
+      case 'Full Truck Load':
+        // Check if any existing entry matches Capacity and Criteria for 'Full Truck Load'
+        return array.some(item =>
+          item.FreightType === 'Full Truck Load' &&
+          item.Capacity === obj.Capacity &&
+          item.Criteria === obj.Criteria
+        );
+
+      case 'Part Truck Load':
+        // Check if any existing entry matches Criteria for 'Part Truck Load'
+        return array.some(item =>
+          item.FreightType === 'Part Truck Load' &&
+          item.Criteria === obj.Criteria
+        );
+
+      default:
+        // If FreightType does not match any known types
+        return false;
+    }
+  }
+
   const onSubmit = data => {
     let freightTypeText = '';
 
@@ -457,6 +515,11 @@ function AddFreight(props) {
       FreightType: freightTypeText,
       FreightCRMHead: data?.crmHeadFreight ? data?.crmHeadFreight?.label : '',
       FullTruckLoadId: isEditFlag ? rowObjData?.FullTruckLoadId : fullTruckLoadId,
+    }
+
+    if (doesObjectExist(gridData, formData)) {
+      Toaster.warning("Data already exists in the grid.")
+      return false;
     }
     toggleDrawer('', formData)
   }

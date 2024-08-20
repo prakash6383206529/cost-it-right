@@ -27,10 +27,8 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import InitiateUnblocking from '../vendorManagement/InitiateUnblocking';
 
 function SummaryDrawer(props) {
-
-    const { approvalData } = props
-
-    const dispatch = useDispatch()
+        const { approvalData } = props
+        const dispatch = useDispatch()
     /**
     * @method toggleDrawer
     * @description TOGGLE DRAWER
@@ -67,12 +65,15 @@ function SummaryDrawer(props) {
     const [isBudgetApproval, setIsBudgetApproval] = useState(false)
     const [showImport, setShowImport] = useState(false)
     const [bopDataResponse, setBopDataResponse] = useState([])
+    const [rmDataResponse, setRmDataResponse ] = useState([])
     const [showPushButton, setShowPushButton] = useState(false) // This is for showing push button when master is approved and need to push it for scheduling
     // const { rmDomesticListing, rmImportListing, bopDomesticList, bopImportList } = useSelector(state => state.material)
     const [dataForFetchingAllApprover, setDataForFetchingAllApprover] = useState({})
     const [mastersPlantId, setMastersPlantId] = useState('')
     const [isOnboardingApproval, setIsOnboardingApproval] = useState(false)
     const [onBoardingData, setOnBoardingData] = useState({})
+    const [isRfq , setIsRfq] = useState(false)
+    const [quotationId , setQuotationId] = useState('')
 
 
 
@@ -84,7 +85,9 @@ function SummaryDrawer(props) {
         dispatch(getMasterApprovalSummary(approvalData.approvalNumber, approvalData.approvalProcessId, props?.masterId, props?.OnboardingApprovalId, res => {
 
             const Data = res.data.Data
-
+          const QuotationId = Data?.QuotationId 
+setQuotationId(QuotationId)
+setIsRfq(QuotationId  !== null ? true : false)
             setApprovalLevelStep(Data?.MasterSteps)
             setApprovalDetails({ IsSent: Data?.IsSent, IsFinalLevelButtonShow: Data?.IsFinalLevelButtonShow, ApprovalProcessId: Data?.ApprovalProcessId, MasterApprovalProcessSummaryId: Data?.ApprovalProcessSummaryId, Token: Data?.Token, MasterId: Data?.MasterId, OnboardingId: Data?.OnboardingId, ApprovalTypeId: Data?.ApprovalTypeId })
             setLoader(false)
@@ -92,6 +95,7 @@ function SummaryDrawer(props) {
             if (checkForNull(props?.masterId) === RM_MASTER_ID) {
                 CostingTypeId = Data?.ImpactedMasterDataList.RawMaterialListResponse[0]?.CostingTypeId
                 setFiles(Data?.ImpactedMasterDataList.RawMaterialListResponse[0].Attachements)
+                setRmDataResponse(Data?.ImpactedMasterDataList.RawMaterialListResponse)
                 masterPlantId = Data?.ImpactedMasterDataList.RawMaterialListResponse[0]?.MasterApprovalPlantId
                 Data?.ImpactedMasterDataList?.RawMaterialListResponse.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
                 if (Data?.ImpactedMasterDataList.RawMaterialListResponse[0]?.Currency === reactLocalStorage.getObject("baseCurrency")) {
@@ -240,14 +244,14 @@ function SummaryDrawer(props) {
                                         {showImport ?
                                             <RMImportListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' isDataInMaster={isDataInMaster} approvalStatus={APPROVED_STATUS} stopApiCallOnCancel={true} costingTypeId={approvalData?.costingTypeId} />
                                             :
-                                            <RMDomesticListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' isDataInMaster={isDataInMaster} approvalStatus={APPROVED_STATUS} stopApiCallOnCancel={true} costingTypeId={approvalData?.costingTypeId} />
+                                            <RMDomesticListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' isDataInMaster={isDataInMaster} approvalStatus={APPROVED_STATUS} stopApiCallOnCancel={true} costingTypeId={approvalData?.costingTypeId} quotationId={quotationId} rmDataResponse={rmDataResponse} />
                                         }
                                     </>}
                                     {isBOPApproval && <>
                                         {showImport ?
                                             <BOPImportListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' isDataInMaster={isDataInMaster} approvalStatus={APPROVED_STATUS} stopApiCallOnCancel={true} costingTypeId={approvalData?.costingTypeId} />
                                             :
-                                            <BOPDomesticListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' isDataInMaster={isDataInMaster} approvalStatus={APPROVED_STATUS} stopApiCallOnCancel={true} costingTypeId={approvalData?.costingTypeId} />
+                                            <BOPDomesticListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' isDataInMaster={isDataInMaster} approvalStatus={APPROVED_STATUS} stopApiCallOnCancel={true} costingTypeId={approvalData?.costingTypeId} quotationId={quotationId} bopDataResponse={bopDataResponse} />
                                         }
                                     </>
                                     }
@@ -312,6 +316,7 @@ function SummaryDrawer(props) {
                     IsFinalLevelButtonShow={finalLevelUser}
                     costingTypeId={costingTypeId}
                     levelDetails={levelDetails}
+                    // approvalObj={approvalObj}
                 />
             }
         </div >

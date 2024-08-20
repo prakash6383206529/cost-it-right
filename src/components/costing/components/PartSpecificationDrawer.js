@@ -3,7 +3,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Col, Container, Row } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import HeaderTitle from '../../common/HeaderTitle';
-import { getSpecificationDetailTco } from '../actions/Costing';
+import { getSpecificationDetailBpo, getSpecificationDetailTco } from '../actions/Costing';
 import { QuotationId } from '../../rfq/ViewRfq';
 import LoaderCustom from '../../common/LoaderCustom';
 import { TextFieldHookForm } from '../../layout/HookFormInputs';
@@ -38,7 +38,7 @@ const PartSpecificationDrawer = (props) => {
         }
         props.closeDrawer('');
     };
-    const { baseCostingId } = props
+    const { baseCostingId ,bopId,bopQuotationId} = props
         useEffect(() => {
         setIsLoader(true);
             if (baseCostingId?.length > 0) {
@@ -52,7 +52,20 @@ const PartSpecificationDrawer = (props) => {
                     }
                     setIsLoader(false);
                 }));
-            } else {
+            } 
+            else if(bopId?.length > 0) {
+                setIsLoader(true);
+                dispatch(getSpecificationDetailBpo(bopQuotationId, bopId, (res) => {
+                    let Data = res?.data?.Data
+                    if (Data?.SpecsHead && Data?.SpecsColumn) {
+                        setColumnDefs(generateColumnDefs(Data?.SpecsHead));
+                        setRowData(Data?.SpecsColumn); // Directly use SpecsColumn as row data
+                    }
+                    setIsLoader(false);
+                }));
+            }
+            
+            else {
                 setIsLoader(false);
             }
         
@@ -100,7 +113,7 @@ const PartSpecificationDrawer = (props) => {
                     <Row className="drawer-heading">
                         <Col>
                             <div className="header-wrapper left">
-                                <h3>Part Specification Detail</h3>
+                            <h3>{`${props.type === 'BOP' ? 'BOP' : 'TCO'} Specification Detail`}</h3>
                             </div>
                             <div onClick={toggleDrawer} className="close-button right"></div>
                         </Col>
@@ -113,7 +126,7 @@ const PartSpecificationDrawer = (props) => {
                                 {rowData?.length > 0 && (
                                     <Row className="mt-1 part-detail-wrapper">
                                         <Col md="3">
-                                            <TextFieldHookForm
+                                           {props.type !== 'BOP' && ( <TextFieldHookForm
                                                 label="Havells Design Part"
                                                 name="HavellsDesignPart"
                                                 Controller={Controller}
@@ -124,10 +137,10 @@ const PartSpecificationDrawer = (props) => {
                                                 className=""
                                                 customClassName="withBorder"
                                                 errors={errors.Specification}
-                                            />
+                                            />)}
                                         </Col>
                                         <Col md="3">
-                                            <TextFieldHookForm
+                                            {props.type !== 'BOP' && (<TextFieldHookForm
                                                 label="Target Price"
                                                 name="TargetPrice"
                                                 Controller={Controller}
@@ -141,7 +154,7 @@ const PartSpecificationDrawer = (props) => {
                                                 errors={errors.Description}
                                                 disabled={true}
                                                 placeholder="-"
-                                            />
+                                            />)}
                                         </Col>
                                         <Col md="3">
                                             <TextFieldHookForm
@@ -178,7 +191,7 @@ const PartSpecificationDrawer = (props) => {
                                             />
                                         </Col>
                                         <Col md="3">
-                                            <TextFieldHookForm
+                                            {props.type !== 'BOP' && (<TextFieldHookForm
                                                 label="Part Number"
                                                 name="PartNumber"
                                                 Controller={Controller}
@@ -192,7 +205,7 @@ const PartSpecificationDrawer = (props) => {
                                                 errors={errors.Description}
                                                 disabled={true}
                                                 placeholder="-"
-                                            />
+                                            />)}
                                         </Col>
                                     </Row>
                                 )}

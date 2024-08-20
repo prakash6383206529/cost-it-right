@@ -35,6 +35,8 @@ import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from '../../common/Tour/TourMessages';
 import { useTranslation } from 'react-i18next';
 import BulkUpload from '../../massUpload/BulkUpload';
+import RfqMasterApprovalDrawer from './RfqMasterApprovalDrawer';
+import { useLabels } from '../../../helper/core';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -55,7 +57,6 @@ function RMDomesticListing(props) {
     const filteredRMData = useSelector((state) => state.material.filteredRMData);
     const { selectedRowForPagination } = useSelector((state => state.simulation))
     const { globalTakes } = useSelector((state) => state.pagination);
-
 
     const [showPopup, setShowPopup] = useState(false)
     const [deletedId, setDeletedId] = useState('')
@@ -83,8 +84,10 @@ function RMDomesticListing(props) {
     const [showExtraData, setShowExtraData] = useState(false)
     const [render, setRender] = useState(false)
     const { t } = useTranslation("common")
-
-
+    const { technologyLabel, RMCategoryLabel } = useLabels();
+    const [compareDrawer, setCompareDrawer] = useState(false)
+    const [rowDataForCompare, setRowDataForCompare] = useState([])
+    const isRfq = props?.quotationId !== null || props?.quotationId !== '' || props?.quotationId !== undefined ? true : false
     var filterParams = {
         date: "", inRangeInclusive: true, filterOptions: ['equals', 'inRange'],
         comparator: function (filterLocalDateAtMidnight, cellValue) {
@@ -452,22 +455,34 @@ function RMDomesticListing(props) {
     * @method buttonFormatter
     * @description Renders buttons
     */
-    const { benchMark } = props
+    const handleCompareDrawer = (data) => {
+        setCompareDrawer(true)
+        setRowDataForCompare([data])
+    }
+    const { benchMark, isMasterSummaryDrawer } = props
 
     const buttonFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
         let isEditbale = false
         let isDeleteButton = false
+
         if (EditAccessibility) {
             isEditbale = true
         } else {
             isEditbale = false
         }
+        if (isRfq && isMasterSummaryDrawer) {
+            return (
+                <button className="Balance mb-0 button-stick" type="button" onClick={() => handleCompareDrawer(rowData)}>
+
+                </button>
+            );
+        }
         if (showExtraData && props.rowIndex === 0) {
             isDeleteButton = true
         } else {
-            if (DeleteAccessibility && !rowData.IsRMAssociated) {
+            if (DeleteAccessibility && !rowData?.IsRMAssociated) {
                 isDeleteButton = true
             }
         }
@@ -584,6 +599,13 @@ function RMDomesticListing(props) {
 
     const closeBulkUploadDrawer = (event, type) => {
         setisBulkUpload(false);
+        if (type !== 'cancel') {
+            resetState()
+        }
+    }
+
+    const closeCompareDrawer = (event, type) => {
+        setCompareDrawer(false);
         if (type !== 'cancel') {
             resetState()
         }
@@ -751,7 +773,7 @@ function RMDomesticListing(props) {
             if (uniqueArrayNew.length > 1) {
                 dispatch(setSelectedRowForPagination([]))
                 gridApi.deselectAll()
-                Toaster.warning("Technology & Raw material should be same")
+                Toaster.warning(`${technologyLabel} & Raw material should be same`)
             }
         }
     }
@@ -830,6 +852,10 @@ function RMDomesticListing(props) {
             </>
         )
 
+    }
+    const headerCategory = (props) => {
+        console.log("COMING HERE");
+        return t('RMCategoryLabel', { defaultValue: 'Category' })
     }
     const frameworkComponents = {
         totalValueRenderer: buttonFormatter,
@@ -988,17 +1014,18 @@ function RMDomesticListing(props) {
                                         enableBrowserTooltips={true}
                                     >
                                         <AgGridColumn cellClass="has-checkbox" field="CostingHead" headerName='Costing Head' cellRenderer={checkBoxRenderer}></AgGridColumn>
-                                        <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>
+                                        <AgGridColumn field="TechnologyName" headerName={technologyLabel}></AgGridColumn>
                                         <AgGridColumn field="RawMaterialName" headerName='Raw Material'></AgGridColumn>
                                         <AgGridColumn field="RawMaterialGradeName" headerName="Grade"></AgGridColumn>
                                         <AgGridColumn field="RawMaterialSpecificationName" headerName="Spec"></AgGridColumn>
                                         <AgGridColumn field="RawMaterialCode" headerName='Code' cellRenderer='hyphenFormatter'></AgGridColumn>
-                                        <AgGridColumn field="Category"></AgGridColumn>
+                                        <AgGridColumn field="Category" headerName={RMCategoryLabel}></AgGridColumn>
                                         <AgGridColumn field="MaterialType"></AgGridColumn>
                                         <AgGridColumn field="DestinationPlantName" headerName="Plant (Code)"></AgGridColumn>
                                         <AgGridColumn field="VendorName" headerName="Vendor (Code)"></AgGridColumn>
                                         {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
                                         {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                                        {getConfigurationKey()?.IsShowSourceVendorInRawMaterial && <AgGridColumn field="SourceVendorName" headerName="Source Vendor Name" cellRenderer='hyphenFormatter'></AgGridColumn>}
                                         <AgGridColumn field="UnitOfMeasurementName" headerName='UOM'></AgGridColumn>
 
                                         <AgGridColumn field="BasicRatePerUOM" headerName='Basic Rate' cellRenderer='commonCostFormatter'></AgGridColumn>
@@ -1016,7 +1043,7 @@ function RMDomesticListing(props) {
                                         <AgGridColumn field="NetLandedCost" headerName="Net Cost" cellRenderer='costFormatter'></AgGridColumn>
 
                                         <AgGridColumn field="EffectiveDate" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-                                        {(!isSimulation && !props.isMasterSummaryDrawer) && <AgGridColumn width={160} field="RawMaterialId" cellClass="ag-grid-action-container" pinned="right" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                        {((!isSimulation && !props.isMasterSummaryDrawer) || (isRfq && props?.isMasterSummaryDrawer)) && <AgGridColumn width={160} field="RawMaterialId" cellClass="ag-grid-action-container" pinned="right" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                                         <AgGridColumn field="VendorId" hide={true}></AgGridColumn>
                                         <AgGridColumn field="TechnologyId" hide={true}></AgGridColumn>
                                         {props.isMasterSummaryDrawer && <AgGridColumn field="Attachements" headerName='Attachments' cellRenderer='attachmentFormatter'></AgGridColumn>}
@@ -1090,6 +1117,18 @@ function RMDomesticListing(props) {
             }
             {
                 showPopupBulk && <PopupMsgWrapper isOpen={showPopupBulk} closePopUp={closePopUp} confirmPopup={onPopupConfirmBulk} message={`Recently Created Material's Density is not created, Do you want to create?`} />
+            }
+            {compareDrawer &&
+                <RfqMasterApprovalDrawer
+                    isOpen={compareDrawer}
+                    anchor={'right'}
+                    selectedRows={rowDataForCompare}
+                    type={'Raw Material'}
+                    quotationId={props.quotationId}
+                    closeDrawer={closeCompareDrawer}
+                // selectedRow = {props.bopDataResponse}
+                />
+
             }
 
         </div >

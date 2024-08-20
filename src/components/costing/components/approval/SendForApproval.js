@@ -553,31 +553,36 @@ const SendForApproval = (props) => {
 
     if (props?.isRfq) {
       let tempData = { ...viewCostingData[viewCostingData?.length - 1] }
+
       let data = {
-        "QuotationPartId": selectedRows[0]?.QuotationPartId,
-        "NetRawMaterialsCost": tempData?.netRM,
-        "NetBoughtOutPartCost": tempData?.netBOP,
-        "NetConversionCost": tempData?.nConvCost,
-        "NetProcessCost": tempData?.netProcessCost,
-        "NetOperationCost": tempData?.netOperationCost,
-        "NetOtherOperationCost": tempData?.netOtherOperationCost,
-        "NetTotalRMBOPCC": tempData?.nTotalRMBOPCC,
-        "NetSurfaceTreatmentCost": tempData?.netSurfaceTreatmentCost,
-        "OverheadCost": 0,
-        "ProfitCost": 0,
-        "RejectionCost": tempData?.netRejectionCostView,
-        "ICCCost": 0,
-        "PaymentTermCost": 0,
-        "NetOverheadAndProfitCost": tempData?.nOverheadProfit,
-        "PackagingCost": 0,
-        "FreightCost": 0,
-        "NetFreightPackagingCost": tempData?.nPackagingAndFreight,
-        "NetToolCost": tempData?.totalToolCost,
-        "DiscountCost": tempData?.otherDiscountCost,
-        "OtherCost": tempData?.anyOtherCost,
-        "BasicRate": tempData?.BasicRate,
-        "NetPOPrice": tempData?.nPOPrice,
-        "NetPOPriceOtherCurrency": tempData?.nPoPriceCurrency
+        CostingBestCostRequest: {
+          "QuotationPartId": selectedRows[0]?.QuotationPartId,
+          "NetRawMaterialsCost": tempData?.netRM,
+          "NetBoughtOutPartCost": tempData?.netBOP,
+          "NetConversionCost": tempData?.nConvCost,
+          "NetProcessCost": tempData?.netProcessCost,
+          "NetOperationCost": tempData?.netOperationCost,
+          "NetOtherOperationCost": tempData?.netOtherOperationCost,
+          "NetTotalRMBOPCC": tempData?.nTotalRMBOPCC,
+          "NetSurfaceTreatmentCost": tempData?.netSurfaceTreatmentCost,
+          "OverheadCost": 0,
+          "ProfitCost": 0,
+          "RejectionCost": tempData?.netRejectionCostView,
+          "ICCCost": 0,
+          "PaymentTermCost": 0,
+          "NetOverheadAndProfitCost": tempData?.nOverheadProfit,
+          "PackagingCost": 0,
+          "FreightCost": 0,
+          "NetFreightPackagingCost": tempData?.nPackagingAndFreight,
+          "NetToolCost": tempData?.totalToolCost,
+          "DiscountCost": tempData?.otherDiscountCost,
+          "OtherCost": tempData?.anyOtherCost,
+          "BasicRate": tempData?.BasicRate,
+          "NetPOPrice": tempData?.nPOPrice,
+          "NetPOPriceOtherCurrency": tempData?.nPoPriceCurrency
+        },
+        RawMaterialBestCostRequest: null,
+        BoughtOutPartBestCostRequest: null
       }
       setIsLoader(true)
       dispatch(rfqSaveBestCosting(data, res => {

@@ -86,7 +86,7 @@ function CostingDetailSimulationDrawer(props) {
                                     <Col>
                                         <div className={"header-wrapper left"}>
                                             <h3>
-                                                {(!isReport || isOldCosting) ? "Old " : ''}Costing Details
+                                                Costing Details
                                             </h3>
                                         </div>
                                         <div
@@ -237,7 +237,23 @@ function CostingDetailSimulationDrawer(props) {
                                     </Row >
                                 }
                                 {isReportLoader && <LoaderCustom customClass={"report-costing"} />}
-                                <CostingSummaryTable customClass="ml-0" simulationDrawer={props?.simulationDrawer} simulationMode={true} viewMode={true} master={masterID} isSimulationDone={isSimulation} drawerViewMode={true} isImpactDrawer={props?.isImpactDrawer} costingIdExist={true} fromCostingSummary={props?.fromCostingSummary} isRfqCosting={props?.isRfqCosting} isRejectedSummaryTable={props?.isRejectedSummaryTable} selectedTechnology={props?.selectedTechnology} isFromAssemblyTechnology={props?.isFromAssemblyTechnology} />
+                                <CostingSummaryTable customClass="ml-0"
+                                    viewMode={true}
+                                    id={pricesDetail?.CostingNumber}
+                                    simulationMode={true}
+                                    isApproval={isReport ? false : true}
+                                    costingIdExist={true}
+                                    selectedTechnology={props?.selectedTechnology}
+                                    simulationId={simulationDetail?.SimulationId}
+                                    simulationDrawer={props?.simulationDrawer}
+                                    master={masterID}
+                                    isSimulationDone={isSimulation}
+                                    drawerViewMode={true}
+                                    isImpactDrawer={props?.isImpactDrawer}
+                                    fromCostingSummary={props?.fromCostingSummary}
+                                    isRfqCosting={props?.isRfqCosting}
+                                    isRejectedSummaryTable={props?.isRejectedSummaryTable} isFromAssemblyTechnology={props?.isFromAssemblyTechnology}
+                                />
                             </form>
                         </div>
                     </Container>

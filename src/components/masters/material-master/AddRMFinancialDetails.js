@@ -29,7 +29,7 @@ import { TestHeadless } from "ag-grid-community"
 import AddIndexationMaterialListing from "./AddIndexationMaterialListing"
 import { getIndexSelectList, setOtherCostDetails } from "../actions/Indexation"
 function AddRMFinancialDetails(props) {
-    const { Controller, control, register, setValue, getValues, errors, reset, useWatch, states, data, isRMAssociated, DataToChange } = props
+    const { Controller, control, register, setValue, getValues, errors, reset, useWatch, states, data, isRMAssociated, disableAll } = props
     const { isEditFlag, isViewFlag } = data
     // const { register, handleSubmit, formState: { errors }, control, setValue, getValues } = useForm({
     //     mode: 'onChange',
@@ -38,6 +38,8 @@ function AddRMFinancialDetails(props) {
     //         ScrapRatePerScrapUOM: ''
     //     },
     // });
+    const rawMaterailDetails = useSelector((state) => state.material.rawMaterailDetails)
+
     const [state, setState] = useState({
         inputLoader: false,
         showErrorOnFocus: false,
@@ -91,7 +93,8 @@ function AddRMFinancialDetails(props) {
         totalOtherCost: 0,
         isShowIndexCheckBox: false,
         exchange: [],
-        index: []
+        index: [],
+        enableHalfMonthDays: false,
 
     });
     const [showScrapKeys, setShowScrapKeys] = useState({
@@ -101,7 +104,6 @@ function AddRMFinancialDetails(props) {
     })
     const dispatch = useDispatch()
     const UOMSelectList = useSelector((state) => state.comman.UOMSelectList)
-    const rawMaterailDetails = useSelector((state) => state.material.rawMaterailDetails)
     const currencySelectList = useSelector(state => state.comman.currencySelectList)
     const frequncySettlementList = useSelector((state) => state.comman.frequencyOfSettlement)
     const exchangeRateSourceList = useSelector((state) => state.comman.exchangeRateSourceList);
@@ -157,7 +159,9 @@ function AddRMFinancialDetails(props) {
             checkTechnology()
         }
     }, [rawMaterailDetails?.Technology])
-
+    useEffect(() => {
+        setState(prevState => ({ ...prevState, isShowIndexCheckBox: rawMaterailDetails?.isShowIndexCheckBox }))
+    }, [rawMaterailDetails?.isShowIndexCheckBox])
     useEffect(() => {
         handleVendor()
     }, [rawMaterailDetails?.Vendor])
@@ -182,7 +186,7 @@ function AddRMFinancialDetails(props) {
     useEffect(() => {
         if (props?.DataToChange && Object.keys(props?.DataToChange).length > 0) {
             let Data = props?.DataToChange
-            setValue('UnitOfMeasurement', { label: Data.UnitOfMeasurementName, value: Data.UOM })
+            setValue('UnitOfMeasurement', { label: Data?.UnitOfMeasurementName, value: Data?.UOM })
             setValue('cutOffPriceSelectedCurrency', Data?.CutOffPrice)
             setValue('cutOffPriceBaseCurrency', states.isImport ? Data?.CutOffPriceInINR : Data?.CutOffPrice)
             setValue('BasicRateSelectedCurrency', Data?.BasicRatePerUOM)
@@ -203,9 +207,9 @@ function AddRMFinancialDetails(props) {
             setValue('NetLandedCostBaseCurrency', states.isImport ? Data?.NetLandedCostConversion : Data?.NetLandedCost)
             setValue('FinalConditionCostSelectedCurrency', Data?.NetConditionCost)
             setValue('FinalConditionCostBaseCurrency', states.isImport ? Data?.NetConditionCostConversion : Data?.NetConditionCost)
-            setValue('ScrapRateUOM', { label: Data.ScrapUnitOfMeasurement, value: Data.ScrapUnitOfMeasurementId })
-            setValue('CalculatedFactor', Data.CalculatedFactor)
-            setValue('effectiveDate', DayTime(Data?.EffectiveDate).$d)
+            setValue('ScrapRateUOM', { label: Data?.ScrapUnitOfMeasurement, value: Data?.ScrapUnitOfMeasurementId })
+            setValue('CalculatedFactor', Data?.CalculatedFactor)
+            setValue('effectiveDate', Data?.EffectiveDate ? DayTime(Data?.EffectiveDate).$d : '')
             setValue('CircleScrapCostSelectedCurrency', Data?.JaliScrapCost)
             setValue('CircleScrapCostBaseCurrency', states.isImport ? Data?.JaliScrapCostConversion : Data?.JaliScrapCost)
             setValue('currency', { label: Data?.Currency, value: Data?.CurrencyId })
@@ -213,24 +217,26 @@ function AddRMFinancialDetails(props) {
             setValue('MachiningScrapBaseCurrency', states.isImport ? Data?.MachiningScrapRateInINR : Data?.MachiningScrapRate)
             setValue('JaliScrapCostBaseCurrency', Data?.ScrapRate)
             setValue('ForgingScrapBaseCurrency', Data?.ScrapRate)
-            setValue('frequencyOfSettlement', { label: Data.FrequencyOfSettlement, value: Data.FrequencyOfSettlementId })
+            setValue('frequencyOfSettlement', { label: Data?.FrequencyOfSettlement, value: Data?.FrequencyOfSettlementId })
             setValue('fromDate', DayTime(Data?.FromDate).$d)
             setValue('toDate', DayTime(Data?.ToDate).$d)
             setValue('OtherCostBaseCurrency', Data?.OtherNetCostConversion)
+            setValue('Index', { label: Data?.IndexExchangeName, value: Data?.IndexExchangeId })
+            setValue('ExchangeSource', { label: Data?.ExchangeRateSourceName, value: Data?.ExchangeRateSourceName })
             setState(prevState => ({
                 ...prevState,
-                effectiveDate: DayTime(Data?.EffectiveDate).$d,
-                sourceLocation: Data.SourceSupplierLocationName !== undefined ? { label: Data.SourceSupplierLocationName, value: Data.SourceLocation } : [],
-                UOM: { label: Data.UnitOfMeasurementName, value: Data.UOM },
-                IsApplyHasDifferentUOM: Data.IsScrapUOMApply,
-                ScrapRateUOM: { label: Data.ScrapUnitOfMeasurement, value: Data.ScrapUnitOfMeasurementId },
+                effectiveDate: Data?.EffectiveDate ? DayTime(Data?.EffectiveDate).$d : '',
+                sourceLocation: Data?.SourceSupplierLocationName !== undefined ? { label: Data?.SourceSupplierLocationName, value: Data?.SourceLocation } : [],
+                UOM: { label: Data?.UnitOfMeasurementName, value: Data?.UOM },
+                IsApplyHasDifferentUOM: Data?.IsScrapUOMApply,
+                ScrapRateUOM: { label: Data?.ScrapUnitOfMeasurement, value: Data?.ScrapUnitOfMeasurementId },
                 FinalConditionCostSelectedCurrency: Data?.NetConditionCost,
                 FinalConditionCostBaseCurrency: states.isImport ? Data?.NetConditionCostConversion : Data?.NetConditionCost,
                 conditionTableData: Data?.RawMaterialConditionsDetails,
-                currency: Data.Currency !== undefined ? { label: Data.Currency, value: Data.CurrencyId } : [],
+                currency: Data?.Currency !== undefined ? { label: Data?.Currency, value: Data?.CurrencyId } : [],
                 showCurrency: true,
-                currencyValue: Data.CurrencyExchangeRate,
-                calculatedFactor: Data.CalculatedFactor,
+                currencyValue: Data?.CurrencyExchangeRate,
+                calculatedFactor: Data?.CalculatedFactor,
                 otherCostTableData: Data?.RawMaterialOtherCostDetails,
                 isShowIndexCheckBox: Data?.IsIndexationDetails,
                 totalOtherCost: Data?.OtherNetCostConversion,
@@ -255,8 +261,8 @@ function AddRMFinancialDetails(props) {
             return obj
         } else {
             let obj = {
-                toolTipTextNetCostSelectedCurrency: `Net Cost (${state.currency?.label === undefined ? 'Currency' : state.currency?.label}) = Basic Rate (${state.currency?.label === undefined ? 'Currency' : state.currency?.label})${IsShowFreightAndShearingCostFields() ? ` + Freight Cost (${state.currency?.label === undefined ? 'Currency' : state.currency?.label}) + Shearing Cost (${state.currency?.label === undefined ? 'Currency' : state.currency?.label})` : ''}`,
-                toolTipTextNetCostBaseCurrency: `Net Cost (${reactLocalStorage.getObject("baseCurrency")}) = Basic Rate (${reactLocalStorage.getObject("baseCurrency")}) ${IsShowFreightAndShearingCostFields() ? `+ Freight Cost (${reactLocalStorage.getObject("baseCurrency")}) + Shearing Cost (${reactLocalStorage.getObject("baseCurrency")})` : ''}`
+                toolTipTextNetCostSelectedCurrency: `Net Cost (${state.currency?.label === undefined ? 'Currency' : state.currency?.label}) = Basic Rate (${state.currency?.label === undefined ? 'Currency' : state.currency?.label})${IsShowFreightAndShearingCostFields() ? ` + Freight Cost (${state.currency?.label === undefined ? 'Currency' : state.currency?.label}) + Shearing Cost (${state.currency?.label === undefined ? 'Currency' : state.currency?.label})` : ''} + Other Cost (${state.currency?.label === undefined ? 'Currency' : state.currency?.label})`,
+                toolTipTextNetCostBaseCurrency: `Net Cost (${reactLocalStorage.getObject("baseCurrency")}) = Basic Rate (${reactLocalStorage.getObject("baseCurrency")}) ${IsShowFreightAndShearingCostFields() ? `+ Freight Cost (${reactLocalStorage.getObject("baseCurrency")}) + Shearing Cost (${reactLocalStorage.getObject("baseCurrency")})` : ''} + Other Cost (${reactLocalStorage.getObject("baseCurrency")})`
             }
             return obj
         }
@@ -434,6 +440,9 @@ function AddRMFinancialDetails(props) {
 
         const sumBaseCurrency = conditionList?.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCost), 0);
         let netLandedCostBaseCurrency = RMIndex ? checkForNull(sumBaseCurrency) + checkForNull(basicPriceCurrencyTemp) + state.totalOtherCost : checkForNull(sumBaseCurrency) + checkForNull(basicPriceCurrencyTemp)
+
+
+
 
         setValue('FinalConditionCostBaseCurrency', checkForDecimalAndNull(sumBaseCurrency, getConfigurationKey().NoOfDecimalForPrice))
         setValue('NetLandedCostBaseCurrency', checkForDecimalAndNull(netLandedCostBaseCurrency, getConfigurationKey().NoOfDecimalForPrice))
@@ -625,6 +634,7 @@ function AddRMFinancialDetails(props) {
         }
 
     };
+
     const handleFrequencyChange = (selectedOption) => {
         if (selectedOption && selectedOption !== '') {
             setState(prevState => ({
@@ -632,6 +642,7 @@ function AddRMFinancialDetails(props) {
                 frequencyOfSettlement: selectedOption.label,
                 toDate: '',
                 fromDate: '',
+                enableHalfMonthDays: selectedOption?.label === 'Half Month Avg'
             }));
             if (selectedOption?.label === 'As and When') {
                 setState(prevState => ({ ...prevState, disableToDate: false }));
@@ -657,6 +668,18 @@ function AddRMFinancialDetails(props) {
             case 'Fortnightly':
                 // Add 13 days for a fortnight's duration
                 validToDate = addDays(date, 13);
+                break;
+            case 'Half Month Avg':
+                if (getDate(date) === 1) {
+                    validToDate = addDays(date, 14); // 15th of the month
+                } else if (getDate(date) === 16) {
+                    validToDate = endOfMonth(date); // Last day of the month
+                } else {
+                    validToDate = null; // Invalid selection, reset the date
+                    setValue('fromDate', '');
+                    setValue('toDate', '');
+                    return;
+                }
                 break;
             case 'Monthly':
                 if (getDate(date) === 1) {
@@ -934,10 +957,16 @@ function AddRMFinancialDetails(props) {
         }
         dispatch(SetCommodityIndexAverage('', 0, '', 0, newValue?.value, '', ''))
     };
-
+    const filterDates = (date) => {
+        if (state.enableHalfMonthDays) {
+            const day = getDate(date);
+            return day === 1 || day === 16;
+        }
+        return true;
+    };
     return (
         <Fragment>
-            <Row >
+            {/* <Row >
                 <Col md="6" className='d-flex align-items-center mb-3'>
                     {getConfigurationKey().IsShowMaterialIndexation && (
                         <label id="AddRMDomestic_HasDifferentSource"
@@ -958,7 +987,7 @@ function AddRMFinancialDetails(props) {
                         </label>
                     )}
                 </Col>
-            </Row>
+            </Row> */}
             {state.isShowIndexCheckBox && <>
 
                 {RMIndex && <Row className="mb-3 accordian-container">
@@ -988,7 +1017,7 @@ function AddRMFinancialDetails(props) {
                                         placeholder={'Select'}
                                         options={renderListing("IndexExchangeName")}
                                         handleChange={handleIndex}
-                                        disabled={isEditFlag || isViewFlag}
+                                        disabled={disableAll || isEditFlag || isViewFlag}
                                         errors={errors.Index}
                                     />
                                 </Col>
@@ -999,12 +1028,12 @@ function AddRMFinancialDetails(props) {
                                         Controller={Controller}
                                         control={control}
                                         register={register}
-                                        mandatory={true}
-                                        rules={{ required: true }}
+                                        mandatory={false}
+                                        rules={{ required: false }}
                                         placeholder={'Select'}
                                         options={renderListing("ExchangeSource")}
                                         handleChange={handleExchangeRate}
-                                        disabled={isEditFlag || isViewFlag}
+                                        disabled={disableAll || isEditFlag || isViewFlag}
                                         errors={errors.ExchangeSource}
                                     />
                                 </Col>
@@ -1021,7 +1050,7 @@ function AddRMFinancialDetails(props) {
                                         handleChange={() => { }}
                                         // defaultValue={state.rmName.length !== 0 ? state.rmName : ""}
                                         className="fullinput-icon"
-                                        disabled={isEditFlag || isViewFlag || RMIndex}
+                                        disabled={disableAll || isEditFlag || isViewFlag || RMIndex}
                                         errors={errors.Material}
                                         isClearable={true}
                                     />
@@ -1030,7 +1059,7 @@ function AddRMFinancialDetails(props) {
                                     <SearchableSelectHookForm
                                         label={`Frequency of settlement`}
                                         name={"frequencyOfSettlement"}
-                                        errors={errors.currency}
+                                        errors={errors.frequencyOfSettlement}
                                         Controller={Controller}
                                         control={control}
                                         register={register}
@@ -1041,11 +1070,12 @@ function AddRMFinancialDetails(props) {
                                         placeholder={'Select'}
                                         options={renderListing("Frequency")}
                                         handleChange={handleFrequencyChange}
-                                        disabled={isEditFlag || isViewFlag}
+                                        disabled={disableAll || isEditFlag || isViewFlag}
                                     />
 
                                 </Col>
                                 <Col className="col-md-15">
+                                    {state.frequencyOfSettlement === 'Half Month Avg' && <TooltipCustom customClass="mb-0 ml-1" id="fromDate" tooltipText={`In Half Month Avg only 1st and 16th of the month will be considered`} />}
                                     <div className="inputbox date-section">
                                         <DatePickerHookForm
                                             name={`fromDate`}
@@ -1068,9 +1098,10 @@ function AddRMFinancialDetails(props) {
                                             autoComplete={"off"}
                                             disabledKeyboardNavigation
                                             onChangeRaw={(e) => e.preventDefault()}
-                                            disabled={false}
+                                            disabled={disableAll || isEditFlag || isViewFlag}
                                             mandatory={true}
                                             errors={errors && errors.fromDate}
+                                            filterDate={filterDates}
                                         />
                                     </div>
                                 </Col>
@@ -1095,7 +1126,7 @@ function AddRMFinancialDetails(props) {
                                             autoComplete={"off"}
                                             disabledKeyboardNavigation
                                             onChangeRaw={(e) => e.preventDefault()}
-                                            disabled={state.disableToDate}
+                                            disabled={disableAll || state.disableToDate}
                                             mandatory={false}
                                             errors={errors && errors.toDate}
                                         />
@@ -1122,6 +1153,7 @@ function AddRMFinancialDetails(props) {
                         commodityDetails={props.commodityDetails}
                         isViewFlag={isViewFlag}
                         setTotalBasicRate={setTotalBasicRate}
+                        disableAll={disableAll}
                     />
                 </Row>}
             </>
@@ -1154,7 +1186,7 @@ function AddRMFinancialDetails(props) {
                                 mandatory={state.isShowIndexCheckBox === true ? false : true}
                                 handleChange={handleUOM}
                                 customClassName="withBorder"
-                                disabled={state.isShowIndexCheckBox ? true : isEditFlag || isViewFlag}
+                                disabled={disableAll || state.isShowIndexCheckBox ? true : isEditFlag || isViewFlag}
                                 errors={errors.UnitOfMeasurement}
                             />
                         </Col>
@@ -1173,7 +1205,7 @@ function AddRMFinancialDetails(props) {
                                 placeholder={'Select'}
                                 options={renderListing("currency")}
                                 handleChange={handleCurrency}
-                                disabled={isEditFlag || isViewFlag}
+                                disabled={disableAll || isEditFlag || isViewFlag}
                             />
                         </Col>}
 
@@ -1194,7 +1226,7 @@ function AddRMFinancialDetails(props) {
                                             validate: { number, decimalNumberLimit3 },
                                         }}
                                         mandatory={false}
-                                        disabled={isViewFlag || (isEditFlag && isRMAssociated)}
+                                        disabled={disableAll || isViewFlag || (isEditFlag && isRMAssociated)}
                                         className=" "
                                         customClassName=" withBorder"
                                         handleChange={() => { }}
@@ -1219,7 +1251,7 @@ function AddRMFinancialDetails(props) {
                                     mandatory={false}
                                     className=" "
                                     customClassName=" withBorder"
-                                    disabled={states.isImport ? true : isViewFlag || (isEditFlag && isRMAssociated)}
+                                    disabled={disableAll || states.isImport ? true : isViewFlag || (isEditFlag && isRMAssociated)}
                                     handleChange={() => { }}
                                     errors={errors.cutOffPriceBaseCurrency}
                                 />
@@ -1239,7 +1271,7 @@ function AddRMFinancialDetails(props) {
                                     }}
                                     mandatory={true}
                                     handleChange={() => { }}
-                                    disabled={isViewFlag || (isEditFlag && isRMAssociated)}
+                                    disabled={disableAll || isViewFlag || (isEditFlag && isRMAssociated)}
                                     className=" "
                                     customClassName=" withBorder"
                                 />
@@ -1261,7 +1293,7 @@ function AddRMFinancialDetails(props) {
                                             validate: { positiveAndDecimalNumber, maxLength10, decimalLengthsix, number },
                                         }}
                                         mandatory={state.isShowIndexCheckBox ? false : true}
-                                        disabled={states.isImport || state.isShowIndexCheckBox ? true : isViewFlag || (isEditFlag && isRMAssociated)}
+                                        disabled={disableAll || states.isImport || state.isShowIndexCheckBox ? true : isViewFlag || (isEditFlag && isRMAssociated)}
                                         className=" "
                                         customClassName=" withBorder"
                                         handleChange={() => { }}
@@ -1281,7 +1313,7 @@ function AddRMFinancialDetails(props) {
                                             <input
                                                 type="checkbox"
                                                 checked={state.IsApplyHasDifferentUOM}
-                                                disabled={(isViewFlag || (isEditFlag && isRMAssociated)) ? true : false}
+                                                disabled={disableAll || (isViewFlag || (isEditFlag && isRMAssociated)) ? true : false}
                                             />
                                             <span
                                                 className=" before-box"
@@ -1306,7 +1338,7 @@ function AddRMFinancialDetails(props) {
                                         rules={{ required: true }}
                                         mandatory={true}
                                         handleChange={handleSelectConversion}
-                                        disabled={isViewFlag || (isEditFlag && isRMAssociated)}
+                                        disabled={disableAll || isViewFlag || (isEditFlag && isRMAssociated)}
                                         errors={errors.ScrapRateUOM}
                                     />
                                 </Col>}
@@ -1328,7 +1360,7 @@ function AddRMFinancialDetails(props) {
                                         maxLength="15"
                                         customClassName=" withBorder"
                                         handleChange={(e) => { handleConversionRatio(e.target.value) }}
-                                        disabled={isViewFlag || (isEditFlag && isRMAssociated)}
+                                        disabled={disableAll || isViewFlag || (isEditFlag && isRMAssociated)}
                                         errors={errors.ConversionRatio}
                                     />
                                 </Col>
@@ -1346,7 +1378,7 @@ function AddRMFinancialDetails(props) {
                                         maxLength="15"
                                         customClassName=" withBorder"
                                         handleChange={() => { }}
-                                        disabled={true}
+                                        disabled={disableAll || true}
                                     />
                                 </Col>
                                 {states.isImport && < Col md="3">
@@ -1625,7 +1657,7 @@ function AddRMFinancialDetails(props) {
                                                 Controller={Controller}
                                                 control={control}
                                                 register={register}
-                                                disabled={true}
+                                                disabled={disableAll || true}
                                                 isViewFlag={true}
                                                 className=" "
                                                 handleChange={() => { }}
@@ -1638,7 +1670,7 @@ function AddRMFinancialDetails(props) {
                                             className={"right mt-3 mb-2"}
                                             variant={isViewFlag ? "view-icon-primary" : true ? "plus-icon-square" : "blurPlus-icon-square"}
                                             title={isViewFlag ? "View" : "Add"}
-                                            disabled={false}
+                                            disabled={isViewFlag}
                                         />}
                                     </div>
                                 </Col>}
@@ -1652,7 +1684,7 @@ function AddRMFinancialDetails(props) {
                                                 Controller={Controller}
                                                 control={control}
                                                 register={register}
-                                                disabled={true}
+                                                disabled={disableAll || true}
                                                 isViewFlag={true}
                                                 className=" "
                                                 handleChange={() => { }}
@@ -1683,7 +1715,7 @@ function AddRMFinancialDetails(props) {
                                         Controller={Controller}
                                         control={control}
                                         register={register}
-                                        disabled={true}
+                                        disabled={disableAll || true}
                                         handleChange={() => { }}
                                         className=" "
                                         customClassName=" withBorder"
@@ -1699,7 +1731,7 @@ function AddRMFinancialDetails(props) {
                                         Controller={Controller}
                                         control={control}
                                         register={register}
-                                        disabled={true}
+                                        disabled={disableAll || true}
                                         className=" "
                                         handleChange={() => { }}
                                         customClassName=" withBorder"
@@ -1716,7 +1748,7 @@ function AddRMFinancialDetails(props) {
                                                 Controller={Controller}
                                                 control={control}
                                                 register={register}
-                                                disabled={true}
+                                                disabled={disableAll || true}
                                                 isViewFlag={true}
                                                 className=" "
                                                 handleChange={() => { }}
@@ -1729,7 +1761,7 @@ function AddRMFinancialDetails(props) {
                                             className={"right mt-0 mb-2"}
                                             variant={isViewFlag ? "view-icon-primary" : true ? "plus-icon-square" : "blurPlus-icon-square"}
                                             title={isViewFlag ? "View" : "Add"}
-                                            disabled={false}
+                                            disabled={disableAll || isViewFlag}
                                         />}
                                     </div>
                                 </Col>}
@@ -1743,7 +1775,7 @@ function AddRMFinancialDetails(props) {
                                                 Controller={Controller}
                                                 control={control}
                                                 register={register}
-                                                disabled={true}
+                                                disabled={disableAll || true}
                                                 isViewFlag={true}
                                                 className=" "
                                                 handleChange={() => { }}
@@ -1772,7 +1804,7 @@ function AddRMFinancialDetails(props) {
                                         Controller={Controller}
                                         control={control}
                                         register={register}
-                                        disabled={true}
+                                        disabled={disableAll || true}
                                         className=" "
                                         handleChange={() => { }}
                                         customClassName=" withBorder"
@@ -1788,7 +1820,7 @@ function AddRMFinancialDetails(props) {
                                     Controller={Controller}
                                     control={control}
                                     register={register}
-                                    disabled={true}
+                                    disabled={disableAll || true}
                                     className=" "
                                     handleChange={() => { }}
                                     customClassName=" withBorder"
@@ -1815,7 +1847,7 @@ function AddRMFinancialDetails(props) {
                                         autoComplete={"off"}
                                         disabledKeyboardNavigation
                                         onChangeRaw={(e) => e.preventDefault()}
-                                        disabled={false}
+                                        disabled={disableAll || isViewFlag}
                                         mandatory={true}
                                         errors={errors && errors.effectiveDate}
                                         minDate={state.isShowIndexCheckBox ? addDays(new Date(state.toDate), 1) : state.minDate}

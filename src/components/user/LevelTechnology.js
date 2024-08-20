@@ -7,6 +7,7 @@ import { searchableSelect, focusOnError } from "../layout/FormInputs";
 
 import { setApprovalLevelForTechnology, getAllTechnologyAPI, getAllLevelAPI } from "../../actions/auth/AuthActions";
 import { MESSAGES } from "../../config/message";
+import { withTranslation } from "react-i18next";
 
 class LevelTechnology extends Component {
     constructor(props) {
@@ -117,7 +118,7 @@ class LevelTechnology extends Component {
                     <div className="shadow-lg login-form">
                         <div className="form-heading">
                             <h2>
-                                Technology Approval For Level
+                                {this.props.t('commonFields.technology', { ns: 'MasterLabels', defaultValue: 'Technology' })} Approval For Level
                             </h2>
                         </div>
                         <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
@@ -126,7 +127,7 @@ class LevelTechnology extends Component {
                                     <Field
                                         name="TechnologyId"
                                         type="text"
-                                        label="Technology"
+                                        label={this.props.t('commonFields.technology', { ns: 'MasterLabels', defaultValue: 'Technology' })}
                                         component={searchableSelect}
                                         options={this.searchableSelectType('technology')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
@@ -205,4 +206,4 @@ export default connect(mapStateToProps, {
     },
     enableReinitialize: true,
     touchOnChange: true
-})(LevelTechnology));
+})(withTranslation(['MasterLabels'])(LevelTechnology)));

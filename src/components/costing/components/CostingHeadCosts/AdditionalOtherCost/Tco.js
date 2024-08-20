@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import { number, checkWhiteSpaces } from '../../../../../helper/validation';
 import TooltipCustom from '../../../../common/Tooltip';
-import { getCostingTcoDetails } from '../../../actions/Costing';
+import { getCostingPaymentTermDetail, getCostingTcoDetails } from '../../../actions/Costing';
 import { useForm, Controller } from 'react-hook-form'
 const Tco = (props) => {
     const { costingId } = props
@@ -20,6 +20,7 @@ const Tco = (props) => {
     const [incoTermlist, setIncoTermlist] = useState([])
     useEffect(() => {
         dispatch(getCostingTcoDetails(costingId, () => { }))
+        dispatch(getCostingPaymentTermDetail(costingId, () => { }))
 
     }, [costingId])
     useEffect(() => {
@@ -38,7 +39,7 @@ const Tco = (props) => {
                 id: getTcoDetails.IncoTermsIdRef
             }
             setValue('IncoTerms', incoTermObj.label ? incoTermObj : '');
-            setValue('Uom', getTcoDetails.UOM ? { label: getTcoDetails.UOM, value: getTcoDetails.UOMIdRef } : '')
+            setValue('Uom', getTcoDetails?.UOMSymbol ? { label: getTcoDetails?.UOMSymbol, value: getTcoDetails.UOMIdRef } : '')
             setIncoTermlist(incoTermObj)
             // Object.keys(getTcoDetails).forEach(key => {
             //     setValue(key, getTcoDetails[key]);
@@ -71,7 +72,7 @@ const Tco = (props) => {
                 <TooltipCustom id="Warranty" tooltipText="The preferred warranty duration is 3 years." />
                 <TextFieldHookForm
                     id="WarrantyYear_Conrainer"
-                    label={`Warranty Year(No)`}
+                    label={`Warranty Year (No)`}
                     name={'Warranty'}
                     Controller={Controller}
                     control={control}
@@ -94,7 +95,7 @@ const Tco = (props) => {
                 <TooltipCustom id="QualityPPM" tooltipText="The preferred quality PPM is 3000." />
                 <TextFieldHookForm
                     id="QualityPPM_Container"
-                    label={`Quality PPM(No)`}
+                    label={`Quality PPM (No)`}
                     name={'QualityPPM'}
                     Controller={Controller}
                     control={control}
@@ -113,10 +114,10 @@ const Tco = (props) => {
                 />
             </Col>
             <Col md="3" >
-                <TooltipCustom id="paymentDays" tooltipText="The preferred Payment Term is 90 Days." />
+                <TooltipCustom id="paymentDays" tooltipText="The preferred payment term is 90 days." />
                 <TextFieldHookForm
                     id="paymentDays_Container"
-                    label={`Payment Term(No)`}
+                    label={`Payment Term (Days)`}
                     name={'PaymentDays'}
                     Controller={Controller}
                     control={control}
@@ -136,7 +137,7 @@ const Tco = (props) => {
             </Col>
             <Col md="3">
                 <TextFieldHookForm
-                    label={`MOQ(No)`}
+                    label={`MOQ (No)`}
                     name={'Moq'}
                     Controller={Controller}
                     id={'Moq_Container'}
@@ -158,7 +159,7 @@ const Tco = (props) => {
             </Col>
             <Col md="3">
                 <TextFieldHookForm
-                    label={`SPQ(No)`}
+                    label={`SPQ (No)`}
                     name={'Spq'}
                     Controller={Controller}
                     id={'Spq_Container'}
@@ -178,7 +179,7 @@ const Tco = (props) => {
             </Col>
             <Col md="3">
                 <TextFieldHookForm
-                    label={`Lead Time(Days)`}
+                    label={`Lead Time (Days)`}
                     name={'LeadTime'}
                     Controller={Controller}
                     id={'LeadTime_Container'}
@@ -218,7 +219,7 @@ const Tco = (props) => {
             </Col>
             <Col md="3">
                 <TextFieldHookForm
-                    label={`Available Capacity(No)`}
+                    label={`Available Monthly Capacity (No)`}
                     name={'AvailableCapacity'}
                     Controller={Controller}
                     id={'AvailableCapacity_Container'}

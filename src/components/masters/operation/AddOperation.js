@@ -1123,7 +1123,7 @@ class AddOperation extends Component {
                       <Col md="3">
                         <Field
                           title={showDataOnHover(this.state.selectedTechnology)}
-                          label="Technology"
+                          label={t('commonFields.technology', { ns: 'MasterLabels', defaultValue: 'Technology' })}
                           name="technology"
                           placeholder={isEditFlag ? '-' : 'Select'}
                           selection={
@@ -1660,6 +1660,6 @@ export default connect(mapStateToProps, {
     focusOnError(errors)
   },
   enableReinitialize: true,
-})(withTranslation(['OperationMaster'])(AddOperation)),
+})(withTranslation(['OperationMaster', 'MasterLabels'])(AddOperation)),
 )
 

@@ -17,13 +17,13 @@ import { swappingLogicCommon } from '../../../CostingUtil';
 import Button from '../../../../layout/Button';
 
 function SurfaceTreatmentCost(props) {
-  const { item } = props
+  const { item, index } = props
   const tempArray = JSON.parse(sessionStorage.getItem('surfaceCostingArray'))
   let surfaceData = tempArray && tempArray.find(surfaceItem => surfaceItem.PartNumber === item.PartNumber && surfaceItem.AssemblyPartNumber === item.AssemblyPartNumber)
 
   const CostingViewMode = useContext(ViewCostingContext);
   const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
-  const { register, control, setValue, formState: { errors } } = useForm({
+  const { register, control, setValue, getValues, formState: { errors } } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
   });
@@ -36,10 +36,31 @@ function SurfaceTreatmentCost(props) {
   const [editIndex, setEditIndex] = useState('')
   const [Ids, setIds] = useState([])
   const [isDrawerOpen, setDrawerOpen] = useState(false)
+  const [rmFinishWeight, setRmFinishWeight] = useState('')
+  const [rmGrossWeight, setRmGrossWeight] = useState('')
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const { CostingEffectiveDate } = useSelector(state => state.costing)
   const { RMCCTabData } = useSelector(state => state.costing)
+
+  useEffect(() => {
+    if (RMCCTabData?.length > 0 && RMCCTabData[index]?.CostingPartDetails?.CostingRawMaterialsCost?.length > 0) {
+      let totalFinishWeight = 0;
+      let totalGrossWeight = 0;
+      let list = RMCCTabData && RMCCTabData[index]?.CostingPartDetails?.CostingRawMaterialsCost && RMCCTabData[0]?.CostingPartDetails?.CostingRawMaterialsCost
+
+      totalFinishWeight = list && list.reduce((accummlator, el) => {
+        return accummlator + checkForNull(el.FinishWeight)
+      }, 0)
+
+      totalGrossWeight = list && list.reduce((accummlator, el) => {
+        return accummlator + checkForNull(el.GrossWeight)
+      }, 0)
+
+      setRmFinishWeight(totalFinishWeight)
+      setRmGrossWeight(totalGrossWeight)
+    }
+  }, []);
 
   useEffect(() => {
     // setTimeout(() => {
@@ -88,7 +109,6 @@ function SurfaceTreatmentCost(props) {
       let rowArray = rowData && rowData.map(el => {
         let finalQuantity = 1
         if (RMCCTabData[0]?.PartType !== ASSEMBLYNAME) {
-          let rmFinishWeight = RMCCTabData && RMCCTabData[0]?.CostingPartDetails?.CostingRawMaterialsCost && RMCCTabData[0]?.CostingPartDetails?.CostingRawMaterialsCost[0]?.FinishWeight
           if (el?.UOMType === MASS) {
             finalQuantity = rmFinishWeight ? rmFinishWeight : 1
           } else {
@@ -104,8 +124,9 @@ function SurfaceTreatmentCost(props) {
           LabourRate: el.IsLabourRateExist ? el.LabourRate : '-',
           LabourQuantity: el.IsLabourRateExist ? el.LabourQuantity : '-',
           IsLabourRateExist: el.IsLabourRateExist,
-          SurfaceTreatmentCost: (checkForNull(el.Rate) * checkForNull(el?.Quantity)) + (checkForNull(el?.LabourRate) * checkForNull(el?.LabourQuantity)),
+          SurfaceTreatmentCost: (checkForNull(el.Rate) * checkForNull(finalQuantity)) + (checkForNull(el?.LabourRate) * checkForNull(el?.LabourQuantity)),
           SurfaceTreatmentDetailsId: '',
+          UOMType: el.UOMType
         }
       })
 
@@ -158,6 +179,9 @@ function SurfaceTreatmentCost(props) {
     if (errors?.OperationGridFields && (errors?.OperationGridFields[index]?.SurfaceArea !== undefined && Object.keys(errors?.OperationGridFields[index]?.SurfaceArea).length !== 0)) {
       return false
     }
+    if (getValues(`${OperationGridFields}.${index}.SurfaceArea`) === '') {
+      return false
+    }
     let operationGridData = gridData[index]
     if (operationGridData.UOM === 'Number') {
       let isValid = Number.isInteger(Number(operationGridData.SurfaceArea));
@@ -188,7 +212,13 @@ function SurfaceTreatmentCost(props) {
   const handleSurfaceAreaChange = (event, index) => {
     let tempArr = [];
     let tempData = gridData[index];
-
+    if (checkForNull(rmGrossWeight) !== 0 && tempData?.UOMType === MASS && event?.target?.value > rmGrossWeight) {
+      Toaster.warning("Enter value less than gross weight.")
+      setTimeout(() => {
+        setValue(`${OperationGridFields}.${index}.SurfaceArea`, '')
+      }, 50);
+      return false
+    }
     if (!isNaN(event.target.value)) {
 
       const SurfaceTreatmentCost = (checkForNull(event.target.value) * checkForNull(tempData.RatePerUOM)) + (checkForNull(tempData.LabourRate) * tempData.LabourQuantity);

@@ -308,6 +308,7 @@ class AddMachineRate extends Component {
     this.props.change('Description', data && data.fieldsObj && data.fieldsObj.Description)
     this.props.change('Specification', data && data.fieldsObj && data.fieldsObj.Specification)
     this.props.change('vendorName', data && data.selectedVedor)
+    this.props.change('clientName', data && data.selectedCustomer)
     this.props.change('Description', data && data.fieldsObj && data.fieldsObj.Description)
     setTimeout(() => {
       this.setState({ selectedPlants: data.selectedPlants })
@@ -663,13 +664,13 @@ class AddMachineRate extends Component {
   * @description called
   */
   moreDetailsToggler = (Id, editFlag) => {
-    const { selectedTechnology, vendorName, costingTypeId } = this.state;
+    const { selectedTechnology, vendorName, costingTypeId, client } = this.state;
     if (selectedTechnology == null || selectedTechnology.length === 0 || Object.keys(selectedTechnology).length < 0) {
-      Toaster.warning('Technology should not be empty.')
+      Toaster.warning(`${this.props.t('commonFields.technology', { ns: 'MasterLabels', defaultValue: 'Technology' })} should not be empty.`)
       return false;
     }
     if (costingTypeId === VBCTypeId && vendorName.length === 0) {
-      Toaster.warning('Vendor and Technology should not be empty.')
+      Toaster.warning(`Vendor and ${this.props.t('commonFields.technology', { ns: 'MasterLabels', defaultValue: 'Technology' })} should not be empty.`)
       return false;
     }
     let data = {
@@ -681,7 +682,8 @@ class AddMachineRate extends Component {
       selectedTechnology: selectedTechnology,
       vendorName: vendorName ?? [],
       selectedPlants: this.state.selectedPlants,
-      selectedEffectiveDate: this.props.fieldsObj.EffectiveDate
+      selectedEffectiveDate: this.props.fieldsObj.EffectiveDate,
+      selectedCustomer: client ?? []
 
     }
     this.props.displayMoreDetailsForm(data)
@@ -1516,7 +1518,7 @@ class AddMachineRate extends Component {
                         </Col>
                         <Col md="3">
                           <Field
-                            label="Technology"
+                            label={t('commonFields.technology', { ns: 'MasterLabels', defaultValue: 'Technology' })}
                             name="technology"
                             placeholder={isViewFlag || isEditFlag ? '-' : "Select"}
                             // selection={(this.state.selectedTechnology == null || this.state.selectedTechnology.length === 0) ? [] : this.state.selectedTechnology}
@@ -2151,5 +2153,5 @@ export default connect(mapStateToProps, {
   onSubmitFail: errors => {
     focusOnError(errors);
   },
-})(withTranslation(['MachineMaster'])(AddMachineRate)),
+})(withTranslation(['MachineMaster', 'MasterLabels'])(AddMachineRate)),
 )

@@ -38,6 +38,7 @@ import { Steps } from '../../common/Tour/TourMessages';
 import TourWrapper from '../../common/Tour/TourWrapper';
 import { useTranslation } from 'react-i18next';
 import { TourStartAction } from '../../../actions/Common';
+import { useLabels } from '../../../helper/core';
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -85,7 +86,7 @@ const MachineRateListing = (props) => {
   const { globalTakes } = useSelector(state => state.pagination);
   const permissions = useContext(ApplyPermission);
   const tourStartData = useSelector(state => state.comman.tourStartData);
-
+  const { technologyLabel } = useLabels();
   useEffect(() => {
     const fetchData = async () => {
       setTimeout(() => {
@@ -770,7 +771,7 @@ const MachineRateListing = (props) => {
               >
                 { }
                 <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
-                {!isSimulation && <AgGridColumn field="Technology" headerName="Technology"></AgGridColumn>}
+                {!isSimulation && <AgGridColumn field="Technology" headerName={technologyLabel}></AgGridColumn>}
                 <AgGridColumn field="MachineName" headerName="Machine Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 <AgGridColumn field="MachineNumber" headerName="Machine Number" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 <AgGridColumn field="MachineTypeName" headerName="Machine Type" cellRenderer={'hyphenFormatter'}></AgGridColumn>

@@ -22,9 +22,9 @@ const ViewTcoDetail = ({ isApproval, viewCostingData, isRfqCosting, highlighter,
     );
     const handleOpenSpecificationDrawerMutiple = () => {
         let costingIds = viewCostingData
-                .map(item => item.AssemblyCostingId)
-                .filter(id => id !== null && id !== undefined && id !== '-') ;
-                setBaseCostingId(costingIds)
+            .map(item => item.AssemblyCostingId)
+            .filter(id => id !== null && id !== undefined && id !== '-');
+        setBaseCostingId(costingIds)
         setOpenSpecificationDrawer(true);
     };
     const handleOpenSpecificationDrawerSingle = (id) => {
@@ -100,8 +100,7 @@ const ViewTcoDetail = ({ isApproval, viewCostingData, isRfqCosting, highlighter,
                                 renderSpan(data?.bestCost === true ? ' ' : (data?.CostingHeading !== VARIANCE ? (CostingTCOResponse && CostingTCOResponse?.QualityPPM) ? CostingTCOResponse?.QualityPPM : '-' : '')),
 
                                 renderSpan(data?.bestCost === true ? ' ' : (data?.CostingHeading !== VARIANCE ? '-' : '')),
-                                renderSpan(data?.bestCost === true ? ' ' : (data?.CostingHeading !== VARIANCE ? (CostingTCOResponse && CostingTCOResponse?.CalculatedQualityPPMValue) ?? '-' : ''))
-                            ])}
+                                renderSpan(data?.bestCost === true ? ' ' : (data?.CostingHeading !== VARIANCE ? (CostingTCOResponse && checkForDecimalAndNull(CostingTCOResponse?.CalculatedQualityPPMValue, initialConfiguration.NoOfDecimalForPrice)) ?? '-' : ''))])}
                             {renderDiv([
                                 renderSpan(data?.bestCost === true ? ' ' : (data?.CostingHeading !== VARIANCE ? '-' : '')),
                                 renderSpan(data?.bestCost === true ? ' ' : (data?.CostingHeading !== VARIANCE ? '-' : '')),

@@ -11,7 +11,7 @@ import { getBopCategorySelectList, getBopNumberSelectList } from '../actions/rfq
 import { DRAFT, PREDRAFT, SENT } from "../../../config/constants";
 
 const RaiseRfqBopDetails = (props) => {
-    const { setViewQuotationPart, updateBopList, isEditFlag, isViewFlag, updateButtonPartNoTable, dataProps, resetBopFields, plant, prNumber, disabledPartUid } = props
+    const { setViewQuotationPart, updateBopList, isEditFlag, isViewFlag, updateButtonPartNoTable, dataProps, resetBopFields, plant, prNumber, disabledPartUid, resetDrawer } = props
 
     const [drawerOpen, setDrawerOpen] = useState(false);
     const { register, handleSubmit, setValue, getValues, formState: { errors }, control } = useForm({
@@ -97,8 +97,7 @@ const RaiseRfqBopDetails = (props) => {
 
     }
     const setBopData = () => {
-        if (bopName.length !== 0 && bopCategory.length !== 0 && bopNumber.length !== 0) {
-
+        if (bopCategory.length !== 0 && bopNumber.length !== 0 && bopName.length !== 0) {
             let obj = {
                 BoughtOutPartChildId: bopNumber.value,
                 BoughtOutPartCategoryId: bopCategory.value,
@@ -107,7 +106,6 @@ const RaiseRfqBopDetails = (props) => {
                 BopSpecification: bopSpecificationList,
                 BoughtOutPartName: bopName,
                 BoughtOutPartCategoryName: bopCategory?.label,
-                BoughtOutPartCategoryId: bopCategory?.value,
                 BoughtOutPartNumber: bopNumber?.label,
 
 
@@ -121,8 +119,10 @@ const RaiseRfqBopDetails = (props) => {
         const temp = []
         if (label === 'bopNumber') {
             SelectBopNumber && SelectBopNumber?.map((item) => {
+                const match = item?.Text.match(/\(([^)]+)\)/);
+                const valueInsideBrackets = match ? match[1] : '';
                 if (item.Value === '0') return false
-                temp.push({ label: item.Text, value: item.Value })
+                temp.push({ label: valueInsideBrackets, value: item?.Value })
                 return null
             })
             return temp
@@ -140,9 +140,6 @@ const RaiseRfqBopDetails = (props) => {
 
     }
     const handleBopNo = (newValue, actionMeta) => {
-
-
-
         if (newValue && newValue !== '') {
 
             delete errors.RawMaterialCode
@@ -153,12 +150,13 @@ const RaiseRfqBopDetails = (props) => {
 
             setBopName(name);
             dispatch(getBopCategorySelectList(newValue?.value, () => { }))
+            setBopCategory([])
+            setValue("Category", "")
+
         } else {
             setBopNumber([])
-
-
             dispatch(getBopCategorySelectList(newValue?.value, () => { }))
-
+            setBopCategory([])
         }
     }
     const handleBopCategory = (newValue, actionMeta) => {
@@ -169,7 +167,8 @@ const RaiseRfqBopDetails = (props) => {
 
     return (
         <div className='bop-details-wrapper'>
-            <HeaderTitle title={'BOP:'} />
+            {/* <HeaderTitle title={'BOP:'} /> */}
+            {props.heading()}
             <Row className="part-detail-wrapper">
                 <Col md="3">
                     <SearchableSelectHookForm
@@ -255,7 +254,7 @@ const RaiseRfqBopDetails = (props) => {
                             isOpen={drawerOpen}
                             anchor={"right"}
                             closeDrawer={closeDrawer}
-                            partType={'BOP'}
+                            partType={'Bought Out Part'}
                             setViewQuotationPart={setViewQuotationPart}
                             specificationList={bopSpecificationList}
                             setSpecificationList={setBopSpecificationList}
@@ -266,6 +265,7 @@ const RaiseRfqBopDetails = (props) => {
                             setChildPartFiles={setBopAttchment}
                             childPartFiles={bopAttchment}
                             bopNumber={bopNumber}
+                            resetDrawer={resetDrawer}
                         />
                     )
                 }

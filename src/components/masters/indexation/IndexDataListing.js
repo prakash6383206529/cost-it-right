@@ -10,7 +10,7 @@ import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
 import PopupMsgWrapper from "../../common/PopupMsgWrapper";
 import LoaderCustom from "../../common/LoaderCustom";
-import { checkForDecimalAndNull, getConfigurationKey, searchNocontentFilter } from "../../../helper";
+import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId, searchNocontentFilter, userDetails } from "../../../helper";
 import Button from "../../layout/Button";
 import { ApplyPermission } from ".";
 import TourWrapper from "../../common/Tour/TourWrapper";
@@ -205,8 +205,20 @@ const IndexDataListing = (props) => {
     };
 
     const confirmDelete = (ID) => {
+        let tempArr = [];
+        let tempObj = {}
+        if (selectedRowForPagination) {
+            selectedRowForPagination.forEach(item => {
+                const CommodityIndexRateDetailId = item.CommodityIndexRateDetailId;
+                tempArr.push(CommodityIndexRateDetailId);
+                tempObj = {
+                    LoggedInUserId: userDetails().LoggedInUserId,
+                    CommodityIndexRateDetailIds: tempArr
+                }
+            });
+        }
         dispatch(
-            deleteIndexDetailData(ID, (res) => {
+            deleteIndexDetailData(tempObj, (res) => {
                 if (res && res.data && res.data.Result === true) {
                     Toaster.success(MESSAGES.INDEX_DELETE_SUCCESS);
                     setState((prevState) => ({ ...prevState, dataCount: 0 }));
@@ -313,7 +325,6 @@ const IndexDataListing = (props) => {
         reactLocalStorage.setObject('selectedRow', { selectedRow: uniqeArray }) //SETTING CHECKBOX STATE DATA IN LOCAL STORAGE
         setDataCount(uniqeArray.length)
         dispatch(setSelectedRowForPagination(uniqeArray))              //SETTING CHECKBOX STATE DATA IN REDUCER
-
     }
     const checkBoxRenderer = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -582,6 +593,7 @@ const IndexDataListing = (props) => {
                             >
                                 <AgGridColumn cellClass='has-checkbox' field="IndexExchangeName" cellRenderer={checkBoxRenderer} headerName="Index"></AgGridColumn>
                                 <AgGridColumn field="CommodityName" headerName="Commodity Name" ></AgGridColumn>
+                                <AgGridColumn width={250} field="CommodityStandardName" headerName="Commodity Name (In CIR)" ></AgGridColumn>
                                 <AgGridColumn field="IndexUOM" headerName="Index UOM"></AgGridColumn>
                                 <AgGridColumn field="ConvertedUOM" headerName="UOM"></AgGridColumn>
                                 <AgGridColumn field="FromCurrency" headerName="From Currency"></AgGridColumn>
@@ -589,7 +601,7 @@ const IndexDataListing = (props) => {
                                 <AgGridColumn field="RatePerIndexUOM" headerName="Index Rate (From Currency)/Index UOM" cellRenderer='priceFormatter'></AgGridColumn>
                                 <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>
                                 <AgGridColumn field="ExchangeRate" headerName={`Exchange Rate (${reactLocalStorage.getObject("baseCurrency")})`} cellRenderer='priceFormatter'></AgGridColumn>
-                                <AgGridColumn field="EffectiveDate" headerName="Indexed On" cellRenderer="effectiveDateFormatter" filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
+                                <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer="effectiveDateFormatter" filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                                 <AgGridColumn field="RatePerConvertedUOM" headerName="Index Rate (From Currency)/ UOM" cellRenderer='priceFormatter'></AgGridColumn>
                                 <AgGridColumn field="RateConversionPerIndexUOM" headerName="Conversion Rate/Index UOM" cellRenderer='priceFormatter'></AgGridColumn>
                                 <AgGridColumn field="RateConversionPerConvertedUOM" headerName="Conversion Rate/UOM " cellRenderer='priceFormatter'></AgGridColumn>

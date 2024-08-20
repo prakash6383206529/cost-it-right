@@ -22,8 +22,8 @@ import { reactLocalStorage } from 'reactjs-localstorage'
 function SimulationApproveReject(props) {
   // ********* INITIALIZE REF FOR DROPZONE ********
   const dropzone = useRef(null);
-
-  const { type, technologyId, approvalTypeIdValue, approvalData, IsFinalLevel, IsPushDrawer, dataSend, reasonId, simulationDetail, selectedRowData, costingArr, isSaveDone, Attachements, vendorId, SimulationTechnologyId, SimulationType, isSimulationApprovalListing, apiData, TechnologyId, releaseStrategyDetails, IsExchangeRateSimulation } = props
+  const hasCalledAPI = useRef(false);
+  const { type, technologyId, approvalTypeIdValue, approvalData, IsFinalLevel, IsPushDrawer, dataSend, reasonId, simulationDetail, selectedRowData, costingArr, isSaveDone, Attachements, vendorId, SimulationTechnologyId, SimulationType, isSimulationApprovalListing, apiData, TechnologyId, releaseStrategyDetails, IsExchangeRateSimulation, isRMIndexationSimulation } = props
 
   const userLoggedIn = loggedInUserId()
   const userData = userDetails()
@@ -122,28 +122,29 @@ function SimulationApproveReject(props) {
 
   useEffect(() => {
     //THIS OBJ IS FOR SAVE SIMULATION
-    if (initialConfiguration?.IsSAPConfigured && type === 'Sender' && !isSaveDone && !isSimulationApprovalListing) {
-      let simObj = formatRMSimulationObject(simulationDetail, costingArr, apiData)
-
+    if (type === 'Sender' && !isSaveDone && !isSimulationApprovalListing) {
+      let simObj = formatRMSimulationObject(simulationDetail, costingArr, apiData, isRMIndexationSimulation)
       //THIS CONDITION IS FOR SAVE SIMULATION
       dispatch(saveSimulationForRawMaterial(simObj, res => {
         if (res?.data?.Result) {
           Toaster.success('Simulation has been saved successfully')
           setLoader(true)
-          dispatch(checkSAPPoPrice(simulationDetail?.SimulationId, '', res => {
-            let status = 200
-            if ('response' in res) {
+          if (initialConfiguration?.IsSAPConfigured) {
+            dispatch(checkSAPPoPrice(simulationDetail?.SimulationId, '', res => {
+              let status = 200
+              if ('response' in res) {
 
-              status = res && res?.response?.status
-            }
+                status = res && res?.response?.status
+              }
 
-            if (status !== undefined && status === 200) {
-              setIsDisableSubmit(false)
-            } else {
-              setIsDisableSubmit(true)
-            }
-            setLoader(false)
-          }))
+              if (status !== undefined && status === 200) {
+                setIsDisableSubmit(false)
+              } else {
+                setIsDisableSubmit(true)
+              }
+            }))
+          }
+          setLoader(false)
         }
       }))
     }
@@ -156,10 +157,9 @@ function SimulationApproveReject(props) {
   const checkPermission = (costingTypeId) => {
     let levelDetailsTemp = ''
     levelDetailsTemp = userTechnologyLevelDetails(costingTypeId, technologyLevelsList?.TechnologyLevels ? technologyLevelsList?.TechnologyLevels : [])
-    
+
     if (levelDetailsTemp?.length !== 0) {
       setLevelDetails(levelDetailsTemp)
-      console.log("COMIG HERE");
       getApproversList(dataInFields?.Department?.value, dataInFields?.Department?.label, levelDetailsTemp, dataInFields)
     } else {
       if (getConfigurationKey().IsReleaseStrategyConfigured && props?.showApprovalTypeDropdown) {
@@ -198,10 +198,6 @@ function SimulationApproveReject(props) {
       ...dataInFieldTemp,
       ApprovalType: { label: releaseStrategyData?.ApprovalTypeId, value: releaseStrategyData?.ApprovalTypeId }
     })
-
-
-
-
   }
 
   const checkFinalLevelAPI = () => {
@@ -238,7 +234,6 @@ function SimulationApproveReject(props) {
 
       if (values.length > 1) {
         values.map((item, index) => {
-          console.log('item: ', item);
           let obj = {
             LoggedInUserId: userData.LoggedInUserId,
             DepartmentId: departId,
@@ -320,7 +315,6 @@ function SimulationApproveReject(props) {
             technologyIdTemp = EXCHNAGERATE
           }
         } else {
-          console.log(technologyId, "IN ELSE");
           technologyIdTemp = technologyId
         }
 
@@ -378,24 +372,23 @@ function SimulationApproveReject(props) {
 
   }
 
-  useEffect(() => {
-    if (type === 'Sender' && !isSaveDone && !isSimulationApprovalListing) {
-      let simObj = formatRMSimulationObject(simulationDetail, costingArr, apiData)
-      //THIS CONDITION IS FOR SAVE SIMULATION
-      setLoader(true)
-      dispatch(saveSimulationForRawMaterial(simObj, res => {
-        if (res?.data?.Result) {
-          reactLocalStorage.setObject('isSaveSimualtionCalled', true)
-          Toaster.success('Simulation saved successfully.')
-          setTimeout(() => {
-
-            setLoader(false)
-          }, 500);
-
-        }
-      }))
-    }
-  }, [simulationDetail])
+  // useEffect(() => {
+  //   if (type === 'Sender' && !isSaveDone && !isSimulationApprovalListing && !hasCalledAPI.current) {
+  //     let simObj = formatRMSimulationObject(simulationDetail, costingArr, apiData, isRMIndexationSimulation);
+  //     //THIS CONDITION IS FOR SAVE SIMULATION
+  //     setLoader(true);
+  //     hasCalledAPI.current = true; // Set the ref to true to prevent future calls
+  //     dispatch(saveSimulationForRawMaterial(simObj, res => {
+  //       if (res?.data?.Result) {
+  //         reactLocalStorage.setObject('isSaveSimualtionCalled', true);
+  //         Toaster.success('Simulation saved successfully.');
+  //         setTimeout(() => {
+  //           setLoader(false);
+  //         }, 500);
+  //       }
+  //     }));
+  //   }
+  // }, [simulationDetail]);
 
   const closePushButton = () => {
     setOpenPushButton(false)

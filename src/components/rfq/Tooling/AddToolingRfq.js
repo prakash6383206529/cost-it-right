@@ -1,0 +1,92 @@
+import React, { useEffect, useState } from 'react';
+import { TextFieldHookForm } from '../../layout/HookFormInputs';
+import { Col, Nav, NavItem, NavLink, Row, TabContent, Table, TabPane } from 'reactstrap'
+import HeaderTitle from '../../common/HeaderTitle';
+import TooltipCustom from '../../common/Tooltip';
+import { AgGridReact } from 'ag-grid-react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Controller, useForm } from 'react-hook-form'
+import { useLabels } from '../../../helper/core';
+function AddToolingRfq() {
+    const { register, handleSubmit, setValue, getValues, formState: { errors }, control } = useForm({
+        mode: 'onChange',
+        reValidateMode: 'onChange',
+    });
+    // const { getRfqToolingData } = useSelector(state => state?.rfq);
+    const { toolingSpecificRowData } = useSelector(state => state?.rfq);
+
+    const [formData, setFormData] = useState(toolingSpecificRowData[0]?.ToolData);
+
+    const [rowData, setRowData] = useState([]);
+    const dispatch = useDispatch()
+    const { technologyLabel } = useLabels();
+    const toolingDetailsInputFields = [
+        { name: 'toolingType', label: 'Tooling Type', editable: false, tooltip: 'Tooling Type', mandatory: false },
+        { name: 'toolTechnology', label: `Tool ${technologyLabel}`, editable: false, tooltip: 'Tool Technology', mandatory: false },
+        { name: 'toolLife', label: 'Tool Life', editable: false, tooltip: 'Tool Life', mandatory: false },
+        { name: 'noOfCavity', label: 'No. of Cavity', editable: false, tooltip: 'No of Cavity', mandatory: false },
+        { name: 'machineTonage', label: 'Machine Tonnage', editable: false, tooltip: 'Machine Tonnage', mandatory: false },
+        { name: 'toolRunLoc', label: 'Tool Run loc.', editable: false, tooltip: 'Tool Run loc.', mandatory: false },
+    ];
+    const columnDefs = [
+        { headerName: 'Specification', field: 'specification', editable: false },
+        { headerName: 'Value', field: 'value', editable: false },
+    ];
+
+
+    useEffect(() => {
+        const toolData = toolingSpecificRowData[0]?.ToolData
+        setValue("noOfCavity", toolData?.NoOfCavity)
+        setValue("machineTonage", toolData?.MachineTonnage)
+        setValue("toolingType", toolData?.ToolType)
+        setValue("toolTechnology", toolData?.ToolTechnology)
+        setValue("toolLife", toolData?.ToolLife)
+        setValue("toolRunLoc", toolData?.ToolRunningLocation)
+    }, [toolingSpecificRowData])
+    const handleInputChange = (name, value) => {
+
+
+        // Update form data in state
+        setFormData(prev => ({ ...prev, [name]: value }));
+    };
+    return (
+        <>
+            <Row>
+                <Col md="12">
+                    <HeaderTitle
+                        title={'Tooling:'} />
+                </Col>
+                <form>
+                    <Row>
+                        {toolingDetailsInputFields.map(item => {
+                            const { tooltip = "", name, label, editable } = item ?? {};
+                            return <Col md="3">
+                                {/* {item.tooltip && <TooltipCustom width={tooltip.width} tooltipClass={tooltip.className ?? ''} disabledIcon={true} id={item.name} tooltipText={`${item.label} = ${tooltip.text ?? ''}`} />} */}
+                                <TextFieldHookForm
+                                    label={label}
+                                    name={name}
+                                    Controller={Controller}
+                                    control={control}
+                                    register={register}
+                                    rules={{ required: false }}
+                                    mandatory={false}
+                                    handleChange={(e) => handleInputChange(name, e.target.value)}
+                                    defaultValue={''}
+                                    className=""
+                                    customClassName={'withBorder'}
+                                    errors={errors[name]}
+                                    disabled={!editable}
+                                    placeholder={!editable}
+                                />
+                            </Col>
+                        })}
+
+                    </Row>
+                </form>
+            </Row>
+        </>
+
+    );
+}
+
+export default AddToolingRfq;

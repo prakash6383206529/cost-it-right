@@ -9,7 +9,7 @@ i18n
     .use(initReactI18next)
     .init({
         fallbackLng: 'en',
-        ns: ['common', 'RawMaterialMaster', 'BOPMaster', 'MachineMaster', 'OverheadsProfits', 'OperationMaster', 'FuelPowerMaster', 'PartMaster', 'VendorMaster', "Costing", "Dashboard"],
+        ns: ['common', 'RawMaterialMaster', 'BOPMaster', 'MachineMaster', 'OverheadsProfits', 'OperationMaster', 'FuelPowerMaster', 'PartMaster', 'VendorMaster', "Costing", "Dashboard", "MasterLabels"],
         defualtNS: 'common',
         Backend: {
             loadPath: '/locales/{{lng}}/{{ns}}.json'

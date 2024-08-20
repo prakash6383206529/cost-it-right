@@ -16,6 +16,7 @@ import { masterFinalLevelUser } from '../actions/Material'
 import { loggedInUserId, userDetails } from '../../../helper'
 import NoContentFound from '../../common/NoContentFound';
 import { PaginationWrapper } from '../../common/commonPagination';
+import { useLabels } from '../../../helper/core';
 
 
 
@@ -34,7 +35,7 @@ function OperationApproval(props) {
     const [approvalDrawer, setApprovalDrawer] = useState(false)
     const [isFinalApprover, setIsFinalApprover] = useState(false)
     const dispatch = useDispatch()
-
+    const { technologyLabel } = useLabels();
     useEffect(() => {
         getTableData()
 
@@ -246,7 +247,7 @@ function OperationApproval(props) {
                                     <AgGridColumn width="145" cellClass="has-checkbox" field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Token No."></AgGridColumn>
                                     <AgGridColumn width="145" field="CostingHead" headerName='Costing Head'></AgGridColumn>
                                     <AgGridColumn width="145" field="ApprovalProcessId" hide></AgGridColumn>
-                                    <AgGridColumn width="145" field="Technology" headerName='Technology'></AgGridColumn>
+                                    <AgGridColumn width="145" field="Technology" headerName={technologyLabel}></AgGridColumn>
                                     <AgGridColumn width="145" field="OperationName" headerName='Operation Name'></AgGridColumn>
                                     <AgGridColumn width="145" field="OperationCode" headerName='Operation Code'></AgGridColumn>
                                     <AgGridColumn width="150" field="Plants" headerName='Plant (Code)'></AgGridColumn>

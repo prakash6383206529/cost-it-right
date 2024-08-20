@@ -831,6 +831,10 @@ a:hover {
                 overflow: hidden;
                 text-overflow: ellipsis;
                 margin-bottom: 4px;
+
+                &.with-button {
+                  max-width: fit-content
+                }
               }
 
               .attachment.images {
@@ -2776,6 +2780,7 @@ td,
   .ApprovedByASMSimulation,
   .RejectedBySystem,
   .Cancelled,
+  .Accepted,
   .CreatedByAssembly,
   .Received,
   .Sent,
@@ -2791,6 +2796,10 @@ td,
     line-height: 26px;
     padding: 0 0.5rem;
     vertical-align: middle;
+
+    &.counter-offer {
+      line-height: 1;
+    }
   }
 
   [class^="Pending"],
@@ -2813,6 +2822,7 @@ td,
   .Approved,
   .ApprovedBySimulation,
   .ApprovedByASMSimulation,
+  .Accepted,
   .ApprovedByAssembly {
     background-color: #4dc771;
   }

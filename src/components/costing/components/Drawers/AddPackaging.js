@@ -16,6 +16,7 @@ import { MESSAGES } from '../../../../config/message';
 import TooltipCustom from '../../../common/Tooltip';
 import { CRMHeads, WACTypeId } from '../../../../config/constants';
 import { fetchCostingHeadsAPI } from '../../../../actions/Common';
+import Toaster from '../../../common/Toaster';
 
 function IsolateReRender(control) {
   const values = useWatch({
@@ -61,6 +62,8 @@ function AddPackaging(props) {
   const { CostingDataList, isBreakupBoughtOutPartCostingFromAPI } = useSelector(state => state.costing)
   const [packagingCostDataFixed, setPackagingCostDataFixed] = useState(getValues('PackagingCost') ? getValues('PackagingCost') : '')
   const [errorMessage, setErrorMessage] = useState('')
+  const [removeApplicability, setRemoveApplicability] = useState([])
+  const [totalRMGrossWeight, setTotalRMGrossWeight] = useState('')
 
   const fieldValues = IsolateReRender(control)
   const { costingData, ComponentItemData } = useSelector(state => state.costing)
@@ -78,15 +81,19 @@ function AddPackaging(props) {
     if (applicability?.value === PACK_AND_FREIGHT_PER_KG) {
       let arr = _.map(RMCCTabData, 'CostingPartDetails.CostingRawMaterialsCost')
       let totalFinishWeight = 0
+      let totalGrossWeight = 0
       arr && arr?.map(item => {
         totalFinishWeight = item && item?.reduce((accummlator, el) => {
           return accummlator + checkForNull(el?.FinishWeight)
+        }, 0)
+        totalGrossWeight = item && item?.reduce((accummlator, el) => {
+          return accummlator + checkForNull(el?.GrossWeight)
         }, 0)
       })
       // setTotalFinishWeight(totalFinishWeight)
 
       setValue("Quantity", totalFinishWeight)
-
+      setTotalRMGrossWeight(totalGrossWeight)
     }
   }, [RMCCTabData, applicability])
 
@@ -100,6 +107,8 @@ function AddPackaging(props) {
   useEffect(() => {
     let request = partType ? 'multiple technology assembly' : ''
     dispatch(fetchCostingHeadsAPI(request, false, (res) => { }))
+    const removeApplicabilityList = _.map(gridData, 'Applicability')
+    setRemoveApplicability(removeApplicabilityList)
   }, [])
 
   // useEffect(() => {
@@ -131,7 +140,9 @@ function AddPackaging(props) {
 
     if (label === 'Applicability') {
       costingHead && costingHead.map(item => {
+        if (removeApplicability?.includes(item.Text)) return false;
         if (item.Value === '0') return false;
+
         temp.push({ label: item.Text, value: item.Value })
         return null;
       });
@@ -142,7 +153,9 @@ function AddPackaging(props) {
       } else {
         tempList = [...temp]
       }
-      tempList.push({ label: PACK_AND_FREIGHT_PER_KG, value: PACK_AND_FREIGHT_PER_KG })
+      if (!removeApplicability?.includes(PACK_AND_FREIGHT_PER_KG)) {
+        tempList.push({ label: PACK_AND_FREIGHT_PER_KG, value: PACK_AND_FREIGHT_PER_KG })
+      }
       return tempList;
     }
     if (label === 'FrieghtType') {
@@ -322,6 +335,13 @@ function AddPackaging(props) {
   }
 
   const calculatePerKg = (rate, weight) => {
+    if (checkForNull(totalRMGrossWeight) !== 0 && applicability?.label === PACK_AND_FREIGHT_PER_KG && weight > totalRMGrossWeight) {
+      Toaster.warning("Enter value less than gross weight.")
+      setTimeout(() => {
+        setValue('Quantity', '')
+      }, 50);
+      return false
+    }
     const packagingCost = checkForNull(rate) * checkForNull(weight)
 
     setValue('PackagingCost', packagingCost ? checkForDecimalAndNull(packagingCost, getConfigurationKey().NoOfDecimalForPrice) : '')

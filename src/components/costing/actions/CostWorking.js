@@ -1499,3 +1499,89 @@ export function getSimulationCorrugatedAndMonoCartonCalculation(simulationId, co
     });
   };
 }
+
+
+/**
+ * @method saveRawMaterialCalculationForInsulation
+ * @description Save raw material calculator data for Insulation
+ */
+export function saveRawMaterialCalculationForInsulation(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.saveRawMaterialCalculationForInsulation, data, config());
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      apiErrors(error);
+      callback(error);
+    });
+  };
+}
+
+/**
+ * @method getRawMaterialCalculationForInsulation
+ * @description Get raw material calculator data for Insulation
+ */
+export function getRawMaterialCalculationForInsulation(costingId, rawMaterialId, weightCalculationId, callback) {
+
+  return (dispatch) => {
+    const queryParams = `costingId=${costingId}&rawMaterialId=${rawMaterialId}&weightCalculationId=${weightCalculationId ? weightCalculationId : "0"}`
+    const request = axios.get(`${API.getRawMaterialCalculationForInsulation}?${queryParams}`, config());
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      } else {
+        Toaster.error(MESSAGES.SOME_ERROR);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+      apiErrors(error);
+    });
+  };
+}
+
+/**
+ * @method InsulationBulkUploadCosting
+ * @description Insulation bulk upload
+ */
+export function InsulationBulkUploadCosting(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.uploadInsulationCosting, data, config());
+    request.then((response) => {
+      if (response.status === 200) {
+
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      if (error?.response?.status === 400) {
+        callback(error.response)
+      }
+      apiErrors(error);
+    });
+  }
+}
+
+/**
+ * @method ElectricalStampingCostingBulkImport
+ * @description Electronic stamping bulk upload.
+ */
+export function ElectricalStampingCostingBulkImport(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.uploadElectricalStampingCosting, data, config());
+    request.then((response) => {
+      if (response.status === 200) {
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      if (error?.response?.status === 400) {
+        callback(error.response)
+      }
+      apiErrors(error);
+    });
+  }
+}

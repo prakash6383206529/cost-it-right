@@ -28,12 +28,14 @@ import { useTranslation } from 'react-i18next';
 import { filterParams } from '../common/DateFilter';
 import CustomCellRenderer from './CommonDropdown';
 import { useHistory, useLocation } from "react-router-dom/cjs/react-router-dom";
+import { useLabels } from '../../helper/core';
 export const ApplyPermission = React.createContext();
 const gridOptions = {};
 
 
 
 function RfqListing(props) {
+
     const [gridApi, setgridApi] = useState(null);                      // DONT DELETE THIS STATE , IT IS USED BY AG GRID
     const [gridColumnApi, setgridColumnApi] = useState(null);          // DONT DELETE THIS STATE , IT IS USED BY AG GRID
     const [loader, setloader] = useState(false);
@@ -59,7 +61,7 @@ function RfqListing(props) {
     const [permissionDataPart, setPermissionDataPart] = useState()
     const [permissionDataVendor, setPermissionDataVendor] = useState()
     const [permissionData, setPermissionData] = useState()
-
+    const { technologyLabel } = useLabels();
 
     const { topAndLeftMenuData } = useSelector(state => state.auth);
     const agGridRef = useRef(null);
@@ -116,9 +118,10 @@ function RfqListing(props) {
     }, [statusColumnData])
     useEffect(() => {
         const { source, quotationId } = location.state || {};
+
         if (source === 'auction') {
             if (rowData && rowData.length !== 0) {
-                const fiterRowData = rowData.find(item => item.QuotationId === quotationId);
+                const fiterRowData = rowData.find(item => item?.QuotationId === quotationId);
                 viewDetails(fiterRowData);
             }
         }
@@ -170,12 +173,12 @@ function RfqListing(props) {
         dispatch(getQuotationList(userDetails()?.DepartmentCode, Timezone, (res) => {
             let temp = []
             res?.data?.DataList && res?.data?.DataList.map((item) => {
-                if (item.IsActive === false) {
+                if (item?.IsActive === false) {
                     item.Status = "Cancelled"
                 }
 
                 item.tooltipText = ''
-                switch (item.Status) {
+                switch (item?.Status) {
                     case APPROVED:
                         item.tooltipText = 'Total no. of parts for which costing has been approved from that quotation / Total no. of parts exist in that quotation'
                         break;
@@ -277,8 +280,8 @@ function RfqListing(props) {
     */
     const buttonFormatter = (props) => {
 
-        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cellValue = props?.valueFormatted ? props?.valueFormatted : props?.value;
+        const rowData = props?.valueFormatted ? props?.valueFormatted : props?.data;
         let status = rowData?.Status
 
         return (
@@ -307,8 +310,9 @@ function RfqListing(props) {
 
     }
 
-    const closeDrawerViewRfq = () => {
-        setViewRfq(false)
+    const closeDrawerViewRfq = (value) => {
+        value === true ? setViewRfq(true) : setViewRfq(false)
+        // setViewRfq(false)
         getDataList()
 
     }
@@ -335,8 +339,8 @@ function RfqListing(props) {
 
     const linkableFormatter = (props) => {
 
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
 
         if (row?.IsActive) {
             return (
@@ -356,8 +360,8 @@ function RfqListing(props) {
     }
     const quotationReceiveFormatter = (props) => {
 
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
 
         if (row?.IsActive) {
             return (
@@ -376,8 +380,8 @@ function RfqListing(props) {
     }
     const statusFormatter = (props) => {
         dispatch(getGridHeight({ value: agGridRef.current.rowRenderer.allRowCons.length, component: 'RFQ' }))
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         let tempStatus = '-'
         if (row?.Status === APPROVED || row?.Status === UNDER_REVISION || row?.Status === RECEIVED || row?.Status === SUBMITTED || row?.Status === UNDER_APPROVAL) {
             tempStatus = row?.DisplayStatus + ' (' + row?.CostingReceived + '/' + row?.TotalCostingCount + ')'
@@ -405,12 +409,12 @@ function RfqListing(props) {
     }
 
     const dateFormatter = (props) => {
-        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const cellValue = props?.valueFormatted ? props?.valueFormatted : props?.value;
         return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '-';
     }
 
     const dateTimeFormatter = (props) => {
-        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const cellValue = props?.valueFormatted ? props?.valueFormatted : props?.value;
         return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY  hh:mm') : '-';
     }
     const onFloatingFilterChanged = (value) => {
@@ -420,7 +424,7 @@ function RfqListing(props) {
     }
 
     const attachmentFormatter = (props) => {
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
         let files = row?.Attachments
 
         return (
@@ -516,7 +520,7 @@ function RfqListing(props) {
                                 <Col md="9" lg="9" className="mb-3 d-flex justify-content-end">
                                     {
                                         // SHOW FILTER BUTTON ONLY FOR RM MASTER NOT FOR SIMULATION AMD MASTER APPROVAL SUMMARY
-                                        (!props.isMasterSummaryDrawer) &&
+                                        (!props?.isMasterSummaryDrawer) &&
                                         <>
                                             <div className="d-flex justify-content-end bd-highlight w100">
                                                 <>
@@ -573,23 +577,25 @@ function RfqListing(props) {
                                                 {/* <AgGridColumn field="NfrId" headerName='NFR Id' width={150}></AgGridColumn> */}
                                                 <AgGridColumn field="PartType" headerName="Part Type" width={150} cellRenderer={"hyphenFormatter"}></AgGridColumn>
                                                 <AgGridColumn field="PartNumber" tooltipField="PartNumber" headerName="Part No." width={150} cellRendererFramework={CustomCellRenderer} />
-                                                <AgGridColumn field="RawMaterial" tooltipField="PartNumber" headerName="Raw Material" width={150} cellRenderer={"hyphenFormatter"}></AgGridColumn>
-                                                <AgGridColumn field="NoOfQuotationReceived" headerName='No. of Quotation Received' maxWidth={150} cellRenderer={'quotationReceiveFormatter'}></AgGridColumn>
-                                                <AgGridColumn field="VendorName" tooltipField="VendorName" headerName='Vendor (Code)'></AgGridColumn>
+                                                <AgGridColumn field="RawMaterial" tooltipField="PartNumber" headerName="Raw Material Name-Grade-Specification" width={230} cellRenderer={"hyphenFormatter"}></AgGridColumn>
+                                                <AgGridColumn field="PRNumber" headerName="PR No." width={150} cellRenderer={"hyphenFormatter"}></AgGridColumn>
+
+                                                <AgGridColumn field="NoOfQuotationReceived" headerName='Quotation Received (No.)' maxWidth={150} cellRenderer={'quotationReceiveFormatter'}></AgGridColumn>
+                                                <AgGridColumn field="VendorName" tooltipField="VendorName" headerName='Vendor (Code)' cellRendererFramework={CustomCellRenderer}></AgGridColumn>
                                                 <AgGridColumn field="PlantName" tooltipField="PlantName" headerName='Plant (Code)'></AgGridColumn>
-                                                <AgGridColumn field="TechnologyName" width={"160px"} headerName='Technology'></AgGridColumn>
-                                                <AgGridColumn field="Remark" tooltipField="Remark" headerName='Notes'></AgGridColumn>
-                                                <AgGridColumn field="RaisedBy" width={"160px"} headerName='Raised By'></AgGridColumn>
+                                                <AgGridColumn field="TechnologyName" width={"160px"} headerName={technologyLabel}></AgGridColumn>
+                                                <AgGridColumn field="RaisedBy" width={"160px"} headerName='Initiated By'></AgGridColumn>
                                                 <AgGridColumn field="RaisedOn" width={"145px"} headerName='Raised On' cellRenderer='dateFormatter' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-                                                <AgGridColumn field="PartDataSentDate" width={"145px"} headerName='Part Submission Date' cellRenderer='dateFormatter' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
+                                                <AgGridColumn field="PartDataSentDate" width={"145px"} headerName='RFI Date' cellRenderer='dateFormatter' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
 
                                                 <AgGridColumn field="VisibilityMode" width={"200px"} headerName='Visibility Mode' cellRenderer='dashFormatter'></AgGridColumn>
                                                 <AgGridColumn field="VisibilityDate" width={"160px"} headerName='Visibility Date' cellRenderer='dateTimeFormatter'></AgGridColumn>
                                                 <AgGridColumn field="VisibilityDuration" width={"150px"} headerName='Visibility Duration' cellRenderer='dashFormatter'></AgGridColumn>
-                                                <AgGridColumn field="TimeZone" width={"150px"} headerName='Time Zone' cellRenderer='timeZoneFormatter'></AgGridColumn>
-                                                <AgGridColumn field="LastSubmissionDate" width={"160px"} headerName='Last Submission Date' cellRenderer='dateFormatter' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
+                                                {/* <AgGridColumn field="TimeZone" width={"150px"} headerName='Time Zone' cellRenderer='timeZoneFormatter'></AgGridColumn> */}
+                                                <AgGridColumn field="LastSubmissionDate" width={"160px"} headerName='Quote Submission Date' cellRenderer='dateFormatter' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                                                 {/* <AgGridColumn field="QuotationNumber" headerName='Attachments' cellRenderer='attachmentFormatter'></AgGridColumn> */}
-                                                <AgGridColumn field="Status" tooltipField="tooltipText" headerName="Status" headerClass="justify-content-center" cellClass="text-center" cellRenderer="statusFormatter" floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterRFQ}></AgGridColumn>
+                                                <AgGridColumn field="Remark" tooltipField="Remark" headerName='Notes' cellRenderer={"hyphenFormatter"}></AgGridColumn>
+                                                <AgGridColumn field="Status" tooltipField="tooltipText" pinned="right" headerName="Status" headerClass="justify-content-center" cellClass="text-center" cellRenderer="statusFormatter" floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterRFQ}></AgGridColumn>
                                                 {<AgGridColumn field="QuotationId" width={180} cellClass="ag-grid-action-container rfq-listing-action" pinned="right" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
 
                                             </AgGridReact>
@@ -607,7 +613,7 @@ function RfqListing(props) {
                         <ViewRfq
                             data={viewRfqData}
                             isOpen={viewRfq}
-                            partType={'BOP'}
+                            getDataList={getDataList}
                             closeDrawer={closeDrawerViewRfq}
                         />
 

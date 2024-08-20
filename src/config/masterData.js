@@ -59,7 +59,6 @@ export const Masters = [
     },
 ];
 
-
 /** 
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
@@ -935,11 +934,11 @@ export const RMSpecificationXLTempData = [
 export const IndexDataListing = [
     { label: "Index", value: "IndexExchangeName", },
     { label: "CommodityName", value: "CommodityName", },
-    { label: "UOM", value: "UOM2", },
+    { label: "Index UOM", value: "UOM", },
     { label: "From Currency", value: "FromCurrency", },
     { label: "To Currency", value: "ToCurrency", },
-    { label: "Indexed On", value: "EffectiveDate", },
-    { label: "Index Rate (Currency)", value: "Rate", },
+    { label: "EffectiveDate", value: "EffectiveDate", },
+    { label: "Index Rate (From Currency)", value: "Rate", },
     { label: "ExchangeRateSourceName", value: "ExchangeRateSourceName", },
     { label: "Exchangerate", value: "ExchangeRate", },
 ]
@@ -948,7 +947,7 @@ export const IndexDataListingTempData = [
     {
         "IndexExchangeName": "LME",
         "CommodityName": "CU",
-        "UOM2": "kg",
+        "UOM": "kg",
         "FromCurrency": "USD",
         "ToCurrency": "INR",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -4440,6 +4439,8 @@ export const ASSEMBLY_TECHNOLOGY_MASTER = 10
 export const LOGISTICS = 24
 export const WIREFORMING = 25
 export const ELECTRICAL_STAMPING = 26
+export const INSULATION = 28
+export const TOOLING_ID = 27
 
 // PART TYPE
 export const PART_TYPE_ASSEMBLY = 1
@@ -5097,7 +5098,7 @@ export const ENDMILL = 'End Mill'
 export const BROACHING = 'Broaching'
 export const HARDFACING = 'Hard Facing'
 
-export const getTechnology = [1, 8, 2, 4, 20, 23, 14, 25, 26]
+export const getTechnology = [1, 8, 2, 4, 20, 23, 14, 25, 26, 28]
 export const technologyForDensity = [1, 2, 14, 25]
 export const getTechnologyForRecoveryPercent = [4, 6, 3, 5, 2]
 export const getTechnologyForSimulation = ['0', '1', '2', '3', '4', '5', '6', '7', '9', '10']
@@ -5828,6 +5829,7 @@ export const COMMODITYSTANDARD_DOWNLOAD_EXCEl = [
 export const RMMATERIALISTING_DOWNLOAD_EXCEl = [
     { label: "Index", value: "IndexExchangeName", },
     { label: "Commodity Name", value: "CommodityName", },
+    { label: "Commodity Name (In CIR)", value: "CommodityStandardName", },
     { label: "Index UOM", value: "IndexUOM", },
     { label: "UOM", value: "UOM", },
     { label: "From Currency", value: "FromCurrency", },
@@ -5916,7 +5918,7 @@ export const INDIVIDUALPART_DOWNLOAD_EXCEl = [
     { label: "Technology", value: "Technology", },
     { label: "Part No.", value: "PartNumber", },
     { label: "Name", value: "PartName", },
-    // { label: "SAP Code", value: "SAPCode", },
+    { label: "SAP Code", value: "SAPCode", },
     { label: "ECN No.", value: "ECNNumber", },
     { label: "Revision No.", value: "RevisionNumber", },
     { label: "Drawing No.", value: "DrawingNumber", },
@@ -6731,14 +6733,15 @@ export const TechnologyDropdownBulkUpload = [
     { label: 'Wiring Harness', value: '6' }
 ]
 export const TechnologyDropdownBulkUploadV4 = [
-    { label: 'Mechanical Proprietary, Sheet Metal, Hardware, Rivet', value: '1' },
+    { label: 'Mechanical Proprietary, Sheet Metal, Hardware, Rivet, Wire Forming , Sintered Proprietary , Electronics', value: '1' },
     { label: 'Rubber, Plastic', value: '2' },
     { label: 'Forging, Machining, Springs', value: '3' },
     { label: 'Corrugated Box', value: '4' },
-    { label: 'Assembly', value: '5' },
+    { label: 'Assembly , Electrical Proprietary', value: '5' },
     { label: 'Wiring Harness', value: '6' },
-    { label: 'Die Casting', value: '7' }
-
+    { label: 'Die Casting', value: '7' },
+    { label: 'Electrical Stamping', value: '12' },
+    { label: 'Insulation', value: '11' }
 ]
 
 

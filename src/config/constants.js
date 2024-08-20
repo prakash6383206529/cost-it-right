@@ -109,6 +109,7 @@ export const API = {
   getExchangeRateSource: `${BASE_URL}/masters-material/select-list-exchange-rate-source`,
   getFrequencySettlement: `${BASE_URL}/masters-material/select-list-frequency-of-settlement`,
   getCommodityIndexRateAverage: `${BASE_URL}/masters-material/get-commodity-index-rate-average`,
+  getRawMaterialDataBySourceVendor: `${BASE_URL}/masters-raw-material/get-source-vendor-raw-material-by-id`,
 
   // INDEXATION SIMULATION
   getRMIndexationSimulationListing: `${BASE_URL}/simulation/get-raw-material-records-for-simulation`,
@@ -116,7 +117,6 @@ export const API = {
   draftSimulationForRMMaster: `${BASE_URL}/simulation/draft-simulation-raw-material-master`,
   updateSimulationRawMaterial: `${BASE_URL}/simulation/update-simulation-raw-material`,
   runSimulationOnRawMaterial: `${BASE_URL}/simulation/run-simulation-on-raw-material-master`,
-  getAllSimulatedRawMaterial: `${BASE_URL}/simulation/get-all-simulated-raw-material`,
   getApprovalSimulatedRawMaterialSummary: `${BASE_URL}/app-simulation-approval-system/get-approval-simulated-raw-material-summary`,
   getRMIndexationCostingSimulationListing: `${BASE_URL}/simulation/get-impacted-raw-material-details`,
 
@@ -630,6 +630,9 @@ export const API = {
   getSimulationRmMachiningCalculation: `${BASE_URL}/simulation/get-simulation-raw-material-machining-calculation-details`,
   getSimulationCorrugatedAndMonoCartonCalculation: `${BASE_URL}/simulation/get-simulation-raw-material-corrugated-and-mono-carton-box-calculation-details`,
 
+  //Insulation calculator
+  saveRawMaterialCalculationForInsulation: `${BASE_URL}/costing/save-raw-material-insulation-calculation-details`,
+  getRawMaterialCalculationForInsulation: `${BASE_URL}/costing/get-raw-material-insulation-calculation-details`,
   // YOY
   getYOYCostList: `${BASE_URL}/rfq-costing/rfq-get-yoy-details`,
   saveYOYCostList: `${BASE_URL}/rfq-costing/rfq-save-yoy-details`,
@@ -684,7 +687,8 @@ export const API = {
   getAssemblyChildPartbyAsmCostingId: `${BASE_URL}/costing/get-assembly-child-parts-by-asmCostingId`,
   getProcessAndOperationbyCostingId: `${BASE_URL}/costing/get-process-and-operation-by-asmCostingId-or-childCostingId`,
   getSettledSimulationCostingDetails: `${BASE_URL}/simulation/get-settled-simulation-costing-details`,
-
+  uploadInsulationCosting: `${BASE_URL}/bulk-costing/save-costing-insulation`,
+  uploadElectricalStampingCosting: `${BASE_URL}/bulk-costing/save-costing-electrical-stamping`,
 
   //COST SUMMARY
   getCostingByCostingId: `${BASE_URL}/costing-sheet-metal/get-costing-by-id`,
@@ -1120,6 +1124,7 @@ export const API = {
   getRfqPartDetails: `${BASE_URL}/rfq-quotation/get-rfq-part-details`,
   getRfqRaiseNumber: `${BASE_URL}/rfq-quotation/get-rfq-raise-number`,
   getSpecificationDetailTco: `${BASE_URL}/rfq-quotation/get-costing-specification`,
+  getSpecificationDetailBop: `${BASE_URL}/rfq-quotation/get-bought-out-part-specification`,
   deleteQuotationPartDetail: `${BASE_URL}/rfq-quotation/delete-quotation-part-detail`,
   checkRegisteredVendor: `${BASE_URL}/rfq-quotation/check-registered-vendor`,
   getPurchaseRequisitionSelectList: `${BASE_URL}/rfq-quotation/select-list-pr-number`,
@@ -1221,7 +1226,7 @@ export const API = {
   // getSAPDetailById: `${BASE_URL}/sap-sync/get-sap-push-details-by-id`
 
   //SAP API FOR APPROVAL PUSH
-  getEvaluationType: `${BASE_URL}/ExternalIntegration/select-list-of-valuations`
+  getEvaluationType: `${BASE_URL}/ExternalIntegration/select-list-of-valuations`,
 
 }
 //VENDOR MANAGEMENT
@@ -2035,6 +2040,9 @@ export const SELECT_BOP_CATEGORY = "SELECT_BOP_CATEGORY"
 export const SET_BOP_SPECIFIC_ROW_DATA = "SET_BOP_SPECIFIC_ROW_DATA"
 export const GET_BOP_PR_QUOTATION_DETAILS = "GET_BOP_PR_QUOTATION_DETAILS"
 export const SET_BOP_PR_QUOTATION_IDENTITY = "SET_BOP_PR_QUOTATION_IDENTITY"
+export const GET_RFQ_TOOLING_DETAILS = "GET_RFQ_TOOLING_DETAILS"
+export const UPDATED_TOOLING_DATA = "UPDATED_TOOLING_DATA"
+export const SET_TOOLING_SPECIFIC_ROW_DATA = "SET_TOOLING_SPECIFIC_ROW_DATA"
 
 //AUCTION 
 export const SET_AUCTION_DATA = 'SET_AUCTION_DATA'
@@ -2126,6 +2134,7 @@ export const ONBOARDING = 'Onboarding & Management'
 export const VENDOR_MANAGEMENT = 'Vendor Classification Status'
 export const LPS = 'LPS Rating Status'
 export const RFQVendor = 'RFQ-Vendor'
+export const AUCTION = 'Auction'
 
 
 export const APPROVAL_LISTING = 'Approval Listing'
@@ -2231,6 +2240,7 @@ export const FERROUSCASTING = 'Ferrous Casting'
 export const WIREFORMING = 'Wire Forming'
 export const ELECTRIC = 'Electric'
 export const ELECTRONICSNAME = 'Electronics'
+export const TOOLING = 'Tooling'
 
 export const COMBINED_PROCESS_NAME = 'Combined Process';          						//RE
 export const ZBC_COSTING = 'Costing - ZBC';
@@ -2316,6 +2326,7 @@ export const VIEW_COSTING_DATA = {
   // costingName: '',
   costingVersion: 'Costing Version',
   PoPriceWithDate: 'Net Cost (Effective from)',
+  InfoCategory: 'Category',
   partType: 'Part Type',
   partNumber: 'Part Number',
   partName: 'Part Name',
@@ -2821,6 +2832,8 @@ export const SHEETMETAL = 8
 
 export const REASON_ID = 2
 export const TOFIXEDVALUE = 10
+export const INSULATION = 11
+export const ELECTRICAL_STAMPING = 12
 
 // MASTER PAGES NAME
 export const RmDomestic = "Raw-material-domestic"
@@ -3128,7 +3141,6 @@ export const RELEASESTRATEGYTYPEID4 = Number(reactLocalStorage.getObject('Approv
 export const RELEASESTRATEGYTYPEID6 = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[ReleaseStrategyB6])
 export const VENDORNEEDFORMID = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[VendorNeedForm])
 export const RAWMATERIALAPPROVALTYPEID = Number(reactLocalStorage.getObject('ApprovalTypeListFullForm')[RAWMATERIAL])
-console.log('RAWMATERIALAPPROVALTYPEID: ', RAWMATERIALAPPROVALTYPEID);
 //Supplier approval 
 
 export const CLASSIFICATIONAPPROVALTYPEID = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[CUD])
@@ -3200,9 +3212,13 @@ export const showPaperCorrugatedBox = true
 
 export const showDynamicKeys = false
 export const hideDetailOfRubbercalci = true
+export const havellsConditionKey = true
+export const countDownBlickingTime = 2
+export const clientName = 'Havells'
+export const isShowTaxCode = false
 
 //VERSION 
-export const VERSION = "V3.0.12";
+export const VERSION = "V3.1.3";
 
 
 

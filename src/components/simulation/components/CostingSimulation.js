@@ -39,6 +39,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import { costingTypeIdToApprovalTypeIdFunction } from '../../common/CommonFunctions';
 import SimulationApproveReject from '../../costing/components/approval/SimulationApproveReject';
 import { simulationContext } from '.';
+import { useLabels } from '../../../helper/core';
 
 const gridOptions = {};
 
@@ -145,7 +146,7 @@ function CostingSimulation(props) {
     const userData = userDetails()
 
     const dispatch = useDispatch()
-
+    const { technologyLabel } = useLabels();
     useEffect(() => {
         getCostingList()
         dispatch(getImpactedMasterData(simulationId, () => { }))
@@ -611,7 +612,7 @@ function CostingSimulation(props) {
         })
         dispatch(getComparisionSimulationData(obj, res => {
             const Data = res.data.Data
-            const obj1 = formViewData(Data.OldCosting)
+            const obj1 = [...formViewData(Data.OldCosting, 'Old Costing'), ...formViewData(Data.NewCosting, 'New Costing'), ...formViewData(Data.Variance, 'Variance')]
             dispatch(setCostingViewData(obj1))
             setCostingDetailDrawer(true)
         }))
@@ -1685,7 +1686,7 @@ function CostingSimulation(props) {
                                                     {isSimulationWithCosting && <AgGridColumn width={130} field="PartNo" tooltipField='PartNo' headerName='Part No.'></AgGridColumn>}
                                                     {isSimulationWithCosting && <AgGridColumn width={130} field="PartName" tooltipField='PartName' headerName='Part Name' cellRenderer='descriptionFormatter'></AgGridColumn>}
                                                     {isSimulationWithCosting && <AgGridColumn width={120} field="PartType" tooltipField='PartType' cellRenderer='partTypeFormatter' headerName="Part Type"></AgGridColumn>}
-                                                    {(isSimulationWithCosting && !amendmentDetails?.IsExchangeRateSimulation) && <AgGridColumn width={130} field="Technology" tooltipField='Technology' headerName='Technology'></AgGridColumn>}
+                                                    {(isSimulationWithCosting && !amendmentDetails?.IsExchangeRateSimulation) && <AgGridColumn width={130} field="Technology" tooltipField='Technology' headerName={technologyLabel}></AgGridColumn>}
                                                     {isSimulationWithCosting && <AgGridColumn width={110} field="ECNNumber" tooltipField='ECNNumber' headerName='ECN No.' cellRenderer='ecnFormatter'></AgGridColumn>}
                                                     {isSimulationWithCosting && <AgGridColumn width={130} field="RevisionNumber" tooltipField='RevisionNumber' headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>}
                                                     {/* //MINDA */}
@@ -1697,6 +1698,7 @@ function CostingSimulation(props) {
                                                     {amendmentDetails?.SimulationHeadId !== CBCTypeId && <AgGridColumn width={150} field="VendorName" tooltipField='VendorName' headerName='Vendor (Code)'></AgGridColumn>}
                                                     {amendmentDetails?.SimulationHeadId === CBCTypeId && <AgGridColumn width={150} field="CustomerName" tooltipField='CustomerName' headerName='Customer (Code)'></AgGridColumn>}
                                                     {isSimulationWithCosting && <AgGridColumn width={150} field="PlantName" tooltipField='PlantName' cellRenderer='plantFormatter' headerName='Plant (Code)'></AgGridColumn>}
+                                                    {isSimulationWithCosting && <AgGridColumn width={150} field="InfoCategory" tooltipField='InfoCategory' cellRenderer='hyphenFormatter' headerName='Category'></AgGridColumn>}
                                                     {isSimulationWithCosting && <AgGridColumn width={140} field="BudgetedPrice" tooltipField='BudgetedPrice' headerName='Budgeted Price' cellRenderer='impactPerQuarterFormatter'></AgGridColumn>}
 
 

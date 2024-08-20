@@ -127,6 +127,12 @@
     @include extra-icon-styles;
 }
 
+.Award {
+    @include icons("../../images/award.png");
+    @include extra-icon-styles;
+    border-radius: 5px;
+}
+
 .undo-icon {
     @include icons("../../images/undo-red.png", 20px, 17px);
     margin-bottom: 1px !important;

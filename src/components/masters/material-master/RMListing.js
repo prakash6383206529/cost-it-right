@@ -161,7 +161,7 @@ const RMListing = (props) => {
 
   const openModel = () => {
     setState((prevState) => ({
-      ...prevState, isOpen: true, isEditFlag: false,
+      ...prevState, isOpen: true, isEditFlag: false, isViewFlag: false
     }));
   };
 

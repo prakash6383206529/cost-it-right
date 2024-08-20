@@ -45,6 +45,8 @@ import Toaster from '../../common/Toaster';
 import { simulationContext } from '.';
 import RMIndexationSimulationListing from './SimulationPages/RMIndexationSimulationListing';
 import RMIndexationSimulation from './SimulationPages/RMIndexationSimulation';
+import { setCommodityDetails } from '../../masters/actions/Indexation';
+import { useLabels } from '../../../helper/core';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -101,7 +103,7 @@ function Simulation(props) {
     const [plant, setPlant] = useState('')
     const [type, setType] = useState('')
     const [rawMaterialIds, setRawMaterialIds] = useState([])
-
+    const { technologyLabel } = useLabels();
     const dispatch = useDispatch()
     const vendorSelectList = useSelector(state => state.comman.vendorWithVendorCodeSelectList)
     useEffect(() => {
@@ -328,7 +330,7 @@ function Simulation(props) {
         setPlant('')
         setValue('Plant', '')
         setShowDropdown({})
-        if ((IdForMultiTechnology.includes(String(value?.value)) && Number(master?.value) === Number(ASSEMBLY_TECHNOLOGY_MASTER)) || Number(master.value) === Number(COMBINED_PROCESS) || Number(master.value) === Number(RMDOMESTIC)) {
+        if ((IdForMultiTechnology.includes(String(value?.value)) && Number(master?.value) === Number(ASSEMBLY_TECHNOLOGY_MASTER)) || Number(master.value) === Number(COMBINED_PROCESS) || (Number(master.value) === Number(RMDOMESTIC) && getConfigurationKey.IsShowMaterialIndexation)) {
             setTechnology(value)
             setShowMasterList(false)
             dispatch(setTechnologyForSimulation(value))
@@ -1507,10 +1509,10 @@ function Simulation(props) {
             //         return (<RMDomesticListing isSimulation={true} technology={technology.value} isMasterSummaryDrawer={false} apply={editTable} objectForMultipleSimulation={obj} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} isReset={isReset} ListFor='simulation' approvalStatus={APPROVED_STATUS} />)
             //     }
             case RMDOMESTIC:
-                
+
                 if (type?.label === "Indexed") {
                     return <ApplyPermission.Provider value={permissionData}>
-                        <RMIndexationSimulation isCostingSimulation={true} backToSimulation={backToSimulation} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData} master={master.label} tokenForMultiSimulation={tempObject} />
+                        <RMIndexationSimulation isCostingSimulation={true} backToSimulation={backToSimulation} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData} master={master.label} tokenForMultiSimulation={tempObject} technology={technology.label} technologyId={technology.value} />
                     </ApplyPermission.Provider>
                 } else {
                     return <ApplyPermission.Provider value={permissionData}>
@@ -1546,7 +1548,7 @@ function Simulation(props) {
                     return ''
                 }
             case String(RAWMATERIALINDEX):
-                return <RMIndexationSimulation backToSimulation={backToSimulation} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData} master={master.label} tokenForMultiSimulation={tempObject} />
+                return <RMIndexationSimulation backToSimulation={backToSimulation} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData} master={master.label} tokenForMultiSimulation={tempObject} technology={technology.label} technologyId={technology.value} />
             default:
                 break;
         }
@@ -1712,7 +1714,7 @@ function Simulation(props) {
                                     (association !== '' && association?.value !== NON_ASSOCIATED)) &&
                                     getTechnologyForSimulation.includes(master.value) &&
                                     <div className="d-inline-flex justify-content-start align-items-center mr-2 mb-3 zindex-unset">
-                                        <div className="flex-fills label">Technology:</div>
+                                        <div className="flex-fills label">{technologyLabel}:</div>
                                         <div className="flex-fills hide-label pl-0">
                                             <SearchableSelectHookForm
                                                 label={''}

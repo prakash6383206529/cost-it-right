@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { Col, Row } from 'reactstrap';
 import { fetchPlantDataAPI, fetchSpecificationDataAPI, getApprovalTypeSelectList, getPlantSelectListByType, getRawMaterialCategory, getVendorNameByVendorSelectList } from '../../../../actions/Common';
-import { searchCount, VBC_VENDOR_TYPE, VBCTypeId, ZBC } from '../../../../config/constants';
+import { RAWMATERIALINDEX, searchCount, VBC_VENDOR_TYPE, VBCTypeId, ZBC } from '../../../../config/constants';
 import { MESSAGES } from '../../../../config/message';
 import { getConfigurationKey, loggedInUserId, showBopLabel } from '../../../../helper';
 import { autoCompleteDropdown } from '../../../common/CommonFunctions';
@@ -24,6 +24,7 @@ import { getProcessesSelectList } from '../../../masters/actions/MachineMaster';
 import TourWrapper from '../../../common/Tour/TourWrapper';
 import { Steps } from '../TourMessages';
 import { useTranslation } from "react-i18next"
+import { useLabels } from '../../../../helper/core';
 
 function MasterCostMovement() {
     const { t } = useTranslation("Reports")
@@ -66,7 +67,7 @@ function MasterCostMovement() {
     const processSelectList = useSelector(state => state.machine.processSelectList)
 
 
-
+    const { technologyLabel } = useLabels();
 
     const dispatch = useDispatch()
 
@@ -500,7 +501,7 @@ function MasterCostMovement() {
                     }
                     else if (label === 'masters') {
 
-                        if (item.Value === '3' || item.Value === '8' || item.Value === '10') {
+                        if (item.Value === '3' || item.Value === '8' || item.Value === '10' || item.Value === RAWMATERIALINDEX) {
                             return false;
                         }
                         else {
@@ -799,7 +800,7 @@ function MasterCostMovement() {
                         </Col>
                         {showTechnologyField && <Col md="3">
                             <SearchableSelectHookForm
-                                label={'Technology'}
+                                label={technologyLabel}
                                 name={'Technology'}
                                 placeholder={'Technology'}
                                 Controller={Controller}

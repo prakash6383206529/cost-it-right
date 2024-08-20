@@ -21,7 +21,7 @@ import ViewDetailedForms from '../../Drawers/ViewDetailedForms';
 
 let counter = 0;
 function OperationCostExcludedOverhead(props) {
-  const { item, rmFinishWeight } = props;
+  const { item, rmFinishWeight, rmGrossWeight } = props;
   const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
 
   const { register, control, formState: { errors }, setValue, getValues } = useForm({
@@ -103,7 +103,8 @@ function OperationCostExcludedOverhead(props) {
           LabourQuantity: el.IsLabourRateExist ? el.LabourQuantity : '-',
           IsLabourRateExist: el.IsLabourRateExist,
           OperationCost: OperationCost,
-          IsOtherOperation: true
+          IsOtherOperation: true,
+          UOMType: el.UOMType,
         }
       })
       let tempArr = [...GridArray, ...rowArray]
@@ -210,6 +211,9 @@ function OperationCostExcludedOverhead(props) {
     if (errors?.OperationGridFields && (errors?.OperationGridFields[index]?.Quantity !== undefined && Object.keys(errors?.OperationGridFields[index]?.Quantity).length !== 0)) {
       return false
     }
+    if (getValues(`${OperationGridFields}.${index}.Quantity`) === '') {
+      return false
+    }
     let operationGridData = gridData[index]
     if (operationGridData.UOM === 'Number') {
       if (operationGridData.Quantity === '0') {
@@ -232,7 +236,13 @@ function OperationCostExcludedOverhead(props) {
   const handleQuantityChange = (event, index) => {
     let tempArr = [];
     let tempData = gridData[index];
-
+    if (checkForNull(rmGrossWeight) !== 0 && tempData?.UOMType === MASS && event?.target?.value > rmGrossWeight) {
+      Toaster.warning("Enter value less than gross weight.")
+      setTimeout(() => {
+        setValue(`${OperationGridFields}.${index}.Quantity`, '')
+      }, 50);
+      return false
+    }
     if (!isNaN(event.target.value) && event.target.value !== '') {
       const WithLaboutCost = checkForNull(tempData.Rate) * event.target.value;
       const WithOutLabourCost = tempData.IsLabourRateExist ? checkForNull(tempData.LabourRate) * tempData.LabourQuantity : 0;
@@ -265,7 +275,7 @@ function OperationCostExcludedOverhead(props) {
       setGridData(tempArr)
       //Toaster.warning('Please enter valid number.')
       setTimeout(() => {
-        setValue(`${OperationGridFields}[${index}]LabourQuantity`, 0)
+        setValue(`${OperationGridFields}${index}LabourQuantity`, 0)
       }, 200)
     }
   }
@@ -382,12 +392,13 @@ function OperationCostExcludedOverhead(props) {
                               {
                                 <TextFieldHookForm
                                   label={false}
-                                  name={`${OperationGridFields}[${index}].Quantity`}
+                                  name={`${OperationGridFields}.${index}.Quantity`}
                                   Controller={Controller}
                                   control={control}
                                   register={register}
                                   mandatory={false}
                                   rules={{
+                                    required: true,
                                     validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
                                   }}
                                   defaultValue={checkForDecimalAndNull(item.Quantity, initialConfiguration.NoOfDecimalForInputOutput)}

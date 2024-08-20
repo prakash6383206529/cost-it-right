@@ -609,8 +609,11 @@ class BulkUpload extends Component {
                                 if (fileHeads[i] === 'Commodity Name (Standard)' || fileHeads[i] === 'Commodity Name (In CIR)') {
                                     fileHeads[i] = 'CommodityStandardName'
                                 }
-                                if (fileHeads[i] === 'Index Rate (Currency)') {
+                                if (fileHeads[i] === 'Index Rate (From Currency)') {
                                     fileHeads[i] = 'Rate'
+                                }
+                                if (fileHeads[i] === 'Index UOM') {
+                                    fileHeads[i] = 'UOM'
                                 }
                                 if (fileHeads[i] === 'Conversion Rate (INR)') {
                                     fileHeads[i] = 'RateConversion'

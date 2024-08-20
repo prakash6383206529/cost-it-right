@@ -16,6 +16,7 @@ import Toaster from '../../common/Toaster'
 import DayTime from '../../common/DayTimeWrapper'
 import NoContentFound from '../../common/NoContentFound';
 import { PaginationWrapper } from '../../common/commonPagination';
+import { useLabels } from '../../../helper/core';
 
 
 
@@ -36,7 +37,7 @@ function MachineApproval(props) {
     const dispatch = useDispatch()
     const { machineApprovalList } = useSelector((state) => state.machine)
 
-
+    const { technologyLabel } = useLabels();
 
     useEffect(() => {
         getTableData()
@@ -248,7 +249,7 @@ function MachineApproval(props) {
                                     <AgGridColumn width="145" cellClass="has-checkbox" field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Token No."></AgGridColumn>
                                     <AgGridColumn width="145" field="CostingHead" headerName='Costing Head'></AgGridColumn>
                                     <AgGridColumn width="145" field="ApprovalProcessId" hide></AgGridColumn>
-                                    <AgGridColumn width="145" field="TechnologyName" headerName='Technology'></AgGridColumn>
+                                    <AgGridColumn width="145" field="TechnologyName" headerName={technologyLabel}></AgGridColumn>
                                     <AgGridColumn width="145" field="VendorName" headerName='Vendor (Code)'></AgGridColumn>
                                     <AgGridColumn width="145" field="Plants" headerName='Plant (Code)'></AgGridColumn>
                                     <AgGridColumn width="150" field="MachineNumber" headerName='Machine Number'></AgGridColumn>

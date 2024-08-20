@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { checkForNull } from '../../../helper';
+import { countDownBlickingTime } from '../../../config/constants';
 
 const CountdownTimer = ({ endTime, checkTimerRunning }) => {
     const calculateTimeLeft = () => {
@@ -28,9 +30,11 @@ const CountdownTimer = ({ endTime, checkTimerRunning }) => {
                 const newTimeLeft = calculateTimeLeft();
                 setTimeLeft(newTimeLeft);
 
-                if (newTimeLeft.hours === 0 && newTimeLeft.minutes === 0 && newTimeLeft.seconds === 0) {
+                if (checkForNull(newTimeLeft.hours) === 0 && checkForNull(newTimeLeft.minutes) === 0 && checkForNull(newTimeLeft.seconds) === 0) {
                     clearInterval(timer);
                     setIsTimerRunning(false);
+                } else {
+                    setIsTimerRunning(true);
                 }
             }, 1000);
 
@@ -42,7 +46,7 @@ const CountdownTimer = ({ endTime, checkTimerRunning }) => {
         return time.toString().padStart(2, '0');
     };
     return (
-        <div className={`countdown ${timeLeft.hours === 0 && timeLeft.minutes === 0 ? 'last-minute' : ''}`}>
+        <div className={`countdown ${timeLeft.hours === 0 && timeLeft.minutes <= countDownBlickingTime ? 'last-minute' : ''}`}>
             <span>{formatTime(timeLeft.hours)}:</span>
             <span>{formatTime(timeLeft.minutes)}:</span>
             <span>{formatTime(timeLeft.seconds)}</span>
