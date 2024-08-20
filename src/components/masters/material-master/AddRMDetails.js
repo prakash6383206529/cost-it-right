@@ -433,7 +433,7 @@ function AddRMDetails(props) {
                 getmaterial(Data.GradeId)
             }))
         } else {
-            setState({ rmCode: [], RawMaterial: [], RMGrade: [], RMSpec: [], isDisabled: false })
+            setState(prevState => ({ ...prevState, rmCode: [], RawMaterial: [], RMGrade: [], RMSpec: [], isDisabled: false }))
             setValue('RawMaterialName', '')
             setValue('RawMaterialGrade', '')
             setValue('RawMaterialSpecification', '')
