@@ -1059,7 +1059,7 @@ function AddRMFinancialDetails(props) {
                                     <SearchableSelectHookForm
                                         label={`Frequency of settlement`}
                                         name={"frequencyOfSettlement"}
-                                        errors={errors.currency}
+                                        errors={errors.frequencyOfSettlement}
                                         Controller={Controller}
                                         control={control}
                                         register={register}
@@ -1075,6 +1075,7 @@ function AddRMFinancialDetails(props) {
 
                                 </Col>
                                 <Col className="col-md-15">
+                                    {state.frequencyOfSettlement === 'Half Month Avg' && <TooltipCustom customClass="mb-0 ml-1" id="fromDate" tooltipText={`In Half Month Avg only 1st and 16th of the month will be considered`} />}
                                     <div className="inputbox date-section">
                                         <DatePickerHookForm
                                             name={`fromDate`}
