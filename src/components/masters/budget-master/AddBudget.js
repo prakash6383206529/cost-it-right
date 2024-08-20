@@ -672,7 +672,7 @@ function AddBudget(props) {
         obj.vendorId = vendorName.value
         obj.customerId = client.value
 
-        if (currency && currency.label && part.value) {
+        if (part.value) {
             dispatch(getApprovedPartCostingPrice(obj, (res) => {
                 let TotalSum = checkForNull(res?.data?.DataList[0]?.NetPOPrice) + checkForNull(totalSum)
                 setValue('currentPrice', checkForDecimalAndNull(res?.data?.DataList[0].NetPOPrice, getConfigurationKey().NoOfDecimalForInputOutput))
@@ -1049,16 +1049,16 @@ function AddBudget(props) {
                                                                     Controller={Controller}
                                                                     control={control}
                                                                     register={register}
-                                                                    mandatory={true}
+                                                                    mandatory={false}
                                                                     rules={{
-                                                                        required: true,
+                                                                        required: false,
                                                                     }}
                                                                     //component={searchableSelect}
                                                                     placeholder={'Select'}
                                                                     options={renderListing("currency")}
                                                                     //onKeyUp={(e) => this.changeItemDesc(e)}
                                                                     //validate={(role == null || role.length === 0) ? [required] : []}
-                                                                    required={true}
+                                                                    required={false}
                                                                     handleChange={handleCurrencyChange}
                                                                     disabled={disableCurrency || isViewMode ? true : false}
                                                                 />
@@ -1163,29 +1163,32 @@ function AddBudget(props) {
                                                         </Row>
                                                             <ConditionCosting hideAction={true} tableData={conditionTableData} /></div>}
                                                     </>}
+
                                                     <Col md="9">
-                                                        <div className='budgeting-details  mt-2'>
-                                                            <label className='w-fit'>{`Total Sum ${currency?.label ? `(${currency.label})` : '(Currency)'}:`}</label>
-                                                            <NumberFieldHookForm
-                                                                label=""
-                                                                name={"totalSumCurrency"}
-                                                                errors={errors.totalSumCurrency}
-                                                                Controller={Controller}
-                                                                control={control}
-                                                                register={register}
-                                                                disableErrorOverflow={true}
-                                                                mandatory={false}
-                                                                rules={{
-                                                                    required: false,
-                                                                }}
-                                                                handleChange={() => { }}
-                                                                disabled={true}
-                                                                customClassName={'withBorder'}
-                                                            />
-                                                        </div>
+                                                        {currency && currency?.label ?
+                                                            <div className='budgeting-details  mt-2 '>
+                                                                <label className='w-fit'>{`Total Sum ${currency?.label ? `(${currency.label})` : '(Currency)'}:`}</label>
+                                                                <NumberFieldHookForm
+                                                                    label=""
+                                                                    name={"totalSumCurrency"}
+                                                                    errors={errors.totalSumCurrency}
+                                                                    Controller={Controller}
+                                                                    control={control}
+                                                                    register={register}
+                                                                    disableErrorOverflow={true}
+                                                                    mandatory={false}
+                                                                    rules={{
+                                                                        required: false,
+                                                                    }}
+                                                                    handleChange={() => { }}
+                                                                    disabled={true}
+                                                                    customClassName={'withBorder'}
+                                                                />
+                                                            </div> : <></>
+                                                        }
                                                     </Col>
                                                     <Col md="3">
-                                                        <div className='budgeting-details  mt-2'>
+                                                        <div className='budgeting-details  mt-2 mb-2'>
                                                             <label className='w-fit'>Total Sum:</label>
                                                             <NumberFieldHookForm
                                                                 label=""
