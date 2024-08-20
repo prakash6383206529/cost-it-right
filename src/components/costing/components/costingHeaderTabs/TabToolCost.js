@@ -563,7 +563,7 @@ function TabToolCost(props) {
                                 <AgGridColumn field="PartType" headerName="Part Type"></AgGridColumn>
                                 <AgGridColumn field="ProcessOrOperation" headerName="Process/Operation"></AgGridColumn>
                                 <AgGridColumn field="ProcessOrOperationType" headerName="Process/Operation Type"></AgGridColumn>
-                                <AgGridColumn field="ProcessOrOperationQuantity" headerName="Process/Operation Quantity"></AgGridColumn>
+                                {/* <AgGridColumn field="ProcessOrOperationQuantity" headerName="Process/Operation Quantity"></AgGridColumn> */}
                                 <AgGridColumn field="ToolCategory" headerName="Tool Category" ></AgGridColumn>
                                 <AgGridColumn field="ToolName" headerName="Tool Name"></AgGridColumn>
                                 <AgGridColumn field="ToolCost" headerName="Tool Cost" cellRenderer={'decimalFormatter'}></AgGridColumn>

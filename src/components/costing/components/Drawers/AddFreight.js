@@ -404,7 +404,7 @@ function AddFreight(props) {
   // MAY BE USED LATER 
   const handleQuantityChange = (event) => {
     if (!isNaN(event.target.value)) {
-      if ((freightType === FullTruckLoad || freightType === PartTruckLoad) && event.target.value > totalRMGrossWeight) {
+      if (checkForNull(totalRMGrossWeight) !== 0 && (freightType === FullTruckLoad || freightType === PartTruckLoad) && event.target.value > totalRMGrossWeight) {
         Toaster.warning("Enter value less than gross weight.")
         setTimeout(() => {
           setValue('Quantity', '')

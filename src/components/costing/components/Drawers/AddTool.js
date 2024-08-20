@@ -31,7 +31,7 @@ function AddTool(props) {
     partType: rowObjData?.PartType ? rowObjData?.PartType : '',
     partQuantity: rowObjData?.PartQuantity ? rowObjData?.PartQuantity : '',
     type: rowObjData?.ProcessOrOperationType ? rowObjData?.ProcessOrOperationType : '',
-    processOrOperationQuantity: rowObjData?.ProcessOrOperationQuantity ? rowObjData?.ProcessOrOperationQuantity : '',
+    // processOrOperationQuantity: 1,
   }
 
 
@@ -44,7 +44,7 @@ function AddTool(props) {
   const dispatch = useDispatch()
 
   const [tool, setTool] = useState(isEditFlag && rowObjData?.ToolCategory ? { label: rowObjData.ToolCategory, value: rowObjData.ToolCategory } : []);
-  const [ToolForProcessOperation, setToolForProcessOperation] = useState(isEditFlag ? { label: rowObjData?.ProcessOrOperation, value: rowObjData?.ProcessOrOperationType === 'Operation' ? rowObjData?.OperationChildIdRef : rowObjData?.ProcessIdRef, processOrOperationQuantity: rowObjData?.ProcessOrOperationQuantity, type: rowObjData?.ProcessOrOperationType, machineId: rowObjData?.MachineIdRef } : []);
+  const [ToolForProcessOperation, setToolForProcessOperation] = useState(isEditFlag ? { label: rowObjData?.ProcessOrOperation, value: rowObjData?.ProcessOrOperationType === 'Operation' ? rowObjData?.OperationChildIdRef : rowObjData?.ProcessIdRef, processOrOperationQuantity: 1, type: rowObjData?.ProcessOrOperationType, machineId: rowObjData?.MachineIdRef } : []);
   const [dataToSend, setDataToSend] = useState(isEditFlag ? { netToolCost: rowObjData?.TotalToolCost } : {});
   const [partNumberArray, setPartNumberArray] = useState([])
   const [processOperationArray, setProcessOperationArray] = useState([])
@@ -81,7 +81,7 @@ function AddTool(props) {
   * @description GET NET TOOL COST
   */
   const getNetToolCost = (partQuantity = '') => {
-    const cost = checkForNull(getValues("Quantity")) * checkForNull(getValues("ToolCost")) / checkForNull(getValues("Life")) * checkForNull(ToolForProcessOperation?.processOrOperationQuantity) * checkForNull(partQuantity)
+    const cost = checkForNull(getValues("Quantity")) * checkForNull(getValues("ToolCost")) / checkForNull(getValues("Life")) * checkForNull(partQuantity)
     setDataToSend(prevState => ({ ...prevState, netToolCost: cost }))
     return cost
   }
@@ -118,7 +118,7 @@ function AddTool(props) {
 
       processOperationArray && processOperationArray.map((item) => {
         if (item?.Value === "0") return false
-        temp.push({ label: item?.Text, value: item?.Value, processOrOperationQuantity: item?.Quantity, type: item?.Type, machineId: item?.MachineId })
+        temp.push({ label: item?.Text, value: item?.Value, processOrOperationQuantity: 1, type: item?.Type, machineId: item?.MachineId })
 
       })
       return temp
@@ -144,7 +144,7 @@ function AddTool(props) {
     if (newValue && newValue !== '') {
       setToolForProcessOperation(newValue)
       setValue('type', newValue?.type)
-      setValue('processOrOperationQuantity', newValue?.processOrOperationQuantity)
+      // setValue('processOrOperationQuantity', newValue?.processOrOperationQuantity)
     } else {
       setToolForProcessOperation([])
     }
@@ -185,7 +185,7 @@ function AddTool(props) {
       PartType: getValues('partType'),
       PartQuantity: getValues('partQuantity'),
       ProcessOrOperationType: getValues('type'),
-      ProcessOrOperationQuantity: getValues('processOrOperationQuantity'),
+      ProcessOrOperationQuantity: 1,
       BOMLevel: partNumberDetail?.bomLevel,
       PartNumber: costData?.PartNumber,
       PartId: costData?.PartId,
@@ -230,7 +230,7 @@ function AddTool(props) {
     setValue('partQuantity', newValue?.partQuantity)
     setValue('partType', newValue?.partType)
     setValue('ProcessOrOperation', { label: '', value: '' })
-    setValue('processOrOperationQuantity', '')
+    // setValue('processOrOperationQuantity', '')
     setValue('type', '')
     setPartNumberDetail(newValue)
     dispatch(getProcessAndOperationbyAsmAndChildCostingId(newValue?.asmCostingId, newValue?.childPartCostingId, res => {
@@ -274,7 +274,7 @@ function AddTool(props) {
         PartType: item?.Type,
         PartQuantity: item?.Quantity,
         ProcessOrOperationType: getValues('type'),
-        ProcessOrOperationQuantity: getValues('processOrOperationQuantity'),
+        ProcessOrOperationQuantity: 1,
         BOMLevel: item?.Level,
         PartNumber: costData?.PartNumber,
         PartId: costData?.PartId,
@@ -474,7 +474,7 @@ function AddTool(props) {
                       disabled={true}
                     />
                   </Col>
-                  <Col md="6">
+                  {/* <Col md="6">
                     <TextFieldHookForm
                       label="Process/Operation Quantity"
                       name={'processOrOperationQuantity'}
@@ -492,7 +492,7 @@ function AddTool(props) {
                       errors={errors.processOrOperationQuantity}
                       disabled={true}
                     />
-                  </Col>
+                  </Col> */}
                   <Col md="6">
                     <SearchableSelectHookForm
                       label={'Tool Category'}
@@ -598,7 +598,7 @@ function AddTool(props) {
 
 
                   <Col md="6">
-                    <TooltipCustom disabledIcon={true} id={'total-tool-cost'} tooltipText={'Total Tool Cost = (Tool Cost * Quantity)/Life * Part Quantity * Process/Operation Quantity'} />
+                    <TooltipCustom disabledIcon={true} id={'total-tool-cost'} tooltipText={'Total Tool Cost = (Tool Cost * Quantity)/Life * Part Quantity'} />
                     <TextFieldHookForm
                       label="Total Tool Cost"
                       name={'TotalToolCost'}

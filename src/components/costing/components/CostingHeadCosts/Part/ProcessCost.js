@@ -821,7 +821,7 @@ function ProcessCost(props) {
   }
 
   const handleQuantityChange = (event, index) => {
-    if (processGroupGrid && processGroupGrid[index]?.UOMType === MASS && event?.target?.value > rmGrossWeight) {
+    if (checkForNull(rmGrossWeight) !== 0 && processGroupGrid && processGroupGrid[index]?.UOMType === MASS && event?.target?.value > rmGrossWeight) {
       Toaster.warning("Enter value less than gross weight.")
       setTimeout(() => {
         setValue(`${ProcessGridFields}.${index}.Quantity`, '')
