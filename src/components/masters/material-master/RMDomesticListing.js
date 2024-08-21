@@ -996,7 +996,6 @@ function RMDomesticListing(props) {
                                         floatingFilter={true}
                                         domLayout='autoHeight'
                                         rowData={showExtraData && rmDataList ? [...setLoremIpsum(rmDataList[0]), ...rmDataList] : rmDataList}
-
                                         pagination={true}
                                         paginationPageSize={globalTakes}
                                         onGridReady={onGridReady}

@@ -984,7 +984,6 @@ function RfqListing(props) {
     */
     const buttonFormatter = (props) => {
 
-
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 
@@ -992,9 +991,7 @@ function RfqListing(props) {
         let showReminderIcon = false
         let showRemarkHistory = false
 
-
-
-        if (rowData?.CostingNumber === null && rowData?.RawMaterialId === null && rowData?.BoughtOutPartId) {
+        if (rowData?.CostingNumber === null || rowData?.RawMaterialId === null || rowData?.BoughtOutPartId === null) {
             showReminderIcon = true
 
         } else {
@@ -1008,7 +1005,6 @@ function RfqListing(props) {
                 showActionIcons = false
             }
         }
-
 
         let reminderCount = rowData?.RemainderCount
 
@@ -1371,6 +1367,7 @@ function RfqListing(props) {
     }
 
     const partNumberFormatter = (props) => {
+        console.log('props: ', props);
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         if (props?.rowIndex === selectedRowIndex) {
             props.node.setSelected(true)
