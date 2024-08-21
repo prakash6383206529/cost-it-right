@@ -2287,6 +2287,7 @@ export const ASSEMBLYNAME = 'Assembly'
 export const COMPONENT_PART = 'Component'
 export const BOUGHTOUTPART = 'BoughtOutPart'
 export const BOUGHTOUTPARTSPACING = 'Bought Out Part'
+export const TOOLINGPART = 'Tooling'
 export const Assembly = '1'
 export const BoughtOutPart = '3'
 export const Component = '2'
@@ -3219,7 +3220,7 @@ export const clientName = 'Havells'
 export const isShowTaxCode = false
 
 //VERSION 
-export const VERSION = "V3.1.3";
+export const VERSION = "V3.1.4";
 
 
 

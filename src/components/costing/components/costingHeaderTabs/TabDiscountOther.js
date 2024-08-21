@@ -319,7 +319,7 @@ function TabDiscountOther(props) {
 
   const costingConditionUI = useMemo(() => {
     const sum = conditionTableData.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCostPerQuantity), 0);
-    console.log('conditionTableData: ', conditionTableData);
+
     setValue('ConditionCosting', checkForDecimalAndNull(sum, initialConfiguration.NoOfDecimalForPrice))
     setValue('TaxCode', conditionTableData[0]?.Description)
 
@@ -448,8 +448,8 @@ function TabDiscountOther(props) {
   useEffect(() => {
     if (CostingDataList && CostingDataList.length > 0) {
       let dataList = CostingDataList[0]
-      console.log('dataList: ', dataList);
-      console.log('dataList.NetOverheadAndProfitCost: ', dataList.NetOverheadAndProfitCost);
+
+
       const total = checkForNull(dataList.NetTotalRMBOPCC) + checkForNull(dataList.NetSurfaceTreatmentCost) + checkForNull(dataList.NetOverheadAndProfitCost) + checkForNull(dataList.NetPackagingAndFreight) + checkForNull(dataList.ToolCost)
       setTotalCost(total)
       const discountValues = {
@@ -460,7 +460,7 @@ function TabDiscountOther(props) {
         paymentTermCost: UpdatePaymentTermCost?.NetCost
 
       }
-      console.log('discountValues:333333333333 222', discountValues);
+
 
       dispatch(setDiscountCost(discountValues, () => { }))
       //dispatch(setDiscountCost({ ...discountObj, totalCost: total }, () => { }));
@@ -677,7 +677,7 @@ function TabDiscountOther(props) {
               totalNpvCost: discountObj?.totalNpvCost ? discountObj?.totalNpvCost : costDetail?.NetNpvCost,
               totalConditionCost: discountObj?.totalConditionCost ? discountObj?.totalConditionCost : costDetail?.NetConditionCost,
             }
-            console.log('discountValues:useEffect1111111111111 333', discountValues);
+
 
             dispatch(setDiscountCost(discountValues, () => { }))
 
@@ -696,7 +696,7 @@ function TabDiscountOther(props) {
               totalNpvCost: discountObj?.totalNpvCost ? discountObj?.totalNpvCost : costDetail?.NetNpvCost,
               totalConditionCost: discountObj?.totalConditionCost ? discountObj?.totalConditionCost : costDetail?.NetConditionCost,
             }
-            console.log('topHeaderData: ', topHeaderData);
+
             setDiscountObj(topHeaderData)
             props.setHeaderCost(topHeaderData, headerCosts, costData)
             // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
@@ -731,7 +731,7 @@ function TabDiscountOther(props) {
       totalNpvCost: discountObj?.totalNpvCost ? discountObj?.totalNpvCost : totalNpvCost,
       totalConditionCost: discountObj?.totalConditionCost ? discountObj?.totalConditionCost : totalConditionCost,
     }
-    console.log('discountValues:useEffect222222 444', discountValues);
+
     dispatch(setDiscountCost(discountValues, () => { }))
 
     setTimeout(() => {
@@ -1163,8 +1163,8 @@ function TabDiscountOther(props) {
   const onSubmit = debounce((values, val, gotoNextValue) => {
     setPaymentTermsWarning(false)
     if (errorCheckObject(ErrorObjDiscount)) return false;
-    console.log('conditionTableData: ', conditionTableData);
-    if (conditionTableData.length === 0) {
+
+    if (isShowTaxCode && conditionTableData.length === 0) {
       Toaster.warning("Tax code is mandatory.Please add from the drawer")
       return false
     }

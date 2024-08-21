@@ -7,17 +7,27 @@ import { number, checkWhiteSpaces } from '../../../../../helper/validation';
 import TooltipCustom from '../../../../common/Tooltip';
 import { getCostingPaymentTermDetail, getCostingTcoDetails } from '../../../actions/Costing';
 import { useForm, Controller } from 'react-hook-form'
+import { ASSEMBLYNAME, COMPONENT_PART, TOOLINGPART } from '../../../../../config/constants';
 const Tco = (props) => {
     const { costingId } = props
 
     const dispatch = useDispatch();
-    const { getTcoDetails, getCostingPaymentDetails } = useSelector(state => state.costing)
+    const { getTcoDetails, getCostingPaymentDetails, RMCCTabData } = useSelector(state => state.costing)
 
     const { register, control, setValue, getValues, formState: { errors }, } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
     })
+
+    const tabData = (RMCCTabData && RMCCTabData.length > 0) ? RMCCTabData[0] : (props?.partType ?? '')
+    console.log('tabData: ', tabData);
     const [incoTermlist, setIncoTermlist] = useState([])
+    const [showTCOFields, setShowTCOFields] = useState({ incoTerms: true, warrantyTerms: true, paymentTerms: false, qualityPPM: true, investment: true })
+
+    useEffect(() => {
+        defineVisibility()
+    }, [])
+
     useEffect(() => {
         dispatch(getCostingTcoDetails(costingId, () => { }))
         dispatch(getCostingPaymentTermDetail(costingId, () => { }))
@@ -47,9 +57,28 @@ const Tco = (props) => {
         }
     }, [getTcoDetails, setValue, getCostingPaymentDetails]);
 
+
+    const defineVisibility = () => {
+        switch (tabData?.PartType) {
+            case COMPONENT_PART:
+                setShowTCOFields(prevState => ({ ...prevState, incoTerms: true, warrantyTerms: true, paymentTerms: false, qualityPPM: true, investment: true }))
+                break;
+            case ASSEMBLYNAME:
+                setShowTCOFields(prevState => ({ ...prevState, incoTerms: true, warrantyTerms: true, paymentTerms: false, qualityPPM: true, investment: true }))
+                break;
+            case TOOLINGPART:
+                setShowTCOFields(prevState => ({ ...prevState, incoTerms: true, warrantyTerms: true, paymentTerms: true, qualityPPM: false, investment: false }))
+                break;
+
+            default:
+                break;
+        }
+
+    }
+
     return (
         <Row>
-            <Col md="3" >
+            {showTCOFields?.incoTerms && <Col md="3" >
                 <SearchableSelectHookForm
                     id="IncoTerms_Container"
                     label={'Inco Terms'}
@@ -63,12 +92,12 @@ const Tco = (props) => {
                     disabled={true}
                     // options={renderListing("IncoTerms")}
                     customClassName={'mb-0'}
-                    mandatory={true}
+                    mandatory={false}
                     errors={errors.IncoTerms}
 
                 />
-            </Col>
-            <Col md="3" >
+            </Col>}
+            {showTCOFields?.warrantyTerms && <Col md="3" >
                 <TooltipCustom id="Warranty" tooltipText="The preferred warranty duration is 3 years." />
                 <TextFieldHookForm
                     id="WarrantyYear_Conrainer"
@@ -81,17 +110,17 @@ const Tco = (props) => {
                         required: true,
                         validate: { number, checkWhiteSpaces },
                     }}
-                    mandatory={true}
+                    mandatory={false}
                     disabled={true}
                     className=""
                     customClassName={'withBorder'}
                     errors={errors.Warranty}
                 />
 
-            </Col>
+            </Col>}
 
 
-            <Col md="3" >
+            {showTCOFields?.qualityPPM && <Col md="3" >
                 <TooltipCustom id="QualityPPM" tooltipText="The preferred quality PPM is 3000." />
                 <TextFieldHookForm
                     id="QualityPPM_Container"
@@ -104,7 +133,7 @@ const Tco = (props) => {
                         validate: { number, checkWhiteSpaces },
                     }}
                     register={register}
-                    mandatory={true}
+                    mandatory={false}
 
                     disabled={true}
                     className=""
@@ -112,8 +141,8 @@ const Tco = (props) => {
                     errors={errors.QualityPPM}
 
                 />
-            </Col>
-            <Col md="3" >
+            </Col>}
+            {showTCOFields?.paymentTerms && <Col md="3" >
                 <TooltipCustom id="paymentDays" tooltipText="The preferred payment term is 90 days." />
                 <TextFieldHookForm
                     id="paymentDays_Container"
@@ -126,7 +155,7 @@ const Tco = (props) => {
                         required: true,
                         validate: { number, checkWhiteSpaces },
                     }}
-                    mandatory={true}
+                    mandatory={false}
 
                     disabled={true}
                     className=""
@@ -134,7 +163,7 @@ const Tco = (props) => {
                     errors={errors.PaymentDays}
                 />
 
-            </Col>
+            </Col>}
             <Col md="3">
                 <TextFieldHookForm
                     label={`MOQ (No)`}
@@ -147,7 +176,7 @@ const Tco = (props) => {
                         required: true,
                         validate: { number, checkWhiteSpaces },
                     }}
-                    mandatory={true}
+                    mandatory={false}
                     disabled={true}
 
 
@@ -165,7 +194,7 @@ const Tco = (props) => {
                     id={'Spq_Container'}
                     control={control}
                     register={register}
-                    mandatory={true}
+                    mandatory={false}
                     rules={{
                         required: true,
                         validate: { number, checkWhiteSpaces },
@@ -189,7 +218,7 @@ const Tco = (props) => {
                         required: true,
                         validate: { number, checkWhiteSpaces },
                     }}
-                    mandatory={true}
+                    mandatory={false}
                     disabled={true}
 
 
@@ -211,7 +240,7 @@ const Tco = (props) => {
                     register={register}
 
                     customClassName={'mb-0'}
-                    mandatory={true}
+                    mandatory={false}
                     disabled={true}
                     errors={errors.Uom}
 
@@ -229,7 +258,7 @@ const Tco = (props) => {
                         required: true,
                         validate: { number, checkWhiteSpaces },
                     }}
-                    mandatory={true}
+                    mandatory={false}
                     disabled={true}
 
 
@@ -249,6 +278,7 @@ const Tco = (props) => {
 Tco.defaultProps = {
     netPOPrice: null,
     costingId: null,
+    partType: null
 };
 
 export default Tco;

@@ -180,6 +180,7 @@ function RfqListing(props) {
             switch (type.trim()) {
                 case 'Component':
                 case 'Assembly':
+                case 'Tooling':
                     filteredArr = _.map(viewCostingData, 'costingId');
                     filteredArr.forEach(item => {
                         selectedRows.filter(el => {
@@ -209,16 +210,16 @@ function RfqListing(props) {
                         });
                     });
                     break;
-                case 'Tooling':
-                    filteredArr = _.map(viewCostingData, 'toolId');
-                    filteredArr.forEach(item => {
-                        selectedRows.filter(el => {
-                            if (el.CostingId === item) {
-                                arr.push(el);
-                            }
-                        });
-                    });
-                    break;
+                // case 'Tooling':
+                //     filteredArr = _.map(viewCostingData, 'toolId');
+                //     filteredArr.forEach(item => {
+                //         selectedRows.filter(el => {
+                //             if (el.CostingId === item) {
+                //                 arr.push(el);
+                //             }
+                //         });
+                //     });
+                //     break;
                 default:
                     break;
             }
@@ -1616,6 +1617,7 @@ function RfqListing(props) {
                 }
                 {
                     isOpen &&
+
                     <CostingDetailSimulationDrawer
                         isOpen={isOpen}
                         closeDrawer={closeUserDetails}
@@ -1679,29 +1681,29 @@ function RfqListing(props) {
                 {
                     <div id='rfq-compare-drawer'>
                         {(!viewRMCompare && !viewBOPCompare) && addComparisonToggle && (
-                            <QuotationId.Provider value={data?.QuotationId}>
 
-                                <CostingSummaryTable
-                                    viewMode={true}
-                                    isRfqCosting={true}
-                                    // costingID={approvalDetails.CostingId}
-                                    approvalMode={true}
-                                    // isApproval={approvalData.LastCostingId !== EMPTY_GUID ? true : false}
-                                    simulationMode={false}
-                                    uniqueShouldCostingId={uniqueShouldCostingId}
-                                    costingIdExist={true}
-                                    bestCostObjectFunction={bestCostObjectFunction}
-                                    crossButton={hideSummaryHandler}
-                                    costingIdList={costingListToShow}
-                                    isFromViewRFQ={true}
-                                    checkCostingSelected={checkCostingSelected}
-                                    disableApproveRejectButton={disableApproveRejectButton}
-                                    compareButtonPressed={compareButtonPressed}
-                                    showEditSOBButton={addComparisonToggle && disableApproveRejectButton && viewCostingData.length > 0}
-                                    selectedTechnology={viewCostingData && viewCostingData.length > 0 && viewCostingData[0].technology}
-                                    costingsDifferentStatus={costingsDifferentStatus}
-                                />
-                            </QuotationId.Provider>
+
+                            <CostingSummaryTable
+                                viewMode={true}
+                                isRfqCosting={true}
+                                // costingID={approvalDetails.CostingId}
+                                approvalMode={true}
+                                // isApproval={approvalData.LastCostingId !== EMPTY_GUID ? true : false}
+                                simulationMode={false}
+                                uniqueShouldCostingId={uniqueShouldCostingId}
+                                costingIdExist={true}
+                                bestCostObjectFunction={bestCostObjectFunction}
+                                crossButton={hideSummaryHandler}
+                                costingIdList={costingListToShow}
+                                isFromViewRFQ={true}
+                                checkCostingSelected={checkCostingSelected}
+                                disableApproveRejectButton={disableApproveRejectButton}
+                                compareButtonPressed={compareButtonPressed}
+                                showEditSOBButton={addComparisonToggle && disableApproveRejectButton && viewCostingData.length > 0}
+                                selectedTechnology={viewCostingData && viewCostingData.length > 0 && viewCostingData[0].technology}
+                                costingsDifferentStatus={costingsDifferentStatus}
+                            />
+
                         )}
                         {(viewRMCompare && addComparisonToggle) && <RMCompareTable
                             checkCostingSelected={checkCostingSelected}

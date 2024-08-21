@@ -32,6 +32,7 @@ function AddNpvCost(props) {
     const [isEditMode, setIsEditMode] = useState(false)
     const [totalCost, setTotalCost] = useState('')
     const [isLoader, setIsLoader] = useState(false)
+    const [partType, setPartType] = useState('')
     let IsEnterToolCostManually = false
     const { ToolTabData, IsRfqCostingType } = useSelector(state => state.costing)
     const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
@@ -58,6 +59,7 @@ function AddNpvCost(props) {
             })
             seConditionTableData(temp)
             setIsLoader(false)
+            setPartType(viewCostingData[0]?.partType)
         }
     }, [])
 
@@ -420,7 +422,7 @@ function AddNpvCost(props) {
                                     } */}
                                     {initialConfiguration?.IsShowNpvCost && !props?.totalCostFromSummary && <NpvCost showAddButton={false} tableData={tableData} hideAction={costingSummary} editData={editData} />}
                                     {(props?.totalCostFromSummary || (initialConfiguration?.IsShowTCO && (IsRfqCostingType?.isRfqCosting || IsRfqCostingType?.costingType))) ? (
-                                        <Tco costingId={props?.costingId} />
+                                        <Tco costingId={props?.costingId} partType={{ PartType: partType }} />
                                     ) : null}
 
 

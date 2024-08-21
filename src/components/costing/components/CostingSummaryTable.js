@@ -54,6 +54,7 @@ import AddNpvCost from './CostingHeadCosts/AdditionalOtherCost/AddNpvCost'
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
 const CostingSummaryTable = (props) => {
+  console.log('props: ', props);
 
   const { register, control, formState: { errors }, setValue, getValues } = useForm({
     mode: 'onChange',
@@ -2091,13 +2092,13 @@ const CostingSummaryTable = (props) => {
             {<Col md={simulationMode || props.isRfqCosting || isApproval ? "12" : "8"} className="text-right">
               <div className='d-flex justify-content-end mb-2'>
                 <div className='d-flex justify-content-end align-items-center'>
-                  {props.isRfqCosting && !isApproval && showCheckbox && <WarningMessage dClass={"justify-content-end mr-2"} message={'Click the checkbox to approve, reject, or return the quotation'} />}
+                  {props.isRfqCosting && !isApproval && showCheckbox && !drawerViewMode && <WarningMessage dClass={"justify-content-end mr-2"} message={'Click the checkbox to approve, reject, or return the quotation'} />}
 
                   {downloadAccessibility && <ExcelFile filename={'Costing Summary'} fileExtension={'.xls'} element={<button type="button" className={'user-btn excel-btn mr5 mb-2'} id="costingSummary_excel" title="Excel"><img src={ExcelIcon} alt="download" /></button>}>
 
                     {onBtExport()}
                   </ExcelFile>}
-                  {props.isRfqCosting && !isApproval && <button onClick={() => props?.crossButton()} title='Discard Summary' className='CancelIcon rfq-summary-discard'></button>}
+                  {props.isRfqCosting && !isApproval && !drawerViewMode && <button onClick={() => props?.crossButton()} title='Discard Summary' className='CancelIcon rfq-summary-discard'></button>}
                 </div>
                 {!simulationMode && !props.isRfqCosting && !props.isRfqCosting && downloadAccessibility &&
                   <ReactToPrint

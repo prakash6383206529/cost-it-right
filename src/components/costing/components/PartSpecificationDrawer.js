@@ -13,6 +13,7 @@ import { EMPTY_DATA } from '../../../config/constants';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import SOPListing from './SOPListing';
 import _ from 'lodash';
+import DayTime from '../../common/DayTimeWrapper';
 
 const PartSpecificationDrawer = (props) => {
     const gridOptions = {};
@@ -21,7 +22,8 @@ const PartSpecificationDrawer = (props) => {
         reValidateMode: 'onChange',
     });
     const [isLoader, setIsLoader] = useState(false);
-    const quotationId = useContext(QuotationId);
+    const quotationId = useSelector((state) => state?.rfq?.quotationIDForRFQ) ?? ''
+
     const [columnDefs, setColumnDefs] = useState([]);
     const [rowData, setRowData] = useState([]);
     const dispatch = useDispatch();
@@ -38,38 +40,38 @@ const PartSpecificationDrawer = (props) => {
         }
         props.closeDrawer('');
     };
-    const { baseCostingId ,bopId,bopQuotationId} = props
-        useEffect(() => {
+    const { baseCostingId, bopId, bopQuotationId } = props
+    useEffect(() => {
         setIsLoader(true);
-            if (baseCostingId?.length > 0) {
-                dispatch(getSpecificationDetailTco(quotationId, baseCostingId, (res) => {
+        if (baseCostingId?.length > 0) {
+            dispatch(getSpecificationDetailTco(quotationId, baseCostingId, (res) => {
 
-                    let Data = res?.data?.Data
-                    if (Data?.SpecsHead && Data?.SpecsColumn) {
+                let Data = res?.data?.Data
+                if (Data?.SpecsHead && Data?.SpecsColumn) {
 
-                        setColumnDefs(generateColumnDefs(Data?.SpecsHead));
-                        setRowData(Data?.SpecsColumn); // Directly use SpecsColumn as row data
-                    }
-                    setIsLoader(false);
-                }));
-            } 
-            else if(bopId?.length > 0) {
-                setIsLoader(true);
-                dispatch(getSpecificationDetailBpo(bopQuotationId, bopId, (res) => {
-                    let Data = res?.data?.Data
-                    if (Data?.SpecsHead && Data?.SpecsColumn) {
-                        setColumnDefs(generateColumnDefs(Data?.SpecsHead));
-                        setRowData(Data?.SpecsColumn); // Directly use SpecsColumn as row data
-                    }
-                    setIsLoader(false);
-                }));
-            }
-            
-            else {
+                    setColumnDefs(generateColumnDefs(Data?.SpecsHead));
+                    setRowData(Data?.SpecsColumn); // Directly use SpecsColumn as row data
+                }
                 setIsLoader(false);
-            }
-        
-    }, [quotationId,baseCostingId, dispatch]);
+            }));
+        }
+        else if (bopId?.length > 0) {
+            setIsLoader(true);
+            dispatch(getSpecificationDetailBpo(bopQuotationId, bopId, (res) => {
+                let Data = res?.data?.Data
+                if (Data?.SpecsHead && Data?.SpecsColumn) {
+                    setColumnDefs(generateColumnDefs(Data?.SpecsHead));
+                    setRowData(Data?.SpecsColumn); // Directly use SpecsColumn as row data
+                }
+                setIsLoader(false);
+            }));
+        }
+
+        else {
+            setIsLoader(false);
+        }
+
+    }, [quotationId, baseCostingId, dispatch]);
 
     const generateColumnDefs = (specsHead) => {
         return specsHead.map(head => ({
@@ -94,7 +96,7 @@ const PartSpecificationDrawer = (props) => {
             ...prev,
             [gridIdentifier]: { api: params.api, columnApi: params.columnApi },
         }));
-    
+
         params.api.paginationGoToPage(0);
         params.api.sizeColumnsToFit();
     };
@@ -113,7 +115,7 @@ const PartSpecificationDrawer = (props) => {
                     <Row className="drawer-heading">
                         <Col>
                             <div className="header-wrapper left">
-                            <h3>{`${props.type === 'BOP' ? 'BOP' : 'TCO'} Specification Detail`}</h3>
+                                <h3>{`${props.type === 'BOP' ? 'BOP' : 'TCO'} Specification Detail`}</h3>
                             </div>
                             <div onClick={toggleDrawer} className="close-button right"></div>
                         </Col>
@@ -126,7 +128,7 @@ const PartSpecificationDrawer = (props) => {
                                 {rowData?.length > 0 && (
                                     <Row className="mt-1 part-detail-wrapper">
                                         <Col md="3">
-                                           {props.type !== 'BOP' && ( <TextFieldHookForm
+                                            {props.type !== 'BOP' && (<TextFieldHookForm
                                                 label="Havells Design Part"
                                                 name="HavellsDesignPart"
                                                 Controller={Controller}
@@ -182,7 +184,7 @@ const PartSpecificationDrawer = (props) => {
                                                 register={register}
                                                 rules={{ required: false }}
                                                 mandatory={false}
-                                                defaultValue={partSpecificationRFQData?.TimeLine ? new Date(partSpecificationRFQData.TimeLine).toLocaleDateString() : ""}
+                                                defaultValue={partSpecificationRFQData?.TimeLine ? DayTime(partSpecificationRFQData?.TimeLine).format('DD/MM/YYYY') : ""}
                                                 className=""
                                                 customClassName="withBorder"
                                                 errors={errors.Description}

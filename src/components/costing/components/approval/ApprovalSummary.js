@@ -29,7 +29,7 @@ import { MESSAGES } from '../../../../config/message'
 import CostingApproveReject from './CostingApproveReject'
 import { ErrorMessage } from '../../../simulation/SimulationUtils'
 import { useLabels } from '../../../../helper/core'
-
+export const QuotationIdFromSummary = React.createContext();
 
 function ApprovalSummary(props) {
   const { approvalNumber, approvalProcessId } = props.location.state
@@ -143,6 +143,7 @@ function ApprovalSummary(props) {
         setApprovalTypeId(ApprovalTypeId)
         setIsRFQCostingApproval(IsRFQCostingApproval)
         dispatch(setQuotationIdForRFQ(QuotationId))
+
         // let BestCostAndShouldCostDetails = {
         //   ShouldCostings: [{ CostingId: "aae83b68-128d-4ade-b446-cd2407d6c1c2" }],
         //   CostingIdList: [{ CostingId: "4a3dc510-ae1c-478a-969a-3fa7c1820d62" }, { CostingId: "2d49ced2-dc50-4e63-b2b9-ed74dd44fb24" }],
@@ -222,7 +223,8 @@ function ApprovalSummary(props) {
           DepartmentCode: DepartmentCode,
           NewPOPrice: Data.NewPOPrice,
           EffectiveDate: ApprovalDetails[0].EffectiveDate,
-          VendorId: VendorId
+          VendorId: VendorId,
+          QuotationId: QuotationId
         })
         let requestArray = []
         let requestObject = {}
@@ -813,7 +815,9 @@ function ApprovalSummary(props) {
             <Row className="mb-4">
               <Col md="12" className="costing-summary-row">
                 {/* SEND isApproval FALSE WHEN OPENING FROM FGWISE */}
+
                 {costingSummary && <CostingSummaryTable VendorId={approvalData.VendorId} viewMode={true} costingID={approvalDetails.CostingId} approvalMode={true} isApproval={(approvalData.LastCostingId === EMPTY_GUID || fgWise) ? false : true} simulationMode={false} costingIdExist={true} uniqueShouldCostingId={uniqueShouldCostingId} isRfqCosting={isRFQ} costingIdList={costingIdList} notSelectedCostingId={notSelectedCostingId} selectedTechnology={partDetail.Technology} />}
+
               </Col>
             </Row>
             {/* Costing Summary page here */}

@@ -92,7 +92,7 @@ function AddRfq(props) {
     const [showPopup, setShowPopup] = useState(false)
     const [selectedRowVendorTable, setSelectedVendorTable] = useState({})
     const [files, setFiles] = useState([])
-    
+
 
     const [IsOpen, setIsOpen] = useState(false);
     const [apiData, setData] = useState({});
@@ -269,7 +269,7 @@ function AddRfq(props) {
             dispatch(setTargetPriceDetail({}))
             setTimeout(() => {
                 const obj = createQuotationObject(null);
-                
+
                 dispatch(createRfqQuotation(obj, (res) => {
 
                     setQuotationIdentity(res?.data?.Identity)
@@ -2797,7 +2797,7 @@ function AddRfq(props) {
     function ShowLdClause(partType) {
 
         const partTypesToReturnFalse = ['Component', 'Assembly', 'componentAssembly', 'Raw Material'];
-        
+
         return !partTypesToReturnFalse.includes(partType);
     }
     function ShowQuoteSubmissionDate(partType) {
@@ -3191,7 +3191,7 @@ function AddRfq(props) {
                                                         />
                                                     </Col>
                                                 }
-                                                {havellsKey && (selectedOption === 'componentAssembly' || selectedOption === 'Tooling') &&
+                                                {havellsKey && (selectedOption === 'componentAssembly') &&
 
 
                                                     <Col md="3">
@@ -3352,7 +3352,7 @@ function AddRfq(props) {
                                                                     {selectedOption === "Raw Material" && <AgGridColumn width={"230px"} field="RawMaterialCode" headerName="Code" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                                                                     {selectedOption === "Tooling" && <AgGridColumn width={"230px"} field="PartType" headerName={`${selectedOption === 'Tooling' ? 'Tool' : 'Part'} Type`} tooltipField="PartNumber" cellRenderer={'partNumberFormatter'}></AgGridColumn>}
 
-                                                                    {(selectedOption === "componentAssembly" || selectedOption === 'Tooling') && <AgGridColumn width={"230px"} field="PartNumber" headerName={`${selectedOption === 'Tooling' ? 'Tool' : 'Part'} No`} tooltipField="PartNumber" cellRenderer={'partNumberFormatter'}></AgGridColumn>}
+                                                                    {(selectedOption === "componentAssembly") && <AgGridColumn width={"230px"} field="PartNumber" headerName={`${selectedOption === 'Tooling' ? 'Tool' : 'Part'} No`} tooltipField="PartNumber" cellRenderer={'partNumberFormatter'}></AgGridColumn>}
                                                                     {selectedOption === "Tooling" && <AgGridColumn width={"230px"} field="Description" headerName={`${selectedOption === 'Tooling' ? 'Tool' : 'Part'} Description`} cellRenderer={'hyphenFormatter'}></AgGridColumn>}
 
                                                                     {/* {checkForNull(technology?.value) !== LOGISTICS && <AgGridColumn width={"230px"} field="RMName" tooltipField="RMName" headerName="RM Name" cellClass={"colorWhite"}></AgGridColumn>}
@@ -3362,7 +3362,7 @@ function AddRfq(props) {
                                                                     <AgGridColumn width={"230px"} field="Quantity" headerName="Annual Forecast Quantity" headerComponent={'quantityHeader'} cellRenderer={'afcFormatter'} editable={EditableCallback} colId="Quantity"></AgGridColumn> */}
                                                                     <AgGridColumn width={"0px"} field="PartId" headerName="Part Id" hide={true} ></AgGridColumn>
 
-                                                                    {(selectedOption === 'componentAssembly' || selectedOption === 'Tooling') && <AgGridColumn width={"230px"} field="TargetPrice" headerName="Target Price" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                                                                    {(selectedOption === 'componentAssembly') && <AgGridColumn width={"230px"} field="TargetPrice" headerName="Target Price" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
 
                                                                     {quotationType === "Bought Out Part" && <AgGridColumn width={"190px"} field="BoughtOutPartNumber" headerName="BOP No." cellRenderer={'hyphenFormatter'}></AgGridColumn>}
 
@@ -3374,7 +3374,7 @@ function AddRfq(props) {
                                                                     {/* {(quotationType=== "BOP" || quotationType=== 'RM' || quotationType=== 'componentAssembly') && <AgGridColumn width={"190px"} field="UOM" cellClass="ag-grid-action-container" headerName="UOM" floatingFilter={false} type="" cellRenderer={'buttonFormatterFirst'}></AgGridColumn>} */}
                                                                     {selectedOption === "componentAssembly" && <AgGridColumn width={"230px"} field="HavellsDesignPart" headerName="Havells Design Part" ></AgGridColumn>}
 
-                                                                    {selectedOption !== 'Tooling' && <AgGridColumn width={"230px"} field="UOM" headerName="UOM" ></AgGridColumn>}
+                                                                    {<AgGridColumn width={"230px"} field="UOM" headerName="UOM" ></AgGridColumn>}
 
                                                                     <AgGridColumn width={"230px"} field="TimeLine" headerName={selectedOption === TOOLING ? "T0 Timeline" : "N - 100 Timeline"} cellRenderer={'effectiveDateFormatter'} ></AgGridColumn>
                                                                     {(selectedOption === 'componentAssembly' === "componentAssembly" || selectedOption === 'componentAssembly' === 'Raw Material' || selectedOption === 'componentAssembly' === "Bought Out Part") && <AgGridColumn width={"230px"} field="VendorListExisting" headerName="Existing Vendor" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
