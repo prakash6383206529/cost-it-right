@@ -28,6 +28,7 @@ import { IsPartType, IsNFR, ViewCostingContext } from '../../CostingDetails';
 import { createToprowObjAndSave, errorCheck, errorCheckObject, findSurfaceTreatmentData } from '../../../CostingUtil';
 import _ from 'lodash';
 import { PreviousTabData } from '../../CostingHeaderTabs';
+import { TOOLING_ID } from '../../../../../config/masterData';
 function PartCompoment(props) {
 
   const { rmData, bopData, ccData, item } = props;
@@ -264,7 +265,7 @@ function PartCompoment(props) {
                 item={item}
               />
 
-              {!isBreakupBoughtOutPartCostingFromAPI && <BOPCost
+              {(!isBreakupBoughtOutPartCostingFromAPI && costData?.TechnologyId !== TOOLING_ID) && <BOPCost
                 index={props.index}
                 data={bopData}
                 setBOPCost={props.setBOPCost}
@@ -272,7 +273,7 @@ function PartCompoment(props) {
                 item={item}
               />}
 
-              <ProcessCost
+              {costData?.TechnologyId !== TOOLING_ID && <ProcessCost
                 index={props.index}
                 data={ccData}
                 rmFinishWeight={rmData && rmData.length > 0 && rmData[0].FinishWeight !== undefined ? totalFinishWeight : 0}
@@ -280,7 +281,7 @@ function PartCompoment(props) {
                 setConversionCost={props.setConversionCost}
                 item={item}
                 isAssemblyTechnology={false}
-              />
+              />}
             </div>
           </div >
         </td>

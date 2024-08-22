@@ -3,10 +3,12 @@ import { TextFieldHookForm } from '../../layout/HookFormInputs';
 import { Col, Nav, NavItem, NavLink, Row, TabContent, Table, TabPane } from 'reactstrap'
 import HeaderTitle from '../../common/HeaderTitle';
 import TooltipCustom from '../../common/Tooltip';
-import { AgGridReact } from 'ag-grid-react';
+import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Controller, useForm } from 'react-hook-form'
+import { EMPTY_DATA } from '../../../config/constants';
 function ToolingPartDetails() {
+    const gridOptions = {};
     const { register, handleSubmit, setValue, getValues, formState: { errors }, control } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
@@ -38,6 +40,17 @@ function ToolingPartDetails() {
     const handleInputChange = (name, value) => {
         setFormData(prev => ({ ...prev, [name]: value }));
     };
+    /**
+     * @method defaultColDef
+     * @description Default column definitions for the table.
+    */
+    const defaultColDef = {
+        resizable: true,
+        filter: true,
+        sortable: false,
+        editable: true
+    };
+
     return (
         <>
             <Row>
@@ -77,14 +90,26 @@ function ToolingPartDetails() {
                         </Col>
                         <Col >
                             <div className={`ag-grid-wrapper without-filter-grid rfq-grid height-width-wrapper ${rowData && rowData.length <= 0 ? "overlay-contain border" : ""} `}>
-                                {/* <div className={`ag-theme-material ${!state ? "custom-min-height-208px" : ''}`}> */}
+                                <div className="ag-theme-material" style={{ height: '100%', width: '100%' }}>
+                                    <AgGridReact
 
-                                <AgGridReact
-                                    columnDefs={columnDefs}
-                                    rowData={rowData}
-                                    domLayout='autoHeight'
-                                />
-                                {/* </div> */}
+                                        style={{ height: '100%', width: '100%' }}
+                                        defaultColDef={defaultColDef}
+                                        domLayout="autoHeight"
+                                        rowData={rowData}
+                                        onGridReady={(params) => params?.api.sizeColumnsToFit()}
+                                        noRowsOverlayComponent={'customNoRowsOverlay'}
+                                        noRowsOverlayComponentParams={{
+                                            title: EMPTY_DATA,
+                                            imagClass: 'imagClass'
+                                        }}
+                                        stopEditingWhenCellsLoseFocus={true}
+                                        gridOptions={gridOptions}
+                                    >
+                                        <AgGridColumn field="Specification" headerName="Specification Description" editable={false} ></AgGridColumn>
+                                        <AgGridColumn field="Value" headerName="Specification Value" editable={false}></AgGridColumn>
+                                    </AgGridReact>
+                                </div>
                             </div>
                         </Col>
                     </Row>

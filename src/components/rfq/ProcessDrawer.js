@@ -1119,6 +1119,7 @@ function ViewDrawer(props) {
                                         <>
                                             <HeaderTitle title={'Add RM'} customClass="mt-3" />
 
+
                                             <Row className="mt-1 part-detail-wrapper">
                                                 <Col md="3">
                                                     <div className='mt5 flex-grow-1'>
@@ -1219,7 +1220,12 @@ function ViewDrawer(props) {
 
                             {Number(activeTab) === 2 && (
                                 <TabPane tabId="2">
+
+
                                     <HeaderTitle title={'Add Specification'} customClass="mt-3" />
+                                    {/* <TooltipCustom id="addSpecification" customClass="mt-3" tooltipText="Describe comprehensive specifications, desired features, quality standard and any other relevant details to ensure supplier understand needs." /> */}
+
+
                                     <div className="tab-pane fade active show" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
                                         <Row>
                                             <Col md="3">
@@ -1326,7 +1332,7 @@ function ViewDrawer(props) {
                                 <Col md="6" className="height152-label">
                                     <TooltipCustom id="uploadFile" tooltipText="Upload upto 4 file, size of each file upto 20MB" />
 
-                                    <label>Upload Attachment (upload up to 4 files)<span className="asterisk-required">*</span></label>
+                                    <label>Upload Attachment (upload up to 4 files, size of each file upto 20MB)<span className="asterisk-required">*</span></label>
                                     <div className={`alert alert-danger mt-2 ${files?.length === 4 ? '' : 'd-none'}`} role="alert">
                                         Maximum file upload limit has been reached.
                                     </div>

@@ -25,7 +25,7 @@ import DayTime from '../../../common/DayTimeWrapper'
 import TabAssemblyTechnology from './TabAssemblyTechnology';
 import { createToprowObjAndSave, errorCheck, errorCheckObject, findSurfaceTreatmentData } from '../../CostingUtil';
 import _ from 'lodash'
-import { IdForMultiTechnology } from '../../../../config/masterData';
+import { IdForMultiTechnology, TOOLING_ID } from '../../../../config/masterData';
 import WarningMessage from '../../../common/WarningMessage';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { LOGISTICS } from '../../../../config/masterData';
@@ -652,7 +652,7 @@ function CostingHeaderTabs(props) {
               </NavLink>
             </NavItem>
             {
-              costingData.TechnologyId !== LOGISTICS && <NavItem>
+              (costingData.TechnologyId !== LOGISTICS && costingData?.TechnologyId !== TOOLING_ID) && <NavItem>
                 <NavLink id='Tool_tabs' className={classnames({ active: activeTab === '5' })} onClick={() => { toggle('5'); }}>
                   Tool Cost
                 </NavLink>

@@ -12,7 +12,7 @@ import { IdForMultiTechnology } from '../../../../config/masterData';
 import { setSubAssemblyTechnologyArray } from '../../actions/SubAssembly';
 import _ from 'lodash'
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { ASSEMBLYNAME, LEVEL0, WACTypeId } from '../../../../config/constants';
+import { ASSEMBLYNAME, LEVEL0, TOOLINGPART, WACTypeId } from '../../../../config/constants';
 import { ASSEMBLY } from '../../../../config/masterData';
 import { netHeadCostContext, SurfaceCostContext } from '../CostingDetailStepTwo';
 import { findrmCctData } from '../../CostingUtil';
@@ -1002,7 +1002,7 @@ function TabSurfaceTreatment(props) {
 
 
         // WILL RUN IF IT IS ASSEMBLY COSTING. WILL NOT RUN FOR COMPONENT COSTING
-        if (assemblyObj.PartType === 'Assembly') {
+        if (assemblyObj.PartType === 'Assembly' || assemblyObj?.CostingPartDetails?.PartType === TOOLINGPART) {
           let dataList = CostingDataList[0]
 
           assemblyObj.CostingPartDetails.SurfaceTreatmentDetails = params.PartNumber === assemblyObj.PartNumber ? surfaceGrid : assemblyObj?.CostingPartDetails?.SurfaceTreatmentDetails
@@ -1163,7 +1163,7 @@ function TabSurfaceTreatment(props) {
         let subAssemblyArray = tempArrForCosting && tempArrForCosting.filter(item => item.BOMLevel === 'L1')
         let assemblyObj = tempArrForCosting[0]
         // WILL RUN IF IT IS ASSEMBLY COSTING. WILL NOT RUN FOR COMPONENT COSTING
-        if (assemblyObj.PartType === 'Assembly') {
+        if (assemblyObj.PartType === 'Assembly' || assemblyObj?.CostingPartDetails?.PartType === TOOLINGPART) {
           let dataList = CostingDataList[0]
           assemblyObj.CostingPartDetails.TransportationDetails = params.PartNumber === assemblyObj.PartNumber ? TransportationObj : assemblyObj?.CostingPartDetails?.TransportationDetails
           assemblyObj.CostingPartDetails.TotalTransportationCostPerAssembly = params.PartNumber === assemblyObj.PartNumber ? checkForNull(TransportationObj.TransportationCost) : checkForNull(assemblyObj?.CostingPartDetails?.TotalTransportationCostPerAssembly)

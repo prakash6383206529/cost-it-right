@@ -191,6 +191,7 @@ function AddRfq(props) {
     const [rmDataList, setRmDataList] = useState([])
     const [bopDataList, setBopDataList] = useState([])
     const [toolingList, setToolingList] = useState([])
+    console.log('toolingList: ', toolingList);
 
     const [editRawMaterialId, setEditRawMaterialId] = useState("")
     const [editBopId, setEditBopId] = useState("")
@@ -1617,7 +1618,7 @@ function AddRfq(props) {
                 }
 
             } if (requirementDate === "") {
-                Toaster.warning(`Please select ${selectedOption === 'TOOLING' ? 'T0 Timeline' : 'N - 100 Timeline'}`);
+                Toaster.warning(`Please select ${selectedOption === 'TOOLING' ? 'T0 Timeline' : 'N-100 Timeline'}`);
                 return false;
             }
             if (nfrId && nfrId.value !== null) {//CHECK_NFR
@@ -3219,7 +3220,7 @@ function AddRfq(props) {
                                                         <div className="form-group">
                                                             <TooltipCustom id="timeline" tooltipText="Part Rediness timeline for Quality, N-10 & N-100" />
 
-                                                            <label>{selectedOption === TOOLING ? "T0 Timeline" : "N - 100 Timeline"}<span className="asterisk-required">*</span></label>
+                                                            <label>{selectedOption === TOOLING ? "T0 Timeline" : "N-100 Timeline"}<span className="asterisk-required">*</span></label>
                                                             <div id="addRFQDate_container" className="inputbox date-section">
                                                                 <DatePicker
 
@@ -3349,9 +3350,9 @@ function AddRfq(props) {
                                                                     {selectedOption === "Raw Material" && <AgGridColumn width={"230px"} field="RawMaterialGrade" headerName="Grade" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                                                                     {selectedOption === "Raw Material" && <AgGridColumn width={"230px"} field="RawMaterialSpecification" headerName="Specification" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                                                                     {selectedOption === "Raw Material" && <AgGridColumn width={"230px"} field="RawMaterialCode" headerName="Code" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
-                                                                    {selectedOption === "Tooling" && <AgGridColumn width={"230px"} field="PartType" headerName={`${selectedOption === 'Tooling' ? 'Tool' : 'Part'} Type`} tooltipField="PartNumber" cellRenderer={'partNumberFormatter'}></AgGridColumn>}
+                                                                    {selectedOption === "Tooling" && <AgGridColumn width={"230px"} field="PartType" headerName={`${selectedOption === 'Tooling' ? 'Tool' : 'Part'} Type`} tooltipField="PartType" ></AgGridColumn>}
 
-                                                                    {(selectedOption === "componentAssembly") && <AgGridColumn width={"230px"} field="PartNumber" headerName={`${selectedOption === 'Tooling' ? 'Tool' : 'Part'} No`} tooltipField="PartNumber" cellRenderer={'partNumberFormatter'}></AgGridColumn>}
+                                                                    {(selectedOption === "componentAssembly" || selectedOption === "Tooling") && <AgGridColumn width={"230px"} field="PartNumber" headerName={`${selectedOption === 'Tooling' ? 'Tool' : 'Part'} No`} tooltipField="PartNumber" cellRenderer={'partNumberFormatter'}></AgGridColumn>}
                                                                     {selectedOption === "Tooling" && <AgGridColumn width={"230px"} field="Description" headerName={`${selectedOption === 'Tooling' ? 'Tool' : 'Part'} Description`} cellRenderer={'hyphenFormatter'}></AgGridColumn>}
 
                                                                     {/* {checkForNull(technology?.value) !== LOGISTICS && <AgGridColumn width={"230px"} field="RMName" tooltipField="RMName" headerName="RM Name" cellClass={"colorWhite"}></AgGridColumn>}
@@ -3375,7 +3376,7 @@ function AddRfq(props) {
 
                                                                     {<AgGridColumn width={"230px"} field="UOM" headerName="UOM" ></AgGridColumn>}
 
-                                                                    <AgGridColumn width={"230px"} field="TimeLine" headerName={selectedOption === TOOLING ? "T0 Timeline" : "N - 100 Timeline"} cellRenderer={'effectiveDateFormatter'} ></AgGridColumn>
+                                                                    <AgGridColumn width={"230px"} field="TimeLine" headerName={selectedOption === TOOLING ? "T0 Timeline" : "N-100 Timeline"} cellRenderer={'effectiveDateFormatter'} ></AgGridColumn>
                                                                     {(selectedOption === 'componentAssembly' === "componentAssembly" || selectedOption === 'componentAssembly' === 'Raw Material' || selectedOption === 'componentAssembly' === "Bought Out Part") && <AgGridColumn width={"230px"} field="VendorListExisting" headerName="Existing Vendor" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
 
                                                                     {(selectedOption === "componentAssembly" || selectedOption === 'Tooling') && (<AgGridColumn width={"190px"} field="PartId" cellClass="ag-grid-action-container text-right" headerName="Action" floatingFilter={false} type="rightAligned" cellRenderer={'buttonFormatterFirst'} />)}

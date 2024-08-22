@@ -10,7 +10,7 @@ import {
 import { costingInfoContext, NetPOPriceContext } from '../CostingDetailStepTwo';
 import { checkForNull, getConfigurationKey, loggedInUserId, showBopLabel } from '../../../../helper';
 import AssemblyPart from '../CostingHeadCosts/SubAssembly';
-import { LEVEL0, LEVEL1, } from '../../../../config/constants';
+import { LEVEL0, LEVEL1, TOOLINGPART, } from '../../../../config/constants';
 import Toaster from '../../../common/Toaster';
 import { MESSAGES } from '../../../../config/message';
 import { IsPartType, SelectedCostingDetail, ViewCostingContext } from '../CostingDetails';
@@ -574,7 +574,7 @@ function TabRMCC(props) {
         let assemblyObj = tempArrForCosting[0]
 
         // WILL RUN IF IT IS ASSEMBLY COSTING. WILL NOT RUN FOR COMPONENT COSTING
-        if (assemblyObj?.CostingPartDetails?.PartType === 'Assembly') {
+        if (assemblyObj?.CostingPartDetails?.PartType === 'Assembly' || assemblyObj?.CostingPartDetails?.PartType === TOOLINGPART) {
 
           let isAllFalse = false
           // if (assemblyObj?.CostingPartDetails?.IsRMCutOffApplicable !== true) {
@@ -696,7 +696,7 @@ function TabRMCC(props) {
         let subAssemblyArray = tempArrForCosting && tempArrForCosting.filter(item => item.BOMLevel === 'L1')
         let assemblyObj = tempArrForCosting[0]
         // WILL RUN IF IT IS ASSEMBLY COSTING. WILL NOT RUN FOR COMPONENT COSTING
-        if (assemblyObj?.CostingPartDetails?.PartType === 'Assembly') {
+        if (assemblyObj?.CostingPartDetails?.PartType === 'Assembly' || assemblyObj?.CostingPartDetails?.PartType === TOOLINGPART) {
           assemblyObj.CostingPartDetails.TotalBoughtOutPartCostWithQuantity = setBOPCostAssembly(subAssemblyArray) + checkForNull(assemblyObj?.CostingPartDetails?.BOPHandlingCharges)
           assemblyObj.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = checkForNull(assemblyObj?.CostingPartDetails?.TotalRawMaterialsCostWithQuantity) + checkForNull(assemblyObj?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity) + checkForNull(assemblyObj?.CostingPartDetails?.TotalConversionCostWithQuantity)
           tempArrForCosting = Object.assign([...tempArrForCosting], { 0: assemblyObj })
@@ -811,7 +811,7 @@ function TabRMCC(props) {
         let partAssemblyArray = tempArrForCosting && tempArrForCosting.filter(item => item.BOMLevel === 'L1' && item.PartType === 'Part')
         let assemblyObj = tempArrForCosting[0]
         // WILL RUN IF IT IS ASSEMBLY COSTING. WILL NOT RUN FOR COMPONENT COSTING
-        if (assemblyObj?.CostingPartDetails?.PartType === 'Assembly') {
+        if (assemblyObj?.CostingPartDetails?.PartType === 'Assembly' || assemblyObj?.CostingPartDetails?.PartType === TOOLINGPART) {
           assemblyObj.CostingPartDetails.TotalOperationCostSubAssembly = setOperationCostForAssembly(subAssemblyArray)
           assemblyObj.CostingPartDetails.TotalOperationCostComponent = getCCTotalCostForAssembly(partAssemblyArray)
           assemblyObj.CostingPartDetails.TotalConversionCostWithQuantity = setConversionCostAssembly(subAssemblyArray) + checkForNull(assemblyObj?.CostingPartDetails?.TotalOperationCostPerAssembly) + checkForNull(assemblyObj?.CostingPartDetails?.TotalOperationCostComponent)
