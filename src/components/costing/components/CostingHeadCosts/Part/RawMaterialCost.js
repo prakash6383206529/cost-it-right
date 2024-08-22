@@ -18,7 +18,7 @@ import Popup from 'reactjs-popup';
 import 'reactjs-popup/dist/index.css';
 import { setFerrousCalculatorReset } from '../../../actions/CostWorking'
 import { gridDataAdded, isDataChange, setMasterBatchObj, setRMCCErrors, setRMCutOff } from '../../../actions/Costing'
-import { getTechnology, technologyForDensity, STRINGMAXLENGTH, REMARKMAXLENGTH, WIREFORMING, ELECTRICAL_STAMPING, } from '../../../../../config/masterData'
+import { getTechnology, technologyForDensity, STRINGMAXLENGTH, REMARKMAXLENGTH, WIREFORMING, ELECTRICAL_STAMPING, TOOLING_ID, } from '../../../../../config/masterData'
 import PopupMsgWrapper from '../../../../common/PopupMsgWrapper';
 import { SHEETMETAL, RUBBER, FORGING, DIE_CASTING, PLASTIC, CORRUGATEDBOX, Ferrous_Casting, MACHINING, INSULATION } from '../../../../../config/masterData'
 import _, { debounce } from 'lodash'
@@ -1475,6 +1475,7 @@ function RawMaterialCost(props) {
                   <thead className={`${headerPinned ? 'sticky-headers' : ''} rm-table-header`}>
                     <tr>
                       <th className='rm-name-head'>{`RM Name`}</th>
+                      {(costData?.TechnologyId === TOOLING_ID && costData?.IsRfqCosting) && <th className='rm-name-head'>{`Updated RM Name`}</th>}
                       <th className='rm-name-head'>{`RM Code`}</th>
                       <th>{`RM Rate`}</th>
                       <th>{`Scrap Rate`}</th>
@@ -1498,11 +1499,12 @@ function RawMaterialCost(props) {
                       gridData.map((item, index) => {
                         return (
                           <tr key={index} className=''>
-                            <td className='text-overflow'><span title={item.RMName}>{item.RMName}</span></td>
-                            <td className='text-overflow'><span title={item.RawMaterialCode}>{item.RawMaterialCode}</span></td>
-                            <td>{checkForDecimalAndNull(item.RMRate, getConfigurationKey().NoOfDecimalForPrice)}</td>
-                            <td>{checkForDecimalAndNull(item.ScrapRate, getConfigurationKey().NoOfDecimalForPrice)}</td>
-                            <td>{item.UOM}</td>
+                            <td className='text-overflow'><span title={item?.RMName}>{item?.RMName}</span></td>
+                            {costData?.TechnologyId === TOOLING_ID && costData?.IsRfqCosting && <td className='text-overflow'><span title={item?.UpdatedRawMaterialName}>{item?.UpdatedRawMaterialName}</span></td>}
+                            <td className='text-overflow'><span title={item?.RawMaterialCode}>{item?.RawMaterialCode ?? '-'}</span></td>
+                            <td>{checkForDecimalAndNull(item?.RMRate, getConfigurationKey().NoOfDecimalForPrice)}</td>
+                            <td>{checkForDecimalAndNull(item?.ScrapRate, getConfigurationKey().NoOfDecimalForPrice)}</td>
+                            <td>{item.UOM ?? '-'}</td>
                             {
                               showCalculatorFunctionHeader() && getTechnology.includes(costData?.TechnologyId) &&
                               <td className="text-center">
