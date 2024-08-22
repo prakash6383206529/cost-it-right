@@ -143,45 +143,50 @@ const IndexListing = () => {
     const onFloatingFilterChanged = (value) => {
         setTimeout(() => {
             if (indexCommodityDataList?.length !== 0) {
-                setNoData(searchNocontentFilter(value, noData))
+                const newNoData = searchNocontentFilter(value, noData);
+                setNoData(newNoData);
             }
         }, 500);
-        setDisableFilter(false)
+    
+        setDisableFilter(false);
+    
         const model = gridOptions?.api?.getFilterModel();
-        setFilterModel(model)
+        setFilterModel(model);
+    
         if (!isFilterButtonClicked) {
-            setWarningMessage(true)
+            setWarningMessage(true);
         }
-
+    
+        // Only reset if all the filters are cleared manually, not when applying a valid filter.
         if (value?.filterInstance?.appliedModel === null || value?.filterInstance?.appliedModel?.filter === "") {
-            let isFilterEmpty = true
-            if (model !== undefined && model !== null) {
-                if (Object.keys(model).length > 0) {
-                    isFilterEmpty = false
-                    for (var property in floatingFilterData) {
-                        if (property === value.column.colId) {
-                            floatingFilterData[property] = ""
-                        }
-                    }
-                    setFloatingFilterData(floatingFilterData)
-                }
-
-                if (isFilterEmpty) {
-                    setWarningMessage(false)
-                    for (var prop in floatingFilterData) {
-                        floatingFilterData[prop] = ""
-                    }
-                    setFloatingFilterData(floatingFilterData)
-                }
+            let isFilterEmpty = Object.keys(model).length === 0; // Check if the model is empty
+    
+            if (!isFilterEmpty) {
+                // Update the specific floating filter data for the column being changed
+                setFloatingFilterData({ 
+                    ...floatingFilterData, 
+                    [value.column.colId]: "" 
+                });
             } else {
-                setFloatingFilterData({ ...floatingFilterData, [value.column.colId]: value.filterInstance.appliedModel.filter })
+                setWarningMessage(false);
+    
+                // Reset all filters if everything is cleared
+                const clearedFilters = Object.keys(floatingFilterData).reduce((acc, key) => {
+                    acc[key] = ""; // Reset all floating filters
+                    return acc;
+                }, {});
+                
+                setFloatingFilterData(clearedFilters);
             }
-
         } else {
-
-            setFloatingFilterData({ ...floatingFilterData, [value.column.colId]: value.filterInstance.appliedModel.filter })
+            setFloatingFilterData({
+                ...floatingFilterData,
+                [value.column.colId]: value.filterInstance.appliedModel.filter
+            });
         }
-    }
+    };
+    
+    
     const onSearch = () => {
         setWarningMessage(false)
         setIsFilterButtonClicked(true)

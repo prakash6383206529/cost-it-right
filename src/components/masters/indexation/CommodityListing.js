@@ -82,45 +82,54 @@ const CommodityInIndexListing = (props) => {
     const onFloatingFilterChanged = (value) => {
         setTimeout(() => {
             if (commodityInIndexDataList?.length !== 0) {
-                setNoData(searchNocontentFilter(value, noData))
+                setNoData(searchNocontentFilter(value, noData));
             }
         }, 500);
         setDisableFilter(false)
         const model = gridOptions?.api?.getFilterModel();
-        setFilterModel(model)
+        setFilterModel(model);
+    
         if (!isFilterButtonClicked) {
-            setWarningMessage(true)
+            setWarningMessage(true);
         }
-
+    
         if (value?.filterInstance?.appliedModel === null || value?.filterInstance?.appliedModel?.filter === "") {
-            let isFilterEmpty = true
+            let isFilterEmpty = true;
+    
             if (model !== undefined && model !== null) {
                 if (Object.keys(model).length > 0) {
-                    isFilterEmpty = false
-                    for (var property in floatingFilterData) {
+                    isFilterEmpty = false;
+    
+                    // Minimal change: create a copy of floatingFilterData before modifying
+                    const updatedFloatingFilterData = { ...floatingFilterData };
+                    for (var property in updatedFloatingFilterData) {
                         if (property === value.column.colId) {
-                            floatingFilterData[property] = ""
+                            updatedFloatingFilterData[property] = "";
                         }
                     }
-                    setFloatingFilterData(floatingFilterData)
+                    setFloatingFilterData(updatedFloatingFilterData);
                 }
-
+    
                 if (isFilterEmpty) {
-                    setWarningMessage(false)
-                    for (var prop in floatingFilterData) {
-                        floatingFilterData[prop] = ""
+                    setWarningMessage(false);
+    
+                    // Reset all filters
+                    const resetData = { ...floatingFilterData };
+                    for (var prop in resetData) {
+                        resetData[prop] = "";
                     }
-                    setFloatingFilterData(floatingFilterData)
+                    setFloatingFilterData(resetData);
                 }
             } else {
-                setFloatingFilterData({ ...floatingFilterData, [value.column.colId]: value.filterInstance.appliedModel.filter })
+                setFloatingFilterData({ ...floatingFilterData, [value.column.colId]: value.filterInstance.appliedModel?.filter || "" });
             }
-
+    
         } else {
-
-            setFloatingFilterData({ ...floatingFilterData, [value.column.colId]: value.filterInstance.appliedModel.filter })
+            setFloatingFilterData({ ...floatingFilterData, [value.column.colId]: value.filterInstance.appliedModel.filter });
         }
-    }
+    };
+    
+    
 
     const editItemDetails = (Id) => {
         setState((prevState) => ({

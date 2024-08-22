@@ -41,6 +41,7 @@ const IndexDataListing = (props) => {
 
     const dispatch = useDispatch();
     const { rmIndexDataList } = useSelector((state) => state?.indexation);
+    
     const permissions = useContext(ApplyPermission);
     const { globalTakes } = useSelector((state) => state?.pagination)
     const { t } = useTranslation("common")
@@ -61,7 +62,23 @@ const IndexDataListing = (props) => {
     });
     const { selectedRowForPagination } = useSelector((state => state.simulation))
 
-    const [floatingFilterData, setFloatingFilterData] = useState({ IndexExchangeName: '' })
+    const [floatingFilterData, setFloatingFilterData] = useState({
+        IndexExchangeName: '',
+        CommodityName: '',
+        CommodityStandardName: '',
+        IndexUOM: '',
+        ConvertedUOM: '',
+        FromCurrency: '',
+        ToCurrency: '',
+        RatePerIndexUOM: '',
+        ExchangeRateSourceName: '',
+        ExchangeRate: '',
+        EffectiveDate: '',
+        RatePerConvertedUOM: '',
+        RateConversionPerIndexUOM: '',
+        RateConversionPerConvertedUOM: ''
+    }); 
+    
     const [isLoader, setIsLoader] = useState(false);
     const [totalRecordCount, setTotalRecordCount] = useState(1)
     const [filterModel, setFilterModel] = useState({});
@@ -96,6 +113,7 @@ const IndexDataListing = (props) => {
         if (isPagination === true) { setIsLoader(true) }
         let dataObj = { ...floatingFilterData }
         dispatch(getIndexDataListAPI(dataObj, isPagination, skip, take, (res) => {
+            
             if (isPagination === true || isPagination === null) setIsLoader(false)
             if ((res && res.status === 204) || res.length === 0) {
                 setTotalRecordCount(0)
@@ -155,7 +173,7 @@ const IndexDataListing = (props) => {
      */
     const onFloatingFilterChanged = (value) => {
         setTimeout(() => {
-            if (rmIndexDataList?.length !== 0) {
+            if (rmIndexDataList.length !== 0) {
                 setNoData(searchNocontentFilter(value, noData))
             }
         }, 500);
@@ -165,7 +183,7 @@ const IndexDataListing = (props) => {
         if (!isFilterButtonClicked) {
             setWarningMessage(true)
         }
-
+    
         if (value?.filterInstance?.appliedModel === null || value?.filterInstance?.appliedModel?.filter === "") {
             let isFilterEmpty = true
             if (model !== undefined && model !== null) {
@@ -178,20 +196,27 @@ const IndexDataListing = (props) => {
                     }
                     setFloatingFilterData(floatingFilterData)
                 }
-
+    
                 if (isFilterEmpty) {
                     setWarningMessage(false)
                     for (var prop in floatingFilterData) {
-                        floatingFilterData[prop] = ""
+                        // Add this check if applicable to Indexation
+                        // if (isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant) {
+                            if (prop !== "DepartmentName") {
+                                floatingFilterData[prop] = ""
+                            }
+                        // } 
+                        else {
+                            floatingFilterData[prop] = ""
+                        }
                     }
                     setFloatingFilterData(floatingFilterData)
                 }
-            } else {
-                setFloatingFilterData({ ...floatingFilterData, [value.column.colId]: value.filterInstance.appliedModel.filter })
             }
-
         } else {
-
+            if (value.column.colId === "EffectiveDate" || value.column.colId === "CreatedDate") {
+                return false
+            }
             setFloatingFilterData({ ...floatingFilterData, [value.column.colId]: value.filterInstance.appliedModel.filter })
         }
     }
@@ -419,6 +444,7 @@ const IndexDataListing = (props) => {
 * @description Renders buttons
 */
     const effectiveDateFormatter = (props) => {
+        
 
         if (showExtraData && props?.rowIndex === 0) {
             return "Lorem Ipsum";
@@ -495,9 +521,19 @@ const IndexDataListing = (props) => {
         }
 
     }
+ 
+        var setDate = (date) => {
+            setFloatingFilterData((prevState) => ({ ...prevState, EffectiveDate: date }));
+        };
     var filterParams = {
         date: "", comparator: function (filterLocalDateAtMidnight, cellValue) {
+            
+           
             var dateAsString = cellValue != null ? DayTime(cellValue).format("DD/MM/YYYY") : "";
+            var newDate = filterLocalDateAtMidnight != null ? DayTime(filterLocalDateAtMidnight).format('DD/MM/YYYY') : '';
+
+            setDate(newDate)
+
             if (dateAsString == null) return -1;
             var dateParts = dateAsString.split("/");
             var cellDate = new Date(
@@ -505,6 +541,7 @@ const IndexDataListing = (props) => {
                 Number(dateParts[1]) - 1,
                 Number(dateParts[0])
             );
+
             if (filterLocalDateAtMidnight.getTime() === cellDate.getTime()) {
                 return 0;
             }

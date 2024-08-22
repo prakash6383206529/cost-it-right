@@ -246,7 +246,6 @@ function CostingDetailStepTwo(props) {
         BasicRate: checkForNull(basicRate),
       }
       let tempArr = DataList && Object.assign([...DataList], { [headerIndex]: tempData })
-      console.log('tempArr: ', tempArr);
 
       dispatch(setCostingDataList('setHeaderOverheadProfitCostTab', tempArr, () => {
       }))
@@ -392,7 +391,6 @@ function CostingDetailStepTwo(props) {
           checkForNull(tempData.NetPackagingAndFreight) +
           checkForNull(tempData.ToolCost) +
           (initialConfiguration?.IsAddPaymentTermInNetCost ? checkForNull(UpdatePaymentTermCost?.NetCost) : 0) + checkForNull(data?.AnyOtherCost) - checkForNull(tempData?.NetDiscountsCost)
-        console.log('SumOfTab: ', SumOfTab);
 
         // data.AnyOtherCost
         // if (data.OtherCostType === 'Percentage') {
@@ -411,7 +409,6 @@ function CostingDetailStepTwo(props) {
           totalNpvCost: data.totalNpvCost,
           totalConditionCost: data.totalConditionCost
         }
-        console.log('discountValues:detailsteptwo 111', discountValues);
 
         dispatch(setDiscountCost(discountValues, () => { }))
         tempData = {

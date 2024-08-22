@@ -54,7 +54,6 @@ import AddNpvCost from './CostingHeadCosts/AdditionalOtherCost/AddNpvCost'
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
 const CostingSummaryTable = (props) => {
-  console.log('props: ', props);
 
   const { register, control, formState: { errors }, setValue, getValues } = useForm({
     mode: 'onChange',
