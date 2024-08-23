@@ -3217,7 +3217,7 @@ export const clientName = 'Havells'
 export const isShowTaxCode = false
 
 //VERSION 
-export const VERSION = "V3.1.4";
+export const VERSION = "V3.1.5";
 
 
 

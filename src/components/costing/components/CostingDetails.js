@@ -907,9 +907,9 @@ function CostingDetails(props) {
    * @description HANDLE ZBC SOB CHANGE
    */
   const checkIsVBCSOBChanged = (event, index) => {
-    let tempOldObj = vbcVendorOldArray[index]
+    let tempOldObj = vbcVendorGrid[index]
 
-    if (index > vbcVendorOldArray.length - 1) {
+    if (index > vbcVendorGrid.length - 1) {
       return false
     } else if (parseInt(event.target.value) === tempOldObj.ShareOfBusinessPercent) {
       return false
