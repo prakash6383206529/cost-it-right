@@ -182,7 +182,6 @@ function AddRfq(props) {
     const [showVendorSection, setShowVendorSection] = useState(true)
     const [quotationType, setQuotationType] = useState('componentAssembly')
     const [RawMaterialList, setRawMaterialList] = useState([])
-    console.log('RawMaterialList: ', RawMaterialList);
     const [bopList, setBopList] = useState([])
 
 
@@ -192,7 +191,6 @@ function AddRfq(props) {
     const [rmDataList, setRmDataList] = useState([])
     const [bopDataList, setBopDataList] = useState([])
     const [toolingList, setToolingList] = useState([])
-    console.log('toolingList: ', toolingList);
 
     const [editRawMaterialId, setEditRawMaterialId] = useState("")
     const [editBopId, setEditBopId] = useState("")
@@ -385,6 +383,7 @@ function AddRfq(props) {
                         obj.VendorListExisting = item?.VendorList
                         obj.TargetPrice = item?.TargetPrice
                         obj.UOM = item?.UOMSymbol
+                        obj.UOMSymbol = item?.UOMSymbol
                         obj.RequirementDate = item?.TimeLine
 
                     }
@@ -581,6 +580,7 @@ function AddRfq(props) {
                 dispatch(setTargetPriceDetail({
                     TargetPrice: data?.PartList[0]?.TargetPrice
                 }))
+                setValue('Description', data?.PartName)
 
                 //dispatch(setToolingSpecificRowData(data?.ToolDataList));
                 //dispatch(getTargetPrice(plant?.value, value?.value, Number(technology?.value), (res) => {}))
@@ -770,14 +770,14 @@ function AddRfq(props) {
                 setValue('PartType', { label: rowData?.PartType, value: rowData?.PartTypeId })
                 setValue('Description', rowData?.Description)
                 setValue("TargetPrice", rowData?.TargetPrice)
-
+                setValue('UOM', { label: rowData?.UOMSymbol, value: rowData?.UnitOfMeasurementId })
                 setPartType({ label: rowData?.PartType, value: rowData?.PartTypeId })
                 setPartName({ label: rowData?.PartNumber, value: rowData?.PartId })
                 setRequirementDate(rowData?.TimeLine || '')
                 setAssemblyPartNumber({ label: rowData?.PartNumber, value: rowData?.PartId })
             }, 200);
 
-            setEditToolingId(rowData?.ToolId)
+            setEditToolingId(rowData?.PartId)
         }
 
 
@@ -1003,11 +1003,11 @@ function AddRfq(props) {
                 title = 'RM'
                 break
             case "componentAssembly":
-                warningMessgae = "Select a part, then add raw material, specification, and attachment documents"
+                warningMessgae = "Select a part, then click on + button to start inputing Specification, RM details and mandatory attachments."
                 title = 'Part'
                 break
             case "Tooling":
-                warningMessgae = "Select a PR Number, then add raw material, specification, and attachment documents"
+                warningMessgae = "Select a PR Number, then edit the Tool No, add the specification and attachment documents"
                 title = 'Tooling'
                 break
             default:
@@ -1479,6 +1479,7 @@ function AddRfq(props) {
                     newObjTemp.PartNo = partNumber?.label;
                     newObjTemp.PartId = getValues('partNumber')?.value;
                     newObjTemp.UOM = getValues('UOM')?.label;
+                    newObjTemp.UOMSymbol = getValues('UOM')?.label
                     newObjTemp.UnitOfMeasurementId = getValues('UOM')?.value;
                     newObjTemp.TargetPrice = getTargetprice?.TargetPrice || "-";
                     newObjTemp.TimeLine = requirementDate.split(' ')[0] || '';
@@ -1710,6 +1711,7 @@ function AddRfq(props) {
 
                 // Common properties
                 newObjTemp.UOM = getValues('UOM')?.label;
+                newObjTemp.UOMSymbol = getValues('UOM')?.label
                 newObjTemp.UnitOfMeasurementId = getValues('UOM')?.value;
                 newObjTemp.TargetPrice = getTargetprice?.TargetPrice || "-";
                 newObjTemp.TimeLine = requirementDate.split(' ')[0] || '';
@@ -1750,8 +1752,9 @@ function AddRfq(props) {
 
                 arrTemp.push(newObjTemp);
                 let arr
-
+                let QuotationPartId = ''
                 if (updateButtonPartNoTable) {
+
                     if (selectedOption === "Raw Material") {
                         arr = rmDataList.map(item => {
                             return item?.RawMaterialChildId === editRawMaterialId ? { ...item, ...arrTemp[0] } : item;
@@ -1767,8 +1770,12 @@ function AddRfq(props) {
                         });
                     } else {
                         arr = toolingList.map(item => {
-                            return item.ToolId === editToolingId ? { ...item, ...arrTemp[0] } : item;
+                            if (item?.PartId === editToolingId) {
+                                QuotationPartId = item?.QuotationPartId
+                            }
+                            return item?.PartId === editToolingId ? { ...item, ...arrTemp[0] } : item;
                         });
+
                     }
                 } else {
                     if (selectedOption === "Raw Material") {
@@ -1830,6 +1837,7 @@ function AddRfq(props) {
                             }
                         })
                     }
+
 
 
                     temppartObj.RMDetails = rmList
@@ -2064,14 +2072,14 @@ function AddRfq(props) {
                                 temppartObj.ToolChildList = rmList;
                             }
                             temppartObj.IsChildPart = false
-                            temppartObj.QuotationPartId = updateButtonPartNoTable ? arr[0]?.QuotationPartId : ""
+                            temppartObj.QuotationPartId = updateButtonPartNoTable ? QuotationPartId : ""
                             temppartObj.PartType = partType?.label || ''
                             temppartObj.TargetPrice = getTargetprice?.TargetPrice || "-"
                             temppartObj.TimeLine = requirementDate || "";
                             temppartObj.Remarks = remark || null
                             temppartObj.Attachments = childPartFiles || []
                             temppartObj.HavellsDesignPart = null
-                            temppartObj.UnitOfMeasurementId = null
+                            temppartObj.UnitOfMeasurementId = getValues('UOM')?.value
                             temppartObj.ExistingVendor = vendorList.join(',') || '';
                             temppartObj.Description = getValues('Description') || ""
                             temppartObj.SopDate = sopdate || null
@@ -2128,6 +2136,7 @@ function AddRfq(props) {
 
                             return null
                         })
+
                         obj.RawMaterialList = [];
                         obj.BoughtOutPartList = [];
                         obj.PartList = [];
@@ -3014,7 +3023,7 @@ function AddRfq(props) {
                                         <Row className="part-detail-wrapper">
                                             {havellsKey && <Col md="3">
                                                 <SearchableSelectHookForm
-                                                    label={`${selectedOption === TOOLING ? 'Tool' : 'Part'} Type`}
+                                                    label={`Part Type`}
                                                     name={"PartType"}
                                                     placeholder={"Select"}
                                                     Controller={Controller}
@@ -3351,10 +3360,10 @@ function AddRfq(props) {
                                                                     {selectedOption === "Raw Material" && <AgGridColumn width={"230px"} field="RawMaterialGrade" headerName="Grade" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                                                                     {selectedOption === "Raw Material" && <AgGridColumn width={"230px"} field="RawMaterialSpecification" headerName="Specification" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                                                                     {selectedOption === "Raw Material" && <AgGridColumn width={"230px"} field="RawMaterialCode" headerName="Code" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
-                                                                    {selectedOption === "Tooling" && <AgGridColumn width={"230px"} field="PartType" headerName={`${selectedOption === 'Tooling' ? 'Tool' : 'Part'} Type`} tooltipField="PartType" ></AgGridColumn>}
+                                                                    {selectedOption === "Tooling" && <AgGridColumn width={"230px"} field="PartType" headerName={`Part Type`} tooltipField="PartType" ></AgGridColumn>}
 
                                                                     {(selectedOption === "componentAssembly" || selectedOption === "Tooling") && <AgGridColumn width={"230px"} field="PartNumber" headerName={`${selectedOption === 'Tooling' ? 'Tool' : 'Part'} No`} tooltipField="PartNumber" cellRenderer={'partNumberFormatter'}></AgGridColumn>}
-                                                                    {selectedOption === "Tooling" && <AgGridColumn width={"230px"} field="Description" headerName={`${selectedOption === 'Tooling' ? 'Tool' : 'Part'} Description`} cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                                                                    {(selectedOption === "componentAssembly" || selectedOption === "Tooling") && <AgGridColumn width={"230px"} field="PartNumber" headerName={`${selectedOption === 'Tooling' ? 'Tool' : 'Part'} Description`} cellRenderer={'hyphenFormatter'}></AgGridColumn>}
 
                                                                     {/* {checkForNull(technology?.value) !== LOGISTICS && <AgGridColumn width={"230px"} field="RMName" tooltipField="RMName" headerName="RM Name" cellClass={"colorWhite"}></AgGridColumn>}
                                                                     {checkForNull(technology?.value) !== LOGISTICS && <AgGridColumn width={"230px"} field="RMGrade" headerName="RM Grade" cellClass={"colorWhite"}></AgGridColumn>}
@@ -3375,10 +3384,10 @@ function AddRfq(props) {
                                                                     {/* {(quotationType=== "BOP" || quotationType=== 'RM' || quotationType=== 'componentAssembly') && <AgGridColumn width={"190px"} field="UOM" cellClass="ag-grid-action-container" headerName="UOM" floatingFilter={false} type="" cellRenderer={'buttonFormatterFirst'}></AgGridColumn>} */}
                                                                     {selectedOption === "componentAssembly" && <AgGridColumn width={"230px"} field="HavellsDesignPart" headerName="Havells Design Part" ></AgGridColumn>}
 
-                                                                    {<AgGridColumn width={"230px"} field="UOM" headerName="UOM" ></AgGridColumn>}
+                                                                    {<AgGridColumn width={"230px"} field="UOMSymbol" headerName="UOM" ></AgGridColumn>}
 
                                                                     <AgGridColumn width={"230px"} field="TimeLine" headerName={selectedOption === TOOLING ? "T0 Timeline" : "N-100 Timeline"} cellRenderer={'effectiveDateFormatter'} ></AgGridColumn>
-                                                                    {(selectedOption === 'componentAssembly' === "componentAssembly" || selectedOption === 'componentAssembly' === 'Raw Material' || selectedOption === 'componentAssembly' === "Bought Out Part") && <AgGridColumn width={"230px"} field="VendorListExisting" headerName="Existing Vendor" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                                                                    {(selectedOption === 'componentAssembly' || selectedOption === 'Raw Material' || selectedOption === "Bought Out Part") && <AgGridColumn width={"230px"} field="VendorListExisting" headerName="Existing Vendor" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
 
                                                                     {(selectedOption === "componentAssembly" || selectedOption === 'Tooling') && (<AgGridColumn width={"190px"} field="PartId" cellClass="ag-grid-action-container text-right" headerName="Action" floatingFilter={false} type="rightAligned" cellRenderer={'buttonFormatterFirst'} />)}
                                                                     {selectedOption === "Raw Material" && (<AgGridColumn width={"190px"} field="RawMaterialChildId" cellClass="ag-grid-action-container text-right" headerName="Action" floatingFilter={false} type="rightAligned" cellRenderer={'buttonFormatterFirst'} />)}
