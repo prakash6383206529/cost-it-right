@@ -510,14 +510,14 @@ const IndexDataListing = (props) => {
             setTimeout(() => {
                 setDisableDownload(false)
                 dispatch(disabledClass(false))
-                let button = document.getElementById('Excel-Downloads-rm-import')
+                let button = document.getElementById('Excel-Downloads-rmMaterialList')
                 button && button.click()
             }, 400);
 
 
         } else {
 
-            getTableListData(0, globalTakes, false)
+            getTableListData(0, undefined, false)
         }
 
     }
@@ -579,7 +579,7 @@ const IndexDataListing = (props) => {
                                         filename={"Index Data"}
                                         fileExtension={".xls"}
                                         element={
-                                            <Button onClick={onExcelDownload} id={"Excel-Downloads-Rm MaterialList"} title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} type="button" className={'user-btn mr5 Tour_List_Download'} icon={"download mr-1"} buttonName={`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} />
+                                            <Button onClick={onExcelDownload} id={"Excel-Downloads-rmMaterialList"} title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} type="button" className={'user-btn mr5 Tour_List_Download'} icon={"download mr-1"} buttonName={`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} />
                                         }
                                     >
                                         {onBtExport()}
