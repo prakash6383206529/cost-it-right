@@ -75,26 +75,27 @@ function RfqListing(props) {
     const [disableDownload, setDisableDownload] = useState(false)
 
 const [disableFilter , setDisableFilter] = useState(false)
-    const [floatingFilterData, setFloatingFilterData] = useState({
-        QuotationNumber: "",
-        PartType: "",
-        PartNumber: "",
-        RawMaterial: "",
-        PRNumber: "",
-        NoOfQuotationReceived: "",
-        VendorName: "",
-        PlantName: "",
-        TechnologyName: "",
-        RaisedBy: "",
-        RaisedOn: "",
-        PartDataSentDate: "",
-        VisibilityMode: "",
-        VisibilityDate: "",
-        VisibilityDuration: "",
-        LastSubmissionDate: "",
-        Remark: "",
-        Status: ""
-      });
+const [floatingFilterData, setFloatingFilterData] = useState({
+    QuotationNumber: "",
+    PartType: "",
+    PartNumber: "",
+    RawMaterial: "",
+    PRNumber: "",
+    NoOfQuotationReceived: "",
+    vendorCode: "",
+    plantCode: "",
+    TechnologyName: "",
+    RaisedBy: "",
+    RaisedOn: "",
+    PartDataSentDate: "",
+    VisibilityMode: "",
+    VisibilityDate: "",
+    VisibilityDuration: "",
+    LastSubmissionDate: "",
+    Remark: "",
+    Status: "",
+    boughtOutPart: ""
+  });
       
       const [filterModel, setFilterModel] = useState({});
     const { technologyLabel } = useLabels();
@@ -115,20 +116,21 @@ const [disableFilter , setDisableFilter] = useState(false)
     useEffect(() => {
         if (rowData?.length > 0) {
           setTotalRecordCount(rowData[0].TotalRecordCount)
-        } else {
-          setTotalRecordCount(0);
-        //   setNoData(true);
-        }
+        } 
       }, [rowData])
     useEffect(() => {
+        dispatch(agGridStatus("", ""))
         // setloader(true)
         getDataList()
         applyPermission(topAndLeftMenuData)
     }, [topAndLeftMenuData])
+ 
+        useEffect(() => {
 
-    useEffect(() => {
-        if (statusColumnData) {
-            gridApi?.setQuickFilter(statusColumnData?.data);
+        if (statusColumnData && statusColumnData.data) {
+            setDisableFilter(false)
+            setWarningMessage(true)
+            setFloatingFilterData(prevState => ({ ...prevState, Status: statusColumnData.data }))
         }
     }, [statusColumnData])
     useEffect(() => {
@@ -219,7 +221,9 @@ const [disableFilter , setDisableFilter] = useState(false)
               let isReset = !Object.values(floatingFilterData).some(value => value !== "")
               setTimeout(() => {
                 isReset ? gridOptions?.api?.setFilterModel({}) : gridOptions?.api?.setFilterModel(filterModel)
-              }, 300);
+                
+  
+            }, 300);
               setWarningMessage(false)
               setIsFilterButtonClicked(false)
             }
@@ -253,6 +257,7 @@ const [disableFilter , setDisableFilter] = useState(false)
         setDisableFilter(false)
 
         const model = gridOptions?.api?.getFilterModel();
+        
         setFilterModel(model);
         if (!isFilterButtonClicked) {
             setWarningMessage(true)
@@ -323,6 +328,8 @@ const [disableFilter , setDisableFilter] = useState(false)
     
       const resetState = () => {
         setNoData(false)
+        dispatch(agGridStatus("", ""))
+
         // setinRangeDate([])
         setIsFilterButtonClicked(false)
         gridOptions?.columnApi?.resetColumnState(null);
@@ -382,6 +389,7 @@ getDataList(0, globalTakes, true)
     
         }
       };
+     
       const floatingFilterRFQ = {
         maxValue: 11,
         suppressFilterButton: true,

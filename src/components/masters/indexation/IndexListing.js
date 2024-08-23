@@ -188,6 +188,7 @@ const IndexListing = () => {
     
     
     const onSearch = () => {
+        setNoData(false)
         setWarningMessage(false)
         setIsFilterButtonClicked(true)
         dispatch(updatePageNumber(1))
@@ -324,7 +325,7 @@ const IndexListing = () => {
         setFloatingFilterData(floatingFilterData)
         setWarningMessage(false)
         dispatch(resetStatePagination())
-        getTableListData(0, 10, true)
+        getTableListData(0, globalTakes, true)
         dispatch(updateGlobalTake(10))
         setDataCount(0)
         reactLocalStorage.setObject('selectedRow', {})

@@ -292,18 +292,13 @@ export function getIndexDataListAPI(obj, isPagination, skip, take, callback) {
             Remark: obj.Remark || "",
             commodityName: obj.CommodityName || "",
             indexExchangeName: obj.IndexExchangeName || "",
-            uom: obj.IndexUOM || "", // Changed from obj.UOM to obj.IndexUOM to match your current implementation
+            uom: obj.UOM || "",
             fromCurrency: obj.FromCurrency || "",
             toCurrency: obj.ToCurrency || "",
             commodityStandardName: obj.CommodityStandardName || "",
             applyPagination: isPagination,
             skip: skip,
             take: take,
-            // Additional parameters that were in your original function but not in the API spec:
-            ConvertedUOM: obj.ConvertedUOM || "",
-            rate: obj.Rate || "",
-            rateConversion: obj.RateConversion || "",
-            currency: obj.Currency || "",
         });
         dispatch({ type: API_REQUEST });
         axios.get(`${API.getIndexDataList}?${queryParams}`, config())

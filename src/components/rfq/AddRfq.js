@@ -191,7 +191,6 @@ function AddRfq(props) {
     const [rmDataList, setRmDataList] = useState([])
     const [bopDataList, setBopDataList] = useState([])
     const [toolingList, setToolingList] = useState([])
-    console.log('toolingList: ', toolingList);
 
     const [editRawMaterialId, setEditRawMaterialId] = useState("")
     const [editBopId, setEditBopId] = useState("")

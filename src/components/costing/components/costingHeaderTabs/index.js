@@ -142,7 +142,6 @@ function CostingHeaderTabs(props) {
     // USED FOR OVERHEAD AND PROFIT WHEN CLICKED ON OTHER TABS WITHOUT SAVING
     if (!CostingViewMode && Object.keys(ComponentItemOverheadData).length > 0 && ComponentItemOverheadData.IsOpen !== false && activeTab !== '3' && checkIsOverheadProfitChange) {
       const discountAndOtherTabData = DiscountCostData
-      console.log('discountAndOtherTabData: ', discountAndOtherTabData);
 
       let reqData = {
         "CostingId": ComponentItemOverheadData.CostingId,
@@ -181,8 +180,6 @@ function CostingHeaderTabs(props) {
           dispatch(setOverheadProfitData(arrTemp, () => { }))
         }))
       } else {
-        console.log("222222222222");
-        console.log('reqData:2222 ', reqData);
         dispatch(saveComponentOverheadProfitTab(reqData, res => {
           callAssemblyAPi(3)
           dispatch(setComponentOverheadItemData({}, () => { }))
@@ -196,7 +193,6 @@ function CostingHeaderTabs(props) {
 
     }
     const discountAndOtherTabData = DiscountCostData
-    console.log('discountAndOtherTabData: ', discountAndOtherTabData);
 
     // USED FOR PACKAGE AND FREIGHT WHEN CLICKED ON OTHER TABS WITHOUT SAVING
     if (!CostingViewMode && Object.keys(ComponentItemPackageFreightData).length > 0 && ComponentItemPackageFreightData.IsChanged === true && activeTab !== '4' && Object.keys(ComponentItemPackageFreightData).length > 0 && ComponentItemPackageFreightData.IsChanged === true && checkIsFreightPackageChange) {
