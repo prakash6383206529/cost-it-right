@@ -344,7 +344,7 @@ function Rejection(props) {
     const calculateRecoveryCost = (rejectionPercentage, recoveryPerantage) => {
         const EffectiveRecovery = checkForNull(rejectionPercentage) * checkForNull(recoveryPerantage) / 100
         let CostApplicability = 0
-        CostingPartDetails.CostingRawMaterialsCost.map(item => {
+        CostingPartDetails && CostingPartDetails?.CostingRawMaterialsCost?.map(item => {
             CostApplicability += checkForNull(item.ScrapRate) * checkForNull(item.FinishWeight)
         })
         const rejectionRecoveryCost = CostApplicability * EffectiveRecovery / 100
