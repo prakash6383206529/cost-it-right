@@ -854,7 +854,6 @@ function RMDomesticListing(props) {
 
     }
     const headerCategory = (props) => {
-        console.log("COMING HERE");
         return t('RMCategoryLabel', { defaultValue: 'Category' })
     }
     const frameworkComponents = {
