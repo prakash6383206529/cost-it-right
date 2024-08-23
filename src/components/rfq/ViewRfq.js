@@ -1368,7 +1368,6 @@ function RfqListing(props) {
     }
 
     const partNumberFormatter = (props) => {
-        console.log('props: ', props);
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         if (props?.rowIndex === selectedRowIndex) {
             props.node.setSelected(true)

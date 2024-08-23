@@ -21,7 +21,6 @@ const ViewTcoDetail = ({ isApproval, viewCostingData, isRfqCosting, highlighter,
                 setShowTCOFields(prevState => ({ ...prevState, incoTerms: true, warrantyTerms: true, paymentTerms: false, qualityPPM: true, investment: true }))
                 break;
             case TOOLINGPART:
-                console.log('TOOLINGPART: ', TOOLINGPART);
 
                 setShowTCOFields(prevState => ({ ...prevState, incoTerms: true, warrantyTerms: true, paymentTerms: true, qualityPPM: false, investment: false }))
                 break;

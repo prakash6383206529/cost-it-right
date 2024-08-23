@@ -79,9 +79,10 @@ function SingleDropdownFloationFilter(props) {
             }
         })
         dispatch(agGridStatus(plants, props?.maxValue, arr))
+        // props.maxValue  === "11" ? setCurrentValue(arr[0]?.value) :
         setCurrentValue(arr?.target?.value)
         props.onFloatingFilterChanged({ model: buildModel() });
-
+        
     }
 
     const onParentModelChanged = (parentModel) => {
