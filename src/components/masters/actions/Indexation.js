@@ -245,7 +245,7 @@ export function getStandardizedCommodityListAPI(obj, isPagination, skip, take, i
             });
         } else {
             queryParams = encodeQueryParamsAndLog({
-                commodityStandardizationId: "", commodityStandardName: obj.CommodityStandardName, commodityName: obj.CommodityName, indexExchangeName: obj.IndexExchangeName, Remark: '', applyPagination: isPagination, skip: skip, take: take
+                commodityStandardizationId: "", commodityStandardName: obj.CommodityStandardName, commodityName: obj.CommodityName, indexExchangeName: obj.IndexExchangeName, remark: '', applyPagination: isPagination, skip: skip, take: take
             });
         }
         dispatch({ type: API_REQUEST });
@@ -280,10 +280,25 @@ export function getStandardizedCommodityListAPI(obj, isPagination, skip, take, i
 export function getIndexDataListAPI(obj, isPagination, skip, take, callback) {
     return (dispatch) => {
         const queryParams = encodeQueryParamsAndLog({
-            commodityMaterialDetailId: "", rate: obj.Rate, currencyCharge: obj.CurrencyCharge, exchangeRate: obj.ExchangeRate,
-            rateConversion: obj.RateConversion, exchangeRateSourceName: obj.ExchangeRateSourceName, effectiveDate: obj.EffectiveDate, commodityName: obj.CommodityName,
-            indexExchangeName: obj.IndexExchangeName, uom: obj.UOM, currency: obj.Currency,
-            Remark: '', applyPagination: isPagination, skip: skip, take: take
+            commodityIndexRateDetailId: obj.CommodityIndexRateDetailId || "",
+            ratePerIndexUOM: obj.RatePerIndexUOM || "",
+            ratePerConvertedUOM: obj.RatePerConvertedUOM || "",
+            currencyCharge: obj.CurrencyCharge || "",
+            exchangeRate: obj.ExchangeRate || "",
+            rateConversionPerConvertedUOM: obj.RateConversionPerConvertedUOM || "",
+            rateConversionPerIndexUOM: obj.RateConversionPerIndexUOM || "",
+            exchangeRateSourceName: obj.ExchangeRateSourceName || "",
+            effectiveDate: obj.EffectiveDate || "",
+            Remark: obj.Remark || "",
+            commodityName: obj.CommodityName || "",
+            indexExchangeName: obj.IndexExchangeName || "",
+            uom: obj.UOM || "",
+            fromCurrency: obj.FromCurrency || "",
+            toCurrency: obj.ToCurrency || "",
+            commodityStandardName: obj.CommodityStandardName || "",
+            applyPagination: isPagination,
+            skip: skip,
+            take: take,
         });
         dispatch({ type: API_REQUEST });
         axios.get(`${API.getIndexDataList}?${queryParams}`, config())

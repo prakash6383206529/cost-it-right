@@ -1537,7 +1537,6 @@ export function isResetClick(data, component) {
 
 //GET HEIGHT FOR DROPDOWN
 export function getGridHeight(value) {
-  console.log('value: ', value);
   return (dispatch) => {
     dispatch({
       type: GET_GRID_HEIGHT,
