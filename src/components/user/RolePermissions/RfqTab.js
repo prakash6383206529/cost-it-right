@@ -20,7 +20,7 @@ class RFQTab extends Component {
             actionData: [],
             actionSelectList: [],
             initialConfiguration: props.initialConfiguration || {},
-            
+
         }
     }
 
@@ -45,6 +45,14 @@ class RFQTab extends Component {
                 Modules: data && data.sort((a, b) => a.Sequence - b.Sequence),
                 actionSelectList: actionSelectList,
                 initialConfiguration: initialConfiguration
+            })
+
+            actionData && actionData.map((ele, index) => {
+                if (ele.ModuleName === RFQ) {
+                    this.setState({ checkBox: ele.SelectAll })
+                    // this.setState({ checkBox: ele.IsChecked })          		//MINDA				//RE
+                }
+                return null
             })
         }
     }
@@ -73,7 +81,7 @@ class RFQTab extends Component {
     */
     renderActionHeads = (actionHeads) => {
         const { actionData } = this.state;
-                let actionNames = actionData && actionData.find(el => el.ModuleName === RFQ)
+        let actionNames = actionData && actionData.find(el => el.ModuleName === RFQ)
         if (actionNames !== undefined) {
             return actionHeads && actionHeads.map((item, index) => {
                 if (item.Value === 0) return false;
@@ -103,14 +111,14 @@ class RFQTab extends Component {
         let tempArray = [];
 
         let actionRow = (Modules && Modules !== undefined) ? Modules[index].Actions : [];
-                if (isModuleChecked) {
+        if (isModuleChecked) {
             actionArray = actionRow && actionRow.map((item, index) => {
                 item.IsChecked = false;
                 return item;
             })
 
             tempArray = Object.assign([...Modules], { [index]: Object.assign({}, Modules[index], { IsChecked: false, Actions: actionArray }) })
-            
+
             this.setState({ Modules: tempArray })
         } else {
             actionArray = actionRow && actionRow.map((item, index) => {
@@ -119,7 +127,7 @@ class RFQTab extends Component {
             })
 
             tempArray = Object.assign([...Modules], { [index]: Object.assign({}, Modules[index], { IsChecked: true, Actions: actionArray }) })
-            
+
             this.setState({ Modules: tempArray })
         }
         this.checkIsVendorSelected(index, tempArray)
@@ -149,14 +157,14 @@ class RFQTab extends Component {
             return tempArray.length === Modules[parentIndex].Actions.length ? true : false;
         }
     }
-    
+
 
     selectAllHandler = (parentIndex, actionRows) => {
-                const { Modules, } = this.state;
+        const { Modules, } = this.state;
         //const { actionSelectList } = this.props;
 
         let checkedActions = actionRows.filter(item => item.IsChecked === true)
-        
+
         let tempArray = [];
         let isCheckedSelectAll = (checkedActions.length === Modules[parentIndex].Actions.length) ? true : false;
 
@@ -181,7 +189,7 @@ class RFQTab extends Component {
     checkIsVendorSelected = (parentIndex, Module) => {
         let tempModule = [...Module];
         let tempArray = [...Module]; // Manipulated array to set in state
-    
+
         // Common function to handle action checking based on ModuleName
         const commonLogic = (ModuleName, value) => {
             let index = tempModule.findIndex((x) => x.PageName === ModuleName);
@@ -199,15 +207,15 @@ class RFQTab extends Component {
                 tempArray = Object.assign([...tempModule], { [index]: Object.assign({}, tempModule[index], { IsChecked: value, Actions: actions }) });
             }
         };
-    
+
         // Logic for checking/unchecking RFQ actions based on RFQVendor state
         if (tempModule[parentIndex]?.PageName === RFQVendor && tempModule[parentIndex]?.IsChecked === true) {
             commonLogic(RFQ, true); // Check specific actions in RFQ
         }
-    
+
         this.setState({ Modules: tempArray });
     };
-    
+
 
     /**
     * @method renderAction
@@ -223,39 +231,39 @@ class RFQTab extends Component {
     * @description Used to check/uncheck action's checkbox
     */
     actionCheckHandler = (parentIndex, childIndex) => {
-                const { Modules } = this.state;
+        const { Modules } = this.state;
 
         let actionRow = (Modules && Modules !== undefined) ? Modules[parentIndex].Actions : [];
-        
+
         let actionArray = actionRow && actionRow.map((el, index) => {
-            
+
             if (childIndex === index) {
                 el.IsChecked = !el.IsChecked
-            // Automatically check "View" if "Add", "Edit", or "Bulk Upload" is checked for the 0th module
-            if (parentIndex === 0 && ["Add", "Edit", "Bulk Upload"].includes(el.ActionName) && el.IsChecked) {
-                let viewAction = actionRow.find(action => action.ActionName === 'View');
-                if (viewAction) {
-                    viewAction.IsChecked = true;
+                // Automatically check "View" if "Add", "Edit", or "Bulk Upload" is checked for the 0th module
+                if (parentIndex === 0 && ["Add", "Edit", "Bulk Upload"].includes(el.ActionName) && el.IsChecked) {
+                    let viewAction = actionRow.find(action => action.ActionName === 'View');
+                    if (viewAction) {
+                        viewAction.IsChecked = true;
+                    }
                 }
-            }
 
-            // If "Add" or "Edit" is checked for the 1st module
-            if (parentIndex === 1 && ["Add", "Edit"].includes(el.ActionName) && el.IsChecked) {
-                let firstModuleActions = Modules[0].Actions;
-                
-                // Ensure "View" is checked for both the 0th and 1st modules
-                let firstModuleViewAction = firstModuleActions.find(action => action.ActionName === 'View');
-                let secondModuleViewAction = actionRow.find(action => action.ActionName === 'View');
-                if (firstModuleViewAction) {
-                    firstModuleViewAction.IsChecked = true;
-                }
-                if (secondModuleViewAction) {
-                    secondModuleViewAction.IsChecked = true;
+                // If "Add" or "Edit" is checked for the 1st module
+                if (parentIndex === 1 && ["Add", "Edit"].includes(el.ActionName) && el.IsChecked) {
+                    let firstModuleActions = Modules[0].Actions;
+
+                    // Ensure "View" is checked for both the 0th and 1st modules
+                    let firstModuleViewAction = firstModuleActions.find(action => action.ActionName === 'View');
+                    let secondModuleViewAction = actionRow.find(action => action.ActionName === 'View');
+                    if (firstModuleViewAction) {
+                        firstModuleViewAction.IsChecked = true;
+                    }
+                    if (secondModuleViewAction) {
+                        secondModuleViewAction.IsChecked = true;
+                    }
                 }
             }
-                  }
-        return el;
-    });
+            return el;
+        });
         let tempArray = Object.assign([...Modules], { [parentIndex]: Object.assign({}, Modules[parentIndex], { Actions: actionArray }) })
         this.setState({ Modules: tempArray }, () => {
             const { Modules } = this.state;
@@ -264,29 +272,65 @@ class RFQTab extends Component {
             let abcd = checkedActions && checkedActions.length !== 0 ? true : false;
             let tempArray1 = Object.assign([...Modules], { [parentIndex]: Object.assign({}, Modules[parentIndex], { IsChecked: abcd, Actions: actionArray }) })
             this.setState({ Modules: tempArray1 })
-                    })
+        })
     }
 
-  
+
     updateModules = () => {
         const { Modules } = this.state;
         this.props.permissions(Modules, RFQ)
     }
 
+    selectAllHandlerEvery = () => {
+        const { Modules } = this.state;
+
+        let booleanVal = this.state.checkBox
+        this.setState({ checkBox: !booleanVal })
+        let isCheckedSelectAll = !booleanVal
+
+        let actionRows
+        let actionArray = Modules && Modules.map((item, index) => {
+            actionRows = item
+            item.Actions && item.Actions.map((item1, index) => {
+                item1.IsChecked = isCheckedSelectAll;
+                return null
+            })
+            item.IsChecked = isCheckedSelectAll
+            return actionRows;
+        })
+        this.setState({ Modules: actionArray, })
+    }
 
     render() {
         const { actionSelectList, initialConfiguration } = this.state;
         const showOnlyFirstModule = initialConfiguration.IsManageSeparateUserPermissionForPartAndVendorInRaiseRFQ;
-    
+
         return (
             <div>
                 <div className="row form-group grant-user-grid">
                     <div className="col-md-12">
                         <Table className="table table-bordered" size="sm">
                             <thead>
-                                <tr>
+                                {/* <tr>
                                     <th>{`Module`}</th>
                                     <th>{``}</th>
+                                    {this.renderActionHeads(actionSelectList)}
+                                </tr> */}
+                                <tr>
+                                    <th>{`Module`}</th>
+                                    <th className="select-all-block pr-2">
+                                        <label id='Onboarding_Specific_SelectAll_Check' className="custom-checkbox align-middle text-left">
+                                            <input
+                                                type="checkbox"
+                                                value={"All"}
+                                                checked={this.state.checkBox}
+                                                onClick={() =>
+                                                    this.selectAllHandlerEvery()
+                                                }
+                                            />
+                                            <span className=" before-box pl-0">Select All</span>
+                                        </label>
+                                    </th>
                                     {this.renderActionHeads(actionSelectList)}
                                 </tr>
                             </thead>
@@ -344,7 +388,7 @@ class RFQTab extends Component {
             </div>
         );
     }
-    
+
 }
 
 /**
@@ -354,10 +398,10 @@ class RFQTab extends Component {
 */
 const mapStateToProps = (state, ownProps) => {
     const { auth } = state;
-    const { roleList, moduleSelectList, actionSelectList, loading ,initialConfiguration} = auth;
+    const { roleList, moduleSelectList, actionSelectList, loading, initialConfiguration } = auth;
     let initialValues = {};
 
-    
+
     return { loading, roleList, initialValues, moduleSelectList, actionSelectList, initialConfiguration };
 };
 
