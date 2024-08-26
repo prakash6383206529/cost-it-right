@@ -1524,6 +1524,16 @@ export const extenstionTime = (length = 5, timeGap = 1, TimeCategory = 'min') =>
   }
   return temp;
 }
+export const durationTimeDropdown = (length = 12, timeGap = 15) => {
+  let temp = [];
+  for (let i = timeGap; i <= length * 60; i += timeGap) {
+    const minutes = Math.floor(i / 60);
+    const seconds = i % 60;
+    const formattedTime = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    temp.push({ label: formattedTime, value: i });
+  }
+  return temp;
+}
 
 export function calculateEndDateTime(startDateTime, duration) {
 
