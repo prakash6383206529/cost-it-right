@@ -612,7 +612,7 @@ function AddToComparisonDrawer(props) {
           obj.destinationPlantId = dataFromAPI.DestinationPlantId ? dataFromAPI.DestinationPlantId : '-'
           obj.CostingHeading = dataFromAPI.CostingHeading ? dataFromAPI.CostingHeading : '-'
           obj.partName = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.PartName ? dataFromAPI?.CostingPartDetails?.PartName : '-'
-          obj.netOtherOperationCost = dataFromAPI && dataFromAPI.NetOtherOperationCost ? dataFromAPI.NetOtherOperationCost : 0
+          obj.netOtherOperationCost = dataFromAPI && dataFromAPI?.CostingPartDetails?.NetOtherOperationCost ? dataFromAPI?.CostingPartDetails?.NetOtherOperationCost : 0
           obj.masterBatchTotal = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.MasterBatchTotal ? dataFromAPI?.CostingPartDetails?.MasterBatchTotal : 0
           obj.masterBatchRMPrice = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.MasterBatchRMPrice ? dataFromAPI?.CostingPartDetails?.MasterBatchRMPrice : 0
           obj.masterBatchPercentage = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.MasterBatchPercentage ? dataFromAPI?.CostingPartDetails?.MasterBatchPercentage : 0

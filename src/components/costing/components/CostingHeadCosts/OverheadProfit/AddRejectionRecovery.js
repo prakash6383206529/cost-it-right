@@ -135,7 +135,7 @@ function AddRejectionRecovery(props) {
         }))
     }
     const applicabilityTooltip = () => {
-        const rmData = CostingPartDetails.CostingRawMaterialsCost;
+        const rmData = CostingPartDetails?.CostingRawMaterialsCost ?? [];
         if (rmData.length === 0) {
             return { tooltipText: false, width: '0' };
         } else if (rmData.length === 1) {
@@ -146,8 +146,7 @@ function AddRejectionRecovery(props) {
     }
     return (
         <div>
-            <Drawer anchor={'right'} open={isOpen}
-            >
+            <Drawer anchor={'right'} open={isOpen}>
                 <Container>
                     <div className={'drawer-wrapper freight-drawer'}>
 

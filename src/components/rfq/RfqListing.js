@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo } from 'react';
 import { useState, useEffect, } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
-import { Row, Col, Button, } from 'reactstrap';
+import { Row, Col } from 'reactstrap';
 import { APPROVED, CANCELLED, DRAFT, EMPTY_DATA, FILE_URL, PREDRAFT, RECEIVED, REJECTED, RETURNED, RFQ, RFQVendor, SENT, SUBMITTED, UNDER_APPROVAL, UNDER_REVISION, } from '../.././config/constants'
 import NoContentFound from '.././common/NoContentFound';
 import { MESSAGES } from '../.././config/message';
@@ -36,6 +36,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import { setSelectedRowForPagination } from '../simulation/actions/Simulation';
 import WarningMessage from '../common/WarningMessage';
 import { useLabels } from '../../helper/core';
+import Button from '../layout/Button';
 export const ApplyPermission = React.createContext();
 const gridOptions = {};
 
@@ -71,27 +72,31 @@ function RfqListing(props) {
     const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false)
     const { globalTakes } = useSelector((state) => state.pagination);
     const [warningMessage, setWarningMessage] = useState(false)
+    const [disableDownload, setDisableDownload] = useState(false)
+
 const [disableFilter , setDisableFilter] = useState(false)
-    const [floatingFilterData, setFloatingFilterData] = useState({
-        QuotationNumber: "",
-        PartType: "",
-        PartNumber: "",
-        RawMaterial: "",
-        PRNumber: "",
-        NoOfQuotationReceived: "",
-        VendorName: "",
-        PlantName: "",
-        TechnologyName: "",
-        RaisedBy: "",
-        RaisedOn: "",
-        PartDataSentDate: "",
-        VisibilityMode: "",
-        VisibilityDate: "",
-        VisibilityDuration: "",
-        LastSubmissionDate: "",
-        Remark: "",
-        Status: ""
-      });
+const [floatingFilterData, setFloatingFilterData] = useState({
+    QuotationNumber: "",
+    PartType: "",
+    PartNumber: "",
+    RawMaterial: "",
+    PRNumber: "",
+    NoOfQuotationReceived: "",
+    vendorCode: "",
+    plantCode: "",
+    TechnologyName: "",
+    RaisedBy: "",
+    RaisedOn: "",
+    PartDataSentDate: "",
+    VisibilityMode: "",
+    VisibilityDate: "",
+    VisibilityDuration: "",
+    LastSubmissionDate: "",
+    Remark: "",
+    Status: "",
+    boughtOutPart: ""
+  });
+      
       const [filterModel, setFilterModel] = useState({});
     const { technologyLabel } = useLabels();
 
@@ -111,20 +116,21 @@ const [disableFilter , setDisableFilter] = useState(false)
     useEffect(() => {
         if (rowData?.length > 0) {
           setTotalRecordCount(rowData[0].TotalRecordCount)
-        } else {
-          setTotalRecordCount(0);
-        //   setNoData(true);
-        }
+        } 
       }, [rowData])
     useEffect(() => {
+        dispatch(agGridStatus("", ""))
         // setloader(true)
         getDataList()
         applyPermission(topAndLeftMenuData)
     }, [topAndLeftMenuData])
+ 
+        useEffect(() => {
 
-    useEffect(() => {
-        if (statusColumnData) {
-            gridApi?.setQuickFilter(statusColumnData?.data);
+        if (statusColumnData && statusColumnData.data) {
+            setDisableFilter(false)
+            setWarningMessage(true)
+            setFloatingFilterData(prevState => ({ ...prevState, Status: statusColumnData.data }))
         }
     }, [statusColumnData])
     useEffect(() => {
@@ -181,7 +187,7 @@ const [disableFilter , setDisableFilter] = useState(false)
           setloader(true)
         }
         
-        const queryParams = encodeQueryParamsAndLog({
+        const queryParams = {
           DepartmentCode: userDetails()?.DepartmentCode,
           Timezone: Timezone,
           LoggedInUserId: loggedInUserId(),
@@ -189,20 +195,13 @@ const [disableFilter , setDisableFilter] = useState(false)
           take: take,
           isApplyPagination: isPagination,
           ...floatingFilterData
-        });
+        };
     
         // Convert dates to the required format if needed
-        if (floatingFilterData.RaisedOn) {
-          queryParams.RaisedOn = DayTime(floatingFilterData.RaisedOn).format('DD/MM/YYYY');
-        }
-        if (floatingFilterData.PartDataSentDate) {
-          queryParams.PartDataSentDate = DayTime(floatingFilterData.PartDataSentDate).format('DD/MM/YYYY');
-        }
-        if (floatingFilterData.LastSubmissionDate) {
-          queryParams.LastSubmissionDate = DayTime(floatingFilterData.LastSubmissionDate).format('DD/MM/YYYY');
-        }
-    
-        dispatch(getQuotationList(queryParams, (res) => {
+       
+          const encodedQueryParams = encodeQueryParamsAndLog(queryParams);
+
+        dispatch(getQuotationList(encodedQueryParams, (res) => {
           if (res && res.status === 200) {
             let temp = res?.data?.DataList?.map(item => ({
               ...item,
@@ -222,7 +221,9 @@ const [disableFilter , setDisableFilter] = useState(false)
               let isReset = !Object.values(floatingFilterData).some(value => value !== "")
               setTimeout(() => {
                 isReset ? gridOptions?.api?.setFilterModel({}) : gridOptions?.api?.setFilterModel(filterModel)
-              }, 300);
+                
+  
+            }, 300);
               setWarningMessage(false)
               setIsFilterButtonClicked(false)
             }
@@ -256,10 +257,17 @@ const [disableFilter , setDisableFilter] = useState(false)
         setDisableFilter(false)
 
         const model = gridOptions?.api?.getFilterModel();
+        
         setFilterModel(model);
         if (!isFilterButtonClicked) {
             setWarningMessage(true)
         }
+        // if (value.column.colId === "Status") {
+        //     setFloatingFilterData(prevState => ({
+        //       ...prevState,
+        //       Status: value.filterInstance.appliedModel.filter
+        //     }));
+        //   }
         if (value?.filterInstance?.appliedModel === null || value?.filterInstance?.appliedModel?.filter === "") {
           let isFilterEmpty = true;
           if (model !== undefined && model !== null) {
@@ -296,18 +304,32 @@ const [disableFilter , setDisableFilter] = useState(false)
             }
           }
         } else {
-          if (value.column.colId === "RaisedOn" || value.column.colId === "PartDataSentDate" || value.column.colId === "LastSubmissionDate") {
-            return false;
-          }
-          setFloatingFilterData(prevState => ({
-            ...prevState,
-            [value.column.colId]: value.filterInstance.appliedModel.filter
-          }));
-        }
-      }, [rowData, noData, filterModel])
+            if (value.column.colId === "RaisedOn" || value.column.colId === "PartDataSentDate" || value.column.colId === "LastSubmissionDate" || value.column.colId === "VisibilityDate") {
+                // Handle date filters
+                const dateFilter = value.filterInstance.appliedModel;
+                let formattedDate = null;
+                if (dateFilter.type === 'equals') {
+                  formattedDate = DayTime(dateFilter.dateFrom).format('DD/MM/YYYY');
+                } else if (dateFilter.type === 'inRange') {
+                  formattedDate = `${DayTime(dateFilter.dateFrom).format('DD/MM/YYYY')},${DayTime(dateFilter.dateTo).format('DD/MM/YYYY')}`;
+                }
+                setFloatingFilterData(prevState => ({
+                  ...prevState,
+                  [value.column.colId]: formattedDate
+                }));
+              } else {
+                setFloatingFilterData(prevState => ({
+                  ...prevState,
+                  [value.column.colId]: value.filterInstance.appliedModel.filter
+                }));
+              }
+            }
+        }, [rowData, noData, filterModel]);
     
       const resetState = () => {
         setNoData(false)
+        dispatch(agGridStatus("", ""))
+
         // setinRangeDate([])
         setIsFilterButtonClicked(false)
         gridOptions?.columnApi?.resetColumnState(null);
@@ -367,8 +389,9 @@ getDataList(0, globalTakes, true)
     
         }
       };
+     
       const floatingFilterRFQ = {
-        maxValue: 3,
+        maxValue: 11,
         suppressFilterButton: true,
         component: "RFQ",
         onFilterChange: handleFilterChange,
@@ -675,19 +698,20 @@ getDataList(0, globalTakes, true)
                                                 <>
                                                 {(props?.isMasterSummaryDrawer === undefined || this.props?.isMasterSummaryDrawer === false) &&
                                                     <div className="warning-message d-flex align-items-center">
-                                                        {warningMessage  && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
+                                                        {warningMessage && !disableDownload && ( <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>)}
                                                     </div>
                                                 }
                                                 {
 
                                                     <Button
-                                                        id="rmDomesticListing_filter"
+                                                        id="rfqlisting_filter"
                                                         className={"mr5 Tour_List_Filter"}
                                                         onClick={() => onSearch()}
                                                         title={"Filtered data"}
                                                         icon={"filter"}
                                                         disabled={disableFilter}
                                                     />
+                                                    
                                                 }
 
                                                     {(addAccessibility || permissionData?.permissionDataVendor?.Add) && (<button
@@ -757,14 +781,14 @@ getDataList(0, globalTakes, true)
                                                 <AgGridColumn field="PartDataSentDate" width={"145px"} headerName='RFI Date' cellRenderer='dateFormatter' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
 
                                                 <AgGridColumn field="VisibilityMode" width={"200px"} headerName='Visibility Mode' cellRenderer='dashFormatter'></AgGridColumn>
-                                                <AgGridColumn field="VisibilityDate" width={"160px"} headerName='Visibility Date' cellRenderer='dateTimeFormatter'></AgGridColumn>
+                                                <AgGridColumn field="VisibilityDate" width={"160px"} headerName='Visibility Date' cellRenderer='dateTimeFormatter'filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                                                 <AgGridColumn field="VisibilityDuration" width={"150px"} headerName='Visibility Duration' cellRenderer='dashFormatter'></AgGridColumn>
                                                 {/* <AgGridColumn field="TimeZone" width={"150px"} headerName='Time Zone' cellRenderer='timeZoneFormatter'></AgGridColumn> */}
                                                 <AgGridColumn field="LastSubmissionDate" width={"160px"} headerName='Quote Submission Date' cellRenderer='dateFormatter' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                                                 {/* <AgGridColumn field="QuotationNumber" headerName='Attachments' cellRenderer='attachmentFormatter'></AgGridColumn> */}
                                                 <AgGridColumn field="Remark" tooltipField="Remark" headerName='Notes' cellRenderer={"hyphenFormatter"}></AgGridColumn>
-                                                <AgGridColumn field="Status" tooltipField="tooltipText"pinned="right"  headerName="Status" headerClass="justify-content-center" cellClass="text-center" cellRenderer="statusFormatter" floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterRFQ}></AgGridColumn>
-                                                {<AgGridColumn field="QuotationId" width={180} cellClass="ag-grid-action-container rfq-listing-action" pinned="right" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                                <AgGridColumn field="Status" tooltipField="tooltipText" headerName="Status" headerClass="justify-content-center" cellClass="text-center" cellRenderer="statusFormatter" floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterRFQ}></AgGridColumn>
+                                                                                               {<AgGridColumn field="QuotationId" width={180} cellClass="ag-grid-action-container rfq-listing-action" pinned="right" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
 
                                             </AgGridReact>}
                                             <div className='button-wrapper'>

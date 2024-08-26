@@ -67,7 +67,10 @@ export function PaginationWrappers(props) {
     };
 
     const onPageSizeChanged = (newPageSize) => {
+<<<<<<< HEAD
 
+=======
+>>>>>>> m1-frontend-merge-branch
         const totalPages = Math.ceil(totalRecordCount / newPageSize);
         const newPageNo = currentRowIndex / newPageSize;
         const calculatedPageNo = newPageNo > Math.ceil(newPageNo) ? Math.ceil(newPageNo) + 1 : Math.ceil(newPageNo);
