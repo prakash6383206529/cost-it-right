@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { setCurrentRowIndex, updateGlobalTake, updatePageNumber, updatePageSize, skipUpdate, resetStatePagination } from './paginationAction';
 
 export function PaginationWrappers(props) {
-    console.log('props: ', props);
+
     const dispatch = useDispatch();
     const { currentRowIndex, globalTakes } = useSelector((state) => state.pagination);
     const { getDataList, totalRecordCount, floatingFilterData, gridApi, module } = props;
@@ -57,9 +57,9 @@ export function PaginationWrappers(props) {
             case 'IndexData':
                 getDataList(newSkip, numericPageSize, true)
                 break;
-                case 'RFQ' :
-                    getDataList(newSkip, numericPageSize, true)
-                    break;
+            case 'RFQ':
+                getDataList(newSkip, numericPageSize, true)
+                break;
 
             default:
                 break;
@@ -67,7 +67,7 @@ export function PaginationWrappers(props) {
     };
 
     const onPageSizeChanged = (newPageSize) => {
-        console.log('newPageSize: ', newPageSize);
+
         const totalPages = Math.ceil(totalRecordCount / newPageSize);
         const newPageNo = currentRowIndex / newPageSize;
         const calculatedPageNo = newPageNo > Math.ceil(newPageNo) ? Math.ceil(newPageNo) + 1 : Math.ceil(newPageNo);
