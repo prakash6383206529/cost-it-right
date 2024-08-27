@@ -80,7 +80,6 @@ const [floatingFilterData, setFloatingFilterData] = useState({
     PartType: "",
     PartNumber: "",
     RawMaterial: "",
-    PRNumber: "",
     NoOfQuotationReceived: "",
     vendorCode: "",
     plantCode: "",
@@ -92,7 +91,6 @@ const [floatingFilterData, setFloatingFilterData] = useState({
     VisibilityDate: "",
     VisibilityDuration: "",
     LastSubmissionDate: "",
-    Remark: "",
     Status: "",
     boughtOutPart: ""
   });
@@ -187,7 +185,7 @@ const [floatingFilterData, setFloatingFilterData] = useState({
           setloader(true)
         }
         
-        const queryParams = {
+        const queryParams = encodeQueryParamsAndLog({
           DepartmentCode: userDetails()?.DepartmentCode,
           Timezone: Timezone,
           LoggedInUserId: loggedInUserId(),
@@ -195,13 +193,10 @@ const [floatingFilterData, setFloatingFilterData] = useState({
           take: take,
           isApplyPagination: isPagination,
           ...floatingFilterData
-        };
+        });
     
-        // Convert dates to the required format if needed
-       
-          const encodedQueryParams = encodeQueryParamsAndLog(queryParams);
-
-        dispatch(getQuotationList(encodedQueryParams, (res) => {
+    
+        dispatch(getQuotationList(queryParams, (res) => {
           if (res && res.status === 200) {
             let temp = res?.data?.DataList?.map(item => ({
               ...item,

@@ -85,7 +85,7 @@ const CommodityInIndexListing = (props) => {
                 setNoData(searchNocontentFilter(value, noData));
             }
         }, 500);
-        setDisableFilter(false)
+        setDisableFilter(false);
         const model = gridOptions?.api?.getFilterModel();
         setFilterModel(model);
     
@@ -93,40 +93,27 @@ const CommodityInIndexListing = (props) => {
             setWarningMessage(true);
         }
     
+        // Create a copy of the current floatingFilterData
+        const updatedFloatingFilterData = { ...floatingFilterData };
+    
         if (value?.filterInstance?.appliedModel === null || value?.filterInstance?.appliedModel?.filter === "") {
-            let isFilterEmpty = true;
+            // If the filter is cleared
+            updatedFloatingFilterData[value.column.colId] = "";
     
-            if (model !== undefined && model !== null) {
-                if (Object.keys(model).length > 0) {
-                    isFilterEmpty = false;
+            // Check if all filters are now empty
+            const allFiltersEmpty = Object.values(updatedFloatingFilterData).every(filter => filter === "");
     
-                    // Minimal change: create a copy of floatingFilterData before modifying
-                    const updatedFloatingFilterData = { ...floatingFilterData };
-                    for (var property in updatedFloatingFilterData) {
-                        if (property === value.column.colId) {
-                            updatedFloatingFilterData[property] = "";
-                        }
-                    }
-                    setFloatingFilterData(updatedFloatingFilterData);
-                }
-    
-                if (isFilterEmpty) {
-                    setWarningMessage(false);
-    
-                    // Reset all filters
-                    const resetData = { ...floatingFilterData };
-                    for (var prop in resetData) {
-                        resetData[prop] = "";
-                    }
-                    setFloatingFilterData(resetData);
-                }
-            } else {
-                setFloatingFilterData({ ...floatingFilterData, [value.column.colId]: value.filterInstance.appliedModel?.filter || "" });
+            if (allFiltersEmpty) {
+                // If all filters are empty, reset the warning message
+                setWarningMessage(false);
             }
-    
         } else {
-            setFloatingFilterData({ ...floatingFilterData, [value.column.colId]: value.filterInstance.appliedModel.filter });
+            // If a filter is applied
+            updatedFloatingFilterData[value.column.colId] = value.filterInstance.appliedModel.filter;
         }
+    
+        // Update the state with the new filter data
+        setFloatingFilterData(updatedFloatingFilterData);
     };
     
     

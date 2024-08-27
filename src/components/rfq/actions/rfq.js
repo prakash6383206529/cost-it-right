@@ -36,8 +36,7 @@ import Toaster from '../../common/Toaster';
 
 export function getQuotationList(queryParams, callback) {
     return (dispatch) => {
-        const queryString = new URLSearchParams(queryParams).toString();
-        const request = axios.get(`${API.getQuotationList}?${queryString}`, config());
+        const request = axios.get(`${API.getQuotationList}?${queryParams}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
                 dispatch({
