@@ -40,6 +40,7 @@ class DownloadUploadBOMxls extends React.Component {
   * @description Used to get excel column names
   */
   returnExcelColumn = (data = [], TempData) => {
+
     const { fileName, failedData, isFailedFlag } = this.props;
     let dataList = [...data]
     if (isFailedFlag) {
