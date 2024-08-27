@@ -137,12 +137,12 @@ function AddAuction(props) {
     data.LoggedInUserId = loggedInUserId()
     data.AuctionRaisedOnTimeZone = getTimeZone();
     data.VendorId = state.VendorIdList
-    data.AuctionDuration = value.AuctionDuration.label
+    data.AuctionDuration = value?.AuctionDuration?.label ?? "00:00"
     data.ExtensionTime = value.ExtensionTime.label
     data.AuctionStartDateTime = dateAndTimeState.dateAndTime
     data.MinimumReductionApplicabilityType = state.reductionPrice ? 'Fixed' : 'Percentage'
     data.PriceZoneApplicabilityType = state.priceZoneReduction ? 'Fixed' : 'Percentage'
-    data.AuctionEndDateTime = calculateEndDateTime(dateAndTimeState.dateAndTime, String(value.AuctionDuration.label))
+    data.AuctionEndDateTime = calculateEndDateTime(dateAndTimeState.dateAndTime, String(value?.AuctionDuration?.label ?? "00:00"))
     data.AuctionStartDateTimeUTC = ''
     data.AuctionEndDateTimeUTC = ''
 
