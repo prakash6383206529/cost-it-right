@@ -267,7 +267,7 @@ function AddRfq(props) {
             dispatch(setQuotationIdForRfq(""))
             dispatch(setTargetPriceDetail({}))
             setTimeout(() => {
-                const obj = createQuotationObject(null);
+                const obj = createQuotationObject(null, null, null);
 
                 dispatch(createRfqQuotation(obj, (res) => {
 
@@ -756,12 +756,12 @@ function AddRfq(props) {
                 setAssemblyPartNumber({ label: rowData?.PartNumber, value: rowData?.PartId })
             }, 200);
         } else if (selectedOption === "Raw Material") {
-            setValue('UOM', { label: rowData?.UOM, value: rowData?.UnitOfMeasurementId })
+            setValue('UOM', { label: rowData?.UOMSymbol, value: rowData?.UnitOfMeasurementId })
             setRequirementDate(rowData?.TimeLine || '')
             setEditRawMaterialId(rowData?.RawMaterialChildId
             )
         } else if (selectedOption === "Bought Out Part") {
-            setValue('UOM', { label: rowData?.UOM, value: rowData?.UnitOfMeasurementId })
+            setValue('UOM', { label: rowData?.UOMSymbol, value: rowData?.UnitOfMeasurementId })
             setRequirementDate(rowData?.TimeLine || '')
             setEditBopId(rowData?.BoughtOutPartChildId)
         } else {
@@ -864,9 +864,9 @@ function AddRfq(props) {
         setValue('LDClause', props?.node?.data?.LDClause)
 
     }
-    function createQuotationObject(isSent, quotationId, IsPartDetailsSent) {
+    function createQuotationObject(isSent, IsPartDetailsSent, quotationId) {
         return {
-            QuotationId: getQuotationIdForRFQ ? getQuotationIdForRFQ : null,
+            QuotationId: quotationId !== undefined ? quotationId : (getQuotationIdForRFQ ? getQuotationIdForRFQ : null),
             QuotationNumber: apiData.QuotationNumber ? apiData.QuotationNumber : null,
             Remark: getValues('remark') || null,
             TechnologyId: getValues('technology')?.value || null,
@@ -1105,7 +1105,8 @@ function AddRfq(props) {
             IsPartDetailsSent = isPartDetailsSent;
             isSent = isPartDetailsSent;
         } else {
-            IsPartDetailsSent = isPartDetailsSent ? hasParts || hasRm || hasBop || hasTooling : ((hasParts || hasRm || hasBop || hasTooling) && hasVendors);
+            IsPartDetailsSent = isPartDetailsSent ? (hasParts || hasRm || hasBop || hasTooling) : ((hasParts || hasRm || hasBop || hasTooling));
+
             isSent = (hasParts || hasRm || hasBop || hasTooling) && hasVendors && isPartDetailsSent;
         }
         // const IsPartDetailsSent = isShowRfqPartDetail ? ((isPartDetailSent && partList && partList.length > 0) ? true : (partList && partList.length > 0 && vendorList && vendorList.length > 0) ? true : false) : false
@@ -1117,7 +1118,7 @@ function AddRfq(props) {
 
 
 
-        const obj = createQuotationObject(isSent, quotationIdentity, IsPartDetailsSent);
+        const obj = createQuotationObject(isSent, IsPartDetailsSent);
 
         // let obj = {}
         // obj.QuotationId = apiData.QuotationId ? apiData.QuotationId : ""
@@ -1210,7 +1211,9 @@ function AddRfq(props) {
             ? (rowData?.PartNumber !== undefined)
             : (selectedOption === "Bought Out Part" ? rowData?.BoughtOutPartChildId !== undefined : rowData?.RawMaterialChildId !== undefined)
 
+
         const row = props?.data;
+
         const isSendButtonVisible = dataProps?.isViewFlag || (dataProps?.isAddFlag ? false : (dataProps?.isEditFlag && showSendButton === PREDRAFT ? false : true))
         return (
             <>
@@ -1757,15 +1760,24 @@ function AddRfq(props) {
 
                     if (selectedOption === "Raw Material") {
                         arr = rmDataList.map(item => {
+                            if (item?.RawMaterialChildId === editRawMaterialId) {
+                                QuotationPartId = item?.QuotationPartId
+                            }
                             return item?.RawMaterialChildId === editRawMaterialId ? { ...item, ...arrTemp[0] } : item;
                         });
                     } else if (selectedOption === "componentAssembly") {
                         arr = partList.map(item => {
                             // Check PartId for componentAssembly
+                            if (item?.PartId === getValues('partNumber')?.value) {
+                                QuotationPartId = item?.QuotationPartId
+                            }
                             return item?.PartId === getValues('partNumber')?.value ? { ...item, ...arrTemp[0] } : item;
                         });
                     } else if (selectedOption === "Bought Out Part") {
                         arr = bopDataList.map(item => {
+                            if (item?.BoughtOutPartChildId === editBopId) {
+                                QuotationPartId = item?.QuotationPartId
+                            }
                             return item?.BoughtOutPartChildId === editBopId ? { ...item, ...arrTemp[0] } : item;
                         });
                     } else {
@@ -1808,7 +1820,7 @@ function AddRfq(props) {
 
 
                 obj.QuotationId = getQuotationIdForRFQ ? getQuotationIdForRFQ : ""
-                obj.TechnologyId = getValues('technology').value
+                obj.TechnologyId = getValues('technology').value || null
                 obj.PlantId = getValues('plant')?.value
                 obj.LoggedInUserId = loggedInUserId()
                 let partIdList = _.uniq(_.map(list, 'PartId'))
@@ -1843,7 +1855,7 @@ function AddRfq(props) {
                     temppartObj.RMDetails = rmList
                     temppartObj.SOPQuantityDetails = sopQuantityList
                     temppartObj.IsChildPart = false
-                    temppartObj.QuotationPartId = updateButtonPartNoTable ? arr[0]?.QuotationPartId : ""
+                    temppartObj.QuotationPartId = updateButtonPartNoTable ? QuotationPartId : ""
                     temppartObj.PartType = partType?.label || ''
                     temppartObj.TargetPrice = getTargetprice?.TargetPrice || "-"
                     temppartObj.TimeLine = requirementDate || "";
@@ -1982,7 +1994,7 @@ function AddRfq(props) {
                                         HavellsDesignPart: getValues('HavellsDesignPart')?.label || '',
                                         UnitOfMeasurementId: getValues('UOM')?.value || '',
                                         ExistingVendor: vendorList.join(',') || '',
-                                        QuotationPartId: updateButtonPartNoTable ? arr[0]?.QuotationPartId : "",
+                                        QuotationPartId: updateButtonPartNoTable ? QuotationPartId : "",
                                     };
                                     tempRmArr.push(tempRmObj);
                                 }
@@ -2012,7 +2024,7 @@ function AddRfq(props) {
                                         HavellsDesignPart: getValues('HavellsDesignPart')?.label || '',
                                         UnitOfMeasurementId: getValues('UOM')?.value || '',
                                         ExistingVendor: vendorList.join(',') || '',
-                                        QuotationPartId: updateButtonPartNoTable ? arr[0]?.QuotationPartId : "",
+                                        QuotationPartId: updateButtonPartNoTable ? QuotationPartId : "",
                                     };
                                     let PartSpecificationList = {};
                                     let PartSpecification = [];
@@ -2376,7 +2388,8 @@ function AddRfq(props) {
                 quotationId: quotationIdentity,
                 prNumbersId: newValue.value,
                 loggedInUserId: loggedInUserId(),
-                IsToolRequest: selectedOption === "Tooling" ? true : false
+                IsToolRequest: selectedOption === "Tooling" ? true : false,
+                PartIdList: []
             }
             dispatch(createQuotationPrParts(obj, (res) => {
 
@@ -3389,9 +3402,9 @@ function AddRfq(props) {
                                                                     <AgGridColumn width={"230px"} field="TimeLine" headerName={selectedOption === TOOLING ? "T0 Timeline" : "N-100 Timeline"} cellRenderer={'effectiveDateFormatter'} ></AgGridColumn>
                                                                     {(selectedOption === 'componentAssembly' || selectedOption === 'Raw Material' || selectedOption === "Bought Out Part") && <AgGridColumn width={"230px"} field="VendorListExisting" headerName="Existing Vendor" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
 
-                                                                    {(selectedOption === "componentAssembly" || selectedOption === 'Tooling') && (<AgGridColumn width={"190px"} field="PartId" cellClass="ag-grid-action-container text-right" headerName="Action" floatingFilter={false} type="rightAligned" cellRenderer={'buttonFormatterFirst'} />)}
-                                                                    {selectedOption === "Raw Material" && (<AgGridColumn width={"190px"} field="RawMaterialChildId" cellClass="ag-grid-action-container text-right" headerName="Action" floatingFilter={false} type="rightAligned" cellRenderer={'buttonFormatterFirst'} />)}
-                                                                    {selectedOption === "Bought Out Part" && (<AgGridColumn width={"190px"} field="BoughtOutPartChildId" cellClass="ag-grid-action-container text-right" headerName="Action" floatingFilter={false} type="rightAligned" cellRenderer={'buttonFormatterFirst'} />)}
+                                                                    {(selectedOption === "componentAssembly" || selectedOption === 'Tooling') && (<AgGridColumn width={"230px"} field="PartId" cellClass="ag-grid-action-container text-right" headerName="Action" floatingFilter={false} type="rightAligned" cellRenderer={'buttonFormatterFirst'} />)}
+                                                                    {selectedOption === "Raw Material" && (<AgGridColumn width={"230px"} field="RawMaterialChildId" cellClass="ag-grid-action-container text-right" headerName="Action" floatingFilter={false} type="rightAligned" cellRenderer={'buttonFormatterFirst'} />)}
+                                                                    {selectedOption === "Bought Out Part" && (<AgGridColumn width={"230px"} field="BoughtOutPartChildId" cellClass="ag-grid-action-container text-right" headerName="Action" floatingFilter={false} type="rightAligned" cellRenderer={'buttonFormatterFirst'} />)}
 
                                                                 </AgGridReact>
                                                             }

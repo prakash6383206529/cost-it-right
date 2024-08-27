@@ -31,7 +31,7 @@ import CustomCellRenderer from './CommonDropdown';
 import { useHistory, useLocation } from "react-router-dom/cjs/react-router-dom";
 import { PaginationWrappers } from '../common/Pagination/PaginationWrappers';
 import PaginationControls from '../common/Pagination/PaginationControls';
-import {resetStatePagination, updateCurrentRowIndex, updateGlobalTake, updatePageNumber, updatePageSize  } from '../common/Pagination/paginationAction';
+import { resetStatePagination, updateCurrentRowIndex, updateGlobalTake, updatePageNumber, updatePageSize } from '../common/Pagination/paginationAction';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { setSelectedRowForPagination } from '../simulation/actions/Simulation';
 import WarningMessage from '../common/WarningMessage';
@@ -74,30 +74,30 @@ function RfqListing(props) {
     const [warningMessage, setWarningMessage] = useState(false)
     const [disableDownload, setDisableDownload] = useState(false)
 
-const [disableFilter , setDisableFilter] = useState(false)
-const [floatingFilterData, setFloatingFilterData] = useState({
-    QuotationNumber: "",
-    PartType: "",
-    PartNumber: "",
-    RawMaterial: "",
-    PRNumber: "",
-    NoOfQuotationReceived: "",
-    vendorCode: "",
-    plantCode: "",
-    TechnologyName: "",
-    RaisedBy: "",
-    RaisedOn: "",
-    PartDataSentDate: "",
-    VisibilityMode: "",
-    VisibilityDate: "",
-    VisibilityDuration: "",
-    LastSubmissionDate: "",
-    Remark: "",
-    Status: "",
-    boughtOutPart: ""
-  });
-      
-      const [filterModel, setFilterModel] = useState({});
+    const [disableFilter, setDisableFilter] = useState(false)
+    const [floatingFilterData, setFloatingFilterData] = useState({
+        QuotationNumber: "",
+        PartType: "",
+        PartNumber: "",
+        RawMaterial: "",
+        PRNumber: "",
+        NoOfQuotationReceived: "",
+        vendorCode: "",
+        plantCode: "",
+        TechnologyName: "",
+        RaisedBy: "",
+        RaisedOn: "",
+        PartDataSentDate: "",
+        VisibilityMode: "",
+        VisibilityDate: "",
+        VisibilityDuration: "",
+        LastSubmissionDate: "",
+        Remark: "",
+        Status: "",
+        boughtOutPart: ""
+    });
+
+    const [filterModel, setFilterModel] = useState({});
     const { technologyLabel } = useLabels();
 
     const { topAndLeftMenuData } = useSelector(state => state.auth);
@@ -105,27 +105,27 @@ const [floatingFilterData, setFloatingFilterData] = useState({
     const statusColumnData = useSelector((state) => state.comman.statusColumnData);
     const history = useHistory();
     const location = useLocation();
-   
+
     useEffect(() => {
         return () => {
-          dispatch(setSelectedRowForPagination([]))
-          dispatch(resetStatePagination());
+            dispatch(setSelectedRowForPagination([]))
+            dispatch(resetStatePagination());
         }
-      }, [])
+    }, [])
 
     useEffect(() => {
         if (rowData?.length > 0) {
-          setTotalRecordCount(rowData[0].TotalRecordCount)
-        } 
-      }, [rowData])
+            setTotalRecordCount(rowData[0].TotalRecordCount)
+        }
+    }, [rowData])
     useEffect(() => {
         dispatch(agGridStatus("", ""))
         // setloader(true)
         getDataList()
         applyPermission(topAndLeftMenuData)
     }, [topAndLeftMenuData])
- 
-        useEffect(() => {
+
+    useEffect(() => {
 
         if (statusColumnData && statusColumnData.data) {
             setDisableFilter(false)
@@ -180,84 +180,82 @@ const [floatingFilterData, setFloatingFilterData] = useState({
             }
         }
     }
-  
+
     const getDataList = useCallback((skip = 0, take = 10, isPagination = true) => {
         const Timezone = getTimeZone()
         if (isPagination === true) {
-          setloader(true)
+            setloader(true)
         }
-        
+
         const queryParams = {
-          DepartmentCode: userDetails()?.DepartmentCode,
-          Timezone: Timezone,
-          LoggedInUserId: loggedInUserId(),
-          skip: skip,
-          take: take,
-          isApplyPagination: isPagination,
-          ...floatingFilterData
+            DepartmentCode: userDetails()?.DepartmentCode,
+            Timezone: Timezone,
+            LoggedInUserId: loggedInUserId(),
+            skip: skip,
+            take: take,
+            isApplyPagination: isPagination,
+            ...floatingFilterData
         };
-    
+
         // Convert dates to the required format if needed
-       
-          const encodedQueryParams = encodeQueryParamsAndLog(queryParams);
+
+        const encodedQueryParams = encodeQueryParamsAndLog(queryParams);
 
         dispatch(getQuotationList(encodedQueryParams, (res) => {
-          if (res && res.status === 200) {
-            let temp = res?.data?.DataList?.map(item => ({
-              ...item,
-              Status: item?.IsActive === false ? "Cancelled" : item.Status,
-              tooltipText: getTooltipText(item?.Status)
-            })) || []
-            
-            setRowData(temp)
-            setloader(false)
-    
-            if (res && res.status === 204) {
-              setTotalRecordCount(0)
-              dispatch(updatePageNumber(0))
+            if (res && res.status === 200) {
+                let temp = res?.data?.DataList?.map(item => ({
+                    ...item,
+                    Status: item?.IsActive === false ? "Cancelled" : item.Status,
+                    tooltipText: getTooltipText(item?.Status)
+                })) || []
+
+                setRowData(temp)
+                setloader(false)
+
+                if (res && res.status === 204) {
+                    setTotalRecordCount(0)
+                    dispatch(updatePageNumber(0))
+                }
+
+                if (res) {
+                    let isReset = !Object.values(floatingFilterData).some(value => value !== "")
+                    setTimeout(() => {
+                        isReset ? gridOptions?.api?.setFilterModel({}) : gridOptions?.api?.setFilterModel(filterModel)
+                    }, 300);
+                    setWarningMessage(false)
+                    setIsFilterButtonClicked(false)
+                }
+            } else {
+                setloader(false);
             }
-    
-            if (res) {
-              let isReset = !Object.values(floatingFilterData).some(value => value !== "")
-              setTimeout(() => {
-                isReset ? gridOptions?.api?.setFilterModel({}) : gridOptions?.api?.setFilterModel(filterModel)
-                
-  
-            }, 300);
-              setWarningMessage(false)
-              setIsFilterButtonClicked(false)
-            }
-          } else {
-            setloader(false);
-          }
         }))
-      }, [floatingFilterData, globalTakes, filterModel])
-    
-      const getTooltipText = useMemo(() => (status) => {
+    }, [floatingFilterData, globalTakes, filterModel])
+
+    const getTooltipText = useMemo(() => (status) => {
         switch (status) {
-          case APPROVED: return 'Total no. of parts for which costing has been approved from that quotation / Total no. of parts exist in that quotation'
-          case RECEIVED: return 'Total no. of costing received / Total no. of expected costing in that quotation'
-          case UNDER_REVISION: return 'Total no. of costing under revision / Total no. of expected costing in that quotation'
-          case DRAFT: return 'The token is pending to send for approval from your side.'
-          case CANCELLED: return 'Quotation has been cancelled.'
-          case SENT: return 'Costing under the quotation has been sent.'
-          case REJECTED: return 'Quotation has been rejected.'
-          case RETURNED: return 'Quotation has been returned.'
-          case PREDRAFT: return 'Quotation pre-drafted, parts details saved.'
-          default: return ''
+            case APPROVED: return 'Total no. of parts for which costing has been approved from that quotation / Total no. of parts exist in that quotation'
+            case RECEIVED: return 'Total no. of costing received / Total no. of expected costing in that quotation'
+            case UNDER_REVISION: return 'Total no. of costing under revision / Total no. of expected costing in that quotation'
+            case DRAFT: return 'The token is pending to send for approval from your side.'
+            case CANCELLED: return 'Quotation has been cancelled.'
+            case SENT: return 'Costing under the quotation has been sent.'
+            case REJECTED: return 'Quotation has been rejected.'
+            case RETURNED: return 'Quotation has been returned.'
+            case PREDRAFT: return 'Quotation pre-drafted, parts details saved.'
+            default: return ''
         }
-      }, [])
-    
-      const onFloatingFilterChanged = useCallback((value) => {
+    }, [])
+
+    const onFloatingFilterChanged = useCallback((value) => {
         setTimeout(() => {
-          if (rowData.length !== 0) {
-            setNoData(searchNocontentFilter(value, noData))
-          }
+            if (rowData.length !== 0) {
+                setNoData(searchNocontentFilter(value, noData))
+            }
         }, 500);
         setDisableFilter(false)
 
         const model = gridOptions?.api?.getFilterModel();
-        
+
         setFilterModel(model);
         if (!isFilterButtonClicked) {
             setWarningMessage(true)
@@ -269,64 +267,64 @@ const [floatingFilterData, setFloatingFilterData] = useState({
         //     }));
         //   }
         if (value?.filterInstance?.appliedModel === null || value?.filterInstance?.appliedModel?.filter === "") {
-          let isFilterEmpty = true;
-          if (model !== undefined && model !== null) {
-            if (Object.keys(model).length > 0) {
-              isFilterEmpty = false;
-      
-              setFloatingFilterData(prevState => ({
-                ...prevState,
-                [value.column.colId]: ""
-              }));
+            let isFilterEmpty = true;
+            if (model !== undefined && model !== null) {
+                if (Object.keys(model).length > 0) {
+                    isFilterEmpty = false;
+
+                    setFloatingFilterData(prevState => ({
+                        ...prevState,
+                        [value.column.colId]: ""
+                    }));
+                }
+
+                if (isFilterEmpty) {
+                    setFloatingFilterData({
+                        QuotationNumber: "",
+                        PartType: "",
+                        PartNumber: "",
+                        RawMaterial: "",
+                        PRNumber: "",
+                        NoOfQuotationReceived: "",
+                        VendorName: "",
+                        PlantName: "",
+                        TechnologyName: "",
+                        RaisedBy: "",
+                        RaisedOn: "",
+                        PartDataSentDate: "",
+                        VisibilityMode: "",
+                        VisibilityDate: "",
+                        VisibilityDuration: "",
+                        LastSubmissionDate: "",
+                        Remark: "",
+                        Status: ""
+                    });
+                }
             }
-      
-            if (isFilterEmpty) {
-              setFloatingFilterData({
-                QuotationNumber: "",
-                PartType: "",
-                PartNumber: "",
-                RawMaterial: "",
-                PRNumber: "",
-                NoOfQuotationReceived: "",
-                VendorName: "",
-                PlantName: "",
-                TechnologyName: "",
-                RaisedBy: "",
-                RaisedOn: "",
-                PartDataSentDate: "",
-                VisibilityMode: "",
-                VisibilityDate: "",
-                VisibilityDuration: "",
-                LastSubmissionDate: "",
-                Remark: "",
-                Status: ""
-              });
-            }
-          }
         } else {
             if (value.column.colId === "RaisedOn" || value.column.colId === "PartDataSentDate" || value.column.colId === "LastSubmissionDate" || value.column.colId === "VisibilityDate") {
                 // Handle date filters
                 const dateFilter = value.filterInstance.appliedModel;
                 let formattedDate = null;
                 if (dateFilter.type === 'equals') {
-                  formattedDate = DayTime(dateFilter.dateFrom).format('DD/MM/YYYY');
+                    formattedDate = DayTime(dateFilter.dateFrom).format('DD/MM/YYYY');
                 } else if (dateFilter.type === 'inRange') {
-                  formattedDate = `${DayTime(dateFilter.dateFrom).format('DD/MM/YYYY')},${DayTime(dateFilter.dateTo).format('DD/MM/YYYY')}`;
+                    formattedDate = `${DayTime(dateFilter.dateFrom).format('DD/MM/YYYY')},${DayTime(dateFilter.dateTo).format('DD/MM/YYYY')}`;
                 }
                 setFloatingFilterData(prevState => ({
-                  ...prevState,
-                  [value.column.colId]: formattedDate
+                    ...prevState,
+                    [value.column.colId]: formattedDate
                 }));
-              } else {
+            } else {
                 setFloatingFilterData(prevState => ({
-                  ...prevState,
-                  [value.column.colId]: value.filterInstance.appliedModel.filter
+                    ...prevState,
+                    [value.column.colId]: value.filterInstance.appliedModel.filter
                 }));
-              }
             }
-        }, [rowData, noData, filterModel]);
-    
-      const resetState = () => {
+        }
+    }, [rowData, noData, filterModel]);
+
+    const resetState = () => {
         setNoData(false)
         dispatch(agGridStatus("", ""))
 
@@ -351,7 +349,7 @@ const [floatingFilterData, setFloatingFilterData] = useState({
         dispatch(updatePageNumber(1))
         // setPageNoNew(1)
         dispatch(updateCurrentRowIndex(10))
-getDataList(0, globalTakes, true)
+        getDataList(0, globalTakes, true)
         dispatch(setSelectedRowForPagination([]))
         dispatch(updateGlobalTake(10))
         dispatch(updatePageSize({ pageSize10: true, pageSize50: false, pageSize100: false }))
@@ -361,8 +359,8 @@ getDataList(0, globalTakes, true)
         //     props.isReset()
         // }
     }
-    
-      const onSearch = useCallback(() => {
+
+    const onSearch = useCallback(() => {
         setNoData(false)
         setWarningMessage(false)
         setIsFilterButtonClicked(true)
@@ -370,32 +368,32 @@ getDataList(0, globalTakes, true)
         dispatch(updateCurrentRowIndex(10))
         gridOptions?.columnApi?.resetColumnState();
         getDataList(0, globalTakes, true)
-      }, [globalTakes, getDataList])
+    }, [globalTakes, getDataList])
     /**
     * @method hideForm
     * @description HIDE DOMESTIC, IMPORT FORMS
     */
- 
+
     const handleFilterChange = () => {
         if (agGridRef.current) {
-          setTimeout(() => {
-            if (!agGridRef.current.rowRenderer.allRowCons.length) {
-              setNoData(true)
-              dispatch(getGridHeight({ value: 3, component: 'RFQ' }))
-            } else {
-              setNoData(false)
-            }
-          }, 100);
-    
+            setTimeout(() => {
+                if (!agGridRef.current.rowRenderer.allRowCons.length) {
+                    setNoData(true)
+                    dispatch(getGridHeight({ value: 3, component: 'RFQ' }))
+                } else {
+                    setNoData(false)
+                }
+            }, 100);
+
         }
-      };
-     
-      const floatingFilterRFQ = {
+    };
+
+    const floatingFilterRFQ = {
         maxValue: 11,
         suppressFilterButton: true,
         component: "RFQ",
         onFilterChange: handleFilterChange,
-      }
+    }
     //**  HANDLE TOGGLE EXTRA DATA */
     const toggleExtraData = (showTour) => {
         setRender(true)
@@ -406,7 +404,7 @@ getDataList(0, globalTakes, true)
 
 
     }
-  
+
 
     /**
     * @method editItemDetails
@@ -681,7 +679,7 @@ getDataList(0, globalTakes, true)
                             <Row className={`filter-row-large pt-2 ${props?.isSimulation ? 'zindex-0 ' : ''}`}>
 
                                 <Col md="3" lg="3" className='mb-2'>
-                                
+
                                     <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
                                     <TourWrapper
                                         buttonSpecificProp={{ id: "Rfq_listing_Tour", onClick: toggleExtraData }}
@@ -696,23 +694,23 @@ getDataList(0, globalTakes, true)
                                         <>
                                             <div className="d-flex justify-content-end bd-highlight w100">
                                                 <>
-                                                {(props?.isMasterSummaryDrawer === undefined || this.props?.isMasterSummaryDrawer === false) &&
-                                                    <div className="warning-message d-flex align-items-center">
-                                                        {warningMessage && !disableDownload && ( <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>)}
-                                                    </div>
-                                                }
-                                                {
+                                                    {(props?.isMasterSummaryDrawer === undefined || this.props?.isMasterSummaryDrawer === false) &&
+                                                        <div className="warning-message d-flex align-items-center">
+                                                            {warningMessage && !disableDownload && (<><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>)}
+                                                        </div>
+                                                    }
+                                                    {
 
-                                                    <Button
-                                                        id="rfqlisting_filter"
-                                                        className={"mr5 Tour_List_Filter"}
-                                                        onClick={() => onSearch()}
-                                                        title={"Filtered data"}
-                                                        icon={"filter"}
-                                                        disabled={disableFilter}
-                                                    />
-                                                    
-                                                }
+                                                        <Button
+                                                            id="rfqlisting_filter"
+                                                            className={"mr5 Tour_List_Filter"}
+                                                            onClick={() => onSearch()}
+                                                            title={"Filtered data"}
+                                                            icon={"filter"}
+                                                            disabled={disableFilter}
+                                                        />
+
+                                                    }
 
                                                     {(addAccessibility || permissionData?.permissionDataVendor?.Add) && (<button
                                                         type="button"
@@ -740,65 +738,67 @@ getDataList(0, globalTakes, true)
                                     <div className={`ag-grid-wrapper ${(props?.isDataInMaster && noData) ? 'master-approval-overlay' : ''} ${(rowData && rowData?.length <= 0) || noData ? 'overlay-contain' : ''}`}>
                                         <div className={`ag-theme-material ${(loader) && "max-loader-height"}`}>
                                             {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
-                                          
-      {render ? <LoaderCustom customClass="loader-center" /> :
 
-                                            <AgGridReact
-                                                style={{ height: '100%', width: '100%' }}
-                                                defaultColDef={defaultColDef}
-                                                floatingFilter={true}
-                                                ref={agGridRef}
-                                                domLayout='autoHeight'
-                                                rowData={showExtraData ? [...setLoremIpsum(rowData[0]), ...rowData] : rowData}
-                                                // pagination={true}
-                                                paginationPageSize={globalTakes}
-                                                onGridReady={onGridReady}
-                                                gridOptions={gridOptions}
-                                                noRowsOverlayComponent={'customNoRowsOverlay'}
-                                                noRowsOverlayComponentParams={{
-                                                    title: EMPTY_DATA,
-                                                    imagClass: 'imagClass'
-                                                }}
-                                                frameworkComponents={frameworkComponents}
-                                                rowSelection={'multiple'}
-                                                suppressRowClickSelection={true}
-                                                onFilterModified={onFloatingFilterChanged}
-                                                enableBrowserTooltips={true}
-                                            >
-                                                <AgGridColumn cellClass="has-checkbox" field="QuotationNumber" headerName='RFQ No.' cellRenderer={'linkableFormatter'} ></AgGridColumn>
-                                                {/* <AgGridColumn field="NfrId" headerName='NFR Id' width={150}></AgGridColumn> */}
-                                                <AgGridColumn field="PartType" headerName="Part Type" width={150} cellRenderer={"hyphenFormatter"}></AgGridColumn>
-                                                <AgGridColumn field="PartNumber" tooltipField="PartNumber" headerName="Part No." width={150} cellRendererFramework={CustomCellRenderer} />
-                                                <AgGridColumn field="RawMaterial" tooltipField="PartNumber" headerName="Raw Material Name-Grade-Specification" width={230} cellRenderer={"hyphenFormatter"}></AgGridColumn>
-                                                <AgGridColumn field="PRNumber" headerName="PR No." width={150} cellRenderer={"hyphenFormatter"}></AgGridColumn>
+                                            {render ? <LoaderCustom customClass="loader-center" /> :
 
-                                                <AgGridColumn field="NoOfQuotationReceived" headerName='Quotation Received (No.)' maxWidth={150} cellRenderer={'quotationReceiveFormatter'}></AgGridColumn>
-                                                <AgGridColumn field="VendorName" tooltipField="VendorName" headerName='Vendor (Code)' cellRendererFramework={CustomCellRenderer}></AgGridColumn>
-                                                <AgGridColumn field="PlantName" tooltipField="PlantName" headerName='Plant (Code)'></AgGridColumn>
-                                                <AgGridColumn field="TechnologyName" width={"160px"} headerName={technologyLabel}></AgGridColumn>
-                                                <AgGridColumn field="RaisedBy" width={"160px"} headerName='Initiated By'></AgGridColumn>
-                                                <AgGridColumn field="RaisedOn" width={"145px"} headerName='Raised On' cellRenderer='dateFormatter' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-                                                <AgGridColumn field="PartDataSentDate" width={"145px"} headerName='RFI Date' cellRenderer='dateFormatter' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
+                                                <AgGridReact
+                                                    style={{ height: '100%', width: '100%' }}
+                                                    defaultColDef={defaultColDef}
+                                                    floatingFilter={true}
+                                                    ref={agGridRef}
+                                                    domLayout='autoHeight'
+                                                    rowData={showExtraData ? [...setLoremIpsum(rowData[0]), ...rowData] : rowData}
+                                                    // pagination={true}
+                                                    paginationPageSize={globalTakes}
+                                                    onGridReady={onGridReady}
+                                                    gridOptions={gridOptions}
+                                                    noRowsOverlayComponent={'customNoRowsOverlay'}
+                                                    noRowsOverlayComponentParams={{
+                                                        title: EMPTY_DATA,
+                                                        imagClass: 'imagClass'
+                                                    }}
+                                                    frameworkComponents={frameworkComponents}
+                                                    rowSelection={'multiple'}
+                                                    suppressRowClickSelection={true}
+                                                    onFilterModified={onFloatingFilterChanged}
+                                                    enableBrowserTooltips={true}
+                                                >
+                                                    <AgGridColumn cellClass="has-checkbox" field="QuotationNumber" headerName='RFQ No.' cellRenderer={'linkableFormatter'} ></AgGridColumn>
+                                                    {/* <AgGridColumn field="NfrId" headerName='NFR Id' width={150}></AgGridColumn> */}
+                                                    <AgGridColumn field="PartType" headerName="Part Type" width={150} cellRenderer={"hyphenFormatter"}></AgGridColumn>
+                                                    <AgGridColumn field="PartNumber" tooltipField="PartNumber" headerName="Part No." width={150} cellRendererFramework={CustomCellRenderer} />
+                                                    <AgGridColumn field="RawMaterial" tooltipField="PartNumber" headerName="Raw Material Name-Grade-Specification" width={230} cellRendererFramework={CustomCellRenderer}></AgGridColumn>
+                                                    <AgGridColumn field="BoughtOutPart" headerName="Bought Out Part Name" width={200} cellRendererFramework={CustomCellRenderer}></AgGridColumn>
+                                                    <AgGridColumn field="PRNumber" headerName="PR No." width={150} cellRenderer={"hyphenFormatter"}></AgGridColumn>
 
-                                                <AgGridColumn field="VisibilityMode" width={"200px"} headerName='Visibility Mode' cellRenderer='dashFormatter'></AgGridColumn>
-                                                <AgGridColumn field="VisibilityDate" width={"160px"} headerName='Visibility Date' cellRenderer='dateTimeFormatter'filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-                                                <AgGridColumn field="VisibilityDuration" width={"150px"} headerName='Visibility Duration' cellRenderer='dashFormatter'></AgGridColumn>
-                                                {/* <AgGridColumn field="TimeZone" width={"150px"} headerName='Time Zone' cellRenderer='timeZoneFormatter'></AgGridColumn> */}
-                                                <AgGridColumn field="LastSubmissionDate" width={"160px"} headerName='Quote Submission Date' cellRenderer='dateFormatter' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-                                                {/* <AgGridColumn field="QuotationNumber" headerName='Attachments' cellRenderer='attachmentFormatter'></AgGridColumn> */}
-                                                <AgGridColumn field="Remark" tooltipField="Remark" headerName='Notes' cellRenderer={"hyphenFormatter"}></AgGridColumn>
-                                                <AgGridColumn field="Status" tooltipField="tooltipText" headerName="Status" headerClass="justify-content-center" cellClass="text-center" cellRenderer="statusFormatter" floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterRFQ}></AgGridColumn>
-                                                                                               {<AgGridColumn field="QuotationId" width={180} cellClass="ag-grid-action-container rfq-listing-action" pinned="right" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                                    <AgGridColumn field="NoOfQuotationReceived" headerName='Quotation Received (No.)' maxWidth={150} cellRenderer={'quotationReceiveFormatter'}></AgGridColumn>
+                                                    <AgGridColumn field="VendorName" tooltipField="VendorName" headerName='Vendor (Code)' cellRendererFramework={CustomCellRenderer}></AgGridColumn>
+                                                    <AgGridColumn field="PlantName" tooltipField="PlantName" headerName='Plant (Code)'></AgGridColumn>
+                                                    <AgGridColumn field="TechnologyName" width={"160px"} headerName={technologyLabel}></AgGridColumn>
+                                                    <AgGridColumn field="RaisedBy" width={"160px"} headerName='Initiated By'></AgGridColumn>
+                                                    <AgGridColumn field="RaisedOn" width={"145px"} headerName='Raised On' cellRenderer='dateFormatter' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
+                                                    <AgGridColumn field="PartDataSentDate" width={"145px"} headerName='RFI Date' cellRenderer='dateFormatter' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
 
-                                            </AgGridReact>}
+                                                    <AgGridColumn field="VisibilityMode" width={"200px"} headerName='Visibility Mode' cellRenderer='dashFormatter'></AgGridColumn>
+                                                    <AgGridColumn field="VisibilityDate" width={"160px"} headerName='Visibility Date' cellRenderer='dateTimeFormatter' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
+                                                    <AgGridColumn field="VisibilityDuration" width={"150px"} headerName='Visibility Duration' cellRenderer='dashFormatter'></AgGridColumn>
+                                                    {/* <AgGridColumn field="TimeZone" width={"150px"} headerName='Time Zone' cellRenderer='timeZoneFormatter'></AgGridColumn> */}
+                                                    <AgGridColumn field="LastSubmissionDate" width={"160px"} headerName='Quote Submission Date' cellRenderer='dateFormatter' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
+                                                    <AgGridColumn field="QuotationNumber" headerName='Attachments' cellRenderer='attachmentFormatter'></AgGridColumn>
+                                                    <AgGridColumn field="Remark" tooltipField="Remark" headerName='Notes' cellRenderer={"hyphenFormatter"}></AgGridColumn>
+                                                    <AgGridColumn field="Status" tooltipField="tooltipText" headerName="Status" headerClass="justify-content-center" cellClass="text-center" cellRenderer="statusFormatter" floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterRFQ}></AgGridColumn>
+                                                    {<AgGridColumn field="QuotationId" width={180} cellClass="ag-grid-action-container rfq-listing-action" pinned="right" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+
+                                                </AgGridReact>}
+
                                             <div className='button-wrapper'>
-                                        {<PaginationWrappers gridApi={gridApi} totalRecordCount={totalRecordCount} getDataList={getDataList} floatingFilterData={floatingFilterData} module="RFQ" />}
-                                        {/* {(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) && */}
-                                            <PaginationControls totalRecordCount={totalRecordCount} getDataList={getDataList} floatingFilterData={floatingFilterData} module="RFQ" />
+                                                {<PaginationWrappers gridApi={gridApi} totalRecordCount={totalRecordCount} getDataList={getDataList} floatingFilterData={floatingFilterData} module="RFQ" />}
+                                                {/* {(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) && */}
+                                                <PaginationControls totalRecordCount={totalRecordCount} getDataList={getDataList} floatingFilterData={floatingFilterData} module="RFQ" />
 
-                                        {/* } */}
+                                                {/* } */}
 
-                                    </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </Col>
