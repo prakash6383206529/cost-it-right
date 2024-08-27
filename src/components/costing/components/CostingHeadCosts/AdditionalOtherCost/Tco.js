@@ -20,7 +20,6 @@ const Tco = (props) => {
     })
 
     const tabData = (RMCCTabData && RMCCTabData.length > 0) ? RMCCTabData[0] : (props?.partType ?? '')
-    console.log('tabData: ', tabData);
     const [incoTermlist, setIncoTermlist] = useState([])
     const [showTCOFields, setShowTCOFields] = useState({ incoTerms: true, warrantyTerms: true, paymentTerms: false, qualityPPM: true, investment: true })
 

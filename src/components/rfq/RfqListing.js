@@ -82,8 +82,8 @@ function RfqListing(props) {
         RawMaterial: "",
         PRNumber: "",
         NoOfQuotationReceived: "",
-        VendorName: "",
-        PlantName: "",
+        vendorCode: "",
+        plantCode: "",
         TechnologyName: "",
         RaisedBy: "",
         RaisedOn: "",
@@ -93,7 +93,8 @@ function RfqListing(props) {
         VisibilityDuration: "",
         LastSubmissionDate: "",
         Remark: "",
-        Status: ""
+        Status: "",
+        boughtOutPart: ""
     });
 
     const [filterModel, setFilterModel] = useState({});
@@ -115,20 +116,21 @@ function RfqListing(props) {
     useEffect(() => {
         if (rowData?.length > 0) {
             setTotalRecordCount(rowData[0].TotalRecordCount)
-        } else {
-            setTotalRecordCount(0);
-            //   setNoData(true);
         }
     }, [rowData])
     useEffect(() => {
+        dispatch(agGridStatus("", ""))
         // setloader(true)
         getDataList()
         applyPermission(topAndLeftMenuData)
     }, [topAndLeftMenuData])
 
     useEffect(() => {
-        if (statusColumnData) {
-            gridApi?.setQuickFilter(statusColumnData?.data);
+
+        if (statusColumnData && statusColumnData.data) {
+            setDisableFilter(false)
+            setWarningMessage(true)
+            setFloatingFilterData(prevState => ({ ...prevState, Status: statusColumnData.data }))
         }
     }, [statusColumnData])
     useEffect(() => {
@@ -253,6 +255,7 @@ function RfqListing(props) {
         setDisableFilter(false)
 
         const model = gridOptions?.api?.getFilterModel();
+
         setFilterModel(model);
         if (!isFilterButtonClicked) {
             setWarningMessage(true)
@@ -323,6 +326,8 @@ function RfqListing(props) {
 
     const resetState = () => {
         setNoData(false)
+        dispatch(agGridStatus("", ""))
+
         // setinRangeDate([])
         setIsFilterButtonClicked(false)
         gridOptions?.columnApi?.resetColumnState(null);
@@ -382,6 +387,7 @@ function RfqListing(props) {
 
         }
     };
+
     const floatingFilterRFQ = {
         maxValue: 11,
         suppressFilterButton: true,
