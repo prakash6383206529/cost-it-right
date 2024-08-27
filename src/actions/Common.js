@@ -67,7 +67,11 @@ import {
   GET_APPROVAL_TYPE_SELECT_LIST_ONBOARDING,
   GET_RM_EXCHANGE_RATE_SOURCE,
   GET_COST_FREQUENCY_SETTLEMENT,
-  GET_COMMODITY_INDEX_RATE_AVERAGE
+  GET_COMMODITY_INDEX_RATE_AVERAGE,
+  COSTING_LEVEL,
+  SIMULATION_LEVEL,
+  MASTER_LEVEL,
+  ONBOARDING_MANAGEMENT_LEVEL
 } from '../config/constants';
 import { apiErrors, encodeQueryParamsAndLog } from '../helper/util';
 import { MESSAGES } from '../config/message';
@@ -1642,25 +1646,25 @@ export function getApprovalTypeSelectListUserModule(callback, id = '') {
         const selectList = response.data.SelectList;
         // Dispatch actions based on id
         switch (id) {
-          case '1':
+          case COSTING_LEVEL:
             dispatch({
               type: GET_APPROVAL_TYPE_SELECT_LIST_COSTING,
               payload: selectList,
             });
             break;
-          case '2':
+          case SIMULATION_LEVEL:
             dispatch({
               type: GET_APPROVAL_TYPE_SELECT_LIST_SIMULATION,
               payload: selectList,
             });
             break;
-          case '3':
+          case MASTER_LEVEL:
             dispatch({
               type: GET_APPROVAL_TYPE_SELECT_LIST_MASTER,
               payload: selectList,
             });
             break;
-          case '4':
+          case ONBOARDING_MANAGEMENT_LEVEL:
             dispatch({
               type: GET_APPROVAL_TYPE_SELECT_LIST_ONBOARDING,
               payload: selectList,

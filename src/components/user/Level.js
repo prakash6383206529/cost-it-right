@@ -27,7 +27,7 @@ const Level = (props) => {
     reValidateMode: 'onChange',
   });
   const { register, control, setValue, handleSubmit, getValues, reset, formState: { errors }, } = formController;
-  console.log('formController', formController);
+
   const dispatch = useDispatch();
   const [state, setState] = useState({
     isLoader: true,
@@ -272,8 +272,7 @@ const Level = (props) => {
   * @description LEVEL TYPE HANDLING
   */
   const onPressRadioLevel = (label) => {
-
-    dispatch(getApprovalTypeSelectList(() => { }), label)
+    dispatch(getApprovalTypeSelectList(() => { }, label))
     reset();
     setValue('ApprovalType', '');
     setValue('TechnologyId', '');
