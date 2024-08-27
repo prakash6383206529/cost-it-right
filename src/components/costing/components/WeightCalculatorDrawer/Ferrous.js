@@ -153,7 +153,7 @@ const [scrapCost , setScrapCost] = useState(0)
 
         setTableRawMaterials(rawMaterials);
         rawMaterials.forEach((item, index) => {
-            setValue(`rmGridFields.${index}.Percentage`, checkForDecimalAndNull(item.Percentage, getConfigurationKey().NoOfDecimalForInputOutput));
+            setValue(`rmGridFields.${index}.Percentage`, checkForDecimalAndNull(item?.Percentage, getConfigurationKey().NoOfDecimalForInputOutput));
         });
 
         
@@ -180,11 +180,11 @@ const [scrapCost , setScrapCost] = useState(0)
 
         const updatedCalculatedValues = rawMaterials.map(item => ({
             ...item,
-            calculatedBasicValue: (item.Percentage / 100) * item.RawMaterialRate,
-            calculatedScrapValue: (item.Percentage / 100) * item.ScrapRate,
+            calculatedBasicValue: (item?.Percentage / 100) * item?.RawMaterialRate,
+            calculatedScrapValue: (item?.Percentage / 100) * item?.ScrapRate,
         }));
         setCalculatedValues(updatedCalculatedValues);
-        const totalPercentage = rawMaterials.reduce((sum, item) => sum + (item.Percentage || 0), 0);
+        const totalPercentage = rawMaterials.reduce((sum, item) => sum + (item?.Percentage || 0), 0);
         setFieldsEnabled(totalPercentage === 100);
         setValue('BinderOrAdditivesTotalCost', checkForDecimalAndNull(data.BinderOrAdditivesTotalCost, getConfigurationKey().NoOfDecimalForPrice));
         //calculateNetRmRate();//
@@ -219,14 +219,17 @@ const [scrapCost , setScrapCost] = useState(0)
             }
 
             const updatedItems = tableRawMaterials.map((item, idx) => {
-                const currentPercentage = parseFloat(getValues(`rmGridFields.${idx}.Percentage`) || 0);
+                const currentPercentage = idx === index ? parseFloat(percentage) || 0 : parseFloat(getValues(`rmGridFields.${idx}.Percentage`) || 0);
                 return {
                     ...item,
                     Percentage: currentPercentage,
-                    calculatedBasicValue: (currentPercentage / 100) * item.RawMaterialRate,
-                    calculatedScrapValue: (currentPercentage / 100) * item.ScrapRate,
+                    calculatedBasicValue: (currentPercentage / 100) * item?.RawMaterialRate,
+                    calculatedScrapValue: (currentPercentage / 100) * item?.ScrapRate,
                 };
             });
+            setTableRawMaterials(updatedItems);
+            setCalculatedValues(updatedItems);
+         
 
             if (percentage !== '') {
                 calculateNetRmRate();
@@ -240,7 +243,7 @@ const [scrapCost , setScrapCost] = useState(0)
     const calculateNetRmRate = () => {
         let NetRMRate = tableRawMaterials.reduce((acc, item, index) => {
             const Percentage = parseFloat(getValues(`rmGridFields.${index}.Percentage`) || 0);
-            const BasicRate = parseFloat(item.RawMaterialRate || 0);
+            const BasicRate = parseFloat(item?.RawMaterialRate || 0);
             return acc + (Percentage * BasicRate) / 100;
         }, 0);
         setValue('NetRMRate', checkForDecimalAndNull(NetRMRate, getConfigurationKey().NoOfDecimalForPrice));
@@ -257,7 +260,7 @@ const [scrapCost , setScrapCost] = useState(0)
     const calculateNetScrapRate = () => {
         let NetScrapRate = tableRawMaterials.reduce((acc, item, index) => {
             const Percentage = parseFloat(getValues(`rmGridFields.${index}.Percentage`) || 0);
-            const ScrapRate = parseFloat(item.ScrapRate || 0);
+            const ScrapRate = parseFloat(item?.ScrapRate || 0);
             return acc + (Percentage * ScrapRate) / 100;
         }, 0);
         setValue('NetScrapRate', checkForDecimalAndNull(NetScrapRate, getConfigurationKey().NoOfDecimalForPrice));
@@ -300,12 +303,11 @@ const [scrapCost , setScrapCost] = useState(0)
             setBinderRm(prev => [...prev, ...binderRawMaterials]);
         // Remove the added binders from the main raw materials list
         setTableRawMaterials(prev => prev.filter(item =>
-            !binderRawMaterials.some(binder => binder.value === item.value)
+            !binderRawMaterials.some(binder => binder.value === item?.value)
         ));
         // Clear the unselected raw materials
-        setUnSelectedRm([]);
         setUnSelectedRm(prev => prev.filter(item =>
-            !binderRawMaterials.some(binder => binder.value === item.RawMaterialId)
+            !binderRawMaterials.some(binder => binder.value === item?.RawMaterialId)
         ));
         // Clear the form value for RawMaterialBinders
         setValue('RawMaterialBinders', []);
@@ -459,7 +461,7 @@ const [scrapCost , setScrapCost] = useState(0)
         
         let obj = {
             FerrousCastingWeightCalculatorId: WeightCalculatorRequest?.WeightCalculationId || 0,
-            BaseCostingIdRef: item.CostingId || "00000000-0000-0000-0000-000000000000",
+            BaseCostingIdRef: item?.CostingId || "00000000-0000-0000-0000-000000000000",
             CostingRawMaterialDetailsIdRef: rmRowData.RawMaterialDetailId || "00000000-0000-0000-0000-000000000000",
             RawMaterialIdRef: rmRowData?.RawMaterialId || "00000000-0000-0000-0000-000000000000",
             LoggedInUserId: loggedInUserId() || "00000000-0000-0000-0000-000000000000",
@@ -500,40 +502,40 @@ const [scrapCost , setScrapCost] = useState(0)
             }],
             CostingFerrousCalculationRawMaterials: [
                 ...tableRawMaterials
-                    .filter(item => usedRMIds.includes(item.value))
+                    .filter(item => usedRMIds.includes(item?.value))
                     .map((item, index) => {
                         const percentage = checkForNull(getValues(`rmGridFields.${index}.Percentage`));
                         if (percentage > 0) {
                             return {
-                                RMName: item.label,
-                                RMRate: item.RawMaterialRate,
-                                ScrapRate: item.ScrapRate,
+                                RMName: item?.label,
+                                RMRate: item?.RawMaterialRate,
+                                ScrapRate: item?.ScrapRate,
                                 Percentage: percentage,
-                                CostingCalculationDetailId: item.CostingCalculationDetailId || 0,
-                                RawMaterialId: item.value,
+                                CostingCalculationDetailId: item?.CostingCalculationDetailId || 0,
+                                RawMaterialId: item?.value,
                                 IsBinders: false,
                                 BinderQuantity: 0,
-                                RMCost: item.calculatedBasicValue,
-                                ScrapRateCost: item.calculatedScrapValue
+                                RMCost: item?.calculatedBasicValue,
+                                ScrapRateCost: item?.calculatedScrapValue
                             };
                         }
                         return null;
                     }).filter(Boolean),
                 ...binderRm
-                    .filter(item => usedRMIds.includes(item.value))
+                    .filter(item => usedRMIds.includes(item?.value))
                     .map((item, index) => {
                         const quantity = checkForNull(getValues(`binderQuantity.${index}`));
                         if (quantity > 0) {
                             return {
-                                RMName: item.label,
-                                RMRate: item.RawMaterialRate,
-                                ScrapRate: item.ScrapRate,
+                                RMName: item?.label,
+                                RMRate: item?.RawMaterialRate,
+                                ScrapRate: item?.ScrapRate,
                                 Percentage: 0,
-                                CostingCalculationDetailId: item.CostingCalculationDetailId || 0,
-                                RawMaterialId: item.value,
+                                CostingCalculationDetailId: item?.CostingCalculationDetailId || 0,
+                                RawMaterialId: item?.value,
                                 IsBinders: true,
                                 BinderQuantity: quantity,
-                                RMCost: item.calculatedBindersBasicValue,
+                                RMCost: item?.calculatedBindersBasicValue,
                                 ScrapRateCost: 0
                             };
                         }
@@ -604,7 +606,7 @@ useEffect(() => {
 
         if (Array.isArray(newValue) && newValue.some(item => item?.value === 'select_all')) {
             const allOptions = rmData
-                .filter(item => item.RawMaterialId !== 'select_all' && !tableRawMaterials.some(tableItem => tableItem.value === item.RawMaterialId))
+                .filter(item => item?.RawMaterialId !== 'select_all' && !tableRawMaterials.some(tableItem => tableItem.value === item?.RawMaterialId))
                 .map(({ RMName, RawMaterialId, RMRate, ScrapRate }) => ({
                     label: RMName,
                     value: RawMaterialId,
@@ -642,20 +644,20 @@ useEffect(() => {
                             { label: "Select All", value: 'select_all' },
                             ...rmData
                                 .filter(item =>
-                                    !tableRawMaterials.some(tableItem => tableItem.value === item.RawMaterialId) &&
-                                    !binderRm.some(binderItem => binderItem.value === item.RawMaterialId)
+                                    !tableRawMaterials.some(tableItem => tableItem.value === item?.RawMaterialId) &&
+                                    !binderRm.some(binderItem => binderItem.value === item?.RawMaterialId)
                                 )
                                 .map((item) => ({
-                                    label: item.RMName,
-                                    value: item.RawMaterialId,
-                                    RawMaterialRate: item.RMRate,
-                                    ScrapRate: item.ScrapRate
+                                    label: item?.RMName,
+                                    value: item?.RawMaterialId,
+                                    RawMaterialRate: item?.RMRate,
+                                    ScrapRate: item?.ScrapRate
                                 }))
                         ];
 
                         // If in edit mode, remove the "Select All" option
                         if (props.isEditFlag) {
-                            return temp.filter(item => item.value !== 'select_all');
+                            return temp.filter(item => item?.value !== 'select_all');
                         }
 
                         return temp;
@@ -664,14 +666,14 @@ useEffect(() => {
                 case 'RawMaterialBinders':
                     return unSelectedRm
                         .filter(item =>
-                            !tableRawMaterials.some(tableItem => tableItem.value === item.RawMaterialId) &&
-                            !binderRm.some(binderItem => binderItem.value === item.RawMaterialId)
+                            !tableRawMaterials.some(tableItem => tableItem.value === item?.RawMaterialId) &&
+                            !binderRm.some(binderItem => binderItem.value === item?.RawMaterialId)
                         )
                         .map((item) => ({
-                            label: item.RMName,
-                            value: item.RawMaterialId,
-                            RawMaterialRate: item.RMRate,
-                            ScrapRate: item.ScrapRate
+                            label: item?.RMName,
+                            value: item?.RawMaterialId,
+                            RawMaterialRate: item?.RMRate,
+                            ScrapRate: item?.ScrapRate
                         }));
                 default:
                     return [];
@@ -733,7 +735,7 @@ useEffect(() => {
         setValueTableForm('RawMaterial', []); // Add this line
 
         // Update unSelectedRm to remove the newly added items
-        setUnSelectedRm(prev => prev.filter(item => !newItems.some(newItem => newItem.value === item.RawMaterialId)));
+        setUnSelectedRm(prev => prev.filter(item => !newItems.some(newItem => newItem.value === item?.RawMaterialId)));
 
         // Recalculate all values
         setTimeout(() => {
@@ -742,8 +744,8 @@ useEffect(() => {
                 return {
                     ...item,
                     Percentage: currentPercentage,
-                    calculatedBasicValue: (currentPercentage / 100) * item.RawMaterialRate,
-                    calculatedScrapValue: (currentPercentage / 100) * item.ScrapRate,
+                    calculatedBasicValue: (currentPercentage / 100) * item?.RawMaterialRate,
+                    calculatedScrapValue: (currentPercentage / 100) * item?.ScrapRate,
                 };
             });
 
@@ -758,7 +760,7 @@ useEffect(() => {
     const quantityChange = (quantity, index) => {
         const newValues = binderRm.map((item, idx) => {
             if (idx === index) {
-                const basicValue = quantity * item.RawMaterialRate;
+                const basicValue = quantity * item?.RawMaterialRate;
                 return {
                     ...item,
                     quantity: parseFloat(quantity),
@@ -893,8 +895,8 @@ useEffect(() => {
             return {
                 ...item,
                 Percentage: currentPercentage,
-                calculatedBasicValue: (currentPercentage / 100) * item.RawMaterialRate,
-                calculatedScrapValue: (currentPercentage / 100) * item.ScrapRate,
+                calculatedBasicValue: (currentPercentage / 100) * item?.RawMaterialRate,
+                calculatedScrapValue: (currentPercentage / 100) * item?.ScrapRate,
             };
         });
         setCalculatedValues(newCalculatedValues);
@@ -930,18 +932,53 @@ useEffect(() => {
     };
 
     const resetBinderMaterials = () => {
+        // Reset binder-related state
         setBinderRm([]);
         setCalculatedCost([]);
         setTotalCostCalculated(0);
+    
+        // Reset the form values for binders
+        binderRm.forEach((_, index) => {
+            setValue(`binderQuantity.${index}`, '');
+        });
+    
+        // Clear the searchable select field for binders
+        setBinderRawMaterials([]);
+        setValue('RawMaterialBinders', []);
+        setValueTableForm('RawMaterialBinders', []);
+    
+        // Add the reset binders back to the unselected raw materials
+        const resetBinders = binderRm.map(binder => ({
+            RMName: binder.label,
+            RawMaterialId: binder.value,
+            RMRate: binder.RawMaterialRate,
+            ScrapRate: binder.ScrapRate
+        }));
+        console.log('resetBinders: ', resetBinders);
+        setUnSelectedRm(prev => [...prev, ...resetBinders]);
+    
+        // Recalculate remaining values
         calculateRemainingCalculation();
     };
 
     const deleteBinderMaterial = (index) => {
+        const deletedBinder = binderRm[index];
         const updatedBinders = binderRm.filter((_, idx) => idx !== index);
         setBinderRm(updatedBinders);
         setCalculatedCost(updatedBinders);
         const newTotalCost = calculateTotalCost();
         setTotalCostCalculated(newTotalCost);
+            // Add the deleted binder back to the unselected raw materials
+        setUnSelectedRm(prev => [...prev, {
+            RMName: deletedBinder.label,
+            RawMaterialId: deletedBinder.value,
+            RMRate: deletedBinder.RawMaterialRate,
+            ScrapRate: deletedBinder.ScrapRate
+        }]);
+    
+        // Clear the form value for this binder
+        setValue(`binderQuantity.${index}`, '');
+    
         calculateRemainingCalculation();
     };
 
@@ -1040,10 +1077,10 @@ useEffect(() => {
                                 <tbody className='rm-table-body'>
                                     {tableRawMaterials.length > 0 ? (
                                         tableRawMaterials.map((item, index) => {
-                                            const calculatedItem = calculatedValues?.find(calcItem => calcItem.value === item.value) || item;
+                                            const calculatedItem = calculatedValues?.find(calcItem => calcItem.value === item?.value) || item;
                                             return (
                                                 <tr key={index} className=''>
-                                                    <td className='rm-part-name'><span title={item.label}>{item.label}</span></td>
+                                                    <td className='rm-part-name'><span title={item?.label}>{item?.label}</span></td>
                                                     <td>
                                                         <div style={{ display: 'flex', alignItems: 'center' }}>
                                                             <TextFieldHookForm
@@ -1072,7 +1109,7 @@ useEffect(() => {
                                                             />
                                                         </div>
                                                     </td>
-                                                    <td>{checkForDecimalAndNull(item.RawMaterialRate, getConfigurationKey().NoOfDecimalForInputOutput)}</td>
+                                                    <td>{checkForDecimalAndNull(item?.RawMaterialRate, getConfigurationKey().NoOfDecimalForInputOutput)}</td>
                                                     <td>
                                                         <TooltipCustom
                                                             disabledIcon={true}
@@ -1083,7 +1120,7 @@ useEffect(() => {
                                                             {checkForDecimalAndNull(calculatedItem.calculatedBasicValue, getConfigurationKey().NoOfDecimalForInputOutput)}
                                                         </div>
                                                     </td>
-                                                    <td> {checkForDecimalAndNull(item.ScrapRate, getConfigurationKey().NoOfDecimalForInputOutput)}</td>
+                                                    <td> {checkForDecimalAndNull(item?.ScrapRate, getConfigurationKey().NoOfDecimalForInputOutput)}</td>
                                                     <td>
                                                         <TooltipCustom
                                                             disabledIcon={true}
@@ -1249,7 +1286,7 @@ useEffect(() => {
                                     <tbody className='rm-table-body'>
                                         {binderRm.map((item, index) => (
                                             <tr key={index} className=''>
-                                                <td className='rm-part-name'><span title={item.label}>{item.label}</span></td>
+                                                <td className='rm-part-name'><span title={item?.label}>{item?.label}</span></td>
                                                 <td>
                                                     <TextFieldHookForm
                                                         label=""
@@ -1260,7 +1297,7 @@ useEffect(() => {
                                                         rules={{
                                                             validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
                                                         }}
-                                                        defaultValue={item.quantity || ''}
+                                                        defaultValue={item?.quantity || ''}
                                                         className=""
                                                         customClassName={'withBorder'}
                                                         handleChange={(e) => { quantityChange(e.target.value, index) }}
@@ -1276,7 +1313,7 @@ useEffect(() => {
                                                     tooltipText={'Cost = Quantity * Basic Rate'}
                                                 />
                                                     <div className='w-fit' id={`cost-${index}`}>
-                                                        {checkForDecimalAndNull(item.calculatedBindersBasicValue, getConfigurationKey().NoOfDecimalForPrice)}
+                                                        {checkForDecimalAndNull(item?.calculatedBindersBasicValue, getConfigurationKey().NoOfDecimalForPrice)}
                                                     </div></td>
                                                 <td>
                                                     <React.Fragment>
