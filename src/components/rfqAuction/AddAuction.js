@@ -12,13 +12,13 @@ import _, { debounce } from "lodash";
 import { technology } from "../../helper/Dummy";
 
 import Switch from 'react-switch'
-import { required, calculatePercentageValue, checkForDecimalAndNull, checkForNull, checkWhiteSpaces, extenstionTime, decimalNumberLimit, maxPercentageValue, number, acceptAllExceptSingleSpecialCharacter, maxLength70, hashValidation, calculateEndDate, userDetails, loggedInUserId, getTimeZone, calculateEndDateTime } from "../../helper";
+import { required, calculatePercentageValue, checkForDecimalAndNull, checkForNull, checkWhiteSpaces, extenstionTime, decimalNumberLimit, maxPercentageValue, number, acceptAllExceptSingleSpecialCharacter, maxLength70, hashValidation, calculateEndDate, userDetails, loggedInUserId, getTimeZone, calculateEndDateTime, durationTimeDropdown } from "../../helper";
 import DatePicker from 'react-datepicker'
 import { setHours, setMinutes } from 'date-fns';
 import DayTime from "../common/DayTimeWrapper";
 import { getQuotationById } from "./actions/rfq";
-import { auctionRfqSelectList, checkQuatationForAuction, createAuction, saveAuctionDetails } from "./actions/RfqAuction";
-import { EMPTY_GUID, EMPTY_GUID_0 } from "../../config/constants";
+import { auctionRfqSelectList, checkQuatationForAuction, createAuction } from "./actions/RfqAuction";
+import { EMPTY_GUID } from "../../config/constants";
 import Toaster from "../common/Toaster";
 import { useHistory, useLocation } from "react-router-dom/cjs/react-router-dom";
 import { useLabels } from "../../helper/core";
@@ -29,12 +29,10 @@ export const ASSEMBLY = 'Assembly'
 
 function AddAuction(props) {
   const dispatch = useDispatch();
-  const { data: dataProps } = props;
 
   const {
     register,
     handleSubmit,
-    watch,
     setValue,
     getValues,
     formState: { errors },
@@ -72,8 +70,6 @@ function AddAuction(props) {
     BasePrice: '',
     ReductionPrice: '',
     ReductionPercent: '',
-    RedZoneReductionPrice: '',
-    RedZoneReductionPercent: '',
     YellowZoneReductionPrice: '',
     YellowZoneReductionPercent: '',
     GreenZoneReductionPrice: '',
@@ -141,12 +137,12 @@ function AddAuction(props) {
     data.LoggedInUserId = loggedInUserId()
     data.AuctionRaisedOnTimeZone = getTimeZone();
     data.VendorId = state.VendorIdList
-    data.AuctionDuration = value.AuctionDuration
+    data.AuctionDuration = value?.AuctionDuration?.label ?? "00:00"
     data.ExtensionTime = value.ExtensionTime.label
     data.AuctionStartDateTime = dateAndTimeState.dateAndTime
     data.MinimumReductionApplicabilityType = state.reductionPrice ? 'Fixed' : 'Percentage'
     data.PriceZoneApplicabilityType = state.priceZoneReduction ? 'Fixed' : 'Percentage'
-    data.AuctionEndDateTime = calculateEndDateTime(dateAndTimeState.dateAndTime, String(value.AuctionDuration))
+    data.AuctionEndDateTime = calculateEndDateTime(dateAndTimeState.dateAndTime, String(value?.AuctionDuration?.label ?? "00:00"))
     data.AuctionStartDateTimeUTC = ''
     data.AuctionEndDateTimeUTC = ''
 
@@ -190,7 +186,7 @@ function AddAuction(props) {
   const basePriceHandle = (event) => {
     const getValue = checkForNull(event.target.value)
     setCalculationState(prevState => ({ ...prevState, BasePrice: getValue }))
-    const calculationFields = ['ReductionPercent', 'ReductionPrice', 'ReductionPrice', 'ReductionPercent', 'RedZoneReductionPrice', 'RedZoneReductionPercent', 'YellowZoneReductionPrice', 'YellowZoneReductionPercent', 'GreenZoneReductionPrice', 'GreenZoneReductionPercent']
+    const calculationFields = ['ReductionPercent', 'ReductionPrice', 'ReductionPrice', 'ReductionPercent', 'YellowZoneReductionPrice', 'YellowZoneReductionPercent', 'GreenZoneReductionPrice', 'GreenZoneReductionPercent']
     calculationFields.map(item => {
       setValue(item, '')
       setCalculationState(prevState => ({ ...prevState, [item]: 0 }))
@@ -635,37 +631,20 @@ function AddAuction(props) {
                         </div>
                       </Col>
                       <Col md="3">
-                        <div className="inputbox date-section">
-                          <div className="form-group">
-                            <label>Duration</label>
-                            <div className="inputbox date-section">
-                              <TextFieldHookForm
-                                label=""
-                                name={"AuctionDuration"}
-                                selected={"00:00"}
-                                Controller={Controller}
-                                control={control}
-                                register={register}
-                                rules={{
-                                  required: true,
-                                  pattern: {
-                                    value: /^([0-9]*):([0-5]?[0-9])$/i,
-                                    message:
-                                      "Hours should be in hh:mm format.",
-                                  },
-                                }}
-                                mandatory={true}
-                                handleChange={(e) => durationHandle(e)}
-                                defaultValue={""}
-                                className=""
-                                customClassName={
-                                  "withBorder mn-height-auto hide-label mb-0"
-                                }
-                                errors={errors.AuctionDuration}
-                              />
-                            </div>
-                          </div>
-                        </div>
+                        <SearchableSelectHookForm
+                          label={"Duration"}
+                          name={"AuctionDuration"}
+                          placeholder={"Select"}
+                          Controller={Controller}
+                          control={control}
+                          rules={{ required: true }}
+                          register={register}
+                          defaultValue={""}
+                          options={durationTimeDropdown()}
+                          mandatory={true}
+                          handleChange={() => { }}
+                          errors={errors.AuctionDuration}
+                        />
                       </Col>
                     </Row>
                     {/* Auction Price Section */}
@@ -928,60 +907,6 @@ function AddAuction(props) {
                               placeholder={"Reduction Price Value"}
                             />
                           </div>
-                        </div>
-                      </Col>
-                      <Col md="3">
-                        <label>Red</label>
-                        <div className="d-flex">
-                          <TextFieldHookForm
-                            label="Price %"
-                            name="RedZoneReductionPercent"
-                            Controller={Controller}
-                            control={control}
-                            register={register}
-                            rules={{
-                              required: true,
-                              validate: { number, checkWhiteSpaces, maxPercentageValue, decimalNumberLimit },
-                              max: {
-                                value: calculationState.YellowZoneReductionPercent - 0.0001,
-                                message: 'Percentage value should be less than to Yellow value'
-                              },
-                            }}
-                            mandatory={false}
-                            handleChange={(e) => PriceZoneCalculation('RedZoneReductionPrice', 'RedZoneReductionPercent', e.target.value)}
-                            defaultValue=""
-                            className=""
-                            customClassName="withBorder remove-mh"
-                            errors={
-                              errors.RedZoneReductionPercent
-                            }
-                            placeholder={"Reduction Price %"}
-                            disabled={state.priceZoneReduction}
-                          />
-                          <TextFieldHookForm
-                            label="Price Value"
-                            name="RedZoneReductionPrice"
-                            Controller={Controller}
-                            control={control}
-                            register={register}
-                            rules={{
-                              required: true,
-                              validate: { number, checkWhiteSpaces, decimalNumberLimit },
-
-                              min: {
-                                value: calculationState.YellowZoneReductionPrice + 0.0001,
-                                message: 'Value should be greater than to Yellow Zone Price'
-                              },
-                            }}
-                            mandatory={false}
-                            handleChange={(e) => PriceZoneCalculation('RedZoneReductionPercent', 'RedZoneReductionPrice', e.target.value)}
-                            defaultValue=""
-                            className=""
-                            customClassName="withBorder remove-mh"
-                            errors={errors.RedZoneReductionPrice}
-                            disabled={!state.priceZoneReduction}
-                            placeholder={"Reduction Price Value"}
-                          />
                         </div>
                       </Col>
 

@@ -522,8 +522,7 @@ const VendorListing = (props) => {
    * @description Filter user listing on the basis of role and department
    */
   const filterList = () => {
-    getTableListData(
-      currentRowIndex, state.floatingFilterData, 100, true);
+    getTableListData(currentRowIndex, state.floatingFilterData, 100, true);
   };
 
   const formToggle = () => {
@@ -536,7 +535,8 @@ const VendorListing = (props) => {
     );
 
     if (type === "submit") {
-      filterList();
+      // filterList();
+      resetState();
     }
 
   };
