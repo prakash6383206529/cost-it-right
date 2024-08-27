@@ -4013,6 +4013,7 @@ export const BOMUpload = [
     { label: "Quantity", value: "Quantity" }, //NOUI
     { label: "EffectiveDate", value: "EffectiveDate" },
     { label: "Remark", value: "Remark" },
+    { label: 'TechnologyName', value: "Technology" },
     { label: 'Technology', value: "Technology" }
 ]
 
