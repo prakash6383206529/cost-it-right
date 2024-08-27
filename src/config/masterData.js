@@ -4014,7 +4014,6 @@ export const BOMUpload = [
     { label: "EffectiveDate", value: "EffectiveDate" },
     { label: "Remark", value: "Remark" },
     { label: 'TechnologyName', value: "Technology" },
-    { label: 'Technology', value: "Technology" }
 ]
 
 export const BOMUploadTempData = [
@@ -4038,7 +4037,7 @@ export const BOMUploadTempData = [
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": 'Remark',
         "ProductGroupCode": "VB",
-        "Technology": "Sheet Metal"
+        "TechnologyName": "Sheet Metal"
     },
     // COMPONENT
     {
@@ -4060,7 +4059,7 @@ export const BOMUploadTempData = [
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": 'Remark',
         "ProductGroupCode": "VB",
-        "Technology": "Sheet Metal"
+        "TechnologyName": "Sheet Metal"
     },
     // BOP
     {
@@ -4082,7 +4081,7 @@ export const BOMUploadTempData = [
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": 'Remark',
         "ProductGroupCode": "VB",
-        "Technology": "Sheet Metal"
+        "TechnologyName": "Sheet Metal"
     },
     // SUB ASSEMBLY
     {
@@ -4104,7 +4103,7 @@ export const BOMUploadTempData = [
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": 'Remark',
         "ProductGroupCode": "VB",
-        "Technology": "Sheet Metal"
+        "TechnologyName": "Sheet Metal"
     },
     // COMPONENT
     {
@@ -4126,7 +4125,7 @@ export const BOMUploadTempData = [
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": 'Remark',
         "ProductGroupCode": "VB",
-        "Technology": "Sheet Metal"
+        "TechnologyName": "Sheet Metal"
     },
 ]
 export const EAccessType = [
