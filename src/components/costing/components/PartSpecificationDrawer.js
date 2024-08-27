@@ -22,8 +22,7 @@ const PartSpecificationDrawer = (props) => {
         reValidateMode: 'onChange',
     });
     const [isLoader, setIsLoader] = useState(false);
-    const quotationId = useSelector((state) => state?.rfq?.quotationIDForRFQ) ?? ''
-
+    const quotationId = useSelector((state) => state.rfq.quotationIDForRFQ);
     const [columnDefs, setColumnDefs] = useState([]);
     const [rowData, setRowData] = useState([]);
     const dispatch = useDispatch();
@@ -74,15 +73,27 @@ const PartSpecificationDrawer = (props) => {
     }, [quotationId, baseCostingId, dispatch]);
 
     const generateColumnDefs = (specsHead) => {
-        return specsHead.map(head => ({
+        return specsHead.map((head, index) => ({
             headerName: head,
             field: head, // Use the head value directly as the field name
             sortable: true,
             filter: true,
+            cellRenderer: index >= 2 ? 'vendorDataRenderer' : undefined,
+
         }));
     };
-
-
+    const VendorDataRenderer = (props) => {
+        const specValueField = 'Part Specs Value'; // The field name for the specification value
+        const vendorValue = props.value;
+        const specValue = props.data[specValueField];
+        const isChanged = vendorValue !== specValue && vendorValue !== null && vendorValue !== undefined && vendorValue !== '';
+    
+        return (
+            <span style={{ color: isChanged ? 'red' : 'inherit' }}>
+                {vendorValue !== null && vendorValue !== undefined ? vendorValue : '-'}
+            </span>
+        );
+    };
 
     const defaultColDef = {
         resizable: true,
@@ -104,6 +115,8 @@ const PartSpecificationDrawer = (props) => {
     const frameworkComponents = {
         customLoadingOverlay: LoaderCustom,
         customNoRowsOverlay: NoContentFound,
+        vendorDataRenderer: VendorDataRenderer,
+
     };
 
     return (
