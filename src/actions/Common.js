@@ -1636,7 +1636,7 @@ export function getApprovalTypeSelectList(id = '', callback) {
   };
 }
 
-export function getApprovalTypeSelectListUserModule(callback, id = '') {
+export function getApprovalTypeSelectListUserModule(id = '', callback) {
   return (dispatch) => {
     let querryParam = encodeQueryParamsAndLog({ id: id });
     const request = axios.get(`${API.getApprovalTypeSelectList}?${querryParam}`, config());

@@ -184,12 +184,12 @@ function UserRegistration(props) {
   };
 
   useEffect(() => {
-    dispatch(getApprovalTypeSelectListUserModule(() => { }, COSTING_LEVEL));
-    dispatch(getApprovalTypeSelectListUserModule(() => { }, SIMULATION_LEVEL));
-    dispatch(getApprovalTypeSelectListUserModule(() => { }, MASTER_LEVEL));
-    dispatch(getApprovalTypeSelectListUserModule(() => { }, ONBOARDING_MANAGEMENT_LEVEL));
-
+    dispatch(getApprovalTypeSelectListUserModule(COSTING_LEVEL, () => { }));
+    dispatch(getApprovalTypeSelectListUserModule(SIMULATION_LEVEL, () => { }));
+    dispatch(getApprovalTypeSelectListUserModule(MASTER_LEVEL, () => { }));
+    dispatch(getApprovalTypeSelectListUserModule(ONBOARDING_MANAGEMENT_LEVEL, () => { }));
   }, [dispatch]);
+
   useEffect(() => {
     if (registerUserData && props?.data?.isEditFlag) {
       const CommonField = ['FirstName', 'MiddleName', 'LastName', 'EmailAddress', 'UserName', 'Mobile', 'AddressLine1', 'AddressLine2', 'ZipCode', 'PhoneNumber', 'Extension']
