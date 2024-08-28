@@ -250,7 +250,7 @@ function UserRegistration(props) {
     if (props?.RFQUser) {
       dispatch(getReporterList(() => { }))
     }
-    dispatch(getApprovalTypeSelectList(() => { }))
+    dispatch(getApprovalTypeSelectList('', () => { }))
     dispatch(getAllLevelAPI(() => { }))
     return () => {
       reactLocalStorage?.setObject('vendorData', [])

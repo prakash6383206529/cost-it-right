@@ -271,20 +271,20 @@ const Level = (props) => {
   * @method onPressRadioLevel
   * @description LEVEL TYPE HANDLING
   */
-  const onPressRadioLevel = (label) => {
-    dispatch(getApprovalTypeSelectList(() => { }, label))
+  const onPressRadioLevel = (levelId) => {
+    dispatch(getApprovalTypeSelectList(levelId, () => { }))
     reset();
     setValue('ApprovalType', '');
     setValue('TechnologyId', '');
     setValue('LevelId', '');
-    if (Number(label) === COSTING_LEVEL) {
+    if (Number(levelId) === COSTING_LEVEL) {
 
       dispatch(getAllTechnologyAPI(() => { }))
-    } else if (Number(label) === SIMULATION_LEVEL) {
+    } else if (Number(levelId) === SIMULATION_LEVEL) {
 
       dispatch(getSimulationTechnologySelectList(() => { }))
     }
-    setState((prevState) => ({ ...prevState, levelType: label, technology: [], level: [], approvalTypeObject: [] }));
+    setState((prevState) => ({ ...prevState, levelType: levelId, technology: [], level: [], approvalTypeObject: [] }));
   };
 
   /**
