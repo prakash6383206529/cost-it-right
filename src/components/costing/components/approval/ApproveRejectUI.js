@@ -25,7 +25,7 @@ import { submit } from 'redux-form'
 import SAPApproval from '../../../SAPApproval'
 
 function ApproveRejectUI(props) {
-  
+
   // ********* INITIALIZE REF FOR DROPZONE ********
   const dropzone = useRef(null);
   const { type, approvalData, showMessage, setDataFromSummary, disableReleaseStrategy, IsNotFinalLevel, isSimulation, dataSend, simulationDetail, isSimulationApprovalListing, dataInFields, approvalDropDown, handleDepartmentChange, onSubmit, callbackSetDataInFields, showApprovalTypeDropdown, releaseStrategyDetails, reasonId } = props
@@ -59,7 +59,7 @@ function ApproveRejectUI(props) {
 
   useEffect(() => {
     dispatch(getReasonSelectList((res) => { }))
-    dispatch(getApprovalTypeSelectList(() => { }))
+    dispatch(getApprovalTypeSelectList('', () => { }))
   }, [])
 
   useEffect(() => {
