@@ -226,7 +226,7 @@ const SendForApproval = (props) => {
     dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), props.technologyId, (res) => {
       setTechnologyLevelsList(res?.data?.Data)
       if (initialConfiguration.IsReleaseStrategyConfigured) {
-        dispatch(getApprovalTypeSelectList((departmentRes) => {
+        dispatch(getApprovalTypeSelectList('', (departmentRes) => {
           let data = []
           viewApprovalData && viewApprovalData?.map(item => {
             let obj = {}

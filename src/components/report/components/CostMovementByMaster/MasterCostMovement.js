@@ -73,7 +73,7 @@ function MasterCostMovement() {
 
     useEffect(() => {
         dispatch(getSelectListOfMasters(() => { }))
-        dispatch(getApprovalTypeSelectList(() => { }))
+        dispatch(getApprovalTypeSelectList('', () => { }))
         dispatch(getCostingSpecificTechnology(loggedInUserId(), () => { }))
         dispatch(fetchPlantDataAPI(() => { }))
         dispatch(getPlantSelectListByType(ZBC, "REPORT", '', () => { }))
