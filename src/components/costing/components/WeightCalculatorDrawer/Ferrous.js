@@ -1,9 +1,9 @@
-import React, { useState, useEffect, Fragment, useRef } from 'react'
+import React, { useState, useEffect, Fragment } from 'react'
 import { Col, Row, Table } from 'reactstrap'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
-import {  SearchableSelectHookForm, TextFieldHookForm, } from '../../../layout/HookFormInputs'
-import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from '../../../../helper'
+import { SearchableSelectHookForm, TextFieldHookForm, } from '../../../layout/HookFormInputs'
+import { checkForDecimalAndNull, checkForNull, findLostWeight, getConfigurationKey, loggedInUserId } from '../../../../helper'
 import LossStandardTable from './LossStandardTable'
 import { saveRawMaterialCalculationForFerrous } from '../../actions/CostWorking'
 import Toaster from '../../../common/Toaster'
@@ -11,13 +11,13 @@ import { debounce } from 'lodash'
 import TooltipCustom from '../../../common/Tooltip'
 import { number, percentageLimitValidation, checkWhiteSpaces, decimalAndNumberValidation } from "../../../../helper/validation";
 import NoContentFound from '../../../common/NoContentFound'
-import { EMPTY_DATA, LOGIN_PAGE_INIT_CONFIGURATION } from '../../../../config/constants'
+import { EMPTY_DATA } from '../../../../config/constants'
 import PopupMsgWrapper from '../../../common/PopupMsgWrapper'
 import { MESSAGES } from '../../../../config/message'
 
 function Ferrous(props) {
     const WeightCalculatorRequest = props?.rmRowData?.WeightCalculatorRequest
-    
+
     const [resetLossTable, setResetLossTable] = useState(false);
     const dispatch = useDispatch()
     const { ferrousCalculatorReset } = useSelector(state => state.costing)
@@ -27,7 +27,6 @@ function Ferrous(props) {
     const [lostWeight, setLostWeight] = useState(WeightCalculatorRequest && WeightCalculatorRequest.NetLossWeight ? WeightCalculatorRequest.NetLossWeight : 0)
     const [dataToSend, setDataToSend] = useState(WeightCalculatorRequest)
     const [percentage, setPercentage] = useState(0)
-    const [inputFinishWeight, setInputFinishWeight] = useState(0)
     const { rmRowData, rmData, CostingViewMode, item } = props
     const [selectedRm, setSelectedRm] = useState([])
     const [unSelectedRm, setUnSelectedRm] = useState([])
@@ -42,12 +41,17 @@ function Ferrous(props) {
     const [calculatedCost, setCalculatedCost] = useState([])
     const [totalCostCalculated, setTotalCostCalculated] = useState(0);
     const [unusedRMsMessage, setUnusedRMsMessage] = useState('');
-const [netRmRate , setNetRmRate] = useState(0)
-const [netScrapRate , setNetScrapRate] = useState(0)
-const [netGrossWeight , setNetGrossWeight] = useState(0)
-const [scrapWeight , setScrapWeight] = useState(0)
-const [netRMCost , setNetRMCost] = useState(0)
-const [scrapCost , setScrapCost] = useState(0)
+    const [netRmRate, setNetRmRate] = useState(0)
+    const [netScrapRate, setNetScrapRate] = useState(0)
+    const [netGrossWeight, setNetGrossWeight] = useState(0)
+    const [scrapWeight, setScrapWeight] = useState(0)
+    const [netRMCost, setNetRMCost] = useState(0)
+    const [scrapCost, setScrapCost] = useState(0)
+    const [totalCostInputWeight, setTotalCostInputWeight] = useState(0)
+    const [totalCastingCostInputWeight, setTotalCastingCostInputWeight] = useState(0)
+    const [castingCost, setCastingCost] = useState(0)
+    const [castingWeightDisable, setCastingWeightDisable] = useState(false)
+    const [finishWeight, setFinishWeight] = useState(false)
     const rmGridFields = 'rmGridFields';
 
     const { register, control, setValue, handleSubmit, getValues, reset, formState: { errors }, } = useForm({
@@ -56,24 +60,35 @@ const [scrapCost , setScrapCost] = useState(0)
         // defaultValues: defaultValues,
     })
 
-    useEffect(() => {
-        const castingWeight = checkForNull(getValues("castingWeight"))
-        if (inputFinishWeight > castingWeight) {
-            Toaster.warning('Finish Weight should not be greater than casting weight')
-            setValue('finishedWeight', '')
-        }
-    }, [inputFinishWeight])
     const watchedValues = useWatch({
         control,
-        name: ['castingWeight', 'finishedWeight', 'recovery', 'otherCost'],
+        name: ['castingWeight', 'recovery'],
     });
-    
+    const totalCostInputWeightValue = useWatch({
+        control,
+        name: ['inputWeight'],
+    })
+    const totalCastingCostInputWeightValues = useWatch({
+        control,
+        name: ['otherCostInputWeight', 'inputWeight'],
+    })
     useEffect(() => {
         if (!CostingViewMode) {
-                calculateRemainingCalculation();
-         
+            calculateRemainingCalculation();
+            calculateFinishWeight();
+            calculateNetScrapRate();
+            calculateScrapCost();
         }
-    }, [watchedValues]);
+    }, [watchedValues, finishWeight, tableVal]);
+
+
+    useEffect(() => {
+        if (tableVal && tableVal?.length > 0) {
+            setCastingWeightDisable(true)
+        } else {
+            setCastingWeightDisable(false)
+        }
+    }, [tableVal])
     useEffect(() => {
         if (ferrousCalculatorReset === true) {
             reset({
@@ -94,9 +109,16 @@ const [scrapCost , setScrapCost] = useState(0)
             setTableVal([])
         }
     }, [ferrousCalculatorReset])
-    
+
     const tableData = (value = []) => {
-        setTableVal(value)
+        if (!Array.isArray(value)) {
+            value = [value];
+        }
+        if (!Array.isArray(tableVal)) {
+            setTableVal(value);
+        } else {
+            setTableVal([...value]);
+        }
     }
     const dropDown = [
         {
@@ -118,26 +140,36 @@ const [scrapCost , setScrapCost] = useState(0)
     ]
     const defaultValues = () => {
         let data = WeightCalculatorRequest
-        
+
         // Set form values
         setValue('castingWeight', checkForDecimalAndNull(data.CastingWeight, getConfigurationKey().NoOfDecimalForInputOutput));
         setValue('recovery', checkForDecimalAndNull(data.RecoveryPercentage, getConfigurationKey().NoOfDecimalForInputOutput));
         setValue('grossWeight', checkForDecimalAndNull(data.GrossWeight, getConfigurationKey().NoOfDecimalForInputOutput));
-        setValue('finishedWeight', checkForDecimalAndNull(data?.FinishWeight, getConfigurationKey().NoOfDecimalForInputOutput));
         setValue('scrapWeight', checkForDecimalAndNull(data?.ScrapWeight, getConfigurationKey().NoOfDecimalForInputOutput));
         setValue('NetRMRate', checkForDecimalAndNull(data?.NetRMRate, getConfigurationKey().NoOfDecimalForPrice));
-        
         setValue('NetScrapRate', checkForDecimalAndNull(data?.NetScrapRate, getConfigurationKey().NoOfDecimalForPrice));
-        setValue('scrapCost', checkForDecimalAndNull(data?.ScrapCost, getConfigurationKey().NoOfDecimalForPrice));
         setValue('NetRMCost', checkForDecimalAndNull(data?.RawMaterialCost, getConfigurationKey().NoOfDecimalForPrice));
-        setValue('otherCost', checkForDecimalAndNull(data.OtherCost, getConfigurationKey().NoOfDecimalForPrice));
-
+        setValue('inputWeight', checkForDecimalAndNull(data?.InputWeight, getConfigurationKey().NoOfDecimalForInputOutput));
+        setValue('otherCostInputWeight', checkForDecimalAndNull(data?.OtherCostPerInputWeight, getConfigurationKey().NoOfDecimalForInputOutput));
+        setValue('castingCost', checkForDecimalAndNull(data?.CastingCost, getConfigurationKey().NoOfDecimalForPrice));
+        setValue('scrapCost', checkForDecimalAndNull(data?.ScrapCost, getConfigurationKey().NoOfDecimalForPrice));
+        setValue('totalCostInputWeight', checkForDecimalAndNull(data?.TotalCostPerInputWeight, getConfigurationKey().NoOfDecimalForInputOutput));
+        setValue('totalCastingCostInputWeight', checkForDecimalAndNull(data?.TotalCastingCostPerInputWeight, getConfigurationKey().NoOfDecimalForInputOutput));
+        setValue('finishedWeight', checkForDecimalAndNull(data?.FinishWeight, getConfigurationKey().NoOfDecimalForInputOutput));
         // Set state variables
         setTableVal(data.LossOfTypeDetails || []);
         setLostWeight(data.NetLossWeight || 0);
         setDataToSend(data);
         setTotalCostCalculated(data.BinderOrAdditivesTotalCost || 0);
-
+        setTotalCostInputWeight(data.TotalCostPerInputWeight)
+        setTotalCastingCostInputWeight(data.TotalCastingCostPerInputWeight)
+        setCastingCost(data.CastingCost)
+        setFinishWeight(data.FinishWeight)
+        setNetRMCost(data.RawMaterialCost);
+        setScrapCost(data.ScrapCost)
+        setScrapWeight(data?.ScrapWeight);
+        setNetScrapRate(data?.NetScrapRate);
+        setNetRmRate(data?.NetRMRate);
         // Handle raw materials
         const rawMaterials = data.CostingFerrousCalculationRawMaterials
             .filter(rm => !rm.IsBinders && rm.Percentage > 0)
@@ -156,7 +188,7 @@ const [scrapCost , setScrapCost] = useState(0)
             setValue(`rmGridFields.${index}.Percentage`, checkForDecimalAndNull(item.Percentage, getConfigurationKey().NoOfDecimalForInputOutput));
         });
 
-        
+
         const binders = data.CostingFerrousCalculationRawMaterials
             .filter(rm => rm.IsBinders)
             .map(rm => ({
@@ -187,17 +219,48 @@ const [scrapCost , setScrapCost] = useState(0)
         const totalPercentage = rawMaterials.reduce((sum, item) => sum + (item.Percentage || 0), 0);
         setFieldsEnabled(totalPercentage === 100);
         setValue('BinderOrAdditivesTotalCost', checkForDecimalAndNull(data.BinderOrAdditivesTotalCost, getConfigurationKey().NoOfDecimalForPrice));
-        //calculateNetRmRate();//
-        //calculateNetScrapRate();
     };
-    
+
     useEffect(() => {
         if (WeightCalculatorRequest && Object.keys(WeightCalculatorRequest).length > 0) {
             defaultValues(WeightCalculatorRequest);
         }
     }, [WeightCalculatorRequest]);
 
+    useEffect(() => {
+        if (!CostingViewMode) {
+            calculatetotalCostInputWeight()
+        }
+    }, [totalCostInputWeightValue])
 
+    const calculatetotalCostInputWeight = () => {
+        const inputWeight = getValues('inputWeight')
+        const netRMRate = getValues('NetRMRate')
+        const totalCostInputWeight = checkForNull(inputWeight * netRMRate)
+        setTotalCostInputWeight(totalCostInputWeight)
+        setValue('totalCostInputWeight', checkForDecimalAndNull(totalCostInputWeight, getConfigurationKey().NoOfDecimalForPrice))
+    }
+    useEffect(() => {
+        if (!CostingViewMode) {
+            calculateTotalCastingCostInputWeight()
+        }
+    }, [totalCastingCostInputWeightValues, totalCostCalculated, watchedValues])
+
+    const calculateTotalCastingCostInputWeight = () => {
+        const otherCostInputWeight = checkForNull(getValues('otherCostInputWeight'))
+        const inputWeight = Number(getValues('inputWeight'))
+        const totalCastingCostInputWeight = otherCostInputWeight + totalCostInputWeight + totalCostCalculated
+        const castingCost = checkForNull(totalCastingCostInputWeight / inputWeight)
+
+        setTotalCastingCostInputWeight(totalCastingCostInputWeight)
+        setCastingCost(castingCost)
+        setValue('totalCastingCostInputWeight', checkForDecimalAndNull(totalCastingCostInputWeight, getConfigurationKey().NoOfDecimalForPrice))
+        setValue('castingCost', checkForDecimalAndNull(castingCost, getConfigurationKey().NoOfDecimalForPrice))
+        const netRMCost = checkForNull((netGrossWeight * castingCost) - calculateScrapCost());
+        setNetRMCost(netRMCost);
+        setValue('NetRMCost', checkForDecimalAndNull(netRMCost, getConfigurationKey().NoOfDecimalForPrice));
+        return netRMCost;
+    }
     const totalPercentageValue = () => {
         let sum = 0;
         tableRawMaterials.forEach((item, index) => {
@@ -208,7 +271,7 @@ const [scrapCost , setScrapCost] = useState(0)
         return checkForDecimalAndNull(sum, getConfigurationKey().NoOfDecimalForInputOutput);
     };
     const percentageChange = (percentage, index) => {
-        
+
         setValue(`rmGridFields.${index}.Percentage`, percentage);
 
         setTimeout(() => {
@@ -219,20 +282,23 @@ const [scrapCost , setScrapCost] = useState(0)
             }
 
             const updatedItems = tableRawMaterials.map((item, idx) => {
-                const currentPercentage = parseFloat(getValues(`rmGridFields.${idx}.Percentage`) || 0);
+                const currentPercentage = idx === index ? parseFloat(percentage) || 0 : parseFloat(getValues(`rmGridFields.${idx}.Percentage`) || 0);
                 return {
                     ...item,
                     Percentage: currentPercentage,
-                    calculatedBasicValue: (currentPercentage / 100) * item.RawMaterialRate,
-                    calculatedScrapValue: (currentPercentage / 100) * item.ScrapRate,
+                    calculatedBasicValue: (currentPercentage / 100) * item?.RawMaterialRate,
+                    calculatedScrapValue: (currentPercentage / 100) * item?.ScrapRate,
                 };
             });
+            setTableRawMaterials(updatedItems);
+            setCalculatedValues(updatedItems);
+
 
             if (percentage !== '') {
                 calculateNetRmRate();
                 calculateNetScrapRate();
             }
-    
+
             calculateRemainingCalculation();
         }, 300);
     };
@@ -244,7 +310,7 @@ const [scrapCost , setScrapCost] = useState(0)
             return acc + (Percentage * BasicRate) / 100;
         }, 0);
         setValue('NetRMRate', checkForDecimalAndNull(NetRMRate, getConfigurationKey().NoOfDecimalForPrice));
-        
+
         setNetRmRate(NetRMRate);
         return checkForDecimalAndNull(NetRMRate, getConfigurationKey().NoOfDecimalForPrice);
     };
@@ -268,24 +334,26 @@ const [scrapCost , setScrapCost] = useState(0)
     const calculateLossWeight = (castingWeight, lossPercentage) => {
         return (castingWeight * lossPercentage) / 100;
     };
-
+    const calculateFinishWeight = () => {
+        const castingWeight = Number(getValues('castingWeight'));
+        const totalLossWeight = Number(findLostWeight(tableVal));
+        const finishedWeight = checkForNull(castingWeight - totalLossWeight);
+        setFinishWeight(finishedWeight);
+        setValue('finishedWeight', checkForDecimalAndNull(finishedWeight, getConfigurationKey().NoOfDecimalForInputOutput));
+    }
     const calculateGrossWeight = (castingWeight, totalLossWeight) => {
         const grossWeight = castingWeight + totalLossWeight;
-        
         setNetGrossWeight(grossWeight);
         setValue('grossWeight', checkForDecimalAndNull(grossWeight, getConfigurationKey().NoOfDecimalForInputOutput));
         return grossWeight;
     };
 
-    const calculateScrapWeight = (castingWeight, finishWeight) => {
+    const calculateScrapCost = () => {
+        const castingWeight = Number(getValues('castingWeight'));
         const scrapWeight = castingWeight - finishWeight;
         setScrapWeight(scrapWeight);
         setValue('scrapWeight', checkForDecimalAndNull(scrapWeight, getConfigurationKey().NoOfDecimalForInputOutput));
-        return scrapWeight;
-
-    };
-
-    const calculateScrapCost = (scrapWeight, recovery, netScrapRate) => {
+        const recovery = Number(getValues('recovery'));
         const scrapCost = (scrapWeight * recovery * netScrapRate) / 100;
         setScrapCost(scrapCost);
         setValue('scrapCost', checkForDecimalAndNull(scrapCost, getConfigurationKey().NoOfDecimalForInputOutput));
@@ -297,13 +365,12 @@ const [scrapCost , setScrapCost] = useState(0)
             return;
         }
         setBinderError('');
-            setBinderRm(prev => [...prev, ...binderRawMaterials]);
+        setBinderRm(prev => [...prev, ...binderRawMaterials]);
         // Remove the added binders from the main raw materials list
         setTableRawMaterials(prev => prev.filter(item =>
             !binderRawMaterials.some(binder => binder.value === item.value)
         ));
         // Clear the unselected raw materials
-        setUnSelectedRm([]);
         setUnSelectedRm(prev => prev.filter(item =>
             !binderRawMaterials.some(binder => binder.value === item.RawMaterialId)
         ));
@@ -320,19 +387,9 @@ const [scrapCost , setScrapCost] = useState(0)
         // Trigger recalculation
         calculateRemainingCalculation();
     };
-    const calculateNetRMCost = (grossWeight, netRMRate, scrapCost, totalCostCalculated, otherCost, castingWeight) => {
-        const netRMCost = ((grossWeight * netRMRate) - scrapCost + totalCostCalculated + otherCost) / castingWeight;
-        
-        setNetRMCost(netRMCost);
-        setValue('NetRMCost', checkForDecimalAndNull(netRMCost, getConfigurationKey().NoOfDecimalForInputOutput));
-        return netRMCost;
-    };
 
-    const calculateRemainingCalculation = React.useCallback(() => {
+    const calculateRemainingCalculation = React.useCallback((weight) => {
         const castingWeight = checkForNull(getValues("castingWeight"));
-        const finishedWeight = checkForNull(getValues('finishedWeight'));
-        const recovery = checkForNull(getValues('recovery'));
-                const otherCost = checkForNull(getValues('otherCost'));
 
         if (castingWeight) {
             const lossWeights = tableVal?.map(loss => ({
@@ -351,42 +408,17 @@ const [scrapCost , setScrapCost] = useState(0)
             // Set lost weight
             setLostWeight(totalLossWeight);
 
-            // Update loss weights in the table
-            setTableVal(prevTableVal => prevTableVal?.map(loss => ({
-                ...loss,
-                LossWeight: calculateLossWeight(castingWeight, loss.LossPercentage)
-            })));
-
-            if (finishedWeight !== undefined && recovery !== undefined && netScrapRate !== undefined && netRmRate !== undefined) {
-                // Calculate scrap weight
-                const scrapWeight = calculateScrapWeight(castingWeight, finishedWeight);
-
-                // Calculate scrap cost
-                const scrapCost = calculateScrapCost(scrapWeight, recovery, netScrapRate);
-
-                // Calculate Net RM Cost
-                const NetRMCost = calculateNetRMCost(grossWeight, netRmRate, scrapCost, totalCostCalculated, otherCost, castingWeight);
-
-                // Update additional state and form values
-                setDataToSend(prev => ({
-                    ...prev,
-                    scrapWeight: scrapWeight,
-                    scrapCost: scrapCost,
-                    NetRMCost: NetRMCost,
-                    RecoveryPercentage: recovery
-                }));
-            }
         }
 
     }, [getValues, setValue, tableVal, totalCostCalculated]);
-   
+
     useEffect(() => {
         const recovery = getValues('recovery');
         if (recovery !== undefined) {
             calculateRemainingCalculation();
         }
     }, [getValues('recovery')]);
-   
+
 
 
     const getUnusedRawMaterials = () => {
@@ -450,54 +482,58 @@ const [scrapCost , setScrapCost] = useState(0)
         }
     };
     const saveRawMaterialCalculation = (usedRMIdsParam) => {
-        
+
         const formValues = getValues();
         const usedRMIds = usedRMIdsParam || [
             ...tableRawMaterials.map(rm => rm.value),
             ...binderRm.map(rm => rm.value)
         ];
-        
+
         let obj = {
             FerrousCastingWeightCalculatorId: WeightCalculatorRequest?.WeightCalculationId || 0,
             BaseCostingIdRef: item.CostingId || "00000000-0000-0000-0000-000000000000",
             CostingRawMaterialDetailsIdRef: rmRowData.RawMaterialDetailId || "00000000-0000-0000-0000-000000000000",
             RawMaterialIdRef: rmRowData?.RawMaterialId || "00000000-0000-0000-0000-000000000000",
             LoggedInUserId: loggedInUserId() || "00000000-0000-0000-0000-000000000000",
-            FinishWeight: checkForNull(formValues.finishedWeight) || 0,
-            GrossWeight: checkForNull(dataToSend.totalGrossWeight),
-            ScrapWeight: checkForNull(dataToSend.scrapWeight),
-            ScrapCost: checkForNull(dataToSend.scrapCost),
+            FinishWeight: finishWeight,
+            GrossWeight: checkForNull(netGrossWeight),
+            ScrapWeight: checkForNull(scrapWeight),
+            ScrapCost: checkForNull(scrapCost),
             RecoveryPercentage: checkForNull(formValues.recovery) || 0,
-            NetRMRate: checkForNull(formValues.NetRMRate),
+            NetRMRate: checkForNull(netRmRate),
             NetScrapRate: checkForNull(formValues.NetScrapRate),
             CastingWeight: checkForNull(formValues.castingWeight),
             NetLossWeight: checkForNull(lostWeight),
-            RawMaterialCost: checkForNull(dataToSend?.NetRMCost),
-            OtherCost: checkForNull(formValues.otherCost) || 0,
+            RawMaterialCost: checkForNull(netRMCost),
             OtherCostDescription: "",
             BinderOrAdditivesTotalCost: checkForNull(totalCostCalculated),
-            LossOfTypeDetails: (tableVal && tableVal.length > 0) 
-                        ? tableVal.map(item => ({
-                LossOfTypeId: item?.LossOfTypeId || 0,
-                LossOfType: item?.LossOfType || "",
-                FlashLossId: 0,
-                FlashLoss: "",
-                FlashLength: 0,
-                FlashThickness: 0,
-                FlashWidth: 0,
-                BarDiameter: 0,
-                BladeThickness: 0,
-                LossPercentage: item?.LossPercentage || 0,
-                LossWeight: item?.LossWeight || 0,
-                CostingCalculationDetailId: item?.CostingCalculationDetailId || 0
-            }))
-            : [{
-                LossOfTypeId: 0,
-                LossOfType: "",
-                LossPercentage: 0,
-                LossWeight: 0,
-                CostingCalculationDetailId: 0
-            }],
+            InputWeight: checkForNull(formValues.inputWeight) || 0,
+            TotalCostPerInputWeight: totalCostInputWeight,
+            OtherCostPerInputWeight: checkForNull(formValues.otherCostInputWeight) || 0,
+            TotalCastingCostPerInputWeight: totalCastingCostInputWeight,
+            CastingCost: castingCost,
+            LossOfTypeDetails: (tableVal && tableVal.length > 0)
+                ? tableVal.map(item => ({
+                    LossOfTypeId: item?.LossOfTypeId || 0,
+                    LossOfType: item?.LossOfType || "",
+                    FlashLossId: 0,
+                    FlashLoss: "",
+                    FlashLength: 0,
+                    FlashThickness: 0,
+                    FlashWidth: 0,
+                    BarDiameter: 0,
+                    BladeThickness: 0,
+                    LossPercentage: item?.LossPercentage || 0,
+                    LossWeight: item?.LossWeight || 0,
+                    CostingCalculationDetailId: item?.CostingCalculationDetailId || 0
+                }))
+                : [{
+                    LossOfTypeId: 0,
+                    LossOfType: "",
+                    LossPercentage: 0,
+                    LossWeight: 0,
+                    CostingCalculationDetailId: 0
+                }],
             CostingFerrousCalculationRawMaterials: [
                 ...tableRawMaterials
                     .filter(item => usedRMIds.includes(item.value))
@@ -543,7 +579,7 @@ const [scrapCost , setScrapCost] = useState(0)
         };
 
         dispatch(saveRawMaterialCalculationForFerrous(obj, res => {
-            
+
             if (res?.data?.Result) {
                 obj.WeightCalculationId = res.data.Identity;
                 Toaster.success("Calculation saved successfully");
@@ -553,10 +589,10 @@ const [scrapCost , setScrapCost] = useState(0)
     };
     const [isSaveEnabled, setIsSaveEnabled] = useState(false);
 
-useEffect(() => {
-    const totalPercentage = totalPercentageValue();
-    setIsSaveEnabled(totalPercentage === 100 && tableRawMaterials.length > 0);
-}, [tableRawMaterials, getValues]);
+    useEffect(() => {
+        const totalPercentage = totalPercentageValue();
+        setIsSaveEnabled(totalPercentage === 100 && tableRawMaterials.length > 0);
+    }, [tableRawMaterials, getValues]);
     const onSubmit = debounce(handleSubmit((values) => {
         // if (!fieldsEnabled) {
         //     Toaster.warning('Please add raw materials and ensure their percentages sum up to 100% before saving.');
@@ -574,14 +610,12 @@ useEffect(() => {
     }
 
     const handleKeyDown = function (e) {
-        
+
         if (e.key === 'Enter' && e.shiftKey === false) {
             e.preventDefault();
         }
     };
-    const handleFinishedWeight = (e) => {
-        setInputFinishWeight(e)
-    }
+
 
     const {
         register: registerTableForm,
@@ -599,7 +633,7 @@ useEffect(() => {
     const handleLossDelete = (updatedLosses) => {
         setTableVal(updatedLosses);
         calculateRemainingCalculation();
-      };
+    };
     const rawMaterialHandler = (newValue) => {
 
         if (Array.isArray(newValue) && newValue.some(item => item?.value === 'select_all')) {
@@ -790,7 +824,7 @@ useEffect(() => {
         setShowResetPopup(false);
     };
 
-   
+
     const confirmResetMainRawMaterials = () => {
         // Reset table data and related state variables
         setTableRawMaterials([]);
@@ -811,10 +845,8 @@ useEffect(() => {
         setValue('finishedWeight', '');
         setValue('scrapWeight', '');
         setValue('recovery', '');
-        setValue('scrapCost', '');
+        // setValue('scrapCost', '');
         setValue('NetRMCost', '');
-        setValue('otherCost', '');
-        setValue('BinderOrAdditivesTotalCost', '');
 
         // Reset rmGridFields
         tableRawMaterials.forEach((_, index) => {
@@ -843,21 +875,12 @@ useEffect(() => {
         setValueTableForm('RawMaterialBinders', []);
 
         // Reset data to send
-        setDataToSend(prevData => ({
-            ...prevData,
-            totalGrossWeight: 0,
-            scrapWeight: 0,
-            scrapCost: 0,
-            NetRMCost: 0,
-            BinderOrAdditivesTotalCost: 0
-        }));
 
         // Reset lost weight
         setLostWeight(0);
 
         // Reset table values for LossStandardTable
         setTableVal([]);
-
         // Reset loss calculations
         dropDown.forEach(loss => {
             setValue(`loss_${loss.value}`, '');
@@ -930,21 +953,54 @@ useEffect(() => {
     };
 
     const resetBinderMaterials = () => {
+        // Reset binder-related state
         setBinderRm([]);
         setCalculatedCost([]);
         setTotalCostCalculated(0);
+
+        // Reset the form values for binders
+        binderRm.forEach((_, index) => {
+            setValue(`binderQuantity.${index}`, '');
+        });
+
+        // Clear the searchable select field for binders
+        setBinderRawMaterials([]);
+        setValue('RawMaterialBinders', []);
+        setValueTableForm('RawMaterialBinders', []);
+
+        // Add the reset binders back to the unselected raw materials
+        const resetBinders = binderRm.map(binder => ({
+            RMName: binder.label,
+            RawMaterialId: binder.value,
+            RMRate: binder.RawMaterialRate,
+            ScrapRate: binder.ScrapRate
+        }));
+        setUnSelectedRm(prev => [...prev, ...resetBinders]);
+
+        // Recalculate remaining values
         calculateRemainingCalculation();
     };
 
     const deleteBinderMaterial = (index) => {
+        const deletedBinder = binderRm[index];
         const updatedBinders = binderRm.filter((_, idx) => idx !== index);
         setBinderRm(updatedBinders);
         setCalculatedCost(updatedBinders);
         const newTotalCost = calculateTotalCost();
         setTotalCostCalculated(newTotalCost);
+        // Add the deleted binder back to the unselected raw materials
+        setUnSelectedRm(prev => [...prev, {
+            RMName: deletedBinder.label,
+            RawMaterialId: deletedBinder.value,
+            RMRate: deletedBinder.RawMaterialRate,
+            ScrapRate: deletedBinder.ScrapRate
+        }]);
+
+        // Clear the form value for this binder
+        setValue(`binderQuantity.${index}`, '');
+
         calculateRemainingCalculation();
     };
-
     return (
         <Fragment>
             <Row>
@@ -1165,8 +1221,8 @@ useEffect(() => {
                             </Col>
                             <Col md="3">
                                 <TextFieldHookForm
-                                    label={`Casting Weight(kg)`}
-                                    name={'castingWeight'}
+                                    label={`Input Wt (Kg)`}
+                                    name={'inputWeight'}
                                     Controller={Controller}
                                     control={control}
                                     register={register}
@@ -1180,12 +1236,33 @@ useEffect(() => {
                                     defaultValue={''}
                                     className=""
                                     customClassName={'withBorder text-nowrap'}
-                                    errors={errors.castingWeight}
+                                    errors={errors.inputWeight}
                                     // disabled={!fieldsEnabled || props.isEditFlag ? false : true}
                                     disabled={!fieldsEnabled || props?.CostingViewMode}
 
                                 />
                             </Col>
+                            <Col md="3">
+                                <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'total-cost-input-weight'} tooltipText={'Total Cost/Input Wt = Net RM Rate * Input Wt (Kg)'} />
+                                <TextFieldHookForm
+                                    label={`Total Cost/Input Wt`}
+                                    name={'totalCostInputWeight'}
+                                    id={'total-cost-input-weight'}
+                                    Controller={Controller}
+                                    control={control}
+                                    register={register}
+                                    mandatory={false}
+                                    handleChange={() => { }}
+                                    defaultValue={''}
+                                    className=""
+                                    customClassName={'withBorder text-nowrap'}
+                                    errors={errors.totalCostInputWeight}
+                                    // disabled={!fieldsEnabled || props.isEditFlag ? false : true}
+                                    disabled={true}
+
+                                />
+                            </Col>
+
                         </Row>
                         <div class="header-title mt12"><h5>Binders/Additives Detail</h5></div>
                         <Row className={"mx-0 align-items-center"}>
@@ -1311,6 +1388,95 @@ useEffect(() => {
                                 )}
                             </Table>
                         </div>
+                        <div class="header-title mt12"><h5>Casting Detail</h5></div>
+                        <Row className={"mx-0 align-items-center"}>
+                            <Col md="3">
+                                <TextFieldHookForm
+                                    label={`Other Cost/Input Wt`}
+                                    name={'otherCostInputWeight'}
+                                    Controller={Controller}
+                                    control={control}
+                                    register={register}
+                                    mandatory={true}
+                                    rules={{
+                                        required: true,
+                                        validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
+
+                                    }}
+                                    handleChange={() => { }}
+                                    defaultValue={''}
+                                    className=""
+                                    customClassName={'withBorder text-nowrap'}
+                                    errors={errors.otherCostInputWeight}
+                                    // disabled={!fieldsEnabled || props.isEditFlag ? false : true}
+                                    disabled={!fieldsEnabled || props?.CostingViewMode}
+
+                                />
+                            </Col>
+                            <Col md="3">
+                                <TooltipCustom width={"300px"} tooltipClass='weight-of-sheet' disabledIcon={true} id={'total-casting-cost-input-weight'} tooltipText={'Total Casting Cost/Input Wt = Total Cost/Input Wt + Binder/Additives Total Cost + Other Cost/Input Wt'} />
+                                <TextFieldHookForm
+                                    label={`Total Casting Cost/Input Wt`}
+                                    name={'totalCastingCostInputWeight'}
+                                    id={'total-casting-cost-input-weight'}
+                                    Controller={Controller}
+                                    control={control}
+                                    register={register}
+                                    mandatory={false}
+                                    handleChange={() => { }}
+                                    defaultValue={''}
+                                    className=""
+                                    customClassName={'withBorder text-nowrap'}
+                                    errors={errors.totalCastingCostInputWeight}
+                                    // disabled={!fieldsEnabled || props.isEditFlag ? false : true}
+                                    disabled={true}
+
+                                />
+                            </Col>
+                            <Col md="3">
+                                <TooltipCustom width={"300px"} tooltipClass='weight-of-sheet' disabledIcon={true} id={'casting-cost'} tooltipText={'Casting Cost/Kg = (Total Casting Cost/Input Wt) / Input Wt (Kg)'} />
+                                <TextFieldHookForm
+                                    label={`Casting Cost/Kg`}
+                                    name={'castingCost'}
+                                    id={'casting-cost'}
+                                    Controller={Controller}
+                                    control={control}
+                                    register={register}
+                                    mandatory={false}
+                                    handleChange={() => { }}
+                                    defaultValue={''}
+                                    className=""
+                                    customClassName={'withBorder text-nowrap'}
+                                    errors={errors.castingCost}
+                                    // disabled={!fieldsEnabled || props.isEditFlag ? false : true}
+                                    disabled={true}
+
+                                />
+                            </Col>
+                            <Col md="3">
+                                <TextFieldHookForm
+                                    label={`Casting Wt(kg)`}
+                                    name={'castingWeight'}
+                                    Controller={Controller}
+                                    control={control}
+                                    register={register}
+                                    mandatory={true}
+                                    rules={{
+                                        required: true,
+                                        validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
+
+                                    }}
+                                    handleChange={() => { }}
+                                    defaultValue={''}
+                                    className=""
+                                    customClassName={'withBorder text-nowrap'}
+                                    errors={errors.castingWeight}
+                                    // disabled={!fieldsEnabled || props.isEditFlag ? false : true}
+                                    disabled={!fieldsEnabled || props?.CostingViewMode || castingWeightDisable}
+
+                                />
+                            </Col>
+                        </Row>
                         <LossStandardTable
                             dropDownMenu={dropDown}
                             CostingViewMode={props.CostingViewMode}
@@ -1333,29 +1499,9 @@ useEffect(() => {
 
                         <Row className={'mt25 mx-0'}>
                             <Col md="3" >
+                                <TooltipCustom disabledIcon={true} id={'gross-weight-ferrous'} tooltipText={'Gross Wt = (Casting Wt + Net Loss Wt)'} />
                                 <TextFieldHookForm
-                                    label={`Other Cost`}
-                                    name={'otherCost'}
-                                    Controller={Controller}
-                                    control={control}
-                                    register={register}
-                                    rules={{
-                                        required: true,
-                                        validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
-
-                                    }}
-                                    handleChange={() => { }}
-                                    defaultValue={'0'}
-                                    className=""
-                                    customClassName={'withBorder'}
-                                    // errors={errors.otherCost}
-                                    disabled={!fieldsEnabled || props?.CostingViewMode}
-                                />
-                            </Col>
-                            <Col md="3" >
-                                <TooltipCustom disabledIcon={true} id={'gross-weight-ferrous'} tooltipText={'Gross Weight = (Casting Weight + Net Loss Weight)'} />
-                                <TextFieldHookForm
-                                    label={`Gross Weight(Kg)`}
+                                    label={`Gross Wt(Kg)`}
                                     id={'gross-weight-ferrous'}
                                     name={'grossWeight'}
                                     Controller={Controller}
@@ -1374,34 +1520,28 @@ useEffect(() => {
                                 />
                             </Col>
                             <Col md="3" >
+                                <TooltipCustom disabledIcon={true} id={'finished-weight-ferrous'} tooltipText={'Finished Wt = (Casting Wt - Net Loss Wt)'} />
                                 <TextFieldHookForm
-                                    label={`Finished Weight(Kg)`}
+                                    label={`Finished Wt(Kg)`}
                                     name={'finishedWeight'}
+                                    id={'finished-weight-ferrous'}
                                     Controller={Controller}
                                     control={control}
                                     register={register}
-                                    mandatory={true}
-                                    rules={{
-                                        required: true,
-                                        validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
-                                        max: {
-                                            value: getValues("castingWeight"),
-                                            message: 'Finish weight should not be greater than casting weight.'
-                                        },
-                                    }}
-                                    handleChange={(e) => { handleFinishedWeight(e?.target?.value) }}
+                                    mandatory={false}
+                                    handleChange={(e) => { }}
                                     defaultValue={'0'}
                                     className=""
                                     customClassName={'withBorder'}
                                     errors={errors.finishedWeight}
-                                    disabled={!fieldsEnabled || props?.CostingViewMode}
+                                    disabled={true}
                                 />
                             </Col>
 
                             <Col md="3">
-                                <TooltipCustom disabledIcon={true} id={'scrap-weight-ferrous'} tooltipText={'Scrap Weight = (Casting Weight - Finished Weight)'} />
+                                <TooltipCustom disabledIcon={true} id={'scrap-weight-ferrous'} tooltipText={'Scrap Wt = (Casting Wt - Finished Wt)'} />
                                 <TextFieldHookForm
-                                    label={`Scrap Weight(Kg)`}
+                                    label={`Scrap Wt(Kg)`}
                                     name={'scrapWeight'}
                                     id={'scrap-weight-ferrous'}
                                     Controller={Controller}
@@ -1451,7 +1591,7 @@ useEffect(() => {
 
 
                             <Col md="3">
-                                <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'scrap-cost-ferrous'} tooltipText={'Scrap Cost = (Scrap Weight * Scrap Recovery Percentage * Net Scrap Rate / 100)'} />
+                                <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'scrap-cost-ferrous'} tooltipText={'Scrap Cost = (Scrap Wt * Scrap Recovery Percentage * Net Scrap Rate / 100)'} />
                                 <TextFieldHookForm
                                     label={`Scrap Cost`}
                                     name={'scrapCost'}
@@ -1471,7 +1611,7 @@ useEffect(() => {
                             </Col>
 
                             <Col md="3">
-                                <TooltipCustom disabledIcon={true} id={'net-rm-ferrous'} tooltipText={'Net RM Cost = ((Gross Weight * Net RM Rate) - Scrap Cost + Binder/Additives Total Cost + Other Cost)/ Casting Weight'} />
+                                <TooltipCustom disabledIcon={true} id={'net-rm-ferrous'} tooltipText={'Net RM Cost = (Casting Cost/Kg * Gross Wt) - Scrap Cost'} />
 
                                 <TextFieldHookForm
                                     // Confirm this name from tanmay sir
@@ -1508,7 +1648,7 @@ useEffect(() => {
                         <button
                             type="button"
                             onClick={onSubmit}
-                            disabled={props.CostingViewMode|| !fieldsEnabled}
+                            disabled={props.CostingViewMode || !fieldsEnabled}
                             className="btn-primary save-btn"
                         >
                             <div className={'save-icon'}>
