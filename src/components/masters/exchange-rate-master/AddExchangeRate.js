@@ -204,12 +204,14 @@ class AddExchangeRate extends Component {
             this.setState({
               isEditFlag: true,
               // isLoader: false,
-              currency: Data.Currency !== undefined ? { label: Data.Currency, value: Data.CurrencyId } : [],
+              currency: Data.FromCurrency !== undefined ? { label: Data.FromCurrency, value: Data.FromCurrencyId } : [],
               effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(new Date(Data.EffectiveDate)).format('MM/DD/YYYY') : '',
               costingTypeId: Data.CostingHeadId,
               customer: Data.CustomerName !== undefined ? { label: `${Data.CustomerName} (${Data.CustomerCode})`, value: Data.CustomerId } : [],
               vendorName: Data.VendorName !== undefined ? { label: `${Data.VendorName} (${Data.VendorCode})`, value: Data.VendorIdRef } : [],
-              budgeting: Data.IsBudgeting ? Data.IsBudgeting : false
+              budgeting: Data.IsBudgeting ? Data.IsBudgeting : false,
+              toCurrency: Data.ToCurrency !== undefined ? { label: Data.ToCurrency, value: Data.ToCurrencyId } : [],
+              exchangeRateSource: Data.ExchangeRateSourceName !== undefined ? { label: Data.ExchangeRateSourceName, value: Data.ExchangeRateSourceId } : [],
             }, () => this.setState({ isLoader: false }))
           }, 500)
 
@@ -622,6 +624,7 @@ class AddExchangeRate extends Component {
                           //onKeyUp={(e) => this.changeItemDesc(e)}
                           required={false}
                           handleChangeDescription={this.handleExchangeRateSource}
+                          valueDescription={this.state.exchangeRateSource}
                           disabled={isEditFlag ? true : false}
                         />
                       </Col>

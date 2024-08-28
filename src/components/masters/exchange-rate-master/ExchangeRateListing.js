@@ -418,6 +418,7 @@ const ExchangeRateListing = (props) => {
                                 <AgGridColumn field="CustomRate" headerName={`Custom Rate (${reactLocalStorage.getObject("baseCurrency")})`} minWidth={160} cellRenderer={'commonCostFormatter'}></AgGridColumn>
                                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams} minWidth={160}></AgGridColumn>
                                 <AgGridColumn suppressSizeToFit="true" field="DateOfModification" headerName="Date of Modification" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams} minWidth={160}></AgGridColumn>
+                                <AgGridColumn field="IsBudgeting" headerName="Is Budgeting" minWidth={135}></AgGridColumn>
                                 {!props.isSimulation && <AgGridColumn suppressSizeToFit="true" field="ExchangeRateId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer='totalValueRenderer' minWidth={160} ></AgGridColumn>}
                             </AgGridReact>}
                             {<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} />}
