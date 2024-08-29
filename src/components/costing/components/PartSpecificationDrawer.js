@@ -140,8 +140,8 @@ const PartSpecificationDrawer = (props) => {
                                 <HeaderTitle title="Specifications" customClass="mt-3" />
                                 {rowData?.length > 0 && (
                                     <Row className="mt-1 part-detail-wrapper">
-                                        <Col md="3">
-                                            {props.type !== 'BOP' && (<TextFieldHookForm
+                                       {props.type !== 'BOP'  && props.partType !=='Tooling'  && (  <Col md="3">
+                                           <TextFieldHookForm
                                                 label="Havells Design Part"
                                                 name="HavellsDesignPart"
                                                 Controller={Controller}
@@ -152,10 +152,10 @@ const PartSpecificationDrawer = (props) => {
                                                 className=""
                                                 customClassName="withBorder"
                                                 errors={errors.Specification}
-                                            />)}
-                                        </Col>
-                                        <Col md="3">
-                                            {props.type !== 'BOP' && (<TextFieldHookForm
+                                            />
+                                        </Col>)}
+                                        {props.type !== 'BOP' && props.partType !=='Tooling' && (  <Col md="3">
+                                           <TextFieldHookForm
                                                 label="Target Price"
                                                 name="TargetPrice"
                                                 Controller={Controller}
@@ -169,8 +169,8 @@ const PartSpecificationDrawer = (props) => {
                                                 errors={errors.Description}
                                                 disabled={true}
                                                 placeholder="-"
-                                            />)}
-                                        </Col>
+                                            />
+                                        </Col>)}
                                         <Col md="3">
                                             <TextFieldHookForm
                                                 label="UOM"
@@ -205,9 +205,9 @@ const PartSpecificationDrawer = (props) => {
                                                 placeholder="-"
                                             />
                                         </Col>
-                                        <Col md="3">
-                                            {props.type !== 'BOP' && (<TextFieldHookForm
-                                                label="Part Number"
+                                        {props.type !== 'BOP' && ( <Col md="3">
+                                           <TextFieldHookForm
+                                                label={props?.partType === 'Tooling' ? "Tool Number" : "Part Number"}
                                                 name="PartNumber"
                                                 Controller={Controller}
                                                 control={control}
@@ -220,8 +220,8 @@ const PartSpecificationDrawer = (props) => {
                                                 errors={errors.Description}
                                                 disabled={true}
                                                 placeholder="-"
-                                            />)}
-                                        </Col>
+                                            />
+                                        </Col>)}
                                     </Row>
                                 )}
                                 <div className="ag-grid-react">
