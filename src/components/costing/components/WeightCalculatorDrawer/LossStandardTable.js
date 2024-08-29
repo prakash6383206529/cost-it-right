@@ -13,8 +13,8 @@ import TooltipCustom from '../../../common/Tooltip'
 import { number, percentageLimitValidation, checkWhiteSpaces } from "../../../../helper/validation";
 import { FORGING } from '../../../../config/masterData'
 function LossStandardTable(props) {
-  
-  const { rmRowData, isLossStandard, isNonFerrous, disableAll, isFerrous, fieldsEnabled, resetTrigger,onLossDelete } = props;
+
+  const { rmRowData, isLossStandard, isNonFerrous, disableAll, isFerrous, fieldsEnabled, resetTrigger, onLossDelete } = props;
   const trimValue = getConfigurationKey()
   const trim = trimValue.NoOfDecimalForInputOutput
   const [lossWeight, setLossWeight] = useState('')
@@ -46,7 +46,7 @@ function LossStandardTable(props) {
     setIsDisable(false);
     setIsBarBlade(false);
     setIsFlashParametersDisable(false);
-    
+
     reset({
       LossPercentage: '',
       FlashLength: '',
@@ -58,7 +58,7 @@ function LossStandardTable(props) {
       LossWeight: '',
       FlashLoss: '',
     });
-  
+
     props.tableValue([]);
     props.calculation(0);
     if (props.burningLoss) {
@@ -98,15 +98,15 @@ function LossStandardTable(props) {
   const [isFlashParametersDisable, setIsFlashParametersDisable] = useState(false)
   useEffect(() => {
     if (props.castingWeightChanged) {
-        resetTable();
-        props.calculation(0);
+      resetTable();
+      props.calculation(0);
     }
-}, [props.castingWeightChanged]);
+  }, [props.castingWeightChanged]);
   useEffect(() => {
-    if(isFerrous ){
-      setTableData( (props?.sendTable.length !== 0 && props?.sendTable[0]?.LossWeight !==0 ) ? props?.sendTable : [])
+    if (isFerrous) {
+      setTableData((props?.sendTable.length !== 0 && props?.sendTable[0]?.LossWeight !== 0) ? props?.sendTable : [])
     }
-    else{
+    else {
 
       setTableData(props?.sendTable ? props?.sendTable : [])
     }
@@ -128,7 +128,7 @@ function LossStandardTable(props) {
       setBarCuttingAllowanceLossType(true)
       setIsDisable(false)
       setFlashLossType(false)
-      setLossWeightTooltip(<div>Loss Weight = (0.7857 Bar Diameter<sup>2</sup> * Blade Thickness * Density / 1000000)</div>)
+      setLossWeightTooltip(<div>Loss {isFerrous ? "Wt" : "Weight"} = (0.7857 Bar Diameter<sup>2</sup> * Blade Thickness * Density / 1000000)</div>)
     }
     else if ((value.label === "Flash Loss")) {
 
@@ -146,24 +146,14 @@ function LossStandardTable(props) {
         setLossWeightTooltip(`Loss Weight = (Loss (%) * Forged Weight / 100)`)
       }
       else if (props?.isFerrous || props?.isNonFerrous) {
-        setLossWeightTooltip(`Loss Weight = (Loss (%) * Casting Weight / 100)`)
+        setLossWeightTooltip(`Loss ${isFerrous ? "Wt" : "Weight"} = (Loss (%) * Casting ${isFerrous ? "Wt" : "Weight"} / 100)`)
       }
       else {
         setLossWeightTooltip(`Loss Weight = (Loss (%) * Gross Weight / 100)`)
       }
     }
-    reset({
-      LossPercentage: '',
-      FlashLength: '',
-      FlashThickness: '',
-      FlashWidth: '',
-      BarDiameter: '',
-      BladeThickness: '',
-      LossOfType: '',
-      LossWeight: '',
-      FlashLoss: '',
-    })
-
+    const resetFields = ['LossPercentage', 'FlashLength', 'FlashThickness', 'FlashWidth', 'BarDiameter', 'BladeThickness', 'LossOfType', 'LossWeight', 'FlashLoss']
+    resetFields.map(field => setValue(field, ''))
   }
 
   const handleFlashloss = (value) => {
@@ -525,7 +515,7 @@ function LossStandardTable(props) {
     setTableData(tempData)
     cancelUpdate()
 
-    
+
     onLossDelete(tempData);
 
   }
@@ -571,7 +561,7 @@ function LossStandardTable(props) {
             className=""
             customClassName={'withBorder'}
             errors={errors.LossOfType}
-            disabled={props.CostingViewMode || disableLossType || disableAll || (isFerrous ? !fieldsEnabled :fieldsEnabled) }
+            disabled={props.CostingViewMode || disableLossType || disableAll || (isFerrous ? !fieldsEnabled : fieldsEnabled)}
           />
         </Col>
 
@@ -734,7 +724,7 @@ function LossStandardTable(props) {
         <Col md="2">
           {lossWeightTooltip && (props.CostingViewMode || isDisable || disableAll) && <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'loss-weight'} tooltipText={lossWeightTooltip} />}
           <TextFieldHookForm
-            label={`Loss Weight`}
+            label={`Loss ${isFerrous ? "Wt" : "Weight"}`}
             name={'LossWeight'}
             Controller={Controller}
             control={control}
@@ -746,7 +736,7 @@ function LossStandardTable(props) {
             className=""
             customClassName={'withBorder'}
             errors={errors.LossWeight}
-            disabled={props.CostingViewMode || isDisable || disableAll || !fieldsEnabled  }
+            disabled={props.CostingViewMode || isDisable || disableAll || !fieldsEnabled}
           />
         </Col>
         <Col md="3" className="pr-0">
@@ -783,7 +773,7 @@ function LossStandardTable(props) {
                 <button
                   type="button"
                   className={"mr15 ml-1 mt30 reset-btn"}
-                  disabled={props.CostingViewMode || disableAll || (isFerrous ? !fieldsEnabled : fieldsEnabled)}  
+                  disabled={props.CostingViewMode || disableAll || (isFerrous ? !fieldsEnabled : fieldsEnabled)}
                   onClick={rateTableReset}
                 >
                   Reset
@@ -804,7 +794,7 @@ function LossStandardTable(props) {
                 {isLossStandard && <th>{`Bar Diameter`}</th>}
                 {isLossStandard && <th>{`Blade Thickness`}</th>}
                 <th>{`Loss (%)`}</th>
-                <th>{`Loss Weight`}</th>
+                <th>{`Loss ${isFerrous ? "Wt" : "Weight"}`}</th>
                 <th>{`Actions`}</th>
               </tr>
             </thead>
@@ -861,11 +851,11 @@ function LossStandardTable(props) {
           <div className="col-md-12 text-right bluefooter-butn border">
             {props.isPlastic &&
               <span className="w-50 d-inline-block text-left">
-                {`${props.isStamping ? "Total" : "Burning"} Loss Weight: `}
+                {`${props.isStamping ? "Total" : "Burning"} Loss ${isFerrous ? "Wt" : "Weight"}: `}
                 {checkForDecimalAndNull(burningWeight, trim)}
               </span>}
             {!props.isStamping && <span className="w-50 d-inline-block">
-              {`${props.isPlastic ? 'Other' : 'Net'} Loss Weight: `}
+              {`${props.isPlastic ? 'Other' : 'Net'} Loss ${isFerrous ? "Wt" : "Weight"}: `}
               {checkForDecimalAndNull(findLostWeight(tableData), trim)}
             </span>}
           </div>

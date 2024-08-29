@@ -19,7 +19,7 @@ import { EMPTY_DATA, IV, IVRFQ, KEY, KEYRFQ, ONBOARDINGID, ONBOARDINGNAME, VBC_V
 import NoContentFound from "../common/NoContentFound";
 import HeaderTitle from "../common/HeaderTitle";
 import PermissionsTabIndex from "./RolePermissions/PermissionsTabIndex";
-import { EMPTY_GUID } from "../../config/constants";
+import { EMPTY_GUID, COSTING_LEVEL, SIMULATION_LEVEL, MASTER_LEVEL, ONBOARDING_MANAGEMENT_LEVEL } from "../../config/constants";
 import PopupMsgWrapper from "../common/PopupMsgWrapper";
 import { useDispatch, useSelector } from 'react-redux'
 import { reactLocalStorage } from "reactjs-localstorage";
@@ -184,12 +184,12 @@ function UserRegistration(props) {
   };
 
   useEffect(() => {
-    dispatch(getApprovalTypeSelectListUserModule(() => { }, '1'));
-    dispatch(getApprovalTypeSelectListUserModule(() => { }, '2'));
-    dispatch(getApprovalTypeSelectListUserModule(() => { }, '3'));
-    dispatch(getApprovalTypeSelectListUserModule(() => { }, '4'));
-
+    dispatch(getApprovalTypeSelectListUserModule(COSTING_LEVEL, () => { }));
+    dispatch(getApprovalTypeSelectListUserModule(SIMULATION_LEVEL, () => { }));
+    dispatch(getApprovalTypeSelectListUserModule(MASTER_LEVEL, () => { }));
+    dispatch(getApprovalTypeSelectListUserModule(ONBOARDING_MANAGEMENT_LEVEL, () => { }));
   }, [dispatch]);
+
   useEffect(() => {
     if (registerUserData && props?.data?.isEditFlag) {
       const CommonField = ['FirstName', 'MiddleName', 'LastName', 'EmailAddress', 'UserName', 'Mobile', 'AddressLine1', 'AddressLine2', 'ZipCode', 'PhoneNumber', 'Extension']
@@ -250,7 +250,7 @@ function UserRegistration(props) {
     if (props?.RFQUser) {
       dispatch(getReporterList(() => { }))
     }
-    dispatch(getApprovalTypeSelectList(() => { }))
+    dispatch(getApprovalTypeSelectList('', () => { }))
     dispatch(getAllLevelAPI(() => { }))
     return () => {
       reactLocalStorage?.setObject('vendorData', [])

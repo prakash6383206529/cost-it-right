@@ -248,7 +248,7 @@ function ViewDrawer(props) {
     }, [sopdate])
     useEffect(() => {
         if (!isViewFlag && !isEditFlag) {
-            if ((tableData.length > 0) && (childPartFiles.length > 0 || remark !== "")) {
+            if ((childPartFiles?.length > 0 || remark !== "")) {
                 setValue("remark", remark)
                 setFiles(childPartFiles)
             }

@@ -22,7 +22,7 @@ const PartSpecificationDrawer = (props) => {
         reValidateMode: 'onChange',
     });
     const [isLoader, setIsLoader] = useState(false);
-    const quotationId = useSelector((state) => state.rfq.quotationIDForRFQ);
+    const quotationId = useSelector((state) => state.rfq.quotationIDForRFQ ?? '');
     const [columnDefs, setColumnDefs] = useState([]);
     const [rowData, setRowData] = useState([]);
     const dispatch = useDispatch();
