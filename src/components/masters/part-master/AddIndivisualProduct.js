@@ -21,6 +21,7 @@ import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from './TourMessages';
 import { withTranslation } from 'react-i18next';
 import Button from '../../layout/Button';
+import AssociateHierarchy from './AssociateHierarchy';
 
 class AddIndivisualProduct extends Component {
     constructor(props) {
@@ -45,6 +46,7 @@ class AddIndivisualProduct extends Component {
             setDisable: false,
             attachmentLoader: false,
             showPopup: false,
+            showHierarchy: false
         }
     }
 
@@ -352,6 +354,13 @@ class AddIndivisualProduct extends Component {
     onPressImpactCalculation = () => {
         this.setState({ isImpactCalculation: !this.state.isImpactCalculation, DropdownChanged: false });
     }
+    formToggle = () => {
+        if (Object.keys(this.props.productHierarchyData).length > 0) {
+            this.setState({ showHierarchy: !this.state.showHierarchy })
+        } else {
+            Toaster.warning("Please define the levels in Product Hierarchy");
+        }
+    }
 
     /**
     * @method render
@@ -437,7 +446,7 @@ class AddIndivisualProduct extends Component {
 
                                                     {initialConfiguration &&
                                                         initialConfiguration.IsGroupCodeDisplay && (
-                                                            <Col md="3">
+                                                            <Col md="3" className="d-flex">
                                                                 <Field
                                                                     label={`Group Code`}
                                                                     name={"ProductGroupCode"}
@@ -450,8 +459,14 @@ class AddIndivisualProduct extends Component {
                                                                     }
                                                                     required={false}
                                                                     className=""
-                                                                    customClassName={"withBorder"}
+                                                                    customClassName={"withBorder w-100"}
                                                                     disabled={isViewMode}
+                                                                />
+                                                                <Button
+                                                                    id="RawMaterialName-add"
+                                                                    className="mt40 right"
+                                                                    variant="plus-icon-square"
+                                                                    onClick={() => this.formToggle()}
                                                                 />
                                                             </Col>
                                                         )}
@@ -685,6 +700,7 @@ class AddIndivisualProduct extends Component {
                                 </Col>
                             </Row>
                         </div>
+                        {this.state.showHierarchy && <AssociateHierarchy isOpen={this.state.showHierarchy} toggle={this.formToggle} />}
                     </div>
                 </div>
                 {
@@ -703,7 +719,7 @@ class AddIndivisualProduct extends Component {
 */
 function mapStateToProps({ comman, part, auth }) {
     const { plantSelectList, } = comman;
-    const { productData } = part;
+    const { productData, productHierarchyData } = part;
     const { initialConfiguration } = auth;
 
     let initialValues = {};
@@ -720,7 +736,7 @@ function mapStateToProps({ comman, part, auth }) {
         }
     }
 
-    return { plantSelectList, productData, initialValues, initialConfiguration, }
+    return { plantSelectList, productData, initialValues, initialConfiguration, productHierarchyData }
 }
 
 /**

@@ -15,7 +15,11 @@ import {
     GET_PRODUCT_DATA_LIST,
     GET_PRODUCT_UNIT_DATA,
     PRODUCT_GROUPCODE_SELECTLIST,
-    API_SUCCESS
+    API_SUCCESS,
+    ADD_PRODUCT_HIERARCHY,
+    ADD_PRODUCT_LABELS,
+    GET_PRODUCT_HIERARCHY_DATA,
+    GET_PRODUCT_HIERARCHY_LABELS
 } from '../../../config/constants';
 import { loggedInUserId } from '../../../helper';
 import { apiErrors, encodeQueryParams, encodeQueryParamsAndLog } from '../../../helper/util';
@@ -819,3 +823,83 @@ export function activeInactivePartUser(requestData, callback) {
             });
     };
 }
+
+// export function saveProductHierarchyData(data, callback) {
+//     return (dispatch) => {
+//         const request = axios.post(API.saveProductHierarchyData, data, config());
+//         request.then((response) => {
+//             if (response && response.status === 200) {
+//                 callback(response);
+//             }
+//         }).catch((error) => {
+//             dispatch({ type: API_FAILURE });
+//             apiErrors(error);
+//         });
+//     };
+// }
+export function getHierarchyData(callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getHierarchyData}`, config());
+        request.then((response) => {
+            if (response.data.Result || response.status === 204) {
+                dispatch({
+                    type: GET_PRODUCT_HIERARCHY_DATA,
+                    payload: response.status === 204 ? [] : response.data.DataList
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+export function saveProductHierarchyData(data) {
+    return (dispatch) => {
+        dispatch({
+            type: ADD_PRODUCT_HIERARCHY,
+            payload: data
+        })
+    }
+}
+export function getProductHierarchyLabels(callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getProductHierarchyLabels}`, config());
+        request.then((response) => {
+            if (response.data.Result || response.status === 204) {
+                dispatch({
+                    type: GET_PRODUCT_HIERARCHY_LABELS,
+                    payload: response.status === 204 ? [] : response.data.DataList
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+export function saveProductlabelsData(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.saveProductlabelsData, data, config());
+        request.then((response) => {
+            if (response && response.status === 200) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+// export function saveProductlabelsData(data) {
+//     return (dispatch) => {
+//         dispatch({
+//             type: ADD_PRODUCT_LABELS,
+//             payload: data
+//         })
+//     }
+// }

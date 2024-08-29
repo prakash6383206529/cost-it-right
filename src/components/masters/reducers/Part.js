@@ -18,12 +18,18 @@ import {
     GET_PRODUCT_DATA_LIST,
     GET_PRODUCT_UNIT_DATA,
     GET_ALL_NEW_PARTS_SUCCESS_PAGINATION,
-    PRODUCT_GROUPCODE_SELECTLIST
+    PRODUCT_GROUPCODE_SELECTLIST,
+    ADD_PRODUCT_HIERARCHY,
+    ADD_PRODUCT_LABELS,
+    GET_PRODUCT_HIERARCHY_DATA,
+    GET_PRODUCT_HIERARCHY_LABELS
 } from '../../../config/constants';
 import DayTime from '../../common/DayTimeWrapper';
 
 const initialState = {
-    productDataList: []
+    productDataList: [],
+    productHierarchyData: {},
+    getProductLabels: {}
 };
 
 export default function partReducer(state = initialState, action) {
@@ -200,6 +206,22 @@ export default function partReducer(state = initialState, action) {
                 loading: false,
                 error: true,
                 productGroupSelectList: action.payload
+            }
+        case ADD_PRODUCT_HIERARCHY:
+        case GET_PRODUCT_HIERARCHY_DATA:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                productHierarchyData: action.payload
+            }
+        case ADD_PRODUCT_LABELS:
+        case GET_PRODUCT_HIERARCHY_LABELS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                getProductLabels: action.payload
             }
         default:
             return state;
