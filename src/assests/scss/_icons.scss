@@ -236,6 +236,10 @@
     @include icons("../../images/plus-icon.svg", 12px, 12px);
 }
 
+.delete-primary {
+    @include icons("../../images/delete-primary.svg", 16px, 16px);
+}
+
 .swap {
     @include icons("../../images/swap.svg", 18px, 18px);
 }
