@@ -35,7 +35,7 @@ export default function OtherDiscountTable(props) {
                             <tr key={index} >
                                 {initialConfiguration.IsShowCRMHead && <td>{item.CRMHead}</td>}
                                 <td>{item.Description}</td>
-                                <td>{item.applicability}</td>
+                                <td>{item.ApplicabilityType}</td>
                                 <td>{checkForDecimalAndNull(item?.ApplicabilityCost, initialConfiguration.NoOfDecimalForPrice)}</td>
                                 <td>{item?.PercentageDiscountCost !== '' ? item?.PercentageDiscountCost : '-'}</td>
                                 <td>{checkForDecimalAndNull(item.NetCost, initialConfiguration.NoOfDecimalForPrice)}</td>
