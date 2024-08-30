@@ -895,7 +895,7 @@ function AddRMDetails(props) {
                                             }`}
                                         onChange={onPressDifferentSource}
                                     >
-                                        Has Difference Source?
+                                        Has different Source?
                                         <input
                                             type="checkbox"
                                             checked={state.HasDifferentSource}
