@@ -53,7 +53,8 @@ const BOPDomesticListing = (props) => {
   const { selectedRowForPagination } = useSelector(state => state.simulation)
   const { globalTakes } = useSelector((state) => state.pagination);
   const tourStartData = useSelector(state => state.comman.tourStartData);
-  const isRfq = props?.quotationId !== null || props?.quotationId !== '' || props?.quotationId !== undefined ? true : false
+  // const isRfq = props?.quotationId !== null || props?.quotationId !== '' || props?.quotationId !== undefined ? true : false
+  const isRfq = props?.quotationId !== null && props?.quotationId !== '' && props?.quotationId !== undefined;
 
   const { t } = useTranslation("common")
   const { technologyLabel } = useLabels();

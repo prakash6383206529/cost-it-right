@@ -234,6 +234,8 @@ function MasterSendForApproval(props) {
                     bulkuploadIdsArray.push({ OldRawMaterialId: masterId === 1 ? item?.OldRawMaterialId ?? null : null, MasterRecordId: masterId === 1 ? item?.RawMaterialId : masterId === 2 ? item?.BoughtOutPartId : masterId === 3 ? item?.OperationId : masterId === 4 ? item?.MachineId : null })
                 })
 
+                return bulkuploadIdsArray
+
             }
 
             //THIS OBJ IS FOR MASTER SEND FOR APPROVAL
