@@ -4013,7 +4013,7 @@ export const BOMUpload = [
     { label: "Quantity", value: "Quantity" }, //NOUI
     { label: "EffectiveDate", value: "EffectiveDate" },
     { label: "Remark", value: "Remark" },
-    { label: 'TechnologyName', value: "Technology" }
+    { label: 'TechnologyName', value: "Technology" },
 ]
 
 export const BOMUploadTempData = [
@@ -4036,7 +4036,8 @@ export const BOMUploadTempData = [
         "Quantity": 2,
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": 'Remark',
-        "ProductGroupCode": "VB"
+        "ProductGroupCode": "VB",
+        "TechnologyName": "Sheet Metal"
     },
     // COMPONENT
     {
@@ -4057,7 +4058,8 @@ export const BOMUploadTempData = [
         "Quantity": 3,
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": 'Remark',
-        "ProductGroupCode": "VB"
+        "ProductGroupCode": "VB",
+        "TechnologyName": "Sheet Metal"
     },
     // BOP
     {
@@ -4078,7 +4080,8 @@ export const BOMUploadTempData = [
         "Quantity": 4,
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": 'Remark',
-        "ProductGroupCode": "VB"
+        "ProductGroupCode": "VB",
+        "TechnologyName": "Sheet Metal"
     },
     // SUB ASSEMBLY
     {
@@ -4099,7 +4102,8 @@ export const BOMUploadTempData = [
         "Quantity": 2,
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": 'Remark',
-        "ProductGroupCode": "VB"
+        "ProductGroupCode": "VB",
+        "TechnologyName": "Sheet Metal"
     },
     // COMPONENT
     {
@@ -4120,7 +4124,8 @@ export const BOMUploadTempData = [
         "Quantity": 3,
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": 'Remark',
-        "ProductGroupCode": "VB"
+        "ProductGroupCode": "VB",
+        "TechnologyName": "Sheet Metal"
     },
 ]
 export const EAccessType = [
@@ -5644,6 +5649,7 @@ export const EXCHANGERATE_DOWNLOAD_EXCEl = [
     { label: `Custom Rate (${reactLocalStorage.getObject("baseCurrency")})`, value: "CustomRate", },
     { label: "Effective Date", value: "EffectiveDate", },
     { label: "Date of Modification", value: "DateOfModification", },
+    { label: "Is Budgeting", value: "IsBudgeting", },
 ]
 
 export const FREIGHT_DOWNLOAD_EXCEl = [

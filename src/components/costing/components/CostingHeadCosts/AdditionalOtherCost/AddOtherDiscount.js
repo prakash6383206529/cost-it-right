@@ -114,9 +114,8 @@ function AddOtherDiscount(props) {
             CRMHead: getValues('crmHeadOtherCost') ? getValues('crmHeadOtherCost').label : '-',
             Description: getValues("OtherCostDescription"),
             ApplicabilityIdRef: state.otherDiscountApplicabilityType?.value,
-            applicability: state.otherDiscountApplicabilityType?.label,
+            ApplicabilityType: state.otherDiscountApplicabilityType?.label,
             ApplicabilityCost: applicabilityCost,
-            ApplicabilityType: getValues("OtherCostApplicability").value ?? '',
             PercentageDiscountCost: getValues("PercentageOtherCost") ?? '-',
             NetCost: state.otherDiscountApplicabilityType?.label === 'Fixed' ? getValues('AnyOtherCost') : otherCost,
         }
@@ -190,6 +189,7 @@ function AddOtherDiscount(props) {
             CRMHead: getValues('crmHeadOtherCost') ? getValues('crmHeadOtherCost').label : '-',
             Description: getValues("OtherCostDescription"),
             ApplicabilityIdRef: state.otherDiscountApplicabilityType?.value,
+            ApplicabilityType: state.otherDiscountApplicabilityType?.label,
             applicability: state.otherDiscountApplicabilityType?.label,
             ApplicabilityCost: applicabilityCost,
             PercentageDiscountCost: getValues("PercentageOtherCost") ?? '-',
@@ -207,12 +207,12 @@ function AddOtherDiscount(props) {
     }
     const editItemDetails = (index) => {
         const editObj = state.tableData[index]
-        setValue('OtherCostApplicability', { label: editObj.applicability, value: editObj.ApplicabilityIdRef })
+        setValue('OtherCostApplicability', { label: editObj.ApplicabilityType, value: editObj.ApplicabilityIdRef })
         setValue('PercentageOtherCost', editObj.PercentageDiscountCost === '-' ? 0 : editObj.PercentageDiscountCost)
         setValue('OtherCostDescription', editObj.Description)
         setValue('AnyOtherCost', editObj.NetCost)
         setValue('crmHeadOtherCost', { label: editObj.CRMHead, value: index })
-        if (editObj?.applicability === 'Fixed') {
+        if (editObj?.ApplicabilityType === 'Fixed') {
             setTimeout(() => {
                 setValue('ApplicabilityCost', editObj?.ApplicabilityCost)
                 setApplicabilityCost(editObj?.ApplicabilityCost)
@@ -224,8 +224,8 @@ function AddOtherDiscount(props) {
             }, 100);
         }
 
-        setState(prevState => ({ ...prevState, editIndex: index, isEdit: true, otherDiscountApplicabilityType: { label: editObj.applicability, value: editObj.ApplicabilityIdRef } }))
-        let applicability = editObj.applicability !== 'Fixed' ? { label: 'Percentage', value: 'Percentage' } : editObj.applicability
+        setState(prevState => ({ ...prevState, editIndex: index, isEdit: true, otherDiscountApplicabilityType: { label: editObj.ApplicabilityType, value: editObj.ApplicabilityIdRef } }))
+        let applicability = editObj.ApplicabilityType !== 'Fixed' ? { label: 'Percentage', value: 'Percentage' } : editObj.ApplicabilityType
         setOtherCostApplicability(applicability)
 
     }

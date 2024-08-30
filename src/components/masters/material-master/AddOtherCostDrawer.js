@@ -608,7 +608,7 @@ function AddOtherCostDrawer(props) {
                                                 <Col md={3} className={'px-2'}>
 
                                                     <TextFieldHookForm
-                                                        label={`Applicability Cost (${reactLocalStorage.getObject("baseCurrency")})`}
+                                                        label={`Applicability Cost (${reactLocalStorage.getObject("baseCurrency")}/${UOM})`}
                                                         name={'ApplicabilityBaseCost'}
                                                         id={'cost-by-percent'}
                                                         Controller={Controller}
@@ -679,7 +679,7 @@ function AddOtherCostDrawer(props) {
                                         <Col md={3} className={'px-2'}>
 
                                             <TextFieldHookForm
-                                                label={`Cost (${reactLocalStorage.getObject("baseCurrency")})`}
+                                                label={`Cost (${reactLocalStorage.getObject("baseCurrency")}/${UOM})`}
                                                 name={'CostBaseCurrency'}
                                                 id={'cost-by-percent'}
                                                 Controller={Controller}
@@ -748,10 +748,10 @@ function AddOtherCostDrawer(props) {
                                                     <th>{`Type`}</th>
                                                     <th>{`Applicability`}</th>
                                                     {!props.rawMaterial && <th>{`Applicability Cost (${Currency}/${UOM})`}</th>}
-                                                    <th>{`Applicability Cost (${reactLocalStorage.getObject("baseCurrency")})`}</th>
+                                                    <th>{`Applicability Cost (${reactLocalStorage.getObject("baseCurrency")}/${UOM})`}</th>
                                                     <th>{`Percentage (%)`}</th>
                                                     {!props.rawMaterial && <th>{`Cost (${Currency}/${UOM})`}</th>}
-                                                    <th>{`Cost (${reactLocalStorage.getObject("baseCurrency")})`}</th>
+                                                    <th>{`Cost (${reactLocalStorage.getObject("baseCurrency")}/${UOM})`}</th>
                                                     <th>{`Remark`}</th>
                                                     {!props.hideAction && <th className='text-right'>{`Action`}</th>}
                                                 </tr>

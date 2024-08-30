@@ -81,7 +81,8 @@ const VendorMaster = () => {
                                 {disabledClass && (<div title={MESSAGES.DOWNLOADING_MESSAGE} className="disabled-overflow"  ></div>)}
                                 <NavItem> <NavLink className={classnames({ active: state.activeTab === "1" })} onClick={() => toggle("1")}  > Vendor Listing  </NavLink></NavItem>
                                 {ViewClassificationAccessibility && <NavItem> <NavLink className={classnames({ active: state.activeTab === "2" })} onClick={() => toggle("2")} > Supplier Classification Status </NavLink> </NavItem>
-                                }                                {initialConfiguration?.IsProductMasterConfigurable && ViewLpsRatingAccessibility && (
+                                }
+                                {initialConfiguration?.IsProductMasterConfigurable && ViewLpsRatingAccessibility && (
                                     <NavItem> <NavLink className={classnames({ active: state.activeTab === "3" })} onClick={() => toggle("3")} >  LPS Rating Status </NavLink> </NavItem>
                                 )}
                             </Nav>

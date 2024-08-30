@@ -488,7 +488,7 @@ class AddMoreDetails extends Component {
               IsInsuranceFixed: Data.IsInsuranceFixed === true ? false : true,
               IsUsesFuel: Data.IsUsesFuel,
               IsUsesSolarPower: Data.IsUsesSolarPower,
-              fuelType: fuelObj && fuelObj !== undefined ? { value: fuelObj.Value } : [],
+              fuelType: fuelObj && fuelObj !== undefined ? { label: fuelObj?.Text, value: fuelObj?.Value } : [],
               labourGrid: LabourArray,
               processGrid: MachineProcessArray,
               disableAllForm: (MachineProcessArray?.length > 0) ? true : false,
@@ -1372,7 +1372,7 @@ class AddMoreDetails extends Component {
     if (IsIncludeMachineRateDepreciation) {
       TotalMachineCostPerAnnum = checkForNull(fieldsObj.TotalCost) + checkForNull(fieldsObj.RateOfInterestValue) + checkForNull(fieldsObj.DepreciationAmount) + checkForDecimalAndNull(fieldsObj.TotalMachineCostPerAnnum) + checkForNull(fieldsObj.TotalFuelCostPerYear) + checkForNull(fieldsObj.TotalPowerCostPerYear) + checkForNull(this.calculateTotalLabourCost())
     } else {
-      TotalMachineCostPerAnnum = checkForNull(fieldsObj.RateOfInterestValue) + checkForNull(fieldsObj.DepreciationAmount) + checkForDecimalAndNull(fieldsObj.TotalMachineCostPerAnnum) + checkForNull(fieldsObj.TotalFuelCostPerYear) + checkForNull(fieldsObj.TotalPowerCostPerYear) + checkForNull(this.calculateTotalLabourCost())
+      TotalMachineCostPerAnnum = checkForNull(fieldsObj.RateOfInterestValue) + checkForNull(fieldsObj.DepreciationAmount) + checkForNull(fieldsObj.TotalMachineCostPerAnnum) + checkForNull(fieldsObj.TotalFuelCostPerYear) + checkForNull(fieldsObj.TotalPowerCostPerYear) + checkForNull(this.calculateTotalLabourCost())
     }
     if (UOM.type === TIME) {
 

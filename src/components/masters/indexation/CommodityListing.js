@@ -85,7 +85,7 @@ const CommodityInIndexListing = (props) => {
                 setNoData(searchNocontentFilter(value, noData));
             }
         }, 500);
-        setDisableFilter(false)
+        setDisableFilter(false);
         const model = gridOptions?.api?.getFilterModel();
         setFilterModel(model);
     
@@ -93,40 +93,27 @@ const CommodityInIndexListing = (props) => {
             setWarningMessage(true);
         }
     
+        // Create a copy of the current floatingFilterData
+        const updatedFloatingFilterData = { ...floatingFilterData };
+    
         if (value?.filterInstance?.appliedModel === null || value?.filterInstance?.appliedModel?.filter === "") {
-            let isFilterEmpty = true;
+            // If the filter is cleared
+            updatedFloatingFilterData[value.column.colId] = "";
     
-            if (model !== undefined && model !== null) {
-                if (Object.keys(model).length > 0) {
-                    isFilterEmpty = false;
+            // Check if all filters are now empty
+            const allFiltersEmpty = Object.values(updatedFloatingFilterData).every(filter => filter === "");
     
-                    // Minimal change: create a copy of floatingFilterData before modifying
-                    const updatedFloatingFilterData = { ...floatingFilterData };
-                    for (var property in updatedFloatingFilterData) {
-                        if (property === value.column.colId) {
-                            updatedFloatingFilterData[property] = "";
-                        }
-                    }
-                    setFloatingFilterData(updatedFloatingFilterData);
-                }
-    
-                if (isFilterEmpty) {
-                    setWarningMessage(false);
-    
-                    // Reset all filters
-                    const resetData = { ...floatingFilterData };
-                    for (var prop in resetData) {
-                        resetData[prop] = "";
-                    }
-                    setFloatingFilterData(resetData);
-                }
-            } else {
-                setFloatingFilterData({ ...floatingFilterData, [value.column.colId]: value.filterInstance.appliedModel?.filter || "" });
+            if (allFiltersEmpty) {
+                // If all filters are empty, reset the warning message
+                setWarningMessage(false);
             }
-    
         } else {
-            setFloatingFilterData({ ...floatingFilterData, [value.column.colId]: value.filterInstance.appliedModel.filter });
+            // If a filter is applied
+            updatedFloatingFilterData[value.column.colId] = value.filterInstance.appliedModel.filter;
         }
+    
+        // Update the state with the new filter data
+        setFloatingFilterData(updatedFloatingFilterData);
     };
     
     
@@ -327,7 +314,7 @@ const CommodityInIndexListing = (props) => {
                 setDisableDownload(false)
                 dispatch(disabledClass(false))
                 setTimeout(() => {
-                    let button = document.getElementById('Excel-Downloads-outsourcing')
+                    let button = document.getElementById('Excel-Downloads-commodityIndex')
                     button && button.click()
                 }, 500);
             }
@@ -433,7 +420,7 @@ const CommodityInIndexListing = (props) => {
             setTimeout(() => {
                 setDisableDownload(false)
                 dispatch(disabledClass(false))
-                let button = document.getElementById('Excel-Downloads-rm-import')
+                let button = document.getElementById('Excel-Downloads-commodityIndex')
                 button && button.click()
             }, 400);
 
@@ -460,19 +447,25 @@ const CommodityInIndexListing = (props) => {
                         {permissions.BulkUpload && (<Button id="rmSpecification_add" className={"mr5 Tour_List_BulkUpload"} onClick={bulkToggle} title={"Bulk Upload"} icon={"upload"} />)}
 
                         {permissions.Download && (
-                            <>
-                                <>
-                                    <ExcelFile
-                                        filename={"Index Commodity"}
-                                        fileExtension={".xls"}
-                                        element={
-                                            <Button onClick={onExcelDownload} id={"Excel-Downloads-Rm Material"} title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} type="button" className={'user-btn mr5 Tour_List_Download'} icon={"download mr-1"} buttonName={`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} />
-                                        }
-                                    >
-                                        {onBtExport()}
-                                    </ExcelFile>
-                                </>
-                            </>
+                         <>
+
+                              <Button
+                                  className="mr5 Tour_List_Download"
+                                  id={"commodity_excel_download"}
+                                  onClick={onExcelDownload}
+                                  title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
+                                  icon={"download mr-1"}
+                                  buttonName={`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
+                              />
+                              <ExcelFile                                         filename={"Index Commodity"}
+
+                                  fileExtension={'.xls'} element={
+                                      <Button id={"Excel-Downloads-commodityIndex"} className="p-absolute" />
+
+                                  }>
+                                  {onBtExport()}
+                              </ExcelFile>
+                          </>
                         )}
                         <Button id={"rmSpecification_refresh"} className={" Tour_List_Reset"} onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
                     </div>

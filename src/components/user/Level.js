@@ -22,10 +22,12 @@ import { useLabels } from "../../helper/core";
 /**************************************THIS FILE IS FOR ADDING LEVEL MAPPING*****************************************/
 const Level = (props) => {
   const { t } = useTranslation("Level");
-  const { register, control, setValue, handleSubmit, getValues, reset, formState: { errors }, } = useForm({
+  const formController = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
   });
+  const { register, control, setValue, handleSubmit, getValues, reset, formState: { errors }, } = formController;
+
   const dispatch = useDispatch();
   const [state, setState] = useState({
     isLoader: true,
@@ -269,21 +271,20 @@ const Level = (props) => {
   * @method onPressRadioLevel
   * @description LEVEL TYPE HANDLING
   */
-  const onPressRadioLevel = (label) => {
-
-    dispatch(getApprovalTypeSelectList(() => { }), label)
+  const onPressRadioLevel = (levelId) => {
+    dispatch(getApprovalTypeSelectList(levelId, () => { }))
     reset();
     setValue('ApprovalType', '');
     setValue('TechnologyId', '');
     setValue('LevelId', '');
-    if (Number(label) === COSTING_LEVEL) {
+    if (Number(levelId) === COSTING_LEVEL) {
 
       dispatch(getAllTechnologyAPI(() => { }))
-    } else if (Number(label) === SIMULATION_LEVEL) {
+    } else if (Number(levelId) === SIMULATION_LEVEL) {
 
       dispatch(getSimulationTechnologySelectList(() => { }))
     }
-    setState((prevState) => ({ ...prevState, levelType: label, technology: [], level: [], approvalTypeObject: [] }));
+    setState((prevState) => ({ ...prevState, levelType: levelId, technology: [], level: [], approvalTypeObject: [] }));
   };
 
   /**
@@ -342,6 +343,13 @@ const Level = (props) => {
       closeDrawer('', levelTypeData, update)
     }
   };
+
+  const resetAddForm = () => {
+    setValue("ApprovalType", null)
+    setValue("TechnologyId", null)
+    setValue("LevelId", null)
+  }
+
   /**
    * @name onSubmit
    * @param values
@@ -351,7 +359,6 @@ const Level = (props) => {
   const onSubmit = (values) => {
 
     const { technology, level, approvalTypeObject } = state;
-
 
     if (isShowForm) {
       if (isEditFlag) {
@@ -369,7 +376,7 @@ const Level = (props) => {
             Toaster.success(MESSAGES.UPDATE_LEVEL_SUCCESSFULLY)
           }
           toggleDrawer('')
-          reset();
+          resetAddForm();
           setState((prevState) => ({ ...prevState, isLoader: false, }))
         }))
 
@@ -380,7 +387,7 @@ const Level = (props) => {
             Toaster.success(MESSAGES.ADD_LEVEL_SUCCESSFULLY)
           }
           toggleDrawer('')
-          reset();
+          resetAddForm();
           setState((prevState) => ({ ...prevState, isLoader: false }))
         }))
       }
@@ -414,7 +421,7 @@ const Level = (props) => {
           dispatch(updateLevelMappingAPI(formReq, (res) => {
             if (res && res.data && res.data.Result) {
               Toaster.success(MESSAGES.UPDATE_LEVEL_TECHNOLOGY_USER_SUCCESSFULLY)
-              reset();
+              resetAddForm();
               setState((prevState) => ({
                 ...prevState,
                 isLoader: false,
@@ -455,7 +462,7 @@ const Level = (props) => {
               }))
               toggleDrawer('', state?.levelType, '', res.status)
               dispatch(manageLevelTabApi(true))
-              reset();
+              resetAddForm();
             }
           }))
         }
@@ -485,7 +492,7 @@ const Level = (props) => {
               toggleDrawer('', state?.levelType, '', res.status)
               dispatch(manageLevelTabApi(true))
               setState((prevState) => ({ ...prevState, isLoader: false }))
-              reset();
+              resetAddForm();
             }
           }))
         }
@@ -509,7 +516,7 @@ const Level = (props) => {
 
               toggleDrawer('', state?.levelType, '', res.status)
               dispatch(manageLevelTabApi(true))
-              reset();
+              resetAddForm();
             }
           }))
         }
@@ -528,7 +535,7 @@ const Level = (props) => {
               toggleDrawer('', state?.levelType, '')
               dispatch(manageLevelTabApi(true))
             }
-            reset();
+            resetAddForm();
             setState((prevState) => ({
               ...prevState,
               isLoader: false,
@@ -548,7 +555,7 @@ const Level = (props) => {
               dispatch(manageLevelTabApi(true))
             }
 
-            reset();
+            resetAddForm();
             setState((prevState) => ({
               ...prevState,
               isLoader: false,
@@ -573,7 +580,7 @@ const Level = (props) => {
               toggleDrawer('', state?.levelType, '')
               dispatch(manageLevelTabApi(true))
             }
-            reset();
+            resetAddForm();
             setState((prevState) => ({
               ...prevState,
               isLoader: false,
@@ -598,7 +605,7 @@ const Level = (props) => {
               toggleDrawer('', state?.levelType, '')
               dispatch(manageLevelTabApi(true))
             }
-            reset();
+            resetAddForm();
             setState((prevState) => ({
               ...prevState,
               isLoader: false,
@@ -745,6 +752,7 @@ const Level = (props) => {
                           validate={(state?.approvalTypeObject == null || state?.approvalTypeObject.length === 0) ? [required] : []}
                           handleChange={approvalTypeHandler}
                           disabled={isEditFlag ? true : false}
+                          errors={errors?.ApprovalType}
                         //MINDA
                         // disabled={!(userData.Department.length > 1 && reasonId !== REASON_ID) || disableSR ? true : false}
                         // errors={errors.approver}
@@ -764,6 +772,7 @@ const Level = (props) => {
                           handleChange={technologyHandler}
                           valueDescription={state?.technology}
                           disabled={isEditFlag ? true : false}
+                          errors={errors?.TechnologyId}
                         />
                       </div>}
                       <div className="input-group col-md-12  form-group input-withouticon" >
@@ -778,10 +787,10 @@ const Level = (props) => {
                           validate={(state?.level == null || state?.level.length === 0) ? [required] : []}
                           placeholder={"Select"}
                           handleChange={(value) => {
-
                             levelHandler(value);
                           }}
                           valueDescription={state?.level}
+                          errors={errors?.LevelId}
                         />
                       </div>
                       <div className="text-right mt-0 col-md-12">

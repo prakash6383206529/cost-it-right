@@ -108,7 +108,7 @@ const IndexListing = () => {
                 setDisableDownload(false)
                 dispatch(disabledClass(false))
                 setTimeout(() => {
-                    let button = document.getElementById('Excel-Downloads-outsourcing')
+                    let button = document.getElementById('Excel-Downloads-index')
                     button && button.click()
                 }, 500);
             }
@@ -415,7 +415,7 @@ const IndexListing = () => {
             setTimeout(() => {
                 setDisableDownload(false)
                 dispatch(disabledClass(false))
-                let button = document.getElementById('Excel-Downloads-rm-import')
+                let button = document.getElementById('Excel-Downloads-index')
                 button && button.click()
             }, 400);
 
@@ -444,19 +444,25 @@ const IndexListing = () => {
                             <Button id="add_index" className="mr5 Tour_List_AdCommodity" onClick={openModel} title="Add" icon={"plus"} />
                         )}
                         {permissions.Download && (
+                            
                             <>
-                                <>
-                                    <ExcelFile
-                                        filename={"Index"}
-                                        fileExtension={".xls"}
-                                        element={
-                                            <Button onClick={onExcelDownload} id={"Excel-Downloads-index"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5 Tour_List_Download'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
-                                        }
-                                    >
-                                        {onBtExport()}
-                                    </ExcelFile>
-                                </>
-                            </>
+
+                            <Button
+                                className="mr5 Tour_List_Download"
+                                id={"index_excel_download"}
+                                onClick={onExcelDownload}
+                                title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
+                                icon={"download mr-1"}
+                                buttonName={`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
+                            />
+                            <ExcelFile   filename={"Index"}
+ fileExtension={'.xls'} element={
+                                <Button id={"Excel-Downloads-index"} className="p-absolute" />
+
+                            }>
+                                {onBtExport()}
+                            </ExcelFile>
+                        </>
                         )}
                         <Button id={"index_refresh"} onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
                     </div>
