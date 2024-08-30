@@ -113,21 +113,23 @@ const IndexDataListing = (props) => {
         if (isPagination === true) { setIsLoader(true) }
         let dataObj = { ...floatingFilterData }
         dispatch(getIndexDataListAPI(dataObj, isPagination, skip, take, (res) => {
-            
             if (isPagination === true || isPagination === null) setIsLoader(false)
             if ((res && res.status === 204) || res.length === 0) {
                 setTotalRecordCount(0)
                 dispatch(updatePageNumber(0))
             }
-            if (res && isPagination === false) {
-                setDisableDownload(false)
-                dispatch(disabledClass(false))
+            if (res && !isPagination) {
+                setDisableDownload(false);
+                dispatch(disabledClass(false));
                 setTimeout(() => {
-                    let button = document.getElementById('Excel-Downloads-rmMaterialList')
-                    button && button.click()
+                    let button = document.getElementById('Excel-Downloads-indexDataList');
+                    button && button.click();
                 }, 500);
             }
             if (res) {
+                // Update local state if needed
+                // setRmIndexDataList(res);
+                
                 let isReset = true
                 setTimeout(() => {
                     for (var prop in floatingFilterData) {
@@ -137,13 +139,12 @@ const IndexDataListing = (props) => {
                     }
                     // Sets the filter model via the grid API
                     isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(filterModel))
-
                 }, 300);
-
+    
                 setTimeout(() => {
                     setWarningMessage(false)
                 }, 330);
-
+    
                 setTimeout(() => {
                     setIsFilterButtonClicked(false)
                 }, 600);
@@ -463,13 +464,11 @@ const IndexDataListing = (props) => {
 
     };
     const onBtExport = () => {
-        let tempArr = [];
-        tempArr = gridApi && gridApi?.getSelectedRows();
-        let orignalCopyArr = _.cloneDeep(rmIndexDataList)
+        let tempArr = selectedRowForPagination;
+        let orignalCopyArr = _.cloneDeep(rmIndexDataList);
         tempArr = tempArr && tempArr.length > 0 ? tempArr : orignalCopyArr ? orignalCopyArr : [];
         return returnExcelColumn(RMMATERIALISTING_DOWNLOAD_EXCEl, tempArr);
     };
-
     const returnExcelColumn = (data = [], TempData) => {
         let temp = [];
         temp =
@@ -502,25 +501,20 @@ const IndexDataListing = (props) => {
         resetState()
     };
     const onExcelDownload = () => {
-        setDisableDownload(true)
-        dispatch(disabledClass(true))
-        //let tempArr = gridApi && gridApi?.getSelectedRows()
-        let tempArr = selectedRowForPagination
+        setDisableDownload(true);
+        dispatch(disabledClass(true));
+        let tempArr = selectedRowForPagination;
         if (tempArr?.length > 0) {
             setTimeout(() => {
-                setDisableDownload(false)
-                dispatch(disabledClass(false))
-                let button = document.getElementById('Excel-Downloads-rmMaterialList')
-                button && button.click()
+                setDisableDownload(false);
+                dispatch(disabledClass(false));
+                let button = document.getElementById('Excel-Downloads-indexDataList');
+                button && button.click();
             }, 400);
-
-
         } else {
-
-            getTableListData(0, undefined, false)
+            getTableListData(0, globalTakes, false);
         }
-
-    }
+    };
  
         var setDate = (date) => {
             setFloatingFilterData((prevState) => ({ ...prevState, EffectiveDate: date }));
@@ -574,17 +568,23 @@ const IndexDataListing = (props) => {
 
                         {permissions?.Download && (
                             <>
-                                <>
-                                    <ExcelFile
-                                        filename={"Index Data"}
-                                        fileExtension={".xls"}
-                                        element={
-                                            <Button onClick={onExcelDownload} id={"Excel-Downloads-rmMaterialList"} title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} type="button" className={'user-btn mr5 Tour_List_Download'} icon={"download mr-1"} buttonName={`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} />
-                                        }
-                                    >
-                                        {onBtExport()}
-                                    </ExcelFile>
-                                </>
+                               <>
+
+<Button
+    className="mr5 Tour_List_Download"
+    id={"indexDataListing_excel_download"}
+    onClick={onExcelDownload}
+    title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
+    icon={"download mr-1"}
+    buttonName={`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
+/>
+<ExcelFile filename={'Index Data'} fileExtension={'.xls'} element={
+    <Button id={"Excel-Downloads-indexDataList"} className="p-absolute" />
+
+}>
+    {onBtExport()}
+</ExcelFile>
+</>
                             </>
                         )}
                         <Button id={"rmMaterialListing_refresh"} className={" Tour_List_Reset"} onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />

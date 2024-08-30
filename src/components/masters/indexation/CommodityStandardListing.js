@@ -92,7 +92,7 @@ const CommodityStandardListing = (props) => {
                 setDisableDownload(false)
                 dispatch(disabledClass(false))
                 setTimeout(() => {
-                    let button = document.getElementById('Excel-Downloads-rmDetailList')
+                    let button = document.getElementById('Excel-Downloads-comodityStandard')
                     button && button.click()
                 }, 500);
             }
@@ -407,7 +407,7 @@ const CommodityStandardListing = (props) => {
             setTimeout(() => {
                 setDisableDownload(false)
                 dispatch(disabledClass(false))
-                let button = document.getElementById('Excel-Downloads-rm-import')
+                let button = document.getElementById('Excel-Downloads-comodityStandard')
                 button && button.click()
             }, 400);
 
@@ -436,19 +436,27 @@ const CommodityStandardListing = (props) => {
                             <Button id="rmDetailList_addCommodity" className="mr5 Tour_List_AdCommodity" onClick={openModel} title="Add" icon={"plus"} />
                         )} */}
                         {permissions.Download && (
-                            <>
+                            
                                 <>
-                                    <ExcelFile
-                                        filename={"Commodity Name (Standard)"}
-                                        fileExtension={".xls"}
-                                        element={
-                                            <Button onClick={onExcelDownload} id={"Excel-Downloads-RmDetailList"} title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} type="button" className={'user-btn mr5 Tour_List_Download'} icon={"download mr-1"} buttonName={`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} />
-                                        }
-                                    >
+
+                                    <Button
+                                        className="mr5 Tour_List_Download"
+                                        id={"comodityStandard_excel_download"}
+                                        onClick={onExcelDownload}
+                                        title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
+                                        icon={"download mr-1"}
+                                        buttonName={`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
+                                    />
+                                    <ExcelFile filename={"Commodity Name (Standard)"}
+
+                                        fileExtension={'.xls'} element={
+                                            <Button id={"Excel-Downloads-comodityStandard"} className="p-absolute" />
+
+                                        }>
                                         {onBtExport()}
                                     </ExcelFile>
                                 </>
-                            </>
+                            
                         )}
                         <Button id={"rmDetail_refresh"} onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
                     </div>
