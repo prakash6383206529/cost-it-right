@@ -18,7 +18,8 @@ export const config = () => {
 }
 
 
-const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
+// const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
+const BASE_URL = `http://10.10.11.208:3030/api/v1`;
 export const FILE_URL = `${process.env.REACT_APP_FILE_URL}`;
 
 /** Export API */
@@ -173,7 +174,9 @@ export const API = {
   bulkUploadProduct: `${BASE_URL}/masters-product/bulk-upload-for-product-json`,
   productGroupSelectList: `${BASE_URL}/masters-product/select-list-get-product-group-code`,
   getPartDescription: `${BASE_URL}/masters-part/get-info-name-by-part-number-and-type`,
-
+  createProductLevels: `${BASE_URL}/masters-product/create-product-levels`,
+  getAllProductLevels: `${BASE_URL}/masters-product/get-all-product-levels`,
+  createProductLevelValues: `${BASE_URL}/masters-product/create-product-level-values`,
 
   //ASSEMBLY PART
   createAssemblyPart: `${BASE_URL}/masters-part/create-assembly-part`,

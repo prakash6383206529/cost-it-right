@@ -3,9 +3,9 @@ import React, { useEffect, useState } from "react";
 import { Col, Row } from "reactstrap";
 import { SearchableSelectHookForm, TextFieldHookForm } from "../../layout/HookFormInputs";
 import { Controller, useForm } from "react-hook-form";
-import { checkWhiteSpaces, levelDropdown, maxLength80, required } from "../../../helper";
+import { checkWhiteSpaces, levelDropdown, loggedInUserId, maxLength80, required } from "../../../helper";
 import { useDispatch, useSelector } from "react-redux";
-import { saveProductHierarchyData, saveProductlabelsData } from "../actions/Part";
+import { createProductLevels, createProductLevelValues, getAllProductLevels } from "../actions/Part";
 import Button from "../../layout/Button";
 
 const AssociateHierarchy = (props) => {
@@ -28,46 +28,74 @@ const AssociateHierarchy = (props) => {
         levelCount: 0,
         levelNames: [],
         isOpenDrawer: false,
-        labelName: ''
+        labelName: '',
+        levelData: {},
+        selectedDropdownValue: null
     })
     const dispatch = useDispatch()
     const { productHierarchyData, getProductLabels } = useSelector((state) => state.part);
     useEffect(() => {
-        if (Object.keys(productHierarchyData).length > 0) {
-            const levelNames = Object.keys(productHierarchyData)
-                .filter(key => key.startsWith('LevelName'))
-                .map(key => productHierarchyData[key]);
+        dispatch(getAllProductLevels(() => { }))
+    }, [])
+    useEffect(() => {
+        if (productHierarchyData.length > 0) {
+            const levelNames = []
+            productHierarchyData.map((item, index) => levelNames.push(item.LevelName))
             setState((prevState) => ({ ...prevState, levelCount: levelNames.length, levelNames: levelNames }));
         }
-    }, [])
+    }, [productHierarchyData])
     const submit = (data) => {
-        // dispatch(saveProductHierarchyData(data))
+        // dispatch(createProductLevels(data))
         props.toggle()
     }
     const renderListing = (field) => {
         let temp = [];
-        getProductLabels[field] && getProductLabels[field].map((item) => {
-            temp.push({ label: item.label, value: item.label })
-        })
+        if (productHierarchyData.length > 0) {
+            productHierarchyData.map((item) => {
+                if (field.LevelName === item.LevelName) {
+                    item.ProductLevelValue && item.ProductLevelValue.map((item) => {
+                        temp.push({ label: item.LevelValue, value: item.LevelValueId, LevelId: item.LevelId })
+                    })
+                }
+            })
+        }
+        // getProductLabels[field] && getProductLabels[field].map((item) => {
+        //     temp.push({ label: item.label, value: item.label })
+        // })
         return temp;
     }
     const addData = (field, i) => {
-        if (field === state.levelNames[i]) {
-            setState((prevState) => ({ ...prevState, isOpenDrawer: true, labelName: field }));
-            setValueAddLabels(`${field}`, '');
+        console.log('field: ', field);
+        if (field.LevelName === state.levelNames[i]) {
+            setState((prevState) => ({ ...prevState, isOpenDrawer: true, labelName: field.LevelName, levelData: field }));
+            setValueAddLabels(`${field.LevelName}`, '');
         }
     }
     const cancelDrawer = () => {
-        setState((prevState) => ({ ...prevState, isOpenDrawer: false, labelName: '' }));
+        setState((prevState) => ({ ...prevState, isOpenDrawer: false, labelName: '', levelData: {} }));
     }
     const addNewlabels = (data) => {
-        setState((prevState) => ({ ...prevState, isOpenDrawer: false, }));
-        setValue(`${state.labelName}`, { label: data[state.labelName], value: data[state.labelName] });
-        const existData = getProductLabels[state.labelName] ? getProductLabels[state.labelName] : []
-        const finalDataSubmit = { ...getProductLabels, [state.labelName]: [...existData, { label: data[state.labelName], value: data[state.labelName] }] }
-        dispatch(saveProductlabelsData(finalDataSubmit, () => { }))
+        console.log(state.selectedDropdownValue, "state.selectedDropdownValue");
+        const isSameLevelDataSelected = state.selectedDropdownValue ? state.selectedDropdownValue.LevelId === state.levelData.LevelId - 1 : false
+        const finalDataSubmit = {
+            LevelId: state.levelData.LevelId,
+            LevelValue: data[state.labelName],
+            LevelValueId: (state.selectedDropdownValue && isSameLevelDataSelected) ? state.selectedDropdownValue.value : null,
+            LoggedInUserId: loggedInUserId(),
+        }
+        console.log(finalDataSubmit, "finalDataSubmit");
+        // dispatch(createProductLevelValues(finalDataSubmit, () => {
+        //     dispatch(getAllProductLevels(() => { }))
+        // }))
+        cancelDrawer()
     }
-
+    const handleLevelChange = (e, item) => {
+        const selectedValue = {
+            ...e,
+            LevelId: item.LevelId,
+        }
+        setState((prevState) => ({ ...prevState, selectedDropdownValue: selectedValue }));
+    }
     return <div><Drawer
         anchor={"right"}
         open={props.isOpen}
@@ -93,11 +121,11 @@ const AssociateHierarchy = (props) => {
             >
                 <div className="px-2">
                     <Row>
-                        {state.levelNames.map((item, i) => i !== state.levelNames.length - 1 && (
+                        {productHierarchyData.map((item, i) => i !== productHierarchyData.length - 1 && (
                             <Col md="12" className="d-flex" key={i}>
                                 <SearchableSelectHookForm
-                                    label={item}
-                                    name={item}
+                                    label={item.LevelName}
+                                    name={item.LevelName}
                                     placeholder={"Select"}
                                     Controller={Controller}
                                     control={control}
@@ -106,8 +134,8 @@ const AssociateHierarchy = (props) => {
                                     defaultValue={""}
                                     options={renderListing(item, i)}
                                     mandatory={true}
-                                    handleChange={(e) => { }}
-                                    errors={errors[item]}
+                                    handleChange={(e) => handleLevelChange(e, item)}
+                                    errors={errors[item.LevelName]}
                                 />
                                 <Button
                                     id="RawMaterialName-add"

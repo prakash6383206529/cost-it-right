@@ -824,22 +824,22 @@ export function activeInactivePartUser(requestData, callback) {
     };
 }
 
-// export function saveProductHierarchyData(data, callback) {
-//     return (dispatch) => {
-//         const request = axios.post(API.saveProductHierarchyData, data, config());
-//         request.then((response) => {
-//             if (response && response.status === 200) {
-//                 callback(response);
-//             }
-//         }).catch((error) => {
-//             dispatch({ type: API_FAILURE });
-//             apiErrors(error);
-//         });
-//     };
-// }
-export function getHierarchyData(callback) {
+export function createProductLevels(data, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.getHierarchyData}`, config());
+        const request = axios.post(API.createProductLevels, data, config());
+        request.then((response) => {
+            if (response && response.status === 200) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+export function getAllProductLevels(callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getAllProductLevels}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
                 dispatch({
@@ -856,35 +856,9 @@ export function getHierarchyData(callback) {
     };
 }
 
-export function saveProductHierarchyData(data) {
+export function createProductLevelValues(data, callback) {
     return (dispatch) => {
-        dispatch({
-            type: ADD_PRODUCT_HIERARCHY,
-            payload: data
-        })
-    }
-}
-export function getProductHierarchyLabels(callback) {
-    return (dispatch) => {
-        const request = axios.get(`${API.getProductHierarchyLabels}`, config());
-        request.then((response) => {
-            if (response.data.Result || response.status === 204) {
-                dispatch({
-                    type: GET_PRODUCT_HIERARCHY_LABELS,
-                    payload: response.status === 204 ? [] : response.data.DataList
-                });
-                callback(response);
-            }
-        }).catch((error) => {
-            dispatch({ type: API_FAILURE });
-            callback(error);
-            apiErrors(error);
-        });
-    };
-}
-export function saveProductlabelsData(data, callback) {
-    return (dispatch) => {
-        const request = axios.post(API.saveProductlabelsData, data, config());
+        const request = axios.post(API.createProductLevelValues, data, config());
         request.then((response) => {
             if (response && response.status === 200) {
                 callback(response);
@@ -895,11 +869,3 @@ export function saveProductlabelsData(data, callback) {
         });
     };
 }
-// export function saveProductlabelsData(data) {
-//     return (dispatch) => {
-//         dispatch({
-//             type: ADD_PRODUCT_LABELS,
-//             payload: data
-//         })
-//     }
-// }

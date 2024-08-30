@@ -3,9 +3,10 @@ import React, { useEffect, useState } from "react";
 import { Col, Row } from "reactstrap";
 import { SearchableSelectHookForm, TextFieldHookForm } from "../../layout/HookFormInputs";
 import { Controller, useForm } from "react-hook-form";
-import { checkWhiteSpaces, levelDropdown, maxLength80, required } from "../../../helper";
+import { checkWhiteSpaces, levelDropdown, loggedInUserId, maxLength80, required } from "../../../helper";
 import { useDispatch, useSelector } from "react-redux";
-import { getHierarchyData, saveProductHierarchyData } from "../actions/Part";
+import { getAllProductLevels, createProductLevels } from "../actions/Part";
+import Toaster from "../../common/Toaster";
 
 const AddProductHierarchy = (props) => {
     const { register, handleSubmit, setValue, getValues, formState: { errors }, control, } = useForm({
@@ -17,22 +18,17 @@ const AddProductHierarchy = (props) => {
     })
     const dispatch = useDispatch()
     const { productHierarchyData } = useSelector((state) => state.part);
+    console.log('productHierarchyData: ', productHierarchyData);
     useEffect(() => {
-        // dispatch(getHierarchyData(() => { }))
+        dispatch(getAllProductLevels(() => { }))
     }, [])
     useEffect(() => {
-        if (Object.keys(productHierarchyData).length > 0) {
-            setValue('Levels', productHierarchyData.Levels)
-            const levelNames = Object.keys(productHierarchyData)
-                .filter(key => key.startsWith('LevelName'))
-                .map((key) => {
-                    setValue(key, productHierarchyData[key])
-                    return productHierarchyData[key]
-                });
-            setState((prevState) => ({ ...prevState, levelCount: levelNames.length }));
+        if (productHierarchyData.length > 0) {
+            setValue('Levels', { label: `Level-${productHierarchyData.length}`, value: productHierarchyData.length })
+            productHierarchyData.map((item, index) => setValue(`LevelName${index + 1}`, item.LevelName))
+            setState((prevState) => ({ ...prevState, levelCount: productHierarchyData.length }));
         }
-
-    }, [])
+    }, [productHierarchyData])
     const handleLevelSelection = (e) => {
         setState((prevState) => ({ ...prevState, levelCount: e.value }))
         for (let i = 1; i <= e.value; i++) {
@@ -41,7 +37,22 @@ const AddProductHierarchy = (props) => {
         setValue(`LevelName${e.value}`, 'SKU')
     }
     const submit = (data) => {
-        dispatch(saveProductHierarchyData(data, () => { }))
+        let ProductLevels = []
+        for (let i = 1; i <= state.levelCount; i++) {
+            ProductLevels.push({
+                LevelId: i,
+                LevelName: data[`LevelName${i}`],
+                ParentLevelId: i > 1 ? i - 1 : null
+            });
+        }
+        const requestedData = {
+            TotalLevel: state.levelCount,
+            ProductLevels: ProductLevels,
+            LoggedInUserId: loggedInUserId()
+        }
+        dispatch(createProductLevels(requestedData, (res) => {
+            Toaster.warning("Level create successfully")
+        }))
         props.toggle()
     }
     return <div><Drawer

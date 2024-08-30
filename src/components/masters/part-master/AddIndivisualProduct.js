@@ -355,11 +355,7 @@ class AddIndivisualProduct extends Component {
         this.setState({ isImpactCalculation: !this.state.isImpactCalculation, DropdownChanged: false });
     }
     formToggle = () => {
-        if (Object.keys(this.props.productHierarchyData).length > 0) {
-            this.setState({ showHierarchy: !this.state.showHierarchy })
-        } else {
-            Toaster.warning("Please define the levels in Product Hierarchy");
-        }
+        this.setState({ showHierarchy: !this.state.showHierarchy })
     }
 
     /**
@@ -719,7 +715,7 @@ class AddIndivisualProduct extends Component {
 */
 function mapStateToProps({ comman, part, auth }) {
     const { plantSelectList, } = comman;
-    const { productData, productHierarchyData } = part;
+    const { productData } = part;
     const { initialConfiguration } = auth;
 
     let initialValues = {};
@@ -736,7 +732,7 @@ function mapStateToProps({ comman, part, auth }) {
         }
     }
 
-    return { plantSelectList, productData, initialValues, initialConfiguration, productHierarchyData }
+    return { plantSelectList, productData, initialValues, initialConfiguration }
 }
 
 /**

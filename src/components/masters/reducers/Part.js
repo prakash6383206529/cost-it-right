@@ -28,8 +28,7 @@ import DayTime from '../../common/DayTimeWrapper';
 
 const initialState = {
     productDataList: [],
-    productHierarchyData: {},
-    getProductLabels: {}
+    productHierarchyData: [],
 };
 
 export default function partReducer(state = initialState, action) {
@@ -207,21 +206,12 @@ export default function partReducer(state = initialState, action) {
                 error: true,
                 productGroupSelectList: action.payload
             }
-        case ADD_PRODUCT_HIERARCHY:
         case GET_PRODUCT_HIERARCHY_DATA:
             return {
                 ...state,
                 loading: false,
                 error: true,
                 productHierarchyData: action.payload
-            }
-        case ADD_PRODUCT_LABELS:
-        case GET_PRODUCT_HIERARCHY_LABELS:
-            return {
-                ...state,
-                loading: false,
-                error: true,
-                getProductLabels: action.payload
             }
         default:
             return state;
