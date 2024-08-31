@@ -147,35 +147,35 @@ const IndexListing = () => {
                 setNoData(newNoData);
             }
         }, 500);
-    
+
         setDisableFilter(false);
-    
+
         const model = gridOptions?.api?.getFilterModel();
         setFilterModel(model);
-    
+
         if (!isFilterButtonClicked) {
             setWarningMessage(true);
         }
-    
+
         // Only reset if all the filters are cleared manually, not when applying a valid filter.
         if (value?.filterInstance?.appliedModel === null || value?.filterInstance?.appliedModel?.filter === "") {
             let isFilterEmpty = Object.keys(model).length === 0; // Check if the model is empty
-    
+
             if (!isFilterEmpty) {
                 // Update the specific floating filter data for the column being changed
-                setFloatingFilterData({ 
-                    ...floatingFilterData, 
-                    [value.column.colId]: "" 
+                setFloatingFilterData({
+                    ...floatingFilterData,
+                    [value.column.colId]: ""
                 });
             } else {
                 setWarningMessage(false);
-    
+
                 // Reset all filters if everything is cleared
                 const clearedFilters = Object.keys(floatingFilterData).reduce((acc, key) => {
                     acc[key] = ""; // Reset all floating filters
                     return acc;
                 }, {});
-                
+
                 setFloatingFilterData(clearedFilters);
             }
         } else {
@@ -185,8 +185,8 @@ const IndexListing = () => {
             });
         }
     };
-    
-    
+
+
     const onSearch = () => {
         setNoData(false)
         setWarningMessage(false)
@@ -510,7 +510,7 @@ const IndexListing = () => {
                                 onFilterModified={onFloatingFilterChanged}
                                 suppressRowClickSelection={true}
                             >
-                                <AgGridColumn field="IndexExchangeName" headerName="Name"></AgGridColumn>
+                                <AgGridColumn field="IndexExchangeName" headerName="Index"></AgGridColumn>
                                 <AgGridColumn field="IndexExchangeId" cellClass="ag-grid-action-container" headerName="Action" pinned="right" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"}></AgGridColumn>
                             </AgGridReact>
 
