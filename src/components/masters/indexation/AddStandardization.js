@@ -110,11 +110,11 @@ const AddStandardization = (props) => {
     };
 
     const onSubmit = debounce((values) => {
-        if (gridData?.length === 0) {
-            Toaster.warning("Please add atleast one entry in the table");
-            return false
-        }
         if (!isEditFlag) {
+            if (gridData?.length === 0) {
+                Toaster.warning("Please add atleast one entry in the table");
+                return false
+            }
             const formDataToSubmit = gridData.map(item => ({
                 ...item,
                 LoggedInUserId: loggedInUserId()
@@ -235,6 +235,11 @@ const AddStandardization = (props) => {
                 CommodityName: '',
                 CommodityStandardName: '',
             });
+            // Clear the CommodityName dropdown options
+            dispatch({ type: 'GET_COMMODITY_IN_INDEX_SELECTLIST', payload: [] });
+
+            // Reset the disable state for CommodityName dropdown
+            setState(prevState => ({ ...prevState, setDisable: true }));
         };
 
         commonReset();
@@ -272,7 +277,7 @@ const AddStandardization = (props) => {
                                 <Col>
                                     <div className={"header-wrapper left"}>
                                         <h3>
-                                            Commodity Standardization
+                                            {`${isEditFlag ? "Update" : "Add"} Commodity Standardization`}
                                         </h3>
                                     </div>
                                     <div
