@@ -1123,6 +1123,7 @@ function ViewDrawer(props) {
                                             <Row className="mt-1 part-detail-wrapper">
                                                 <Col md="3">
                                                     <div className='mt5 flex-grow-1'>
+                                                        <TooltipCustom id="RMDetail_Info" tooltipText="Select RM Name, RM Grade & specification to get the Part code, or directly input the RM Code to fetch the previously mentioned information and click on the Add button." />
                                                         <SearchableSelectHookForm
                                                             label={"Part No"}
                                                             name={"partNumber"}
@@ -1244,6 +1245,8 @@ function ViewDrawer(props) {
                                                 />
                                             </Col>
                                             <Col md="3">
+                                                <TooltipCustom id="Specification_Info" tooltipText="Describe comprehensive specifications, desired features, quality standards,s and any other relevant details to ensure the supplier understands needs." />
+
                                                 <TextFieldHookForm
                                                     label="Specification Description"
                                                     name={"Specification"}
