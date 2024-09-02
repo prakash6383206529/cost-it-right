@@ -84,9 +84,9 @@ const AssociateHierarchy = (props) => {
             LoggedInUserId: loggedInUserId(),
         }
         console.log(finalDataSubmit, "finalDataSubmit");
-        // dispatch(createProductLevelValues(finalDataSubmit, () => {
-        //     dispatch(getAllProductLevels(() => { }))
-        // }))
+        dispatch(createProductLevelValues(finalDataSubmit, () => {
+            dispatch(getAllProductLevels(() => { }))
+        }))
         cancelDrawer()
     }
     const handleLevelChange = (e, item) => {
@@ -95,6 +95,17 @@ const AssociateHierarchy = (props) => {
             LevelId: item.LevelId,
         }
         setState((prevState) => ({ ...prevState, selectedDropdownValue: selectedValue }));
+    }
+    const disabledDropdown = (item, index) => {
+        if (index === 0) {
+            return false;
+        } else {
+            if (state.selectedDropdownValue && (state.selectedDropdownValue.LevelId + 1) > index) {
+                return false;
+            } else {
+                return true;
+            }
+        }
     }
     return <div><Drawer
         anchor={"right"}
@@ -136,6 +147,7 @@ const AssociateHierarchy = (props) => {
                                     mandatory={true}
                                     handleChange={(e) => handleLevelChange(e, item)}
                                     errors={errors[item.LevelName]}
+                                    disabled={disabledDropdown(item, i)}
                                 />
                                 <Button
                                     id="RawMaterialName-add"
