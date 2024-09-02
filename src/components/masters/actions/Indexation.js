@@ -178,10 +178,10 @@ export function getCommodityIndexDataListAPI(obj, isPagination, skip, take, isAd
             .then((response) => {
                 if (response.data.Result || response.status === 204) {
                     // if (isPagination) {
-                        dispatch({
-                            type: GET_INDEXCOMMODITY_DATALIST_SUCCESS,
-                            payload: response.status === 204 ? [] : response.data.DataList
-                        })
+                    dispatch({
+                        type: GET_INDEXCOMMODITY_DATALIST_SUCCESS,
+                        payload: response.status === 204 ? [] : response.data.DataList
+                    })
                     // } else {
                     //     dispatch({
                     //         type: GET_INDEXCOMMODITY_DATA_FOR_DOWNLOAD,
@@ -212,10 +212,10 @@ export function getCommodityInIndexDataListAPI(obj, isPagination, skip, take, ca
             .then((response) => {
                 if (response.data.Result || response.status === 204) {
                     // if (isPagination) {
-                        dispatch({
-                            type: GET_COMMODITYININDEX_DATALIST_SUCCESS,
-                            payload: response.status === 204 ? [] : response.data.DataList
-                        })
+                    dispatch({
+                        type: GET_COMMODITYININDEX_DATALIST_SUCCESS,
+                        payload: response.status === 204 ? [] : response.data.DataList
+                    })
                     // } else {
                     //     dispatch({
                     //         type: GET_COMMODITYININDEX_DATA_FOR_DOWNLOAD,
@@ -253,10 +253,10 @@ export function getStandardizedCommodityListAPI(obj, isPagination, skip, take, i
             .then((response) => {
                 if (response.data.Result || response.status === 204) {
                     // if (isPagination) {
-                        dispatch({
-                            type: GET_STANDARDIZEDCOMMODITY_DATALIST_SUCCESS,
-                            payload: response.status === 204 ? [] : response.data.DataList
-                        })
+                    dispatch({
+                        type: GET_STANDARDIZEDCOMMODITY_DATALIST_SUCCESS,
+                        payload: response.status === 204 ? [] : response.data.DataList
+                    })
                     // } else {
                     //     dispatch({
                     //         type: GET_STANDARDIZEDCOMMODITY_FOR_DOWNLOAD,
@@ -305,15 +305,15 @@ export function getIndexDataListAPI(obj, isPagination, skip, take, callback) {
             .then((response) => {
                 if (response.data.Result || response.status === 204) {
                     // if (isPagination) {
-                        dispatch({
-                            type: GET_INDEXDATA_LIST_SUCCESS,
-                            payload: response.status === 204 ? [] : response.data.DataList
-                        })
+                    dispatch({
+                        type: GET_INDEXDATA_LIST_SUCCESS,
+                        payload: response.status === 204 ? [] : response.data.DataList
+                    })
                     // } else {
                     //     console.log(response.data);
-                        
+
                     //     dispatch({
-                            
+
                     //         type: GET_INDEXDATA_FOR_DOWNLOAD,
                     //         payload: response.status === 204 ? [] : response.data.DataList
                     //     })
@@ -592,10 +592,10 @@ export function getCommodityStandardList(obj, isPagination, skip, take, callback
             .then((response) => {
                 if (response.data.Result || response.status === 204) {
                     // if (isPagination) {
-                        dispatch({
-                            type: GET_COMMODITY_STANDARD_DATALIST_SUCCESS,
-                            payload: response.status === 204 ? [] : response.data.DataList
-                        })
+                    dispatch({
+                        type: GET_COMMODITY_STANDARD_DATALIST_SUCCESS,
+                        payload: response.status === 204 ? [] : response.data.DataList
+                    })
                     // } else {
                     //     dispatch({
                     //         type: GET_COMMODITY_STANDARD_FOR_DOWNLOAD,
@@ -738,7 +738,7 @@ export function getLastRevisionRawMaterialDetails(data, callback) {
     return (dispatch) => {
         const request = axios.post(API.getLastRevisionRawMaterialDetails, data, config());
         request.then((response) => {
-            if (response?.data.Result) {
+            if (response) {
                 callback(response);
             }
         }).catch((error) => {
