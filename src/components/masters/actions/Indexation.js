@@ -720,7 +720,7 @@ export function getLastRevisionRawMaterialDetails(data, callback) {
     return (dispatch) => {
         const request = axios.post(API.getLastRevisionRawMaterialDetails, data, config());
         request.then((response) => {
-            if (response?.data.Result) {
+            if (response) {
                 callback(response);
             }
         }).catch((error) => {
