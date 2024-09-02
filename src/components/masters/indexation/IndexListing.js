@@ -108,7 +108,7 @@ const IndexListing = () => {
                 setDisableDownload(false)
                 dispatch(disabledClass(false))
                 setTimeout(() => {
-                    let button = document.getElementById('Excel-Downloads-outsourcing')
+                    let button = document.getElementById('Excel-Downloads-index')
                     button && button.click()
                 }, 500);
             }
@@ -147,35 +147,35 @@ const IndexListing = () => {
                 setNoData(newNoData);
             }
         }, 500);
-    
+
         setDisableFilter(false);
-    
+
         const model = gridOptions?.api?.getFilterModel();
         setFilterModel(model);
-    
+
         if (!isFilterButtonClicked) {
             setWarningMessage(true);
         }
-    
+
         // Only reset if all the filters are cleared manually, not when applying a valid filter.
         if (value?.filterInstance?.appliedModel === null || value?.filterInstance?.appliedModel?.filter === "") {
             let isFilterEmpty = Object.keys(model).length === 0; // Check if the model is empty
-    
+
             if (!isFilterEmpty) {
                 // Update the specific floating filter data for the column being changed
-                setFloatingFilterData({ 
-                    ...floatingFilterData, 
-                    [value.column.colId]: "" 
+                setFloatingFilterData({
+                    ...floatingFilterData,
+                    [value.column.colId]: ""
                 });
             } else {
                 setWarningMessage(false);
-    
+
                 // Reset all filters if everything is cleared
                 const clearedFilters = Object.keys(floatingFilterData).reduce((acc, key) => {
                     acc[key] = ""; // Reset all floating filters
                     return acc;
                 }, {});
-                
+
                 setFloatingFilterData(clearedFilters);
             }
         } else {
@@ -185,8 +185,8 @@ const IndexListing = () => {
             });
         }
     };
-    
-    
+
+
     const onSearch = () => {
         setNoData(false)
         setWarningMessage(false)
@@ -415,7 +415,7 @@ const IndexListing = () => {
             setTimeout(() => {
                 setDisableDownload(false)
                 dispatch(disabledClass(false))
-                let button = document.getElementById('Excel-Downloads-rm-import')
+                let button = document.getElementById('Excel-Downloads-index')
                 button && button.click()
             }, 400);
 
@@ -444,19 +444,25 @@ const IndexListing = () => {
                             <Button id="add_index" className="mr5 Tour_List_AdCommodity" onClick={openModel} title="Add" icon={"plus"} />
                         )}
                         {permissions.Download && (
+                            
                             <>
-                                <>
-                                    <ExcelFile
-                                        filename={"Index"}
-                                        fileExtension={".xls"}
-                                        element={
-                                            <Button onClick={onExcelDownload} id={"Excel-Downloads-index"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5 Tour_List_Download'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
-                                        }
-                                    >
-                                        {onBtExport()}
-                                    </ExcelFile>
-                                </>
-                            </>
+
+                            <Button
+                                className="mr5 Tour_List_Download"
+                                id={"index_excel_download"}
+                                onClick={onExcelDownload}
+                                title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
+                                icon={"download mr-1"}
+                                buttonName={`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
+                            />
+                            <ExcelFile   filename={"Index"}
+ fileExtension={'.xls'} element={
+                                <Button id={"Excel-Downloads-index"} className="p-absolute" />
+
+                            }>
+                                {onBtExport()}
+                            </ExcelFile>
+                        </>
                         )}
                         <Button id={"index_refresh"} onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
                     </div>
@@ -504,7 +510,7 @@ const IndexListing = () => {
                                 onFilterModified={onFloatingFilterChanged}
                                 suppressRowClickSelection={true}
                             >
-                                <AgGridColumn field="IndexExchangeName" headerName="Name"></AgGridColumn>
+                                <AgGridColumn field="IndexExchangeName" headerName="Index"></AgGridColumn>
                                 <AgGridColumn field="IndexExchangeId" cellClass="ag-grid-action-container" headerName="Action" pinned="right" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"}></AgGridColumn>
                             </AgGridReact>
 

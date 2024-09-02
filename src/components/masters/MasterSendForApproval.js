@@ -142,7 +142,6 @@ function MasterSendForApproval(props) {
                 }]
             }
             dispatch(getLastRevisionRawMaterialDetails(data, (res) => {
-
                 if (res.status === 200 || res.status === 204) {
 
                     setLastRevisionRawMaterialDetails(res.status === 200 ? res?.data?.DataList : [])
@@ -233,6 +232,8 @@ function MasterSendForApproval(props) {
                 approvalData && approvalData.map(item => {
                     bulkuploadIdsArray.push({ OldRawMaterialId: masterId === 1 ? item?.OldRawMaterialId ?? null : null, MasterRecordId: masterId === 1 ? item?.RawMaterialId : masterId === 2 ? item?.BoughtOutPartId : masterId === 3 ? item?.OperationId : masterId === 4 ? item?.MachineId : null })
                 })
+
+                return bulkuploadIdsArray
 
             }
 
@@ -803,7 +804,7 @@ function MasterSendForApproval(props) {
                                                         className=""
                                                         customClassName={'withBorder'}
                                                         errors={errors.NetLandedCost}
-                                                        // defaultValue={Object?.keys(approvalObj)?.length > 0 ? checkForDecimalAndNull(approvalObj?.NetLandedCost, initialConfiguration?.NoOfDecimalForPrice) : ''}
+                                                        defaultValue={Object?.keys(approvalObj)?.length > 0 ? checkForDecimalAndNull(approvalObj?.NetLandedCost, initialConfiguration?.NoOfDecimalForPrice) : ''}
                                                         disabled={true}
                                                     />
                                                 </Col>

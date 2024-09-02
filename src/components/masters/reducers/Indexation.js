@@ -40,35 +40,35 @@ export default function indexationReducer(state = initialState, action) {
                 ...state,
                 loading: false,
                 error: true,
-                indexCommodityDataList: action.payload
+                indexCommodityDataList: action.payload ?? []
             };
         case GET_COMMODITYININDEX_DATALIST_SUCCESS:
             return {
                 ...state,
                 loading: false,
                 error: true,
-                commodityInIndexDataList: action.payload
+                commodityInIndexDataList: action.payload  ?? []
             };
         case GET_STANDARDIZEDCOMMODITY_DATALIST_SUCCESS:
             return {
                 ...state,
                 loading: false,
                 error: true,
-                standardizedCommodityDataList: action.payload
+                standardizedCommodityDataList: action.payload ?? []
             };
         case GET_INDEXDATA_LIST_SUCCESS:
             return {
                 ...state,
                 loading: false,
                 error: true,
-                rmIndexDataList: action.payload
+                rmIndexDataList: action.payload ?? []
             };
         case GET_COMMODITY_STANDARD_DATALIST_SUCCESS:
             return {
                 ...state,
                 loading: false,
                 error: true,
-                commodityStandardDataList: action.payload
+                commodityStandardDataList: action.payload ?? []
             };
         case GET_COMMODITY_STANDARD_FOR_DOWNLOAD:
             return {

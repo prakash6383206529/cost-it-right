@@ -5649,6 +5649,7 @@ export const EXCHANGERATE_DOWNLOAD_EXCEl = [
     { label: `Custom Rate (${reactLocalStorage.getObject("baseCurrency")})`, value: "CustomRate", },
     { label: "Effective Date", value: "EffectiveDate", },
     { label: "Date of Modification", value: "DateOfModification", },
+    { label: "Is Budgeting", value: "IsBudgeting", },
 ]
 
 export const FREIGHT_DOWNLOAD_EXCEl = [

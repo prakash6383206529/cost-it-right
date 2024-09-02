@@ -22,8 +22,7 @@ const PartSpecificationDrawer = (props) => {
         reValidateMode: 'onChange',
     });
     const [isLoader, setIsLoader] = useState(false);
-    const quotationId = useSelector((state) => state?.rfq?.quotationIDForRFQ) ?? ''
-
+    const quotationId = useSelector((state) => state.rfq.quotationIDForRFQ ?? '');
     const [columnDefs, setColumnDefs] = useState([]);
     const [rowData, setRowData] = useState([]);
     const dispatch = useDispatch();
@@ -74,15 +73,27 @@ const PartSpecificationDrawer = (props) => {
     }, [quotationId, baseCostingId, dispatch]);
 
     const generateColumnDefs = (specsHead) => {
-        return specsHead.map(head => ({
+        return specsHead.map((head, index) => ({
             headerName: head,
             field: head, // Use the head value directly as the field name
             sortable: true,
             filter: true,
+            cellRenderer: index >= 2 ? 'vendorDataRenderer' : undefined,
+
         }));
     };
-
-
+    const VendorDataRenderer = (props) => {
+        const specValueField = 'Part Specs Value'; // The field name for the specification value
+        const vendorValue = props.value;
+        const specValue = props.data[specValueField];
+        const isChanged = vendorValue !== specValue && vendorValue !== null && vendorValue !== undefined && vendorValue !== '';
+    
+        return (
+            <span style={{ color: isChanged ? 'red' : 'inherit' }}>
+                {vendorValue !== null && vendorValue !== undefined ? vendorValue : '-'}
+            </span>
+        );
+    };
 
     const defaultColDef = {
         resizable: true,
@@ -104,6 +115,8 @@ const PartSpecificationDrawer = (props) => {
     const frameworkComponents = {
         customLoadingOverlay: LoaderCustom,
         customNoRowsOverlay: NoContentFound,
+        vendorDataRenderer: VendorDataRenderer,
+
     };
 
     return (
@@ -127,8 +140,8 @@ const PartSpecificationDrawer = (props) => {
                                 <HeaderTitle title="Specifications" customClass="mt-3" />
                                 {rowData?.length > 0 && (
                                     <Row className="mt-1 part-detail-wrapper">
-                                        <Col md="3">
-                                            {props.type !== 'BOP' && (<TextFieldHookForm
+                                       {props.type !== 'BOP'  && props.partType !=='Tooling'  && (  <Col md="3">
+                                           <TextFieldHookForm
                                                 label="Havells Design Part"
                                                 name="HavellsDesignPart"
                                                 Controller={Controller}
@@ -139,10 +152,10 @@ const PartSpecificationDrawer = (props) => {
                                                 className=""
                                                 customClassName="withBorder"
                                                 errors={errors.Specification}
-                                            />)}
-                                        </Col>
-                                        <Col md="3">
-                                            {props.type !== 'BOP' && (<TextFieldHookForm
+                                            />
+                                        </Col>)}
+                                        {props.type !== 'BOP' && props.partType !=='Tooling' && (  <Col md="3">
+                                           <TextFieldHookForm
                                                 label="Target Price"
                                                 name="TargetPrice"
                                                 Controller={Controller}
@@ -156,8 +169,8 @@ const PartSpecificationDrawer = (props) => {
                                                 errors={errors.Description}
                                                 disabled={true}
                                                 placeholder="-"
-                                            />)}
-                                        </Col>
+                                            />
+                                        </Col>)}
                                         <Col md="3">
                                             <TextFieldHookForm
                                                 label="UOM"
@@ -192,9 +205,9 @@ const PartSpecificationDrawer = (props) => {
                                                 placeholder="-"
                                             />
                                         </Col>
-                                        <Col md="3">
-                                            {props.type !== 'BOP' && (<TextFieldHookForm
-                                                label="Part Number"
+                                        {props.type !== 'BOP' && ( <Col md="3">
+                                           <TextFieldHookForm
+                                                label={props?.partType === 'Tooling' ? "Tool Number" : "Part Number"}
                                                 name="PartNumber"
                                                 Controller={Controller}
                                                 control={control}
@@ -207,8 +220,8 @@ const PartSpecificationDrawer = (props) => {
                                                 errors={errors.Description}
                                                 disabled={true}
                                                 placeholder="-"
-                                            />)}
-                                        </Col>
+                                            />
+                                        </Col>)}
                                     </Row>
                                 )}
                                 <div className="ag-grid-react">

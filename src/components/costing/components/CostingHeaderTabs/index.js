@@ -8,7 +8,6 @@ import TabSurfaceTreatment from './TabSurfaceTreatment';
 import TabOverheadProfit from './TabOverheadProfit';
 import TabPackagingFreight from './TabPackagingFreight';
 import TabDiscountOther from './TabDiscountOther';
-import TabToolCost from './TabToolCost';
 import { costingInfoContext, NetPOPriceContext } from '../CostingDetailStepTwo';
 import BOMViewer from '../../../masters/part-master/BOMViewer';
 import {
@@ -34,6 +33,7 @@ import { Steps } from '../TourMessages';
 import { useTranslation } from 'react-i18next';
 import { getRMFromNFR, setOpenAllTabs } from '../../../masters/nfr/actions/nfr';
 import Toaster from '../../../common/Toaster';
+import TabToolCost from './TabToolCost';
 export const PreviousTabData = React.createContext();
 
 function CostingHeaderTabs(props) {

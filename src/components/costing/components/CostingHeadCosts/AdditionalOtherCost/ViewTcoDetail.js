@@ -170,6 +170,7 @@ const ViewTcoDetail = ({ isApproval, viewCostingData, isRfqCosting, highlighter,
                 closeDrawer={closeSpecificationDrawer}
                 anchor={'right'}
                 baseCostingId={baseCostingId}
+                partType={viewCostingData[0]?.partType}
             />
             }
         </>

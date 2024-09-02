@@ -174,7 +174,9 @@ class AddGrade extends Component {
                   <Col>
                     <div className={"header-wrapper left"}>
                       <h3>
-                        {this.props.isShowCommodity ? "Add Commodity" : this.props.isShowIndex ? 'Add Index' : isEditFlag ? "Update RM Grade" : "Add RM Grade"}
+                        {this.props.isShowCommodity ? "Add Commodity" :
+                          this.props.isShowIndex ? (isEditFlag ? "Update" : "Add") + " Index" :
+                            (isEditFlag ? "Update" : "Add") + " RM Grade"}
                       </h3>
                     </div>
                     <div
