@@ -142,7 +142,6 @@ function MasterSendForApproval(props) {
                 }]
             }
             dispatch(getLastRevisionRawMaterialDetails(data, (res) => {
-
                 if (res.status === 200 || res.status === 204) {
 
                     setLastRevisionRawMaterialDetails(res.status === 200 ? res?.data?.DataList : [])
@@ -805,7 +804,7 @@ function MasterSendForApproval(props) {
                                                         className=""
                                                         customClassName={'withBorder'}
                                                         errors={errors.NetLandedCost}
-                                                        // defaultValue={Object?.keys(approvalObj)?.length > 0 ? checkForDecimalAndNull(approvalObj?.NetLandedCost, initialConfiguration?.NoOfDecimalForPrice) : ''}
+                                                        defaultValue={Object?.keys(approvalObj)?.length > 0 ? checkForDecimalAndNull(approvalObj?.NetLandedCost, initialConfiguration?.NoOfDecimalForPrice) : ''}
                                                         disabled={true}
                                                     />
                                                 </Col>
