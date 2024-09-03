@@ -27,7 +27,7 @@ import { IdForMultiTechnology, PART_TYPE_ASSEMBLY } from '../../../../config/mas
 import { debounce } from 'lodash';
 import { PaginationWrapper } from '../../../common/commonPagination';
 import { updateMultiTechnologyTopAndWorkingRowCalculation } from '../../actions/SubAssembly';
-import { PreviousTabData } from '.';
+import { PreviousTabData } from '../CostingHeaderTabs';
 function TabToolCost(props) {
 
   const { handleSubmit } = useForm();
@@ -351,13 +351,29 @@ function TabToolCost(props) {
   }
 
   const buttonFormatter = (props) => {
+    const row = props?.valueFormatted ? props.valueFormatted : props?.data;
     const rowsToShowButtons = findRowsWithHighestBOMLevel(props?.agGridReact?.props?.rowData);
     const shouldShowButtons = rowsToShowButtons.has(props.rowIndex);
     return (
       <>
-        {!shouldShowButtons && <div className={`${'lock_icon tooltip-n'}`} title='This part is already present at multiple level in this BOM. Please go to the lowest level to edit the data.'></div>}
-        {shouldShowButtons && <button title='Edit' className="Edit mr-2 align-middle" type={'button'} onClick={() => editItem(props?.rowIndex, props?.agGridReact?.props?.rowData)} />}
-        {(CostingViewMode || shouldShowButtons) && <button title='Delete' className="Delete align-middle" type={'button'} onClick={() => deleteItem(props?.rowIndex, props?.agGridReact?.props?.rowData)} />}
+        {!shouldShowButtons && row?.PartType !== 'Component' && <div className={`${'lock_icon tooltip-n'}`} title='This part is already present at multiple level in this BOM. Please go to the lowest level to edit the data.'></div>}
+        {(!CostingViewMode && shouldShowButtons) && (
+          <>
+            <button
+              title='Edit'
+              className="Edit mr-2 align-middle"
+              type={'button'}
+              onClick={() => editItem(props?.rowIndex, props?.agGridReact?.props?.rowData)}
+            />
+            <button
+              title='Delete'
+              className="Delete align-middle"
+              type={'button'}
+              onClick={() => deleteItem(props?.rowIndex, props?.agGridReact?.props?.rowData)}
+            />
+          </>
+        )}
+
       </>
     )
   }
@@ -555,7 +571,7 @@ function TabToolCost(props) {
                               >
                                 {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
                                 {/* <AgGridColumn field="ToolOperationId" headerName=" "></AgGridColumn> */}
-                                {initialConfiguration.IsShowCRMHead && <AgGridColumn field="CRMHead" headerName="CRM Head"></AgGridColumn>}
+                                {initialConfiguration.IsShowCRMHead && <AgGridColumn field="ToolCRMHead" headerName="CRM Head"></AgGridColumn>}
                                 <AgGridColumn field="BOMLevel" headerName="BOMLevel"></AgGridColumn>
                                 <AgGridColumn field="ParentPartNumber" headerName="Parent Part Number"></AgGridColumn>
                                 <AgGridColumn field="ChildPartNumber" headerName="Child Part Number"></AgGridColumn>

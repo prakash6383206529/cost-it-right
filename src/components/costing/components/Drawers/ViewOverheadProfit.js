@@ -543,7 +543,7 @@ function ViewOverheadProfit(props) {
                 <br />
                 <div>
                   {/* //COMMENTED CODE DUE TO PAGE BLANK, ONCE FIXED IT BY ADITI IT WILL BE UNCOMMENT */}
-                  {/* {iccTableData()} */}
+                  {iccTableData()}
                 </div>
 
                 <br />

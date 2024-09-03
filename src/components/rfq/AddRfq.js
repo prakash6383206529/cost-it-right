@@ -1623,7 +1623,7 @@ function AddRfq(props) {
                 }
 
             } if (requirementDate === "") {
-                Toaster.warning(`Please select ${selectedOption === 'TOOLING' ? 'T0 Timeline' : 'N-100 Timeline'}`);
+                Toaster.warning(`Please select ${selectedOption === 'TOOLING' ? 'T0 Date' : 'N-100 Timeline'}`);
                 return false;
             }
             if (nfrId && nfrId.value !== null) {//CHECK_NFR
@@ -2932,10 +2932,11 @@ function AddRfq(props) {
                                     </Form>
 
                                 </div>
-
                                 <form>
 
                                     <Row className="part-detail-wrapper">
+                                        <TooltipCustom id="technology" disabledIcon={true} tooltipText="To initiate RFI creation, select the technology, plant code, part type, and input part number (all three characters are necessary)" />
+
                                         {quotationType !== "Bought Out Part" && (
                                             <Col md="3">
                                                 <SearchableSelectHookForm
@@ -3051,6 +3052,7 @@ function AddRfq(props) {
                                                     disabled={Object.keys(prNumber).length !== 0 || (dataProps?.isViewFlag) ? true : false || (technology.length === 0) ? true : false || updateButtonPartNoTable || disabledPartUid}
                                                 />
                                             </Col>}
+
                                             <Col md="3" className='d-flex align-items-center' >
 
                                                 <AsyncSearchableSelectHookForm
@@ -3070,11 +3072,16 @@ function AddRfq(props) {
                                                     asyncOptions={(inputValue) => partFilterList(inputValue, partTypeforRM)}
                                                     NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
                                                 />
+
                                                 {partType.length !== 0 && partTypeforRM !== BoughtOutPart && (
-                                                    <Button id="addComponentSpecificatione" className={"ml-2 mb-2"}
-                                                        // icon={updateButtonPartNoTable ? 'edit_pencil_icon' : ''}
-                                                        variant={updateButtonPartNoTable ? 'Edit' : 'plus-icon-square'}
-                                                        title={updateButtonPartNoTable ? 'Edit' : 'Add'} onClick={DrawerToggle} disabled={partName?.length === 0 || disabledPartUid}></Button>
+                                                    <>
+                                                        <TooltipCustom id="addComponentSpecification" disabledIcon={true} tooltipText="Click on the + button to start inputting Specification, RM details, and mandatory attachments." />
+                                                        <Button id="addComponentSpecification" className={"ml-2 mb-2"}
+                                                            // icon={updateButtonPartNoTable ? 'edit_pencil_icon' : ''}
+                                                            variant={updateButtonPartNoTable ? 'Edit' : 'plus-icon-square'}
+                                                            title={updateButtonPartNoTable ? 'Edit' : 'Add'} onClick={DrawerToggle} disabled={partName?.length === 0 || disabledPartUid}></Button>
+                                                    </>
+
                                                 )}
                                             </Col>
                                             {havellsKey && <Col md="3">
@@ -3243,7 +3250,7 @@ function AddRfq(props) {
                                                         <div className="form-group">
                                                             <TooltipCustom id="timeline" tooltipText="Part Rediness timeline for Quality, N-10 & N-100" />
 
-                                                            <label>{selectedOption === TOOLING ? "T0 Timeline" : "N-100 Timeline"}<span className="asterisk-required">*</span></label>
+                                                            <label>{selectedOption === TOOLING ? 'T0 Date' : "N-100 Timeline"}<span className="asterisk-required">*</span></label>
                                                             <div id="addRFQDate_container" className="inputbox date-section">
                                                                 <DatePicker
 
@@ -3399,7 +3406,7 @@ function AddRfq(props) {
 
                                                                     {<AgGridColumn width={"230px"} field="UOMSymbol" headerName="UOM" ></AgGridColumn>}
 
-                                                                    <AgGridColumn width={"230px"} field="TimeLine" headerName={selectedOption === TOOLING ? "T0 Timeline" : "N-100 Timeline"} cellRenderer={'effectiveDateFormatter'} ></AgGridColumn>
+                                                                    <AgGridColumn width={"230px"} field="TimeLine" headerName={selectedOption === TOOLING ? 'T0 Date' : "N-100 Timeline"} cellRenderer={'effectiveDateFormatter'} ></AgGridColumn>
                                                                     {(selectedOption === 'componentAssembly' || selectedOption === 'Raw Material' || selectedOption === "Bought Out Part") && <AgGridColumn width={"230px"} field="VendorListExisting" headerName="Existing Vendor" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
 
                                                                     {(selectedOption === "componentAssembly" || selectedOption === 'Tooling') && (<AgGridColumn width={"230px"} field="PartId" cellClass="ag-grid-action-container text-right" headerName="Action" floatingFilter={false} type="rightAligned" cellRenderer={'buttonFormatterFirst'} />)}

@@ -20,7 +20,7 @@ import { updateMultiTechnologyTopAndWorkingRowCalculation } from '../../actions/
 import { LOGISTICS } from '../../../../config/masterData';
 import { useHistory } from 'react-router';
 import { WACTypeId } from '../../../../config/constants';
-import { PreviousTabData } from '.';
+import { PreviousTabData } from '../CostingHeaderTabs';
 function TabPackagingFreight(props) {
 
   const { handleSubmit, } = useForm();

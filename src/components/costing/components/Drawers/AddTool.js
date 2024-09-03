@@ -17,6 +17,7 @@ function AddTool(props) {
 
   const { rowObjData, isEditFlag, gridData, CostingViewMode } = props;
   const costData = useContext(costingInfoContext)
+  const { RMCCTabData } = useSelector(state => state.costing)
 
   const defaultValues = {
     ToolOperationId: rowObjData?.ToolOperationId ? rowObjData.ToolOperationId : '',
@@ -59,9 +60,11 @@ function AddTool(props) {
 
   useEffect(() => {
     dispatch(getToolCategoryList(res => { }))
-    dispatch(getAssemblyChildPartbyAsmCostingId(costData?.CostingId, false, res => {
-      setPartNumberArray(res?.data?.DataList)
-    }))
+    if (RMCCTabData) {
+      dispatch(getAssemblyChildPartbyAsmCostingId(RMCCTabData[0]?.AssemblyCostingId, false, res => {
+        setPartNumberArray(res?.data?.DataList)
+      }))
+    }
   }, [])
 
   useEffect(() => {
@@ -200,7 +203,7 @@ function AddTool(props) {
     let tempArr = []
     let finalList = []
     if (isEditFlag) {
-      finalList = updateEntriesForPartNumber(partNumberDetail?.label, tableData, rowObjData?.OperationChildIdRef, rowObjData?.ProcessIdRef)
+      finalList = updateEntriesForPartNumber(partNumberDetail?.label, tableData, rowObjData?.OperationChildIdRef, rowObjData?.ProcessIdRef, rowObjData?.ToolName)
       tempArr = finalList
     }
     else {
@@ -297,11 +300,11 @@ function AddTool(props) {
    * @method updateEntriesForPartNumber
    * @description This is for calculation of Tool cost on same part number which is present at different BOM Level in update mode
   */
-  const updateEntriesForPartNumber = (partNumber, list, OperationChildIdRef, ProcessIdRef) => {
+  const updateEntriesForPartNumber = (partNumber, list, OperationChildIdRef, ProcessIdRef, ToolName) => {
     // Iterate over the list and update entries matching the partNumber
     list.forEach(item => {
       if (item.ChildPartNumber === partNumber) {
-        if (rowObjData?.ProcessOrOperationType === 'Operation' && item.OperationChildIdRef === OperationChildIdRef) {
+        if (rowObjData?.ProcessOrOperationType === 'Operation' && item.OperationChildIdRef === OperationChildIdRef && item.ToolName === ToolName) {
           // Calculate the new TotalToolCost based on the item's Quantity
           const totalToolCost = getNetToolCost(item?.PartQuantity)
           // Update the item with the new TotalToolCost (or any other updates you need)
@@ -313,7 +316,7 @@ function AddTool(props) {
           item.NetToolCost = totalToolCost
           item.ToolCRMHead = getValues('crmHead')?.label
           // Here you can add any other property updates as needed
-        } else if (rowObjData?.ProcessOrOperationType === 'Process' && item.ProcessIdRef === ProcessIdRef) {
+        } else if (rowObjData?.ProcessOrOperationType === 'Process' && item.ProcessIdRef === ProcessIdRef && item.ToolName === ToolName) {
 
           // Calculate the new TotalToolCost based on the item's Quantity
           const totalToolCost = getNetToolCost(item?.PartQuantity)

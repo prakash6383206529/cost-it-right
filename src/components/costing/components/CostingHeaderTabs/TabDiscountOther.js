@@ -496,18 +496,20 @@ function TabDiscountOther(props) {
       }
       otherCostFinalArray.push(data1)
     })
-
-    let discountArray = [
-      {
+    let discountArray = []
+    otherDiscountData?.gridData && otherDiscountData?.gridData?.map(item => {
+      let obj = {
         "Type": 'Discount',
-        "ApplicabilityType": discountCostApplicability?.label,
-        "ApplicabilityIdRef": discountCostApplicability?.value,
-        "Description": getValues('discountDescriptionRemark'),
-        "NetCost": DiscountCostData?.HundiOrDiscountValue,
-        "Value": getValues('HundiOrDiscountPercentage'),
-        "CRMHead": getValues('crmHeadDiscount') ? getValues('crmHeadDiscount').label : '',
+        "ApplicabilityType": item?.ApplicabilityType,
+        "ApplicabilityIdRef": item?.ApplicabilityIdRef,
+        "Description": item?.Description,
+        "NetCost": item?.NetCost,
+        "Value": item?.PercentageDiscountCost ? item?.PercentageDiscountCost : item?.PercentageDiscountCost,
+        "ApplicabilityCost": item?.ApplicabilityCost ? item?.ApplicabilityCost : item?.ApplicabilityCost,
+        "CRMHead": item?.CRMHead,
       }
-    ]
+      discountArray.push(obj)
+    })
 
     let data = {
       "CostingId": costData?.CostingId,
@@ -648,7 +650,7 @@ function TabDiscountOther(props) {
               discountTotalCost = checkForNull(discountTotalCost) + checkForNull(item.NetCost)
               obj.Description = item.Description
               obj.ApplicabilityIdRef = item.ApplicabilityIdRef
-              obj.applicability = item.ApplicabilityType
+              obj.ApplicabilityType = item.ApplicabilityType
               obj.ApplicabilityCost = item?.ApplicabilityCost
               obj.PercentageDiscountCost = item.Value ? item.Value : '-'
               obj.NetCost = item.NetCost
@@ -1211,7 +1213,7 @@ function TabDiscountOther(props) {
     discountCostArray && discountCostArray.map(item => {
       let tempData = {
         "Type": 'Discount',
-        "ApplicabilityType": item?.applicability,
+        "ApplicabilityType": item?.ApplicabilityType,
         "ApplicabilityIdRef": item.ApplicabilityIdRef,
         ApplicabilityCost: item.ApplicabilityCost,
         "Description": item.Description,

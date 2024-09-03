@@ -21,7 +21,7 @@ import ScrollToTop from '../../../common/ScrollToTop';
 import WarningMessage from '../../../common/WarningMessage';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { PART_TYPE_ASSEMBLY } from '../../../../config/masterData';
-import { PreviousTabData } from '.';
+import { PreviousTabData } from '../CostingHeaderTabs';
 function TabRMCC(props) {
 
   const { handleSubmit } = useForm()

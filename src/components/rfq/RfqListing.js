@@ -74,30 +74,28 @@ function RfqListing(props) {
     const [warningMessage, setWarningMessage] = useState(false)
     const [disableDownload, setDisableDownload] = useState(false)
 
-    const [disableFilter, setDisableFilter] = useState(false)
-    const [floatingFilterData, setFloatingFilterData] = useState({
-        QuotationNumber: "",
-        PartType: "",
-        PartNumber: "",
-        RawMaterial: "",
-        PRNumber: "",
-        NoOfQuotationReceived: "",
-        vendorCode: "",
-        plantCode: "",
-        TechnologyName: "",
-        RaisedBy: "",
-        RaisedOn: "",
-        PartDataSentDate: "",
-        VisibilityMode: "",
-        VisibilityDate: "",
-        VisibilityDuration: "",
-        LastSubmissionDate: "",
-        Remark: "",
-        Status: "",
-        boughtOutPart: ""
-    });
-
-    const [filterModel, setFilterModel] = useState({});
+const [disableFilter , setDisableFilter] = useState(false)
+const [floatingFilterData, setFloatingFilterData] = useState({
+    QuotationNumber: "",
+    PartType: "",
+    PartNumber: "",
+    RawMaterial: "",
+    NoOfQuotationReceived: "",
+    vendorCode: "",
+    plantCode: "",
+    TechnologyName: "",
+    RaisedBy: "",
+    RaisedOn: "",
+    PartDataSentDate: "",
+    VisibilityMode: "",
+    VisibilityDate: "",
+    VisibilityDuration: "",
+    LastSubmissionDate: "",
+    Status: "",
+    boughtOutPart: ""
+  });
+      
+      const [filterModel, setFilterModel] = useState({});
     const { technologyLabel } = useLabels();
 
     const { topAndLeftMenuData } = useSelector(state => state.auth);

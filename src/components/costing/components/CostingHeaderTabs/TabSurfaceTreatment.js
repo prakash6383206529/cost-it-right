@@ -16,7 +16,6 @@ import { ASSEMBLYNAME, LEVEL0, TOOLINGPART, WACTypeId } from '../../../../config
 import { ASSEMBLY } from '../../../../config/masterData';
 import { netHeadCostContext, SurfaceCostContext } from '../CostingDetailStepTwo';
 import { findrmCctData } from '../../CostingUtil';
-import { PreviousTabData } from '.';
 function TabSurfaceTreatment(props) {
 
   const { handleSubmit, } = useForm();

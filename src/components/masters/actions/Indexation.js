@@ -177,17 +177,17 @@ export function getCommodityIndexDataListAPI(obj, isPagination, skip, take, isAd
         axios.get(`${API.getCommodityIndexDataList}?${queryParams}`, config())
             .then((response) => {
                 if (response.data.Result || response.status === 204) {
-                    if (isPagination) {
-                        dispatch({
-                            type: GET_INDEXCOMMODITY_DATALIST_SUCCESS,
-                            payload: response.status === 204 ? [] : response.data.DataList
-                        })
-                    } else {
-                        dispatch({
-                            type: GET_INDEXCOMMODITY_DATA_FOR_DOWNLOAD,
-                            payload: response.status === 204 ? [] : response.data.DataList
-                        })
-                    }
+                    // if (isPagination) {
+                    dispatch({
+                        type: GET_INDEXCOMMODITY_DATALIST_SUCCESS,
+                        payload: response.status === 204 ? [] : response.data.DataList
+                    })
+                    // } else {
+                    //     dispatch({
+                    //         type: GET_INDEXCOMMODITY_DATA_FOR_DOWNLOAD,
+                    //         payload: response.status === 204 ? [] : response.data.DataList
+                    //     })
+                    // }
                     callback(response.status === 204 ? [] : response)
                 }
             })
@@ -211,17 +211,17 @@ export function getCommodityInIndexDataListAPI(obj, isPagination, skip, take, ca
         axios.get(`${API.getCommodityInIndexDataList}?${queryParams}`, config())
             .then((response) => {
                 if (response.data.Result || response.status === 204) {
-                    if (isPagination) {
-                        dispatch({
-                            type: GET_COMMODITYININDEX_DATALIST_SUCCESS,
-                            payload: response.status === 204 ? [] : response.data.DataList
-                        })
-                    } else {
-                        dispatch({
-                            type: GET_COMMODITYININDEX_DATA_FOR_DOWNLOAD,
-                            payload: response.status === 204 ? [] : response.data.DataList
-                        })
-                    }
+                    // if (isPagination) {
+                    dispatch({
+                        type: GET_COMMODITYININDEX_DATALIST_SUCCESS,
+                        payload: response.status === 204 ? [] : response.data.DataList
+                    })
+                    // } else {
+                    //     dispatch({
+                    //         type: GET_COMMODITYININDEX_DATA_FOR_DOWNLOAD,
+                    //         payload: response.status === 204 ? [] : response.data.DataList
+                    //     })
+                    // }
                     callback(response.status === 204 ? [] : response)
                 }
             })
@@ -252,17 +252,17 @@ export function getStandardizedCommodityListAPI(obj, isPagination, skip, take, i
         axios.get(`${API.getStandardizedCommodityDataList}?${queryParams}`, config())
             .then((response) => {
                 if (response.data.Result || response.status === 204) {
-                    if (isPagination) {
-                        dispatch({
-                            type: GET_STANDARDIZEDCOMMODITY_DATALIST_SUCCESS,
-                            payload: response.status === 204 ? [] : response.data.DataList
-                        })
-                    } else {
-                        dispatch({
-                            type: GET_STANDARDIZEDCOMMODITY_FOR_DOWNLOAD,
-                            payload: response.status === 204 ? [] : response.data.DataList
-                        })
-                    }
+                    // if (isPagination) {
+                    dispatch({
+                        type: GET_STANDARDIZEDCOMMODITY_DATALIST_SUCCESS,
+                        payload: response.status === 204 ? [] : response.data.DataList
+                    })
+                    // } else {
+                    //     dispatch({
+                    //         type: GET_STANDARDIZEDCOMMODITY_FOR_DOWNLOAD,
+                    //         payload: response.status === 204 ? [] : response.data.DataList
+                    //     })
+                    // }
                     callback(response.status === 204 ? [] : response)
                 }
             })
@@ -304,17 +304,20 @@ export function getIndexDataListAPI(obj, isPagination, skip, take, callback) {
         axios.get(`${API.getIndexDataList}?${queryParams}`, config())
             .then((response) => {
                 if (response.data.Result || response.status === 204) {
-                    if (isPagination) {
-                        dispatch({
-                            type: GET_INDEXDATA_LIST_SUCCESS,
-                            payload: response.status === 204 ? [] : response.data.DataList
-                        })
-                    } else {
-                        dispatch({
-                            type: GET_INDEXDATA_FOR_DOWNLOAD,
-                            payload: response.status === 204 ? [] : response.data.DataList
-                        })
-                    }
+                    // if (isPagination) {
+                    dispatch({
+                        type: GET_INDEXDATA_LIST_SUCCESS,
+                        payload: response.status === 204 ? [] : response.data.DataList
+                    })
+                    // } else {
+                    //     console.log(response.data);
+
+                    //     dispatch({
+
+                    //         type: GET_INDEXDATA_FOR_DOWNLOAD,
+                    //         payload: response.status === 204 ? [] : response.data.DataList
+                    //     })
+                    // }
                     callback(response.status === 204 ? [] : response)
                 }
             })
@@ -588,17 +591,17 @@ export function getCommodityStandardList(obj, isPagination, skip, take, callback
         axios.get(`${API.getCommodityStandardList}?${queryParams}`, config())
             .then((response) => {
                 if (response.data.Result || response.status === 204) {
-                    if (isPagination) {
-                        dispatch({
-                            type: GET_COMMODITY_STANDARD_DATALIST_SUCCESS,
-                            payload: response.status === 204 ? [] : response.data.DataList
-                        })
-                    } else {
-                        dispatch({
-                            type: GET_COMMODITY_STANDARD_FOR_DOWNLOAD,
-                            payload: response.status === 204 ? [] : response.data.DataList
-                        })
-                    }
+                    // if (isPagination) {
+                    dispatch({
+                        type: GET_COMMODITY_STANDARD_DATALIST_SUCCESS,
+                        payload: response.status === 204 ? [] : response.data.DataList
+                    })
+                    // } else {
+                    //     dispatch({
+                    //         type: GET_COMMODITY_STANDARD_FOR_DOWNLOAD,
+                    //         payload: response.status === 204 ? [] : response.data.DataList
+                    //     })
+                    // }
                     callback(response.status === 204 ? [] : response)
                 }
             })
@@ -735,7 +738,7 @@ export function getLastRevisionRawMaterialDetails(data, callback) {
     return (dispatch) => {
         const request = axios.post(API.getLastRevisionRawMaterialDetails, data, config());
         request.then((response) => {
-            if (response?.data.Result) {
+            if (response) {
                 callback(response);
             }
         }).catch((error) => {
