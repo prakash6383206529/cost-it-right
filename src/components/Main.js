@@ -752,7 +752,7 @@ class Main extends Component {
                       path="/material-indexation"
                       component={AuthMiddleware(Indexation, INDEXATION)}
                     />
-                    <Route path="/auction" component={AuctionIndex} />
+                    <Route path="/reverse-auction" component={AuctionIndex} />
                     <Route path="/add-auction" component={AddAuction} />
 
                     {/* <Route path='/simulation-approval-listing' component={SimulationApprovalListing} /> */}
