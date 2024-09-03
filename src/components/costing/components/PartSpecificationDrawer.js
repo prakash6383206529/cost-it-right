@@ -9,7 +9,7 @@ import LoaderCustom from '../../common/LoaderCustom';
 import { TextFieldHookForm } from '../../layout/HookFormInputs';
 import { Controller, useForm } from 'react-hook-form';
 import NoContentFound from '../../common/NoContentFound';
-import { EMPTY_DATA } from '../../../config/constants';
+import { EMPTY_DATA, TOOLING } from '../../../config/constants';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import SOPListing from './SOPListing';
 import _ from 'lodash';
@@ -87,7 +87,7 @@ const PartSpecificationDrawer = (props) => {
         const vendorValue = props.value;
         const specValue = props.data[specValueField];
         const isChanged = vendorValue !== specValue && vendorValue !== null && vendorValue !== undefined && vendorValue !== '';
-    
+
         return (
             <span style={{ color: isChanged ? 'red' : 'inherit' }}>
                 {vendorValue !== null && vendorValue !== undefined ? vendorValue : '-'}
@@ -140,8 +140,8 @@ const PartSpecificationDrawer = (props) => {
                                 <HeaderTitle title="Specifications" customClass="mt-3" />
                                 {rowData?.length > 0 && (
                                     <Row className="mt-1 part-detail-wrapper">
-                                       {props.type !== 'BOP'  && props.partType !=='Tooling'  && (  <Col md="3">
-                                           <TextFieldHookForm
+                                        {props.type !== 'BOP' && props.partType !== 'Tooling' && (<Col md="3">
+                                            <TextFieldHookForm
                                                 label="Havells Design Part"
                                                 name="HavellsDesignPart"
                                                 Controller={Controller}
@@ -154,8 +154,8 @@ const PartSpecificationDrawer = (props) => {
                                                 errors={errors.Specification}
                                             />
                                         </Col>)}
-                                        {props.type !== 'BOP' && props.partType !=='Tooling' && (  <Col md="3">
-                                           <TextFieldHookForm
+                                        {props.type !== 'BOP' && props.partType !== 'Tooling' && (<Col md="3">
+                                            <TextFieldHookForm
                                                 label="Target Price"
                                                 name="TargetPrice"
                                                 Controller={Controller}
@@ -205,8 +205,8 @@ const PartSpecificationDrawer = (props) => {
                                                 placeholder="-"
                                             />
                                         </Col>
-                                        {props.type !== 'BOP' && ( <Col md="3">
-                                           <TextFieldHookForm
+                                        {props.type !== 'BOP' && (<Col md="3">
+                                            <TextFieldHookForm
                                                 label={props?.partType === 'Tooling' ? "Tool Number" : "Part Number"}
                                                 name="PartNumber"
                                                 Controller={Controller}
@@ -215,6 +215,25 @@ const PartSpecificationDrawer = (props) => {
                                                 rules={{ required: false }}
                                                 mandatory={false}
                                                 defaultValue={partSpecificationRFQData?.SOPQuantityDetails?.PartNumber || ""}
+                                                className=""
+                                                customClassName="withBorder"
+                                                errors={errors.Description}
+                                                disabled={true}
+                                                placeholder="-"
+                                            />
+                                        </Col>)}
+                                        {props?.partType === TOOLING && (<Col md="3">
+                                            <TextFieldHookForm
+                                                label={"Tool Life"}
+                                                name="toolLife"
+                                                Controller={Controller}
+                                                control={control}
+                                                register={register}
+                                                rules={{ required: false }}
+                                                mandatory={false}
+                                                defaultValue={partSpecificationRFQData?.AdditionalDetailsForPart
+                                                    ?.ToolLife
+                                                    || ""}
                                                 className=""
                                                 customClassName="withBorder"
                                                 errors={errors.Description}

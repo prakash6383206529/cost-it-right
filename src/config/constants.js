@@ -3210,7 +3210,7 @@ export const showPaperCorrugatedBox = true
 
 export const showDynamicKeys = false
 export const hideDetailOfRubbercalci = true
-export const havellsConditionKey = true
+export const customHavellsChanges = true
 export const countDownBlickingTime = 2
 export const clientName = 'Havells'
 export const isShowTaxCode = false

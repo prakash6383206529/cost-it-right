@@ -42,7 +42,7 @@ import { getUsersMasterLevelAPI } from '../../actions/auth/AuthActions';
 import { costingTypeIdToApprovalTypeIdFunction } from '../common/CommonFunctions';
 import { useHistory, useLocation } from 'react-router-dom/cjs/react-router-dom';
 import { ASSEMBLY } from '../../config/masterData';
-import { havellsConditionKey } from '../.././config/constants';
+import { customHavellsChanges } from '../.././config/constants';
 import { useLabels } from '../../helper/core';
 export const QuotationId = React.createContext();
 
@@ -511,7 +511,7 @@ function RfqListing(props) {
     * @description approveDetails
     */
     const approveDetails = (Id, rowData = {}) => {
-        if (havellsConditionKey && (partType !== "Bought Out Part" && partType !== "Raw Material")) {
+        if (customHavellsChanges && (partType !== "Bought Out Part" && partType !== "Raw Material")) {
             const filteredData = viewCostingData.filter(item => selectedCostingList.includes(item.costingId));
             // Check if the total share of business is 100%
             const totalShareOfBusiness = filteredData
@@ -1495,7 +1495,7 @@ function RfqListing(props) {
                                 </h3>
                             </Col>
                             <Col md="6" className='d-flex justify-content-end align-items-center mb-2 mt-1'>
-                                <div className='d-flex  align-items-center'><div className='w-min-fit'>{havellsConditionKey ? "Initiated by:" : "Raised By:"}</div>
+                                <div className='d-flex  align-items-center'><div className='w-min-fit'>{customHavellsChanges ? "Initiated by:" : "Raised By:"}</div>
                                     <input
                                         type="text"
                                         className="form-control mx-2 defualt-input-value"

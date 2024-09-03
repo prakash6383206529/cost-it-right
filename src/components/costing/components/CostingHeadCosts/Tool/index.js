@@ -4,7 +4,7 @@ import { useForm, Controller, useWatch } from 'react-hook-form';
 import { Col, Row, Table } from 'reactstrap';
 import { SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import NoContentFound from '../../../../common/NoContentFound';
-import { CRMHeads, EMPTY_DATA, WACTypeId } from '../../../../../config/constants';
+import { CRMHeads, EMPTY_DATA, customHavellsChanges, WACTypeId } from '../../../../../config/constants';
 import Toaster from '../../../../common/Toaster';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, removeBOPfromApplicability } from '../../../../../helper';
 //MINDA
@@ -778,7 +778,7 @@ function Tool(props) {
                     </Col>}
                   <Col md="3">{applicability.label !== 'Fixed' && <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={"tool-maintanence"} tooltipText={"Tool Maintenance Cost = (Maintenance Cost (%) * Cost(Applicability) / 100)"} />}
                     <TextFieldHookForm
-                      label="Tool Maintenance Cost"
+                      label={customHavellsChanges ? `Tool Maintenance Cost (per pcs)` : "Tool Maintenance Cost"}
                       name={`ToolMaintenanceCost`}
                       id={"tool-maintanence"}
                       Controller={Controller}
