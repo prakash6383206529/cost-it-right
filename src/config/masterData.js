@@ -5628,7 +5628,7 @@ export const BOP_IMPORT_DOWNLOAD_EXCEl = [
 export const BOP_SOBLISTING_DOWNLOAD_EXCEl = [
     { label: "BOP Part No.", value: "BoughtOutPartNumber", },
     { label: "BOP Part Name", value: "BoughtOutPartName", },
-    { label: "BOP Category", value: "BoughtOutPartCategory", },
+    { label: "BOP Category", value: "BoughtOutPartCategoryName", },
     { label: "Specification", value: "Specification", },
     { label: "No. of Vendors", value: "NoOfVendors", },
     { label: "Plant (Code)", value: "Plant", },
