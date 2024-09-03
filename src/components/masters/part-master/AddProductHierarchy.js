@@ -51,7 +51,7 @@ const AddProductHierarchy = (props) => {
             LoggedInUserId: loggedInUserId()
         }
         dispatch(createProductLevels(requestedData, (res) => {
-            Toaster.warning("Level create successfully")
+            Toaster.success("Level create successfully")
         }))
         props.toggle()
     }

@@ -841,6 +841,7 @@ export function getAllProductLevels(callback) {
     return (dispatch) => {
         const request = axios.get(`${API.getAllProductLevels}`, config());
         request.then((response) => {
+            console.log('response: ', response);
             if (response.data.Result || response.status === 204) {
                 dispatch({
                     type: GET_PRODUCT_HIERARCHY_DATA,

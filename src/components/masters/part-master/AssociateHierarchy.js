@@ -7,6 +7,7 @@ import { checkWhiteSpaces, levelDropdown, loggedInUserId, maxLength80, required 
 import { useDispatch, useSelector } from "react-redux";
 import { createProductLevels, createProductLevelValues, getAllProductLevels } from "../actions/Part";
 import Button from "../../layout/Button";
+import Toaster from "../../common/Toaster";
 
 const AssociateHierarchy = (props) => {
     const { register, handleSubmit, setValue, getValues, formState: { errors }, control, } = useForm({
@@ -33,7 +34,7 @@ const AssociateHierarchy = (props) => {
         selectedDropdownValue: null
     })
     const dispatch = useDispatch()
-    const { productHierarchyData, getProductLabels } = useSelector((state) => state.part);
+    const { productHierarchyData } = useSelector((state) => state.part);
     useEffect(() => {
         dispatch(getAllProductLevels(() => { }))
     }, [])
@@ -53,8 +54,13 @@ const AssociateHierarchy = (props) => {
         if (productHierarchyData.length > 0) {
             productHierarchyData.map((item) => {
                 if (field.LevelName === item.LevelName) {
+
                     item.ProductLevelValue && item.ProductLevelValue.map((item) => {
-                        temp.push({ label: item.LevelValue, value: item.LevelValueId, LevelId: item.LevelId })
+                        if (item.ParentLevelValueId === null) {
+                            temp.push({ label: item.LevelValue, value: item.LevelValueId, LevelId: item.LevelId })
+                        } else if (state.selectedDropdownValue && (state.selectedDropdownValue.value === item.ParentLevelValueId)) {
+                            temp.push({ label: item.LevelValue, value: item.LevelValueId, LevelId: item.LevelId })
+                        }
                     })
                 }
             })
@@ -64,8 +70,7 @@ const AssociateHierarchy = (props) => {
         // })
         return temp;
     }
-    const addData = (field, i) => {
-        console.log('field: ', field);
+    const addData = (field, levelState, i) => {
         if (field.LevelName === state.levelNames[i]) {
             setState((prevState) => ({ ...prevState, isOpenDrawer: true, labelName: field.LevelName, levelData: field }));
             setValueAddLabels(`${field.LevelName}`, '');
@@ -75,16 +80,14 @@ const AssociateHierarchy = (props) => {
         setState((prevState) => ({ ...prevState, isOpenDrawer: false, labelName: '', levelData: {} }));
     }
     const addNewlabels = (data) => {
-        console.log(state.selectedDropdownValue, "state.selectedDropdownValue");
-        const isSameLevelDataSelected = state.selectedDropdownValue ? state.selectedDropdownValue.LevelId === state.levelData.LevelId - 1 : false
         const finalDataSubmit = {
             LevelId: state.levelData.LevelId,
             LevelValue: data[state.labelName],
-            LevelValueId: (state.selectedDropdownValue && isSameLevelDataSelected) ? state.selectedDropdownValue.value : null,
+            LevelValueId: state[`LevelName${state.levelData.LevelId - 1}`] ? state[`LevelName${state.levelData.LevelId - 1}`]?.value : null,
             LoggedInUserId: loggedInUserId(),
         }
-        console.log(finalDataSubmit, "finalDataSubmit");
-        dispatch(createProductLevelValues(finalDataSubmit, () => {
+        dispatch(createProductLevelValues(finalDataSubmit, (res) => {
+            Toaster.success("Level values create successfully")
             dispatch(getAllProductLevels(() => { }))
         }))
         cancelDrawer()
@@ -94,7 +97,7 @@ const AssociateHierarchy = (props) => {
             ...e,
             LevelId: item.LevelId,
         }
-        setState((prevState) => ({ ...prevState, selectedDropdownValue: selectedValue }));
+        setState((prevState) => ({ ...prevState, selectedDropdownValue: selectedValue, [`LevelName${item.LevelId}`]: selectedValue }));
     }
     const disabledDropdown = (item, index) => {
         if (index === 0) {
@@ -153,7 +156,7 @@ const AssociateHierarchy = (props) => {
                                     id="RawMaterialName-add"
                                     className="mt40 right"
                                     variant="plus-icon-square"
-                                    onClick={() => addData(item, i)}
+                                    onClick={() => addData(item, state[`LevelName${item.LevelId - 1}`], i)}
                                 />
                             </Col>
                         ))}
