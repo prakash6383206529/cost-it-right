@@ -365,7 +365,7 @@ class PermissionsTabIndex extends Component {
                                         this.state.auction?.length > 0 &&
                                         <NavItem>
                                             <NavLink className={classnames({ active: this.state.activeTab === '12' })} onClick={() => { this.toggle('12'); }}>
-                                                Auction
+                                            Reverse Auction
                                             </NavLink>
                                         </NavItem>
                                     }
