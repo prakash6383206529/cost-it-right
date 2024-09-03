@@ -213,7 +213,10 @@ function AddRfq(props) {
         setSelectedOption(type);
         // Update state based on radio button selection
         setQuotationType(type);
-        setValue('Technology', '');
+        setValue('technology', '');
+        setValue('plant', '');
+        setValue('prId', '');
+        setPrNumber([])
 
         // if (type !== selectedOption) {
         //     setTableData([]);
@@ -222,6 +225,7 @@ function AddRfq(props) {
         //     setChildPartFiles([]);
         //     setRemark('');
         // }
+        onResetPartNoTable(true)
     };
 
     useEffect(() => {
@@ -2273,11 +2277,19 @@ function AddRfq(props) {
 
     };
 
-    const onResetPartNoTable = () => {
-        setResetRmFields(true)
-        setResetBopFields(true)
+    const onResetPartNoTable = (toggleButton = false) => {
+
+        if (!toggleButton) {
+            setTimeout(() => {
+                setResetRmFields(false)
+                setResetBopFields(false)
+            }, 50)
+            setResetRmFields(true)
+            setResetBopFields(true)
+            console.log("resetBopFields", resetBopFields);
+        }
+
         setRawMaterialList([])
-        setUpdateButtonPartNoTable(false)
         setValue('partNumber', "")
         setValue('annualForecastQuantity', "")
         setValue('RMName', "")
@@ -2403,11 +2415,11 @@ function AddRfq(props) {
             }))
             reactLocalStorage.setObject('PartData', [])
             dispatch(getPlantSelectListByType(ZBC, 'RFQ', newValue?.value, () => { }))
-            setNfrId(newValue)
-            setIsNFRFlow(true)
+            //setNfrId(newValue)
+            // setIsNFRFlow(true)
         } else {
-            setNfrId(null)
-            setIsNFRFlow(false)
+            //setNfrId(null)
+            // setIsNFRFlow(false)
         }
     }
     /**
@@ -3248,9 +3260,9 @@ function AddRfq(props) {
                                                 <Col md="3">
                                                     <div className="inputbox date-section h-auto">
                                                         <div className="form-group">
-                                                            <TooltipCustom id="timeline" tooltipText="Part Rediness timeline for Quality, N-10 & N-100" />
 
                                                             <label>{selectedOption === TOOLING ? 'T0 Date' : "N-100 Timeline"}<span className="asterisk-required">*</span></label>
+                                                            {selectedOption !== TOOLING && <TooltipCustom id="timeline" tooltipText="Part Rediness timeline for Quality, N-10 & N-100" />}
                                                             <div id="addRFQDate_container" className="inputbox date-section">
                                                                 <DatePicker
 
@@ -3295,7 +3307,7 @@ function AddRfq(props) {
                                                     </button>
                                                     <button
                                                         id="reset_part"
-                                                        onClick={onResetPartNoTable} // Need to change this cancel functionality
+                                                        onClick={() => onResetPartNoTable()} // Need to change this cancel functionality
                                                         type="button"
                                                         value="CANCEL"
                                                         className="reset ml-2 mr5"
