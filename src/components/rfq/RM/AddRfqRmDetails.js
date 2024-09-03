@@ -13,6 +13,7 @@ import { fetchSpecificationDataAPI } from '../../../actions/Common';
 import { getRMGradeSelectListByRawMaterial, getRMSpecificationDataAPI, getRMSpecificationDataList, getRawMaterialNameChild } from '../../masters/actions/Material';
 import Toaster from "../../common/Toaster";
 import { DRAFT, PREDRAFT, SENT } from "../../../config/constants";
+import TooltipCustom from "../../common/Tooltip";
 
 
 
@@ -345,7 +346,9 @@ const AddRfqRmDetails = (props) => {
                         variant={'plus-icon-square'}
                         title={'Add'} onClick={DrawerToggle} >
                     </Button> */}
-                    <Button id="addRMSpecificatione" className={"ml-2 mb-2"}
+                    <TooltipCustom id="addRMSpecification" disabledIcon={true} tooltipText="Click on the + button to start inputting remark and mandatory attachments." />
+
+                    <Button id="addRMSpecification" className={"ml-2 mb-2"}
                         // icon={updateButtonPartNoTable ? 'edit_pencil_icon' : ''}
                         variant={updateButtonPartNoTable ? 'Edit' : 'plus-icon-square'}
 

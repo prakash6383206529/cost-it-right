@@ -9,6 +9,7 @@ import { AsyncSearchableSelectHookForm, RadioHookForm, SearchableSelectHookForm,
 import Button from '../../layout/Button';
 import { getBopCategorySelectList, getBopNumberSelectList } from '../actions/rfq';
 import { DRAFT, PREDRAFT, SENT } from "../../../config/constants";
+import TooltipCustom from "../../common/Tooltip";
 
 const RaiseRfqBopDetails = (props) => {
     const { setViewQuotationPart, updateBopList, isEditFlag, isViewFlag, updateButtonPartNoTable, dataProps, resetBopFields, plant, prNumber, disabledPartUid, resetDrawer } = props
@@ -233,7 +234,8 @@ const RaiseRfqBopDetails = (props) => {
                             errors={errors.Category}
                             isClearable={true}
                         />
-                        <Button id="addBOPSpecificatione" className={"ml-2 mb-2 "}
+                        <TooltipCustom id="addBOPSpecification" disabledIcon={true} tooltipText="Click on the + button to start inputting Specification and mandatory attachments." />
+                        <Button id="addBOPSpecification" className={"ml-2 mb-2 "}
                             variant={updateButtonPartNoTable ? 'Edit' : 'plus-icon-square'}
                             title={updateButtonPartNoTable ? 'Edit' : 'Add'} onClick={DrawerToggle} disabled={disabledPartUid || (dataProps?.isEditFlag && showStatus !== PREDRAFT)}
                         >
