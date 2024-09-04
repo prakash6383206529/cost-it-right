@@ -24,16 +24,16 @@ const AddProductHierarchy = (props) => {
     useEffect(() => {
         if (productHierarchyData.length > 0) {
             setValue('Levels', { label: `Level-${productHierarchyData.length}`, value: productHierarchyData.length })
-            productHierarchyData.map((item, index) => setValue(`LevelName${index + 1}`, item.LevelName))
+            productHierarchyData.map((item, index) => setValue(`LevelName${index + 1}`, item?.LevelName))
             setState((prevState) => ({ ...prevState, levelCount: productHierarchyData.length }));
         }
     }, [productHierarchyData])
     const handleLevelSelection = (e) => {
-        setState((prevState) => ({ ...prevState, levelCount: e.value }))
-        for (let i = 1; i <= e.value; i++) {
+        setState((prevState) => ({ ...prevState, levelCount: e?.value }))
+        for (let i = 1; i <= e?.value; i++) {
             setValue(`LevelName${i}`, '')
         }
-        setValue(`LevelName${e.value}`, 'SKU')
+        setValue(`LevelName${e?.value}`, 'SKU')
     }
     const submit = (data) => {
         let ProductLevels = []
@@ -93,7 +93,7 @@ const AddProductHierarchy = (props) => {
                                 mandatory={true}
                                 handleChange={(e) => handleLevelSelection(e)}
                                 errors={errors.Levels}
-                                disabled={Object.keys(productHierarchyData).length > 0}
+                                disabled={productHierarchyData.length > 0}
                             />
                         </Col>
                     </Row>
@@ -116,7 +116,7 @@ const AddProductHierarchy = (props) => {
                                     className=""
                                     customClassName={'withBorder'}
                                     errors={errors[`LevelName${i + 1}`]}
-                                    disabled={(i === state.levelCount - 1) || Object.keys(productHierarchyData).length > 0}
+                                    disabled={(i === state.levelCount - 1) || productHierarchyData.length > 0}
                                 />
                             </Col>
                         ))}
@@ -134,7 +134,7 @@ const AddProductHierarchy = (props) => {
                             <button
                                 type="submit"
                                 className="user-btn save-btn"
-                                disabled={Object.keys(productHierarchyData).length > 0}
+                                disabled={productHierarchyData.length > 0}
                             >
                                 <div className={"save-icon"}></div>
                                 {"Save"}

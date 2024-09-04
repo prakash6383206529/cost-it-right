@@ -38,23 +38,23 @@ const AssociateHierarchy = (props) => {
     const { productHierarchyData, storedHierarachyData } = useSelector((state) => state.part);
     useEffect(() => {
         dispatch(getAllProductLevels(() => {
-            storedHierarachyData.map(item => setValue(`LevelName${item.LevelId}`, { label: item.LevelValue, value: item.LevelValueId, LevelId: item.LevelId }))
+            storedHierarachyData.map(item => setValue(`LevelName${item?.LevelId}`, { label: item?.LevelValue, value: item?.LevelValueId, LevelId: item?.LevelId }))
         }))
 
     }, [])
     useEffect(() => {
         if (productHierarchyData.length > 0) {
             const levelNames = []
-            productHierarchyData.map((item, index) => levelNames.push(item.LevelName))
+            productHierarchyData.map((item, index) => levelNames.push(item?.LevelName))
             setState((prevState) => ({ ...prevState, levelCount: levelNames.length, levelNames: levelNames }));
         }
     }, [productHierarchyData])
     const submit = (data) => {
-        const valueId = state[`LevelName${state.levelCount - 1}`].value
+        const valueId = state[`LevelName${state.levelCount - 1}`]?.value
         let sendData = []
         for (let i = 1; i <= state.levelCount - 1; i++) {
             let temp = data[`LevelName${i}`]
-            sendData.push({ LevelId: temp.LevelId, LevelValueId: temp.value, LevelValue: temp.label })
+            sendData.push({ LevelId: temp?.LevelId, LevelValueId: temp?.value, LevelValue: temp?.label })
         }
         dispatch(storeHierarchyData(sendData))
         props.toggle(valueId)
@@ -63,13 +63,14 @@ const AssociateHierarchy = (props) => {
         let temp = [];
         if (productHierarchyData.length > 0) {
             productHierarchyData.map((item) => {
-                if (field.LevelName === item.LevelName) {
+                if (field?.LevelName === item?.LevelName) {
 
-                    item.ProductLevelValue && item.ProductLevelValue.map((item) => {
-                        if (item.LevelId === 1) {
-                            temp.push({ label: item.LevelValue, value: item.LevelValueId, LevelId: item.LevelId })
-                        } else if (state[`LevelName${item.LevelId - 1}`] && (state[`LevelName${item.LevelId - 1}`].value === item.ParentLevelValueId)) {
-                            temp.push({ label: item.LevelValue, value: item.LevelValueId, LevelId: item.LevelId })
+                    item?.ProductLevelValue && item?.ProductLevelValue?.map((el) => {
+
+                        if (el?.LevelId === 1) {
+                            temp.push({ label: el?.LevelValue, value: el?.LevelValueId, LevelId: el?.LevelId })
+                        } else if (state[`LevelName${el?.LevelId - 1}`] && (state[`LevelName${el?.LevelId - 1}`]?.value === el?.ParentLevelValueId)) {
+                            temp.push({ label: el?.LevelValue, value: el?.LevelValueId, LevelId: el?.LevelId })
                         }
                         return null;
                     })
@@ -80,9 +81,9 @@ const AssociateHierarchy = (props) => {
         return temp;
     }
     const addData = (field, i) => {
-        if (field.LevelName === state.levelNames[i]) {
-            setState((prevState) => ({ ...prevState, isOpenDrawer: true, labelName: field.LevelName, levelData: field }));
-            setValueAddLabels(`${field.LevelName}`, '');
+        if (field?.LevelName === state?.levelNames[i]) {
+            setState((prevState) => ({ ...prevState, isOpenDrawer: true, labelName: field?.LevelName, levelData: field }));
+            setValueAddLabels(`${field?.LevelName}`, '');
         }
     }
     const cancelDrawer = () => {
@@ -90,9 +91,9 @@ const AssociateHierarchy = (props) => {
     }
     const addNewlabels = (data) => {
         const finalDataSubmit = {
-            LevelId: state.levelData.LevelId,
-            LevelValue: data[state.labelName],
-            LevelValueId: state[`LevelName${state.levelData.LevelId - 1}`] ? state[`LevelName${state.levelData.LevelId - 1}`]?.value : null,
+            LevelId: state.levelData?.LevelId,
+            LevelValue: data[state?.labelName],
+            LevelValueId: state[`LevelName${state?.LevelId - 1}`] ? state[`LevelName${state?.LevelId - 1}`]?.value : null,
             LoggedInUserId: loggedInUserId(),
         }
         dispatch(createProductLevelValues(finalDataSubmit, (res) => {
@@ -105,11 +106,11 @@ const AssociateHierarchy = (props) => {
     const handleLevelChange = (e, item) => {
         const selectedValue = {
             ...e,
-            LevelId: item.LevelId,
+            LevelId: item?.LevelId,
         }
-        setState((prevState) => ({ ...prevState, selectedDropdownValue: selectedValue, [`LevelName${item.LevelId}`]: selectedValue }));
+        setState((prevState) => ({ ...prevState, selectedDropdownValue: selectedValue, [`LevelName${item?.LevelId}`]: selectedValue }));
         for (let i = 1; i <= state.levelCount - 1; i++) {
-            if (item.LevelId < i + 1) {
+            if (item?.LevelId < i + 1) {
                 setValue(`LevelName${i}`, {})
             }
         }
@@ -120,7 +121,7 @@ const AssociateHierarchy = (props) => {
         } else if (index === 0) {
             return false;
         } else {
-            if (state.selectedDropdownValue && (state.selectedDropdownValue.LevelId + 1) > index) {
+            if (state.selectedDropdownValue && (state.selectedDropdownValue?.LevelId + 1) > index) {
                 return false;
             } else {
                 return true;
@@ -155,8 +156,8 @@ const AssociateHierarchy = (props) => {
                         {productHierarchyData.length !== 0 ? productHierarchyData.map((item, i) => i !== productHierarchyData.length - 1 && (
                             <Col md="12" className="d-flex" key={i}>
                                 <SearchableSelectHookForm
-                                    label={item.LevelName}
-                                    name={`LevelName${item.LevelId}`}
+                                    label={item?.LevelName}
+                                    name={`LevelName${item?.LevelId}`}
                                     placeholder={"Select"}
                                     Controller={Controller}
                                     control={control}
@@ -166,11 +167,11 @@ const AssociateHierarchy = (props) => {
                                     options={renderListing(item, i)}
                                     mandatory={true}
                                     handleChange={(e) => handleLevelChange(e, item)}
-                                    errors={errors[item.LevelName]}
+                                    errors={errors[item?.LevelName]}
                                     disabled={disabledDropdown(item, i)}
                                 />
                                 <Button
-                                    id="RawMaterialName-add"
+                                    id={`AssociateHierarchy${i}`}
                                     className="mt40 right"
                                     variant="plus-icon-square"
                                     onClick={() => addData(item, i)}
@@ -231,8 +232,8 @@ const AssociateHierarchy = (props) => {
                         <Row>
                             <Col md="12" >
                                 <TextFieldHookForm
-                                    label={state.labelName}
-                                    name={state.labelName}
+                                    label={state?.labelName}
+                                    name={state?.labelName}
                                     Controller={Controller}
                                     control={controlAddLabels}
                                     register={registerAddLabels}
@@ -245,7 +246,7 @@ const AssociateHierarchy = (props) => {
                                     defaultValue={''}
                                     className=""
                                     customClassName={'withBorder'}
-                                    errors={errorsAddLabels[state.labelName]}
+                                    errors={errorsAddLabels[state?.labelName]}
                                     disabled={false}
                                 />
 

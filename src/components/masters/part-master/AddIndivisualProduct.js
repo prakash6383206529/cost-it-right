@@ -83,7 +83,7 @@ class AddIndivisualProduct extends Component {
                     this.setState({ DataToCheck: Data })
 
                     this.props.change("EffectiveDate", DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
-                    Data.LevelValueIdRef ? this.props.getPreFilledProductLevelValues(Data.LevelValueIdRef, res => { }) : this.props.storeHierarchyData([])
+                    Data?.LevelValueIdRef ? this.props.getPreFilledProductLevelValues(Data?.LevelValueIdRef, res => { }) : this.props.storeHierarchyData([])
                     setTimeout(() => {
                         this.setState({
                             isEditFlag: true,
