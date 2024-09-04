@@ -619,24 +619,32 @@ function ViewDrawer(props) {
         // }
 
 
-        if (partType === "Component" || partType === "Tooling") {
-            const dropdownTexts = _.map(getChildParts, 'Text');
-            const tableTexts = _.map(tableData, 'PartNumber');
-            const allPresent = _.every(dropdownTexts, text => _.includes(tableTexts, text));
+        if (partType === "Component" || partType === "Tooling" || partType === "Bought Out Part") {
             const hasNonZeroQuantity = sopQuantityList && sopQuantityList.length > 0 && sopQuantityList[0].Quantity !== 0 && sopQuantityList[0].Quantity !== '0';
-            if (type !== Component && partType !== "Tooling") {
-                if (!allPresent) {
-                    Toaster.warning('RM Name, RM Grade, and RM Specification are required for each part.');
+
+            if (partType === "Component" || partType === "Tooling") {
+                const dropdownTexts = _.map(getChildParts, 'Text');
+                const tableTexts = _.map(tableData, 'PartNumber');
+                const allPresent = _.every(dropdownTexts, text => _.includes(tableTexts, text));
+                if (type !== Component && partType !== "Tooling") {
+                    if (!allPresent) {
+                        Toaster.warning('RM Name, RM Grade, and RM Specification are required for each part.');
+                        return false;
+                    }
+                } else if (type === Component && (tableData.length === 0)) {
+                    Toaster.warning('RM Name, RM Grade, and RM Specification are required.');
                     return false;
                 }
-            } else if (type === Component && (tableData.length === 0)) {
-                Toaster.warning('RM Name, RM Grade, and RM Specification are required.');
+                if (_.isEmpty(sopQuantityList) || !hasNonZeroQuantity) {
+                    Toaster.warning("Select SOP date and fill the first year's quantity.");
+                    return false;
+                }
+            }
+            if (specificationList && specificationList?.length === 0) {
+                Toaster.warning("Please fill the Specification Details.");
                 return false;
             }
-            if (_.isEmpty(sopQuantityList) || !hasNonZeroQuantity) {
-                Toaster.warning("Select SOP date and fill the first year's quantity.");
-                return false;
-            }
+
         }
 
         if (getValues('remark') === '' || files.length === 0) {
@@ -744,7 +752,6 @@ function ViewDrawer(props) {
       * @description Deleting single row from table
       */
     const deleteRow = (index, activeTab) => {
-        const tempObj = tableData[index];
         if (activeTab === "2") {
             const newSpecificationList = [...specificationList];
             newSpecificationList.splice(index, 1);
@@ -753,6 +760,7 @@ function ViewDrawer(props) {
             if (type === Component) {
                 setValue('partNumber', { label: AssemblyPartNumber.label, value: AssemblyPartNumber.value })
             }
+            const tempObj = tableData[index];
             const removedItemPartNumber = tempObj.PartId;
             const newData = [...tableData];
             newData.splice(index, 1);
@@ -1245,7 +1253,7 @@ function ViewDrawer(props) {
                                                 />
                                             </Col>
                                             <Col md="3">
-                                                <TooltipCustom id="Specification_Info" tooltipText="Describe comprehensive specifications, desired features, quality standards,s and any other relevant details to ensure the supplier understands needs." />
+                                                <TooltipCustom id="Specification_Info" tooltipText="Describe comprehensive specifications, desired features, quality standards and any other relevant details to ensure the supplier understands needs." />
 
                                                 <TextFieldHookForm
                                                     label="Specification Description"

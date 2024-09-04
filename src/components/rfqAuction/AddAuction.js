@@ -119,7 +119,7 @@ function AddAuction(props) {
    */
   const cancel = () => {
     if (location.state && location.state.source === 'auction') {
-      history.push('/auction');
+      history.push('/reverse-auction');
     } else if (location.state && location.state.source === 'rfq') {
       history.push({
         pathname: '/rfq-listing',
@@ -151,7 +151,7 @@ function AddAuction(props) {
       if (res.data.Result) {
         Toaster.success("Auction has been created successfully")
         history.push({
-          pathname: '/auction',
+          pathname: '/reverse-auction',
           state: { source: 'auction' }
         })
       }

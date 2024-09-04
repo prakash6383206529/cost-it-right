@@ -2139,7 +2139,7 @@ export const ONBOARDING = 'Onboarding & Management'
 export const VENDOR_MANAGEMENT = 'Vendor Classification Status'
 export const LPS = 'LPS Rating Status'
 export const RFQVendor = 'RFQ-Vendor'
-export const AUCTION = 'Auction'
+export const AUCTION = 'Reverse Auction'
 
 
 export const APPROVAL_LISTING = 'Approval Listing'
@@ -2310,7 +2310,7 @@ export const SIMULATION_PATH = '/simulation'
 export const SIMULATION_HISTORY_PATH = '/simulation-history'
 export const USER_PATH = '/users'
 export const RFQ_LISTING = '/rfq-listing'
-export const AUCTION_LISTING = '/auction'
+export const AUCTION_LISTING = '/reverse-auction'
 export const ADD_AUCTION = '/add-auction'
 export const NFR_LISTING = '/nfr'
 export const PRODUCT_ROLLOUT = '/product-rollout'
@@ -3218,7 +3218,7 @@ export const showPaperCorrugatedBox = true
 
 export const showDynamicKeys = false
 export const hideDetailOfRubbercalci = true
-export const havellsConditionKey = true
+export const customHavellsChanges = true
 export const countDownBlickingTime = 2
 export const clientName = 'Havells'
 export const isShowTaxCode = false
