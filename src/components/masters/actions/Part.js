@@ -19,7 +19,8 @@ import {
     ADD_PRODUCT_HIERARCHY,
     ADD_PRODUCT_LABELS,
     GET_PRODUCT_HIERARCHY_DATA,
-    GET_PRODUCT_HIERARCHY_LABELS
+    GET_PRODUCT_HIERARCHY_LABELS,
+    STORE_HIERARCHY_DATA
 } from '../../../config/constants';
 import { loggedInUserId } from '../../../helper';
 import { apiErrors, encodeQueryParams, encodeQueryParamsAndLog } from '../../../helper/util';
@@ -841,10 +842,28 @@ export function getAllProductLevels(callback) {
     return (dispatch) => {
         const request = axios.get(`${API.getAllProductLevels}`, config());
         request.then((response) => {
-            console.log('response: ', response);
             if (response.data.Result || response.status === 204) {
                 dispatch({
                     type: GET_PRODUCT_HIERARCHY_DATA,
+                    payload: response.status === 204 ? [] : response.data.DataList
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+export function getPreFilledProductLevelValues(levelValueId, callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getPreFilledProductLevelValues}?levelvalueid=${levelValueId}`, config());
+        request.then((response) => {
+            if (response.data.Result || response.status === 204) {
+                dispatch({
+                    type: STORE_HIERARCHY_DATA,
                     payload: response.status === 204 ? [] : response.data.DataList
                 });
                 callback(response);
@@ -869,4 +888,14 @@ export function createProductLevelValues(data, callback) {
             apiErrors(error);
         });
     };
+}
+
+export function storeHierarchyData(data) {
+    return (dispatch) => {
+        dispatch({
+            type: STORE_HIERARCHY_DATA,
+            payload: data,
+        });
+    };
+
 }

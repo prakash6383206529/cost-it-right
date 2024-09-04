@@ -176,6 +176,7 @@ export const API = {
   createProductLevels: `${BASE_URL}/masters-product/create-product-levels`,
   getAllProductLevels: `${BASE_URL}/masters-product/get-all-product-levels`,
   createProductLevelValues: `${BASE_URL}/masters-product/create-product-level-values`,
+  getPreFilledProductLevelValues: `${BASE_URL}/masters-product/get-product-level-values-by-level-value-id`,
 
   //ASSEMBLY PART
   createAssemblyPart: `${BASE_URL}/masters-part/create-assembly-part`,
@@ -1349,6 +1350,7 @@ export const ADD_PRODUCT_HIERARCHY = 'ADD_PRODUCT_HIERARCHY'
 export const GET_PRODUCT_HIERARCHY_DATA = 'GET_PRODUCT_HIERARCHY_DATA'
 export const GET_PRODUCT_HIERARCHY_LABELS = 'GET_PRODUCT_HIERARCHY_LABELS'
 export const ADD_PRODUCT_LABELS = 'ADD_PRODUCT_LABELS'
+export const STORE_HIERARCHY_DATA = 'STORE_HIERARCHY_DATA'
 
 //ASSEMBLY PART
 export const GET_ASSEMBLY_PART_SELECTLIST = 'GET_ASSEMBLY_PART_SELECTLIST'

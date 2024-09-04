@@ -18,7 +18,6 @@ const AddProductHierarchy = (props) => {
     })
     const dispatch = useDispatch()
     const { productHierarchyData } = useSelector((state) => state.part);
-    console.log('productHierarchyData: ', productHierarchyData);
     useEffect(() => {
         dispatch(getAllProductLevels(() => { }))
     }, [])

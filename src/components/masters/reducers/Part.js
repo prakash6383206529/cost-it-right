@@ -22,13 +22,15 @@ import {
     ADD_PRODUCT_HIERARCHY,
     ADD_PRODUCT_LABELS,
     GET_PRODUCT_HIERARCHY_DATA,
-    GET_PRODUCT_HIERARCHY_LABELS
+    GET_PRODUCT_HIERARCHY_LABELS,
+    STORE_HIERARCHY_DATA
 } from '../../../config/constants';
 import DayTime from '../../common/DayTimeWrapper';
 
 const initialState = {
     productDataList: [],
     productHierarchyData: [],
+    storedHierarachyData: []
 };
 
 export default function partReducer(state = initialState, action) {
@@ -212,6 +214,13 @@ export default function partReducer(state = initialState, action) {
                 loading: false,
                 error: true,
                 productHierarchyData: action.payload
+            }
+        case STORE_HIERARCHY_DATA:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                storedHierarachyData: action.payload
             }
         default:
             return state;
