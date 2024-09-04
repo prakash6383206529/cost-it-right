@@ -194,10 +194,6 @@
         "approval_Summary": "Click on the approval number to view approval summary from here.",
         "sendForApproval": "After selecting the checkbox, you can send it for approval.",
         "status": "You can filter the costing by status from here."
-    },
-    "labels": {
-        "discount": "Hundi/Discount",
-        "costingSummary": "Costing Summary",
-        "costingApproval": "Costing Approval"
     }
+   
 }
