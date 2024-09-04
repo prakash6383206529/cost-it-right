@@ -236,7 +236,7 @@ class SideBar extends Component {
         } else {
           break;
         }
-      case "Auction":
+      case "Reverse Auction":
         return this.renderAuction(module, LandingPageURL);
       default:
         return null
@@ -982,7 +982,7 @@ class SideBar extends Component {
                   pathname: el.LandingPageURL,
                   state: {
                     ModuleId: el.ModuleId,
-                    PageName: "Auction",
+                    PageName: "Reverse Auction",
                     PageURL: el.LandingPageURL,
                   },
                 }}

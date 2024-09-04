@@ -161,14 +161,14 @@ class Downloadxls extends React.Component {
     * @description Switch case for different xls file head according to master
     */
     renderSwitch = (master) => {
-        let updatedLabels, updatedTempData;
+        let updatedLabels
         switch (master) {
             case 'RM Specification':
                 return this.returnExcelColumn(checkRM_Process_OperationConfigurable(RMSpecification), RMSpecificationXLTempData);
             case 'Vendor':
-                ({ updatedLabels, updatedTempData } = updateBOPValues(Vendor, VendorTempData, bopMasterName, 'label'));
+                ({ updatedLabels } = updateBOPValues(Vendor, VendorTempData, bopMasterName, 'label'));
 
-                return this.returnExcelColumn(checkVendorPlantConfig(updatedLabels, '', false, true), updatedTempData);
+                return this.returnExcelColumn(checkVendorPlantConfig(updatedLabels, '', false, true), VendorTempData);
             case 'Overhead':
                 return this.returnExcelColumn(Overhead, OverheadTempData);
             case 'Index Data':
@@ -205,7 +205,7 @@ class Downloadxls extends React.Component {
     * @description Switch case for different xls file head according to master
     */
     renderZBCSwitch = (master) => {
-        let updatedLabels, updatedTempData;
+        let updatedLabels
         switch (master) {
             case 'RM':
                 if (!this.props.isImport) {
@@ -222,12 +222,10 @@ class Downloadxls extends React.Component {
             case CBCADDMORE:
                 return this.returnExcelColumn(checkRM_Process_OperationConfigurable(MHRMoreZBC), MHRMoreZBCTempData);
             case `${showBopLabel()} Domestic`:
-                ({ updatedLabels, updatedTempData } = updateBOPValues(BOP_ZBC_DOMESTIC, BOP_ZBC_DOMESTIC_TempData, bopMasterName, 'label'));
-
-                return this.returnExcelColumn(checkVendorPlantConfig(updatedLabels, '', true), updatedTempData);
+                ({ updatedLabels } = updateBOPValues(BOP_ZBC_DOMESTIC, BOP_ZBC_DOMESTIC_TempData, bopMasterName, 'label'));
+                return this.returnExcelColumn(checkVendorPlantConfig(updatedLabels, '', true), BOP_ZBC_DOMESTIC_TempData);
             case `${showBopLabel()} Import`:
-                ({ updatedLabels, updatedTempData } = updateBOPValues(BOP_ZBC_IMPORT, BOP_ZBC_IMPORT_TempData, bopMasterName, 'label'));
-
+                ({ updatedLabels } = updateBOPValues(BOP_ZBC_IMPORT, BOP_ZBC_IMPORT_TempData, bopMasterName, 'label'));
                 return this.returnExcelColumn(checkVendorPlantConfig(BOP_ZBC_IMPORT, '', true), BOP_ZBC_IMPORT_TempData);
 
             case `Overhead`:
@@ -258,7 +256,7 @@ class Downloadxls extends React.Component {
     * @description Switch case for different xls file head according to master
     */
     renderVBCSwitch = (master, bopType) => {
-        let updatedLabels, updatedTempData;
+        let updatedLabels;
         switch (master) {
             case 'RM':
                 if (!this.props.isImport) {
@@ -272,23 +270,23 @@ class Downloadxls extends React.Component {
                 return this.returnExcelColumn(checkVendorPlantConfig(MachineVBC), MachineVBCTempData);
             case `${showBopLabel()} Domestic`:
                 if (bopType === DETAILED_BOP) {
-                    ({ updatedLabels, updatedTempData } = updateBOPValues(BOP_DETAILED_DOMESTIC, BOP_DETAILED_DOMESTIC_TempData, bopMasterName, 'label'));
+                    ({ updatedLabels } = updateBOPValues(BOP_DETAILED_DOMESTIC, [], bopMasterName, 'label'));
 
-                    return this.returnExcelColumn(checkVendorPlantConfig(updatedLabels, '', true), updatedTempData);
+                    return this.returnExcelColumn(checkVendorPlantConfig(updatedLabels, '', true), BOP_DETAILED_DOMESTIC_TempData);
                 } else {
-                    ({ updatedLabels, updatedTempData } = updateBOPValues(BOP_VBC_DOMESTIC, BOP_VBC_DOMESTIC_TempData, bopMasterName, 'label'));
+                    ({ updatedLabels } = updateBOPValues(BOP_VBC_DOMESTIC, [], bopMasterName, 'label'));
 
-                    return this.returnExcelColumn(checkVendorPlantConfig(updatedLabels, '', true), updatedTempData);
+                    return this.returnExcelColumn(checkVendorPlantConfig(updatedLabels, '', true), BOP_VBC_DOMESTIC_TempData);
                 }
             case `${showBopLabel()} Import`:
                 if (bopType === DETAILED_BOP) {
-                    ({ updatedLabels, updatedTempData } = updateBOPValues(BOP_DETAILED_IMPORT, BOP_DETAILED_IMPORT_TempData, bopMasterName, 'label'));
+                    ({ updatedLabels } = updateBOPValues(BOP_DETAILED_IMPORT, [], bopMasterName, 'label'));
 
-                    return this.returnExcelColumn(checkVendorPlantConfig(updatedLabels, '', true), updatedTempData);
+                    return this.returnExcelColumn(checkVendorPlantConfig(updatedLabels, '', true), BOP_DETAILED_IMPORT_TempData);
                 } else {
-                    ({ updatedLabels, updatedTempData } = updateBOPValues(BOP_VBC_IMPORT, BOP_VBC_IMPORT_TempData, bopMasterName, 'label'));
+                    ({ updatedLabels } = updateBOPValues(BOP_VBC_IMPORT, [], bopMasterName, 'label'));
 
-                    return this.returnExcelColumn(checkVendorPlantConfig(updatedLabels, '', true), updatedTempData);
+                    return this.returnExcelColumn(checkVendorPlantConfig(updatedLabels, '', true), BOP_VBC_IMPORT_TempData);
                 }
             case `Overhead`:
 
@@ -317,7 +315,7 @@ class Downloadxls extends React.Component {
      * @description Switch case for different xls file head according to master
      */
     renderCBCSwitch = (master) => {
-        let updatedLabels, updatedTempData;
+        let updatedLabels;
         switch (master) {
             case 'RM':
                 if (!this.props.isImport) {
@@ -330,13 +328,13 @@ class Downloadxls extends React.Component {
             case 'Machine':
                 return this.returnExcelColumn(checkVendorPlantConfig(MachineCBC, CBCTypeId), MachineCBCTempData);
             case `${showBopLabel()} Domestic`:
-                ({ updatedLabels, updatedTempData } = updateBOPValues(BOP_CBC_DOMESTIC, BOP_CBC_DOMESTIC_TempData, bopMasterName, 'label'));
+                ({ updatedLabels } = updateBOPValues(BOP_CBC_DOMESTIC, [], bopMasterName, 'label'));
 
-                return this.returnExcelColumn(checkVendorPlantConfig(updatedLabels, CBCTypeId, true), updatedTempData);
+                return this.returnExcelColumn(checkVendorPlantConfig(updatedLabels, CBCTypeId, true), BOP_CBC_DOMESTIC_TempData);
             case `${showBopLabel()} Import`:
-                ({ updatedLabels, updatedTempData } = updateBOPValues(BOP_CBC_IMPORT, BOP_CBC_IMPORT_TempData, bopMasterName, 'label'));
+                ({ updatedLabels } = updateBOPValues(BOP_CBC_IMPORT, [], bopMasterName, 'label'));
 
-                return this.returnExcelColumn(checkVendorPlantConfig(updatedLabels, CBCTypeId, true), updatedTempData);
+                return this.returnExcelColumn(checkVendorPlantConfig(updatedLabels, CBCTypeId, true), BOP_CBC_IMPORT_TempData);
             case `Overhead`:
 
                 return this.returnExcelColumn(OverheadCBC, OverheadCBC_TempData);
@@ -365,6 +363,7 @@ class Downloadxls extends React.Component {
     */
     returnExcelColumn = (data = [], TempData, isNoteColExist = false) => {
         const { fileName, failedData, isFailedFlag } = this.props;
+
         let dataList = [...data]
 
 
