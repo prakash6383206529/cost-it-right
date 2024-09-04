@@ -57,8 +57,7 @@ function ReportListing(props) {
 
     const loggedUser = loggedInUserId()
 
-
-    const [selectedRowData, setSelectedRowData] = useState([]);
+   const [selectedRowData, setSelectedRowData] = useState([]);
     const [selectedIds, setSelectedIds] = useState(props.Ids);
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
@@ -73,7 +72,7 @@ function ReportListing(props) {
 
 
     const dispatch = useDispatch()
-    const { technologyLabel } = useLabels();
+    const { technologyLabel ,hundiDiscount} = useLabels();
     const { register, handleSubmit, control, setValue, formState: { errors }, getValues } = useForm({
         mode: 'onBlur',
         reValidateMode: 'onChange',
@@ -552,7 +551,7 @@ function ReportListing(props) {
                         <AgGridColumn field="AmorizationQuantity" headerName="Amortization Quantity (Tool Life)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="NetToolCost" headerName="Net Tool Cost" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="TotalCost" headerName="Total Cost" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                        <AgGridColumn field="NetDiscountsCost" headerName="Hundi/Other Discount" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                        <AgGridColumn field="NetDiscountsCost" headerName={`${hundiDiscount}`} cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="AnyOtherCost" headerName="Any Other Cost" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="PaymentTermCost" headerName="Payment Terms"></AgGridColumn>
                         <AgGridColumn field="NetPOPrice" headerName={`Net PO Price (${reactLocalStorage.getObject("baseCurrency")})`}></AgGridColumn>

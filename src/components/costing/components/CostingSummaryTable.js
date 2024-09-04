@@ -382,7 +382,6 @@ const CostingSummaryTable = (props) => {
       }, []);
 
       labelArray.forEach(item => {
-        console.log('item: ', item);
         switch (item) {
           case partType ? 'COST/ASSEMBLY' : 'RM':
             dataArray.push(checkForDecimalAndNull(partType ? tempObj?.nTotalRMBOPCC : tempObj?.netRM, initialConfiguration.NoOfDecimalForPrice))
