@@ -151,7 +151,7 @@ function AddAuction(props) {
       if (res.data.Result) {
         Toaster.success("Auction has been created successfully")
         history.push({
-          pathname: '/auction',
+          pathname: '/reverse-auction',
           state: { source: 'auction' }
         })
       }
