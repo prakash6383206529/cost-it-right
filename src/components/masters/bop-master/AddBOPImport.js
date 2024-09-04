@@ -1392,6 +1392,8 @@ class AddBOPImport extends Component {
     const { handleSubmit, isBOPAssociated, initialConfiguration, t } = this.props;
     const { isCategoryDrawerOpen, isOpenVendor, isOpenUOM, isEditFlag, isViewMode, setDisable, costingTypeId, isClientVendorBOP, CostingTypePermission,
       isTechnologyVisible, disableSendForApproval, isOpenConditionDrawer, conditionTableData, FinalBasicPriceSelectedCurrency, FinalBasicPriceBaseCurrency, toolTipTextNetCost, toolTipTextBasicPrice, toolTipTextObject, IsSAPCodeUpdated, IsSapCodeEditView, IsSAPCodeHandle } = this.state;
+    console.log('isEditFlag: ', isEditFlag);
+    console.log('costingTypeId: ', costingTypeId);
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
       if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
@@ -1638,14 +1640,14 @@ class AddBOPImport extends Component {
 
                               <Col md="3" className='d-flex align-items-center'>
                                 <label
-                                  className={`custom-checkbox`}
-                                  onChange={this.breakUpHandleChange}
+                                  className={`custom-checkbox ${this.state.isEditFlag ? "disabled" : ""
+                                    }`} onChange={this.breakUpHandleChange}
                                 >
                                   Detailed {showBopLabel()}
                                   <input
                                     type="checkbox"
                                     checked={isTechnologyVisible}
-                                    disabled={isViewMode || (isBOPAssociated && isEditFlag && costingTypeId === VBCTypeId)}
+                                    disabled={isViewMode || (/* isBOPAssociated && */ isEditFlag && costingTypeId === VBCTypeId)}
                                   />
                                   < span
                                     className=" before-box"
@@ -1653,7 +1655,7 @@ class AddBOPImport extends Component {
                                     onChange={this.breakUpHandleChange}
                                   />
                                 </label >
-                                {isBOPAssociated && isEditFlag && costingTypeId === VBCTypeId && <WarningMessage dClass={"mr-2"} message={`This ${showBopLabel()} is already associated, so now you can't edit it.`} />}
+                                {/* {isBOPAssociated && isEditFlag && costingTypeId === VBCTypeId && <WarningMessage dClass={"mr-2"} message={`This ${showBopLabel()} is already associated, so now you can't edit it.`} />} */}
                               </Col >
                               {isTechnologyVisible && <Col md="3">
                                 <Field
@@ -1670,7 +1672,7 @@ class AddBOPImport extends Component {
                                     this.handleTechnologyChange
                                   }
                                   valueDescription={this.state.Technology}
-                                  disabled={isViewMode || (isBOPAssociated && isEditFlag && costingTypeId === VBCTypeId)}
+                                  disabled={isViewMode || (/* isBOPAssociated && */ isEditFlag && costingTypeId === VBCTypeId)}
                                 />
                               </Col>}
                             </>
