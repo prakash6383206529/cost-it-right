@@ -210,7 +210,7 @@ const CostingSummaryTable = (props) => {
   const [isFinalCommonApproval, setIsFinalCommonApproval] = useState(false);
   const [tcoAndNpvDrawer, setTcoAndNpvDrawer] = useState(false);
   const [costingId, setCostingId] = useState("");
-  const { hundiDiscount } = useLabels();
+  const { discountLabel } = useLabels();
 
   const [drawerOpen, setDrawerOpen] = useState({
     BOP: false,
@@ -3117,7 +3117,7 @@ const CostingSummaryTable = (props) => {
                           <tr className='border-right'>
                             <td>
                               <span className="d-block small-grey-text">
-                                {hundiDiscount}
+                                {discountLabel}
                               </span>
                               <span className="d-block small-grey-text"></span>
                             </td>

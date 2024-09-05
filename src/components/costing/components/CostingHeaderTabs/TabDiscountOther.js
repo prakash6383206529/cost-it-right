@@ -55,7 +55,7 @@ function TabDiscountOther(props) {
     mode: 'onChange',
     reValidateMode: 'onChange',
   });
-  const { hundiDiscount } = useLabels();
+  const { discountLabel } = useLabels();
 
   const [IsCurrencyChange, setIsCurrencyChange] = useState(false);
   const [currency, setCurrency] = useState([]);
@@ -288,7 +288,7 @@ function TabDiscountOther(props) {
     return <div className='d-flex align-items-center'>
       <TooltipCustom disabledIcon={true} width="280px" id="totalDiscountCost" tooltipText={"Discount Cost = Sum of Discount cost added in Discount cost drawer"} />
       <TextFieldHookForm
-label={`${hundiDiscount} Value`}
+label={`${discountLabel} Value`}
 name={'HundiOrDiscountValue'}
         Controller={Controller}
         control={control}
@@ -862,7 +862,7 @@ name={'HundiOrDiscountValue'}
             totalCost: totalCost
           })
           errors.HundiOrDiscountValue = {}
-          Toaster.warning(`${hundiDiscount} Value should not be greater than Total Cost`)
+          Toaster.warning(`${discountLabel} Value should not be greater than Total Cost`)
           return false
         }
         else {
@@ -2087,7 +2087,7 @@ name={'HundiOrDiscountValue'}
                     </Row>
                     {initialConfiguration?.IsBasicRateAndCostingConditionVisible &&
                       <Col md="3">
-                        <TooltipCustom disabledIcon={true} width="280px" id="basic-rate" tooltipText={`Basic Price = (Total Cost -${hundiDiscount} Value) + Total Other Cost`} />
+                        <TooltipCustom disabledIcon={true} width="280px" id="basic-rate" tooltipText={`Basic Price = (Total Cost -${discountLabel} Value) + Total Other Cost`} />
                         <TextFieldHookForm
                           label={`Basic Price (${reactLocalStorage.getObject("baseCurrency")})`}
                           name={'BasicRateINR'}

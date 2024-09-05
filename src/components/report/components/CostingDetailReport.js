@@ -74,7 +74,7 @@ function ReportListing(props) {
     const statusColumnData = useSelector((state) => state.comman.statusColumnData);
     const [dataCount, setDataCount] = useState(0)
     const [applicabilityDropdown, setApplicabilityDropdown] = useState([])
-    const { technologyLabel,hundiDiscount } = useLabels();
+    const { technologyLabel,discountLabel } = useLabels();
     const { selectedRowForPagination } = useSelector((state => state.simulation))
     var filterParams = {
         comparator: function (filterLocalDateAtMidnight, cellValue) {
@@ -1110,8 +1110,8 @@ function ReportListing(props) {
                             <AgGridColumn field='ToolLife' headerName='Amortization Quantity (Tool Life)' cellRenderer='hyphenFormatter'></AgGridColumn>
                             <AgGridColumn field='ToolMaintenanceCost' headerName='Tool Maintenance Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                             <AgGridColumn field='NetToolCost' headerName='Net Tool Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
-                            <AgGridColumn field='HundiOrDiscountPercentage' headerName={`${hundiDiscount} Percentage`} cellRenderer='decimalInputOutputFormatter'></AgGridColumn>
-                            <AgGridColumn field='HundiOrDiscountValue' headerName={`${hundiDiscount} Value`} cellRenderer='decimalPriceFormatter'></AgGridColumn>
+                            <AgGridColumn field='HundiOrDiscountPercentage' headerName={`${discountLabel} Percentage`} cellRenderer='decimalInputOutputFormatter'></AgGridColumn>
+                            <AgGridColumn field='HundiOrDiscountValue' headerName={`${discountLabel} Value`} cellRenderer='decimalPriceFormatter'></AgGridColumn>
                             <AgGridColumn field='OtherCostPercentage' headerName='Other Cost Percentage' cellRenderer='decimalInputOutputFormatter'></AgGridColumn>
                             <AgGridColumn field='AnyOtherCost' headerName='Any Other Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                             {showSaLineNumber() && <AgGridColumn field='SANumber' headerName='SA Number' cellRenderer='decimalPriceFormatter'></AgGridColumn>}

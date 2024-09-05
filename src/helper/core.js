@@ -12,6 +12,6 @@ export const useLabels = () => {
         technologyLabel: tMasterLabels('commonFields.technology', { defaultValue: 'Technology' }),
         partTypeLabel: tMasterLabels('commonFields.partType', { defaultValue: 'Part Type' }),
         RMCategoryLabel:tMasterLabels('RMCategoryLabel', { defaultValue: 'Category' }),
-        hundiDiscount : tCosting('discount', { defaultValue: 'Hundi/Discount' }),
+        discountLabel : tCosting('discount', { defaultValue: 'Hundi/Discount' }),
     };
 };

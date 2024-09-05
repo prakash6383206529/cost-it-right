@@ -52,7 +52,7 @@ const RejectedCostingSummaryTable = (props) => {
   const ExcelFile = ReactExport.ExcelFile;
   const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
   const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
-  const { hundiDiscount } = useLabels();
+  const { discountLabel } = useLabels();
 
   const dispatch = useDispatch()
   const [addComparisonToggle, setaddComparisonToggle] = useState(false)
@@ -1983,7 +1983,7 @@ const RejectedCostingSummaryTable = (props) => {
                         <tr className='border-right'>
                           <td width={"20%"}>
                             <span className="d-block small-grey-text">
-                              {hundiDiscount}
+                              {discountLabel}
                             </span>
                             <span className="d-block small-grey-text"></span>
                           </td>

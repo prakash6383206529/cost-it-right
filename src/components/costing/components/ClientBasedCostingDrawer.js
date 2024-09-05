@@ -20,7 +20,7 @@ export function Clientbasedcostingdrawer(props) {
     const toggleDrawer = () => {
         props.closeDrawer('')
     };
-    const { hundiDiscount } = useLabels();
+    const { discountLabel } = useLabels();
 
     const [files, setFiles] = useState([]);
     const [IsOpen, setIsOpen] = useState(false);
@@ -441,7 +441,7 @@ export function Clientbasedcostingdrawer(props) {
                                         customClassName="withBorder" />
                                 </Col>
                                 <Col md="3" className="two-filled-container">
-                                    <label>{hundiDiscount}</label>
+                                    <label>{discountLabel}</label>
                                     <Row className="p-0">
                                         <div className="col-md-6">
                                             <Field
