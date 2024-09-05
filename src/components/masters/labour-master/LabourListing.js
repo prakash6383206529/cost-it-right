@@ -241,7 +241,7 @@ function LabourListing(props) {
   const closeBulkUploadDrawer = (event, type) => {
     setState((prevState) => ({ ...prevState, isBulkUpload: false }))
     if (type !== 'cancel') {
-      getTableListData(null, null, null, null)
+      getTableListData('' ,0 ,'' ,0,0 ) 
     }
   }
 

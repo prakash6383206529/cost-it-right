@@ -42,6 +42,7 @@ import PaymentTerms from '../CostingHeadCosts/OverheadProfit/PaymentTerms';
 import AddNpvCost from '../CostingHeadCosts/AdditionalOtherCost/AddNpvCost';
 import NpvCost from '../CostingHeadCosts/AdditionalOtherCost/NpvCost';
 import { setSAPData } from '../../actions/Approval';
+import { useLabels } from '../../../../helper/core';
 
 let counter = 0;
 function TabDiscountOther(props) {
@@ -54,6 +55,7 @@ function TabDiscountOther(props) {
     mode: 'onChange',
     reValidateMode: 'onChange',
   });
+  const { discountLabel } = useLabels();
 
   const [IsCurrencyChange, setIsCurrencyChange] = useState(false);
   const [currency, setCurrency] = useState([]);
@@ -286,8 +288,8 @@ function TabDiscountOther(props) {
     return <div className='d-flex align-items-center'>
       <TooltipCustom disabledIcon={true} width="280px" id="totalDiscountCost" tooltipText={"Discount Cost = Sum of Discount cost added in Discount cost drawer"} />
       <TextFieldHookForm
-        label="Hundi/Discount Value"
-        name={'HundiOrDiscountValue'}
+label={`${discountLabel} Value`}
+name={'HundiOrDiscountValue'}
         Controller={Controller}
         control={control}
         id="totalDiscountCost"
@@ -860,7 +862,7 @@ function TabDiscountOther(props) {
             totalCost: totalCost
           })
           errors.HundiOrDiscountValue = {}
-          Toaster.warning("Hundi/Discount Value should not be greater then Total Cost ")
+          Toaster.warning(`${discountLabel} Value should not be greater than Total Cost`)
           return false
         }
         else {
@@ -2085,7 +2087,7 @@ function TabDiscountOther(props) {
                     </Row>
                     {initialConfiguration?.IsBasicRateAndCostingConditionVisible &&
                       <Col md="3">
-                        <TooltipCustom disabledIcon={true} width="280px" id="basic-rate" tooltipText={"Basic Price = (Total Cost - Hundi/Discount Value) + Total Other Cost"} />
+                        <TooltipCustom disabledIcon={true} width="280px" id="basic-rate" tooltipText={`Basic Price = (Total Cost -${discountLabel} Value) + Total Other Cost`} />
                         <TextFieldHookForm
                           label={`Basic Price (${reactLocalStorage.getObject("baseCurrency")})`}
                           name={'BasicRateINR'}
