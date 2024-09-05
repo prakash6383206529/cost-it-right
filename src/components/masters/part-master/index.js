@@ -14,6 +14,8 @@ import { MASTERS, PART } from "../../../config/constants";
 import { checkPermission } from "../../../helper/util";
 import { MESSAGES } from "../../../config/message";
 import { resetStatePagination } from "../../common/Pagination/paginationAction";
+import ProductHierarchyListing from "./ProductHierarchyListing";
+import AddProductHierarchy from "./AddProductHierarchy";
 export const ApplyPermission = React.createContext();
 
 const PartMaster = () => {
@@ -142,6 +144,7 @@ const PartMaster = () => {
                 {initialConfiguration?.IsProductMasterConfigurable && (
                   <NavItem> <NavLink className={classnames({ active: state.activeTab === "3" })} onClick={() => toggle("3")} >  Manage Products </NavLink> </NavItem>
                 )}
+                <NavItem> <NavLink className={classnames({ active: state.activeTab === "4" })} onClick={() => toggle("4")} > Product Hierarchy </NavLink> </NavItem>
                 {initialConfiguration?.IsSAPConfigured && <button type="button" className={`secondary-btn mr5 mt-1 fetch-btn`} title="Fetch" onClick={openFetchDrawer} onMouseOver={handleMouse} onMouseOut={handleMouseOut} >
                   <div className={`${state.isHover ? "swap-hover" : "swap"} mr-0`} ></div>
                 </button>}
@@ -156,6 +159,9 @@ const PartMaster = () => {
                   )}
                   {state.activeTab === "3" && (
                     <TabPane tabId="3"> <IndivisualProductListing formToggle={displayIndividualProductForm} getDetails={getIndividualProductDetails} stopApiCallOnCancel={state.stopApiCallOnCancel} /> </TabPane>
+                  )}
+                  {state.activeTab === "4" && (
+                    <TabPane tabId="4"> <ProductHierarchyListing /> </TabPane>
                   )}
                 </TabContent>
               </ApplyPermission.Provider>

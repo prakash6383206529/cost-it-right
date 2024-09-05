@@ -5,7 +5,7 @@ import { Row, Col } from 'reactstrap';
 import { required, checkWhiteSpaces, alphaNumeric, acceptAllExceptSingleSpecialCharacter, maxLength20, maxLength80, maxLength512, checkSpacesInString, hashValidation } from "../../../helper/validation";
 import { loggedInUserId } from "../../../helper/auth";
 import { renderDatePicker, renderText, renderTextAreaField, } from "../../layout/FormInputs";
-import { createProduct, updateProduct, getProductData, fileUploadProduct, } from '../actions/Part';
+import { createProduct, updateProduct, getProductData, fileUploadProduct, getPreFilledProductLevelValues, storeHierarchyData, } from '../actions/Part';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import Dropzone from 'react-dropzone-uploader';
@@ -21,6 +21,7 @@ import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from './TourMessages';
 import { withTranslation } from 'react-i18next';
 import Button from '../../layout/Button';
+import AssociateHierarchy from './AssociateHierarchy';
 
 class AddIndivisualProduct extends Component {
     constructor(props) {
@@ -45,6 +46,8 @@ class AddIndivisualProduct extends Component {
             setDisable: false,
             attachmentLoader: false,
             showPopup: false,
+            showHierarchy: false,
+            ProductHierarachyValueId: null
         }
     }
 
@@ -80,7 +83,7 @@ class AddIndivisualProduct extends Component {
                     this.setState({ DataToCheck: Data })
 
                     this.props.change("EffectiveDate", DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
-
+                    Data?.LevelValueIdRef ? this.props.getPreFilledProductLevelValues(Data?.LevelValueIdRef, res => { }) : this.props.storeHierarchyData([])
                     setTimeout(() => {
                         this.setState({
                             isEditFlag: true,
@@ -88,6 +91,7 @@ class AddIndivisualProduct extends Component {
                             effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
                             files: Data.Attachements,
                             isImpactCalculation: Data.IsConsideredForMBOM,
+                            ProductHierarachyValueId: Data.LevelValueIdRef
                         }, () => this.setState({ isLoader: false }))
                         // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
                         let files = Data.Attachements && Data.Attachements.map((item) => {
@@ -293,6 +297,7 @@ class AddIndivisualProduct extends Component {
                 DrawingNumber: values.DrawingNumber,
                 ProductGroupCode: values.ProductGroupCode,
                 Remark: values.Remark,
+                LevelValueIdRef: this.state.ProductHierarachyValueId,
                 EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
                 // Plants: [],
                 Attachements: updatedFiles,
@@ -324,6 +329,7 @@ class AddIndivisualProduct extends Component {
                 RevisionNumber: values.RevisionNumber,
                 DrawingNumber: values.DrawingNumber,
                 ProductGroupCode: values.ProductGroupCode,
+                LevelValueIdRef: this.state.ProductHierarachyValueId,
                 // Plants: [],
                 Attachements: files,
                 IsConsideredForMBOM: isImpactCalculation,
@@ -351,6 +357,9 @@ class AddIndivisualProduct extends Component {
     */
     onPressImpactCalculation = () => {
         this.setState({ isImpactCalculation: !this.state.isImpactCalculation, DropdownChanged: false });
+    }
+    formToggle = (valueId) => {
+        this.setState({ showHierarchy: !this.state.showHierarchy, ProductHierarachyValueId: valueId ?? this.state.ProductHierarachyValueId })
     }
 
     /**
@@ -437,7 +446,7 @@ class AddIndivisualProduct extends Component {
 
                                                     {initialConfiguration &&
                                                         initialConfiguration.IsGroupCodeDisplay && (
-                                                            <Col md="3">
+                                                            <Col md="3" className="d-flex">
                                                                 <Field
                                                                     label={`Group Code`}
                                                                     name={"ProductGroupCode"}
@@ -450,8 +459,14 @@ class AddIndivisualProduct extends Component {
                                                                     }
                                                                     required={false}
                                                                     className=""
-                                                                    customClassName={"withBorder"}
+                                                                    customClassName={"withBorder w-100"}
                                                                     disabled={isViewMode}
+                                                                />
+                                                                <Button
+                                                                    id="RawMaterialName-add"
+                                                                    className="mt40 right"
+                                                                    variant={this.state.ProductHierarachyValueId ? 'view-icon-primary' : 'plus-icon-square'}
+                                                                    onClick={() => this.formToggle(this.state.ProductHierarachyValueId)}
                                                                 />
                                                             </Col>
                                                         )}
@@ -685,6 +700,7 @@ class AddIndivisualProduct extends Component {
                                 </Col>
                             </Row>
                         </div>
+                        {this.state.showHierarchy && <AssociateHierarchy isOpen={this.state.showHierarchy} toggle={this.formToggle} isViewMode={this.state.isViewMode} />}
                     </div>
                 </div>
                 {
@@ -720,7 +736,7 @@ function mapStateToProps({ comman, part, auth }) {
         }
     }
 
-    return { plantSelectList, productData, initialValues, initialConfiguration, }
+    return { plantSelectList, productData, initialValues, initialConfiguration }
 }
 
 /**
@@ -734,6 +750,8 @@ export default connect(mapStateToProps, {
     updateProduct,
     getProductData,
     fileUploadProduct,
+    getPreFilledProductLevelValues,
+    storeHierarchyData
 })(reduxForm({
     form: 'AddIndivisualPart',
     enableReinitialize: true,
