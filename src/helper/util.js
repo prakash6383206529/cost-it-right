@@ -1523,6 +1523,13 @@ export const extenstionTime = (length = 5, timeGap = 1, TimeCategory = 'min') =>
   }
   return temp;
 }
+export const levelDropdown = (length = 6, label = 'Level') => {
+  let temp = [];
+  for (let i = 1; i <= length; i++) {
+    temp.push({ label: `${label}-${i}`, value: i });
+  }
+  return temp;
+}
 export const durationTimeDropdown = (length = 12, timeGap = 15) => {
   let temp = [];
   for (let i = timeGap; i <= length * 60; i += timeGap) {
