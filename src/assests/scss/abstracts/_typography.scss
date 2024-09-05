@@ -24,6 +24,14 @@
         margin-right: calculatePixels($i, -0.25rem)
     }
 
+    .mb-n#{$i} {
+        margin-bottom: calculatePixels($i, -0.25rem)
+    }
+
+    .mt-n#{$i} {
+        margin-top: calculatePixels($i, -0.25rem)
+    }
+
     .pr-#{$i} {
         padding-right: calculatePixels($i, 0.25rem);
     }

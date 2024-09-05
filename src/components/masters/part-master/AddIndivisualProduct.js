@@ -275,10 +275,10 @@ class AddIndivisualProduct extends Component {
     * @description Used to Submit the form
     */
     onSubmit = debounce((values) => {
-        const { ProductId, effectiveDate, isEditFlag, files, DropdownChanged, isImpactCalculation, DataToCheck, uploadAttachements } = this.state;
+        const { ProductId, effectiveDate, isEditFlag, files, DropdownChanged, isImpactCalculation, DataToCheck, uploadAttachements, ProductHierarachyValueId } = this.state;
 
         if (isEditFlag) {
-            if (DropdownChanged && ((files ? JSON.stringify(files) : []) === (DataToCheck.Attachements ? JSON.stringify(DataToCheck.Attachements) : [])) && (DataToCheck.Remark) === (values.Remark) && uploadAttachements) {
+            if (DropdownChanged && ((files ? JSON.stringify(files) : []) === (DataToCheck.Attachements ? JSON.stringify(DataToCheck.Attachements) : [])) && (DataToCheck.Remark) === (values.Remark) && uploadAttachements && DataToCheck.LevelValueIdRef === ProductHierarachyValueId) {
                 this.cancel('cancel')
                 return false;
             }

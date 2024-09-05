@@ -23,7 +23,8 @@ import {
     ADD_PRODUCT_LABELS,
     GET_PRODUCT_HIERARCHY_DATA,
     GET_PRODUCT_HIERARCHY_LABELS,
-    STORE_HIERARCHY_DATA
+    STORE_HIERARCHY_DATA,
+    API_FAILURE
 } from '../../../config/constants';
 import DayTime from '../../common/DayTimeWrapper';
 
@@ -39,6 +40,11 @@ export default function partReducer(state = initialState, action) {
             return {
                 ...state,
                 loading: true
+            };
+        case API_FAILURE:
+            return {
+                ...state,
+                loading: false
             };
         case CREATE_PART_REQUEST:
             return {
