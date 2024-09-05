@@ -9,6 +9,7 @@ import { createProductLevelValues, getAllProductLevels, storeHierarchyData } fro
 import Button from "../../layout/Button";
 import Toaster from "../../common/Toaster";
 import NoContentFound from "../../common/NoContentFound";
+import LoaderCustom from "../../common/LoaderCustom";
 const AssociateHierarchy = (props) => {
     const { register, handleSubmit, setValue, getValues, formState: { errors }, control, } = useForm({
         mode: "onChange",
@@ -35,7 +36,7 @@ const AssociateHierarchy = (props) => {
         isLoader: false
     })
     const dispatch = useDispatch()
-    const { productHierarchyData, storedHierarachyData } = useSelector((state) => state.part);
+    const { productHierarchyData, storedHierarachyData, loading } = useSelector((state) => state.part);
     useEffect(() => {
         dispatch(getAllProductLevels(() => {
             storedHierarachyData.map(item => setValue(`LevelName${item?.LevelId}`, { label: item?.LevelValue, value: item?.LevelValueId, LevelId: item?.LevelId }))
@@ -93,15 +94,15 @@ const AssociateHierarchy = (props) => {
         const finalDataSubmit = {
             LevelId: state.levelData?.LevelId,
             LevelValue: data[state?.labelName],
-            LevelValueId: state[`LevelName${state?.LevelId - 1}`] ? state[`LevelName${state?.LevelId - 1}`]?.value : null,
+            LevelValueId: state[`LevelName${state.levelData?.LevelId - 1}`] ? state[`LevelName${state.levelData?.LevelId - 1}`]?.value : null,
             LoggedInUserId: loggedInUserId(),
         }
         dispatch(createProductLevelValues(finalDataSubmit, (res) => {
             Toaster.success("Level values create successfully")
             dispatch(getAllProductLevels(() => { }))
-
+            cancelDrawer()
         }))
-        cancelDrawer()
+
     }
     const handleLevelChange = (e, item) => {
         const selectedValue = {
@@ -146,6 +147,7 @@ const AssociateHierarchy = (props) => {
                     ></div>
                 </Col>
             </Row>
+            {loading && <LoaderCustom customClass="mb-n2" />}
             <form
                 noValidate
                 className="form"
