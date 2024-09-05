@@ -41,6 +41,7 @@ import AddNpvCost from './CostingHeadCosts/AdditionalOtherCost/AddNpvCost'
 import { costingTypeIdToApprovalTypeIdFunction } from '../../common/CommonFunctions'
 import CrossIcon from '../../../assests/images/red-cross.png'
 import { getMultipleCostingDetails } from '../../rfq/actions/rfq'
+import { useLabels } from '../../../helper/core'
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
@@ -51,6 +52,7 @@ const RejectedCostingSummaryTable = (props) => {
   const ExcelFile = ReactExport.ExcelFile;
   const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
   const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+  const { discountLabel } = useLabels();
 
   const dispatch = useDispatch()
   const [addComparisonToggle, setaddComparisonToggle] = useState(false)
@@ -1981,7 +1983,7 @@ const RejectedCostingSummaryTable = (props) => {
                         <tr className='border-right'>
                           <td width={"20%"}>
                             <span className="d-block small-grey-text">
-                              Hundi/Discount
+                              {discountLabel}
                             </span>
                             <span className="d-block small-grey-text"></span>
                           </td>

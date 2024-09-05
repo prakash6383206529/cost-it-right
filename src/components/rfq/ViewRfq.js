@@ -50,7 +50,7 @@ const gridOptions = {};
 
 
 function RfqListing(props) {
-    const { t } = useTranslation("Rfq");
+    const { t } = useTranslation(["Rfq", "CostingLabels"]);
     const [showCompareButton, setShowCompareButton] = useState(false);
     const [gridApi, setgridApi] = useState(null);                      // DONT DELETE THIS STATE , IT IS USED BY AG GRID
     const [gridColumnApi, setgridColumnApi] = useState(null);          // DONT DELETE THIS STATE , IT IS USED BY AG GRID
@@ -1766,7 +1766,8 @@ function RfqListing(props) {
                         <button type={'button'} disabled={costingsDifferentStatus} className="mr5 approve-reject-btn" onClick={() => returnDetailsClick("", selectedRows)} >
                             {/* <button type={'button'} disabled={costingsDifferentStatus} className="mr5 approve-reject-btn" onClick={() => returnDetailsClick("", selectedRows)} > */}
                             <div className={'cancel-icon-white mr5'}></div>
-                            {'Return'}
+                            {t('return', {ns: 'CostingLabels', defaultValue: 'Return' })}
+
                         </button>)}
                     {(matchedStatus?.length !== 0 || matchedStatus?.includes(RECEIVED)) && (
                         <button type={'button'} disabled={costingsDifferentStatus} className="mr5 approve-reject-btn" onClick={() => rejectDetailsClick("", selectedRows)} >

@@ -5629,13 +5629,8 @@ export const BOP_SOBLISTING_DOWNLOAD_EXCEl = [
     { label: "BOP Part No.", value: "BoughtOutPartNumber", },
     { label: "BOP Part Name", value: "BoughtOutPartName", },
     { label: "BOP Category", value: "BoughtOutPartCategoryName", },
-    { label: "Specification", value: "Specification", },
-    { label: "No. of Vendors", value: "NoOfVendors", },
-    { label: "Plant (Code)", value: "Plant", },
-    { label: "Total SOB (%)", value: "ShareOfBusinessPercentage", },
-    { label: `Weighted Net Cost (${reactLocalStorage.getObject("baseCurrency")})`, value: "WeightedNetLandedCost", },
-    { label: "Effective Date", value: "EffectiveDate", }
-]
+    { label: "Entry Type", value: "BoughtOutPartEntryType", },
+   ]
 
 export const EXCHANGERATE_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead", },
