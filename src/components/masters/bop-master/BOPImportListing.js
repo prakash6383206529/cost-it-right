@@ -721,8 +721,8 @@ const BOPImportListing = (props) => {
           ? allBopDataList
           : [];
     const bopMasterName = showBopLabel();
-    const { updatedLabels, updatedTempData } = updateBOPValues(BOP_IMPORT_DOWNLOAD_EXCEl, tempArr, bopMasterName, 'label');
-    return returnExcelColumn(updatedLabels, updatedTempData)
+    const { updatedLabels } = updateBOPValues(BOP_IMPORT_DOWNLOAD_EXCEl, [], bopMasterName, 'label');
+    return returnExcelColumn(updatedLabels, tempArr)
   };
 
   const returnExcelColumn = (data = [], TempData) => {

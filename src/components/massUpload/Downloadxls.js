@@ -226,7 +226,7 @@ class Downloadxls extends React.Component {
                 return this.returnExcelColumn(checkVendorPlantConfig(updatedLabels, '', true), BOP_ZBC_DOMESTIC_TempData);
             case `${showBopLabel()} Import`:
                 ({ updatedLabels } = updateBOPValues(BOP_ZBC_IMPORT, BOP_ZBC_IMPORT_TempData, bopMasterName, 'label'));
-                return this.returnExcelColumn(checkVendorPlantConfig(BOP_ZBC_IMPORT, '', true), BOP_ZBC_IMPORT_TempData);
+                return this.returnExcelColumn(checkVendorPlantConfig(updatedLabels, '', true), BOP_ZBC_IMPORT_TempData);
 
             case `Overhead`:
 
