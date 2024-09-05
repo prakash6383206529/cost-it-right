@@ -51,7 +51,7 @@ const AssociateHierarchy = (props) => {
         }
     }, [productHierarchyData])
     const submit = (data) => {
-        const valueId = state[`LevelName${state.levelCount - 1}`]?.value
+        const valueId = state[`LevelName${state.levelCount - 1}`]
         let sendData = []
         for (let i = 1; i <= state.levelCount - 1; i++) {
             let temp = data[`LevelName${i}`]
@@ -98,12 +98,24 @@ const AssociateHierarchy = (props) => {
             LoggedInUserId: loggedInUserId(),
         }
         dispatch(createProductLevelValues(finalDataSubmit, (res) => {
-            Toaster.success("Level values create successfully")
-            dispatch(getAllProductLevels(() => { }))
-            cancelDrawer()
+            if (res && res.data && res.data.Result) {
+                Toaster.success("Level values create successfully")
+                dispatch(getAllProductLevels((response) => {
+                    if (response && response.data && response.data.DataList) {
+                        const Data = response.data.DataList[state.levelData?.LevelId - 1]
+                        const filteredData = Data && Data?.ProductLevelValue && Data?.ProductLevelValue?.filter(item => item?.LevelValue === data[state?.labelName])
+                        const setData = { label: filteredData[0]?.LevelValue, value: filteredData[0]?.LevelValueId, LevelId: filteredData[0]?.LevelId }
+                        setValue(`LevelName${state.levelData?.LevelId}`, setData)
+                        setState((prevState) => ({ ...prevState, [`LevelName${state.levelData?.LevelId}`]: setData, selectedDropdownValue: setData }));
+                        cancelDrawer()
+                    }
+                }))
+            }
+
         }))
 
     }
+
     const handleLevelChange = (e, item) => {
         const selectedValue = {
             ...e,
