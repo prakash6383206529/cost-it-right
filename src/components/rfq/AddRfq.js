@@ -758,6 +758,8 @@ function AddRfq(props) {
                 setPartName({ label: rowData?.PartNumber, value: rowData?.PartId })
                 setRequirementDate(rowData?.TimeLine || '')
                 setAssemblyPartNumber({ label: rowData?.PartNumber, value: rowData?.PartId })
+                setPartTypeforRM(rowData?.PartTypeId)
+
             }, 200);
         } else if (selectedOption === "Raw Material") {
             setValue('UOM', { label: rowData?.UOMSymbol, value: rowData?.UnitOfMeasurementId })
@@ -779,6 +781,8 @@ function AddRfq(props) {
                 setPartName({ label: rowData?.PartNumber, value: rowData?.PartId })
                 setRequirementDate(rowData?.TimeLine || '')
                 setAssemblyPartNumber({ label: rowData?.PartNumber, value: rowData?.PartId })
+                setPartTypeforRM(rowData?.PartTypeId)
+
             }, 200);
 
             setEditToolingId(rowData?.PartId)
@@ -2286,7 +2290,7 @@ function AddRfq(props) {
             }, 50)
             setResetRmFields(true)
             setResetBopFields(true)
-            console.log("resetBopFields", resetBopFields);
+
         }
 
         setRawMaterialList([])

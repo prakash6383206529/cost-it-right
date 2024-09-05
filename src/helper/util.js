@@ -1409,22 +1409,21 @@ export function updateBOPValues(bopLabels = [], bopData = [], bopReplacement = '
   const updatedLabels = bopLabels.map(label => ({
     ...label,
     [labelName]: label[labelName]?.replace(bopRegex, bopReplacement),
-    value: label.value?.replace(bopRegex, bopReplacement),
+    // value: label.value?.replace(bopRegex, bopReplacement),
 
   }));
 
-  const updatedTempData = bopData.map(dataItem => {
-    const newDataItem = {};
-    for (let key in dataItem) {
-      if (dataItem.hasOwnProperty(key)) {
-        const newKey = key?.replace(bopRegex, bopReplacement);
-        newDataItem[newKey] = dataItem[key];
-      }
-    }
-    return newDataItem;
-  });
-
-  return { updatedLabels, updatedTempData };
+  // const updatedTempData = bopData.map(dataItem => {
+  //   const newDataItem = {};
+  //   for (let key in dataItem) {
+  //     if (dataItem.hasOwnProperty(key)) {
+  //       const newKey = key?.replace(bopRegex, bopReplacement);
+  //       newDataItem[newKey] = dataItem[key];
+  //     }
+  //   }
+  //   return newDataItem;
+  // });
+  return { updatedLabels };
 }
 /**
   * @method setLoremIpsum
@@ -1521,6 +1520,13 @@ export const extenstionTime = (length = 5, timeGap = 1, TimeCategory = 'min') =>
     if (i % timeGap === 0) {
       temp.push({ label: `${i} (${TimeCategory})`, value: i });
     }
+  }
+  return temp;
+}
+export const levelDropdown = (length = 6, label = 'Level') => {
+  let temp = [];
+  for (let i = 1; i <= length; i++) {
+    temp.push({ label: `${label}-${i}`, value: i });
   }
   return temp;
 }

@@ -15,7 +15,12 @@ import {
     GET_PRODUCT_DATA_LIST,
     GET_PRODUCT_UNIT_DATA,
     PRODUCT_GROUPCODE_SELECTLIST,
-    API_SUCCESS
+    API_SUCCESS,
+    ADD_PRODUCT_HIERARCHY,
+    ADD_PRODUCT_LABELS,
+    GET_PRODUCT_HIERARCHY_DATA,
+    GET_PRODUCT_HIERARCHY_LABELS,
+    STORE_HIERARCHY_DATA
 } from '../../../config/constants';
 import { loggedInUserId } from '../../../helper';
 import { apiErrors, encodeQueryParams, encodeQueryParamsAndLog } from '../../../helper/util';
@@ -818,4 +823,83 @@ export function activeInactivePartUser(requestData, callback) {
                 dispatch({ type: API_FAILURE });
             });
     };
+}
+
+export function createProductLevels(data, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.post(API.createProductLevels, data, config());
+        request.then((response) => {
+            if (response && response.status === 200) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+export function getAllProductLevels(callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getAllProductLevels}`, config());
+        request.then((response) => {
+            if (response.data.Result || response.status === 204) {
+                dispatch({
+                    type: GET_PRODUCT_HIERARCHY_DATA,
+                    payload: response.status === 204 ? [] : response.data.DataList
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+export function getPreFilledProductLevelValues(levelValueId, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getPreFilledProductLevelValues}?levelvalueid=${levelValueId}`, config());
+        request.then((response) => {
+            if (response.data.Result || response.status === 204) {
+                dispatch({
+                    type: STORE_HIERARCHY_DATA,
+                    payload: response.status === 204 ? [] : response.data.DataList
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+export function createProductLevelValues(data, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.post(API.createProductLevelValues, data, config());
+        request.then((response) => {
+            if (response && response.status === 200) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+export function storeHierarchyData(data) {
+    return (dispatch) => {
+        dispatch({
+            type: STORE_HIERARCHY_DATA,
+            payload: data,
+        });
+    };
+
 }
