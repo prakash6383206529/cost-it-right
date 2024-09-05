@@ -1336,7 +1336,9 @@ class AddBOPDomestic extends Component {
                             <>
                               <Col md="3" className='d-flex align-items-center'>
                                 <label
-                                  className={`custom-checkbox`}
+                                  className={`custom-checkbox ${this.state.isEditFlag ? "disabled" : ""
+                                    }`}
+
                                   onChange={this.breakUpHandleChange}
                                 >
                                   Detailed {showBopLabel()}
@@ -1344,7 +1346,7 @@ class AddBOPDomestic extends Component {
                                     type="checkbox"
                                     checked={isTechnologyVisible}
                                     disabled={isViewMode ||
-                                      (isBOPAssociated && isEditFlag && costingTypeId === VBCTypeId)}
+                                      (/* isBOPAssociated && */ isEditFlag && costingTypeId === VBCTypeId)}
                                   />
                                   <span
                                     className=" before-box"
@@ -1352,8 +1354,8 @@ class AddBOPDomestic extends Component {
                                     onChange={this.breakUpHandleChange}
                                   />
                                 </label>
-                                {isBOPAssociated && isEditFlag && costingTypeId === VBCTypeId && <WarningMessage dClass={"mr-2"} message={`This ${showBopLabel()} is already associated, so now you can't edit it.`} />}
-                              </Col>
+                                {/*                                 {isBOPAssociated && isEditFlag && costingTypeId === VBCTypeId && <WarningMessage dClass={"mr-2"} message={`This ${showBopLabel()} is already associated, so now you can't edit it.`} />}
+ */}                              </Col>
                               {isTechnologyVisible && <Col md="3">
                                 <Field
                                   label={t('commonFields.technology', { ns: 'MasterLabels', defaultValue: 'Technology' })}
@@ -1369,7 +1371,7 @@ class AddBOPDomestic extends Component {
                                     this.handleTechnologyChange
                                   }
                                   valueDescription={this.state.Technology}
-                                  disabled={isViewMode || (isBOPAssociated && isEditFlag && costingTypeId === VBCTypeId)}
+                                  disabled={isViewMode || (/* isBOPAssociated && */ isEditFlag && costingTypeId === VBCTypeId)}
                                 />
                               </Col>}
                             </>
