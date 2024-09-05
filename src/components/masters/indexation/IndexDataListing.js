@@ -41,7 +41,7 @@ const IndexDataListing = (props) => {
 
     const dispatch = useDispatch();
     const { rmIndexDataList } = useSelector((state) => state?.indexation);
-    
+
     const permissions = useContext(ApplyPermission);
     const { globalTakes } = useSelector((state) => state?.pagination)
     const { t } = useTranslation("common")
@@ -77,8 +77,8 @@ const IndexDataListing = (props) => {
         RatePerConvertedUOM: '',
         RateConversionPerIndexUOM: '',
         RateConversionPerConvertedUOM: ''
-    }); 
-    
+    });
+
     const [isLoader, setIsLoader] = useState(false);
     const [totalRecordCount, setTotalRecordCount] = useState(1)
     const [filterModel, setFilterModel] = useState({});
@@ -129,7 +129,7 @@ const IndexDataListing = (props) => {
             if (res) {
                 // Update local state if needed
                 // setRmIndexDataList(res);
-                
+
                 let isReset = true
                 setTimeout(() => {
                     for (var prop in floatingFilterData) {
@@ -140,11 +140,11 @@ const IndexDataListing = (props) => {
                     // Sets the filter model via the grid API
                     isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(filterModel))
                 }, 300);
-    
+
                 setTimeout(() => {
                     setWarningMessage(false)
                 }, 330);
-    
+
                 setTimeout(() => {
                     setIsFilterButtonClicked(false)
                 }, 600);
@@ -184,7 +184,7 @@ const IndexDataListing = (props) => {
         if (!isFilterButtonClicked) {
             setWarningMessage(true)
         }
-    
+
         if (value?.filterInstance?.appliedModel === null || value?.filterInstance?.appliedModel?.filter === "") {
             let isFilterEmpty = true
             if (model !== undefined && model !== null) {
@@ -197,15 +197,15 @@ const IndexDataListing = (props) => {
                     }
                     setFloatingFilterData(floatingFilterData)
                 }
-    
+
                 if (isFilterEmpty) {
                     setWarningMessage(false)
                     for (var prop in floatingFilterData) {
                         // Add this check if applicable to Indexation
                         // if (isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant) {
-                            if (prop !== "DepartmentName") {
-                                floatingFilterData[prop] = ""
-                            }
+                        if (prop !== "DepartmentName") {
+                            floatingFilterData[prop] = ""
+                        }
                         // } 
                         else {
                             floatingFilterData[prop] = ""
@@ -232,16 +232,17 @@ const IndexDataListing = (props) => {
 
     const confirmDelete = (ID) => {
         let tempArr = [];
-        let tempObj = {}
-        if (selectedRowForPagination) {
+        let tempObj = {
+            LoggedInUserId: userDetails().LoggedInUserId,
+        }
+        if (selectedRowForPagination && selectedRowForPagination.length > 0) {
             selectedRowForPagination.forEach(item => {
                 const CommodityIndexRateDetailId = item.CommodityIndexRateDetailId;
                 tempArr.push(CommodityIndexRateDetailId);
-                tempObj = {
-                    LoggedInUserId: userDetails().LoggedInUserId,
-                    CommodityIndexRateDetailIds: tempArr
-                }
+                tempObj.CommodityIndexRateDetailIds = tempArr
             });
+        } else {
+            tempObj.CommodityIndexRateDetailIds = [ID]
         }
         dispatch(
             deleteIndexDetailData(tempObj, (res) => {
@@ -445,7 +446,7 @@ const IndexDataListing = (props) => {
 * @description Renders buttons
 */
     const effectiveDateFormatter = (props) => {
-        
+
 
         if (showExtraData && props?.rowIndex === 0) {
             return "Lorem Ipsum";
@@ -515,14 +516,14 @@ const IndexDataListing = (props) => {
             getTableListData(0, globalTakes, false);
         }
     };
- 
-        var setDate = (date) => {
-            setFloatingFilterData((prevState) => ({ ...prevState, EffectiveDate: date }));
-        };
+
+    var setDate = (date) => {
+        setFloatingFilterData((prevState) => ({ ...prevState, EffectiveDate: date }));
+    };
     var filterParams = {
         date: "", comparator: function (filterLocalDateAtMidnight, cellValue) {
-            
-           
+
+
             var dateAsString = cellValue != null ? DayTime(cellValue).format("DD/MM/YYYY") : "";
             var newDate = filterLocalDateAtMidnight != null ? DayTime(filterLocalDateAtMidnight).format('DD/MM/YYYY') : '';
 
@@ -564,27 +565,36 @@ const IndexDataListing = (props) => {
                         {/* {permissions?.Add && (
             <Button id="rmSpecification_addMaterial" className="mr5 Tour_List_AddMaterial" onClick={openModel} title="Add Material" icon={"plus mr-0 ml5"} buttonName="M" />
           )} */}
+                        {permissions?.Delete && <Button
+                            title={"Delete"}
+                            // variant="Delete" 
+                            className={"mr-1"}
+                            icon={"delete-primary"}
+                            id={`rmMaterialList_edit_delete${props?.rowIndex}`}
+                            onClick={() => deleteItem(props?.rowIndex)}
+                            buttonName={`${dataCount === 0 ? "" : "(" + dataCount + ")"}`}
+                            disabled={dataCount === 0 ? true : false}
+                        />}
                         {permissions?.BulkUpload && (<Button id="rmMaterialListing_add" className={"mr5 Tour_List_BulkUpload"} onClick={bulkToggle} title={"Bulk Upload"} icon={"upload"} />)}
-
                         {permissions?.Download && (
                             <>
-                               <>
+                                <>
 
-<Button
-    className="mr5 Tour_List_Download"
-    id={"indexDataListing_excel_download"}
-    onClick={onExcelDownload}
-    title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
-    icon={"download mr-1"}
-    buttonName={`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
-/>
-<ExcelFile filename={'Index Data'} fileExtension={'.xls'} element={
-    <Button id={"Excel-Downloads-indexDataList"} className="p-absolute" />
+                                    <Button
+                                        className="mr5 Tour_List_Download"
+                                        id={"indexDataListing_excel_download"}
+                                        onClick={onExcelDownload}
+                                        title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
+                                        icon={"download mr-1"}
+                                        buttonName={`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
+                                    />
+                                    <ExcelFile filename={'Index Data'} fileExtension={'.xls'} element={
+                                        <Button id={"Excel-Downloads-indexDataList"} className="p-absolute" />
 
-}>
-    {onBtExport()}
-</ExcelFile>
-</>
+                                    }>
+                                        {onBtExport()}
+                                    </ExcelFile>
+                                </>
                             </>
                         )}
                         <Button id={"rmMaterialListing_refresh"} className={" Tour_List_Reset"} onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
@@ -662,7 +672,7 @@ const IndexDataListing = (props) => {
                     isOpen={state?.showPopup}
                     closePopUp={closePopUp}
                     confirmPopup={onPopupConfirm}
-                    message={`${MESSAGES.DELETE}`}
+                    message={`${dataCount === 0 ? MESSAGES.DELETE : "Are you sure you want to delete the selected record(s)?"}`}
                 />
             )}
             {isBulkUpload && (
