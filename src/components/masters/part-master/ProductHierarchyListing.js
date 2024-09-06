@@ -1,5 +1,5 @@
 
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Row, Col } from "reactstrap";
 
@@ -13,6 +13,8 @@ import "ag-grid-community/dist/styles/ag-theme-material.css";
 import { ApplyPermission } from ".";
 import { PaginationWrapper } from "../../common/commonPagination";
 import AddProductHierarchy from "./AddProductHierarchy";
+import { getAllProductLevels } from "../actions/Part";
+import LoaderCustom from "../../common/LoaderCustom";
 
 const gridOptions = {};
 
@@ -22,30 +24,29 @@ const ProductHierarchyListing = (props) => {
         // pageNo: 1,
         gridApi: null,
         gridColumnApi: null,
-        isLoader: true,
+        isLoader: false,
         noData: false,
-        tableData: [],
         rowData: [],
         isDrawerOpen: false,
         searchText: ''
     });
-    const { newPartsListing } = useSelector((state) => state.part);
     const { globalTakes } = useSelector((state) => state.pagination);
     const permissions = useContext(ApplyPermission);
-
+    const dispatch = useDispatch()
+    const { productHierarchyData } = useSelector((state) => state.part);
+    useEffect(() => {
+        if (productHierarchyData?.length === 0) {
+            setState(prevState => ({ ...prevState, isLoader: true }))
+        }
+        dispatch(getAllProductLevels((res) => {
+            setState(prevState => ({ ...prevState, isLoader: false }))
+        }))
+    }, [])
     const resetState = () => {
         setState((prevState) => ({
             ...prevState,
             noData: false,
-            warningMessage: false,
-
         }));
-        setState((prevState) => ({
-            ...prevState,
-
-            isFilterButtonClicked: false,
-        }));
-
         if (state.gridApi) {
             state.gridApi.setQuickFilter(''); // Clear the Ag-Grid quick filter
         }
@@ -80,14 +81,7 @@ const ProductHierarchyListing = (props) => {
     };
     return (
         <>
-            <div
-                className={`ag-grid-react custom-pagination ${permissions.Download ? "show-table-btn" : ""
-                    }`}
-            >
-                {/* {state.isLoader && <LoaderCustom />}
-                {state.disableDownload && (
-                    <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />
-                )} */}
+            <div className="ag-grid-react">
                 <Row className="pt-4 no-filter-row">
                     <Col md="9" className="search-user-block pr-0">
                         <div className="d-flex justify-content-end bd-highlight w100">
@@ -99,11 +93,9 @@ const ProductHierarchyListing = (props) => {
                                         title="Add"
                                         onClick={formToggle}
                                     >
-                                        <div className={"plus mr-0"}></div>
+                                        <div className={`${productHierarchyData?.length === 0 ? 'plus' : 'view'} mr-0`}></div>
                                     </button>
                                 )}
-
-
                                 <button
                                     type="button"
                                     className="user-btn Tour_List_Reset"
@@ -120,24 +112,15 @@ const ProductHierarchyListing = (props) => {
                 <div className="ag-grid-header">
                     <input type="text" value={state.searchText} className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={"off"} onChange={onFilterTextBoxChanged} />
                 </div>
-                <div
-                    className={`ag-grid-wrapper height-width-wrapper ${(state.rowData && state.rowData?.length <= 0) || state.noData ? "overlay-contain" : ""}`}
-                >
-                    <div
-                        className={`ag-theme-material ${state.isLoader && "max-loader-height"}`}
-                    >
-                        {(state.noData && newPartsListing.length !== 0) ? (
-                            <NoContentFound
-                                title={EMPTY_DATA}
-                                customClassName="no-content-found"
-                            />
-                        ) : <></>}
+                <div className={`ag-grid-wrapper height-width-wrapper ${(productHierarchyData && productHierarchyData?.length <= 0) || state.noData ? "overlay-contain" : ""}`}>
+                    <div className={`ag-theme-material ${state.isLoader && "max-loader-height"}`} >
+                        {state.isLoader && <LoaderCustom />}
                         {
                             <AgGridReact
                                 defaultColDef={defaultColDef}
                                 floatingFilter={true}
                                 domLayout="autoHeight"
-                                rowData={[]}
+                                rowData={productHierarchyData}
 
                                 pagination={true}
                                 paginationPageSize={globalTakes}
@@ -153,8 +136,8 @@ const ProductHierarchyListing = (props) => {
                                 frameworkComponents={frameworkComponents}
                                 suppressRowClickSelection={true}
                             >
-                                <AgGridColumn field="DrawingNumber" headerName="Drawing No." cellRenderer={"hyphenFormatter"}  ></AgGridColumn>
-                                <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={"effectiveDateFormatter"} filter="agDateColumnFilter" ></AgGridColumn>
+                                <AgGridColumn field="LevelNo" headerName="Level"  ></AgGridColumn>
+                                <AgGridColumn field="LevelName" headerName="Level Name" ></AgGridColumn>
                             </AgGridReact>}
                         {<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} />}
                     </div>

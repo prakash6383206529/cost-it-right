@@ -50,6 +50,10 @@ import { Steps } from './TourMessages'
 import { useTranslation } from 'react-i18next';
 import ViewTcoDetail from './CostingHeadCosts/AdditionalOtherCost/ViewTcoDetail'
 import AddNpvCost from './CostingHeadCosts/AdditionalOtherCost/AddNpvCost'
+import { BarChartComparison } from './BarChartComparison'
+import { useLabels } from '../../../helper/core'
+
+
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
@@ -75,6 +79,7 @@ const CostingSummaryTable = (props) => {
   const [isAssemblyCosting, setIsAssemblyCosting] = useState(false)
   const [editObject, setEditObject] = useState({})
   const [isFinalApproverShow, setIsFinalApproverShow] = useState(false)
+  const [isComparing, setIsComparing] = useState(false);
 
   /* Constant  for drawer toggle*/
   const [isViewBOP, setViewBOP] = useState(false)
@@ -205,6 +210,7 @@ const CostingSummaryTable = (props) => {
   const [isFinalCommonApproval, setIsFinalCommonApproval] = useState(false);
   const [tcoAndNpvDrawer, setTcoAndNpvDrawer] = useState(false);
   const [costingId, setCostingId] = useState("");
+  const { discountLabel } = useLabels();
 
   const [drawerOpen, setDrawerOpen] = useState({
     BOP: false,
@@ -878,6 +884,8 @@ const CostingSummaryTable = (props) => {
     setaddComparisonToggle(true)
     setIsEditFlag(false)
     setEditObject({})
+    props.setIsComparing(true); // Set to true when comparison is added
+
   }
 
   /**
@@ -2121,7 +2129,8 @@ const CostingSummaryTable = (props) => {
                 />
                 }
                 {
-                  !simulationMode && !props.isRfqCosting && <>
+                  // !simulationMode && 
+                  !props.isRfqCosting && <>
 
                     {(!viewMode && !isFinalApproverShow) && !props.isRfqCosting && !isSuperAdmin && (
                       <button id="costingSummary_sendforapproval" className="user-btn mr-1 mb-2 approval-btn" disabled={false} onClick={() => checkCostings()}>
@@ -2146,6 +2155,27 @@ const CostingSummaryTable = (props) => {
               {disableSendForApproval && <WarningMessage dClass={"col-md-12 pr-0 justify-content-end"} message={'This user is not in the approval cycle'} />}
             </Col>}
           </Row>
+          {/* {
+            isComparing &&
+            (<> */}
+              {/* <Row className="mt-2">
+                <Col md="10">
+                  <div id="bar-chart-compare" className="left-border">{'Bar Chart Comparison:'}</div>
+                </Col>
+              </Row> */}
+
+              {/* <Row>
+                <Col md="12" className="costing-summary-row" style={{ maxWidth: '600px', margin: 'auto' }}>
+                  {isComparing && viewCostingData.length >= 2 &&
+                    <BarChartComparison
+                      costingData={viewCostingData}
+                      currency={viewCostingData[0]?.currency?.currencyTitle || 'INR'}
+                    />
+                  }
+                </Col>
+              </Row> */}
+            {/* </>
+            )} */}
           <div ref={componentRef}>
             <Row id="summaryPdf" className={`${customClass} ${vendorNameClass()} ${drawerDetailPDF ? 'remove-space-border' : ''} ${simulationMode ? "simulation-print" : ""}`}>
               {(drawerDetailPDF || pdfHead) &&
@@ -3087,7 +3117,7 @@ const CostingSummaryTable = (props) => {
                           <tr className='border-right'>
                             <td>
                               <span className="d-block small-grey-text">
-                                Hundi/Discount
+                                {discountLabel}
                               </span>
                               <span className="d-block small-grey-text"></span>
                             </td>
@@ -3529,6 +3559,8 @@ const CostingSummaryTable = (props) => {
             editObject={editObject}
             anchor={'right'}
             viewMode={viewMode}
+            // isComparing={isComparing}
+            onComparisonAdded={() => setIsComparing(true)}
           />
         )
       }

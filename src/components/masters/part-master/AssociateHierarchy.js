@@ -9,6 +9,7 @@ import { createProductLevelValues, getAllProductLevels, storeHierarchyData } fro
 import Button from "../../layout/Button";
 import Toaster from "../../common/Toaster";
 import NoContentFound from "../../common/NoContentFound";
+import LoaderCustom from "../../common/LoaderCustom";
 const AssociateHierarchy = (props) => {
     const { register, handleSubmit, setValue, getValues, formState: { errors }, control, } = useForm({
         mode: "onChange",
@@ -35,7 +36,7 @@ const AssociateHierarchy = (props) => {
         isLoader: false
     })
     const dispatch = useDispatch()
-    const { productHierarchyData, storedHierarachyData } = useSelector((state) => state.part);
+    const { productHierarchyData, storedHierarachyData, loading } = useSelector((state) => state.part);
     useEffect(() => {
         dispatch(getAllProductLevels(() => {
             storedHierarachyData.map(item => setValue(`LevelName${item?.LevelId}`, { label: item?.LevelValue, value: item?.LevelValueId, LevelId: item?.LevelId }))
@@ -50,7 +51,7 @@ const AssociateHierarchy = (props) => {
         }
     }, [productHierarchyData])
     const submit = (data) => {
-        const valueId = state[`LevelName${state.levelCount - 1}`]?.value
+        const valueId = state[`LevelName${state.levelCount - 1}`]
         let sendData = []
         for (let i = 1; i <= state.levelCount - 1; i++) {
             let temp = data[`LevelName${i}`]
@@ -93,16 +94,28 @@ const AssociateHierarchy = (props) => {
         const finalDataSubmit = {
             LevelId: state.levelData?.LevelId,
             LevelValue: data[state?.labelName],
-            LevelValueId: state[`LevelName${state?.LevelId - 1}`] ? state[`LevelName${state?.LevelId - 1}`]?.value : null,
+            LevelValueId: state[`LevelName${state.levelData?.LevelId - 1}`] ? state[`LevelName${state.levelData?.LevelId - 1}`]?.value : null,
             LoggedInUserId: loggedInUserId(),
         }
         dispatch(createProductLevelValues(finalDataSubmit, (res) => {
-            Toaster.success("Level values create successfully")
-            dispatch(getAllProductLevels(() => { }))
+            if (res && res.data && res.data.Result) {
+                Toaster.success("Level values create successfully")
+                dispatch(getAllProductLevels((response) => {
+                    if (response && response.data && response.data.DataList) {
+                        const Data = response.data.DataList[state.levelData?.LevelId - 1]
+                        const filteredData = Data && Data?.ProductLevelValue && Data?.ProductLevelValue?.filter(item => item?.LevelValue === data[state?.labelName])
+                        const setData = { label: filteredData[0]?.LevelValue, value: filteredData[0]?.LevelValueId, LevelId: filteredData[0]?.LevelId }
+                        setValue(`LevelName${state.levelData?.LevelId}`, setData)
+                        setState((prevState) => ({ ...prevState, [`LevelName${state.levelData?.LevelId}`]: setData, selectedDropdownValue: setData }));
+                        cancelDrawer()
+                    }
+                }))
+            }
 
         }))
-        cancelDrawer()
+
     }
+
     const handleLevelChange = (e, item) => {
         const selectedValue = {
             ...e,
@@ -146,6 +159,7 @@ const AssociateHierarchy = (props) => {
                     ></div>
                 </Col>
             </Row>
+            {loading && <LoaderCustom customClass="mb-n2" />}
             <form
                 noValidate
                 className="form"

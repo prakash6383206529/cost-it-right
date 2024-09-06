@@ -82,6 +82,7 @@ class BulkUpload extends Component {
             showPopup: false,
             bopType: '',
             isImport: false,
+            isLoading: false,
         }
     }
 
@@ -194,6 +195,7 @@ class BulkUpload extends Component {
         if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
             return;
         }
+        this.setState({ isLoading: false });
 
         this.props.closeDrawer('', type);
     };
@@ -735,9 +737,9 @@ class BulkUpload extends Component {
         } else if (costingTypeId === CBCADDMORE || costingTypeId === CBCADDMOREOPERATION) {
             masterUploadData.CostingTypeId = CBCTypeId
         }
-        this.setState({ setDisable: true })
-        if (fileName === 'Actual Volume') {
-            uploadData.TypeOfEntry = ENTRY_TYPE_DOMESTIC
+        this.setState({ setDisable: true, isLoading: true }, () => {
+            if (fileName === 'Actual Volume') {
+                        uploadData.TypeOfEntry = ENTRY_TYPE_DOMESTIC
         } else if (fileName === 'Budgeted Volume') {
             uploadData.TypeOfEntry = ENTRY_TYPE_IMPORT
         }
@@ -849,7 +851,7 @@ class BulkUpload extends Component {
 
         } else if (fileName === 'Actual Volume' || fileName === 'Budgeted Volume') {
             this.props.volumeBulkUpload(uploadData, (res) => {
-                this.setState({ setDisable: false })
+                                this.setState({ setDisable: false })
                 this.responseHandler(res)
             });
 
@@ -889,8 +891,10 @@ class BulkUpload extends Component {
         }
 
         else {
-            this.setState({ setDisable: false })
+            this.setState({ setDisable: false, isLoading: false })
         }
+    })
+
 
     }
     /**
@@ -927,6 +931,12 @@ class BulkUpload extends Component {
                 {!this.props.isDrawerfasle ? <Drawer anchor={this.props.anchor} open={this.props.isOpen}>
                     <Container>
                         <div className={'drawer-wrapper WIDTH-400'}>
+                        {this.state.isLoading && (
+                                <div className="loader-overlay">
+                                    <LoaderCustom customClass="attachment-loader" />
+                                    </div>
+                                )}
+
                             <form
                                 noValidate
                                 className="form"

@@ -827,6 +827,7 @@ export function activeInactivePartUser(requestData, callback) {
 
 export function createProductLevels(data, callback) {
     return (dispatch) => {
+        dispatch({ type: API_REQUEST });
         const request = axios.post(API.createProductLevels, data, config());
         request.then((response) => {
             if (response && response.status === 200) {
@@ -840,6 +841,7 @@ export function createProductLevels(data, callback) {
 }
 export function getAllProductLevels(callback) {
     return (dispatch) => {
+        dispatch({ type: API_REQUEST });
         const request = axios.get(`${API.getAllProductLevels}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
@@ -859,6 +861,7 @@ export function getAllProductLevels(callback) {
 
 export function getPreFilledProductLevelValues(levelValueId, callback) {
     return (dispatch) => {
+        dispatch({ type: API_REQUEST });
         const request = axios.get(`${API.getPreFilledProductLevelValues}?levelvalueid=${levelValueId}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
@@ -878,6 +881,7 @@ export function getPreFilledProductLevelValues(levelValueId, callback) {
 
 export function createProductLevelValues(data, callback) {
     return (dispatch) => {
+        dispatch({ type: API_REQUEST });
         const request = axios.post(API.createProductLevelValues, data, config());
         request.then((response) => {
             if (response && response.status === 200) {
