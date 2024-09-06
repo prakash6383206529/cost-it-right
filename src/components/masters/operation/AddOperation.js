@@ -13,7 +13,7 @@ import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import AddUOM from '../uom-master/AddUOM';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
-import { FILE_URL, ZBC, OPERATIONS_ID, EMPTY_GUID, SPACEBAR, VBCTypeId, CBCTypeId, ZBCTypeId, searchCount, VBC_VENDOR_TYPE, GUIDE_BUTTON_SHOW } from '../../../config/constants';
+import { FILE_URL, ZBC, OPERATIONS_ID, EMPTY_GUID, SPACEBAR, VBCTypeId, CBCTypeId, ZBCTypeId, searchCount, VBC_VENDOR_TYPE, GUIDE_BUTTON_SHOW, effectiveDateRangeDays } from '../../../config/constants';
 import { AcceptableOperationUOM, LOGISTICS } from '../../../config/masterData'
 import DayTime from '../../common/DayTimeWrapper'
 import imgRedcross from '../../../assests/images/red-cross.png';
@@ -36,6 +36,7 @@ import { Steps } from './TourMessages';
 import { withTranslation } from 'react-i18next';
 import Button from '../../layout/Button';
 import TooltipCustom from '../../common/Tooltip';
+import { subDays } from 'date-fns';
 
 const selector = formValueSelector('AddOperation');
 
@@ -1372,7 +1373,7 @@ class AddOperation extends Component {
                             onChange={this.handleEffectiveDateChange}
                             type="text"
                             validate={[required]}
-                            minDate={this.state.minEffectiveDate}
+                            minDate={isEditFlag ? this.state.minEffectiveDate : subDays(new Date(), effectiveDateRangeDays)}
                             autoComplete={'off'}
                             required={true}
                             changeHandler={(e) => {

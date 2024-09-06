@@ -9,7 +9,7 @@ import {
 import { getUOMSelectList, fetchStateDataAPI, getAllCity, getPlantSelectListByType, fetchCountryDataAPI, fetchCityDataAPI, getCityByCountry, getVendorNameByVendorSelectList, } from '../../../actions/Common';
 import { getFuelByPlant, createFuelDetail, updateFuelDetail, getFuelDetailData, getUOMByFuelId, getAllFuelAPI } from '../actions/Fuel';
 import { MESSAGES } from '../../../config/message';
-import { CBCTypeId, EMPTY_DATA, GUIDE_BUTTON_SHOW, searchCount, SPACEBAR, VBC_VENDOR_TYPE, VBCTypeId, ZBC, ZBCTypeId } from '../../../config/constants'
+import { CBCTypeId, effectiveDateRangeDays, EMPTY_DATA, GUIDE_BUTTON_SHOW, searchCount, SPACEBAR, VBC_VENDOR_TYPE, VBCTypeId, ZBC, ZBCTypeId } from '../../../config/constants'
 import { loggedInUserId } from "../../../helper/auth";
 import Toaster from '../../common/Toaster';
 import DatePicker from "react-datepicker";
@@ -30,6 +30,7 @@ import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from './TourMessages';
 import { withTranslation } from 'react-i18next';
 import Button from '../../layout/Button';
+import { subDays } from 'date-fns';
 
 const selector = formValueSelector('AddFuel');
 
@@ -1105,6 +1106,8 @@ class AddFuel extends Component {
                                   disabledKeyboardNavigation
                                   onChangeRaw={(e) => e.preventDefault()}
                                   disabled={isViewMode}
+                                  minDate={subDays(new Date(), effectiveDateRangeDays)}
+
                                 />
                                 {this.state.errorObj.effectiveDate && this.state.effectiveDate === "" && <div className='text-help'>This field is required.</div>}
                               </div>

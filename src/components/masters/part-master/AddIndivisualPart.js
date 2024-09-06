@@ -12,7 +12,7 @@ import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
 import DayTime from '../../common/DayTimeWrapper'
 import "react-datepicker/dist/react-datepicker.css";
-import { FILE_URL, GUIDE_BUTTON_SHOW } from '../../../config/constants';
+import { effectiveDateRangeDays, FILE_URL, GUIDE_BUTTON_SHOW } from '../../../config/constants';
 import LoaderCustom from '../../common/LoaderCustom';
 import imgRedcross from "../../../assests/images/red-cross.png";
 import _, { debounce } from 'lodash';
@@ -23,6 +23,7 @@ import { ASSEMBLY, LOGISTICS } from '../../../config/masterData';
 import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from './TourMessages';
 import { withTranslation } from 'react-i18next';
+import { subDays } from 'date-fns';
 
 class AddIndivisualPart extends Component {
   constructor(props) {
@@ -666,7 +667,7 @@ class AddIndivisualPart extends Component {
                                   onChange={this.handleEffectiveDateChange}
                                   type="text"
                                   validate={[required]}
-                                  minDate={this.state.minEffectiveDate}
+                                  minDate={isEditFlag ? this.state.minEffectiveDate : subDays(new Date(), effectiveDateRangeDays)}
                                   autoComplete={'off'}
                                   required={true}
                                   changeHandler={(e) => {
