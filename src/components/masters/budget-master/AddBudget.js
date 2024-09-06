@@ -7,7 +7,7 @@ import { getCurrencySelectList, getPlantSelectListByType, getVendorNameByVendorS
 import Toaster from '../../common/Toaster'
 import { MESSAGES } from '../../../config/message'
 import { getConfigurationKey, loggedInUserId, userDetails } from '../../../helper/auth'
-import { BOUGHTOUTPARTSPACING, BUDGET_ID, CBCTypeId, PRODUCT_ID, searchCount, SPACEBAR, VBC_VENDOR_TYPE, VBCTypeId, ZBC, ZBCTypeId } from '../../../config/constants'
+import { BOUGHTOUTPARTSPACING, BUDGET_ID, CBCTypeId, EMPTY_GUID, IsFetchExchangeRateVendorWise, PRODUCT_ID, searchCount, SPACEBAR, VBC_VENDOR_TYPE, VBCTypeId, ZBC, ZBCTypeId } from '../../../config/constants'
 import LoaderCustom from '../../common/LoaderCustom'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -572,8 +572,11 @@ function AddBudget(props) {
 
             const finalYear = year?.label && year?.label?.slice(0, 4);
             let date = (`${finalYear}-04-01`);
+            const vendorValue = IsFetchExchangeRateVendorWise ? vendorName?.value : EMPTY_GUID
+            const costingType = IsFetchExchangeRateVendorWise ? costingTypeId : ZBCTypeId
+
             if (finalYear) {
-                dispatch(getExchangeRateByCurrency(newValue.label, costingTypeId, date, vendorName?.value, client?.value, true, res => {
+                dispatch(getExchangeRateByCurrency(newValue.label, costingType, date, vendorValue, client?.value, true, res => {
                     if (res && res?.data && res?.data?.Result && Object.keys(res?.data?.Data)?.length > 0) {
                         let Data = res?.data?.Data;
                         setCurrencyExchangeRate(Data.CurrencyExchangeRate)

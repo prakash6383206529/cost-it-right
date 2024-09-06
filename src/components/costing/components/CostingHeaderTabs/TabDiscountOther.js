@@ -18,7 +18,7 @@ import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
 import { Redirect, useHistory } from "react-router-dom";
 import redcrossImg from '../../../../assests/images/red-cross.png';
-import { ATTACHMENT, CAPACITY, CRMHeads, FEASIBILITY, FILE_URL, isShowTaxCode, NFRTypeId, TIMELINE, VBCTypeId, WACTypeId } from '../../../../config/constants';
+import { ATTACHMENT, CAPACITY, CRMHeads, EMPTY_GUID, FEASIBILITY, FILE_URL, IsFetchExchangeRateVendorWise, isShowTaxCode, NFRTypeId, TIMELINE, VBCTypeId, WACTypeId, ZBCTypeId } from '../../../../config/constants';
 import { IdForMultiTechnology } from '../../../../config/masterData';
 import { MESSAGES } from '../../../../config/message';
 import DayTime from '../../../common/DayTimeWrapper';
@@ -937,8 +937,11 @@ function TabDiscountOther(props) {
       dispatch(isDiscountDataChange(true))
       setCurrency(newValue)
       setIsInputLader(true)
+      const vendorValue = IsFetchExchangeRateVendorWise ? costData?.VendorId : EMPTY_GUID
+
       let costingTypeId = (costData.CostingTypeId === VBCTypeId || costData.CostingTypeId === NFRTypeId) ? VBCTypeId : costData.CostingTypeId
-      dispatch(getExchangeRateByCurrency(newValue.label, costingTypeId, DayTime(CostingEffectiveDate).format('YYYY-MM-DD'), costData.VendorId, costData.CustomerId, false, res => {
+      const costingType = IsFetchExchangeRateVendorWise ? costingTypeId : ZBCTypeId
+      dispatch(getExchangeRateByCurrency(newValue.label, costingType, DayTime(CostingEffectiveDate).format('YYYY-MM-DD'), vendorValue, costData.CustomerId, false, res => {
         setIsInputLader(false)
         if (Object.keys(res.data.Data).length === 0) {
           setShowWarning(true)

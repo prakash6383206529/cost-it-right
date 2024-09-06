@@ -3222,6 +3222,8 @@ export const customHavellsChanges = true
 export const countDownBlickingTime = 2
 export const clientName = 'Havells'
 export const isShowTaxCode = false
+export const IsFetchExchangeRateVendorWise = false
+
 
 //VERSION 
 export const VERSION = "V3.1.6";
