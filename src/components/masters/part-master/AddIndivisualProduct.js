@@ -464,14 +464,14 @@ class AddIndivisualProduct extends Component {
                                                                     required={false}
                                                                     className=""
                                                                     customClassName={"withBorder w-100"}
-                                                                    disabled={true}
+                                                                    disabled={initialConfiguration?.IsProductMasterConfigurable}
                                                                 />
-                                                                <Button
+                                                                {initialConfiguration?.IsProductMasterConfigurable && <Button
                                                                     id="RawMaterialName-add"
                                                                     className="mt40 right"
                                                                     variant={this.state.ProductHierarachyValueId ? 'view-icon-primary' : 'plus-icon-square'}
                                                                     onClick={() => this.formToggle(this.state.ProductHierarachyValueId)}
-                                                                />
+                                                                />}
                                                             </Col>
                                                         )}
 
