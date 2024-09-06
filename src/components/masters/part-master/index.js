@@ -144,7 +144,7 @@ const PartMaster = () => {
                 {initialConfiguration?.IsProductMasterConfigurable && (
                   <NavItem> <NavLink className={classnames({ active: state.activeTab === "3" })} onClick={() => toggle("3")} >  Manage Products </NavLink> </NavItem>
                 )}
-                <NavItem> <NavLink className={classnames({ active: state.activeTab === "4" })} onClick={() => toggle("4")} > Product Hierarchy </NavLink> </NavItem>
+                {initialConfiguration?.IsProductMasterConfigurable && <NavItem> <NavLink className={classnames({ active: state.activeTab === "4" })} onClick={() => toggle("4")} > Product Hierarchy </NavLink> </NavItem>}
                 {initialConfiguration?.IsSAPConfigured && <button type="button" className={`secondary-btn mr5 mt-1 fetch-btn`} title="Fetch" onClick={openFetchDrawer} onMouseOver={handleMouse} onMouseOut={handleMouseOut} >
                   <div className={`${state.isHover ? "swap-hover" : "swap"} mr-0`} ></div>
                 </button>}
