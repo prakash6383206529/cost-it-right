@@ -14,7 +14,7 @@ import { MESSAGES } from '../../../config/message';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
 import "react-datepicker/dist/react-datepicker.css";
-import { BOUGHTOUTPARTSPACING, COMPONENT_PART, FILE_URL, SPACEBAR, ASSEMBLYNAME, searchCount, GUIDE_BUTTON_SHOW } from '../../../config/constants';
+import { BOUGHTOUTPARTSPACING, COMPONENT_PART, FILE_URL, SPACEBAR, ASSEMBLYNAME, searchCount, GUIDE_BUTTON_SHOW, effectiveDateRangeDays } from '../../../config/constants';
 import AddChildDrawer from './AddChildDrawer';
 import DayTime from '../../common/DayTimeWrapper'
 import BOMViewer from './BOMViewer';
@@ -35,6 +35,7 @@ import { withTranslation } from 'react-i18next';
 import Button from '../../layout/Button';
 import { LOGISTICS } from '../../../config/masterData';
 import AsyncSelect from 'react-select/async';
+import { subDays } from 'date-fns';
 
 const selector = formValueSelector('AddAssemblyPart')
 export const PartEffectiveDate = React.createContext()
@@ -1176,7 +1177,7 @@ class AddAssemblyPart extends Component {
                                 validate={[required]}
                                 autoComplete={'off'}
                                 required={true}
-                                minDate={this.state.minEffectiveDate}
+                                minDate={isEditFlag ? this.state.minEffectiveDate : subDays(new Date(), effectiveDateRangeDays)}
                                 changeHandler={(e) => {
                                 }}
                                 component={renderDatePicker}

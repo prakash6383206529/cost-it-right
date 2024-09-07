@@ -11,7 +11,7 @@ import {
 } from '../actions/Fuel';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { CBCTypeId, GENERATOR_DIESEL, GUIDE_BUTTON_SHOW, searchCount, SPACEBAR, VBC_VENDOR_TYPE, VBCTypeId, ZBCTypeId, } from '../../../config/constants';
+import { CBCTypeId, effectiveDateRangeDays, GENERATOR_DIESEL, GUIDE_BUTTON_SHOW, searchCount, SPACEBAR, VBC_VENDOR_TYPE, VBCTypeId, ZBCTypeId, } from '../../../config/constants';
 import { EMPTY_DATA } from '../../../config/constants'
 import { loggedInUserId } from "../../../helper/auth";
 import "react-datepicker/dist/react-datepicker.css";
@@ -32,6 +32,7 @@ import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from './TourMessages';
 import { withTranslation } from 'react-i18next';
 import Button from '../../layout/Button';
+import { subDays } from 'date-fns';
 
 const selector = formValueSelector('AddPower');
 
@@ -1610,6 +1611,8 @@ class AddPower extends Component {
                                     disabled={(isEditFlag || isViewMode) ? true : false}
                                     placeholder={isViewMode ? '-' : "Select Date"}
                                     onFocus={() => onFocus(this, true)}
+                                    minDate={subDays(new Date(), effectiveDateRangeDays)}
+
                                   />
                                 </div>
                               </div>
