@@ -3222,7 +3222,7 @@ export const customHavellsChanges = true
 export const countDownBlickingTime = 2
 export const clientName = 'Havells'
 export const isShowTaxCode = false
-export const effectiveDateRangeDays = '7'
+export const effectiveDateRangeDays = ''
 
 //VERSION 
 export const VERSION = "V3.1.6";
