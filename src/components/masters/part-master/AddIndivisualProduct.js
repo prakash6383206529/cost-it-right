@@ -48,7 +48,8 @@ class AddIndivisualProduct extends Component {
             attachmentLoader: false,
             showPopup: false,
             showHierarchy: false,
-            ProductHierarachyValueId: null
+            ProductHierarachyValueId: null,
+            ProductHierarachyLabel: ''
         }
     }
 
@@ -84,6 +85,7 @@ class AddIndivisualProduct extends Component {
                     this.setState({ DataToCheck: Data })
 
                     this.props.change("EffectiveDate", DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
+                    this.props.change("ProductGroupCode", Data.ProductGroupCode ?? '')
                     Data?.LevelValueIdRef ? this.props.getPreFilledProductLevelValues(Data?.LevelValueIdRef, res => { }) : this.props.storeHierarchyData([])
                     setTimeout(() => {
                         this.setState({
@@ -92,7 +94,8 @@ class AddIndivisualProduct extends Component {
                             effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
                             files: Data.Attachements,
                             isImpactCalculation: Data.IsConsideredForMBOM,
-                            ProductHierarachyValueId: Data.LevelValueIdRef
+                            ProductHierarachyValueId: Data.LevelValueIdRef,
+                            ProductHierarachyLabel: Data.ProductGroupCode
                         }, () => this.setState({ isLoader: false }))
                         // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
                         let files = Data.Attachements && Data.Attachements.map((item) => {
@@ -359,8 +362,9 @@ class AddIndivisualProduct extends Component {
     onPressImpactCalculation = () => {
         this.setState({ isImpactCalculation: !this.state.isImpactCalculation, DropdownChanged: false });
     }
-    formToggle = (valueId) => {
-        this.setState({ showHierarchy: !this.state.showHierarchy, ProductHierarachyValueId: valueId ?? this.state.ProductHierarachyValueId })
+    formToggle = (data) => {
+        this.setState({ showHierarchy: !this.state.showHierarchy, ProductHierarachyValueId: data?.value ?? this.state.ProductHierarachyValueId, ProductHierarachyLabel: data?.label ?? this.state.ProductHierarachyLabel })
+        this.props.change('ProductGroupCode', data?.label ?? this.state.ProductHierarachyLabel)
     }
 
     /**
@@ -453,7 +457,7 @@ class AddIndivisualProduct extends Component {
                                                                     name={"ProductGroupCode"}
                                                                     type="text"
                                                                     placeholder={isViewMode ? '-' : "Enter"}
-                                                                    validate={[checkWhiteSpaces, alphaNumeric, maxLength20, hashValidation]}
+                                                                    validate={[]}
                                                                     component={renderText}
                                                                     onChange={
                                                                         this.ProductGroupCodeUpdate
@@ -461,14 +465,14 @@ class AddIndivisualProduct extends Component {
                                                                     required={false}
                                                                     className=""
                                                                     customClassName={"withBorder w-100"}
-                                                                    disabled={isViewMode}
+                                                                    disabled={initialConfiguration?.IsProductMasterConfigurable}
                                                                 />
-                                                                <Button
+                                                                {initialConfiguration?.IsProductMasterConfigurable && <Button
                                                                     id="RawMaterialName-add"
                                                                     className="mt40 right"
                                                                     variant={this.state.ProductHierarachyValueId ? 'view-icon-primary' : 'plus-icon-square'}
                                                                     onClick={() => this.formToggle(this.state.ProductHierarachyValueId)}
-                                                                />
+                                                                />}
                                                             </Col>
                                                         )}
 
