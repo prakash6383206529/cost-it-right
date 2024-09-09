@@ -8,7 +8,7 @@ import {
     GET_MENU_BY_USER_DATA_SUCCESS, GET_LEFT_MENU_BY_MODULE_ID_AND_USER, LOGIN_PAGE_INIT_CONFIGURATION, config, GET_USERS_BY_TECHNOLOGY_AND_LEVEL,
     GET_LEVEL_BY_TECHNOLOGY, GET_MENU_BY_MODULE_ID_AND_USER, LEVEL_MAPPING_API, GET_SIMULATION_TECHNOLOGY_SELECTLIST_SUCCESS,
     SIMULATION_LEVEL_DATALIST_API, GET_SIMULATION_LEVEL_BY_TECHNOLOGY, GET_TOP_AND_LEFT_MENU_DATA, GET_MASTER_SELECT_LIST, MASTER_LEVEL_DATALIST_API, GET_MASTER_LEVEL_BY_MASTERID, COSTINGS_APPROVAL_DASHBOARD, AMENDMENTS_APPROVAL_DASHBOARD, GET_USERS_MASTER_LEVEL_API, GET_RFQ_USER_DATA_SUCCESS,
-    ONBOARDING_LEVEL_DATALIST_API, GET_ONBOARDING_LEVEL_BY_ID, GET_PLANT_SELECT_LIST_FOR_DEPARTMENT, ONBOARDINGID, MANAGE_LEVEL_TAB_API
+    ONBOARDING_LEVEL_DATALIST_API, GET_ONBOARDING_LEVEL_BY_ID, GET_PLANT_SELECT_LIST_FOR_DEPARTMENT, ONBOARDINGID, MANAGE_LEVEL_TAB_API, GET_DIVISION_SUCCESS, GET_DIVISION_DATA_SUCCESS, GET_DIVISION_LIST_SUCCESS
 } from '../../config/constants';
 import { formatLoginResult } from '../../helper/ApiResponse';
 import { MESSAGES } from "../../config/message";
@@ -737,7 +737,8 @@ export function updateDepartmentAPI(requestData, callback) {
 export function deleteDepartmentAPI(Id, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deleteDepartmentAPI}/${Id}`, config())
+        const queryParams = `divisionId=${Id}&loggedInUserId=${loggedInUserId}`;
+        axios.delete(`${API.deleteDepartmentAPI}${queryParams}`, config())
             .then((response) => {
                 dispatch({ type: API_SUCCESS });
                 callback(response);
@@ -2143,4 +2144,156 @@ export function manageLevelTabApi(isCallApi = false) {
             payload: isCallApi,
         })
     }
+}
+
+/**
+ * @method addDivisionAPI
+ * @description add Division API 
+ */
+export function addDivisionAPI(requestData, callback) {
+    return (dispatch) => {
+        dispatch({ type: AUTH_API_REQUEST });
+        axios.post(API.addDivisionAPI, requestData, config())
+            .then((response) => {
+                dispatch({ type: API_SUCCESS });
+                callback(response);
+            })
+            .catch((error) => {
+                dispatch({ type: API_FAILURE });
+                apiErrors(error);
+                callback(error);
+            });
+    };
+}
+/**
+ * @method updateDivisionAPI
+ * @description update Division details
+ */
+export function updateDivisionAPI(requestData, callback) {
+    return (dispatch) => {
+        dispatch({ type: AUTH_API_REQUEST });
+        axios.put(API.updateDivisionAPI, requestData, config())
+            .then((response) => {
+                dispatch({ type: API_SUCCESS });
+                callback(response);
+            })
+            .catch((error) => {
+                dispatch({ type: API_FAILURE });
+                apiErrors(error);
+                callback(error);
+            });
+    };
+}
+
+/**
+ * @method deleteDivisionAPI
+ * @description delete Division
+ */
+export function deleteDivisionAPI(Id, loggedInUserId, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const queryParams = `divisionId=${Id}&loggedInUserId=${loggedInUserId}`;
+        axios.delete(`${API.deleteDivisionAPI}?${queryParams}`, config())
+            .then((response) => {
+                dispatch({ type: API_SUCCESS });
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+                callback(error);
+            });
+    };
+}
+
+/**
+ * @method getAllDivisionAPI
+ * @description get all divisions
+ */
+export function getAllDivisionAPI(callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getAllDivisionAPI}`, config());
+        request.then((response) => {
+            if (response) {
+                console.log("response", response)
+                dispatch({
+                    type: GET_DIVISION_SUCCESS,
+                    payload: response.data.DataList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+/**
+
+ * @method getDivisionAPI
+ * @description get division detail
+ */
+export function getDivisionAPI(DivisionId, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getDivisionAPI}/${DivisionId}`, config());
+        request.then((response) => {
+            if (response) {
+                dispatch({
+                    type: GET_DIVISION_DATA_SUCCESS,
+                    payload: response.data.Data,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getDivisionListAPI
+ * @description get division list   
+ */
+export function getDivisionListAPI(callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        // const request = axios.get(`${API.getAllLevelAPI}`, config());
+        const request = axios.get(`${API.getDivisionListAPI}`, config());
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_DIVISION_LIST_SUCCESS,
+                    payload: response.data.DataList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            //apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getAllDivisionListAssociatedWithDepartment
+ * @description get all division list associated with department
+ */
+export function getAllDivisionListAssociatedWithDepartment(requestData, callback) {
+    return (dispatch) => {
+        dispatch({ type: AUTH_API_REQUEST });
+        axios.post(API.getAllDivisionListAssociatedWithDepartment, requestData, config())
+            .then((response) => {
+                dispatch({ type: API_SUCCESS });
+                callback(response);
+            })
+            .catch((error) => {
+                dispatch({ type: API_FAILURE });
+                apiErrors(error);
+                callback(error);
+            });
+    };
 }

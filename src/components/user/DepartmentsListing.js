@@ -2,12 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { Row, Col } from 'reactstrap';
 import { useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getAllDepartmentAPI, deleteDepartmentAPI } from '../../actions/auth/AuthActions';
+import { getAllDepartmentAPI, deleteDepartmentAPI, getAllDivisionAPI, deleteDivisionAPI } from '../../actions/auth/AuthActions';
 import Toaster from '../common/Toaster';
 import { MESSAGES } from '../../config/message';
-import { defaultPageSize, EMPTY_DATA } from '../../config/constants';
+import { defaultPageSize, DIVISION, EMPTY_DATA } from '../../config/constants';
 import NoContentFound from '../common/NoContentFound';
-import { getConfigurationKey, handleDepartmentHeader } from '../../helper/auth';
+import { getConfigurationKey, handleDepartmentHeader, loggedInUserId } from '../../helper/auth';
 import { checkPermission, searchNocontentFilter, setLoremIpsum } from '../../helper/util';
 import Department from './Department';
 import { DEPARTMENT } from '../../config/constants';
@@ -24,7 +24,8 @@ import { Steps } from '../common/Tour/TourMessages';
 import { useTranslation } from 'react-i18next'
 
 const gridOptions = {};
-const DepartmentsListing = () => {
+const DepartmentsListing = (props) => {
+  const { isDivision } = props;
   const { t } = useTranslation("common")
 
   const [state, setState] = useState({
@@ -42,7 +43,10 @@ const DepartmentsListing = () => {
     showData: false,
     showPopup: false,
     deletedId: '',
-    noData: false
+    noData: false,
+    AddAccessibilityDivision: false,
+    EditAccessibilityDivision: false,
+    DeleteAccessibilityDivision: false,
   });
   const dispatch = useDispatch();
   const searchRef = useRef(null);
@@ -52,9 +56,14 @@ const DepartmentsListing = () => {
     if (topAndLeftMenuData) {
       const userMenu = topAndLeftMenuData.find(el => el.ModuleName === 'Users');
       const accessData = userMenu?.Pages.find(el => el.PageName === DEPARTMENT);
+      const accessDataDivision = userMenu?.Pages.find(el => el.PageName === DIVISION);
       const permissionData = accessData?.Actions && checkPermission(accessData.Actions);
+      const permissionDataDivision = accessDataDivision?.Actions && checkPermission(accessDataDivision.Actions);
       if (permissionData) {
         setState((prevState) => ({ ...prevState, AddAccessibility: permissionData.Add ?? false, EditAccessibility: permissionData.Edit ?? false, DeleteAccessibility: permissionData.Delete ?? false }));
+      }
+      if (permissionDataDivision) {
+        setState((prevState) => ({ ...prevState, AddAccessibilityDivision: permissionDataDivision.Add ?? false, EditAccessibilityDivision: permissionDataDivision.Edit ?? false, DeleteAccessibilityDivision: permissionDataDivision.Delete ?? false }));
       }
     }
     getDepartmentListData();
@@ -62,16 +71,29 @@ const DepartmentsListing = () => {
   }, []);
 
   const getDepartmentListData = () => {
-    dispatch(getAllDepartmentAPI((res) => {
-      if (res && res.data && res.data.DataList) {
-        let Data = res.data.DataList;
-        setState((prevState) => ({ ...prevState, tableData: Data, isLoader: false }));
+    if (props.isDivision) {
+      dispatch(getAllDivisionAPI((res) => {
+        if (res && res.data && res.data.DataList) {
+          let Data = res.data.DataList;
+          setState((prevState) => ({ ...prevState, tableData: Data, isLoader: false }));
+        }
+        else {
+          setState((prevState) => ({ ...prevState, isLoader: false }));
+        }
       }
-      else {
-        setState((prevState) => ({ ...prevState, isLoader: false }));
+      ));
+    } else {
+      dispatch(getAllDepartmentAPI((res) => {
+        if (res && res.data && res.data.DataList) {
+          let Data = res.data.DataList;
+          setState((prevState) => ({ ...prevState, tableData: Data, isLoader: false }));
+        }
+        else {
+          setState((prevState) => ({ ...prevState, isLoader: false }));
+        }
       }
+      ));
     }
-    ));
   };
 
   /**
@@ -122,14 +144,24 @@ const DepartmentsListing = () => {
    * @description confirm delete Department item
    */
   const confirmDeleteItem = (DepartmentId) => {
-    dispatch(deleteDepartmentAPI(DepartmentId, (res) => {
-      if (res && res.data && res.data.Result === true) {
-        Toaster.success(MESSAGES.DELETE_DEPARTMENT_SUCCESSFULLY);
-        getDepartmentListData();
-      } else if (res.data.Result === false && res.statusText === "Found") {
-        Toaster.warning(res.data.Message)
-      }
-    }));
+    const loggedInUser = loggedInUserId();
+    if (props.isDivision) {
+      dispatch(deleteDivisionAPI(DepartmentId, loggedInUser, (res) => {
+        if (res && res.data && res.data.Result === true) {
+          Toaster.success(MESSAGES.DELETE_DIVISION_SUCCESSFULLY);
+          getDepartmentListData();
+        }
+      }));
+    } else {
+      dispatch(deleteDepartmentAPI(DepartmentId, (res) => {
+        if (res && res.data && res.data.Result === true) {
+          Toaster.success(MESSAGES.DELETE_DEPARTMENT_SUCCESSFULLY);
+          getDepartmentListData();
+        } else if (res.data.Result === false && res.statusText === "Found") {
+          Toaster.warning(res.data.Message)
+        }
+      }));
+    }
     setState((prevState) => ({ ...prevState, showPopup: false }))
   }
   const toggleExtraData = (showTour) => {
@@ -145,11 +177,9 @@ const DepartmentsListing = () => {
    */
 
   const buttonFormatter = (props) => {
-    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    const cellValue = props.data.DepartmentId;
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
     const { EditAccessibility, DeleteAccessibility } = state;
-
-
     return (
       <>
         {EditAccessibility && <Button id={`departmentListing_edit${props.rowIndex}`} className={"Edit Tour_List_Edit"} variant="Edit" onClick={() => editItemDetails(cellValue, rowData)} title={"Edit"} />}
@@ -158,6 +188,16 @@ const DepartmentsListing = () => {
     )
   };
 
+  const buttonFormatterDivision = (props) => {
+    const cellValue = props.data.DivisionId;
+    const { EditAccessibilityDivision, DeleteAccessibilityDivision } = state;
+    return (
+      <>
+        {EditAccessibilityDivision && <Button id={`departmentListing_edit${props.rowIndex}`} className={"Edit Tour_List_Edit"} variant="Edit" onClick={() => editItemDetails(cellValue)} title={"Edit"} />}
+        {DeleteAccessibilityDivision && <Button id={`departmentListing_delete${props.rowIndex}`} className={"Delete m15 Tour_List_Delete"} variant="Delete" onClick={() => deleteItem(cellValue)} title={"Delete"} />}
+      </>
+    )
+  };
 
   const onGridReady = (params) => {
     state.gridApi = params.api;
@@ -189,6 +229,7 @@ const DepartmentsListing = () => {
   const frameworkComponents = {
     totalValueRenderer: buttonFormatter,
     customNoRowsOverlay: NoContentFound,
+    totalValueRendererDivision: buttonFormatterDivision
   };
   return (
     <div className={"ag-grid-react"} id="department-go-to-top">
@@ -239,11 +280,12 @@ const DepartmentsListing = () => {
                   frameworkComponents={frameworkComponents}
                 >
                   {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
-                  <AgGridColumn field="DepartmentName" headerName={handleDepartmentHeader()}></AgGridColumn>
+                  <AgGridColumn field={props.isDivision ? "DivisionName" : "DepartmentName"} headerName={props.isDivision ? "Division" : handleDepartmentHeader()}></AgGridColumn>
                   {/* <AgGridColumn field="DepartmentName" headerName={getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Purchase Group'}></AgGridColumn>   //RE */}
-                  <AgGridColumn field="DepartmentCode" headerName={`${handleDepartmentHeader()} Code`}></AgGridColumn>
+                  <AgGridColumn field={props.isDivision ? "DivisionCode" : "DepartmentCode"} headerName={`${props.isDivision ? "Division" : handleDepartmentHeader()} Code`}></AgGridColumn>
                   {/* <AgGridColumn field="DepartmentCode" headerName={getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company Code' : 'Purchase Group Code'}></AgGridColumn> //RE */}
-                  <AgGridColumn field="DepartmentId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                  {!props.isDivision && <AgGridColumn field="DepartmentId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                  {props.isDivision && <AgGridColumn field="DivisionId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRendererDivision'}></AgGridColumn>}
                 </AgGridReact>}
                 {<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} />}
               </div>
@@ -252,8 +294,8 @@ const DepartmentsListing = () => {
 
           </Col>
         </Row>
-        {isOpen && (<Department isOpen={isOpen} closeDrawer={closeDrawer} isEditFlag={isEditFlag} DepartmentId={DepartmentId} anchor={"right"} className={"test-rahul"} />)}
-        {state.showPopup && <PopupMsgWrapper isOpen={state.showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.DEPARTMENT_DELETE_ALERT}`} />}
+        {isOpen && (<Department isDivision={props.isDivision} isOpen={isOpen} closeDrawer={closeDrawer} isEditFlag={isEditFlag} DepartmentId={DepartmentId} anchor={"right"} className={"test-rahul"} />)}
+        {state.showPopup && <PopupMsgWrapper isOpen={state.showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${props.isDivision ? MESSAGES.DIVISION_DELETE_ALERT : MESSAGES.DEPARTMENT_DELETE_ALERT}`} />}
       </>
     </div>
   );

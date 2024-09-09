@@ -6,7 +6,7 @@ import { Loader } from "../common/Loader";
 import { required, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, checkSpacesInString, excludeOnlySpecialCharacter, maxLength50, hashValidation, maxLength75, getNameBySplitting, getCodeBySplitting } from "../../helper/validation";
 import { focusOnError, renderText, renderMultiSelectField } from "../layout/FormInputs";
 
-import { addDepartmentAPI, getDepartmentAPI, setEmptyDepartmentAPI, updateDepartmentAPI, addCompanyAPI, updateCompanyAPI } from "../../actions/auth/AuthActions";
+import { addDepartmentAPI, getDepartmentAPI, setEmptyDepartmentAPI, updateDepartmentAPI, addCompanyAPI, updateCompanyAPI, addDivisionAPI, updateDivisionAPI, getDivisionAPI, getDivisionListAPI } from "../../actions/auth/AuthActions";
 import { MESSAGES } from "../../config/message";
 import { Container, Row, Col } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
@@ -28,6 +28,10 @@ class Department extends Component {
 			isEditFlag: false,
 			selectedPlants: [],
 			plantSelectAll: [],
+			divisionId: 0,
+			divisions: [],
+			divisionSelectAll: [],
+			isApplyDivision: false
 		};
 	}
 
@@ -42,7 +46,7 @@ class Department extends Component {
 		this.props.getPlantSelectListByType(ZBC, "", '', (res) => {
 			if (res?.status === 204) {
 				this.setState({ plantSelectAll: [] });
-			} else if (res?.status === 200 && res?.data?.Result) {           
+			} else if (res?.status === 200 && res?.data?.Result) {
 				let list = res?.data?.DataList?.filter(element => element?.Value !== '0')
 				let temp = []
 				list?.forEach((item) => {
@@ -55,31 +59,64 @@ class Department extends Component {
 				Toaster.errors(res?.data?.Message);
 			}
 		})
+		this.props.getDivisionListAPI((res) => {
+			if (res?.status === 204) {
+				this.setState({ divisionSelectAll: [] });
+			} else if (res?.status === 200 && res?.data?.Result) {
+				let list = res?.data?.DataList?.filter(element => String(element?.DivisionId) !== '0')
+				let temp = []
+				list?.forEach((item) => {
+					if (String(item?.Value) === '0') return false
+					temp.push({ Text: item.DivisionNameCode, Value: item.DivisionId, DivisionName: item.DivisionName, DivisionCode: item.DivisionCode })
+					return temp
+				})
+				this.setState({ divisionSelectAll: temp })
+			} else {
+				Toaster.errors(res?.data?.Message);
+			}
+		})
 		if (isEditFlag) {
 
+			if (this.props.isDivision) {
+				this.props.getDivisionAPI(DepartmentId, (res) => {
+					let Data = res?.data?.Data
+					if (res?.status === 204) {
+						this.setState({ DataToChange: null, selectedPlants: [] });
+					} else {
 
-			this.props.getDepartmentAPI(DepartmentId, (res) => {
-				if (res?.status === 204) {
-					this.setState({ DataToChange: null, selectedPlants: [] });
-				}
-				else if (res && res?.status === 200 && res?.data?.Result) {
-					let plantArray = []
-					res?.data?.Data?.PlantList && res?.data?.Data?.PlantList?.map((item) => {
-						plantArray.push({ Text: `${item.PlantName ?? ''} (${item.PlantCode ?? ''})`, Value: (item?.PlantId ?? '')?.toString() })
-						return null;
-					})
+						this.setState({ DataToChange: Data, selectedPlants: [], divisionId: Data?.DivisionId, })
+						this.props.change("DivisionCode", Data?.DivisionCode)
+						this.props.change("DivisionName", Data?.DivisionName)
 
+					}
+					this.setState({ isLoader: false })
+				})
+			} else {
+				this.props.getDepartmentAPI(DepartmentId, (res) => {
+					if (res?.status === 204) {
+						this.setState({ DataToChange: null, selectedPlants: [] });
+					}
+					else if (res && res?.status === 200 && res?.data?.Result) {
+						let plantArray = []
+						res?.data?.Data?.PlantList && res?.data?.Data?.PlantList?.map((item) => {
+							plantArray.push({ Text: `${item.PlantName ?? ''} (${item.PlantCode ?? ''})`, Value: (item?.PlantId ?? '')?.toString() })
+							return null;
+						})
+						let divisionArray = []
+						res?.data?.Data?.DivisionList?.map(item => {
+							divisionArray.push({ Text: `${item.DivisionName ?? ''} (${item.DivisionCode ?? ''})`, Value: item.DivisionId, DivisionName: item.DivisionName, DivisionCode: item.DivisionCode })
+							return null
+						})
+						this.props.change("DivisionList", divisionArray)
+						this.setState({ DataToChange: res?.data?.Data, selectedPlants: plantArray, divisions: divisionArray })
+						this.props.change("plant", plantArray)
+					}
 
-					this.setState({ DataToChange: res?.data?.Data, selectedPlants: plantArray })
-					this.props.change("plant", plantArray)
-				}
+					this.setState({ isLoader: false })
 
-				this.setState({ isLoader: false })
-
-			})
+				})
+			}
 		} else {
-
-
 			this.props.setEmptyDepartmentAPI('', (res) => {
 				if (res?.status === 204) {
 					this.setState({ DataToChange: null, selectedPlants: [] });
@@ -129,7 +166,8 @@ class Department extends Component {
 	onSubmit(values) {
 		const { isEditFlag, DepartmentId, departmentDetail } = this.props;
 		const { reset } = this.props;
-		const { DataToChange, selectedPlants } = this.state;
+		const { DataToChange, selectedPlants, isApplyDivision, divisions } = this.state;
+		console.log(divisions, 'divisions')
 		this.setState({ isLoader: true })
 
 		let plantArray = []
@@ -141,56 +179,111 @@ class Department extends Component {
 			}
 			plantArray.push(obj)
 		})
+		let divisionArray = []
+		divisions && divisions.map(item => {
+			let obj = {
+				DivisionId: item?.Value,
+				DivisionName: item?.DivisionName,
+				DivisionCode: item?.DivisionCode,
+			}
+			divisionArray.push(obj)
+		})
+
 		if (isEditFlag) {
 			if (DataToChange?.DepartmentName === values?.DepartmentName && DataToChange?.DepartmentCode === values?.DepartmentCode && (JSON.stringify(selectedPlants) === JSON.stringify(DataToChange?.PlantList))) {
 				this.toggleDrawer('', 'cancel')
 				return false
 			}
 			// Update existing department
-			let formReq = {
-				DepartmentId: DepartmentId,
-				IsActive: true,
-				CreatedDate: DayTime(new Date()).format('YYYY/MM/dd HH:mm:ss'),
-				DepartmentName: values.DepartmentName ? values.DepartmentName.trim() : values.DepartmentName,
-				DepartmentCode: values.DepartmentCode ? values.DepartmentCode.trim() : '',
-				CompanyId: departmentDetail.CompanyId ? departmentDetail.CompanyId : '',
-				PlantList: plantArray,
-			}
-			this.setState({ isLoader: true })
-			this.props.updateDepartmentAPI(formReq, (res) => {
-				// IF COMPANY CONFIGURABLE IS TRUE
-				if (res && res.data && res.data.Result) {
-					Toaster.success(MESSAGES.UPDATE_DEPARTMENT_SUCCESSFULLY)
+			let formReq = {}
+			if (this.props.isDivision) {
+				formReq = {
+					"LoggedInUserId": loggedInUserId(),
+					"DivisionCode": values.DivisionCode,
+					"DivisionName": values.DivisionName,
+					"DivisionId": this.state.divisionId,
 				}
-				reset();
-				this.toggleDrawer('', 'submit')
-				this.props.setEmptyDepartmentAPI('', () => { })
-			})
-
-		} else {
-
-			let depObj = {
-				DepartmentName: values.DepartmentName ? values.DepartmentName.trim() : values.DepartmentName,
-				DepartmentCode: values.DepartmentCode ? values.DepartmentCode.trim() : ``,
-				CompanyId: '',
-				LoggedInUserId: loggedInUserId(),
-				PlantList: plantArray,
+			} else {
+				formReq = {
+					DepartmentId: DepartmentId,
+					IsActive: true,
+					CreatedDate: DayTime(new Date()).format('YYYY/MM/dd HH:mm:ss'),
+					DepartmentName: values.DepartmentName ? values.DepartmentName.trim() : values.DepartmentName,
+					DepartmentCode: values.DepartmentCode ? values.DepartmentCode.trim() : '',
+					CompanyId: departmentDetail.CompanyId ? departmentDetail.CompanyId : '',
+					PlantList: plantArray,
+					IsDivision: isApplyDivision,
+					DivisionList: divisionArray
+				}
 			}
-			this.props.addDepartmentAPI(depObj, (res) => {
-				if (res && res.data && res.data.Result) {
-					Toaster.success(MESSAGES.ADD_DEPARTMENT_SUCCESSFULLY)
+
+			this.setState({ isLoader: true })
+			if (this.props.isDivision) {
+				this.props.updateDivisionAPI(formReq, (res) => {
+					if (res && res.data && res.data.Result) {
+						Toaster.success(MESSAGES.UPDATE_DIVISION_SUCCESSFULLY)
+					}
 					reset();
 					this.toggleDrawer('', 'submit')
+					this.setState({ isLoader: false })
+				})
+			} else {
+				this.props.updateDepartmentAPI(formReq, (res) => {
+					// IF COMPANY CONFIGURABLE IS TRUE
+					if (res && res.data && res.data.Result) {
+						Toaster.success(MESSAGES.UPDATE_DEPARTMENT_SUCCESSFULLY)
+					}
+					reset();
+					this.toggleDrawer('', 'submit')
+					this.props.setEmptyDepartmentAPI('', () => { })
+				})
+			}
+
+		} else {
+			let ojb = {}
+			if (this.props.isDivision) {
+				ojb = {
+					"LoggedInUserId": loggedInUserId(),
+					"DivisionCode": values.DivisionCode,
+					"DivisionName": values.DivisionName
 				}
-			})
+			} else {
+				ojb = {
+					DepartmentName: values.DepartmentName ? values.DepartmentName.trim() : values.DepartmentName,
+					DepartmentCode: values.DepartmentCode ? values.DepartmentCode.trim() : ``,
+					CompanyId: '',
+					LoggedInUserId: loggedInUserId(),
+					PlantList: plantArray,
+					DivisionList: divisionArray
+				}
+			}
+			if (this.props.isDivision) {
+				this.props.addDivisionAPI(ojb, (res) => {
+					if (res && res.data && res.data.Result) {
+						Toaster.success(MESSAGES.ADD_DIVISION_SUCCESSFULLY)
+						reset();
+						this.toggleDrawer('', 'submit')
+						this.props.setEmptyDepartmentAPI('', () => { })
+					}
+					this.setState({ isLoader: false })
+				})
+			} else {
+				this.props.addDepartmentAPI(ojb, (res) => {
+					if (res && res.data && res.data.Result) {
+						Toaster.success(MESSAGES.ADD_DEPARTMENT_SUCCESSFULLY)
+						reset();
+						this.toggleDrawer('', 'submit')
+					}
+				})
+			}
 		}
 	}
 	/**
    * @method renderListing
    * @description Used to show type of listing
    */
-	renderListing = (label, isScrapRateUOM) => {
-		const { plantSelectList } = this.props
+	renderListing = (label) => {
+		const { plantSelectList, divisionList } = this.props
 		const temp = []
 		if (label === 'plant') {
 
@@ -210,9 +303,34 @@ class Department extends Component {
 				return temp;
 			}
 		}
+		if (label === 'division') {
+			divisionList?.forEach((item) => {
+				if (String(item?.DivisionId) === '0') {
+					temp.push({ Text: "Select All", Value: item?.DivisionId });
+				} else {
+					temp.push({ Text: item.DivisionNameCode, Value: item.DivisionId, DivisionName: item.DivisionName, DivisionCode: item.DivisionCode })
+				}
+			});
+
+			const isSelectAllOnly = temp.length === 1 && temp[0]?.Text === "Select All" && temp[0]?.Value === "0";
+
+			if (isSelectAllOnly) {
+				return [];
+			} else {
+				return temp;
+			}
+		}
 
 	}
-
+	handleDivision = (newValue) => {
+		console.log(newValue, 'newValue')
+		const { divisionSelectAll } = this.state
+		if (newValue?.filter(element => String(element?.Value) === '0')?.length > 0) {
+			this.setState({ divisions: divisionSelectAll })
+		} else {
+			this.setState({ divisions: newValue })
+		}
+	}
 	handlePlant = (newValue) => {
 		const { plantSelectAll } = this.state
 		if (newValue?.filter(element => element?.Value === '0')?.length > 0) {
@@ -221,9 +339,12 @@ class Department extends Component {
 			this.setState({ selectedPlants: newValue })
 		}
 	}
+	checkboxHandler = (e) => {
+		this.setState({ isApplyDivision: e.target.checked })
+	}
 	render() {
 		const { handleSubmit, isEditFlag, t } = this.props;
-		const { isSubmitted } = this.state;
+		const { isSubmitted, isApplyDivision } = this.state;
 		return (
 			<div>
 				<Drawer className="add-department-drawer" anchor={this.props.anchor} open={this.props.isOpen}
@@ -237,7 +358,7 @@ class Department extends Component {
 								<Row className="drawer-heading">
 									<Col>
 										<div className={'header-wrapper left'}>
-											<h3>{isEditFlag ? `Update ${handleDepartmentHeader()}` : `Add ${handleDepartmentHeader()}`}
+											<h3>{isEditFlag ? `Update ${this.props.isDivision ? "Division" : handleDepartmentHeader()}` : `Add ${this.props.isDivision ? "Division" : handleDepartmentHeader()}`}
 												<TourWrapper
 													buttonSpecificProp={{ id: "Add_Department_Form" }}
 													stepsSpecificProp={{
@@ -258,7 +379,7 @@ class Department extends Component {
 										<div className="input-group col-md-12 input-withouticon" >
 											<Field
 												label="Name"
-												name={"DepartmentName"}
+												name={this.props.isDivision ? "DivisionName" : "DepartmentName"}
 												type="text"
 												placeholder={''}
 												validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength75, checkSpacesInString, hashValidation]}
@@ -270,7 +391,7 @@ class Department extends Component {
 										{<div className="input-group col-md-12 input-withouticon">
 											<Field
 												label="Code"
-												name={"DepartmentCode"}
+												name={this.props.isDivision ? "DivisionCode" : "DepartmentCode"}
 												type="text"
 												placeholder={''}
 												validate={[required, excludeOnlySpecialCharacter, checkWhiteSpaces, maxLength50, checkSpacesInString]}
@@ -279,7 +400,44 @@ class Department extends Component {
 												customClassName={'withBorder'}
 											/>
 										</div>}
-										{getConfigurationKey().IsPlantsAllowedForDepartment && <div className="input-group col-md-12 input-withouticon">
+										{getConfigurationKey().IsDivisionAllowedForDepartment && <>
+											{!this.props.isDivision && !getConfigurationKey().IsShowDivisionSelectionDropDownInManageDepartment && <Col md="6" className="d-flex align-items-center mb-2">
+												<span className="d-inline-block">
+													<label
+														className={`custom-checkbox mb-0`}
+														onChange={this.checkboxHandler}>
+														IsApplyDivision
+														<input
+															type="checkbox"
+														/>
+														<span
+															className=" before-box"
+															onChange={this.checkboxHandler}
+														/>
+													</label>
+												</span>
+											</Col>}
+											{!this.props.isDivision && getConfigurationKey().IsShowDivisionSelectionDropDownInManageDepartment && <div className="input-group col-md-12 input-withouticon">
+												<Field
+													label="Division (Code)"
+													name="Division"
+													placeholder={"Select"}
+													selection={this.state.divisions == null || this.state.divisions.length === 0 ? [] : this.state.divisions}
+													options={this.renderListing("division")}
+													selectionChanged={this.handleDivision}
+													validate={
+														this.state.divisions == null || this.state.divisions.length === 0 ? [required] : []}
+													required={true}
+													optionValue={(option) => option.Value}
+													optionLabel={(option) => option.Text}
+													component={renderMultiSelectField}
+													mendatory={true}
+													className="multiselect-with-border"
+												/>
+											</div>}
+										</>}
+
+										{!this.props.isDivision && getConfigurationKey().IsPlantsAllowedForDepartment && <div className="input-group col-md-12 input-withouticon">
 											<Field
 												label="Plant (Code)"
 												name="plant"
@@ -352,7 +510,7 @@ class Department extends Component {
 */
 const mapStateToProps = (state) => {
 	const { comman, auth } = state
-	const { departmentDetail } = auth;
+	const { departmentDetail, divisionList } = auth;
 	let initialValues = {};
 	const { plantSelectList } = comman
 	if (departmentDetail && departmentDetail !== undefined) {
@@ -363,7 +521,7 @@ const mapStateToProps = (state) => {
 		}
 	}
 
-	return { initialValues, departmentDetail, plantSelectList };
+	return { initialValues, departmentDetail, plantSelectList, divisionList };
 };
 
 /**
@@ -379,7 +537,11 @@ export default connect(mapStateToProps, {
 	setEmptyDepartmentAPI,
 	addCompanyAPI,
 	updateCompanyAPI,
-	getPlantSelectListByType
+	getPlantSelectListByType,
+	addDivisionAPI,
+	updateDivisionAPI,
+	getDivisionAPI,
+	getDivisionListAPI
 })(reduxForm({
 	form: 'Department',
 	enableReinitialize: true,

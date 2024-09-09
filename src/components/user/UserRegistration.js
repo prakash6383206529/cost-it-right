@@ -9,7 +9,8 @@ import {
 } from "../../helper/validation";
 import {
   registerUserAPI, getAllRoleAPI, getAllDepartmentAPI, getUserDataAPI, updateUserAPI, setEmptyUserDataAPI, getRoleDataAPI, getAllTechnologyAPI,
-  getPermissionByUser, getUsersTechnologyLevelAPI, getLevelByTechnology, getSimulationTechnologySelectList, getSimualationLevelByTechnology, getUsersSimulationTechnologyLevelAPI, getMastersSelectList, getUsersMasterLevelAPI, getMasterLevelDataList, getMasterLevelByMasterId, registerRfqUser, updateRfqUser, getAllLevelAPI, checkHighestApprovalLevelForHeadsAndApprovalType, getOnboardingLevelById, getPlantSelectListForDepartment, getUsersOnboardingLevelAPI
+  getPermissionByUser, getUsersTechnologyLevelAPI, getLevelByTechnology, getSimulationTechnologySelectList, getSimualationLevelByTechnology, getUsersSimulationTechnologyLevelAPI, getMastersSelectList, getUsersMasterLevelAPI, getMasterLevelDataList, getMasterLevelByMasterId, registerRfqUser, updateRfqUser, getAllLevelAPI, checkHighestApprovalLevelForHeadsAndApprovalType, getOnboardingLevelById, getPlantSelectListForDepartment, getUsersOnboardingLevelAPI,
+  getAllDivisionListAssociatedWithDepartment
 } from "../../actions/auth/AuthActions";
 import { getCityByCountry, getAllCity, getReporterList, getApprovalTypeSelectList, getVendorNameByVendorSelectList, getApprovalTypeSelectListUserModule } from "../../actions/Common";
 import { MESSAGES } from "../../config/message";
@@ -129,6 +130,8 @@ function UserRegistration(props) {
   const [inputLoader, setInputLoader] = useState({
     plant: false
   })
+  const [isShowDivision, setIsShowDivision] = useState(false)
+  const [divisionList, setDivisionList] = useState([])
   const dispatch = useDispatch()
   const { technologyLabel } = useLabels();
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
@@ -553,6 +556,7 @@ function UserRegistration(props) {
         return temp;
       }
     }
+
   }
 
   /**
@@ -560,7 +564,26 @@ function UserRegistration(props) {
    * @description Used to handle 
   */
   const departmentHandler = (newValue, actionMeta) => {
-
+    let departmentIds = []
+    newValue && newValue?.map(item => {
+      departmentIds.push(item?.value)
+    })
+    dispatch(getAllDivisionListAssociatedWithDepartment(departmentIds, res => {
+      if (res && res?.data && res?.data?.Identity === true) {
+        setIsShowDivision(true)
+        let divisionArray = []
+        res?.data?.DataList?.map(item => {
+          if (String(item?.DivisionId) !== '0') {
+            divisionArray.push({ label: `${item.DivisionNameCode}`, value: (item?.DivisionId)?.toString(), DivisionCode: item?.DivisionCode })
+          }
+          return null;
+        })
+        setDivisionList(divisionArray)
+      } else {
+        setIsShowDivision(false)
+        setDivisionList([])
+      }
+    }))
     if (selectedPlants.length > 0) {
       setValue('plant', [])
     }
@@ -578,12 +601,22 @@ function UserRegistration(props) {
       setDepartment([newValue])
       dispatch(getPlantSelectListForDepartment([newValue.value], res => { }))
     }
+
     if (JSON.stringify(newValue) !== JSON.stringify(oldDepartment)) {
       setIsForcefulUpdate(true)
     }
-    else { setIsForcefulUpdate(false) }
-  };
 
+
+    else { setIsForcefulUpdate(false) }
+
+  };
+  const handleDivisionChange = (newValue, actionMeta) => {
+    if (newValue && newValue !== '') {
+      setDivisionList(newValue)
+    } else {
+      setDivisionList([])
+    }
+  }
 
   /**
     * @method roleHandler
@@ -666,8 +699,20 @@ function UserRegistration(props) {
               plantArray.push({ label: `${item.PlantName}`, value: (item?.PlantId)?.toString() })
               return null;
             })
+            let divisionArray = []
+            Data && Data?.DepartmentsDivisionIdLists?.map((item) => {
+              divisionArray.push({ label: `${item.DivisionName}`, value: (item?.DivisionId)?.toString(), DivisionCode: item?.DivisionCode })
+              return null;
+            })
+            if (Data && Data?.DepartmentsDivisionIdLists?.length > 0) {
+              setIsShowDivision(true)
+            } else {
+              setIsShowDivision(false)
+            }
             setSelectedPlants(plantArray)
+            setDivisionList(divisionArray)
             setValue('plant', plantArray)
+            setValue('Division', divisionArray)
             const depatArr = []
             const RoleObj = roleList && roleList.find(item => item.RoleId === Data.RoleId)
             Data.Departments && Data.Departments.map(item => (depatArr.push({ label: item.DepartmentName, value: item.DepartmentId })))
@@ -703,7 +748,6 @@ function UserRegistration(props) {
     }
   }
 
-
   /**
   * @method getUserPermission
   * @description used to get user additional permissions
@@ -735,9 +779,9 @@ function UserRegistration(props) {
     }))
   }
   /**
- * @method getUsersTechnologyLevelData
- * @description used to get users technology level listing
- */
+  * @method getUsersTechnologyLevelData
+  * @description used to get users technology level listing
+  */
   const getUsersSimulationTechnologyLevelData = (UserId) => {
     dispatch(getUsersSimulationTechnologyLevelAPI(UserId, 0, (res) => {
       if (res && res.data && res.data.Data) {
@@ -751,9 +795,9 @@ function UserRegistration(props) {
   }
 
   /**
- * @method getUsersMasterLevelData
- * @description used to get users MASTER level listing
- */
+  * @method getUsersMasterLevelData
+  * @description used to get users MASTER level listing
+  */
   const getUsersMasterLevelData = (UserId) => {
     dispatch(getUsersMasterLevelAPI(UserId, 0, (res) => {
       if (res && res.data && res.data.Data) {
@@ -1116,9 +1160,9 @@ function UserRegistration(props) {
   };
 
   /**
-* @method onboardingLevelHandler
-* @description Used to handle onboarding level
-*/
+  * @method onboardingLevelHandler
+  * @description Used to handle onboarding level
+  */
   const onboardingLevelHandler = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
       setMasterLevels(newValue)
@@ -2102,7 +2146,16 @@ function UserRegistration(props) {
       }
       plantArray.push(obj)
     })
-
+    let divisionArray = []
+    divisionList && divisionList.map(item => {
+      if (String(item?.DivisionId) === '0') return false
+      let obj = {
+        DivisionId: item?.value,
+        DivisionName: item?.label,
+        DivisionCode: item?.DivisionCode,
+      }
+      divisionArray.push(obj)
+    })
     if (isEditFlag) {
       let updatedData = {
         IsForcefulUpdated: isForcefulUpdate ? isForcefulUpdate : forcefulUpdate,
@@ -2145,7 +2198,8 @@ function UserRegistration(props) {
         CostingCount: registerUserData.CostingCount,
         IsAdditionalAccess: IsShowAdditionalPermission,
         DepartmentsPlantsIdLists: plantArray,
-        OnboardingApprovalLevels: []
+        OnboardingApprovalLevels: [],
+        DepartmentsDivisionIdLists: divisionArray
       }
 
       if (isRfqUser) {
@@ -2233,7 +2287,8 @@ function UserRegistration(props) {
         Extension: values.Extension,
         CityId: city.value,
         DepartmentsPlantsIdLists: plantArray,
-        OnboardingApprovalLevels: []
+        OnboardingApprovalLevels: [],
+        DepartmentsDivisionIdLists: divisionArray
       }
 
       if (props?.RFQUser) {
@@ -2252,7 +2307,6 @@ function UserRegistration(props) {
       }
 
       setIsLoader(true)
-
       if (props?.RFQUser) {
         dispatch(registerRfqUser(userData, res => {
           setIsSubmitted(false)
@@ -3002,6 +3056,28 @@ function UserRegistration(props) {
                                 valueDescription={department}
                               />
                             </div>
+                        }
+                        {getConfigurationKey().IsDivisionAllowedForDepartment && isShowDivision &&
+                          <div className="col-md-3">
+                            <SearchableSelectHookForm
+                              name="Division"
+                              label={`Division(Code) - (${handleDepartmentHeader()}(code) list)`}
+                              errors={errors.Division}
+                              Controller={Controller}
+                              control={control}
+                              register={register}
+                              mandatory={true}
+                              rules={{
+                                required: true,
+                              }}
+                              handleChange={handleDivisionChange}
+                              isMulti={true}
+                              placeholder={`select`}
+                              selection={divisionList == null || divisionList.length === 0 ? [] : divisionList}
+                              options={divisionList}
+                              className="multiselect-with-border"
+                              mendatory={true} />
+                          </div>
                         }
                         {getConfigurationKey().IsPlantsAllowedForDepartment && <div className="col-md-3">
                           <SearchableSelectHookForm

@@ -28,7 +28,8 @@ function ApproveRejectUI(props) {
 
   // ********* INITIALIZE REF FOR DROPZONE ********
   const dropzone = useRef(null);
-  const { type, approvalData, showMessage, setDataFromSummary, disableReleaseStrategy, IsNotFinalLevel, isSimulation, dataSend, simulationDetail, isSimulationApprovalListing, dataInFields, approvalDropDown, handleDepartmentChange, onSubmit, callbackSetDataInFields, showApprovalTypeDropdown, releaseStrategyDetails, reasonId } = props
+  const { type, approvalData, showMessage, setDataFromSummary, disableReleaseStrategy, IsNotFinalLevel, isSimulation, dataSend, simulationDetail, isSimulationApprovalListing, dataInFields, approvalDropDown, handleDepartmentChange, onSubmit, callbackSetDataInFields, showApprovalTypeDropdown, releaseStrategyDetails, reasonId, divisionList, isShowDivision, selectedRowData } = props
+
 
   const { TokensList } = useSelector(state => state.simulation)
   const { initialConfiguration } = useSelector(state => state.auth)
@@ -58,6 +59,12 @@ function ApproveRejectUI(props) {
   const approvalTypeSelectList = useSelector(state => state.comman.approvalTypeSelectList)
 
   useEffect(() => {
+    if (props?.emptyDivision) {
+      setValue('Division', '')
+    }
+  }, [props?.emptyDivision])
+
+  useEffect(() => {
     dispatch(getReasonSelectList((res) => { }))
     dispatch(getApprovalTypeSelectList('', () => { }))
   }, [])
@@ -74,7 +81,7 @@ function ApproveRejectUI(props) {
       setValue('dept', dataInFields?.Department ? dataInFields?.Department : '')
       setValue('approver', dataInFields?.Approver ? dataInFields?.Approver : '')
 
-    } else {
+    } else if (!getConfigurationKey().IsDivisionAllowedForDepartment || type === 'Approve') {
       setValue('dept', dataInFields?.Department ? dataInFields?.Department : '')
       setValue('approver', dataInFields?.Approver ? dataInFields?.Approver : '')
     }
@@ -300,6 +307,11 @@ function ApproveRejectUI(props) {
   const submitForm = handleSubmit(() => {
     onSubmit()
   })
+  // const handleDivisionChange = (e) => {
+  //   setDivision(e?.value)
+  //   props.checkFinalUserAndGetApprovers(dataInFields?.Department, props.levelDetails, dataInFields, e?.value)
+  //   props.callApproverAPI(e?.value)
+  // }
   return (
     <>
       <Drawer
@@ -429,9 +441,27 @@ function ApproveRejectUI(props) {
                         mandatory={true}
                         handleChange={handleDepartmentChange}
                         errors={errors.dept}
-                        disabled={(disableReleaseStrategy || !(userData.Department.length > 1 && reasonId !== REASON_ID))}
+                        disabled={(disableReleaseStrategy || (getConfigurationKey().IsDivisionAllowedForDepartment ? false : !(userData.Department.length > 1 && reasonId !== REASON_ID)) || (isSimulationApprovalListing && selectedRowData[0]?.DivisionId) ? true : false)}
+
                       />
                     </div>
+                    {getConfigurationKey().IsDivisionAllowedForDepartment && isShowDivision && <div className="input-group form-group col-md-12 input-withouticon">
+                      <SearchableSelectHookForm
+                        label={"Division"}
+                        name={"Division"}
+                        placeholder={"Select"}
+                        Controller={Controller}
+                        control={control}
+                        rules={{ required: true }}
+                        register={register}
+                        defaultValue={""}
+                        options={divisionList}
+                        disabled={false}
+                        mandatory={true}
+                        handleChange={props.handleDivisionChange}
+                        errors={errors.Division}
+                      />
+                    </div>}
                     <div className="input-group form-group col-md-12 input-withouticon">
                       {initialConfiguration.IsMultipleUserAllowForApproval ? <>
                         <AllApprovalField

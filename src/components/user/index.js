@@ -5,7 +5,7 @@ import UserRegistration from './UserRegistration';
 import Role from './RolePermissions/Role';
 import { checkPermission } from '../../helper/util';
 import { getConfigurationKey, handleDepartmentHeader } from '../../helper/auth';
-import { USER, ROLE, DEPARTMENT, LEVELS, COMPANY, RFQUSER } from '../../config/constants';
+import { USER, ROLE, DEPARTMENT, LEVELS, COMPANY, RFQUSER, DIVISION } from '../../config/constants';
 import classnames from 'classnames';
 import DepartmentsListing from './DepartmentsListing';
 import LevelsListing from './LevelsListing';
@@ -37,7 +37,7 @@ const User = () => {
     ViewDepartmentAccessibility: false,
     ViewLevelAccessibility: false,
     count: 0,
-    RFQUser: false
+    RFQUser: false,
   });
 
   useEffect(() => {
@@ -68,12 +68,14 @@ const User = () => {
       const departmentPermissions = leftMenuFromAPI && leftMenuFromAPI.find(el => (el.PageName === DEPARTMENT || el.PageName === COMPANY))
       const levelsPermissions = leftMenuFromAPI && leftMenuFromAPI.find(el => el.PageName === LEVELS)
       const RfqUserPermissions = leftMenuFromAPI && leftMenuFromAPI.find(el => el.PageName === RFQUSER)
+      const divisionPermissions = leftMenuFromAPI && leftMenuFromAPI.find(el => el.PageName === DIVISION)
 
       const userData = userPermissions && userPermissions.Actions && checkPermission(userPermissions.Actions)
       const roleData = rolePermissions && rolePermissions.Actions && checkPermission(rolePermissions.Actions)
       const departmentData = departmentPermissions && departmentPermissions.Actions && checkPermission(departmentPermissions.Actions)
       const levelsData = levelsPermissions && levelsPermissions.Actions && checkPermission(levelsPermissions.Actions)
       const rfqUserData = RfqUserPermissions && RfqUserPermissions.Actions && checkPermission(RfqUserPermissions.Actions)
+      const divisionData = divisionPermissions && divisionPermissions.Actions && checkPermission(divisionPermissions.Actions)
       // setUserData(userData)
       // setRoleData(roleData)
       // setDepartmentData(departmentData)
@@ -119,6 +121,14 @@ const User = () => {
         for (var propLevel in levelsData) {
           if (levelsData[propLevel] === true) {
             setState((prevState) => ({ ...prevState, ViewLevelAccessibility: true }))
+          }
+        }
+      }
+
+      if (divisionData !== undefined) {
+        for (var propDivision in divisionData) {
+          if (divisionData[propDivision] === true) {
+            setState((prevState) => ({ ...prevState, ViewDivisionAccessibility: true }))
           }
         }
       }
@@ -181,7 +191,7 @@ const User = () => {
     }));
   };
   const { isUserForm, isRolePermissionForm, data, ViewUserAccessibility,
-    ViewRoleAccessibility, ViewDepartmentAccessibility, ViewLevelAccessibility, ViewRFQUserAccessibility } = state;
+    ViewRoleAccessibility, ViewDepartmentAccessibility, ViewLevelAccessibility, ViewRFQUserAccessibility, ViewDivisionAccessibility } = state;
 
   if (isUserForm === true) {
     return <UserRegistration
@@ -218,14 +228,19 @@ const User = () => {
               {`Manage ${handleDepartmentHeader()}`}
             </NavLink>
           </NavItem>}
-          {ViewLevelAccessibility && <NavItem>
+          {ViewDivisionAccessibility && getConfigurationKey().IsDivisionAllowedForDepartment && <NavItem>
             <NavLink className={classnames({ active: state.activeTab === '4' })} onClick={() => { toggle('4'); }}>
+              Manage Divisions
+            </NavLink>
+          </NavItem>}
+          {ViewLevelAccessibility && <NavItem>
+            <NavLink className={classnames({ active: state.activeTab === '5' })} onClick={() => { toggle('5'); }}>
               Manage Levels
             </NavLink>
           </NavItem>}
 
           {ViewRFQUserAccessibility && getConfigurationKey().IsRFQConfigured && <NavItem>
-            <NavLink className={classnames({ active: state.activeTab === '5' })} onClick={() => { toggle('5'); }}>
+            <NavLink className={classnames({ active: state.activeTab === '6' })} onClick={() => { toggle('6'); }}>
               Manage RFQ Users
             </NavLink>
           </NavItem>}
@@ -253,13 +268,19 @@ const User = () => {
               <DepartmentsListing
                 toggle={toggle} />
             </TabPane>}
-          {state.activeTab === '4' && ViewLevelAccessibility &&
+          {state.activeTab === '4' && ViewDivisionAccessibility && getConfigurationKey().IsDivisionAllowedForDepartment &&
             <TabPane tabId="4">
+              <DepartmentsListing
+                toggle={toggle}
+                isDivision={true} />
+            </TabPane>}
+          {state.activeTab === '5' && ViewLevelAccessibility &&
+            <TabPane tabId="5">
               <LevelsListing
                 toggle={toggle} />
             </TabPane>}
-          {state.activeTab === '5' && ViewRFQUserAccessibility &&
-            <TabPane tabId="5">
+          {state.activeTab === '6' && ViewRFQUserAccessibility &&
+            <TabPane tabId="6">
               <UsersListing
                 RFQUser={true}
                 formToggle={displayForm}
