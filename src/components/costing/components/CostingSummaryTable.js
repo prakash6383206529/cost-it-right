@@ -1211,7 +1211,7 @@ const CostingSummaryTable = (props) => {
               obj.approvalTypeId = costingTypeIdToApprovalTypeIdFunction(viewCostingData[0]?.costingTypeId)
               obj.plantId = viewCostingData[index]?.destinationPlantId ?? EMPTY_GUID
               const { Department } = userDetails()
-              if (Department.length === 1) {
+              if (Department.length === 1 && !initialConfiguration.IsDivisionAllowedForDepartment) {
                 dispatch(checkFinalUser(obj, res => {
                   if (res?.data?.Result) {
                     setIsFinalCommonApproval(res?.data?.Data?.IsFinalApprover)
@@ -2158,13 +2158,13 @@ const CostingSummaryTable = (props) => {
           {/* {
             isComparing &&
             (<> */}
-              {/* <Row className="mt-2">
+          {/* <Row className="mt-2">
                 <Col md="10">
                   <div id="bar-chart-compare" className="left-border">{'Bar Chart Comparison:'}</div>
                 </Col>
               </Row> */}
 
-              {/* <Row>
+          {/* <Row>
                 <Col md="12" className="costing-summary-row" style={{ maxWidth: '600px', margin: 'auto' }}>
                   {isComparing && viewCostingData.length >= 2 &&
                     <BarChartComparison
@@ -2174,7 +2174,7 @@ const CostingSummaryTable = (props) => {
                   }
                 </Col>
               </Row> */}
-            {/* </>
+          {/* </>
             )} */}
           <div ref={componentRef}>
             <Row id="summaryPdf" className={`${customClass} ${vendorNameClass()} ${drawerDetailPDF ? 'remove-space-border' : ''} ${simulationMode ? "simulation-print" : ""}`}>
@@ -3024,7 +3024,6 @@ const CostingSummaryTable = (props) => {
 
                           {
                             viewCostingData?.some(data => {
-                              // Console log the technologyId
                               return data.technologyId !== TOOLING_ID && data.technologyId !== '-';
                             }) && rfqCosting && (
                               <>

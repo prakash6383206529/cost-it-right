@@ -139,7 +139,7 @@ function ApprovalSummary(props) {
       if (res?.data?.Data?.Costings?.length > 0) {
         const { IsRFQCostingApproval, PartDetails, ApprovalDetails, ApprovalLevelStep, DepartmentId, Technology, ApprovalProcessId,
           ApprovalProcessSummaryId, ApprovalNumber, IsSent, IsFinalLevelButtonShow, IsPushedButtonShow,
-          CostingId, PartId, PartNumber, DepartmentCode, LastCostingId, DecimalOption, VendorId, IsRegularizationLimitCrossed, CostingHead, NCCPartQuantity, IsRegularized, ApprovalTypeId, CostingTypeId, BestCostAndShouldCostDetails, QuotationId, NfrId, NfrGroupIdForPFS2, NfrGroupIdForPFS3, IsNFRPFS2PushedButtonShow, IsNFRPFS3PushedButtonShow } = res?.data?.Data?.Costings[0];
+          CostingId, PartId, PartNumber, DepartmentCode, LastCostingId, DecimalOption, VendorId, IsRegularizationLimitCrossed, CostingHead, NCCPartQuantity, IsRegularized, ApprovalTypeId, CostingTypeId, BestCostAndShouldCostDetails, QuotationId, DivisionId } = res?.data?.Data?.Costings[0];
         setApprovalTypeId(ApprovalTypeId)
         setIsRFQCostingApproval(IsRFQCostingApproval)
         dispatch(setQuotationIdForRFQ(QuotationId))
@@ -224,7 +224,8 @@ function ApprovalSummary(props) {
           NewPOPrice: Data.NewPOPrice,
           EffectiveDate: ApprovalDetails[0].EffectiveDate,
           VendorId: VendorId,
-          QuotationId: QuotationId
+          QuotationId: QuotationId,
+          DivisionId: DivisionId
         })
         let requestArray = []
         let requestObject = {}
@@ -254,7 +255,7 @@ function ApprovalSummary(props) {
                 Mode: 'costing',
                 // approvalTypeId: costingTypeIdToApprovalTypeIdFunction(CostingTypeId),
                 approvalTypeId: ApprovalTypeId,
-                plantId: Data.DestinationPlantId ?? EMPTY_GUID
+                plantId: Data.DestinationPlantId ?? EMPTY_GUID,
               }
               dispatch(checkFinalUser(obj, res => {
                 if (res && res.data && res.data.Result) {
@@ -277,7 +278,8 @@ function ApprovalSummary(props) {
             // approvalTypeId: costingTypeIdToApprovalTypeIdFunction(CostingTypeId),
             approvalTypeId: ApprovalTypeId,
 
-            plantId: Data.DestinationPlantId
+            plantId: Data.DestinationPlantId,
+            divisionId: DivisionId ?? null
           }
           dispatch(checkFinalUser(obj, res => {
             if (res && res.data && res.data.Result) {

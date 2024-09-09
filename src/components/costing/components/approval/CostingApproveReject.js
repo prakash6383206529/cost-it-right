@@ -11,7 +11,7 @@ import 'react-dropzone-uploader/dist/styles.css';
 import Toaster from '../../../common/Toaster'
 import { costingTypeIdToApprovalTypeIdFunction } from '../../../common/CommonFunctions'
 import ApproveRejectUI from './ApproveRejectUI'
-import { checkFinalUser, updateCostingIdFromRfqToNfrPfs } from '../../actions/Costing'
+import { updateCostingIdFromRfqToNfrPfs } from '../../actions/Costing'
 import { getUsersTechnologyLevelAPI } from '../../../../actions/auth/AuthActions'
 import DayTime from '../../../common/DayTimeWrapper'
 import { pushNfrOnSap } from '../../../masters/nfr/actions/nfr'
@@ -22,7 +22,6 @@ function CostingApproveReject(props) {
   // ********* INITIALIZE REF FOR DROPZONE ********
 
   const { type, technologyId, approvalData, IsNotFinalLevel, IsPushDrawer, dataSend, reasonId, selectedRowData, costingArr, apiData, TechnologyId, releaseStrategyDetails } = props
-
   const userLoggedIn = loggedInUserId()
   const userData = userDetails()
 
@@ -93,7 +92,8 @@ function CostingApproveReject(props) {
       TechnologyId: technology,
       ReasonId: reasonId,
       ApprovalTypeId: approverTypeId,
-      plantId: approvalData[0].PlantId ?? EMPTY_GUID
+      plantId: approvalData[0].PlantId ?? EMPTY_GUID,
+      DivisionId: approvalData[0]?.DivisionId ?? null
     }
     dispatch(getAllApprovalUserFilterByDepartment(obj, (res) => {
       const Data = res.data.DataList[1] ? res.data.DataList[1] : []
@@ -272,7 +272,7 @@ function CostingApproveReject(props) {
         IsRFQCostingSendForApproval: false,
         ApprovalTypeId: ele.ApprovalTypeId,
         IsReturn: type === 'Return' ? true : false,
-
+        DivisionId: approvalData[0]?.DivisionId ?? null
       })
       return null;
     })
