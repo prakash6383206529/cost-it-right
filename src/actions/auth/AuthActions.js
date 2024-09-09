@@ -2263,17 +2263,17 @@ export function getDivisionListAPI(callback) {
         // const request = axios.get(`${API.getAllLevelAPI}`, config());
         const request = axios.get(`${API.getDivisionListAPI}`, config());
         request.then((response) => {
-            if (response.data.Result) {
+            if (response) {
                 dispatch({
                     type: GET_DIVISION_LIST_SUCCESS,
-                    payload: response.data.DataList,
+                    payload: response?.data?.DataList,
                 });
                 callback(response);
             }
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             callback(error);
-            //apiErrors(error);
+            apiErrors(error);
         });
     };
 }
