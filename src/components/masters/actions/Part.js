@@ -894,6 +894,34 @@ export function createProductLevelValues(data, callback) {
     };
 }
 
+export function getProductLabel(id, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getProductLabel}?levelid=${id}`, config());
+        request.then((response) => {
+            if (response && response.status === 200) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+export function updateProductLabel(data, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.put(API.updateProductLabel, data, config());
+        request.then((response) => {
+            if (response && response.status === 200) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
 export function storeHierarchyData(data) {
     return (dispatch) => {
         dispatch({

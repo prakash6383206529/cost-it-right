@@ -239,22 +239,24 @@ function CostingSimulation(props) {
                     plantId: plantId
                 }
                 if (initialConfiguration.IsMultipleUserAllowForApproval ? plantId : true) {
-                    dispatch(checkFinalUser(obj, res => {
-                        if (res && res.data && res.data.Result) {
-                            setIsFinalLevelApprover(res.data.Data?.IsFinalApprover)
-                            if (res?.data?.Data?.IsUserInApprovalFlow === false) {
-                                setMessage("This user is not in the approval cycle")
-                                setDisableSendForApproval(true)
-                            } if (res.data.Data.IsFinalApprover) {
-                                setDisableSendForApproval(true)
-                                setMessage("Final level approver can not send draft token for approval")
-                            } if (res.data.Data.IsUserInApprovalFlow && !res.data.Data.IsFinalApprover) {
-                                setDisableSendForApproval(false)
+                    if (!getConfigurationKey().IsDivisionAllowedForDepartment) {
+                        dispatch(checkFinalUser(obj, res => {
+                            if (res && res.data && res.data.Result) {
+                                setIsFinalLevelApprover(res.data.Data?.IsFinalApprover)
+                                if (res?.data?.Data?.IsUserInApprovalFlow === false) {
+                                    setMessage("This user is not in the approval cycle")
+                                    setDisableSendForApproval(true)
+                                } if (res.data.Data.IsFinalApprover) {
+                                    setDisableSendForApproval(true)
+                                    setMessage("Final level approver can not send draft token for approval")
+                                } if (res.data.Data.IsUserInApprovalFlow && !res.data.Data.IsFinalApprover) {
+                                    setDisableSendForApproval(false)
+                                }
+                                let countTemp = count + 1
+                                setCount(countTemp)
                             }
-                            let countTemp = count + 1
-                            setCount(countTemp)
-                        }
-                    }))
+                        }))
+                    }
                 }
             }
             // let obj = {

@@ -646,7 +646,8 @@ function SimulationApprovalListing(props) {
                         TechnologyId: approvalData?.SimulationTechnologyId ? approvalData?.SimulationTechnologyId : selectedRowData[0].SimulationTechnologyId,
                         Mode: 'simulation',
                         approvalTypeId: costingTypeIdToApprovalTypeIdFunction(res?.data?.Data?.ApprovalTypeId ? res?.data?.Data?.ApprovalTypeId : selectedRowData[0].ApprovalTypeId),
-                        plantId: selectedRowData[0].PlantId ?? EMPTY_GUID
+                        plantId: selectedRowData[0].PlantId ?? EMPTY_GUID,
+                        divisionId: selectedRowData[0].DivisionId ?? EMPTY_GUID
                     }
                     dispatch(checkFinalUser(obj, res => {
                         if (res && res.data && res.data.Result) {
@@ -676,7 +677,8 @@ function SimulationApprovalListing(props) {
                 TechnologyId: selectedRowData[0]?.SimulationTechnologyId,
                 Mode: 'simulation',
                 approvalTypeId: costingTypeIdToApprovalTypeIdFunction(selectedRowData[0]?.SimulationHeadId),
-                plantId: selectedRowData[0].PlantId
+                plantId: selectedRowData[0].PlantId,
+                divisionId: selectedRowData[0].DivisionId ?? null
             }
             setSimulationDetail({ DepartmentId: selectedRowData[0]?.DepartmentId, TokenNo: selectedRowData[0]?.SimulationTokenNumber, Status: selectedRowData[0]?.SimulationStatus, SimulationId: selectedRowData[0]?.SimulationId, SimulationAppliedOn: selectedRowData[0]?.SimulationAppliedOn, EffectiveDate: selectedRowData[0]?.EffectiveDate, IsExchangeRateSimulation: selectedRowData[0]?.IsExchangeRateSimulation })
             dispatch(setMasterForSimulation({ label: selectedRowData[0]?.SimulationTechnologyHead, value: selectedRowData[0]?.SimulationTechnologyId }))

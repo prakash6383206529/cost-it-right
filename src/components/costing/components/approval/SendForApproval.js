@@ -24,7 +24,7 @@ import VerifyImpactDrawer from '../../../simulation/components/VerifyImpactDrawe
 import PushSection from '../../../common/PushSection'
 import LoaderCustom from '../../../common/LoaderCustom'
 import TooltipCustom from '../../../common/Tooltip'
-import { getUsersTechnologyLevelAPI } from '../../../../actions/auth/AuthActions'
+import { getUsersTechnologyLevelAPI, getAllDivisionListAssociatedWithDepartment } from '../../../../actions/auth/AuthActions'
 import { rfqSaveBestCosting } from '../../../rfq/actions/rfq'
 import { getApprovalTypeSelectList } from '../../../../actions/Common'
 import { reactLocalStorage } from 'reactjs-localstorage'
@@ -50,7 +50,7 @@ const SendForApproval = (props) => {
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const { IsApprovalLevelFilterByPlant } = initialConfiguration
 
-  const [selectedDepartment, setSelectedDepartment] = useState('')
+  const [selectedDepartment, setSelectedDepartment] = useState([])
   const [selectedApprover, setSelectedApprover] = useState('')
   const [selectedApproverLevelId, setSelectedApproverLevelId] = useState('')
   const [financialYear, setFinancialYear] = useState('')
@@ -87,8 +87,11 @@ const SendForApproval = (props) => {
   const [count, setCount] = useState(0)
   const [approverIdList, setApproverIdList] = useState([])
   const [noApprovalExistMessage, setNoApprovalExistMessage] = useState('')
+  const [isShowDivision, setIsShowDivision] = useState(false)
+  const [divisionList, setDivisionList] = useState([])
+  const [division, setDivision] = useState('')
 
-  const apicall = (technologyId, depart, ApprovalTypeId, isdisable, levelsList) => {
+  const apicall = (technologyId, depart, ApprovalTypeId, isdisable, levelsList, divisionId = '') => {
 
     dispatch(getReasonSelectList((res) => { }))
 
@@ -127,7 +130,8 @@ const SendForApproval = (props) => {
         TechnologyId: technologyId,
         ReasonId: 0, // key only for minda
         ApprovalTypeId: ApprovalTypeId,
-        plantId: (IsApprovalLevelFilterByPlant && viewApprovalData[0]?.destinationPlantId) ? viewApprovalData[0]?.destinationPlantId : EMPTY_GUID
+        plantId: (IsApprovalLevelFilterByPlant && viewApprovalData[0]?.destinationPlantId) ? viewApprovalData[0]?.destinationPlantId : EMPTY_GUID,
+        DivisionId: divisionId ?? null
       }
       dispatch(getAllApprovalUserFilterByDepartment(requestObject, (res) => {
         let tempDropdownList = []
@@ -151,7 +155,7 @@ const SendForApproval = (props) => {
         setSelectedApprover(Data.Value)
         setSelectedApproverLevelId({ levelName: Data.LevelName, levelId: Data.LevelId })
         if (tempDropdownList?.length !== 0) {
-          setValue('approver', { label: Data.Text, value: Data.Value })
+          // setValue('approver', { label: Data.Text, value: Data.Value })
         } else {
           setShowValidation(true)
         }
@@ -162,48 +166,52 @@ const SendForApproval = (props) => {
     userTechnology(ApprovalTypeId, levelsList)
   }
   useEffect(() => {
-    dispatch(getAllApprovalDepartment((res) => {
-      const Data = res?.data?.SelectList
-      const departObj = Data && Data.filter(item => item.Value === userData.DepartmentId)
-      let approverIdListTemp = []
-      let requestObject = {
-        LoggedInUserId: userData.LoggedInUserId,
-        DepartmentId: departObj[0]?.Value,
-        TechnologyId: props.technologyId,
-        ReasonId: 0, // key only for minda
-        ApprovalTypeId: viewApprovalData[0]?.costingTypeId,
-        plantId: (IsApprovalLevelFilterByPlant && viewApprovalData[0]?.destinationPlantId) ? viewApprovalData[0]?.destinationPlantId : EMPTY_GUID
-      }
-      if (!initialConfiguration.IsReleaseStrategyConfigured) {
-        dispatch(getAllApprovalUserFilterByDepartment(requestObject, (res) => {
-          let tempDropdownList = []
-          if (res.data.DataList.length === 1) {
-            return false
-          }
-          res.data.DataList && res.data.DataList.map((item) => {
-            if (item.Value === '0') return false;
-            if (item.Value === EMPTY_GUID) return false;
-            tempDropdownList.push({ label: item.Text, value: item.Value, levelId: item.LevelId, levelName: item.LevelName })
-            approverIdListTemp.push(item.Value)
-            return null
-          })
-          const Data = res.data.DataList[1]
-          setApprover(Data.Text)
-          setSelectedApprover(Data.Value)
-          setSelectedApproverLevelId({ levelName: Data.LevelName, levelId: Data.LevelId })
-          if (tempDropdownList?.length !== 0) {
-            setValue('approver', { label: Data.Text, value: Data.Value })
-          } else {
-            setShowValidation(true)
-          }
-          setApprovalDropDown(tempDropdownList)
-          setApproverIdList(approverIdListTemp)
-        }))
-      }
-    }))
+    if (!getConfigurationKey().IsDivisionAllowedForDepartment) {
+      dispatch(getAllApprovalDepartment((res) => {
+        const Data = res?.data?.SelectList
+        const departObj = Data && Data.filter(item => item.Value === userData.DepartmentId)
+        let approverIdListTemp = []
+        let requestObject = {
+          LoggedInUserId: userData.LoggedInUserId,
+          DepartmentId: departObj[0]?.Value,
+          TechnologyId: props.technologyId,
+          ReasonId: 0, // key only for minda
+          ApprovalTypeId: viewApprovalData[0]?.costingTypeId,
+          plantId: (IsApprovalLevelFilterByPlant && viewApprovalData[0]?.destinationPlantId) ? viewApprovalData[0]?.destinationPlantId : EMPTY_GUID
+        }
+        if (!initialConfiguration.IsReleaseStrategyConfigured) {
+          dispatch(getAllApprovalUserFilterByDepartment(requestObject, (res) => {
+            let tempDropdownList = []
+            if (res.data.DataList.length === 1) {
+              return false
+            }
+            res.data.DataList && res.data.DataList.map((item) => {
+              if (item.Value === '0') return false;
+              if (item.Value === EMPTY_GUID) return false;
+              tempDropdownList.push({ label: item.Text, value: item.Value, levelId: item.LevelId, levelName: item.LevelName })
+              approverIdListTemp.push(item.Value)
+              return null
+            })
+            const Data = res.data.DataList[1]
+            setApprover(Data.Text)
+            setSelectedApprover(Data.Value)
+            setSelectedApproverLevelId({ levelName: Data.LevelName, levelId: Data.LevelId })
+            if (tempDropdownList?.length !== 0) {
+              // setValue('approver', { label: Data.Text, value: Data.Value })
+            } else {
+              setShowValidation(true)
+            }
+            setApprovalDropDown(tempDropdownList)
+            setApproverIdList(approverIdListTemp)
+          }))
+        }
+      }))
+    } else {
+      dispatch(getAllApprovalDepartment((res) => { }))
+    }
   }, [])
   useEffect(() => {
-    if (deptList && deptList.length > 1 && approvalType) {
+    if (deptList && deptList.length > 1 && approvalType && !getConfigurationKey().IsDivisionAllowedForDepartment) {
       const filterDeprtment = deptList.filter(item => item.Value === userData.DepartmentId)
       let temp = { label: filterDeprtment[0].Text, value: filterDeprtment[0].Value }
       callCheckFinalUserApi(temp)
@@ -254,9 +262,12 @@ const SendForApproval = (props) => {
           }))
         }))
       } else {
-        apicall(props.technologyId, userData.DepartmentId, viewApprovalData[0]?.costingTypeId, false, res?.data?.Data)
+        if (!getConfigurationKey().IsDivisionAllowedForDepartment) {
+          apicall(props.technologyId, userData.DepartmentId, viewApprovalData[0]?.costingTypeId, false, res?.data?.Data)
+        }
         setApprovalType(viewApprovalData[0]?.costingTypeId)
       }
+
     }))
 
     let requestArray = []
@@ -357,14 +368,15 @@ const SendForApproval = (props) => {
    * @description  USED TO HANDLE DEPARTMENT CHANGE
    */
 
-  const callCheckFinalUserApi = (newValue) => {
+  const callCheckFinalUserApi = (newValue, divisionId = '') => {
     const tempDropdownList = []
     let requestObject = {
       LoggedInUserId: userData.LoggedInUserId,
       DepartmentId: newValue.value,
       TechnologyId: props.technologyId,
       ApprovalTypeId: approvalType,
-      plantId: (IsApprovalLevelFilterByPlant && viewApprovalData[0]?.destinationPlantId) ? viewApprovalData[0]?.destinationPlantId : EMPTY_GUID
+      plantId: (IsApprovalLevelFilterByPlant && viewApprovalData[0]?.destinationPlantId) ? viewApprovalData[0]?.destinationPlantId : EMPTY_GUID,
+      DivisionId: divisionId
     }
     let Data = []
     let approverIdListTemp = []
@@ -374,7 +386,8 @@ const SendForApproval = (props) => {
       TechnologyId: props.technologyId,
       Mode: 'costing',
       approvalTypeId: approvalType,
-      plantId: (IsApprovalLevelFilterByPlant && viewApprovalData[0]?.destinationPlantId) ? viewApprovalData[0]?.destinationPlantId : EMPTY_GUID
+      plantId: (IsApprovalLevelFilterByPlant && viewApprovalData[0]?.destinationPlantId) ? viewApprovalData[0]?.destinationPlantId : EMPTY_GUID,
+      divisionId: divisionId ?? null
     }
     dispatch(checkFinalUser(obj, (res) => {
       const data = res?.data?.Data
@@ -394,7 +407,7 @@ const SendForApproval = (props) => {
             setShowValidation(true)
           } else {
             setApprover(Data.Text ? Data.Text : '')
-            setValue('approver', { label: Data.Text ? Data.Text : '', value: Data.Value ? Data.Value : '', levelId: Data.LevelId ? Data.LevelId : '', levelName: Data.LevelName ? Data.LevelName : '' })
+            // setValue('approver', { label: Data.Text ? Data.Text : '', value: Data.Value ? Data.Value : '', levelId: Data.LevelId ? Data.LevelId : '', levelName: Data.LevelName ? Data.LevelName : '' })
           }
           setApprovalDropDown(tempDropdownList)
           setApproverIdList(approverIdListTemp)
@@ -433,17 +446,53 @@ const SendForApproval = (props) => {
   const handleDepartmentChange = (newValue) => {
 
     if (newValue && newValue !== '') {
+      if (getConfigurationKey().IsDivisionAllowedForDepartment) {
+        setDivisionList([])
+        setDivision('')
+        setValue('Division', '')
+        setValue('approver', '')
+        setApprover('')
+        setApprovalDropDown([])
+        setShowValidation(false)
+        let departmentIds = [newValue.value]
+        dispatch(getAllDivisionListAssociatedWithDepartment(departmentIds, res => {
+          if (res && res?.data && res?.data?.Identity === true) {
+            setIsShowDivision(true)
+            let divisionArray = []
+            res?.data?.DataList?.map(item => {
+              if (String(item?.DivisionId) !== '0') {
+                divisionArray.push({ label: `${item.DivisionNameCode}`, value: (item?.DivisionId)?.toString(), DivisionCode: item?.DivisionCode })
+              }
+              return null;
+            })
+            setDivisionList(divisionArray)
+          } else {
+            setIsShowDivision(false)
+            setDivisionList([])
+            callCheckFinalUserApi(newValue)
+          }
+        }))
+      } else {
+        setDivisionList([])
+        callCheckFinalUserApi(newValue)
+      }
       setValue('approver', '')
       setApprover('')
       setSelectedApprover('')
       setShowValidation(false)
-      callCheckFinalUserApi(newValue)
       setSelectedDepartment(newValue)
     } else {
       setSelectedDepartment('')
     }
   }
-
+  const handleDivisionChange = (newValue, actionMeta) => {
+    if (newValue && newValue !== '') {
+      setDivision(newValue)
+      callCheckFinalUserApi(selectedDepartment, newValue.value)
+    } else {
+      setDivision('')
+    }
+  }
   /**
    * @method handleReasonChange
    * @param {*} data
@@ -633,6 +682,7 @@ const SendForApproval = (props) => {
         tempObj.BudgetedPriceVariance = data.BudgetedPriceVariance
         tempObj.IsRFQCostingSendForApproval = props?.isRfq ? true : false
         tempObj.ApprovalTypeId = approvalType
+        tempObj.DivisionId = division?.value ?? null
         temp.push(tempObj)
         return null
       })
@@ -766,6 +816,7 @@ const SendForApproval = (props) => {
       obj.InfoCategeory = data?.infoCategeory?.value ?? ''
       obj.ValuationType = data?.evaluationType?.label ?? ''
       obj.PlannedDelTime = data?.leadTime
+      obj.DivisionId = division?.value ?? null
 
 
       // debounce_fun()
@@ -1232,12 +1283,29 @@ const SendForApproval = (props) => {
                           register={register}
                           defaultValue={""}
                           options={renderDropdownListing("Dept")}
-                          disabled={disableRS || (!(userData.Department.length > 1) || (initialConfiguration.IsReleaseStrategyConfigured && Object.keys(approvalType)?.length === 0))}
+                          disabled={disableRS || ((initialConfiguration.IsReleaseStrategyConfigured && Object.keys(approvalType)?.length === 0))}
                           mandatory={true}
                           handleChange={handleDepartmentChange}
                           errors={errors.dept}
                         />
                       </Col >
+                      {getConfigurationKey().IsDivisionAllowedForDepartment && isShowDivision && <Col md="6">
+                        <SearchableSelectHookForm
+                          label={"Division"}
+                          name={"Division"}
+                          placeholder={"Select"}
+                          Controller={Controller}
+                          control={control}
+                          rules={{ required: true }}
+                          register={register}
+                          defaultValue={""}
+                          options={divisionList}
+                          disabled={((Object.keys(selectedDepartment).length === 0) || (initialConfiguration.IsReleaseStrategyConfigured && Object.keys(approvalType)?.length === 0))}
+                          mandatory={true}
+                          handleChange={handleDivisionChange}
+                          errors={errors.Division}
+                        />
+                      </Col>}
                       <Col md="6">
                         {initialConfiguration.IsMultipleUserAllowForApproval ? <>
                           <AllApprovalField

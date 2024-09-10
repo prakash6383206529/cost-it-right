@@ -124,7 +124,7 @@ const AssociateHierarchy = (props) => {
         setState((prevState) => ({ ...prevState, selectedDropdownValue: selectedValue, [`LevelName${item?.LevelId}`]: selectedValue }));
         for (let i = 1; i <= state.levelCount - 1; i++) {
             if (item?.LevelId < i + 1) {
-                setValue(`LevelName${i}`, {})
+                setValue(`LevelName${i}`, null)
             }
         }
     }
@@ -181,7 +181,7 @@ const AssociateHierarchy = (props) => {
                                     options={renderListing(item, i)}
                                     mandatory={true}
                                     handleChange={(e) => handleLevelChange(e, item)}
-                                    errors={errors[item?.LevelName]}
+                                    errors={errors[`LevelName${item?.LevelId}`]}
                                     disabled={disabledDropdown(item, i)}
                                 />
                                 <Button

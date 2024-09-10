@@ -480,7 +480,7 @@ export const TextAreaHookForm = (field) => {
 */
 export const DatePickerHookForm = (field) => {
   const {
-    label, Controller, control, register, name, defaultValue, mandatory, errors, rules, placeholder, handleChange, buttonCross } = field
+    label, Controller, control, register, name, defaultValue, mandatory, errors, rules, placeholder, handleChange, buttonCross,maxDate,minDate } = field
   //const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""} ${touched && error ? "has-danger" : ""}`;
   const className = `form-group inputbox ${field.customClassName ? field.customClassName : ''} ${buttonCross ? 'cross-btn-container' : ''}`
   const isDisabled = field.disabled === true ? true : false
@@ -510,8 +510,8 @@ export const DatePickerHookForm = (field) => {
                 value={value}
                 dateFormat="dd/MM/yyyy"
                 placeholderText={placeholder}
-                //maxDate={new Date()}
-                //minDate={new Date()}
+                maxDate={maxDate}
+                minDate={minDate}
                 showMonthDropdown
                 showYearDropdown
                 dropdownMode="select"
