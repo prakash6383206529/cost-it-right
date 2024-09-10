@@ -3241,6 +3241,7 @@ export const clientName = 'Havells'
 export const isShowTaxCode = false
 export const effectiveDateRangeDays = ''
 
+
 //VERSION 
 export const VERSION = "V3.1.7";
 

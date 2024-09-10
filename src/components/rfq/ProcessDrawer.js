@@ -43,11 +43,8 @@ function ViewDrawer(props) {
         { sop: 'SOP5' },
     ]
 
-    const { type, isOpen, anchor, isEditFlag, isViewFlag, AssemblyPartNumber, tableData, setTableData, specificationList, setSpecificationList, setRemark, setChildPartFiles, remark, partListData, sopQuantityList, setSopQuantityList, sopdate, setSOPDate, effectiveMinDate, childPartFiles, rmSpecificRowData, partType, bopNumber, handleDrawer, drawerViewMode, resetDrawer } = props
-
-
-
-
+    const { isOpen, anchor, isEditFlag, isViewFlag, AssemblyPartNumber, tableData, setTableData, specificationList, setSpecificationList, setRemark, setChildPartFiles, remark, partListData, sopQuantityList, setSopQuantityList, sopdate, setSOPDate, effectiveMinDate, childPartFiles, rmSpecificRowData, partType, bopNumber, handleDrawer, drawerViewMode, resetDrawer } = props
+    const type = String(props?.type)
     const { register, handleSubmit, setValue, getValues, formState: { errors }, control } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
@@ -114,7 +111,7 @@ function ViewDrawer(props) {
             setValue('AssemblyPartNumber', { label: bopNumber?.label, value: bopNumber?.value })
         }
 
-    }, [AssemblyPartNumber, bopNumber])
+    }, [AssemblyPartNumber, bopNumber, partType, type])
     useEffect(() => {
         if (partType === "Component")
             if (!isViewFlag) {

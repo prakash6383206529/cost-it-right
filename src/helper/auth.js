@@ -83,6 +83,10 @@ export function IsSendMailToPrimaryContact() {
   const configurationKey = reactLocalStorage.getObject('InitialConfiguration')
   return configurationKey?.IsSendMailToPrimaryContact
 }
+export function IsFetchExchangeRateVendorWise() {
+  const configurationKey = reactLocalStorage.getObject('InitialConfiguration')
+  return configurationKey?.IsFetchExchangeRateVendorWise
+}
 export function corrugatedBoxPermission() {
   const boxTypeStr = getConfigurationKey().PackagingCalculatorList
   let boxTypeObject = {};
