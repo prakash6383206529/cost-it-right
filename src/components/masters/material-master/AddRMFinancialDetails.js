@@ -149,7 +149,7 @@ function AddRMFinancialDetails(props) {
         allFieldsInfoIcon(true)
 
     }, [])
-    console.log('initialConfiguration: ', initialConfiguration);
+
 
     useEffect(() => {
         dispatch(getFrequencySettlement(() => { }))
