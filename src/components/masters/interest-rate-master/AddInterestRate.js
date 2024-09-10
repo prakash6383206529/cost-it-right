@@ -14,7 +14,7 @@ import LoaderCustom from '../../common/LoaderCustom';
 import Toaster from '../../common/Toaster'
 import { debounce } from 'lodash';
 import AsyncSelect from 'react-select/async';
-import { CBCTypeId, SPACEBAR, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, searchCount } from '../../../config/constants';
+import { CBCTypeId, SPACEBAR, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, effectiveDateRangeDays, searchCount } from '../../../config/constants';
 import { onFocus, showDataOnHover } from '../../../helper';
 import { getClientSelectList, } from '../actions/Client';
 import { reactLocalStorage } from 'reactjs-localstorage';
@@ -26,6 +26,7 @@ import { Steps } from './TourMessages';
 import { withTranslation } from 'react-i18next';
 import WarningMessage from '../../common/WarningMessage';
 import TooltipCustom from '../../common/Tooltip';
+import { subDays } from 'date-fns';
 
 const selector = formValueSelector('AddInterestRate');
 
@@ -1034,7 +1035,7 @@ class AddInterestRate extends Component {
                               selected={this.state.effectiveDate}
                               onChange={this.handleEffectiveDateChange}
                               type="text"
-                              minDate={this.state.minEffectiveDate}
+                              minDate={isEditFlag ? this.state.minEffectiveDate : subDays(new Date(), effectiveDateRangeDays)}
                               validate={[required]}
                               autoComplete={'off'}
                               required={true}

@@ -177,6 +177,8 @@ export const API = {
   getAllProductLevels: `${BASE_URL}/masters-product/get-all-product-levels`,
   createProductLevelValues: `${BASE_URL}/masters-product/create-product-level-values`,
   getPreFilledProductLevelValues: `${BASE_URL}/masters-product/get-product-level-values-by-level-value-id`,
+  getProductLabel: `${BASE_URL}/masters-product/get-product-level-by-id`,
+  updateProductLabel: `${BASE_URL}/masters-product/update-product-level`,
 
   //ASSEMBLY PART
   createAssemblyPart: `${BASE_URL}/masters-part/create-assembly-part`,
@@ -756,6 +758,15 @@ export const API = {
   deleteDepartmentAPI: `${BASE_URL}/user-department/delete`,
   addCompanyAPI: `${BASE_URL}/company/create`,
   getPlantSelectListForDepartment: `${BASE_URL}/user-department/get-all-plants-list-Associated-with-departments`,
+
+  //DIVISION'S API
+  addDivisionAPI: `${BASE_URL}/user-department/create-division`,
+  updateDivisionAPI: `${BASE_URL}/user-department/update-division`,
+  getAllDivisionAPI: `${BASE_URL}/user-department/get-all-division`,
+  getDivisionAPI: `${BASE_URL}/user-department/get-division-by-id`,
+  deleteDivisionAPI: `${BASE_URL}/user-department/delete-division`,
+  getDivisionListAPI: `${BASE_URL}/user-department/select-list-get-divisions`,
+  getAllDivisionListAssociatedWithDepartment: `${BASE_URL}/user-department/get-all-division-list-associated-with-departments`,
 
   //LEVEL'S API
   assignUserLevelAPI: `${BASE_URL}/user-level/assign-user-level-for-costing`,
@@ -1857,8 +1868,14 @@ export const GET_TECHNOLOGY_DATA_LIST_SUCCESS = 'GET_TECHNOLOGY_DATA_LIST_SUCCES
 export const GET_SIMULATION_TECHNOLOGY_SELECTLIST_SUCCESS = 'GET_SIMULATION_TECHNOLOGY_SELECTLIST_SUCCESS'
 export const GET_PLANT_SELECT_LIST_FOR_DEPARTMENT = 'GET_PLANT_SELECT_LIST_FOR_DEPARTMENT'
 
+//DIVISION
+export const GET_DIVISION_SUCCESS = 'GET_DIVISION_SUCCESS'
+export const GET_DIVISION_DATA_SUCCESS = 'GET_DIVISION_DATA_SUCCESS'
+export const GET_DIVISION_LIST_SUCCESS = 'GET_DIVISION_LIST_SUCCESS'
+
 //Common to get plants by supplier
 export const GET_PLANTS_BY_SUPPLIER = 'GET_PLANTS_BY_SUPPLIER'
+
 
 //APPROVAL
 export const GET_SEND_FOR_APPROVAL_SUCCESS = 'GET_SEND_FOR_APPROVAL_SUCCESS'
@@ -2262,7 +2279,7 @@ export const DEPARTMENT = 'Department'
 export const LEVELS = 'Levels'
 export const COMPANY = 'Company'//MINDA
 export const RFQUSER = 'RFQUser'
-
+export const DIVISION = 'Division'
 
 //DEPRECIATION TYPE ENUMS
 export const SLM = 'SLM'
@@ -3222,9 +3239,10 @@ export const customHavellsChanges = true
 export const countDownBlickingTime = 2
 export const clientName = 'Havells'
 export const isShowTaxCode = false
+export const effectiveDateRangeDays = ''
 
 //VERSION 
-export const VERSION = "V3.1.6";
+export const VERSION = "V3.1.7";
 
 
 

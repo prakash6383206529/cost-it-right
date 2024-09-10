@@ -44,15 +44,22 @@ const AddProductHierarchy = (props) => {
                 ParentLevelId: i > 1 ? i - 1 : null
             });
         }
+        const IsUpdateProductLevel = productHierarchyData.length !== 0
         const requestedData = {
             TotalLevel: state.levelCount,
             ProductLevels: ProductLevels,
+            IsUpdateProductLevel: IsUpdateProductLevel,
             LoggedInUserId: loggedInUserId()
         }
         dispatch(createProductLevels(requestedData, (res) => {
-            Toaster.success("Level create successfully")
+            Toaster.success(`Level ${IsUpdateProductLevel ? 'update' : 'create'} successfully`)
         }))
         props.toggle()
+    }
+    const isDisabled = (i) => {
+        if (productHierarchyData.length !== 0) {
+            return !productHierarchyData[i].IsProductLevelChangeAllowed ?? false
+        } else return false
     }
     return <div><Drawer
         anchor={"right"}
@@ -93,7 +100,7 @@ const AddProductHierarchy = (props) => {
                                 mandatory={true}
                                 handleChange={(e) => handleLevelSelection(e)}
                                 errors={errors.Levels}
-                                disabled={productHierarchyData.length > 0}
+                                disabled={isDisabled(0)}
                             />
                         </Col>
                     </Row>
@@ -116,7 +123,7 @@ const AddProductHierarchy = (props) => {
                                     className=""
                                     customClassName={'withBorder'}
                                     errors={errors[`LevelName${i + 1}`]}
-                                    disabled={(i === state.levelCount - 1) || productHierarchyData.length > 0}
+                                    disabled={(i === state.levelCount - 1) || isDisabled(0)}
                                 />
                             </Col>
                         ))}
@@ -134,7 +141,7 @@ const AddProductHierarchy = (props) => {
                             <button
                                 type="submit"
                                 className="user-btn save-btn"
-                                disabled={productHierarchyData.length > 0}
+                                disabled={isDisabled(0)}
                             >
                                 <div className={"save-icon"}></div>
                                 {"Save"}

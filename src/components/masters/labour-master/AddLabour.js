@@ -12,7 +12,7 @@ import { getClientSelectList, } from '../actions/Client';
 import Toaster from '../../common/Toaster'
 import { fetchStateDataAPI, getAllCity, getVendorNameByVendorSelectList } from '../../../actions/Common';
 import { MESSAGES } from '../../../config/message'
-import { CBCTypeId, EMPTY_DATA, LABOUR_VENDOR_TYPE, searchCount, SPACEBAR, VBCTypeId, ZBCTypeId } from '../../../config/constants'
+import { CBCTypeId, effectiveDateRangeDays, EMPTY_DATA, LABOUR_VENDOR_TYPE, searchCount, SPACEBAR, VBCTypeId, ZBCTypeId } from '../../../config/constants'
 import { loggedInUserId } from '../../../helper/auth'
 import Switch from 'react-switch'
 import DatePicker from 'react-datepicker'
@@ -27,6 +27,7 @@ import { onFocus } from '../../../helper'
 import { reactLocalStorage } from 'reactjs-localstorage'
 import { autoCompleteDropdown } from '../../common/CommonFunctions'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper'
+import { subDays } from 'date-fns'
 
 const selector = formValueSelector('AddLabour')
 
@@ -1151,6 +1152,8 @@ class AddLabour extends Component {
                               onChangeRaw={(e) => e.preventDefault()}
                               disabled={isViewMode}
                               valueDescription={this.state.effectiveDate}
+                              minDate={subDays(new Date(), effectiveDateRangeDays)}
+
                             />
                             {this.state.errorObj.effectiveDate && this.state.effectiveDate === "" && <div className='text-help'>This field is required.</div>}
                           </div>

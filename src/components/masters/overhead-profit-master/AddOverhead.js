@@ -14,7 +14,7 @@ import { MESSAGES } from '../../../config/message';
 import { getConfigurationKey, loggedInUserId, showBopLabel } from "../../../helper/auth";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
-import { CBCTypeId, FILE_URL, GUIDE_BUTTON_SHOW, SPACEBAR, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, searchCount } from '../../../config/constants';
+import { CBCTypeId, FILE_URL, GUIDE_BUTTON_SHOW, SPACEBAR, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, effectiveDateRangeDays, searchCount } from '../../../config/constants';
 import DayTime from '../../common/DayTimeWrapper'
 import LoaderCustom from '../../common/LoaderCustom';
 import imgRedcross from '../../../assests/images/red-cross.png'
@@ -30,6 +30,7 @@ import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from './TourMessages';
 import { withTranslation } from 'react-i18next';
 import Button from '../../layout/Button';
+import { subDays } from 'date-fns';
 
 const selector = formValueSelector('AddOverhead');
 
@@ -1301,7 +1302,7 @@ class AddOverhead extends Component {
                               selected={this.state.effectiveDate}
                               onChange={this.handleEffectiveDateChange}
                               type="text"
-                              minDate={this.state.minEffectiveDate}
+                              minDate={isEditFlag ? this.state.minEffectiveDate : subDays(new Date(), effectiveDateRangeDays)}
                               validate={[required]}
                               autoComplete={'off'}
                               required={true}

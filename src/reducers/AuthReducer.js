@@ -44,7 +44,9 @@ import {
     ONBOARDING_LEVEL_DATALIST_API,
     GET_ONBOARDING_LEVEL_BY_ID,
     GET_PLANT_SELECT_LIST_FOR_DEPARTMENT,
-    MANAGE_LEVEL_TAB_API
+    MANAGE_LEVEL_TAB_API,
+    GET_DIVISION_SUCCESS,
+    GET_DIVISION_LIST_SUCCESS
 } from '../../src/config/constants'
 import DayTime from '../components/common/DayTimeWrapper'
 import { showBopLabel, updateBOPValues } from '../helper'
@@ -418,6 +420,20 @@ export default function authReducer(state = initialState, action) {
             return {
                 ...state,
                 isCallApi: action.payload
+            }
+        case GET_DIVISION_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                divisionAllList: action.payload
+            }
+        case GET_DIVISION_LIST_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                divisionList: action.payload
             }
         default:
             return state;

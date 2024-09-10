@@ -16,7 +16,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import AddVendorDrawer from "../supplier-master/AddVendorDrawer";
 import DayTime from "../../common/DayTimeWrapper"
 import NoContentFound from "../../common/NoContentFound";
-import { CBCTypeId, EMPTY_DATA, FullTruckLoad, SPACEBAR, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, searchCount } from "../../../config/constants";
+import { CBCTypeId, EMPTY_DATA, FullTruckLoad, SPACEBAR, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, effectiveDateRangeDays, searchCount } from "../../../config/constants";
 import LoaderCustom from "../../common/LoaderCustom";
 import { debounce } from "lodash";
 import AsyncSelect from 'react-select/async';
@@ -27,6 +27,7 @@ import { autoCompleteDropdown, getCostingTypeIdByCostingPermission } from "../..
 import PopupMsgWrapper from "../../common/PopupMsgWrapper";
 import { FREIGHT_LOAD_OPTIONS } from "../../../config/masterData";
 import { label } from "react-dom-factories";
+import { subDays } from "date-fns";
 
 
 const selector = formValueSelector("AddFreight");
@@ -989,6 +990,8 @@ class AddFreight extends Component {
                                   disabledKeyboardNavigation
                                   onChangeRaw={(e) => e.preventDefault()}
                                   disabled={isViewMode || isEditMode}
+                                  minDate={subDays(new Date(), effectiveDateRangeDays)}
+
                                 />
                                 {this.state.showEffectiveDateError && <div className='text-help'>This field is required.</div>}
                               </div>

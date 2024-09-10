@@ -107,9 +107,10 @@ export const MESSAGES = {
   //INDEXATION
   INDEX_ADD_SUCCESS: 'Record added successfully',
   INDEX_DELETE_ALERT: 'Are you sure you want to delete this record?',
-  INDEX_DELETE_SUCCESS: 'Record deleted successfully',
+  INDEX_DELETE_SUCCESS: 'Record(s) deleted successfully',
   INDEX_UPDATE_SUCCESS: 'Record updated successfully',
   DELETE: 'Are you sure you want to delete this record?',
+  DELETE_ALL: 'Are you sure you want to delete the selected record(s)?',
 
   //OVERHEAD AND PROFIT
   OVERHEAD_ADDED_SUCCESS: 'Overhead added successfully',
@@ -272,6 +273,12 @@ export const MESSAGES = {
   ADD_DEPARTMENT_SUCCESSFULLY: `${handleDepartmentHeader()} added successfully`,
   UPDATE_DEPARTMENT_SUCCESSFULLY: `${handleDepartmentHeader()} updated successfully`,
   DELETE_DEPARTMENT_SUCCESSFULLY: `${handleDepartmentHeader()} deleted successfully`,
+
+  //DIVISION
+  DIVISION_DELETE_ALERT: `Are you sure you want to delete this division?`,
+  ADD_DIVISION_SUCCESSFULLY: `Division added successfully`,
+  UPDATE_DIVISION_SUCCESSFULLY: `Division updated successfully`,
+  DELETE_DIVISION_SUCCESSFULLY: `Division deleted successfully`,
 
   //LEVEL
   ADD_LEVEL_SUCCESSFULLY: 'User level added successfully',

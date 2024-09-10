@@ -15,6 +15,7 @@ import { PaginationWrapper } from "../../common/commonPagination";
 import AddProductHierarchy from "./AddProductHierarchy";
 import { getAllProductLevels } from "../actions/Part";
 import LoaderCustom from "../../common/LoaderCustom";
+import UpdateHierarchyLabels from "./UpdateHierarchyLabels";
 
 const gridOptions = {};
 
@@ -28,18 +29,17 @@ const ProductHierarchyListing = (props) => {
         noData: false,
         rowData: [],
         isDrawerOpen: false,
-        searchText: ''
+        searchText: '',
+        labelupdateDrawerOpen: false,
+        levelId: ''
     });
     const { globalTakes } = useSelector((state) => state.pagination);
-    const permissions = useContext(ApplyPermission);
     const dispatch = useDispatch()
     const { productHierarchyData } = useSelector((state) => state.part);
     useEffect(() => {
-        if (productHierarchyData?.length === 0) {
-            setState(prevState => ({ ...prevState, isLoader: true }))
-        }
+        setState(prevState => ({ ...prevState, isLoader: true }))
         dispatch(getAllProductLevels((res) => {
-            setState(prevState => ({ ...prevState, isLoader: false }))
+            setState(prevState => ({ ...prevState, isLoader: false, rowData: productHierarchyData }))
         }))
     }, [])
     const resetState = () => {
@@ -76,9 +76,33 @@ const ProductHierarchyListing = (props) => {
     const onPageSizeChanged = (newPageSize) => {
         state.gridApi.paginationSetPageSize(Number(newPageSize));
     };
+    const EditLabel = (id) => {
+        setState(prevState => ({ ...prevState, labelupdateDrawerOpen: true, levelId: id }))
+    }
+    const ButtonFormatter = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const disabled = !rowData.IsProductLevelChangeAllowed || props.agGridReact?.gridOptions?.rowData?.length === cellValue
+
+        return (
+            <>
+                <button
+                    title="Edit"
+                    className="Edit mr-2 Tour_List_Edit"
+                    type={"button"}
+                    onClick={() => EditLabel(cellValue)}
+                    disabled={disabled}
+                />
+            </>
+        );
+    };
     const frameworkComponents = {
         customNoRowsOverlay: NoContentFound,
+        ButtonFormatter: ButtonFormatter
     };
+    const cancelDrawer = () => {
+        setState((prevState) => ({ ...prevState, labelupdateDrawerOpen: false }));
+    }
     return (
         <>
             <div className="ag-grid-react">
@@ -86,7 +110,7 @@ const ProductHierarchyListing = (props) => {
                     <Col md="9" className="search-user-block pr-0">
                         <div className="d-flex justify-content-end bd-highlight w100">
                             <div className="d-flex">
-                                {permissions.Add && (
+                                {(
                                     <button
                                         type="button"
                                         className={"user-btn mr5 Tour_List_Add"}
@@ -138,12 +162,15 @@ const ProductHierarchyListing = (props) => {
                             >
                                 <AgGridColumn field="LevelNo" headerName="Level"  ></AgGridColumn>
                                 <AgGridColumn field="LevelName" headerName="Level Name" ></AgGridColumn>
+                                <AgGridColumn field="LevelId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={"ButtonFormatter"}
+                                ></AgGridColumn>
                             </AgGridReact>}
                         {<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} />}
                     </div>
                 </div>
             </div>
             {state.isDrawerOpen && <AddProductHierarchy isOpen={state.isDrawerOpen} toggle={formToggle} />}
+            {state.labelupdateDrawerOpen && <UpdateHierarchyLabels isOpen={state.labelupdateDrawerOpen} levelId={state.levelId} cancelDrawer={cancelDrawer} />}
         </>
     );
 };

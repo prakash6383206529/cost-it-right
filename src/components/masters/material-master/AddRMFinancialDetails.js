@@ -1,6 +1,6 @@
 import React, { Fragment, useEffect, useState } from "react"
 import { fetchSpecificationDataAPI, getCurrencySelectList, getPlantSelectListByType, getUOMSelectList, getVendorNameByVendorSelectList, getFrequencySettlement, getExchangeRateSource } from "../../../actions/Common"
-import { CBCTypeId, EMPTY_GUID, ENTRY_TYPE_DOMESTIC, SPACEBAR, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, searchCount } from "../../../config/constants"
+import { CBCTypeId, EMPTY_GUID, ENTRY_TYPE_DOMESTIC, SPACEBAR, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, effectiveDateRangeDays, searchCount } from "../../../config/constants"
 import { useDispatch, useSelector } from "react-redux"
 import { getCostingSpecificTechnology, getExchangeRateByCurrency } from "../../costing/actions/Costing"
 import { IsShowFreightAndShearingCostFields, getConfigurationKey, labelWithUOMAndCurrency, labelWithUOMAndUOM, loggedInUserId, showRMScrapKeys } from "../../../helper"
@@ -1850,7 +1850,7 @@ function AddRMFinancialDetails(props) {
                                         disabled={disableAll || isViewFlag}
                                         mandatory={true}
                                         errors={errors && errors.effectiveDate}
-                                        minDate={state.isShowIndexCheckBox ? addDays(new Date(state.toDate), 1) : state.minDate}
+                                        minDate={state.isShowIndexCheckBox ? addDays(new Date(state.toDate), 1) : isEditFlag ? state.minDate : subDays(new Date(), effectiveDateRangeDays)}
                                     />
                                 </div>
                             </Col>

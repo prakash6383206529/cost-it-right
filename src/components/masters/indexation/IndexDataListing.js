@@ -672,7 +672,7 @@ const IndexDataListing = (props) => {
                     isOpen={state?.showPopup}
                     closePopUp={closePopUp}
                     confirmPopup={onPopupConfirm}
-                    message={`${dataCount === 0 ? MESSAGES.DELETE : "Are you sure you want to delete the selected record(s)?"}`}
+                    message={`${dataCount === 0 ? MESSAGES.DELETE : MESSAGES.DELETE_ALL}`}
                 />
             )}
             {isBulkUpload && (
