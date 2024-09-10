@@ -10,7 +10,7 @@ import {
 } from '../../actions/Costing';
 import { fetchCostingHeadsAPI, getConditionDetails, getCurrencySelectList, getNpvDetails, saveCostingDetailCondition, saveCostingDetailNpv, } from '../../../../actions/Common';
 import { costingInfoContext, netHeadCostContext, NetPOPriceContext } from '../CostingDetailStepTwo';
-import { calculatePercentage, checkForDecimalAndNull, checkForNull, loggedInUserId, removeBOPfromApplicability, maxLength20, showSaLineNumber, showBopLabel, getConfigurationKey } from '../../../../helper';
+import { calculatePercentage, checkForDecimalAndNull, checkForNull, loggedInUserId, removeBOPfromApplicability, maxLength20, showSaLineNumber, showBopLabel, getConfigurationKey, IsFetchExchangeRateVendorWise } from '../../../../helper';
 //MINDA
 // import {  removeBOPFromList} from '../../../../helper';
 import { debounce } from 'lodash';
@@ -18,7 +18,7 @@ import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
 import { Redirect, useHistory } from "react-router-dom";
 import redcrossImg from '../../../../assests/images/red-cross.png';
-import { ATTACHMENT, CAPACITY, CRMHeads, EMPTY_GUID, FEASIBILITY, FILE_URL, IsFetchExchangeRateVendorWise, isShowTaxCode, NFRTypeId, TIMELINE, VBCTypeId, WACTypeId, ZBCTypeId } from '../../../../config/constants';
+import { ATTACHMENT, CAPACITY, CRMHeads, EMPTY_GUID, FEASIBILITY, FILE_URL, isShowTaxCode, NFRTypeId, TIMELINE, VBCTypeId, WACTypeId, ZBCTypeId } from '../../../../config/constants';
 import { IdForMultiTechnology } from '../../../../config/masterData';
 import { MESSAGES } from '../../../../config/message';
 import DayTime from '../../../common/DayTimeWrapper';
@@ -77,6 +77,7 @@ function TabDiscountOther(props) {
   const headerCosts = useContext(netHeadCostContext);
   const currencySelectList = useSelector(state => state.comman.currencySelectList)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
+  console.log('initialConfiguration: ', initialConfiguration);
 
   const { DiscountCostData, ExchangeRateData, CostingEffectiveDate, RMCCTabData, CostingInterestRateDetail, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, CostingDataList, getAssemBOPCharge, ErrorObjDiscount, isBreakupBoughtOutPartCostingFromAPI, DiscountAndOtherCostTabData, UpdatePaymentTermCost, checkIsPaymentTermsDataChange, PaymentTermDataDiscountTab, getTcoDetails, IsRfqCostingType } = useSelector(state => state.costing)
   const [totalCost, setTotalCost] = useState(0)
@@ -288,8 +289,8 @@ function TabDiscountOther(props) {
     return <div className='d-flex align-items-center'>
       <TooltipCustom disabledIcon={true} width="280px" id="totalDiscountCost" tooltipText={"Discount Cost = Sum of Discount cost added in Discount cost drawer"} />
       <TextFieldHookForm
-label={`${discountLabel} Value`}
-name={'HundiOrDiscountValue'}
+        label={`${discountLabel} Value`}
+        name={'HundiOrDiscountValue'}
         Controller={Controller}
         control={control}
         id="totalDiscountCost"
@@ -939,10 +940,10 @@ name={'HundiOrDiscountValue'}
       dispatch(isDiscountDataChange(true))
       setCurrency(newValue)
       setIsInputLader(true)
-      const vendorValue = IsFetchExchangeRateVendorWise ? costData?.VendorId : EMPTY_GUID
+      const vendorValue = IsFetchExchangeRateVendorWise() ? costData?.VendorId : EMPTY_GUID
 
       let costingTypeId = (costData.CostingTypeId === VBCTypeId || costData.CostingTypeId === NFRTypeId) ? VBCTypeId : costData.CostingTypeId
-      const costingType = IsFetchExchangeRateVendorWise ? costingTypeId : ZBCTypeId
+      const costingType = IsFetchExchangeRateVendorWise() ? costingTypeId : ZBCTypeId
       dispatch(getExchangeRateByCurrency(newValue.label, costingType, DayTime(CostingEffectiveDate).format('YYYY-MM-DD'), vendorValue, costData.CustomerId, false, res => {
         setIsInputLader(false)
         if (Object.keys(res.data.Data).length === 0) {
