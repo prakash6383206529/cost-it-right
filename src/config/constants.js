@@ -177,6 +177,8 @@ export const API = {
   getAllProductLevels: `${BASE_URL}/masters-product/get-all-product-levels`,
   createProductLevelValues: `${BASE_URL}/masters-product/create-product-level-values`,
   getPreFilledProductLevelValues: `${BASE_URL}/masters-product/get-product-level-values-by-level-value-id`,
+  getProductLabel: `${BASE_URL}/masters-product/get-product-level-by-id`,
+  updateProductLabel: `${BASE_URL}/masters-product/update-product-level`,
 
   //ASSEMBLY PART
   createAssemblyPart: `${BASE_URL}/masters-part/create-assembly-part`,
