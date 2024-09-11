@@ -132,8 +132,8 @@ function AddRMMaster(props) {
                 '',
                 '',
                 getValues('ExchangeSource')?.label ?? '',
-                DayTime(getValues('fromDate')).format('YYYY-MM-DD'),
-                DayTime(getValues('toDate')).format('YYYY-MM-DD'),
+                DayTime(getValues('fromDate'))?.format('YYYY-MM-DD'),
+                DayTime(getValues('toDate'))?.format('YYYY-MM-DD'),
                 (res) => {
                     setValue('UnitOfMeasurement', { label: res?.data?.Data, value: res?.data?.Identity })
                     const updatedCommodityDetails = state.commodityDetails.map(detail => {
@@ -194,7 +194,7 @@ function AddRMMaster(props) {
     }, [])
     useEffect(() => {
 
-        if (!isViewFlag && getConfigurationKey().IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {
+        if (!getConfigurationKey().IsDivisionAllowedForDepartment && !isViewFlag && getConfigurationKey().IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {
 
             dispatch(getUsersMasterLevelAPI(loggedInUserId(), RM_MASTER_ID, (res) => {
                 setTimeout(() => {
@@ -204,7 +204,7 @@ function AddRMMaster(props) {
         }
     }, [state.costingTypeId])
 
-    const userMasterLevelAPI = useSelector((state) => state.auth.userMasterLevelAPI)
+    const { userMasterLevelAPI } = useSelector((state) => state.auth)
     /**
      * @method onPressVendor
      * @description Used for Vendor checked
@@ -225,7 +225,7 @@ function AddRMMaster(props) {
         dispatch(fetchSpecificationDataAPI(0, () => { }))
         props?.hideForm(type)
     }
-    const commonFunction = (plantId = EMPTY_GUID) => {
+    const commonFunction = (plantId = EMPTY_GUID, isDivision = false) => {
         let levelDetailsTemp = []
         levelDetailsTemp = userTechnologyDetailByMasterId(state.costingTypeId, RM_MASTER_ID, userMasterLevelAPI)
 
@@ -238,14 +238,20 @@ function AddRMMaster(props) {
             approvalTypeId: costingTypeIdToApprovalTypeIdFunction(state.costingTypeId),
             plantId: plantId
         }
-        if (getConfigurationKey().IsMasterApprovalAppliedConfigure) {
+        if (isDivision) {
+            dispatch(getUsersMasterLevelAPI(loggedInUserId(), RM_MASTER_ID, (res) => {
+                setTimeout(() => {
+                    commonFunction()
+                }, 100);
+            }))
+        }
+        if (getConfigurationKey().IsMasterApprovalAppliedConfigure && !isDivision) {
             dispatch(checkFinalUser(obj, (res) => {
                 if (res?.data?.Result && res?.data?.Data?.IsFinalApprover) {
 
                     setState(prevState => ({ ...prevState, isFinalApprovar: res?.data?.Data?.IsFinalApprover, CostingTypePermission: true, finalApprovalLoader: false, disableSendForApproval: false }))
                 }
                 else if (res?.data?.Data?.IsUserInApprovalFlow === false || res?.data?.Data?.IsNextLevelUserExist === false) {
-
                     setState(prevState => ({ ...prevState, disableSendForApproval: true }))
                 } else {
                     setState(prevState => ({ ...prevState, disableSendForApproval: false }))
@@ -274,7 +280,7 @@ function AddRMMaster(props) {
                         }))
                         dispatch(setOtherCostDetails(Data?.RawMaterialOtherCostDetails))
                         dispatch(setCommodityDetails(Data?.MaterialCommodityIndexRateDetails))
-                        if (getConfigurationKey().IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {
+                        if (!getConfigurationKey().IsDivisionAllowedForDepartment && getConfigurationKey().IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {
                             dispatch(getUsersMasterLevelAPI(loggedInUserId(), RM_MASTER_ID, (res) => {
                                 setTimeout(() => {
                                     commonFunction(Data?.Plant[0]?.PlantId)
@@ -314,9 +320,20 @@ function AddRMMaster(props) {
             cancel('submit')
         }
     }
+    const handleRMOperation = (formData, isEdit) => {
+        const action = isEdit ? updateRMAPI : createRM;
+        const successMessage = isEdit ? MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS : MESSAGES.MATERIAL_ADD_SUCCESS;
 
+        dispatch(action(formData, (res) => {
+            if (res?.data?.Result) {
+                Toaster.success(successMessage);
+                cancel('submit');
+            }
+        }));
+    };
 
-    const onSubmit = debounce(handleSubmit((values) => {
+    const onSubmit = debounce(handleSubmit((values, isDivision) => {
+        console.log(values, 'values')
         const { DataToChange } = state
         let scrapRate = ''
         let jaliRateBaseCurrency = ''
@@ -325,7 +342,7 @@ function AddRMMaster(props) {
         const { ShowScrapKeys } = rawMaterailDetails
         const Plants = values.Plants
         if (ShowScrapKeys?.showCircleJali) {
-
+            console.log("ShowScrapKeys.showCircleJali condition met")
             scrapRate = state?.isImport ? checkForNull(values?.JaliScrapCostSelectedCurrency) : checkForNull(values?.JaliScrapCostBaseCurrency)
             scrapRateInr = state?.isImport ? checkForNull(values?.JaliScrapCostBaseCurrency) : 0
             jaliRateBaseCurrency = checkForNull(values?.CircleScrapCostBaseCurrency)
@@ -336,7 +353,7 @@ function AddRMMaster(props) {
             }
 
         } else if (ShowScrapKeys?.showForging) {
-
+            console.log("ShowScrapKeys.showForging condition met")
             scrapRate = state?.isImport ? checkForNull(values?.ForgingScrapSelectedCurrency) : checkForNull(values?.ForgingScrapBaseCurrency)
             scrapRateInr = state?.isImport ? checkForNull(values?.ForgingScrapSelectedCurrency) : 0
             machiningRateBaseCurrency = state?.isImport ? checkForNull(values?.MachiningScrapSelectedCurrency) : checkForNull(values?.MachiningScrapBaseCurrency)
@@ -347,7 +364,7 @@ function AddRMMaster(props) {
             }
 
         } else if (ShowScrapKeys?.showScrap) {
-
+            console.log("ShowScrapKeys.showScrap condition met")
             scrapRate = state?.isImport ? checkForNull(values?.ScrapRateSelectedCurrency) : checkForNull(values?.ScrapRateBaseCurrency)
             scrapRateInr = state?.isImport ? checkForNull(values?.ScrapRateBaseCurrency) : 0
             if (checkForNull(values?.BasicRateBaseCurrency) < checkForNull(scrapRate)) {
@@ -358,11 +375,13 @@ function AddRMMaster(props) {
         }
         let plantArray = []
         if ((state.costingTypeId === ZBCTypeId && !getConfigurationKey().IsMultipleUserAllowForApproval) || state.isEditFlag) {
+            console.log("state.costingTypeId === ZBCTypeId && !getConfigurationKey().IsMultipleUserAllowForApproval condition met")
             Plants && Plants.map((item) => {
                 plantArray.push({ PlantName: item.label, PlantId: item.value, PlantCode: '', })
                 return plantArray
             })
         } else {
+            console.log("else condition met")
             plantArray.push({ PlantName: values?.Plants?.label, PlantId: values?.Plants?.value, PlantCode: '', })
         }
         let formData = {
@@ -448,7 +467,7 @@ function AddRMMaster(props) {
             "SourceVendorId": rawMaterailDetails?.SourceVendor?.value ?? null
         }
 
-
+        console.log('dfdf')
         let basicRate = state.isImport ? checkForNull(values?.BasicRateSelectedCurrency) : checkForNull(values.BasicRateBaseCurrency)
         let cuttOffPrice = state.isImport ? checkForNull(values?.cutOffPriceSelectedCurrency) : checkForNull(values.cutOffPriceBaseCurrency)
         let shearingCost = state.isImport ? checkForNull(values?.ShearingCostSelectedCurrency) : checkForNull(values.ShearingCostBaseCurrency)
@@ -464,20 +483,24 @@ function AddRMMaster(props) {
             && (shearingCost === checkForNull(DataToChange?.RMShearingCost)) && (circleScrapCost === checkForNull(DataToChange?.JaliScrapCost)) && (machiningScrapCost === checkForNull(DataToChange?.MachiningScrapRate))
         let nonFinancialDataNotChanged = (JSON.stringify(rawMaterailDetails.Files) === JSON.stringify(DataToChange?.FileList) && values?.Remarks === DataToChange?.Remark)
         if (state.isEditFlag) {
+            console.log('state.isEditFlag')
             if (!isRMAssociated) {
-
+                console.log('!isRMAssociated')
                 if (financialDataNotChanged && nonFinancialDataNotChanged) {
+                    console.log('financialDataNotChanged && nonFinancialDataNotChanged')
                     if (!state.isFinalApprovar && getConfigurationKey().IsMasterApprovalAppliedConfigure) {
                         Toaster.warning('Please change data to send RM for approval')
                         return false
                     }
                 } else if (!state?.isSourceVendor && (!financialDataNotChanged) && DayTime(values?.effectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(DataToChange?.EffectiveDate).format('YYYY-MM-DD HH:mm:ss')) {
                     Toaster.warning('Please update the effective date')
+                    console.log('!state?.isSourceVendor')
                     setState(prevState => ({ ...prevState, isDateChanged: true }))
                     return false
                 }
                 formData.IsFinancialDataChanged = false
             } else {
+                console.log('else')
                 formData.IsFinancialDataChanged = financialDataNotChanged ? false : true
             }
 
@@ -492,22 +515,8 @@ function AddRMMaster(props) {
                 ...prevState, approveDrawer: true, approvalObj: formData
             }))
         } else {
-            if (state.isEditFlag) {
-                formData.IsSendForApproval = false
-                dispatch(updateRMAPI(formData, (res) => {
-                    if (res?.data?.Result) {
-                        Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
-                        cancel('submit')
-                    }
-                }))
-            } else {
-                dispatch(createRM(formData, (res) => {
-                    if (res?.data?.Result) {
-                        Toaster.success(MESSAGES.MATERIAL_ADD_SUCCESS)
-                        cancel('submit')
-                    }
-                }))
-            }
+            formData.IsSendForApproval = false;
+            handleRMOperation(formData, state.isEditFlag);
         }
 
 
@@ -611,7 +620,6 @@ function AddRMMaster(props) {
                             useWatch={useWatch}
                             DataToChange={state.DataToChange}
                             data={data}
-                            commonFunction={commonFunction}
                             AddAccessibilityRMANDGRADE={AddAccessibilityRMANDGRADE}
                             EditAccessibilityRMANDGRADE={EditAccessibilityRMANDGRADE}
                             disableAll={state.disableAll}
@@ -699,6 +707,9 @@ function AddRMMaster(props) {
                             Technology={state.Technology}
                             showScrapKeys={rawMaterailDetails?.ShowScrapKeys}
                             toolTipTextObject={state.toolTipTextObject}
+                            handleOperation={handleRMOperation}
+                            commonFunction={commonFunction}
+                            isEdit={state.isEditFlag}
                         />
                     )
                 }

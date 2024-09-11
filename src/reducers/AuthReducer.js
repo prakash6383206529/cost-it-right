@@ -46,7 +46,8 @@ import {
     GET_PLANT_SELECT_LIST_FOR_DEPARTMENT,
     MANAGE_LEVEL_TAB_API,
     GET_DIVISION_SUCCESS,
-    GET_DIVISION_LIST_SUCCESS
+    GET_DIVISION_LIST_SUCCESS,
+    GET_DIVISION_LIST_FOR_DEPARTMENT
 } from '../../src/config/constants'
 import DayTime from '../components/common/DayTimeWrapper'
 import { showBopLabel, updateBOPValues } from '../helper'
@@ -434,6 +435,13 @@ export default function authReducer(state = initialState, action) {
                 loading: false,
                 error: true,
                 divisionList: action.payload
+            }
+        case GET_DIVISION_LIST_FOR_DEPARTMENT:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                divisionListForDepartment: action.payload
             }
         default:
             return state;

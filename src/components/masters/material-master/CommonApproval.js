@@ -1053,6 +1053,7 @@ function CommonApproval(props) {
                     approvalData={selectedRowData}
                     levelDetails={levelDetails}
                     costingTypeId={selectedRowData[0]?.CostingTypeId}
+                    approvalListing={true}
                 />
             }
             {
