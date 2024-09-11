@@ -90,7 +90,7 @@ class AddBOPDomestic extends Component {
       remarks: '',
       showErrorOnFocus: false,
       showErrorOnFocusDate: false,
-      finalApprovalLoader: true,
+      finalApprovalLoader: getConfigurationKey().IsDivisionAllowedForDepartment ? false : true,
       client: [],
       costingTypeId: ZBCTypeId,
       showPopup: false,
@@ -173,19 +173,19 @@ class AddBOPDomestic extends Component {
     setTimeout(() => {
       this.getDetails()
       this.props.getCostingSpecificTechnology(loggedInUserId(), () => { this.setState({ inputLoader: false }) })
-      if (!(this.props.data.isEditFlag || this.props.data.isViewMode)) {
-        this.props.getClientSelectList(() => { })
+      if (!(this.props.data.isEditFlag || this.props.data.isViewMode) && !getConfigurationKey().IsDivisionAllowedForDepartment) {
         this.finalUserCheckAndMasterLevelCheckFunction(EMPTY_GUID)
       }
+      this.props.getClientSelectList(() => { })
     }, 300);
   }
 
-  finalUserCheckAndMasterLevelCheckFunction = (plantId) => {
+  finalUserCheckAndMasterLevelCheckFunction = (plantId, isDivision = false) => {
     const { initialConfiguration } = this.props
     if (!this.state.isViewMode && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(BOP_MASTER_ID) === true) {
       this.props.getUsersMasterLevelAPI(loggedInUserId(), BOP_MASTER_ID, (res) => {
         setTimeout(() => {
-          this.commonFunction(plantId)
+          this.commonFunction(plantId, isDivision)
         }, 100);
       })
     } else {
@@ -193,7 +193,7 @@ class AddBOPDomestic extends Component {
     }
   }
 
-  commonFunction(plantId = EMPTY_GUID) {
+  commonFunction(plantId = EMPTY_GUID, isDivision) {
     let levelDetailsTemp = []
     levelDetailsTemp = userTechnologyDetailByMasterId(this.state.costingTypeId, BOP_MASTER_ID, this.props.userMasterLevelAPI)
     this.setState({ levelDetails: levelDetailsTemp })
@@ -205,7 +205,7 @@ class AddBOPDomestic extends Component {
       approvalTypeId: costingTypeIdToApprovalTypeIdFunction(this.state.costingTypeId),
       plantId: plantId
     }
-    if (this.props.initialConfiguration.IsMasterApprovalAppliedConfigure) {
+    if (this.props.initialConfiguration.IsMasterApprovalAppliedConfigure && !isDivision) {
       this.props.checkFinalUser(obj, (res) => {
         if (res?.data?.Result) {
           this.setState({ isFinalApprovar: res?.data?.Data?.IsFinalApprover, CostingTypePermission: true, finalApprovalLoader: false })
@@ -227,7 +227,7 @@ class AddBOPDomestic extends Component {
       this.toolTipNetCost()
       this.handleCalculation()
     }
-    if ((prevState?.costingTypeId !== this.state.costingTypeId) && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(BOP_MASTER_ID) === true) {
+    if (!getConfigurationKey().IsDivisionAllowedForDepartment && (prevState?.costingTypeId !== this.state.costingTypeId) && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(BOP_MASTER_ID) === true) {
       this.commonFunction(this.state.selectedPlants && this.state.selectedPlants.value)
     }
   }
@@ -528,7 +528,9 @@ class AddBOPDomestic extends Component {
   handlePlant = (e) => {
 
     this.setState({ selectedPlants: e })
-    this.commonFunction(e ? e.value : '')
+    if (!getConfigurationKey().IsDivisionAllowedForDepartment) {
+      this.commonFunction(e ? e.value : '')
+    }
   }
 
   /**
@@ -872,6 +874,34 @@ class AddBOPDomestic extends Component {
       }
     }
   };
+  handleBOPOperation = (formData, isEditFlag) => {
+    const operation = isEditFlag ? this.props.updateBOP : this.props.createBOP;
+    const successMessage = isEditFlag ? MESSAGES.UPDATE_BOP_SUCESS : MESSAGES.BOP_ADD_SUCCESS;
+
+    operation(formData, (res) => {
+      this.setState({ setDisable: false });
+      if (res?.data?.Result) {
+        Toaster.success(successMessage);
+        if (isEditFlag) {
+          if (!this.state.isEditBtnClicked) {
+            this.cancel('submit');
+          } else {
+            this.getDetails();
+            this.setState({
+              IsSapCodeEditView: true,
+              IsSAPCodeHandle: false
+            });
+          }
+        } else {
+          this.cancel('submit');
+        }
+      }
+    });
+
+    if (isEditFlag) {
+      this.setState({ updatedObj: formData });
+    }
+  }
 
   /**
   * @method 
@@ -879,6 +909,7 @@ class AddBOPDomestic extends Component {
   * @description Used to Submit the form
   */
   onSubmit = debounce((values) => {
+    console.log(values, 'values')
     const { BOPCategory, selectedPlants, vendorName, costingTypeId, sourceLocation, BOPID, isEditFlag, files, DropdownChanged, oldDate, client, effectiveDate, UOM, DataToCheck, isDateChange, IsFinancialDataChanged,
       isClientVendorBOP, isTechnologyVisible, Technology, FinalConditionCostBaseCurrency, FinalBasicPriceBaseCurrency, FinalNetLandedCostBaseCurrency, FinalBasicRateBaseCurrency, conditionTableData, isBOPAssociated, IsSAPCodeHandle, IsSAPCodeUpdated } = this.state;
     const { fieldsObj } = this.props;
@@ -902,18 +933,18 @@ class AddBOPDomestic extends Component {
     formData.IsFinancialDataChanged = isDateChange ? true : false
     formData.BoughtOutPartId = BOPID
     formData.CostingTypeId = costingTypeId
-    formData.BoughtOutPartNumber = values.BoughtOutPartNumber
-    formData.BoughtOutPartName = values.BoughtOutPartName
+    formData.BoughtOutPartNumber = values?.BoughtOutPartNumber
+    formData.BoughtOutPartName = values?.BoughtOutPartName
     formData.CategoryId = BOPCategory.value
-    formData.Specification = values.Specification
-    formData.SAPPartNumber = values.SAPPartNumber
+    formData.Specification = values?.Specification
+    formData.SAPPartNumber = values?.SAPPartNumber
     formData.UnitOfMeasurementId = UOM.value
     formData.Vendor = vendorName.value
-    formData.Source = values.Source
+    formData.Source = values?.Source
     formData.SourceLocation = sourceLocation.value
     formData.EffectiveDate = DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss')
-    formData.NumberOfPieces = getConfigurationKey().IsMinimumOrderQuantityVisible ? values.NumberOfPieces : 1
-    formData.Remark = values.Remark
+    formData.NumberOfPieces = getConfigurationKey().IsMinimumOrderQuantityVisible ? values?.NumberOfPieces : 1
+    formData.Remark = values?.Remark
     formData.IsActive = true
     formData.LoggedInUserId = loggedInUserId()
     formData.Plant = [plantArray]
@@ -950,9 +981,9 @@ class AddBOPDomestic extends Component {
       // CHECK IF THERE IS CHANGE !!!  
       // IF: NO CHANGE  
 
-      if (((files ? JSON.stringify(files) : []) === (DataToCheck.Attachements ? JSON.stringify(DataToCheck.Attachements) : [])) && ((DataToCheck.Remark ? DataToCheck.Remark : '') === (values.Remark ? values.Remark : '')) &&
-        ((DataToCheck.SAPPartNumber ? DataToCheck.SAPPartNumber : '') === (values.SAPPartNumber ? values.SAPPartNumber : '')) &&
-        ((DataToCheck.Source ? String(DataToCheck.Source) : '-') === (values.Source ? String(values.Source) : '-')) &&
+      if (((files ? JSON.stringify(files) : []) === (DataToCheck.Attachements ? JSON.stringify(DataToCheck.Attachements) : [])) && ((DataToCheck.Remark ? DataToCheck.Remark : '') === (values?.Remark ? values?.Remark : '')) &&
+        ((DataToCheck.SAPPartNumber ? DataToCheck.SAPPartNumber : '') === (values?.SAPPartNumber ? values?.SAPPartNumber : '')) &&
+        ((DataToCheck.Source ? String(DataToCheck.Source) : '-') === (values?.Source ? String(values?.Source) : '-')) &&
         ((DataToCheck.SourceLocation ? String(DataToCheck.SourceLocation) : '') === (sourceLocation?.value ? String(sourceLocation?.value) : '')) &&
         checkForNull(fieldsObj?.BasicRateBase) === checkForNull(DataToCheck?.BasicRate) && checkForNull(basicPriceBaseCurrency) === checkForNull(DataToCheck?.NetCostWithoutConditionCost) &&
         checkForNull(netLandedCostBaseCurrency) === checkForNull(DataToCheck?.NetLandedCost) && checkForNull(FinalConditionCostBaseCurrency) === checkForNull(DataToCheck?.NetConditionCost) && DropdownChanged && ((DataToCheck.TechnologyId ? String(DataToCheck.TechnologyId) : '') === (Technology?.value ? String(Technology?.value) : ''))) {
@@ -980,36 +1011,8 @@ class AddBOPDomestic extends Component {
     }
     //  ELSE: NO APPROVAL FLOW
     else {
-      if (isEditFlag) {
-        formData.IsSendForApproval = false
-        this.props.updateBOP(formData, (res) => {
-          this.setState({ setDisable: false })
-          if (res?.data?.Result) {
-            Toaster.success(MESSAGES.UPDATE_BOP_SUCESS);
-            if (!this.state.isEditBtnClicked) {
-              this.cancel('submit');
-            }
-            else {
-              //call get api after sapcode updated
-              this.getDetails();
-              this.setState({
-                IsSapCodeEditView: true,
-                IsSAPCodeHandle: false
-
-              })
-            }
-          }
-        })
-        this.setState({ updatedObj: formData })
-      } else {
-        this.props.createBOP(formData, (res) => {
-          this.setState({ setDisable: false })
-          if (res?.data?.Result) {
-            Toaster.success(MESSAGES.BOP_ADD_SUCCESS)
-            this.cancel('submit')
-          }
-        })
-      }
+      formData.IsSendForApproval = false;
+      this.handleBOPOperation(formData, isEditFlag);
     }
   }, 500)
 
@@ -1082,7 +1085,6 @@ class AddBOPDomestic extends Component {
   * @description Renders the component
   */
   render() {
-
     const { handleSubmit, isBOPAssociated, initialConfiguration, t, } = this.props;
     const { isCategoryDrawerOpen, isOpenVendor, costingTypeId, isOpenUOM, isEditFlag, isViewMode, setDisable, isClientVendorBOP, CostingTypePermission,
       isTechnologyVisible, disableSendForApproval, isOpenConditionDrawer, conditionTableData, FinalBasicPriceBaseCurrency, IsFinancialDataChanged, toolTipTextNetCost, toolTipTextBasicPrice, IsSAPCodeUpdated, IsSapCodeEditView, IsSAPCodeHandle
@@ -1861,6 +1863,9 @@ class AddBOPDomestic extends Component {
                 isFromImport={false}
                 currency={{ label: reactLocalStorage.getObject("baseCurrency"), value: reactLocalStorage.getObject("baseCurrency") }}
                 toolTipTextObject={this.state.toolTipTextObject}
+                commonFunction={this.finalUserCheckAndMasterLevelCheckFunction}
+                handleOperation={this.handleBOPOperation}
+                isEdit={this.state.isEditFlag}
               />
             )
           }

@@ -131,7 +131,7 @@ function UserRegistration(props) {
     plant: false
   })
   const [isShowDivision, setIsShowDivision] = useState(false)
-  const [divisionList, setDivisionList] = useState([])
+  const [selectedDivision, setSelectedDivision] = useState([])
   const dispatch = useDispatch()
   const { technologyLabel } = useLabels();
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
@@ -149,6 +149,7 @@ function UserRegistration(props) {
   const levelList = useSelector(state => state.auth.levelList)
   const OnboardingLevelSelectList = useSelector(state => state.auth.OnboardingLevelSelectList)
   const plantSelectListForDepartment = useSelector(state => state.auth.plantSelectListForDepartment);
+  const divisionListForDepartment = useSelector(state => state.auth.divisionListForDepartment);
   const approvalTypeCosting = useSelector(state => state.comman.approvalTypeCosting)
 
   const approvalTypeSimulation = useSelector(state => state.comman?.approvalTypeSimulation)
@@ -556,6 +557,24 @@ function UserRegistration(props) {
         return temp;
       }
     }
+    if (label === 'division') {
+      const selectedDivisionIds = selectedDivision.map(div => div.value);
+
+      divisionListForDepartment?.forEach((item) => {
+        if (String(item?.DivisionId) === '0') {
+          temp.push({ label: "Select All", value: '0' });
+        } else if (!selectedDivisionIds.includes(String(item.DivisionId))) {
+          temp.push({ label: item.DivisionNameCode, value: item.DivisionId, DivisionCode: item.DivisionCode })
+        }
+      });
+
+      const isSelectAllOnly = temp.length === 1 && temp[0]?.label === "Select All" && temp[0]?.value === "0";
+      if (isSelectAllOnly) {
+        return [];
+      } else {
+        return temp;
+      }
+    }
 
   }
 
@@ -571,17 +590,8 @@ function UserRegistration(props) {
     dispatch(getAllDivisionListAssociatedWithDepartment(departmentIds, res => {
       if (res && res?.data && res?.data?.Identity === true) {
         setIsShowDivision(true)
-        let divisionArray = []
-        res?.data?.DataList?.map(item => {
-          if (String(item?.DivisionId) !== '0') {
-            divisionArray.push({ label: `${item.DivisionNameCode}`, value: (item?.DivisionId)?.toString(), DivisionCode: item?.DivisionCode })
-          }
-          return null;
-        })
-        setDivisionList(divisionArray)
       } else {
         setIsShowDivision(false)
-        setDivisionList([])
       }
     }))
     if (selectedPlants.length > 0) {
@@ -610,14 +620,26 @@ function UserRegistration(props) {
     else { setIsForcefulUpdate(false) }
 
   };
-  const handleDivisionChange = (newValue, actionMeta) => {
-    if (newValue && newValue !== '') {
-      setDivisionList(newValue)
+
+  const handleDivisionChange = (newValue) => {
+    if (newValue && ((newValue[0]?.value) === '0' || newValue?.some(item => item?.value === '0'))) {
+      // Select All option is chosen
+      const allDivisionExceptZero = divisionListForDepartment
+        .filter(item => String(item?.DivisionId) !== '0')
+        .map(item => ({ label: item?.DivisionNameCode, value: item?.DivisionId, DivisionCode: item?.DivisionCode }));
+      setSelectedDivision(allDivisionExceptZero);
+      setTimeout(() => {
+        setValue('Division', allDivisionExceptZero);
+      }, 50);
+    } else if (newValue && newValue?.length > 0) {
+      // Other options are chosen
+      setSelectedDivision(newValue);
     } else {
-      setDivisionList([])
+      // No option is chosen
+      setSelectedDivision([]);
+      setValue('Division', '');  // Assuming you want to clear the form value when nothing is selected
     }
   }
-
   /**
     * @method roleHandler
     * @description Used to handle 
@@ -692,6 +714,8 @@ function UserRegistration(props) {
             idArr.push(item.DepartmentId)
           })
           dispatch(getPlantSelectListForDepartment(idArr, res => { }))
+          dispatch(getAllDivisionListAssociatedWithDepartment(idArr, res => {
+          }))
 
           setTimeout(() => {
             let plantArray = []
@@ -710,7 +734,7 @@ function UserRegistration(props) {
               setIsShowDivision(false)
             }
             setSelectedPlants(plantArray)
-            setDivisionList(divisionArray)
+            setSelectedDivision(divisionArray)
             setValue('plant', plantArray)
             setValue('Division', divisionArray)
             const depatArr = []
@@ -2112,6 +2136,12 @@ function UserRegistration(props) {
       (selectedPlant) => !registerUserData.DepartmentsPlantsIdLists?.some((userDataItem) => userDataItem.PlantId === selectedPlant.value)
     );
 
+    let isDivisionUpdate = registerUserData.DepartmentsDivisionIdLists?.some(
+      (userDataItem) => !selectedDivision?.some((selectedDivision) => userDataItem.DivisionId === selectedDivision.value)
+    ) || selectedDivision?.some(
+      (selectedDivision) => !registerUserData.DepartmentsDivisionIdLists?.some((userDataItem) => userDataItem.DivisionId === selectedDivision.value)
+    );
+
     let isForcefulUpdatedForMaster = false;
     let isForcefulUpdatedForCosting = false;
     let isForcefulUpdatedForSimulation = false;
@@ -2126,13 +2156,13 @@ function UserRegistration(props) {
     } if (JSON.stringify(onboardingLevelGrid) !== JSON.stringify(oldOnboardingLevelGrid)) {
       isForcefulUpdatedForOnboarding = true;
     }
-    if (isDepartmentUpdate || isPlantUpdate) {
+    if (isDepartmentUpdate || isPlantUpdate || isDivisionUpdate) {
       isForcefulUpdatedForMaster = true;
       isForcefulUpdatedForSimulation = true;
       isForcefulUpdatedForCosting = true;
       isForcefulUpdatedForOnboarding = true;
     }
-    setIsDepartmentUpdated(isDepartmentUpdate || isPlantUpdate);
+    setIsDepartmentUpdated(isDepartmentUpdate || isPlantUpdate || isDivisionUpdate);
     setCostingTableChanged(isForcefulUpdatedForCosting);
     setMasterTableChanged(isForcefulUpdatedForMaster);
     setSimulationTableChanged(isForcefulUpdatedForSimulation);
@@ -2147,7 +2177,7 @@ function UserRegistration(props) {
       plantArray.push(obj)
     })
     let divisionArray = []
-    divisionList && divisionList.map(item => {
+    selectedDivision && selectedDivision.map(item => {
       if (String(item?.DivisionId) === '0') return false
       let obj = {
         DivisionId: item?.value,
@@ -3073,10 +3103,12 @@ function UserRegistration(props) {
                               handleChange={handleDivisionChange}
                               isMulti={true}
                               placeholder={`select`}
-                              selection={divisionList == null || divisionList.length === 0 ? [] : divisionList}
-                              options={divisionList}
+                              selection={selectedDivision == null || selectedDivision.length === 0 ? [] : selectedDivision}
+                              options={searchableSelectType('division')}
                               className="multiselect-with-border"
-                              mendatory={true} />
+                              mendatory={true}
+                              defaultValue={selectedDivision}
+                            />
                           </div>
                         }
                         {getConfigurationKey().IsPlantsAllowedForDepartment && <div className="col-md-3">

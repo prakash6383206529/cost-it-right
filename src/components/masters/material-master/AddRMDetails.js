@@ -283,7 +283,9 @@ function AddRMDetails(props) {
             setState(prevState => ({ ...prevState, plants: [] }));
         }
         dispatch(SetRawMaterialDetails({ Plants: newValue }, () => { }))
-        props?.commonFunction(newValue ? newValue.value : '')
+        if (!getConfigurationKey().IsDivisionAllowedForDepartment) {
+            props?.commonFunction(newValue ? newValue.value : '')
+        }
     }
     /**
  * @method handleTechnology
