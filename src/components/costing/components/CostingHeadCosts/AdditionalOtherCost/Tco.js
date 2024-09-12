@@ -163,7 +163,7 @@ const Tco = (props) => {
                 />
 
             </Col>}
-            <Col md="3">
+            {showTCOFields?.MOQ && <Col md="3" >
                 <TextFieldHookForm
                     label={`MOQ (No)`}
                     name={'Moq'}
@@ -184,8 +184,8 @@ const Tco = (props) => {
                     errors={errors.Moq}
 
                 />
-            </Col>
-            <Col md="3">
+            </Col>}
+            {showTCOFields?.SPQ && <Col md="3" >
                 <TextFieldHookForm
                     label={`SPQ (No)`}
                     name={'Spq'}
@@ -204,7 +204,7 @@ const Tco = (props) => {
                     errors={errors.Spq}
 
                 />
-            </Col>
+            </Col>}
             <Col md="3">
                 <TextFieldHookForm
                     label={`Lead Time (Days)`}
@@ -227,7 +227,7 @@ const Tco = (props) => {
 
                 />
             </Col>
-            <Col md="3">
+            {showTCOFields?.UOM && <Col md="3" >
                 <SearchableSelectHookForm
                     id="Uom_Container"
                     label={'UOM'}
@@ -244,8 +244,8 @@ const Tco = (props) => {
                     errors={errors.Uom}
 
                 />
-            </Col>
-            <Col md="3">
+            </Col>}
+            {showTCOFields?.capacity && <Col md="3" >
                 <TextFieldHookForm
                     label={`Available Monthly Capacity (No)`}
                     name={'AvailableCapacity'}
@@ -266,7 +266,7 @@ const Tco = (props) => {
                     errors={errors.AvailableCapacity}
 
                 />
-            </Col>
+            </Col>}
 
 
         </Row>
