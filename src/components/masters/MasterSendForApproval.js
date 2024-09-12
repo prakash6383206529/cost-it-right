@@ -28,10 +28,8 @@ import { rfqSaveBestCosting } from '../rfq/actions/rfq';
 import { checkFinalUser } from '../costing/actions/Costing';
 
 function MasterSendForApproval(props) {
-    console.log('props', props)
     const { type, IsFinalLevel, IsPushDrawer, reasonId, masterId, selectedRows, OnboardingId, approvalObj, isBulkUpload, IsImportEntry, approvalDetails, IsFinalLevelButtonShow, approvalData, levelDetails, Technology, showScrapKeys } = props
     const RFQPlantId = props?.partType === 'Raw Material' && props.isRFQ ? (approvalObj && approvalObj[0]?.Plant && approvalObj[0]?.Plant[0]?.PlantId) : approvalObj && approvalObj[0]?.PlantId
-
     const { register, control, formState: { errors }, handleSubmit, setValue, getValues, reset, } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
@@ -53,7 +51,6 @@ function MasterSendForApproval(props) {
     const [department, setDepartment] = useState('')
     const [isDisableDept, setDisableDept] = useState(false)
     const [departmentDropdown, setDepartmentDropdown] = useState([])
-
     const dispatch = useDispatch()
     const reasonsList = useSelector((state) => state.approval.reasonsList)
     const { deptList } = useSelector((state) => state.material)
@@ -88,14 +85,13 @@ function MasterSendForApproval(props) {
                 })
             setDepartmentDropdown(department)
             if (department?.length === 1) {
-                setValue('dept', { label: department[0].label, value: department[0].value })
+                setValue('dept', { label: department[0]?.label, value: department[0]?.value })
                 setDisableDept(true)
                 setDepartment(department[0])
                 if (props.approvalListing) {
                     fetchAndSetApprovalUsers(updateList[0]?.Value, reasonId, approvalData[0]?.DivisionId);
                 } else {
                     fetchDivisionList(department[0].value, dispatch, (divisionArray, showDivision) => {
-                        console.log('divisionArray', divisionArray)
                         setIsShowDivision(showDivision);
                         setDivisionList(divisionArray);
                     });
@@ -103,13 +99,17 @@ function MasterSendForApproval(props) {
             }
             if (!getConfigurationKey().IsDivisionAllowedForDepartment || (type === 'Approve' && !IsFinalLevelButtonShow)) {
                 setTimeout(() => {
-                    setValue('dept', { label: department[0].label, value: department[0].value })
+                    const matchingDepartment = department.find(dept => dept.value === approvalDetails?.DepartmentId);
+                    if (getConfigurationKey().IsDivisionAllowedForDepartment && matchingDepartment) {
+                        setValue('dept', { label: matchingDepartment?.label, value: matchingDepartment?.value });
+                    } else {
+                        setValue('dept', { label: department[0]?.label, value: department[0]?.value });
+                    }
                     setDisableDept(true)
                 }, 100);
                 fetchAndSetApprovalUsers(department[0]?.value, reasonId, props?.divisionId);
             }
             if (type === 'Sender' && props.approvalListing) {
-                console.log('approvalData', approvalData)
                 const DepartmentId = approvalData && approvalData[0]?.ApprovalDepartmentId;
                 // Ensure DepartmentId is an array
                 const departmentIds = Array.isArray(DepartmentId) ? DepartmentId : [DepartmentId];
@@ -233,6 +233,7 @@ function MasterSendForApproval(props) {
                     }));
                 callback(divisionArray, true);
             } else {
+                checkFinalUserAndSetApprover(departmentId, null);
                 callback([], false);
             }
         }));
@@ -241,6 +242,8 @@ function MasterSendForApproval(props) {
         setValue('approver', { label: '', value: '', levelId: '', levelName: '' })
         setApprovalDropDown([])
         setDepartment(value)
+        setDivision('')
+        setValue('Division', '')
         if (getConfigurationKey().IsDivisionAllowedForDepartment) {
             setIsShowDivision(true)
             fetchDivisionList(value.value, dispatch, (divisionArray, showDivision) => {
@@ -381,7 +384,7 @@ function MasterSendForApproval(props) {
 
                 senderObj.ApprovalTypeId = masterId !== 0 ? costingTypeIdToApprovalTypeIdFunction(props?.costingTypeId) : approvalDetails?.ApprovalTypeId
                 senderObj.IsFinalApprover = isFinalApprover
-                senderObj.DivisionId = division.value ?? props?.divisionId ?? approvalData[0]?.DivisionId
+                senderObj.DivisionId = division?.value ?? props?.divisionId ?? null
                 senderObj.MasterIdList = [
 
                 ]
