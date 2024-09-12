@@ -12,7 +12,7 @@ import {
     COMMODITY_INDEX_RATE_AVERAGE,
     GET_RM_DETAILS
 } from '../../../config/constants';
-import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper';
+import { checkForDecimalAndNull, getConfigurationKey, userDetails } from '../../../helper';
 import { tokenStatus, tokenStatusName } from '../../../config/masterData';
 
 const initialState = {
@@ -340,13 +340,13 @@ export default function materialReducer(state = initialState, action) {
             }
         case GET_ALL_MASTER_APPROVAL_DEPARTMENT:
             //MINDA
-            // const list = action.payload
-            // const Departments = userDetails().Department && userDetails().Department.map(item => item.DepartmentName)
-            // const updateList = list && list.filter(item => Departments.includes(item.Text))
+            const list = action.payload
+            const Departments = userDetails().Department && userDetails().Department.map(item => item.DepartmentName)
+            const updateList = list && list.filter(item => Departments.includes(item.Text))
             return {
                 ...state,
                 loading: false,
-                deptList: action.payload
+                deptList: updateList
             }
         case GET_RM_APPROVAL_LIST:
             // let temp1 = []

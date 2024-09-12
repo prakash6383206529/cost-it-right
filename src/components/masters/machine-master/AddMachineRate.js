@@ -111,7 +111,7 @@ class AddMachineRate extends Component {
         processUOM: false,
         machineRate: false
       },
-      finalApprovalLoader: true,
+      finalApprovalLoader: getConfigurationKey().IsDivisionAllowedForDepartment ? false : true,
       costingTypeId: ZBCTypeId,
       levelDetails: {},
       vendorFilterList: [],
@@ -165,16 +165,9 @@ class AddMachineRate extends Component {
     if (!editDetails.isViewMode) {
       this.props.getUOMSelectList(() => { })
       this.props.getProcessesSelectList(() => { })
-      if (initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true) {
-        this.props.getUsersMasterLevelAPI(loggedInUserId(), MACHINE_MASTER_ID, (res) => {
-          setTimeout(() => {
-            this.commonFunction(this.state.selectedPlants.value)
-          }, 100);
-        })
-      } else {
-        this.setState({ finalApprovalLoader: false })
+      if (!getConfigurationKey().IsDivisionAllowedForDepartment && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true) {
+        this.finalUserCheckAndMasterLevelCheckFunction(EMPTY_GUID)
       }
-
     }
     else {
       this.setState({ finalApprovalLoader: false })
@@ -219,8 +212,20 @@ class AddMachineRate extends Component {
     //GET MACHINE VALUES IN EDIT MODE
     this.getDetails()
   }
+  finalUserCheckAndMasterLevelCheckFunction = (plantId, isDivision = false) => {
+    const { initialConfiguration } = this.props
+    if (!this.state.isViewMode && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true) {
+      this.props.getUsersMasterLevelAPI(loggedInUserId(), MACHINE_MASTER_ID, (res) => {
+        setTimeout(() => {
+          this.commonFunction(plantId, isDivision)
+        }, 100);
+      })
+    } else {
+      this.setState({ finalApprovalLoader: false })
+    }
+  }
 
-  commonFunction(plantId = EMPTY_GUID) {
+  commonFunction(plantId = EMPTY_GUID, isDivision = false) {
     let levelDetailsTemp = []
     levelDetailsTemp = userTechnologyDetailByMasterId(this.state.costingTypeId, MACHINE_MASTER_ID, this.props.userMasterLevelAPI)
     this.setState({ levelDetails: levelDetailsTemp })
@@ -233,7 +238,7 @@ class AddMachineRate extends Component {
       approvalTypeId: costingTypeIdToApprovalTypeIdFunction(this.state.costingTypeId),
       plantId: plantId
     }
-    if (this.props.initialConfiguration.IsMasterApprovalAppliedConfigure) {
+    if (this.props.initialConfiguration.IsMasterApprovalAppliedConfigure && !isDivision) {
       this.props.checkFinalUser(obj, (res) => {
         if (res?.data?.Result) {
           this.setState({ isFinalApprovar: res?.data?.Data?.IsFinalApprover, CostingTypePermission: true, finalApprovalLoader: false })
@@ -621,7 +626,9 @@ class AddMachineRate extends Component {
   * @description called
   */
   handlePlants = (newValue, actionMeta) => {
-    this.commonFunction(newValue ? newValue.value : '')
+    if (!getConfigurationKey().IsDivisionAllowedForDepartment) {
+      this.commonFunction(newValue ? newValue.value : '')
+    }
     if (newValue && newValue !== '') {
       this.setState({ selectedPlants: newValue, })
     } else {
@@ -1076,7 +1083,31 @@ class AddMachineRate extends Component {
       </span>
     )
   }
+  handleMachineOperation = (formData, isEditFlag) => {
+    const operation = isEditFlag ? this.props.updateMachine : this.props.createMachine;
+    const successMessage = isEditFlag ? MESSAGES.UPDATE_MACHINE_DETAILS_SUCCESS : MESSAGES.MACHINE_ADD_SUCCESS;
 
+    operation(formData, (res) => {
+      this.setState({ setDisable: false });
+      if (res?.data?.Result) {
+        Toaster.success(successMessage);
+        if (isEditFlag) {
+          if (!this.state.isEditBtnClicked) {
+            this.cancel('submit');
+          } else {
+            this.getDetails();
+            // Add any additional state updates needed for edit mode
+          }
+        } else {
+          this.cancel('submit');
+        }
+      }
+    });
+
+    if (isEditFlag) {
+      this.setState({ updatedObj: formData });
+    }
+  }
 
 
 
@@ -1125,13 +1156,7 @@ class AddMachineRate extends Component {
       if (IsDetailedEntry) {
         // EXECUTED WHEN:- EDIT MODE && MACHINE MORE DETAILED == TRUE
         let detailedRequestData = { ...machineData, MachineId: MachineID, Remark: remarks, Attachements: updatedFiles }
-        this.props.updateMachineDetails(detailedRequestData, (res) => {
-          this.setState({ setDisable: false, selectedPlants: selectedPlants })
-          if (res?.data?.Result) {
-            Toaster.success(MESSAGES.UPDATE_MACHINE_SUCCESS);
-            this.cancel('submit');
-          }
-        })
+        this.handleMachineOperation(detailedRequestData, true);
 
       } else {
 
@@ -1163,15 +1188,8 @@ class AddMachineRate extends Component {
 
         if (IsFinancialDataChanged) {
           if (isDateChange && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
-            this.props.updateMachine(requestData, (res) => {
-              this.setState({ setDisable: false })
-              if (res?.data?.Result) {
-                Toaster.success(MESSAGES.UPDATE_MACHINE_DETAILS_SUCCESS);
-                this.cancel('submit')
-              }
-            });
+            this.handleMachineOperation(requestData, true);
             return false
-
           } else {
 
             this.setState({ setDisable: false })
@@ -1278,26 +1296,8 @@ class AddMachineRate extends Component {
         }
 
       } else {
-
-        this.props.createMachine(formData, (res) => {
-          this.setState({ setDisable: false })
-          if (res?.data?.Result) {
-            Toaster.success(MESSAGES.MACHINE_ADD_SUCCESS)
-            //this.clearForm()
-            this.cancel('submit')
-          }
-        })
+        this.handleMachineOperation(formData, false);
       }
-
-
-      // this.props.createMachine(formData, (res) => {
-      //   this.setState({ setDisable: false })
-      //   if (res?.data?.Result) {
-      //     Toaster.success(MESSAGES.MACHINE_ADD_SUCCESS);
-      //     this.cancel();
-      //   }
-      // });
-
     }
   }, 500)
 
@@ -2077,6 +2077,9 @@ class AddMachineRate extends Component {
               IsImportEntry={false}
               costingTypeId={this.state.costingTypeId}
               levelDetails={this.state.levelDetails}
+              commonFunction={this.finalUserCheckAndMasterLevelCheckFunction}
+              handleOperation={this.handleMachineOperation}
+              isEdit={this.state.isEditFlag}
             />
           )
         }
