@@ -16,7 +16,7 @@ import { useLabels } from "../../../helper/core";
 
 const gridOptions = {};
 const AuctionGrid = (props) => {
-    const { auctionlistId, ViewRMAccessibility, AddAccessibility } = props
+    const { auctionlistId, ViewRMAccessibility, AddAccessibility, loader } = props
     const { AuctionList } = useSelector(state => state.Auction);
     const [state, setState] = useState({
         gridApi: null,
@@ -152,14 +152,14 @@ const AuctionGrid = (props) => {
                     </div></Col>
                 </Row>
                 <div className={`ag-grid-wrapper height-width-wrapper ${AuctionList.length === 0 ? "overlay-contain" : ""}`}>
-                    <div className={`ag-theme-material ${state.isLoader && "max-loader-height"}`}>
+                    <div className={`ag-theme-material ${loader && "max-loader-height"}`}>
                         {state.noData && (
                             <NoContentFound
                                 title={EMPTY_DATA}
                                 customClassName="no-content-found"
                             />
                         )}
-                        <AgGridReact
+                        {!loader ? <AgGridReact
                             defaultColDef={defaultColDef}
                             floatingFilter={true}
                             domLayout="autoHeight"
@@ -209,7 +209,7 @@ const AuctionGrid = (props) => {
                                 <AgGridColumn width={50} field="RedCount" headerName="R" colId="BlueColor"></AgGridColumn>
                             </AgGridColumn>
                             {(auctionlistId === AuctionLiveId || auctionlistId === AuctionClosedId) && <AgGridColumn width={'80px'} field="QuotationPartId" cellClass="ag-grid-action-container" headerName="Action" pinned="right" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"}></AgGridColumn>}
-                        </AgGridReact>
+                        </AgGridReact> : null}
                         {
                             <PaginationWrapper
                                 gridApi={state.gridApi}
