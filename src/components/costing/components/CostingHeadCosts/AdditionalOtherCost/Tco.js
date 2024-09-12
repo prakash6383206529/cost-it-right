@@ -21,7 +21,7 @@ const Tco = (props) => {
 
     const tabData = (RMCCTabData && RMCCTabData.length > 0) ? RMCCTabData[0] : (props?.partType ?? '')
     const [incoTermlist, setIncoTermlist] = useState([])
-    const [showTCOFields, setShowTCOFields] = useState({ incoTerms: true, warrantyTerms: true, paymentTerms: false, qualityPPM: true, investment: true })
+    const [showTCOFields, setShowTCOFields] = useState({ incoTerms: true, warrantyTerms: true, paymentTerms: false, qualityPPM: true, investment: true, UOM: true })
 
     useEffect(() => {
         defineVisibility()
@@ -60,13 +60,13 @@ const Tco = (props) => {
     const defineVisibility = () => {
         switch (tabData?.PartType) {
             case COMPONENT_PART:
-                setShowTCOFields(prevState => ({ ...prevState, incoTerms: true, warrantyTerms: true, paymentTerms: false, qualityPPM: true, investment: true }))
+                setShowTCOFields(prevState => ({ ...prevState, incoTerms: true, warrantyTerms: true, paymentTerms: true, qualityPPM: true, investment: true, capacity: true, MOQ: true, SPQ: true, UOM: true }))
                 break;
             case ASSEMBLYNAME:
-                setShowTCOFields(prevState => ({ ...prevState, incoTerms: true, warrantyTerms: true, paymentTerms: false, qualityPPM: true, investment: true }))
+                setShowTCOFields(prevState => ({ ...prevState, incoTerms: true, warrantyTerms: true, paymentTerms: true, qualityPPM: true, investment: true, capacity: true, MOQ: true, SPQ: true, UOM: true }))
                 break;
             case TOOLINGPART:
-                setShowTCOFields(prevState => ({ ...prevState, incoTerms: true, warrantyTerms: true, paymentTerms: true, qualityPPM: false, investment: false }))
+                setShowTCOFields(prevState => ({ ...prevState, incoTerms: true, warrantyTerms: false, paymentTerms: false, qualityPPM: false, investment: false, capacity: false, MOQ: false, SPQ: false, UOM: false }))
                 break;
 
             default:
