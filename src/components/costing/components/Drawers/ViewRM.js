@@ -260,7 +260,7 @@ function ViewRM(props) {
                 <tr key={index}>
                   {isAssemblyCosting && <td className={`${isPDFShow ? '' : 'text-overflow'}`}> <span title={item?.PartNumber !== null || item?.PartNumber !== "" ? item?.PartNumber : ""}>{item?.PartNumber !== null || item?.PartNumber !== "" ? item?.PartNumber : ""}</span></td>}
                   <td className={`${isPDFShow ? '' : 'text-overflow'}`}><span title={item?.RMName}>{item?.RMName}</span></td>
-                  <td>{item?.UpdatedRawMaterialName ? item?.UpdatedRawMaterialName : '-'}</td>
+                  <td><div className='red-value'>{item?.UpdatedRawMaterialName ? item?.UpdatedRawMaterialName : '-'}</div></td>
 
                   <td>{item?.RMCode ? item?.RMCode : '-'}</td>
                   <td>{checkForDecimalAndNull(item?.RMRate, initialConfiguration.NoOfDecimalForPrice)}</td>
