@@ -730,10 +730,11 @@ function AddRfq(props) {
             let arr = final && final.filter(item => item?.BoughtOutPartChildId !== rowData?.BoughtOutPartChildId)
             setBopDataList(arr)
         }
-        //else{
-        //     let arr = final && final.filter(item => item?.toolingPartId !== rowData?.toolingPartId)
-        //     setToolingList(arr)
-        // }
+        else {
+            let arr = final && final.filter(item => item?.PartId !== rowData?.PartId)
+            setToolingList(arr)
+        }
+
 
         setDeleteToggle({ deleteToggle: !deleteToggle, rowData: rowData })
 
@@ -1235,7 +1236,7 @@ function AddRfq(props) {
                 {show && < button title='View' className="View mr-2 align-middle" disabled={false} type={'button'} onClick={() => ViewItemPartTable(rowData, props, false)} />}
 
                 {/*  {<button title='Delete' className="Delete align-middle" disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !dataProps?.isEditFlag)} type={'button'} onClick={() => deleteItemPartTable(final, props)} />} */}
-                {(show && prNumber.length === 0) && <button title='Delete' className="Delete align-middle" disabled={isSendButtonVisible} type={'button'} onClick={() => deleteItemPartTable(row, final)} />}
+                {(show && selectedOption !== BOUGHTOUTPARTSPACING) && <button title='Delete' className="Delete align-middle" disabled={isSendButtonVisible} type={'button'} onClick={() => deleteItemPartTable(row, final)} />}
             </>
         )
     };
