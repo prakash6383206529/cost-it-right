@@ -233,6 +233,8 @@ function MasterSendForApproval(props) {
                     }));
                 callback(divisionArray, true);
             } else {
+                fetchAndSetApprovalUsers(departmentId, reasonId, null);
+
                 callback([], false);
             }
         }));
