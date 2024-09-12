@@ -74,7 +74,7 @@ function ReportListing(props) {
     const statusColumnData = useSelector((state) => state.comman.statusColumnData);
     const [dataCount, setDataCount] = useState(0)
     const [applicabilityDropdown, setApplicabilityDropdown] = useState([])
-    const { technologyLabel,discountLabel } = useLabels();
+    const { technologyLabel, discountLabel, toolMaintenanceCostLabel } = useLabels();
     const { selectedRowForPagination } = useSelector((state => state.simulation))
     var filterParams = {
         comparator: function (filterLocalDateAtMidnight, cellValue) {
@@ -1108,7 +1108,7 @@ function ReportListing(props) {
                             <AgGridColumn field='FreightType' headerName='Freight Type' cellRenderer='hyphenFormatter'></AgGridColumn>
                             <AgGridColumn field='ToolCost' headerName='Tool Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                             <AgGridColumn field='ToolLife' headerName='Amortization Quantity (Tool Life)' cellRenderer='hyphenFormatter'></AgGridColumn>
-                            <AgGridColumn field='ToolMaintenanceCost' headerName='Tool Maintenance Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
+                            <AgGridColumn field='ToolMaintenanceCost' headerName={`${toolMaintenanceCostLabel}`} cellRenderer='decimalPriceFormatter'></AgGridColumn>
                             <AgGridColumn field='NetToolCost' headerName='Net Tool Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                             <AgGridColumn field='HundiOrDiscountPercentage' headerName={`${discountLabel} Percentage`} cellRenderer='decimalInputOutputFormatter'></AgGridColumn>
                             <AgGridColumn field='HundiOrDiscountValue' headerName={`${discountLabel} Value`} cellRenderer='decimalPriceFormatter'></AgGridColumn>

@@ -57,7 +57,7 @@ function ReportListing(props) {
 
     const loggedUser = loggedInUserId()
 
-   const [selectedRowData, setSelectedRowData] = useState([]);
+    const [selectedRowData, setSelectedRowData] = useState([]);
     const [selectedIds, setSelectedIds] = useState(props.Ids);
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
@@ -72,7 +72,7 @@ function ReportListing(props) {
 
 
     const dispatch = useDispatch()
-    const { technologyLabel ,discountLabel} = useLabels();
+    const { technologyLabel, discountLabel, toolMaintenanceCostLabel } = useLabels();
     const { register, handleSubmit, control, setValue, formState: { errors }, getValues } = useForm({
         mode: 'onBlur',
         reValidateMode: 'onChange',
@@ -546,7 +546,7 @@ function ReportListing(props) {
                         <AgGridColumn field="PackagingCost" headerName="Packaging Cost"></AgGridColumn>
                         <AgGridColumn field="FreightCost" headerName="Freight Cost"></AgGridColumn>
                         <AgGridColumn field="NetFreightPackagingCost" headerName="Net Packaging & Freight"></AgGridColumn>
-                        <AgGridColumn field="ToolMaintenaceCost" headerName="Tool Maintenance Cost" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                        <AgGridColumn field="ToolMaintenaceCost" headerName={`${toolMaintenanceCostLabel}`} cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="ToolPrice" headerName="Tool Price" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="AmorizationQuantity" headerName="Amortization Quantity (Tool Life)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="NetToolCost" headerName="Net Tool Cost" cellRenderer={'hyphenFormatter'}></AgGridColumn>

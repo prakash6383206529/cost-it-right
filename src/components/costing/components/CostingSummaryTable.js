@@ -210,7 +210,7 @@ const CostingSummaryTable = (props) => {
   const [isFinalCommonApproval, setIsFinalCommonApproval] = useState(false);
   const [tcoAndNpvDrawer, setTcoAndNpvDrawer] = useState(false);
   const [costingId, setCostingId] = useState("");
-  const { discountLabel } = useLabels();
+  const { discountLabel, toolMaintenanceCostLabel } = useLabels();
 
   const [drawerOpen, setDrawerOpen] = useState({
     BOP: false,
@@ -3025,13 +3025,13 @@ const CostingSummaryTable = (props) => {
                           {
                             viewCostingData?.some(data => {
                               return data.technologyId !== TOOLING_ID && data.technologyId !== '-';
-                            }) && rfqCosting && (
+                            }) && !rfqCosting && (
                               <>
                                 {!drawerDetailPDF ? (
                                   <tr>
                                     <td>
                                       <span className="d-block small-grey-text pt-3"></span>
-                                      <span className={highlighter("toolMaintenanceCost")}>Tool Maintenance Cost on</span>
+                                      <span className={highlighter("toolMaintenanceCost")}>{`${toolMaintenanceCostLabel} on`}</span>
                                       <span className={highlighter("toolPrice")}>Tool Price</span>
                                       <span className={highlighter("amortizationQty")}>Amortization Quantity (Tool Life)</span>
                                       <span className={highlighter("toolAmortizationCost")}>Tool Amortization Cost</span>
