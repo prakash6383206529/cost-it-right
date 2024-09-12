@@ -91,7 +91,7 @@ function SummaryDrawer(props) {
             setQuotationId(QuotationId)
             setIsRfq(QuotationId !== null ? true : false)
             setApprovalLevelStep(Data?.MasterSteps)
-            setApprovalDetails({ IsSent: Data?.IsSent, IsFinalLevelButtonShow: Data?.IsFinalLevelButtonShow, ApprovalProcessId: Data?.ApprovalProcessId, MasterApprovalProcessSummaryId: Data?.ApprovalProcessSummaryId, Token: Data?.Token, MasterId: Data?.MasterId, OnboardingId: Data?.OnboardingId, ApprovalTypeId: Data?.ApprovalTypeId })
+            setApprovalDetails({ IsSent: Data?.IsSent, IsFinalLevelButtonShow: Data?.IsFinalLevelButtonShow, ApprovalProcessId: Data?.ApprovalProcessId, MasterApprovalProcessSummaryId: Data?.ApprovalProcessSummaryId, Token: Data?.Token, MasterId: Data?.MasterId, OnboardingId: Data?.OnboardingId, ApprovalTypeId: Data?.ApprovalTypeId, DepartmentId: Data?.DepartmentId })
             setLoader(false)
             let masterPlantId = ''
             if (checkForNull(props?.masterId) === RM_MASTER_ID) {
@@ -321,6 +321,7 @@ function SummaryDrawer(props) {
                     costingTypeId={costingTypeId}
                     levelDetails={levelDetails}
                     divisionId={divisionId}
+                    masterSummary={true}
                 // approvalObj={approvalObj}
                 />
             }

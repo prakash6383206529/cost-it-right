@@ -1034,7 +1034,7 @@ class BulkUpload extends Component {
                                     }
                                 </Row>
                                 <Row>
-                                    {getConfigurationKey().IsDivisionAllowedForDepartment && <>
+                                    {getConfigurationKey().IsDivisionAllowedForDepartment && (fileName === 'RM' || fileName === `${showBopLabel()} Domestic` || fileName === `${showBopLabel()} Import` || fileName === 'Operation' || fileName === 'Budget' || fileName === 'Machine') && <>
 
                                         <Col md="6" className='dropdown-flex'>
                                             <Field
