@@ -76,10 +76,6 @@ function AuctionIndex(props) {
       const accessData = Data && Data.Pages.find(el => el.PageName === AUCTION)
       const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
 
-
-      const accessDataRMANDGRADE = Data && Data.Pages.find(el => el.PageName === AUCTION)
-      const permmisionDataRMANDGRADE = accessDataRMANDGRADE && accessDataRMANDGRADE.Actions && checkPermission(accessDataRMANDGRADE.Actions)
-
       if (permmisionData !== undefined) {
         setPermissionData(permmisionData);
         setViewRMAccessibility(permmisionData && permmisionData.View ? permmisionData.View : false);
