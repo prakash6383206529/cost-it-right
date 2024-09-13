@@ -3244,7 +3244,7 @@ export const effectiveDateRangeDays = ''
 
 
 //VERSION 
-export const VERSION = "V3.1.7";
+export const VERSION = "V3.1.8";
 
 
 
