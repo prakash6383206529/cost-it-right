@@ -20,7 +20,7 @@ export function Clientbasedcostingdrawer(props) {
     const toggleDrawer = () => {
         props.closeDrawer('')
     };
-    const { discountLabel } = useLabels();
+    const { discountLabel, toolMaintenanceCostLabel } = useLabels();
 
     const [files, setFiles] = useState([]);
     const [IsOpen, setIsOpen] = useState(false);
@@ -389,7 +389,7 @@ export function Clientbasedcostingdrawer(props) {
                                 </Col>
                                 <Col md="3">
                                     <Field
-                                        label={`Tool Maintenance Cost`}
+                                        label={toolMaintenanceCostLabel}
                                         type="text"
                                         placeholder={"Enter"}
                                         component={renderText}

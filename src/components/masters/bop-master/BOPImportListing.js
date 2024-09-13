@@ -722,7 +722,30 @@ const BOPImportListing = (props) => {
           : [];
     const bopMasterName = showBopLabel();
     const { updatedLabels } = updateBOPValues(BOP_IMPORT_DOWNLOAD_EXCEl, [], bopMasterName, 'label');
-    return returnExcelColumn(updatedLabels, tempArr)
+    const filteredLabels = updatedLabels.filter(column => {
+      if (column.value === "PaymentTermDescriptionAndPaymentTerm") {
+
+        return getConfigurationKey().IsShowPaymentTermsFields;
+      }
+      if (column.value === "NumberOfPieces") {
+
+        return getConfigurationKey().IsMinimumOrderQuantityVisible
+      }
+      if (column.value === "CustomerName") {
+
+        return reactLocalStorage.getObject('CostingTypePermission').cbc
+      }
+      if (column.value === "NetConditionCostConversion" || column.value === "NetConditionCost" || column.value === "NetCostWithoutConditionCostConversion" || column.value === "NetCostWithoutConditionCost") {
+
+        return getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((props.isMasterSummaryDrawer && bopImportList[0]?.CostingTypeId === ZBCTypeId) || !props.isMasterSummaryDrawer) && !props?.isFromVerifyPage
+      }
+      if (column.value === "TechnologyName" || column.value === "IsBreakupBoughtOutPart") {
+
+        return initialConfiguration?.IsBoughtOutPartCostingConfigured
+      }
+      return true;
+    })
+    return returnExcelColumn(filteredLabels, tempArr)
   };
 
   const returnExcelColumn = (data = [], TempData) => {

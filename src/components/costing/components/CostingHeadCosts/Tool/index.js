@@ -19,6 +19,7 @@ import { IdForMultiTechnology } from '../../../../../config/masterData';
 import TooltipCustom from '../../../../common/Tooltip';
 import { errorCheckObject } from '../../../CostingUtil';
 import { number, decimalNumberLimit6, checkWhiteSpaces, percentageLimitValidation, decimalNumberLimit8, decimalNumberLimit13 } from "../../../../../helper/validation";
+import { useLabels } from '../../../../../helper/core';
 
 let counter = 0;
 function Tool(props) {
@@ -67,6 +68,7 @@ function Tool(props) {
   const costData = useContext(costingInfoContext);
   const [percentageLimit, setPercentageLimit] = useState(false);
   const partType = (IdForMultiTechnology.includes(String(costingData?.TechnologyId)) || costData.CostingTypeId === WACTypeId)
+  const { toolMaintenanceCostLabel } = useLabels();
 
 
   useEffect(() => {
@@ -776,9 +778,9 @@ function Tool(props) {
                         disabled={true}
                       />
                     </Col>}
-                  <Col md="3">{applicability.label !== 'Fixed' && <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={"tool-maintanence"} tooltipText={"Tool Maintenance Cost = (Maintenance Cost (%) * Cost(Applicability) / 100)"} />}
+                  <Col md="3">{applicability.label !== 'Fixed' && <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={"tool-maintanence"} tooltipText={`${toolMaintenanceCostLabel}= (Maintenance Cost (%) * Cost(Applicability) / 100)`} />}
                     <TextFieldHookForm
-                      label={customHavellsChanges ? `Tool Maintenance Cost (per pcs)` : "Tool Maintenance Cost"}
+                      label={toolMaintenanceCostLabel}
                       name={`ToolMaintenanceCost`}
                       id={"tool-maintanence"}
                       Controller={Controller}
@@ -862,7 +864,7 @@ function Tool(props) {
                   </Col>
 
                   <Col md="3">
-                    <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id="tool-cost" tooltipText={"Net Tool Cost = (Tool Maintenance Cost + Tool Amortization)"} />
+                    <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id="tool-cost" tooltipText={`Net Tool Cost = (${toolMaintenanceCostLabel}+ Tool Amortization)`} />
                     <TextFieldHookForm
                       label="Net Tool Cost"
                       name={`NetToolCost`}

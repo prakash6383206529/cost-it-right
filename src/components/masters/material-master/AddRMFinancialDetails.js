@@ -410,7 +410,7 @@ function AddRMFinancialDetails(props) {
 
     const convertIntoBase = (price) => {
         const { currencyValue } = state;
-        return checkForDecimalAndNull(price) * checkForDecimalAndNull(currencyValue)
+        return checkForNull(price) * checkForNull(currencyValue)
     }
     const calculateNetCostDomestic = () => {
         const { showScrapKeys } = state
@@ -623,7 +623,7 @@ function AddRMFinancialDetails(props) {
 
                 if ((currency && currency?.length !== 0 && date)) {
                     if (IsFetchExchangeRateVendorWise() && !((rawMaterailDetails?.Vendor && rawMaterailDetails?.Vendor?.length !== 0) || (rawMaterailDetails?.customer && rawMaterailDetails?.customer?.length !== 0))) {
-                        this.setState({ showWarning: true });
+                        setState(prevState => ({ ...prevState, showWarning: true }));
                         return;
                     }
                     dispatch(getExchangeRateByCurrency(currency?.label, costingType, DayTime(date).format('YYYY-MM-DD'), vendorValue, rawMaterailDetails?.customer?.value, false, res => {
@@ -741,7 +741,7 @@ function AddRMFinancialDetails(props) {
 
         if (state.currency && state.currency.length !== 0 && state.effectiveDate) {
             if (IsFetchExchangeRateVendorWise() && !(rawMaterailDetails && rawMaterailDetails?.Vendor?.length !== 0)) {
-                this.setState({ showWarning: true });
+                setState(prevState => ({ ...prevState, showWarning: true }));
                 return;
             }
             dispatch(getExchangeRateByCurrency(state.currency?.label, costingType, DayTime(state.effectiveDate).format('YYYY-MM-DD'), vendorValue, rawMaterailDetails?.customer?.value, false, res => {
@@ -848,7 +848,8 @@ function AddRMFinancialDetails(props) {
                     if (IsFetchExchangeRateVendorWise() &&
                         !((rawMaterailDetails?.Vendor && rawMaterailDetails?.Vendor?.label) ||
                             (rawMaterailDetails?.customer && rawMaterailDetails?.customer?.length !== 0))) {
-                        this.setState({ showWarning: true });
+                        setState(prevState => ({ ...prevState, showWarning: true }));
+
                         return;
                     }
 
