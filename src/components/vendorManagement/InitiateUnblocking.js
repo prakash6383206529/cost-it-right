@@ -11,7 +11,7 @@ import { CLASSIFICATIONAPPROVALTYPEID, EMPTY_GUID, LPSAPPROVALTYPEID, ONBOARDING
 import Switch from "react-switch";
 import { useLocation } from 'react-router-dom';
 import TooltipCustom from '../common/Tooltip';
-import { loggedInUserId, showTitleForActiveToggle, userDetails, userTechnologyLevelDetailsWithoutCostingToApproval } from '../../helper';
+import { getConfigurationKey, loggedInUserId, showTitleForActiveToggle, userDetails, userTechnologyLevelDetailsWithoutCostingToApproval } from '../../helper';
 import { getUsersOnboardingLevelAPI } from '../../actions/auth/AuthActions';
 import Toaster from '../common/Toaster';
 import { checkFinalUser } from '../costing/actions/Costing';
@@ -90,7 +90,7 @@ const InitiateUnblocking = (props) => {
     }, [isClassification, isLpsRating]);
 
     const handlePlantCheck = (approvalTypeId) => {
-
+        
         if (selectedVendor && selectedPlant) {
             let obj = {};
             obj.DepartmentId = userDetails().DepartmentId;
@@ -100,7 +100,7 @@ const InitiateUnblocking = (props) => {
             obj.approvalTypeId = approvalTypeId; // Access the approval type ID from the response
             obj.plantId = selectedPlant?.value ?? EMPTY_GUID;
             dispatch(checkFinalUser(obj, res => {
-                if (res?.data?.Result) {
+                             if (res?.data?.Result) {
                     const { IsUserInApprovalFlow, IsFinalApprover } = res?.data?.Data || {};
 
                     if ((IsUserInApprovalFlow === true && IsFinalApprover === true) || (IsUserInApprovalFlow === false && IsFinalApprover === false)) {
@@ -184,7 +184,8 @@ const InitiateUnblocking = (props) => {
 
 
     const handleNext = () => {
-        dispatch(getUsersOnboardingLevelAPI(loggedInUserId(), (res) => {
+        if(! getConfigurationKey().IsDivisionAllowedForDepartment )
+    {    dispatch(getUsersOnboardingLevelAPI(loggedInUserId(), (res) => {
 
             //When user is not in any approval flow
             if (res.status === 204 && res?.data === '') {
@@ -213,7 +214,12 @@ const InitiateUnblocking = (props) => {
             } else {
                 Toaster.warning(`User is not in the approval flow for ${isClassification === CLASSIFICATIONAPPROVALTYPEID ? 'LPS Rating' : 'Classification'}`);
             }
-        }));
+        }));}
+        else{
+            setCanGoForApproval(true);
+            setShowApproval(true);
+            setShouldMakeApiCalls(true);
+        }
     };
 
     const handleCombinedApproval = (approvalTypeIds, res, checkedApproval) => {
@@ -271,7 +277,8 @@ const InitiateUnblocking = (props) => {
                 obj.approvalTypeId = details?.ApprovalTypeId; // Access the approval type ID from the response
                 obj.plantId = deviationData?.PlantId ?? EMPTY_GUID;
                 dispatch(checkFinalUser(obj, res => {
-                    finalUserResponses.push({ ...res.data.Data, type: details.ApprovalTypeId === LPSAPPROVALTYPEID ? "lps" : "classification" });
+                   
+                    finalUserResponses?.push({ ...res?.data?.Data, type: details?.ApprovalTypeId === LPSAPPROVALTYPEID ? "lps" : "classification" });
                     let tempArr = _.filter(finalUserResponses, ['IsUserInApprovalFlow', true], ['IsFinalApprover', false]);
                     // if (res?.data?.Result) {
                     // setIsFinalCommonApproval(res?.data?.Data?.IsFinalApprover);
@@ -312,14 +319,22 @@ const InitiateUnblocking = (props) => {
     };
 
     const handleClassificationCheckboxChange = (e) => {
-        if (e.target.checked) {
+        if (e.target.checked && ! getConfigurationKey().IsDivisionAllowedForDepartment ) {
             handlePlantCheck(CLASSIFICATIONAPPROVALTYPEID);
+        }
+        else{
+          
+            setSubmit(false)
         }
     };
 
     const handleLpsRatingCheckboxChange = (e) => {
-        if (e.target.checked) {
+        if (e.target.checked&& ! getConfigurationKey().IsDivisionAllowedForDepartment ) {
             handlePlantCheck(LPSAPPROVALTYPEID);
+        }
+        else{
+               setSubmit
+            (false)
         }
     };
 
@@ -538,6 +553,7 @@ const InitiateUnblocking = (props) => {
                         deviationData={deviationData}
                         isClassification={isClassification}
                         isLpsRating={isLpsRating} // Pass LPS Rating approval status
+                        isLpsClasssification={isLpsRating && isClassification}
 
                     // Add other props as needed
                     />
