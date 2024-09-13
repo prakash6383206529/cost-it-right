@@ -62,6 +62,8 @@ import { checkSAPCodeinExcel } from './DownloadUploadBOMxls';
 import WarningMessage from '../common/WarningMessage';
 import Switch from 'react-switch'
 import { searchableSelect } from '../layout/FormInputs';
+import { withLocalization, useWithLocalization } from '../../helper/core';
+import { withTranslation } from 'react-i18next';
 const bopMasterName = showBopLabel();
 
 class BulkUpload extends Component {
@@ -313,12 +315,11 @@ class BulkUpload extends Component {
 
                     let checkForFileHead
                     const { fileName } = this.props;
-
                     switch (String(this.props.fileName)) {
                         case String(RMMASTER):
                             if (!this.state.isImport) {
                                 if (this.state.costingTypeId === ZBCTypeId) {
-                                    checkForFileHead = checkForSameFileUpload(checkRM_Process_OperationConfigurable(RMDomesticZBC, ZBCTypeId), fileHeads, true)
+                                    checkForFileHead = checkForSameFileUpload(checkRM_Process_OperationConfigurable(withLocalization(RMDomesticZBC, this.props.t), ZBCTypeId), fileHeads, true)
                                 }
                                 else if (this.state.costingTypeId === VBCTypeId) {
                                     checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(RMDomesticVBC, VBCTypeId), fileHeads, true)
@@ -1410,4 +1411,4 @@ export default connect(mapStateToProps, {
     form: 'BulkUpload',
     enableReinitialize: true,
     touchOnChange: true
-})(BulkUpload));
+})(withTranslation('MasterLabels')(BulkUpload)));

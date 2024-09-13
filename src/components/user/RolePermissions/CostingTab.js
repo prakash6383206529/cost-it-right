@@ -352,7 +352,7 @@ class CostingTab extends Component {
                     })}
                   <tr>
                     <td>
-                      <h6 className='inner-tab-heading'>Costing {this.props.t('commonFields.technology', { ns: 'MasterLabels', defaultValue: 'Technology' })} List</h6>
+                      <h6 className='inner-tab-heading'>Costing {this.props.t('Technology', { ns: 'MasterLabels', defaultValue: 'Technology' })} List</h6>
                     </td>
                   </tr>
                   {this.state.Modules &&

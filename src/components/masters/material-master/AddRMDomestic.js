@@ -1710,7 +1710,7 @@ class AddRMDomestic extends Component {
                           </Col>
                           <Col md="3">
                             <Field
-                              label={t('commonFields.technology', { ns: 'MasterLabels', defaultValue: 'Technology' })}
+                              label={t('Technology', { ns: 'MasterLabels', defaultValue: 'Technology' })}
                               type="text"
                               name="TechnologyId"
                               component={searchableSelect}

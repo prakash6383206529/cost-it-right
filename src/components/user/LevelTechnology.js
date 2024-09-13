@@ -118,7 +118,7 @@ class LevelTechnology extends Component {
                     <div className="shadow-lg login-form">
                         <div className="form-heading">
                             <h2>
-                                {this.props.t('commonFields.technology', { ns: 'MasterLabels', defaultValue: 'Technology' })} Approval For Level
+                                {this.props.t('Technology', { ns: 'MasterLabels', defaultValue: 'Technology' })} Approval For Level
                             </h2>
                         </div>
                         <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
@@ -127,7 +127,7 @@ class LevelTechnology extends Component {
                                     <Field
                                         name="TechnologyId"
                                         type="text"
-                                        label={this.props.t('commonFields.technology', { ns: 'MasterLabels', defaultValue: 'Technology' })}
+                                        label={this.props.t('Technology', { ns: 'MasterLabels', defaultValue: 'Technology' })}
                                         component={searchableSelect}
                                         options={this.searchableSelectType('technology')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}

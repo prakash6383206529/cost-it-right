@@ -453,7 +453,7 @@ class AssemblyProductListing extends Component {
                             }}
                             frameworkComponents={frameworkComponents}
                         >
-                            <AgGridColumn field="Technology" headerName={this.props.t('commonFields.technology', { ns: 'MasterLabels', defaultValue: 'Technology' })} cellRenderer={'costingHeadFormatter'}></AgGridColumn>
+                            <AgGridColumn field="Technology" headerName={this.props.t('Technology', { ns: 'MasterLabels', defaultValue: 'Technology' })} cellRenderer={'costingHeadFormatter'}></AgGridColumn>
                             <AgGridColumn field="BOMNumber" headerName="BOM NO."></AgGridColumn>
                             <AgGridColumn field="PartNumber" headerName="Part No."></AgGridColumn>
                             <AgGridColumn field="PartName" headerName="Name"></AgGridColumn>

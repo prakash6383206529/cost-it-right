@@ -1124,7 +1124,7 @@ class AddOperation extends Component {
                       <Col md="3">
                         <Field
                           title={showDataOnHover(this.state.selectedTechnology)}
-                          label={t('commonFields.technology', { ns: 'MasterLabels', defaultValue: 'Technology' })}
+                          label={t('Technology', { ns: 'MasterLabels', defaultValue: 'Technology' })}
                           name="technology"
                           placeholder={isEditFlag ? '-' : 'Select'}
                           selection={

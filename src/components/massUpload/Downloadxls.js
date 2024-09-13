@@ -27,6 +27,8 @@ import {
 import { checkVendorPlantConfigurable, getConfigurationKey, showBopLabel, updateBOPValues } from "../../helper";
 import { checkSAPCodeinExcel } from "./DownloadUploadBOMxls";
 import { IsShowFreightAndShearingCostFields } from "../../helper";
+import { withLocalization, useWithLocalization } from "../../helper/core";
+import { withTranslation } from "react-i18next";
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -204,12 +206,13 @@ class Downloadxls extends React.Component {
     * @method renderZBCSwitch
     * @description Switch case for different xls file head according to master
     */
+
     renderZBCSwitch = (master) => {
         let updatedLabels
         switch (master) {
             case 'RM':
                 if (!this.props.isImport) {
-                    return this.returnExcelColumn(checkRM_Process_OperationConfigurable(RMDomesticZBC), RMDomesticZBCTempData, true);
+                    return this.returnExcelColumn(checkRM_Process_OperationConfigurable(withLocalization(RMDomesticZBC, this.props.t, "MasterLabels")), RMDomesticZBCTempData, true);
                 } else {
                     return this.returnExcelColumn(checkRM_Process_OperationConfigurable(RMImportZBC), RMImportZBCTempData);
                 }
@@ -485,4 +488,4 @@ class Downloadxls extends React.Component {
     }
 }
 
-export default Downloadxls;
+export default withTranslation('MasterLabels')(Downloadxls);

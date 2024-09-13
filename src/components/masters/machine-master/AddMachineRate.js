@@ -674,11 +674,11 @@ class AddMachineRate extends Component {
   moreDetailsToggler = (Id, editFlag) => {
     const { selectedTechnology, vendorName, costingTypeId, client } = this.state;
     if (selectedTechnology == null || selectedTechnology.length === 0 || Object.keys(selectedTechnology).length < 0) {
-      Toaster.warning(`${this.props.t('commonFields.technology', { ns: 'MasterLabels', defaultValue: 'Technology' })} should not be empty.`)
+      Toaster.warning(`${this.props.t('Technology', { ns: 'MasterLabels', defaultValue: 'Technology' })} should not be empty.`)
       return false;
     }
     if (costingTypeId === VBCTypeId && vendorName.length === 0) {
-      Toaster.warning(`Vendor and ${this.props.t('commonFields.technology', { ns: 'MasterLabels', defaultValue: 'Technology' })} should not be empty.`)
+      Toaster.warning(`Vendor and ${this.props.t('Technology', { ns: 'MasterLabels', defaultValue: 'Technology' })} should not be empty.`)
       return false;
     }
     let data = {
@@ -1519,7 +1519,7 @@ class AddMachineRate extends Component {
                         </Col>
                         <Col md="3">
                           <Field
-                            label={t('commonFields.technology', { ns: 'MasterLabels', defaultValue: 'Technology' })}
+                            label={t('Technology', { ns: 'MasterLabels', defaultValue: 'Technology' })}
                             name="technology"
                             placeholder={isViewFlag || isEditFlag ? '-' : "Select"}
                             // selection={(this.state.selectedTechnology == null || this.state.selectedTechnology.length === 0) ? [] : this.state.selectedTechnology}
