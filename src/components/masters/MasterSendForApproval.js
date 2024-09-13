@@ -233,6 +233,9 @@ function MasterSendForApproval(props) {
                     }));
                 callback(divisionArray, true);
             } else {
+                if (!props.approvalListing) {
+                    props.commonFunction(approvalObj && approvalObj?.Plant && approvalObj?.Plant[0]?.PlantId, true)
+                }
                 checkFinalUserAndSetApprover(departmentId, null);
                 callback([], false);
             }
@@ -249,9 +252,6 @@ function MasterSendForApproval(props) {
             fetchDivisionList(value.value, dispatch, (divisionArray, showDivision) => {
                 setIsShowDivision(showDivision);
                 setDivisionList(divisionArray);
-                if (!showDivision) {
-                    checkFinalUserAndSetApprover(value?.value, null);
-                }
             });
         } else {
             let tempDropdownList = []
