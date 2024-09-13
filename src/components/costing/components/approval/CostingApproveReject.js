@@ -45,7 +45,6 @@ function CostingApproveReject(props) {
   const [disableReleaseStrategy, setDisableReleaseStrategy] = useState(false)
   const [approverIdList, setApproverIdList] = useState([])
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
-
   useEffect(() => {
     dispatch(getReasonSelectList((res) => { }))
     if (!props?.isRFQApproval) {
@@ -62,19 +61,31 @@ function CostingApproveReject(props) {
         dispatch(getAllApprovalDepartment((res) => {
 
           const Data = res?.data?.SelectList
-          const departObj = Data && Data.filter(item => item?.Value === userData?.DepartmentId)
-          let dataInFieldTemp = {
-            ...dataInFields, Department: { label: departObj[0]?.Text, value: departObj[0]?.Value },
+          const Departments = userDetails().Department && userDetails().Department.map(item => item.DepartmentName)
+          const updateList = Data && Data.filter(item => Departments.includes(item.Text))
+          let dataInFieldTemp = {}
+          if (props.isApprovalListing && approvalData && approvalData[0]?.DepartmentId) {
+            let dept = updateList.find(item => item.Value === approvalData[0]?.DepartmentId)
+            dataInFieldTemp = {
+              ...updateList[0]?.Text, Department: { label: dept?.Text, value: dept?.Value },
+            }
+            setDataInFields(dataInFieldTemp)
+            setValue('dept', { label: dept?.Text, value: dept?.Value })
+          } else {
+
+            dataInFieldTemp = {
+              ...updateList[0]?.Text, Department: { label: updateList[0]?.Text, value: updateList[0]?.Value },
+            }
+            setDataInFields(dataInFieldTemp)
+            setValue('dept', { label: updateList && updateList[0].Text, value: updateList && updateList[0].Value })
           }
-          setDataInFields(dataInFieldTemp)
-          setValue('dept', { label: departObj && departObj[0].Text, value: departObj && departObj[0].Value })
 
           if (initialConfiguration.IsReleaseStrategyConfigured && releaseStrategyDetails?.IsPFSOrBudgetingDetailsExist === true) {
             setDisableReleaseStrategy(true)
             approverAPICall(releaseStrategyDetails?.DepartmentId, releaseStrategyDetails?.TechnologyId, releaseStrategyDetails?.ApprovalTypeId, dataInFieldTemp)
           } else {
             setDisableReleaseStrategy(false)
-            approverAPICall(departObj[0]?.Value, approvalData && approvalData[0]?.TechnologyId, costingTypeIdToApprovalTypeIdFunction(props?.approvalData[0].ApprovalTypeId ?? props?.costingTypeId), dataInFieldTemp)
+            approverAPICall(updateList[0]?.Value, approvalData && approvalData[0]?.TechnologyId, costingTypeIdToApprovalTypeIdFunction(props?.approvalData[0].ApprovalTypeId ?? props?.costingTypeId), dataInFieldTemp)
             // MINDA
             // approverAPICall(departObj[0]?.Value, approvalData && approvalData[0]?.TechnologyId, props?.costingTypeId, dataInFieldTemp)
           }
@@ -402,6 +413,7 @@ function CostingApproveReject(props) {
         isDisable={isDisable}
         disableReleaseStrategy={disableReleaseStrategy}
         isShowNFRPopUp={props.isShowNFRPopUp}
+        isApprovalListing={props?.isApprovalListing}
       />
 
       {
