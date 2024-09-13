@@ -498,6 +498,9 @@ export function calculatePercentage(value) {
 export function calculatePercentageValue(value, percent) {
   return value * percent / 100
 }
+export function calculatePercentageFromValue(BaseValue, input) {
+  return (input * 100) / BaseValue
+}
 
 /**
  * @description getRandomSixDigit 

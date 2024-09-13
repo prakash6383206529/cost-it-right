@@ -19,6 +19,7 @@ const AuctionDetails = (props) => {
   const history = useHistory();
   const [state, setState] = useState({
     isLoader: false,
+    gridRefresh: false
   });
 
   const [addAuction, setAddAuction] = useState(false);
@@ -28,9 +29,15 @@ const AuctionDetails = (props) => {
     dispatch(auctionListByStatus(AuctionLiveId, () => {
       setTimeout(() => {
         setState(prevState => ({ ...prevState, isLoader: false }))
-      }, 300);
+      }, 20);
     }))
   }, []);
+  useEffect(() => {
+    setState(prevState => ({ ...prevState, gridRefresh: true }))
+    setTimeout(() => {
+      setState(prevState => ({ ...prevState, gridRefresh: false }))
+    }, 50);
+  }, [ViewRMAccessibility])
 
   const formToggle = () => {
 
@@ -51,7 +58,7 @@ const AuctionDetails = (props) => {
       {!addAuction && (
         <div>
           {state.isLoader && <LoaderCustom />}
-          <AuctionGrid auctionlistId={AuctionLiveId} formToggle={formToggle} ViewRMAccessibility={ViewRMAccessibility} AddAccessibility={AddAccessibility} />
+          <AuctionGrid auctionlistId={AuctionLiveId} formToggle={formToggle} ViewRMAccessibility={ViewRMAccessibility} AddAccessibility={AddAccessibility} loader={state.gridRefresh} />
         </div>
       )}
       {addAuction && (

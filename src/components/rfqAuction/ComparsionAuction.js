@@ -160,7 +160,7 @@ function ComparsionAuction(props) {
   };
 
   const checkTimerShop = (value) => {
-    setState(prevState => ({ ...prevState, isTimerRunning: false }))
+    setState(prevState => ({ ...prevState, isTimerRunning: value }))
   }
 
   const showVendorRank = (data, check) => {
@@ -275,7 +275,7 @@ function ComparsionAuction(props) {
                 </>}
                 <td>{headerDetails?.AuctionStartDateTime ? DayTime(headerDetails?.AuctionStartDateTime).format('DD/MM/YYYY HH:MM') : '-'}</td>
                 <td>{headerDetails?.AuctionDuration ?? '-'}{isExtendedTime ? '+' + headerDetails?.TotalAuctionExtensionDuration : ''}</td>
-                <td>{headerDetails?.AuctionEndDateTime ? DayTime(headerDetails?.AuctionEndDateTime).format('DD/MM/YYYY HH:MM') : '-'}</td>
+                <td>{headerDetails?.AuctionEndDateTime ? DayTime(headerDetails?.AuctionEndDateTime).format('DD/MM/YYYY hh:mm') : '-'}</td>
                 <td>{checkForDecimalAndNull(headerDetails?.BasePrice, NoOfDecimalForPrice) ?? '-'}</td>
                 <td>{checkForDecimalAndNull(headerDetails?.ReductionPrice, NoOfDecimalForPrice) ?? '-'}</td>
               </tr>
