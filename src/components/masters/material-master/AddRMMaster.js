@@ -193,18 +193,21 @@ function AddRMMaster(props) {
         }
     }, [])
     useEffect(() => {
-
-        if (!getConfigurationKey().IsDivisionAllowedForDepartment && !isViewFlag && getConfigurationKey().IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {
-
-            dispatch(getUsersMasterLevelAPI(loggedInUserId(), RM_MASTER_ID, (res) => {
-                setTimeout(() => {
-                    commonFunction()
-                }, 100);
-            }))
+        if (!getConfigurationKey().IsDivisionAllowedForDepartment && !isViewFlag) {
+            finalUserCheckAndMasterLevelCheckFunction()
         }
     }, [state.costingTypeId])
 
-    const { userMasterLevelAPI } = useSelector((state) => state.auth)
+    const finalUserCheckAndMasterLevelCheckFunction = (plantId, isDivision = false) => {
+        if (!isViewFlag && getConfigurationKey().IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {
+            dispatch(getUsersMasterLevelAPI(loggedInUserId(), RM_MASTER_ID, (res) => {
+                setTimeout(() => {
+                    commonFunction(plantId, isDivision, res?.data?.Data?.MasterLevels)
+                }, 500);
+            }))
+        }
+    }
+
     /**
      * @method onPressVendor
      * @description Used for Vendor checked
@@ -225,10 +228,9 @@ function AddRMMaster(props) {
         dispatch(fetchSpecificationDataAPI(0, () => { }))
         props?.hideForm(type)
     }
-    const commonFunction = (plantId = EMPTY_GUID, isDivision = false) => {
+    const commonFunction = (plantId = EMPTY_GUID, isDivision = false, masterLevels = []) => {
         let levelDetailsTemp = []
-        levelDetailsTemp = userTechnologyDetailByMasterId(state.costingTypeId, RM_MASTER_ID, userMasterLevelAPI)
-
+        levelDetailsTemp = userTechnologyDetailByMasterId(state.costingTypeId, RM_MASTER_ID, masterLevels)
         setState(prevState => ({ ...prevState, levelDetails: levelDetailsTemp }))
         let obj = {
             DepartmentId: userDetails().DepartmentId,
@@ -237,13 +239,6 @@ function AddRMMaster(props) {
             Mode: 'master',
             approvalTypeId: costingTypeIdToApprovalTypeIdFunction(state.costingTypeId),
             plantId: plantId
-        }
-        if (isDivision) {
-            dispatch(getUsersMasterLevelAPI(loggedInUserId(), RM_MASTER_ID, (res) => {
-                setTimeout(() => {
-                    commonFunction()
-                }, 100);
-            }))
         }
         if (getConfigurationKey().IsMasterApprovalAppliedConfigure && !isDivision) {
             dispatch(checkFinalUser(obj, (res) => {
@@ -281,11 +276,7 @@ function AddRMMaster(props) {
                         dispatch(setOtherCostDetails(Data?.RawMaterialOtherCostDetails))
                         dispatch(setCommodityDetails(Data?.MaterialCommodityIndexRateDetails))
                         if (!getConfigurationKey().IsDivisionAllowedForDepartment && getConfigurationKey().IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {
-                            dispatch(getUsersMasterLevelAPI(loggedInUserId(), RM_MASTER_ID, (res) => {
-                                setTimeout(() => {
-                                    commonFunction(Data?.Plant[0]?.PlantId)
-                                }, 100);
-                            }))
+                            finalUserCheckAndMasterLevelCheckFunction(Data?.Plant[0]?.PlantId)
                         } else {
                             setState(prevState => ({ ...prevState, finalApprovalLoader: false }))
                         }
@@ -333,7 +324,6 @@ function AddRMMaster(props) {
     };
 
     const onSubmit = debounce(handleSubmit((values, isDivision) => {
-        console.log(values, 'values')
         const { DataToChange } = state
         let scrapRate = ''
         let jaliRateBaseCurrency = ''
@@ -342,7 +332,6 @@ function AddRMMaster(props) {
         const { ShowScrapKeys } = rawMaterailDetails
         const Plants = values.Plants
         if (ShowScrapKeys?.showCircleJali) {
-            console.log("ShowScrapKeys.showCircleJali condition met")
             scrapRate = state?.isImport ? checkForNull(values?.JaliScrapCostSelectedCurrency) : checkForNull(values?.JaliScrapCostBaseCurrency)
             scrapRateInr = state?.isImport ? checkForNull(values?.JaliScrapCostBaseCurrency) : 0
             jaliRateBaseCurrency = checkForNull(values?.CircleScrapCostBaseCurrency)
@@ -353,7 +342,6 @@ function AddRMMaster(props) {
             }
 
         } else if (ShowScrapKeys?.showForging) {
-            console.log("ShowScrapKeys.showForging condition met")
             scrapRate = state?.isImport ? checkForNull(values?.ForgingScrapSelectedCurrency) : checkForNull(values?.ForgingScrapBaseCurrency)
             scrapRateInr = state?.isImport ? checkForNull(values?.ForgingScrapSelectedCurrency) : 0
             machiningRateBaseCurrency = state?.isImport ? checkForNull(values?.MachiningScrapSelectedCurrency) : checkForNull(values?.MachiningScrapBaseCurrency)
@@ -364,7 +352,6 @@ function AddRMMaster(props) {
             }
 
         } else if (ShowScrapKeys?.showScrap) {
-            console.log("ShowScrapKeys.showScrap condition met")
             scrapRate = state?.isImport ? checkForNull(values?.ScrapRateSelectedCurrency) : checkForNull(values?.ScrapRateBaseCurrency)
             scrapRateInr = state?.isImport ? checkForNull(values?.ScrapRateBaseCurrency) : 0
             if (checkForNull(values?.BasicRateBaseCurrency) < checkForNull(scrapRate)) {
@@ -375,13 +362,11 @@ function AddRMMaster(props) {
         }
         let plantArray = []
         if ((state.costingTypeId === ZBCTypeId && !getConfigurationKey().IsMultipleUserAllowForApproval) || state.isEditFlag) {
-            console.log("state.costingTypeId === ZBCTypeId && !getConfigurationKey().IsMultipleUserAllowForApproval condition met")
             Plants && Plants.map((item) => {
                 plantArray.push({ PlantName: item.label, PlantId: item.value, PlantCode: '', })
                 return plantArray
             })
         } else {
-            console.log("else condition met")
             plantArray.push({ PlantName: values?.Plants?.label, PlantId: values?.Plants?.value, PlantCode: '', })
         }
         let formData = {
@@ -467,7 +452,6 @@ function AddRMMaster(props) {
             "SourceVendorId": rawMaterailDetails?.SourceVendor?.value ?? null
         }
 
-        console.log('dfdf')
         let basicRate = state.isImport ? checkForNull(values?.BasicRateSelectedCurrency) : checkForNull(values.BasicRateBaseCurrency)
         let cuttOffPrice = state.isImport ? checkForNull(values?.cutOffPriceSelectedCurrency) : checkForNull(values.cutOffPriceBaseCurrency)
         let shearingCost = state.isImport ? checkForNull(values?.ShearingCostSelectedCurrency) : checkForNull(values.ShearingCostBaseCurrency)
@@ -483,24 +467,19 @@ function AddRMMaster(props) {
             && (shearingCost === checkForNull(DataToChange?.RMShearingCost)) && (circleScrapCost === checkForNull(DataToChange?.JaliScrapCost)) && (machiningScrapCost === checkForNull(DataToChange?.MachiningScrapRate))
         let nonFinancialDataNotChanged = (JSON.stringify(rawMaterailDetails.Files) === JSON.stringify(DataToChange?.FileList) && values?.Remarks === DataToChange?.Remark)
         if (state.isEditFlag) {
-            console.log('state.isEditFlag')
             if (!isRMAssociated) {
-                console.log('!isRMAssociated')
                 if (financialDataNotChanged && nonFinancialDataNotChanged) {
-                    console.log('financialDataNotChanged && nonFinancialDataNotChanged')
                     if (!state.isFinalApprovar && getConfigurationKey().IsMasterApprovalAppliedConfigure) {
                         Toaster.warning('Please change data to send RM for approval')
                         return false
                     }
                 } else if (!state?.isSourceVendor && (!financialDataNotChanged) && DayTime(values?.effectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(DataToChange?.EffectiveDate).format('YYYY-MM-DD HH:mm:ss')) {
                     Toaster.warning('Please update the effective date')
-                    console.log('!state?.isSourceVendor')
                     setState(prevState => ({ ...prevState, isDateChanged: true }))
                     return false
                 }
                 formData.IsFinancialDataChanged = false
             } else {
-                console.log('else')
                 formData.IsFinancialDataChanged = financialDataNotChanged ? false : true
             }
 
@@ -708,7 +687,7 @@ function AddRMMaster(props) {
                             showScrapKeys={rawMaterailDetails?.ShowScrapKeys}
                             toolTipTextObject={state.toolTipTextObject}
                             handleOperation={handleRMOperation}
-                            commonFunction={commonFunction}
+                            commonFunction={finalUserCheckAndMasterLevelCheckFunction}
                             isEdit={state.isEditFlag}
                         />
                     )

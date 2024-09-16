@@ -672,6 +672,7 @@ function MasterSendForApproval(props) {
                     ApproverDepartmentName: dept && dept.label ? dept.label : '',
                     IsFinalApprovalProcess: false,
                     IsRFQCostingSendForApproval: props.isRFQ ? true : false,
+                    DivisionId: props?.divisionId ?? null,
                     // Add any other necessary fields from the item
                 }));
                 setIsLoader(true);
