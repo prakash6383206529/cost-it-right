@@ -108,7 +108,7 @@ class Department extends Component {
 							return null
 						})
 						this.props.change("DivisionList", divisionArray)
-						this.setState({ DataToChange: res?.data?.Data, selectedPlants: plantArray, divisions: divisionArray })
+						this.setState({ DataToChange: res?.data?.Data, selectedPlants: plantArray, divisions: divisionArray, isApplyDivision: res?.data?.Data?.IsDivision })
 						this.props.change("plant", plantArray)
 					}
 
@@ -254,7 +254,8 @@ class Department extends Component {
 					CompanyId: '',
 					LoggedInUserId: loggedInUserId(),
 					PlantList: plantArray,
-					DivisionList: divisionArray
+					DivisionList: divisionArray,
+					IsDivision: isApplyDivision,
 				}
 			}
 			if (this.props.isDivision) {
@@ -409,9 +410,11 @@ class Department extends Component {
 														IsApplyDivision
 														<input
 															type="checkbox"
+															checked={isApplyDivision}
 														/>
 														<span
 															className=" before-box"
+															checked={isApplyDivision}
 															onChange={this.checkboxHandler}
 														/>
 													</label>
