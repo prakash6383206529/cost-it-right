@@ -10,14 +10,12 @@ import { Loader } from "../common/Loader";
 import { reactLocalStorage } from "reactjs-localstorage";
 import { Redirect } from 'react-router-dom';
 import { formatLoginResult } from '../../helper/ApiResponse';
-import logo from '../../assests/images/logo/company-logo.svg'
-import secondLogo from '../../assests/images/logo/CIRlogo.svg';
 import CheckIcon from '../../assests/images/mail-sent.png';
 import errorImg from '../../assests/images/box.png';
-import { IV, KEY, VERSION, showLogoFromDataBase } from '../../config/constants';
+import { IV, KEY, VERSION } from '../../config/constants';
 import LoaderCustom from "../common/LoaderCustom";
 import { MsalAuthLogin } from "../../../src/components/login/MsalAuthLogin";
-import { getConfigurationKey } from "../../helper";
+import { CirLogo, CompanyLogo } from "../../helper/core";
 
 const CryptoJS = require('crypto-js');
 
@@ -191,7 +189,7 @@ class Login extends Component {
             <div className="row shadow-lg">
               <div className="col-md-5 form-section">
                 <div className="text-center">
-                  <img className="logo-first" src={showLogoFromDataBase ? getConfigurationKey().LogoURL : logo} alt={showLogoFromDataBase ? getConfigurationKey().ClientName ?? "LOGO" : 'Softude'} />
+                  <CompanyLogo />
                 </div >
                 <h3 className="text-center">Welcome Back,<br /> Please login to your account</h3>
                 <form noValidate className="form" onSubmit={handleSubmit(this.onSubmit.bind(this))}>
@@ -265,7 +263,7 @@ class Login extends Component {
                 </div>
                 <div className="bottomlogo_con mt-3">
                   <span className="mt-0">Powered By</span>
-                  <img className="logo-second" src={secondLogo} alt="Cost It Right" />
+                  <CirLogo />
                 </div>
               </div >
               <div className="col-md-7 p-0 right-sideimg">

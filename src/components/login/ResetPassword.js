@@ -1,13 +1,11 @@
 import React from 'react'
-import cirLogo from '../../assests/images/logo/CIRlogo.svg'
 import logoutImg from '../../assests/images/logout.svg'
 //MINDA
-import Logo from '../../assests/images/logo/company-logo.svg'
 import { Nav } from 'reactstrap'
 import { PasswordFieldHookForm } from '../layout/HookFormInputs'
 import { Controller, useForm } from 'react-hook-form'
 import { useState } from 'react'
-import { IVRFQ, KEYRFQ, RESET_PASSWORD, VERSION, showLogoFromDataBase } from '../../config/constants'
+import { IVRFQ, KEYRFQ, RESET_PASSWORD, VERSION } from '../../config/constants'
 import { required, minLength6, maxLength18, checkWhiteSpaces, strongPassword } from "../../helper/validation";
 import { useHistory, useLocation } from 'react-router-dom'
 import { reactLocalStorage } from 'reactjs-localstorage'
@@ -16,7 +14,7 @@ import PopupMsgWrapper from '../common/PopupMsgWrapper'
 import { useDispatch } from 'react-redux'
 import { updatePassword } from '../../actions/auth/AuthActions'
 import Toaster from '../common/Toaster'
-import { getConfigurationKey } from '../../helper'
+import { CirLogo, CompanyLogo } from '../../helper/core'
 
 const CryptoJS = require('crypto-js')
 function ResetPassword() {
@@ -94,14 +92,11 @@ function ResetPassword() {
             <nav className="navbar navbar-expand-lg fixed-top nav bg-light">
                 <div className="logo-container">
                     <button className="btn btn-no-border">
-                        <img
-                            src={showLogoFromDataBase ? getConfigurationKey().LogoURL : Logo} alt={showLogoFromDataBase ? getConfigurationKey().ClientName ?? "LOGO" : 'Softude'}
-                            height="40"
-                        />
+                        <CompanyLogo height="40" />
                     </button>
                     <div className="border-left"></div>
                     <div className="btn btn-no-border rfq-icon-container d-flex align-items-center" >
-                        <img src={cirLogo} alt="Cost It Right" height="40" />
+                        <CirLogo height="40" />
                     </div>
                 </div>
                 <div className="navbar-collapse offcanvas-collapse justify-content-end" id="">
