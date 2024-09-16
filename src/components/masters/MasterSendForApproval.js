@@ -91,12 +91,10 @@ function MasterSendForApproval(props) {
                 if (props.approvalListing) {
                     fetchAndSetApprovalUsers(updateList[0]?.Value, reasonId, approvalData[0]?.DivisionId);
                 } else if ((type !== "Approve" && props.masterSummary) && getConfigurationKey().IsDivisionAllowedForDepartment) {
-                            
-                                fetchDivisionList(department[0].value, dispatch, (divisionArray, showDivision) => {
-                                    setIsShowDivision(showDivision);
-                                    setDivisionList(divisionArray);
-                                });
-                            }
+                    fetchDivisionList(department[0].value, dispatch, (divisionArray, showDivision) => {
+                        setIsShowDivision(showDivision);
+                        setDivisionList(divisionArray);
+                    });
                 }
                 if (!getConfigurationKey().IsDivisionAllowedForDepartment || (type === 'Approve' && !IsFinalLevelButtonShow)) {
                     setTimeout(() => {
@@ -121,7 +119,8 @@ function MasterSendForApproval(props) {
                     fetchAndSetApprovalUsers(updateList[0]?.Value, reasonId, approvalData[0]?.DivisionId);
                     setIsShowDivision(false)
                 }
-            }))
+            }
+        }))
         getLastRevisionData()
     }, [])
 
@@ -1311,7 +1310,7 @@ function MasterSendForApproval(props) {
                                         disabled={isDisable}
                                     >
                                         <div className={'save-icon'}></div>
-                                        {isFinalApprover || type === 'Approve' || type === 'Reject' ? 'Submit' : 'Send For Approval' }
+                                        {isFinalApprover || type === 'Approve' || type === 'Reject' ? 'Submit' : 'Send For Approval'}
                                     </button>
                                 </div>
                             </Row>
