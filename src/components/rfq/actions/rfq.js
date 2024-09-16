@@ -628,7 +628,7 @@ export function setRmSpecificRowData(data) {
     }
 };
 
-export function getPurchaseRequisitionSelectList(callback) {
+export function getPurchaseRequisitionSelectList(/* filterData,  */callback) {
 
 
     return (dispatch) => {
@@ -637,6 +637,8 @@ export function getPurchaseRequisitionSelectList(callback) {
             payload: []
         })
         const request = axios.get(`${API.getPurchaseRequisitionSelectList}`, config());
+
+        // const request = axios.get(`${API.getPurchaseRequisitionSelectList}?partType=${filterData?.partType}&plantId=${filterData?.plantId}`, config());
         request.then((response) => {
 
             if (response.data.Result || response.status === 204) {
