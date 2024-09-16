@@ -15,7 +15,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import LoaderCustom from '../../common/LoaderCustom'
 import { MESSAGES } from '../../../config/message'
-import { allEqual, checkForNull, getConfigurationKey, searchNocontentFilter, setLoremIpsum } from '../../../helper'
+import { allEqual, checkForNull, getConfigurationKey, removeSpaces, searchNocontentFilter, setLoremIpsum } from '../../../helper'
 import SimulationApproveReject from '../../costing/components/approval/SimulationApproveReject'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import WarningMessage from '../../common/WarningMessage'
@@ -155,7 +155,7 @@ function SimulationApprovalListing(props) {
             if (statusColumnData && statusColumnData.data) {
                 setDisableFilter(false)
                 setWarningMessage(true)
-                setFloatingFilterData(prevState => ({ ...prevState, DisplayStatus: statusColumnData.data }))
+                setFloatingFilterData(prevState => ({ ...prevState, DisplayStatus: removeSpaces(statusColumnData.data) }))
             }
         }, 200);
     }, [statusColumnData])
@@ -449,6 +449,7 @@ function SimulationApprovalListing(props) {
     const statusFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+
         return <div className={cell} >{row.DisplayStatus}</div>
     }
 

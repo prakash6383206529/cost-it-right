@@ -1,5 +1,5 @@
 import React, { useState, useEffect, Fragment } from 'react'
-import { checkForDecimalAndNull, getConfigurationKey, showBopLabel } from '../../../../../src/helper'
+import { checkForDecimalAndNull, checkTechnologyIdAndRfq, getConfigurationKey, showBopLabel } from '../../../../../src/helper'
 import { Container, Row, Col, Table } from 'reactstrap'
 import Drawer from '@material-ui/core/Drawer'
 import NoContentFound from '../../../common/NoContentFound'
@@ -13,7 +13,6 @@ function ViewBOP(props) {
   const [viewBOPCost, setviewBOPCost] = useState([])
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
-  const hasPartType = viewCostingData?.some(item => item?.partType === TOOLING);
 
   useEffect(() => {
     setviewBOPCost(BOPData)
@@ -46,7 +45,7 @@ function ViewBOP(props) {
                 {IsAssemblyCosting && <th>{`Part No.`}</th>}
                 <th>{`${showBopLabel()} Part No.`}</th>
                 <th>{`${showBopLabel()} Part Name`}</th>
-                {hasPartType && <th>{`${showBopLabel()} Updated Part Name`}</th>}
+                {checkTechnologyIdAndRfq(viewCostingData) && <th>{`${showBopLabel()} Updated Part Name`}</th>}
 
                 <th>{`Currency`}</th>
                 <th>{`Landed Cost (${reactLocalStorage.getObject("baseCurrency")})`}</th>
@@ -63,7 +62,7 @@ function ViewBOP(props) {
                       {IsAssemblyCosting && <td className={`${isPDFShow ? '' : 'text-overflow'}`}><span title={item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</span></td>}
                       <td className={`${isPDFShow ? '' : 'text-overflow'}`}><span title={item.BOPPartNumber}>{item.BOPPartNumber}</span></td>
                       <td className={`${isPDFShow ? '' : 'text-overflow'}`}><span title={item.BOPPartName}>{item.BOPPartName}</span></td>
-                      {hasPartType && <td><div className='red-value'><span title={item.UpdatedBoughtOutPartPartName}>{item.UpdatedBoughtOutPartPartName}</span></div></td>}
+                      {checkTechnologyIdAndRfq(viewCostingData) && <td><div className={item?.UpdatedBoughtOutPartPartName ? 'red-value' : ''}><span title={item?.UpdatedBoughtOutPartPartName}>{item?.UpdatedBoughtOutPartPartName}</span></div></td>}
                       <td>{item.Currency}</td>
                       <td>
                         {checkForDecimalAndNull(item.LandedCostINR, initialConfiguration.NoOfDecimalForPrice)}
