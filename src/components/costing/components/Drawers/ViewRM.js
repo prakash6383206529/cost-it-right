@@ -3,9 +3,9 @@ import Drawer from '@material-ui/core/Drawer'
 import WeightCalculator from '../WeightCalculatorDrawer';
 import { useDispatch, useSelector } from 'react-redux';
 import Toaster from '../../../common/Toaster';
-import { IsShowFreightAndShearingCostFields, checkForDecimalAndNull, getConfigurationKey, isRMDivisorApplicable } from '../../../../helper';
+import { IsShowFreightAndShearingCostFields, checkForDecimalAndNull, checkTechnologyIdAndRfq, getConfigurationKey, isRMDivisorApplicable } from '../../../../helper';
 import NoContentFound from '../../../common/NoContentFound';
-import { AWAITING_APPROVAL_ID, EMPTY_DATA, PENDING_FOR_APPROVAL_ID, REJECTEDID } from '../../../../config/constants';
+import { AWAITING_APPROVAL_ID, EMPTY_DATA, PENDING_FOR_APPROVAL_ID, REJECTEDID, TOOLING } from '../../../../config/constants';
 import { SHEETMETAL, RUBBER, FORGING, DIE_CASTING, PLASTIC, CORRUGATEDBOX, Ferrous_Casting, MACHINING, WIREFORMING, getTechnology, ELECTRICAL_STAMPING, INSULATION } from '../../../../config/masterData'
 import 'reactjs-popup/dist/index.css'
 import { getRawMaterialCalculationForCorrugatedBox, getRawMaterialCalculationForDieCasting, getRawMaterialCalculationForFerrous, getRawMaterialCalculationForForging, getRawMaterialCalculationForMachining, getRawMaterialCalculationForMonoCartonCorrugatedBox, getRawMaterialCalculationForPlastic, getRawMaterialCalculationForRubber, getRawMaterialCalculationForSheetMetal, getSimulationCorrugatedAndMonoCartonCalculation, getSimulationRmFerrousCastingCalculation, getSimulationRmMachiningCalculation, getSimulationRmRubberCalculation, getRawMaterialCalculationForInsulation } from '../../actions/CostWorking'
@@ -26,7 +26,6 @@ function ViewRM(props) {
   const { viewCostingDetailData, viewRejectedCostingDetailData, viewCostingDetailDataForAssembly } = useSelector((state) => state.costing)
 
   const disabledForMonoCartonCorrugated = (viewCostingData[props.index]?.technologyId === CORRUGATEDBOX && viewCostingData[props.index]?.CalculatorType === 'CorrugatedAndMonoCartonBox')
-
   useEffect(() => {
     if (viewCostingDetailData && viewCostingDetailData?.length > 0 && !props?.isRejectedSummaryTable && !props?.isFromAssemblyTechnology) {
       setViewCostingData(viewCostingDetailData)
@@ -233,7 +232,7 @@ function ViewRM(props) {
             <tr>
               {isAssemblyCosting && <th>{`Part No`}</th>}
               <th>{`RM Name -Grade`}</th>
-              <th>{`Updated RM Name`}</th>
+              {checkTechnologyIdAndRfq(viewCostingData) && <th>{`Updated RM Name`}</th>}
 
               <th>{`RM Code`}</th>
               <th>{`RM Rate`}</th>
@@ -260,7 +259,7 @@ function ViewRM(props) {
                 <tr key={index}>
                   {isAssemblyCosting && <td className={`${isPDFShow ? '' : 'text-overflow'}`}> <span title={item?.PartNumber !== null || item?.PartNumber !== "" ? item?.PartNumber : ""}>{item?.PartNumber !== null || item?.PartNumber !== "" ? item?.PartNumber : ""}</span></td>}
                   <td className={`${isPDFShow ? '' : 'text-overflow'}`}><span title={item?.RMName}>{item?.RMName}</span></td>
-                  <td><div className='red-value'>{item?.UpdatedRawMaterialName ? item?.UpdatedRawMaterialName : '-'}</div></td>
+                  {checkTechnologyIdAndRfq(viewCostingData) && <td><div className={item?.UpdatedRawMaterialName ? 'red-value' : ''}>{item?.UpdatedRawMaterialName ? item?.UpdatedRawMaterialName : '-'}</div></td>}
 
                   <td>{item?.RMCode ? item?.RMCode : '-'}</td>
                   <td>{checkForDecimalAndNull(item?.RMRate, initialConfiguration.NoOfDecimalForPrice)}</td>
