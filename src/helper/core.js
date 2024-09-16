@@ -1,4 +1,9 @@
+import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { showLogoFromDataBase } from '../config/constants';
+import { getConfigurationKey } from './auth';
+import PrimaryLogo from '../assests/images/logo/company-logo.svg';
+import SecondaryLogo from '../assests/images/logo/CIRlogo.svg';
 
 export const useLabels = () => {
     // const { t } = useTranslation('MasterLabels');
@@ -16,3 +21,11 @@ export const useLabels = () => {
         toolMaintenanceCostLabel: tCosting('toolMaintenanceCost', { defaultValue: 'Tool Maintenance Cost (per pcs)' })
     };
 };
+
+export const CompanyLogo = (props) => {
+    return <img src={showLogoFromDataBase ? getConfigurationKey().LogoURL : PrimaryLogo} alt={showLogoFromDataBase ? getConfigurationKey().ClientName ?? "LOGO" : 'Softude'} height={props.height ?? ''} />
+}
+
+export const CirLogo = (props) => {
+    return <img className="logo-second" src={SecondaryLogo} height={props.height ?? ''} alt="Cost It Right" />
+}
