@@ -8231,15 +8231,15 @@ export const statusDropdownforRfq = [
 ];
 export const statusDropdownforNfr = [
     { label: 'Draft', value: 1 },
-    { label: 'PendingForApproval', value: 2 },
+    { label: 'Pending For Approval', value: 2 },
     { label: 'Approved', value: 3 },
     { label: 'Rejected', value: 4 },
     { label: 'History', value: 5 },
-    { label: 'AwaitingApproval', value: 6 },
+    { label: 'Awaiting Approval', value: 6 },
     { label: 'Error', value: 12 },
     { label: 'Pushed', value: 13 },
-    { label: 'UnderApproval', value: 21 },
-    { label: 'ExternalReject', value: 27 },
+    { label: 'Under Approval', value: 21 },
+    { label: 'External Reject', value: 27 },
 ];
 export const CostingBulkUploadTechnologyDropdown = [
     { label: "Sheet Metal", value: "8" },
