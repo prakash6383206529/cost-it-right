@@ -1253,7 +1253,7 @@ function AddRfq(props) {
         const isSendButtonVisible = dataProps?.isViewFlag || (dataProps?.isAddFlag ? false : (dataProps?.isEditFlag && showSendButton === PREDRAFT ? false : true))
         return (
             <>
-                {show && (selectedOption === TOOLINGPART /* || ASSEMBLYNAME === partType?.label */)}  <button title="button" className="hirarchy-btn Tour_List_View_BOM" type={"button"} onClick={() => visualAdDetails(cellValue)} />
+                {show && selectedOption === TOOLINGPART && (<button title="button" className="hirarchy-btn Tour_List_View_BOM" type="button" onClick={() => visualAdDetails(cellValue)} />)}
                 {show && < button title='Edit' className="Edit mr-2 align-middle" disabled={isSendButtonVisible} type={'button'} onClick={() => editItemPartTable(rowData, props, true)} />}
                 {show && < button title='View' className="View mr-2 align-middle" disabled={false} type={'button'} onClick={() => ViewItemPartTable(rowData, props, false)} />}
 
@@ -1660,7 +1660,7 @@ function AddRfq(props) {
                 }
 
             } if (requirementDate === "") {
-                Toaster.warning(`Please select ${selectedOption === 'TOOLING' ? 'T0 Date' : 'N-100 Timeline'}`);
+                Toaster.warning(`Please select ${selectedOption === 'TOOLING' ? 'Delivery Date' : 'N-100 Timeline'}`);
                 return false;
             }
             if (nfrId && nfrId.value !== null) {//CHECK_NFR
@@ -3001,28 +3001,6 @@ function AddRfq(props) {
                                                         || (partList?.length !== 0 || rmDataList?.length !== 0 || bopDataList?.length !== 0 || vendorList?.length !== 0)}
                                                 />
                                             </Col>)}
-
-                                        <Col md="3">
-                                            <SearchableSelectHookForm
-                                                label={"Plant (Code)"}
-                                                name={"plant"}
-                                                placeholder={"Select"}
-                                                Controller={Controller}
-                                                control={control}
-                                                rules={{ required: true }}
-                                                register={register}
-                                                defaultValue={Object.keys(plant).length !== 0 ? plant : ""}
-                                                options={renderListing("plant")}
-                                                mandatory={true}
-                                                handleChange={handlePlant}
-                                                errors={errors.plant}
-                                                // disabled={((dataProps?.isViewFlag || isEditAll) ? true : false)
-                                                //     || (partList?.length !== 0 || vendorList?.length !== 0)}
-                                                //     selectedOption === 'Tooling' || ((dataProps?.isViewFlag ) ? true : false)
-                                                // || (partList?.length !== 0 || rmDataList?.length !== 0 || bopDataList?.length !== 0 || vendorList?.length !== 0)
-                                                disabled={Object.keys(prNumber).length !== 0 || ((partList?.length !== 0 || rmDataList?.length !== 0 || bopDataList?.length !== 0 || vendorList?.length !== 0) /* || showSendButton === PREDRAFT  */ || (dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll || disabledPartUid)))}
-                                            />
-                                        </Col>
                                         {(quotationType === "Bought Out Part" || quotationType === 'Tooling') && <Col md="3" className={isRmSelected ? 'd-none' : ''}>
                                             <SearchableSelectHookForm
                                                 label={(quotationType === "Bought Out Part" || quotationType === 'Tooling') ? "PR No." : "NFR No."}
@@ -3044,6 +3022,28 @@ function AddRfq(props) {
                                             // isLoading={VendorLoaderObj}
                                             />
                                         </Col>}
+                                        <Col md="3">
+                                            <SearchableSelectHookForm
+                                                label={"Plant (Code)"}
+                                                name={"plant"}
+                                                placeholder={"Select"}
+                                                Controller={Controller}
+                                                control={control}
+                                                rules={{ required: true }}
+                                                register={register}
+                                                defaultValue={Object.keys(plant).length !== 0 ? plant : ""}
+                                                options={renderListing("plant")}
+                                                mandatory={true}
+                                                handleChange={handlePlant}
+                                                errors={errors.plant}
+                                                // disabled={((dataProps?.isViewFlag || isEditAll) ? true : false)
+                                                //     || (partList?.length !== 0 || vendorList?.length !== 0)}
+                                                //     selectedOption === 'Tooling' || ((dataProps?.isViewFlag ) ? true : false)
+                                                // || (partList?.length !== 0 || rmDataList?.length !== 0 || bopDataList?.length !== 0 || vendorList?.length !== 0)
+                                                disabled={Object.keys(prNumber).length !== 0 || ((partList?.length !== 0 || rmDataList?.length !== 0 || bopDataList?.length !== 0 || vendorList?.length !== 0) /* || showSendButton === PREDRAFT  */ || (dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll || disabledPartUid)))}
+                                            />
+                                        </Col>
+
                                         {ShowQuoteSubmissionDate(quotationType) && <Col md="3">
                                             <div className="inputbox date-section">
                                                 <div className="form-group">
@@ -3294,7 +3294,7 @@ function AddRfq(props) {
                                                     <div className="inputbox date-section h-auto">
                                                         <div className="form-group">
 
-                                                            <label>{selectedOption === TOOLING ? 'T0 Date' : "N-100 Timeline"}<span className="asterisk-required">*</span></label>
+                                                            <label>{selectedOption === TOOLING ? 'Delivery Date' : "N-100 Timeline"}<span className="asterisk-required">*</span></label>
                                                             {selectedOption !== TOOLING && <TooltipCustom id="timeline" tooltipText="Part Rediness timeline for Quality, N-10 & N-100" />}
                                                             <div id="addRFQDate_container" className="inputbox date-section">
                                                                 <DatePicker
@@ -3451,7 +3451,7 @@ function AddRfq(props) {
 
                                                                     {<AgGridColumn width={"230px"} field="UOMSymbol" headerName="UOM" ></AgGridColumn>}
 
-                                                                    <AgGridColumn width={"230px"} field="TimeLine" headerName={selectedOption === TOOLING ? 'T0 Date' : "N-100 Timeline"} cellRenderer={'effectiveDateFormatter'} ></AgGridColumn>
+                                                                    <AgGridColumn width={"230px"} field="TimeLine" headerName={selectedOption === TOOLING ? 'Delivery Date' : "N-100 Timeline"} cellRenderer={'effectiveDateFormatter'} ></AgGridColumn>
                                                                     {(selectedOption === 'componentAssembly' || selectedOption === 'Raw Material' || selectedOption === "Bought Out Part") && <AgGridColumn width={"230px"} field="VendorListExisting" headerName="Existing Vendor" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
 
                                                                     {(selectedOption === "componentAssembly" || selectedOption === 'Tooling') && (<AgGridColumn width={"230px"} field="PartId" cellClass="ag-grid-action-container text-right" headerName="Action" floatingFilter={false} type="rightAligned" cellRenderer={'buttonFormatterFirst'} />)}
