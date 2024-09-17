@@ -14,7 +14,7 @@ import ViewPackagingAndFreight from './Drawers/ViewPackagingAndFreight'
 import ViewToolCost from './Drawers/viewToolCost'
 import SendForApproval from './approval/SendForApproval'
 import Toaster from '../../common/Toaster'
-import { checkForDecimalAndNull, checkForNull, checkPermission, formViewData, getTechnologyPermission, loggedInUserId, userDetails, allEqual, getConfigurationKey, getCurrencySymbol, highlightCostingSummaryValue, checkVendorPlantConfigurable, userTechnologyLevelDetails, showSaLineNumber, showBopLabel } from '../../../helper'
+import { checkForDecimalAndNull, checkForNull, checkPermission, formViewData, getTechnologyPermission, loggedInUserId, userDetails, allEqual, getConfigurationKey, getCurrencySymbol, highlightCostingSummaryValue, checkVendorPlantConfigurable, userTechnologyLevelDetails, showSaLineNumber, showBopLabel, checkTechnologyIdAndRfq } from '../../../helper'
 import Attachament from './Drawers/Attachament'
 import { BOPDOMESTIC, BOPIMPORT, COSTING, DRAFT, FILE_URL, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, VARIANCE, VBC, ZBC, VIEW_COSTING_DATA, VIEW_COSTING_DATA_LOGISTICS, NCC, EMPTY_GUID, ZBCTypeId, VBCTypeId, NCCTypeId, CBCTypeId, VIEW_COSTING_DATA_TEMPLATE, PFS2TypeId, REJECTED, SWAP_POSITIVE_NEGATIVE, WACTypeId, UNDER_REVISION, showDynamicKeys, } from '../../../config/constants'
 import { useHistory } from "react-router-dom";
@@ -227,7 +227,7 @@ const CostingSummaryTable = (props) => {
   useEffect(() => {
     if (viewCostingDetailData && viewCostingDetailData.length > 0 && !props?.isRejectedSummaryTable) {
       setViewCostingData(viewCostingDetailData)
-      checkTechnologyIdAndRfq()
+      checkTechnologyIdAndRfq(viewCostingData)
     } else if (viewRejectedCostingDetailData && viewRejectedCostingDetailData.length > 0 && props?.isRejectedSummaryTable) {
       setViewCostingData(viewRejectedCostingDetailData)
     }
@@ -2052,24 +2052,6 @@ const CostingSummaryTable = (props) => {
     })
     return arr
   }
-  function checkTechnologyIdAndRfq() {
-    let foundMismatch = false;
-
-    for (const data of viewCostingData) {
-
-      if (data.technologyId === TOOLING_ID) {
-
-        foundMismatch = true;
-        break; // Return true if there's a mismatch
-      } else if (data.technologyId === '-') {
-
-
-        continue; // Skip if the technologyId is '-'
-      }
-    }
-    //hideDrawerTables(foundMismatch)
-    return foundMismatch;
-  }
 
 
   return (
@@ -2481,7 +2463,7 @@ const CostingSummaryTable = (props) => {
                                   index={index}
                                   isPDFShow={true}
                                   processShow={true}
-                                  hideProcessAndOtherCostTable={checkTechnologyIdAndRfq()}
+                                  hideProcessAndOtherCostTable={checkTechnologyIdAndRfq(viewCostingData)}
                                 />
                               </th>
                             </tr>}
@@ -2496,7 +2478,7 @@ const CostingSummaryTable = (props) => {
                                   isPDFShow={true}
                                   stCostShow={false}
                                   operationShow={true}
-                                  hideProcessAndOtherCostTable={checkTechnologyIdAndRfq()}
+                                  hideProcessAndOtherCostTable={checkTechnologyIdAndRfq(viewCostingData)}
 
                                 /></th></tr>}
                             {drawerDetailPDF && <tr>
@@ -2677,9 +2659,10 @@ const CostingSummaryTable = (props) => {
                               {
                                 !drawerDetailPDF ? <tr>
                                   <td>
-                                    {(viewCostingData?.technologyId !== TOOLING_ID && !rfqCosting) && <span className={highlighter("pCost")}>Process Cost</span>}
+                                    {((!checkTechnologyIdAndRfq(viewCostingData)) || (checkTechnologyIdAndRfq(viewCostingData) && !rfqCosting)) && <span className={highlighter("pCost")}>Process Cost</span>}
                                     <span className={highlighter("oCost")}>Operation Cost</span>
-                                    {(viewCostingData?.technologyId !== TOOLING_ID && !rfqCosting) && <span className={highlighter("netOtherOperationCost")}>Other Operation Cost</span>}
+                                    {((!checkTechnologyIdAndRfq(viewCostingData)) || (checkTechnologyIdAndRfq(viewCostingData) && !rfqCosting)) && (<span className={highlighter("netOtherOperationCost")}>Other Operation Cost</span>)}
+
                                     {showLabourData && <span className={highlighter("NetLabourCost")}>Net Labour Cost</span>}
                                     {showLabourData && <span className={highlighter("IndirectLaborCost")}>Indirect Labor Cost</span>}
                                     {showLabourData && <span className={highlighter("StaffCost")}>Staff Cost</span>}
@@ -2692,13 +2675,13 @@ const CostingSummaryTable = (props) => {
                                     viewCostingData?.map((data, indexInside) => {
                                       return (
                                         <td className={tableDataClass(data)}>
-                                          {(viewCostingData?.technologyId !== TOOLING_ID && !rfqCosting) && <span className={highlighter("pCost")}>
+                                          {(!(checkTechnologyIdAndRfq(viewCostingData)) || (checkTechnologyIdAndRfq(viewCostingData) && !rfqCosting)) && <span className={highlighter("pCost")}>
                                             {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? (data?.IsAssemblyCosting === true ? "Multiple Process" : <span title={checkForDecimalAndNull(data?.pCost, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.pCost, initialConfiguration.NoOfDecimalForPrice)}</span>) : '')}
                                           </span>}
                                           <span className={highlighter('oCost')}>
                                             {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? (data?.IsAssemblyCosting === true ? "Multiple Operation" : <span title={checkForDecimalAndNull(data?.oCost, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.oCost, initialConfiguration.NoOfDecimalForPrice)}</span>) : '')}
                                           </span>
-                                          {(viewCostingData?.technologyId !== TOOLING_ID && !rfqCosting) && <span className={highlighter('netOtherOperationCost')}>
+                                          {(!(checkTechnologyIdAndRfq(viewCostingData)) || (checkTechnologyIdAndRfq(viewCostingData) && !rfqCosting)) && <span className={highlighter('netOtherOperationCost')}>
                                             {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? (data?.IsAssemblyCosting === true ? "Multiple Other Operation" : <span title={checkForDecimalAndNull(data?.netOtherOperationCost, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.netOtherOperationCost, initialConfiguration.NoOfDecimalForPrice)}</span>) : '')}
                                           </span>}
 
@@ -2733,7 +2716,7 @@ const CostingSummaryTable = (props) => {
                                     index={index}
                                     isPDFShow={true}
                                     stCostShow={false}
-                                    hideProcessAndOtherCostTable={checkTechnologyIdAndRfq()}
+                                    hideProcessAndOtherCostTable={checkTechnologyIdAndRfq(viewCostingData)}
 
 
                                   />
@@ -2798,7 +2781,7 @@ const CostingSummaryTable = (props) => {
                                 index={index}
                                 isPDFShow={true}
                                 stCostShow={true}
-                                hideProcessAndOtherCostTable={checkTechnologyIdAndRfq()}
+                                hideProcessAndOtherCostTable={checkTechnologyIdAndRfq(viewCostingData)}
 
                               />
                             </th></tr>
@@ -3021,9 +3004,7 @@ const CostingSummaryTable = (props) => {
 
 
                           {
-                            viewCostingData?.some(data => {
-                              return data.technologyId !== TOOLING_ID && data.technologyId !== '-';
-                            }) && !rfqCosting && (
+                            (!(checkTechnologyIdAndRfq(viewCostingData)) || (checkTechnologyIdAndRfq(viewCostingData) && !rfqCosting)) && (
                               <>
                                 {!drawerDetailPDF ? (
                                   <tr>
@@ -3606,7 +3587,7 @@ const CostingSummaryTable = (props) => {
             anchor={'right'}
             index={index}
             isPDFShow={false}
-            hideProcessAndOtherCostTable={checkTechnologyIdAndRfq()}
+            hideProcessAndOtherCostTable={checkTechnologyIdAndRfq(viewCostingData)}
 
           />
         )
@@ -3620,7 +3601,7 @@ const CostingSummaryTable = (props) => {
             anchor={'right'}
             index={index}
             isPDFShow={false}
-            hideProcessAndOtherCostTable={checkTechnologyIdAndRfq()}
+            hideProcessAndOtherCostTable={checkTechnologyIdAndRfq(viewCostingData)}
 
           />
         )
@@ -3650,7 +3631,7 @@ const CostingSummaryTable = (props) => {
             index={index}
             isPDFShow={false}
             fromCostingSummary={props.fromCostingSummary}
-            hideProcessAndOtherCostTable={checkTechnologyIdAndRfq()}
+            hideProcessAndOtherCostTable={checkTechnologyIdAndRfq(viewCostingData)}
 
           />
         )

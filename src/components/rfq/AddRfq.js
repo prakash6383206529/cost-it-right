@@ -7,7 +7,7 @@ import { getReporterList, getVendorNameByVendorSelectList, getPlantSelectListByT
 import { getCostingSpecificTechnology, getExistingCosting, getPartInfo, } from '../costing/actions/Costing'
 import { IsSendQuotationToPointOfContact, addDays, checkPermission, getConfigurationKey, getTimeZone, loggedInUserId, parseLinks } from '../.././helper';
 import { checkForNull, checkForDecimalAndNull } from '../.././helper/validation'
-import { BOUGHTOUTPARTSPACING, BoughtOutPart, COMPONENT_PART, DRAFT, EMPTY_DATA, FILE_URL, HAVELLS_DESIGN_PARTS, PREDRAFT, PRODUCT_ID, RFQ, RFQVendor, TOOLING, VBC_VENDOR_TYPE, ZBC, searchCount } from '../.././config/constants';
+import { ASSEMBLYNAME, BOUGHTOUTPARTSPACING, BoughtOutPart, COMPONENT_PART, DRAFT, EMPTY_DATA, FILE_URL, HAVELLS_DESIGN_PARTS, PREDRAFT, PRODUCT_ID, RFQ, RFQVendor, TOOLING, TOOLINGPART, VBC_VENDOR_TYPE, ZBC, searchCount } from '../.././config/constants';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
@@ -44,6 +44,7 @@ import AddRfqRmDetails from './RM/AddRfqRmDetails';
 import RaiseRfqBopDetails from './BOP/RaiseRfqBopDetails';
 import TooltipCustom from '../common/Tooltip';
 import { useLabels } from '../../helper/core';
+import BOMViewer from '../masters/part-master/BOMViewer';
 const gridOptionsPart = {}
 const gridOptionsVendor = {}
 
@@ -202,7 +203,8 @@ function AddRfq(props) {
     const [drawerViewMode, setDrawerViewMode] = useState(false)
     const [resetDrawer, setResetDrawer] = useState(false)
     const [partDetailSent, setPartDetailSent] = useState(false)
-
+    const [isOpenVisualDrawer, setIsOpenVisualDrawer] = useState(false)
+    const [visualAdId, setVisualAdId] = useState("")
     const showOnlyFirstModule = initialConfiguration.IsManageSeparateUserPemissionForPartAndVendorInRaiseRFQ;
     const { toolingSpecificRowData } = useSelector(state => state?.rfq);
 
@@ -232,7 +234,12 @@ function AddRfq(props) {
 
     useEffect(() => {
         if (selectedOption === "Bought Out Part" || selectedOption === "Tooling") {
-            dispatch(getPurchaseRequisitionSelectList(() => { }))
+            const filterObj = {
+                "partType": selectedOption,
+                "plantId": plant
+
+            }
+            dispatch(getPurchaseRequisitionSelectList((/* filterObj */) => { }))
         }
     }, [selectedOption])
     useEffect(() => {
@@ -324,7 +331,12 @@ function AddRfq(props) {
             setPartTypeList(res?.data?.SelectList)
         }))
         if (selectedOption === "Bought Out Part" || selectedOption === "Tooling") {
-            dispatch(getPurchaseRequisitionSelectList(() => { }))
+            const filterObj = {
+                "partType": selectedOption,
+                "plantId": plant
+
+            }
+            dispatch(getPurchaseRequisitionSelectList((/* filterObj */) => { }))
         }
         dispatch(getRawMaterialNameChild(() => { }))
         if (initialConfiguration.IsNFRConfigured) {
@@ -1215,9 +1227,18 @@ function AddRfq(props) {
         const cellValue = props?.value;
         return cellValue ? cellValue : '-'
     }
+    const visualAdDetails = (cell) => {
 
+        setIsOpenVisualDrawer(true)
+        setVisualAdId(cell)
+    };
+    const closeVisualDrawer = () => {
+        setIsOpenVisualDrawer(false)
 
+    };
     const buttonFormatterFirst = (props) => {
+
+        const cellValue = props?.value;
 
         const rowData = props?.valueFormatted ? props?.valueFormatted : props?.data;
 
@@ -1232,6 +1253,7 @@ function AddRfq(props) {
         const isSendButtonVisible = dataProps?.isViewFlag || (dataProps?.isAddFlag ? false : (dataProps?.isEditFlag && showSendButton === PREDRAFT ? false : true))
         return (
             <>
+                {show && (selectedOption === TOOLINGPART /* || ASSEMBLYNAME === partType?.label */)}  <button title="button" className="hirarchy-btn Tour_List_View_BOM" type={"button"} onClick={() => visualAdDetails(cellValue)} />
                 {show && < button title='Edit' className="Edit mr-2 align-middle" disabled={isSendButtonVisible} type={'button'} onClick={() => editItemPartTable(rowData, props, true)} />}
                 {show && < button title='View' className="View mr-2 align-middle" disabled={false} type={'button'} onClick={() => ViewItemPartTable(rowData, props, false)} />}
 
@@ -2980,27 +3002,6 @@ function AddRfq(props) {
                                                 />
                                             </Col>)}
 
-                                        {(quotationType === "Bought Out Part" || quotationType === 'Tooling') && <Col md="3" className={isRmSelected ? 'd-none' : ''}>
-                                            <SearchableSelectHookForm
-                                                label={(quotationType === "Bought Out Part" || quotationType === 'Tooling') ? "PR No." : "NFR No."}
-                                                name={(quotationType === "Bought Out Part" || quotationType === 'Tooling') ? "prId" : "nfrId"}
-                                                isClearable={true}
-                                                placeholder={"Select"}
-                                                Controller={Controller}
-                                                control={control}
-                                                rules={{ required: false }}
-                                                register={register}
-                                                defaultValue={nfrId?.length !== 0 ? nfrId : ""}
-                                                options={renderListing(quotationType === "Bought Out Part" || quotationType === 'Tooling' ? "prNo" : "nfrId")}
-                                                mandatory={quotationType === 'Tooling' ? true : false}
-
-                                                handleChange={handleNfrChnage}
-                                                errors={errors.nfrId}
-                                                disabled={Object.keys(prNumber).length !== 0 || ((dataProps?.isViewFlag /* || dataProps?.isEditFlag */ || showSendButton === DRAFT) ? true : false)
-                                                    || (partList?.length !== 0 || bopDataList?.length !== 0 || vendorList?.length !== 0)}
-                                            // isLoading={VendorLoaderObj}
-                                            />
-                                        </Col>}
                                         <Col md="3">
                                             <SearchableSelectHookForm
                                                 label={"Plant (Code)"}
@@ -3022,6 +3023,27 @@ function AddRfq(props) {
                                                 disabled={Object.keys(prNumber).length !== 0 || ((partList?.length !== 0 || rmDataList?.length !== 0 || bopDataList?.length !== 0 || vendorList?.length !== 0) /* || showSendButton === PREDRAFT  */ || (dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll || disabledPartUid)))}
                                             />
                                         </Col>
+                                        {(quotationType === "Bought Out Part" || quotationType === 'Tooling') && <Col md="3" className={isRmSelected ? 'd-none' : ''}>
+                                            <SearchableSelectHookForm
+                                                label={(quotationType === "Bought Out Part" || quotationType === 'Tooling') ? "PR No." : "NFR No."}
+                                                name={(quotationType === "Bought Out Part" || quotationType === 'Tooling') ? "prId" : "nfrId"}
+                                                isClearable={true}
+                                                placeholder={"Select"}
+                                                Controller={Controller}
+                                                control={control}
+                                                rules={{ required: false }}
+                                                register={register}
+                                                defaultValue={nfrId?.length !== 0 ? nfrId : ""}
+                                                options={renderListing(quotationType === "Bought Out Part" || quotationType === 'Tooling' ? "prNo" : "nfrId")}
+                                                mandatory={quotationType === 'Tooling' ? true : false}
+
+                                                handleChange={handleNfrChnage}
+                                                errors={errors.nfrId}
+                                                disabled={Object.keys(prNumber).length !== 0 || ((dataProps?.isViewFlag /* || dataProps?.isEditFlag */ || showSendButton === DRAFT) ? true : false)
+                                                    || (partList?.length !== 0 || bopDataList?.length !== 0 || vendorList?.length !== 0)}
+                                            // isLoading={VendorLoaderObj}
+                                            />
+                                        </Col>}
                                         {ShowQuoteSubmissionDate(quotationType) && <Col md="3">
                                             <div className="inputbox date-section">
                                                 <div className="form-group">
@@ -3957,7 +3979,17 @@ function AddRfq(props) {
                 showPopup && <PopupMsgWrapper disablePopup={alreadyInDeviation} vendorId={vendorId}
                     plantId={plantId} redirectPath={blocked ? "/initiate-unblocking" : ""} isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={blocked ? `${popupMessage}` : `${MESSAGES.RFQ_ADD_SUCCESS}`} />
             }
-
+            {isOpenVisualDrawer && (
+                <BOMViewer
+                    isOpen={isOpenVisualDrawer}
+                    closeDrawer={closeVisualDrawer}
+                    isEditFlag={true}
+                    PartId={visualAdId}
+                    anchor={"right"}
+                    isFromVishualAd={true}
+                    NewAddedLevelOneChilds={[]}
+                />
+            )}
 
         </div >
 
