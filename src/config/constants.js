@@ -3016,20 +3016,20 @@ export const PROFITBULKUPLOAD = 'Profit'
 export const statusOptionsMasters = _.sortBy([
   { label: "Rejected", value: "4" },
   { label: "Approved", value: "3" },
-  { label: "AwaitingApproval", value: "6" },
+  { label: "Awaiting Approval", value: "6" },
   { label: "Draft", value: "1" },
   { label: "History", value: "5" },
-  { label: "PendingForApproval", value: "2" },
+  { label: "Pending For Approval", value: "2" },
 ], ({ label }) => label.toLowerCase());
 
 
 export const statusOptionsCosting = _.sortBy([
-  { label: "AwaitingApproval", value: "6" },
+  { label: "Awaiting Approval", value: "6" },
   { label: "Draft", value: "1" },
   { label: "Error", value: "12" },
   { label: "History", value: "5" },
-  { label: "PendingForApproval", value: "2" },
-  { label: "POUpdated", value: "14" },
+  { label: "Pending For Approval", value: "2" },
+  { label: "PO Updated", value: "14" },
   { label: "Pushed", value: "13" },
   { label: "Rejected", value: "4" },
   { label: "Returned", value: "15" },
@@ -3038,13 +3038,13 @@ export const statusOptionsCosting = _.sortBy([
   , ({ label }) => label.toLowerCase());
 
 export const statusOptionsSimulation = _.sortBy([
-  { label: "AwaitingApproval", value: "6" },
+  { label: "Awaiting Approval", value: "6" },
   { label: "Draft", value: "1" },
   { label: "Error", value: "12" },
   { label: "History", value: "5" },
   { label: "Linked", value: "17" },
-  { label: "PendingForApproval", value: "2" },
-  { label: "POUpdated", value: "14" },
+  { label: "Pending For Approval", value: "2" },
+  { label: "PO Updated", value: "14" },
   { label: "Provisional", value: "15" },
   { label: "Pushed", value: "13" },
   { label: "Rejected", value: "4" },
@@ -3053,23 +3053,23 @@ export const statusOptionsSimulation = _.sortBy([
 
 
 export const statusOptions = _.sortBy([
-  { label: "ApprovedByAssembly", value: "8" },
-  { label: "ApprovedBySimulation", value: "9" },
+  { label: "Approved By Assembly", value: "8" },
+  { label: "Approved By Simulation", value: "9" },
   { label: "Approved", value: "3" },
-  { label: "AwaitingApproval", value: "6" },
-  { label: "CreatedByAssembly", value: "10" },
-  { label: "CreatedBySimulation", value: "11" },
+  { label: "Awaiting Approval", value: "6" },
+  { label: "Created By Assembly", value: "10" },
+  { label: "Created By Simulation", value: "11" },
   { label: "Draft", value: "1" },
   { label: "Error", value: "12" },
   { label: "History", value: "5" },
   { label: "Linked", value: "17" },
-  { label: "PendingForApproval", value: "2" },
-  { label: "POUpdated", value: "14" },
+  { label: "Pending For Approval", value: "2" },
+  { label: "PO Updated", value: "14" },
   { label: "Provisional", value: "15" },
   { label: "Pushed", value: "13" },
   { label: "Rejected", value: "4" },
-  { label: "RejectedBySystem", value: "18" },
-  { label: "ApprovedByASMSimulation", value: "16" },
+  { label: "Rejected By System", value: "18" },
+  { label: "Approved By ASM Simulation", value: "16" },
   // { label: "SendForApproval", value: "7" },
 ], ({ label }) => label.toLowerCase());
 

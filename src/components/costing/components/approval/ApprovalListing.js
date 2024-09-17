@@ -8,7 +8,7 @@ import NoContentFound from '../../../common/NoContentFound'
 import { defaultPageSize, DRAFT, EMPTY_DATA, EMPTY_GUID, REJECTED, ZBCTypeId } from '../../../../config/constants'
 import DayTime from '../../../common/DayTimeWrapper'
 import CostingApproveReject from './CostingApproveReject'
-import { allEqual, checkForDecimalAndNull, checkForNull, formViewData, searchNocontentFilter, setLoremIpsum } from '../../../../helper'
+import { allEqual, checkForDecimalAndNull, checkForNull, formViewData, removeSpaces, searchNocontentFilter, setLoremIpsum } from '../../../../helper'
 import { PENDING } from '../../../../config/constants'
 import Toaster from '../../../common/Toaster'
 import imgArrowDown from "../../../../assests/images/arrow-down.svg";
@@ -120,7 +120,7 @@ function ApprovalListing(props) {
       if (statusColumnData && statusColumnData.data) {
         setDisableFilter(false)
         setWarningMessage(true)
-        setFloatingFilterData(prevState => ({ ...prevState, DisplayStatus: statusColumnData.data }))
+        setFloatingFilterData(prevState => ({ ...prevState, DisplayStatus: removeSpaces(statusColumnData.data) }))
       }
     }, 200)
   }, [statusColumnData])
