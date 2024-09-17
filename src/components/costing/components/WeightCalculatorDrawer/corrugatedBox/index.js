@@ -13,6 +13,7 @@ import CorrugatedBox from './CorrugatedBox'
 import MeshCalculation from './MeshCalculation'
 import BodySeperate from './BodySeperate'
 import Flap from './Flap'
+import Plastic from '../Plastic'
 
 function CorrugatedBoxCalculator(props) {
     const { rmRowData, item } = props
@@ -27,6 +28,8 @@ function CorrugatedBoxCalculator(props) {
                 return '3'
             case 'Flap':
                 return '4'
+            case 'Plastic':
+                return '5'
             default:
                 break;
         }
@@ -92,6 +95,17 @@ function CorrugatedBoxCalculator(props) {
                                 Flap
                             </NavLink>
                         </NavItem>
+                        <NavItem>
+                            <NavLink
+                                className={classnames({ active: activeTab === '5' })}
+                                onClick={() => {
+                                    toggle('5')
+                                }}
+                                disabled={rmRowData && Object.keys(rmRowData.WeightCalculatorRequest).length === 0 ? false : rmRowData.WeightCalculatorRequest.LayoutType !== null && getTabno(rmRowData.WeightCalculatorRequest.LayoutType) !== '5' ? true : false}
+                            >
+                                EPS Cushion
+                            </NavLink>
+                        </NavItem>
                     </Nav>
                     <TabContent activeTab={activeTab}>
                         {activeTab === '1' && (
@@ -135,6 +149,20 @@ function CorrugatedBoxCalculator(props) {
                                     toggleDrawer={props.toggleDrawer}
                                     item={item}
                                     CostingViewMode={props.CostingViewMode ? props.CostingViewMode : false}
+                                />
+                            </TabPane>
+                        )}
+                        {activeTab === '5' && (
+                            <TabPane tabId='5'>
+                                <Plastic
+                                    rmRowData={props.rmRowData}
+                                    isEditFlag={props.isEditFlag}
+                                    item={item}
+                                    toggleDrawer={props.toggleDrawer}
+                                    isSummary={false}
+                                    fromPackaging={true}
+                                    CostingViewMode={props.CostingViewMode ? props.CostingViewMode : false}
+                                    DisableMasterBatchCheckbox={true}
                                 />
                             </TabPane>
                         )}
