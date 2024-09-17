@@ -95,7 +95,7 @@ function CorrugatedBoxCalculator(props) {
                                 Flap
                             </NavLink>
                         </NavItem>
-                        {/* <NavItem>  //UNCOMMENT THE CODE ONCE DONE FROM BACKEND
+                        <NavItem>
                             <NavLink
                                 className={classnames({ active: activeTab === '5' })}
                                 onClick={() => {
@@ -105,7 +105,7 @@ function CorrugatedBoxCalculator(props) {
                             >
                                 EPS Cushion
                             </NavLink>
-                        </NavItem> */}
+                        </NavItem>
                     </Nav>
                     <TabContent activeTab={activeTab}>
                         {activeTab === '1' && (
@@ -160,6 +160,7 @@ function CorrugatedBoxCalculator(props) {
                                     item={item}
                                     toggleDrawer={props.toggleDrawer}
                                     isSummary={false}
+                                    fromPackaging={true}
                                     CostingViewMode={props.CostingViewMode ? props.CostingViewMode : false}
                                     DisableMasterBatchCheckbox={true}
                                 />

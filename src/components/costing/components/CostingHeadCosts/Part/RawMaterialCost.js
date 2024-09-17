@@ -407,9 +407,17 @@ function RawMaterialCost(props) {
 
           }))
         } else {
-          dispatch(getRawMaterialCalculationForCorrugatedBox(item.CostingId, tempData.RawMaterialId, tempData.RawMaterialCalculatorId, res => {
-            setCalculatorData(res, index)
-          }))
+          if (tempData.LayoutType === 'Plastic') {
+            dispatch(getRawMaterialCalculationForPlastic(item.CostingId, tempData.RawMaterialId, tempData.RawMaterialCalculatorId, res => {
+              setCalculatorData(res, index)
+            }))
+          }
+          else {
+            dispatch(getRawMaterialCalculationForCorrugatedBox(item.CostingId, tempData.RawMaterialId, tempData.RawMaterialCalculatorId, res => {
+              setCalculatorData(res, index)
+            }))
+          }
+
         }
         break;
       case DIE_CASTING:
