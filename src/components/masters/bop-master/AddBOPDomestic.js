@@ -1361,7 +1361,7 @@ class AddBOPDomestic extends Component {
  */}                              </Col>
                               {isTechnologyVisible && <Col md="3">
                                 <Field
-                                  label={t('commonFields.technology', { ns: 'MasterLabels', defaultValue: 'Technology' })}
+                                  label={t('TechnologyLabel', { ns: 'MasterLabels', defaultValue: 'Technology' })}
                                   type="text"
                                   name="Technology"
                                   component={searchableSelect}

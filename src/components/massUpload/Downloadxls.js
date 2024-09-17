@@ -27,6 +27,8 @@ import {
 import { checkVendorPlantConfigurable, getConfigurationKey, showBopLabel, updateBOPValues } from "../../helper";
 import { checkSAPCodeinExcel } from "./DownloadUploadBOMxls";
 import { IsShowFreightAndShearingCostFields } from "../../helper";
+import { withLocalization, useWithLocalization } from "../../helper/core";
+import { withTranslation } from "react-i18next";
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -188,7 +190,7 @@ class Downloadxls extends React.Component {
             case 'Labour':
                 return this.returnExcelColumn(Labour, LabourTempData);
             case 'Part Component':
-                return this.returnExcelColumn(checkSAPCodeinExcel(PartComponent), checkSAPCodeinExcel(PartComponentTempData));
+                return this.returnExcelColumn(checkSAPCodeinExcel(withLocalization(PartComponent, this.props.t, "MasterLabels")), checkSAPCodeinExcel(PartComponentTempData));
             case 'Product Component':
                 return this.returnExcelColumn(ProductComponent, ProductComponentTempData);
             case 'BOM':
@@ -204,23 +206,24 @@ class Downloadxls extends React.Component {
     * @method renderZBCSwitch
     * @description Switch case for different xls file head according to master
     */
+
     renderZBCSwitch = (master) => {
         let updatedLabels
         switch (master) {
             case 'RM':
                 if (!this.props.isImport) {
-                    return this.returnExcelColumn(checkRM_Process_OperationConfigurable(RMDomesticZBC), RMDomesticZBCTempData, true);
+                    return this.returnExcelColumn(checkRM_Process_OperationConfigurable(withLocalization(RMDomesticZBC, this.props.t, "MasterLabels")), RMDomesticZBCTempData, true);
                 } else {
-                    return this.returnExcelColumn(checkRM_Process_OperationConfigurable(RMImportZBC), RMImportZBCTempData);
+                    return this.returnExcelColumn(checkRM_Process_OperationConfigurable(withLocalization(RMImportZBC, this.props.t, "MasterLabels")), RMImportZBCTempData);
                 }
             case 'Operation':
                 return this.returnExcelColumn(checkLabourRateConfigure(ZBCOperationSmallForm), ZBCOperationTempData, true);
             case 'Machine':
-                return this.returnExcelColumn(checkVendorPlantConfig(MachineZBC), MachineZBCTempData);
+                return this.returnExcelColumn(checkVendorPlantConfig(withLocalization(MachineZBC, this.props.t, "MasterLabels")), MachineZBCTempData);
             case ZBCADDMORE:
             case VBCADDMORE:
             case CBCADDMORE:
-                return this.returnExcelColumn(checkRM_Process_OperationConfigurable(MHRMoreZBC), MHRMoreZBCTempData);
+                return this.returnExcelColumn(checkRM_Process_OperationConfigurable(withLocalization(MHRMoreZBC, this.props.t, "MasterLabels")), MHRMoreZBCTempData);
             case `${showBopLabel()} Domestic`:
                 ({ updatedLabels } = updateBOPValues(BOP_ZBC_DOMESTIC, BOP_ZBC_DOMESTIC_TempData, bopMasterName, 'label'));
                 return this.returnExcelColumn(checkVendorPlantConfig(updatedLabels, '', true), BOP_ZBC_DOMESTIC_TempData);
@@ -260,17 +263,17 @@ class Downloadxls extends React.Component {
         switch (master) {
             case 'RM':
                 if (!this.props.isImport) {
-                    return this.returnExcelColumn(checkVendorPlantConfig(RMDomesticVBC), RMDomesticVBCTempData, true);
+                    return this.returnExcelColumn(checkVendorPlantConfig(withLocalization(RMDomesticVBC, this.props.t, "MasterLabels")), RMDomesticVBCTempData, true);
                 } else {
-                    return this.returnExcelColumn(checkVendorPlantConfig(RMImportVBC), RMImportVBCTempData);
+                    return this.returnExcelColumn(checkVendorPlantConfig(withLocalization(RMDomesticVBC, this.props.t, "MasterLabels")), RMImportVBCTempData);
                 }
             case 'Operation':
                 return this.returnExcelColumn(checkLabourRateConfigure(VBCOperationSmallForm), VBCOperationTempData, true);
             case 'Machine':
-                return this.returnExcelColumn(checkVendorPlantConfig(MachineVBC), MachineVBCTempData);
+                return this.returnExcelColumn(checkVendorPlantConfig(withLocalization(MachineVBC, this.props.t, "MasterLabels")), MachineVBCTempData);
             case `${showBopLabel()} Domestic`:
                 if (bopType === DETAILED_BOP) {
-                    ({ updatedLabels } = updateBOPValues(BOP_DETAILED_DOMESTIC, [], bopMasterName, 'label'));
+                    ({ updatedLabels } = updateBOPValues(withLocalization(BOP_DETAILED_DOMESTIC, this.props.t, "MasterLabels"), [], bopMasterName, 'label'));
 
                     return this.returnExcelColumn(checkVendorPlantConfig(updatedLabels, '', true), BOP_DETAILED_DOMESTIC_TempData);
                 } else {
@@ -319,14 +322,14 @@ class Downloadxls extends React.Component {
         switch (master) {
             case 'RM':
                 if (!this.props.isImport) {
-                    return this.returnExcelColumn(checkVendorPlantConfig(RMDomesticCBC, CBCTypeId), RMDomesticCBCTempData, true);
+                    return this.returnExcelColumn(checkVendorPlantConfig(withTranslation(RMDomesticCBC, this.props.t, "MasterLabels"), CBCTypeId), RMDomesticCBCTempData, true);
                 } else {
-                    return this.returnExcelColumn(checkVendorPlantConfig(RMImportCBC, CBCTypeId), RMImportCBCTempData);
+                    return this.returnExcelColumn(checkVendorPlantConfig(withTranslation(RMImportCBC, this.props.t, "MasterLabels"), CBCTypeId), RMImportCBCTempData);
                 }
             case 'Operation':
                 return this.returnExcelColumn(checkLabourRateConfigure(CBCOperationSmallForm), CBCOperationTempData, true);
             case 'Machine':
-                return this.returnExcelColumn(checkVendorPlantConfig(MachineCBC, CBCTypeId), MachineCBCTempData);
+                return this.returnExcelColumn(checkVendorPlantConfig(withTranslation(MachineCBC, this.props.t, "MasterLabels"), CBCTypeId), MachineCBCTempData);
             case `${showBopLabel()} Domestic`:
                 ({ updatedLabels } = updateBOPValues(BOP_CBC_DOMESTIC, [], bopMasterName, 'label'));
 
@@ -485,4 +488,4 @@ class Downloadxls extends React.Component {
     }
 }
 
-export default Downloadxls;
+export default withTranslation('MasterLabels')(Downloadxls);

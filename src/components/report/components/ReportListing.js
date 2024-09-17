@@ -18,7 +18,7 @@ import LoaderCustom from '../common/LoaderCustom';
 import WarningMessage from '../common/WarningMessage'
 import { handleDepartmentHeader, showBopLabel } from '../../../helper'
 import { reactLocalStorage } from 'reactjs-localstorage'
-import { useLabels } from '../../../helper/core'
+import { useLabels, useWithLocalization } from '../../../helper/core'
 
 
 
@@ -393,7 +393,7 @@ function ReportListing(props) {
         setSelectedRowData(selectedRows)
 
     }
-
+    const REPORT_DOWNLOAD_EXCEl_LOCALIZATION = useWithLocalization(REPORT_DOWNLOAD_EXCEl, "MasterLabels")
     const renderColumn = (fileName) => {
 
         let tempData
@@ -403,7 +403,7 @@ function ReportListing(props) {
         else {
             tempData = selectedRowData
         }
-        return returnExcelColumn(REPORT_DOWNLOAD_EXCEl, tempData)
+        return returnExcelColumn(REPORT_DOWNLOAD_EXCEl_LOCALIZATION, tempData)
 
     }
 
