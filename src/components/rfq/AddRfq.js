@@ -3571,7 +3571,7 @@ function AddRfq(props) {
                                                             register={register}
                                                             rules={{
                                                                 required: true,
-                                                                maxLength: 80
+                                                                maxLength: 250
                                                             }}
                                                             mandatory={selectedOption === TOOLING ? true : false}
                                                             handleChange={() => { }}
