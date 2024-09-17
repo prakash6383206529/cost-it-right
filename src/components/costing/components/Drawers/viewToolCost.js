@@ -5,12 +5,14 @@ import Drawer from '@material-ui/core/Drawer'
 import { useSelector } from 'react-redux';
 import NoContentFound from '../../../common/NoContentFound';
 import { EMPTY_DATA } from '../../../../config/constants';
+import { useLabels } from '../../../../helper/core';
 
 
 function ViewToolCost(props) {
 
   const { viewToolCost, isPDFShow, isToolCostProcessWise } = props
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
+  const { toolMaintenanceCostLabel } = useLabels();
 
   const tableData = () => {
 
@@ -75,7 +77,7 @@ function ViewToolCost(props) {
                 <th>{`Tool Maintenance Applicability`}</th>
                 <th>{`Maintenance Tool Cost (%)`}</th>
                 <th>{`Cost (Applicability)`}</th>
-                <th>{`Tool Maintenance Cost`}</th>
+                <th>{toolMaintenanceCostLabel}</th>
                 <th>{`Tool Cost`}</th>
                 <th>{`Amortization Quantity (Tool Life)`}</th>
                 <th>{`Tool Amortization Cost`}</th>

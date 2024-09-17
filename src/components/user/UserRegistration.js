@@ -715,8 +715,13 @@ function UserRegistration(props) {
           })
           dispatch(getPlantSelectListForDepartment(idArr, res => { }))
           dispatch(getAllDivisionListAssociatedWithDepartment(idArr, res => {
-          }))
+            if (res && res?.data && res?.data?.Identity === true) {
+              setIsShowDivision(true)
+            } else {
+              setIsShowDivision(false)
+            }
 
+          }))
           setTimeout(() => {
             let plantArray = []
             Data && Data?.DepartmentsPlantsIdLists?.map((item) => {
@@ -728,11 +733,6 @@ function UserRegistration(props) {
               divisionArray.push({ label: `${item.DivisionName}`, value: (item?.DivisionId)?.toString(), DivisionCode: item?.DivisionCode })
               return null;
             })
-            if (Data && Data?.DepartmentsDivisionIdLists?.length > 0) {
-              setIsShowDivision(true)
-            } else {
-              setIsShowDivision(false)
-            }
             setSelectedPlants(plantArray)
             setSelectedDivision(divisionArray)
             setValue('plant', plantArray)

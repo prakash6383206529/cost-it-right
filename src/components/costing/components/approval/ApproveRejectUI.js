@@ -25,7 +25,6 @@ import { submit } from 'redux-form'
 import SAPApproval from '../../../SAPApproval'
 
 function ApproveRejectUI(props) {
-
   // ********* INITIALIZE REF FOR DROPZONE ********
   const dropzone = useRef(null);
   const { type, approvalData, showMessage, setDataFromSummary, disableReleaseStrategy, IsNotFinalLevel, isSimulation, dataSend, simulationDetail, isSimulationApprovalListing, dataInFields, approvalDropDown, handleDepartmentChange, onSubmit, callbackSetDataInFields, showApprovalTypeDropdown, releaseStrategyDetails, reasonId, divisionList, isShowDivision, selectedRowData } = props
@@ -393,7 +392,7 @@ function ApproveRejectUI(props) {
                         mandatory={true}
                         handleChange={handleDepartmentChange}
                         errors={errors.dept}
-                        disabled={(disableReleaseStrategy || !(userData.Department.length > 1 && reasonId !== REASON_ID))}
+                        disabled={(disableReleaseStrategy || !(userData.Department.length > 1 && reasonId !== REASON_ID) || (props.isApprovalListing && approvalData[0]?.DivisionId) ? true : false)}
                       />
                     </div>
                     <div className="input-group form-group col-md-12 input-withouticon">

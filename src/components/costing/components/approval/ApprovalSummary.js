@@ -256,6 +256,7 @@ function ApprovalSummary(props) {
                 // approvalTypeId: costingTypeIdToApprovalTypeIdFunction(CostingTypeId),
                 approvalTypeId: ApprovalTypeId,
                 plantId: Data.DestinationPlantId ?? EMPTY_GUID,
+                divisionId: DivisionId ?? null
               }
               dispatch(checkFinalUser(obj, res => {
                 if (res && res.data && res.data.Result) {

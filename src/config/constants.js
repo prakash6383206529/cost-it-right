@@ -3237,14 +3237,14 @@ export const showPaperCorrugatedBox = true
 export const showDynamicKeys = false
 export const hideDetailOfRubbercalci = true
 export const customHavellsChanges = true
-export const countDownBlickingTime = 2
+export const countDownBlinkingTime = 2
 export const clientName = 'Havells'
 export const isShowTaxCode = false
 export const effectiveDateRangeDays = ''
 
 
 //VERSION 
-export const VERSION = "V3.1.7";
+export const VERSION = "V3.1.8";
 
 
 

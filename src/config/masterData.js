@@ -5584,7 +5584,7 @@ export const BOP_DOMESTIC_DOWNLOAD_EXCEl = [
     { label: "Basic Rate", value: "BasicRate", },
     { label: "Basic Price", value: "NetCostWithoutConditionCost", },
     { label: "Net Condition Cost", value: "NetConditionCost", },
-    { label: "Net Landed Cost", value: "NetLandedCost", },
+    { label: "Net Cost", value: "NetLandedCost", },
 
 
 
@@ -5610,16 +5610,14 @@ export const BOP_IMPORT_DOWNLOAD_EXCEl = [
     { label: "Inco Terms", value: "IncoTermDescriptionAndInfoTerm" },
     { label: "Payment Terms", value: "PaymentTermDescriptionAndPaymentTerm" },
     { label: "Minimum Order Quantity", value: "NumberOfPieces", },
-    { label: "Basic Rate", value: "BasicRate", },
-    { label: "Basic Rate Conversion", value: "BasicRateConversion", },
-    { label: "Basic Price", value: "NetCostWithoutConditionCost", },
-    { label: "Basic Price Conversion", value: "NetCostWithoutConditionCostConversion", },
-    { label: "Net Condition Cost", value: "NetConditionCost", },
-    { label: "Net Condition Cost Conversion", value: "NetConditionCostConversion", },
-    { label: "Net Landed Cost", value: "NetLandedCost", },
-    { label: "Net Landed Cost Conversion", value: "NetLandedCostConversion", },
-
-
+    { label: "Basic Rate (Currency)", value: "BasicRate", },
+    { label: `Basic Rate (${reactLocalStorage.getObject("baseCurrency")})`, value: "BasicRateConversion", },
+    { label: "Basic Price (Currency)", value: "NetCostWithoutConditionCost", },
+    { label: `Basic Price (${reactLocalStorage.getObject("baseCurrency")})`, value: "NetCostWithoutConditionCostConversion", },
+    { label: "Net Condition Cost (Currency)", value: "NetConditionCost", },
+    { label: `Net Condition Cost (${reactLocalStorage.getObject("baseCurrency")})`, value: "NetConditionCostConversion", },
+    { label: `Net Cost (Currency)`, value: "NetLandedCost", },
+    { label: `Net Cost (${reactLocalStorage.getObject("baseCurrency")})`, value: "NetLandedCostConversion", },
     { label: "Effective Date", value: "EffectiveDate" },
 ]
 
@@ -6095,7 +6093,7 @@ export const REPORT_DOWNLOAD_EXCEl = [
     { label: "Hundi/Discount Value", value: "HundiOrDiscountValue", },
     { label: "Tool Cost", value: "ToolCost", },
     { label: "Amortization Quantity (Tool Life)", value: "ToolLife", },
-    { label: "Tool Maintenance Cost", value: "ToolMaintenanceCost", },
+    { label: "Tool Maintenance Cost (per pcs)", value: "ToolMaintenanceCost" },
     { label: "Net Tool Cost", value: "NetToolCost", },
     { label: "Other Cost Percentage", value: "OtherCostPercentage", },
     { label: "Any Other Cost", value: "AnyOtherCost", },
