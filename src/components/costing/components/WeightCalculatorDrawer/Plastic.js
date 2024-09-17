@@ -196,6 +196,7 @@ function Plastic(props) {
     obj.ScrapCost = dataToSend.scrapCost
     obj.BurningValue = dataToSend.burningValue
     obj.LoggedInUserId = loggedInUserId()
+    obj.LayoutType = "Plastic"
     let tempArr = []
     tableVal && tableVal.map(item => (
       tempArr.push({ LossOfType: item.LossOfType, LossPercentage: item.LossPercentage, LossWeight: item.LossWeight, CostingCalculationDetailId: "0" })

@@ -95,7 +95,7 @@ function CorrugatedBoxCalculator(props) {
                                 Flap
                             </NavLink>
                         </NavItem>
-                        <NavItem>
+                        {/* <NavItem>  //UNCOMMENT THE CODE ONCE DONE FROM BACKEND
                             <NavLink
                                 className={classnames({ active: activeTab === '5' })}
                                 onClick={() => {
@@ -103,9 +103,9 @@ function CorrugatedBoxCalculator(props) {
                                 }}
                                 disabled={rmRowData && Object.keys(rmRowData.WeightCalculatorRequest).length === 0 ? false : rmRowData.WeightCalculatorRequest.LayoutType !== null && getTabno(rmRowData.WeightCalculatorRequest.LayoutType) !== '5' ? true : false}
                             >
-                                Plastic
+                                EPS Cushion
                             </NavLink>
-                        </NavItem>
+                        </NavItem> */}
                     </Nav>
                     <TabContent activeTab={activeTab}>
                         {activeTab === '1' && (
