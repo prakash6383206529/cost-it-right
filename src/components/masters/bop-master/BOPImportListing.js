@@ -34,7 +34,7 @@ import { resetStatePagination, updateCurrentRowIndex, updateGlobalTake, updatePa
 import TourWrapper from "../../common/Tour/TourWrapper";
 import { Steps } from "../../common/Tour/TourMessages";
 import { useTranslation } from "react-i18next";
-import { useLabels } from "../../../helper/core";
+import { useLabels, useWithLocalization } from "../../../helper/core";
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
@@ -710,6 +710,7 @@ const BOPImportListing = (props) => {
     }
   };
 
+  const BOP_IMPORT_DOWNLOAD_EXCEl_LOCALIZATION = useWithLocalization(BOP_IMPORT_DOWNLOAD_EXCEl, "MasterLabels")
   const onBtExport = () => {
     let tempArr = [];
     //tempArr = state.gridApi && state.gridApi?.getSelectedRows()
@@ -721,7 +722,7 @@ const BOPImportListing = (props) => {
           ? allBopDataList
           : [];
     const bopMasterName = showBopLabel();
-    const { updatedLabels } = updateBOPValues(BOP_IMPORT_DOWNLOAD_EXCEl, [], bopMasterName, 'label');
+    const { updatedLabels } = updateBOPValues(BOP_IMPORT_DOWNLOAD_EXCEl_LOCALIZATION, [], bopMasterName, 'label');
     const filteredLabels = updatedLabels.filter(column => {
       if (column.value === "PaymentTermDescriptionAndPaymentTerm") {
 

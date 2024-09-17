@@ -483,7 +483,7 @@ class ViewUserDetails extends Component {
                                       // onFilterModified={onFloatingFilterChanged}
                                       enableBrowserTooltips={true}
                                     >
-                                      <AgGridColumn field="Technology" headerName={this.props.t('Technology', { ns: 'MasterLabels', defaultValue: 'Technology' })} />
+                                      <AgGridColumn field="Technology" headerName={this.props.t('TechnologyLabel', { ns: 'MasterLabels', defaultValue: 'Technology' })} />
                                       <AgGridColumn field="ApprovalType" headerName="Approval Type" />
                                       <AgGridColumn field="Level" headerName="Level" />
                                     </AgGridReact>

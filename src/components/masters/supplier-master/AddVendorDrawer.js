@@ -985,7 +985,7 @@ class AddVendorDrawer extends Component {
                                             <Col md="4">
                                                 <div className='vendor-drawer'>
                                                     <Field
-                                                        label={t('Technology', { ns: 'MasterLabels', defaultValue: 'Technology' })}
+                                                        label={t('TechnologyLabel', { ns: 'MasterLabels', defaultValue: 'Technology' })}
                                                         name="Technology"
                                                         placeholder={"Select"}
                                                         selection={this.state.Technology == null || this.state.Technology.length === 0 ? [] : this.state.Technology}
@@ -1033,7 +1033,7 @@ class AddVendorDrawer extends Component {
                                                 <thead>
                                                     <tr>
                                                         <th className='border'>{`Plant (Code)`}</th>
-                                                        <th>{`${t('Technology', { ns: 'MasterLabels', defaultValue: 'Technology' })}`}</th>
+                                                        <th>{`${t('TechnologyLabel', { ns: 'MasterLabels', defaultValue: 'Technology' })}`}</th>
                                                         <th className='border text-right'>{`Action`}</th>
                                                     </tr>
                                                 </thead>

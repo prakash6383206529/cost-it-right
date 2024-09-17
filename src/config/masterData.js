@@ -68,7 +68,7 @@ export const RMDomesticZBC = [
     { label: "Spec", value: "RMSpec" }, //*
     { label: "Code", value: "RawMaterialCode" }, //*
     { label: "Category", value: "Category" }, //*
-    { label: "Technology", value: "TechnologyName", defaultValue: "Technology" }, //*
+    { label: "TechnologyLabel", value: "TechnologyName", defaultValue: "Technology" }, //*
     { label: "PlantCode", value: "DestinationPlantCode" }, //*
     { label: "VendorCode", value: "VendorCode" }, //*
     { label: "HasDifferentSource", value: "HasDifferentSource" },
@@ -217,7 +217,7 @@ export const RMDomesticVBC = [
     { label: "Spec", value: "RMSpec" }, //*
     { label: "Code", value: "RawMaterialCode" }, //*
     { label: "Category", value: "Category" }, //*
-    { label: "Technology", value: "TechnologyName", defaultValue: "Technology" }, //*
+    { label: "TechnologyLabel", value: "TechnologyName", defaultValue: "Technology" }, //*
     { label: "VendorCode", value: "VendorCode" }, //NOUI,*
     { label: "PlantCode", value: "DestinationPlantCode" }, //NOUI
     { label: "Source", value: "Source" },
@@ -361,7 +361,7 @@ export const RMImportZBC = [
     { label: "Spec", value: "RMSpec" }, //*
     { label: "Code", value: "RawMaterialCode" }, //*
     { label: "Category", value: "Category" }, //*
-    { label: "Technology", value: "TechnologyName", defaultValue: "Technology" }, //*
+    { label: "TechnologyLabel", value: "TechnologyName", defaultValue: "Technology" }, //*
     { label: "PlantCode", value: "DestinationPlantCode" }, //*
     { label: "VendorCode", value: "VendorCode" }, //NOUI
     { label: "HasDifferentSource", value: "HasDifferentSource" },
@@ -610,7 +610,7 @@ export const RMDomesticCBC = [
     { label: "Spec", value: "RMSpec" }, //*
     { label: "Code", value: "RawMaterialCode" }, //*
     { label: "Category", value: "Category" }, //*
-    { label: "Technology", value: "TechnologyName", defaultValue: "Technology" }, //*
+    { label: "TechnologyLabel", value: "TechnologyName", defaultValue: "Technology" }, //*
     { label: "CustomerCode", value: "CustomerCode" }, //NOUI,*
     { label: "UOM", value: "UOM" }, //*
     { label: "BasicRate", value: "BasicRate" }, //*
@@ -640,7 +640,7 @@ export const RMImportVBC = [
     { label: "Spec", value: "RMSpec" }, //*
     { label: "Code", value: "RawMaterialCode" }, //*
     { label: "Category", value: "Category" }, //*
-    { label: "Technology", value: "TechnologyName", defaultValue: "Technology" }, //*
+    { label: "TechnologyLabel", value: "TechnologyName", defaultValue: "Technology" }, //*
     { label: "VendorCode", value: "VendorCode" }, //NOUI
     { label: "PlantCode", value: "DestinationPlantCode" }, //NOUI
     { label: "Source", value: "Source" },
@@ -785,7 +785,7 @@ export const RMImportCBC = [
     { label: "Spec", value: "RMSpec" }, //*
     { label: "Code", value: "RawMaterialCode" }, //*
     { label: "Category", value: "Category" }, //*
-    { label: "Technology", value: "TechnologyName", defaultValue: "Technology" }, //*
+    { label: "TechnologyLabel", value: "TechnologyName", defaultValue: "Technology" }, //*
     { label: "CustomerCode", value: "CustomerCode" }, //NOUI
     { label: "UOM", value: "UOM" }, //*
     { label: "Currency", value: "Currency" }, //*
@@ -1016,7 +1016,7 @@ export const Vendor = [
     { label: 'AddressLine1', value: 'AddressLine1', },
     { label: 'AddressLine2', value: 'AddressLine2', },
     { label: 'Potential Vendor', value: 'IsCriticalVendor' },
-    { label: 'Technology', value: 'Technology' },
+    { label: "TechnologyLabel", value: 'Technology', defaultValue: "Technology" },
     { label: 'PlantCode', value: 'PlantCode' }
 ]
 
@@ -1145,7 +1145,7 @@ export const ZBCOperation = [
     { label: 'UOM', value: 'UOM', }, //*
     { label: 'LabourRate', value: 'LabourRate', }, //NOUI
     { label: 'SurfaceTreatmentOperation', value: 'SurfaceTreatmentOperation' },
-    { label: 'Technology', value: 'Technology' },
+    { label: "TechnologyLabel", value: 'Technology', defaultValue: "Technology" },
     { label: 'EffectiveDate', value: 'EffectiveDate' },
     { label: 'OperationType', value: 'OperationType' },
     { label: 'MaterialGasCRMHead/NiScrapCrmHead', value: 'MaterialGasCRMHead' },
@@ -1195,7 +1195,7 @@ export const ZBCOperation = [
 ]
 export const ZBCOperationSmallForm = [
     { label: "Note", value: "Note" },
-    { label: 'Technology', value: 'Technology', }, //*
+    { label: "TechnologyLabel", value: 'Technology', defaultValue: "Technology" }, //*
     { label: 'OperationType', value: 'OperationType', },
     { label: 'OperationName', value: 'OperationName', }, //*
     { label: "OperationCode", value: "OperationCode" },
@@ -1416,7 +1416,7 @@ export const VBCOperation = [
     { label: 'LabourRate', value: 'LabourRate', }, //NOUI
     { label: 'SurfaceTreatmentOperation', value: 'SurfaceTreatmentOperation' },
     { label: 'LabourRatePerUOM', value: 'LabourRatePerUOM' },
-    { label: 'Technology', value: 'Technology' },
+    { label: "TechnologyLabel", value: 'Technology', defaultValue: "Technology" },
     { label: 'Remark', value: 'Remark' },
     { label: 'Plant', value: 'Plant' },
     { label: 'EffectiveDate', value: 'EffectiveDate' },
@@ -1470,7 +1470,7 @@ export const VBCOperation = [
 ]
 export const VBCOperationSmallForm = [
     { label: "Note", value: "Note" },
-    { label: 'Technology', value: 'Technology', }, //*
+    { label: "TechnologyLabel", value: 'Technology', defaultValue: "Technology" }, //*
     { label: 'OperationType', value: 'OperationType', },
     { label: 'OperationName', value: 'OperationName', }, //*
     { label: "OperationCode", value: "OperationCode" },
@@ -1697,7 +1697,7 @@ export const CBCOperation = [
     { label: 'LabourRate', value: 'LabourRate', }, //NOUI
     { label: 'SurfaceTreatmentOperation', value: 'SurfaceTreatmentOperation' },
     { label: 'LabourRatePerUOM', value: 'LabourRatePerUOM' },
-    { label: 'Technology', value: 'Technology' },
+    { label: "TechnologyLabel", value: 'Technology', defaultValue: "Technology" },
     { label: 'Remark', value: 'Remark' },
     { label: 'Plant', value: 'Plant' },
     { label: 'EffectiveDate', value: 'EffectiveDate' },
@@ -1750,7 +1750,7 @@ export const CBCOperation = [
 ]
 export const CBCOperationSmallForm = [
     { label: "Note", value: "Note" }, //*
-    { label: 'Technology', value: 'Technology', }, //*
+    { label: "TechnologyLabel", value: 'Technology', defaultValue: "Technology" }, //*
     { label: 'OperationType', value: 'OperationType', },
     { label: 'OperationName', value: 'OperationName', }, //*
     { label: "OperationCode", value: "OperationCode" },
@@ -2317,7 +2317,7 @@ export const BOP_DETAILED_DOMESTIC = [
     { label: 'PlantCode', value: 'DestinationPlantCode', }, //*
     { label: 'VendorCode', value: 'VendorCode', }, //NOUI
     { label: 'IsBreakupBoughtOutPart', value: 'IsBreakupBoughtOutPart', }, //NOUI
-    { label: 'Technology', value: 'TechnologyName', defaultValue: "Technology" }, //NOUI
+    { label: "TechnologyLabel", value: 'TechnologyName', defaultValue: "Technology" }, //NOUI
     { label: 'Source', value: 'Source', },
     { label: 'SourceLocation', value: 'SourceLocation', },
     { label: 'EffectiveDate', value: 'EffectiveDate', },
@@ -2529,7 +2529,7 @@ export const BOP_DETAILED_IMPORT = [
     { label: 'PlantCode', value: 'DestinationPlantCode', },
     { label: 'VendorCode', value: 'VendorCode', }, //NOUI
     { label: 'IsBreakupBoughtOutPart', value: 'IsBreakupBoughtOutPart', }, //NOUI
-    { label: 'Technology', value: 'TechnologyName', defaultValue: "Technology" }, //NOUI
+    { label: "TechnologyLabel", value: 'TechnologyName', defaultValue: "Technology" }, //NOUI
     // { label: 'VendorPlant', value: 'VendorPlant' },
     // { label: 'VendorPlantCode', value: 'VendorPlantCode', }, //NOUI
     { label: 'SourceVendorName', value: 'SourceVendorName', },
@@ -3036,7 +3036,7 @@ export const Bought_Out_Parts = [
     { label: 'Quantity', value: 'Quantity', },
     { label: 'NetLandedCost', value: 'NetLandedCost', },
     { label: 'PartNumber', value: 'PartNumber', },
-    { label: 'Technology', value: 'TechnologyName', defaultValue: "Technology" },
+    { label: 'TechnologyLabel', value: 'TechnologyName', defaultValue: "Technology" },
     { label: 'CategoryName', value: 'CategoryName', },
     { label: 'CategoryTypeName', value: 'CategoryTypeName', },
     { label: 'Specification', value: 'Specification', },
@@ -3076,7 +3076,7 @@ export const OtherOperation = [
     { label: 'OtherOperationName', value: 'OtherOperationName', },
     { label: 'OperationProcessCode', value: 'OperationProcessCode', },
     { label: 'Description', value: 'Description', },
-    { label: 'Technology', value: 'TechnologyName', defaultValue: "Technology" },
+    { label: "TechnologyLabel", value: 'TechnologyName', defaultValue: "Technology" },
     { label: 'SupplierName', value: 'SupplierName', },
     { label: 'OperationName', value: 'OperationName', },
     { label: 'UnitOfMeasurementName', value: 'UnitOfMeasurementName', },
@@ -3117,7 +3117,7 @@ export const Power = [
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const MachineZBC = [
-    { label: 'Technology', value: 'Technology', }, //*
+    { label: "TechnologyLabel", value: 'Technology', defaultValue: "Technology" }, //*
     { label: 'PlantCode', value: 'PlantCode', }, //*
     { label: 'MachineNo', value: 'MachineNo', }, //*
     { label: 'MachineSpecification', value: 'MachineSpecification', },
@@ -3210,7 +3210,7 @@ export const MachineZBCTempData = [
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const MHRMoreZBC = [
-    { label: "Technology", value: "Technology", }, //*
+    { label: "TechnologyLabel", value: "Technology", defaultValue: "Technology" }, //*
     { label: "PlantCode", value: "PlantCode", }, //*
     { label: "VendorCode", value: "VendorCode", },
     { label: "CustomerCode", value: "CustomerCode", },
@@ -3648,7 +3648,7 @@ export const MHRMoreZBCTempData = [
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const MachineVBC = [
-    { label: 'Technology', value: 'Technology', }, //*
+    { label: "TechnologyLabel", value: 'Technology', defaultValue: "Technology" }, //*
     { label: 'VendorCode', value: 'VendorCode', }, // not on UI
     { label: 'PlantCode', value: 'PlantCode', }, // not on UI
     { label: 'MachineNo', value: 'MachineNo', }, //*
@@ -3743,7 +3743,7 @@ export const MachineVBCTempData = [
     }
 ]
 export const MachineCBC = [
-    { label: 'Technology', value: 'Technology', }, //*
+    { label: "TechnologyLabel", value: 'Technology', defaultValue: "Technology" }, //*
     { label: 'CustomerCode', value: 'CustomerCode', }, // not on UI
     { label: 'PlantCode', value: 'PlantCode', }, // not on UI
     { label: 'MachineNo', value: 'MachineNo', }, //*
@@ -3849,7 +3849,7 @@ export const PartComponent = [
     { label: 'RevisionNo', value: 'RevisionNo', },
     { label: 'DrawingNo', value: 'DrawingNo', },
     { label: "SAPCode", value: "SAPCode", },
-    { label: 'Technology', value: 'TechnologyName', defaultValue: "Technology" },
+    { label: "TechnologyLabel", value: 'TechnologyName', defaultValue: "Technology" },
     { label: 'EffectiveDate', value: 'EffectiveDate', }, //,* maybe only star
     { label: 'Remark', value: 'Remark', },
 ]
@@ -4011,7 +4011,7 @@ export const BOMUpload = [
     { label: "Quantity", value: "Quantity" }, //NOUI
     { label: "EffectiveDate", value: "EffectiveDate" },
     { label: "Remark", value: "Remark" },
-    { label: 'Technology', value: "Technology", defaultValue: "Technology" },
+    { label: "TechnologyLabel", value: "Technology", defaultValue: "Technology" },
 ]
 
 export const BOMUploadTempData = [
@@ -4465,7 +4465,7 @@ export const RMDomesticSimulation = [
     { label: "Spec", value: "RawMaterialSpecificationName" },
     { label: "Code", value: "RawMaterialCode", },
     { label: "Category", value: "Category" },
-    { label: "Technology", value: "TechnologyName", defaultValue: "Technology" },
+    { label: "TechnologyLabel", value: "TechnologyName", defaultValue: "Technology" },
     { label: "Plant (Code)", value: "DestinationPlantName" },
     { label: "Vendor (Code)", value: "VendorName" },
     //MINDA
@@ -4494,7 +4494,7 @@ export const RMImportSimulation = [
     { label: "Spec", value: "RawMaterialSpecificationName" },
     { label: "Code", value: "RawMaterialCode", },
     { label: "Category", value: "Category" },
-    { label: "Technology", value: "TechnologyName", defaultValue: "Technology" },
+    { label: "TechnologyLabel", value: "TechnologyName", defaultValue: "Technology" },
     { label: "Plant (Code)", value: "DestinationPlantName" },
     { label: "Vendor (Code)", value: "VendorName" },
     //MINDA
@@ -4515,7 +4515,7 @@ export const RMImportSimulation = [
 ]
 
 export const SurfaceTreatmentSimulation = [
-    { label: "Technology", value: "Technology" },
+    { label: "TechnologyLabel", value: "Technology", defaultValue: "Technology" },
     { label: "CostingHead", value: "CostingHead" },
     { label: "OperationName", value: "OperationName" },
     { label: "OperationCode", value: "OperationCode" },
@@ -4533,7 +4533,7 @@ export const SurfaceTreatmentSimulation = [
 ]
 
 export const OperationSimulation = [
-    { label: "Technology", value: "Technology" },
+    { label: "TechnologyLabel", value: "Technology", defaultValue: "Technology" },
     { label: "CostingHead", value: "CostingHead" },
     { label: "OperationName", value: "OperationName" },
     { label: "OperationCode", value: "OperationCode" },
@@ -4557,7 +4557,7 @@ export const OperationSimulation = [
 
 export const MachineRateSimulation = [
     { label: "CostingHead", value: "CostingHead" },
-    { label: "Technology", value: "Technology" },
+    { label: "TechnologyLabel", value: "Technology", defaultValue: "Technology" },
     { label: "MachineName", value: "MachineName", },
     { label: "MachineNumber", value: "MachineNumber", },
     { label: "MachineTypeName", value: "MachineTypeName" },
@@ -5111,7 +5111,7 @@ export const IdForMultiTechnology = ['13', '10', '9']   //Assembly, Electrical P
 export const CostingSimulationDownloadRM = [
     { label: "Costing Head", value: "CostingHead" },
     { label: "CostingNumber", value: "CostingNumber" },
-    { label: "Technology", value: "Technology" },
+    { label: "TechnologyLabel", value: "Technology", defaultValue: "Technology" },
     { label: "Raw Material", value: "RMName" },
     { label: "Grade", value: "RMGrade" },
     { label: "Spec", value: "RMSpec" },
@@ -5181,7 +5181,7 @@ export const COMBINEDPROCESSSIMULATION = [          			//RE
     { label: "Vendor Name", value: "VendorName" },
     { label: "Plant", value: "PlantName" },
     { label: "PlantCode", value: "PlantCode" },
-    { label: "Technology", value: "Technology" },
+    { label: "TechnologyLabel", value: "Technology", defaultValue: "Technology" },
     //{ label: "Raw Material", value: "RMName" },
     //{ label: "RawMaterial Grade", value: "RMGrade" },
     { label: "Part No", value: "PartNo" },
@@ -5222,7 +5222,7 @@ export const COMBINEDPROCESSSIMULATION = [          			//RE
 export const CostingSimulationDownloadST = [
     { label: "Costing Head", value: "CostingHead" },
     { label: "CostingNumber", value: "CostingNumber" },
-    { label: "Technology", value: "Technology" },
+    { label: "TechnologyLabel", value: "Technology", defaultValue: "Technology" },
     { label: "Part No", value: "PartNo" },
     { label: "Part Name", value: "PartName" },
     { label: "Part Type", value: "PartType" },
@@ -5281,7 +5281,7 @@ export const CostingSimulationDownloadST = [
 export const CostingSimulationDownloadOperation = [
     { label: "Costing Head", value: "CostingHead" },
     { label: "CostingNumber", value: "CostingNumber" },
-    { label: "Technology", value: "Technology" },
+    { label: "TechnologyLabel", value: "Technology", defaultValue: "Technology" },
     { label: "Part No", value: "PartNo" },
     { label: "Part Name", value: "PartName" },
     { label: "Part Type", value: "PartType" },
@@ -5339,7 +5339,7 @@ export const CostingSimulationDownloadOperation = [
 export const CostingSimulationDownloadBOP = [
     { label: "Costing Head", value: "CostingHead" },
     { label: "CostingNumber", value: "CostingNumber" },
-    { label: "Technology", value: "Technology" },
+    { label: "TechnologyLabel", value: "Technology", defaultValue: "Technology" },
     { label: "Part No", value: "PartNo" },
     { label: "Part Name", value: "PartName" },
     { label: "Part Type", value: "PartType" },
@@ -5578,7 +5578,7 @@ export const BOP_DOMESTIC_DOWNLOAD_EXCEl = [
     //MINDA
     // { label: "Company (Code)", value: "DepartmentName", },
     { label: 'IsBreakupBoughtOutPart', value: 'IsBreakupBoughtOutPart', },
-    { label: 'Technology', value: 'TechnologyName', defaultValue: "Technology" },
+    { label: "TechnologyLabel", value: 'TechnologyName', defaultValue: "Technology" },
     { label: "Customer (Code)", value: "CustomerName", },
     { label: "Minimum Order Quantity", value: "NumberOfPieces", },
     { label: "Basic Rate", value: "BasicRate", },
@@ -5606,7 +5606,7 @@ export const BOP_IMPORT_DOWNLOAD_EXCEl = [
     // { label: "Company (Code)", value: "DepartmentName", },
     { label: "Customer (Code)", value: "CustomerName", },
     { label: 'IsBreakupBoughtOutPart', value: 'IsBreakupBoughtOutPart', },
-    { label: 'Technology', value: 'TechnologyName', defaultValue: "Technology" },
+    { label: "TechnologyLabel", value: 'TechnologyName', defaultValue: "Technology" },
     { label: "Inco Terms", value: "IncoTermDescriptionAndInfoTerm" },
     { label: "Payment Terms", value: "PaymentTermDescriptionAndPaymentTerm" },
     { label: "Minimum Order Quantity", value: "NumberOfPieces", },
@@ -5701,7 +5701,7 @@ export const LABOUR_DOWNLOAD_EXCEl = [
 
 export const MACHINERATE_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead", },
-    { label: "Technology", value: "Technology", },
+    { label: "TechnologyLabel", value: "Technology", defaultValue: "Technology" },
     { label: "Machine Name", value: "MachineName" },
     { label: "Machine Number", value: "MachineNumber", },
     { label: "Machine Type", value: "MachineTypeName", },
@@ -5722,7 +5722,7 @@ export const PROCESSLISTING_DOWNLOAD_EXCEl = [
 
 export const RMDOMESTIC_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead", },
-    { label: "Technology", value: "TechnologyName", defaultValue: "Technology" },
+    { label: "TechnologyLabel", value: "TechnologyName", defaultValue: "Technology" },
     { label: "Raw Material", value: "RawMaterialName", },
     { label: "Grade", value: "RawMaterialGradeName", },
     { label: "Spec", value: "RawMaterialSpecificationName", },
@@ -5757,7 +5757,7 @@ export const RMDOMESTIC_DOWNLOAD_EXCEl = [
 
 export const RMIMPORT_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead", },
-    { label: "Technology", value: "TechnologyName", defaultValue: "Technology" },
+    { label: "TechnologyLabel", value: "TechnologyName", defaultValue: "Technology" },
     { label: "Raw Material", value: "RawMaterialName", },
     { label: "Grade", value: "RawMaterialGradeName", },
     { label: "Spec", value: "RawMaterialSpecificationName", },
@@ -5868,7 +5868,7 @@ export const RMINDEXATION = [
 ]
 export const OPERATION_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead", },
-    { label: "Technology", value: "Technology", },
+    { label: "TechnologyLabel", value: "Technology", defaultValue: "Technology" },
     { label: "Operation Name", value: "OperationName", },
     { label: "Operation Code", value: "OperationCode", },
     { label: "Plant (Code)", value: "Plants", },
@@ -5898,7 +5898,7 @@ export const OVERHEAD_DOWNLOAD_EXCEl = [
 ]
 
 export const ASSEMBLYPART_DOWNLOAD_EXCEl = [
-    { label: "Technology", value: "Technology", },
+    { label: "TechnologyLabel", value: "Technology", defaultValue: "Technology" },
     { label: "BOM No.", value: "BOMNumber", },
     { label: "Part No.", value: "PartNumber", },
     { label: "Name", value: "PartName", },
@@ -5912,7 +5912,7 @@ export const ASSEMBLYPART_DOWNLOAD_EXCEl = [
 ]
 
 export const INDIVIDUALPART_DOWNLOAD_EXCEl = [
-    { label: "Technology", value: "Technology", },
+    { label: "TechnologyLabel", value: "Technology", defaultValue: "Technology" },
     { label: "Part No.", value: "PartNumber", },
     { label: "Name", value: "PartName", },
     { label: "SAP Code", value: "SAPCode", },
@@ -6032,7 +6032,7 @@ export const ZBCPLANT_DOWNLOAD_EXCEl = [
 ]
 export const REPORT_DOWNLOAD_EXCEl = [
     { label: "Costing Version", value: "CostingNumber", },
-    { label: "Technology", value: "TechnologyName", defaultValue: "Technology" },
+    { label: "TechnologyLabel", value: "TechnologyName", defaultValue: "Technology" },
     { label: "Plant (Code)", value: "Plant", },
     { label: "Vendor (Code)", value: "Vendor", },
     { label: "Customer (Code)", value: "Customer", },
@@ -6115,7 +6115,7 @@ export const REPORT_DOWNLOAD_EXCEl = [
 ]
 
 export const CombinedProcessSimulation = [         //  						//RE
-    { label: "Technology", value: "TechnologyName", defaultValue: "Technology" },
+    { label: "TechnologyLabel", value: "TechnologyName", defaultValue: "Technology" },
     { label: "PartName", value: "PartName" },
     { label: "PartNumber", value: "PartNumber" },
     { label: "PlantName", value: "PlantName" },
@@ -6397,7 +6397,7 @@ export const InitialGridForToken = [
 
     { label: "Costing Head", value: "CostingHead" },
     { label: "CostingNumber", value: "CostingNumber" },
-    { label: "Technology", value: "Technology" },
+    { label: "TechnologyLabel", value: "Technology", defaultValue: "Technology" },
     { label: "Part No", value: "PartNo" },
     { label: "Part Name", value: "PartName" },
     { label: "ECN Number", value: "ECNNumber" },
@@ -6516,7 +6516,7 @@ export const ImpactedRMDownload = [
     { label: "Spec", value: "RMSpec" },
     { label: "Code", value: "RawMaterialCode" },
     { label: "Category", value: "Category" },
-    { label: "Technology", value: "TechnologyName", defaultValue: "Technology" },
+    { label: "TechnologyLabel", value: "TechnologyName", defaultValue: "Technology" },
     { label: "VendorName", value: "VendorName" },
     { label: "UOM", value: "UOM" },
     { label: "ExistingBasicRate", value: "OldBasicRate" },
@@ -6549,7 +6549,7 @@ export const ImpactedOPERATIONDownload = [
     { label: "EffectiveDate", value: "EffectiveDate" },
 ]
 export const ImpactedSTDownload = [
-    { label: "Technology", value: "Technology" },
+    { label: "TechnologyLabel", value: "Technology", defaultValue: "Technology" },
     { label: "VendorName", value: "VendorName" },
     { label: "OperationName", value: "OperationName" },
     { label: "OperationCode", value: "OperationCode" },
@@ -6600,7 +6600,7 @@ export const EXCHANGESIMULATIONDOWNLOAD = [
 export const CostingSimulationDownloadMR = [
     { label: "Costing Head", value: "CostingHead" },
     { label: "CostingNumber", value: "CostingNumber" },
-    { label: "Technology", value: "Technology" },
+    { label: "TechnologyLabel", value: "Technology", defaultValue: "Technology" },
     { label: "Part No", value: "PartNo" },
     { label: "Part Name", value: "PartName" },
     { label: "Part Type", value: "PartType" },
@@ -8017,7 +8017,7 @@ export const CostingSimulationDownloadAssemblyTechnology = [
     { label: "Vendor (Code)", value: "VendorName" },
     { label: "Plant", value: "PlantName" },
     { label: "PlantCode", value: "PlantCode" },
-    { label: "Technology", value: "Technology" },
+    { label: "TechnologyLabel", value: "Technology", defaultValue: "Technology" },
     { label: "Part No", value: "PartNo" },
     { label: "Part Name", value: "PartName" },
     { label: "ECN Number", value: "ECNNumber" },

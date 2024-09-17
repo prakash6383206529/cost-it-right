@@ -46,7 +46,7 @@ import { simulationContext } from '.';
 import RMIndexationSimulationListing from './SimulationPages/RMIndexationSimulationListing';
 import RMIndexationSimulation from './SimulationPages/RMIndexationSimulation';
 import { setCommodityDetails } from '../../masters/actions/Indexation';
-import { useLabels } from '../../../helper/core';
+import { useLabels, useWithLocalization } from '../../../helper/core';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -784,25 +784,32 @@ function Simulation(props) {
         // }
     }
 
-
+    const RMDOMESTIC_SIMULATION_LOCALIZATION = useWithLocalization(RMDomesticSimulation, "MasterLabels")
+    const RMIMPORT_SIMULATION_LOCALIZATION = useWithLocalization(RMImportSimulation, "MasterLabels")
+    const COMBINED_PROCESS_SIMULATION_LOCALIZATION = useWithLocalization(CombinedProcessSimulation, "MasterLabels")
+    const SURFACETREATMENT_SIMULATION_LOCALIZATION = useWithLocalization(SurfaceTreatmentSimulation, "MasterLabels")
+    const OPERATIONS_SIMULATION_LOCALIZATION = useWithLocalization(OperationSimulation, "MasterLabels")
+    const MACHINERATE_SIMULATION_LOCALIZATION = useWithLocalization(MachineRateSimulation, "MasterLabels")
+    const BOPDOMESTIC_SIMULATION_LOCALIZATION = useWithLocalization(BOPDomesticSimulation, "MasterLabels")
+    const BOPIMPORT_SIMULATION_LOCALIZATION = useWithLocalization(BOPImportSimulation, "MasterLabels")
     const renderColumn = (fileName) => {
         switch (fileName) {
             case RMDOMESTIC:
-                return returnExcelColumn(RMDomesticSimulation, tableData ? tableData : [])
+                return returnExcelColumn(RMDOMESTIC_SIMULATION_LOCALIZATION, tableData ? tableData : [])
             case RMIMPORT:
-                return returnExcelColumn(RMImportSimulation, tableData ? tableData : [])
+                return returnExcelColumn(RMIMPORT_SIMULATION_LOCALIZATION, tableData ? tableData : [])
             case COMBINED_PROCESS:                //RE
-                return returnExcelColumn(CombinedProcessSimulation, tableData && tableData.length > 0 ? tableData : [])
+                return returnExcelColumn(COMBINED_PROCESS_SIMULATION_LOCALIZATION, tableData && tableData.length > 0 ? tableData : [])
             case SURFACETREATMENT:
-                return returnExcelColumn(SurfaceTreatmentSimulation, tableData && tableData.length > 0 ? tableData : [])
+                return returnExcelColumn(SURFACETREATMENT_SIMULATION_LOCALIZATION, tableData && tableData.length > 0 ? tableData : [])
             case OPERATIONS:
-                return returnExcelColumn(OperationSimulation, tableData && tableData.length > 0 ? tableData : [], true)
+                return returnExcelColumn(OPERATIONS_SIMULATION_LOCALIZATION, tableData && tableData.length > 0 ? tableData : [], true)
             case MACHINERATE:
-                return returnExcelColumn(MachineRateSimulation, tableData && tableData.length > 0 ? tableData : [])
+                return returnExcelColumn(MACHINERATE_SIMULATION_LOCALIZATION, tableData && tableData.length > 0 ? tableData : [])
             case BOPDOMESTIC:
-                return returnExcelColumn(BOPDomesticSimulation, tableData && tableData.length > 0 ? tableData : [])
+                return returnExcelColumn(BOPDOMESTIC_SIMULATION_LOCALIZATION, tableData && tableData.length > 0 ? tableData : [])
             case BOPIMPORT:
-                return returnExcelColumn(BOPImportSimulation, tableData && tableData.length > 0 ? tableData : [])
+                return returnExcelColumn(BOPIMPORT_SIMULATION_LOCALIZATION, tableData && tableData.length > 0 ? tableData : [])
             // case BOPIMPORT:
             //     return returnExcelColumn(OverheadProfitSimulation, tableData && tableData.length > 0 ? tableData : [])
             default:

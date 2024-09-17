@@ -157,7 +157,7 @@ class LevelUser extends Component {
                                         name="TechnologyId"
                                         type="text"
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
-                                        label={this.props.t('Technology', { ns: 'MasterLabels', defaultValue: 'Technology' })}
+                                        label={this.props.t('TechnologyLabel', { ns: 'MasterLabels', defaultValue: 'Technology' })}
                                         component={searchableSelect}
                                         //validate={[required, maxLength50]}
                                         options={this.searchableSelectType('technology')}

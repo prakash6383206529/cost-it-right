@@ -14,7 +14,7 @@ export const useLabels = () => {
     const tCosting = i18n.getFixedT(null, 'CostingLabels');
 
     return {
-        technologyLabel: tMasterLabels('Technology', { defaultValue: 'Technology' }),
+        technologyLabel: tMasterLabels('TechnologyLabel', { defaultValue: 'Technology' }),
         partTypeLabel: tMasterLabels('commonFields.partType', { defaultValue: 'Part Type' }),
         RMCategoryLabel: tMasterLabels('RMCategoryLabel', { defaultValue: 'Category' }),
         discountLabel: tCosting('discount', { defaultValue: 'Hundi/Discount' }),

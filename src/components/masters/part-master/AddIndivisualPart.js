@@ -624,7 +624,7 @@ class AddIndivisualPart extends Component {
 
                           <Col md="3">
                             <Field
-                              label={t('Technology', { ns: 'MasterLabels', defaultValue: 'Technology' })}
+                              label={t('TechnologyLabel', { ns: 'MasterLabels', defaultValue: 'Technology' })}
                               type="text"
                               name="TechnologyId"
                               component={searchableSelect}
