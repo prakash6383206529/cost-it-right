@@ -445,7 +445,7 @@ class IndivisualProductListing extends Component {
                             }}
                             frameworkComponents={frameworkComponents}
                         >
-                            <AgGridColumn field="Technology" headerName={this.props.t('commonFields.technology', { ns: 'MasterLabels', defaultValue: 'Technology' })} cellRenderer={'costingHeadFormatter'}></AgGridColumn>
+                            <AgGridColumn field="Technology" headerName={this.props.t('TechnologyLabel', { ns: 'MasterLabels', defaultValue: 'Technology' })} cellRenderer={'costingHeadFormatter'}></AgGridColumn>
                             <AgGridColumn field="PartNumber" headerName="Part No."></AgGridColumn>
                             <AgGridColumn field="PartName" headerName="Name"></AgGridColumn>
                             <AgGridColumn field="ECNNumber" headerName="ECN No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
