@@ -859,7 +859,7 @@ function ApprovalListing(props) {
       Mode: 'costing',
       approvalTypeId: costingTypeIdToApprovalTypeIdFunction(selectedRowData[0]?.ApprovalTypeId ?? selectedRowData[0]?.CostingTypeId),
       plantId: selectedRowData[0].PlantId ?? EMPTY_GUID,
-      divisionId: selectedRowData[0].DivisionId ?? EMPTY_GUID
+      divisionId: selectedRowData[0].DivisionId ?? null
     }
     dispatch(checkFinalUser(obj, res => {
       if (res && res.data && res.data.Result) {

@@ -653,8 +653,19 @@ const BOPDomesticListing = (props) => {
     tempArr = selectedRowForPagination
     tempArr = (tempArr && tempArr.length > 0) ? tempArr : (allBopDataList ? allBopDataList : [])
     const { updatedLabels } = updateBOPValues(BOP_DOMESTIC_DOWNLOAD_EXCEl, [], bopMasterName, 'label')
-
-    return returnExcelColumn(updatedLabels, tempArr)
+    const filteredLabels = updatedLabels.filter(column => {
+      if (column.value === "NetConditionCost" || column.value === "NetCostWithoutConditionCost") {
+        return initialConfiguration?.IsBasicRateAndCostingConditionVisible && ((props.isMasterSummaryDrawer && bopDomesticList[0]?.CostingTypeId === ZBCTypeId) || !props.isMasterSummaryDrawer)
+      }
+      if (column.value === "CustomerName") {
+        return reactLocalStorage.getObject('CostingTypePermission').cbc
+      }
+      if (column.value === "NumberOfPieces") {
+        return getConfigurationKey().IsMinimumOrderQuantityVisible
+      }
+      return true;
+    })
+    return returnExcelColumn(filteredLabels, tempArr)
   };
 
   const returnExcelColumn = (data = [], TempData) => {

@@ -2195,7 +2195,7 @@ export const BOP_ZBC_DOMESTIC_TempData = [
         'Specification': '20 mm',
         'SAPCode': 'SAP 01',
         "UnitOfMeasurement": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
-        'PlantCode': 'Plant101',
+        'DestinationPlantCode': 'Plant101',
         'VendorCode': 'Sys01',
         'NumberOfPieces': '1',
         'BasicRate': '100',
@@ -2208,7 +2208,7 @@ export const BOP_ZBC_DOMESTIC_TempData = [
         'Specification': '20 mm',
         'SAPCode': 'SAP 01',
         "UnitOfMeasurement": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
-        'PlantCode': 'Plant101',
+        'DestinationPlantCode': 'Plant101',
         'VendorCode': 'Sys01',
         'NumberOfPieces': '1',
         'BasicRate': '100',
@@ -2221,7 +2221,7 @@ export const BOP_ZBC_DOMESTIC_TempData = [
         'Specification': '20 mm',
         'SAPCode': 'SAP 01',
         "UnitOfMeasurement": "shot/stroke/Number",
-        'PlantCode': 'Plant101',
+        'DestinationPlantCode': 'Plant101',
         'VendorCode': 'Sys01',
         'NumberOfPieces': '1',
         'BasicRate': '100',
@@ -5586,7 +5586,7 @@ export const BOP_DOMESTIC_DOWNLOAD_EXCEl = [
     { label: "Basic Rate", value: "BasicRate", },
     { label: "Basic Price", value: "NetCostWithoutConditionCost", },
     { label: "Net Condition Cost", value: "NetConditionCost", },
-    { label: "Net Landed Cost", value: "NetLandedCost", },
+    { label: "Net Cost", value: "NetLandedCost", },
 
 
 
@@ -5612,16 +5612,14 @@ export const BOP_IMPORT_DOWNLOAD_EXCEl = [
     { label: "Inco Terms", value: "IncoTermDescriptionAndInfoTerm" },
     { label: "Payment Terms", value: "PaymentTermDescriptionAndPaymentTerm" },
     { label: "Minimum Order Quantity", value: "NumberOfPieces", },
-    { label: "Basic Rate", value: "BasicRate", },
-    { label: "Basic Rate Conversion", value: "BasicRateConversion", },
-    { label: "Basic Price", value: "NetCostWithoutConditionCost", },
-    { label: "Basic Price Conversion", value: "NetCostWithoutConditionCostConversion", },
-    { label: "Net Condition Cost", value: "NetConditionCost", },
-    { label: "Net Condition Cost Conversion", value: "NetConditionCostConversion", },
-    { label: "Net Landed Cost", value: "NetLandedCost", },
-    { label: "Net Landed Cost Conversion", value: "NetLandedCostConversion", },
-
-
+    { label: "Basic Rate (Currency)", value: "BasicRate", },
+    { label: `Basic Rate (${reactLocalStorage.getObject("baseCurrency")})`, value: "BasicRateConversion", },
+    { label: "Basic Price (Currency)", value: "NetCostWithoutConditionCost", },
+    { label: `Basic Price (${reactLocalStorage.getObject("baseCurrency")})`, value: "NetCostWithoutConditionCostConversion", },
+    { label: "Net Condition Cost (Currency)", value: "NetConditionCost", },
+    { label: `Net Condition Cost (${reactLocalStorage.getObject("baseCurrency")})`, value: "NetConditionCostConversion", },
+    { label: `Net Cost (Currency)`, value: "NetLandedCost", },
+    { label: `Net Cost (${reactLocalStorage.getObject("baseCurrency")})`, value: "NetLandedCostConversion", },
     { label: "Effective Date", value: "EffectiveDate" },
 ]
 
@@ -5630,7 +5628,7 @@ export const BOP_SOBLISTING_DOWNLOAD_EXCEl = [
     { label: "BOP Part Name", value: "BoughtOutPartName", },
     { label: "BOP Category", value: "BoughtOutPartCategoryName", },
     { label: "Entry Type", value: "BoughtOutPartEntryType", },
-   ]
+]
 
 export const EXCHANGERATE_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead", },
@@ -6097,7 +6095,7 @@ export const REPORT_DOWNLOAD_EXCEl = [
     { label: "Hundi/Discount Value", value: "HundiOrDiscountValue", },
     { label: "Tool Cost", value: "ToolCost", },
     { label: "Amortization Quantity (Tool Life)", value: "ToolLife", },
-    { label: "Tool Maintenance Cost", value: "ToolMaintenanceCost", },
+    { label: "Tool Maintenance Cost (per pcs)", value: "ToolMaintenanceCost" },
     { label: "Net Tool Cost", value: "NetToolCost", },
     { label: "Other Cost Percentage", value: "OtherCostPercentage", },
     { label: "Any Other Cost", value: "AnyOtherCost", },

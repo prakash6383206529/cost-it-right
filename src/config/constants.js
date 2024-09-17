@@ -1872,6 +1872,7 @@ export const GET_PLANT_SELECT_LIST_FOR_DEPARTMENT = 'GET_PLANT_SELECT_LIST_FOR_D
 export const GET_DIVISION_SUCCESS = 'GET_DIVISION_SUCCESS'
 export const GET_DIVISION_DATA_SUCCESS = 'GET_DIVISION_DATA_SUCCESS'
 export const GET_DIVISION_LIST_SUCCESS = 'GET_DIVISION_LIST_SUCCESS'
+export const GET_DIVISION_LIST_FOR_DEPARTMENT = 'GET_DIVISION_LIST_FOR_DEPARTMENT'
 
 //Common to get plants by supplier
 export const GET_PLANTS_BY_SUPPLIER = 'GET_PLANTS_BY_SUPPLIER'
@@ -3236,13 +3237,14 @@ export const showPaperCorrugatedBox = true
 export const showDynamicKeys = false
 export const hideDetailOfRubbercalci = true
 export const customHavellsChanges = true
-export const countDownBlickingTime = 2
+export const countDownBlinkingTime = 2
 export const clientName = 'Havells'
 export const isShowTaxCode = false
 export const effectiveDateRangeDays = ''
 
+
 //VERSION 
-export const VERSION = "V3.1.7";
+export const VERSION = "V3.1.8";
 
 
 

@@ -15,7 +15,7 @@ import { CLASSIFICATIONAPPROVALTYPEID, EMPTY_GUID, LPSAPPROVALTYPEID, RELEASESTR
 import WarningMessage from '../../common/WarningMessage';
 import Toaster from '../../common/Toaster';
 import { debounce } from 'lodash';
-import { getUsersOnboardingLevelAPI } from '../../../actions/auth/AuthActions';
+import { getAllDivisionListAssociatedWithDepartment, getUsersOnboardingLevelAPI } from '../../../actions/auth/AuthActions';
 import LoaderCustom from '../../common/LoaderCustom';
 import { REMARKMAXLENGTH } from '../../../config/masterData';
 import { checkFinalUser } from '../../costing/actions/Costing';
@@ -51,7 +51,19 @@ const SendForApproval = (props) => {
   const [classificationApproverIdList, setClassificationApproverIdList] = useState([])
   const [noApprovalExistMessage, setNoApprovalExistMessage] = useState('')
   const [levelDetails, setLevelDetails] = useState('');
+  const [isShowDivision, setIsShowDivision] = useState(false)
+  const [divisionList, setDivisionList] = useState([])
 
+  const [division, setDivision] = useState('')
+
+  const [isFinalApprover, setIsFinalApprover] = useState(false)
+  const [isFinalApproverLps, setIsFinalApproverLps] = useState(false)
+
+
+  const [department, setDepartment] = useState('')
+  const [isDisableDept, setDisableDept] = useState(false)
+  const [departmentDropdown, setDepartmentDropdown] = useState([])
+  const [isSubmitDisabled, setIsSubmitDisabled] = useState(false)
   const approvalTypeSelectList = useSelector(state => state.comman.approvalTypeSelectList)
 
   const {
@@ -68,90 +80,135 @@ const SendForApproval = (props) => {
   useEffect(() => {
     setIsLoader(true)
     dispatch(getAllMasterApprovalDepartment((res) => {
-      res ? setIsLoader(false) : setIsLoader(false)
+
+      setIsLoader(false)
       const Data = res?.data?.SelectList;
-      const departObj = Data && Data.filter(item => item.Value === userDetails().DepartmentId);
-      setTimeout(() => {
-        setValue('dept', { label: departObj[0].Text, value: departObj[0].Value });
-      }, 100);
 
 
-      let obj = {
-        LoggedInUserId: loggedInUserId(),
-        DepartmentId: userDetails().DepartmentId,
-        MasterId: 0,
-        ReasonId: 0,
-        PlantId: deviationData?.PlantId ?? EMPTY_GUID,
-        OnboardingMasterId: 1
-      };
+      const departObj = userDetails().Department && userDetails().Department.map(item => item.DepartmentName)
+      const updateList = Data && Data.filter(item => departObj.includes(item.Text))
 
-      const handleApiResponse = (res, deptKey, approverKey) => {
-        let approverIdListTemp = [];
-        const Data = res.data.DataList[1] || {};
-        const isLPSApprovalType = Data.ApprovalTypeId === LPSAPPROVALTYPEID;
-        if (Data.length !== 0) {
-          setTimeout(() => {
-            setValue(deptKey, { label: Data.DepartmentName, value: Data.DepartmentId });
-            setValue(approverKey, {
-              label: Data.Text || '',
-              value: Data.Value || '',
-              levelId: Data.LevelId || '',
-              levelName: Data.LevelName || ''
-            });
-          }, 100);
+      let department = []
+      updateList &&
+        updateList.map((item) => {
+          if (item?.Value === '0') return false
+          department?.push({ label: item?.Text, value: item?.Value })
+          return null
+        })
+      setDepartmentDropdown(department)
 
-          let tempDropdownList = [];
-          res.data.DataList && res.data.DataList.forEach((item) => {
 
-            if (item.Value !== '0') {
-              tempDropdownList.push({
-                label: item.Text,
-                value: item.Value,
-                levelId: item.LevelId,
-                levelName: item.LevelName
-              });
-              approverIdListTemp.push(item.Value);
+
+      if (department?.length === 1) {
+        const selectedDept = { label: department[0].label, value: department[0].value };
+
+        setValue('dept', selectedDept)
+        setValue('dept1', selectedDept)
+        setDisableDept(true)
+        setDepartment(selectedDept)
+        if (getConfigurationKey().IsDivisionAllowedForDepartment) {
+
+          fetchDivisionList(department[0].value, dispatch, (divisionArray, showDivision) => {
+            setIsShowDivision(showDivision);
+            setDivisionList(divisionArray);
+            if (!showDivision) {
+              if (isLpsRating && isClassification) {
+                callCheckFinalUserApi(department[0].value, LPSAPPROVALTYPEID, null, 'dept1');
+                callCheckFinalUserApi(department[0].value, CLASSIFICATIONAPPROVALTYPEID, null, 'dept');
+              } else if (isLpsRating) {
+                callCheckFinalUserApi(department[0].value, LPSAPPROVALTYPEID, null, 'dept1');
+              } else if (isClassification) {
+                callCheckFinalUserApi(department?.value, CLASSIFICATIONAPPROVALTYPEID, null, 'dept');
+              }
             }
           });
-          setTimeout(() => {
-            if (isLPSApprovalType) {
-              // Update LPS related states
-              setLPSApprovalDropDown(tempDropdownList);
-              setLPSApproverIdList(approverIdListTemp);
-            } else {
-              // Update Classification related states
-              setClassificationApprovalDropDown(tempDropdownList);
-              setClassificationApproverIdList(approverIdListTemp);
-            }
-          }, 100);
         }
-      };
+        else {
+          setTimeout(() => {
+            setValue('dept', { label: department[0].label, value: department[0].value })
+            setValue('dept1', { label: department[0].label, value: department[0].value })
+            setDisableDept(true)
+          }, 100);
 
-      if (isLpsRating && isClassification) {
-        const lpsObj = { ...obj, ApprovalTypeId: LPSAPPROVALTYPEID };
-        const classificationObj = { ...obj, ApprovalTypeId: CLASSIFICATIONAPPROVALTYPEID };
-        dispatch(getAllMasterApprovalUserByDepartment(classificationObj, (classificationRes) => {
+          let obj = {
+            LoggedInUserId: loggedInUserId(),
+            DepartmentId: userDetails().DepartmentId,
+            MasterId: 0,
+            ReasonId: 0,
+            PlantId: deviationData?.PlantId ?? EMPTY_GUID,
+            OnboardingMasterId: 1
+          };
 
-          handleApiResponse(classificationRes, 'dept', 'approver');
-          // After handling the response for Classification, make API call for LPS
-          dispatch(getAllMasterApprovalUserByDepartment(lpsObj, (lpsRes) => {
+          const handleApiResponse = (res, deptKey, approverKey) => {
+            let approverIdListTemp = [];
+            const Data = res.data.DataList[1] || {};
+            const isLPSApprovalType = Data.ApprovalTypeId === LPSAPPROVALTYPEID;
+            if (Data.length !== 0) {
+              setTimeout(() => {
+                setValue(deptKey, { label: Data.DepartmentName, value: Data.DepartmentId });
+                setValue(approverKey, {
+                  label: Data.Text || '',
+                  value: Data.Value || '',
+                  levelId: Data.LevelId || '',
+                  levelName: Data.LevelName || ''
+                });
+              }, 100);
 
-            handleApiResponse(lpsRes, 'dept1', 'approver1');
-          }));
-        }));
-      } else {
-        // Handle single scenario
-        const apiObj = {
-          ...obj,
-          ApprovalTypeId: isLpsRating ? LPSAPPROVALTYPEID : CLASSIFICATIONAPPROVALTYPEID
-        };
+              let tempDropdownList = [];
+              res.data.DataList && res.data.DataList.forEach((item) => {
+
+                if (item?.Value !== '0') {
+                  tempDropdownList.push({
+                    label: item?.Text,
+                    value: item?.Value,
+                    levelId: item?.LevelId,
+                    levelName: item?.LevelName
+                  });
+                  approverIdListTemp.push(item?.Value);
+                }
+              });
+              setTimeout(() => {
+                if (isLPSApprovalType) {
+                  // Update LPS related states
+                  setLPSApprovalDropDown(tempDropdownList);
+                  setLPSApproverIdList(approverIdListTemp);
+                } else {
+                  // Update Classification related states
+                  setClassificationApprovalDropDown(tempDropdownList);
+                  setClassificationApproverIdList(approverIdListTemp);
+                }
+              }, 100);
+            }
+          };
+
+          if (isLpsRating && isClassification) {
+            const lpsObj = { ...obj, ApprovalTypeId: LPSAPPROVALTYPEID };
+            const classificationObj = { ...obj, ApprovalTypeId: CLASSIFICATIONAPPROVALTYPEID };
+            dispatch(getAllMasterApprovalUserByDepartment(classificationObj, (classificationRes) => {
+
+              handleApiResponse(classificationRes, 'dept', 'approver');
+              // After handling the response for Classification, make API call for LPS
+              dispatch(getAllMasterApprovalUserByDepartment(lpsObj, (lpsRes) => {
 
 
-        // Make API call for single type
-        dispatch(getAllMasterApprovalUserByDepartment(apiObj, (res) => {
-          isClassification ?
-            handleApiResponse(res, 'dept', 'approver') : handleApiResponse(res, 'dept1', 'approver1');
-        }));
+                handleApiResponse(lpsRes, 'dept1', 'approver1');
+              }));
+            }));
+          } else {
+            // Handle single scenario
+            const apiObj = {
+              ...obj,
+              ApprovalTypeId: isLpsRating ? LPSAPPROVALTYPEID : CLASSIFICATIONAPPROVALTYPEID
+            };
+
+
+            // Make API call for single type
+            dispatch(getAllMasterApprovalUserByDepartment(apiObj, (res) => {
+              isClassification ?
+                handleApiResponse(res, 'dept', 'approver') : handleApiResponse(res, 'dept1', 'approver1');
+            }));
+          }
+        }
       }
     }));
   }, [isOpen]);
@@ -180,115 +237,143 @@ const SendForApproval = (props) => {
       const dept = isClassification ? getValues('dept') : getValues('dept1');
       const approver = isClassification ? getValues('approver') : getValues('approver1');
       const month = isClassification ? getValues('month') : getValues('month1');
-      if (initialConfiguration.IsMultipleUserAllowForApproval && !dept?.label) {
-        Toaster.warning('There is no highest approver defined for this user. Please connect with the IT team.');
-        return false;
+
+      if (initialConfiguration?.IsDivisionAllowedForDepartment && isFinalApprover) {
+        Toaster.warning("User does not have permission for unblocking because it is the final level approver")
+
+      }
+      else {
+        if (initialConfiguration.IsMultipleUserAllowForApproval && !dept?.label) {
+          Toaster.warning('There is no highest approver defined for this user. Please connect with the IT team.');
+          return false;
+        }
+
+        const senderObj = {
+
+          IsFinalApproved: false,
+          // DepartmentId: dept?.value || '',
+          // DepartmentName: dept?.label || '',
+          ApproverLevelId: approver?.levelId || '',
+          // ApproverDepartmentId: dept?.value || '',
+          ApproverLevel: approver?.levelName || '',
+          // ApproverDepartmentName: dept?.label || '',
+          ApproverIdList: initialConfiguration.IsMultipleUserAllowForApproval
+            ? approverIdList
+            : [approver?.value || ''],
+          SenderLevelId: levelDetails?.LevelId,
+          SenderId: loggedInUserId(),
+          SenderLevel: levelDetails?.Level,
+          // SenderRemark: isClassification ? getValues('remarks') : getValues('remarks1'),
+          LoggedInUserId: loggedInUserId(),
+          PurchasingGroup: '',
+          MaterialGroup: '',
+          CostingTypeId: 1,
+          MasterIdList: [],
+          BudgetingIdList: [],
+          OnboardingApprovalId: 1,
+
+        };
+
+        const classificationSenderObj = {
+          ...senderObj,
+          ReasonId: getValues('reason')?.value || '',
+          Reason: getValues('reason')?.label || '',
+          ApprovalTypeId: CLASSIFICATIONAPPROVALTYPEID,
+          ApproverIdList: initialConfiguration.IsMultipleUserAllowForApproval
+            ? classificationApproverIdList
+            : [approver?.value || ''],
+          ApproverDepartmentName: getValues('dept')?.label ?? '',
+          ApproverDepartmentId: getValues('dept')?.value ?? '',
+
+          SenderRemark: getValues('remarks'),
+          DepartmentId: getValues('dept')?.value ?? '',
+          DepartmentName: getValues('dept')?.label ?? '',
+          FinalApprover: isFinalApprover,
+
+          DivisionId: getValues('Division')?.value ?? '',
+          MasterCreateRequest: {
+            CreateVendorPlantClassificationLPSRatingUnblocking: {
+              VendorClassificationId: deviationData?.VendorClassificationId,
+              VendorLPSRatingId: '',
+              IsSendForApproval: deviationData?.ClassificationIsBlocked,
+
+              DeviationId: '00000000-0000-0000-0000-000000000000',
+              CostingTypeId: 1,
+              DeviationType: 1,
+              DeviationDuration: `${month.value} Month(s)`,
+              LoggedInUserId: loggedInUserId(),
+              PlantId: deviationData.PlantId,
+              PlantName: deviationData.PlantName,
+              Remark: '',
+
+
+            }
+          }
+        };
+
+        const lpsSenderObj = {
+          ...senderObj,
+          ReasonId: getValues('reason1')?.value || '',
+          Reason: getValues('reason1')?.label || '',
+          ApproverDepartmentName: getValues('dept1')?.label ?? '',
+          ApproverDepartmentId: getValues('dept1')?.value ?? '',
+          SenderRemark: getValues('remarks1'),
+          ApprovalTypeId: LPSAPPROVALTYPEID,
+          ApproverIdList: initialConfiguration.IsMultipleUserAllowForApproval
+            ? lpsApproverIdList
+            : [approver?.value || ''],
+          FinalApprover: isFinalApproverLps,
+
+          DepartmentId: getValues('dept1')?.value ?? '',
+          DepartmentName: getValues('dept1')?.label ?? '',
+
+          DivisionId: getValues('Division1')?.value ?? '',
+          MasterCreateRequest: {
+            CreateVendorPlantClassificationLPSRatingUnblocking: {
+              VendorClassificationId: '',
+              VendorLPSRatingId: deviationData?.VendorLPSRatingId,
+              IsSendForApproval: deviationData?.LPSRatingIsBlocked,
+              DeviationId: '00000000-0000-0000-0000-000000000000',
+              CostingTypeId: 1,
+              DeviationType: 2,
+              DeviationDuration: `1 Month(s)`,
+              LoggedInUserId: loggedInUserId(),
+              PlantId: deviationData.PlantId,
+              PlantName: deviationData.PlantName,
+              Remark: '',
+
+            }
+          }
+        };
+
+
+        // Dispatching API calls
+        setIsLoader(true);
+        const dispatchApproval = (sender, message) => {
+          dispatch(sendForUnblocking(sender, res => {
+
+            setIsLoader(false);
+            if (res?.data?.Result) {
+              Toaster?.success(message);
+              props?.closeDrawer('', 'submit');
+              // history.push('/supplier-approval-summary'); // Update the route as per your application
+
+            }
+          }));
+
+        };
+
+        if (isClassification && isLpsRating) {
+          dispatchApproval(classificationSenderObj, 'Token has been sent for classification approval.');
+          dispatchApproval(lpsSenderObj, 'Token has been sent for LPS rating approval.');
+          props.closeDrawer()
+        } else if (isClassification) {
+          dispatchApproval(classificationSenderObj, 'Token has been sent for classification approval.');
+        } else if (isLpsRating) {
+          dispatchApproval(lpsSenderObj, 'Token has been sent for LPS rating approval.');
+        }
       }
 
-      const senderObj = {
-
-        IsFinalApproved: false,
-        DepartmentId: dept?.value || '',
-        DepartmentName: dept?.label || '',
-        ApproverLevelId: approver?.levelId || '',
-        ApproverDepartmentId: dept?.value || '',
-        ApproverLevel: approver?.levelName || '',
-        ApproverDepartmentName: dept?.label || '',
-        ApproverIdList: initialConfiguration.IsMultipleUserAllowForApproval
-          ? approverIdList
-          : [approver?.value || ''],
-        SenderLevelId: levelDetails?.LevelId,
-        SenderId: loggedInUserId(),
-        SenderLevel: levelDetails?.Level,
-        // SenderRemark: isClassification ? getValues('remarks') : getValues('remarks1'),
-        LoggedInUserId: loggedInUserId(),
-        PurchasingGroup: '',
-        MaterialGroup: '',
-        CostingTypeId: 1,
-        MasterIdList: [],
-        BudgetingIdList: [],
-        OnboardingApprovalId: 1,
-      };
-
-      const classificationSenderObj = {
-        ...senderObj,
-        ReasonId: getValues('reason')?.value || '',
-        Reason: getValues('reason')?.label || '',
-        ApprovalTypeId: CLASSIFICATIONAPPROVALTYPEID,
-        ApproverIdList: initialConfiguration.IsMultipleUserAllowForApproval
-          ? classificationApproverIdList
-          : [approver?.value || ''],
-        SenderRemark: getValues('remarks'),
-        MasterCreateRequest: {
-          CreateVendorPlantClassificationLPSRatingUnblocking: {
-            VendorClassificationId: deviationData?.VendorClassificationId,
-            VendorLPSRatingId: '',
-            IsSendForApproval: deviationData?.ClassificationIsBlocked,
-
-            DeviationId: '00000000-0000-0000-0000-000000000000',
-            CostingTypeId: 1,
-            DeviationType: 1,
-            DeviationDuration: `${month.value} Month(s)`,
-            LoggedInUserId: loggedInUserId(),
-            PlantId: deviationData.PlantId,
-            PlantName: deviationData.PlantName,
-            Remark: '',
-            DepartmentId: ''
-          }
-        }
-      };
-
-      const lpsSenderObj = {
-        ...senderObj,
-        ReasonId: getValues('reason1')?.value || '',
-        Reason: getValues('reason1')?.label || '',
-        SenderRemark: getValues('remarks1'),
-        ApprovalTypeId: LPSAPPROVALTYPEID,
-        ApproverIdList: initialConfiguration.IsMultipleUserAllowForApproval
-          ? lpsApproverIdList
-          : [approver?.value || ''],
-        MasterCreateRequest: {
-          CreateVendorPlantClassificationLPSRatingUnblocking: {
-            VendorClassificationId: '',
-            VendorLPSRatingId: deviationData?.VendorLPSRatingId,
-            IsSendForApproval: deviationData?.LPSRatingIsBlocked,
-            DeviationId: '00000000-0000-0000-0000-000000000000',
-            CostingTypeId: 1,
-            DeviationType: 2,
-            DeviationDuration: `1 Month(s)`,
-            LoggedInUserId: loggedInUserId(),
-            PlantId: deviationData.PlantId,
-            PlantName: deviationData.PlantName,
-            Remark: '',
-            DepartmentId: ''
-          }
-        }
-      };
-
-      // Dispatching API calls
-      setIsLoader(true);
-      const dispatchApproval = (sender, message) => {
-        dispatch(sendForUnblocking(sender, res => {
-
-          setIsLoader(false);
-          if (res?.data?.Result) {
-            Toaster.success(message);
-            props.closeDrawer('', 'submit');
-            // history.push('/supplier-approval-summary'); // Update the route as per your application
-
-          }
-        }));
-
-      };
-
-      if (isClassification && isLpsRating) {
-        dispatchApproval(classificationSenderObj, 'Token has been sent for classification approval.');
-        dispatchApproval(lpsSenderObj, 'Token has been sent for LPS rating approval.');
-      } else if (isClassification) {
-        dispatchApproval(classificationSenderObj, 'Token has been sent for classification approval.');
-      } else if (isLpsRating) {
-        dispatchApproval(lpsSenderObj, 'Token has been sent for LPS rating approval.');
-      }
     }),
     500
   );
@@ -311,9 +396,9 @@ const SendForApproval = (props) => {
 
 
   const toggleDrawer = (event) => {
-    if (isDisable) {
-      return false
-    }
+    // if (isDisable) {
+    //   return false
+    // }
     if (
       event.type === 'keydown' &&
       (event.key === 'Tab' || event.key === 'Shift')
@@ -322,7 +407,7 @@ const SendForApproval = (props) => {
     }
     reset()
     // dispatch(setCostingApprovalData([]))
-    props.closeDrawer('', 'Cancel')
+    props?.closeDrawer('', 'Cancel')
   }
 
   const searchableSelectType = (label) => {
@@ -330,8 +415,8 @@ const SendForApproval = (props) => {
     if (label === 'Dept') {
       deptList && deptList.map((item) => {
 
-        if (item.Value === '0') return false
-        temp.push({ label: item.Text, value: item.Value })
+        if (item?.Value === '0') return false
+        temp.push({ label: item?.Text, value: item?.Value })
         return null
       })
       return temp
@@ -341,8 +426,8 @@ const SendForApproval = (props) => {
       approvalTypeSelectList && approvalTypeSelectList.map((item) => {
 
         const transformedText = transformApprovalItem(item);
-        if ((Number(item.Value) === Number(RELEASESTRATEGYTYPEID1) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID2) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID3) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID4) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID6)) && !props?.isRfq) temp.push({ label: transformedText, value: item.Value })
-        if ((Number(item.Value) === Number(RELEASESTRATEGYTYPEID1) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID2) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID6)) && props?.isRfq) temp.push({ label: transformedText, value: item.Value })
+        if ((Number(item?.Value) === Number(RELEASESTRATEGYTYPEID1) || Number(item?.Value) === Number(RELEASESTRATEGYTYPEID2) || Number(item?.Value) === Number(RELEASESTRATEGYTYPEID3) || Number(item?.Value) === Number(RELEASESTRATEGYTYPEID4) || Number(item?.Value) === Number(RELEASESTRATEGYTYPEID6)) && !props?.isRfq) temp.push({ label: transformedText, value: item?.Value })
+        if ((Number(item?.Value) === Number(RELEASESTRATEGYTYPEID1) || Number(item?.Value) === Number(RELEASESTRATEGYTYPEID2) || Number(item?.Value) === Number(RELEASESTRATEGYTYPEID6)) && props?.isRfq) temp.push({ label: transformedText, value: item?.Value })
         return null
       })
       return temp
@@ -361,10 +446,10 @@ const SendForApproval = (props) => {
       // Map options for 'department'
       // Example logic...
       reasonOption && reasonOption.map(item => {
-        if (item.Value === '0') return false
+        if (item?.Value === '0') return false
 
 
-        temp.push({ label: item.Reason, value: item.ReasonId })
+        temp.push({ label: item?.Reason, value: item?.ReasonId })
       });
       return temp;
     }
@@ -388,108 +473,203 @@ const SendForApproval = (props) => {
     setSelectedApprover(data.value)
     setSelectedApproverLevelId({ levelName: data.levelName, levelId: data.levelId })
   }
-  const callCheckFinalUserApi = (newValue, approvalId) => {
-    const tempDropdownList = []
+  const fetchDivisionList = (departmentId, dispatch, callback) => {
+    let departmentIds = [departmentId];
+    dispatch(getAllDivisionListAssociatedWithDepartment(departmentIds, res => {
+      if (res && res?.data && res?.data?.Identity === true) {
+        let divisionArray = res?.data?.DataList
+          .filter(item => String(item?.DivisionId) !== '0')
+          .map(item => ({
+            label: `${item?.DivisionNameCode}`,
+            value: (item?.DivisionId)?.toString(),
+            DivisionCode: item?.DivisionCode
+          }));
+        callback(divisionArray, true);
+      } else {
+        if (isLpsRating && isClassification) {
+
+
+          // Call for LPS
+          callCheckFinalUserApi(departmentId, LPSAPPROVALTYPEID, null, 'dept1');
+          // Call for Classification
+          callCheckFinalUserApi(departmentId, CLASSIFICATIONAPPROVALTYPEID, null, 'dept');
+        } else if (isLpsRating) {
+          callCheckFinalUserApi(departmentId, LPSAPPROVALTYPEID, null, 'dept1');
+        } else if (isClassification) {
+          callCheckFinalUserApi(departmentId, CLASSIFICATIONAPPROVALTYPEID, null, 'dept');
+
+        }
+        callback([], false);
+
+      }
+    }));
+  };
+  const callCheckFinalUserApi = (newValue, approvalId, divisionId) => {
+
+
     let requestObject = {
       LoggedInUserId: loggedInUserId(),
-      DepartmentId: newValue.value,
+      DepartmentId: newValue,
       MasterId: 0,
       ReasonId: 0,
       PlantId: deviationData?.PlantId ?? EMPTY_GUID,
       OnboardingMasterId: 1,
-      ApprovalTypeId: approvalId
+      ApprovalTypeId: approvalId,
+      DivisionId: divisionId ?? null
     }
-    let Data = []
-    let approverIdListTemp = []
+
     let obj = {
-      DepartmentId: newValue?.value,
+      DepartmentId: newValue,
       UserId: loggedInUserId(),
       TechnologyId: '',
       Mode: 'onboarding',
       approvalTypeId: approvalId,
-      plantId: deviationData.PlantId ?? EMPTY_GUID
+      plantId: deviationData.PlantId ?? EMPTY_GUID,
+      divisionId: divisionId ?? null
     }
+
     dispatch(checkFinalUser(obj, (res) => {
+
       const data = res?.data?.Data
       if (data?.IsUserInApprovalFlow === true && data?.IsFinalApprover === false) {
         dispatch(getAllMasterApprovalUserByDepartment(requestObject, (res) => {
-
           const Data = res.data.DataList[1] ? res.data.DataList[1] : []
           if (Data?.length !== 0) {
             setTimeout(() => {
-              setValue('dept', { label: Data.DepartmentName, value: Data.DepartmentId })
-              setValue('approver', { label: Data.Text ? Data.Text : '', value: Data.Value ? Data.Value : '', levelId: Data.LevelId ? Data.LevelId : '', levelName: Data.LevelName ? Data.LevelName : '' })
+              if (approvalId === CLASSIFICATIONAPPROVALTYPEID) {
+                setValue('approver', {
+                  label: Data.Text ? Data.Text : '',
+                  value: Data.Value ? Data.Value : '',
+                  levelId: Data.LevelId ? Data.LevelId : '',
+                  levelName: Data.LevelName ? Data.LevelName : ''
+                })
+              } else if (approvalId === LPSAPPROVALTYPEID) {
+                setValue('approver1', {
+                  label: Data.Text ? Data.Text : '',
+                  value: Data.Value ? Data.Value : '',
+                  levelId: Data.LevelId ? Data.LevelId : '',
+                  levelName: Data.LevelName ? Data.LevelName : ''
+                })
+              }
             }, 100);
 
             let tempDropdownList = []
             res.data.DataList &&
               res.data.DataList.map((item) => {
-                if (item.Value === '0') return false;
+                if (item?.Value === '0') return false;
                 tempDropdownList.push({
-                  label: item.Text,
-                  value: item.Value,
-                  levelId: item.LevelId,
-                  levelName: item.LevelName
+                  label: item?.Text,
+                  value: item?.Value,
+                  levelId: item?.LevelId,
+                  levelName: item?.LevelName
                 })
-                approverIdListTemp.push(item.Value)
                 return null
               })
             setTimeout(() => {
-              setApprovalDropDown(tempDropdownList)
-
-              setApproverIdList(approverIdListTemp)
+              if (approvalId === CLASSIFICATIONAPPROVALTYPEID) {
+                setClassificationApprovalDropDown(tempDropdownList)
+                setClassificationApproverIdList(tempDropdownList.map(item => item.value))
+              } else if (approvalId === LPSAPPROVALTYPEID) {
+                setLPSApprovalDropDown(tempDropdownList)
+                setLPSApproverIdList(tempDropdownList.map(item => item.value))
+              }
             }, 100)
           }
-        },),)
+        }))
       } else if (data?.IsUserInApprovalFlow === false) {
-        setValue('approver', { label: '', value: '', levelId: '', levelName: '' })
-        setApprover('')
-        setSelectedApprover('')
-        setApprovalDropDown([])
-        setApproverIdList([])
-        Toaster.warning('This user is not in approval flow.')
-        setNoApprovalExistMessage('')
-        return false
-      } else if (data?.IsNextLevelUserExist === false && data?.IsUserInApprovalFlow === true) {
-        setValue('approver', { label: '', value: '', levelId: '', levelName: '' })
-        setApprover('')
-        setSelectedApprover('')
-        setApprovalDropDown([])
-        setApproverIdList([])
-        setNoApprovalExistMessage('There is no higher approver available for this user in this department.')
-        return false
-      } else if (data?.IsUserInApprovalFlow === false) {
-        setValue('approver', { label: '', value: '', levelId: '', levelName: '' })
-        setApprover('')
-        setSelectedApprover('')
-        setApprovalDropDown([])
-        setApproverIdList([])
-        Toaster.warning('This user is not in approval flow.')
-        setNoApprovalExistMessage('')
-        return false
-      }
+        if (approvalId === CLASSIFICATIONAPPROVALTYPEID) {
+          setValue('approver', { label: '', value: '', levelId: '', levelName: '' })
+          setClassificationApprovalDropDown([])
+          setClassificationApproverIdList([])
+          setIsFinalApprover(false)
 
+          Toaster.warning('This user is not in approval flow for Classification.')
+
+        } else if (approvalId === LPSAPPROVALTYPEID) {
+
+          setIsFinalApproverLps(false)
+
+          setValue('approver1', { label: '', value: '', levelId: '', levelName: '' })
+          setLPSApprovalDropDown([])
+          setLPSApproverIdList([])
+          Toaster.warning('This user is not in approval flow for LPS.')
+
+        }
+
+        setApprover('')
+        setSelectedApprover('')
+        setIsSubmitDisabled(true)
+        setNoApprovalExistMessage('')
+      } else if (data?.IsNextLevelUserExist === false && data?.IsUserInApprovalFlow === true) {
+
+        if (approvalId === CLASSIFICATIONAPPROVALTYPEID) {
+          setValue('approver', { label: '', value: '', levelId: '', levelName: '' })
+          setClassificationApprovalDropDown([])
+          setClassificationApproverIdList([])
+          setIsFinalApprover(true)
+
+          Toaster.warning('This user is final level approver for the Classification')
+
+        } else if (approvalId === LPSAPPROVALTYPEID) {
+          setValue('approver1', { label: '', value: '', levelId: '', levelName: '' })
+          setLPSApprovalDropDown([])
+          setLPSApproverIdList([])
+          setIsFinalApproverLps(true)
+          Toaster.warning('This user is final level approver for the LPS.')
+
+        }
+        // setApprover('')
+        setIsSubmitDisabled(false)
+        setSelectedApprover('')
+        // setNoApprovalExistMessage('There is no higher approver available for this user in this department.')
+      }
     }))
   }
   const handleDepartmentChange = (newValue, approvalId) => {
 
-    if (newValue && newValue !== '') {
-      setValue('approver', '')
-      setApprover('')
-      setSelectedApprover('')
-      setShowValidation(false)
-      callCheckFinalUserApi(newValue, approvalId)
-      setSelectedDepartment(newValue)
+    setApprovalType(approvalId)
+    if (getConfigurationKey().IsDivisionAllowedForDepartment) {
+      setIsShowDivision(true)
+      fetchDivisionList(newValue.value, dispatch, (divisionArray, showDivision) => {
+
+        setIsShowDivision(showDivision);
+        setDivisionList(divisionArray);
+        setDepartment(newValue)
+
+        if (!showDivision) {
+          callCheckFinalUserApi(newValue.value, approvalType, division?.value)
+
+          // callCheckFinalUserApi(newValue, approvalId);
+        }
+      });
     } else {
-      setSelectedDepartment('')
+
+
+      if (newValue && newValue !== '') {
+        setValue(approvalId === CLASSIFICATIONAPPROVALTYPEID ? 'approver' : 'approver1', '')
+        setApprover('')
+        setSelectedApprover('')
+        setShowValidation(false)
+        callCheckFinalUserApi(newValue.value, approvalId)
+        setSelectedDepartment(newValue)
+      } else {
+        setSelectedDepartment('')
+      }
     }
   }
 
+  const handleDivisionChange = (value, approvalId) => {
+    setDivision(value)
+
+    callCheckFinalUserApi(department?.value, approvalId, value?.value)
+
+
+  }
   const approverMessage = `This user is not in approval cycle for "${getValues('ApprovalType')?.label ? getValues('ApprovalType')?.label : viewApprovalData && viewApprovalData[0]?.CostingHead}" approval type, please contact admin to add approver for "${getValues('ApprovalType')?.label ? getValues('ApprovalType')?.label : viewApprovalData && viewApprovalData[0]?.CostingHead}" approval type and ${getConfigurationKey().IsCompanyConfigureOnPlant ? 'company' : 'department'}.`;
 
   return (
     <Fragment>
-      <Drawer anchor={props.anchor} open={isOpen}>
+      <Drawer anchor={props?.anchor} open={isOpen}>
 
         <div className="container">
           <div className={"drawer-wrapper layout-width-900px"}>
@@ -534,45 +714,69 @@ const SendForApproval = (props) => {
                         rules={{ required: true }}
                         register={register}
                         defaultValue={""}
-                        options={searchableSelectType("Dept")}
-                        disabled={disableRS || (!(userData.Department.length > 1) || (initialConfiguration.IsReleaseStrategyConfigured && Object.keys(approvalType)?.length === 0))}
+                        options={departmentDropdown}
+                        disabled={disableRS || (!getConfigurationKey().IsDivisionAllowedForDepartment || isDisableDept)}
+
+                        // disabled={(disableRS || (!(userData.Department.length > 1) || (initialConfiguration.IsReleaseStrategyConfigured && Object.keys(approvalType)?.length === 0))) && (!getConfigurationKey().IsDivisionAllowedForDepartment || isDisableDept)}
                         mandatory={true}
                         handleChange={(e) => handleDepartmentChange(e, CLASSIFICATIONAPPROVALTYPEID)}
                         errors={errors.dept}
                       />
                     </div>
                   </Col >
-                  <Col md="6">
-                    {initialConfiguration.IsMultipleUserAllowForApproval ? <>
-                      <AllApprovalField
-                        label="Approver"
-                        approverList={classificationApprovalDropDown}
-                        popupButton="View all"
-                      />
-                    </> :
+                  {getConfigurationKey().IsDivisionAllowedForDepartment && isShowDivision &&
+                    <Col md="6">
                       <SearchableSelectHookForm
-                        label={"Approver"}
-                        name={"approver"}
+                        label={"Division"}
+                        name={"Division"}
                         placeholder={"Select"}
                         Controller={Controller}
                         control={control}
-                        rules={{ required: true }}
                         register={register}
                         defaultValue={""}
-                        options={classificationApprovalDropDown}
+                        options={divisionList}
+                        // disabled={(Object.keys(getValues('dept')).length === 0)}
+                        // handleChange={handleDivisionChange}
+                        handleChange={(e) => handleDivisionChange(e, CLASSIFICATIONAPPROVALTYPEID)}
+
+                        errors={errors.Division}
                         mandatory={true}
-                        disabled={disableRS || !(userData.Department.length > 1)}
-                        customClassName={"mb-0 approver-wrapper"}
-                        handleChange={handleApproverChange}
-                        errors={errors.approver}
-                      />}
-                    {
-                      showValidation && <span className="warning-top"><WarningMessage title={approverMessage} dClass={`${errors.approver ? "mt-2" : ''} approver-warning`} message={approverMessage} /></span>
-                    }
+                        rules={{ required: true }}
+                      />
+                    </Col>}
+                  <Col md="6">
+                    {!isFinalApprover && <div className="input-group form-group col-md-12 input-withouticon">
+                      {initialConfiguration?.IsMultipleUserAllowForApproval ? <>
+                        <AllApprovalField
+                          label="Approver"
+                          approverList={classificationApprovalDropDown}
+                          popupButton="View all"
+                        />
+                      </> :
+                        <SearchableSelectHookForm
+                          label={"Approver"}
+                          name={"approver"}
+                          placeholder={"Select"}
+                          Controller={Controller}
+                          control={control}
+                          rules={{ required: true }}
+                          register={register}
+                          defaultValue={""}
+                          options={classificationApprovalDropDown}
+                          mandatory={true}
+                          disabled={disableRS || !(userData.Department.length > 1)}
+                          customClassName={"mb-0 approver-wrapper"}
+                          handleChange={handleApproverChange}
+                          errors={errors.approver}
+                        />}
+
+                      {
+                        showValidation && <span className="warning-top"><WarningMessage title={approverMessage} dClass={`${errors.approver ? "mt-2" : ''} approver-warning`} message={approverMessage} /></span>
+                      } </div>}
                   </Col>
                 </Row>
                 <Row>
-                  <Col md="6">
+                  {!isFinalApprover && (<Col md="6">
                     <SearchableSelectHookForm
                       label={'Select Reason'}
                       name={'reason'}
@@ -588,8 +792,8 @@ const SendForApproval = (props) => {
                       errors={errors.reason}
                     />
 
-                  </Col>
-                  <Col md="6">
+                  </Col>)}
+                  {!isFinalApprover && <Col md="6">
                     <SearchableSelectHookForm
                       label={'Deviation Duration (Months)'}
                       name={'month'}
@@ -605,8 +809,8 @@ const SendForApproval = (props) => {
                       errors={errors.month}
                     />
 
-                  </Col>
-                  <Col md="12">
+                  </Col>}
+                  {!isFinalApprover && (<Col md="12">
                     <TextAreaHookForm
                       label="Remarks"
                       name={"remarks"}
@@ -627,7 +831,7 @@ const SendForApproval = (props) => {
                       errors={errors.remarks}
                       disabled={false}
                     />
-                  </Col>
+                  </Col>)}
                 </Row>
               </form>
             </div>)}
@@ -658,15 +862,34 @@ const SendForApproval = (props) => {
                         rules={{ required: true }}
                         register={register}
                         defaultValue={""}
-                        options={searchableSelectType("Dept")}
-                        disabled={disableRS || (!(userData.Department.length > 1) || (initialConfiguration.IsReleaseStrategyConfigured && Object.keys(approvalType)?.length === 0))}
+                        options={departmentDropdown}
+                        disabled={disableRS || (!getConfigurationKey().IsDivisionAllowedForDepartment || isDisableDept)}
+                        // disabled={(disableRS || (!(userData?.department.length > 1) || (initialConfiguration.IsReleaseStrategyConfigured ))) || !getConfigurationKey().IsDivisionAllowedForDepartment}
                         mandatory={true}
                         handleChange={(e) => handleDepartmentChange(e, LPSAPPROVALTYPEID)}
                         errors={errors.dept1}
                       />
                     </div>
                   </Col >
-                  <Col md="6">
+                  {getConfigurationKey().IsDivisionAllowedForDepartment && isShowDivision &&
+                    <Col md="6">
+                      <SearchableSelectHookForm
+                        label={"Division"}
+                        name={"Division1"}
+                        placeholder={"Select"}
+                        Controller={Controller}
+                        control={control}
+                        register={register}
+                        defaultValue={""}
+                        options={divisionList}
+                        // disabled={(Object?.keys(getValues('dept1')).length === 0)}
+                        handleChange={(e) => handleDivisionChange(e, LPSAPPROVALTYPEID)}
+                        errors={errors.Division1}
+                        mandatory={true}
+                        rules={{ required: true }}
+                      />
+                    </Col>}
+                  {!isFinalApproverLps && (<Col md="6">
                     {initialConfiguration.IsMultipleUserAllowForApproval ? <>
                       <AllApprovalField
                         label="Approver"
@@ -694,10 +917,10 @@ const SendForApproval = (props) => {
                       !noApprovalExistMessage && showValidation && <span className="warning-top"><WarningMessage title={approverMessage} dClass={`${errors.approver ? "mt-2" : ''} approver-warning`} message={approverMessage} /></span>
                     }
                     {noApprovalExistMessage && <span className="warning-top"><WarningMessage title={noApprovalExistMessage} message={noApprovalExistMessage} /></span>}
-                  </Col >
+                  </Col >)}
                 </Row>
                 <Row>
-                  <Col md="6">
+                  {!isFinalApproverLps && (<Col md="6">
                     <SearchableSelectHookForm
                       label={'Select Reason'}
                       name={'reason1'}
@@ -713,8 +936,8 @@ const SendForApproval = (props) => {
                       errors={errors.reason1}
                     />
 
-                  </Col>
-                  <Col md="6">
+                  </Col>)}
+                  {!isFinalApproverLps && (<Col md="6">
                     <SearchableSelectHookForm
                       label={'Deviation Duration (Months)'}
                       name={'month1'}
@@ -732,32 +955,32 @@ const SendForApproval = (props) => {
                     />
 
 
-                  </Col>
-                  <Col md="12">
-                    <Col md="12">
-                      <TextAreaHookForm
-                        label="Remarks"
-                        name={"remarks1"}
-                        Controller={Controller}
-                        control={control}
-                        register={register}
-                        mandatory={true}
-                        // mandatory={mandatoryRemark ? true : false}
-                        rules={{
-                          required: true,
-                          maxLength: REMARKMAXLENGTH
-                        }}
+                  </Col>)}
+                  {!isFinalApproverLps && (<Col md="12">
 
-                        // rules={{ required: mandatoryRemark ? true : false }}
-                        handleChange={() => { }}
-                        defaultValue={""}
-                        className=""
-                        customClassName={"withBorder"}
-                        errors={errors.remarks1}
-                        disabled={false}
-                      />
-                    </Col>
-                  </Col>
+                    <TextAreaHookForm
+                      label="Remarks"
+                      name={"remarks1"}
+                      Controller={Controller}
+                      control={control}
+                      register={register}
+                      mandatory={true}
+                      // mandatory={mandatoryRemark ? true : false}
+                      rules={{
+                        required: true,
+                        maxLength: REMARKMAXLENGTH
+                      }}
+
+                      // rules={{ required: mandatoryRemark ? true : false }}
+                      handleChange={() => { }}
+                      defaultValue={""}
+                      className=""
+                      customClassName={"withBorder"}
+                      errors={errors.remarks1}
+                      disabled={false}
+                    />
+
+                  </Col>)}
                 </Row>
               </form>
             </div>)}
@@ -770,6 +993,8 @@ const SendForApproval = (props) => {
                   className="cancel-btn mr-2"
                   type={"button"}
                   onClick={toggleDrawer}
+                  disabled={false}
+
                 // className="reset mr15 cancel-btn"
                 >
                   <div className={'cancel-icon'}></div>
@@ -779,7 +1004,7 @@ const SendForApproval = (props) => {
                   className="btn btn-primary save-btn"
                   type="submit"
                   // disabled={(isDisable || isFinalApproverShow)}
-                  disabled={isDisable || isDisableSubmit}
+                  disabled={isDisable || isDisableSubmit || isSubmitDisabled || isFinalApprover || isFinalApproverLps}
                   onClick={onSubmit}
                 >
                   <div className={'save-icon'}></div>

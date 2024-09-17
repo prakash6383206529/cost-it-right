@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { reduxForm } from "redux-form";
+import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Label } from 'reactstrap';
-import { checkForNull, getJsDateFromExcel, isDateFormatter } from "../../helper/validation";
+import { checkForNull, getJsDateFromExcel, isDateFormatter, required, requiredDropDown } from "../../helper/validation";
 import {
     bulkUploadRM, bulkfileUploadRM, bulkUploadRMSpecification,
+    getAllMasterApprovalDepartment,
 } from '../masters/actions/Material';
 import { bulkUploadCommodityInIndex, bulkUploadCommodityStandard, bulkUploadIndex, bulkUploadIndexData, bulkUploadStandardizedCommodity } from '../masters/actions/Indexation'
 import { bulkUploadMachine, bulkUploadMachineMoreZBC } from '../masters/actions/MachineMaster';
@@ -19,7 +20,7 @@ import { volumeBulkUpload } from '../masters/actions/Volume';
 import { bulkUploadBudgetMaster } from '../masters/actions/Budget'
 import { bulkUploadInterestRateZBC, bulkUploadInterestRateVBC, bulkUploadInterestRateCBC } from '../masters/actions/InterestRateMaster';
 import Toaster from '../common/Toaster';
-import { getConfigurationKey, loggedInUserId, showBopLabel, userDetails } from "../../helper/auth";
+import { getConfigurationKey, handleDepartmentHeader, loggedInUserId, showBopLabel, userDetails } from "../../helper/auth";
 import { ExcelRenderer } from 'react-excel-renderer';
 import Drawer from '@material-ui/core/Drawer';
 import Downloadxls, { checkInterestRateConfigure, checkLabourRateConfigure, checkRM_Process_OperationConfigurable, checkVendorPlantConfig } from './Downloadxls';
@@ -52,7 +53,7 @@ import PopupMsgWrapper from '../common/PopupMsgWrapper';
 import { MESSAGES } from '../../config/message';
 import { checkRFQBulkUpload } from '../rfq/actions/rfq';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { getUsersMasterLevelAPI } from '../../actions/auth/AuthActions';
+import { getAllDivisionListAssociatedWithDepartment, getUsersMasterLevelAPI } from '../../actions/auth/AuthActions';
 import { checkFinalUser } from '../../components/costing/actions/Costing';
 import { costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission, OperationFileData } from '../common/CommonFunctions';
 import { ENTRY_TYPE_DOMESTIC } from '../../config/constants';
@@ -60,6 +61,7 @@ import DayTime from '../common/DayTimeWrapper';
 import { checkSAPCodeinExcel } from './DownloadUploadBOMxls';
 import WarningMessage from '../common/WarningMessage';
 import Switch from 'react-switch'
+import { searchableSelect } from '../layout/FormInputs';
 const bopMasterName = showBopLabel();
 
 class BulkUpload extends Component {
@@ -83,6 +85,12 @@ class BulkUpload extends Component {
             bopType: '',
             isImport: false,
             isLoading: false,
+            divisionList: [],
+            division: '',
+            department: [],
+            disableDept: false,
+            departmentDropDownList: [],
+            isShowDivision: false
         }
     }
 
@@ -91,7 +99,26 @@ class BulkUpload extends Component {
      * @description called after render the component
     */
     componentDidMount() {
+
         this.setState({ costingTypeId: this.props?.fileName === "Interest Rate" ? VBCTypeId : getCostingTypeIdByCostingPermission() })
+        this.props.getAllMasterApprovalDepartment((res) => {
+            const Data = res?.data?.SelectList
+            const Departments = userDetails().Department && userDetails().Department.map(item => item.DepartmentName)
+            const updateList = Data && Data.filter(item => Departments.includes(item.Text))
+            let department = []
+            updateList &&
+                updateList.map((item) => {
+                    if (item?.Value === '0') return false
+                    department?.push({ label: item?.Text, value: item?.Value })
+                    return null
+                })
+            this.setState({ departmentDropDownList: department })
+            if (updateList && updateList.length === 1) {
+                this.setState({ disableDept: true, department: department })
+                this.props.change('dept', { label: department[0].label, value: department[0].value })
+                this.callDivisionApi(department[0].value)
+            }
+        })
         if (this.props?.masterId === RM_MASTER_ID && this.props.initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {
             this.props.getUsersMasterLevelAPI(loggedInUserId(), this.props?.masterId, (res) => {
                 setTimeout(() => {
@@ -138,7 +165,7 @@ class BulkUpload extends Component {
         }
     }
 
-    commonFunction() {
+    commonFunction(divisionId = null) {
         let levelDetailsTemp = []
         levelDetailsTemp = userTechnologyDetailByMasterId(this.state.costingTypeId === Number(ZBCADDMORE) || this.state.costingTypeId === Number(ZBCADDMOREOPERATION) ? ZBCTypeId : this.state.costingTypeId === Number(VBCADDMORE) || this.state.costingTypeId === Number(VBCADDMOREOPERATION) ? VBCTypeId : this.state.costingTypeId === Number(CBCADDMORE) || this.state.costingTypeId === Number(CBCADDMOREOPERATION) ? CBCTypeId : this.state.bopType === DETAILED_BOP ? VBCTypeId : this.state.costingTypeId, this.props?.masterId, this.props.userMasterLevelAPI)
         this.setState({ levelDetails: levelDetailsTemp })
@@ -147,7 +174,8 @@ class BulkUpload extends Component {
             DepartmentId: userDetails().DepartmentId,
             UserId: loggedInUserId(),
             Mode: 'master',
-            approvalTypeId: costingTypeIdToApprovalTypeIdFunction(this.state.costingTypeId === Number(ZBCADDMORE) || this.state.costingTypeId === Number(ZBCADDMOREOPERATION) ? ZBCTypeId : this.state.costingTypeId === Number(VBCADDMORE) || this.state.costingTypeId === Number(VBCADDMOREOPERATION) ? VBCTypeId : this.state.costingTypeId === Number(CBCADDMORE) || this.state.costingTypeId === Number(CBCADDMOREOPERATION) ? CBCTypeId : this.state.bopType === DETAILED_BOP ? VBCTypeId : this.state.costingTypeId)
+            approvalTypeId: costingTypeIdToApprovalTypeIdFunction(this.state.costingTypeId === Number(ZBCADDMORE) || this.state.costingTypeId === Number(ZBCADDMOREOPERATION) ? ZBCTypeId : this.state.costingTypeId === Number(VBCADDMORE) || this.state.costingTypeId === Number(VBCADDMOREOPERATION) ? VBCTypeId : this.state.costingTypeId === Number(CBCADDMORE) || this.state.costingTypeId === Number(CBCADDMOREOPERATION) ? CBCTypeId : this.state.bopType === DETAILED_BOP ? VBCTypeId : this.state.costingTypeId),
+            divisionId: divisionId
         }
         if (!this.props.initialConfiguration.IsMultipleUserAllowForApproval) {
             this.props.checkFinalUser(obj, (res) => {
@@ -181,6 +209,24 @@ class BulkUpload extends Component {
             this.commonFunction()
         }
 
+    }
+    callDivisionApi = (deptId) => {
+        this.props.getAllDivisionListAssociatedWithDepartment([deptId], res => {
+            if (res && res?.data && res?.data?.Identity === true) {
+                this.setState({ isShowDivision: true })
+                let divisionArray = []
+                res?.data?.DataList?.map(item => {
+                    if (String(item?.DivisionId) !== '0') {
+                        divisionArray.push({ label: `${item.DivisionNameCode}`, value: (item?.DivisionId)?.toString(), DivisionCode: item?.DivisionCode })
+                    }
+                    return null;
+                })
+                this.setState({ divisionList: divisionArray })
+            } else {
+                this.setState({ isShowDivision: false })
+                this.setState({ divisionList: [] })
+            }
+        })
     }
 
     /**
@@ -728,7 +774,9 @@ class BulkUpload extends Component {
             LoggedInUserId: loggedInUserId(),
             IsFinalApprover: !this.props.initialConfiguration.IsMasterApprovalAppliedConfigure ? true : IsFinalApprover,
             CostingTypeId: costingTypeId,
-            TypeOfEntry: this.props.masterId === RM_MASTER_ID && this.state.isImport ? ENTRY_TYPE_IMPORT : typeOfEntryId ? typeOfEntryId : 0
+            TypeOfEntry: this.props.masterId === RM_MASTER_ID && this.state.isImport ? ENTRY_TYPE_IMPORT : typeOfEntryId ? typeOfEntryId : 0,
+            DivisionId: this.state.division?.value,
+            DepartmentId: this.state.disableDept ? this.state.department[0].value : this.state.department?.value
         }
         if (costingTypeId === ZBCADDMORE || costingTypeId === ZBCADDMOREOPERATION) {
             masterUploadData.CostingTypeId = ZBCTypeId
@@ -739,161 +787,161 @@ class BulkUpload extends Component {
         }
         this.setState({ setDisable: true, isLoading: true }, () => {
             if (fileName === 'Actual Volume') {
-                        uploadData.TypeOfEntry = ENTRY_TYPE_DOMESTIC
-        } else if (fileName === 'Budgeted Volume') {
-            uploadData.TypeOfEntry = ENTRY_TYPE_IMPORT
-        }
-        if (fileName === 'RM') {
-            this.props.bulkUploadRM(masterUploadData, (res) => {
-                this.setState({ setDisable: false })
-                this.responseHandler(res)
-            });
+                uploadData.TypeOfEntry = ENTRY_TYPE_DOMESTIC
+            } else if (fileName === 'Budgeted Volume') {
+                uploadData.TypeOfEntry = ENTRY_TYPE_IMPORT
+            }
+            if (fileName === 'RM') {
+                this.props.bulkUploadRM(masterUploadData, (res) => {
+                    this.setState({ setDisable: false })
+                    this.responseHandler(res)
+                });
 
-        } else if (fileName === `${showBopLabel()} Domestic` || fileName === `${showBopLabel()} Import`) {
-            // } else if (fileName === 'BOP Domestic' || fileName === 'BOP Import' || fileName === 'Insert Domestic' || fileName === 'Insert Import') {
-            masterUploadData.CostingTypeId = (bopType === DETAILED_BOP ? VBCTypeId : masterUploadData.CostingTypeId)
-            this.props.bulkUploadBOP(masterUploadData, (res) => {
-                this.setState({ setDisable: false })
-                this.responseHandler(res)
-            });
+            } else if (fileName === `${showBopLabel()} Domestic` || fileName === `${showBopLabel()} Import`) {
+                // } else if (fileName === 'BOP Domestic' || fileName === 'BOP Import' || fileName === 'Insert Domestic' || fileName === 'Insert Import') {
+                masterUploadData.CostingTypeId = (bopType === DETAILED_BOP ? VBCTypeId : masterUploadData.CostingTypeId)
+                this.props.bulkUploadBOP(masterUploadData, (res) => {
+                    this.setState({ setDisable: false })
+                    this.responseHandler(res)
+                });
 
-        } else if (fileName === 'RM Specification') {
-            this.props.bulkUploadRMSpecification(uploadData, (res) => {
-                this.setState({ setDisable: false })
-                this.responseHandler(res)
-            });
+            } else if (fileName === 'RM Specification') {
+                this.props.bulkUploadRMSpecification(uploadData, (res) => {
+                    this.setState({ setDisable: false })
+                    this.responseHandler(res)
+                });
 
-        } else if (fileName === 'Index') {
-            this.props.bulkUploadIndex(uploadData, (res) => {
-                this.setState({ setDisable: false })
-                this.responseHandler(res)
-            });
+            } else if (fileName === 'Index') {
+                this.props.bulkUploadIndex(uploadData, (res) => {
+                    this.setState({ setDisable: false })
+                    this.responseHandler(res)
+                });
 
-        }
-        else if (fileName === 'Commodity (In Index)') {
-            this.props.bulkUploadCommodityInIndex(uploadData, (res) => {
-                this.setState({ setDisable: false })
-                this.responseHandler(res)
-            });
+            }
+            else if (fileName === 'Commodity (In Index)') {
+                this.props.bulkUploadCommodityInIndex(uploadData, (res) => {
+                    this.setState({ setDisable: false })
+                    this.responseHandler(res)
+                });
 
-        }
-        else if (fileName === 'Commodity Standardization') {
-            this.props.bulkUploadStandardizedCommodity(uploadData, (res) => {
-                this.setState({ setDisable: false })
-                this.responseHandler(res)
-            });
+            }
+            else if (fileName === 'Commodity Standardization') {
+                this.props.bulkUploadStandardizedCommodity(uploadData, (res) => {
+                    this.setState({ setDisable: false })
+                    this.responseHandler(res)
+                });
 
-        }
-        else if (fileName === 'Index Data') {
-            this.props.bulkUploadIndexData(uploadData, (res) => {
-                this.setState({ setDisable: false })
-                this.responseHandler(res)
-            });
+            }
+            else if (fileName === 'Index Data') {
+                this.props.bulkUploadIndexData(uploadData, (res) => {
+                    this.setState({ setDisable: false })
+                    this.responseHandler(res)
+                });
 
-        } else if (fileName === 'Commodity Standard') {
-            this.props.bulkUploadCommodityStandard(uploadData, (res) => {
-                this.setState({ setDisable: false })
-                this.responseHandler(res)
-            });
-        }
-        else if (fileName === 'Vendor') {
-            this.props.vendorBulkUpload(uploadData, (res) => {
-                this.setState({ setDisable: false })
-                this.responseHandler(res)
-            });
+            } else if (fileName === 'Commodity Standard') {
+                this.props.bulkUploadCommodityStandard(uploadData, (res) => {
+                    this.setState({ setDisable: false })
+                    this.responseHandler(res)
+                });
+            }
+            else if (fileName === 'Vendor') {
+                this.props.vendorBulkUpload(uploadData, (res) => {
+                    this.setState({ setDisable: false })
+                    this.responseHandler(res)
+                });
 
-        }
-        else if (fileName === 'Operation') {
-            this.props.operationBulkUpload(masterUploadData, (res) => {
-                this.setState({ setDisable: false })
-                this.responseHandler(res)
-            });
-        }
-        else if (fileName === 'Fuel') {
-            this.props.fuelBulkUpload(uploadData, (res) => {
-                this.setState({ setDisable: false })
-                this.responseHandler(res)
-            });
+            }
+            else if (fileName === 'Operation') {
+                this.props.operationBulkUpload(masterUploadData, (res) => {
+                    this.setState({ setDisable: false })
+                    this.responseHandler(res)
+                });
+            }
+            else if (fileName === 'Fuel') {
+                this.props.fuelBulkUpload(uploadData, (res) => {
+                    this.setState({ setDisable: false })
+                    this.responseHandler(res)
+                });
 
-        } else if (fileName === 'Overhead') {
-            this.props.overheadBulkUpload(uploadData, (res) => {
-                this.setState({ setDisable: false })
-                this.responseHandler(res)
-            });
+            } else if (fileName === 'Overhead') {
+                this.props.overheadBulkUpload(uploadData, (res) => {
+                    this.setState({ setDisable: false })
+                    this.responseHandler(res)
+                });
 
-        } else if (fileName === 'Profit') {
-            this.props.profitBulkUpload(uploadData, (res) => {
-                this.setState({ setDisable: false })
-                this.responseHandler(res)
-            });
+            } else if (fileName === 'Profit') {
+                this.props.profitBulkUpload(uploadData, (res) => {
+                    this.setState({ setDisable: false })
+                    this.responseHandler(res)
+                });
 
-        } else if (fileName === 'Labour') {
-            this.props.labourBulkUpload(uploadData, (res) => {
-                this.setState({ setDisable: false })
-                this.responseHandler(res)
-            });
-        } else if (fileName === 'Machine' && (costingTypeId === ZBCTypeId || costingTypeId === VBCTypeId || costingTypeId === CBCTypeId)) {
-            this.props.bulkUploadMachine(masterUploadData, (res) => {
-                this.setState({ setDisable: false })
-                this.responseHandler(res)
-            });
+            } else if (fileName === 'Labour') {
+                this.props.labourBulkUpload(uploadData, (res) => {
+                    this.setState({ setDisable: false })
+                    this.responseHandler(res)
+                });
+            } else if (fileName === 'Machine' && (costingTypeId === ZBCTypeId || costingTypeId === VBCTypeId || costingTypeId === CBCTypeId)) {
+                this.props.bulkUploadMachine(masterUploadData, (res) => {
+                    this.setState({ setDisable: false })
+                    this.responseHandler(res)
+                });
 
-        } else if (fileName === 'Machine' && (costingTypeId === ZBCADDMORE || costingTypeId === VBCADDMORE || costingTypeId === CBCADDMORE)) {
-            this.props.bulkUploadMachineMoreZBC(masterUploadData, (res) => {
-                this.setState({ setDisable: false })
-                this.responseHandler(res)
-            });
-        } else if (fileName === 'Part Component') {
-            this.props.partComponentBulkUpload(uploadData, (res) => {
-                this.setState({ setDisable: false })
-                this.responseHandler(res)
-            });
+            } else if (fileName === 'Machine' && (costingTypeId === ZBCADDMORE || costingTypeId === VBCADDMORE || costingTypeId === CBCADDMORE)) {
+                this.props.bulkUploadMachineMoreZBC(masterUploadData, (res) => {
+                    this.setState({ setDisable: false })
+                    this.responseHandler(res)
+                });
+            } else if (fileName === 'Part Component') {
+                this.props.partComponentBulkUpload(uploadData, (res) => {
+                    this.setState({ setDisable: false })
+                    this.responseHandler(res)
+                });
 
-        } else if (fileName === 'Actual Volume' || fileName === 'Budgeted Volume') {
-            this.props.volumeBulkUpload(uploadData, (res) => {
-                                this.setState({ setDisable: false })
-                this.responseHandler(res)
-            });
+            } else if (fileName === 'Actual Volume' || fileName === 'Budgeted Volume') {
+                this.props.volumeBulkUpload(uploadData, (res) => {
+                    this.setState({ setDisable: false })
+                    this.responseHandler(res)
+                });
 
-        } else if (fileName === 'Budget') {
-            uploadData.CostingTypeId = costingTypeId
-            uploadData.IsFinalApprover = true
-            this.props.bulkUploadBudgetMaster(uploadData, (res) => {
-                this.setState({ setDisable: false })
-                this.responseHandler(res)
-            });
+            } else if (fileName === 'Budget') {
+                uploadData.CostingTypeId = costingTypeId
+                uploadData.IsFinalApprover = true
+                this.props.bulkUploadBudgetMaster(uploadData, (res) => {
+                    this.setState({ setDisable: false })
+                    this.responseHandler(res)
+                });
 
-        } else if (fileName === 'Interest Rate' && costingTypeId === VBCTypeId) {
-            this.props.bulkUploadInterestRateVBC(uploadData, (res) => {
-                this.setState({ setDisable: false })
-                this.responseHandler(res)
-            });
-        } else if (fileName === 'Interest Rate' && costingTypeId === CBCTypeId) {
-            this.props.bulkUploadInterestRateCBC(uploadData, (res) => {
-                this.setState({ setDisable: false })
-                this.responseHandler(res)
-            });
+            } else if (fileName === 'Interest Rate' && costingTypeId === VBCTypeId) {
+                this.props.bulkUploadInterestRateVBC(uploadData, (res) => {
+                    this.setState({ setDisable: false })
+                    this.responseHandler(res)
+                });
+            } else if (fileName === 'Interest Rate' && costingTypeId === CBCTypeId) {
+                this.props.bulkUploadInterestRateCBC(uploadData, (res) => {
+                    this.setState({ setDisable: false })
+                    this.responseHandler(res)
+                });
 
-        } else if (fileName === 'Product Component') {
-            this.props.productComponentBulkUpload(uploadData, (res) => {
-                this.setState({ setDisable: false })
-                this.responseHandler(res)
-            });
-        } else if (fileName === 'ADD RFQ') {
-            let uploadDataRFQ = {}
-            uploadDataRFQ.PartList = fileData
-            uploadDataRFQ.LoggedInUserId = loggedInUserId()
-            uploadDataRFQ.TechnologyId = this.props?.technologyId?.value
-            this.props.checkRFQBulkUpload(uploadDataRFQ, (res) => {
-                this.setState({ setDisable: false })
-                this.responseHandlerRFQ(res)
-            });
-        }
+            } else if (fileName === 'Product Component') {
+                this.props.productComponentBulkUpload(uploadData, (res) => {
+                    this.setState({ setDisable: false })
+                    this.responseHandler(res)
+                });
+            } else if (fileName === 'ADD RFQ') {
+                let uploadDataRFQ = {}
+                uploadDataRFQ.PartList = fileData
+                uploadDataRFQ.LoggedInUserId = loggedInUserId()
+                uploadDataRFQ.TechnologyId = this.props?.technologyId?.value
+                this.props.checkRFQBulkUpload(uploadDataRFQ, (res) => {
+                    this.setState({ setDisable: false })
+                    this.responseHandlerRFQ(res)
+                });
+            }
 
-        else {
-            this.setState({ setDisable: false, isLoading: false })
-        }
-    })
+            else {
+                this.setState({ setDisable: false, isLoading: false })
+            }
+        })
 
 
     }
@@ -906,7 +954,15 @@ class BulkUpload extends Component {
             isImport: !this.state.isImport,
         })
     }
+    handleDepartmentChange = (e) => {
+        this.setState({ department: e, division: '' })
+        this.props.change('Division', { label: '', value: '' })
+        this.callDivisionApi(e.value)
 
+    }
+    handleDivision = (e) => {
+        this.setState({ division: e })
+    }
     /**
      * @method render
      * @description Renders the component
@@ -931,11 +987,11 @@ class BulkUpload extends Component {
                 {!this.props.isDrawerfasle ? <Drawer anchor={this.props.anchor} open={this.props.isOpen}>
                     <Container>
                         <div className={'drawer-wrapper WIDTH-400'}>
-                        {this.state.isLoading && (
+                            {this.state.isLoading && (
                                 <div className="loader-overlay">
                                     <LoaderCustom customClass="attachment-loader" />
-                                    </div>
-                                )}
+                                </div>
+                            )}
 
                             <form
                                 noValidate
@@ -976,6 +1032,42 @@ class BulkUpload extends Component {
                                             </label>
                                         </Col>
                                     }
+                                </Row>
+                                <Row>
+                                    {getConfigurationKey().IsDivisionAllowedForDepartment && (fileName === 'RM' || fileName === `${showBopLabel()} Domestic` || fileName === `${showBopLabel()} Import` || fileName === 'Operation' || fileName === 'Budget' || fileName === 'Machine') && <>
+
+                                        <Col md="6" className='dropdown-flex'>
+                                            <Field
+                                                label={`${handleDepartmentHeader()}`}
+                                                name={"dept"}
+                                                placeholder={"Select"}
+                                                type="text"
+                                                component={searchableSelect}
+                                                options={this.state.departmentDropDownList}
+                                                validate={this.state.department == null || this.state.department?.length === 0 ? [required] : []}
+                                                required={true}
+                                                handleChangeDescription={this.handleDepartmentChange}
+                                                valueDescription={this.state.department}
+                                                disabled={this.state.disableDept}
+                                            />
+                                        </Col>
+                                        {this.state.isShowDivision && <Col md="6" className='dropdown-flex'>
+                                            <Field
+                                                label={"Division"}
+                                                name={"Division"}
+                                                placeholder={"Select"}
+                                                type="text"
+                                                component={searchableSelect}
+                                                options={this.state.divisionList}
+                                                validate={this.state.division == null || this.state.division?.length === 0 ? [required] : []}
+                                                required={true}
+                                                handleChangeDescription={this.handleDivision}
+                                                valueDescription={this.state.division}
+                                                disabled={false}
+                                            />
+                                        </Col>}
+
+                                    </>}
                                 </Row>
                                 <Row className="pl-3">
                                     {isZBCVBCTemplate &&
@@ -1271,10 +1363,11 @@ class BulkUpload extends Component {
 * @param {*} state
 */
 function mapStateToProps(state) {
-    const { rfq, auth } = state
+    const { rfq, auth, material } = state
     const { checkRFQPartBulkUpload } = rfq
     const { userMasterLevelAPI, initialConfiguration } = auth
-    return { checkRFQPartBulkUpload, userMasterLevelAPI, initialConfiguration };
+    const { deptList } = material
+    return { checkRFQPartBulkUpload, userMasterLevelAPI, initialConfiguration, deptList };
 }
 
 /**
@@ -1310,7 +1403,9 @@ export default connect(mapStateToProps, {
     bulkUploadCommodityInIndex,
     bulkUploadIndexData,
     bulkUploadStandardizedCommodity,
-    bulkUploadCommodityStandard
+    bulkUploadCommodityStandard,
+    getAllMasterApprovalDepartment,
+    getAllDivisionListAssociatedWithDepartment
 })(reduxForm({
     form: 'BulkUpload',
     enableReinitialize: true,

@@ -5,7 +5,7 @@ import { Row, Col, Tooltip, FormGroup, Label, Input, Form } from 'reactstrap';
 import { AsyncSearchableSelectHookForm, RadioHookForm, SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '.././layout/HookFormInputs'
 import { getReporterList, getVendorNameByVendorSelectList, getPlantSelectListByType, fetchSpecificationDataAPI, getUOMSelectList } from '../.././actions/Common';
 import { getCostingSpecificTechnology, getExistingCosting, getPartInfo, } from '../costing/actions/Costing'
-import { IsSendQuotationToPointOfContact, addDays, checkPermission, getConfigurationKey, getTimeZone, loggedInUserId } from '../.././helper';
+import { IsSendQuotationToPointOfContact, addDays, checkPermission, getConfigurationKey, getTimeZone, loggedInUserId, parseLinks } from '../.././helper';
 import { checkForNull, checkForDecimalAndNull } from '../.././helper/validation'
 import { BOUGHTOUTPARTSPACING, BoughtOutPart, COMPONENT_PART, DRAFT, EMPTY_DATA, FILE_URL, HAVELLS_DESIGN_PARTS, PREDRAFT, PRODUCT_ID, RFQ, RFQVendor, TOOLING, VBC_VENDOR_TYPE, ZBC, searchCount } from '../.././config/constants';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -201,6 +201,8 @@ function AddRfq(props) {
     const [selectedPartType, setSelectedPartType] = useState('')
     const [drawerViewMode, setDrawerViewMode] = useState(false)
     const [resetDrawer, setResetDrawer] = useState(false)
+    const [partDetailSent, setPartDetailSent] = useState(false)
+
     const showOnlyFirstModule = initialConfiguration.IsManageSeparateUserPemissionForPartAndVendorInRaiseRFQ;
     const { toolingSpecificRowData } = useSelector(state => state?.rfq);
 
@@ -577,6 +579,7 @@ function AddRfq(props) {
                 setToolingList(convertToToolingList(data.ToolList, data?.NfrId ? true : false))
                 setVendorList(data.VendorList)
                 setValue("remark", data.Remark)
+                setRemark(data?.Remark)
                 setValue("nfrId", { label: data?.NfrNumber, value: data?.NfrId })
                 setNfrId({ label: data?.NfrNumber, value: data?.NfrId })
                 setData(data)
@@ -585,7 +588,7 @@ function AddRfq(props) {
                     TargetPrice: data?.PartList[0]?.TargetPrice
                 }))
                 setValue('Description', data?.PartName)
-
+                setPartDetailSent(data?.IsPartDetailsSent)
                 //dispatch(setToolingSpecificRowData(data?.ToolDataList));
                 //dispatch(getTargetPrice(plant?.value, value?.value, Number(technology?.value), (res) => {}))
 
@@ -727,10 +730,11 @@ function AddRfq(props) {
             let arr = final && final.filter(item => item?.BoughtOutPartChildId !== rowData?.BoughtOutPartChildId)
             setBopDataList(arr)
         }
-        //else{
-        //     let arr = final && final.filter(item => item?.toolingPartId !== rowData?.toolingPartId)
-        //     setToolingList(arr)
-        // }
+        else {
+            let arr = final && final.filter(item => item?.PartId !== rowData?.PartId)
+            setToolingList(arr)
+        }
+
 
         setDeleteToggle({ deleteToggle: !deleteToggle, rowData: rowData })
 
@@ -751,7 +755,7 @@ function AddRfq(props) {
                 setValue('PartType', { label: rowData?.PartType, value: rowData?.PartTypeId })
                 setValue('HavellsDesignPart', { label: rowData?.HavellsDesignPart, value: rowData?.HavellsDesignPartId })
                 setValue('UOM', { label: rowData?.UOMSymbol, value: rowData?.UnitOfMeasurementId })
-                setValue('Description', rowData?.Description)
+                setValue('Description', rowData?.PartName)
                 setValue("TargetPrice", rowData?.TargetPrice)
 
                 setPartType({ label: rowData?.PartType, value: rowData?.PartTypeId })
@@ -774,7 +778,7 @@ function AddRfq(props) {
             setTimeout(() => {
                 setValue('partNumber', { label: rowData?.PartNumber, value: rowData?.PartId })
                 setValue('PartType', { label: rowData?.PartType, value: rowData?.PartTypeId })
-                setValue('Description', rowData?.Description)
+                setValue('Description', rowData?.PartName)
                 setValue("TargetPrice", rowData?.TargetPrice)
                 setValue('UOM', { label: rowData?.UOMSymbol, value: rowData?.UnitOfMeasurementId })
                 setPartType({ label: rowData?.PartType, value: rowData?.PartTypeId })
@@ -1113,9 +1117,12 @@ function AddRfq(props) {
             IsPartDetailsSent = isPartDetailsSent;
             isSent = isPartDetailsSent;
         } else {
-            IsPartDetailsSent = isPartDetailsSent ? (hasParts || hasRm || hasBop || hasTooling) : ((hasParts || hasRm || hasBop || hasTooling));
+            IsPartDetailsSent = (showSendButton === PREDRAFT || showSendButton === '')
+                ? (isPartDetailsSent ? (hasParts || hasRm || hasBop || hasTooling) : false)
+                : partDetailSent;
 
             isSent = (hasParts || hasRm || hasBop || hasTooling) && hasVendors && isPartDetailsSent;
+
         }
         // const IsPartDetailsSent = isShowRfqPartDetail ? ((isPartDetailSent && partList && partList.length > 0) ? true : (partList && partList.length > 0 && vendorList && vendorList.length > 0) ? true : false) : false
         // const isSent = isShowRfqPartDetail ? ((partList && vendorList && partList.length > 0 && vendorList.length > 0) ? IsPartDetailsSent : false) : false
@@ -1229,7 +1236,7 @@ function AddRfq(props) {
                 {show && < button title='View' className="View mr-2 align-middle" disabled={false} type={'button'} onClick={() => ViewItemPartTable(rowData, props, false)} />}
 
                 {/*  {<button title='Delete' className="Delete align-middle" disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !dataProps?.isEditFlag)} type={'button'} onClick={() => deleteItemPartTable(final, props)} />} */}
-                {(show && prNumber.length === 0) && <button title='Delete' className="Delete align-middle" disabled={isSendButtonVisible} type={'button'} onClick={() => deleteItemPartTable(row, final)} />}
+                {(show && selectedOption !== BOUGHTOUTPARTSPACING) && <button title='Delete' className="Delete align-middle" disabled={isSendButtonVisible} type={'button'} onClick={() => deleteItemPartTable(row, final)} />}
             </>
         )
     };
@@ -2808,7 +2815,7 @@ function AddRfq(props) {
         dispatch(getPartInfo(value?.value, (res) => {
 
 
-            setValue("Description", res.data?.Data?.PartName);
+            setValue("Description", res?.data?.Data?.PartName);
             setPartEffectiveDate(res.data.Data?.EffectiveDate);
         }));
         dispatch(getTargetPrice(plant?.value, value?.value, Number(technology?.value), (res) => {
@@ -3399,7 +3406,7 @@ function AddRfq(props) {
                                                                     {selectedOption === "Tooling" && <AgGridColumn width={"230px"} field="PartType" headerName={`Part Type`} tooltipField="PartType" ></AgGridColumn>}
 
                                                                     {(selectedOption === "componentAssembly" || selectedOption === "Tooling") && <AgGridColumn width={"230px"} field="PartNumber" headerName={`${selectedOption === 'Tooling' ? 'Tool' : 'Part'} No`} tooltipField="PartNumber" cellRenderer={'partNumberFormatter'}></AgGridColumn>}
-                                                                    {(selectedOption === "componentAssembly" || selectedOption === "Tooling") && <AgGridColumn width={"230px"} field="PartNumber" headerName={`${selectedOption === 'Tooling' ? 'Tool' : 'Part'} Description`} cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                                                                    {(selectedOption === "componentAssembly" || selectedOption === "Tooling") && <AgGridColumn width={"230px"} field="PartName" headerName={`${selectedOption === 'Tooling' ? 'Tool' : 'Part'} Description`} cellRenderer={'hyphenFormatter'}></AgGridColumn>}
 
                                                                     {/* {checkForNull(technology?.value) !== LOGISTICS && <AgGridColumn width={"230px"} field="RMName" tooltipField="RMName" headerName="RM Name" cellClass={"colorWhite"}></AgGridColumn>}
                                                                     {checkForNull(technology?.value) !== LOGISTICS && <AgGridColumn width={"230px"} field="RMGrade" headerName="RM Grade" cellClass={"colorWhite"}></AgGridColumn>}

@@ -14,7 +14,7 @@ import {
 } from '../actions/BoughtOutParts';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { getConfigurationKey, loggedInUserId, showBopLabel, userDetails } from "../../../helper/auth";
+import { getConfigurationKey, IsFetchExchangeRateVendorWise, loggedInUserId, showBopLabel, userDetails } from "../../../helper/auth";
 import "react-datepicker/dist/react-datepicker.css";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
@@ -103,7 +103,7 @@ class AddBOPImport extends Component {
       remarks: '',
       showErrorOnFocus: false,
       showErrorOnFocusDate: false,
-      finalApprovalLoader: true,
+      finalApprovalLoader: getConfigurationKey().IsDivisionAllowedForDepartment ? false : true,
       showPopup: false,
       incoTerm: [],
       paymentTerm: [],
@@ -216,18 +216,18 @@ class AddBOPImport extends Component {
     this.props.getPaymentTermSelectList(() => { })    // FOR MINDA ONLY
     this.getDetails()
     this.props.getCostingSpecificTechnology(loggedInUserId(), () => { this.setState({ inputLoader: false }) })
-    if (!(this.props.data.isEditFlag || this.props.data.isViewMode)) {
-      this.props.getCurrencySelectList(() => { })
-      this.props.getClientSelectList(() => { })
+    if (!(this.props.data.isEditFlag || this.props.data.isViewMode) && !getConfigurationKey().IsDivisionAllowedForDepartment) {
       this.finalUserCheckAndMasterLevelCheckFunction(EMPTY_GUID)
     }
+    this.props.getCurrencySelectList(() => { })
+    this.props.getClientSelectList(() => { })
   }
-  finalUserCheckAndMasterLevelCheckFunction = (plantId) => {
+  finalUserCheckAndMasterLevelCheckFunction = (plantId, isDivision) => {
     const { initialConfiguration } = this.props
     if (!this.state.isViewMode && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(BOP_MASTER_ID) === true) {
       this.props.getUsersMasterLevelAPI(loggedInUserId(), BOP_MASTER_ID, (res) => {
         setTimeout(() => {
-          this.commonFunction(plantId)
+          this.commonFunction(plantId, isDivision)
         }, 100);
       })
     } else {
@@ -235,7 +235,7 @@ class AddBOPImport extends Component {
     }
   }
 
-  commonFunction(plantId = EMPTY_GUID) {
+  commonFunction(plantId = EMPTY_GUID, isDivision) {
     let levelDetailsTemp = []
     levelDetailsTemp = userTechnologyDetailByMasterId(this.state.costingTypeId, BOP_MASTER_ID, this.props.userMasterLevelAPI)
     this.setState({ levelDetails: levelDetailsTemp })
@@ -247,7 +247,7 @@ class AddBOPImport extends Component {
       approvalTypeId: costingTypeIdToApprovalTypeIdFunction(this.state.costingTypeId),
       plantId: plantId
     }
-    if (this.props.initialConfiguration.IsMasterApprovalAppliedConfigure) {
+    if (this.props.initialConfiguration.IsMasterApprovalAppliedConfigure && !isDivision) {
       this.props.checkFinalUser(obj, (res) => {
         if (res?.data?.Result) {
           this.setState({ isFinalApprovar: res?.data?.Data?.IsFinalApprover, CostingTypePermission: true, finalApprovalLoader: false })
@@ -282,7 +282,7 @@ class AddBOPImport extends Component {
         this.setInStateToolTip()
         this.handleCalculation()
       }
-      if ((prevState?.costingTypeId !== this.state.costingTypeId) && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(BOP_MASTER_ID) === true) {
+      if (!getConfigurationKey().IsDivisionAllowedForDepartment && (prevState?.costingTypeId !== this.state.costingTypeId) && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(BOP_MASTER_ID) === true) {
         if (!(this.props.data.isViewMode)) {
           this.commonFunction(this.state.selectedPlants && this.state.selectedPlants.value)
         }
@@ -729,8 +729,11 @@ class AddBOPImport extends Component {
   * @description Used handle Plant
   */
   handlePlant = (e) => {
+
     this.setState({ selectedPlants: e })
-    this.commonFunction(e.value)
+    if (!getConfigurationKey().IsDivisionAllowedForDepartment) {
+      this.commonFunction(e ? e.value : '')
+    }
   }
 
   /**
@@ -759,8 +762,16 @@ class AddBOPImport extends Component {
         const { vendorName } = this.state;
         this.props.getPlantBySupplier(vendorName.value, () => { })
         const { costingTypeId, currency, effectiveDate, client } = this.state;
-        if (newValue && newValue?.length !== 0 && this.state.currency && this.state.currency.length !== 0 && effectiveDate) {
-          this.props.getExchangeRateByCurrency(currency.label, (costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? VBCTypeId : costingTypeId, DayTime(effectiveDate).format('YYYY-MM-DD'), (costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? newValue.value : EMPTY_GUID, client.value, false, res => {
+        const costingType = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? VBCTypeId : costingTypeId) : ZBCTypeId
+        console.log('costingType', costingType)
+        const vendorValue = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? newValue.value : EMPTY_GUID) : EMPTY_GUID;
+        console.log('vendorValue', vendorValue)
+        if (this.state.currency && this.state.currency.length !== 0 && effectiveDate) {
+          if (IsFetchExchangeRateVendorWise() && (!newValue || newValue?.length === 0)) {
+            this.setState({ showWarning: true });
+            return;
+          }
+          this.props.getExchangeRateByCurrency(currency.label, costingType, DayTime(effectiveDate).format('YYYY-MM-DD'), vendorValue, client.value, false, res => {
             if (Object.keys(res.data.Data).length === 0) {
               this.setState({ showWarning: true })
             } else {
@@ -847,8 +858,15 @@ class AddBOPImport extends Component {
     const { effectiveDate } = this.state
     if (newValue && newValue !== '') {
       const { costingTypeId, vendorName, client } = this.state;
-      if (newValue && newValue.length !== 0 && effectiveDate && (vendorName?.length !== 0 || client?.length !== 0)) {
-        this.props.getExchangeRateByCurrency(newValue.label, (costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? VBCTypeId : costingTypeId, DayTime(effectiveDate).format('YYYY-MM-DD'), (costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? vendorName.value : EMPTY_GUID, client.value, false, res => {
+      const vendorValue = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? vendorName.value : EMPTY_GUID) : EMPTY_GUID
+      const costingType = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? VBCTypeId : costingTypeId) : ZBCTypeId
+
+      if (newValue && newValue.length !== 0 && effectiveDate) {
+        if (IsFetchExchangeRateVendorWise() && (vendorName?.length === 0 || client?.length === 0)) {
+          this.setState({ showWarning: true });
+          return;
+        }
+        this.props.getExchangeRateByCurrency(newValue.label, costingType, DayTime(effectiveDate).format('YYYY-MM-DD'), vendorValue, client.value, false, res => {
           if (Object.keys(res.data.Data).length === 0) {
             this.setState({ showWarning: true });
           } else {
@@ -971,8 +989,15 @@ class AddBOPImport extends Component {
     const { currency, effectiveDate } = this.state
     if (date !== effectiveDate) {
       const { costingTypeId, vendorName, client } = this.state;
-      if (currency && currency.length !== 0 && date && (vendorName?.length !== 0 || client?.length !== 0)) {
-        this.props.getExchangeRateByCurrency(currency.label, (costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? VBCTypeId : costingTypeId, DayTime(date).format('YYYY-MM-DD'), (costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? vendorName.value : EMPTY_GUID, client.value, false, res => {
+      const vendorValue = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? vendorName.value : EMPTY_GUID) : EMPTY_GUID
+      const costingType = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? VBCTypeId : costingTypeId) : ZBCTypeId
+
+      if (currency && currency.length !== 0 && date) {
+        if (IsFetchExchangeRateVendorWise() && (vendorName?.length === 0 || client?.length === 0)) {
+          this.setState({ showWarning: true });
+          return;
+        }
+        this.props.getExchangeRateByCurrency(currency.label, costingType, DayTime(date).format('YYYY-MM-DD'), vendorValue, client.value, false, res => {
           if (Object.keys(res.data.Data).length === 0) {
             this.setState({ showWarning: true });
           } else {
@@ -1157,6 +1182,34 @@ class AddBOPImport extends Component {
       }
     }
   };
+  handleBOPOperation = (formData, isEditFlag) => {
+    const operation = isEditFlag ? this.props.updateBOP : this.props.createBOP;
+    const successMessage = isEditFlag ? MESSAGES.UPDATE_BOP_SUCESS : MESSAGES.BOP_ADD_SUCCESS;
+
+    operation(formData, (res) => {
+      this.setState({ setDisable: false });
+      if (res?.data?.Result) {
+        Toaster.success(successMessage);
+        if (isEditFlag) {
+          if (!this.state.isEditBtnClicked) {
+            this.cancel('submit');
+          } else {
+            this.getDetails();
+            this.setState({
+              IsSapCodeEditView: true,
+              IsSAPCodeHandle: false
+            });
+          }
+        } else {
+          this.cancel('submit');
+        }
+      }
+    });
+
+    if (isEditFlag) {
+      this.setState({ updatedObj: formData });
+    }
+  }
   /**
   * @method onSubmit
   * @description Used to Submit the form
@@ -1283,36 +1336,8 @@ class AddBOPImport extends Component {
     }
     //  ELSE: NO APPROVAL FLOW
     else {
-      if (isEditFlag) {
-        formData.IsSendForApproval = false
-        this.props.updateBOP(formData, (res) => {
-          this.setState({ setDisable: false })
-          if (res?.data?.Result) {
-            Toaster.success(MESSAGES.UPDATE_BOP_SUCESS);
-            //this.cancel('submit');
-            if (!this.state.isEditBtnClicked) {
-              this.cancel('submit');
-            }
-            else {
-              //call get api after sap code has updated.
-              this.getDetails();
-              this.setState({
-                IsSapCodeEditView: true,
-                IsSAPCodeHandle: false
-              })
-            }
-          }
-        })
-        this.setState({ updatedObj: formData })
-      } else {
-        this.props.createBOP(formData, (res) => {
-          this.setState({ setDisable: false })
-          if (res?.data?.Result) {
-            Toaster.success(MESSAGES.BOP_ADD_SUCCESS)
-            this.cancel('submit')
-          }
-        })
-      }
+      formData.IsSendForApproval = false;
+      this.handleBOPOperation(formData, isEditFlag);
     }
 
 
@@ -2271,6 +2296,9 @@ class AddBOPImport extends Component {
                 isFromImport={true}
                 toolTipTextObject={this.state.toolTipTextObject}
                 UOM={this.state.UOM}
+                commonFunction={this.finalUserCheckAndMasterLevelCheckFunction}
+                handleOperation={this.handleBOPOperation}
+                isEdit={this.state.isEditFlag}
               />
             )
           }

@@ -27,8 +27,8 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import InitiateUnblocking from '../vendorManagement/InitiateUnblocking';
 
 function SummaryDrawer(props) {
-        const { approvalData } = props
-        const dispatch = useDispatch()
+    const { approvalData } = props
+    const dispatch = useDispatch()
     /**
     * @method toggleDrawer
     * @description TOGGLE DRAWER
@@ -65,15 +65,17 @@ function SummaryDrawer(props) {
     const [isBudgetApproval, setIsBudgetApproval] = useState(false)
     const [showImport, setShowImport] = useState(false)
     const [bopDataResponse, setBopDataResponse] = useState([])
-    const [rmDataResponse, setRmDataResponse ] = useState([])
+    const [rmDataResponse, setRmDataResponse] = useState([])
     const [showPushButton, setShowPushButton] = useState(false) // This is for showing push button when master is approved and need to push it for scheduling
     // const { rmDomesticListing, rmImportListing, bopDomesticList, bopImportList } = useSelector(state => state.material)
     const [dataForFetchingAllApprover, setDataForFetchingAllApprover] = useState({})
     const [mastersPlantId, setMastersPlantId] = useState('')
     const [isOnboardingApproval, setIsOnboardingApproval] = useState(false)
     const [onBoardingData, setOnBoardingData] = useState({})
-    const [isRfq , setIsRfq] = useState(false)
-    const [quotationId , setQuotationId] = useState('')
+    const [isRfq, setIsRfq] = useState(false)
+    const [quotationId, setQuotationId] = useState('')
+    const [divisionId, setDivisionId] = useState('')
+
 
 
 
@@ -85,11 +87,11 @@ function SummaryDrawer(props) {
         dispatch(getMasterApprovalSummary(approvalData.approvalNumber, approvalData.approvalProcessId, props?.masterId, props?.OnboardingApprovalId, res => {
 
             const Data = res.data.Data
-          const QuotationId = Data?.QuotationId 
-setQuotationId(QuotationId)
-setIsRfq(QuotationId  !== null ? true : false)
+            const QuotationId = Data?.QuotationId
+            setQuotationId(QuotationId)
+            setIsRfq(QuotationId !== null ? true : false)
             setApprovalLevelStep(Data?.MasterSteps)
-            setApprovalDetails({ IsSent: Data?.IsSent, IsFinalLevelButtonShow: Data?.IsFinalLevelButtonShow, ApprovalProcessId: Data?.ApprovalProcessId, MasterApprovalProcessSummaryId: Data?.ApprovalProcessSummaryId, Token: Data?.Token, MasterId: Data?.MasterId, OnboardingId: Data?.OnboardingId, ApprovalTypeId: Data?.ApprovalTypeId })
+            setApprovalDetails({ IsSent: Data?.IsSent, IsFinalLevelButtonShow: Data?.IsFinalLevelButtonShow, ApprovalProcessId: Data?.ApprovalProcessId, MasterApprovalProcessSummaryId: Data?.ApprovalProcessSummaryId, Token: Data?.Token, MasterId: Data?.MasterId, OnboardingId: Data?.OnboardingId, ApprovalTypeId: Data?.ApprovalTypeId, DepartmentId: Data?.DepartmentId })
             setLoader(false)
             let masterPlantId = ''
             if (checkForNull(props?.masterId) === RM_MASTER_ID) {
@@ -147,8 +149,10 @@ setIsRfq(QuotationId  !== null ? true : false)
                 TechnologyId: props?.masterId,
                 Mode: (props?.masterId === 0 && props?.OnboardingApprovalId === ONBOARDINGID) ? 'onboarding' : 'master',
                 approvalTypeId: (props?.masterId === 0 && props?.OnboardingApprovalId === ONBOARDINGID) ? Data?.ApprovalTypeId : costingTypeIdToApprovalTypeIdFunction(CostingTypeId),
-                plantId: masterPlantId
+                plantId: masterPlantId,
+                divisionId: Data?.DivisionId ?? null
             }
+            setDivisionId(Data?.DivisionId ?? null)
             setMastersPlantId(masterPlantId)
             setDataForFetchingAllApprover({
                 processId: approvalData.approvalProcessId,
@@ -316,7 +320,9 @@ setIsRfq(QuotationId  !== null ? true : false)
                     IsFinalLevelButtonShow={finalLevelUser}
                     costingTypeId={costingTypeId}
                     levelDetails={levelDetails}
-                    // approvalObj={approvalObj}
+                    divisionId={divisionId}
+                    masterSummary={true}
+                // approvalObj={approvalObj}
                 />
             }
         </div >

@@ -12,7 +12,7 @@ import _, { debounce } from "lodash";
 import { technology } from "../../helper/Dummy";
 
 import Switch from 'react-switch'
-import { required, calculatePercentageValue, checkForDecimalAndNull, checkForNull, checkWhiteSpaces, extenstionTime, decimalNumberLimit, maxPercentageValue, number, acceptAllExceptSingleSpecialCharacter, maxLength70, hashValidation, calculateEndDate, userDetails, loggedInUserId, getTimeZone, calculateEndDateTime, durationTimeDropdown } from "../../helper";
+import { required, calculatePercentageValue, checkForDecimalAndNull, checkForNull, checkWhiteSpaces, extenstionTime, decimalNumberLimit, maxPercentageValue, number, acceptAllExceptSingleSpecialCharacter, maxLength70, hashValidation, calculateEndDate, userDetails, loggedInUserId, getTimeZone, calculateEndDateTime, durationTimeDropdown, calculatePercentageFromValue } from "../../helper";
 import DatePicker from 'react-datepicker'
 import { setHours, setMinutes } from 'date-fns';
 import DayTime from "../common/DayTimeWrapper";
@@ -22,8 +22,8 @@ import { EMPTY_GUID } from "../../config/constants";
 import Toaster from "../common/Toaster";
 import { useHistory, useLocation } from "react-router-dom/cjs/react-router-dom";
 import { useLabels } from "../../helper/core";
-export const RM = 'RawMaterial'
-export const BOP = 'BoughtOutPart'
+export const RM = 'Raw Material'
+export const BOP = 'Bought Out Part'
 export const COMPONENT = 'Component'
 export const ASSEMBLY = 'Assembly'
 
@@ -197,12 +197,13 @@ function AddAuction(props) {
   const calculateBasePriceValueAndPer = (event) => {
     if (!state.reductionPrice) {
       const eventValue = checkForNull(event.target.value)
-      const ReductionPrice = calculateReversePercentage(eventValue)
+      const ReductionPrice = calculatePercentageValue(calculationState.BasePrice, eventValue)
+
       setValue('ReductionPrice', checkForDecimalAndNull(ReductionPrice, NoOfDecimalForPrice))
       setCalculationState(prevState => ({ ...prevState, ReductionPrice: ReductionPrice, ReductionPercent: eventValue }))
     } else if (state.reductionPrice) {
       const eventValue = checkForNull(event.target.value)
-      const ReductionPercent = calculateReverseValue(eventValue)
+      const ReductionPercent = calculatePercentageFromValue(calculationState.BasePrice, eventValue)
       setValue('ReductionPercent', checkForDecimalAndNull(ReductionPercent, NoOfDecimalForPrice))
       setCalculationState(prevState => ({ ...prevState, ReductionPercent: ReductionPercent, ReductionPrice: eventValue }))
     }

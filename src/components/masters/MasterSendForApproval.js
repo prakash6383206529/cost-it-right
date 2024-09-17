@@ -13,7 +13,7 @@ import { getReasonSelectList } from '../costing/actions/Approval';
 import DayTime from '../common/DayTimeWrapper'
 import DatePicker from "react-datepicker";
 import { BOPTYPE, BUDGETTYPE, BUDGET_ID, CBCTypeId, EMPTY_DATA, EMPTY_GUID, MACHINETYPE, OPERATIONTYPE, RMTYPE, VBCTypeId, ZBCTypeId } from '../../config/constants';
-import { getUsersMasterLevelAPI } from '../../actions/auth/AuthActions';
+import { getAllDivisionListAssociatedWithDepartment, getUsersMasterLevelAPI } from '../../actions/auth/AuthActions';
 import { REMARKMAXLENGTH, SHEETMETAL } from '../../config/masterData';
 import { costingTypeIdToApprovalTypeIdFunction } from '../common/CommonFunctions';
 import { masterApprovalAPI, masterApprovalRequestBySenderBudget } from './actions/Budget';
@@ -25,13 +25,11 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import HeaderTitle from '../common/HeaderTitle';
 import NoContentFound from '../common/NoContentFound';
 import { rfqSaveBestCosting } from '../rfq/actions/rfq';
+import { checkFinalUser } from '../costing/actions/Costing';
 
 function MasterSendForApproval(props) {
-
     const { type, IsFinalLevel, IsPushDrawer, reasonId, masterId, selectedRows, OnboardingId, approvalObj, isBulkUpload, IsImportEntry, approvalDetails, IsFinalLevelButtonShow, approvalData, levelDetails, Technology, showScrapKeys } = props
     const RFQPlantId = props?.partType === 'Raw Material' && props.isRFQ ? (approvalObj && approvalObj[0]?.Plant && approvalObj[0]?.Plant[0]?.PlantId) : approvalObj && approvalObj[0]?.PlantId
-
-
     const { register, control, formState: { errors }, handleSubmit, setValue, getValues, reset, } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
@@ -46,16 +44,22 @@ function MasterSendForApproval(props) {
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [isLastRevisionOpen, setIsLastRevisionOpen] = useState(false)
     const [lastRevisionRawMaterialDetails, setLastRevisionRawMaterialDetails] = useState([])
-
+    const [isShowDivision, setIsShowDivision] = useState(false)
+    const [divisionList, setDivisionList] = useState([])
+    const [division, setDivision] = useState('')
+    const [isFinalApprover, setIsFinalApprover] = useState(false)
+    const [department, setDepartment] = useState('')
+    const [isDisableDept, setDisableDept] = useState(false)
+    const [departmentDropdown, setDepartmentDropdown] = useState([])
     const dispatch = useDispatch()
     const reasonsList = useSelector((state) => state.approval.reasonsList)
     const { deptList } = useSelector((state) => state.material)
     const { initialConfiguration } = useSelector(state => state.auth)
     // const { lastRevisionRawMaterialDetails } = useSelector(state => state.indexation)
     const toggleDrawer = (event, type = 'cancel') => {
-        if (isDisable) {
-            return false
-        }
+        // if (isDisable) {
+        //     return false
+        // }
         if (
             event.type === 'keydown' &&
             (event.key === 'Tab' || event.key === 'Shift')
@@ -70,57 +74,112 @@ function MasterSendForApproval(props) {
         setValue('ScrapRateUOM', { label: approvalObj?.ScrapUnitOfMeasurement, value: approvalObj?.ScrapUnitOfMeasurementId })
         dispatch(getAllMasterApprovalDepartment((res) => {
             const Data = res?.data?.SelectList
-            const departObj = Data && Data.filter(item => item?.Value === userDetails().DepartmentId)
-            setTimeout(() => {
-                setValue('dept', { label: departObj[0].Text, value: departObj[0].Value })
-
-            }, 100);
-
-            let approverIdListTemp = []
-            let obj = {
-                LoggedInUserId: loggedInUserId(),
-                DepartmentId: departObj && departObj[0]?.Value,
-                MasterId: masterId,
-                OnboardingMasterId: OnboardingId,
-                ApprovalTypeId: masterId !== 0 ? costingTypeIdToApprovalTypeIdFunction(props?.costingTypeId) : approvalDetails?.ApprovalTypeId,
-                ReasonId: reasonId,
-                PlantId: props?.isRFQ ? RFQPlantId : (approvalObj ? approvalObj.Plant[0].PlantId ?? EMPTY_GUID : props.masterPlantId ?? EMPTY_GUID)
-                // PlantId: approvalObj ? approvalObj.Plant[0].PlantId ?? EMPTY_GUID : props.masterPlantId ?? EMPTY_GUID
-
-            }
-            dispatch(getAllMasterApprovalUserByDepartment(obj, (res) => {
-
-                const Data = res.data.DataList[1] ? res.data.DataList[1] : []
-                if (Data?.length !== 0) {
-                    setTimeout(() => {
-                        setValue('dept', { label: Data.DepartmentName, value: Data.DepartmentId })
-                        setValue('approver', { label: Data.Text ? Data.Text : '', value: Data.Value ? Data.Value : '', levelId: Data.LevelId ? Data.LevelId : '', levelName: Data.LevelName ? Data.LevelName : '' })
-                    }, 100);
-
-                    let tempDropdownList = []
-                    res.data.DataList &&
-                        res.data.DataList.map((item) => {
-                            if (item?.Value === '0') return false;
-                            tempDropdownList.push({
-                                label: item?.Text,
-                                value: item?.Value,
-                                levelId: item?.LevelId,
-                                levelName: item?.LevelName
-                            })
-                            approverIdListTemp.push(item?.Value)
-                            return null
-                        })
-                    setTimeout(() => {
-                        setApprovalDropDown(tempDropdownList)
-
-                        setApproverIdList(approverIdListTemp)
-                    }, 100)
+            const Departments = userDetails().Department && userDetails().Department.map(item => item.DepartmentName)
+            const updateList = Data && Data.filter(item => Departments.includes(item.Text))
+            let department = []
+            updateList &&
+                updateList.map((item) => {
+                    if (item?.Value === '0') return false
+                    department?.push({ label: item?.Text, value: item?.Value })
+                    return null
+                })
+            setDepartmentDropdown(department)
+            if (department?.length === 1) {
+                setValue('dept', { label: department[0]?.label, value: department[0]?.value })
+                setDisableDept(true)
+                setDepartment(department[0])
+                if (props.approvalListing) {
+                    fetchAndSetApprovalUsers(updateList[0]?.Value, reasonId, approvalData[0]?.DivisionId);
+                } else if ((type !== "Approve" && props.masterSummary) && getConfigurationKey().IsDivisionAllowedForDepartment) {
+                    fetchDivisionList(department[0].value, dispatch, (divisionArray, showDivision) => {
+                        setIsShowDivision(showDivision);
+                        setDivisionList(divisionArray);
+                    });
                 }
-            },),)
+                if (!getConfigurationKey().IsDivisionAllowedForDepartment || (type === 'Approve' && !IsFinalLevelButtonShow)) {
+                    setTimeout(() => {
+                        const matchingDepartment = department.find(dept => dept.value === approvalDetails?.DepartmentId);
+                        if (getConfigurationKey().IsDivisionAllowedForDepartment && matchingDepartment) {
+                            setValue('dept', { label: matchingDepartment?.label, value: matchingDepartment?.value });
+                        } else {
+                            setValue('dept', { label: department[0]?.label, value: department[0]?.value });
+                        }
+                        setDisableDept(true)
+                    }, 100);
+                    fetchAndSetApprovalUsers(department[0]?.value, reasonId, props?.divisionId);
+                }
+                if (type === 'Sender' && props.approvalListing) {
+                    const DepartmentId = approvalData && approvalData[0]?.ApprovalDepartmentId;
+                    // Ensure DepartmentId is an array
+                    const departmentIds = Array.isArray(DepartmentId) ? DepartmentId : [DepartmentId];
+                    const updateList = Data && Data.filter(item => departmentIds.includes(item.Value));
+                    setDepartmentDropdown(updateList)
+                    setValue('dept', { label: updateList[0]?.Text, value: updateList[0]?.Value })
+                    setDisableDept(true)
+                    fetchAndSetApprovalUsers(updateList[0]?.Value, reasonId, approvalData[0]?.DivisionId);
+                    setIsShowDivision(false)
+                }
+            }
         }))
         getLastRevisionData()
     }, [])
 
+    const fetchAndSetApprovalUsers = (departmentId, reasonId, divisionId = null) => {
+        const obj = {
+            LoggedInUserId: loggedInUserId(),
+            DepartmentId: departmentId,
+            MasterId: masterId,
+            OnboardingMasterId: OnboardingId,
+            ApprovalTypeId: masterId !== 0 ? costingTypeIdToApprovalTypeIdFunction(props?.costingTypeId) : approvalDetails?.ApprovalTypeId,
+            ReasonId: reasonId,
+            PlantId: props?.isRFQ ? RFQPlantId : (approvalObj ? approvalObj.Plant[0].PlantId ?? EMPTY_GUID : props.masterPlantId ?? EMPTY_GUID),
+            DivisionId: divisionId ?? null
+        };
+
+        dispatch(getAllMasterApprovalUserByDepartment(obj, (res) => {
+            const Data = res.data.DataList[1] ? res.data.DataList[1] : [];
+            if (Data?.length !== 0) {
+                setTimeout(() => {
+                    if (!getConfigurationKey().IsDivisionAllowedForDepartment) {
+                        setValue('dept', { label: Data.DepartmentName, value: Data.DepartmentId });
+                    }
+                    setValue('approver', {
+                        label: Data.Text ? Data.Text : '',
+                        value: Data.Value ? Data.Value : '',
+                        levelId: Data.LevelId ? Data.LevelId : '',
+                        levelName: Data.LevelName ? Data.LevelName : ''
+                    });
+                }, 100);
+
+                const tempDropdownList = [];
+                const approverIdListTemp = [];
+
+                res.data.DataList.forEach((item) => {
+                    if (item?.Value !== '0') {
+                        tempDropdownList.push({
+                            label: item?.Text,
+                            value: item?.Value,
+                            levelId: item?.LevelId,
+                            levelName: item?.LevelName
+                        });
+                        approverIdListTemp.push(item?.Value);
+                    }
+                });
+                const hasFinalApproval = tempDropdownList.some(approver =>
+                    approver.label.toLowerCase().includes("final approval")
+                );
+                if (hasFinalApproval) {
+                    Toaster.warning('User not in approval flow');
+                    setDepartment('')
+                }
+
+                setTimeout(() => {
+                    setApprovalDropDown(tempDropdownList);
+                    setApproverIdList(approverIdListTemp);
+                }, 100);
+            }
+        }));
+    };
     const getLastRevisionData = () => {
 
         if (approvalObj && Object.keys(approvalObj)?.length > 0 && getConfigurationKey()?.IsShowMaterialIndexation && Number(masterId) === 1) {
@@ -152,15 +211,6 @@ function MasterSendForApproval(props) {
     }
     const renderDropdownListing = (label) => {
         const tempDropdownList = []
-        if (label === 'Dept') {
-            deptList &&
-                deptList.map((item) => {
-                    if (item?.Value === '0') return false
-                    tempDropdownList?.push({ label: item?.Text, value: item?.Value })
-                    return null
-                })
-            return tempDropdownList
-        }
         if (label === 'reasons') {
             reasonsList && reasonsList.map((item) => {
                 if (item?.Value === '0') return false
@@ -170,422 +220,496 @@ function MasterSendForApproval(props) {
             return tempDropdownList
         }
     }
-
+    const fetchDivisionList = (departmentId, dispatch, callback) => {
+        let departmentIds = [departmentId];
+        dispatch(getAllDivisionListAssociatedWithDepartment(departmentIds, res => {
+            if (res && res?.data && res?.data?.Identity === true) {
+                let divisionArray = res?.data?.DataList
+                    .filter(item => String(item?.DivisionId) !== '0')
+                    .map(item => ({
+                        label: `${item.DivisionNameCode}`,
+                        value: (item?.DivisionId)?.toString(),
+                        DivisionCode: item?.DivisionCode
+                    }));
+                callback(divisionArray, true);
+            } else {
+                if (!props.approvalListing) {
+                    props.commonFunction(approvalObj && approvalObj?.Plant && approvalObj?.Plant[0]?.PlantId, true)
+                }
+                checkFinalUserAndSetApprover(departmentId, null);
+                callback([], false);
+            }
+        }));
+    };
     const handleDepartmentChange = (value) => {
         setValue('approver', { label: '', value: '', levelId: '', levelName: '' })
-        let tempDropdownList = []
-        let approverIdListTemp = []
-        let obj = {
-            LoggedInUserId: loggedInUserId(), // user id
-            DepartmentId: value.value,
-            MasterId: masterId,
-            OnboardingMasterId: OnboardingId,
-            ReasonId: '',
-            ApprovalTypeId: masterId !== 0 ? costingTypeIdToApprovalTypeIdFunction(props?.costingTypeId) : approvalDetails?.ApprovalTypeId,
-            PlantId: props?.isRFQ ? RFQPlantId : (approvalObj?.PlantId ?? approvalData[0].MasterApprovalPlantId ?? EMPTY_GUID)
+        setApprovalDropDown([])
+        setDepartment(value)
+        setDivision('')
+        setValue('Division', '')
+        if (getConfigurationKey().IsDivisionAllowedForDepartment) {
+            setIsShowDivision(true)
+            fetchDivisionList(value.value, dispatch, (divisionArray, showDivision) => {
+                setIsShowDivision(showDivision);
+                setDivisionList(divisionArray);
+            });
+        } else {
+            let tempDropdownList = []
+            let approverIdListTemp = []
+            let obj = {
+                LoggedInUserId: loggedInUserId(), // user id
+                DepartmentId: value.value,
+                MasterId: masterId,
+                OnboardingMasterId: OnboardingId,
+                ReasonId: '',
+                ApprovalTypeId: masterId !== 0 ? costingTypeIdToApprovalTypeIdFunction(props?.costingTypeId) : approvalDetails?.ApprovalTypeId,
+                PlantId: props?.isRFQ ? RFQPlantId : (approvalObj?.PlantId ?? approvalData[0].MasterApprovalPlantId ?? EMPTY_GUID)
 
-        }
-        dispatch(getAllMasterApprovalUserByDepartment(obj, (res) => {
-            const Data = res.data.DataList[1] ? res.data.DataList[1] : []
-            if (Data?.length !== 0) {
-                setValue('dept', { label: Data.DepartmentName, value: Data.DepartmentId })
-                setValue('approver', { label: Data.Text ? Data.Text : '', value: Data.Value ? Data.Value : '', levelId: Data.LevelId ? Data.LevelId : '', levelName: Data.LevelName ? Data.LevelName : '' })
-                res.data.DataList &&
-                    res.data.DataList.map((item) => {
-                        if (item?.Value === '0') return false;
-                        tempDropdownList.push({
-                            label: item?.Text,
-                            value: item?.Value,
-                            levelId: item?.LevelId,
-                            levelName: item?.LevelName
-                        })
-                        approverIdListTemp.push(item?.Value)
-                        return null
-                    })
-                setTimeout(() => {
-
-                    setApprovalDropDown(tempDropdownList)
-                    setApproverIdList(approverIdListTemp)
-                }, 100);
             }
-        }),
-        )
+            dispatch(getAllMasterApprovalUserByDepartment(obj, (res) => {
+                const Data = res.data.DataList[1] ? res.data.DataList[1] : []
+                if (Data?.length !== 0) {
+                    setValue('dept', { label: Data.DepartmentName, value: Data.DepartmentId })
+                    setValue('approver', { label: Data.Text ? Data.Text : '', value: Data.Value ? Data.Value : '', levelId: Data.LevelId ? Data.LevelId : '', levelName: Data.LevelName ? Data.LevelName : '' })
+                    res.data.DataList &&
+                        res.data.DataList.map((item) => {
+                            if (item?.Value === '0') return false;
+                            tempDropdownList.push({
+                                label: item?.Text,
+                                value: item?.Value,
+                                levelId: item?.LevelId,
+                                levelName: item?.LevelName
+                            })
+                            approverIdListTemp.push(item?.Value)
+                            return null
+                        })
+                    setTimeout(() => {
+
+                        setApprovalDropDown(tempDropdownList)
+                        setApproverIdList(approverIdListTemp)
+                    }, 100);
+                }
+            }),
+            )
+        }
 
     }
 
+    const checkFinalUserAndSetApprover = (departmentId, divisionId) => {
+        let obj = {
+            DepartmentId: departmentId,
+            UserId: loggedInUserId(),
+            TechnologyId: masterId,
+            Mode: 'master',
+            approvalTypeId: costingTypeIdToApprovalTypeIdFunction(props?.costingTypeId),
+            plantId: (approvalObj?.Plant && approvalObj.Plant[0]?.PlantId) || (approvalData && approvalData[0]?.DestinationPlantId) || null,
+            divisionId: divisionId
+        }
 
-    const onSubmit = debounce(handleSubmit(() => {
+        dispatch(checkFinalUser(obj, (res) => {
+            if (res?.data?.Result && res?.data?.Data?.IsFinalApprover) {
+                setIsFinalApprover(true)
+                setIsDisable(false)
+            } else if (res?.data?.Data?.IsUserInApprovalFlow === false || res?.data?.Data?.IsNextLevelUserExist === false) {
+                setIsFinalApprover(false)
+                setIsDisable(true)
+                Toaster.warning('There is no highest approver defined for this user')
+            } else {
+                setIsDisable(false)
+                setIsFinalApprover(false)
+                fetchAndSetApprovalUsers(departmentId, getValues('reason')?.value, divisionId)
+            }
+        }))
+    }
+
+    const handleDivisionChange = (value) => {
+        setDivision(value)
+        checkFinalUserAndSetApprover(department?.value, value?.value)
+        if (!props.approvalListing) {
+            props.commonFunction(approvalObj && approvalObj?.Plant && approvalObj?.Plant[0]?.PlantId, true)
+        }
+
+    }
+
+    const onSubmit = debounce(handleSubmit((formValues) => {
         const remark = getValues('remark')
         const reason = getValues('reason')
         const dept = getValues('dept')
         const approver = getValues('approver')
-        setIsDisable(true)
-        if (initialConfiguration?.IsMultipleUserAllowForApproval && (!getValues('dept')?.label) && (!IsFinalLevelButtonShow)) {
-            Toaster.warning('There is no highest approver defined for this user. Please connect with the IT team.')
-            setIsDisable(false)
-            return false
-        }
-        if (type === 'Sender') {
-            const bulkuploadArray = (approvalData) => {
-
-                let bulkuploadIdsArray = []
-                approvalData && approvalData.map(item => {
-                    bulkuploadIdsArray.push({ OldRawMaterialId: masterId === 1 ? item?.OldRawMaterialId ?? null : null, MasterRecordId: masterId === 1 ? item?.RawMaterialId : masterId === 2 ? item?.BoughtOutPartId : masterId === 3 ? item?.OperationId : masterId === 4 ? item?.MachineId : null })
-                })
-
-                return bulkuploadIdsArray
-
+        if (initialConfiguration?.IsDivisionAllowedForDepartment && isFinalApprover) {
+            approvalObj.IsSendForApproval = false;
+            props.handleOperation(approvalObj, props.isEdit)
+        } else {
+            setIsDisable(true)
+            if (initialConfiguration?.IsMultipleUserAllowForApproval && (!getValues('dept')?.label) && (!IsFinalLevelButtonShow)) {
+                Toaster.warning('There is no highest approver defined for this user. Please connect with the IT team.')
+                setIsDisable(false)
+                return false
             }
+            if (type === 'Sender') {
+                const bulkuploadArray = (approvalData) => {
 
-            //THIS OBJ IS FOR MASTER SEND FOR APPROVAL
-            let senderObj = {}
-            senderObj.ReasonId = reason ? reason.value : 0
-            senderObj.Reason = reason ? reason.label : ''
-            senderObj.IsFinalApproved = false
-            senderObj.DepartmentId = dept && dept.value ? dept.value : ''
-            senderObj.DepartmentName = dept && dept.label ? dept.label : ''
-            senderObj.ApproverLevelId = approver && approver.levelId ? approver.levelId : ''
-            senderObj.ApproverDepartmentId = dept && dept.value ? dept.value : ''
-            senderObj.ApproverDepartmentName = dept && dept.label ? dept.label : ''
-            senderObj.ApproverLevel = approver && approver.levelName ? approver.levelName : ''
-            // senderObj.ApproverId = approver && approver.value ? approver.value : ''
-            senderObj.ApproverIdList = initialConfiguration?.IsMultipleUserAllowForApproval ? approverIdList : [approver && approver.value ? approver.value : '']
-            senderObj.SenderLevelId = levelDetails?.LevelId
-            senderObj.SenderId = loggedInUserId()
-            senderObj.SenderLevel = levelDetails?.Level
-            senderObj.SenderRemark = remark
-            senderObj.LoggedInUserId = loggedInUserId()
-            senderObj.IsVendor = approvalObj && Object.keys(approvalObj)?.length > 0 ? approvalObj?.IsVendor : false
-            senderObj.EffectiveDate = approvalObj && Object.keys(approvalObj)?.length > 0 ? approvalObj?.EffectiveDate : DayTime(new Date()).format('YYYY-MM-DD HH:mm:ss')
-            senderObj.PurchasingGroup = ''
-            senderObj.MaterialGroup = ''
-            senderObj.CostingTypeId = props?.costingTypeId
+                    let bulkuploadIdsArray = []
+                    approvalData && approvalData.map(item => {
+                        bulkuploadIdsArray.push({ OldRawMaterialId: masterId === 1 ? item?.OldRawMaterialId ?? null : null, MasterRecordId: masterId === 1 ? item?.RawMaterialId : masterId === 2 ? item?.BoughtOutPartId : masterId === 3 ? item?.OperationId : masterId === 4 ? item?.MachineId : null })
+                    })
 
-            senderObj.ApprovalTypeId = masterId !== 0 ? costingTypeIdToApprovalTypeIdFunction(props?.costingTypeId) : approvalDetails?.ApprovalTypeId
-            senderObj.MasterIdList = [
+                    return bulkuploadIdsArray
 
-            ]
-            senderObj.BudgetingIdList = []
-
-            switch (checkForNull(masterId)) {
-                case 1:                        // CASE 1 FOR RAW MATERIAL
-                    if (isBulkUpload) {
-                        senderObj.MasterIdList = bulkuploadArray(approvalData)
-                        senderObj.MasterCreateRequest = {
-                            CreateRawMaterial: {}
-                        }
-                    } else {
-                        senderObj.MasterIdList = []
-                        senderObj.MasterCreateRequest = {
-                            OldRawMaterialId: lastRevisionRawMaterialDetails[0]?.RawMaterialId,
-                            CreateRawMaterial: approvalObj
-                        }
-                    }
-                    senderObj.ApprovalMasterId = RMTYPE
-
-                    //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
-                    setIsLoader(true)
-                    dispatch(masterApprovalAPI(senderObj, res => {
-                        setIsDisable(false)
-                        setIsLoader(false)
-                        if (res?.data?.Result) {
-                            Toaster.success('Raw Material has been sent for approval.')
-                            props.closeDrawer('', 'submit')
-                        }
-                    }))
-                    break;
-
-
-
-                case 2:  //CASE 2 FOR BOP
-                    if (isBulkUpload) {
-                        senderObj.MasterIdList = bulkuploadArray(approvalData)
-                        senderObj.MasterCreateRequest = {
-                            CreateBoughtOutPart: {}
-                        }
-                    } else {
-                        senderObj.MasterIdList = []
-                        senderObj.MasterCreateRequest = {
-                            OldRawMaterialId: null,
-                            CreateBoughtOutPart: approvalObj
-                        }
-                    }
-                    senderObj.ApprovalMasterId = BOPTYPE
-
-                    //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
-                    setIsLoader(true)
-                    dispatch(masterApprovalAPI(senderObj, res => {
-                        setIsDisable(false)
-                        setIsLoader(false)
-                        if (res?.data?.Result) {
-                            Toaster.success(`${showBopLabel()} has been sent for approval.`)
-                            props.closeDrawer('', 'submit')
-                        }
-                    }))
-                    break;
-
-
-                case 3:  //CASE 3 FOR OPERATIONS
-
-
-                    if (isBulkUpload) {
-                        senderObj.MasterIdList = bulkuploadArray(approvalData)
-                        senderObj.MasterCreateRequest = {
-                            CreateOperationRequest: {}
-                        }
-                    } else {
-                        senderObj.MasterIdList = []
-                        senderObj.MasterCreateRequest = {
-                            OldRawMaterialId: null,
-                            CreateOperationRequest: approvalObj
-                        }
-                    }
-
-                    senderObj.ApprovalMasterId = OPERATIONTYPE
-
-                    //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
-                    setIsLoader(true)
-                    dispatch(masterApprovalAPI(senderObj, res => {
-                        setIsDisable(false)
-                        setIsLoader(false)
-                        if (res?.data?.Result) {
-                            Toaster.success('Operation has been sent for approval.')
-                            props.closeDrawer('', 'submit')
-                        }
-                    }))
-                    break;
-
-
-                case 4:  //CASE 4 FOR MACHINE
-
-                    // if (isBulkUpload) {
-                    //     approvalData && approvalData.map(item => {
-                    //         tempArray.push({ MachineId: item?.MachineId, IsImportEntry: item?.EnteryType === 'Domestic' ? false : true, MachineRequest: {}, CostingTypeId: item?.CostingTypeId })
-                    //         return null
-                    //     })
-                    // } else {
-                    //     tempArray.push({ MachineId: EMPTY_GUID, IsImportEntry: IsImportEntry, MachineRequest: approvalObj })
-                    // }
-                    if (isBulkUpload) {
-                        senderObj.MasterIdList = bulkuploadArray(approvalData)
-                        senderObj.MasterCreateRequest = {
-                            OldRawMaterialId: null,
-                            CreateRawMaterial: {}
-                        }
-                    } else if (props.detailEntry) {
-                        senderObj.MasterIdList = []
-                        senderObj.MasterCreateRequest = {
-                            MachineDetailsRequest: approvalObj,
-                            IsDetailedEntry: true
-                        }
-                    } else {
-                        senderObj.MasterIdList = []
-                        senderObj.MasterCreateRequest = {
-                            MachineBasicRequest: approvalObj,
-                            IsDetailedEntry: false
-                        }
-                    }
-
-                    // if (props.detailEntry) {
-                    //     senderObj.MasterCreateRequest = {
-                    //         MachineDetailsRequest: approvalObj,
-                    //         IsDetailedEntry: true
-                    //     }
-                    // } else {
-                    //     senderObj.MasterCreateRequest = {
-                    //         MachineBasicRequest: approvalObj,
-                    //         IsDetailedEntry: false
-                    //     }
-                    // }
-                    senderObj.ApprovalMasterId = MACHINETYPE
-
-                    //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
-                    setIsLoader(true)
-                    dispatch(masterApprovalAPI(senderObj, res => {
-                        setIsDisable(false)
-                        setIsLoader(false)
-                        if (res?.data?.Result) {
-                            Toaster.success('Machine has been sent for approval.')
-                            props.closeDrawer('', 'submit')
-                        }
-                    }))
-                    break;
-
-                case 5:  //CASE 5 FOR BUDGET MASTER
-
-                    let obj = {
-
-                        LoggedInUserId: loggedInUserId(),
-                        BudgetingId: 0,
-                        FinancialYear: approvalObj?.FinancialYear,
-                        NetPoPrice: approvalObj?.NetPoPrice,
-                        BudgetedPoPrice: approvalObj?.BudgetedPoPrice,
-                        CostingHeadId: approvalObj?.CostingHeadId,
-                        PartId: approvalObj?.PartId,
-                        RevisionNumber: approvalObj?.RevisionNumber,
-                        PlantId: approvalObj?.PlantId,
-                        VendorId: approvalObj?.VendorId,
-                        CustomerId: approvalObj?.CustomerId,
-                        TotalRecordCount: 0,
-                        CurrencyId: approvalObj?.CurrencyId,
-                        BudgetedPoPriceInCurrency: approvalObj?.BudgetedPoPriceInCurrency,
-                        IsSendForApproval: true,
-                        IsRecordInsertedBySimulation: false,
-                        IsFinancialDataChanged: true,
-                        BudgetingPartCostingDetails: approvalObj?.BudgetingPartCostingDetails,
-                        ConditionsData: approvalObj?.conditionTableData,
-                        SenderLevelId: levelDetails?.LevelId,
-                        SenderId: loggedInUserId(),
-                        SenderLevel: levelDetails?.Level
-                    }
-                    if (isBulkUpload) {
-                        senderObj.MasterIdList = approvalData.map(item => item?.RawMaterialId)
-                        senderObj.MasterCreateRequest = {
-                            CreateBudgeting: {}
-                        }
-                    } else {
-                        senderObj.MasterIdList = []
-                        senderObj.MasterCreateRequest = {
-                            CreateBudgeting: obj
-                        }
-                    }
-
-                    senderObj.ApprovalMasterId = BUDGETTYPE
-
-                    //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
-                    setIsLoader(true)
-                    dispatch(masterApprovalRequestBySender(senderObj, res => {
-                        setIsDisable(false)
-                        setIsLoader(false)
-                        if (res?.data?.Result) {
-                            Toaster.success('Budget has been sent for approval.')
-                            props.closeDrawer('', 'submit')
-                        }
-                    }))
-                    break;
-                default:
-                    break;
-            }
-
-        }
-        else {
-            if (props.isRFQ && (checkForNull(masterId) === 1 || checkForNull(masterId) === 2)) {
-                let data = {
-                    CostingBestCostRequest: null,
-                    RawMaterialBestCostRequest: null,
-                    BoughtOutPartBestCostRequest: null
-                };
-
-                switch (checkForNull(masterId)) {
-                    case 1: // Raw Material
-                        data.RawMaterialBestCostRequest = {
-                            "QuotationPartId": selectedRows[0]?.QuotationPartId ?? 0,
-                            "NetRawMaterialsCost": selectedRows[0]?.NetLandedCost ?? 0,
-                            "OtherCost": approvalObj[0]?.OtherNetCost ?? 0,
-                            "BasicRate": approvalObj[0]?.BasicRatePerUOM ?? 0,
-                        };
-                        break;
-
-                    case 2: // Bought Out Part
-                        data.BoughtOutPartBestCostRequest = {
-                            "QuotationPartId": selectedRows[0]?.QuotationPartId ?? 0,
-                            "NetBoughtOutPartCost": selectedRows[0]?.NetLandedCost ?? 0,
-                            "OtherCost": approvalObj[0].OtherNetCost ?? 0,
-                            "BasicRate": approvalObj[0]?.BasicRate ?? 0,
-                        };
-                        break;
-
-                    default:
-
-                        return; // Exit if masterId is neither 1 nor 2
                 }
 
-                setIsLoader(true);
-                dispatch(rfqSaveBestCosting(data, res => {
+                //THIS OBJ IS FOR MASTER SEND FOR APPROVAL
+                let senderObj = {}
+                senderObj.ReasonId = reason ? reason.value : 0
+                senderObj.Reason = reason ? reason.label : ''
+                senderObj.IsFinalApproved = false
+                senderObj.DepartmentId = dept && dept.value ? dept.value : ''
+                senderObj.DepartmentName = dept && dept.label ? dept.label : ''
+                senderObj.ApproverLevelId = approver && approver.levelId ? approver.levelId : ''
+                senderObj.ApproverDepartmentId = dept && dept.value ? dept.value : ''
+                senderObj.ApproverDepartmentName = dept && dept.label ? dept.label : ''
+                senderObj.ApproverLevel = approver && approver.levelName ? approver.levelName : ''
+                // senderObj.ApproverId = approver && approver.value ? approver.value : ''
+                senderObj.ApproverIdList = initialConfiguration?.IsMultipleUserAllowForApproval ? approverIdList : [approver && approver.value ? approver.value : '']
+                senderObj.SenderLevelId = levelDetails?.LevelId
+                senderObj.SenderId = loggedInUserId()
+                senderObj.SenderLevel = levelDetails?.Level
+                senderObj.SenderRemark = remark
+                senderObj.LoggedInUserId = loggedInUserId()
+                senderObj.IsVendor = approvalObj && Object.keys(approvalObj)?.length > 0 ? approvalObj?.IsVendor : false
+                senderObj.EffectiveDate = approvalObj && Object.keys(approvalObj)?.length > 0 ? approvalObj?.EffectiveDate : DayTime(new Date()).format('YYYY-MM-DD HH:mm:ss')
+                senderObj.PurchasingGroup = ''
+                senderObj.MaterialGroup = ''
+                senderObj.CostingTypeId = props?.costingTypeId
 
-                    setIsLoader(false)
-                }))
+                senderObj.ApprovalTypeId = masterId !== 0 ? costingTypeIdToApprovalTypeIdFunction(props?.costingTypeId) : approvalDetails?.ApprovalTypeId
+                senderObj.IsFinalApprover = isFinalApprover
+                senderObj.DivisionId = division?.value ?? props?.divisionId ?? null
+                senderObj.MasterIdList = [
+
+                ]
+                senderObj.BudgetingIdList = []
+
+                switch (checkForNull(masterId)) {
+                    case 1:                        // CASE 1 FOR RAW MATERIAL
+                        if (isBulkUpload) {
+                            senderObj.MasterIdList = bulkuploadArray(approvalData)
+                            senderObj.MasterCreateRequest = {
+                                CreateRawMaterial: {}
+                            }
+                        } else {
+                            senderObj.MasterIdList = []
+                            senderObj.MasterCreateRequest = {
+                                OldRawMaterialId: lastRevisionRawMaterialDetails[0]?.RawMaterialId,
+                                CreateRawMaterial: approvalObj
+                            }
+                        }
+                        senderObj.ApprovalMasterId = RMTYPE
+
+                        //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
+                        setIsLoader(true)
+                        dispatch(masterApprovalAPI(senderObj, res => {
+                            setIsDisable(false)
+                            setIsLoader(false)
+                            if (res?.data?.Result) {
+                                Toaster.success('Raw Material has been sent for approval.')
+                                props.closeDrawer('', 'submit')
+                            }
+                        }))
+                        break;
+
+
+
+                    case 2:  //CASE 2 FOR BOP
+                        if (isBulkUpload) {
+                            senderObj.MasterIdList = bulkuploadArray(approvalData)
+                            senderObj.MasterCreateRequest = {
+                                CreateBoughtOutPart: {}
+                            }
+                        } else {
+                            senderObj.MasterIdList = []
+                            senderObj.MasterCreateRequest = {
+                                OldRawMaterialId: null,
+                                CreateBoughtOutPart: approvalObj
+                            }
+                        }
+                        senderObj.ApprovalMasterId = BOPTYPE
+
+                        //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
+                        setIsLoader(true)
+                        dispatch(masterApprovalAPI(senderObj, res => {
+                            setIsDisable(false)
+                            setIsLoader(false)
+                            if (res?.data?.Result) {
+                                Toaster.success(`${showBopLabel()} has been sent for approval.`)
+                                props.closeDrawer('', 'submit')
+                            }
+                        }))
+                        break;
+
+
+                    case 3:  //CASE 3 FOR OPERATIONS
+
+
+                        if (isBulkUpload) {
+                            senderObj.MasterIdList = bulkuploadArray(approvalData)
+                            senderObj.MasterCreateRequest = {
+                                CreateOperationRequest: {}
+                            }
+                        } else {
+                            senderObj.MasterIdList = []
+                            senderObj.MasterCreateRequest = {
+                                OldRawMaterialId: null,
+                                CreateOperationRequest: approvalObj
+                            }
+                        }
+
+                        senderObj.ApprovalMasterId = OPERATIONTYPE
+
+                        //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
+                        setIsLoader(true)
+                        dispatch(masterApprovalAPI(senderObj, res => {
+                            setIsDisable(false)
+                            setIsLoader(false)
+                            if (res?.data?.Result) {
+                                Toaster.success('Operation has been sent for approval.')
+                                props.closeDrawer('', 'submit')
+                            }
+                        }))
+                        break;
+
+
+                    case 4:  //CASE 4 FOR MACHINE
+
+                        // if (isBulkUpload) {
+                        //     approvalData && approvalData.map(item => {
+                        //         tempArray.push({ MachineId: item?.MachineId, IsImportEntry: item?.EnteryType === 'Domestic' ? false : true, MachineRequest: {}, CostingTypeId: item?.CostingTypeId })
+                        //         return null
+                        //     })
+                        // } else {
+                        //     tempArray.push({ MachineId: EMPTY_GUID, IsImportEntry: IsImportEntry, MachineRequest: approvalObj })
+                        // }
+                        if (isBulkUpload) {
+                            senderObj.MasterIdList = bulkuploadArray(approvalData)
+                            senderObj.MasterCreateRequest = {
+                                OldRawMaterialId: null,
+                                CreateRawMaterial: {}
+                            }
+                        } else if (props.detailEntry) {
+                            senderObj.MasterIdList = []
+                            senderObj.MasterCreateRequest = {
+                                MachineDetailsRequest: approvalObj,
+                                IsDetailedEntry: true
+                            }
+                        } else {
+                            senderObj.MasterIdList = []
+                            senderObj.MasterCreateRequest = {
+                                MachineBasicRequest: approvalObj,
+                                IsDetailedEntry: false
+                            }
+                        }
+
+                        // if (props.detailEntry) {
+                        //     senderObj.MasterCreateRequest = {
+                        //         MachineDetailsRequest: approvalObj,
+                        //         IsDetailedEntry: true
+                        //     }
+                        // } else {
+                        //     senderObj.MasterCreateRequest = {
+                        //         MachineBasicRequest: approvalObj,
+                        //         IsDetailedEntry: false
+                        //     }
+                        // }
+                        senderObj.ApprovalMasterId = MACHINETYPE
+
+                        //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
+                        setIsLoader(true)
+                        dispatch(masterApprovalAPI(senderObj, res => {
+                            setIsDisable(false)
+                            setIsLoader(false)
+                            if (res?.data?.Result) {
+                                Toaster.success('Machine has been sent for approval.')
+                                props.closeDrawer('', 'submit')
+                            }
+                        }))
+                        break;
+
+                    case 5:  //CASE 5 FOR BUDGET MASTER
+
+                        let obj = {
+
+                            LoggedInUserId: loggedInUserId(),
+                            BudgetingId: 0,
+                            FinancialYear: approvalObj?.FinancialYear,
+                            NetPoPrice: approvalObj?.NetPoPrice,
+                            BudgetedPoPrice: approvalObj?.BudgetedPoPrice,
+                            CostingHeadId: approvalObj?.CostingHeadId,
+                            PartId: approvalObj?.PartId,
+                            RevisionNumber: approvalObj?.RevisionNumber,
+                            PlantId: approvalObj?.PlantId,
+                            VendorId: approvalObj?.VendorId,
+                            CustomerId: approvalObj?.CustomerId,
+                            TotalRecordCount: 0,
+                            CurrencyId: approvalObj?.CurrencyId,
+                            BudgetedPoPriceInCurrency: approvalObj?.BudgetedPoPriceInCurrency,
+                            IsSendForApproval: true,
+                            IsRecordInsertedBySimulation: false,
+                            IsFinancialDataChanged: true,
+                            BudgetingPartCostingDetails: approvalObj?.BudgetingPartCostingDetails,
+                            ConditionsData: approvalObj?.conditionTableData,
+                            SenderLevelId: levelDetails?.LevelId,
+                            SenderId: loggedInUserId(),
+                            SenderLevel: levelDetails?.Level
+                        }
+                        if (isBulkUpload) {
+                            senderObj.MasterIdList = approvalData.map(item => item?.RawMaterialId)
+                            senderObj.MasterCreateRequest = {
+                                CreateBudgeting: {}
+                            }
+                        } else {
+                            senderObj.MasterIdList = []
+                            senderObj.MasterCreateRequest = {
+                                CreateBudgeting: obj
+                            }
+                        }
+
+                        senderObj.ApprovalMasterId = BUDGETTYPE
+
+                        //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
+                        setIsLoader(true)
+                        dispatch(masterApprovalRequestBySender(senderObj, res => {
+                            setIsDisable(false)
+                            setIsLoader(false)
+                            if (res?.data?.Result) {
+                                Toaster.success('Budget has been sent for approval.')
+                                props.closeDrawer('', 'submit')
+                            }
+                        }))
+                        break;
+                    default:
+                        break;
+                }
+
             }
-            // let obj = {}
-            // obj.ApprovalProcessSummaryId = approvalDetails.MasterApprovalProcessSummaryId
-            // obj.ApprovalProcessId = approvalDetails.ApprovalProcessId
-            // obj.ApprovalToken = approvalDetails.Token
-            // obj.LoggedInUserId = loggedInUserId()
-            // obj.SenderLevelId = levelDetails.LevelId
-            // obj.SenderId = loggedInUserId()
-            // obj.SenderLevel = levelDetails.Level
-            // obj.SenderDepartmentId = dept && dept.value ? dept.value : ''
-            // obj.SenderDepartmentName = dept && dept.label ? dept.label : ''
-            // // obj.ApproverId = approver && approver.value ? approver.value : ''
-            // obj.ApproverIdList = initialConfiguration?.IsMultipleUserAllowForApproval ? approverIdList : [approver && approver.value ? approver.value : '']
-            // obj.ApproverLevelId = approver && approver.levelId ? approver.levelId : ''
-            // obj.ApproverLevel = approver && approver.levelName ? approver.levelName : ''
-            // obj.Remark = remark
-            // obj.IsApproved = type === 'Approve' ? true : false
-            // obj.IsReject = type === 'Reject' ? true : false
-            // obj.IsReturn = type === 'Return' ? true : false
-            // obj.ApproverDepartmentId = dept && dept.value ? dept.value : ''
-            // obj.ApproverDepartmentName = dept && dept.label ? dept.label : ''
-            // obj.IsFinalApprovalProcess = false
-            // obj.IsRFQCostingSendForApproval = props.isRFQ ? true : false
-            const approvalObjects = Array.isArray(approvalDetails) ? approvalDetails : [approvalDetails];
-            const processedApprovalObjects = approvalObjects.map(item => ({
-                ApprovalProcessSummaryId: item?.ApprovalProcessSummaryId !== null ? item?.ApprovalProcessSummaryId : 0,
-                ApprovalProcessId: item?.ApprovalProcessId !== null ? item?.ApprovalProcessId : 0,
-                ApprovalToken: item?.Token !== null ? item?.Token : 0,
-                LoggedInUserId: loggedInUserId(),
-                SenderLevelId: levelDetails.LevelId,
-                SenderId: loggedInUserId(),
-                SenderLevel: levelDetails.Level,
-                SenderDepartmentId: dept && dept.value ? dept.value : '',
-                SenderDepartmentName: dept && dept.label ? dept.label : '',
-                ApproverIdList: initialConfiguration?.IsMultipleUserAllowForApproval ? approverIdList : [approver && approver.value ? approver.value : ''],
-                ApproverLevelId: approver && approver.levelId ? approver.levelId : '',
-                ApproverLevel: approver && approver.levelName ? approver.levelName : '',
-                Remark: remark,
-                IsApproved: type === 'Approve',
-                IsReject: type === 'Reject',
-                IsReturn: type === 'Return',
-                ApproverDepartmentId: dept && dept.value ? dept.value : '',
-                ApproverDepartmentName: dept && dept.label ? dept.label : '',
-                IsFinalApprovalProcess: false,
-                IsRFQCostingSendForApproval: props.isRFQ ? true : false,
-                // Add any other necessary fields from the item
-            }));
-            setIsLoader(true);
-            const processApproval = (objects) => {
+            else {
+                if (props.isRFQ && (checkForNull(masterId) === 1 || checkForNull(masterId) === 2)) {
+                    let data = {
+                        CostingBestCostRequest: null,
+                        RawMaterialBestCostRequest: null,
+                        BoughtOutPartBestCostRequest: null
+                    };
 
-                return new Promise((resolve, reject) => {
-                    dispatch(approvalOrRejectRequestByMasterApprove(objects, res => {
-                        if (res?.data?.Result) {
-                            resolve(res);
-                        } else {
-                            reject(res);
-                        }
-                    }));
-                });
-            };
-            processApproval(processedApprovalObjects)
-                .then(() => {
-                    setIsDisable(false);
-                    setIsLoader(false);
-                    if (type === 'Approve') {
-                        if (IsPushDrawer) {
-                            Toaster.success('The token has been approved');
-                        } else {
-                            Toaster.success(!IsFinalLevel ? 'The token has been approved' : 'The token has been sent to next level for approval');
-                        }
-                    } else {
-                        Toaster.success(`Token ${type === 'Reject' ? 'Rejected' : "Returned"}`);
+                    switch (checkForNull(masterId)) {
+                        case 1: // Raw Material
+                            data.RawMaterialBestCostRequest = {
+                                "QuotationPartId": selectedRows[0]?.QuotationPartId ?? 0,
+                                "NetRawMaterialsCost": selectedRows[0]?.NetLandedCost ?? 0,
+                                "OtherCost": approvalObj[0]?.OtherNetCost ?? 0,
+                                "BasicRate": approvalObj[0]?.BasicRatePerUOM ?? 0,
+                            };
+                            break;
+
+                        case 2: // Bought Out Part
+                            data.BoughtOutPartBestCostRequest = {
+                                "QuotationPartId": selectedRows[0]?.QuotationPartId ?? 0,
+                                "NetBoughtOutPartCost": selectedRows[0]?.NetLandedCost ?? 0,
+                                "OtherCost": approvalObj[0].OtherNetCost ?? 0,
+                                "BasicRate": approvalObj[0]?.BasicRate ?? 0,
+                            };
+                            break;
+
+                        default:
+
+                            return; // Exit if masterId is neither 1 nor 2
                     }
-                    props.closeDrawer('', `${type === 'Reject' ? 'reject' : "submit"}`);
-                })
-                .catch((error) => {
-                    setIsDisable(false);
-                    setIsLoader(false);
-                    // Toaster.error('An error occurred while processing tokens');
 
-                });
+                    setIsLoader(true);
+                    dispatch(rfqSaveBestCosting(data, res => {
+
+                        setIsLoader(false)
+                    }))
+                }
+                // let obj = {}
+                // obj.ApprovalProcessSummaryId = approvalDetails.MasterApprovalProcessSummaryId
+                // obj.ApprovalProcessId = approvalDetails.ApprovalProcessId
+                // obj.ApprovalToken = approvalDetails.Token
+                // obj.LoggedInUserId = loggedInUserId()
+                // obj.SenderLevelId = levelDetails.LevelId
+                // obj.SenderId = loggedInUserId()
+                // obj.SenderLevel = levelDetails.Level
+                // obj.SenderDepartmentId = dept && dept.value ? dept.value : ''
+                // obj.SenderDepartmentName = dept && dept.label ? dept.label : ''
+                // // obj.ApproverId = approver && approver.value ? approver.value : ''
+                // obj.ApproverIdList = initialConfiguration?.IsMultipleUserAllowForApproval ? approverIdList : [approver && approver.value ? approver.value : '']
+                // obj.ApproverLevelId = approver && approver.levelId ? approver.levelId : ''
+                // obj.ApproverLevel = approver && approver.levelName ? approver.levelName : ''
+                // obj.Remark = remark
+                // obj.IsApproved = type === 'Approve' ? true : false
+                // obj.IsReject = type === 'Reject' ? true : false
+                // obj.IsReturn = type === 'Return' ? true : false
+                // obj.ApproverDepartmentId = dept && dept.value ? dept.value : ''
+                // obj.ApproverDepartmentName = dept && dept.label ? dept.label : ''
+                // obj.IsFinalApprovalProcess = false
+                // obj.IsRFQCostingSendForApproval = props.isRFQ ? true : false
+                const approvalObjects = Array.isArray(approvalDetails) ? approvalDetails : [approvalDetails];
+                const processedApprovalObjects = approvalObjects.map(item => ({
+                    ApprovalProcessSummaryId: item?.ApprovalProcessSummaryId !== null ? item?.ApprovalProcessSummaryId : 0,
+                    ApprovalProcessId: item?.ApprovalProcessId !== null ? item?.ApprovalProcessId : 0,
+                    ApprovalToken: item?.Token !== null ? item?.Token : 0,
+                    LoggedInUserId: loggedInUserId(),
+                    SenderLevelId: levelDetails.LevelId,
+                    SenderId: loggedInUserId(),
+                    SenderLevel: levelDetails.Level,
+                    SenderDepartmentId: dept && dept.value ? dept.value : '',
+                    SenderDepartmentName: dept && dept.label ? dept.label : '',
+                    ApproverIdList: initialConfiguration?.IsMultipleUserAllowForApproval ? approverIdList : [approver && approver.value ? approver.value : ''],
+                    ApproverLevelId: approver && approver.levelId ? approver.levelId : '',
+                    ApproverLevel: approver && approver.levelName ? approver.levelName : '',
+                    Remark: remark,
+                    IsApproved: type === 'Approve',
+                    IsReject: type === 'Reject',
+                    IsReturn: type === 'Return',
+                    ApproverDepartmentId: dept && dept.value ? dept.value : '',
+                    ApproverDepartmentName: dept && dept.label ? dept.label : '',
+                    IsFinalApprovalProcess: false,
+                    IsRFQCostingSendForApproval: props.isRFQ ? true : false,
+                    // Add any other necessary fields from the item
+                }));
+                setIsLoader(true);
+                const processApproval = (objects) => {
+
+                    return new Promise((resolve, reject) => {
+                        dispatch(approvalOrRejectRequestByMasterApprove(objects, res => {
+                            if (res?.data?.Result) {
+                                resolve(res);
+                            } else {
+                                reject(res);
+                            }
+                        }));
+                    });
+                };
+                processApproval(processedApprovalObjects)
+                    .then(() => {
+                        setIsDisable(false);
+                        setIsLoader(false);
+                        if (type === 'Approve') {
+                            if (IsPushDrawer) {
+                                Toaster.success('The token has been approved');
+                            } else {
+                                Toaster.success(!IsFinalLevel ? 'The token has been approved' : 'The token has been sent to next level for approval');
+                            }
+                        } else {
+                            Toaster.success(`Token ${type === 'Reject' ? 'Rejected' : "Returned"}`);
+                        }
+                        props.closeDrawer('', `${type === 'Reject' ? 'reject' : "submit"}`);
+                    })
+                    .catch((error) => {
+                        setIsDisable(false);
+                        setIsLoader(false);
+                        // Toaster.error('An error occurred while processing tokens');
+
+                    });
+            }
         }
 
     }), 500)
@@ -695,17 +819,35 @@ function MasterSendForApproval(props) {
                                                 placeholder={"Select"}
                                                 Controller={Controller}
                                                 control={control}
-                                                rules={{ required: false }}
                                                 register={register}
                                                 defaultValue={""}
-                                                options={renderDropdownListing("Dept")}
-                                                mandatory={false}
+                                                options={departmentDropdown}
                                                 handleChange={handleDepartmentChange}
                                                 errors={errors.dept}
-                                                disabled={initialConfiguration?.IsMultipleUserAllowForApproval}
+                                                disabled={initialConfiguration?.IsMultipleUserAllowForApproval && (!getConfigurationKey().IsDivisionAllowedForDepartment || isDisableDept)}
+                                                mandatory={true}
+                                                rules={{ required: true }}
+
                                             />
                                         </div>
-                                        <div className="input-group form-group col-md-6 input-withouticon">
+                                        {getConfigurationKey().IsDivisionAllowedForDepartment && isShowDivision && <Col md="6">
+                                            <SearchableSelectHookForm
+                                                label={"Division"}
+                                                name={"Division"}
+                                                placeholder={"Select"}
+                                                Controller={Controller}
+                                                control={control}
+                                                register={register}
+                                                defaultValue={""}
+                                                options={divisionList}
+                                                disabled={(Object.keys(getValues('dept')).length === 0)}
+                                                handleChange={handleDivisionChange}
+                                                errors={errors.Division}
+                                                mandatory={true}
+                                                rules={{ required: true }}
+                                            />
+                                        </Col>}
+                                        {!isFinalApprover && <div className="input-group form-group col-md-6 input-withouticon">
                                             {initialConfiguration?.IsMultipleUserAllowForApproval ? <>
                                                 <AllApprovalField
                                                     label="Approver"
@@ -727,12 +869,12 @@ function MasterSendForApproval(props) {
                                                     disabled={false}
                                                     errors={errors.approver}
                                                 />}
-                                        </div>
+                                        </div>}
                                     </>
                                 )}
                                 {
 
-                                    (type === 'Sender' && !IsFinalLevel) &&
+                                    (type === 'Sender' && !IsFinalLevel && !isFinalApprover) &&
                                     <>
 
                                         <div className="input-group form-group col-md-6">
@@ -1079,7 +1221,7 @@ function MasterSendForApproval(props) {
 
                                     </>
                                 }
-                                <div className="input-group form-group col-md-12">
+                                {!isFinalApprover && <div className="input-group form-group col-md-12">
                                     <TextAreaHookForm
                                         label="Remark"
                                         name={'remark'}
@@ -1099,7 +1241,7 @@ function MasterSendForApproval(props) {
                                         disabled={false}
                                     />
 
-                                </div>
+                                </div>}
                             </Row>
                             {getConfigurationKey()?.IsShowMaterialIndexation && Number(masterId) === 1 && type === 'Sender' && <Row className="mb-2 accordian-container">
                                 <Col md="6" className='d-flex align-items-center'>
@@ -1155,7 +1297,7 @@ function MasterSendForApproval(props) {
                                         type={'button'}
                                         className="reset mr15 cancel-btn"
                                         onClick={toggleDrawer}
-                                        disabled={isDisable}
+                                        disabled={false}
                                     >
                                         <div className={'cancel-icon'}></div>
                                         {'Cancel'}
@@ -1168,7 +1310,7 @@ function MasterSendForApproval(props) {
                                         disabled={isDisable}
                                     >
                                         <div className={'save-icon'}></div>
-                                        {'Submit'}
+                                        {isFinalApprover || type === 'Approve' || type === 'Reject' ? 'Submit' : 'Send For Approval'}
                                     </button>
                                 </div>
                             </Row>
