@@ -18,16 +18,18 @@ function Plastic(props) {
 
   let totalRM
   if (!isSummary) {
-    const { CostingPartDetails } = item
-    const { IsApplyMasterBatch, MasterBatchTotal, MasterBatchPercentage } = CostingPartDetails
+    if (!props.fromPackaging) {
+      const { CostingPartDetails } = item
+      const { IsApplyMasterBatch, MasterBatchTotal, MasterBatchPercentage } = CostingPartDetails
 
-    //IF MASTER BATCH IS ADDED OUTSIDE THE CALCULATOR THEN RM RATE WILL BE SUM OF RMRATE AND MASTERBATCH RATE (AFTER PERCENTAGE)
-    if (IsApplyMasterBatch) {
-      const RMRate = calculatePercentageValue(rmRowData.RMRate, (100 - MasterBatchPercentage));
-      const RMRatePlusMasterBatchRate = RMRate + checkForNull(MasterBatchTotal)
-      totalRM = RMRatePlusMasterBatchRate
-    } else {
-      totalRM = Number(rmRowData.RMRate)
+      //IF MASTER BATCH IS ADDED OUTSIDE THE CALCULATOR THEN RM RATE WILL BE SUM OF RMRATE AND MASTERBATCH RATE (AFTER PERCENTAGE)
+      if (IsApplyMasterBatch) {
+        const RMRate = calculatePercentageValue(rmRowData.RMRate, (100 - MasterBatchPercentage));
+        const RMRatePlusMasterBatchRate = RMRate + checkForNull(MasterBatchTotal)
+        totalRM = RMRatePlusMasterBatchRate
+      } else {
+        totalRM = Number(rmRowData.RMRate)
+      }
     }
   } else {
     totalRM = Number(rmRowData.RMRate)

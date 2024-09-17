@@ -110,15 +110,25 @@ function ViewRM(props) {
               }
             }))
           } else {
+            if (tempData?.netRMCostView[index]?.LayoutType === 'Plastic') {
+              dispatch(getRawMaterialCalculationForPlastic(tempData.netRMCostView[index].CostingId, tempData.netRMCostView[index].RawMaterialId, tempData.netRMCostView[index].RawMaterialCalculatorId, res => {
 
-            dispatch(getRawMaterialCalculationForCorrugatedBox(tempData.netRMCostView[index].CostingId, tempData.netRMCostView[index].RawMaterialId, tempData.netRMCostView[index].RawMaterialCalculatorId, res => {
+                if (Number(res.status) === Number(204)) {
+                  Toaster.warning('Data is not available for calculator')
+                } else {
+                  setCalculatorData(res, index)
+                }
+              }))
+            } else {
+              dispatch(getRawMaterialCalculationForCorrugatedBox(tempData.netRMCostView[index].CostingId, tempData.netRMCostView[index].RawMaterialId, tempData.netRMCostView[index].RawMaterialCalculatorId, res => {
 
-              if (Number(res.status) === Number(204)) {
-                Toaster.warning('Data is not available for calculator')
-              } else {
-                setCalculatorData(res, index)
-              }
-            }))
+                if (Number(res.status) === Number(204)) {
+                  Toaster.warning('Data is not available for calculator')
+                } else {
+                  setCalculatorData(res, index)
+                }
+              }))
+            }
           }
           break;
         default:
@@ -161,10 +171,15 @@ function ViewRM(props) {
               setCalculatorData(res, index)
             }))
           } else {
-
-            dispatch(getRawMaterialCalculationForCorrugatedBox(tempData.netRMCostView[index].CostingId, tempData.netRMCostView[index].RawMaterialId, tempData.netRMCostView[index].RawMaterialCalculatorId, res => {
-              setCalculatorData(res, index)
-            }))
+            if (tempData?.netRMCostView[index]?.LayoutType === 'Plastic') {
+              dispatch(getRawMaterialCalculationForPlastic(tempData.netRMCostView[index].CostingId, tempData.netRMCostView[index].RawMaterialId, tempData.netRMCostView[index].RawMaterialCalculatorId, res => {
+                setCalculatorData(res, index)
+              }))
+            } else {
+              dispatch(getRawMaterialCalculationForCorrugatedBox(tempData.netRMCostView[index].CostingId, tempData.netRMCostView[index].RawMaterialId, tempData.netRMCostView[index].RawMaterialCalculatorId, res => {
+                setCalculatorData(res, index)
+              }))
+            }
           }
           break;
         case DIE_CASTING:
