@@ -18,16 +18,18 @@ function Plastic(props) {
 
   let totalRM
   if (!isSummary) {
-    const { CostingPartDetails } = item
-    const { IsApplyMasterBatch, MasterBatchTotal, MasterBatchPercentage } = CostingPartDetails
+    if (!props.fromPackaging) {
+      const { CostingPartDetails } = item
+      const { IsApplyMasterBatch, MasterBatchTotal, MasterBatchPercentage } = CostingPartDetails
 
-    //IF MASTER BATCH IS ADDED OUTSIDE THE CALCULATOR THEN RM RATE WILL BE SUM OF RMRATE AND MASTERBATCH RATE (AFTER PERCENTAGE)
-    if (IsApplyMasterBatch) {
-      const RMRate = calculatePercentageValue(rmRowData.RMRate, (100 - MasterBatchPercentage));
-      const RMRatePlusMasterBatchRate = RMRate + checkForNull(MasterBatchTotal)
-      totalRM = RMRatePlusMasterBatchRate
-    } else {
-      totalRM = Number(rmRowData.RMRate)
+      //IF MASTER BATCH IS ADDED OUTSIDE THE CALCULATOR THEN RM RATE WILL BE SUM OF RMRATE AND MASTERBATCH RATE (AFTER PERCENTAGE)
+      if (IsApplyMasterBatch) {
+        const RMRate = calculatePercentageValue(rmRowData.RMRate, (100 - MasterBatchPercentage));
+        const RMRatePlusMasterBatchRate = RMRate + checkForNull(MasterBatchTotal)
+        totalRM = RMRatePlusMasterBatchRate
+      } else {
+        totalRM = Number(rmRowData.RMRate)
+      }
     }
   } else {
     totalRM = Number(rmRowData.RMRate)
@@ -175,7 +177,7 @@ function Plastic(props) {
     props.toggleDrawer('')
   }
   const onSubmit = debounce(handleSubmit((values) => {
-    DisableMasterBatchCheckbox(!item?.CostingPartDetails?.IsApplyMasterBatch ? true : false)
+    !props?.fromPackaging && DisableMasterBatchCheckbox(!item?.CostingPartDetails?.IsApplyMasterBatch ? true : false)
     setIsDisable(true)
     let obj = {}
 
@@ -196,6 +198,7 @@ function Plastic(props) {
     obj.ScrapCost = dataToSend.scrapCost
     obj.BurningValue = dataToSend.burningValue
     obj.LoggedInUserId = loggedInUserId()
+    obj.LayoutType = "Plastic"
     let tempArr = []
     tableVal && tableVal.map(item => (
       tempArr.push({ LossOfType: item.LossOfType, LossPercentage: item.LossPercentage, LossWeight: item.LossWeight, CostingCalculationDetailId: "0" })

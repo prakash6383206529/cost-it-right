@@ -7,7 +7,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import LoaderCustom from '../../common/LoaderCustom'
 import NoContentFound from '../../common/NoContentFound';
 import DayTime from '../../common/DayTimeWrapper'
-import { IsShowFreightAndShearingCostFields, checkForDecimalAndNull, getConfigurationKey, handleDepartmentHeader, loggedInUserId, searchNocontentFilter, showBopLabel, userDetails, userTechnologyDetailByMasterId, userTechnologyLevelDetailsWithoutCostingToApproval } from '../../../helper'
+import { IsShowFreightAndShearingCostFields, checkForDecimalAndNull, getConfigurationKey, handleDepartmentHeader, loggedInUserId, removeSpaces, searchNocontentFilter, showBopLabel, userDetails, userTechnologyDetailByMasterId, userTechnologyLevelDetailsWithoutCostingToApproval } from '../../../helper'
 import { BOP_MASTER_ID, BUDGET_ID, CLASSIFICATIONAPPROVALTYPEID, EMPTY_DATA, LPSAPPROVALTYPEID, MACHINE_MASTER_ID, ONBOARDINGID, OPERATIONS_ID } from '../../../config/constants';
 import { deleteRawMaterialAPI, getRMApprovalList } from '../actions/Material';
 import SummaryDrawer from '../SummaryDrawer';
@@ -99,7 +99,7 @@ function CommonApproval(props) {
         if (statusColumnData && statusColumnData.data) {
             setDisableFilter(false)
             setWarningMessage(true)
-            setFloatingFilterData(prevState => ({ ...prevState, DisplayStatus: statusColumnData.data }))
+            setFloatingFilterData(prevState => ({ ...prevState, DisplayStatus: removeSpaces(statusColumnData.data) }))
         }
     }, [statusColumnData])
     var filterParams = {

@@ -407,9 +407,17 @@ function RawMaterialCost(props) {
 
           }))
         } else {
-          dispatch(getRawMaterialCalculationForCorrugatedBox(item.CostingId, tempData.RawMaterialId, tempData.RawMaterialCalculatorId, res => {
-            setCalculatorData(res, index)
-          }))
+          if (tempData.LayoutType === 'Plastic') {
+            dispatch(getRawMaterialCalculationForPlastic(item.CostingId, tempData.RawMaterialId, tempData.RawMaterialCalculatorId, res => {
+              setCalculatorData(res, index)
+            }))
+          }
+          else {
+            dispatch(getRawMaterialCalculationForCorrugatedBox(item.CostingId, tempData.RawMaterialId, tempData.RawMaterialCalculatorId, res => {
+              setCalculatorData(res, index)
+            }))
+          }
+
         }
         break;
       case DIE_CASTING:
@@ -1481,9 +1489,9 @@ function RawMaterialCost(props) {
                       <th>{`Scrap Rate`}</th>
                       <th>{`UOM`}</th>
                       {showCalculatorFunctionHeader() && <th className={`text-center weight-calculator`}>{`Weight Calculator`}</th>}
-                      {(costData?.TechnologyId === Ferrous_Casting) && <th>Percentage</th>}
                       {<th>{`Gross Weight`}</th>}
                       {<th>{`Finish Weight`}</th>}
+                      {(costData?.TechnologyId === Ferrous_Casting) && <th>Percentage</th>}
                       {costData?.TechnologyId === PLASTIC && <th>{'Burning Loss Weight'}</th>}
                       {isScrapRecoveryPercentageApplied && <th className='scrap-recovery'>{`Scrap Recovery (%)`}</th>}
                       {<th className='scrap-weight'>Scrap Weight </th>}

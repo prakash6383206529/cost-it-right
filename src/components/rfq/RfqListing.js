@@ -16,7 +16,7 @@ import { PaginationWrapper } from '.././common/commonPagination'
 import { getQuotationList, cancelRfqQuotation } from './actions/rfq';
 import ViewRfq from './ViewRfq';
 import AddRfq from './AddRfq';
-import { checkPermission, encodeQueryParamsAndLog, getConfigurationKey, getTimeZone, loggedInUserId, searchNocontentFilter, setLoremIpsum, userDetails } from '../../helper';
+import { checkPermission, encodeQueryParamsAndLog, getConfigurationKey, getTimeZone, loggedInUserId, removeSpaces, searchNocontentFilter, setLoremIpsum, userDetails } from '../../helper';
 import DayTime from '../common/DayTimeWrapper';
 import Attachament from '../costing/components/Drawers/Attachament';
 import { useRef } from 'react';
@@ -74,28 +74,28 @@ function RfqListing(props) {
     const [warningMessage, setWarningMessage] = useState(false)
     const [disableDownload, setDisableDownload] = useState(false)
 
-const [disableFilter , setDisableFilter] = useState(false)
-const [floatingFilterData, setFloatingFilterData] = useState({
-    QuotationNumber: "",
-    PartType: "",
-    PartNumber: "",
-    RawMaterial: "",
-    NoOfQuotationReceived: "",
-    vendorCode: "",
-    plantCode: "",
-    TechnologyName: "",
-    RaisedBy: "",
-    RaisedOn: "",
-    PartDataSentDate: "",
-    VisibilityMode: "",
-    VisibilityDate: "",
-    VisibilityDuration: "",
-    LastSubmissionDate: "",
-    Status: "",
-    boughtOutPart: ""
-  });
-      
-      const [filterModel, setFilterModel] = useState({});
+    const [disableFilter, setDisableFilter] = useState(false)
+    const [floatingFilterData, setFloatingFilterData] = useState({
+        QuotationNumber: "",
+        PartType: "",
+        PartNumber: "",
+        RawMaterial: "",
+        NoOfQuotationReceived: "",
+        vendorCode: "",
+        plantCode: "",
+        TechnologyName: "",
+        RaisedBy: "",
+        RaisedOn: "",
+        PartDataSentDate: "",
+        VisibilityMode: "",
+        VisibilityDate: "",
+        VisibilityDuration: "",
+        LastSubmissionDate: "",
+        Status: "",
+        boughtOutPart: ""
+    });
+
+    const [filterModel, setFilterModel] = useState({});
     const { technologyLabel } = useLabels();
 
     const { topAndLeftMenuData } = useSelector(state => state.auth);
@@ -128,7 +128,7 @@ const [floatingFilterData, setFloatingFilterData] = useState({
         if (statusColumnData && statusColumnData.data) {
             setDisableFilter(false)
             setWarningMessage(true)
-            setFloatingFilterData(prevState => ({ ...prevState, Status: statusColumnData.data }))
+            setFloatingFilterData(prevState => ({ ...prevState, Status: removeSpaces(statusColumnData.data) }))
         }
     }, [statusColumnData])
     useEffect(() => {
