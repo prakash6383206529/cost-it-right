@@ -28,7 +28,7 @@ import { hideMultipleColumnFromExcel } from '../../common/CommonFunctions'
 import TourWrapper from '../../common/Tour/TourWrapper'
 import { Steps } from '../../common/Tour/TourMessages'
 import { useTranslation } from 'react-i18next'
-import { useLabels } from '../../../helper/core'
+import { useLabels, useWithLocalization } from '../../../helper/core'
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -876,14 +876,14 @@ function ReportListing(props) {
 
     }
 
-
+    const REPORT_DOWNLOAD_EXCEl_LOCALIZATION = useWithLocalization(REPORT_DOWNLOAD_EXCEl, "MasterLabels")
     const renderColumn = (fileName) => {
 
         let tempArr = []
         tempArr = gridApi && gridApi?.getSelectedRows()
         tempArr = (tempArr && tempArr.length > 0) ? tempArr : (allReportListingData ? allReportListingData : [])
 
-        return returnExcelColumn(REPORT_DOWNLOAD_EXCEl, tempArr)
+        return returnExcelColumn(REPORT_DOWNLOAD_EXCEl_LOCALIZATION, tempArr)
     }
 
     const returnExcelColumn = (data = [], TempData) => {

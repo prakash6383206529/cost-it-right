@@ -39,7 +39,7 @@ import { resetStatePagination, updateCurrentRowIndex, updateGlobalTake, updatePa
 import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from '../../common/Tour/TourMessages';
 import { useTranslation } from 'react-i18next';
-import { useLabels } from '../../../helper/core';
+import { useLabels, useWithLocalization } from '../../../helper/core';
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -696,7 +696,7 @@ function RMImportListing(props) {
 
   }
 
-
+  const RMIMPORT_DOWNLOAD_EXCEl_LOCALIZATION = useWithLocalization(RMIMPORT_DOWNLOAD_EXCEl, "MasterLabels")
   const onBtExport = () => {
     let tempArr = []
 
@@ -704,7 +704,7 @@ function RMImportListing(props) {
     tempArr = selectedRowForPagination
     tempArr = (tempArr && tempArr.length > 0) ? tempArr : (allRmDataList ? allRmDataList : [])
 
-    return returnExcelColumn(RMIMPORT_DOWNLOAD_EXCEl, tempArr)
+    return returnExcelColumn(RMIMPORT_DOWNLOAD_EXCEl_LOCALIZATION, tempArr)
   };
 
   const onFilterTextBoxChanged = (e) => {
