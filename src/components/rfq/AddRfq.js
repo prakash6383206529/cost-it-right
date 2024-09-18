@@ -3636,12 +3636,12 @@ function AddRfq(props) {
                                                                     }}
                                                                     frameworkComponents={frameworkComponents}
                                                                 >
-                                                                    <AgGridColumn field="Vendor" headerName="Vendor (Code)" ></AgGridColumn>
+                                                                    <AgGridColumn field="Vendor" headerName="Vendor (Code)" tooltipField="Vendor"></AgGridColumn>
                                                                     {IsSendQuotationToPointOfContact() && (
                                                                         <AgGridColumn width={"270px"} field="ContactPerson" headerName="Point of Contact" ></AgGridColumn>)}
                                                                     {vendorList && havellsKey && <AgGridColumn field='IncoTerms' header='Inco Terms' cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                                                                     {vendorList && havellsKey && <AgGridColumn field='PaymentTerms' header='Payment Terms' cellRenderer={'hyphenFormatter'} ></AgGridColumn>}
-                                                                    {vendorList && havellsKey && ShowLdClause(selectedOption) && <AgGridColumn field='LDClause' header='LD Clause' cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                                                                    {vendorList && havellsKey && ShowLdClause(selectedOption) && <AgGridColumn field='LDClause' header='LD Clause' tooltipField="LDClause" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                                                                     <AgGridColumn width={"270px"} field="VendorId" headerName="Vendor Id" hide={true} ></AgGridColumn>
                                                                     <AgGridColumn width={"180px"} field="VendorId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'buttonFormatterVendorTable'}></AgGridColumn>
                                                                 </AgGridReact>
