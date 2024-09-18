@@ -626,6 +626,25 @@ const SendForApproval = (props) => {
     }))
   }
   const handleDepartmentChange = (newValue, approvalId) => {
+    if (approvalId === CLASSIFICATIONAPPROVALTYPEID) {
+      setValue('approver', '')
+      setValue('Division', '')
+      setValue('reason', '')
+      setValue('month', '')
+      setValue('remarks', '')
+      setClassificationApprovalDropDown([])
+      setClassificationApproverIdList([])
+      setIsFinalApprover(false)
+    } else if (approvalId === LPSAPPROVALTYPEID) {
+      setValue('approver1', '')
+      setValue('Division1', '')
+      setValue('reason1', '')
+      setValue('remarks1', '')
+      setLPSApprovalDropDown([])
+      setLPSApproverIdList([])
+      setIsFinalApproverLps(false)
+    }
+
 
     setApprovalType(approvalId)
     if (getConfigurationKey().IsDivisionAllowedForDepartment) {
@@ -637,6 +656,7 @@ const SendForApproval = (props) => {
         setDepartment(newValue)
 
         if (!showDivision) {
+          console.log('showDivision: ', showDivision);
           callCheckFinalUserApi(newValue.value, approvalType, division?.value)
 
           // callCheckFinalUserApi(newValue, approvalId);
