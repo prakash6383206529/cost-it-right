@@ -87,7 +87,7 @@ const UsersListing = (props) => {
 				}
 			}
 		}
-		if (props.tabId === '5') {
+		if (props.tabId === '6') {
 			if (topAndLeftMenuData !== undefined) {
 				const userMenu = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === 'Users');
 				const userPermissions = userMenu && userMenu.Pages.find(el => el.PageName === RFQUSER);
