@@ -182,6 +182,7 @@ function OpenWeightCalculator(props) {
               toggleDrawer={toggleDrawer}
               item={item}
               CostingViewMode={CostingViewMode ? CostingViewMode : false}
+              isSummary={isSummary}
             />
           )
         }
