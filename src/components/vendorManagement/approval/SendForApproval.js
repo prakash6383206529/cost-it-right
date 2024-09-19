@@ -655,13 +655,8 @@ const SendForApproval = (props) => {
         setIsShowDivision(showDivision);
         setDivisionList(divisionArray);
         setDepartment(newValue)
-        // console.log('newValue: ', newValue);
-
         // if (!isShowDivision) {
-        //   console.log('isShowDivision: ', isShowDivision);
-        //   console.log('showDivision: ', showDivision);
         //   callCheckFinalUserApi(newValue.value, approvalType, division?.value)
-
         // }
       });
     } else {

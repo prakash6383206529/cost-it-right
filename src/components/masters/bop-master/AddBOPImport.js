@@ -763,9 +763,7 @@ class AddBOPImport extends Component {
         this.props.getPlantBySupplier(vendorName.value, () => { })
         const { costingTypeId, currency, effectiveDate, client } = this.state;
         const costingType = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? VBCTypeId : costingTypeId) : ZBCTypeId
-        console.log('costingType', costingType)
         const vendorValue = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? newValue.value : EMPTY_GUID) : EMPTY_GUID;
-        console.log('vendorValue', vendorValue)
         if (this.state.currency && this.state.currency.length !== 0 && effectiveDate) {
           if (IsFetchExchangeRateVendorWise() && (!newValue || newValue?.length === 0)) {
             this.setState({ showWarning: true });
