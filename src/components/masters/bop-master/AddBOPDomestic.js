@@ -909,7 +909,6 @@ class AddBOPDomestic extends Component {
   * @description Used to Submit the form
   */
   onSubmit = debounce((values) => {
-    console.log(values, 'values')
     const { BOPCategory, selectedPlants, vendorName, costingTypeId, sourceLocation, BOPID, isEditFlag, files, DropdownChanged, oldDate, client, effectiveDate, UOM, DataToCheck, isDateChange, IsFinancialDataChanged,
       isClientVendorBOP, isTechnologyVisible, Technology, FinalConditionCostBaseCurrency, FinalBasicPriceBaseCurrency, FinalNetLandedCostBaseCurrency, FinalBasicRateBaseCurrency, conditionTableData, isBOPAssociated, IsSAPCodeHandle, IsSAPCodeUpdated } = this.state;
     const { fieldsObj } = this.props;
