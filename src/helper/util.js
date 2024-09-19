@@ -1649,3 +1649,6 @@ export function checkTechnologyIdAndRfq(viewCostingData = []) {
 export const removeSpaces = (str = '') => {
   return str.replace(/\s+/g, '');
 };
+export const getChangeHighlightClass = (originalValue, updatedValue) => {
+  return updatedValue && updatedValue !== originalValue ? 'red-value' : '';
+};
