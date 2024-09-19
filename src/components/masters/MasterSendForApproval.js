@@ -90,7 +90,7 @@ function MasterSendForApproval(props) {
                 setDepartment(department[0])
                 if (props.approvalListing) {
                     fetchAndSetApprovalUsers(updateList[0]?.Value, reasonId, approvalData[0]?.DivisionId);
-                } else if ((type !== "Approve" && props.masterSummary) && getConfigurationKey().IsDivisionAllowedForDepartment) {
+                } else if (type !== "Approve" && getConfigurationKey().IsDivisionAllowedForDepartment) {
                     fetchDivisionList(department[0].value, dispatch, (divisionArray, showDivision) => {
                         setIsShowDivision(showDivision);
                         setDivisionList(divisionArray);
