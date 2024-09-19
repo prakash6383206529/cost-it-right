@@ -141,6 +141,7 @@ const RaiseRfqBopDetails = (props) => {
 
     }
     const handleBopNo = (newValue, actionMeta) => {
+
         if (newValue && newValue !== '') {
 
             delete errors.RawMaterialCode
@@ -156,8 +157,13 @@ const RaiseRfqBopDetails = (props) => {
 
         } else {
             setBopNumber([])
-            dispatch(getBopCategorySelectList(newValue?.value, () => { }))
+            //dispatch(getBopCategorySelectList(newValue?.value, () => { }))
             setBopCategory([])
+            setBopName("")
+            setValue("Category", "")
+
+
+
         }
     }
     const handleBopCategory = (newValue, actionMeta) => {

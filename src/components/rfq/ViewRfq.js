@@ -63,6 +63,7 @@ function RfqListing(props) {
     const [isEdit, setIsEdit] = useState(false);
     const [rowData, setRowData] = useState([])
 
+
     const [noData, setNoData] = useState(false)
     const [sendForApproval, setSendForApproval] = useState(false)
     const [rejectDrawer, setRejectDrawer] = useState(false)
@@ -960,8 +961,8 @@ function RfqListing(props) {
                         const matchedItem = arr.find(item => item?.CostingId === selectedItem);
                         return matchedItem ? matchedItem.Status : null;
                     })
-                default:
                     break
+                default:
 
             }
         })
@@ -985,29 +986,30 @@ function RfqListing(props) {
     */
     const buttonFormatter = (props) => {
 
+
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+
 
         let showActionIcons = false
         let showReminderIcon = false
         let showRemarkHistory = false
 
-        if (rowData?.CostingNumber === null || rowData?.RawMaterialId === null || rowData?.BoughtOutPartId === null) {
+        if (rowData?.CostingNumber === null && rowData?.RawMaterialId === null && rowData?.BoughtOutPartId === null) {
             showReminderIcon = true
 
         } else {
-
             showRemarkHistory = true
             if (rowData.ShowApprovalButton) {
                 showActionIcons = true
-
             } else {
-
                 showActionIcons = false
             }
         }
 
         let reminderCount = rowData?.RemainderCount
+
+
 
         return (
             <>
@@ -1766,7 +1768,7 @@ function RfqListing(props) {
                         <button type={'button'} disabled={costingsDifferentStatus} className="mr5 approve-reject-btn" onClick={() => returnDetailsClick("", selectedRows)} >
                             {/* <button type={'button'} disabled={costingsDifferentStatus} className="mr5 approve-reject-btn" onClick={() => returnDetailsClick("", selectedRows)} > */}
                             <div className={'cancel-icon-white mr5'}></div>
-                            {t('return', {ns: 'CostingLabels', defaultValue: 'Return' })}
+                            {t('return', { ns: 'CostingLabels', defaultValue: 'Return' })}
 
                         </button>)}
                     {(matchedStatus?.length !== 0 || matchedStatus?.includes(RECEIVED)) && (
