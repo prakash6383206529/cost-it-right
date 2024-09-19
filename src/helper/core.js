@@ -18,7 +18,8 @@ export const useLabels = () => {
         partTypeLabel: tMasterLabels('commonFields.partType', { defaultValue: 'Part Type' }),
         RMCategoryLabel: tMasterLabels('RMCategoryLabel', { defaultValue: 'Category' }),
         discountLabel: tCosting('discount', { defaultValue: 'Hundi/Discount' }),
-        toolMaintenanceCostLabel: tCosting('toolMaintenanceCost', { defaultValue: 'Tool Maintenance Cost (per pcs)' })
+        toolMaintenanceCostLabel: tCosting('toolMaintenanceCost', { defaultValue: 'Tool Maintenance Cost (per pcs)' }),
+        vendorLabel : tMasterLabels('VendorLabel', { defaultValue: 'Vendor'})
     };
 };
 export const useWithLocalization = (dataArray, ns) => {
