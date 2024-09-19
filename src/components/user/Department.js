@@ -167,7 +167,6 @@ class Department extends Component {
 		const { isEditFlag, DepartmentId, departmentDetail } = this.props;
 		const { reset } = this.props;
 		const { DataToChange, selectedPlants, isApplyDivision, divisions } = this.state;
-		console.log(divisions, 'divisions')
 		this.setState({ isLoader: true })
 
 		let plantArray = []
@@ -324,7 +323,6 @@ class Department extends Component {
 
 	}
 	handleDivision = (newValue) => {
-		console.log(newValue, 'newValue')
 		const { divisionSelectAll } = this.state
 		if (newValue?.filter(element => String(element?.Value) === '0')?.length > 0) {
 			this.setState({ divisions: divisionSelectAll })
