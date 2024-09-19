@@ -121,6 +121,7 @@ function MasterSendForApproval(props) {
                 fetchAndSetApprovalUsers(updateList[0]?.Value, reasonId, approvalData[0]?.DivisionId);
                 setIsShowDivision(false)
             }
+
         }))
         getLastRevisionData()
     }, [])
