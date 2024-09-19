@@ -141,6 +141,7 @@ const RaiseRfqBopDetails = (props) => {
 
     }
     const handleBopNo = (newValue, actionMeta) => {
+
         if (newValue && newValue !== '') {
 
             delete errors.RawMaterialCode
@@ -156,8 +157,13 @@ const RaiseRfqBopDetails = (props) => {
 
         } else {
             setBopNumber([])
-            dispatch(getBopCategorySelectList(newValue?.value, () => { }))
+            //dispatch(getBopCategorySelectList(newValue?.value, () => { }))
             setBopCategory([])
+            setBopName("")
+            setValue("Category", "")
+
+
+
         }
     }
     const handleBopCategory = (newValue, actionMeta) => {
@@ -237,7 +243,7 @@ const RaiseRfqBopDetails = (props) => {
                         <TooltipCustom id="addBOPSpecification" disabledIcon={true} tooltipText="Click on the + button to start inputting Specification and mandatory attachments." />
                         <Button id="addBOPSpecification" className={"ml-2 mb-2 "}
                             variant={updateButtonPartNoTable ? 'Edit' : 'plus-icon-square'}
-                            title={updateButtonPartNoTable ? 'Edit' : 'Add'} onClick={DrawerToggle} disabled={disabledPartUid || (dataProps?.isEditFlag && showStatus !== PREDRAFT)}
+                            title={updateButtonPartNoTable ? 'Edit' : 'Add'} onClick={DrawerToggle} disabled={dataProps?.isAddFlag ? ((!updateButtonPartNoTable && prNumber.length !== 0) ? true : false) : (Object.keys(prNumber).length !== 0 ? !updateButtonPartNoTable : (disabledPartUid || (dataProps?.isEditFlag && showStatus !== PREDRAFT) || dataProps?.isViewFlag))}
                         >
                         </Button>
 

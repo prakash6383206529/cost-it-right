@@ -36,28 +36,24 @@ const LpsRatingListing = () => {
     const topAndLeftMenuData = useSelector((state) => state.auth.topAndLeftMenuData);
 
     useEffect(() => {
-        setIsLoader(true);
         applyPermission(topAndLeftMenuData)
+        setIsLoader(true);
         dispatch(getLPSRatingListing((res) => {
             if (res.errorMessage) {
                 setErrorMessage(res.errorMessage);
-                setIsLoader(false);
             }
             else {
                 setErrorMessage(null);
 
                 if (res.status === 204 && res.data === '') {
                     setCellValue([]);
-                    setIsLoader(false);
                 } else if (res?.status === 200 && res?.data && res?.data?.DataList) {
-                    setIsLoader(false);
                     let data = res?.data?.DataList;
                     setCellValue(data.map(row => row.status));
                 }
-                else {
-                    setIsLoader(false)
-                }
+             
             }
+            setIsLoader(false)
 
         }));
     }, [dispatch]);
@@ -68,7 +64,6 @@ const LpsRatingListing = () => {
     const applyPermission = (topAndLeftMenuData) => {
 
         if (topAndLeftMenuData !== undefined) {
-            setIsLoader(true)
             setGridLoad(true)
             const Data = topAndLeftMenuData && topAndLeftMenuData.find((el) => el.ModuleName === MASTERS);
             const accessData = Data && Data.Pages.find((el) => el.PageName === LPS)
@@ -76,7 +71,6 @@ const LpsRatingListing = () => {
             if (permissionData !== undefined) {
                 setActivateAccessibility(permissionData && permissionData.Activate ? permissionData.Activate : false);
             }
-            setIsLoader(false);
 
         }
     }
@@ -202,7 +196,9 @@ const LpsRatingListing = () => {
                 {gridLoad && <div className={`ag-grid-wrapper height-width-wrapper`}>
                     <div className={`ag-theme-material`}>
                         {isLoader && <LoaderCustom customClass="loader-center" />}
-                        {!isLoader && lpsRatingData && lpsRatingData?.length > 0 &&
+                        {!isLoader &&
+                        
+                         lpsRatingData && lpsRatingData?.length > 0 &&
                             <AgGridReact
                                 defaultColDef={defaultColDef}
                                 floatingFilter={true}

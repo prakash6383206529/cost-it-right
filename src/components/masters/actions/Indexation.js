@@ -310,7 +310,6 @@ export function getIndexDataListAPI(obj, isPagination, skip, take, callback) {
                         payload: response.status === 204 ? [] : response.data.DataList
                     })
                     // } else {
-                    //     console.log(response.data);
 
                     //     dispatch({
 

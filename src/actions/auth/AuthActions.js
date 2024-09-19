@@ -2215,7 +2215,6 @@ export function getAllDivisionAPI(callback) {
         const request = axios.get(`${API.getAllDivisionAPI}`, config());
         request.then((response) => {
             if (response) {
-                console.log("response", response)
                 dispatch({
                     type: GET_DIVISION_SUCCESS,
                     payload: response.data.DataList,
@@ -2287,7 +2286,6 @@ export function getAllDivisionListAssociatedWithDepartment(data, callback) {
         dispatch({ type: API_REQUEST });
         const request = axios.post(`${API.getAllDivisionListAssociatedWithDepartment}`, data, config());
         request.then((response) => {
-            console.log(response, 'response')
             if (response.status === 200) {
                 dispatch({
                     type: GET_DIVISION_LIST_FOR_DEPARTMENT,
@@ -2304,7 +2302,6 @@ export function getAllDivisionListAssociatedWithDepartment(data, callback) {
                 Toaster.error(MESSAGES.SOME_ERROR);
             }
         }).catch((error) => {
-            console.log(error, 'error')
             dispatch({ type: API_FAILURE });
             callback(error);
             apiErrors(error);

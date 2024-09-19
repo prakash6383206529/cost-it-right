@@ -407,7 +407,7 @@ function RawMaterialCost(props) {
 
           }))
         } else {
-          if (tempData.LayoutType === 'Plastic') {
+          if (tempData?.LayoutType === 'Plastic' || tempData?.CalculatorType === "Plastic") {
             dispatch(getRawMaterialCalculationForPlastic(item.CostingId, tempData.RawMaterialId, tempData.RawMaterialCalculatorId, res => {
               setCalculatorData(res, index)
             }))

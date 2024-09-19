@@ -1322,7 +1322,6 @@ export function userTechnologyLevelDetailsWithoutCostingToApproval(approvalTypeI
 }
 
 export function userTechnologyDetailByMasterId(costingTypeId, masterId, data = []) {
-
   let dataList = [...data]
   let filteredData = dataList?.filter(element => (element.MasterId === masterId && element.ApprovalTypeId === costingTypeId))
   let obj = {
@@ -1648,4 +1647,7 @@ export function checkTechnologyIdAndRfq(viewCostingData = []) {
 // function to remove all spaces from a string
 export const removeSpaces = (str = '') => {
   return str.replace(/\s+/g, '');
+};
+export const getChangeHighlightClass = (originalValue, updatedValue) => {
+  return updatedValue && updatedValue !== originalValue ? 'red-value' : '';
 };

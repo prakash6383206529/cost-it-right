@@ -485,10 +485,9 @@ const SendForApproval = (props) => {
             DivisionCode: item?.DivisionCode
           }));
         callback(divisionArray, true);
+
       } else {
         if (isLpsRating && isClassification) {
-
-
           // Call for LPS
           callCheckFinalUserApi(departmentId, LPSAPPROVALTYPEID, null, 'dept1');
           // Call for Classification
@@ -529,12 +528,13 @@ const SendForApproval = (props) => {
     }
 
     dispatch(checkFinalUser(obj, (res) => {
-
       const data = res?.data?.Data
       if (data?.IsUserInApprovalFlow === true && data?.IsFinalApprover === false) {
         dispatch(getAllMasterApprovalUserByDepartment(requestObject, (res) => {
           const Data = res.data.DataList[1] ? res.data.DataList[1] : []
           if (Data?.length !== 0) {
+            setIsLoader(false)
+
             setTimeout(() => {
               if (approvalId === CLASSIFICATIONAPPROVALTYPEID) {
                 setValue('approver', {
@@ -626,25 +626,40 @@ const SendForApproval = (props) => {
     }))
   }
   const handleDepartmentChange = (newValue, approvalId) => {
+    if (approvalId === CLASSIFICATIONAPPROVALTYPEID) {
+      setValue('approver', '')
+      setValue('Division', '')
+      setValue('reason', '')
+      setValue('month', '')
+      setValue('remarks', '')
+      setClassificationApprovalDropDown([])
+      setClassificationApproverIdList([])
+      setIsFinalApprover(false)
+    } else if (approvalId === LPSAPPROVALTYPEID) {
+      setValue('approver1', '')
+      setValue('Division1', '')
+      setValue('reason1', '')
+      setValue('remarks1', '')
+      setLPSApprovalDropDown([])
+      setLPSApproverIdList([])
+      setIsFinalApproverLps(false)
+    }
+
 
     setApprovalType(approvalId)
     if (getConfigurationKey().IsDivisionAllowedForDepartment) {
+      setIsLoader(true)
       setIsShowDivision(true)
       fetchDivisionList(newValue.value, dispatch, (divisionArray, showDivision) => {
 
         setIsShowDivision(showDivision);
         setDivisionList(divisionArray);
         setDepartment(newValue)
-
-        if (!showDivision) {
-          callCheckFinalUserApi(newValue.value, approvalType, division?.value)
-
-          // callCheckFinalUserApi(newValue, approvalId);
-        }
+        // if (!isShowDivision) {
+        //   callCheckFinalUserApi(newValue.value, approvalType, division?.value)
+        // }
       });
     } else {
-
-
       if (newValue && newValue !== '') {
         setValue(approvalId === CLASSIFICATIONAPPROVALTYPEID ? 'approver' : 'approver1', '')
         setApprover('')

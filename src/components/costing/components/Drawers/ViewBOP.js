@@ -1,5 +1,5 @@
 import React, { useState, useEffect, Fragment } from 'react'
-import { checkForDecimalAndNull, checkTechnologyIdAndRfq, getConfigurationKey, showBopLabel } from '../../../../../src/helper'
+import { checkForDecimalAndNull, checkTechnologyIdAndRfq, getChangeHighlightClass, getConfigurationKey, showBopLabel } from '../../../../../src/helper'
 import { Container, Row, Col, Table } from 'reactstrap'
 import Drawer from '@material-ui/core/Drawer'
 import NoContentFound from '../../../common/NoContentFound'
@@ -62,7 +62,7 @@ function ViewBOP(props) {
                       {IsAssemblyCosting && <td className={`${isPDFShow ? '' : 'text-overflow'}`}><span title={item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</span></td>}
                       <td className={`${isPDFShow ? '' : 'text-overflow'}`}><span title={item.BOPPartNumber}>{item.BOPPartNumber}</span></td>
                       <td className={`${isPDFShow ? '' : 'text-overflow'}`}><span title={item.BOPPartName}>{item.BOPPartName}</span></td>
-                      {checkTechnologyIdAndRfq(viewCostingData) && <td><div className={item?.UpdatedBoughtOutPartPartName ? 'red-value' : ''}><span title={item?.UpdatedBoughtOutPartPartName}>{item?.UpdatedBoughtOutPartPartName}</span></div></td>}
+                      {checkTechnologyIdAndRfq(viewCostingData) && <td><div className={getChangeHighlightClass(item?.BOPPartName, item?.UpdatedBoughtOutPartPartName)}><span title={item?.UpdatedBoughtOutPartPartName}>{item?.UpdatedBoughtOutPartPartName}</span></div></td>}
                       <td>{item.Currency}</td>
                       <td>
                         {checkForDecimalAndNull(item.LandedCostINR, initialConfiguration.NoOfDecimalForPrice)}
