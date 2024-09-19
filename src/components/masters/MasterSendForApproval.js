@@ -90,23 +90,25 @@ function MasterSendForApproval(props) {
                 setDepartment(department[0])
                 if (props.approvalListing) {
                     fetchAndSetApprovalUsers(updateList[0]?.Value, reasonId, approvalData[0]?.DivisionId);
-                } else if ((type !== "Approve" && props.masterSummary) && getConfigurationKey().IsDivisionAllowedForDepartment) {
+                } else if (type !== "Approve" && getConfigurationKey().IsDivisionAllowedForDepartment) {
                     fetchDivisionList(department[0].value, dispatch, (divisionArray, showDivision) => {
                         setIsShowDivision(showDivision);
                         setDivisionList(divisionArray);
                     });
                 }
+            }
                 if (!getConfigurationKey().IsDivisionAllowedForDepartment || (type === 'Approve' && !IsFinalLevelButtonShow)) {
                     setTimeout(() => {
                         const matchingDepartment = department.find(dept => dept.value === approvalDetails?.DepartmentId);
+                        let departmentId = matchingDepartment?.value ?? department[0]?.value
                         if (getConfigurationKey().IsDivisionAllowedForDepartment && matchingDepartment) {
                             setValue('dept', { label: matchingDepartment?.label, value: matchingDepartment?.value });
                         } else {
                             setValue('dept', { label: department[0]?.label, value: department[0]?.value });
                         }
                         setDisableDept(true)
+                        fetchAndSetApprovalUsers(departmentId, reasonId, props?.divisionId);
                     }, 100);
-                    fetchAndSetApprovalUsers(department[0]?.value, reasonId, props?.divisionId);
                 }
                 if (type === 'Sender' && props.approvalListing) {
                     const DepartmentId = approvalData && approvalData[0]?.ApprovalDepartmentId;
@@ -119,7 +121,7 @@ function MasterSendForApproval(props) {
                     fetchAndSetApprovalUsers(updateList[0]?.Value, reasonId, approvalData[0]?.DivisionId);
                     setIsShowDivision(false)
                 }
-            }
+            
         }))
         getLastRevisionData()
     }, [])
@@ -673,6 +675,8 @@ function MasterSendForApproval(props) {
                     ApproverDepartmentName: dept && dept.label ? dept.label : '',
                     IsFinalApprovalProcess: false,
                     IsRFQCostingSendForApproval: props.isRFQ ? true : false,
+                    DivisionId: props?.divisionId ?? null,
+
                     // Add any other necessary fields from the item
                 }));
                 setIsLoader(true);

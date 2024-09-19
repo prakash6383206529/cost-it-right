@@ -20,6 +20,7 @@ const gridOptions = {};
 
 const VendorClassificationListing = () => {
     const searchRef = useRef(null);
+    const [errorMessage, setErrorMessage] = useState('')
 
     const [renderState, setRenderState] = useState(true);
     const [isLoader, setIsLoader] = useState(false);
@@ -52,14 +53,12 @@ const VendorClassificationListing = () => {
         if (topAndLeftMenuData !== undefined) {
             setGridLoad(true)
 
-            setIsLoader(true)
             const Data = topAndLeftMenuData && topAndLeftMenuData.find((el) => el.ModuleName === MASTERS);
             const accessData = Data && Data.Pages.find((el) => el.PageName === VENDOR_MANAGEMENT)
             const permissionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
             if (permissionData !== undefined) {
                 setActivateAccessibility(permissionData && permissionData.Activate ? permissionData.Activate : false);
             }
-            setIsLoader(false)
         }
     }
 
@@ -77,30 +76,24 @@ const VendorClassificationListing = () => {
         setIsLoader(true)
         dispatch(getVendorClassificationListing((res) => {
             if (res.errorMessage) {
-                setIsLoader(false);
+                setErrorMessage(res.errorMessage);
             }
             if (res?.status === 204 && res?.data === '') {
                 setTableData([])
-                setIsLoader(false)
             } else if (res && res?.data && res?.data?.DataList) {
                 let Data = res?.data?.DataList
                 setTableData(Data)
-                setIsLoader(false)
                 setRenderState(!renderState)
                 setCellValue(Data?.map(row => row.updatedStatus === 'Active'));
 
             }
-            else {
-                setTableData([])
-                setIsLoader(false)
-            }
+            setTableData([])
+            setIsLoader(false)
+
         }))
     }
     const confirmDeactivateItem = (data, cell) => {
-
-
         dispatch(updateClassificationStatus(data, res => {
-            setIsLoader(false)
             if (res && res?.data && res?.data?.Result) {
                 if (cell === "Unblocked") {
                     Toaster.success(MESSAGES?.CLASSIFICATION_BLOCK_SUCCESSFULLY)
@@ -199,62 +192,60 @@ const VendorClassificationListing = () => {
         }
     }
     return (
-        <>                            {isLoader && <LoaderCustom customClass="loader-center" />}
+        <> <div className={`ag-grid-react container-fluid p-relative`} id='go-to-top'>
 
-            <div className={`ag-grid-react container-fluid p-relative`} id='go-to-top'>
-
-                <>
-                    <Row className="pb-4 mb-3 no-filter-row zindex-2">
-                        <Col md={3}>
-                            <input ref={searchRef} type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={"off"} onChange={(e) => onFilterTextBoxChanged(e)} />
-                        </Col>
-                        <Col md={9}>
-                            <div className="d-flex justify-content-end bd-highlight w100 ">
-                                <div className="d-flex">
-                                    <Button id={"vendorClassification_Listing_refresh"} className="user-btn Tour_List_Reset" onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
-                                </div>
+            <>
+                <Row className="pb-4 mb-3 no-filter-row zindex-2">
+                    <Col md={3}>
+                        <input ref={searchRef} type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={"off"} onChange={(e) => onFilterTextBoxChanged(e)} />
+                    </Col>
+                    <Col md={9}>
+                        <div className="d-flex justify-content-end bd-highlight w100 ">
+                            <div className="d-flex">
+                                <Button id={"vendorClassification_Listing_refresh"} className="user-btn Tour_List_Reset" onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
                             </div>
-                        </Col>
-                    </Row>
-                    {gridLoad && <div className={`ag-grid-wrapper height-width-wrapper`}>
-                        <div className={`ag-theme-material`}>
-                            {!isLoader &&
-                                <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />
-                                && <AgGridReact
-
-                                    style={{ height: '100%', width: '100%' }}
-
-                                    defaultColDef={defaultColDef}
-                                    floatingFilter={true}
-                                    domLayout='autoHeight'
-                                    rowData={supplierManagement}
-                                    onGridReady={onGridReady}
-                                    gridOptions={gridOptions}
-                                    noRowsOverlayComponent={'customNoRowsOverlay'}
-                                    noRowsOverlayComponentParams={{
-                                        title: EMPTY_DATA,
-                                        imagClass: 'imagClass pt-3'
-                                    }}
-                                    suppressRowClickSelection={true}
-                                    frameworkComponents={frameworkComponents}
-                                >
-                                    <AgGridColumn field="ClassificationName" headerName="Supplier Classification"></AgGridColumn>
-                                    <AgGridColumn field="LastUpdatedOn" cellRenderer='effectiveDateFormatter' headerName="Last Updated On" filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-
-                                    <AgGridColumn field="LastUpdatedByUser" headerName="Last Updated By"></AgGridColumn>
-                                    <AgGridColumn field="Status" headerName="Type" ></AgGridColumn>
-
-                                    <AgGridColumn field="Status" headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
-
-                                </AgGridReact>}
                         </div>
+                    </Col>
+                </Row>
+                {gridLoad && <div className={`ag-grid-wrapper height-width-wrapper`}>
+                    <div className={`ag-theme-material`}>
+                        {isLoader && <LoaderCustom customClass="loader-center" />}
 
-                    </div>}
-                </>
-                {
-                    showPopupToggle && <PopupMsgWrapper isOpen={showPopupToggle} closePopUp={closePopUp} confirmPopup={onPopupConfirmToggle} message={`${cellValue === "Blocked" ? MESSAGES.VENDOR_APPROVED : MESSAGES.VENDOR_REJECTED}`} />
-                }
-            </div>
+                        {!isLoader && <AgGridReact
+
+                            style={{ height: '100%', width: '100%' }}
+
+                            defaultColDef={defaultColDef}
+                            floatingFilter={true}
+                            domLayout='autoHeight'
+                            rowData={supplierManagement}
+                            onGridReady={onGridReady}
+                            gridOptions={gridOptions}
+                            noRowsOverlayComponent={'customNoRowsOverlay'}
+                            noRowsOverlayComponentParams={{
+                                title: EMPTY_DATA,
+                                imagClass: 'imagClass pt-3'
+                            }}
+                            suppressRowClickSelection={true}
+                            frameworkComponents={frameworkComponents}
+                        >
+                            <AgGridColumn field="ClassificationName" headerName="Supplier Classification"></AgGridColumn>
+                            <AgGridColumn field="LastUpdatedOn" cellRenderer='effectiveDateFormatter' headerName="Last Updated On" filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
+
+                            <AgGridColumn field="LastUpdatedByUser" headerName="Last Updated By"></AgGridColumn>
+                            <AgGridColumn field="Status" headerName="Type" ></AgGridColumn>
+
+                            <AgGridColumn field="Status" headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
+
+                        </AgGridReact>}
+                    </div>
+
+                </div>}
+            </>
+            {
+                showPopupToggle && <PopupMsgWrapper isOpen={showPopupToggle} closePopUp={closePopUp} confirmPopup={onPopupConfirmToggle} message={`${cellValue === "Blocked" ? MESSAGES.VENDOR_APPROVED : MESSAGES.VENDOR_REJECTED}`} />
+            }
+        </div>
 
 
         </>
