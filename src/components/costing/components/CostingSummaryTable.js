@@ -2276,7 +2276,7 @@ const CostingSummaryTable = (props) => {
                               <span className="d-block">Part Name</span>
                               <span className="d-block">Revision Number</span>
                               <span className="d-block">Plant (Code)</span>
-                              {props.isRfqCosting && <span className="d-block">SOB</span>}
+                              {(props?.isRfqCosting && !checkTechnologyIdAndRfq(viewCostingData)) && <span className="d-block">SOB</span>}
 
                             </td >
                             {viewCostingData &&
@@ -2338,56 +2338,63 @@ const CostingSummaryTable = (props) => {
                                     <span className="d-block">{(data?.bestCost === true) ? ' ' : data?.partName}</span>
                                     <span className="d-block">{(data?.bestCost === true) ? ' ' : data?.RevisionNumber}</span>
                                     <span className="d-block">{(data?.bestCost === true) ? ' ' : (data.costingTypeId === ZBCTypeId ? `${data?.plantName}` : `${data?.destinationPlantName}`)}</span>
-                                    {props.isFromViewRFQ && data?.bestCost !== true ? <div className='d-flex align-items-center'>
-                                      <div className="w-100px costing-error-container">
-                                        <TextFieldHookForm
-                                          label={false}
-                                          name={`ShareOfBusinessPercent.${index}`}
-                                          Controller={Controller}
-                                          control={control}
-                                          register={register}
-                                          mandatory={false}
-                                          rules={{
-                                            required: true,
-                                            validate: { number, percentageLimitValidation, decimalNumberLimit6 },
-                                            max: {
-                                              value: 100,
-                                              message: "Percentage should not be greater then 100"
-                                            }
-                                          }}
-                                          defaultValue={data.shareOfBusinessPercent ?? 0}
-                                          className="custom-height-28px"
-                                          customClassName={"withBorder mb-0"}
-                                          handleChange={(e) => {
-                                            e.preventDefault();
-                                            handleVBCSOBChange(e, index, data);
-                                          }}
-                                          errors={errors && errors.ShareOfBusinessPercent}
-                                          disabled={data?.editSOBPercentage ? false : true}
-                                        />
-                                      </div>
-                                      {data?.bestCost !== true && showEditSOBButton && <>
-                                        {data?.editSOBPercentage ?
-                                          <>
-                                            <Button
-                                              id="CostingSummary_SOB_Save"
-                                              variant="SaveIcon mb-0 ml-2 mr-0"
-                                              title="Save"
-                                              onClick={() => handleSOBSave(data, index)}
-                                            />
-                                            <Button
-                                              id="CostingSummary_SOB_Discard"
-                                              variant="CancelIcon mb-0 ml-2"
-                                              title="Discard"
-                                              onClick={() => handleSOBDiscard(data, index)} />
-                                          </>
-                                          : <Button
-                                            id="CostingSummary_SOB_Edit"
-                                            variant="Edit mb-0 ml-2"
-                                            title="Edit"
-                                            onClick={() => editValue(data, index)} />}
-                                      </>}
-                                    </div> : props.isRfqCosting && <span className="d-block">{data?.shareOfBusinessPercent ?? '0'}</span>
+
+                                    {data?.technologyId !== TOOLING_ID && (
+                                      <>
+                                        {
+                                          props.isFromViewRFQ && data?.bestCost !== true ? <div className='d-flex align-items-center'>
+                                            <div className="w-100px costing-error-container">
+                                              <TextFieldHookForm
+                                                label={false}
+                                                name={`ShareOfBusinessPercent.${index}`}
+                                                Controller={Controller}
+                                                control={control}
+                                                register={register}
+                                                mandatory={false}
+                                                rules={{
+                                                  required: true,
+                                                  validate: { number, percentageLimitValidation, decimalNumberLimit6 },
+                                                  max: {
+                                                    value: 100,
+                                                    message: "Percentage should not be greater then 100"
+                                                  }
+                                                }}
+                                                defaultValue={data.shareOfBusinessPercent ?? 0}
+                                                className="custom-height-28px"
+                                                customClassName={"withBorder mb-0"}
+                                                handleChange={(e) => {
+                                                  e.preventDefault();
+                                                  handleVBCSOBChange(e, index, data);
+                                                }}
+                                                errors={errors && errors.ShareOfBusinessPercent}
+                                                disabled={data?.editSOBPercentage ? false : true}
+                                              />
+                                            </div>
+                                            {data?.bestCost !== true && showEditSOBButton && <>
+                                              {data?.editSOBPercentage ?
+                                                <>
+                                                  <Button
+                                                    id="CostingSummary_SOB_Save"
+                                                    variant="SaveIcon mb-0 ml-2 mr-0"
+                                                    title="Save"
+                                                    onClick={() => handleSOBSave(data, index)}
+                                                  />
+                                                  <Button
+                                                    id="CostingSummary_SOB_Discard"
+                                                    variant="CancelIcon mb-0 ml-2"
+                                                    title="Discard"
+                                                    onClick={() => handleSOBDiscard(data, index)} />
+                                                </>
+                                                : <Button
+                                                  id="CostingSummary_SOB_Edit"
+                                                  variant="Edit mb-0 ml-2"
+                                                  title="Edit"
+                                                  onClick={() => editValue(data, index)} />}
+                                            </>}
+                                          </div> : props.isRfqCosting && <span className="d-block">{data?.shareOfBusinessPercent ?? '0'}</span>
+                                        }
+                                      </>
+                                    )
                                     }
                                   </td>
                                 )
