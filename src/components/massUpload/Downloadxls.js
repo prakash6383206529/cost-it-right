@@ -194,7 +194,7 @@ class Downloadxls extends React.Component {
             case 'Product Component':
                 return this.returnExcelColumn(ProductComponent, ProductComponentTempData);
             case 'BOM':
-                return this.returnExcelColumn(BOMUpload, BOMUploadTempData);
+                return this.returnExcelColumn(withLocalization(BOMUpload, this.props.t, "MasterLabels"), BOMUploadTempData);
             case 'ADD RFQ':
                 return this.returnExcelColumn(AddRFQUpload, AddRFQTempData);
             default:
@@ -217,7 +217,7 @@ class Downloadxls extends React.Component {
                     return this.returnExcelColumn(checkRM_Process_OperationConfigurable(withLocalization(RMImportZBC, this.props.t, "MasterLabels")), RMImportZBCTempData);
                 }
             case 'Operation':
-                return this.returnExcelColumn(checkLabourRateConfigure(ZBCOperationSmallForm), ZBCOperationTempData, true);
+                return this.returnExcelColumn(checkLabourRateConfigure(withLocalization(ZBCOperationSmallForm, this.props.t, "MasterLabels")), ZBCOperationTempData, true);
             case 'Machine':
                 return this.returnExcelColumn(checkVendorPlantConfig(withLocalization(MachineZBC, this.props.t, "MasterLabels")), MachineZBCTempData);
             case ZBCADDMORE:
@@ -248,7 +248,7 @@ class Downloadxls extends React.Component {
             case 'Labour':
                 return this.returnExcelColumn(Labour, LabourTempData);
             case ZBCADDMOREOPERATION:
-                return this.returnExcelColumn(ZBCOperation, ZBCOperationTempData);
+                return this.returnExcelColumn(withLocalization(ZBCOperation, this.props.t, "MasterLabels"), ZBCOperationTempData);
             default:
                 return 'foo';
         }
@@ -268,7 +268,7 @@ class Downloadxls extends React.Component {
                     return this.returnExcelColumn(checkVendorPlantConfig(withLocalization(RMDomesticVBC, this.props.t, "MasterLabels")), RMImportVBCTempData);
                 }
             case 'Operation':
-                return this.returnExcelColumn(checkLabourRateConfigure(VBCOperationSmallForm), VBCOperationTempData, true);
+                return this.returnExcelColumn(checkLabourRateConfigure(withLocalization(VBCOperationSmallForm, this.props.t, "MasterLabels")), VBCOperationTempData, true);
             case 'Machine':
                 return this.returnExcelColumn(checkVendorPlantConfig(withLocalization(MachineVBC, this.props.t, "MasterLabels")), MachineVBCTempData);
             case `${showBopLabel()} Domestic`:
@@ -283,7 +283,7 @@ class Downloadxls extends React.Component {
                 }
             case `${showBopLabel()} Import`:
                 if (bopType === DETAILED_BOP) {
-                    ({ updatedLabels } = updateBOPValues(BOP_DETAILED_IMPORT, [], bopMasterName, 'label'));
+                    ({ updatedLabels } = updateBOPValues(withLocalization(BOP_DETAILED_IMPORT, this.props.t, "MasterLabels"), [], bopMasterName, 'label'));
 
                     return this.returnExcelColumn(checkVendorPlantConfig(updatedLabels, '', true), BOP_DETAILED_IMPORT_TempData);
                 } else {
@@ -308,7 +308,7 @@ class Downloadxls extends React.Component {
             case 'Labour':
                 return this.returnExcelColumn(Labour, LabourTempData);
             case VBCADDMOREOPERATION:
-                return this.returnExcelColumn(VBCOperation, VBCOperationTempData);
+                return this.returnExcelColumn(withLocalization(VBCOperation, this.props.t, "MasterLabels"), VBCOperationTempData);
             default:
                 return 'foo';
         }
@@ -322,14 +322,14 @@ class Downloadxls extends React.Component {
         switch (master) {
             case 'RM':
                 if (!this.props.isImport) {
-                    return this.returnExcelColumn(checkVendorPlantConfig(withTranslation(RMDomesticCBC, this.props.t, "MasterLabels"), CBCTypeId), RMDomesticCBCTempData, true);
+                    return this.returnExcelColumn(checkVendorPlantConfig(withLocalization(RMDomesticCBC, this.props.t, "MasterLabels"), CBCTypeId), RMDomesticCBCTempData, true);
                 } else {
-                    return this.returnExcelColumn(checkVendorPlantConfig(withTranslation(RMImportCBC, this.props.t, "MasterLabels"), CBCTypeId), RMImportCBCTempData);
+                    return this.returnExcelColumn(checkVendorPlantConfig(withLocalization(RMImportCBC, this.props.t, "MasterLabels"), CBCTypeId), RMImportCBCTempData);
                 }
             case 'Operation':
-                return this.returnExcelColumn(checkLabourRateConfigure(CBCOperationSmallForm), CBCOperationTempData, true);
+                return this.returnExcelColumn(checkLabourRateConfigure(withLocalization(CBCOperationSmallForm, this.props.t, "MasterLabels")), CBCOperationTempData, true);
             case 'Machine':
-                return this.returnExcelColumn(checkVendorPlantConfig(withTranslation(MachineCBC, this.props.t, "MasterLabels"), CBCTypeId), MachineCBCTempData);
+                return this.returnExcelColumn(checkVendorPlantConfig(withLocalization(MachineCBC, this.props.t, "MasterLabels"), CBCTypeId), MachineCBCTempData);
             case `${showBopLabel()} Domestic`:
                 ({ updatedLabels } = updateBOPValues(BOP_CBC_DOMESTIC, [], bopMasterName, 'label'));
 
@@ -354,7 +354,7 @@ class Downloadxls extends React.Component {
             case 'Labour':
                 return this.returnExcelColumn(Labour, LabourTempData);
             case CBCADDMOREOPERATION:
-                return this.returnExcelColumn(CBCOperation, CBCOperationTempData);
+                return this.returnExcelColumn(withLocalization(CBCOperation, this.props.t, "MasterLabels"), CBCOperationTempData);
             default:
                 return 'foo';
         }
