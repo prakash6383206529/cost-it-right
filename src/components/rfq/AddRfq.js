@@ -2835,9 +2835,12 @@ function AddRfq(props) {
 
         setAssemblyPartNumber(value)
         dispatch(getPartInfo(value?.value, (res) => {
-
-
+            let Data = res?.data?.Data
+            let uomObject = { label: Data?.UnitOfMeasurementSymbol, value: Data?.UnitOfMeasurementId }
             setValue("Description", res?.data?.Data?.PartName);
+            setValue("UOM", uomObject);
+            setSelectedUOM(uomObject)
+
             setPartEffectiveDate(res.data.Data?.EffectiveDate);
         }));
         dispatch(getTargetPrice(plant?.value, value?.value, Number(technology?.value), (res) => {
@@ -3262,7 +3265,8 @@ function AddRfq(props) {
                                                             mandatory={true}
                                                             handleChange={(newValue) => handleChangeUOM(newValue)}
                                                             errors={errors?.UOM}
-                                                            disabled={Object.keys(prNumber).length !== 0 || (dataProps?.isViewFlag) ? true : false || disabledPartUid}
+                                                            disabled={true}
+                                                        //Object.keys(prNumber).length !== 0 || (dataProps?.isViewFlag) ? true : false || disabledPartUid
                                                         />
                                                     </Col>
                                                 }

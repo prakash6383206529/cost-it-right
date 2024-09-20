@@ -3849,6 +3849,7 @@ export const PartComponent = [
     { label: 'RevisionNo', value: 'RevisionNo', },
     { label: 'DrawingNo', value: 'DrawingNo', },
     { label: "SAPCode", value: "SAPCode", },
+    { label: 'UnitOfMeasurement', value: 'UnitOfMeasurement', }, //*
     { label: "TechnologyLabel", value: 'TechnologyName', defaultValue: "Technology" },
     { label: 'EffectiveDate', value: 'EffectiveDate', }, //,* maybe only star
     { label: 'Remark', value: 'Remark', },
@@ -3864,6 +3865,7 @@ export const PartComponentTempData = [
         'RevisionNo': '1',
         'DrawingNo': '1',
         'SAPCode': 'sap-1001',
+        "UnitOfMeasurement": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         'TechnologyName': 'Sheet Metal',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text',
@@ -4011,7 +4013,8 @@ export const BOMUpload = [
     { label: "Quantity", value: "Quantity" }, //NOUI
     { label: "EffectiveDate", value: "EffectiveDate" },
     { label: "Remark", value: "Remark" },
-    { label: "TechnologyLabel", value: "Technology", defaultValue: "Technology" },
+    { label: "TechnologyLabel", value: 'TechnologyName', defaultValue: "Technology" },
+    { label: 'UnitOfMeasurement', value: 'UnitOfMeasurement', }, //*
 ]
 
 export const BOMUploadTempData = [
@@ -4035,7 +4038,9 @@ export const BOMUploadTempData = [
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": 'Remark',
         "ProductGroupCode": "VB",
-        "TechnologyName": "Sheet Metal"
+        "TechnologyName": "Sheet Metal",
+        "UnitOfMeasurement": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
+
     },
     // COMPONENT
     {
@@ -4057,7 +4062,9 @@ export const BOMUploadTempData = [
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": 'Remark',
         "ProductGroupCode": "VB",
-        "TechnologyName": "Sheet Metal"
+        "TechnologyName": "Sheet Metal",
+        "UnitOfMeasurement": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
+
     },
     // BOP
     {
@@ -4079,7 +4086,9 @@ export const BOMUploadTempData = [
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": 'Remark',
         "ProductGroupCode": "VB",
-        "TechnologyName": "Sheet Metal"
+        "TechnologyName": "Sheet Metal",
+        "UnitOfMeasurement": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
+
     },
     // SUB ASSEMBLY
     {
@@ -4101,7 +4110,9 @@ export const BOMUploadTempData = [
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": 'Remark',
         "ProductGroupCode": "VB",
-        "TechnologyName": "Sheet Metal"
+        "TechnologyName": "Sheet Metal",
+        "UnitOfMeasurement": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
+
     },
     // COMPONENT
     {
@@ -4123,7 +4134,9 @@ export const BOMUploadTempData = [
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": 'Remark',
         "ProductGroupCode": "VB",
-        "TechnologyName": "Sheet Metal"
+        "TechnologyName": "Sheet Metal",
+        "UnitOfMeasurement": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
+
     },
 ]
 export const EAccessType = [
@@ -5909,6 +5922,8 @@ export const ASSEMBLYPART_DOWNLOAD_EXCEl = [
     { label: "Revision No.", value: "RevisionNumber", },
     { label: "Drawing No.", value: "DrawingNumber", },
     { label: "Effective Date", value: "EffectiveDate", },
+    { label: 'UnitOfMeasurement', value: 'UnitOfMeasurement', }, //*
+
 ]
 
 export const INDIVIDUALPART_DOWNLOAD_EXCEl = [
@@ -5920,6 +5935,8 @@ export const INDIVIDUALPART_DOWNLOAD_EXCEl = [
     { label: "Revision No.", value: "RevisionNumber", },
     { label: "Drawing No.", value: "DrawingNumber", },
     { label: "Effective Date", value: "EffectiveDate", },
+    { label: 'UnitOfMeasurement', value: 'UnitOfMeasurement', },
+
 ]
 
 export const INDIVIDUAL_PRODUCT_DOWNLOAD_EXCEl = [

@@ -560,7 +560,13 @@ const IndivisualPartListing = (props) => {
     //tempArr = gridApi && gridApi?.getSelectedRows()
     tempArr = selectedRowForPagination;
     tempArr = (tempArr && tempArr.length > 0) ? tempArr : allNewPartsListing ? allNewPartsListing : []
-    return returnExcelColumn(INDIVIDUALPART_DOWNLOAD_EXCEl, tempArr);
+    const filteredLabels = INDIVIDUALPART_DOWNLOAD_EXCEl.filter(column => {
+      if (column.value === "UnitOfMeasurement") {
+        return initialConfiguration?.IsShowUnitOfMeasurementInPartMaster
+      }
+      return true;
+    })
+    return returnExcelColumn(filteredLabels, tempArr);
 
 
   };
@@ -837,6 +843,8 @@ const IndivisualPartListing = (props) => {
                 <AgGridColumn field="ECNNumber" headerName="ECN No." cellRenderer={"hyphenFormatter"} ></AgGridColumn>
                 <AgGridColumn field="RevisionNumber" headerName="Revision No." cellRenderer={"hyphenFormatter"}  ></AgGridColumn>
                 <AgGridColumn field="DrawingNumber" headerName="Drawing No." cellRenderer={"hyphenFormatter"}  ></AgGridColumn>
+                {initialConfiguration?.IsShowUnitOfMeasurementInPartMaster && <AgGridColumn field="UnitOfMeasurementSymbol" headerName="UOM" cellRenderer={"hyphenFormatter"}  ></AgGridColumn>}
+
                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={"effectiveDateFormatter"} filter="agDateColumnFilter" filterParams={filterParams} ></AgGridColumn>
                 <AgGridColumn pinned="right" field="IsActive" headerName="Status" floatingFilter={false} cellRenderer={"statusButtonFormatter"} ></AgGridColumn>
                 <AgGridColumn field="PartId" pinned="right" cellClass="ag-grid-action-container" headerName="Action" width={160} type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"} ></AgGridColumn>
