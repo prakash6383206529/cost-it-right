@@ -159,7 +159,7 @@ function CorrugatedBoxCalculator(props) {
                                     isEditFlag={props.isEditFlag}
                                     item={item}
                                     toggleDrawer={props.toggleDrawer}
-                                    isSummary={false}
+                                    isSummary={props?.isSummary}
                                     fromPackaging={true}
                                     CostingViewMode={props.CostingViewMode ? props.CostingViewMode : false}
                                     DisableMasterBatchCheckbox={true}
