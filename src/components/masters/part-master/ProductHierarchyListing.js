@@ -82,7 +82,7 @@ const ProductHierarchyListing = (props) => {
     const ButtonFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const disabled = !rowData.IsProductLevelChangeAllowed || props.agGridReact?.gridOptions?.rowData?.length === cellValue
+        const disabled = !rowData.IsProductHierarchyChangeAllowed || props.agGridReact?.gridOptions?.rowData?.length === cellValue
 
         return (
             <>
@@ -160,9 +160,9 @@ const ProductHierarchyListing = (props) => {
                                 frameworkComponents={frameworkComponents}
                                 suppressRowClickSelection={true}
                             >
-                                <AgGridColumn field="LevelNo" headerName="Level"  ></AgGridColumn>
-                                <AgGridColumn field="LevelName" headerName="Level Name" ></AgGridColumn>
-                                <AgGridColumn field="LevelId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={"ButtonFormatter"}
+                                <AgGridColumn field="HierarchyNumber" headerName="Level"  ></AgGridColumn>
+                                <AgGridColumn field="ProductHierarchyName" headerName="Level Name" ></AgGridColumn>
+                                <AgGridColumn field="ProductHierarchyId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={"ButtonFormatter"}
                                 ></AgGridColumn>
                             </AgGridReact>}
                         {<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} />}

@@ -5,7 +5,7 @@ import { Col, Row } from 'reactstrap'
 import { TextFieldHookForm } from '../../layout/HookFormInputs';
 import { required, checkWhiteSpaces, maxLength80, loggedInUserId } from '../../../helper';
 import { useDispatch } from 'react-redux';
-import { getProductLabel, updateProductLabel } from '../actions/Part';
+import { getAllProductLevels, getProductLabel, updateProductLabel } from '../actions/Part';
 import Toaster from '../../common/Toaster';
 
 export default function UpdateHierarchyLabels(props) {
@@ -19,19 +19,20 @@ export default function UpdateHierarchyLabels(props) {
         dispatch(getProductLabel(levelId, (res) => {
             if (res && res.data && res.data.Data) {
                 const Data = res.data.Data
-                setValue(`Level`, Data.LevelName)
+                setValue(`Level`, Data.ProductHierarchyName)
             }
         }))
     }, [])
     const onSubmit = (data) => {
         const requestedData = {
-            LevelId: levelId,
-            LevelName: data.Level,
+            ProductHierarchyId: levelId,
+            ProductHierarchyName: data.Level,
             LoggedInUserId: loggedInUserId()
         }
         dispatch(updateProductLabel(requestedData, res => {
             if (res && res.data && res.data.Result) {
                 Toaster.success("Level update successfully")
+                dispatch(getAllProductLevels((res) => { }))
                 cancelDrawer()
             }
         }))

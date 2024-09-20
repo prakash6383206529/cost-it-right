@@ -862,7 +862,7 @@ export function getAllProductLevels(callback) {
 export function getPreFilledProductLevelValues(levelValueId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getPreFilledProductLevelValues}?levelvalueid=${levelValueId}`, config());
+        const request = axios.get(`${API.getPreFilledProductLevelValues}?producthierarchyvaluedetailid=${levelValueId}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
                 dispatch({
@@ -897,7 +897,7 @@ export function createProductLevelValues(data, callback) {
 export function getProductLabel(id, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getProductLabel}?levelid=${id}`, config());
+        const request = axios.get(`${API.getProductLabel}?producthierarchyid=${id}`, config());
         request.then((response) => {
             if (response && response.status === 200) {
                 callback(response);

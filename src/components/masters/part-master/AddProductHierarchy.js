@@ -24,41 +24,41 @@ const AddProductHierarchy = (props) => {
     useEffect(() => {
         if (productHierarchyData.length > 0) {
             setValue('Levels', { label: `Level-${productHierarchyData.length}`, value: productHierarchyData.length })
-            productHierarchyData.map((item, index) => setValue(`LevelName${index + 1}`, item?.LevelName))
+            productHierarchyData.map((item, index) => setValue(`ProductHierarchyName${index + 1}`, item?.ProductHierarchyName))
             setState((prevState) => ({ ...prevState, levelCount: productHierarchyData.length }));
         }
     }, [productHierarchyData])
     const handleLevelSelection = (e) => {
         setState((prevState) => ({ ...prevState, levelCount: e?.value }))
         for (let i = 1; i <= e?.value; i++) {
-            setValue(`LevelName${i}`, '')
+            setValue(`ProductHierarchyName${i}`, '')
         }
-        setValue(`LevelName${e?.value}`, 'SKU')
+        setValue(`ProductHierarchyName${e?.value}`, 'SKU')
     }
     const submit = (data) => {
         let ProductLevels = []
         for (let i = 1; i <= state.levelCount; i++) {
             ProductLevels.push({
-                LevelId: i,
-                LevelName: data[`LevelName${i}`],
-                ParentLevelId: i > 1 ? i - 1 : null
+                ProductHierarchyId: i,
+                ProductHierarchyName: data[`ProductHierarchyName${i}`],
+                ParentProductHierarchyId: i > 1 ? i - 1 : null
             });
         }
-        const IsUpdateProductLevel = productHierarchyData.length !== 0
+        const IsUpdateProductHierarchy = productHierarchyData.length !== 0
         const requestedData = {
-            TotalLevel: state.levelCount,
-            ProductLevels: ProductLevels,
-            IsUpdateProductLevel: IsUpdateProductLevel,
+            TotalProductHierarchy: state.levelCount,
+            ProductHierarchies: ProductLevels,
+            IsUpdateProductHierarchy: IsUpdateProductHierarchy,
             LoggedInUserId: loggedInUserId()
         }
         dispatch(createProductLevels(requestedData, (res) => {
-            Toaster.success(`Level ${IsUpdateProductLevel ? 'update' : 'create'} successfully`)
+            Toaster.success(`Level ${IsUpdateProductHierarchy ? 'update' : 'create'} successfully`)
         }))
         props.toggle()
     }
     const isDisabled = (i) => {
         if (productHierarchyData.length !== 0) {
-            return !productHierarchyData[i].IsProductLevelChangeAllowed ?? false
+            return !productHierarchyData[i].IsProductHierarchyChangeAllowed ?? false
         } else return false
     }
     return <div><Drawer
@@ -109,7 +109,7 @@ const AddProductHierarchy = (props) => {
                             <Col md="6" key={i}>
                                 <TextFieldHookForm
                                     label={`Level ${i + 1}`}
-                                    name={`LevelName${i + 1}`}
+                                    name={`ProductHierarchyName${i + 1}`}
                                     Controller={Controller}
                                     control={control}
                                     register={register}
@@ -122,7 +122,7 @@ const AddProductHierarchy = (props) => {
                                     defaultValue={''}
                                     className=""
                                     customClassName={'withBorder'}
-                                    errors={errors[`LevelName${i + 1}`]}
+                                    errors={errors[`ProductHierarchyName${i + 1}`]}
                                     disabled={(i === state.levelCount - 1) || isDisabled(0)}
                                 />
                             </Col>
