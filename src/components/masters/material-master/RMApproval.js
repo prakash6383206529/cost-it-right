@@ -151,7 +151,7 @@ function RMApproval(props) {
     */
     const costingHeadFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return (cellValue === true || cellValue === 'VBC') ? `${vendorLabel} Based` : 'Zero Based';
+        return (cellValue === true || cellValue === 'VBC') ? 'Vendor Based' : 'Zero Based';
     }
 
 

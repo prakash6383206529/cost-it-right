@@ -23,7 +23,7 @@ export const useLabels = () => {
     };
 };
 export const labels =(t,label, ns)=>{
-    return  t(label, { defaultValue: 'Vendor', ns: ns })
+    return {vendorLabel: t(label, { defaultValue: 'Vendor', ns: ns })}
     
 }
 export const useWithLocalization = (dataArray, ns) => {

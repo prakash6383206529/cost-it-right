@@ -83,7 +83,7 @@ function RMIndexationSimulationListing(props) {
     const [showExtraData, setShowExtraData] = useState(false)
     const [render, setRender] = useState(false)
     const { t } = useTranslation("common")
-    const { technologyLabel,vendorLabel } = useLabels();
+    const { technologyLabel } = useLabels();
 
     var filterParams = {
         date: "", inRangeInclusive: true, filterOptions: ['equals', 'inRange'],
@@ -417,7 +417,7 @@ function RMIndexationSimulationListing(props) {
             isViewFlag: isViewMode,
             costingTypeId: rowData.CostingTypeId,
             Id: Id,
-            IsVendor: rowData.CostingHead === `${vendorLabel} Based` ? true : rowData.CostingHead === 'Zero Based' ? false : rowData.CostingHead,
+            IsVendor: rowData.CostingHead === 'Vendor Based' ? true : rowData.CostingHead === 'Zero Based' ? false : rowData.CostingHead,
         }
         props.getDetails(data, rowData?.IsRMAssociated);
     }
@@ -530,7 +530,7 @@ function RMIndexationSimulationListing(props) {
     const costingHeadFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
 
-        let data = (cellValue === true || cellValue ===  `${vendorLabel} Based`  || cellValue === 'VBC') ?  `${vendorLabel} Based`  : 'Zero Based';
+        let data = (cellValue === true || cellValue === 'Vendor Based' || cellValue === 'VBC') ? 'Vendor Based' : 'Zero Based';
 
         return data;
     }
@@ -645,7 +645,7 @@ function RMIndexationSimulationListing(props) {
         let temp = []
         temp = TempData && TempData.map((item) => {
             if (item.CostingHead === true) {
-                item.CostingHead = `${vendorLabel} Based`
+                item.CostingHead = 'Vendor Based'
                 item.EffectiveDate = (item.EffectiveDate)?.slice(0, 10)
 
             } else if (item.CostingHead === false) {

@@ -121,7 +121,7 @@ const BOPManage = (props) => {
      * @description Renders Costing head
      */
     const costingHeadFormatter = (cell, row, enumObject, rowIndex) => {
-        return cell ? `${vendorLabel} Based` : 'Zero Based';
+        return cell ? 'Vendor Based' : 'Zero Based';
     }
 
 
