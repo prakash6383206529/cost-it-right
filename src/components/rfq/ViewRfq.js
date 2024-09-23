@@ -18,7 +18,7 @@ import AddRfq from './AddRfq';
 import SendForApproval from '../costing/components/approval/SendForApproval';
 import { checkFinalUser, getReleaseStrategyApprovalDetails, getSingleCostingDetails, setCostingApprovalData, setCostingViewData, storePartNumber } from '../costing/actions/Costing';
 import { getVolumeDataByPartAndYear } from '../masters/actions/Volume';
-import { checkForNull, formViewData, getCodeBySplitting, getConfigurationKey, getNameBySplitting, loggedInUserId, userDetails, userTechnologyDetailByMasterId } from '../../helper';
+import { checkForNull, checkTechnologyIdAndRfq, formViewData, getCodeBySplitting, getConfigurationKey, getNameBySplitting, loggedInUserId, userDetails, userTechnologyDetailByMasterId } from '../../helper';
 import ApproveRejectDrawer from '../costing/components/approval/ApproveRejectDrawer';
 import CostingSummaryTable from '../costing/components/CostingSummaryTable';
 import { Fragment } from 'react';
@@ -514,13 +514,14 @@ function RfqListing(props) {
     const approveDetails = (Id, rowData = {}) => {
         if (customHavellsChanges && (partType !== "Bought Out Part" && partType !== "Raw Material")) {
             const filteredData = viewCostingData.filter(item => selectedCostingList.includes(item.costingId));
-            // Check if the total share of business is 100%
-            const totalShareOfBusiness = filteredData
-                .map(item => item?.shareOfBusinessPercent)
-                .reduce((total, percent) => total + percent, 0);
-            if (totalShareOfBusiness !== 100) {
-                Toaster.warning("The total share of business must be 100%.");
-                return false;
+            if (!checkTechnologyIdAndRfq(filteredData)) {
+                const totalShareOfBusiness = filteredData
+                    .map(item => item?.shareOfBusinessPercent)
+                    .reduce((total, percent) => total + percent, 0);
+                if (totalShareOfBusiness !== 100) {
+                    Toaster.warning("The total share of business must be 100%.");
+                    return false;
+                }
             }
         }
 
