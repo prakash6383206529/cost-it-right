@@ -18,7 +18,7 @@ import AddRfq from './AddRfq';
 import SendForApproval from '../costing/components/approval/SendForApproval';
 import { checkFinalUser, getReleaseStrategyApprovalDetails, getSingleCostingDetails, setCostingApprovalData, setCostingViewData, storePartNumber } from '../costing/actions/Costing';
 import { getVolumeDataByPartAndYear } from '../masters/actions/Volume';
-import { checkForNull, formViewData, getCodeBySplitting, getConfigurationKey, getNameBySplitting, loggedInUserId, userDetails, userTechnologyDetailByMasterId } from '../../helper';
+import { checkForNull, checkTechnologyIdAndRfq, formViewData, getCodeBySplitting, getConfigurationKey, getNameBySplitting, loggedInUserId, userDetails, userTechnologyDetailByMasterId } from '../../helper';
 import ApproveRejectDrawer from '../costing/components/approval/ApproveRejectDrawer';
 import CostingSummaryTable from '../costing/components/CostingSummaryTable';
 import { Fragment } from 'react';
@@ -62,6 +62,7 @@ function RfqListing(props) {
     const [addRfqData, setAddRfqData] = useState({});
     const [isEdit, setIsEdit] = useState(false);
     const [rowData, setRowData] = useState([])
+
 
     const [noData, setNoData] = useState(false)
     const [sendForApproval, setSendForApproval] = useState(false)
@@ -513,13 +514,14 @@ function RfqListing(props) {
     const approveDetails = (Id, rowData = {}) => {
         if (customHavellsChanges && (partType !== "Bought Out Part" && partType !== "Raw Material")) {
             const filteredData = viewCostingData.filter(item => selectedCostingList.includes(item.costingId));
-            // Check if the total share of business is 100%
-            const totalShareOfBusiness = filteredData
-                .map(item => item?.shareOfBusinessPercent)
-                .reduce((total, percent) => total + percent, 0);
-            if (totalShareOfBusiness !== 100) {
-                Toaster.warning("The total share of business must be 100%.");
-                return false;
+            if (!checkTechnologyIdAndRfq(filteredData)) {
+                const totalShareOfBusiness = filteredData
+                    .map(item => item?.shareOfBusinessPercent)
+                    .reduce((total, percent) => total + percent, 0);
+                if (totalShareOfBusiness !== 100) {
+                    Toaster.warning("The total share of business must be 100%.");
+                    return false;
+                }
             }
         }
 
@@ -960,8 +962,8 @@ function RfqListing(props) {
                         const matchedItem = arr.find(item => item?.CostingId === selectedItem);
                         return matchedItem ? matchedItem.Status : null;
                     })
-                default:
                     break
+                default:
 
             }
         })
@@ -985,29 +987,30 @@ function RfqListing(props) {
     */
     const buttonFormatter = (props) => {
 
+
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+
 
         let showActionIcons = false
         let showReminderIcon = false
         let showRemarkHistory = false
 
-        if (rowData?.CostingNumber === null || rowData?.RawMaterialId === null || rowData?.BoughtOutPartId === null) {
+        if (rowData?.CostingNumber === null && rowData?.RawMaterialId === null && rowData?.BoughtOutPartId === null) {
             showReminderIcon = true
 
         } else {
-
             showRemarkHistory = true
             if (rowData.ShowApprovalButton) {
                 showActionIcons = true
-
             } else {
-
                 showActionIcons = false
             }
         }
 
         let reminderCount = rowData?.RemainderCount
+
+
 
         return (
             <>
@@ -1766,7 +1769,7 @@ function RfqListing(props) {
                         <button type={'button'} disabled={costingsDifferentStatus} className="mr5 approve-reject-btn" onClick={() => returnDetailsClick("", selectedRows)} >
                             {/* <button type={'button'} disabled={costingsDifferentStatus} className="mr5 approve-reject-btn" onClick={() => returnDetailsClick("", selectedRows)} > */}
                             <div className={'cancel-icon-white mr5'}></div>
-                            {t('return', {ns: 'CostingLabels', defaultValue: 'Return' })}
+                            {t('return', { ns: 'CostingLabels', defaultValue: 'Return' })}
 
                         </button>)}
                     {(matchedStatus?.length !== 0 || matchedStatus?.includes(RECEIVED)) && (

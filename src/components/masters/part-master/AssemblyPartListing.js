@@ -393,7 +393,13 @@ const AssemblyPartListing = React.memo((props) => {
   const onBtExport = useCallback(() => {
     // Use the selectedRowData for export
     const tempArr = selectedRowData.length > 0 ? selectedRowData : tableData;
-    return returnExcelColumn(ASSEMBLYPART_DOWNLOAD_EXCEl, tempArr);
+    const filteredLabels = ASSEMBLYPART_DOWNLOAD_EXCEl.filter(column => {
+      if (column.value === "UnitOfMeasurement") {
+        return initialConfiguration?.IsShowUnitOfMeasurementInPartMaster
+      }
+      return true;
+    })
+    return returnExcelColumn(filteredLabels, tempArr);
   }, [selectedRowData, tableData]);
 
   const returnExcelColumn = (data = [], TempData) => {
@@ -591,6 +597,8 @@ const AssemblyPartListing = React.memo((props) => {
               <AgGridColumn field="ECNNumber" headerName="ECN No." cellRenderer={"hyphenFormatter"} ></AgGridColumn>
               <AgGridColumn field="RevisionNumber" headerName="Revision No." cellRenderer={"hyphenFormatter"} ></AgGridColumn>
               <AgGridColumn field="DrawingNumber" headerName="Drawing No." cellRenderer={"hyphenFormatter"}></AgGridColumn>
+              {initialConfiguration?.IsShowUnitOfMeasurementInPartMaster && <AgGridColumn field="UnitOfMeasurementSymbol" headerName="UOM" cellRenderer={"hyphenFormatter"}  ></AgGridColumn>}
+
               <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={"effectiveDateFormatter"} filter="agDateColumnFilter" filterParams={filterParams}              ></AgGridColumn>
               <AgGridColumn pinned="right" field="IsActive" headerName="Status" floatingFilter={false} cellRenderer={"statusButtonFormatter"} ></AgGridColumn>
               <AgGridColumn field="PartId" width={250} cellClass="ag-grid-action-container actions-wrapper" headerName="Action" pinned={window.screen.width < 1920 ? "right" : ""} type="rightAligned" floatingFilter={false} cellRenderer={"buttonFormatter"}              ></AgGridColumn>

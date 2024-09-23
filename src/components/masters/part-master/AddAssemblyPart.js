@@ -14,7 +14,7 @@ import { MESSAGES } from '../../../config/message';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
 import "react-datepicker/dist/react-datepicker.css";
-import { BOUGHTOUTPARTSPACING, COMPONENT_PART, FILE_URL, SPACEBAR, ASSEMBLYNAME, searchCount, GUIDE_BUTTON_SHOW, effectiveDateRangeDays } from '../../../config/constants';
+import { BOUGHTOUTPARTSPACING, COMPONENT_PART, FILE_URL, SPACEBAR, ASSEMBLYNAME, searchCount, GUIDE_BUTTON_SHOW, effectiveDateRangeDays, customHavellsChanges } from '../../../config/constants';
 import AddChildDrawer from './AddChildDrawer';
 import DayTime from '../../common/DayTimeWrapper'
 import BOMViewer from './BOMViewer';
@@ -25,7 +25,7 @@ import _, { debounce } from 'lodash';
 import WarningMessage from '../../common/WarningMessage'
 import Switch from "react-switch";
 import { getCostingSpecificTechnology } from '../../costing/actions/Costing'
-import { getPartSelectList } from '../../../actions/Common';
+import { getPartSelectList, getUOMSelectList } from '../../../actions/Common';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { autoCompleteDropdown } from '../../common/CommonFunctions';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
@@ -33,7 +33,7 @@ import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from './TourMessages';
 import { withTranslation } from 'react-i18next';
 import Button from '../../layout/Button';
-import { LOGISTICS } from '../../../config/masterData';
+import { AcceptableBOPUOM, LOGISTICS } from '../../../config/masterData';
 import AsyncSelect from 'react-select/async';
 import { subDays } from 'date-fns';
 
@@ -85,6 +85,8 @@ class AddAssemblyPart extends Component {
       partName: '',
       showPopup: false,
       partAssembly: '',
+      uomSelected: []
+
     }
   }
 
@@ -100,6 +102,8 @@ class AddAssemblyPart extends Component {
       this.props.getProductGroupSelectList(() => { })
     }
     this.getDetails()
+    this.props.getUOMSelectList(() => { })
+
   }
 
   /**
@@ -141,7 +145,9 @@ class AddAssemblyPart extends Component {
               isBomEditable: Data.IsBOMEditable,
               warningMessage: true,
               warningMessageTechnology: Data.IsBOMEditable ? true : false,
-              IsTechnologyUpdateRequired: Data?.IsTechnologyUpdateRequired
+              IsTechnologyUpdateRequired: Data?.IsTechnologyUpdateRequired,
+              uomSelected: ({ label: Data?.UnitOfMeasurementSymbol, value: Data?.UnitOfMeasurementId }),
+
             }, () => {
               this.setState({ isLoader: false })
               if (this.state.IsTechnologyUpdateRequired) {
@@ -181,7 +187,7 @@ class AddAssemblyPart extends Component {
       this.props.change(field, "")
     })
     this.setState({ ProductGroup: [], BOMViewerData: [] })
-    this.setState({ minEffectiveDate: "", warningMessage: false, warningMessageTechnology: false, TechnologySelected: [] })
+    this.setState({ minEffectiveDate: "", warningMessage: false, warningMessageTechnology: false, TechnologySelected: [], uomSelected: [] })
     this.setState({ partAssembly: { ...this.state.partAssembly, convertPartToAssembly: false } })
   }
 
@@ -202,6 +208,7 @@ class AddAssemblyPart extends Component {
         this.props.getPartDescription(assemblyPartNumber, 1, (res) => {
           if (res?.data?.Data) {
             let finalData = res.data.Data;
+            console.log('finalData: ', finalData);
             this.props.change("Description", finalData.Description);
             this.props.change("AssemblyPartName", finalData.PartName);
             this.setState({ disablePartName: true, minEffectiveDate: finalData.EffectiveDate });
@@ -373,7 +380,7 @@ class AddAssemblyPart extends Component {
   * @description Used show listing of unit of measurement
   */
   renderListing = (label) => {
-    const { plantSelectList, productGroupSelectList, costingSpecifiTechnology } = this.props;
+    const { plantSelectList, productGroupSelectList, costingSpecifiTechnology, UOMSelectList } = this.props;
     const temp = [];
 
     if (label === 'plant') {
@@ -411,6 +418,17 @@ class AddAssemblyPart extends Component {
         return null
       })
       return temp
+    }
+    if (label === 'uom') {
+      UOMSelectList && UOMSelectList.map(item => {
+        const accept = AcceptableBOPUOM.includes(item.Type)
+        if (accept === false) return false
+        if (item.Value === '0') return false;
+        // let display = this.applySuperScriptFormatter(item.Display)
+        temp.push({ label: item.Display, value: item.Value })
+        return null
+      });
+      return temp;
     }
   }
 
@@ -751,7 +769,9 @@ class AddAssemblyPart extends Component {
         GroupCodeList: productArray,
         IsStructureChanges: isStructureChanges,
         IsConvertedToAssembly: convertPartToAssembly ? true : false,
-        IsTechnologyUpdateRequired: false
+        IsTechnologyUpdateRequired: false,
+        UnitOfMeasurementId: this.state?.uomSelected?.value ? this.state?.uomSelected?.value : "",
+
       }
 
       if (convertPartToAssembly) {
@@ -797,7 +817,9 @@ class AddAssemblyPart extends Component {
         Attachements: files,
         NumberOfChildParts: BOMViewerData && BOMViewerData.length - 1,
         BOMLevelCount: BOMLevelCount,
-        GroupCodeList: productArray
+        GroupCodeList: productArray,
+        UnitOfMeasurementId: this.state?.uomSelected?.value ? this.state?.uomSelected?.value : "",
+
       }
       this.props.createAssemblyPart(formData, (res) => {
         this.setState({ setDisable: false, isLoader: false })
@@ -863,7 +885,16 @@ class AddAssemblyPart extends Component {
 
     return isGroupCodeChange
   }
+  handleUOM = (newValue, actionMeta) => {
 
+    if (newValue && newValue !== '') {
+      this.setState({ uomSelected: newValue, })
+    }
+    else {
+      this.setState({ uomSelected: [], })
+
+    }
+  };
   /**
   * @method render
   * @description Renders the component
@@ -1142,7 +1173,22 @@ class AddAssemblyPart extends Component {
                             disabled={(isViewMode || (isEditFlag && !this.state.isBomEditable)) ? true : false}
                           />
                         </Col>}
-
+                        {initialConfiguration?.IsShowUnitOfMeasurementInPartMaster && <Col md="3">
+                          <Field
+                            name="UOM"
+                            type="text"
+                            label="UOM"
+                            component={searchableSelect}
+                            placeholder={"Select"}
+                            options={this.renderListing("uom")}
+                            //onKeyUp={(e) => this.changeItemDesc(e)}
+                            //validate={this.state.UOM == null || this.state.UOM.length === 0 ? [required] : []}
+                            // required={true}
+                            handleChangeDescription={this.handleUOM}
+                            valueDescription={this.state?.uomSelected}
+                            disabled={isEditFlag ? true : false}
+                          />
+                        </Col>}
                         {/* 
                         //WORK IN PROGRESS DONT DELETE */}
                         <Col md="3">
@@ -1378,7 +1424,7 @@ function mapStateToProps(state) {
   const fieldsObj = selector(state, 'BOMNumber', 'AssemblyPartNumber', 'AssemblyPartName', 'ECNNumber', 'RevisionNumber',
     'Description', 'DrawingNumber', 'GroupCode', 'Remark', 'TechnologyId')
   const { comman, part, auth, costing } = state;
-  const { plantSelectList } = comman;
+  const { plantSelectList, UOMSelectList } = comman;
   const { partData, actualBOMTreeData, productGroupSelectList } = part;
   const { initialConfiguration } = auth;
   const { costingSpecifiTechnology } = costing
@@ -1397,7 +1443,7 @@ function mapStateToProps(state) {
     }
   }
 
-  return { plantSelectList, partData, actualBOMTreeData, fieldsObj, initialValues, initialConfiguration, productGroupSelectList, costingSpecifiTechnology }
+  return { plantSelectList, partData, actualBOMTreeData, fieldsObj, initialValues, initialConfiguration, productGroupSelectList, costingSpecifiTechnology, UOMSelectList }
 
 }
 
@@ -1418,7 +1464,9 @@ export default connect(mapStateToProps, {
   getPartData,
   getCostingSpecificTechnology,
   getProductGroupSelectList,
-  getPartSelectList
+  getPartSelectList,
+  getUOMSelectList,
+
 })(reduxForm({
   form: 'AddAssemblyPart',
   onSubmitFail: errors => {

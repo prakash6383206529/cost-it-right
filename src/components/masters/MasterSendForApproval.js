@@ -97,31 +97,31 @@ function MasterSendForApproval(props) {
                     });
                 }
             }
-                if (!getConfigurationKey().IsDivisionAllowedForDepartment || (type === 'Approve' && !IsFinalLevelButtonShow)) {
-                    setTimeout(() => {
-                        const matchingDepartment = department.find(dept => dept.value === approvalDetails?.DepartmentId);
-                        let departmentId = matchingDepartment?.value ?? department[0]?.value
-                        if (getConfigurationKey().IsDivisionAllowedForDepartment && matchingDepartment) {
-                            setValue('dept', { label: matchingDepartment?.label, value: matchingDepartment?.value });
-                        } else {
-                            setValue('dept', { label: department[0]?.label, value: department[0]?.value });
-                        }
-                        setDisableDept(true)
-                        fetchAndSetApprovalUsers(departmentId, reasonId, props?.divisionId);
-                    }, 100);
-                }
-                if (type === 'Sender' && props.approvalListing) {
-                    const DepartmentId = approvalData && approvalData[0]?.ApprovalDepartmentId;
-                    // Ensure DepartmentId is an array
-                    const departmentIds = Array.isArray(DepartmentId) ? DepartmentId : [DepartmentId];
-                    const updateList = Data && Data.filter(item => departmentIds.includes(item.Value));
-                    setDepartmentDropdown(updateList)
-                    setValue('dept', { label: updateList[0]?.Text, value: updateList[0]?.Value })
+            if (!getConfigurationKey().IsDivisionAllowedForDepartment || (type === 'Approve' && !IsFinalLevelButtonShow)) {
+                setTimeout(() => {
+                    const matchingDepartment = department.find(dept => dept.value === approvalDetails?.DepartmentId);
+                    let departmentId = matchingDepartment?.value ?? department[0]?.value
+                    if (getConfigurationKey().IsDivisionAllowedForDepartment && matchingDepartment) {
+                        setValue('dept', { label: matchingDepartment?.label, value: matchingDepartment?.value });
+                    } else {
+                        setValue('dept', { label: department[0]?.label, value: department[0]?.value });
+                    }
                     setDisableDept(true)
-                    fetchAndSetApprovalUsers(updateList[0]?.Value, reasonId, approvalData[0]?.DivisionId);
-                    setIsShowDivision(false)
-                }
-            
+                    fetchAndSetApprovalUsers(departmentId, reasonId, props?.divisionId);
+                }, 100);
+            }
+            if (type === 'Sender' && props.approvalListing) {
+                const DepartmentId = approvalData && approvalData[0]?.ApprovalDepartmentId;
+                // Ensure DepartmentId is an array
+                const departmentIds = Array.isArray(DepartmentId) ? DepartmentId : [DepartmentId];
+                const updateList = Data && Data.filter(item => departmentIds.includes(item.Value));
+                setDepartmentDropdown(updateList)
+                setValue('dept', { label: updateList[0]?.Text, value: updateList[0]?.Value })
+                setDisableDept(true)
+                fetchAndSetApprovalUsers(updateList[0]?.Value, reasonId, approvalData[0]?.DivisionId);
+                setIsShowDivision(false)
+            }
+
         }))
         getLastRevisionData()
     }, [])
@@ -298,6 +298,7 @@ function MasterSendForApproval(props) {
     }
 
     const checkFinalUserAndSetApprover = (departmentId, divisionId) => {
+        console.log(props, "props")
         let obj = {
             DepartmentId: departmentId,
             UserId: loggedInUserId(),
