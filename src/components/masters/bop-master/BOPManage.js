@@ -24,6 +24,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from '../../common/Tour/TourMessages';
 import { useTranslation } from 'react-i18next';
+import { useLabels } from '../../../helper/core';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -31,6 +32,7 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {};
 const BOPManage = (props) => {
+    const { vendorLabel } = useLabels();
     const dispatch = useDispatch();
     const searchRef = useRef(null);
     const { t } = useTranslation("common")
@@ -119,7 +121,7 @@ const BOPManage = (props) => {
      * @description Renders Costing head
      */
     const costingHeadFormatter = (cell, row, enumObject, rowIndex) => {
-        return cell ? 'Vendor Based' : 'Zero Based';
+        return cell ? `${vendorLabel} Based` : 'Zero Based';
     }
 
 

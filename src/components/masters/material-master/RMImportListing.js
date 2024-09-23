@@ -404,7 +404,7 @@ function RMImportListing(props) {
       isViewFlag: isViewMode,
       Id: Id,
       costingTypeId: rowData.CostingTypeId,
-      IsVendor: rowData.CostingHead === 'Vendor Based' ? true : rowData.CostingHead === 'Zero Based' ? false : rowData.CostingHead,
+      IsVendor: rowData.CostingHead === `${vendorLabel} Based` ? true : rowData.CostingHead === 'Zero Based' ? false : rowData.CostingHead,
     }
     props?.getDetails(data, rowData?.IsRMAssociated);
   }
@@ -530,7 +530,7 @@ function RMImportListing(props) {
   const costingHeadFormatter = (props) => {
     const cellValue = props?.valueFormatted ? props?.valueFormatted : props?.value;
 
-    let data = (cellValue === true || cellValue === 'Vendor Based' || cellValue === 'VBC') ? 'Vendor Based' : 'Zero Based';
+    let data = (cellValue === true || cellValue === `${vendorLabel} Based`  || cellValue === 'VBC') ? `${vendorLabel} Based`  : 'Zero Based';
 
     return data;
   }
@@ -658,7 +658,7 @@ function RMImportListing(props) {
     let temp = []
     temp = TempData && TempData.map((item) => {
       if (item.CostingHead === true) {
-        item.CostingHead = 'Vendor Based'
+        item.CostingHead = `${vendorLabel} Based` 
         item.EffectiveDate = (item.EffectiveDate)?.slice(0, 10)
       } else if (item.CostingHead === false) {
         item.CostingHead = 'Zero Based'

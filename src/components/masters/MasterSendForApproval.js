@@ -26,6 +26,7 @@ import HeaderTitle from '../common/HeaderTitle';
 import NoContentFound from '../common/NoContentFound';
 import { rfqSaveBestCosting } from '../rfq/actions/rfq';
 import { checkFinalUser } from '../costing/actions/Costing';
+import { useLabels } from '../../helper/core';
 
 function MasterSendForApproval(props) {
     const { type, IsFinalLevel, IsPushDrawer, reasonId, masterId, selectedRows, OnboardingId, approvalObj, isBulkUpload, IsImportEntry, approvalDetails, IsFinalLevelButtonShow, approvalData, levelDetails, Technology, showScrapKeys } = props
@@ -34,6 +35,7 @@ function MasterSendForApproval(props) {
         mode: 'onChange',
         reValidateMode: 'onChange',
     })
+    const { vendorLabel } = useLabels();
     const gridOptions = {};
     const [approvalDropDown, setApprovalDropDown] = useState([])
     const [approverIdList, setApproverIdList] = useState([])
@@ -1084,7 +1086,7 @@ function MasterSendForApproval(props) {
                                                         <SearchableSelectHookForm
                                                             name="vendorName"
                                                             type="text"
-                                                            label={'Vendor (Code)'}
+                                                            label={`${vendorLabel} (Code)`}
                                                             errors={errors.vendorName}
                                                             Controller={Controller}
                                                             control={control}

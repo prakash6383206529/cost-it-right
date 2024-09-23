@@ -803,7 +803,7 @@ const VendorListing = (props) => {
               <AgGridColumn field="State" headerName="State" cellRenderer={"hyphenFormatter"} ></AgGridColumn>
               <AgGridColumn field="City" headerName="City" cellRenderer={"hyphenFormatter"}></AgGridColumn>
 
-              {getConfigurationKey()?.IsCriticalVendorConfigured && (<AgGridColumn field="IsCriticalVendor" headerName="Potential Vendor" ></AgGridColumn>)}
+              {getConfigurationKey()?.IsCriticalVendorConfigured && (<AgGridColumn field="IsCriticalVendor" headerName={`Potential ${vendorLabel}`}></AgGridColumn>)}
               {props?.isVendorManagement && <AgGridColumn field="VendorClassification" headerName={vendorLabel + " Classification"} cellRenderer={"hyphenFormatter"} ></AgGridColumn>}
               {props?.isVendorManagement && <AgGridColumn field="VendorLPSRating" headerName={vendorLabel + " LPS Rating"} cellRenderer={"hyphenFormatter"}></AgGridColumn>}
               <AgGridColumn field="VendorId" minWidth={"180"} cellClass="actions-wrapper ag-grid-action-container" headerName="Actions" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"}              ></AgGridColumn>

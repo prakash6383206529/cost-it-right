@@ -17,6 +17,7 @@ import { getConfigurationKey, loggedInUserId, showBopLabel, userDetails } from '
 import NoContentFound from '../../common/NoContentFound';
 import { PaginationWrapper } from '../../common/commonPagination';
 import { reactLocalStorage } from 'reactjs-localstorage';
+import { useLabels } from '../../../helper/core';
 
 
 
@@ -24,7 +25,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 const gridOptions = {};
 
 function BOPApproval(props) {
-
+    const { vendorLabel } = useLabels();
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [selectedRowData, setSelectedRowData] = useState([]);
@@ -268,7 +269,7 @@ function BOPApproval(props) {
                                     <AgGridColumn width="150" field="UOM" headerName='UOM'></AgGridColumn>
                                     <AgGridColumn width="140" field="Specification" headerName='Specification'></AgGridColumn>
                                     <AgGridColumn width="140" field="Plants" headerName='Plant'></AgGridColumn>
-                                    <AgGridColumn field="VendorName" headerName='Vendor'></AgGridColumn>
+                                    <AgGridColumn field="VendorName" headerName={`${vendorLabel}`}></AgGridColumn>
                                     <AgGridColumn width="140" field="BasicRate" headerName={`Basic Rate (${reactLocalStorage.getObject("baseCurrency")})`}></AgGridColumn>
                                     <AgGridColumn width="140" field="NetLandedCost" headerName={`Net Cost (${reactLocalStorage.getObject("baseCurrency")})`}></AgGridColumn>
                                     <AgGridColumn width="140" field="EffectiveDate" cellRenderer='effectiveDateRenderer' headerName="Effective Date"></AgGridColumn>

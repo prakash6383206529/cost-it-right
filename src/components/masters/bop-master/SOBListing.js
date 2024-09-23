@@ -132,7 +132,7 @@ const SOBListing = (props) => {
    * @description Renders Costing head
    */
   const costingHeadFormatter = (cell, row, enumObject, rowIndex) => {
-    return cell ? 'Vendor Based' : 'Zero Based';
+    return cell ? `${vendorLabel} Based` : 'Zero Based';
   }
 
 

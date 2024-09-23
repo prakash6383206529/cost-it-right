@@ -516,7 +516,7 @@ const BOPDomesticListing = (props) => {
   const costingHeadFormatter = (props) => {
     let cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     if (cellValue === true) {
-      cellValue = 'Vendor Based'
+      cellValue = `${vendorLabel} Based`
     } else if (cellValue === false) {
       cellValue = 'Zero Based'
     }
