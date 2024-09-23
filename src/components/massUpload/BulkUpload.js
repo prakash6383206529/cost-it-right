@@ -1093,7 +1093,8 @@ class BulkUpload extends Component {
                                                     checked={costingTypeId === VBCTypeId ? true : fileName === 'Interest Rate' ? true : false}
                                                     onClick={() => this.onPressHeads(VBCTypeId)}
                                                 />{' '}
-                                                <span>Vendor Based</span>
+                                                <span>{this.props.t('VendorLabel', { ns: 'MasterLabels', defaultValue: 'Vendor' }) + " Based"}
+                                                </span>
                                             </Label>}
                                             {(reactLocalStorage.getObject('CostingTypePermission').cbc) && (fileName !== 'ADD RFQ') && <Label sm={isMachineMoreTemplate || (fileName === 'Operation' && getConfigurationKey().IsShowDetailedOperationBreakup) ? 6 : 4} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
                                                 <input

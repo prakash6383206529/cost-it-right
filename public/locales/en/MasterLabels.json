@@ -1,9 +1,9 @@
 {
     "RMMaster": "Manage Raw Material",
-    "RMZeroBasedVendorLabel": "RM Vendor (Code)",
-    "RMVendorBasedVendorLabel": "Vendor (Code)",
-    "BOPZeroBasedVendorLabel": "BOP Vendor (Code)",
-    "BOPVendorBasedVendorLabel": "Vendor (Code)",
+    "RMZeroBasedVendorLabel": "RM Supplier (Code)",
+    "RMVendorBasedVendorLabel": "Supplier (Code)",
+    "BOPZeroBasedVendorLabel": "BOP Supplier (Code)",
+    "BOPVendorBasedVendorLabel": "Supplier (Code)",
     "RMCategoryLabel": "RM Category",
     "BOPCategoryLabel": "BOP Category",
     "TechnologyLabel": "Technology",
