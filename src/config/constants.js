@@ -173,12 +173,12 @@ export const API = {
   bulkUploadProduct: `${BASE_URL}/masters-product/bulk-upload-for-product-json`,
   productGroupSelectList: `${BASE_URL}/masters-product/select-list-get-product-group-code`,
   getPartDescription: `${BASE_URL}/masters-part/get-info-name-by-part-number-and-type`,
-  createProductLevels: `${BASE_URL}/masters-product/create-product-levels`,
-  getAllProductLevels: `${BASE_URL}/masters-product/get-all-product-levels`,
-  createProductLevelValues: `${BASE_URL}/masters-product/create-product-level-values`,
-  getPreFilledProductLevelValues: `${BASE_URL}/masters-product/get-product-level-values-by-level-value-id`,
-  getProductLabel: `${BASE_URL}/masters-product/get-product-level-by-id`,
-  updateProductLabel: `${BASE_URL}/masters-product/update-product-level`,
+  createProductLevels: `${BASE_URL}/masters-product/create-product-hierarchies`,
+  getAllProductLevels: `${BASE_URL}/masters-product/get-all-product-hierarchies`,
+  createProductLevelValues: `${BASE_URL}/masters-product/create-product-hierarchy-value-details`,
+  getPreFilledProductLevelValues: `${BASE_URL}/masters-product/get-product-hierarchy-value-details-by-id`,
+  getProductLabel: `${BASE_URL}/masters-product/get-product-hierarchy-by-id`,
+  updateProductLabel: `${BASE_URL}/masters-product/update-product-hierarchy`,
 
   //ASSEMBLY PART
   createAssemblyPart: `${BASE_URL}/masters-part/create-assembly-part`,
