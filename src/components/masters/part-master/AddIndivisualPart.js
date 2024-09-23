@@ -107,7 +107,7 @@ class AddIndivisualPart extends Component {
               oldProductGroup: productArray,
               isBomEditable: Data.IsBOMEditable,
               TechnologySelected: ({ label: Data.TechnologyName, value: Data.TechnologyIdRef }),
-              uomSelected: ({ label: Data.UnitOfMeasurementSymbol, value: Data.UnitOfMeasurementId }),
+              uomSelected: ({ label: Data?.UnitOfMeasurementSymbol, value: Data?.UnitOfMeasurementId }),
 
               IsTechnologyUpdateRequired: Data.IsTechnologyUpdateRequired
             }, () => this.setState({ isLoader: false }))
@@ -144,7 +144,7 @@ class AddIndivisualPart extends Component {
           this.setState({
             disablePartName: true, minEffectiveDate: finalData.EffectiveDate, TechnologySelected: {
               label: finalData.Technology, value: finalData.TechnologyId,
-            }, uomSelected: { label: finalData.UnitOfMeasurementSymbol, value: finalData.UnitOfMeasurementId }
+            }, uomSelected: { label: finalData?.UnitOfMeasurementSymbol, value: finalData?.UnitOfMeasurementId }
           })
         } else {
           this.props.change("Description", "")
@@ -442,7 +442,7 @@ class AddIndivisualPart extends Component {
         TechnologyIdRef: this.state.TechnologySelected.value ? this.state.TechnologySelected.value : "",
         TechnologyName: this.state.TechnologySelected.label ? this.state.TechnologySelected.label : "",
         IsTechnologyUpdateRequired: false,
-        UnitOfMeasurementId: this.state.uomSelected.value ? this.state.uomSelected.value : "",
+        UnitOfMeasurementId: this.state.uomSelected?.value ? this.state.uomSelected.value : "",
 
       }
 
@@ -475,7 +475,7 @@ class AddIndivisualPart extends Component {
         GroupCodeList: productArray,
         TechnologyIdRef: this.state.TechnologySelected.value ? this.state.TechnologySelected.value : "",
         TechnologyName: this.state.TechnologySelected.label ? this.state.TechnologySelected.label : "",
-        UnitOfMeasurementId: this.state.uomSelected.value ? this.state.uomSelected.value : "",
+        UnitOfMeasurementId: this.state.uomSelected?.value ? this.state.uomSelected.value : "",
       }
 
       this.props.createPart(formData, (res) => {
