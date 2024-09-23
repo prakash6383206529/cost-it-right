@@ -442,7 +442,7 @@ class AddIndivisualPart extends Component {
         TechnologyIdRef: this.state.TechnologySelected.value ? this.state.TechnologySelected.value : "",
         TechnologyName: this.state.TechnologySelected.label ? this.state.TechnologySelected.label : "",
         IsTechnologyUpdateRequired: false,
-        UnitOfMeasurementId: this.state.uomSelected?.value ? this.state.uomSelected.value : "",
+        UnitOfMeasurementId: this.state?.uomSelected?.value ? this.state?.uomSelected?.value : "",
 
       }
 
@@ -475,7 +475,7 @@ class AddIndivisualPart extends Component {
         GroupCodeList: productArray,
         TechnologyIdRef: this.state.TechnologySelected.value ? this.state.TechnologySelected.value : "",
         TechnologyName: this.state.TechnologySelected.label ? this.state.TechnologySelected.label : "",
-        UnitOfMeasurementId: this.state.uomSelected?.value ? this.state.uomSelected.value : "",
+        UnitOfMeasurementId: this.state?.uomSelected?.value ? this.state?.uomSelected?.value : "",
       }
 
       this.props.createPart(formData, (res) => {
@@ -671,7 +671,7 @@ class AddIndivisualPart extends Component {
                               //validate={this.state.UOM == null || this.state.UOM.length === 0 ? [required] : []}
                               // required={true}
                               handleChangeDescription={this.handleUOM}
-                              valueDescription={this.state.uomSelected}
+                              valueDescription={this.state?.uomSelected}
                               disabled={isEditFlag ? true : false || (!isEditFlag && this.state.disablePartName) || isViewMode}
                             />
                           </Col>}

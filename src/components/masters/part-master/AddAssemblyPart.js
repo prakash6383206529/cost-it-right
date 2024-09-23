@@ -770,7 +770,7 @@ class AddAssemblyPart extends Component {
         IsStructureChanges: isStructureChanges,
         IsConvertedToAssembly: convertPartToAssembly ? true : false,
         IsTechnologyUpdateRequired: false,
-        UnitOfMeasurementId: this.state.uomSelected?.value ? this.state.uomSelected.value : "",
+        UnitOfMeasurementId: this.state?.uomSelected?.value ? this.state?.uomSelected?.value : "",
 
       }
 
@@ -818,7 +818,7 @@ class AddAssemblyPart extends Component {
         NumberOfChildParts: BOMViewerData && BOMViewerData.length - 1,
         BOMLevelCount: BOMLevelCount,
         GroupCodeList: productArray,
-        UnitOfMeasurementId: this.state.uomSelected?.value ? this.state.uomSelected.value : "",
+        UnitOfMeasurementId: this.state?.uomSelected?.value ? this.state?.uomSelected?.value : "",
 
       }
       this.props.createAssemblyPart(formData, (res) => {
@@ -1185,7 +1185,7 @@ class AddAssemblyPart extends Component {
                             //validate={this.state.UOM == null || this.state.UOM.length === 0 ? [required] : []}
                             // required={true}
                             handleChangeDescription={this.handleUOM}
-                            valueDescription={this.state.uomSelected}
+                            valueDescription={this.state?.uomSelected}
                             disabled={isEditFlag ? true : false}
                           />
                         </Col>}
