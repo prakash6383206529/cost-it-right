@@ -12,18 +12,19 @@ import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
 import DayTime from '../../common/DayTimeWrapper'
 import "react-datepicker/dist/react-datepicker.css";
-import { effectiveDateRangeDays, FILE_URL, GUIDE_BUTTON_SHOW } from '../../../config/constants';
+import { customHavellsChanges, effectiveDateRangeDays, FILE_URL, GUIDE_BUTTON_SHOW } from '../../../config/constants';
 import LoaderCustom from '../../common/LoaderCustom';
 import imgRedcross from "../../../assests/images/red-cross.png";
 import _, { debounce } from 'lodash';
 import { showDataOnHover } from '../../../helper';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { getCostingSpecificTechnology } from '../../costing/actions/Costing'
-import { ASSEMBLY, LOGISTICS } from '../../../config/masterData';
+import { AcceptableBOPUOM, ASSEMBLY, LOGISTICS } from '../../../config/masterData';
 import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from './TourMessages';
 import { withTranslation } from 'react-i18next';
 import { subDays } from 'date-fns';
+import { getUOMSelectList } from '../../../actions/Common';
 
 class AddIndivisualPart extends Component {
   constructor(props) {
@@ -52,7 +53,8 @@ class AddIndivisualPart extends Component {
       minEffectiveDate: '',
       disablePartName: false,
       attachmentLoader: false,
-      showPopup: false
+      showPopup: false,
+      uomSelected: []
     }
   }
 
@@ -66,6 +68,7 @@ class AddIndivisualPart extends Component {
       this.props.getCostingSpecificTechnology(loggedInUserId(), () => { })
     }
     this.getDetails()
+    this.props.getUOMSelectList(() => { })
   }
 
   /**
@@ -83,6 +86,8 @@ class AddIndivisualPart extends Component {
       this.props.getPartData(data.Id, res => {
         if (res && res?.data && res?.data?.Result) {
           const Data = res.data.Data;
+
+
           let productArray = []
           Data && Data.GroupCodeList.map((item) => {
             productArray.push({ Text: item.GroupCode, Value: item.ProductId })
@@ -102,6 +107,8 @@ class AddIndivisualPart extends Component {
               oldProductGroup: productArray,
               isBomEditable: Data.IsBOMEditable,
               TechnologySelected: ({ label: Data.TechnologyName, value: Data.TechnologyIdRef }),
+              uomSelected: ({ label: Data.UnitOfMeasurementSymbol, value: Data.UnitOfMeasurementId }),
+
               IsTechnologyUpdateRequired: Data.IsTechnologyUpdateRequired
             }, () => this.setState({ isLoader: false }))
             // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
@@ -134,7 +141,11 @@ class AddIndivisualPart extends Component {
           let finalData = res.data.Data
           this.props.change("Description", finalData.Description)
           this.props.change("PartName", finalData.PartName)
-          this.setState({ disablePartName: true, minEffectiveDate: finalData.EffectiveDate, TechnologySelected: { label: finalData.Technology, value: finalData.TechnologyId } })
+          this.setState({
+            disablePartName: true, minEffectiveDate: finalData.EffectiveDate, TechnologySelected: {
+              label: finalData.Technology, value: finalData.TechnologyId,
+            }, uomSelected: { label: finalData.UnitOfMeasurementSymbol, value: finalData.UnitOfMeasurementId }
+          })
         } else {
           this.props.change("Description", "")
           this.props.dispatch(clearFields('AddIndivisualPart', false, false, 'PartName'));
@@ -171,7 +182,8 @@ class AddIndivisualPart extends Component {
   * @description Used show listing of unit of measurement
   */
   renderListing = (label) => {
-    const { plantSelectList, productGroupSelectList, costingSpecifiTechnology } = this.props;
+    const { plantSelectList, productGroupSelectList, costingSpecifiTechnology, UOMSelectList } = this.props;
+
     const temp = [];
     if (label === 'plant') {
       plantSelectList && plantSelectList.map(item => {
@@ -198,6 +210,17 @@ class AddIndivisualPart extends Component {
           return null
         })
       return temp
+    }
+    if (label === 'uom') {
+      UOMSelectList && UOMSelectList.map(item => {
+        const accept = AcceptableBOPUOM.includes(item.Type)
+        if (accept === false) return false
+        if (item.Value === '0') return false;
+        // let display = this.applySuperScriptFormatter(item.Display)
+        temp.push({ label: item.Display, value: item.Value })
+        return null
+      });
+      return temp;
     }
 
   }
@@ -256,7 +279,16 @@ class AddIndivisualPart extends Component {
       Toaster.warning("Something went wrong")
     }
   }
+  handleUOM = (newValue, actionMeta) => {
 
+    if (newValue && newValue !== '') {
+      this.setState({ uomSelected: newValue, })
+    }
+    else {
+      this.setState({ uomSelected: [], })
+
+    }
+  };
   renderImages = () => {
     this.state.files && this.state.files.map(f => {
       const withOutTild = f.FileURL.replace('~', '')
@@ -330,6 +362,7 @@ class AddIndivisualPart extends Component {
   * @description Used to Submit the form
   */
   onSubmit = debounce((values) => {
+
     const { PartId, effectiveDate, isEditFlag, files, DataToCheck, DropdownChanged, ProductGroup, oldProductGroup, uploadAttachements } = this.state;
     const { initialConfiguration } = this.props;
     let isStructureChanges
@@ -387,6 +420,8 @@ class AddIndivisualPart extends Component {
       let updatedFiles = files.map((file) => {
         return { ...file, ContextId: PartId }
       })
+
+
       let updateData = {
         LoggedInUserId: loggedInUserId(),
         PartId: PartId,
@@ -407,6 +442,8 @@ class AddIndivisualPart extends Component {
         TechnologyIdRef: this.state.TechnologySelected.value ? this.state.TechnologySelected.value : "",
         TechnologyName: this.state.TechnologySelected.label ? this.state.TechnologySelected.label : "",
         IsTechnologyUpdateRequired: false,
+        UnitOfMeasurementId: this.state.uomSelected.value ? this.state.uomSelected.value : "",
+
       }
 
       this.props.updatePart(updateData, (res) => {
@@ -438,6 +475,7 @@ class AddIndivisualPart extends Component {
         GroupCodeList: productArray,
         TechnologyIdRef: this.state.TechnologySelected.value ? this.state.TechnologySelected.value : "",
         TechnologyName: this.state.TechnologySelected.label ? this.state.TechnologySelected.label : "",
+        UnitOfMeasurementId: this.state.uomSelected.value ? this.state.uomSelected.value : "",
       }
 
       this.props.createPart(formData, (res) => {
@@ -621,7 +659,22 @@ class AddIndivisualPart extends Component {
                               disabled={isViewMode}
                             />
                           </Col>
-
+                          {initialConfiguration?.IsShowUnitOfMeasurementInPartMaster && <Col md="3">
+                            <Field
+                              name="UOM"
+                              type="text"
+                              label="UOM"
+                              component={searchableSelect}
+                              placeholder={"Select"}
+                              options={this.renderListing("uom")}
+                              //onKeyUp={(e) => this.changeItemDesc(e)}
+                              //validate={this.state.UOM == null || this.state.UOM.length === 0 ? [required] : []}
+                              // required={true}
+                              handleChangeDescription={this.handleUOM}
+                              valueDescription={this.state.uomSelected}
+                              disabled={isEditFlag ? true : false || (!isEditFlag && this.state.disablePartName) || isViewMode}
+                            />
+                          </Col>}
                           <Col md="3">
                             <Field
                               label={t('TechnologyLabel', { ns: 'MasterLabels', defaultValue: 'Technology' })}
@@ -640,6 +693,8 @@ class AddIndivisualPart extends Component {
                               disabled={(isViewMode) || (!isEditFlag && this.state.disablePartName) || (isEditFlag && !((isEditFlag && this.state.IsTechnologyUpdateRequired && this.state.isBomEditable)))}
                             />
                           </Col>
+
+
                           {initialConfiguration?.IsSAPCodeRequired && <Col md="3">
                             <Field
                               label={`SAP Code`}
@@ -825,7 +880,7 @@ class AddIndivisualPart extends Component {
 * @param {*} state
 */
 function mapStateToProps({ comman, part, auth, costing }) {
-  const { plantSelectList, } = comman;
+  const { plantSelectList, UOMSelectList } = comman;
   const { partData, productGroupSelectList } = part;
   const { initialConfiguration } = auth;
   const { costingSpecifiTechnology } = costing
@@ -845,7 +900,7 @@ function mapStateToProps({ comman, part, auth, costing }) {
     }
   }
 
-  return { plantSelectList, partData, initialValues, initialConfiguration, productGroupSelectList, costingSpecifiTechnology }
+  return { plantSelectList, partData, initialValues, initialConfiguration, productGroupSelectList, costingSpecifiTechnology, UOMSelectList }
 }
 
 /**
@@ -861,7 +916,8 @@ export default connect(mapStateToProps, {
   fileUploadPart,
   getProductGroupSelectList,
   getPartDescription,
-  getCostingSpecificTechnology
+  getCostingSpecificTechnology,
+  getUOMSelectList,
 })(reduxForm({
   form: 'AddIndivisualPart',
   enableReinitialize: true,
