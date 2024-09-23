@@ -46,6 +46,7 @@ import { Steps } from './TourMessages';
 import { withTranslation } from 'react-i18next';
 import Button from '../../layout/Button';
 import { subDays } from 'date-fns';
+import { labels } from '../../../helper/core';
 
 const selector = formValueSelector('AddMachineRate');
 
@@ -1492,7 +1493,7 @@ class AddMachineRate extends Component {
                               }
                               disabled={isEditFlag ? true : false}
                             />{" "}
-                            <span>Vendor Based</span>
+                            <span>{labels(t, 'VendorLabel', 'MasterLabels')} Based</span>
                           </Label>}
                           {reactLocalStorage.getObject('CostingTypePermission').cbc && <Label id="AddMachineRate_customerBased" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
                             <input
@@ -1539,7 +1540,7 @@ class AddMachineRate extends Component {
                         </Col>
                         {costingTypeId === VBCTypeId &&
                           <Col md="3">
-                            <label>{"Vendor (Code)"}<span className="asterisk-required">*</span></label>
+                            <label>{labels(t, 'VendorLabel', 'MasterLabels')}(Code)<span className="asterisk-required">*</span></label>
                             <div className='p-relative'>
                               {this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
                               <AsyncSelect

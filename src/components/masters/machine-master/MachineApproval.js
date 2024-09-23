@@ -37,7 +37,7 @@ function MachineApproval(props) {
     const dispatch = useDispatch()
     const { machineApprovalList } = useSelector((state) => state.machine)
 
-    const { technologyLabel } = useLabels();
+    const { technologyLabel, vendorLabel } = useLabels();
 
     useEffect(() => {
         getTableData()
@@ -250,7 +250,7 @@ function MachineApproval(props) {
                                     <AgGridColumn width="145" field="CostingHead" headerName='Costing Head'></AgGridColumn>
                                     <AgGridColumn width="145" field="ApprovalProcessId" hide></AgGridColumn>
                                     <AgGridColumn width="145" field="TechnologyName" headerName={technologyLabel}></AgGridColumn>
-                                    <AgGridColumn width="145" field="VendorName" headerName='Vendor (Code)'></AgGridColumn>
+                                    <AgGridColumn width="145" field="VendorName" headerName={`${vendorLabel} (Code)`}></AgGridColumn>
                                     <AgGridColumn width="145" field="Plants" headerName='Plant (Code)'></AgGridColumn>
                                     <AgGridColumn width="150" field="MachineNumber" headerName='Machine Number'></AgGridColumn>
                                     <AgGridColumn width="140" field="MachineTypeName" headerName='Machine Type'></AgGridColumn>
