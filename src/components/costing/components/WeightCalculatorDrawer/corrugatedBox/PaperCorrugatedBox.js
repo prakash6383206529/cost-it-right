@@ -34,7 +34,7 @@ function PaperCorrugatedBox(props) {
         RMCost: 0
     })
     const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest
-    const { NoOfDecimalForPrice } = useSelector((state) => state.auth.initialConfiguration)
+    const { NoOfDecimalForPrice, NoOfDecimalForInputOutput } = useSelector((state) => state.auth.initialConfiguration)
     const dispatch = useDispatch()
     const {
         register: registerTableForm,
@@ -92,7 +92,7 @@ function PaperCorrugatedBox(props) {
 
             let tableDataTemp = []
             WeightCalculatorRequest?.CostingCorrugatedAndMonoCartonBoxAdditionalRawMaterial?.length !== 0 && WeightCalculatorRequest?.CostingCorrugatedAndMonoCartonBoxAdditionalRawMaterial?.map((item, index) => {
-                setValueCalculatorForm(`GSM${item.RawMaterialIdRef}${index}`, checkForDecimalAndNull(item.GSM, NoOfDecimalForPrice))
+                setValueCalculatorForm(`GSM${item.RawMaterialIdRef}${index}`, checkForDecimalAndNull(item.GSM, NoOfDecimalForInputOutput))
                 setValueCalculatorForm(`flutePercentage${item.RawMaterialIdRef}${index}`, checkForDecimalAndNull(item.FlutePercentage, NoOfDecimalForPrice))
                 setValueTableForm(`fluteValue${item.RawMaterialIdRef}${index}`, checkForDecimalAndNull(item.FluteValue, NoOfDecimalForPrice))
                 tableDataTemp.push({ label: item.RawMaterialNameAndGrade, value: item.RawMaterialIdRef, RawMaterialRate: item.RawMaterialRate })
@@ -115,9 +115,6 @@ function PaperCorrugatedBox(props) {
                 RMCost: WeightCalculatorRequest.RMCost
             }));
         }
-        if (!props.CostingViewMode) {
-            setValueCalculatorForm('NosOfPly', props?.rmData?.length)
-        }
     }, [])
     useEffect(() => {
         calculateGSM()
@@ -132,7 +129,7 @@ function PaperCorrugatedBox(props) {
         let calculation = state.totalGSM * calculationState.TotalArea / 1000
 
 
-        setValueCalculatorForm('Weight', checkForDecimalAndNull(calculation, NoOfDecimalForPrice))
+        setValueCalculatorForm('Weight', checkForDecimalAndNull(calculation, NoOfDecimalForInputOutput))
         setCalculationState((prevState) => ({ ...prevState, Weight: calculation }))
     }
     const renderListing = (label) => {
@@ -174,7 +171,7 @@ function PaperCorrugatedBox(props) {
             BoardCost += ((singleGSM * checkForNull(state.tableData[i].RawMaterialRate)) / 1000)
             // totalGSM += checkForNull(getValuesTableForm(`GSM${state.tableData[i].value}`)) + checkForNull(getValuesTableForm(`fluteValue${state.tableData[i].value}`))
         }
-        setValueCalculatorForm('BoardCost', checkForDecimalAndNull(BoardCost, NoOfDecimalForPrice))
+        setValueCalculatorForm('BoardCost', checkForDecimalAndNull(BoardCost, NoOfDecimalForInputOutput))
         setValueCalculatorForm('RMCost', checkForDecimalAndNull(BoardCost * calculationState.TotalArea, NoOfDecimalForPrice))
         setState((prevState) => ({ ...prevState, totalGSM }))
         setCalculationState((prevState) => ({ ...prevState, BoardCost: BoardCost, RMCost: BoardCost * calculationState.TotalArea }))
@@ -185,9 +182,9 @@ function PaperCorrugatedBox(props) {
     }
     const calculateWatagePercent = (value) => {
         let Wastage = value * checkForNull(calculationState.Area) / 100
-        setValueCalculatorForm('Wastage', checkForDecimalAndNull(Wastage, NoOfDecimalForPrice))
+        setValueCalculatorForm('Wastage', checkForDecimalAndNull(Wastage, NoOfDecimalForInputOutput))
         const TotalArea = Wastage + checkForNull(calculationState.Area)
-        setValueCalculatorForm('TotalArea', checkForDecimalAndNull(TotalArea, NoOfDecimalForPrice))
+        setValueCalculatorForm('TotalArea', checkForDecimalAndNull(TotalArea, NoOfDecimalForInputOutput))
         setValueCalculatorForm('RMCost', checkForDecimalAndNull(calculationState.BoardCost * TotalArea, NoOfDecimalForPrice))
         setCalculationState((prevState) => ({ ...prevState, Wastage: Wastage, TotalArea: TotalArea, RMCost: calculationState.BoardCost * TotalArea }))
     }
@@ -210,7 +207,7 @@ function PaperCorrugatedBox(props) {
     ]
     const calculateCalulatorValue = () => {
         const calculation = (checkForNull(getValuesCalculatorForm('SheetDecle')) * checkForNull(getValuesCalculatorForm('SheetCut'))) / 1000000
-        setValueCalculatorForm('Area', checkForDecimalAndNull(calculation, NoOfDecimalForPrice))
+        setValueCalculatorForm('Area', checkForDecimalAndNull(calculation, NoOfDecimalForInputOutput))
         setCalculationState((prevState) => ({ ...prevState, Area: calculation }))
     }
     const onSubmit = (value) => {
@@ -511,7 +508,7 @@ function PaperCorrugatedBox(props) {
                                     Total GSM of Board (Including Flute):
                                 </td>
                                 <td colSpan={tableheaders.length - (tableheaders.length + 1)}>
-                                    <TooltipCustom id="totalGSM" disabledIcon={true} tooltipText={`Layer 1 GSM + (Layer 2 GSM +Flute)+Layer 3 GSM...`} /> <div className='w-fit' id="totalGSM">{checkForDecimalAndNull(state.totalGSM, NoOfDecimalForPrice)}</div>
+                                    <TooltipCustom id="totalGSM" disabledIcon={true} tooltipText={`Layer 1 GSM + (Layer 2 GSM +Flute)+Layer 3 GSM...`} /> <div className='w-fit' id="totalGSM">{checkForDecimalAndNull(state.totalGSM, NoOfDecimalForInputOutput)}</div>
                                 </td>
                             </tr>
                         </tbody>

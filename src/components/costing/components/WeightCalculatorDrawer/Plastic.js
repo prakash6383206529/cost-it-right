@@ -12,6 +12,7 @@ import { setPlasticArray } from '../../actions/Costing'
 import { debounce } from 'lodash'
 import { nonZero, number, checkWhiteSpaces, decimalAndNumberValidation, percentageLimitValidation } from '../../../../helper/validation'
 import TooltipCustom from '../../../common/Tooltip'
+import { CORRUGATEDBOX } from '../../../../config/masterData'
 
 function Plastic(props) {
   const { item, rmRowData, isSummary, CostingViewMode, DisableMasterBatchCheckbox } = props
@@ -211,6 +212,9 @@ function Plastic(props) {
       setIsDisable(false)
       if (res.data.Result) {
         obj.WeightCalculationId = res.data.Identity
+        if (Number(costData.TechnologyId) === Number(CORRUGATEDBOX)) {
+          obj.CalculatorType = 'CorrugatedBox'
+        }
         Toaster.success("Calculation saved successfully")
         dispatch(setPlasticArray([]))
         props.toggleDrawer('', obj)
