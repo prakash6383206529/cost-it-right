@@ -31,6 +31,7 @@ function PaperCorrugatedBox(props) {
         TotalArea: 0,
         Weight: 0,
         BoardCost: 0,
+        TotalRMSheetCost: 0,
         RMCost: 0
     })
     const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest
@@ -98,6 +99,7 @@ function PaperCorrugatedBox(props) {
                 tableDataTemp.push({ label: item.RawMaterialNameAndGrade, value: item.RawMaterialIdRef, RawMaterialRate: item.RawMaterialRate })
             })
             setValueCalculatorForm('NosOfPly', WeightCalculatorRequest.NosOfPly)
+            setValueCalculatorForm('NoOfUps', WeightCalculatorRequest.NoOfUps)
             setValueCalculatorForm('TypeOfBox', WeightCalculatorRequest.TypeOfBox)
             setValueTableForm('RawMaterial', '')
             setState((prevState) => ({
@@ -112,17 +114,22 @@ function PaperCorrugatedBox(props) {
                 TotalArea: WeightCalculatorRequest.TotalArea,
                 Weight: WeightCalculatorRequest.Weight,
                 BoardCost: WeightCalculatorRequest.BoardCost,
-                RMCost: WeightCalculatorRequest.RMCost
+                RMCost: WeightCalculatorRequest.RMCost,
+                TotalRMSheetCost: WeightCalculatorRequest.TotalRMSheetCost,
             }));
         }
     }, [])
     useEffect(() => {
-        calculateGSM()
-        calculateWeightAndBoardCost()
+        if (!props?.CostingViewMode) {
+            calculateGSM()
+            calculateWeightAndBoardCost()
+        }
     }, [tableInputsValues, areaCalculateWatch, state.tableData, state.totalGSM])
 
     useEffect(() => {
-        calculateCalulatorValue()
+        if (!props?.CostingViewMode) {
+            calculateCalulatorValue()
+        }
     }, [areaCalclulationFieldValues])
 
     const calculateWeightAndBoardCost = () => {
@@ -172,9 +179,9 @@ function PaperCorrugatedBox(props) {
             // totalGSM += checkForNull(getValuesTableForm(`GSM${state.tableData[i].value}`)) + checkForNull(getValuesTableForm(`fluteValue${state.tableData[i].value}`))
         }
         setValueCalculatorForm('BoardCost', checkForDecimalAndNull(BoardCost, NoOfDecimalForInputOutput))
-        setValueCalculatorForm('RMCost', checkForDecimalAndNull(BoardCost * calculationState.TotalArea, NoOfDecimalForPrice))
+        calculateRMCostAndRMCostPerPc(calculationState.TotalArea)
         setState((prevState) => ({ ...prevState, totalGSM }))
-        setCalculationState((prevState) => ({ ...prevState, BoardCost: BoardCost, RMCost: BoardCost * calculationState.TotalArea }))
+        setCalculationState((prevState) => ({ ...prevState, BoardCost: BoardCost }))
     }
     const sheetDecleHandle = (inputName, value) => {
         setValueCalculatorForm(inputName, checkForDecimalAndNull(value / 25.4, NoOfDecimalForPrice))
@@ -185,10 +192,17 @@ function PaperCorrugatedBox(props) {
         setValueCalculatorForm('Wastage', checkForDecimalAndNull(Wastage, NoOfDecimalForInputOutput))
         const TotalArea = Wastage + checkForNull(calculationState.Area)
         setValueCalculatorForm('TotalArea', checkForDecimalAndNull(TotalArea, NoOfDecimalForInputOutput))
-        setValueCalculatorForm('RMCost', checkForDecimalAndNull(calculationState.BoardCost * TotalArea, NoOfDecimalForPrice))
-        setCalculationState((prevState) => ({ ...prevState, Wastage: Wastage, TotalArea: TotalArea, RMCost: calculationState.BoardCost * TotalArea }))
-    }
+        calculateRMCostAndRMCostPerPc(TotalArea)
+        setCalculationState((prevState) => ({ ...prevState, Wastage: Wastage, TotalArea: TotalArea }))
 
+    }
+    const calculateRMCostAndRMCostPerPc = (TotalArea) => {
+        const totalRMSheetCost = calculationState.BoardCost * TotalArea
+        const rmCost = totalRMSheetCost / checkForNull(getValuesCalculatorForm('NoOfUps'))
+        setValueCalculatorForm('RMCost', checkForDecimalAndNull(rmCost, NoOfDecimalForPrice))
+        setValueCalculatorForm('TotalRMSheetCost', checkForDecimalAndNull(totalRMSheetCost, NoOfDecimalForPrice))
+        setCalculationState((prevState) => ({ ...prevState, TotalRMSheetCost: totalRMSheetCost, RMCost: rmCost }))
+    }
     const boxDetailsInputFields = [
         { label: 'Length (Box)(mm)', name: 'BoxLength', mandatory: true, searchable: true, disabled: props?.CostingViewMode ? props?.CostingViewMode : false },
         { label: 'Width (Box)(mm)', name: 'BoxWidth', mandatory: true, disabled: props?.CostingViewMode ? props?.CostingViewMode : false },
@@ -203,7 +217,8 @@ function PaperCorrugatedBox(props) {
         { label: 'Total Area (Sq. Mt)', name: 'TotalArea', disabled: true, tooltip: { text: 'Area (Sq. Mt) + Wastage (Sq. Mt)', width: '250px' } },
         { label: 'Weight (Kg)', name: 'Weight', disabled: true, tooltip: { text: 'Total Area (Sq. Mt) * Total GSM of Board (Including Flute) / 1000', width: '320px' } },
         { label: 'Board Cost', name: 'BoardCost', disabled: true, tooltip: { text: '(Layer 1 GSM * RM Rate) / 1000 + ((Layer 2 GSM +Flute) * RM Rate) / 1000 ...', width: '350px' } },
-        { label: 'RM Cost', name: 'RMCost', disabled: true, tooltip: { text: 'Board Cost * Total Area (Sq. Mt)' } },
+        { label: 'Total RM Sheet Cost', name: 'TotalRMSheetCost', disabled: true, tooltip: { text: 'Board Cost * Total Area (Sq. Mt)' } },
+        { label: 'RM Cost/PC', name: 'RMCost', disabled: true, tooltip: { text: 'Total RM Sheet Cost / No of Ups' } },
     ]
     const calculateCalulatorValue = () => {
         const calculation = (checkForNull(getValuesCalculatorForm('SheetDecle')) * checkForNull(getValuesCalculatorForm('SheetCut'))) / 1000000
@@ -234,6 +249,7 @@ function PaperCorrugatedBox(props) {
             "CostingRawMaterialDetailsIdRef": rmRowData.RawMaterialDetailId,
             "LoggedInUserId": loggedInUserId(),
             "NosOfPly": value.NosOfPly,
+            "NoOfUps": value.NoOfUps,
             "TypeOfBox": value.TypeOfBox,
             "BoxLength": value.BoxLength,
             "BoxWidth": value.BoxWidth,
@@ -249,6 +265,7 @@ function PaperCorrugatedBox(props) {
             "Weight": calculationState.Weight,
             "BoardCost": calculationState.BoardCost,
             "RMCost": calculationState.RMCost,
+            "TotalRMSheetCost": calculationState.TotalRMSheetCost,
             "TotalGsmAndFluteValue": state.totalGSM,
             "CostingCorrugatedAndMonoCartonBoxAdditionalRawMaterial": RMgsmAndFluteValue
         }
@@ -314,7 +331,7 @@ function PaperCorrugatedBox(props) {
             <Row className={'mt-3'}>
                 <form onSubmit={handleSubmitTableForm(addDataOnTable)}>
                     <Row>
-                        <Col md="2">
+                        <Col md="4">
                             <TextFieldHookForm
                                 label={`Nos of Ply`}
                                 name={'NosOfPly'}
@@ -334,7 +351,27 @@ function PaperCorrugatedBox(props) {
                                 disabled={headerInputDisabled}
                             />
                         </Col>
-                        <Col md="3">
+                        <Col md="4">
+                            <TextFieldHookForm
+                                label={`Ups Qty`}
+                                name={'NoOfUps'}
+                                Controller={Controller}
+                                control={controlCalculatorForm}
+                                register={registerCalculatorForm}
+                                mandatory={true}
+                                rules={{
+                                    required: true,
+                                    validate: { number, checkWhiteSpaces, maxLength7, nonZero },
+                                }}
+                                handleChange={() => { }}
+                                defaultValue={''}
+                                className=""
+                                customClassName={'withBorder'}
+                                errors={errorsCalculatorForm.NoOfUps}
+                                disabled={headerInputDisabled}
+                            />
+                        </Col>
+                        <Col md="4">
 
                             <TextFieldHookForm
                                 label={`Type of Box`}
@@ -355,10 +392,10 @@ function PaperCorrugatedBox(props) {
                                 disabled={headerInputDisabled}
                             />
                         </Col>
-                        <Col md="7">
+                        <Col md="12">
                             <Row className={"align-items-center"}>
-                                <Col md="5">
-                                    <TooltipCustom id="typeOfBox" customClass="ml-2 paper-corrugated" tooltipText="Please add RM in sequence to the Flute." />
+                                <Col md="4">
+                                    <TooltipCustom id="typeOfBox" tooltipText="Please add RM in sequence to the Flute." />
                                     {state.tableData.length !== 0 && <TooltipCustom tooltipClass="show-multi-dropdown-data" id="RawMaterial" placement="bottom" tooltipText={state.tableData.map((item, index) => <p>{index + 1}. {item.label
                                     }</p>)} />}
                                     <SearchableSelectHookForm
@@ -379,11 +416,13 @@ function PaperCorrugatedBox(props) {
                                         handleChange={(e) => rmHandleChange(e)}
                                     />
                                 </Col>
-                                <Col md="5" className={`rm-container-input ${headerInputDisabled ? 'disabled' : ''}`}>
-                                    {state.RmContainer.map((item, index) => <div className='item' key={item.value}>{item.label}<button type='button' disabled={headerInputDisabled} onClick={() => removeFromList(index)} >x</button></div>)}
+                                <Col md="4" >
+                                    <div className={`rm-container-input ${headerInputDisabled ? 'disabled' : ''}`}>
+                                        {state.RmContainer.map((item, index) => <div className='item' key={item.value}>{item.label}<button type='button' disabled={headerInputDisabled} onClick={() => removeFromList(index)} >x</button></div>)}
+                                    </div>
                                 </Col>
 
-                                <Col md="1">
+                                <Col md="2">
                                     <div className='d-flex'>
                                         <Button
                                             id="PaperCorrugatedBox_save"
