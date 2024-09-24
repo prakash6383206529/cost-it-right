@@ -28,6 +28,7 @@ import { Steps } from "../../common/Tour/TourMessages";
 import { useTranslation } from "react-i18next";
 import { TourStartAction } from "../../../actions/Common";
 import AddRMIndexation from "./AddRMIndexation";
+import { useLabels } from "../../../helper/core";
 
 const gridOptions = {};
 const ExcelFile = ReactExport.ExcelFile;
@@ -35,6 +36,7 @@ const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const RMIndexationListing = (props) => {
+    const {vendorLabel}  =useLabels()
     const dispatch = useDispatch();
     const searchRef = useRef(null);
     const tourStartData = useSelector(state => state.comman.tourStartData);
@@ -450,7 +452,7 @@ const RMIndexationListing = (props) => {
                                     <AgGridColumn field="MaterialMain" headerName="Material Name (main)"></AgGridColumn>
                                     <AgGridColumn field="MaterialName" headerName="Material Name"></AgGridColumn>
                                     <AgGridColumn field="Plant" headerName="Plant (Code)"></AgGridColumn>
-                                    <AgGridColumn field="vendorName" headerName="Vendor (Code)"></AgGridColumn>
+                                    <AgGridColumn field="vendorName" headerName={`${vendorLabel} (Code)`}></AgGridColumn>
                                     <AgGridColumn field="clientName" headerName="Customer (Code)"></AgGridColumn>
                                     <AgGridColumn field="exchangeRate" headerName="Exchange Rate Source"></AgGridColumn>
                                     <AgGridColumn field="Index" headerName="Index (LME)"></AgGridColumn>

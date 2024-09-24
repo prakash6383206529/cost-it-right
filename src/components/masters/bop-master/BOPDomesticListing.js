@@ -57,7 +57,7 @@ const BOPDomesticListing = (props) => {
   const isRfq = props?.quotationId !== null && props?.quotationId !== '' && props?.quotationId !== undefined;
 
   const { t } = useTranslation("common")
-  const { technologyLabel } = useLabels();
+  const { technologyLabel,vendorLabel } = useLabels();
   const [state, setState] = useState({
     isOpen: false,
     isEditFlag: false,
@@ -516,7 +516,7 @@ const BOPDomesticListing = (props) => {
   const costingHeadFormatter = (props) => {
     let cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     if (cellValue === true) {
-      cellValue = 'Vendor Based'
+      cellValue = "Vendor Based";
     } else if (cellValue === false) {
       cellValue = 'Zero Based'
     }
@@ -923,7 +923,7 @@ const BOPDomesticListing = (props) => {
                 {getConfigurationKey().IsSAPConfigured
                   && <AgGridColumn field="SAPPartNumber" headerName="SAP Code" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                 <AgGridColumn field="Plants" cellRenderer={'hyphenFormatter'} headerName="Plant (Code)"></AgGridColumn>
-                <AgGridColumn field="Vendor" headerName="Vendor (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                <AgGridColumn field="Vendor" headerName={`${vendorLabel} (Code)`} cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                 {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
                 {props?.isMasterSummaryDrawer && <AgGridColumn field="IncoSummary" headerName="Inco Terms"></AgGridColumn>}

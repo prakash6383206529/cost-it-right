@@ -26,7 +26,8 @@ const CostingBulkUploadDrawer = (props) => {
         fileName: '',
         Technology: [],
         attachmentLoader: false,
-        costingVersion: 'V1'
+        costingVersion: 'V1',
+        isLoader: false
     });
 
 
@@ -165,17 +166,20 @@ const CostingBulkUploadDrawer = (props) => {
         }
     }
     const handleApiResponse = (res, files) => {
-
+        setState((prev) => ({ ...prev, isLoader: false }));
         if (res.status === 400) {
             let Data = res.data.Data
             const withOutTild = Data?.FileURL?.replace("~", "");
             const fileURL = `${FILE_URL}${withOutTild}`;
             window.open(fileURL, '_blank');
         } else {
+            setState((prev) => ({ ...prev, isLoader: false }));
             let Data = res.data[0]
             const { files } = state
             files.push(Data)
         }
+        cancel(); // Close the drawer after handling the response
+
     }
 
     const onSubmit = (value) => {
@@ -191,46 +195,37 @@ const CostingBulkUploadDrawer = (props) => {
         data.append('loggedInUserId', loggedInUserId())
         data.append('IsShowRawMaterialInOverheadProfitAndICC', getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC)
         data.append('version', costingVersion)
-
+        setState((prev) => ({ ...prev, isLoader: true }));
         switch (Number(Technology.value)) {
             case SHEETMETAL_GROUP_BULKUPLOAD:
             case SHEETMETAL:
                 dispatch(bulkUploadCosting(data, costingVersion, handleApiResponse))
-                cancel()
                 break;
             case PLASTIC_GROUP_BULKUPLOAD:
                 dispatch(plasticBulkUploadCosting(data, costingVersion, handleApiResponse))
-                cancel()
                 break;
             case MACHINING_GROUP_BULKUPLOAD:
                 dispatch(machiningBulkUploadCosting(data, costingVersion, handleApiResponse))
-                cancel()
                 break;
             case CORRUGATED_BOX:
                 dispatch(corrugatedBoxBulkUploadCosting(data, handleApiResponse))
-                cancel()
                 break;
             case ASSEMBLY:
                 dispatch(assemblyBulkUploadCosting(data, handleApiResponse))
-                cancel()
                 break;
             case WIRINGHARNESS:
                 dispatch(wiringHarnessBulkUploadCosting(data, handleApiResponse))
-                cancel()
                 break;
 
             case DIE_CASTING:
                 dispatch(diecastingBulkUploadCosting(data, handleApiResponse))
-                cancel()
                 break;
 
             case INSULATION:
                 dispatch(InsulationBulkUploadCosting(data, handleApiResponse))
-                cancel()
                 break;
             case ELECTRICAL_STAMPING:
                 dispatch(ElectricalStampingCostingBulkImport(data, handleApiResponse))
-                cancel()
                 break;
             default:
                 break;
@@ -248,9 +243,12 @@ const CostingBulkUploadDrawer = (props) => {
             <Drawer
                 anchor={props.anchor}
                 open={props.isOpen}
-            // onClose={(e) => toggleDrawer(e)}
-            >
+                // onClose={(e) => toggleDrawer(e)}
+                >
+
+                {state.isLoader && <LoaderCustom customClass={"loader-center"} />}
                 <Container>
+
                     <div className={"drawer-wrapper"}>
                         <form
                             noValidate

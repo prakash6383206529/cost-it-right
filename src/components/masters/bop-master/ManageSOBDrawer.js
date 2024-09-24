@@ -14,6 +14,7 @@ import DatePicker from "react-datepicker";
 import DayTime from '../../common/DayTimeWrapper';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { MESSAGES } from '../../../config/message';
+import { useLabels } from '../../../helper/core';
 
 function ManageSOBDrawer(props) {
 
@@ -28,7 +29,7 @@ function ManageSOBDrawer(props) {
     reValidateMode: 'onChange',
     defaultValues: defaultValues,
   });
-
+  const { vendorLabel } = useLabels();
   const [Data, setData] = useState({});
   const [GridData, setGridData] = useState([]);
   const [GridDataOldArray, setGridDataOldArray] = useState([]);
@@ -274,7 +275,7 @@ function ManageSOBDrawer(props) {
                   <Table className="table cr-brdr-main" size="sm">
                     <thead>
                       <tr>
-                        <th style={{ width: '100px' }}>{`Vendor (Code)`}</th>
+                        <th style={{ width: '100px' }}>{`${vendorLabel} (Code)`}</th>
                         <th style={{ width: '165px' }}>{`Net Cost/Unit`}</th>
                         <th style={{ width: '155px' }}>{`SOB (%)`}</th>
                         <th style={{ width: '150px' }} >{`Weighted Cost`}</th>

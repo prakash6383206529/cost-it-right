@@ -86,7 +86,7 @@ const MachineRateListing = (props) => {
   const { globalTakes } = useSelector(state => state.pagination);
   const permissions = useContext(ApplyPermission);
   const tourStartData = useSelector(state => state.comman.tourStartData);
-  const { technologyLabel } = useLabels();
+  const { technologyLabel ,vendorLabel} = useLabels();
   useEffect(() => {
     const fetchData = async () => {
       setTimeout(() => {
@@ -778,7 +778,7 @@ const MachineRateListing = (props) => {
                 <AgGridColumn field="TonnageCapacity" cellRenderer={'hyphenFormatter'} headerName="Machine Tonnage"></AgGridColumn>
                 <AgGridColumn field="ProcessName" headerName="Process Name"></AgGridColumn>
                 <AgGridColumn field="UOM" headerName='UOM'></AgGridColumn>
-                <AgGridColumn field="VendorName" headerName="Vendor (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                <AgGridColumn field="VendorName" headerName={`${vendorLabel} (Code)`} cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                 <AgGridColumn field="Plant" headerName="Plant (Code)" cellRenderer='hyphenFormatter'></AgGridColumn>
                 <AgGridColumn field="MachineRate" headerName="Machine Rate"></AgGridColumn>
