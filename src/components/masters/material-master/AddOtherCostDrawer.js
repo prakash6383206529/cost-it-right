@@ -7,10 +7,10 @@ import NoContentFound from '../../../../src/components/common/NoContentFound'
 import { reactLocalStorage } from 'reactjs-localstorage'
 import { number, checkWhiteSpaces, percentageLimitValidation, decimalNumberLimit6, checkForNull, checkForDecimalAndNull, hashValidation } from "../../../../src/helper/validation";
 import { useDispatch, useSelector } from 'react-redux'
-import { EMPTY_DATA } from '../../../../src/config/constants'
+import { COMMODITYCOST, EMPTY_DATA, RAWMATERIALCOST } from '../../../../src/config/constants'
 import Toaster from '../../../../src/components/common/Toaster';
 import { getCostingCondition } from '../../../actions/Common'
-import { getRMCostIds } from '../../common/CommonFunctions'
+import { getCostingConditionTypes } from '../../common/CommonFunctions'
 
 function AddOtherCostDrawer(props) {
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
@@ -18,7 +18,7 @@ function AddOtherCostDrawer(props) {
 
     const { currency, rmBasicRate, isFromImport, isFromMaster, RowData, RowIndex } = props
     const Currency = props?.RowData?.IndexCurrency
-    const UOM = props?.RowData?.IndexUOM
+    const UOM = props?.RowData?.IndexUOM || (Array.isArray(props?.uom) ? '' : props?.uom?.label) || '';
     const [tableData, setTableData] = useState([]);
     const [disableTotalCost, setDisableTotalCost] = useState(true)
     const [disableAllFields, setDisableAllFields] = useState(true)
@@ -40,7 +40,7 @@ function AddOtherCostDrawer(props) {
         disableCostBaseCurrency: false,
         costDropdown: []
     })
-
+    const conditionTypeId = getCostingConditionTypes(props.rawMaterial ? RAWMATERIALCOST : COMMODITYCOST)
     useEffect(() => {
         if (!tableData || tableData.length === 0) {
             setTotalCostBase(0);
@@ -90,11 +90,7 @@ function AddOtherCostDrawer(props) {
         }
     }, [props.RowData, props.tableData]);
     useEffect(() => {
-        const entryTypeId =
-            props.rawMaterial
-                ? getRMCostIds()[1].CostingConditionTypeMasterId
-                : getRMCostIds()[0].CostingConditionTypeMasterId;
-        dispatch(getCostingCondition('', entryTypeId, (res) => {
+        dispatch(getCostingCondition('', conditionTypeId, (res) => {
             if (res?.data?.DataList) {
                 const temp = res.data.DataList.map((item) => ({
                     label: item.CostingConditionNumber,
@@ -585,7 +581,7 @@ function AddOtherCostDrawer(props) {
                                                 {!props.rawMaterial && <Col md={3} className={'px-2'}>
 
                                                     <TextFieldHookForm
-                                                        label={`Applicability Cost (${Currency}/${UOM})`}
+                                                        label={`Applicability Cost (${Currency}${UOM ? `/${UOM}` : ''})`}
                                                         name={'ApplicabilityCostCurrency'}
                                                         id={'cost-by-percent'}
                                                         Controller={Controller}
@@ -608,7 +604,7 @@ function AddOtherCostDrawer(props) {
                                                 <Col md={3} className={'px-2'}>
 
                                                     <TextFieldHookForm
-                                                        label={`Applicability Cost (${reactLocalStorage.getObject("baseCurrency")}/${UOM})`}
+                                                        label={`Applicability Cost (${reactLocalStorage.getObject("baseCurrency")}${UOM ? `/${UOM}` : ''})`}
                                                         name={'ApplicabilityBaseCost'}
                                                         id={'cost-by-percent'}
                                                         Controller={Controller}
@@ -656,7 +652,7 @@ function AddOtherCostDrawer(props) {
                                         {!props.rawMaterial && <Col md={3} className={'px-2'}>
 
                                             <TextFieldHookForm
-                                                label={`Cost (${Currency}/${UOM})`}
+                                                label={`Cost (${Currency}${UOM ? `/${UOM}` : ''})`}
                                                 name={'CostCurrency'}
                                                 id={'cost-by-percent'}
                                                 Controller={Controller}
@@ -679,7 +675,7 @@ function AddOtherCostDrawer(props) {
                                         <Col md={3} className={'px-2'}>
 
                                             <TextFieldHookForm
-                                                label={`Cost (${reactLocalStorage.getObject("baseCurrency")}/${UOM})`}
+                                                label={`Cost (${reactLocalStorage.getObject("baseCurrency")}${UOM ? `/${UOM}` : ''})`}
                                                 name={'CostBaseCurrency'}
                                                 id={'cost-by-percent'}
                                                 Controller={Controller}
@@ -747,11 +743,11 @@ function AddOtherCostDrawer(props) {
                                                     <th>{`Cost Description`}</th>
                                                     <th>{`Type`}</th>
                                                     <th>{`Applicability`}</th>
-                                                    {!props.rawMaterial && <th>{`Applicability Cost (${Currency}/${UOM})`}</th>}
-                                                    <th>{`Applicability Cost (${reactLocalStorage.getObject("baseCurrency")}/${UOM})`}</th>
+                                                    {!props.rawMaterial && <th>{`Applicability Cost (${Currency}${UOM ? `/${UOM}` : ''})`}</th>}
+                                                    <th>{`Applicability Cost (${reactLocalStorage.getObject("baseCurrency")}${UOM ? `/${UOM}` : ''})`}</th>
                                                     <th>{`Percentage (%)`}</th>
-                                                    {!props.rawMaterial && <th>{`Cost (${Currency}/${UOM})`}</th>}
-                                                    <th>{`Cost (${reactLocalStorage.getObject("baseCurrency")}/${UOM})`}</th>
+                                                    {!props.rawMaterial && <th>{`Cost (${Currency}${UOM ? `/${UOM}` : ''})`}</th>}
+                                                    <th>{`Cost (${reactLocalStorage.getObject("baseCurrency")}${UOM ? `/${UOM}` : ''})`}</th>
                                                     <th>{`Remark`}</th>
                                                     {!props.hideAction && <th className='text-right'>{`Action`}</th>}
                                                 </tr>

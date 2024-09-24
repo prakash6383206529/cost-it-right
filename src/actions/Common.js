@@ -71,7 +71,8 @@ import {
   COSTING_LEVEL,
   SIMULATION_LEVEL,
   MASTER_LEVEL,
-  ONBOARDING_MANAGEMENT_LEVEL
+  ONBOARDING_MANAGEMENT_LEVEL,
+  GET_TAX_CODE_SELECTLIST
 } from '../config/constants';
 import { apiErrors, encodeQueryParamsAndLog } from '../helper/util';
 import { MESSAGES } from '../config/message';
@@ -1877,5 +1878,27 @@ export function getCommodityIndexRateAverage(materialTypeId, indexExchangeId, un
       });
       callback()
     }
+  };
+}
+/**
+ * @method getTaxCodeSelectList
+ * @description GET TAX CODE SELECTLIST
+ */
+export function getTaxCodeSelectList(callback) {
+  return (dispatch) => {
+    const request = axios.get(`${API.getTaxCodeSelectList}`, config());
+    request.then((response) => {
+      if (response.data.Result) {
+        dispatch({
+          type: GET_TAX_CODE_SELECTLIST,
+          payload: response?.data?.DataList,
+        });
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+      apiErrors(error);
+    });
   };
 }
