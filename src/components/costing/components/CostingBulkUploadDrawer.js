@@ -7,7 +7,7 @@ import Toaster from '../../common/Toaster';
 import Drawer from '@material-ui/core/Drawer';
 import Dropzone from 'react-dropzone-uploader'
 import { bulkUploadCosting, plasticBulkUploadCosting, machiningBulkUploadCosting, corrugatedBoxBulkUploadCosting, assemblyBulkUploadCosting, wiringHarnessBulkUploadCosting, diecastingBulkUploadCosting, InsulationBulkUploadCosting, ElectricalStampingCostingBulkImport } from '../actions/CostWorking'
-import { CostingBulkUploadTechnologyDropdown, TechnologyDropdownBulkUpload, TechnologyDropdownBulkUploadV4 } from '../../../config/masterData'
+import { CostingBulkUploadTechnologyDropdown, TechnologyDropdownBulkUploadV1, TechnologyDropdownBulkUploadV2, TechnologyDropdownBulkUploadV4 } from '../../../config/masterData'
 import { ASSEMBLY, CORRUGATED_BOX, MACHINING_GROUP_BULKUPLOAD, PLASTIC_GROUP_BULKUPLOAD, SHEETMETAL_GROUP_BULKUPLOAD, FILE_URL, WIRINGHARNESS, SHEET_METAL, SHEETMETAL, DIE_CASTING, INSULATION, ELECTRICAL_STAMPING } from '../../../config/constants';
 import { getCostingTechnologySelectList, } from '../actions/Costing'
 import { searchableSelect } from '../../layout/FormInputs';
@@ -35,39 +35,55 @@ const CostingBulkUploadDrawer = (props) => {
         dispatch(getCostingTechnologySelectList(() => { }))
     })
 
-    const renderListing = (label) => {
-        const { technologySelectList } = props
-        let tempArr = []
-        // DON'T REMOVE THIS MIGHT BE USED LATER
-        if (label === 'Technology') {
-            technologySelectList && technologySelectList.map((item) => {
-                if (item.Value === '0') return false
-                tempArr.push({ label: item.Text, value: item.Value })
-                return null
-            })
-            return tempArr
-        }
-        if (label === 'TechnologyMixed') {
-            TechnologyDropdownBulkUpload && TechnologyDropdownBulkUpload.map((item) => {
-                if (item.value === '0') return false
-                tempArr.push({ label: item.label, value: item.value })
-                return null
-            })
-            return tempArr
-        }
-        if (label === 'TechnologyMixedV4') {
-            TechnologyDropdownBulkUploadV4 && TechnologyDropdownBulkUploadV4.map((item) => {
-                if (item.value === '0') return false
-                tempArr.push({ label: item.label, value: item.value })
-                return null
-            })
-            return tempArr
+    // const renderListing = (label) => {
+    //     const { technologySelectList } = props
+    //     let tempArr = []
+    //     // DON'T REMOVE THIS MIGHT BE USED LATER
+    //     if (label === 'Technology') {
+    //         technologySelectList && technologySelectList.map((item) => {
+    //             if (item.Value === '0') return false
+    //             tempArr.push({ label: item.Text, value: item.Value })
+    //             return null
+    //         })
+    //         return tempArr
+    //     }
+    //     if (label === 'TechnologyMixed') {
+    //         TechnologyDropdownBulkUpload && TechnologyDropdownBulkUpload.map((item) => {
+    //             if (item.value === '0') return false
+    //             tempArr.push({ label: item.label, value: item.value })
+    //             return null
+    //         })
+    //         return tempArr
+    //     }
+    //     if (label === 'TechnologyMixedV4') {
+    //         TechnologyDropdownBulkUploadV4 && TechnologyDropdownBulkUploadV4.map((item) => {
+    //             if (item.value === '0') return false
+    //             tempArr.push({ label: item.label, value: item.value })
+    //             return null
+    //         })
+    //         return tempArr
 
+    //     }
+    // }
+
+    const renderListing = (label) => {
+        if (label === 'TechnologyV1') {
+            return TechnologyDropdownBulkUploadV1
         }
+        if (label === 'TechnologyV2') {
+            return TechnologyDropdownBulkUploadV2
+        }
+        if (label === 'TechnologyV3') {
+            return CostingBulkUploadTechnologyDropdown
+        }
+        if (label === 'TechnologyV4') {
+            return TechnologyDropdownBulkUploadV4
+        }
+        return []
     }
 
     const handleTechnologyChange = (value) => {
-        setState((prev) => ({ ...prev, Technology: value }))
+                setState((prev) => ({ ...prev, Technology: value }))
     }
 
     // called every time a file's `status` changes
@@ -243,8 +259,8 @@ const CostingBulkUploadDrawer = (props) => {
             <Drawer
                 anchor={props.anchor}
                 open={props.isOpen}
-                // onClose={(e) => toggleDrawer(e)}
-                >
+            // onClose={(e) => toggleDrawer(e)}
+            >
 
                 {state.isLoader && <LoaderCustom customClass={"loader-center"} />}
                 <Container>
@@ -349,12 +365,21 @@ const CostingBulkUploadDrawer = (props) => {
                                         component={searchableSelect}
                                         placeholder={"Select"}
                                         // options={state.costingVersion === 'V3' ? CostingBulkUploadTechnologyDropdown : renderListing("TechnologyMixed")}
+                                        // options={
+                                        //     state.costingVersion === 'V3'
+                                        //         ? CostingBulkUploadTechnologyDropdown
+                                        //         : (state.costingVersion === 'V4'
+                                        //             ? renderListing("TechnologyMixedV4")
+                                        //             : renderListing("TechnologyMixed"))
+                                        // }
                                         options={
-                                            state.costingVersion === 'V3'
-                                                ? CostingBulkUploadTechnologyDropdown
-                                                : (state.costingVersion === 'V4'
-                                                    ? renderListing("TechnologyMixedV4")
-                                                    : renderListing("TechnologyMixed"))
+                                            state.costingVersion === 'V1'
+                                                ? renderListing("TechnologyV1")
+                                                : (state.costingVersion === 'V2'
+                                                    ? renderListing("TechnologyV2")
+                                                    : (state.costingVersion === 'V3'
+                                                        ? renderListing("TechnologyV3")
+                                                        : renderListing("TechnologyV4")))
                                         }
                                         handleChangeDescription={handleTechnologyChange}
                                         valueDescription={state.Technology}
