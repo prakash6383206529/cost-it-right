@@ -279,7 +279,8 @@ export const NumberFieldHookForm = (field) => {
 
 export const SearchableSelectHookForm = (field) => {
   const { name, label, Controller, mandatory, disabled, options, handleChange, rules, placeholder, defaultValue,
-    control, errors, register, isLoading, customClassName, isMulti, buttonCross, title, dropdownHeight, dropDownClass, onFocus, isClearable, id, tooltipId } = field;
+    control, errors, register, isLoading, customClassName, isMulti, buttonCross, title, dropdownHeight, dropDownClass, onFocus, isClearable, id, tooltipId, isTaxCode = false } = field;
+
   let isDisable = (disabled && disabled === true) ? true : false;
   let isLoader = (isLoading && isLoading?.isLoader === true) ? true : false;
   let isMultiple = (isMulti === true) ? true : false;
@@ -390,7 +391,7 @@ export const SearchableSelectHookForm = (field) => {
         : errors && errors.type !== 'required' ? <div className="text-help">{(errors.message || errors.type)}</div> : ''} */}
       {/* {errors && errors.type === 'required' ? <div className="text-help">This field is required</div>
         : errors && errors.type !== 'required' ? <div className="text-help">{(errors.message || errors.type)}</div> : ''} */}
-      {errors !== undefined ? (errors.type === 'required' && !errors.ref?.value ? (<div className="text-help">This field is required</div>) : errors.ref?.value ? (null
+      {errors !== undefined ? (errors.type === 'required' ? (<div className="text-help">This field is required</div>) : errors.ref?.value ? (null
       ) : errors.message || errors.type ? (<div className="text-help">{errors.message || errors.type}</div>) : null
       ) : null}
 
@@ -480,7 +481,7 @@ export const TextAreaHookForm = (field) => {
 */
 export const DatePickerHookForm = (field) => {
   const {
-    label, Controller, control, register, name, defaultValue, mandatory, errors, rules, placeholder, handleChange, buttonCross,maxDate,minDate } = field
+    label, Controller, control, register, name, defaultValue, mandatory, errors, rules, placeholder, handleChange, buttonCross, maxDate, minDate } = field
   //const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""} ${touched && error ? "has-danger" : ""}`;
   const className = `form-group inputbox ${field.customClassName ? field.customClassName : ''} ${buttonCross ? 'cross-btn-container' : ''}`
   const isDisabled = field.disabled === true ? true : false

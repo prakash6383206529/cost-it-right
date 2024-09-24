@@ -1,20 +1,22 @@
 import React, { useEffect, useState } from 'react'
 import { Row, Col, Container } from 'reactstrap'
 import { Drawer } from '@material-ui/core'
-import { NumberFieldHookForm, TextFieldHookForm, SearchableSelectHookForm } from '../../../../layout/HookFormInputs'
+import { TextFieldHookForm, SearchableSelectHookForm } from '../../../../layout/HookFormInputs'
+
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch, useSelector, } from 'react-redux'
-import { typePercentageAndFixed } from '../../../../../config/masterData'
 import { number, checkWhiteSpaces, percentageLimitValidation, decimalNumberLimit6, checkForNull, checkForDecimalAndNull } from "../../../../../helper/validation";
 import ConditionCosting from './ConditionCosting'
 import { getCostingCondition } from '../../../../../actions/Common'
 import Toaster from '../../../../common/Toaster'
 import TooltipCustom from '../../../../common/Tooltip'
 import { trim } from 'lodash'
+import { getCostingConditionTypes } from '../../../../common/CommonFunctions'
+import { COSTINGCONDITIONCOST } from '../../../../../config/constants'
 import { reactLocalStorage } from 'reactjs-localstorage'
 
 function AddConditionCosting(props) {
-    const { currency, currencyValue, basicRateCurrency, basicRateBase, isFromImport, isFromMaster, EntryType } = props
+    const { currency, currencyValue, basicRateCurrency, basicRateBase, isFromImport, isFromMaster, EntryType, ViewMode } = props
     const [tableData, setTableData] = useState(props?.tableData)
     // const [tableData, setTableData] = useState([])
     const [disableTotalCost, setDisableTotalCost] = useState(true)
@@ -29,6 +31,8 @@ function AddConditionCosting(props) {
     const [disableCurrency, setDisableCurrency] = useState(false)
     const [disableEntryType, setDisableEntryType] = useState(false)
     const [costingConditionEntryType, setCostingConditionEntryType] = useState(props?.costingConditionEntryType)
+    const conditionTypeId = getCostingConditionTypes(COSTINGCONDITIONCOST)
+
     const conditionEntryTypeDropdown = [
         {
             label: 'Domestic',
@@ -57,6 +61,20 @@ function AddConditionCosting(props) {
             setValue('ConditionEntryType', '')
         }
     }, [tableData]);
+    useEffect(() => {
+        dispatch(getCostingCondition(0, conditionTypeId, (res) => {
+            if (res?.data?.DataList) {
+                let Data = res?.data?.DataList
+                let temp = []
+                Data && Data.map((item) => {
+                    item.label = ` ${item.Description} (${item.CostingConditionNumber})`
+                    item.value = item.CostingConditionMasterId
+                    temp.push(item)
+                })
+                setConditionDropdown(temp)
+            }
+        }))
+    }, [props.isOpen]);
 
     useEffect(() => {
         const hasCostingConditionEntryTypeId = tableData?.some(item => item.CostingConditionEntryTypeId !== undefined);
@@ -79,7 +97,7 @@ function AddConditionCosting(props) {
                         ? tableData[0].CostingConditionEntryTypeId
                         : props?.costingConditionEntryType;
 
-            dispatch(getCostingCondition(entryTypeId, '', (res) => {
+            dispatch(getCostingCondition(entryTypeId, conditionTypeId, (res) => {
                 if (res?.data?.DataList) {
                     const temp = res.data.DataList.map(item => ({
                         label: `${item.Description} (${item.CostingConditionNumber})`,
@@ -157,7 +175,7 @@ function AddConditionCosting(props) {
     const onConditionEntryTypeChange = (e) => {
         if (e) {
             setCostingConditionEntryType(e.value)
-            dispatch(getCostingCondition(e.value, '', (res) => {
+            dispatch(getCostingCondition(e.value, conditionTypeId, (res) => {
                 if (res?.data?.DataList) {
                     let Data = res?.data?.DataList
                     let temp = []
@@ -173,6 +191,7 @@ function AddConditionCosting(props) {
             setCostingConditionEntryType(props.costingConditionEntryType)
             setConditionDropdown([])
         }
+
     }
 
     const handleCostChangeCurrency = (e) => {

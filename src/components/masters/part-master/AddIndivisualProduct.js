@@ -5,7 +5,7 @@ import { Row, Col } from 'reactstrap';
 import { required, checkWhiteSpaces, alphaNumeric, acceptAllExceptSingleSpecialCharacter, maxLength20, maxLength80, maxLength512, checkSpacesInString, hashValidation } from "../../../helper/validation";
 import { loggedInUserId } from "../../../helper/auth";
 import { renderDatePicker, renderText, renderTextAreaField, } from "../../layout/FormInputs";
-import { createProduct, updateProduct, getProductData, fileUploadProduct, getPreFilledProductLevelValues, storeHierarchyData, } from '../actions/Part';
+import { createProduct, updateProduct, getProductData, fileUploadProduct, getPreFilledProductLevelValues, storeHierarchyData, getAllProductLevels, } from '../actions/Part';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import Dropzone from 'react-dropzone-uploader';
@@ -372,7 +372,8 @@ class AddIndivisualProduct extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, initialConfiguration, t } = this.props;
+        const { handleSubmit, initialConfiguration, t, productHierarchyData } = this.props;
+        const productLabel = productHierarchyData.length > 0 ? productHierarchyData[productHierarchyData?.length - 1]?.ProductHierarchyName : 'Name'
         const { isEditFlag, isViewMode, setDisable } = this.state;
         return (
             <>
@@ -407,7 +408,7 @@ class AddIndivisualProduct extends Component {
                                                 <Row>
                                                     <Col md="3">
                                                         <Field
-                                                            label={`Product Name`}
+                                                            label={`${productLabel} Name`}
                                                             name={"ProductName"}
                                                             type="text"
                                                             placeholder={isEditFlag ? '-' : "Enter"}
@@ -421,7 +422,7 @@ class AddIndivisualProduct extends Component {
                                                     </Col>
                                                     <Col md="3">
                                                         <Field
-                                                            label={`Product Number`}
+                                                            label={`${productLabel} Number`}
                                                             name={"ProductNumber"}
                                                             type="text"
                                                             placeholder={isEditFlag ? '-' : "Enter"}
@@ -725,7 +726,7 @@ class AddIndivisualProduct extends Component {
 */
 function mapStateToProps({ comman, part, auth }) {
     const { plantSelectList, } = comman;
-    const { productData } = part;
+    const { productData, productHierarchyData } = part;
     const { initialConfiguration } = auth;
 
     let initialValues = {};
@@ -742,7 +743,7 @@ function mapStateToProps({ comman, part, auth }) {
         }
     }
 
-    return { plantSelectList, productData, initialValues, initialConfiguration }
+    return { plantSelectList, productData, initialValues, initialConfiguration, productHierarchyData }
 }
 
 /**
@@ -757,7 +758,8 @@ export default connect(mapStateToProps, {
     getProductData,
     fileUploadProduct,
     getPreFilledProductLevelValues,
-    storeHierarchyData
+    storeHierarchyData,
+    getAllProductLevels
 })(reduxForm({
     form: 'AddIndivisualPart',
     enableReinitialize: true,

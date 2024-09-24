@@ -235,7 +235,12 @@ function OpenWeightCalculator(props) {
 
       case INSULATION:
         return 'insulation'
-
+      case CORRUGATEDBOX:
+        if (calculatorType === 'CorrugatedAndMonoCartonBox') {
+          return 'paper_corrugated_box'
+        } else {
+          return ''
+        }
       default:
         break;
     }
