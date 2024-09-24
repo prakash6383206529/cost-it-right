@@ -32,6 +32,37 @@ const commonDropdownFunction = (array, tempBoolean = false, selectedParts = [], 
         return null
     })
 }
+// ... existing code ...
+
+export const DropDownFilterList = async (inputValue, filterType, stateKey, apiFunction, setState, state) => {
+    const searchCount = 3; // Define searchCount as a constant
+    const resultInput = inputValue.slice(0, searchCount);
+    if (inputValue?.length >= searchCount && state[stateKey] !== resultInput) {
+        setState(prevState => ({ ...prevState, inputLoader: true }));
+        let res;
+        res = await apiFunction(filterType, resultInput);
+        setState(prevState => ({ ...prevState, inputLoader: false, [stateKey]: resultInput }));
+        let dataAPI = res?.data?.SelectList;
+        if (inputValue) {
+            return autoCompleteDropdown(inputValue, dataAPI, false, [], true);
+        } else {
+            return dataAPI;
+        }
+    } else {
+        if (inputValue?.length < searchCount) return false;
+        else {
+            let Data = reactLocalStorage?.getObject('Data');
+            if (inputValue) {
+                return autoCompleteDropdown(inputValue, Data, false, [], false);
+            } else {
+                return Data;
+            }
+        }
+    }
+};
+
+// ... existing code ...
+
 // FOR AUTOCOMPLLETE IN PART AND VENDOR 
 export const autoCompleteDropdown = (inputValue, dropdownArray, tempBoolean = false, selectedParts = [], isApiCall) => {
     let tempArr = []
