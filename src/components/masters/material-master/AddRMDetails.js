@@ -859,7 +859,7 @@ const {vendorLabel} = useLabels()
                 {<Row className={`align-items-center mb-3 ${state.isVendorAccOpen ? '' : 'd-none'}`}>
                     {states.costingTypeId !== CBCTypeId && (<>
                         <Col md="3">
-                            <label>(states.costingTypeId === ZBCTypeId ? `RM ${vendorLabel}(Code)` : `${vendorLabel}(Code)`)<span className="asterisk-required">*</span></label>
+                            <label>{(states.costingTypeId === ZBCTypeId ? `RM ${vendorLabel} (Code)` : `${vendorLabel} (Code)`)}<span className="asterisk-required">*</span></label>
                             <div className="d-flex justify-space-between align-items-center p-relative async-select">
                                 <div className="fullinput-icon p-relative">
                                     {state.inputLoader && <LoaderCustom customClass={`input-loader`} />}

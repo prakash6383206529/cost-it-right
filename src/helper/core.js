@@ -22,10 +22,10 @@ export const useLabels = () => {
         vendorLabel : tMasterLabels('VendorLabel', { defaultValue: 'Vendor'})
     };
 };
-export const labels =(t,label, ns)=>{
-    return {vendorLabel: t(label, { defaultValue: 'Vendor', ns: ns })}
-    
-}
+
+export const labels = (t, label, ns, defaultValue) => {
+    return t(label, { defaultValue: defaultValue, ns: ns });
+  }
 export const useWithLocalization = (dataArray, ns) => {
     const { t } = useTranslation(ns); // Adjust the namespace as needed
 

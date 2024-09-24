@@ -231,7 +231,7 @@ const VendorClassificationListing = () => {
                             suppressRowClickSelection={true}
                             frameworkComponents={frameworkComponents}
                         >
-                            <AgGridColumn field="ClassificationName" headerName={vendorLabel +"Classification"}></AgGridColumn>
+                            <AgGridColumn field="ClassificationName" headerName={vendorLabel +" Classification"}></AgGridColumn>
                             <AgGridColumn field="LastUpdatedOn" cellRenderer='effectiveDateFormatter' headerName="Last Updated On" filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
 
                             <AgGridColumn field="LastUpdatedByUser" headerName="Last Updated By"></AgGridColumn>
