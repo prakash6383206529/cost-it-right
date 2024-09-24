@@ -1193,7 +1193,7 @@ class AddBOPDomestic extends Component {
                                 }
                                 disabled={isEditFlag ? true : false}
                               />{" "}
-                              <span>{labels(t, 'VendorLabel', 'MasterLabels')} Based</span>
+                              <span>{labels(t, 'VendorLabel', 'MasterLabels', 'Vendor')} Based</span>
                             </Label>}
                             {reactLocalStorage.getObject('CostingTypePermission').cbc && <Label id='bop_form_customer_based' className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
                               <input
@@ -1432,10 +1432,10 @@ class AddBOPDomestic extends Component {
                           {costingTypeId !== CBCTypeId && (
                             <>
                               <Col md="12">
-                                <div className="left-border">{labels(t, 'VendorLabel', 'MasterLabels')}:</div>
+                                <div className="left-border">{labels(t, 'VendorLabel', 'MasterLabels' ,'Vendor')}:</div>
                               </Col>
                               <Col md="3" className='mb-4'>
-                                <label>{costingTypeId === ZBCTypeId ? 'BOP' : ''} {labels(t,'VendorLabel','MasterLabels' ) }<span className="asterisk-required">*</span></label>
+                                <label>{costingTypeId === ZBCTypeId ? 'BOP' : ''} {labels(t,'VendorLabel','MasterLabels' , 'Vendor') }<span className="asterisk-required">*</span></label>
                                 <div className="d-flex justify-space-between align-items-center async-select">
                                   <div className="fullinput-icon p-relative">
                                     {this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
@@ -1631,7 +1631,7 @@ class AddBOPDomestic extends Component {
                             className={`custom-checkbox`}
                             onChange={this.onIsClientVendorBOP}
                           >
-                            Client Approved {labels(t, 'VendorLabel', 'MasterLabels')}
+                            Client Approved {labels(t, 'VendorLabel', 'MasterLabels' , 'Vendor')}
                             <input
                               type="checkbox"
                               checked={isClientVendorBOP}
