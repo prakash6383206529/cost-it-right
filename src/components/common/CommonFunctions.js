@@ -294,3 +294,8 @@ export const getRMCostIds = () => {
     let costIds = reactLocalStorage.getObject('InitialConfiguration').CostingConditionTypes
     return costIds
 }
+export const getCostingConditionTypes = (conditionName) => {
+    let arr = getRMCostIds()
+    let costingTypeId = arr && arr?.filter(item => item['CostingConditionTypeName'] === conditionName)
+    return costingTypeId[0]?.CostingConditionTypeMasterId
+}

@@ -706,7 +706,8 @@ class AddVendorDrawer extends Component {
                                 <Row className="drawer-heading">
                                     <Col>
                                         <div className={'header-wrapper left'}>
-                                            <h3>{isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Vendor
+                                            <h3>{`${isViewMode ? "View" : isEditFlag ? "Update " : "Add "}${t('VendorLabel', { ns: 'MasterLabels', defaultValue: 'Vendor' })}`}
+
                                                 {!isViewMode && <TourWrapper
                                                     buttonSpecificProp={{ id: "Add_Vendor_Drawer" }}
                                                     stepsSpecificProp={{
@@ -723,7 +724,7 @@ class AddVendorDrawer extends Component {
                                 <Row className="pl-3">
                                     <Col md="6 multiselect-section">
                                         <Field
-                                            label="Vendor Type"
+                                            label={t('VendorLabel', { ns: 'MasterLabels', defaultValue: 'Vendor' }) + " Type"}
                                             name="VendorType"
                                             placeholder="Select"
                                             title={showDataOnHover(this.state.selectedVendorType)}
@@ -741,7 +742,7 @@ class AddVendorDrawer extends Component {
                                     </Col>
                                     <Col md="6">
                                         <Field
-                                            label={`Vendor Name`}
+                                            label={t('VendorLabel', { ns: 'MasterLabels', defaultValue: 'Vendor' }) + " Name"}
                                             name={"VendorName"}
                                             type="text"
                                             placeholder={this.state.isEditFlag ? '-' : 'Enter'}
@@ -757,7 +758,7 @@ class AddVendorDrawer extends Component {
                                 <Row className="pl-3">
                                     <Col md="6">
                                         <Field
-                                            label={`Vendor Code`}
+                                            label={t('VendorLabel', { ns: 'MasterLabels', defaultValue: 'Vendor' }) + " Code"}
                                             name={"VendorCode"}
                                             type="text"
                                             placeholder={this.state.isEditFlag ? '-' : 'Enter'}

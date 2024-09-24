@@ -37,7 +37,7 @@ import { useLabels } from "../../../helper/core"
 function AddRMDetails(props) {
     const { Controller, control, register, setValue, getValues, errors, reset, useWatch, states, data, disableAll } = props
     const { isEditFlag, isViewFlag } = data
-
+const {vendorLabel} = useLabels()
     const dropzone = useRef(null);
     const [state, setState] = useState({
         vendor: [],
@@ -315,7 +315,7 @@ function AddRMDetails(props) {
     const handleVendor = (newValue, actionMeta) => {
         if (newValue && newValue !== '') {
             if (newValue.value === state?.sourceVendor?.value) {
-                Toaster.warning('Vendor and Source Vendor cannot be the same');
+                Toaster.warning(`${vendorLabel} and Source ${vendorLabel} cannot be the same`);
                 setState(prevState => ({ ...prevState, vendor: [] }));
             } else {
                 setState(prevState => ({ ...prevState, vendor: newValue }));
@@ -330,7 +330,7 @@ function AddRMDetails(props) {
     const handleSourceVendor = (newValue, actionMeta) => {
         if (newValue && newValue !== '') {
             if (newValue.value === state?.vendor?.value) {
-                Toaster.warning('Vendor and Source Vendor cannot be the same');
+                Toaster.warning(`${vendorLabel} and Source ${vendorLabel} cannot be the same`);
 
                 setState(prevState => ({ ...prevState, sourceVendor: [] }));
             } else {
@@ -410,6 +410,8 @@ function AddRMDetails(props) {
                 ...prevState,
                 rmCode: newValue, isDisabled: true
             }))
+            delete errors.RawMaterialSpecification
+            delete errors.RawMaterialGrade
             delete errors.RawMaterialName
             dispatch(getRMSpecificationDataAPI(newValue.value, true, (res) => {
                 if (res.status === 204) {
@@ -847,7 +849,7 @@ function AddRMDetails(props) {
             {states.costingTypeId !== CBCTypeId && <Row className="mb-3 accordian-container">
                 <Col md="6" className='d-flex align-items-center'>
                     <HeaderTitle
-                        title={'Vendor:'}
+                        title={`${vendorLabel}:`}
                         customClass={'Personal-Details'}
                     />
                 </Col>
@@ -859,7 +861,7 @@ function AddRMDetails(props) {
                 {<Row className={`align-items-center mb-3 ${state.isVendorAccOpen ? '' : 'd-none'}`}>
                     {states.costingTypeId !== CBCTypeId && (<>
                         <Col md="3">
-                            <label>{t(states.costingTypeId === ZBCTypeId ? 'RMZeroBasedVendorLabel' : 'RMVendorBasedVendorLabel', { defaultValue: 'Vendor (Code)' })}<span className="asterisk-required">*</span></label>
+                            <label>(states.costingTypeId === ZBCTypeId ? `RM ${vendorLabel}(Code)` : `${vendorLabel}(Code)`)<span className="asterisk-required">*</span></label>
                             <div className="d-flex justify-space-between align-items-center p-relative async-select">
                                 <div className="fullinput-icon p-relative">
                                     {state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
@@ -917,7 +919,7 @@ function AddRMDetails(props) {
                     {states.costingTypeId === VBCTypeId && (
                         <>
                             {getConfigurationKey().IsShowSourceVendorInRawMaterial && <Col md="3">
-                                <label>{"Source Vendor (Code)"}</label>
+                                <label>{`Source ${vendorLabel} (Code)`}</label>
                                 <div className="d-flex justify-space-between align-items-center p-relative async-select">
                                     <div className="fullinput-icon p-relative">
                                         {state.inputLoader && <LoaderCustom customClass={`input-loader`} />}

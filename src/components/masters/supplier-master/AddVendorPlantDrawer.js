@@ -10,6 +10,7 @@ import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId } from "../../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
+import { labels } from '../../../helper/core';
 
 class AddVendorPlantDrawer extends Component {
   constructor(props) {
@@ -229,7 +230,7 @@ class AddVendorPlantDrawer extends Component {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, isEditFlag, } = this.props;
+    const { handleSubmit, isEditFlag, t} = this.props;
     const { country } = this.state;
     return (
       <div>
@@ -251,8 +252,8 @@ class AddVendorPlantDrawer extends Component {
                     <div className={"header-wrapper left"}>
                       <h3>
                         {isEditFlag
-                          ? "Update Vendor Plant"
-                          : "Add Vendor Plant"}
+                          ? `Update ${labels(t, 'VendorLabel', 'MasterLabels')} Plant`
+                          : `Add ${labels(t, 'VendorLabel', 'MasterLabels')} Plant`}
                       </h3>
                     </div>
                     <div

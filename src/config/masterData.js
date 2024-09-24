@@ -6740,7 +6740,7 @@ export const CombinedProcessFileHeads = ['TechnologyName', 'PartName', 'PartNumb
 
 export const TechnologyDropdownBulkUpload = [
     { label: 'Mechanical Proprietary, Sheet Metal, Hardware, Spring, Rivet', value: '1' },
-    { label: 'Rubber, Plastic, Die Casting', value: '2' },
+    { label: 'Rubber, Plastic, Die Costing, Corrugated Box (EPS / Label & Manual)', value: '2' },
     { label: 'Forging, Machining, Turn Part', value: '3' },
     { label: 'Corrugated Box', value: '4' },
     { label: 'Assembly', value: '5' },

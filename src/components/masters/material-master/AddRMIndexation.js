@@ -16,13 +16,14 @@ import { MESSAGES } from "../../../config/message"
 import AsyncSelect from 'react-select/async';
 import { autoCompleteDropdown } from "../../common/CommonFunctions"
 import HeaderTitle from "../../common/HeaderTitle"
+import { useLabels } from "../../../helper/core"
 function AddRMIndexation(props) {
     // const { isEditFlag, isViewFlag } = data
     const { register, handleSubmit, formState: { errors }, control, setValue, getValues } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
     });
-    const dropzone = useRef(null);
+    const vendorLabel = useLabels()
     const [state, setState] = useState({
         costingTypeId: ZBCTypeId,
         vendor: [],
@@ -198,7 +199,7 @@ function AddRMIndexation(props) {
                                 }
                                 disabled={false}
                             />{" "}
-                            <span>Vendor Based</span>
+                            <span>{vendorLabel} Based</span>
                         </Label>}
                         {(reactLocalStorage.getObject('CostingTypePermission').cbc) && <Label id="rm_domestic_form_customer_based" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
                             <input
@@ -278,7 +279,7 @@ function AddRMIndexation(props) {
                         />
                     </Col>
                     {state.costingTypeId !== CBCTypeId && <Col className="col-md-15">
-                        <label>{"Vendor (Code)"}<span className="asterisk-required">*</span></label>
+                        <label>{vendorLabel}(Code)<span className="asterisk-required">*</span></label>
                         <div className="d-flex justify-space-between align-items-center p-relative async-select">
                             <div className="fullinput-icon p-relative">
                                 {state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
