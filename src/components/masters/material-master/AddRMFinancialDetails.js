@@ -1475,7 +1475,7 @@ function AddRMFinancialDetails(props) {
                                             className=""
                                             customClassName=" withBorder"
                                             handleChange={() => { }}
-                                            disabled={true}
+                                            disabled={isViewFlag || state.IsApplyHasDifferentUOM || (isEditFlag && isRMAssociated)}
                                             errors={errors.ScrapRateSelectedCurrency}
                                         />
                                     </Col >}
@@ -1916,6 +1916,7 @@ function AddRMFinancialDetails(props) {
                     rawMaterial={true}
                     rmBasicRate={state.totalBasicRate}
                     ViewMode={isViewFlag}
+                    uom={state.UOM}
                 />
             }
 

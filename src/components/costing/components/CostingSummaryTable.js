@@ -3214,6 +3214,21 @@ const CostingSummaryTable = (props) => {
                                 )
                               })}
                           </tr>}
+                          {getConfigurationKey()?.IsTaxCodeVisible && <tr>
+                            <td>
+                              <span className="d-block small-grey-text"> Tax Code</span>
+                            </td>
+                            {viewCostingData &&
+                              viewCostingData?.map((data) => {
+                                return (
+                                  <td className={tableDataClass(data)}>
+                                    <span title={data?.TaxCodeList.map(tc => tc.TaxCodeAndDescription).join(', ')} className={`w-fit ${highlighter("taxCode")}`}>
+                                      {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.TaxCodeList.map(tc => tc.TaxCodeAndDescription).join(', ') : '')}
+                                    </span>
+                                  </td>
+                                )
+                              })}
+                          </tr>}
                           {
                             initialConfiguration?.IsBasicRateAndCostingConditionVisible && <tr className={`${highlighter("BasicRate", "main-row")}`}>
                               <th>Basic Price </th>

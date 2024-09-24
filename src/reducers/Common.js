@@ -68,7 +68,8 @@ import {
   GET_APPROVAL_TYPE_SELECT_LIST_MASTER,
   GET_APPROVAL_TYPE_SELECT_LIST_ONBOARDING,
   GET_RM_EXCHANGE_RATE_SOURCE,
-  GET_COST_FREQUENCY_SETTLEMENT
+  GET_COST_FREQUENCY_SETTLEMENT,
+  GET_TAX_CODE_SELECTLIST
 } from '../config/constants';
 
 const initialState = {
@@ -554,6 +555,13 @@ export default function commanReducer(state = initialState, action) {
         loading: false,
         error: true,
         frequencyOfSettlement: action.payload
+      };
+    case GET_TAX_CODE_SELECTLIST:
+      return {
+        ...state,
+        loading: false,
+        error: true,
+        taxCodeList: action?.payload
       };
     default:
       return state;

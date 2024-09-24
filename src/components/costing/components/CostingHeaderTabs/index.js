@@ -34,6 +34,7 @@ import { useTranslation } from 'react-i18next';
 import { getRMFromNFR, setOpenAllTabs } from '../../../masters/nfr/actions/nfr';
 import Toaster from '../../../common/Toaster';
 import TabToolCost from './TabToolCost';
+import { getTaxCodeSelectList } from '../../../../actions/Common';
 export const PreviousTabData = React.createContext();
 
 function CostingHeaderTabs(props) {
@@ -298,11 +299,11 @@ function CostingHeaderTabs(props) {
       setMultipleRMApplied(true)
     }
   }, [RMCCTabData]);
-  // useEffect(() => {
-  //   if (activeTab && previousTab) {
-  //     InjectDiscountAPICall();
-  //   }
-  // }, [activeTab]);
+  useEffect(() => {
+    if (activeTab === '6') {
+      dispatch(getTaxCodeSelectList((res) => { }))
+    }
+  }, [activeTab]);
 
   const callAssemblyAPi = (tabId) => {
     if (costData.IsAssemblyPart && IsCalledAPI && !CostingViewMode && !partType) {
@@ -324,7 +325,6 @@ function CostingHeaderTabs(props) {
           dispatch(saveCostingPaymentTermDetail(PaymentTermDataDiscountTab, (res) => { }));
         }
       }));
-
     }
   }
 
