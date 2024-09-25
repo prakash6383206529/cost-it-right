@@ -12,7 +12,7 @@ import {
 import { IsShowFreightAndShearingCostFields, getConfigurationKey, showBopLabel } from './auth'
 import _ from 'lodash';
 import TooltipCustom from '../components/common/Tooltip';
-import { FORGING, RMDomesticZBC, SHEETMETAL, DIE_CASTING } from '../config/masterData';
+import { FORGING, RMDomesticZBC, SHEETMETAL, DIE_CASTING, TOOLING_ID } from '../config/masterData';
 /**
  * @method  apiErrors
  * @desc Response error handler.
@@ -1634,3 +1634,22 @@ export function addTime(time1, time2) {
 
   return timeStr;
 }
+
+export function checkTechnologyIdAndRfq(viewCostingData = []) {
+  for (const data of viewCostingData) {
+    if (data?.technologyId === TOOLING_ID) {
+      return true;
+    } else if (data?.technologyId === '-') {
+      continue;
+    }
+  }
+
+  return false;
+}
+// function to remove all spaces from a string
+export const removeSpaces = (str = '') => {
+  return str.replace(/\s+/g, '');
+};
+export const getChangeHighlightClass = (originalValue, updatedValue) => {
+  return updatedValue && updatedValue !== originalValue ? 'red-value' : '';
+};
