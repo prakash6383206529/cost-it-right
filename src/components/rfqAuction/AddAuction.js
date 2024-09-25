@@ -17,11 +17,12 @@ import DatePicker from 'react-datepicker'
 import { setHours, setMinutes } from 'date-fns';
 import DayTime from "../common/DayTimeWrapper";
 import { getQuotationById } from "./actions/rfq";
-import { auctionRfqSelectList, checkQuatationForAuction, createAuction } from "./actions/RfqAuction";
+import { auctionHeaderDetails, auctionRfqSelectList, checkQuatationForAuction, createAuction, reScheduleAuction } from "./actions/RfqAuction";
 import { EMPTY_GUID } from "../../config/constants";
 import Toaster from "../common/Toaster";
 import { useHistory, useLocation } from "react-router-dom/cjs/react-router-dom";
 import { useLabels } from "../../helper/core";
+import LoaderCustom from "../common/LoaderCustom";
 export const RM = 'Raw Material'
 export const BOP = 'Bought Out Part'
 export const COMPONENT = 'Component'
@@ -89,11 +90,19 @@ function AddAuction(props) {
   const history = useHistory();
   const location = useLocation();
 
+  const { source, quotationId, isEdit } = location.state || {};
   useEffect(() => {
-    const { source, quotationId } = location.state || {};
     if (source === 'rfq') {
       getDataByQuatationId(quotationId)
       setState(prevState => ({ ...prevState, initiateFromRfq: true }))
+    } else if (isEdit) {
+      setState(prevState => ({ ...prevState, loader: true }))
+      dispatch(auctionHeaderDetails(quotationId, res => {
+        if (res?.data?.Data) {
+          setState(prevState => ({ ...prevState, loader: false }))
+          editAuctionDataSetup(res?.data?.Data)
+        }
+      }))
     } else {
       dispatch(auctionRfqSelectList(() => { }))
     }
@@ -130,35 +139,85 @@ function AddAuction(props) {
     }
   };
   const onSubmit = (value) => {
-    let data = {};
-    data.AuctionName = value.AuctionName
-    data.QuotationPartId = state.QuotationPartId;
-    data.QuotationAuctionId = EMPTY_GUID
-    data.LoggedInUserId = loggedInUserId()
-    data.AuctionRaisedOnTimeZone = getTimeZone();
-    data.VendorId = state.VendorIdList
-    data.AuctionDuration = value?.AuctionDuration?.label ?? "00:00"
-    data.ExtensionTime = value.ExtensionTime.label
-    data.AuctionStartDateTime = dateAndTimeState.dateAndTime
-    data.MinimumReductionApplicabilityType = state.reductionPrice ? 'Fixed' : 'Percentage'
-    data.PriceZoneApplicabilityType = state.priceZoneReduction ? 'Fixed' : 'Percentage'
-    data.AuctionEndDateTime = calculateEndDateTime(dateAndTimeState.dateAndTime, String(value?.AuctionDuration?.label ?? "00:00"))
-    data.AuctionStartDateTimeUTC = ''
-    data.AuctionEndDateTimeUTC = ''
+    if (!isEdit) {
+      let data = {};
+      data.AuctionName = value.AuctionName
+      data.QuotationPartId = state.QuotationPartId;
+      data.QuotationAuctionId = EMPTY_GUID
+      data.LoggedInUserId = loggedInUserId()
+      data.AuctionRaisedOnTimeZone = getTimeZone();
+      data.VendorId = state.VendorIdList
+      data.AuctionDuration = value?.AuctionDuration?.label ?? "00:00"
+      data.ExtensionTime = value.ExtensionTime.label
+      data.AuctionStartDateTime = dateAndTimeState.dateAndTime
+      data.MinimumReductionApplicabilityType = state.reductionPrice ? 'Fixed' : 'Percentage'
+      data.PriceZoneApplicabilityType = state.priceZoneReduction ? 'Fixed' : 'Percentage'
+      data.AuctionEndDateTime = calculateEndDateTime(dateAndTimeState.dateAndTime, String(value?.AuctionDuration?.label ?? "00:00"))
+      data.AuctionStartDateTimeUTC = ''
+      data.AuctionEndDateTimeUTC = ''
 
-    let finalObj = { ...data, ...calculationState }
-    dispatch(createAuction(finalObj, (res) => {
-      if (res.data.Result) {
-        Toaster.success("Auction has been created successfully")
-        history.push({
-          pathname: '/reverse-auction',
-          state: { source: 'auction' }
-        })
-      }
-    }))
-
+      let finalObj = { ...data, ...calculationState }
+      dispatch(createAuction(finalObj, (res) => {
+        if (res.data.Result) {
+          Toaster.success("Auction has been created successfully")
+          history.push({
+            pathname: '/reverse-auction',
+            state: { source: 'auction' }
+          })
+        }
+      }))
+    } else {
+      let data = {};
+      data.QuotationPartId = state.QuotationPartId;
+      data.QuotationAuctionId = quotationId
+      data.LoggedInUserId = loggedInUserId()
+      data.AuctionRaisedOnTimeZone = getTimeZone();
+      data.AuctionStartDateTime = dateAndTimeState.dateAndTime
+      data.AuctionEndDateTime = calculateEndDateTime(dateAndTimeState.dateAndTime, String(value?.AuctionDuration?.label ?? "00:00"))
+      data.AuctionDuration = value?.AuctionDuration?.label ?? "00:00"
+      data.ExtensionTime = value.ExtensionTime?.label
+      data.MinimumReductionApplicabilityType = state.reductionPrice ? 'Fixed' : 'Percentage'
+      data.PriceZoneApplicabilityType = state.priceZoneReduction ? 'Fixed' : 'Percentage'
+      let finalObj = { ...data, ...calculationState }
+      dispatch(reScheduleAuction(finalObj, (res) => {
+        if (res.data.Result) {
+          Toaster.success("Auction has been updated successfully")
+          history.push({
+            pathname: '/reverse-auction',
+            state: { source: 'auction' }
+          })
+        }
+      }))
+    }
   };
+  const editAuctionDataSetup = (data) => {
 
+    setValue('AuctionName', data?.AuctionName)
+    setValue('RFQNumber', { label: data?.RfqNumber, value: data?.QuotationId })
+    setValue('PartType', data?.PartType)
+    setValue('PartNumber', { label: data?.PartNumber, value: data?.QuotationPartId })
+    setValue('RawMaterialName', { label: data?.RawMaterialName, value: data?.RawMaterialId })
+    setValue('RawMaterialGrade', data?.RawMaterialGrade)
+    setValue('RawMaterialSpecification', data?.RawMaterialSpecification)
+    setValue('RawMaterialCode', data?.RawMaterialCode)
+    setValue('ExtensionTime', { label: data?.ExtensionTime, value: data?.ExtensionTime })
+    setValue('AuctionDuration', { label: data?.AuctionDuration, value: data?.AuctionDuration })
+    setValue('BopName', { label: data?.BoughtOutPart, value: data?.BoughtOutPart })
+    setValue('BoughtOutPartCategoryName', data?.Category)
+    let VendorList = [];
+    data?.VendorList && data?.VendorList.length !== 0 && data?.VendorList.map(item => VendorList.push({ label: item.Vendor, value: item.VendorId }))
+    const PlantList = data?.Plant ? [{ label: data?.Plant, value: data?.Plant }] : [];
+    const MinimumReductionApplicabilityType = data?.MinimumReductionApplicabilityType === 'Fixed' ? true : false;
+    const PriceZoneApplicabilityType = data?.PriceZoneApplicabilityType === 'Fixed' ? true : false;
+    setState(prevState => ({ ...prevState, PartType: data?.PartType, VendorList: VendorList, PlantList: PlantList, MinimumReductionApplicabilityType: MinimumReductionApplicabilityType, PriceZoneApplicabilityType: PriceZoneApplicabilityType }))
+    setDateAndTimeState(prevState => ({ ...prevState, dateAndTime: data?.AuctionStartDateTime, }))
+    setValue('BasePrice', checkForDecimalAndNull(data?.BasePrice, NoOfDecimalForPrice))
+    setCalculationState(prevState => ({ ...prevState, BasePrice: data?.BasePrice, }))
+    calculationFields.map(item => {
+      setValue(item, checkForDecimalAndNull(data[item], NoOfDecimalForPrice))
+      setCalculationState(prevState => ({ ...prevState, [item]: data[item] }))
+    })
+  }
 
   useEffect(() => {
     setState(prevState => ({ ...prevState, selectedType: '%', selectedPriceZoneType: 'priceZone%' }));
@@ -183,10 +242,11 @@ function AddAuction(props) {
     const returnValue = (inputPrice * 100) / basePrice
     return returnValue;
   }
+
+  const calculationFields = ['ReductionPercent', 'ReductionPrice', 'ReductionPrice', 'ReductionPercent', 'YellowZoneReductionPrice', 'YellowZoneReductionPercent', 'GreenZoneReductionPrice', 'GreenZoneReductionPercent']
   const basePriceHandle = (event) => {
     const getValue = checkForNull(event.target.value)
     setCalculationState(prevState => ({ ...prevState, BasePrice: getValue }))
-    const calculationFields = ['ReductionPercent', 'ReductionPrice', 'ReductionPrice', 'ReductionPercent', 'YellowZoneReductionPrice', 'YellowZoneReductionPercent', 'GreenZoneReductionPrice', 'GreenZoneReductionPercent']
     calculationFields.map(item => {
       setValue(item, '')
       setCalculationState(prevState => ({ ...prevState, [item]: 0 }))
@@ -344,10 +404,11 @@ function AddAuction(props) {
           <div className="row">
             <div className="col-md-12">
               <div className="shadow-lgg login-formg">
+                {state.loader && <LoaderCustom />}
                 <div className="row">
                   <div className="col-md-6">
                     <h1>
-                      {state.isViewFlag ? "View" : props?.isEditFlag ? "Update" : "Add"} Auction
+                      {isEdit ? "Update" : "Add"} Auction
                     </h1>
                   </div>
                 </div>
@@ -372,6 +433,7 @@ function AddAuction(props) {
                           className=""
                           customClassName={"withBorder"}
                           errors={errors.AuctionName}
+                          disabled={isEdit}
                         />
                       </Col>
                       <Col md="3">
@@ -387,7 +449,7 @@ function AddAuction(props) {
                           mandatory={true}
                           handleChange={(e) => RFQHandler(e)}
                           errors={errors.RFQNumber}
-                          disabled={state.initiateFromRfq}
+                          disabled={state.initiateFromRfq || isEdit}
                         />
                       </Col>
                       <Col className="col-3">
@@ -424,7 +486,7 @@ function AddAuction(props) {
                           mandatory={true}
                           handleChange={(e) => handlePartChange(e, COMPONENT)}
                           errors={errors.PartNumber}
-                          disabled={false}
+                          disabled={isEdit}
                         />
                       </Col>}
                       {state.PartType === RM && <> <Col md="3">
@@ -441,7 +503,7 @@ function AddAuction(props) {
                           mandatory={true}
                           handleChange={(e) => handlePartChange(e, RM)}
                           errors={errors.RawMaterialName}
-                          disabled={false}
+                          disabled={isEdit}
                         />
                       </Col>
                         <Col md="3">
@@ -520,7 +582,7 @@ function AddAuction(props) {
                             mandatory={true}
                             handleChange={(e) => handlePartChange(e, BOP)}
                             errors={errors.BopName}
-                            disabled={false}
+                            disabled={isEdit}
                           />
                         </Col>
                         <Col md="3">
@@ -605,7 +667,7 @@ function AddAuction(props) {
                             <label>Date & Time</label>
                             <div className="inputbox date-section rfq-calendar">
                               <DatePicker
-                                name="StartPlanDate"
+                                name="AuctionStartDateTime"
                                 selected={DayTime(dateAndTimeState.dateAndTime).isValid() ? new Date(dateAndTimeState.dateAndTime) : null}
                                 onChange={handleChangeDateAndTime}
 
@@ -622,7 +684,7 @@ function AddAuction(props) {
                                 autoComplete={'off'}
                                 showTimeSelect={true}
                                 timeIntervals={1}
-                                errors={errors.StartPlanDate}
+                                errors={errors.AuctionStartDateTime}
                                 disabledKeyboardNavigation
                                 onChangeRaw={(e) => e.preventDefault()}
                                 disabled={false}

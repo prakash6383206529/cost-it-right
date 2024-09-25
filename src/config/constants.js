@@ -1157,6 +1157,7 @@ export const API = {
   updateShowVendorRank: `${BASE_URL}/rfq-quotation/update-display-rank-to-vendor`,
   updateAuctionDuration: `${BASE_URL}/rfq-quotation/update-auction-duration-extension`,
   closeAuction: `${BASE_URL}/rfq-quotation/closed-auction`,
+  reScheduleAuction: `${BASE_URL}/rfq-quotation/re-schedule-auction`,
 
   //MINDA
   pushNfrOnSap: `${BASE_URL}/nfr/push-nfr-on-sap`,

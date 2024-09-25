@@ -5,11 +5,13 @@ import { AuctionScheduledId } from "../../../config/constants";
 import LoaderCustom from "../../common/LoaderCustom";
 import { auctionListByStatus } from "../actions/RfqAuction";
 import AuctionGrid from "./AuctionGrid";
+import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
 
 
 const AuctionScheduled = (props) => {
   const { AddAccessibility, ViewRMAccessibility } = props;
   const dispatch = useDispatch();
+  const history = useHistory();
   const [state, setState] = useState({
     isLoader: false
   })
@@ -21,13 +23,20 @@ const AuctionScheduled = (props) => {
       }, 300);
     }))
   }, []);
+  const formToggle = (id) => {
+    console.log(id)
+    history.push({
+      pathname: '/add-auction',
+      state: { source: 'auction', quotationId: id, isEdit: true }
+    })
+  }
 
   return (
     <>
-      <div className={`ag-grid-react`}>
+      {<div className={`ag-grid-react`}>
         {state.isLoader && <LoaderCustom />}
-        <AuctionGrid auctionlistId={AuctionScheduledId} ViewRMAccessibility={ViewRMAccessibility} />
-      </div>
+        <AuctionGrid auctionlistId={AuctionScheduledId} formToggle={formToggle} ViewRMAccessibility={ViewRMAccessibility} AddAccessibility={AddAccessibility} />
+      </div>}
     </>
   );
 };

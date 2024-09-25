@@ -4,7 +4,7 @@ import { AgGridColumn, AgGridReact } from "ag-grid-react";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
 import NoContentFound from "../../common/NoContentFound";
-import { AuctionClosedId, AuctionLiveId, defaultPageSize, EMPTY_DATA } from "../../../config/constants";
+import { AuctionClosedId, AuctionLiveId, AuctionScheduledId, defaultPageSize, EMPTY_DATA } from "../../../config/constants";
 import { PaginationWrapper } from "../../common/commonPagination";
 import { useDispatch, useSelector } from "react-redux";
 import { addTime } from "../../../helper";
@@ -16,7 +16,7 @@ import { useLabels } from "../../../helper/core";
 
 const gridOptions = {};
 const AuctionGrid = (props) => {
-    const { auctionlistId, ViewRMAccessibility, AddAccessibility, loader } = props
+    const { auctionlistId, ViewRMAccessibility, AddAccessibility, loader, formToggle } = props
     const { AuctionList } = useSelector(state => state.Auction);
     const [state, setState] = useState({
         gridApi: null,
@@ -71,11 +71,14 @@ const AuctionGrid = (props) => {
         dispatch(ShowBidWindow({ showBidWindow: true, QuotationAuctionId: QuotationAuctionId, AuctionStatusId: auctionlistId }))
     }
 
+
     const buttonFormatter = (props) => {
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-
-        return (
-            ViewRMAccessibility && (
+        const viewAuction = ViewRMAccessibility && (auctionlistId === AuctionLiveId || auctionlistId === AuctionClosedId)
+        const editAuction = AddAccessibility && (auctionlistId === AuctionScheduledId)
+        console.log(AddAccessibility, auctionlistId === AuctionScheduledId, "AddAccessibility")
+        return (<>
+            {viewAuction && (
                 <Button
                     id={`auction_view${props.rowIndex}`}
                     className={"mr-1 Tour_List_View"}
@@ -83,7 +86,17 @@ const AuctionGrid = (props) => {
                     onClick={() => viewBid(rowData.QuotationAuctionId)}
                     title={"View"}
                 />
-            )
+            )}
+            {editAuction && (
+                <Button
+                    id={`auction_edit${props.rowIndex}`}
+                    className={"mr-1 Tour_List_Edit"}
+                    variant="Edit"
+                    onClick={() => formToggle(rowData.QuotationAuctionId)}
+                    title={"Edit"}
+                />
+            )}
+        </>
         );
     };
     const dateAndTimeFormatter = (props, cell, row, enumObject, rowIndex) => {
@@ -137,7 +150,7 @@ const AuctionGrid = (props) => {
                         {auctionlistId === AuctionLiveId && AddAccessibility && <Button
                             id="rmDomesticListing_add"
                             className={"mr5 Tour_List_Add"}
-                            onClick={props.formToggle}
+                            onClick={formToggle}
                             title={"Add"}
                             icon={"plus"}
                         />}
@@ -208,7 +221,7 @@ const AuctionGrid = (props) => {
                                 <AgGridColumn width={50} field="YellowCount" headerName="Y" colId="GreenColor"></AgGridColumn>
                                 <AgGridColumn width={50} field="RedCount" headerName="R" colId="BlueColor"></AgGridColumn>
                             </AgGridColumn>
-                            {(auctionlistId === AuctionLiveId || auctionlistId === AuctionClosedId) && <AgGridColumn width={'80px'} field="QuotationPartId" cellClass="ag-grid-action-container" headerName="Action" pinned="right" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"}></AgGridColumn>}
+                            {<AgGridColumn width={'80px'} field="QuotationPartId" cellClass="ag-grid-action-container" headerName="Action" pinned="right" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"}></AgGridColumn>}
                         </AgGridReact> : null}
                         {
                             <PaginationWrapper
