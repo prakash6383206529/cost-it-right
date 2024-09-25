@@ -311,7 +311,7 @@ const FuelListing = (props) => {
           </div>
         </Col>
       </Row>
-      {state.isBulkUpload && (<BulkUpload isOpen={state.isBulkUpload} closeDrawer={closeBulkUploadDrawer} isEditFlag={false} messageLabel={"Fuel"} anchor={"right"} />)}
+      {state.isBulkUpload && (<BulkUpload isOpen={state.isBulkUpload} closeDrawer={closeBulkUploadDrawer} isEditFlag={false} messageLabel={"Fuel"} anchor={"right"} fileName={"Fuel"} />)}
       {state.showPopup && (<PopupMsgWrapper isOpen={state.showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.FUEL_DELETE_ALERT}`} />)}
     </div>
   );
