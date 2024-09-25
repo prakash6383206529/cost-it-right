@@ -643,10 +643,8 @@ const VendorListing = (props) => {
     tempArr = selectedRowForPagination
 
     tempArr = tempArr && tempArr.length > 0 ? tempArr : allSupplierDataList ? allSupplierDataList : [];
-    //return returnExcelColumn(VENDOR_DOWNLOAD_EXCEl, tempArr);
-    const { updatedLabels, updatedTempData } = updateBOPValues(VENDOR_DOWNLOAD_EXCEl, tempArr, bopMasterName, 'label')
+    return returnExcelColumn(VENDOR_DOWNLOAD_EXCEl, tempArr);
 
-    return returnExcelColumn(updatedLabels, updatedTempData)
   };
   const returnExcelColumn = (data = [], TempData) => {
     let temp = [];
