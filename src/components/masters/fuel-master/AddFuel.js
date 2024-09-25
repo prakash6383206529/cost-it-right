@@ -517,6 +517,7 @@ class AddFuel extends Component {
       return temp;
     }
     if (label === 'city') {
+      console.log('cityList: ', cityList);
       cityList && cityList.map(item => {
         if (item.Value === '0') return false;
         temp.push({ label: item.Text, value: item.Value })
@@ -739,13 +740,16 @@ class AddFuel extends Component {
   };
 
   getAllCityData = () => {
-    const { country } = this.state;
-    if (country && country.label !== 'India') {
-      this.props.getCityByCountry(country.value, '00000000000000000000000000000000', () => { })
-    } else {
-      this.props.fetchStateDataAPI(country.value, () => { })
-    }
+  const { country } = this.state;
+  console.log('country: ', country);
+  if (country && country.label !== 'India') {
+    console.log('country: ', country);
+    this.props.getCityByCountry(country.value, '00000000000000000000000000000000','', (res) => { console.log('res: ', res); })
+  } else {
+    console.log('country: ', country);
+    this.props.fetchStateDataAPI(country.value, () => { })
   }
+}
 
 
   cityHandler = (newValue, actionMeta) => {

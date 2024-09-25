@@ -127,7 +127,7 @@ class AddVendorDrawer extends Component {
     getAllCityData = () => {
         const { country } = this.state;
         if (country && country.label !== 'India') {
-            this.props.getCityByCountry(country.value, '00000000000000000000000000000000', () => { })
+            this.props.getCityByCountry(country.value, '00000000000000000000000000000000','', () => { })
         } else {
             this.props.fetchStateDataAPI(country.value, () => { })
         }

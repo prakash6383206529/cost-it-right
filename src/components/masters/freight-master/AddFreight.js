@@ -87,10 +87,10 @@ class AddFreight extends Component {
       this.props.getFreigtRateCriteriaSelectList((res) => { });
     }
     if (!(this.props.data.isEditFlag || this.state.isViewMode)) {
-      this.props.getAllCity(cityId => {
-        this.props.getCityByCountry(cityId, 0, () => { })
+      // this.props.getAllCity(cityId => {
+        // this.props.getCityByCountry(0, 0,'', () => { })
         this.props.getClientSelectList(() => { })
-      })
+      // })
     }
     this.props.getPlantSelectListByType(ZBC, "MASTER", '', () => { })
     this.props.getFreightModeSelectList((res) => { });

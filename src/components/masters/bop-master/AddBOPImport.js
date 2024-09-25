@@ -208,12 +208,8 @@ class AddBOPImport extends Component {
     const { initialConfiguration } = this.props
     this.setState({ costingTypeId: getCostingTypeIdByCostingPermission() })
     const { currency } = this.state
-    if (!this.state.isViewMode) {
-      this.props.getAllCity(cityId => {
-        this.props.getCityByCountry(cityId, 0, () => { })
-      })
-    }
-    this.props.getIncoTermSelectList(() => { })
+   
+        this.props.getIncoTermSelectList(() => { })
     this.props.getPaymentTermSelectList(() => { })    // FOR MINDA ONLY
     this.getDetails()
     this.props.getCostingSpecificTechnology(loggedInUserId(), () => { this.setState({ inputLoader: false }) })
@@ -627,15 +623,7 @@ class AddBOPImport extends Component {
       });
       return temp;
     }
-    if (label === 'SourceLocation') {
-      cityList && cityList.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ label: item.Text, value: item.Value })
-        return null;
-      });
-      return temp;
-    }
-    if (label === 'uom') {
+       if (label === 'uom') {
       UOMSelectList && UOMSelectList.map(item => {
         const accept = AcceptableBOPUOM.includes(item.Type)
         if (accept === false) return false
@@ -1014,6 +1002,25 @@ class AddBOPImport extends Component {
     }
     this.setState({ effectiveDate: date, dateCount: this.state.dateCount + 1 });
   };
+  filterSourceLocationList = async (inputValue) => {
+    if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
+      inputValue = inputValue.trim();
+    }
+    if (inputValue?.length >= searchCount) {
+      this.setState({ inputLoader: true });
+      let res = await getCityByCountry(0, 0, inputValue);
+      this.setState({ inputLoader: false });
+      let cityDataAPI = res?.data?.SelectList;
+      if (inputValue) {
+        return autoCompleteDropdown(inputValue, cityDataAPI, false, [], true);
+      } else {
+        return cityDataAPI;
+      }
+    } else {
+      return [];
+    }
+  };
+
 
   /**
       * @method handleChangeSapCode
@@ -1811,17 +1818,25 @@ class AddBOPImport extends Component {
                                 />
                               </Col>
                               <Col md="3">
-                                <Field
-                                  name="SourceLocation"
-                                  type="text"
-                                  label="Source Location"
-                                  component={searchableSelect}
-                                  placeholder={isEditFlag ? '-' : "Select"}
-                                  options={this.renderListing("SourceLocation")}
-                                  disabled={isViewMode}
-                                  handleChangeDescription={this.handleSourceSupplierCity}
-                                  valueDescription={this.state.sourceLocation}
-                                />
+                                                                <label>Source Location<span className="asterisk-required">*</span></label>
+                                <div className="d-flex justify-space-between align-items-center async-select">
+                                  <div id='AddBOPImport_SourceLocation' className="fullinput-icon p-relative">
+                                    {this.state.sourceLocationInputLoader && <LoaderCustom customClass={`input-loader`} />}
+                                    <AsyncSelect
+                                      name="sourceLocation"
+                                      loadOptions={this.filterSourceLocationList}
+                                      onChange={(e) => this.handleSourceSupplierCity(e)}
+                                      value={this.state.sourceLocation}
+                                      noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN : "No results found"}
+                                      isDisabled={isViewMode}
+                                      onFocus={() => onFocus(this)}
+                                      onKeyDown={(onKeyDown) => {
+                                        if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
+                                      }}
+                                    />
+                                  </div>
+                                </div>
+                                {((this.state.showErrorOnFocus && this.state.sourceLocation.length === 0)) && <div className='text-help mt-1'>This field is required.</div>}
                               </Col>
                             </>
                           )}
@@ -2066,7 +2081,7 @@ class AddBOPImport extends Component {
                               className={`custom-checkbox`}
                               onChange={this.onIsClientVendorBOP}
                             >
-                              Client Approved {labels(t, 'VendorLabel', 'MasterLabels')} 
+                              Client Approved {labels(t, 'VendorLabel', 'MasterLabels')}
                               <input
                                 type="checkbox"
                                 checked={isClientVendorBOP}

@@ -1315,19 +1315,32 @@ export function getAllCities(callback) {
 //     });
 //   };
 // }
-export function getCityByCountry(CountryId, StateId, CityName, callback) {
-  return axios.get(`${API.getCityByCountry}?countryId=${CountryId}&stateId=${StateId}&cityName=${CityName}`, config())
-    .then((response) => {
-      console.log('response: ', response);
-      if (response.data.Result) {
-        if (callback) callback(null, response);
+export function getCityByCountry(CountryId, StateId, CityName) {
+  return (dispatch) => {
+    console.log(CountryId, StateId, CityName);
+    return axios.get(`${API.getCityByCountry}?countryId=${CountryId}&stateId=${StateId}&cityName=${CityName}`, config())
+      .then((response) => {
+        console.log('response: ', response);
+        if (response.data.Result) {
+          console.log('response: ', response);
+
+          dispatch({
+            type: GET_CITY_SUCCESS,
+            payload: response.data.SelectList,
+          });
+        }
         return response;
-      }
-    }).catch((error) => {
-      apiErrors(error);
-      if (callback) callback(error);
-      throw error;
-    });
+      })
+      .catch((error) => {
+        console.log('response: ', error);
+        dispatch({
+          type: API_FAILURE,
+          payload: error,
+        });
+        apiErrors(error);
+        throw error;
+      });
+  };
 }
 
 /**
@@ -1501,7 +1514,6 @@ export function getAllCity(callback) {
   return (dispatch) => {
     const request = axios.get(`${API.getCountry}`, config());
     request.then((response) => {
-      console.log(response);
       if (response.data.Result) {
         let city
         const data = response.data.SelectList

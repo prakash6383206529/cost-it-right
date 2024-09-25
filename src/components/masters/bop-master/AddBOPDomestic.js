@@ -165,11 +165,11 @@ class AddBOPDomestic extends Component {
   componentDidMount() {
 
     this.setState({ costingTypeId: getCostingTypeIdByCostingPermission() });
-    if (!this.state.isViewMode) {
-      this.props.getAllCity(cityId => {
-        this.props.getCityByCountry(cityId, 0, () => { })
-      })
-    }
+    // if (!this.state.isViewMode) {
+    //   this.props.getAllCity(cityId => {
+    //     this.props.getCityByCountry(cityId, 0, () => { })
+    //   })
+    // }
     setTimeout(() => {
       this.getDetails()
       this.props.getCostingSpecificTechnology(loggedInUserId(), () => { this.setState({ inputLoader: false }) })
@@ -413,6 +413,24 @@ class AddBOPDomestic extends Component {
     }
   }
 
+  filterSourceLocationList = async (inputValue) => {
+    if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
+      inputValue = inputValue.trim();
+    }
+    if (inputValue?.length >= searchCount) {
+      this.setState({ inputLoader: true });
+      let res = await getCityByCountry(0, 0, inputValue);
+      this.setState({ inputLoader: false });
+      let cityDataAPI = res?.data?.SelectList;
+      if (inputValue) {
+        return autoCompleteDropdown(inputValue, cityDataAPI, false, [], true);
+      } else {
+        return cityDataAPI;
+      }
+    } else {
+      return [];
+    }
+  };
 
   /**
   * @method renderListing
@@ -1485,7 +1503,7 @@ class AddBOPDomestic extends Component {
                                   customClassName=" withBorder"
                                 />
                               </Col>
-                              <Col md="3">
+                              {/* <Col md="3">
                                 <Field
                                   name="SourceLocation"
                                   type="text"
@@ -1505,6 +1523,26 @@ class AddBOPDomestic extends Component {
                                   }
                                   valueDescription={this.state.sourceLocation}
                                 />
+                              </Col> */}
+                              <Col md="3">
+                                <label>Source Location<span className="asterisk-required">*</span></label>
+                                <div className="d-flex justify-space-between align-items-center async-select">
+                                  <div id='AddBOPImport_SourceLocation' className="fullinput-icon p-relative">
+                                    {this.state.sourceLocationInputLoader && <LoaderCustom customClass={`input-loader`} />}
+                                    <AsyncSelect
+                                      name="sourceLocation"
+                                      loadOptions={this.filterSourceLocationList}
+                                      onChange={(e) => this.handleSourceSupplierCity(e)}
+                                      value={this.state.sourceLocation}
+                                      noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN : "No results found"}
+                                      isDisabled={isViewMode}
+                                      onFocus={() => onFocus(this)}
+                                      onKeyDown={(onKeyDown) => {
+                                        if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
+                                      }}
+                                    />
+                                  </div>
+                                </div>
                               </Col>
                             </>
                           )}
