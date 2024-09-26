@@ -6,7 +6,7 @@ import { getReporterList } from '../.././actions/Common';
 import { getCostingSpecificTechnology } from '../costing/actions/Costing'
 import { getTimeZone, loggedInUserId } from '../.././helper';
 import { MESSAGES } from '../../config/message';
-import { getCommunicationHistory } from './actions/rfq';
+import { getCommunicationHistory, getRfqReviewHistory } from './actions/rfq';
 import PopupMsgWrapper from '../common/PopupMsgWrapper';
 
 import NoContentFound from '../common/NoContentFound';
@@ -16,7 +16,7 @@ import { ChatFeed, Message } from 'react-chat-ui'
 
 
 function RemarkHistoryDrawer(props) {
-
+    const { rfqListing = false } = props
     const [showPopup, setShowPopup] = useState(false)
     const [messages, setMessages] = useState([])
 
@@ -27,41 +27,73 @@ function RemarkHistoryDrawer(props) {
 
 
     useEffect(() => {
-        dispatch(getCostingSpecificTechnology(loggedInUserId(), () => { }))
-        dispatch(getReporterList(() => { }))
         const { data } = props
-        let reqData = {
-            quotationId: data.QuotationId,
-            partId: data.PartId,
-            vendorId: data.VendorId,
-            timeZone: getTimeZone()
+        if (!rfqListing) {
+            dispatch(getCostingSpecificTechnology(loggedInUserId(), () => { }))
+            dispatch(getReporterList(() => { }))
+            let reqData = {
+                quotationId: data.QuotationId,
+                partId: data.PartId,
+                vendorId: data.VendorId,
+                timeZone: getTimeZone()
+
+            }
+            dispatch(getCommunicationHistory(reqData, (res) => {
+                // dispatch(getCommunicationHistory(props.data.CostingId, (res) => {         //RE
+
+                if (res && res.data) {
+                    let temp = []
+                    let responseMessageArray = res?.data?.DataList
+                    responseMessageArray && responseMessageArray.map((item) => {
+                        const dateObject = new Date(item.SentDate);
+                        let obj = new Message({
+                            id: 1,
+                            // message: `(${item.SenderName}) : ${item.Message ? item.Message : '-'} `,     //RE
+                            message: (
+                                <div className='chat-container'>
+                                    <div className='sender-name'> {item.SenderName}</div> {item.Message ? <div className='sender-message'>{item.Message}</div> : '-'}
+                                    <div className='sender-date'>{dateObject.toLocaleDateString()}<span className='sender-time'>{dateObject.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}</span></div>
+                                </div>
+                            ),
+                        })
+
+                        temp.push(obj)
+                    })
+                    setMessages(temp)
+                }
+            })
+            )
+        } else {
+
+            let reqData = {
+                quotationId: data.QuotationId,
+
+
+            }
+            dispatch(getRfqReviewHistory(reqData, (res) => {
+                if (res && res?.data) {
+                    let temp = []
+                    let responseMessageArray = res?.data?.Data
+                    responseMessageArray && responseMessageArray?.map((item) => {
+                        const dateObject = new Date(item?.CreatedDate);
+                        let obj = new Message({
+                            id: 1,
+                            // message: `(${item.SenderName}) : ${item.Message ? item.Message : '-'} `,     //RE
+                            message: (
+                                <div className='chat-container'>
+                                    <div className='review-message'></div> {item?.Remark ? <div className='sender-message'>{item?.Remark}</div> : '-'}
+                                    <div className='sender-date'>{dateObject?.toLocaleDateString()}<span className='sender-time'>{dateObject?.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}</span></div>
+                                </div>
+                            ),
+                        })
+
+                        temp.push(obj)
+                    })
+                    setMessages(temp)
+                }
+            }))
 
         }
-        dispatch(getCommunicationHistory(reqData, (res) => {
-            // dispatch(getCommunicationHistory(props.data.CostingId, (res) => {         //RE
-
-            if (res && res.data) {
-                let temp = []
-                let responseMessageArray = res?.data?.DataList
-                responseMessageArray && responseMessageArray.map((item) => {
-                    const dateObject = new Date(item.SentDate);
-                    let obj = new Message({
-                        id: 1,
-                        // message: `(${item.SenderName}) : ${item.Message ? item.Message : '-'} `,     //RE
-                        message: (
-                            <div className='chat-container'>
-                                <div className='sender-name'> {item.SenderName}</div> {item.Message ? <div className='sender-message'>{item.Message}</div> : '-'}
-                                <div className='sender-date'>{dateObject.toLocaleDateString()}<span className='sender-time'>{dateObject.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}</span></div>
-                            </div>
-                        ),
-                    })
-
-                    temp.push(obj)
-                })
-                setMessages(temp)
-            }
-        })
-        )
 
     }, [])
 
