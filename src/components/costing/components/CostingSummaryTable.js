@@ -3214,6 +3214,36 @@ const CostingSummaryTable = (props) => {
                                 )
                               })}
                           </tr>}
+                          {getConfigurationKey()?.IsTaxCodeVisible && <tr>
+                            <td>
+                              <span className="d-block small-grey-text"> Tax Code</span>
+                            </td>
+                            {viewCostingData &&
+                              viewCostingData?.map((data) => {
+                                return (
+                                  <td className={tableDataClass(data)}>
+                                    <span
+                                      title={Array.isArray(data?.TaxCodeList) && data.TaxCodeList.length > 0
+                                        ? data.TaxCodeList.map(tc => tc?.TaxCodeAndDescription || '').filter(Boolean).join(', ')
+                                        : '-'
+                                      }
+                                      className={`w-fit ${highlighter("taxCode")}`}
+                                    >
+                                      {data?.bestCost === true
+                                        ? ' '
+                                        : (data?.CostingHeading !== VARIANCE
+                                          ? (Array.isArray(data?.TaxCodeList) && data.TaxCodeList.length > 0
+                                            ? data.TaxCodeList.map(tc => tc?.TaxCodeAndDescription || '').filter(Boolean).join(', ')
+                                            : '-')
+                                          : ''
+                                        )
+                                      }
+
+                                    </span>
+                                  </td>
+                                )
+                              })}
+                          </tr>}
                           {
                             initialConfiguration?.IsBasicRateAndCostingConditionVisible && <tr className={`${highlighter("BasicRate", "main-row")}`}>
                               <th>Basic Price </th>

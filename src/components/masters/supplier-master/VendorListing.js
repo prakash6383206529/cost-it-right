@@ -34,6 +34,7 @@ import { updateGlobalTake, updatePageNumber, updatePageSize, updateCurrentRowInd
 import TourWrapper from "../../common/Tour/TourWrapper";
 import { Steps } from "../../common/Tour/TourMessages";
 import { useTranslation } from "react-i18next";
+import { useLabels } from "../../../helper/core";
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -41,7 +42,7 @@ const gridOptions = {};
 const VendorListing = (props) => {
   const dispatch = useDispatch();
   const { t } = useTranslation("common")
-
+  const { vendorLabel } = useLabels();
   const searchRef = useRef(null);
   const { supplierDataList, allSupplierDataList } = useSelector((state) => state.supplier);
   const { statusColumnData } = useSelector((state) => state.comman);
@@ -643,10 +644,8 @@ const VendorListing = (props) => {
     tempArr = selectedRowForPagination
 
     tempArr = tempArr && tempArr.length > 0 ? tempArr : allSupplierDataList ? allSupplierDataList : [];
-    //return returnExcelColumn(VENDOR_DOWNLOAD_EXCEl, tempArr);
-    const { updatedLabels, updatedTempData } = updateBOPValues(VENDOR_DOWNLOAD_EXCEl, tempArr, bopMasterName, 'label')
+    return returnExcelColumn(VENDOR_DOWNLOAD_EXCEl, tempArr);
 
-    return returnExcelColumn(updatedLabels, updatedTempData)
   };
   const returnExcelColumn = (data = [], TempData) => {
     let temp = [];
@@ -795,16 +794,16 @@ const VendorListing = (props) => {
               enablePivot={true}
               enableBrowserTooltips={true}
             >
-              <AgGridColumn field="VendorType" tooltipField="VendorType" width={"240px"} headerName="Vendor Type" cellRenderer={"checkBoxRenderer"} floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterVendorType}              ></AgGridColumn>
-              <AgGridColumn field="VendorName" headerName="Vendor Name"              ></AgGridColumn>
-              <AgGridColumn field="VendorCode" headerName="Vendor Code"              ></AgGridColumn>
+              <AgGridColumn field="VendorType" tooltipField="VendorType" width={"240px"} headerName={vendorLabel + " Type"} cellRenderer={"checkBoxRenderer"} floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterVendorType}              ></AgGridColumn>
+              <AgGridColumn field="VendorName" headerName={vendorLabel + " Name"}             ></AgGridColumn>
+              <AgGridColumn field="VendorCode" headerName={vendorLabel + " Code"}              ></AgGridColumn>
               <AgGridColumn field="Country" headerName="Country" cellRenderer={"hyphenFormatter"}              ></AgGridColumn>
               <AgGridColumn field="State" headerName="State" cellRenderer={"hyphenFormatter"} ></AgGridColumn>
               <AgGridColumn field="City" headerName="City" cellRenderer={"hyphenFormatter"}></AgGridColumn>
 
-              {getConfigurationKey()?.IsCriticalVendorConfigured && (<AgGridColumn field="IsCriticalVendor" headerName="Potential Vendor" ></AgGridColumn>)}
-              {props?.isVendorManagement && <AgGridColumn field="VendorClassification" headerName="Vendor Classification" cellRenderer={"hyphenFormatter"} ></AgGridColumn>}
-              {props?.isVendorManagement && <AgGridColumn field="VendorLPSRating" headerName="Vendor LPS Rating" cellRenderer={"hyphenFormatter"}></AgGridColumn>}
+              {getConfigurationKey()?.IsCriticalVendorConfigured && (<AgGridColumn field="IsCriticalVendor" headerName={`Potential ${vendorLabel}`}></AgGridColumn>)}
+              {props?.isVendorManagement && <AgGridColumn field="VendorClassification" headerName={vendorLabel + " Classification"} cellRenderer={"hyphenFormatter"} ></AgGridColumn>}
+              {props?.isVendorManagement && <AgGridColumn field="VendorLPSRating" headerName={vendorLabel + " LPS Rating"} cellRenderer={"hyphenFormatter"}></AgGridColumn>}
               <AgGridColumn field="VendorId" minWidth={"180"} cellClass="actions-wrapper ag-grid-action-container" headerName="Actions" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"}              ></AgGridColumn>
               <AgGridColumn width="150" pinned="right" field="IsActive" headerName="Status" floatingFilter={false} cellRenderer={"statusButtonFormatter"}              ></AgGridColumn>
             </AgGridReact>

@@ -698,6 +698,7 @@ function AddToComparisonDrawer(props) {
           obj.OtherCostDetailsProcess = setDynamicKeys(dataFromAPI?.CostingPartDetails?.OtherCostDetails, 'Process')
           obj.CalculatorType = dataFromAPI?.CostingPartDetails?.CalculatorType ?? ''
           obj.InfoCategory = dataFromAPI?.InfoCategory ? dataFromAPI?.InfoCategory : '-'
+          obj.TaxCodeList = dataFromAPI?.CostingPartDetails?.TaxCodeList ? dataFromAPI?.CostingPartDetails?.TaxCodeList : []
           // temp.push(VIEW_COSTING_DATA)
           if (index >= 0) {
 

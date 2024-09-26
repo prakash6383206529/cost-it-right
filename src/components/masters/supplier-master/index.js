@@ -10,6 +10,7 @@ import { resetStatePagination } from "../../common/Pagination/paginationAction";
 import LpsRatingListing from "../../vendorManagement/LpsRatingLisitng";
 import VendorListing from "./VendorListing";
 import VendorClassificationListing from "../../vendorManagement/VendorClassificationListing";
+import { useLabels } from "../../../helper/core";
 export const ApplyPermission = React.createContext();
 
 const VendorMaster = () => {
@@ -21,6 +22,7 @@ const VendorMaster = () => {
         ViewLpsRatingAccessibility: false,
     });
     const { ViewClassificationAccessibility, ViewLpsRatingAccessibility } = state
+    const { vendorLabel } = useLabels();
 
     const topAndLeftMenuData = useSelector((state) => state.auth.topAndLeftMenuData);
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration);
@@ -79,8 +81,8 @@ const VendorMaster = () => {
                             </div>
                             <Nav tabs className="subtabs mt-0 p-relative mb-4">
                                 {disabledClass && (<div title={MESSAGES.DOWNLOADING_MESSAGE} className="disabled-overflow"  ></div>)}
-                                <NavItem> <NavLink className={classnames({ active: state.activeTab === "1" })} onClick={() => toggle("1")}  > Vendor Listing  </NavLink></NavItem>
-                                {ViewClassificationAccessibility && <NavItem> <NavLink className={classnames({ active: state.activeTab === "2" })} onClick={() => toggle("2")} > Supplier Classification Status </NavLink> </NavItem>
+                                <NavItem> <NavLink className={classnames({ active: state.activeTab === "1" })} onClick={() => toggle("1")}  > {vendorLabel} Listing  </NavLink></NavItem>
+                                {ViewClassificationAccessibility && <NavItem> <NavLink className={classnames({ active: state.activeTab === "2" })} onClick={() => toggle("2")} > {vendorLabel} Classification Status </NavLink> </NavItem>
                                 }
                                 {initialConfiguration?.IsProductMasterConfigurable && ViewLpsRatingAccessibility && (
                                     <NavItem> <NavLink className={classnames({ active: state.activeTab === "3" })} onClick={() => toggle("3")} >  LPS Rating Status </NavLink> </NavItem>

@@ -29,6 +29,7 @@ import WarningMessage from "../../common/WarningMessage";
 import AddIndexationMaterialListing from "./AddIndexationMaterialListing"
 import HeaderTitle from "../../common/HeaderTitle";
 import { getRawMaterialDataBySourceVendor, setCommodityDetails, setOtherCostDetails } from "../actions/Indexation";
+import { useLabels } from "../../../helper/core";
 
 function AddRMMaster(props) {
     const { data, EditAccessibilityRMANDGRADE, AddAccessibilityRMANDGRADE } = props
@@ -36,6 +37,8 @@ function AddRMMaster(props) {
         mode: 'onChange',
         reValidateMode: 'onChange',
     });
+    const {  vendorLabel } = useLabels();
+
     const dispatch = useDispatch()
     const [state, setState] = useState({
         costingTypeId: ZBCTypeId,
@@ -569,7 +572,7 @@ function AddRMMaster(props) {
                                         }
                                         disabled={data.isEditFlag || isViewFlag}
                                     />{" "}
-                                    <span>Vendor Based</span>
+                                    <span>{vendorLabel} Based</span>
                                 </Label>}
                                 {(reactLocalStorage.getObject('CostingTypePermission').cbc) && <Label id="rm_domestic_form_customer_based" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
                                     <input
@@ -603,6 +606,7 @@ function AddRMMaster(props) {
                             EditAccessibilityRMANDGRADE={EditAccessibilityRMANDGRADE}
                             disableAll={state.disableAll}
                             isSourceVendorApiCalled={state?.isSourceVendorApiCalled}
+                            commonFunction={commonFunction}
                         />
                         <AddRMFinancialDetails states={state}
                             Controller={Controller}

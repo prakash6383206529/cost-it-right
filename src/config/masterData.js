@@ -6737,18 +6737,31 @@ export const BoughtOutPartImportFileHeads = ['CostingHead', 'BoughtOutPartNumber
 export const MachineRateFileHeads = ['CostingHead', 'Technology', 'MachineName', 'MachineNumber']
 
 export const CombinedProcessFileHeads = ['TechnologyName', 'PartName', 'PartNumber', 'PlantName', 'ConversionCost']         // KEEP COMMENTED ON RE						//RE
-
-export const TechnologyDropdownBulkUpload = [
+export const TechnologyDropdownBulkUploadV1 = [
     { label: 'Mechanical Proprietary, Sheet Metal, Hardware, Spring, Rivet', value: '1' },
-    { label: 'Rubber, Plastic, Die Casting', value: '2' },
+    { label: 'Rubber, Plastic, Die Costing', value: '2' },
+    { label: 'Forging, Machining, Turn Part', value: '3' }
+]
+
+export const TechnologyDropdownBulkUploadV2 = [
+    { label: 'Mechanical Proprietary, Sheet Metal, Hardware, Spring, Rivet', value: '1' },
+    { label: 'Rubber, Plastic, Die Costing, Corrugated Box (EPS / Label & Manual)', value: '2' },
     { label: 'Forging, Machining, Turn Part', value: '3' },
     { label: 'Corrugated Box', value: '4' },
     { label: 'Assembly', value: '5' },
     { label: 'Wiring Harness', value: '6' }
 ]
+// export const TechnologyDropdownBulkUpload = [
+//     { label: 'Mechanical Proprietary, Sheet Metal, Hardware, Spring, Rivet', value: '1' },
+//     { label: 'Rubber, Plastic, Die Costing, Corrugated Box (EPS / Label & Manual)', value: '2' },
+//     { label: 'Forging, Machining, Turn Part', value: '3' },
+//     { label: 'Corrugated Box', value: '4' },
+//     { label: 'Assembly', value: '5' },
+//     { label: 'Wiring Harness', value: '6' }
+// ]
 export const TechnologyDropdownBulkUploadV4 = [
     { label: 'Mechanical Proprietary, Sheet Metal, Hardware, Rivet, Wire Forming , Sintered Proprietary , Electronics ,Extrusion', value: '1' },
-    { label: 'Rubber, Plastic', value: '2' },
+    { label: 'Rubber, Plastic,Corrugated Box (EPS / Label & Manual)', value: '2' },
     { label: 'Forging, Machining, Springs', value: '3' },
     { label: 'Corrugated Box', value: '4' },
     { label: 'Assembly , Electrical Proprietary', value: '5' },

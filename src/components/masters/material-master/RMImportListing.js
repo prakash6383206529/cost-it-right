@@ -95,7 +95,7 @@ function RMImportListing(props) {
   const { t } = useTranslation("common")
   const netCostHeader = `Net Cost (${reactLocalStorage.getObject("baseCurrency")})`
   const { tokenForSimulation, selectedMasterForSimulation } = useSelector(state => state.simulation)
-  const { technologyLabel, RMCategoryLabel } = useLabels();
+  const { technologyLabel, RMCategoryLabel,vendorLabel } = useLabels();
   const headerNames = {
     BasicRate: `Basic Rate (${reactLocalStorage.getObject("baseCurrency")})`,
     ScrapRate: `Scrap Rate (${reactLocalStorage.getObject("baseCurrency")})`,
@@ -1027,7 +1027,7 @@ function RMImportListing(props) {
                     <AgGridColumn field="Category" headerName={RMCategoryLabel}></AgGridColumn>
                     <AgGridColumn field="MaterialType"></AgGridColumn>
                     <AgGridColumn field="DestinationPlantName" headerName="Plant (Code)"></AgGridColumn>
-                    <AgGridColumn field="VendorName" headerName="Vendor (Code)"></AgGridColumn>
+                    <AgGridColumn field="VendorName" headerName={vendorLabel +" (Code)"}></AgGridColumn>
                     {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                     {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
                     <AgGridColumn field="UnitOfMeasurementName" headerName='UOM'></AgGridColumn>

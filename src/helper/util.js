@@ -883,6 +883,7 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
   obj.OtherCostDetailsProcess = setDynamicKeys(dataFromAPI?.CostingPartDetails?.OtherCostDetails, 'Process')
   obj.CalculatorType = dataFromAPI?.CostingPartDetails?.CalculatorType ?? ''
   obj.InfoCategory = dataFromAPI?.InfoCategory ? dataFromAPI?.InfoCategory : '-'
+  obj.TaxCodeList = dataFromAPI?.CostingPartDetails?.TaxCodeList ? dataFromAPI?.CostingPartDetails?.TaxCodeList : []
   temp.push(obj)
   return temp
 }

@@ -7,7 +7,7 @@ import Toaster from '../../common/Toaster';
 import Drawer from '@material-ui/core/Drawer';
 import Dropzone from 'react-dropzone-uploader'
 import { bulkUploadCosting, plasticBulkUploadCosting, machiningBulkUploadCosting, corrugatedBoxBulkUploadCosting, assemblyBulkUploadCosting, wiringHarnessBulkUploadCosting, diecastingBulkUploadCosting, InsulationBulkUploadCosting, ElectricalStampingCostingBulkImport } from '../actions/CostWorking'
-import { CostingBulkUploadTechnologyDropdown, TechnologyDropdownBulkUpload, TechnologyDropdownBulkUploadV4 } from '../../../config/masterData'
+import { CostingBulkUploadTechnologyDropdown, TechnologyDropdownBulkUploadV1, TechnologyDropdownBulkUploadV2, TechnologyDropdownBulkUploadV4 } from '../../../config/masterData'
 import { ASSEMBLY, CORRUGATED_BOX, MACHINING_GROUP_BULKUPLOAD, PLASTIC_GROUP_BULKUPLOAD, SHEETMETAL_GROUP_BULKUPLOAD, FILE_URL, WIRINGHARNESS, SHEET_METAL, SHEETMETAL, DIE_CASTING, INSULATION, ELECTRICAL_STAMPING } from '../../../config/constants';
 import { getCostingTechnologySelectList, } from '../actions/Costing'
 import { searchableSelect } from '../../layout/FormInputs';
@@ -26,7 +26,8 @@ const CostingBulkUploadDrawer = (props) => {
         fileName: '',
         Technology: [],
         attachmentLoader: false,
-        costingVersion: 'V1'
+        costingVersion: 'V1',
+        isLoader: false
     });
 
 
@@ -34,39 +35,55 @@ const CostingBulkUploadDrawer = (props) => {
         dispatch(getCostingTechnologySelectList(() => { }))
     })
 
-    const renderListing = (label) => {
-        const { technologySelectList } = props
-        let tempArr = []
-        // DON'T REMOVE THIS MIGHT BE USED LATER
-        if (label === 'Technology') {
-            technologySelectList && technologySelectList.map((item) => {
-                if (item.Value === '0') return false
-                tempArr.push({ label: item.Text, value: item.Value })
-                return null
-            })
-            return tempArr
-        }
-        if (label === 'TechnologyMixed') {
-            TechnologyDropdownBulkUpload && TechnologyDropdownBulkUpload.map((item) => {
-                if (item.value === '0') return false
-                tempArr.push({ label: item.label, value: item.value })
-                return null
-            })
-            return tempArr
-        }
-        if (label === 'TechnologyMixedV4') {
-            TechnologyDropdownBulkUploadV4 && TechnologyDropdownBulkUploadV4.map((item) => {
-                if (item.value === '0') return false
-                tempArr.push({ label: item.label, value: item.value })
-                return null
-            })
-            return tempArr
+    // const renderListing = (label) => {
+    //     const { technologySelectList } = props
+    //     let tempArr = []
+    //     // DON'T REMOVE THIS MIGHT BE USED LATER
+    //     if (label === 'Technology') {
+    //         technologySelectList && technologySelectList.map((item) => {
+    //             if (item.Value === '0') return false
+    //             tempArr.push({ label: item.Text, value: item.Value })
+    //             return null
+    //         })
+    //         return tempArr
+    //     }
+    //     if (label === 'TechnologyMixed') {
+    //         TechnologyDropdownBulkUpload && TechnologyDropdownBulkUpload.map((item) => {
+    //             if (item.value === '0') return false
+    //             tempArr.push({ label: item.label, value: item.value })
+    //             return null
+    //         })
+    //         return tempArr
+    //     }
+    //     if (label === 'TechnologyMixedV4') {
+    //         TechnologyDropdownBulkUploadV4 && TechnologyDropdownBulkUploadV4.map((item) => {
+    //             if (item.value === '0') return false
+    //             tempArr.push({ label: item.label, value: item.value })
+    //             return null
+    //         })
+    //         return tempArr
 
+    //     }
+    // }
+
+    const renderListing = (label) => {
+        if (label === 'TechnologyV1') {
+            return TechnologyDropdownBulkUploadV1
         }
+        if (label === 'TechnologyV2') {
+            return TechnologyDropdownBulkUploadV2
+        }
+        if (label === 'TechnologyV3') {
+            return CostingBulkUploadTechnologyDropdown
+        }
+        if (label === 'TechnologyV4') {
+            return TechnologyDropdownBulkUploadV4
+        }
+        return []
     }
 
     const handleTechnologyChange = (value) => {
-        setState((prev) => ({ ...prev, Technology: value }))
+                setState((prev) => ({ ...prev, Technology: value }))
     }
 
     // called every time a file's `status` changes
@@ -165,17 +182,20 @@ const CostingBulkUploadDrawer = (props) => {
         }
     }
     const handleApiResponse = (res, files) => {
-
+        setState((prev) => ({ ...prev, isLoader: false }));
         if (res.status === 400) {
             let Data = res.data.Data
             const withOutTild = Data?.FileURL?.replace("~", "");
             const fileURL = `${FILE_URL}${withOutTild}`;
             window.open(fileURL, '_blank');
         } else {
+            setState((prev) => ({ ...prev, isLoader: false }));
             let Data = res.data[0]
             const { files } = state
             files.push(Data)
         }
+        cancel(); // Close the drawer after handling the response
+
     }
 
     const onSubmit = (value) => {
@@ -191,46 +211,37 @@ const CostingBulkUploadDrawer = (props) => {
         data.append('loggedInUserId', loggedInUserId())
         data.append('IsShowRawMaterialInOverheadProfitAndICC', getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC)
         data.append('version', costingVersion)
-
+        setState((prev) => ({ ...prev, isLoader: true }));
         switch (Number(Technology.value)) {
             case SHEETMETAL_GROUP_BULKUPLOAD:
             case SHEETMETAL:
                 dispatch(bulkUploadCosting(data, costingVersion, handleApiResponse))
-                cancel()
                 break;
             case PLASTIC_GROUP_BULKUPLOAD:
                 dispatch(plasticBulkUploadCosting(data, costingVersion, handleApiResponse))
-                cancel()
                 break;
             case MACHINING_GROUP_BULKUPLOAD:
                 dispatch(machiningBulkUploadCosting(data, costingVersion, handleApiResponse))
-                cancel()
                 break;
             case CORRUGATED_BOX:
                 dispatch(corrugatedBoxBulkUploadCosting(data, handleApiResponse))
-                cancel()
                 break;
             case ASSEMBLY:
                 dispatch(assemblyBulkUploadCosting(data, handleApiResponse))
-                cancel()
                 break;
             case WIRINGHARNESS:
                 dispatch(wiringHarnessBulkUploadCosting(data, handleApiResponse))
-                cancel()
                 break;
 
             case DIE_CASTING:
                 dispatch(diecastingBulkUploadCosting(data, handleApiResponse))
-                cancel()
                 break;
 
             case INSULATION:
                 dispatch(InsulationBulkUploadCosting(data, handleApiResponse))
-                cancel()
                 break;
             case ELECTRICAL_STAMPING:
                 dispatch(ElectricalStampingCostingBulkImport(data, handleApiResponse))
-                cancel()
                 break;
             default:
                 break;
@@ -250,7 +261,10 @@ const CostingBulkUploadDrawer = (props) => {
                 open={props.isOpen}
             // onClose={(e) => toggleDrawer(e)}
             >
+
+                {state.isLoader && <LoaderCustom customClass={"loader-center"} />}
                 <Container>
+
                     <div className={"drawer-wrapper"}>
                         <form
                             noValidate
@@ -351,12 +365,21 @@ const CostingBulkUploadDrawer = (props) => {
                                         component={searchableSelect}
                                         placeholder={"Select"}
                                         // options={state.costingVersion === 'V3' ? CostingBulkUploadTechnologyDropdown : renderListing("TechnologyMixed")}
+                                        // options={
+                                        //     state.costingVersion === 'V3'
+                                        //         ? CostingBulkUploadTechnologyDropdown
+                                        //         : (state.costingVersion === 'V4'
+                                        //             ? renderListing("TechnologyMixedV4")
+                                        //             : renderListing("TechnologyMixed"))
+                                        // }
                                         options={
-                                            state.costingVersion === 'V3'
-                                                ? CostingBulkUploadTechnologyDropdown
-                                                : (state.costingVersion === 'V4'
-                                                    ? renderListing("TechnologyMixedV4")
-                                                    : renderListing("TechnologyMixed"))
+                                            state.costingVersion === 'V1'
+                                                ? renderListing("TechnologyV1")
+                                                : (state.costingVersion === 'V2'
+                                                    ? renderListing("TechnologyV2")
+                                                    : (state.costingVersion === 'V3'
+                                                        ? renderListing("TechnologyV3")
+                                                        : renderListing("TechnologyV4")))
                                         }
                                         handleChangeDescription={handleTechnologyChange}
                                         valueDescription={state.Technology}

@@ -5,6 +5,7 @@ import { } from "../../../actions/Common";
 import {
   getProductDataList,
   deleteProduct,
+  getAllProductLevels,
 
 } from "../actions/Part";
 import { MESSAGES } from "../../../config/message";
@@ -62,9 +63,10 @@ const IndivisualProductListing = (props) => {
   }, []);
 
 
-
+  const { productHierarchyData } = useSelector((state) => state.part)
   const getTableListData = () => {
     setIsLoader(true);
+    dispatch(getAllProductLevels((res) => { }))
     dispatch(
       getProductDataList((res) => {
         setIsLoader(false);
@@ -309,6 +311,8 @@ const IndivisualProductListing = (props) => {
     hyphenFormatter: hyphenFormatter,
   };
 
+  const productLabel = productHierarchyData.length > 0 ? productHierarchyData[productHierarchyData?.length - 1]?.ProductHierarchyName : 'Product'
+
   return (
     <div
       className={`ag-grid-react ${permissions.Download ? "show-table-btn" : ""
@@ -429,9 +433,9 @@ const IndivisualProductListing = (props) => {
           >
             <AgGridColumn
               field="ProductNumber"
-              headerName="Product No."
+              headerName={`${productLabel} No.`}
             ></AgGridColumn>
-            <AgGridColumn field="ProductName" headerName="Name"></AgGridColumn>
+            <AgGridColumn field="ProductName" headerName={`${productLabel} Name`}></AgGridColumn>
             <AgGridColumn
               field="ProductGroupCode"
               headerName="Group Code"

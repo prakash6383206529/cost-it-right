@@ -8,7 +8,7 @@ import {
   setOtherDiscountData, getCostingPaymentTermDetail, setDiscountAndOtherCostData, saveCostingPaymentTermDetail, setPaymentTermsDataInDiscountOtherTab, isPaymentTermsDataChange, getCostingTcoDetails, setPaymentTermCost,
   getExternalIntegrationEvaluationType
 } from '../../actions/Costing';
-import { fetchCostingHeadsAPI, getConditionDetails, getCurrencySelectList, getNpvDetails, saveCostingDetailCondition, saveCostingDetailNpv, } from '../../../../actions/Common';
+import { fetchCostingHeadsAPI, getConditionDetails, getCurrencySelectList, getNpvDetails, getTaxCodeSelectList, saveCostingDetailCondition, saveCostingDetailNpv, } from '../../../../actions/Common';
 import { costingInfoContext, netHeadCostContext, NetPOPriceContext } from '../CostingDetailStepTwo';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, loggedInUserId, removeBOPfromApplicability, maxLength20, showSaLineNumber, showBopLabel, getConfigurationKey, IsFetchExchangeRateVendorWise } from '../../../../helper';
 //MINDA
@@ -18,7 +18,7 @@ import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
 import { Redirect, useHistory } from "react-router-dom";
 import redcrossImg from '../../../../assests/images/red-cross.png';
-import { ATTACHMENT, CAPACITY, CRMHeads, EMPTY_GUID, FEASIBILITY, FILE_URL, isShowTaxCode, NFRTypeId, TIMELINE, VBCTypeId, WACTypeId, ZBCTypeId } from '../../../../config/constants';
+import { ATTACHMENT, CAPACITY, EMPTY_GUID, FEASIBILITY, FILE_URL, NFRTypeId, TIMELINE, VBCTypeId, WACTypeId, ZBCTypeId } from '../../../../config/constants';
 import { IdForMultiTechnology } from '../../../../config/masterData';
 import { MESSAGES } from '../../../../config/message';
 import DayTime from '../../../common/DayTimeWrapper';
@@ -29,7 +29,7 @@ import { IsNFR, IsPartType, ViewCostingContext } from '../CostingDetails';
 
 import { useMemo } from 'react';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { checkWhiteSpaces, decimalNumberLimit6, hashValidation, maxLength80, number, percentageLimitValidation } from "../../../../helper/validation";
+import { checkWhiteSpaces, decimalNumberLimit6, hashValidation, maxLength80, number, percentageLimitValidation, required } from "../../../../helper/validation";
 import LoaderCustom from '../../../common/LoaderCustom';
 import TooltipCustom from '../../../common/Tooltip';
 import WarningMessage from '../../../common/WarningMessage';
@@ -40,7 +40,6 @@ import AddOtherDiscount from '../CostingHeadCosts/AdditionalOtherCost/AddOtherDi
 import OtherCostDrawer from '../CostingHeadCosts/AdditionalOtherCost/OtherCostDrawer';
 import PaymentTerms from '../CostingHeadCosts/OverheadProfit/PaymentTerms';
 import AddNpvCost from '../CostingHeadCosts/AdditionalOtherCost/AddNpvCost';
-import NpvCost from '../CostingHeadCosts/AdditionalOtherCost/NpvCost';
 import { setSAPData } from '../../actions/Approval';
 import { useLabels } from '../../../../helper/core';
 
@@ -51,10 +50,12 @@ function TabDiscountOther(props) {
   const dropzoneTimeline = useRef(null);
   const dropzoneCapacity = useRef(null);
   const dropzoneFeasibility = useRef(null);
-  const { register, handleSubmit, setValue, getValues, formState: { errors }, control } = useForm({
+  const formController = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
   });
+  const { register, handleSubmit, setValue, getValues, formState: { errors, isSubmitted, isSubmitSuccessful, isSubmitting }, control } = formController;
+
   const { discountLabel } = useLabels();
 
   const [IsCurrencyChange, setIsCurrencyChange] = useState(false);
@@ -124,6 +125,9 @@ function TabDiscountOther(props) {
     loaderCapacity: false,
     loaderTimeline: false,
   })
+  const [taxCode, setTaxCode] = useState('')
+  const taxCodeList = useSelector(state => state.comman.taxCodeList)
+
   const npvDrawerCondition = (
     ((IsRfqCostingType?.costingType || IsRfqCostingType?.isRfqCosting) && !initialConfiguration?.IsShowTCO && initialConfiguration?.IsShowNpvCost) ||
     (!(IsRfqCostingType?.costingType || IsRfqCostingType?.isRfqCosting) && initialConfiguration?.IsShowTCO && initialConfiguration?.IsShowNpvCost) ||
@@ -186,7 +190,6 @@ function TabDiscountOther(props) {
   const handleOtherDiscountDrawer = () => {
     setOpenCloseOtherDiscount(!openCloseOtherDiscount)
   }
-
   useEffect(() => {
     let request = partType ? 'multiple technology assembly' : ''
     dispatch(fetchCostingHeadsAPI(request, false, (res) => { }))
@@ -196,9 +199,9 @@ function TabDiscountOther(props) {
         plantCode: costData?.PlantCode,
         partNumber: costData?.PartNumber
       }
-
       dispatch(getExternalIntegrationEvaluationType(data, res => { }))
     }
+
   }, [])
   useEffect(() => {
     dispatch(getCostingPaymentTermDetail(costData?.CostingId, (res) => {
@@ -222,7 +225,69 @@ function TabDiscountOther(props) {
       return title
     }
   }
+  /**
+  * @method renderListing
+  * @description Used show listing of unit of measurement
+  */
+  const renderListing = (label) => {
 
+    const temp = [];
+    let tempList = [];
+
+    if (label === 'Currency') {
+      currencySelectList && currencySelectList.map(item => {
+        if (item.Value === '0' || item.Text === 'INR') return false;
+        temp.push({ label: item.Text, value: item.Value })
+        return null;
+      });
+      tempList = [...temp]
+      return tempList;
+    }
+
+    if (label === 'OtherCostType') {
+      return [
+        { label: 'Fixed', value: 'Fixed' },
+        { label: 'Percentage', value: 'Percentage' },
+      ];
+    }
+    if (label === 'HundiDiscountType') {
+      return [
+        { label: 'Fixed', value: 'Fixed' },
+        { label: 'Percentage', value: 'Percentage' },
+      ];
+    }
+    if (label === 'Applicability') {
+      costingHead && costingHead.map(item => {
+        if (item.Value === '0') return false;
+        temp.push({ label: item.Text, value: item.Value })
+        return null;
+      });
+      if (isBreakupBoughtOutPartCostingFromAPI) {
+        tempList = removeBOPfromApplicability([...temp])
+        //MINDA
+        // tempList = removeBOPFromList([...temp])
+      } else {
+        tempList = [...temp]
+      }
+      return tempList;
+    }
+    if (label === 'evaluationType') {
+      evaluationType && evaluationType.map((item) => {
+        if (item.Value === '0') return false
+        temp.push({ label: item.Text, value: item.Value })
+        return null
+      })
+      return temp
+    }
+    if (label === 'TaxCode') {
+      taxCodeList && taxCodeList.map(item => {
+        if (item?.TaxCodeId === '0') return false
+        temp.push({ label: item.TaxCodeAndDescription, value: item.TaxCodeId, TaxCode: item.TaxCode, Description: item.Description })
+        return null
+      })
+      return temp
+    }
+  }
   const otherCostUI = useMemo(() => {
     let otherCost = otherCostData.otherCostTotal
     setValue('OtherCost', checkForDecimalAndNull(otherCost, initialConfiguration.NoOfDecimalForPrice))
@@ -319,55 +384,37 @@ function TabDiscountOther(props) {
     </div>
   }, [otherDiscountData])
 
+  const handleTaxCodeChange = (e) => {
+    setValue('TaxCode', { label: e?.label, value: e?.value })
+    setTaxCode(e)
+  }
 
+  console.log(errors, 'errors')
   const costingConditionUI = useMemo(() => {
     const sum = conditionTableData.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCostPerQuantity), 0);
 
     setValue('ConditionCosting', checkForDecimalAndNull(sum, initialConfiguration.NoOfDecimalForPrice))
-    setValue('TaxCode', conditionTableData[0]?.Description)
 
     return <Col md="3">
       <div className='d-flex align-items-center'>
-        {
-          isShowTaxCode ?
-            <TextFieldHookForm
-              label="Tax Code"
-              name={'TaxCode'}
-              Controller={Controller}
-              id="TaxCode"
-              control={control}
-              register={register}
-              mandatory={true}
-              rules={{ required: true }}
-              handleChange={() => { }}
-              defaultValue={''}
-              className=""
-              customClassName={'withBorder w-100'}
-              errors={errors.TaxCode}
-              disabled={true}
-            /> :
-            <>
 
-              <TooltipCustom disabledIcon={true} width="280px" id="costingCondition" tooltipText={"Condition Cost = Sum of condition cost added in condition drawer"} />
-              <TextFieldHookForm
-                label="Condition"
-                name={'ConditionCosting'}
-                Controller={Controller}
-                id="costingCondition"
-                control={control}
-                register={register}
-                mandatory={false}
-                rules={{}}
-                handleChange={() => { }}
-                defaultValue={sum}
-                className=""
-                customClassName={'withBorder w-100'}
-                errors={errors.ConditionCosting}
-                disabled={true}
-              />
-            </>
-        }
-
+        <TooltipCustom disabledIcon={true} width="280px" id="costingCondition" tooltipText={"Condition Cost = Sum of condition cost added in condition drawer"} />
+        <TextFieldHookForm
+          label="Condition"
+          name={'ConditionCosting'}
+          Controller={Controller}
+          id="costingCondition"
+          control={control}
+          register={register}
+          mandatory={false}
+          rules={{}}
+          handleChange={() => { }}
+          defaultValue={sum}
+          className=""
+          customClassName={'withBorder w-100'}
+          errors={errors.ConditionCosting}
+          disabled={true}
+        />
         <Button
           id="tabDiscount_condition"
           onClick={() => openAndCloseAddConditionCosting('Open')}
@@ -415,7 +462,7 @@ function TabDiscountOther(props) {
         }))
       }
 
-      if (initialConfiguration?.IsBasicRateAndCostingConditionVisible || isShowTaxCode) {
+      if (initialConfiguration?.IsBasicRateAndCostingConditionVisible) {
         dispatch(getConditionDetails(RMCCTabData && RMCCTabData[0]?.CostingId, (res) => {
           if (res?.data?.Data) {
             let Data = res?.data?.Data.ConditionsData
@@ -595,7 +642,6 @@ function TabDiscountOther(props) {
         if (res && res.data && res.data.Result) {
           let Data = res.data.Data;
 
-
           if (Data && Data?.CostingPartDetails && Data?.CostingPartDetails?.GrandTotalCost !== null) {
             let costDetail = Data?.CostingPartDetails
             let attachmentList = filterAttachments(Data.Attachements, null)
@@ -620,8 +666,15 @@ function TabDiscountOther(props) {
             //MINDA
             setValue('SANumber', Data.SANumber !== null ? Data.SANumber : '')
             setValue('LineNumber', Data.LineNumber !== null ? Data.LineNumber : '')
-            setValue("evaluationType", Data?.ValuationType ? { label: Data?.ValuationType, value: Data?.ValuationType } : "")
+            setValue("evaluationType", Data?.ValuationType ? { label: Data?.ValuationType, value: Data?.ValuationType } : null)
 
+            let taxCodeArray = []
+            Data && Data?.CostingPartDetails?.TaxCodeList?.map((item) => {
+              taxCodeArray.push({ label: `${item.TaxCodeAndDescription}`, value: (item?.TaxCodeId)?.toString(), TaxCode: item?.TaxCode, Description: item?.Description })
+              return null;
+            })
+            setTaxCode(taxCodeArray)
+            setValue('TaxCode', taxCodeArray)
             dispatch(setSAPData({ ...SAPData, evaluationType: Data?.ValuationType ?? '', isValuationValid: Data?.IsValuationValid ?? false }))
 
             setEffectiveDate(DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
@@ -755,7 +808,7 @@ function TabDiscountOther(props) {
       }
       props.setHeaderCost(topHeaderData, headerCosts, costData)
     })
-  }, [costData, headerCosts])
+  }, [costData, headerCosts, DiscountAndOtherCostTabData])
 
   //MANIPULATE TOP HEADER COSTS
   useEffect(() => {
@@ -981,62 +1034,7 @@ function TabDiscountOther(props) {
     }
   }, [CostingEffectiveDate])
 
-  /**
-  * @method renderListing
-  * @description Used show listing of unit of measurement
-  */
-  const renderListing = (label) => {
 
-    const temp = [];
-    let tempList = [];
-
-    if (label === 'Currency') {
-      currencySelectList && currencySelectList.map(item => {
-        if (item.Value === '0' || item.Text === 'INR') return false;
-        temp.push({ label: item.Text, value: item.Value })
-        return null;
-      });
-      tempList = [...temp]
-      return tempList;
-    }
-
-    if (label === 'OtherCostType') {
-      return [
-        { label: 'Fixed', value: 'Fixed' },
-        { label: 'Percentage', value: 'Percentage' },
-      ];
-    }
-    if (label === 'HundiDiscountType') {
-      return [
-        { label: 'Fixed', value: 'Fixed' },
-        { label: 'Percentage', value: 'Percentage' },
-      ];
-    }
-    if (label === 'Applicability') {
-      costingHead && costingHead.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ label: item.Text, value: item.Value })
-        return null;
-      });
-      if (isBreakupBoughtOutPartCostingFromAPI) {
-        tempList = removeBOPfromApplicability([...temp])
-        //MINDA
-        // tempList = removeBOPFromList([...temp])
-      } else {
-        tempList = [...temp]
-      }
-      return tempList;
-    }
-    if (label === 'evaluationType') {
-      evaluationType && evaluationType.map((item) => {
-        if (item.Value === '0') return false
-        temp.push({ label: item.Text, value: item.Value })
-        return null
-      })
-      return temp
-    }
-
-  }
 
   /**
   * @method setDisableFalseFunction
@@ -1168,14 +1166,11 @@ function TabDiscountOther(props) {
   * @method onSubmit
   * @description Used to Submit the form
   */
-  const onSubmit = debounce((values, val, gotoNextValue) => {
+  // const onSubmit = debounce((values, val, gotoNextValue) => {
+  const onSubmit = debounce((values, gotoNextValue) => {
     setPaymentTermsWarning(false)
     if (errorCheckObject(ErrorObjDiscount)) return false;
 
-    if (isShowTaxCode && conditionTableData.length === 0) {
-      Toaster.warning("Tax code is mandatory.Please add from the drawer")
-      return false
-    }
     if (!getValues('discountDescriptionRemark') && discountCostApplicability?.value) {
       errors.discountDescriptionRemark = {
         "type": "required",
@@ -1194,7 +1189,16 @@ function TabDiscountOther(props) {
     const discountAndOtherTabData = DiscountCostData
     const packageAndFreightTabData = PackageAndFreightTabData && PackageAndFreightTabData[0]
     const toolTabData = ToolTabData && ToolTabData[0]
-
+    let taxCodeArray = []
+    taxCode && taxCode.map(item => {
+      let obj = {
+        "TaxCodeId": item?.value,
+        "TaxCodeAndDescription": item?.label,
+        "Description": item?.Description,
+        "TaxCode": item?.TaxCode,
+      }
+      taxCodeArray.push(obj)
+    })
     let updatedFiles = files.map((file) => {
       return { ...file, ContextId: costData.CostingId }
     })
@@ -1266,6 +1270,7 @@ function TabDiscountOther(props) {
         "DiscountCostDetails": discountArray,
         "NetNpvCost": checkForNull(totalNpvCost),
         "NetConditionCost": checkForNull(totalConditionCost),
+        "TaxCodeList": taxCodeArray,
       },
       "SANumber": getValues('SANumber'),
       "LineNumber": getValues('LineNumber'),
@@ -1880,8 +1885,10 @@ function TabDiscountOther(props) {
   };
 
   const handleValuationType = (value) => {
-
-
+    if (!value) {
+      //When dropdown is cleared set the value to null. When user selects an option, it is being handled by form neatly.
+      setValue("evaluationType", null);
+    }
     dispatch(setSAPData({ ...SAPData, evaluationType: value?.label ?? '', isValuationValid: evaluationType.length > 0 ? true : false }))
   }
 
@@ -2091,7 +2098,7 @@ function TabDiscountOther(props) {
                     </Row>
                     {initialConfiguration?.IsBasicRateAndCostingConditionVisible &&
                       <Col md="3">
-                        <TooltipCustom disabledIcon={true} width="280px" id="basic-rate" tooltipText={`Basic Price = (Total Cost -${discountLabel} Value) + Total Other Cost`} />
+                        <TooltipCustom disabledIcon={true} width="280px" id="basic-rate" tooltipText={`Basic Price = (Total Cost + Total Other Cost - ${discountLabel} Value)  ${initialConfiguration?.IsAddPaymentTermInNetCost ? "+ Payment Terms Cost" : ""}`} />
                         <TextFieldHookForm
                           label={`Basic Price (${reactLocalStorage.getObject("baseCurrency")})`}
                           name={'BasicRateINR'}
@@ -2109,7 +2116,7 @@ function TabDiscountOther(props) {
                           disabled={true}
                         />
                       </Col >}
-                    {(initialConfiguration?.IsBasicRateAndCostingConditionVisible || isShowTaxCode) ? costingConditionUI : ''}
+                    {(initialConfiguration?.IsBasicRateAndCostingConditionVisible) ? costingConditionUI : ''}
                     {
                       isConditionCostingOpen && <AddConditionCosting
                         isOpen={isConditionCostingOpen}
@@ -2122,7 +2129,31 @@ function TabDiscountOther(props) {
                       />
                     }
 
+                    {(getConfigurationKey()?.IsTaxCodeVisible) ? <Col md="3">
+                      <div className='d-flex align-items-center'>
+                        {
+                          getConfigurationKey()?.IsTaxCodeVisible &&
+                          <SearchableSelectHookForm
+                            label="Tax Code"
+                            name={'TaxCode'}
+                            Controller={Controller}
+                            id="TaxCode"
+                            control={control}
+                            register={register}
+                            mandatory={true}
+                            rules={{ required: true, validate: { required } }}
+                            defaultValue={taxCode?.length !== 0 ? taxCode : ''}
+                            options={renderListing('TaxCode')}
+                            disabled={CostingViewMode}
+                            handleChange={handleTaxCodeChange}
+                            errors={errors.TaxCode}
+                            isMulti={true}
+                            isTaxCode={true}
+                          />
+                        }
 
+                      </div>
+                    </Col> : ''}
                     {(initialConfiguration?.IsShowNpvCost /* || initialConfiguration?.IsShowTCO || IsRfqCostingType?.costingType || IsRfqCostingType?.isRfqCosting */) && isOpenandClose && <AddNpvCost
                       isOpen={isOpenandClose}
                       tableData={npvTableData}
@@ -2134,7 +2165,7 @@ function TabDiscountOther(props) {
                       CostingViewMode={CostingViewMode}
                     />
                     }
-                    <TooltipCustom disabledIcon={true} width="280px" id="net-po-price" tooltipText={"Net Cost = Basic Rate + Total Costing Condition Cost"} />
+                    <TooltipCustom disabledIcon={true} width="280px" id="net-po-price" tooltipText={`Net Cost = ${initialConfiguration?.IsBasicRateAndCostingConditionVisible ? 'Basic Rate + Total Costing Condition Cost' : `(Total Cost + Total Other Cost - ${discountLabel} Value ${initialConfiguration?.IsAddPaymentTermInNetCost ? " + Payment Terms Cost" : ""})  `}`} />
                     <Col md="3">
                       <TextFieldHookForm
                         label={`Net Cost (${reactLocalStorage.getObject("baseCurrency")})`}
@@ -2199,11 +2230,10 @@ function TabDiscountOther(props) {
                           placeholder={"Select"}
                           Controller={Controller}
                           control={control}
-                          rules={{ required: false }}
+                          rules={{ required: !!(renderListing("evaluationType")?.length) ? true : false }}
                           register={register}
-                          defaultValue={""}
                           options={renderListing("evaluationType")}
-                          mandatory={false}
+                          mandatory={!!(renderListing("evaluationType")?.length) ? true : false}
                           handleChange={handleValuationType}
                           errors={errors.evaluationType}
                           isClearable={true}
@@ -2685,12 +2715,6 @@ function TabDiscountOther(props) {
                     </>
                     }
 
-
-
-
-
-
-
                   </Row >
                   <Row className="no-gutters justify-content-between costing-disacount-other-cost-footer sticky-btn-footer">
                     <div className="col-sm-12 text-right bluefooter-butn mt-3">
@@ -2701,7 +2725,8 @@ function TabDiscountOther(props) {
                           id="discountTab_save"
                           type="button"
                           className="submit-button mr5 save-btn"
-                          onClick={(data, e) => { handleSubmit(onSubmit(data, e, false)) }}
+                          // onClick={(data, e) => { handleSubmit(onSubmit(data, e, false)) }}
+                          onClick={(data, e) => { handleSubmit(onSubmit)(false) }}
                           disabled={isDisable}
                         >
                           <div className={"save-icon"}></div>
@@ -2714,7 +2739,8 @@ function TabDiscountOther(props) {
                           type="button"
                           id="discountTab_next"
                           className="submit-button save-btn"
-                          onClick={(data, e) => { handleSubmit(onSubmit(data, e, true)) }}
+                          // onClick={(data, e) => { handleSubmit(onSubmit(data, e, true)) }}
+                          onClick={(data, e) => { handleSubmit(onSubmit)(true) }}
                           disabled={isDisable}
                         >
                           {"Next"}

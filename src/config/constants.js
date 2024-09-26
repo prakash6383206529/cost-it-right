@@ -570,6 +570,7 @@ export const API = {
   getDiscountOtherCostTabData: `${BASE_URL}/costing/get-costing-detail-for-other-cost`,
   saveDiscountOtherCostTab: `${BASE_URL}/costing/save-costing-detail-for-other-cost`,
   getExchangeRateByCurrency: `${BASE_URL}/costing/get-costing-exchange-rate-by-currency`,
+  getTaxCodeSelectList: `${BASE_URL}/costing/get-all-tax-codes`,
 
   fileUploadCosting: `${BASE_URL}/costing/costing-file-upload`,
   fileDeleteCosting: `${BASE_URL}/costing/delete-costing-attachment-file`,
@@ -1694,7 +1695,7 @@ export const GET_PART_SELECTLIST_BY_TECHNOLOGY = 'GET_PART_SELECTLIST_BY_TECHNOL
 export const BOP_DRAWER_LIST = 'BOP_DRAWER_LIST'
 export const SET_PLASTIC_ARR = 'SET_PLASTIC_ARR'
 export const SET_ASSEM_BOP_CHARGE = 'SET_ASSEM_BOP_CHARGE'
-
+export const GET_TAX_CODE_SELECTLIST = 'GET_TAX_CODE_SELECTLIST'
 export const SET_ARRAY_FOR_COSTING = 'SET_ARRAY_FOR_COSTING'
 export const CHECK_IS_DATA_CHANGE = 'CHECK_IS_DATA_CHANGE'
 export const CHECK_IS_OVERHEAD_AND_PROFIT_DATA_CHANGE = 'CHECK_IS_OVERHEAD_AND_PROFIT_DATA_CHANGE'
@@ -3241,12 +3242,15 @@ export const hideDetailOfRubbercalci = true
 export const customHavellsChanges = true
 export const countDownBlinkingTime = 2
 export const clientName = 'Havells'
-export const isShowTaxCode = false
+export const isShowTaxCode = true
 export const effectiveDateRangeDays = ''
-
+// CONSTANT FOR COSTING ENTRY TYPE ID
+export const COMMODITYCOST = 'Commodity Cost'
+export const RAWMATERIALCOST = 'Raw Material Other Cost'
+export const COSTINGCONDITIONCOST = 'Costing Condition Cost'
 
 //VERSION 
-export const VERSION = "V3.1.8";
+export const VERSION = "V3.1.9";
 
 
 

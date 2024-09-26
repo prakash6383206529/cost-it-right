@@ -36,7 +36,7 @@ function RMApproval(props) {
     const [loader, setLoader] = useState(true)
     const [isFinalApprover, setIsFinalApprover] = useState(false)
     const dispatch = useDispatch()
-    const { technologyLabel } = useLabels();
+    const { technologyLabel,vendorLabel } = useLabels();
     useEffect(() => {
         getTableData()
         let obj = {
@@ -382,7 +382,7 @@ function RMApproval(props) {
                                     <AgGridColumn width="140" field="Category"></AgGridColumn>
                                     <AgGridColumn width="140" field="MaterialType"></AgGridColumn>
                                     <AgGridColumn field="Plant"></AgGridColumn>
-                                    <AgGridColumn field="VendorName" headerName="Vendor(Code)"></AgGridColumn>
+                                    <AgGridColumn field="VendorName" headerName={`${vendorLabel} (Code)`}></AgGridColumn>
                                     <AgGridColumn width="140" field="UOM"></AgGridColumn>
                                     <AgGridColumn width="140" field="BasicRate"></AgGridColumn>
                                     <AgGridColumn width="140" field="ScrapRate"></AgGridColumn>

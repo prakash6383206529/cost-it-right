@@ -16,11 +16,13 @@ import { MESSAGES } from '../../config/message';
 import DayTime from '../common/DayTimeWrapper';
 import { filterParams } from '../common/DateFilter';
 import Button from '../layout/Button';
+import { useLabels } from '../../helper/core';
 const gridOptions = {};
 
 const VendorClassificationListing = () => {
     const searchRef = useRef(null);
     const [errorMessage, setErrorMessage] = useState('')
+    const { vendorLabel } = useLabels();
 
     const [renderState, setRenderState] = useState(true);
     const [isLoader, setIsLoader] = useState(false);
@@ -229,7 +231,7 @@ const VendorClassificationListing = () => {
                             suppressRowClickSelection={true}
                             frameworkComponents={frameworkComponents}
                         >
-                            <AgGridColumn field="ClassificationName" headerName="Supplier Classification"></AgGridColumn>
+                            <AgGridColumn field="ClassificationName" headerName={vendorLabel +" Classification"}></AgGridColumn>
                             <AgGridColumn field="LastUpdatedOn" cellRenderer='effectiveDateFormatter' headerName="Last Updated On" filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
 
                             <AgGridColumn field="LastUpdatedByUser" headerName="Last Updated By"></AgGridColumn>
