@@ -606,6 +606,7 @@ function AddRMMaster(props) {
                             EditAccessibilityRMANDGRADE={EditAccessibilityRMANDGRADE}
                             disableAll={state.disableAll}
                             isSourceVendorApiCalled={state?.isSourceVendorApiCalled}
+                            commonFunction={commonFunction}
                         />
                         <AddRMFinancialDetails states={state}
                             Controller={Controller}
