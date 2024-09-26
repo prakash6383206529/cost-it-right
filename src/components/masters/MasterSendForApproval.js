@@ -300,7 +300,6 @@ function MasterSendForApproval(props) {
     }
 
     const checkFinalUserAndSetApprover = (departmentId, divisionId) => {
-        console.log(props, "props")
         let obj = {
             DepartmentId: departmentId,
             UserId: loggedInUserId(),

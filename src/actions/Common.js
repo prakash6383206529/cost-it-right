@@ -1315,34 +1315,43 @@ export function getAllCities(callback) {
 //     });
 //   };
 // }
-export function getCityByCountry(CountryId, StateId, CityName) {
-  return (dispatch) => {
-    console.log(CountryId, StateId, CityName);
-    return axios.get(`${API.getCityByCountry}?countryId=${CountryId}&stateId=${StateId}&cityName=${CityName}`, config())
-      .then((response) => {
-        console.log('response: ', response);
-        if (response.data.Result) {
-          console.log('response: ', response);
 
-          dispatch({
-            type: GET_CITY_SUCCESS,
-            payload: response.data.SelectList,
-          });
-        }
+export function getCityByCountry(CountryId, StateId, CityName, callback) {
+  return axios.get(`${API.getCityByCountry}?countryId=${CountryId}&stateId=${StateId}&cityName=${CityName}`, config())
+    .then((response) => {
+      console.log('response: ', response);
+      if (response.data.Result) {
+        if (callback) callback(null, response);
         return response;
-      })
-      .catch((error) => {
-        console.log('response: ', error);
+      }
+    }).catch((error) => {
+      apiErrors(error);
+      if (callback) callback(error);
+      throw error;
+    });
+}
+// New action creator with dispatch for the soucre location in the class component
+//kindly remove this action when all the files using this action are converted to functional component
+export function getCityByCountryAction(CountryId, StateId, CityName) {
+  return async (dispatch) => {
+    try {
+      const response = await getCityByCountry(CountryId, StateId, CityName);
+      if (response.data.Result) {
         dispatch({
-          type: API_FAILURE,
-          payload: error,
+          type: GET_CITY_SUCCESS,
+          payload: response.data.SelectList,
         });
-        apiErrors(error);
-        throw error;
+      }
+      return response;
+    } catch (error) {
+      dispatch({
+        type: API_FAILURE,
+        payload: error,
       });
+      throw error;
+    }
   };
 }
-
 /**
  * @method getRawMaterialCategory
  * @description Used to GET ALL RM CATEGORY LIST

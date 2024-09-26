@@ -4,7 +4,7 @@ import { Field, reduxForm, formValueSelector, clearFields } from "redux-form";
 import { Row, Col, Table, Label } from "reactstrap";
 import { required, checkForNull, maxLength10, checkForDecimalAndNull, number, decimalNumberLimit6, checkWhiteSpaces } from "../../../helper/validation";
 import { renderTextInputField, searchableSelect } from "../../layout/FormInputs";
-import { fetchSupplierCityDataAPI, getCityByCountry, getAllCity, getVendorNameByVendorSelectList, getPlantSelectListByType } from "../../../actions/Common";
+import { fetchSupplierCityDataAPI, getAllCity, getVendorNameByVendorSelectList, getPlantSelectListByType, getCityByCountryAction } from "../../../actions/Common";
 import {
   createFreight, updateFright, getFreightData, getFreightModeSelectList, getFreigtFullTruckCapacitySelectList, getFreigtRateCriteriaSelectList,
 } from "../actions/Freight";
@@ -1371,7 +1371,7 @@ export default connect(mapStateToProps, {
   getFreightModeSelectList,
   getFreigtFullTruckCapacitySelectList,
   getFreigtRateCriteriaSelectList,
-  getCityByCountry,
+  getCityByCountryAction,
   getAllCity,
   getClientSelectList,
   getPlantSelectListByType,

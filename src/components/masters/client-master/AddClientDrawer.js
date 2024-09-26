@@ -5,7 +5,7 @@ import { Container, Row, Col, Table, } from 'reactstrap';
 import { required, email, minLength7, maxLength70, acceptAllExceptSingleSpecialCharacter, maxLength12, minLength10, maxLength80, checkWhiteSpaces, maxLength20, postiveNumber, maxLength5, maxLength6, number, checkForNull, positiveAndDecimalNumber, maxLength10, hashValidation } from "../../../helper/validation";
 import { renderText, renderEmailInputField, searchableSelect, renderTextInputField } from "../../layout/FormInputs";
 import { createClient, updateClient, getClientData, checkAndGetCustomerCode, getPoamStatusSelectList } from '../actions/Client';
-import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, getCityByCountry, } from '../../../actions/Common';
+import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, getCityByCountryAction, } from '../../../actions/Common';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { getConfigurationKey, loggedInUserId, } from "../../../helper/auth";
@@ -73,7 +73,7 @@ class AddClientDrawer extends Component {
 
         const { country } = this.state;
         if (country && country.label !== 'India') {
-            this.props.getCityByCountry(country.value, '00000000000000000000000000000000', '', () => { })
+            this.props.getCityByCountryAction(country.value, '00000000000000000000000000000000', '', () => { })
         } else {
             this.props.fetchStateDataAPI(country.value, () => { })
         }
@@ -1042,7 +1042,7 @@ export default connect(mapStateToProps, {
     createClient,
     updateClient,
     getClientData,
-    getCityByCountry,
+    getCityByCountryAction,
     checkAndGetCustomerCode,
     getPoamStatusSelectList
 })(reduxForm({

@@ -7,7 +7,7 @@ import {
   maxLength, maxLength10, positiveAndDecimalNumber, maxLength512, maxLength80, checkWhiteSpaces, decimalLengthsix, checkSpacesInString, postiveNumber, hashValidation
 } from "../../../helper/validation";
 import { renderText, searchableSelect, renderTextAreaField, focusOnError, renderDatePicker, renderTextInputField } from "../../layout/FormInputs";
-import { getCityBySupplier, getPlantBySupplier, getUOMSelectList, getPlantSelectListByType, getCityByCountry, getAllCity, getVendorNameByVendorSelectList } from '../../../actions/Common';
+import { getCityBySupplier, getPlantBySupplier, getUOMSelectList, getPlantSelectListByType, getAllCity, getVendorNameByVendorSelectList, getCityByCountryAction } from '../../../actions/Common';
 import { createBOP, updateBOP, getBOPCategorySelectList, getBOPDomesticById, fileUploadBOPDomestic, checkAndGetBopPartNo } from '../actions/BoughtOutParts';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
@@ -419,7 +419,7 @@ class AddBOPDomestic extends Component {
     }
     if (inputValue?.length >= searchCount) {
       this.setState({ inputLoader: true });
-      let res = await getCityByCountry(0, 0, inputValue);
+      let res = await this.props.getCityByCountryAction(0, 0, inputValue);
       this.setState({ inputLoader: false });
       let cityDataAPI = res?.data?.SelectList;
       if (inputValue) {
@@ -431,6 +431,7 @@ class AddBOPDomestic extends Component {
       return [];
     }
   };
+  
 
   /**
   * @method renderListing
@@ -1525,7 +1526,7 @@ class AddBOPDomestic extends Component {
                                 />
                               </Col> */}
                               <Col md="3">
-                                <label>Source Location<span className="asterisk-required">*</span></label>
+                                <label>Source Location</label>
                                 <div className="d-flex justify-space-between align-items-center async-select">
                                   <div id='AddBOPImport_SourceLocation' className="fullinput-icon p-relative">
                                     {this.state.sourceLocationInputLoader && <LoaderCustom customClass={`input-loader`} />}
@@ -1969,7 +1970,7 @@ export default connect(mapStateToProps, {
   fileUploadBOPDomestic,
   getPlantSelectListByType,
   checkFinalUser,
-  getCityByCountry,
+  getCityByCountryAction,
   getAllCity,
   getClientSelectList,
   getUsersMasterLevelAPI,

@@ -6,7 +6,7 @@ import { required, checkForDecimalAndNull, positiveAndDecimalNumber, maxLength10
 import {
   searchableSelect, focusOnError, renderTextInputField,
 } from "../../layout/FormInputs";
-import { getUOMSelectList, fetchStateDataAPI, getAllCity, getPlantSelectListByType, fetchCountryDataAPI, fetchCityDataAPI, getCityByCountry, getVendorNameByVendorSelectList, } from '../../../actions/Common';
+import { getUOMSelectList, fetchStateDataAPI, getAllCity, getPlantSelectListByType, fetchCountryDataAPI, fetchCityDataAPI, getVendorNameByVendorSelectList, getCityByCountryAction, } from '../../../actions/Common';
 import { getFuelByPlant, createFuelDetail, updateFuelDetail, getFuelDetailData, getUOMByFuelId, getAllFuelAPI } from '../actions/Fuel';
 import { MESSAGES } from '../../../config/message';
 import { CBCTypeId, EMPTY_DATA, GUIDE_BUTTON_SHOW, searchCount, SPACEBAR, VBC_VENDOR_TYPE, VBCTypeId, ZBC, ZBCTypeId } from '../../../config/constants'
@@ -517,7 +517,6 @@ class AddFuel extends Component {
       return temp;
     }
     if (label === 'city') {
-      console.log('cityList: ', cityList);
       cityList && cityList.map(item => {
         if (item.Value === '0') return false;
         temp.push({ label: item.Text, value: item.Value })
@@ -741,12 +740,9 @@ class AddFuel extends Component {
 
   getAllCityData = () => {
   const { country } = this.state;
-  console.log('country: ', country);
   if (country && country.label !== 'India') {
-    console.log('country: ', country);
-    this.props.getCityByCountry(country.value, '00000000000000000000000000000000','', (res) => { console.log('res: ', res); })
+    this.props.getCityByCountryAction(country.value, '00000000000000000000000000000000','', (res) =>{ })
   } else {
-    console.log('country: ', country);
     this.props.fetchStateDataAPI(country.value, () => { })
   }
 }
@@ -1301,7 +1297,7 @@ export default connect(mapStateToProps, {
   getPlantSelectListByType,
   fetchCountryDataAPI,
   fetchCityDataAPI,
-  getCityByCountry,
+  getCityByCountryAction,
   getAllFuelAPI
 
 

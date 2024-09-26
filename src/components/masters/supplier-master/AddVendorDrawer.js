@@ -8,7 +8,7 @@ import {
 } from "../../../helper/validation";
 import { renderText, renderEmailInputField, renderMultiSelectField, searchableSelect, focusOnError, renderTextInputField } from "../../layout/FormInputs";
 import { createSupplierAPI, updateSupplierAPI, getSupplierByIdAPI, getRadioButtonSupplierType, getVendorTypesSelectList, } from '../actions/Supplier';
-import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, getVendorPlantSelectList, getAllCities, getCityByCountry, getPlantSelectListByType } from '../../../actions/Common';
+import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, getVendorPlantSelectList, getAllCities, getPlantSelectListByType, getCityByCountryAction } from '../../../actions/Common';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId } from "../../../helper/auth";
@@ -127,7 +127,7 @@ class AddVendorDrawer extends Component {
     getAllCityData = () => {
         const { country } = this.state;
         if (country && country.label !== 'India') {
-            this.props.getCityByCountry(country.value, '00000000000000000000000000000000','', () => { })
+            this.props.getCityByCountryAction(country.value, '00000000000000000000000000000000','', () => { })
         } else {
             this.props.fetchStateDataAPI(country.value, () => { })
         }
@@ -1153,7 +1153,7 @@ export default connect(mapStateToProps, {
     fetchCountryDataAPI,
     fetchStateDataAPI,
     fetchCityDataAPI,
-    getCityByCountry,
+    getCityByCountryAction,
     getVendorTypesSelectList,
     getVendorPlantSelectList,
     getCostingSpecificTechnology,

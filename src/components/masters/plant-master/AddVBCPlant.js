@@ -6,7 +6,7 @@ import { required, number, maxLength6, maxLength80, minLength10, maxLength12, ch
 import { loggedInUserId } from "../../../helper/auth";
 import { renderText, renderTextInputField, searchableSelect } from "../../layout/FormInputs";
 import { createPlantAPI, getPlantUnitAPI, updatePlantAPI } from '../actions/Plant';
-import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, fetchSupplierCityDataAPI, getSupplierList, getCityByCountry, } from '../../../actions/Common';
+import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, fetchSupplierCityDataAPI, getSupplierList, getCityByCountryAction, } from '../../../actions/Common';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import Drawer from '@material-ui/core/Drawer';
@@ -141,7 +141,7 @@ class AddVBCPlant extends Component {
   getAllCityData = () => {
     const { country } = this.state;
     if (country && country.label !== 'India') {
-      this.props.getCityByCountry(country.value, '00000000000000000000000000000000','', () => { })
+      this.props.getCityByCountryAction(country.value, '00000000000000000000000000000000','', () => { })
     } else {
       this.props.fetchStateDataAPI(country.value, () => { })
     }
@@ -600,7 +600,7 @@ export default connect(mapStateToProps, {
   fetchSupplierCityDataAPI,
   updatePlantAPI,
   getSupplierList,
-  getCityByCountry,
+  getCityByCountryAction,
 })(reduxForm({
   form: 'AddVBCPlant',
   enableReinitialize: true,

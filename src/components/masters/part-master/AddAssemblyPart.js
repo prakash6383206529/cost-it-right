@@ -208,7 +208,6 @@ class AddAssemblyPart extends Component {
         this.props.getPartDescription(assemblyPartNumber, 1, (res) => {
           if (res?.data?.Data) {
             let finalData = res.data.Data;
-            console.log('finalData: ', finalData);
             this.props.change("Description", finalData.Description);
             this.props.change("AssemblyPartName", finalData.PartName);
             this.setState({ disablePartName: true, minEffectiveDate: finalData.EffectiveDate });

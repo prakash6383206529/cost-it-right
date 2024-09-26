@@ -7,7 +7,7 @@ import {
   maxLength10, positiveAndDecimalNumber, maxLength512, decimalLengthsix, checkWhiteSpaces, checkSpacesInString, maxLength80, number, postiveNumber, hashValidation
 } from "../../../helper/validation";
 import { renderText, searchableSelect, renderTextAreaField, renderDatePicker, renderTextInputField, focusOnError } from "../../layout/FormInputs";
-import { getPlantBySupplier, getUOMSelectList, getCurrencySelectList, getPlantSelectListByType, getCityByCountry, getAllCity, getVendorNameByVendorSelectList } from '../../../actions/Common';
+import { getPlantBySupplier, getUOMSelectList, getCurrencySelectList, getPlantSelectListByType, getAllCity, getVendorNameByVendorSelectList, getCityByCountryAction } from '../../../actions/Common';
 import {
   createBOP, updateBOP, getBOPCategorySelectList, getBOPImportById,
   fileUploadBOPDomestic, getIncoTermSelectList, getPaymentTermSelectList, checkAndGetBopPartNo
@@ -208,8 +208,8 @@ class AddBOPImport extends Component {
     const { initialConfiguration } = this.props
     this.setState({ costingTypeId: getCostingTypeIdByCostingPermission() })
     const { currency } = this.state
-   
-        this.props.getIncoTermSelectList(() => { })
+
+    this.props.getIncoTermSelectList(() => { })
     this.props.getPaymentTermSelectList(() => { })    // FOR MINDA ONLY
     this.getDetails()
     this.props.getCostingSpecificTechnology(loggedInUserId(), () => { this.setState({ inputLoader: false }) })
@@ -623,7 +623,7 @@ class AddBOPImport extends Component {
       });
       return temp;
     }
-       if (label === 'uom') {
+    if (label === 'uom') {
       UOMSelectList && UOMSelectList.map(item => {
         const accept = AcceptableBOPUOM.includes(item.Type)
         if (accept === false) return false
@@ -1008,7 +1008,7 @@ class AddBOPImport extends Component {
     }
     if (inputValue?.length >= searchCount) {
       this.setState({ inputLoader: true });
-      let res = await getCityByCountry(0, 0, inputValue);
+      let res = await this.props.getCityByCountryAction(0, 0, inputValue);
       this.setState({ inputLoader: false });
       let cityDataAPI = res?.data?.SelectList;
       if (inputValue) {
@@ -1818,7 +1818,7 @@ class AddBOPImport extends Component {
                                 />
                               </Col>
                               <Col md="3">
-                                                                <label>Source Location<span className="asterisk-required">*</span></label>
+                                <label>Source Location</label>
                                 <div className="d-flex justify-space-between align-items-center async-select">
                                   <div id='AddBOPImport_SourceLocation' className="fullinput-icon p-relative">
                                     {this.state.sourceLocationInputLoader && <LoaderCustom customClass={`input-loader`} />}
@@ -1836,7 +1836,6 @@ class AddBOPImport extends Component {
                                     />
                                   </div>
                                 </div>
-                                {((this.state.showErrorOnFocus && this.state.sourceLocation.length === 0)) && <div className='text-help mt-1'>This field is required.</div>}
                               </Col>
                             </>
                           )}
@@ -2381,7 +2380,7 @@ export default connect(mapStateToProps, {
   getPlantSelectListByType,
   getExchangeRateByCurrency,
   checkFinalUser,
-  getCityByCountry,
+  getCityByCountryAction,
   getAllCity,
   getClientSelectList,
   getIncoTermSelectList,

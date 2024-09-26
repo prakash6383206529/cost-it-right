@@ -10,14 +10,14 @@ import { Row, Col } from 'reactstrap'
 import { TextFieldHookForm, SearchableSelectHookForm, NumberFieldHookForm, AsyncSearchableSelectHookForm, TextAreaHookForm, } from '../../layout/HookFormInputs';
 import LoaderCustom from "../../common/LoaderCustom"
 import { MESSAGES } from "../../../config/message"
-import { autoCompleteDropdown, DropDownFilterList, getCostingTypeIdByCostingPermission } from "../../common/CommonFunctions"
+import {  DropDownFilterList, getCostingTypeIdByCostingPermission } from "../../common/CommonFunctions"
 import { reactLocalStorage } from "reactjs-localstorage"
 import AsyncSelect from 'react-select/async';
 import Button from '../../layout/Button';
 import TooltipCustom from "../../common/Tooltip"
 import Toaster from "../../common/Toaster"
 import {
-    acceptAllExceptSingleSpecialCharacter, maxLength70, hashValidation, maxLength512,
+    acceptAllExceptSingleSpecialCharacter, maxLength70, hashValidation,
     checkForNull
 } from "../../../helper/validation";
 import AddSpecification from "./AddSpecification"
@@ -103,7 +103,6 @@ const {vendorLabel} = useLabels()
         }
         dispatch(SetRawMaterialDetails({ HasDifferentSource: state.HasDifferentSource }, () => { }))
 
-
     }, [])
     useEffect(() => {
         if (states.costingTypeId === CBCTypeId) {
@@ -119,7 +118,6 @@ const {vendorLabel} = useLabels()
                 return plantArray;
             })
 
-
             setValue('Index', { label: Data?.IndexExchangeName, value: Data?.IndexExchangeId })
             setValue('ExchangeSource', { label: Data?.ExchangeRateSourceName, value: Data?.ExchangeRateSourceName })
             setValue('Material', { label: Data?.MaterialType, value: Data?.MaterialId })
@@ -127,7 +125,7 @@ const {vendorLabel} = useLabels()
             if (!props?.isSourceVendorApiCalled) {
 
                 setValue('Source', Data?.Source)
-                setValue('SourceLocation', { label: Data?.SourceSupplierLocationName, value: Data?.SourceLocation })
+                // setValue('SourceLocation', { label: Data?.SourceSupplierLocationName, value: Data?.SourceLocation })
                 setValue('clientName', { label: Data?.CustomerName, value: Data?.CustomerId })
                 setValue('Technology', { label: Data?.TechnologyName, value: Data?.TechnologyId })
                 setValue('Plants', plantArray)
@@ -240,14 +238,14 @@ const {vendorLabel} = useLabels()
             });
             return temp;
         }
-        if (label === 'SourceLocation') {
-            cityList && cityList.map((item) => {
-                if (item.Value === '0') return false
-                temp.push({ label: item.Text, value: item.Value })
-                return null
-            })
-            return temp
-        }
+        // if (label === 'SourceLocation') {
+        //     cityList && cityList.map((item) => {
+        //         if (item.Value === '0') return false
+        //         temp.push({ label: item.Text, value: item.Value })
+        //         return null
+        //     })
+        //     return temp
+        // }
     }
     /**
    * @method getmaterial
@@ -315,6 +313,7 @@ const {vendorLabel} = useLabels()
             if (newValue.value === state?.sourceVendor?.value) {
                 Toaster.warning(`${vendorLabel} and Source ${vendorLabel} cannot be the same`);
                 setState(prevState => ({ ...prevState, vendor: [] }));
+                dispatch(SetRawMaterialDetails({ Vendor: [] }, () => { }));
             } else {
                 setState(prevState => ({ ...prevState, vendor: newValue }));
                 dispatch(SetRawMaterialDetails({ Vendor: newValue }, () => { }));
@@ -326,7 +325,6 @@ const {vendorLabel} = useLabels()
     };
 
     const handleSourceVendor = (newValue, actionMeta) => {
-        console.log(newValue);
         if (newValue && newValue !== '') {
             if (newValue.value === state?.vendor?.value) {
                 Toaster.warning(`${vendorLabel} and Source ${vendorLabel} cannot be the same`);
@@ -446,6 +444,8 @@ const {vendorLabel} = useLabels()
         const { isEditFlag, DataToChange } = state
         if (newValue && newValue !== '') {
             setState(prevState => ({ ...prevState, source: newValue, isSourceChange: true, isDropDownChanged: true }))
+            dispatch(SetRawMaterialDetails({ Source: newValue }, () => { }));
+
         }
         if (isEditFlag && (DataToChange.Source !== newValue)) {
             setState(prevState => ({ ...prevState, IsFinancialDataChanged: true }))
@@ -462,12 +462,17 @@ const {vendorLabel} = useLabels()
     const handleSourceSupplierCity = (newValue, actionMeta) => {
         const { isEditFlag, DataToChange } = state
         if (newValue && newValue !== '') {
-            setState(prevState => ({ ...prevState, sourceLocation: newValue, isSourceChange: true }))
-        } else {
-            setState(prevState => ({ ...prevState, sourceLocation: [] }))
-        }
+            if (newValue.value === state?.sourceLocation?.value) {
+                setState(prevState => ({ ...prevState, sourceLocation: [] }));
+                dispatch(SetRawMaterialDetails({ SourceLocation: [] }, () => { }));
+            } else {
+                setState(prevState => ({ ...prevState, sourceLocation: newValue }));
+                dispatch(SetRawMaterialDetails({ SourceLocation: newValue }, () => { }));
+            }
+        } 
         if (isEditFlag && (DataToChange.SourceLocation !== newValue.value)) {
             setState(prevState => ({ ...prevState, IsFinancialDataChanged: true }))
+
         }
         else if (isEditFlag) {
             setState(prevState => ({ ...prevState, IsFinancialDataChanged: false }))
@@ -480,6 +485,33 @@ const {vendorLabel} = useLabels()
     const openAssociationDrawer = () => {
         setState(prevState => ({ ...prevState, isOpenAssociation: true }));
     }
+    // const vendorFilterList = async (inputValue) => {
+    //     const resultInput = inputValue.slice(0, searchCount)
+    //     if (inputValue?.length >= searchCount && state.vendorFilter !== resultInput) {
+    //         setState(prevState => ({ ...prevState, inputLoader: true }))
+    //         let res
+    //         res = await getVendorNameByVendorSelectList(VBC_VENDOR_TYPE, resultInput)
+    //         setState(prevState => ({ ...prevState, inputLoader: false, vendorFilter: resultInput }))
+    //         let vendorDataAPI = res?.data?.SelectList
+    //         if (inputValue) {
+    //             return autoCompleteDropdown(inputValue, vendorDataAPI, false, [], true)
+    //         } else {
+    //             return vendorDataAPI
+    //         }
+    //     }
+    //     else {
+    //         if (inputValue?.length < searchCount) return false
+    //         else {
+    //             let VendorData = reactLocalStorage?.getObject('Data')
+    //             if (inputValue) {
+    //                 return autoCompleteDropdown(inputValue, VendorData, false, [], false)
+    //             } else {
+    //                 return VendorData
+    //             }
+    //         }
+    //     }
+    // };
+
 
     const vendorFilterList = (inputValue) => DropDownFilterList(inputValue, VBC_VENDOR_TYPE, 'vendorFilter', getVendorNameByVendorSelectList, setState, state);
     const sourceVendorFilterList = (inputValue) => DropDownFilterList(inputValue, VBC_VENDOR_TYPE, 'sourceVendorFilter', getVendorNameByVendorSelectList, setState, state);
