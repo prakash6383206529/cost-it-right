@@ -14,7 +14,7 @@ import { MESSAGES } from '../../../config/message';
 import { getConfigurationKey, loggedInUserId, showBopLabel } from "../../../helper/auth";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
-import { CBCTypeId, FILE_URL, GUIDE_BUTTON_SHOW, SPACEBAR, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, effectiveDateRangeDays, searchCount } from '../../../config/constants';
+import { CBCTypeId, FILE_URL, GUIDE_BUTTON_SHOW, SPACEBAR, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, searchCount } from '../../../config/constants';
 import DayTime from '../../common/DayTimeWrapper'
 import LoaderCustom from '../../common/LoaderCustom';
 import imgRedcross from '../../../assests/images/red-cross.png'
@@ -22,7 +22,7 @@ import { debounce } from 'lodash';
 import AsyncSelect from 'react-select/async';
 import { onFocus, showDataOnHover } from '../../../helper';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { autoCompleteDropdown, getCostingTypeIdByCostingPermission } from '../../common/CommonFunctions';
+import { autoCompleteDropdown, getCostingTypeIdByCostingPermission, getEffectiveDateMinDate } from '../../common/CommonFunctions';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { getRawMaterialNameChild, getRMGradeSelectListByRawMaterial } from '../actions/Material'
 import { ASSEMBLY } from '../../../config/masterData';
@@ -1302,7 +1302,7 @@ class AddOverhead extends Component {
                               selected={this.state.effectiveDate}
                               onChange={this.handleEffectiveDateChange}
                               type="text"
-                              minDate={isEditFlag ? this.state.minEffectiveDate : subDays(new Date(), effectiveDateRangeDays)}
+                              minDate={isEditFlag ? this.state.minEffectiveDate : getEffectiveDateMinDate()}
                               validate={[required]}
                               autoComplete={'off'}
                               required={true}
