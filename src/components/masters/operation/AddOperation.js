@@ -707,7 +707,9 @@ class AddOperation extends Component {
 
   handleDestinationPlant = (newValue) => {
     this.setState({ destinationPlant: newValue })
-    this.commonFunction(newValue ? newValue.value : '')
+    if (!this.state.isViewMode && getConfigurationKey()?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !getConfigurationKey()?.IsDivisionAllowedForDepartment) {
+      this.commonFunction(newValue ? newValue.value : '')
+    }
   }
   /**
   * @method handleClient
@@ -781,14 +783,14 @@ class AddOperation extends Component {
       return technologyArray;
     })
     let plantArray = []
-    // if (costingTypeId === VBCTypeId) {
-    plantArray.push({ PlantName: destinationPlant.label, PlantId: destinationPlant.value, PlantCode: '', })
-    // } else {
-    //   selectedPlants && selectedPlants.map((item) => {
-    //     plantArray.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '', })
-    //     return plantArray
-    //   })
-    // }
+    if (costingTypeId === VBCTypeId || (costingTypeId === ZBCTypeId && initialConfiguration?.IsMultipleUserAllowForApproval)) {
+      plantArray.push({ PlantName: destinationPlant.label, PlantId: destinationPlant.value, PlantCode: '', })
+    } else {
+      selectedPlants && selectedPlants.map((item) => {
+        plantArray.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '', })
+        return plantArray
+      })
+    }
     let cbcPlantArray = []
     if (getConfigurationKey().IsCBCApplicableOnPlant && costingTypeId === CBCTypeId) {
       cbcPlantArray.push({ PlantName: destinationPlant.label, PlantId: destinationPlant.value, PlantCode: '', })
@@ -1191,7 +1193,7 @@ class AddOperation extends Component {
 
                     <Row>
                       {/* might use later */}
-                      {/* {(costingTypeId === ZBCTypeId && !initialConfiguration.IsMultipleUserAllowForApproval) && (
+                      {(costingTypeId === ZBCTypeId && !initialConfiguration.IsMultipleUserAllowForApproval) && (
                         <Col md="3">
                           <Field
                             label="Plant (Code)"
@@ -1210,7 +1212,7 @@ class AddOperation extends Component {
                             disabled={isEditFlag ? true : false}
                           />
                         </Col>
-                      )} */}
+                      )}
                       {costingTypeId === VBCTypeId && (
                         <Col md="3"><label>{"Vendor (Code)"}<span className="asterisk-required">*</span></label>
                           <div className="d-flex justify-space-between align-items-center async-select">
