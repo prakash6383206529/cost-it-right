@@ -53,8 +53,8 @@ const AddProductHierarchy = (props) => {
         }
         dispatch(createProductLevels(requestedData, (res) => {
             Toaster.success(`Level ${IsUpdateProductHierarchy ? 'update' : 'create'} successfully`)
+            props.toggle()
         }))
-        props.toggle()
     }
     const isDisabled = (i) => {
         if (productHierarchyData.length !== 0) {
