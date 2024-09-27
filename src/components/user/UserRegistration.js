@@ -2581,7 +2581,7 @@ function UserRegistration(props) {
   }
   const cityFilterList = (inputValue) => {
     return DropDownFilterList(inputValue, '', 'city', (filterType, resultInput) => getCityByCountry(0, 0, resultInput), setState, state);
-};
+  };
   return (
     <div className="container-fluid">
       {isLoader && <Loader />}
@@ -2676,24 +2676,30 @@ function UserRegistration(props) {
                         customClassName={'withBorder'}
                       />
                     </div>
-                    {props?.RFQUser && IsSendMailToPrimaryContact() && <Col md="3" id="primaryContact_container" className="d-flex align-items-center mt-4 pt-2">
-                      <label
-                        className={`custom-checkbox`}
-                        onChange={onPrimaryContactCheck}
-                      >
-                        Primary Contact
-                        <input
-                          type="checkbox"
-                          checked={primaryContact}
-                        />
-                        <TooltipCustom id="Primary_Contact" customClass="mt-1" tooltipText="Please click on the checkbox if this user is the main point of contact for the vendor." />
-                        <span
-                          className=" before-box"
-                          checked={primaryContact}
-                          onChange={onPrimaryContactCheck}
-                        />
-                      </label>
-                    </Col>}
+                    {props?.RFQUser && IsSendMailToPrimaryContact() &&
+                      <Col md="3" id="primaryContact_container" >
+                        <div className="d-flex align-items-center mt-4 pt-2">
+                        <label
+                          className={`custom-checkbox ml-2 mt-1`}
+                          // onChange={onPrimaryContactCheck}
+                        >
+                          Primary Contact
+                          <input
+                            type="checkbox"
+                            checked={primaryContact}
+                            onChange={onPrimaryContactCheck}
+                          />
+                          <span
+                            className=" before-box"
+                          />
+                         
+                        </label>
+                        <TooltipCustom id="Primary_Contact"
+                            customClass="mt-n1 pb-4"
+                            tooltipText="Please click on the checkbox if this user is the main point of contact for the vendor." />
+                      </div>
+                      </Col>
+                    }
                     {!props?.RFQUser && <div className="col-md-3">
                       <div className="row form-group">
                         <div className="Phone phoneNumber col-md-8">
@@ -2984,38 +2990,38 @@ function UserRegistration(props) {
                         valueDescription={city}
                       />
                     </div> */}
-                     <div className="col-md-3">
-                <label>{`City`}<span className="asterisk-required">*</span></label>
-                <div className="d-flex justify-space-between align-items-center p-relative async-select">
-                    <div className="fullinput-icon p-relative">
-                        {state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
-                        <Controller
+                    <div className="col-md-3">
+                      <label>{`City`}<span className="asterisk-required">*</span></label>
+                      <div className="d-flex justify-space-between align-items-center p-relative async-select">
+                        <div className="fullinput-icon p-relative">
+                          {state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
+                          <Controller
                             name="CityId"
                             control={control}
                             rules={{ required: "City is required" }}
                             render={({ field }) => (
-                                <AsyncSelect
-                                    {...field}
-                                    loadOptions={cityFilterList}
-                                    onChange={(e) => {
-                                        field.onChange(e);
-                                        cityHandler(e);
-                                    }}
-                                    value={state.city}
-                                    noOptionsMessage={({ inputValue }) => inputValue?.length < 3 ? MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN : "No results found"}
-                                    onKeyDown={(onKeyDown) => {
-                                        if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
-                                    }}
-                                    onBlur={() => setState(prevState => ({ ...prevState, showErrorOnFocus: false }))}
-                                    placeholder={"Select.."}
-                                    className="mb-0 withBorder"
-                                />
+                              <AsyncSelect
+                                {...field}
+                                loadOptions={cityFilterList}
+                                onChange={(e) => {
+                                  field.onChange(e);
+                                  cityHandler(e);
+                                }}
+                                value={state.city}
+                                noOptionsMessage={({ inputValue }) => inputValue?.length < 3 ? MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN : "No results found"}
+                                onKeyDown={(onKeyDown) => {
+                                  if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
+                                }}
+                                onBlur={() => setState(prevState => ({ ...prevState, showErrorOnFocus: false }))}
+                                placeholder={"Select.."}
+                                className="mb-0 withBorder"
+                              />
                             )}
-                        />
-                        {errors.CityId && <div className="text-help">{errors.CityId.message}</div>}
+                          />
+                          {errors.CityId && <div className="text-help">{errors.CityId.message}</div>}
+                        </div>
+                      </div>
                     </div>
-                </div>
-                </div>
                     <div className="input-group col-md-3 input-withouticon">
                       <NumberFieldHookForm
                         label="ZipCode"
