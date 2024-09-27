@@ -730,9 +730,9 @@ class AddBOPImport extends Component {
   * @description Used handle Plant
   */
   handlePlant = (e) => {
-
+    const { initialConfiguration } = this.props
     this.setState({ selectedPlants: e })
-    if (!getConfigurationKey().IsDivisionAllowedForDepartment) {
+    if (!this.state.isViewMode && initialConfiguration?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !getConfigurationKey()?.IsDivisionAllowedForDepartment) {
       this.commonFunction(e ? e.value : '')
     }
   }
@@ -2066,7 +2066,7 @@ class AddBOPImport extends Component {
                               className={`custom-checkbox`}
                               onChange={this.onIsClientVendorBOP}
                             >
-                              Client Approved {labels(t, 'VendorLabel', 'MasterLabels')} 
+                              Client Approved {labels(t, 'VendorLabel', 'MasterLabels')}
                               <input
                                 type="checkbox"
                                 checked={isClientVendorBOP}
