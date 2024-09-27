@@ -14,7 +14,7 @@ import { MESSAGES } from '../../../config/message';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
 import "react-datepicker/dist/react-datepicker.css";
-import { BOUGHTOUTPARTSPACING, COMPONENT_PART, FILE_URL, SPACEBAR, ASSEMBLYNAME, searchCount, GUIDE_BUTTON_SHOW, effectiveDateRangeDays, customHavellsChanges } from '../../../config/constants';
+import { BOUGHTOUTPARTSPACING, COMPONENT_PART, FILE_URL, SPACEBAR, ASSEMBLYNAME, searchCount, customHavellsChanges } from '../../../config/constants';
 import AddChildDrawer from './AddChildDrawer';
 import DayTime from '../../common/DayTimeWrapper'
 import BOMViewer from './BOMViewer';
@@ -27,7 +27,7 @@ import Switch from "react-switch";
 import { getCostingSpecificTechnology } from '../../costing/actions/Costing'
 import { getPartSelectList, getUOMSelectList } from '../../../actions/Common';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { autoCompleteDropdown } from '../../common/CommonFunctions';
+import { autoCompleteDropdown, getEffectiveDateMinDate } from '../../common/CommonFunctions';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from './TourMessages';
@@ -208,7 +208,6 @@ class AddAssemblyPart extends Component {
         this.props.getPartDescription(assemblyPartNumber, 1, (res) => {
           if (res?.data?.Data) {
             let finalData = res.data.Data;
-            console.log('finalData: ', finalData);
             this.props.change("Description", finalData.Description);
             this.props.change("AssemblyPartName", finalData.PartName);
             this.setState({ disablePartName: true, minEffectiveDate: finalData.EffectiveDate });
@@ -1223,7 +1222,7 @@ class AddAssemblyPart extends Component {
                                 validate={[required]}
                                 autoComplete={'off'}
                                 required={true}
-                                minDate={isEditFlag ? this.state.minEffectiveDate : subDays(new Date(), effectiveDateRangeDays)}
+                                minDate={isEditFlag ? this.state.minEffectiveDate : getEffectiveDateMinDate()}
                                 changeHandler={(e) => {
                                 }}
                                 component={renderDatePicker}

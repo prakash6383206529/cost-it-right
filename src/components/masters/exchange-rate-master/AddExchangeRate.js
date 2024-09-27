@@ -14,10 +14,10 @@ import LoaderCustom from '../../common/LoaderCustom';
 import { debounce } from 'lodash';
 import { onFocus } from '../../../helper';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
-import { CBCTypeId, effectiveDateRangeDays, searchCount, SPACEBAR, VBC_VENDOR_TYPE, VBCTypeId, ZBCTypeId } from '../../../config/constants';
+import { CBCTypeId, searchCount, SPACEBAR, VBC_VENDOR_TYPE, VBCTypeId, ZBCTypeId } from '../../../config/constants';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import AsyncSelect from 'react-select/async';
-import { autoCompleteDropdown, getCostingTypeIdByCostingPermission } from '../../common/CommonFunctions';
+import { autoCompleteDropdown, getCostingTypeIdByCostingPermission, getEffectiveDateMinDate } from '../../common/CommonFunctions';
 import { getClientSelectList, } from '../actions/Client';
 import { getExchangeRateSource, getVendorNameByVendorSelectList } from '../../../actions/Common';
 import { subDays } from 'date-fns';
@@ -695,7 +695,7 @@ class AddExchangeRate extends Component {
                             name="EffectiveDate"
                             selected={DayTime(this.state.effectiveDate).isValid() ? new Date(this.state.effectiveDate) : null}
                             onChange={this.handleEffectiveDateChange}
-                            minDate={subDays(new Date(), effectiveDateRangeDays)}
+                            minDate={getEffectiveDateMinDate()}
                             type="text"
                             validate={[required]}
                             autoComplete={"off"}

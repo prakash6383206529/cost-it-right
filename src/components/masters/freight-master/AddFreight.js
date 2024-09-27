@@ -4,7 +4,7 @@ import { Field, reduxForm, formValueSelector, clearFields } from "redux-form";
 import { Row, Col, Table, Label } from "reactstrap";
 import { required, checkForNull, maxLength10, checkForDecimalAndNull, number, decimalNumberLimit6, checkWhiteSpaces } from "../../../helper/validation";
 import { renderTextInputField, searchableSelect } from "../../layout/FormInputs";
-import { fetchSupplierCityDataAPI, getCityByCountry, getAllCity, getVendorNameByVendorSelectList, getPlantSelectListByType } from "../../../actions/Common";
+import { fetchSupplierCityDataAPI, getAllCity, getVendorNameByVendorSelectList, getPlantSelectListByType, getCityByCountryAction } from "../../../actions/Common";
 import {
   createFreight, updateFright, getFreightData, getFreightModeSelectList, getFreigtFullTruckCapacitySelectList, getFreigtRateCriteriaSelectList,
 } from "../actions/Freight";
@@ -16,14 +16,14 @@ import "react-datepicker/dist/react-datepicker.css";
 import AddVendorDrawer from "../supplier-master/AddVendorDrawer";
 import DayTime from "../../common/DayTimeWrapper"
 import NoContentFound from "../../common/NoContentFound";
-import { CBCTypeId, EMPTY_DATA, FullTruckLoad, SPACEBAR, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, effectiveDateRangeDays, searchCount } from "../../../config/constants";
+import { CBCTypeId, EMPTY_DATA, FullTruckLoad, SPACEBAR, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, searchCount } from "../../../config/constants";
 import LoaderCustom from "../../common/LoaderCustom";
 import { debounce } from "lodash";
 import AsyncSelect from 'react-select/async';
 import { onFocus } from "../../../helper";
 import { getClientSelectList, } from '../actions/Client';
 import { reactLocalStorage } from "reactjs-localstorage";
-import { autoCompleteDropdown, getCostingTypeIdByCostingPermission } from "../../common/CommonFunctions";
+import { autoCompleteDropdown, getCostingTypeIdByCostingPermission, getEffectiveDateMinDate } from "../../common/CommonFunctions";
 import PopupMsgWrapper from "../../common/PopupMsgWrapper";
 import { FREIGHT_LOAD_OPTIONS } from "../../../config/masterData";
 import { label } from "react-dom-factories";
@@ -87,10 +87,10 @@ class AddFreight extends Component {
       this.props.getFreigtRateCriteriaSelectList((res) => { });
     }
     if (!(this.props.data.isEditFlag || this.state.isViewMode)) {
-      this.props.getAllCity(cityId => {
-        this.props.getCityByCountry(cityId, 0, () => { })
+      // this.props.getAllCity(cityId => {
+        // this.props.getCityByCountry(0, 0,'', () => { })
         this.props.getClientSelectList(() => { })
-      })
+      // })
     }
     this.props.getPlantSelectListByType(ZBC, "MASTER", '', () => { })
     this.props.getFreightModeSelectList((res) => { });
@@ -990,7 +990,7 @@ class AddFreight extends Component {
                                   disabledKeyboardNavigation
                                   onChangeRaw={(e) => e.preventDefault()}
                                   disabled={isViewMode || isEditMode}
-                                  minDate={subDays(new Date(), effectiveDateRangeDays)}
+                                  minDate={getEffectiveDateMinDate()}
 
                                 />
                                 {this.state.showEffectiveDateError && <div className='text-help'>This field is required.</div>}
@@ -1371,7 +1371,7 @@ export default connect(mapStateToProps, {
   getFreightModeSelectList,
   getFreigtFullTruckCapacitySelectList,
   getFreigtRateCriteriaSelectList,
-  getCityByCountry,
+  getCityByCountryAction,
   getAllCity,
   getClientSelectList,
   getPlantSelectListByType,
