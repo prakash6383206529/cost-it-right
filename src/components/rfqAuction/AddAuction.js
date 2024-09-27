@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { Row, Col, FormGroup, Label, Input } from "reactstrap";
@@ -196,20 +196,21 @@ function AddAuction(props) {
     setValue('RFQNumber', { label: data?.RfqNumber, value: data?.QuotationId })
     setValue('PartType', data?.PartType)
     setValue('PartNumber', { label: data?.PartNumber, value: data?.QuotationPartId })
-    setValue('RawMaterialName', { label: data?.RawMaterialName, value: data?.RawMaterialId })
-    setValue('RawMaterialGrade', data?.RawMaterialGrade)
-    setValue('RawMaterialSpecification', data?.RawMaterialSpecification)
+    setValue('RawMaterialName', { label: data?.RMName, value: data?.RMName })
+    setValue('RawMaterialGrade', data?.RMGrade)
+    setValue('RawMaterialSpecification', data?.RMSpecification)
     setValue('RawMaterialCode', data?.RawMaterialCode)
     setValue('ExtensionTime', { label: data?.ExtensionTime, value: data?.ExtensionTime })
     setValue('AuctionDuration', { label: data?.AuctionDuration, value: data?.AuctionDuration })
-    setValue('BopName', { label: data?.BoughtOutPart, value: data?.BoughtOutPart })
+    setValue('BopName', { label: data?.BoughtPartName, value: data?.BoughtOutPart })
+    setValue('BoughtOutPartNumber', data?.BoughtPartNumber)
     setValue('BoughtOutPartCategoryName', data?.Category)
     let VendorList = [];
-    data?.VendorList && data?.VendorList.length !== 0 && data?.VendorList.map(item => VendorList.push({ label: item.Vendor, value: item.VendorId }))
-    const PlantList = data?.Plant ? [{ label: data?.Plant, value: data?.Plant }] : [];
+    data?.VendorDetail && data?.VendorDetail.length !== 0 && data?.VendorDetail.map(item => VendorList.push({ label: item?.VendorName, value: item?.VendorId }))
+    const PlantList = data?.Plant ? [{ label: data?.Plant, value: data?.PlantId }] : [];
     const MinimumReductionApplicabilityType = data?.MinimumReductionApplicabilityType === 'Fixed' ? true : false;
     const PriceZoneApplicabilityType = data?.PriceZoneApplicabilityType === 'Fixed' ? true : false;
-    setState(prevState => ({ ...prevState, PartType: data?.PartType, VendorList: VendorList, PlantList: PlantList, MinimumReductionApplicabilityType: MinimumReductionApplicabilityType, PriceZoneApplicabilityType: PriceZoneApplicabilityType }))
+    setState(prevState => ({ ...prevState, PartType: data?.PartType, VendorList: VendorList, PlantList: PlantList, reductionPrice: MinimumReductionApplicabilityType, priceZoneReduction: PriceZoneApplicabilityType }))
     setDateAndTimeState(prevState => ({ ...prevState, dateAndTime: data?.AuctionStartDateTime, }))
     setValue('BasePrice', checkForDecimalAndNull(data?.BasePrice, NoOfDecimalForPrice))
     setCalculationState(prevState => ({ ...prevState, BasePrice: data?.BasePrice, }))
@@ -218,7 +219,6 @@ function AddAuction(props) {
       setCalculationState(prevState => ({ ...prevState, [item]: data[item] }))
     })
   }
-
   useEffect(() => {
     setState(prevState => ({ ...prevState, selectedType: '%', selectedPriceZoneType: 'priceZone%' }));
   }, []);
@@ -397,6 +397,15 @@ function AddAuction(props) {
   const durationHandle = (event) => {
 
   }
+  const vendorUI = useMemo(() => {
+    return <Col md="3">
+      <AllApprovalField
+        label="Vendor (Code)"
+        approverList={state.VendorList}
+        popupButton="View all"
+      />
+    </Col>
+  }, [state.VendorList])
   return (
     <>
       <div className="container-fluid">
@@ -646,13 +655,7 @@ function AddAuction(props) {
                         />
                       </Col>}
 
-                      <Col md="3">
-                        <AllApprovalField
-                          label="Vendor (Code)"
-                          approverList={state.VendorList}
-                          popupButton="View all"
-                        />
-                      </Col>
+                      {vendorUI}
                       <Col md="3">
                         <AllApprovalField
                           label="Plant (Code)"

@@ -9,7 +9,7 @@ import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
 
 
 const AuctionScheduled = (props) => {
-  const { AddAccessibility, ViewRMAccessibility } = props;
+  const { EditAccessibility, ViewRMAccessibility } = props;
   const dispatch = useDispatch();
   const history = useHistory();
   const [state, setState] = useState({
@@ -35,7 +35,7 @@ const AuctionScheduled = (props) => {
     <>
       {<div className={`ag-grid-react`}>
         {state.isLoader && <LoaderCustom />}
-        <AuctionGrid auctionlistId={AuctionScheduledId} formToggle={formToggle} ViewRMAccessibility={ViewRMAccessibility} AddAccessibility={AddAccessibility} />
+        <AuctionGrid auctionlistId={AuctionScheduledId} formToggle={formToggle} ViewRMAccessibility={ViewRMAccessibility} EditAccessibility={EditAccessibility} />
       </div>}
     </>
   );

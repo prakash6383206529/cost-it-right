@@ -16,7 +16,7 @@ import { useLabels } from "../../../helper/core";
 
 const gridOptions = {};
 const AuctionGrid = (props) => {
-    const { auctionlistId, ViewRMAccessibility, AddAccessibility, loader, formToggle } = props
+    const { auctionlistId, ViewRMAccessibility, AddAccessibility, EditAccessibility, loader, formToggle } = props
     const { AuctionList } = useSelector(state => state.Auction);
     const [state, setState] = useState({
         gridApi: null,
@@ -75,8 +75,7 @@ const AuctionGrid = (props) => {
     const buttonFormatter = (props) => {
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
         const viewAuction = ViewRMAccessibility && (auctionlistId === AuctionLiveId || auctionlistId === AuctionClosedId)
-        const editAuction = AddAccessibility && (auctionlistId === AuctionScheduledId)
-        console.log(AddAccessibility, auctionlistId === AuctionScheduledId, "AddAccessibility")
+        const editAuction = EditAccessibility && (auctionlistId === AuctionScheduledId)
         return (<>
             {viewAuction && (
                 <Button
