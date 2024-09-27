@@ -545,9 +545,9 @@ class AddBOPDomestic extends Component {
   * @description Used handle Plant
   */
   handlePlant = (e) => {
-
+    const { initialConfiguration } = this.props
     this.setState({ selectedPlants: e })
-    if (!getConfigurationKey().IsDivisionAllowedForDepartment) {
+    if (!this.state.isViewMode && initialConfiguration?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !getConfigurationKey()?.IsDivisionAllowedForDepartment) {
       this.commonFunction(e ? e.value : '')
     }
   }
@@ -1451,10 +1451,10 @@ class AddBOPDomestic extends Component {
                           {costingTypeId !== CBCTypeId && (
                             <>
                               <Col md="12">
-                                <div className="left-border">{labels(t, 'VendorLabel', 'MasterLabels' ,'Vendor')}:</div>
+                                <div className="left-border">{labels(t, 'VendorLabel', 'MasterLabels', 'Vendor')}:</div>
                               </Col>
                               <Col md="3" className='mb-4'>
-                                <label>{costingTypeId === ZBCTypeId ? 'BOP' : ''} {labels(t,'VendorLabel','MasterLabels' , 'Vendor') }<span className="asterisk-required">*</span></label>
+                                <label>{costingTypeId === ZBCTypeId ? 'BOP' : ''} {labels(t, 'VendorLabel', 'MasterLabels', 'Vendor')}<span className="asterisk-required">*</span></label>
                                 <div className="d-flex justify-space-between align-items-center async-select">
                                   <div className="fullinput-icon p-relative">
                                     {this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
@@ -1670,7 +1670,7 @@ class AddBOPDomestic extends Component {
                             className={`custom-checkbox`}
                             onChange={this.onIsClientVendorBOP}
                           >
-                            Client Approved {labels(t, 'VendorLabel', 'MasterLabels' , 'Vendor')}
+                            Client Approved {labels(t, 'VendorLabel', 'MasterLabels', 'Vendor')}
                             <input
                               type="checkbox"
                               checked={isClientVendorBOP}

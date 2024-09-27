@@ -718,9 +718,9 @@ class AddBOPImport extends Component {
   * @description Used handle Plant
   */
   handlePlant = (e) => {
-
+    const { initialConfiguration } = this.props
     this.setState({ selectedPlants: e })
-    if (!getConfigurationKey().IsDivisionAllowedForDepartment) {
+    if (!this.state.isViewMode && initialConfiguration?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !getConfigurationKey()?.IsDivisionAllowedForDepartment) {
       this.commonFunction(e ? e.value : '')
     }
   }

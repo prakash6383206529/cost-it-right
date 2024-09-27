@@ -1,16 +1,16 @@
 import React, { Fragment, useEffect, useRef, useState } from "react"
 import { fetchSpecificationDataAPI, getCityByCountry, getPlantSelectListByType, getRawMaterialCategory, getVendorNameByVendorSelectList, getExchangeRateSource } from "../../../actions/Common"
-import { CBCTypeId, FILE_URL, RAW_MATERIAL_VENDOR_TYPE, SPACEBAR, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, searchCount } from "../../../config/constants"
+import { CBCTypeId, FILE_URL, RAW_MATERIAL_VENDOR_TYPE, RM_MASTER_ID, SPACEBAR, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, searchCount } from "../../../config/constants"
 import { useDispatch, useSelector } from "react-redux"
 import { getCostingSpecificTechnology } from "../../costing/actions/Costing"
-import { getConfigurationKey, loggedInUserId } from "../../../helper"
+import { CheckApprovalApplicableMaster, getConfigurationKey, loggedInUserId } from "../../../helper"
 import { SetRawMaterialDetails, fileUploadRMDomestic, getMaterialTypeDataAPI, getRMGradeSelectListByRawMaterial, getRMSpecificationDataAPI, getRMSpecificationDataList, getRawMaterialNameChild, SetCommodityIndexAverage } from "../actions/Material"
 import { useForm, Controller, useWatch } from "react-hook-form"
 import { Row, Col } from 'reactstrap'
 import { TextFieldHookForm, SearchableSelectHookForm, NumberFieldHookForm, AsyncSearchableSelectHookForm, TextAreaHookForm, } from '../../layout/HookFormInputs';
 import LoaderCustom from "../../common/LoaderCustom"
 import { MESSAGES } from "../../../config/message"
-import {  DropDownFilterList, getCostingTypeIdByCostingPermission } from "../../common/CommonFunctions"
+import { DropDownFilterList, getCostingTypeIdByCostingPermission } from "../../common/CommonFunctions"
 import { reactLocalStorage } from "reactjs-localstorage"
 import AsyncSelect from 'react-select/async';
 import Button from '../../layout/Button';
@@ -37,7 +37,7 @@ import { useLabels } from "../../../helper/core"
 function AddRMDetails(props) {
     const { Controller, control, register, setValue, getValues, errors, reset, useWatch, states, data, disableAll } = props
     const { isEditFlag, isViewFlag } = data
-const {vendorLabel} = useLabels()
+    const { vendorLabel } = useLabels()
     const dropzone = useRef(null);
     const [state, setState] = useState({
         vendor: [],
@@ -98,7 +98,7 @@ const {vendorLabel} = useLabels()
         dispatch(getRawMaterialNameChild(() => { }))
         dispatch(getRawMaterialCategory((res) => { }))
         dispatch(getRMSpecificationDataList({ GradeId: null }, () => { }))
-                if (getCostingTypeIdByCostingPermission() === CBCTypeId) {
+        if (getCostingTypeIdByCostingPermission() === CBCTypeId) {
             dispatch(getClientSelectList(() => { }))
         }
         dispatch(SetRawMaterialDetails({ HasDifferentSource: state.HasDifferentSource }, () => { }))
@@ -279,7 +279,7 @@ const {vendorLabel} = useLabels()
             setState(prevState => ({ ...prevState, plants: [] }));
         }
         dispatch(SetRawMaterialDetails({ Plants: newValue }, () => { }))
-        if (!getConfigurationKey().IsDivisionAllowedForDepartment) {
+        if (getConfigurationKey()?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !getConfigurationKey()?.IsDivisionAllowedForDepartment) {
             props?.commonFunction(newValue ? newValue.value : '')
         }
     }
@@ -469,7 +469,7 @@ const {vendorLabel} = useLabels()
                 setState(prevState => ({ ...prevState, sourceLocation: newValue }));
                 dispatch(SetRawMaterialDetails({ SourceLocation: newValue }, () => { }));
             }
-        } 
+        }
         if (isEditFlag && (DataToChange.SourceLocation !== newValue.value)) {
             setState(prevState => ({ ...prevState, IsFinancialDataChanged: true }))
 
