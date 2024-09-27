@@ -2135,27 +2135,27 @@ const CostingSummaryTable = (props) => {
               {disableSendForApproval && <WarningMessage dClass={"col-md-12 pr-0 justify-content-end"} message={'This user is not in the approval cycle'} />}
             </Col>}
           </Row>
-          {/* {
-            isComparing &&
-            (<> */}
-          {/* <Row className="mt-2">
+          {
+            true &&
+            (<>
+              <Row className="mt-2">
                 <Col md="10">
                   <div id="bar-chart-compare" className="left-border">{'Bar Chart Comparison:'}</div>
                 </Col>
-              </Row> */}
+              </Row>
 
-          {/* <Row>
-                <Col md="12" className="costing-summary-row" style={{ maxWidth: '600px', margin: 'auto' }}>
-                  {isComparing && viewCostingData.length >= 2 &&
+              <Row>
+                <Col md="12" className="costing-summary-row">
+                  {true && viewCostingData.length >= 2 &&
                     <BarChartComparison
                       costingData={viewCostingData}
                       currency={viewCostingData[0]?.currency?.currencyTitle || 'INR'}
                     />
                   }
                 </Col>
-              </Row> */}
-          {/* </>
-            )} */}
+              </Row>
+            </>
+            )}
           <div ref={componentRef}>
             <Row id="summaryPdf" className={`${customClass} ${vendorNameClass()} ${drawerDetailPDF ? 'remove-space-border' : ''} ${simulationMode ? "simulation-print" : ""}`}>
               {(drawerDetailPDF || pdfHead) &&
