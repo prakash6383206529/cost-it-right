@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useRef, useState } from "react"
-import { fetchSpecificationDataAPI, getAllCity, getCityByCountry, getPlantSelectListByType, getRawMaterialCategory, getVendorNameByVendorSelectList, getExchangeRateSource } from "../../../actions/Common"
+import { fetchSpecificationDataAPI, getCityByCountry, getPlantSelectListByType, getRawMaterialCategory, getVendorNameByVendorSelectList, getExchangeRateSource } from "../../../actions/Common"
 import { CBCTypeId, FILE_URL, RAW_MATERIAL_VENDOR_TYPE, RM_MASTER_ID, SPACEBAR, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, searchCount } from "../../../config/constants"
 import { useDispatch, useSelector } from "react-redux"
 import { getCostingSpecificTechnology } from "../../costing/actions/Costing"
@@ -10,14 +10,14 @@ import { Row, Col } from 'reactstrap'
 import { TextFieldHookForm, SearchableSelectHookForm, NumberFieldHookForm, AsyncSearchableSelectHookForm, TextAreaHookForm, } from '../../layout/HookFormInputs';
 import LoaderCustom from "../../common/LoaderCustom"
 import { MESSAGES } from "../../../config/message"
-import { autoCompleteDropdown, getCostingTypeIdByCostingPermission } from "../../common/CommonFunctions"
+import { DropDownFilterList, getCostingTypeIdByCostingPermission } from "../../common/CommonFunctions"
 import { reactLocalStorage } from "reactjs-localstorage"
 import AsyncSelect from 'react-select/async';
 import Button from '../../layout/Button';
 import TooltipCustom from "../../common/Tooltip"
 import Toaster from "../../common/Toaster"
 import {
-    acceptAllExceptSingleSpecialCharacter, maxLength70, hashValidation, maxLength512,
+    acceptAllExceptSingleSpecialCharacter, maxLength70, hashValidation,
     checkForNull
 } from "../../../helper/validation";
 import AddSpecification from "./AddSpecification"
@@ -50,6 +50,7 @@ function AddRMDetails(props) {
         inputLoader: false,
         vendorFilter: [],
         sourceVendorFilter: [],
+        sourceLocationFilter: [],
         showErrorOnFocus: false,
         rmName: [],
         isRMDrawerOpen: false,
@@ -97,14 +98,10 @@ function AddRMDetails(props) {
         dispatch(getRawMaterialNameChild(() => { }))
         dispatch(getRawMaterialCategory((res) => { }))
         dispatch(getRMSpecificationDataList({ GradeId: null }, () => { }))
-        dispatch(getAllCity(cityId => {
-            dispatch(getCityByCountry(cityId, 0, () => { }))
-        }))
         if (getCostingTypeIdByCostingPermission() === CBCTypeId) {
             dispatch(getClientSelectList(() => { }))
         }
         dispatch(SetRawMaterialDetails({ HasDifferentSource: state.HasDifferentSource }, () => { }))
-
 
     }, [])
     useEffect(() => {
@@ -121,7 +118,6 @@ function AddRMDetails(props) {
                 return plantArray;
             })
 
-
             setValue('Index', { label: Data?.IndexExchangeName, value: Data?.IndexExchangeId })
             setValue('ExchangeSource', { label: Data?.ExchangeRateSourceName, value: Data?.ExchangeRateSourceName })
             setValue('Material', { label: Data?.MaterialType, value: Data?.MaterialId })
@@ -129,7 +125,7 @@ function AddRMDetails(props) {
             if (!props?.isSourceVendorApiCalled) {
 
                 setValue('Source', Data?.Source)
-                setValue('SourceLocation', { label: Data?.SourceSupplierLocationName, value: Data?.SourceLocation })
+                // setValue('SourceLocation', { label: Data?.SourceSupplierLocationName, value: Data?.SourceLocation })
                 setValue('clientName', { label: Data?.CustomerName, value: Data?.CustomerId })
                 setValue('Technology', { label: Data?.TechnologyName, value: Data?.TechnologyId })
                 setValue('Plants', plantArray)
@@ -242,14 +238,14 @@ function AddRMDetails(props) {
             });
             return temp;
         }
-        if (label === 'SourceLocation') {
-            cityList && cityList.map((item) => {
-                if (item.Value === '0') return false
-                temp.push({ label: item.Text, value: item.Value })
-                return null
-            })
-            return temp
-        }
+        // if (label === 'SourceLocation') {
+        //     cityList && cityList.map((item) => {
+        //         if (item.Value === '0') return false
+        //         temp.push({ label: item.Text, value: item.Value })
+        //         return null
+        //     })
+        //     return temp
+        // }
     }
     /**
    * @method getmaterial
@@ -317,6 +313,7 @@ function AddRMDetails(props) {
             if (newValue.value === state?.sourceVendor?.value) {
                 Toaster.warning(`${vendorLabel} and Source ${vendorLabel} cannot be the same`);
                 setState(prevState => ({ ...prevState, vendor: [] }));
+                dispatch(SetRawMaterialDetails({ Vendor: [] }, () => { }));
             } else {
                 setState(prevState => ({ ...prevState, vendor: newValue }));
                 dispatch(SetRawMaterialDetails({ Vendor: newValue }, () => { }));
@@ -447,6 +444,8 @@ function AddRMDetails(props) {
         const { isEditFlag, DataToChange } = state
         if (newValue && newValue !== '') {
             setState(prevState => ({ ...prevState, source: newValue, isSourceChange: true, isDropDownChanged: true }))
+            dispatch(SetRawMaterialDetails({ Source: newValue }, () => { }));
+
         }
         if (isEditFlag && (DataToChange.Source !== newValue)) {
             setState(prevState => ({ ...prevState, IsFinancialDataChanged: true }))
@@ -463,12 +462,17 @@ function AddRMDetails(props) {
     const handleSourceSupplierCity = (newValue, actionMeta) => {
         const { isEditFlag, DataToChange } = state
         if (newValue && newValue !== '') {
-            setState(prevState => ({ ...prevState, sourceLocation: newValue, isSourceChange: true }))
-        } else {
-            setState(prevState => ({ ...prevState, sourceLocation: [] }))
+            if (newValue.value === state?.sourceLocation?.value) {
+                setState(prevState => ({ ...prevState, sourceLocation: [] }));
+                dispatch(SetRawMaterialDetails({ SourceLocation: [] }, () => { }));
+            } else {
+                setState(prevState => ({ ...prevState, sourceLocation: newValue }));
+                dispatch(SetRawMaterialDetails({ SourceLocation: newValue }, () => { }));
+            }
         }
         if (isEditFlag && (DataToChange.SourceLocation !== newValue.value)) {
             setState(prevState => ({ ...prevState, IsFinancialDataChanged: true }))
+
         }
         else if (isEditFlag) {
             setState(prevState => ({ ...prevState, IsFinancialDataChanged: false }))
@@ -478,63 +482,43 @@ function AddRMDetails(props) {
     const openRMdrawer = () => {
         setState(prevState => ({ ...prevState, isRMDrawerOpen: true }));
     }
-
     const openAssociationDrawer = () => {
         setState(prevState => ({ ...prevState, isOpenAssociation: true }));
     }
+    // const vendorFilterList = async (inputValue) => {
+    //     const resultInput = inputValue.slice(0, searchCount)
+    //     if (inputValue?.length >= searchCount && state.vendorFilter !== resultInput) {
+    //         setState(prevState => ({ ...prevState, inputLoader: true }))
+    //         let res
+    //         res = await getVendorNameByVendorSelectList(VBC_VENDOR_TYPE, resultInput)
+    //         setState(prevState => ({ ...prevState, inputLoader: false, vendorFilter: resultInput }))
+    //         let vendorDataAPI = res?.data?.SelectList
+    //         if (inputValue) {
+    //             return autoCompleteDropdown(inputValue, vendorDataAPI, false, [], true)
+    //         } else {
+    //             return vendorDataAPI
+    //         }
+    //     }
+    //     else {
+    //         if (inputValue?.length < searchCount) return false
+    //         else {
+    //             let VendorData = reactLocalStorage?.getObject('Data')
+    //             if (inputValue) {
+    //                 return autoCompleteDropdown(inputValue, VendorData, false, [], false)
+    //             } else {
+    //                 return VendorData
+    //             }
+    //         }
+    //     }
+    // };
 
-    const vendorFilterList = async (inputValue) => {
-        const resultInput = inputValue.slice(0, searchCount)
-        if (inputValue?.length >= searchCount && state.vendorFilter !== resultInput) {
-            setState(prevState => ({ ...prevState, inputLoader: true }))
-            let res
-            res = await getVendorNameByVendorSelectList(VBC_VENDOR_TYPE, resultInput)
-            setState(prevState => ({ ...prevState, inputLoader: false, vendorFilter: resultInput }))
-            let vendorDataAPI = res?.data?.SelectList
-            if (inputValue) {
-                return autoCompleteDropdown(inputValue, vendorDataAPI, false, [], true)
-            } else {
-                return vendorDataAPI
-            }
-        }
-        else {
-            if (inputValue?.length < searchCount) return false
-            else {
-                let VendorData = reactLocalStorage?.getObject('Data')
-                if (inputValue) {
-                    return autoCompleteDropdown(inputValue, VendorData, false, [], false)
-                } else {
-                    return VendorData
-                }
-            }
-        }
-    };
-    const sourceVendorFilterList = async (inputValue) => {
-        const resultInput = inputValue.slice(0, searchCount)
-        if (inputValue?.length >= searchCount && state.sourceVendorFilter !== resultInput) {
-            setState(prevState => ({ ...prevState, inputLoader: true }))
-            let res
-            res = await getVendorNameByVendorSelectList(VBC_VENDOR_TYPE, resultInput)
-            setState(prevState => ({ ...prevState, inputLoader: false, sourceVendorFilter: resultInput }))
-            let vendorDataAPI = res?.data?.SelectList
-            if (inputValue) {
-                return autoCompleteDropdown(inputValue, vendorDataAPI, false, [], true)
-            } else {
-                return vendorDataAPI
-            }
-        }
-        else {
-            if (inputValue?.length < searchCount) return false
-            else {
-                let VendorData = reactLocalStorage?.getObject('Data')
-                if (inputValue) {
-                    return autoCompleteDropdown(inputValue, VendorData, false, [], false)
-                } else {
-                    return VendorData
-                }
-            }
-        }
-    };
+
+    const vendorFilterList = (inputValue) => DropDownFilterList(inputValue, VBC_VENDOR_TYPE, 'vendorFilter', getVendorNameByVendorSelectList, setState, state);
+    const sourceVendorFilterList = (inputValue) => DropDownFilterList(inputValue, VBC_VENDOR_TYPE, 'sourceVendorFilter', getVendorNameByVendorSelectList, setState, state);
+    const sourceLocationFilterList = (inputValue) => DropDownFilterList(inputValue, '', 'sourceLocationFilter', (filterType, resultInput) => getCityByCountry(0, 0, resultInput), setState, state);
+
+
+
     const vendorToggle = () => {
         setState(prevState => ({ ...prevState, isOpenVendor: true }));
     }
@@ -962,8 +946,8 @@ function AddRMDetails(props) {
 
                                     />
                                 </Col>
-                                <Col md="3">
-                                    <SearchableSelectHookForm
+                                {/* <Col md="3"> */}
+                                {/* <SearchableSelectHookForm
                                         name="SourceSupplierCityId"
                                         label="Source Location"
                                         Controller={Controller}
@@ -980,7 +964,32 @@ function AddRMDetails(props) {
                                         defaultValue={state.sourceLocation}
                                         disabled={isViewFlag}
                                         errors={errors.SourceSupplierCityId}
+                                        loadOptions={sourceVendorFilterList}
+
                                     />
+                                </Col> */}
+                                <Col md="3">
+                                    <label>{`Source Location`}</label>
+                                    <div className="d-flex justify-space-between align-items-center p-relative async-select">
+                                        <div className="fullinput-icon p-relative">
+                                            {state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
+                                            <AsyncSelect
+                                                name="SourceSupplierCityId"
+                                                loadOptions={sourceLocationFilterList}
+                                                onChange={(e) => handleSourceSupplierCity(e)}
+                                                value={state.sourceLocation}
+                                                noOptionsMessage={({ inputValue }) => inputValue?.length < 3 ? MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN : "No results found"}
+                                                isDisabled={isViewFlag}
+                                                onKeyDown={(onKeyDown) => {
+                                                    if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
+                                                }}
+                                                onBlur={() => setState(prevState => ({ ...prevState, showErrorOnFocus: false }))}
+                                                placeholder={"Select"}
+                                                className="mb-0 withBorder"
+                                            />
+                                            {errors.SourceSupplierCityId && <div className="text-help">{errors.SourceSupplierCityId.message}</div>}
+                                        </div>
+                                    </div>
                                 </Col>
                             </>}
 

@@ -7,7 +7,7 @@ import {
   maxLength10, positiveAndDecimalNumber, maxLength512, decimalLengthsix, checkWhiteSpaces, checkSpacesInString, maxLength80, number, postiveNumber, hashValidation
 } from "../../../helper/validation";
 import { renderText, searchableSelect, renderTextAreaField, renderDatePicker, renderTextInputField, focusOnError } from "../../layout/FormInputs";
-import { getPlantBySupplier, getUOMSelectList, getCurrencySelectList, getPlantSelectListByType, getCityByCountry, getAllCity, getVendorNameByVendorSelectList } from '../../../actions/Common';
+import { getPlantBySupplier, getUOMSelectList, getCurrencySelectList, getPlantSelectListByType, getAllCity, getVendorNameByVendorSelectList, getCityByCountryAction } from '../../../actions/Common';
 import {
   createBOP, updateBOP, getBOPCategorySelectList, getBOPImportById,
   fileUploadBOPDomestic, getIncoTermSelectList, getPaymentTermSelectList, checkAndGetBopPartNo
@@ -18,7 +18,7 @@ import { getConfigurationKey, IsFetchExchangeRateVendorWise, loggedInUserId, sho
 import "react-datepicker/dist/react-datepicker.css";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
-import { FILE_URL, ZBC, BOP_MASTER_ID, EMPTY_GUID, SPACEBAR, ZBCTypeId, VBCTypeId, CBCTypeId, searchCount, ENTRY_TYPE_IMPORT, VBC_VENDOR_TYPE, BOP_VENDOR_TYPE, effectiveDateRangeDays } from '../../../config/constants';
+import { FILE_URL, ZBC, BOP_MASTER_ID, EMPTY_GUID, SPACEBAR, ZBCTypeId, VBCTypeId, CBCTypeId, searchCount, ENTRY_TYPE_IMPORT, VBC_VENDOR_TYPE, BOP_VENDOR_TYPE } from '../../../config/constants';
 import AddBOPCategory from './AddBOPCategory';
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import AddUOM from '../uom-master/AddUOM';
@@ -34,7 +34,7 @@ import { debounce } from 'lodash';
 import AsyncSelect from 'react-select/async';
 import { getClientSelectList, } from '../actions/Client';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { autoCompleteDropdown, costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission } from '../../common/CommonFunctions';
+import { autoCompleteDropdown, costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission, getEffectiveDateMinDate } from '../../common/CommonFunctions';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { checkFinalUser } from '../../../components/costing/actions/Costing'
 import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions';
@@ -208,11 +208,7 @@ class AddBOPImport extends Component {
     const { initialConfiguration } = this.props
     this.setState({ costingTypeId: getCostingTypeIdByCostingPermission() })
     const { currency } = this.state
-    if (!this.state.isViewMode) {
-      this.props.getAllCity(cityId => {
-        this.props.getCityByCountry(cityId, 0, () => { })
-      })
-    }
+
     this.props.getIncoTermSelectList(() => { })
     this.props.getPaymentTermSelectList(() => { })    // FOR MINDA ONLY
     this.getDetails()
@@ -627,14 +623,6 @@ class AddBOPImport extends Component {
       });
       return temp;
     }
-    if (label === 'SourceLocation') {
-      cityList && cityList.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ label: item.Text, value: item.Value })
-        return null;
-      });
-      return temp;
-    }
     if (label === 'uom') {
       UOMSelectList && UOMSelectList.map(item => {
         const accept = AcceptableBOPUOM.includes(item.Type)
@@ -1014,6 +1002,25 @@ class AddBOPImport extends Component {
     }
     this.setState({ effectiveDate: date, dateCount: this.state.dateCount + 1 });
   };
+  filterSourceLocationList = async (inputValue) => {
+    if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
+      inputValue = inputValue.trim();
+    }
+    if (inputValue?.length >= searchCount) {
+      this.setState({ inputLoader: true });
+      let res = await this.props.getCityByCountryAction(0, 0, inputValue);
+      this.setState({ inputLoader: false });
+      let cityDataAPI = res?.data?.SelectList;
+      if (inputValue) {
+        return autoCompleteDropdown(inputValue, cityDataAPI, false, [], true);
+      } else {
+        return cityDataAPI;
+      }
+    } else {
+      return [];
+    }
+  };
+
 
   /**
       * @method handleChangeSapCode
@@ -1811,17 +1818,24 @@ class AddBOPImport extends Component {
                                 />
                               </Col>
                               <Col md="3">
-                                <Field
-                                  name="SourceLocation"
-                                  type="text"
-                                  label="Source Location"
-                                  component={searchableSelect}
-                                  placeholder={isEditFlag ? '-' : "Select"}
-                                  options={this.renderListing("SourceLocation")}
-                                  disabled={isViewMode}
-                                  handleChangeDescription={this.handleSourceSupplierCity}
-                                  valueDescription={this.state.sourceLocation}
-                                />
+                                <label>Source Location</label>
+                                <div className="d-flex justify-space-between align-items-center async-select">
+                                  <div id='AddBOPImport_SourceLocation' className="fullinput-icon p-relative">
+                                    {this.state.sourceLocationInputLoader && <LoaderCustom customClass={`input-loader`} />}
+                                    <AsyncSelect
+                                      name="sourceLocation"
+                                      loadOptions={this.filterSourceLocationList}
+                                      onChange={(e) => this.handleSourceSupplierCity(e)}
+                                      value={this.state.sourceLocation}
+                                      noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN : "No results found"}
+                                      isDisabled={isViewMode}
+                                      onFocus={() => onFocus(this)}
+                                      onKeyDown={(onKeyDown) => {
+                                        if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
+                                      }}
+                                    />
+                                  </div>
+                                </div>
                               </Col>
                             </>
                           )}
@@ -1891,7 +1905,7 @@ class AddBOPImport extends Component {
                                 selected={this.state.effectiveDate}
                                 onChange={this.handleEffectiveDateChange}
                                 type="text"
-                                minDate={isEditFlag ? this.state.minEffectiveDate : subDays(new Date(), effectiveDateRangeDays)}
+                                minDate={isEditFlag ? this.state.minEffectiveDate : getEffectiveDateMinDate()}
                                 validate={[required]}
                                 autoComplete={'off'}
                                 required={true}
@@ -2366,7 +2380,7 @@ export default connect(mapStateToProps, {
   getPlantSelectListByType,
   getExchangeRateByCurrency,
   checkFinalUser,
-  getCityByCountry,
+  getCityByCountryAction,
   getAllCity,
   getClientSelectList,
   getIncoTermSelectList,
