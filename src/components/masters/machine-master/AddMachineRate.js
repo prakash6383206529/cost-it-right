@@ -46,7 +46,7 @@ import { Steps } from './TourMessages';
 import { withTranslation } from 'react-i18next';
 import Button from '../../layout/Button';
 import { subDays } from 'date-fns';
-import { labels } from '../../../helper/core';
+import { labels, LabelsClass } from '../../../helper/core';
 
 const selector = formValueSelector('AddMachineRate');
 
@@ -1397,6 +1397,8 @@ class AddMachineRate extends Component {
   render() {
     const { handleSubmit, AddAccessibility, EditAccessibility, initialConfiguration, isMachineAssociated, t } = this.props;
     const { isEditFlag, isOpenMachineType, isOpenProcessDrawer, disableMachineType, IsCopied, isViewFlag, isViewMode, setDisable, lockUOMAndRate, UniqueProcessId, costingTypeId, IsDetailedEntry, CostingTypePermission, disableSendForApproval, tourContainer } = this.state;
+    const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
+
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
       if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
@@ -1495,7 +1497,7 @@ class AddMachineRate extends Component {
                               }
                               disabled={isEditFlag ? true : false}
                             />{" "}
-                            <span>{labels(t, 'VendorLabel', 'MasterLabels')} Based</span>
+                            <span>{VendorLabel} Based</span>
                           </Label>}
                           {reactLocalStorage.getObject('CostingTypePermission').cbc && <Label id="AddMachineRate_customerBased" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
                             <input
@@ -1542,7 +1544,7 @@ class AddMachineRate extends Component {
                         </Col>
                         {costingTypeId === VBCTypeId &&
                           <Col md="3">
-                            <label>{labels(t, 'VendorLabel', 'MasterLabels')}(Code)<span className="asterisk-required">*</span></label>
+                            <label>{VendorLabel}(Code)<span className="asterisk-required">*</span></label>
                             <div className='p-relative'>
                               {this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
                               <AsyncSelect

@@ -46,7 +46,7 @@ import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from './TourMessages';
 import { withTranslation } from 'react-i18next';
 import { subDays } from 'date-fns';
-import { labels } from '../../../helper/core';
+import { labels, LabelsClass } from '../../../helper/core';
 
 const selector = formValueSelector('AddBOPImport');
 
@@ -1424,6 +1424,8 @@ class AddBOPImport extends Component {
     const { handleSubmit, isBOPAssociated, initialConfiguration, t } = this.props;
     const { isCategoryDrawerOpen, isOpenVendor, isOpenUOM, isEditFlag, isViewMode, setDisable, costingTypeId, isClientVendorBOP, CostingTypePermission,
       isTechnologyVisible, disableSendForApproval, isOpenConditionDrawer, conditionTableData, FinalBasicPriceSelectedCurrency, FinalBasicPriceBaseCurrency, toolTipTextNetCost, toolTipTextBasicPrice, toolTipTextObject, IsSAPCodeUpdated, IsSapCodeEditView, IsSAPCodeHandle } = this.state;
+    const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
+
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
       if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
@@ -1527,7 +1529,7 @@ class AddBOPImport extends Component {
                                 }
                                 disabled={isEditFlag ? true : false}
                               />{" "}
-                              <span>{labels(t, 'VendorLabel', 'MasterLabels')} Based</span>
+                              <span>{VendorLabel} Based</span>
                             </Label>}
                             {reactLocalStorage.getObject('CostingTypePermission').cbc && <Label id='bop_import_customer_based' className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
                               <input
@@ -1765,10 +1767,10 @@ class AddBOPImport extends Component {
                           {costingTypeId !== CBCTypeId && (
                             <>
                               <Col md="12">
-                                <div className="left-border">{labels(t, 'VendorLabel', 'MasterLabels')}:</div>
+                                <div className="left-border">{VendorLabel}:</div>
                               </Col>
                               <Col md="3" className='mb-4'>
-                                <label>{labels(t, 'VendorLabel', 'MasterLabels')} (Code)<span className="asterisk-required">*</span></label>
+                                <label>{VendorLabel} (Code)<span className="asterisk-required">*</span></label>
                                 <div className="d-flex justify-space-between align-items-center async-select">
                                   <div id='AddBOPImport_BOPVendoreName' className="fullinput-icon p-relative">
                                     {this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
@@ -2080,7 +2082,7 @@ class AddBOPImport extends Component {
                               className={`custom-checkbox`}
                               onChange={this.onIsClientVendorBOP}
                             >
-                              Client Approved {labels(t, 'VendorLabel', 'MasterLabels')}
+                              Client Approved {VendorLabel}
                               <input
                                 type="checkbox"
                                 checked={isClientVendorBOP}

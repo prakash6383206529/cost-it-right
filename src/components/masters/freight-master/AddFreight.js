@@ -28,6 +28,8 @@ import PopupMsgWrapper from "../../common/PopupMsgWrapper";
 import { FREIGHT_LOAD_OPTIONS } from "../../../config/masterData";
 import { label } from "react-dom-factories";
 import { subDays } from "date-fns";
+import { withTranslation } from "react-i18next";
+import { LabelsClass } from "../../../helper/core";
 
 
 const selector = formValueSelector("AddFreight");
@@ -761,7 +763,9 @@ class AddFreight extends Component {
    * @description Renders the component
    */
   render() {
-    const { handleSubmit, initialConfiguration } = this.props;
+    const { handleSubmit, initialConfiguration, t } = this.props;
+    const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
+
     const { isOpenVendor, isEditFlag, isViewMode, setDisable, costingTypeId, isEditMode } = this.state;
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
@@ -848,7 +852,7 @@ class AddFreight extends Component {
                                 }
                                 disabled={isEditFlag ? true : false}
                               />{" "}
-                              <span>Vendor Based</span>
+                              <span>{VendorLabel} Based</span>
                             </Label>}
                             {reactLocalStorage.getObject('CostingTypePermission').cbc && <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
                               <input
@@ -899,7 +903,7 @@ class AddFreight extends Component {
                           </Col> */}
                           {costingTypeId === VBCTypeId && (
                             <Col md="3">
-                              <label>{"Vendor (Code)"}<span className="asterisk-required">*</span></label>
+                              <label>{VendorLabel} (Code)<span className="asterisk-required">*</span></label>
                               <div className="d-flex justify-space-between align-items-center async-select">
                                 <div className="fullinput-icon p-relative">
                                   {this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
@@ -1380,5 +1384,5 @@ export default connect(mapStateToProps, {
     form: "AddFreight",
     enableReinitialize: true,
     touchOnChange: true
-  })(AddFreight)
-);
+  })(withTranslation(['FreightMaster', 'MasterLabels'])(AddFreight)),
+)
