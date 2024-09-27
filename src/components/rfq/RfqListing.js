@@ -37,6 +37,7 @@ import { setSelectedRowForPagination } from '../simulation/actions/Simulation';
 import WarningMessage from '../common/WarningMessage';
 import { useLabels } from '../../helper/core';
 import Button from '../layout/Button';
+import RemarkHistoryDrawer from './RemarkHistoryDrawer';
 export const ApplyPermission = React.createContext();
 const gridOptions = {};
 
@@ -75,6 +76,8 @@ function RfqListing(props) {
     const [disableDownload, setDisableDownload] = useState(false)
 
     const [disableFilter, setDisableFilter] = useState(false)
+    const [remarkHistoryDrawer, setRemarkHistoryDrawer] = useState(false)
+    const [remarkRowData, setRemarkRowData] = useState([])
     const [floatingFilterData, setFloatingFilterData] = useState({
         QuotationNumber: "",
         PartType: "",
@@ -441,6 +444,14 @@ function RfqListing(props) {
     const closePopUp = () => {
         setConfirmPopup(false)
     }
+    const getRemarkHistory = (cell, rowData) => {
+        setRemarkRowData(rowData)
+
+        setTimeout(() => {
+            setRemarkHistoryDrawer(true)
+        }, 500);
+
+    }
     /**
     * @method buttonFormatter
     * @description Renders buttons
@@ -456,6 +467,8 @@ function RfqListing(props) {
                 {(viewAccessibility || permissionData?.permissionDataVendor?.View) && <button title='View' className="View mr-1 Tour_List_View" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
                 {((status !== APPROVED && status !== CANCELLED) && (editAccessibility || permissionData?.permissionDataVendor?.Edit)) && <button title='Edit' className="Edit mr-1 Tour_List_Edit" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
                 {(status !== APPROVED && status !== UNDER_APPROVAL && status !== CANCELLED && status !== RECEIVED) && rowData?.IsShowCancelIcon && <button title='Cancel' className="CancelIcon mr-1  Tour_List_Cancel" type={'button'} onClick={() => cancelItem(cellValue)} />}
+                {/* (status !== PREDRAFT) &&  */<button title='Remark History' id='ViewRfq_remarkHistory' className="btn-history-remark mr-1" type={'button'} onClick={() => { getRemarkHistory(cellValue, rowData) }}><div className='history-remark'></div></button>}
+
             </>
         )
     };
@@ -651,7 +664,9 @@ function RfqListing(props) {
             ? cellValue
             : "-";
     };
-
+    const closeRemarkDrawer = (type) => {
+        setRemarkHistoryDrawer(false)
+    }
     const frameworkComponents = {
         totalValueRenderer: buttonFormatter,
         linkableFormatter: linkableFormatter,
@@ -852,7 +867,20 @@ function RfqListing(props) {
                     />
                 )
             }
-
+            {remarkHistoryDrawer &&
+                <RemarkHistoryDrawer
+                    data={remarkRowData}
+                    //hideForm={hideForm}
+                    AddAccessibilityRMANDGRADE={true}
+                    EditAccessibilityRMANDGRADE={true}
+                    isRMAssociated={true}
+                    isOpen={remarkHistoryDrawer}
+                    anchor={"right"}
+                    isEditFlag={isEdit}
+                    rfqListing={true}
+                    closeDrawer={closeRemarkDrawer}
+                />
+            }
 
         </>
     );

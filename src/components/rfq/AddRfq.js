@@ -15,7 +15,7 @@ import Dropzone from 'react-dropzone-uploader'
 import 'react-dropzone-uploader/dist/styles.css'
 import Toaster from '../common/Toaster';
 import { MESSAGES } from '../../config/message';
-import { createRfqQuotation, fileUploadQuotation, getQuotationById, updateRfqQuotation, getContactPerson, checkExistCosting, setRFQBulkUpload, getNfrSelectList, getNfrAnnualForecastQuantity, getNFRRMList, getPartNFRRMList, checkLPSAndSCN, getrRqVendorDetails, getTargetPrice, setVendorDetails, getAssemblyChildpart, getRfqRaiseNumber, saveRfqPartDetails, getRfqPartDetails, deleteQuotationPartDetail, setRfqPartDetails, setQuotationIdForRfq, setTargetPriceDetail, checkRegisteredVendor, setRmSpecificRowData, getPurchaseRequisitionSelectList, setBopSpecificRowData, createQuotationPrParts, getRfqToolingDetails, setToolingSpecificRowData } from './actions/rfq';
+import { createRfqQuotation, fileUploadQuotation, getQuotationById, updateRfqQuotation, getContactPerson, checkExistCosting, setRFQBulkUpload, getNfrSelectList, getNfrAnnualForecastQuantity, getNFRRMList, getPartNFRRMList, checkLPSAndSCN, getrRqVendorDetails, getTargetPrice, setVendorDetails, getAssemblyChildpart, getRfqRaiseNumber, saveRfqPartDetails, getRfqPartDetails, deleteQuotationPartDetail, setRfqPartDetails, setQuotationIdForRfq, setTargetPriceDetail, checkRegisteredVendor, setRmSpecificRowData, getPurchaseRequisitionSelectList, setBopSpecificRowData, createQuotationPrParts, getRfqToolingDetails, setToolingSpecificRowData, sendQuotationForReview, getQuotationDetailsList } from './actions/rfq';
 import PopupMsgWrapper from '../common/PopupMsgWrapper';
 import LoaderCustom from '../common/LoaderCustom';
 import redcrossImg from '../../assests/images/red-cross.png'
@@ -45,6 +45,7 @@ import RaiseRfqBopDetails from './BOP/RaiseRfqBopDetails';
 import TooltipCustom from '../common/Tooltip';
 import { useLabels } from '../../helper/core';
 import BOMViewer from '../masters/part-master/BOMViewer';
+import RemarkFieldDrawer from '../common/CommonRemarkDrawer';
 const gridOptionsPart = {}
 const gridOptionsVendor = {}
 
@@ -153,6 +154,8 @@ function AddRfq(props) {
     const [partIdentity, setPartIdentity] = useState(0)
     const [showGrid, setShowGrid] = useState(true)
     const [isPartDetailUpdate, setIsPartDeailUpdate] = useState(false)
+
+
     const technologySelectList = useSelector((state) => state.costing.costingSpecifiTechnology)
     const rawMaterialNameSelectList = useSelector(state => state?.material?.rawMaterialNameSelectList);
     const gradeSelectList = useSelector(state => state?.material?.gradeSelectList);
@@ -205,9 +208,12 @@ function AddRfq(props) {
     const [partDetailSent, setPartDetailSent] = useState(false)
     const [isOpenVisualDrawer, setIsOpenVisualDrawer] = useState(false)
     const [visualAdId, setVisualAdId] = useState("")
+    const [remarkDrawer, setRemarkDrawer] = useState(false)
+    const [reviewButtonPermission, setReviewButtonPermission] = useState(false)
+
     const showOnlyFirstModule = initialConfiguration.IsManageSeparateUserPemissionForPartAndVendorInRaiseRFQ;
     const { toolingSpecificRowData } = useSelector(state => state?.rfq);
-
+    const disableUOMFiled = (selectedOption === "Raw Material" || selectedOption === "Bought Out Part") ? (Object.keys(prNumber).length !== 0 || (dataProps?.isViewFlag) ? true : false || disabledPartUid) : true
 
 
 
@@ -296,6 +302,7 @@ function AddRfq(props) {
         if (showSendButton === DRAFT) {
             setDisabledVendoUId((Vendor && (Vendor?.Add || Vendor?.Edit)) ? false : true)
             setShowVendorSection((Vendor && (Vendor?.Add || Vendor?.Edit)) ? false : true)
+            setReviewButtonPermission(Vendor && (Vendor?.SendForReview) ? true : false)
 
         } else if (dataProps?.isAddFlag || showSendButton === PREDRAFT) {
 
@@ -1046,6 +1053,11 @@ function AddRfq(props) {
                 if (bopDataList?.length === 0) {
                     Toaster.warning("Please add at least one BOP.");
                     return false;
+                } else if (isPartDetailsSent && (showSendButton !== PREDRAFT && showSendButton !== "")) {
+                    if (vendorList?.length === 0) {
+                        Toaster.warning("Please add the minimum threshold vendor.");
+                        return false
+                    }
                 }
                 break;
 
@@ -1053,6 +1065,11 @@ function AddRfq(props) {
                 if (rmDataList?.length === 0) {
                     Toaster.warning("Please add at least one RM.");
                     return false;
+                } else if (isPartDetailsSent && (showSendButton !== PREDRAFT && showSendButton !== "")) {
+                    if (vendorList?.length === 0) {
+                        Toaster.warning("Please add the minimum threshold vendor.");
+                        return false
+                    }
                 }
                 break;
 
@@ -1060,12 +1077,22 @@ function AddRfq(props) {
                 if (partList?.length === 0) {
                     Toaster.warning("Please add at least one part.");
                     return false;
+                } else if (isPartDetailsSent && (showSendButton !== PREDRAFT && showSendButton !== "")) {
+                    if (vendorList?.length === 0) {
+                        Toaster.warning("Please add the minimum threshold vendor.");
+                        return false
+                    }
                 }
                 break;
             case "Tooling":
                 if (toolingList?.length === 0) {
                     Toaster.warning("Please add at least one part.");
                     return false;
+                } else if (isPartDetailsSent && (showSendButton !== PREDRAFT && showSendButton !== "")) {
+                    if (vendorList?.length === 0) {
+                        Toaster.warning("Please add the minimum threshold vendor.");
+                        return false
+                    }
                 }
                 break;
             default:
@@ -1133,8 +1160,7 @@ function AddRfq(props) {
                 ? (isPartDetailsSent ? (hasParts || hasRm || hasBop || hasTooling) : false)
                 : partDetailSent;
 
-            isSent = (hasParts || hasRm || hasBop || hasTooling) && hasVendors && isPartDetailsSent;
-
+            isSent = (showSendButton === PREDRAFT || showSendButton === '') ? false : ((hasParts || hasRm || hasBop || hasTooling) && hasVendors && isPartDetailsSent)
         }
         // const IsPartDetailsSent = isShowRfqPartDetail ? ((isPartDetailSent && partList && partList.length > 0) ? true : (partList && partList.length > 0 && vendorList && vendorList.length > 0) ? true : false) : false
         // const isSent = isShowRfqPartDetail ? ((partList && vendorList && partList.length > 0 && vendorList.length > 0) ? IsPartDetailsSent : false) : false
@@ -1259,6 +1285,7 @@ function AddRfq(props) {
 
                 {/*  {<button title='Delete' className="Delete align-middle" disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !dataProps?.isEditFlag)} type={'button'} onClick={() => deleteItemPartTable(final, props)} />} */}
                 {(show && selectedOption !== BOUGHTOUTPARTSPACING) && <button title='Delete' className="Delete align-middle" disabled={isSendButtonVisible} type={'button'} onClick={() => deleteItemPartTable(row, final)} />}
+
             </>
         )
     };
@@ -2309,7 +2336,13 @@ function AddRfq(props) {
         }
 
     };
+    const handleReviewButtonClick = () => {
 
+        setRemarkDrawer(true)
+    }
+    const handleCloseReamrkDrawer = () => {
+        setRemarkDrawer(false)
+    }
     const onResetPartNoTable = (toggleButton = false) => {
 
         if (!toggleButton) {
@@ -2487,6 +2520,9 @@ function AddRfq(props) {
                     setValue('IncoTerms', IncoTerms);
                     setValue('PaymentTerms', PaymentTerms);
                 }));
+            } else {
+                setValue('IncoTerms', "");
+                setValue('PaymentTerms', "");
             }
         }));
 
@@ -2836,10 +2872,12 @@ function AddRfq(props) {
         setAssemblyPartNumber(value)
         dispatch(getPartInfo(value?.value, (res) => {
             let Data = res?.data?.Data
-            let uomObject = { label: Data?.UnitOfMeasurementSymbol, value: Data?.UnitOfMeasurementId }
             setValue("Description", res?.data?.Data?.PartName);
-            setValue("UOM", uomObject);
-            setSelectedUOM(uomObject)
+            if ((selectedOption !== "Raw Material" || selectedOption !== "Bought Out Part")) {
+                let uomObject = { label: Data?.UnitOfMeasurementSymbol, value: Data?.UnitOfMeasurementId }
+                setValue("UOM", uomObject);
+                setSelectedUOM(uomObject)
+            }
 
             setPartEffectiveDate(res.data.Data?.EffectiveDate);
         }));
@@ -2877,7 +2915,18 @@ function AddRfq(props) {
             : true;
     }
 
+    const sendQuotationForReviewHnadle = (values) => {
+        const obj = {
+            loggedInUserId: loggedInUserId(),
+            QuotationId: (getQuotationIdForRFQ ? getQuotationIdForRFQ : null),
+            Remark: values?.remark
+        }
+        dispatch(sendQuotationForReview(obj, () => {
+            props?.closeDrawer('', {})
+        }))
 
+
+    }
     const frameworkComponents = {
         hyphenFormatter: hyphenFormatter,
         buttonFormatterFirst: buttonFormatterFirst,
@@ -3248,7 +3297,7 @@ function AddRfq(props) {
 
                                             <Row>
 
-                                                {UOMSelectList && havellsKey && selectedOption !== 'Tooling' &&
+                                                {UOMSelectList && havellsKey &&
 
 
                                                     <Col md="3">
@@ -3265,7 +3314,7 @@ function AddRfq(props) {
                                                             mandatory={true}
                                                             handleChange={(newValue) => handleChangeUOM(newValue)}
                                                             errors={errors?.UOM}
-                                                            disabled={true}
+                                                            disabled={disableUOMFiled}
                                                         //Object.keys(prNumber).length !== 0 || (dataProps?.isViewFlag) ? true : false || disabledPartUid
                                                         />
                                                     </Col>
@@ -3894,6 +3943,22 @@ function AddRfq(props) {
                                                 <div className={"cancel-icon"}></div>
                                                 {"Cancel"}
                                             </button>
+                                            {reviewButtonPermission && (
+                                                <>
+                                                    <button
+                                                        type="button"
+                                                        className="submit-button save-btn mr-2"
+                                                        value="save"
+                                                        id="Return_RFQ_for_Review"
+                                                        onClick={(data, e) => handleReviewButtonClick(data, e, false)}
+                                                        disabled={isViewFlag}
+                                                    >
+                                                        <div className={"review-icon"}></div>
+                                                        {"Send for Review"}
+                                                    </button>
+                                                </>
+                                            )}
+
 
                                             {
                                                 <button type="button" className="submit-button save-btn mr-2" value="save"
@@ -3993,6 +4058,9 @@ function AddRfq(props) {
                     isFromVishualAd={true}
                     NewAddedLevelOneChilds={[]}
                 />
+            )}
+            {remarkDrawer && (
+                <RemarkFieldDrawer anchor={"right"} isOpen={remarkDrawer} cancelHandler={handleCloseReamrkDrawer} onSubmitHandler={sendQuotationForReviewHnadle} />
             )}
 
         </div >

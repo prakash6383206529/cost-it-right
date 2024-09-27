@@ -445,6 +445,7 @@ export function checkPermission(Data) {
     Activate: false,
     Copy: false,
     SOB: false,
+    SendForReview: false
   }
 
   Data && Data.map((item) => {
@@ -474,6 +475,9 @@ export function checkPermission(Data) {
     }
     if (item.ActionName === 'SOB' && item.IsChecked === true) {
       setAccessibleData.SOB = true
+    }
+    if (item?.ActionName === 'Send For Review' && item?.IsChecked === true) {
+      setAccessibleData.SendForReview = true
     }
     return null;
   })

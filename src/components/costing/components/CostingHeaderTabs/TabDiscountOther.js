@@ -808,7 +808,7 @@ function TabDiscountOther(props) {
       }
       props.setHeaderCost(topHeaderData, headerCosts, costData)
     })
-  }, [costData, headerCosts])
+  }, [costData, headerCosts, DiscountAndOtherCostTabData])
 
   //MANIPULATE TOP HEADER COSTS
   useEffect(() => {
@@ -2098,7 +2098,7 @@ function TabDiscountOther(props) {
                     </Row>
                     {initialConfiguration?.IsBasicRateAndCostingConditionVisible &&
                       <Col md="3">
-                        <TooltipCustom disabledIcon={true} width="280px" id="basic-rate" tooltipText={`Basic Price = (Total Cost -${discountLabel} Value) + Total Other Cost`} />
+                        <TooltipCustom disabledIcon={true} width="280px" id="basic-rate" tooltipText={`Basic Price = (Total Cost + Total Other Cost - ${discountLabel} Value)  ${initialConfiguration?.IsAddPaymentTermInNetCost ? "+ Payment Terms Cost" : ""}`} />
                         <TextFieldHookForm
                           label={`Basic Price (${reactLocalStorage.getObject("baseCurrency")})`}
                           name={'BasicRateINR'}
@@ -2165,7 +2165,7 @@ function TabDiscountOther(props) {
                       CostingViewMode={CostingViewMode}
                     />
                     }
-                    <TooltipCustom disabledIcon={true} width="280px" id="net-po-price" tooltipText={"Net Cost = Basic Rate + Total Costing Condition Cost"} />
+                    <TooltipCustom disabledIcon={true} width="280px" id="net-po-price" tooltipText={`Net Cost = ${initialConfiguration?.IsBasicRateAndCostingConditionVisible ? 'Basic Rate + Total Costing Condition Cost' : `(Total Cost + Total Other Cost - ${discountLabel} Value ${initialConfiguration?.IsAddPaymentTermInNetCost ? " + Payment Terms Cost" : ""})  `}`} />
                     <Col md="3">
                       <TextFieldHookForm
                         label={`Net Cost (${reactLocalStorage.getObject("baseCurrency")})`}

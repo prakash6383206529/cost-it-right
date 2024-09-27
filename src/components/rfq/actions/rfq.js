@@ -788,3 +788,30 @@ export function setToolingSpecificRowData(data) {
         });
     }
 };
+export function sendQuotationForReview(data, callback) {
+
+    return (dispatch) => {
+        const request = axios.post(API.sendQuotationForReview, data, config());
+        request.then((response) => {
+            if (response?.data?.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+            callback(error)
+        });
+    };
+}
+export function getRfqReviewHistory(data, callback) {
+
+    return (dispatch) => {
+        axios.get(`${API.getRfqReviewHistory}?quotationId=${data.quotationId}`, config())
+            .then((response) => {
+                callback(response)
+            }).catch((error) => {
+                dispatch({ type: API_FAILURE });
+                apiErrors(error);
+            });
+    };
+}

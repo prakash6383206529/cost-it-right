@@ -1,6 +1,6 @@
 import React, { Fragment, useEffect, useState } from "react"
 import { fetchSpecificationDataAPI, getCurrencySelectList, getPlantSelectListByType, getUOMSelectList, getVendorNameByVendorSelectList, getFrequencySettlement, getExchangeRateSource } from "../../../actions/Common"
-import { CBCTypeId, EMPTY_GUID, ENTRY_TYPE_DOMESTIC, SPACEBAR, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, effectiveDateRangeDays, searchCount } from "../../../config/constants"
+import { CBCTypeId, EMPTY_GUID, ENTRY_TYPE_DOMESTIC, SPACEBAR, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, searchCount } from "../../../config/constants"
 import { useDispatch, useSelector } from "react-redux"
 import { getCostingSpecificTechnology, getExchangeRateByCurrency } from "../../costing/actions/Costing"
 import { IsFetchExchangeRateVendorWise, IsShowFreightAndShearingCostFields, getConfigurationKey, labelWithUOMAndCurrency, labelWithUOMAndUOM, loggedInUserId, showRMScrapKeys } from "../../../helper"
@@ -28,6 +28,7 @@ import { addDays, endOfMonth, addWeeks, addMonths, addQuarters, addYears, isLeap
 import { TestHeadless } from "ag-grid-community"
 import AddIndexationMaterialListing from "./AddIndexationMaterialListing"
 import { getIndexSelectList, setOtherCostDetails } from "../actions/Indexation"
+import { getEffectiveDateMinDate } from "../../common/CommonFunctions"
 function AddRMFinancialDetails(props) {
     const { Controller, control, register, setValue, getValues, errors, reset, useWatch, states, data, isRMAssociated, disableAll } = props
     const { isEditFlag, isViewFlag } = data
@@ -1880,7 +1881,7 @@ function AddRMFinancialDetails(props) {
                                         disabled={disableAll || isViewFlag}
                                         mandatory={true}
                                         errors={errors && errors.effectiveDate}
-                                        minDate={state.isShowIndexCheckBox ? addDays(new Date(state.toDate), 1) : isEditFlag ? state.minDate : subDays(new Date(), effectiveDateRangeDays)}
+                                        minDate={state.isShowIndexCheckBox ? addDays(new Date(state.toDate), 1) : isEditFlag ? state.minDate : getEffectiveDateMinDate()}
                                     />
                                 </div>
                             </Col>

@@ -1144,6 +1144,8 @@ export const API = {
   getRfqBOPCategorySelectList: `${BASE_URL}/masters-bought-out-part/select-list-bought-out-part-category`,
   createQuotationPrParts: `${BASE_URL}/rfq-quotation/create-quotation-pr-parts`,
   // getRfqRaiseNumber: `${BASE_URL}/rfq-quotation/create-quotation`,
+  sendQuotationForReview: `${BASE_URL}/rfq-quotation/review-Quotation`,
+  getRfqReviewHistory: `${BASE_URL}/rfq-quotation/get-reviewHistory-by-quotationId`,
 
   //Auction
   auctionRfqSelectList: `${BASE_URL}/rfq-quotation/select-list-rfq-number`,
@@ -3242,7 +3244,7 @@ export const customHavellsChanges = true
 export const countDownBlinkingTime = 2
 export const clientName = 'Havells'
 export const isShowTaxCode = true
-export const effectiveDateRangeDays = ''
+export const effectiveDateRangeDays = null
 // CONSTANT FOR COSTING ENTRY TYPE ID
 export const COMMODITYCOST = 'Commodity Cost'
 export const RAWMATERIALCOST = 'Raw Material Other Cost'

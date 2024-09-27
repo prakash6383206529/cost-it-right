@@ -8,7 +8,7 @@ import { focusOnError, renderText, renderTextInputField, searchableSelect } from
 import { createPlantAPI, getPlantUnitAPI, updatePlantAPI, getComapanySelectList } from '../actions/Plant';
 import {
   fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, fetchSupplierCityDataAPI,
-  getCityByCountry,
+  getCityByCountryAction,
 } from '../../../actions/Common';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
@@ -149,7 +149,7 @@ class AddZBCPlant extends Component {
   getAllCityData = () => {
     const { country } = this.state;
     if (country && country.label !== 'India') {
-      this.props.getCityByCountry(country.value, '00000000000000000000000000000000', () => { })
+      this.props.getCityByCountryAction(country.value, '00000000000000000000000000000000','', () => { })
     } else {
       this.props.fetchStateDataAPI(country.value, () => { })
     }
@@ -672,7 +672,7 @@ export default connect(mapStateToProps, {
   getPlantUnitAPI,
   fetchSupplierCityDataAPI,
   updatePlantAPI,
-  getCityByCountry,
+  getCityByCountryAction,
   getComapanySelectList
 })(reduxForm({
   form: 'AddZBCPlant',

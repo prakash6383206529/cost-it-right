@@ -13,7 +13,7 @@ import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import AddUOM from '../uom-master/AddUOM';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
-import { FILE_URL, ZBC, OPERATIONS_ID, EMPTY_GUID, SPACEBAR, VBCTypeId, CBCTypeId, ZBCTypeId, searchCount, VBC_VENDOR_TYPE, GUIDE_BUTTON_SHOW, effectiveDateRangeDays } from '../../../config/constants';
+import { FILE_URL, ZBC, OPERATIONS_ID, EMPTY_GUID, SPACEBAR, VBCTypeId, CBCTypeId, ZBCTypeId, searchCount, VBC_VENDOR_TYPE } from '../../../config/constants';
 import { AcceptableOperationUOM, LOGISTICS } from '../../../config/masterData'
 import DayTime from '../../common/DayTimeWrapper'
 import imgRedcross from '../../../assests/images/red-cross.png';
@@ -25,7 +25,7 @@ import { CheckApprovalApplicableMaster, onFocus, showDataOnHover, userTechnology
 import { getCostingSpecificTechnology } from '../../costing/actions/Costing'
 import { getClientSelectList, } from '../actions/Client';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { autoCompleteDropdown, costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission } from '../../common/CommonFunctions';
+import { autoCompleteDropdown, costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission, getEffectiveDateMinDate } from '../../common/CommonFunctions';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { checkFinalUser } from '../../../components/costing/actions/Costing'
 import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions';
@@ -1373,7 +1373,7 @@ class AddOperation extends Component {
                             onChange={this.handleEffectiveDateChange}
                             type="text"
                             validate={[required]}
-                            minDate={isEditFlag ? this.state.minEffectiveDate : subDays(new Date(), effectiveDateRangeDays)}
+                            minDate={isEditFlag ? this.state.minEffectiveDate : getEffectiveDateMinDate()}
                             autoComplete={'off'}
                             required={true}
                             changeHandler={(e) => {

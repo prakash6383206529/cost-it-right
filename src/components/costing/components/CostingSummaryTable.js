@@ -3222,8 +3222,23 @@ const CostingSummaryTable = (props) => {
                               viewCostingData?.map((data) => {
                                 return (
                                   <td className={tableDataClass(data)}>
-                                    <span title={data?.TaxCodeList.map(tc => tc.TaxCodeAndDescription).join(', ')} className={`w-fit ${highlighter("taxCode")}`}>
-                                      {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.TaxCodeList.map(tc => tc.TaxCodeAndDescription).join(', ') : '')}
+                                    <span
+                                      title={Array.isArray(data?.TaxCodeList) && data.TaxCodeList.length > 0
+                                        ? data.TaxCodeList.map(tc => tc?.TaxCodeAndDescription || '').filter(Boolean).join(', ')
+                                        : '-'
+                                      }
+                                      className={`w-fit ${highlighter("taxCode")}`}
+                                    >
+                                      {data?.bestCost === true
+                                        ? ' '
+                                        : (data?.CostingHeading !== VARIANCE
+                                          ? (Array.isArray(data?.TaxCodeList) && data.TaxCodeList.length > 0
+                                            ? data.TaxCodeList.map(tc => tc?.TaxCodeAndDescription || '').filter(Boolean).join(', ')
+                                            : '-')
+                                          : ''
+                                        )
+                                      }
+
                                     </span>
                                   </td>
                                 )

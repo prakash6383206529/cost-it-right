@@ -1293,26 +1293,65 @@ export function getAllCities(callback) {
  * @method getCityByCountry
  * @description Used to GET ALL CITIES BY COUNTRY
  */
-export function getCityByCountry(CountryId, StateId, callback) {
-  return (dispatch) => {
-    dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getCityByCountry}/${CountryId}/${StateId}`, config());
-    request.then((response) => {
+// export function getCityByCountry(CountryId, StateId,CityName, callback) {
+//   console.log(CountryId, StateId,CityName);
+//   return (dispatch) => {
+//     dispatch({ type: API_REQUEST });
+//     // const request = axios.get(`${API.getCityByCountry}/${CountryId}/${StateId}`, config());
+//     const request = axios.get(`${API.getCityByCountry}?countryId=${CountryId}&stateId=${StateId}&cityName=${CityName}`, config());
+//     request.then((response) => {
+//       console.log('response: ', response);
+//       if (response.data.Result) {
+//         dispatch({
+//           type: GET_CITY_SUCCESS,
+//           payload: response.data.SelectList,
+//         });
+//         callback(response);
+//       }
+//     }).catch((error) => {
+//       dispatch({ type: FETCH_MATER_DATA_FAILURE, });
+//       callback(error);
+//       apiErrors(error);
+//     });
+//   };
+// }
+
+export function getCityByCountry(CountryId, StateId, CityName, callback) {
+  return axios.get(`${API.getCityByCountry}?countryId=${CountryId}&stateId=${StateId}&cityName=${CityName}`, config())
+    .then((response) => {
+      console.log('response: ', response);
+      if (response.data.Result) {
+        if (callback) callback(null, response);
+        return response;
+      }
+    }).catch((error) => {
+      apiErrors(error);
+      if (callback) callback(error);
+      throw error;
+    });
+}
+// New action creator with dispatch for the soucre location in the class component
+//kindly remove this action when all the files using this action are converted to functional component
+export function getCityByCountryAction(CountryId, StateId, CityName) {
+  return async (dispatch) => {
+    try {
+      const response = await getCityByCountry(CountryId, StateId, CityName);
       if (response.data.Result) {
         dispatch({
           type: GET_CITY_SUCCESS,
           payload: response.data.SelectList,
         });
-        callback(response);
       }
-    }).catch((error) => {
-      dispatch({ type: FETCH_MATER_DATA_FAILURE, });
-      callback(error);
-      apiErrors(error);
-    });
+      return response;
+    } catch (error) {
+      dispatch({
+        type: API_FAILURE,
+        payload: error,
+      });
+      throw error;
+    }
   };
 }
-
 /**
  * @method getRawMaterialCategory
  * @description Used to GET ALL RM CATEGORY LIST

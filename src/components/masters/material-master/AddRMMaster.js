@@ -397,7 +397,7 @@ function AddRMMaster(props) {
             "VendorCode": state.costingTypeId === VBCTypeId ? !state.isEditFlag ? getCodeBySplitting(rawMaterailDetails?.Vendor?.label) : getCodeBySplitting(values?.Vendor?.label) : '',
             "HasDifferentSource": rawMaterailDetails?.states?.HasDifferentSource,
             "Source": values?.source,
-            "SourceLocation": values?.SourceSupplierCityId?.value,
+            "SourceLocation": rawMaterailDetails?.SourceLocation?.value ?? '',
             "SourceSupplierLocationName": values?.SourceSupplierCityId?.label,
             "UOM": values?.UnitOfMeasurement?.value,
             "UnitOfMeasurementName": values?.UnitOfMeasurement?.label,
@@ -498,7 +498,7 @@ function AddRMMaster(props) {
             }))
         } else {
             formData.IsSendForApproval = false;
-            handleRMOperation(formData, state.isEditFlag);
+            // handleRMOperation(formData, state.isEditFlag);
         }
 
 
@@ -606,6 +606,7 @@ function AddRMMaster(props) {
                             EditAccessibilityRMANDGRADE={EditAccessibilityRMANDGRADE}
                             disableAll={state.disableAll}
                             isSourceVendorApiCalled={state?.isSourceVendorApiCalled}
+                            commonFunction={commonFunction}
                         />
                         <AddRMFinancialDetails states={state}
                             Controller={Controller}
