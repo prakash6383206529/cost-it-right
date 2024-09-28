@@ -25,6 +25,7 @@ import { Steps } from './TourMessages';
 import { withTranslation } from 'react-i18next';
 import { subDays } from 'date-fns';
 import { getUOMSelectList } from '../../../actions/Common';
+import TooltipCustom from '../../common/Tooltip';
 
 class AddIndivisualPart extends Component {
   constructor(props) {
@@ -660,6 +661,8 @@ class AddIndivisualPart extends Component {
                             />
                           </Col>
                           {initialConfiguration?.IsShowUnitOfMeasurementInPartMaster && <Col md="3">
+                            <TooltipCustom id="uom_tooltip" tooltipText="If no UOM is selected, 'No' will be set by default." />
+
                             <Field
                               name="UOM"
                               type="text"
