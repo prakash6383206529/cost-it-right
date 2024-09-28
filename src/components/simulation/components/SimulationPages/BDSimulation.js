@@ -27,6 +27,7 @@ import { createMultipleExchangeRate } from '../../../masters/actions/ExchangeRat
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { simulationContext } from '..';
 import LoaderCustom from '../../../common/LoaderCustom';
+import { useLabels } from '../../../../helper/core';
 
 const gridOptions = {
 
@@ -62,7 +63,7 @@ function BDSimulation(props) {
     })
 
     const dispatch = useDispatch()
-
+    const { vendorLabel } = useLabels()
     const { selectedMasterForSimulation, selectedTechnologyForSimulation, isMasterAssociatedWithCosting, exchangeRateListBeforeDraft } = useSelector(state => state.simulation)
     const currencySelectList = useSelector(state => state.comman.currencySelectList)
     const simulationApplicability = useSelector(state => state.simulation.simulationApplicability)
@@ -253,7 +254,7 @@ function BDSimulation(props) {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return (
             <>
-                {isbulkUpload ? row['Vendor (Code)'] : cell}
+                {isbulkUpload ? row[`${vendorLabel} (Code)`] : cell}
 
             </>
         )
@@ -542,7 +543,7 @@ function BDSimulation(props) {
                                             {
                                                 !isImpactedMaster && list && <div className={`d-flex align-items-center simulation-label-container`}>
                                                     {list[0]?.CostingTypeId !== CBCTypeId && <div className='d-flex pl-3'>
-                                                        <label className='mr-1'>Vendor (Code):</label>
+                                                        <label className='mr-1'>{vendorLabel} (Code):</label>
                                                         <p title={list[0]?.Vendor} className='mr-2'>{list[0]?.Vendor ? list[0]?.Vendor : list?.[0]?.['Vendor (Code)']}</p>
                                                     </div>}
                                                     <button type="button" id="simulation-back" className={"apply back_simulationPage"} onClick={cancel}> <div className={'back-icon'}></div>Back</button>
@@ -579,7 +580,7 @@ function BDSimulation(props) {
                                                 <AgGridColumn field="BoughtOutPartNumber" tooltipField='BoughtOutPartNumber' editable='false' headerName="BOP Part No" width={columnWidths.BoughtOutPartNumber}></AgGridColumn>
                                                 <AgGridColumn field="BoughtOutPartName" tooltipField='BoughtOutPartName' editable='false' headerName="BOP Part Name" width={columnWidths.BoughtOutPartName}></AgGridColumn>
                                                 {!isImpactedMaster && <AgGridColumn field="BoughtOutPartCategory" tooltipField='BoughtOutPartCategory' editable='false' headerName="BOP Category" width={columnWidths.BoughtOutPartCategory}></AgGridColumn>}
-                                                {!isImpactedMaster && list[0].CostingTypeId !== CBCTypeId && <AgGridColumn field="Vendor" tooltipField='Vendor' editable='false' headerName="Vendor (Code)" width={columnWidths.VendorCode} cellRenderer='vendorFormatter'></AgGridColumn>}
+                                                {!isImpactedMaster && list[0].CostingTypeId !== CBCTypeId && <AgGridColumn field="Vendor" tooltipField='Vendor' editable='false' headerName={vendorLabel + " (Code)"} width={columnWidths.VendorCode} cellRenderer='vendorFormatter'></AgGridColumn>}
                                                 {!isImpactedMaster && list[0].CostingTypeId === CBCTypeId && <AgGridColumn field="CustomerName" tooltipField='CustomerName' editable='false' headerName="Customer (Code)" width={columnWidths.CustomerName} cellRenderer='customerFormatter'></AgGridColumn>}
                                                 {!isImpactedMaster && <AgGridColumn field="Plants" editable='false' headerName="Plant (Code)" tooltipField='Plant (Code)' width={columnWidths.plantCode} cellRenderer='plantFormatter'></AgGridColumn>}
                                                 {getConfigurationKey().IsMinimumOrderQuantityVisible && <AgGridColumn field="Quantity" tooltipField='Quantity' editable='false' headerName="Min Order Quantity" width={columnWidths.Quantity} cellRenderer='quantityFormatter'></AgGridColumn>}

@@ -81,7 +81,7 @@ function AddAuction(props) {
     minMinutes: currentMinutes,
 
   })
-  const { technologyLabel } = useLabels();
+  const { technologyLabel ,vendorLabel} = useLabels();
   // useSelectors
   const { RFQSelectlist } = useSelector(state => state.Auction);
   const { NoOfDecimalForPrice } = useSelector((state) => state.auth?.initialConfiguration) || {}
@@ -586,7 +586,7 @@ function AddAuction(props) {
 
                       <Col md="3">
                         <AllApprovalField
-                          label="Vendor (Code)"
+                          label={`${vendorLabel} (Code)`}
                           approverList={state.VendorList}
                           popupButton="View all"
                         />

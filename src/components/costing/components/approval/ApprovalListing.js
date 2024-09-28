@@ -90,7 +90,7 @@ function ApprovalListing(props) {
     component: 'costingApproval',
     location: "costing"
   }
-
+  const { vendorLabel } = useLabels()
   useEffect(() => {
     setIsSuperAdmin(userDetails()?.Role === "SuperAdmin")
   }, [])
@@ -663,7 +663,7 @@ function ApprovalListing(props) {
       Toaster.warning(`${technologyLabel} should be same for sending costings for approval`)
     } else if (!allEqual(vendorArray)) {
       gridApi.deselectAll()
-      Toaster.warning("Vendor should be same for sending costings for approval")
+      Toaster.warning(`${vendorLabel} should be same for sending costings for approval`)
     } else if (!allEqual(reasonArray)) {
       gridApi.deselectAll()
       Toaster.warning("Reason should be same for sending costings for approval")
@@ -686,7 +686,7 @@ function ApprovalListing(props) {
     }
     if (uniqeArray.length > 1 && allEqual(vendorArray) && allEqual(plantArray) && allEqual(partArray)) {
       gridApi.deselectAll()
-      Toaster.warning('Vendor and Plant should be different against a Part number')
+      Toaster.warning(`${vendorLabel} and Plant should be different against a Part number`)
     }
 
     setSelectedRowData(uniqeArray)
@@ -1123,7 +1123,7 @@ function ApprovalListing(props) {
                           <AgGridColumn field="CostingHead" headerName="Costing Head"  ></AgGridColumn>
                           <AgGridColumn field="PartNumber" headerName='Part No.'></AgGridColumn>
                           <AgGridColumn field="PartName" headerName="Part Name"></AgGridColumn>
-                          <AgGridColumn field="VendorName" cellRenderer='renderVendor' headerName="Vendor (Code)"></AgGridColumn>
+                          <AgGridColumn field="VendorName" cellRenderer='renderVendor' headerName={`${vendorLabel} (Code)`}></AgGridColumn>
                           <AgGridColumn field="PlantName" cellRenderer='renderPlant' headerName="Plant (Code)"></AgGridColumn>
                           {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="Customer" cellRenderer='renderCustomer' headerName="Customer (Code)"></AgGridColumn>}
                           <AgGridColumn field='TechnologyName' headerName={technologyLabel}></AgGridColumn>

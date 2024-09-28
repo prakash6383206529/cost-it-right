@@ -26,6 +26,7 @@ import { BOP_IMPACT_DOWNLOAD_EXCEl } from '../../../../config/masterData';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { simulationContext } from '..';
 import LoaderCustom from '../../../common/LoaderCustom';
+import { useLabels } from '../../../../helper/core';
 
 const gridOptions = {
 
@@ -37,7 +38,7 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 function BDNonAssociatedSimulation(props) {
     const { showEditMaster, handleEditMasterPage, showCompressedColumns, render } = useContext(simulationContext) || {};
-
+const {vendorLabel}= useLabels()
     const { list, isbulkUpload, rowCount, tokenForMultiSimulation } = props
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
     const [showverifyPage, setShowVerifyPage] = useState(false)
@@ -259,7 +260,7 @@ function BDNonAssociatedSimulation(props) {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return (
             <>
-                {isbulkUpload ? row['Vendor (Code)'] : cell}
+                {isbulkUpload ? row[`${vendorLabel} (Code)`] : cell}
 
             </>
         )
@@ -579,7 +580,7 @@ function BDNonAssociatedSimulation(props) {
                                             }
                                             <div className={`d-flex align-items-center simulation-label-container`}>
                                                 {list[0].CostingTypeId !== CBCTypeId && <div className='d-flex pl-3'>
-                                                    <label className='mr-1'>Vendor (Code):</label>
+                                                    <label className='mr-1'>{vendorLabel} (Code):</label>
                                                     <p title={list[0].Vendor} className='mr-2'>{list[0].Vendor ? list[0].Vendor : list[0]['Vendor (Code)']}</p>
                                                 </div>}
                                                 <button type="button" id="simulation-back" className={"apply back_simulationPage"} onClick={cancel}> <div className={'back-icon'}></div>Back</button>
@@ -615,7 +616,7 @@ function BDNonAssociatedSimulation(props) {
                                                 <AgGridColumn field="BoughtOutPartNumber" tooltipField='BoughtOutPartNumber' editable='false' headerName={`${showBopLabel()} Part No.`} minWidth={columnWidths.BoughtOutPartNumber}></AgGridColumn>
                                                 <AgGridColumn field="BoughtOutPartName" tooltipField='BoughtOutPartName' editable='false' headerName={`${showBopLabel()} Part Name`} minWidth={columnWidths.BoughtOutPartNumber}></AgGridColumn>
                                                 {<AgGridColumn field="BoughtOutPartCategory" tooltipField='BoughtOutPartCategory' editable='false' headerName={`${showBopLabel()} Category`} minWidth={columnWidths.BoughtOutPartCategory}></AgGridColumn>}
-                                                {list[0].CostingTypeId !== CBCTypeId && <AgGridColumn field="Vendor" tooltipField='Vendor' editable='false' headerName="Vendor (Code)" minWidth={columnWidths.Vendor} cellRenderer='vendorFormatter'></AgGridColumn>}
+                                                {list[0].CostingTypeId !== CBCTypeId && <AgGridColumn field="Vendor" tooltipField='Vendor' editable='false' headerName={vendorLabel + " (Code)"} minWidth={columnWidths.Vendor} cellRenderer='vendorFormatter'></AgGridColumn>}
                                                 {list[0].CostingTypeId === CBCTypeId && <AgGridColumn field="CustomerName" tooltipField='CustomerName' editable='false' headerName="Customer (Code)" minWidth={columnWidths.CustomerName} cellRenderer='customerFormatter'></AgGridColumn>}
                                                 {<AgGridColumn field="Plants" tooltipField='Plants' editable='false' headerName="Plant (Code)" minWidth={columnWidths.Plants} cellRenderer='plantFormatter'></AgGridColumn>}
                                                 {getConfigurationKey().IsMinimumOrderQuantityVisible && <AgGridColumn field="NumberOfPieces" tooltipField='NumberOfPieces' editable='false' headerName="Min Order Quantity" minWidth={columnWidths.NumberOfPieces} ></AgGridColumn>}
