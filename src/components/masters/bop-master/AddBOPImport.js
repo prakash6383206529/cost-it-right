@@ -1754,7 +1754,7 @@ class AddBOPImport extends Component {
                                   customClassName=" withBorder w-100 mb-0"
                                 />
                                 {!IsSAPCodeUpdated && isEditFlag && (
-                                  <Button className={"Edit ms-2 mt-2"} variant="Edit" title={"Edit"} onClick={() => { this.handleSubmitOfSapCode(handleSubmit(this.onSubmit.bind(this))) }} />
+                                  <Button className={"Edit ms-2 mt-2"} disabled={isViewMode} variant="Edit" title={"Edit"} onClick={() => { this.handleSubmitOfSapCode(handleSubmit(this.onSubmit.bind(this))) }} />
                                 )}
                               </div>
                               {IsSAPCodeHandle && isEditFlag && (
