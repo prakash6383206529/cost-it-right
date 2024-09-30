@@ -3442,7 +3442,7 @@ function AddRfq(props) {
 
                                     </Row >
 
-                                    <div className='rfq-part-list'>
+                                    <div>
                                         {/* {showTooltip && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={viewTooltip} toggle={tooltipToggle} target={"quantity-tooltip"} >{"To edit the quantity please double click on the field."}</Tooltip>} */}
                                         {!loader ? <div className={`ag-grid-react`}>
                                             <Row>
@@ -3575,7 +3575,7 @@ function AddRfq(props) {
                                             )}
 
                                             {havellsKey && (<>
-                                                <Col md="3">
+                                                <Col md={ShowLdClause(selectedOption) ? 3 : 2}>
                                                     <TextFieldHookForm
                                                         // title={titleObj.descriptionTitle}
                                                         label="Inco Terms"
@@ -3594,7 +3594,7 @@ function AddRfq(props) {
                                                         placeholder="-"
                                                     />
                                                 </Col>
-                                                <Col md="3">
+                                                <Col md={ShowLdClause(selectedOption) ? 3 : 2}>
                                                     <TextFieldHookForm
                                                         // title={titleObj.descriptionTitle}
                                                         label="Payment Terms"
@@ -3639,7 +3639,7 @@ function AddRfq(props) {
                                                 )}
                                             </>)
                                             }
-                                            <Col md="3" className='d-flex align-items-center pb-1'>
+                                            <Col md="2" className='d-flex align-items-center pb-1'>
                                                 <button
                                                     id="add_vendor"
                                                     type="button"
@@ -3945,20 +3945,16 @@ function AddRfq(props) {
                                             </button>
                                             {reviewButtonPermission && (
                                                 <>
-                                                    <button
-                                                        type="button"
-                                                        className="submit-button save-btn mr-2"
-                                                        value="save"
+                                                    <Button
                                                         id="Return_RFQ_for_Review"
-                                                        onClick={(data, e) => handleReviewButtonClick(data, e, false)}
                                                         disabled={isViewFlag}
-                                                    >
-                                                        <div className={"review-icon"}></div>
-                                                        {"Send for Review"}
-                                                    </button>
+                                                        className="save-btn mr-2"
+                                                        variant={"submit-button"}
+                                                        onClick={(data, e) => handleReviewButtonClick(data, e, false)}
+                                                        icon={"send-for-approval"}
+                                                        buttonName={"Send for Review"} />
                                                 </>
                                             )}
-
 
                                             {
                                                 <button type="button" className="submit-button save-btn mr-2" value="save"
