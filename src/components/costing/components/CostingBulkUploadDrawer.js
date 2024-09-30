@@ -13,6 +13,7 @@ import { getCostingTechnologySelectList, } from '../actions/Costing'
 import { searchableSelect } from '../../layout/FormInputs';
 import LoaderCustom from '../../common/LoaderCustom';
 import { getConfigurationKey, loggedInUserId } from '../../../helper';
+import { useForm } from 'react-hook-form';
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -20,6 +21,7 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const CostingBulkUploadDrawer = (props) => {
     const dropzone = useRef(null);
     const dispatch = useDispatch();
+    const { register, handleSubmit, formState: { errors }, control } = useForm();
     const [state, setState] = useState({
         files: [],
         fileData: '',
@@ -83,44 +85,52 @@ const CostingBulkUploadDrawer = (props) => {
     }
 
     const handleTechnologyChange = (value) => {
-                setState((prev) => ({ ...prev, Technology: value }))
+        setState((prev) => ({ ...prev, Technology: value }))
     }
 
     // called every time a file's `status` changes
     const handleChangeStatus = ({ meta, file }, status) => {
-
-        const { files } = state
+        const { files } = state;
         let fileObj = files[0];
 
-        let data = new FormData()
-        data.append('file', fileObj)
-        setState((prev) => ({ ...prev, attachmentLoader: true }))
+        let data = new FormData();
+        data.append('file', fileObj);
+
+        setState((prev) => ({ ...prev, attachmentLoader: true }));
+
         if (status === 'removed') {
-            const removedFileName = file.name
-            let tempArr = files.filter((item) => item.OriginalFileName !== removedFileName)
-            setState((prev) => ({ ...prev, files: tempArr }))
-        }
-
-        if (status === 'done') {
-            setState((prev) => ({ ...prev, fileName: file.name, fileData: file, attachmentLoader: false }))
-        }
-
-        if (status === 'rejected_file_type') {
-            dropzone.current.files.pop()
-            setState((prev) => ({ ...prev, attachmentLoader: false }))
-            Toaster.warning('Allowed only xlsx files.')
+            const removedFileName = file.name;
+            let tempArr = files.filter((item) => item.OriginalFileName !== removedFileName);
+            setState((prev) => ({
+                ...prev,
+                files: tempArr,
+                attachmentLoader: false
+            }));
+        } else if (status === 'done') {
+            setState((prev) => ({
+                ...prev,
+                fileName: file.name,
+                fileData: file,
+                attachmentLoader: false
+            }));
+        } else if (status === 'rejected_file_type') {
+            dropzone.current.files.pop();
+            setState((prev) => ({ ...prev, attachmentLoader: false }));
+            Toaster.warning('Allowed only xlsx files.');
         } else if (status === 'error_file_size') {
-            dropzone.current.files.pop()
-            setState((prev) => ({ ...prev, attachmentLoader: false }))
-            Toaster.warning("File size greater than 2mb not allowed")
+            dropzone.current.files.pop();
+            setState((prev) => ({ ...prev, attachmentLoader: false }));
+            Toaster.warning("File size greater than 2mb not allowed");
         } else if (status === 'error_validation'
-            || status === 'error_upload_params' || status === 'exception_upload'
-            || status === 'aborted' || status === 'error_upload') {
-            dropzone.current.files.pop()
-            setState((prev) => ({ ...prev, attachmentLoader: false }))
-            Toaster.warning("Something went wrong")
+            || status === 'error_upload_params'
+            || status === 'exception_upload'
+            || status === 'aborted'
+            || status === 'error_upload') {
+            dropzone.current.files.pop();
+            setState((prev) => ({ ...prev, attachmentLoader: false }));
+            Toaster.warning("Something went wrong");
         }
-    }
+    };
 
     const toggleDrawer = (event) => {
         if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
@@ -184,12 +194,12 @@ const CostingBulkUploadDrawer = (props) => {
     const handleApiResponse = (res, files) => {
         setState((prev) => ({ ...prev, isLoader: false }));
         if (res.status === 400) {
+
             let Data = res.data.Data
             const withOutTild = Data?.FileURL?.replace("~", "");
             const fileURL = `${FILE_URL}${withOutTild}`;
             window.open(fileURL, '_blank');
         } else {
-            setState((prev) => ({ ...prev, isLoader: false }));
             let Data = res.data[0]
             const { files } = state
             files.push(Data)
@@ -197,9 +207,25 @@ const CostingBulkUploadDrawer = (props) => {
         cancel(); // Close the drawer after handling the response
 
     }
-
+    const uploadFunctions = {
+        [SHEETMETAL_GROUP_BULKUPLOAD]: bulkUploadCosting,
+        [SHEETMETAL]: bulkUploadCosting,
+        [PLASTIC_GROUP_BULKUPLOAD]: plasticBulkUploadCosting,
+        [MACHINING_GROUP_BULKUPLOAD]: machiningBulkUploadCosting,
+        [CORRUGATED_BOX]: corrugatedBoxBulkUploadCosting,
+        [ASSEMBLY]: assemblyBulkUploadCosting,
+        [WIRINGHARNESS]: wiringHarnessBulkUploadCosting,
+        [DIE_CASTING]: diecastingBulkUploadCosting,
+        [INSULATION]: InsulationBulkUploadCosting,
+        [ELECTRICAL_STAMPING]: ElectricalStampingCostingBulkImport,
+    };
     const onSubmit = (value) => {
         const { fileData, Technology, costingVersion } = state;
+
+        if (!Technology || !Technology.value) {
+            Toaster.warning('Please select a Technology.');
+            return false;
+        }
 
         if (fileData.length === 0) {
             Toaster.warning('Please select a file to upload.')
@@ -212,39 +238,12 @@ const CostingBulkUploadDrawer = (props) => {
         data.append('IsShowRawMaterialInOverheadProfitAndICC', getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC)
         data.append('version', costingVersion)
         setState((prev) => ({ ...prev, isLoader: true }));
-        switch (Number(Technology.value)) {
-            case SHEETMETAL_GROUP_BULKUPLOAD:
-            case SHEETMETAL:
-                dispatch(bulkUploadCosting(data, costingVersion, handleApiResponse))
-                break;
-            case PLASTIC_GROUP_BULKUPLOAD:
-                dispatch(plasticBulkUploadCosting(data, costingVersion, handleApiResponse))
-                break;
-            case MACHINING_GROUP_BULKUPLOAD:
-                dispatch(machiningBulkUploadCosting(data, costingVersion, handleApiResponse))
-                break;
-            case CORRUGATED_BOX:
-                dispatch(corrugatedBoxBulkUploadCosting(data, handleApiResponse))
-                break;
-            case ASSEMBLY:
-                dispatch(assemblyBulkUploadCosting(data, handleApiResponse))
-                break;
-            case WIRINGHARNESS:
-                dispatch(wiringHarnessBulkUploadCosting(data, handleApiResponse))
-                break;
-
-            case DIE_CASTING:
-                dispatch(diecastingBulkUploadCosting(data, handleApiResponse))
-                break;
-
-            case INSULATION:
-                dispatch(InsulationBulkUploadCosting(data, handleApiResponse))
-                break;
-            case ELECTRICAL_STAMPING:
-                dispatch(ElectricalStampingCostingBulkImport(data, handleApiResponse))
-                break;
-            default:
-                break;
+        const uploadFunction = uploadFunctions[Number(Technology.value)];
+        if (uploadFunction) {
+            dispatch(uploadFunction(data, costingVersion, handleApiResponse));
+        } else {
+            setState((prev) => ({ ...prev, isLoader: false }));
+            Toaster.error('Invalid technology selected');
         }
     }
 
@@ -252,7 +251,6 @@ const CostingBulkUploadDrawer = (props) => {
 
         setState((prev) => ({ ...prev, costingVersion: value, Technology: [] }))
     }
-
 
     return (
         <>
@@ -269,7 +267,7 @@ const CostingBulkUploadDrawer = (props) => {
                         <form
                             noValidate
                             className="form"
-                            onSubmit={onSubmit}
+                            onSubmit={handleSubmit(onSubmit)}
                         >
                             <Row className="drawer-heading">
                                 <Col>
@@ -443,7 +441,7 @@ const CostingBulkUploadDrawer = (props) => {
                                             <div className={'cancel-icon'}></div>
                                             CANCEL
                                         </button>
-                                        <button type="submit" className="btn-primary save-btn">
+                                        <button type="submit" className="btn-primary save-btn" disabled={state.isLoader || state.attachmentLoader}>
                                             <div className={'save-icon'}></div>
                                             {"SAVE"}
                                         </button>

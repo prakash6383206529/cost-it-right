@@ -13,7 +13,7 @@ import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import AddUOM from '../uom-master/AddUOM';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
-import { FILE_URL, ZBC, OPERATIONS_ID, EMPTY_GUID, SPACEBAR, VBCTypeId, CBCTypeId, ZBCTypeId, searchCount, VBC_VENDOR_TYPE, GUIDE_BUTTON_SHOW, effectiveDateRangeDays } from '../../../config/constants';
+import { FILE_URL, ZBC, OPERATIONS_ID, EMPTY_GUID, SPACEBAR, VBCTypeId, CBCTypeId, ZBCTypeId, searchCount, VBC_VENDOR_TYPE } from '../../../config/constants';
 import { AcceptableOperationUOM, LOGISTICS } from '../../../config/masterData'
 import DayTime from '../../common/DayTimeWrapper'
 import imgRedcross from '../../../assests/images/red-cross.png';
@@ -25,7 +25,7 @@ import { CheckApprovalApplicableMaster, onFocus, showDataOnHover, userTechnology
 import { getCostingSpecificTechnology } from '../../costing/actions/Costing'
 import { getClientSelectList, } from '../actions/Client';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { autoCompleteDropdown, costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission } from '../../common/CommonFunctions';
+import { autoCompleteDropdown, costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission, getEffectiveDateMinDate } from '../../common/CommonFunctions';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { checkFinalUser } from '../../../components/costing/actions/Costing'
 import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions';
@@ -707,7 +707,9 @@ class AddOperation extends Component {
 
   handleDestinationPlant = (newValue) => {
     this.setState({ destinationPlant: newValue })
-    this.commonFunction(newValue ? newValue.value : '')
+    if (!this.state.isViewMode && getConfigurationKey()?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !getConfigurationKey()?.IsDivisionAllowedForDepartment) {
+      this.commonFunction(newValue ? newValue.value : '')
+    }
   }
   /**
   * @method handleClient
@@ -781,14 +783,14 @@ class AddOperation extends Component {
       return technologyArray;
     })
     let plantArray = []
-    // if (costingTypeId === VBCTypeId) {
-    plantArray.push({ PlantName: destinationPlant.label, PlantId: destinationPlant.value, PlantCode: '', })
-    // } else {
-    //   selectedPlants && selectedPlants.map((item) => {
-    //     plantArray.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '', })
-    //     return plantArray
-    //   })
-    // }
+    if (costingTypeId === VBCTypeId || (costingTypeId === ZBCTypeId && initialConfiguration?.IsMultipleUserAllowForApproval)) {
+      plantArray.push({ PlantName: destinationPlant.label, PlantId: destinationPlant.value, PlantCode: '', })
+    } else {
+      selectedPlants && selectedPlants.map((item) => {
+        plantArray.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '', })
+        return plantArray
+      })
+    }
     let cbcPlantArray = []
     if (getConfigurationKey().IsCBCApplicableOnPlant && costingTypeId === CBCTypeId) {
       cbcPlantArray.push({ PlantName: destinationPlant.label, PlantId: destinationPlant.value, PlantCode: '', })
@@ -1191,7 +1193,7 @@ class AddOperation extends Component {
 
                     <Row>
                       {/* might use later */}
-                      {/* {(costingTypeId === ZBCTypeId && !initialConfiguration.IsMultipleUserAllowForApproval) && (
+                      {(costingTypeId === ZBCTypeId && !initialConfiguration.IsMultipleUserAllowForApproval) && (
                         <Col md="3">
                           <Field
                             label="Plant (Code)"
@@ -1210,7 +1212,7 @@ class AddOperation extends Component {
                             disabled={isEditFlag ? true : false}
                           />
                         </Col>
-                      )} */}
+                      )}
                       {costingTypeId === VBCTypeId && (
                         <Col md="3"><label>{"Vendor (Code)"}<span className="asterisk-required">*</span></label>
                           <div className="d-flex justify-space-between align-items-center async-select">
@@ -1373,7 +1375,7 @@ class AddOperation extends Component {
                             onChange={this.handleEffectiveDateChange}
                             type="text"
                             validate={[required]}
-                            minDate={isEditFlag ? this.state.minEffectiveDate : subDays(new Date(), effectiveDateRangeDays)}
+                            minDate={isEditFlag ? this.state.minEffectiveDate : getEffectiveDateMinDate()}
                             autoComplete={'off'}
                             required={true}
                             changeHandler={(e) => {

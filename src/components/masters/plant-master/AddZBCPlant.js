@@ -8,7 +8,7 @@ import { focusOnError, renderText, renderTextInputField, searchableSelect } from
 import { createPlantAPI, getPlantUnitAPI, updatePlantAPI, getComapanySelectList } from '../actions/Plant';
 import {
   fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, fetchSupplierCityDataAPI,
-  getCityByCountry,
+  getCityByCountryAction,
 } from '../../../actions/Common';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
@@ -149,7 +149,7 @@ class AddZBCPlant extends Component {
   getAllCityData = () => {
     const { country } = this.state;
     if (country && country.label !== 'India') {
-      this.props.getCityByCountry(country.value, '00000000000000000000000000000000', () => { })
+      this.props.getCityByCountryAction(country.value, '00000000000000000000000000000000','', () => { })
     } else {
       this.props.fetchStateDataAPI(country.value, () => { })
     }
@@ -257,9 +257,9 @@ class AddZBCPlant extends Component {
     const userDetail = userDetails();
     if (isEditFlag) {
 
-      if (DropdownChanged && DataToCheck.PlantName === values.PlantName && DataToCheck.PhoneNumber === values.PhoneNumber &&
-        DataToCheck.Extension === values.Extension && DataToCheck.AddressLine1 === values.AddressLine1 &&
-        DataToCheck.AddressLine2 === values.AddressLine2 && DataToCheck.ZipCode === values.ZipCode) {
+      if (DropdownChanged && DataToCheck?.PlantName === values?.PlantName && DataToCheck?.PhoneNumber === values?.PhoneNumber &&
+        DataToCheck?.Extension === values?.Extension && DataToCheck?.AddressLine1 === values?.AddressLine1 &&
+        DataToCheck?.AddressLine2 === values?.AddressLine2 && DataToCheck?.ZipCode === values?.ZipCode) {
 
         this.toggleDrawer('', 'cancel')
         return false
@@ -269,22 +269,22 @@ class AddZBCPlant extends Component {
       let updateData = {
         PlantId: PlantId,
         CreatedDate: '',
-        CityName: city.label,
+        CityName: city.label || '',
         IsActive: true,
         ModifiedBy: loggedInUserId(),
-        PlantName: values.PlantName,
-        PlantCode: values.PlantCode,
+        PlantName: values?.PlantName || '',
+        PlantCode: values?.PlantCode || '',
         IsVendor: false,
-        AddressLine1: values.AddressLine1 ? values.AddressLine1.trim() : values.AddressLine1,
-        AddressLine2: values.AddressLine2 ? values.AddressLine2.trim() : values.AddressLine2,
-        ZipCode: values.ZipCode,
-        PhoneNumber: values.PhoneNumber,
-        Extension: values.Extension,
+        AddressLine1: values?.AddressLine1 ? values?.AddressLine1.trim() : values?.AddressLine1 || '',
+        AddressLine2: values?.AddressLine2 ? values?.AddressLine2.trim() : values?.AddressLine2 || '',
+        ZipCode: values?.ZipCode || '',
+        PhoneNumber: values?.PhoneNumber || '',
+        Extension: values?.Extension || '',
         CreatedByUserId: loggedInUserId(),
-        CityId: city.value,
+        CityId: city.value || '',
         EVendorType: 0,
-        VendorId: userDetail.ZBCSupplierInfo.VendorId,
-        CompanyId: company.value,
+        VendorId: userDetail.ZBCSupplierInfo.VendorId || '',
+        CompanyId: company.value || '',
         CostingTypeId: ZBCTypeId
       }
       this.props.updatePlantAPI(PlantId, updateData, (res) => {
@@ -299,22 +299,21 @@ class AddZBCPlant extends Component {
 
       this.setState({ setDisable: true })
       let formData = {
-        PlantName: values.PlantName,
-        PlantCode: values.PlantCode,
+        PlantName: values?.PlantName,
+        PlantCode: values?.PlantCode,
         IsVendor: false,
-        AddressLine1: values.AddressLine1 ? values.AddressLine1.trim() : values.AddressLine1,
-        AddressLine2: values.AddressLine2 ? values.AddressLine2.trim() : values.AddressLine2,
-        ZipCode: values.ZipCode,
-        PhoneNumber: values.PhoneNumber,
-        Extension: values.Extension,
+        AddressLine1: values?.AddressLine1 ? values?.AddressLine1.trim() : values?.AddressLine1 || '',
+        AddressLine2: values?.AddressLine2 ? values?.AddressLine2.trim() : values?.AddressLine2 || '',
+        ZipCode: values?.ZipCode || '',
+        PhoneNumber: values?.PhoneNumber || '',
+        Extension: values?.Extension || '',
         CreatedByUserId: loggedInUserId(),
-        CityId: city.value,
+        CityId: city.value || '',
         EVendorType: 0,
-        VendorId: userDetail.ZBCSupplierInfo.VendorId,
-        CompanyId: company.value,
+        VendorId: userDetail.ZBCSupplierInfo.VendorId || '',
+        CompanyId: company.value || '',
         CostingTypeId: ZBCTypeId
       }
-
       this.props.createPlantAPI(formData, (res) => {
         this.setState({ setDisable: false })
         if (res?.data?.Result === true) {
@@ -331,7 +330,7 @@ class AddZBCPlant extends Component {
     } else {
       this.setState({ company: [] })
     }
-    if (Number(value.value) !== Number(this.state.DataToCheck.CompanyId)) {
+    if (Number(value.value) !== Number(this.state.DataToCheck?.CompanyId)) {
       this.setState({ isCompanyChanged: true })
     } else {
       this.setState({ isCompanyChanged: false })
@@ -646,13 +645,13 @@ function mapStateToProps({ comman, plant, auth }) {
   let initialValues = {};
   if (plantUnitDetail && plantUnitDetail !== undefined) {
     initialValues = {
-      PlantName: plantUnitDetail.PlantName,
-      PlantCode: plantUnitDetail.PlantCode,
-      PhoneNumber: plantUnitDetail.PhoneNumber,
-      Extension: plantUnitDetail.Extension,
-      AddressLine1: plantUnitDetail.AddressLine1,
-      AddressLine2: plantUnitDetail.AddressLine2,
-      ZipCode: plantUnitDetail.ZipCode,
+      PlantName: plantUnitDetail?.PlantName || '',
+      PlantCode: plantUnitDetail?.PlantCode || '',
+      PhoneNumber: plantUnitDetail?.PhoneNumber || '',
+      Extension: plantUnitDetail?.Extension || '',
+      AddressLine1: plantUnitDetail?.AddressLine1 || '',
+      AddressLine2: plantUnitDetail?.AddressLine2 || '',
+      ZipCode: plantUnitDetail?.ZipCode || '',
     }
   }
   return { countryList, stateList, cityList, initialValues, plantUnitDetail, initialConfiguration, companySelectList }
@@ -672,7 +671,7 @@ export default connect(mapStateToProps, {
   getPlantUnitAPI,
   fetchSupplierCityDataAPI,
   updatePlantAPI,
-  getCityByCountry,
+  getCityByCountryAction,
   getComapanySelectList
 })(reduxForm({
   form: 'AddZBCPlant',

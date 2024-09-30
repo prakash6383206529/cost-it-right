@@ -12,7 +12,7 @@ import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
 import DayTime from '../../common/DayTimeWrapper'
 import "react-datepicker/dist/react-datepicker.css";
-import { effectiveDateRangeDays, FILE_URL } from '../../../config/constants';
+import { FILE_URL } from '../../../config/constants';
 import LoaderCustom from '../../common/LoaderCustom';
 import imgRedcross from "../../../assests/images/red-cross.png";
 import { debounce } from 'lodash';
@@ -23,6 +23,7 @@ import { withTranslation } from 'react-i18next';
 import Button from '../../layout/Button';
 import AssociateHierarchy from './AssociateHierarchy';
 import { subDays } from 'date-fns';
+import { getEffectiveDateMinDate } from '../../common/CommonFunctions';
 
 class AddIndivisualProduct extends Component {
     constructor(props) {
@@ -528,7 +529,7 @@ class AddIndivisualProduct extends Component {
                                                                     name="EffectiveDate"
                                                                     placeholder={isViewMode ? '-' : "Select Date"}
                                                                     selected={this.state.effectiveDate}
-                                                                    minDate={isEditFlag ? this.state.minEffectiveDate : subDays(new Date(), effectiveDateRangeDays)}
+                                                                    minDate={isEditFlag ? this.state.minEffectiveDate :getEffectiveDateMinDate()}
                                                                     onChange={this.handleEffectiveDateChange}
                                                                     type="text"
                                                                     validate={[required]}

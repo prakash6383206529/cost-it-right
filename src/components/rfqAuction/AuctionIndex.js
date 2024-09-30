@@ -205,6 +205,7 @@ function AuctionIndex(props) {
                 {activeTab === "2" && (
                   <TabPane tabId="2">
                     <AuctionScheduled activeTab={activeTab}
+                      hide={formToggle}
                       ViewRMAccessibility={ViewRMAccessibility}
                       AddAccessibility={AddAccessibility}
                       EditAccessibility={EditAccessibility}

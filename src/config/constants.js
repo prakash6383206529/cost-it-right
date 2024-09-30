@@ -1159,6 +1159,7 @@ export const API = {
   updateShowVendorRank: `${BASE_URL}/rfq-quotation/update-display-rank-to-vendor`,
   updateAuctionDuration: `${BASE_URL}/rfq-quotation/update-auction-duration-extension`,
   closeAuction: `${BASE_URL}/rfq-quotation/closed-auction`,
+  reScheduleAuction: `${BASE_URL}/rfq-quotation/re-schedule-auction`,
 
   //MINDA
   pushNfrOnSap: `${BASE_URL}/nfr/push-nfr-on-sap`,
@@ -3243,14 +3244,14 @@ export const customHavellsChanges = true
 export const countDownBlinkingTime = 2
 export const clientName = 'Havells'
 export const isShowTaxCode = true
-export const effectiveDateRangeDays = ''
+export const effectiveDateRangeDays = null
 // CONSTANT FOR COSTING ENTRY TYPE ID
 export const COMMODITYCOST = 'Commodity Cost'
 export const RAWMATERIALCOST = 'Raw Material Other Cost'
 export const COSTINGCONDITIONCOST = 'Costing Condition Cost'
 
 //VERSION 
-export const VERSION = "V3.1.9";
+export const VERSION = "V3.1.10";
 
 
 

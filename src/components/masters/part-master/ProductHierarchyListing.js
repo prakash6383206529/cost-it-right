@@ -57,6 +57,10 @@ const ProductHierarchyListing = (props) => {
 
     const formToggle = () => {
         setState((prevState) => ({ ...prevState, isDrawerOpen: !state.isDrawerOpen }));
+        dispatch(getAllProductLevels((res) => {
+            setState(prevState => ({ ...prevState, isLoader: false, rowData: productHierarchyData }))
+        }))
+
     };
 
     const onGridReady = (params) => {

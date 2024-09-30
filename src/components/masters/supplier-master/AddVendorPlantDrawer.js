@@ -5,7 +5,7 @@ import { Container, Row, Col, } from 'reactstrap';
 import { required, number, minLength10, maxLength12, maxLength6 } from "../../../helper/validation";
 import { renderText, renderTextInputField, searchableSelect } from "../../layout/FormInputs";
 import { createPlantAPI, } from '../actions/Plant';
-import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, fetchSupplierCityDataAPI, getCityByCountry, } from '../../../actions/Common';
+import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, fetchSupplierCityDataAPI, getCityByCountryAction, } from '../../../actions/Common';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId } from "../../../helper/auth";
@@ -70,7 +70,7 @@ class AddVendorPlantDrawer extends Component {
   getAllCityData = () => {
     const { country } = this.state;
     if (country && country.label !== 'India') {
-      this.props.getCityByCountry(country.value, '00000000000000000000000000000000', () => { })
+      this.props.getCityByCountryAction(country.value, '00000000000000000000000000000000','', () => { })
     } else {
       this.props.fetchStateDataAPI(country.value, () => { })
     }
@@ -490,7 +490,7 @@ export default connect(mapStateToProps, {
   fetchStateDataAPI,
   fetchCityDataAPI,
   fetchSupplierCityDataAPI,
-  getCityByCountry,
+  getCityByCountryAction,
 })(reduxForm({
   form: 'AddVendorPlantDrawer',
   enableReinitialize: true,
