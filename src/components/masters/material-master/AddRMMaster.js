@@ -609,6 +609,7 @@ function AddRMMaster(props) {
                             disableAll={state.disableAll}
                             isSourceVendorApiCalled={state?.isSourceVendorApiCalled}
                             commonFunction={commonFunction}
+                            masterLevels={state.masterLevels}
                         />
                         <AddRMFinancialDetails states={state}
                             Controller={Controller}
