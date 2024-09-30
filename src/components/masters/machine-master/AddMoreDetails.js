@@ -624,7 +624,9 @@ class AddMoreDetails extends Component {
   */
   handlePlants = (newValue, actionMeta) => {
     const { IsUsesSolarPower, machineFullValue, effectiveDate } = this.state;
-    this.commonFunction(newValue.value)
+    if (!this.state.isViewMode && getConfigurationKey()?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !getConfigurationKey()?.IsDivisionAllowedForDepartment) {
+      this.commonFunction(newValue ? newValue.value : '')
+    }
     const { initialConfiguration, editDetails } = this.props
     let editMode = editDetails.isEditFlag ? editDetails.isEditFlag : false
     if (!editMode) {
@@ -4574,7 +4576,7 @@ class AddMoreDetails extends Component {
 
                         {
                           !isViewMode && <>
-                            {(!isViewMode && (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure) || !CostingTypePermission ?
+                            {(!isViewMode && initialConfiguration.IsMasterApprovalAppliedConfigure && (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar)) || (initialConfiguration.IsMasterApprovalAppliedConfigure && !CostingTypePermission) ?
                               <button id="AddMoreDetails_SendForApproval" type="submit"
                                 class="user-btn approval-btn save-btn mr5"
 

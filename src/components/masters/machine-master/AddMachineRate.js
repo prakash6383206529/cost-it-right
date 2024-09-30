@@ -622,7 +622,9 @@ class AddMachineRate extends Component {
   * @description called
   */
   handlePlants = (newValue, actionMeta) => {
-    this.commonFunction(newValue ? newValue.value : '')
+    if (!this.state.isViewMode && getConfigurationKey()?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !getConfigurationKey()?.IsDivisionAllowedForDepartment) {
+      this.commonFunction(newValue ? newValue.value : '')
+    }
     if (newValue && newValue !== '') {
       this.setState({ selectedPlants: newValue, })
     } else {
