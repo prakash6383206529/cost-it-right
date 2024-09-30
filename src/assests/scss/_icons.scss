@@ -341,6 +341,11 @@
     margin-right: 5px;
 }
 
+.send-for-review {
+    @include icons("../../images/send-for-review-white.svg", 20px, 20px);
+    margin-right: 2px;
+}
+
 .compare-arrows {
     @include icons("../../images/compare.svg", 20px, 14px);
     margin-right: 5px;
@@ -387,6 +392,12 @@
 
 .Bulk {
     @include icons("../../images/Upload.svg");
+    @include extra-icon-styles;
+}
+
+.Send.For.Review {
+    @include icons("../../images/send-for-review.svg");
+    border-radius: 2px;
     @include extra-icon-styles;
 }
 

@@ -4093,7 +4093,7 @@ function AddRfq(props) {
                                                         className="save-btn mr-2"
                                                         variant={"submit-button"}
                                                         onClick={(data, e) => handleReviewButtonClick(data, e, false)}
-                                                        icon={"send-for-approval"}
+                                                        icon={"send-for-review "}
                                                         buttonName={"Send for Review"} />
                                                 </>
                                             )}
