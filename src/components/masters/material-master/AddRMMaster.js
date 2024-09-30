@@ -37,7 +37,7 @@ function AddRMMaster(props) {
         mode: 'onChange',
         reValidateMode: 'onChange',
     });
-    const {  vendorLabel } = useLabels();
+    const { vendorLabel } = useLabels();
 
     const dispatch = useDispatch()
     const [state, setState] = useState({
@@ -67,6 +67,7 @@ function AddRMMaster(props) {
         isSourceVendorApiCalled: false,
         sourceVendorRawMaterialId: null,
         isSourceVendor: false,
+        masterLevels: []
     })
     const isViewFlag = data?.isViewFlag === true ? true : false
     const rawMaterailDetails = useSelector((state) => state.material.rawMaterailDetails)
@@ -204,6 +205,7 @@ function AddRMMaster(props) {
     const finalUserCheckAndMasterLevelCheckFunction = (plantId, isDivision = false) => {
         if (!isViewFlag && getConfigurationKey().IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {
             dispatch(getUsersMasterLevelAPI(loggedInUserId(), RM_MASTER_ID, (res) => {
+                setState(prevState => ({ ...prevState, masterLevels: res?.data?.Data?.MasterLevels }))
                 setTimeout(() => {
                     commonFunction(plantId, isDivision, res?.data?.Data?.MasterLevels)
                 }, 500);

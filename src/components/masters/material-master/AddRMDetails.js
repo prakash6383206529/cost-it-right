@@ -284,7 +284,7 @@ function AddRMDetails(props) {
         }
         dispatch(SetRawMaterialDetails({ Plants: newValue }, () => { }))
         if (getConfigurationKey()?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !getConfigurationKey()?.IsDivisionAllowedForDepartment) {
-            props?.commonFunction(newValue ? newValue.value : '')
+            props?.commonFunction(newValue ? newValue.value : '', false, props?.masterLevels)
         }
     }
     /**
