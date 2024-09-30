@@ -88,6 +88,7 @@ function AddRfq(props) {
     const [partList, setPartList] = useState([])
 
 
+
     const [vendorList, setVendorList] = useState([])
     const [updateButtonPartNoTable, setUpdateButtonPartNoTable] = useState(false)
     const [updateButtonVendorTable, setUpdateButtonVendorTable] = useState(false)
@@ -135,6 +136,8 @@ function AddRfq(props) {
     const [drawerOpen, setDrawerOpen] = useState(false)
     const [partTypeforRM, setPartTypeforRM] = useState([])
     const [assemblyPartNumber, setAssemblyPartNumber] = useState('')
+    const [partNumberWithName, setPartNumberWithName] = useState('')
+
     const [selectedUOM, setSelectedUOM] = useState('')
     const [requirementDate, setRequirementDate] = useState('')
     // below key is for managing the fields required for havells
@@ -147,7 +150,9 @@ function AddRfq(props) {
     const [tableData, setTableData] = useState([])
     const [specificationList, setSpecificationList] = useState([])
     const [remark, setRemark] = useState("");
+
     const [childPartFiles, setChildPartFiles] = useState([])
+
     const [havellsDesignPart, setHavellsDesignPart] = useState([])
     const [targetPrice, setTargetPrice] = useState("")
     const [quotationIdentity, setQuotationIdentity] = useState('')
@@ -781,6 +786,7 @@ function AddRfq(props) {
                 setPartName({ label: rowData?.PartNumber, value: rowData?.PartId })
                 setRequirementDate(rowData?.TimeLine || '')
                 setAssemblyPartNumber({ label: rowData?.PartNumber, value: rowData?.PartId })
+                //setPartNumberWithName({ label: rowData?.PartNumberWithName, value: rowData?.PartId })
                 setPartTypeforRM(rowData?.PartTypeId)
 
             }, 200);
@@ -804,6 +810,8 @@ function AddRfq(props) {
                 setPartName({ label: rowData?.PartNumber, value: rowData?.PartId })
                 setRequirementDate(rowData?.TimeLine || '')
                 setAssemblyPartNumber({ label: rowData?.PartNumber, value: rowData?.PartId })
+                //setPartNumberWithName({ label: rowData?.PartNumberWithName, value: rowData?.PartId })
+
                 setPartTypeforRM(rowData?.PartTypeId)
 
             }, 200);
@@ -818,9 +826,9 @@ function AddRfq(props) {
             if (selectedOption === "componentAssembly") {
                 const PartList = res?.data?.Data?.PartList
                 setStorePartsDetail(PartList)
-                if (!ProcessDrawer) {
-                    setRemark(PartList?.Remarks)
-                    setChildPartFiles(PartList?.Attachments || [])
+                if (!drawerOpen) {
+                    setRemark(PartList[0]?.Remarks)
+                    setChildPartFiles(PartList[0]?.Attachments || [])
                 }
 
 
@@ -1555,6 +1563,8 @@ function AddRfq(props) {
                     newObjTemp.HavellsDesignPart = getValues('HavellsDesignPart')?.label;
                     newObjTemp.HavellsDesignPartId = getValues('HavellsDesignPart')?.value;
                     newObjTemp.Description = getValues('Description') || "";
+                    newObjTemp.PartName = getValues('Description') || "";
+
 
 
                     arrTemp.push(newObjTemp);  // Push the new object to the array
@@ -1788,6 +1798,8 @@ function AddRfq(props) {
                 newObjTemp.HavellsDesignPartId = getValues('HavellsDesignPart')?.value;
                 newObjTemp.Description = getValues('Description') || "";
                 newObjTemp.SOPQuantityDetails = sopQuantityList;
+                newObjTemp.PartName = getValues('Description') || "";
+
 
                 if (selectedOption === "Raw Material") {
                     // Set properties specific to Raw Material
@@ -1830,7 +1842,7 @@ function AddRfq(props) {
                             return item?.RawMaterialChildId === editRawMaterialId ? { ...item, ...arrTemp[0] } : item;
                         });
                     } else if (selectedOption === "componentAssembly") {
-                        arr = partList.map(item => {
+                        arr = partList?.map(item => {
                             // Check PartId for componentAssembly
                             if (item?.PartId === getValues('partNumber')?.value) {
                                 QuotationPartId = item?.QuotationPartId
@@ -1949,7 +1961,7 @@ function AddRfq(props) {
 
                     // Populate PartSpecificationList object
                     PartSpecificationList = {
-                        QuotationPartIdRef: temppartObj?.PartId || 0,
+                        QuotationPartIdRef: updateButtonPartNoTable ? QuotationPartId : null,
                         PartSpecification: PartSpecification
                     };
 
@@ -2108,7 +2120,7 @@ function AddRfq(props) {
 
                                     // Populate PartSpecificationList object
                                     PartSpecificationList = {
-                                        QuotationPartIdRef: tempBopObj?.BoughtOutPartChildId || 0,
+                                        QuotationPartIdRef: updateButtonPartNoTable ? QuotationPartId : null,
                                         PartSpecification: PartSpecification
                                     };
                                     tempBopObj.PartSpecificationList = PartSpecificationList;
@@ -2148,7 +2160,7 @@ function AddRfq(props) {
                                 temppartObj.ToolChildList = rmList;
                             }
                             temppartObj.IsChildPart = false
-                            temppartObj.QuotationPartId = updateButtonPartNoTable ? QuotationPartId : ""
+                            temppartObj.QuotationPartId = updateButtonPartNoTable ? QuotationPartId : null
                             temppartObj.PartType = partType?.label || ''
                             temppartObj.TargetPrice = getTargetprice?.TargetPrice || "-"
                             temppartObj.TimeLine = requirementDate || "";
@@ -2313,6 +2325,8 @@ function AddRfq(props) {
                     setSopQuantityList([])
                     setSOPDate('')
                     setAssemblyPartNumber('')
+                    //setPartNumberWithName("")
+
                     // setQuotationIdentity('');
                     setStorePartsDetail([]);
                     dispatch(clearGradeSelectList([]));
@@ -2327,6 +2341,7 @@ function AddRfq(props) {
 
                     setBopList([])
                     setIsDisabled(false)
+                    onResetPartNoTable()
                     // setPrNumber([])
                     //dispatch(setQuotationIdForRfq(""))
                 }, 200)
@@ -2577,23 +2592,67 @@ function AddRfq(props) {
         }
         if (updateButtonPartNoTable) {
             setStorePartsDetail((prevDetails) => {
-                return prevDetails.map((item) => {
+                const updatedDetails = prevDetails?.map((item) => {
+                    let QuotationPartId = null;
+
+                    switch (selectedOption) {
+                        case "Bought Out Part":
+                            bopDataList?.forEach(item => {
+                                if (item?.BoughtOutPartChildId === editBopId) {
+                                    QuotationPartId = item?.QuotationPartId
+                                }
+                            })
+                            break
+                        case "Raw Material":
+                            rmDataList?.forEach(item => {
+                                if (item?.RawMaterialChildId === editRawMaterialId) {
+                                    QuotationPartId = item?.QuotationPartId
+                                }
+                            })
+                            break
+                        case "componentAssembly":
+                            partList?.forEach((part) => {
+                                if (part?.PartId === getValues('partNumber')?.value) {
+                                    QuotationPartId = part?.QuotationPartId;
+                                }
+                            })
+                            break
+                        case "Tooling":
+                            toolingList?.forEach(item => {
+                                if (item?.PartId === editToolingId) {
+                                    QuotationPartId = item?.QuotationPartId
+                                }
+                            })
+                            break
+                        default:
+                    }
+                    const PartSpecificationList = {
+                        QuotationPartIdRef: QuotationPartId || null,
+                        PartSpecification: item?.PartSpecification || [],
+                    };
                     if (item?.PartId === getValues('partNumber')?.value) {
+                        const { PartSpecification, ...rest } = item;
+
                         return {
-                            ...item,
+                            ...rest,
                             UnitOfMeasurementId: getValues('UOM')?.value || null,
                             HavellsDesignPart: newValue?.label || "",
-                            TimeLine: requirementDate || ""
-                        };
+                            TimeLine: requirementDate || "",
+                            PartSpecificationList,
+                            QuotationPartId
+                        }
                     } else {
                         return {
                             ...item,
                             UnitOfMeasurementId: null,
                             HavellsDesignPart: null,
-                            TimeLine: null
+                            TimeLine: null,
+                            PartSpecificationList,
+                            QuotationPartId
                         };
                     }
                 });
+                return updatedDetails;
             });
         }
     }
@@ -2741,23 +2800,62 @@ function AddRfq(props) {
         setRequirementDate(DayTime(value).format('YYYY-MM-DD HH:mm:ss'))
         if (updateButtonPartNoTable && !isPartDetailUpdate) {
             setStorePartsDetail((prevDetails) => {
-                return prevDetails?.map((item) => {
-                    if (item?.PartId === getValues('partNumber')?.value) {
-                        return {
-                            ...item,
-                            UnitOfMeasurementId: getValues('UOM')?.value || null,
-                            HavellsDesignPart: getValues('HavellsDesignPart')?.value || null,
-                            TimeLine: DayTime(value).format('YYYY-MM-DD HH:mm:ss') || null
-                        };
-                    } else {
-                        return {
-                            ...item,
-                            UnitOfMeasurementId: null,
-                            HavellsDesignPart: null,
-                            TimeLine: null
-                        };
+                const updatedDetail = prevDetails?.map((item) => {
+                    let QuotationPartId = null;
+
+                    switch (selectedOption) {
+                        case "Bought Out Part":
+                            bopDataList?.forEach(bopItem => {
+                                if (bopItem?.BoughtOutPartChildId === editBopId) {
+                                    QuotationPartId = bopItem?.QuotationPartId;
+                                }
+                            });
+                            break;
+                        case "Raw Material":
+                            rmDataList?.forEach(rmItem => {
+                                if (rmItem?.RawMaterialChildId === editRawMaterialId) {
+                                    QuotationPartId = rmItem?.QuotationPartId;
+                                }
+                            });
+                            break;
+                        case "componentAssembly":
+                            partList?.forEach(part => {
+                                if (part?.PartId === getValues('partNumber')?.value) {
+                                    QuotationPartId = part?.QuotationPartId;
+                                }
+                            });
+                            break;
+                        case "Tooling":
+                            toolingList?.forEach(toolItem => {
+                                if (toolItem?.PartId === editToolingId) {
+                                    QuotationPartId = toolItem?.QuotationPartId;
+                                }
+                            });
+                            break;
+                        default:
+                            break;
                     }
+
+                    const PartSpecificationList = {
+                        QuotationPartIdRef: QuotationPartId || null,
+                        PartSpecification: item?.PartSpecification || []
+                    };
+
+                    const { PartSpecification, ...rest } = item; // Destructure to omit PartSpecification
+
+                    return {
+                        ...rest,
+                        UnitOfMeasurementId: getValues('UOM')?.value || null,
+                        HavellsDesignPart: getValues('HavellsDesignPart')?.value || null,
+                        TimeLine: DayTime(value).format('YYYY-MM-DD HH:mm:ss') || null,
+                        PartSpecificationList,
+                        QuotationPartId
+                    };
                 });
+
+
+
+                return updatedDetail;
             });
         }
     }
@@ -2829,19 +2927,63 @@ function AddRfq(props) {
         if (updateButtonPartNoTable) {
             setStorePartsDetail((prevDetails) => {
                 return prevDetails.map((item) => {
+                    let QuotationPartId = null;
+
+
+                    switch (selectedOption) {
+                        case "Bought Out Part":
+                            bopDataList?.forEach(bopItem => {
+                                if (bopItem?.BoughtOutPartChildId === editBopId) {
+                                    QuotationPartId = bopItem?.QuotationPartId;
+                                }
+                            });
+                            break;
+                        case "Raw Material":
+                            rmDataList?.forEach(rmItem => {
+                                if (rmItem?.RawMaterialChildId === editRawMaterialId) {
+                                    QuotationPartId = rmItem?.QuotationPartId;
+                                }
+                            });
+                            break;
+                        case "componentAssembly":
+                            partList?.forEach(part => {
+                                if (part?.PartId === getValues('partNumber')?.value) {
+                                    QuotationPartId = part?.QuotationPartId;
+                                }
+                            });
+                            break;
+                        case "Tooling":
+                            toolingList?.forEach(toolingItem => {
+                                if (toolingItem?.PartId === editToolingId) {
+                                    QuotationPartId = toolingItem?.QuotationPartId;
+                                }
+                            });
+                            break;
+                        default:
+                            break;
+                    }
+
+                    const PartSpecificationList = {
+                        QuotationPartIdRef: QuotationPartId || null,
+                        PartSpecification: item?.PartSpecification || []
+                    };
                     if (item?.PartId === getValues('partNumber')?.value) {
                         return {
                             ...item,
                             UnitOfMeasurementId: newValue?.value || null,
                             HavellsDesignPart: getValues('HavellsDesignPart')?.value || null,
-                            TimeLine: requirementDate || ""
+                            TimeLine: requirementDate || "",
+                            PartSpecificationList,
+                            QuotationPartId
                         };
                     } else {
                         return {
                             ...item,
                             UnitOfMeasurementId: null,
                             HavellsDesignPart: null,
-                            TimeLine: null
+                            TimeLine: null,
+                            PartSpecificationList,
+                            QuotationPartId
                         };
                     }
                 });

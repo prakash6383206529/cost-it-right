@@ -25,6 +25,7 @@ import { Steps } from './TourMessages';
 import { withTranslation } from 'react-i18next';
 import { subDays } from 'date-fns';
 import { getUOMSelectList } from '../../../actions/Common';
+import TooltipCustom from '../../common/Tooltip';
 import { getEffectiveDateMinDate } from '../../common/CommonFunctions';
 
 class AddIndivisualPart extends Component {
@@ -661,6 +662,8 @@ class AddIndivisualPart extends Component {
                             />
                           </Col>
                           {initialConfiguration?.IsShowUnitOfMeasurementInPartMaster && <Col md="3">
+                            <TooltipCustom id="uom_tooltip" tooltipText="If no UOM is selected, 'No' will be set by default." />
+
                             <Field
                               name="UOM"
                               type="text"
@@ -723,7 +726,7 @@ class AddIndivisualPart extends Component {
                                   onChange={this.handleEffectiveDateChange}
                                   type="text"
                                   validate={[required]}
-                                  minDate={isEditFlag ? this.state.minEffectiveDate :getEffectiveDateMinDate()}
+                                  minDate={isEditFlag ? this.state.minEffectiveDate : getEffectiveDateMinDate()}
                                   autoComplete={'off'}
                                   required={true}
                                   changeHandler={(e) => {
