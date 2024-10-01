@@ -7,7 +7,7 @@ import { getReporterList, getVendorNameByVendorSelectList, getPlantSelectListByT
 import { getCostingSpecificTechnology, getExistingCosting, getPartInfo, } from '../costing/actions/Costing'
 import { IsSendQuotationToPointOfContact, addDays, checkPermission, getConfigurationKey, getTimeZone, loggedInUserId, parseLinks } from '../.././helper';
 import { checkForNull, checkForDecimalAndNull } from '../.././helper/validation'
-import { ASSEMBLYNAME, BOUGHTOUTPARTSPACING, BoughtOutPart, COMPONENT_PART, DRAFT, EMPTY_DATA, FILE_URL, HAVELLS_DESIGN_PARTS, PREDRAFT, PRODUCT_ID, RFQ, RFQVendor, TOOLING, TOOLINGPART, VBC_VENDOR_TYPE, ZBC, searchCount } from '../.././config/constants';
+import { ASSEMBLYNAME, ASSEMBLYORCOMPONENTSRFQ, BOUGHTOUTPARTSPACING, BOUGHTOUTPARTSRFQ, BoughtOutPart, COMPONENT_PART, DRAFT, EMPTY_DATA, FILE_URL, HAVELLS_DESIGN_PARTS, PREDRAFT, PRODUCT_ID, RAWMATERIALSRFQ, RFQ, RFQVendor, TOOLING, TOOLINGPART, VBC_VENDOR_TYPE, ZBC, searchCount } from '../.././config/constants';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
@@ -2402,9 +2402,17 @@ function AddRfq(props) {
         setisBulkUpload(true);
     }
 
-    const closeBulkUploadDrawer = () => {
+    const closeBulkUploadDrawer = (event, type, identityKey) => {
+
+
         setisBulkUpload(false);
-    }
+
+        if (type === "save" && identityKey !== null) {
+            getQuotationDataById(identityKey);
+
+        }
+    };
+
 
     const onResetVendorTable = () => {
         setUpdateButtonVendorTable(false)
@@ -3088,6 +3096,18 @@ function AddRfq(props) {
     * @method render
     * @description Renders the component
     */
+    const BulkUploadFileName = () => {
+        switch (selectedOption) {
+            case "Bought Out Part":
+                return BOUGHTOUTPARTSRFQ
+            case "Raw Material":
+                return RAWMATERIALSRFQ
+            case "componentAssembly":
+                return ASSEMBLYORCOMPONENTSRFQ
+
+            default:
+        }
+    }
     return (
         <div className="container-fluid">
             <div className="signup-form raise-rfq">
@@ -3270,9 +3290,16 @@ function AddRfq(props) {
                                             </div>
                                         </Col>}
                                     </Row>
-
+                                    <Button
+                                        id="rfq_bulkUpload"
+                                        className={"mr5 Tour_List_BulkUpload"}
+                                        onClick={bulkToggle}
+                                        title={"Bulk Upload"}
+                                        icon={"upload"}
+                                    />
                                     {(selectedOption === 'componentAssembly' || selectedOption === 'Tooling') && <>
                                         {heading()}
+
                                         <Row className="part-detail-wrapper">
                                             {havellsKey && <Col md="3">
                                                 <SearchableSelectHookForm
@@ -3367,10 +3394,10 @@ function AddRfq(props) {
                                         </Row>
                                     </>}
                                     {loader && <LoaderCustom customClass="Rfq-Loader" />}
-                                    {quotationType === 'Raw Material' && <AddRfqRmDetails updateRawMaterialList={updateRawMaterialList} resetRmFields={resetRmFields} rmSpecificRowData={rmSpecificRowData} updateButtonPartNoTable={updateButtonPartNoTable} dataProps={dataProps} isEditFlag={editQuotationPart} isViewFlag={viewQuotationPart} setViewQuotationPart={setViewQuotationPart} disabledPartUid={disabledPartUid} technology={technology} setDisabled={setDisabled} isDisabled={isDisabled} heading={heading} dataProp={dataProps} resetDrawer={resetDrawer} />}
+                                    {quotationType === 'Raw Material' && <AddRfqRmDetails updateRawMaterialList={updateRawMaterialList} resetRmFields={resetRmFields} rmSpecificRowData={rmSpecificRowData} updateButtonPartNoTable={updateButtonPartNoTable} dataProps={dataProps} isEditFlag={editQuotationPart} isViewFlag={viewQuotationPart} setViewQuotationPart={setViewQuotationPart} disabledPartUid={disabledPartUid} technology={technology} setDisabled={setDisabled} isDisabled={isDisabled} heading={heading} dataProp={dataProps} resetDrawer={resetDrawer} selectedOption={selectedOption} />}
                                     <Row>
 
-                                        {quotationType === "Bought Out Part" && <RaiseRfqBopDetails updateButtonPartNoTable={updateButtonPartNoTable} dataProps={dataProps} isEditFlag={editQuotationPart} isViewFlag={viewQuotationPart} setViewQuotationPart={setViewQuotationPart} updateBopList={updateBopList} resetBopFields={resetBopFields} plant={plant} prNumber={prNumber} disabledPartUid={disabledPartUid} heading={heading} dataProp={dataProps} resetDrawer={resetDrawer} />}
+                                        {quotationType === "Bought Out Part" && <RaiseRfqBopDetails updateButtonPartNoTable={updateButtonPartNoTable} dataProps={dataProps} isEditFlag={editQuotationPart} isViewFlag={viewQuotationPart} setViewQuotationPart={setViewQuotationPart} updateBopList={updateBopList} resetBopFields={resetBopFields} plant={plant} prNumber={prNumber} disabledPartUid={disabledPartUid} heading={heading} dataProp={dataProps} resetDrawer={resetDrawer} selectedOption={selectedOption} />}
 
                                         {!havellsKey && (
                                             checkForNull(technology?.value) !== LOGISTICS && (
@@ -4127,10 +4154,11 @@ function AddRfq(props) {
                                             closeDrawer={closeBulkUploadDrawer}
                                             isEditFlag={false}
                                             // densityAlert={densityAlert}
-                                            fileName={"ADD RFQ"}
+                                            fileName={BulkUploadFileName()}
                                             messageLabel={"RFQ Part's"}
                                             anchor={"right"}
                                             technologyId={technology}
+                                            selectedOption={selectedOption}
                                         // isFinalApprovar={isFinalLevelUser}
                                         />
                                     )
