@@ -18,7 +18,7 @@ import { ViewCostingContext } from '../../CostingDetails';
 import { AWAITING_APPROVAL_ID, CBCTypeId, EMPTY_DATA, PENDING_FOR_APPROVAL_ID, REJECTEDID, VBCTypeId, WACTypeId } from '../../../../../config/constants';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { number, checkWhiteSpaces, decimalNumberLimit6 } from "../../../../../helper/validation";
-
+import { useLabels } from '../../../../../helper/core';
 function EditPartCost(props) {
 
     const [gridData, setGridData] = useState([])
@@ -37,7 +37,7 @@ function EditPartCost(props) {
     const costData = useContext(costingInfoContext);
     const { ToolTabData, OverheadProfitTabData, SurfaceTabData, DiscountCostData, PackageAndFreightTabData, CostingEffectiveDate, ToolsDataList, ComponentItemDiscountData, OverHeadAndProfitTabData, RMCCTabData, checkIsToolTabChange, getAssemBOPCharge } = useSelector(state => state.costing)
     const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
-
+    const { vendorLabel } = useLabels()
     const { register, handleSubmit, control, setValue, getValues, formState: { errors } } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
@@ -502,7 +502,7 @@ function EditPartCost(props) {
                                     <thead>
                                         <tr >
                                             {(costData?.CostingTypeId === VBCTypeId || props?.costingTypeId === VBCTypeId) &&
-                                                <th>Vendor (Code)</th>
+                                                <th>{vendorLabel} (Code)</th>
                                             }
                                             {(costData?.CostingTypeId === CBCTypeId || props?.costingTypeId === CBCTypeId) &&
                                                 <th>Customer (Code)</th>

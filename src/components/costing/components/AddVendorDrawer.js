@@ -13,6 +13,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import { autoCompleteDropdown } from '../../common/CommonFunctions';
 import { MESSAGES } from '../../../config/message';
 import TooltipCustom from '../../common/Tooltip';
+import { useLabels } from '../../../helper/core';
 
 function AddVendorDrawer(props) {
 
@@ -33,7 +34,7 @@ function AddVendorDrawer(props) {
   const vendorSelectList = useSelector(state => state.comman.vendorWithVendorCodeSelectList)
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
   const plantSelectList = useSelector(state => state.comman.plantSelectList);
-
+  const { vendorLabel } = useLabels()
   useEffect(() => {
     const { vbcVendorGrid } = props;
     dispatch(getPlantSelectListByType(ZBC, "COSTING", '', () => { }))
@@ -201,7 +202,7 @@ function AddVendorDrawer(props) {
             <Row className="drawer-heading">
               <Col>
                 <div className={"header-wrapper left"}>
-                  <h3>{"Add Vendor"}</h3>
+                  <h3>Add {vendorLabel}</h3>
                 </div>
                 <div
                   onClick={cancel}
@@ -214,7 +215,7 @@ function AddVendorDrawer(props) {
               <Row className="pl-3">
                 <Col md="12">
                   <AsyncSearchableSelectHookForm
-                    label={"Vendor (Code)"}
+                    label={`${vendorLabel} (Code)`}
                     name={"Vendor"}
                     placeholder={"Select"}
                     Controller={Controller}

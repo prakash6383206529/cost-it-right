@@ -3030,6 +3030,7 @@ export const statusOptionsMasters = _.sortBy([
   { label: "Draft", value: "1" },
   { label: "History", value: "5" },
   { label: "Pending For Approval", value: "2" },
+  {label:"Rejected By System",value:"18"},
 ], ({ label }) => label.toLowerCase());
 
 

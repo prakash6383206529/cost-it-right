@@ -27,6 +27,7 @@ import { withTranslation } from 'react-i18next';
 import WarningMessage from '../../common/WarningMessage';
 import TooltipCustom from '../../common/Tooltip';
 import { subDays } from 'date-fns';
+import { labels, LabelsClass } from '../../../helper/core';
 
 const selector = formValueSelector('AddInterestRate');
 
@@ -658,6 +659,7 @@ class AddInterestRate extends Component {
     }
     const { handleSubmit, t } = this.props;
     const { isEditFlag, isViewMode, setDisable, costingTypeId, isDataChanged } = this.state;
+    const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
 
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
@@ -753,7 +755,7 @@ class AddInterestRate extends Component {
                             }
                             disabled={isEditFlag ? true : false}
                           />{" "}
-                          <span>Vendor Based</span>
+                          <span>{VendorLabel} Based</span>
                         </Label>}
                         {reactLocalStorage.getObject('CostingTypePermission').cbc && <Label id="AddInterestRate_CustomerBased" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
                           <input
@@ -842,7 +844,7 @@ class AddInterestRate extends Component {
                       {costingTypeId === VBCTypeId && (
                         <Col md="3" className='mb-4'>
 
-                          <label>{"Vendor (Code)"}<span className="asterisk-required">*</span></label>
+                          <label>{VendorLabel} (Code)<span className="asterisk-required">*</span></label>
                           <div className='p-relative'>
                             {this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
                             <AsyncSelect

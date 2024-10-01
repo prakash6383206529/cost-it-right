@@ -14,11 +14,12 @@ import { ErrorMessage } from '../SimulationUtils';
 import { VBC, VBCTypeId, CBCTypeId } from '../../../config/constants';
 import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper';
 import { simulationContext } from '.';
+import { useLabels } from '../../../helper/core';
 
 
 function VerifyImpactDrawer(props) {
   const { showEditMaster, costingDrawerPage, showverifyPage, handleEditMasterPage } = useContext(simulationContext) || {};
-
+  const { vendorLabel } = useLabels()
   const { SimulationTechnologyIdState, simulationId, vendorIdState, EffectiveDate, CostingTypeId, amendmentDetails, dataForAssemblyImpactInVerifyImpact, assemblyImpactButtonTrue, costingDrawer, costingIdArray, approvalSummaryTrue, isSimulationWithCosting } = props
 
   const [impactedMasterDataListForLastRevisionData, setImpactedMasterDataListForLastRevisionData] = useState([])
@@ -123,7 +124,7 @@ function VerifyImpactDrawer(props) {
                     <Table responsive className="border impact-drawer-table sub-table">
                       <tbody>
                         <tr>
-                          {CostingTypeId === CBCTypeId ? <th>Customer (Code):</th> : <th>Vendor (Code):</th>}
+                          {CostingTypeId === CBCTypeId ? <th>Customer (Code):</th> : <th>{vendorLabel} (Code):</th>}
                           {isSimulationWithCosting ? <th>Technology:</th> : <th>Association:</th>}
                           <th>Master:</th>
                           <th>Costing Head:</th>

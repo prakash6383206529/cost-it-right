@@ -23,6 +23,7 @@ import { ApplyPermission } from ".";
 import { checkMasterCreateByCostingPermission } from '../../common/CommonFunctions';
 import { useRef } from 'react';
 import Button from "../../layout/Button";
+import { useLabels } from "../../../helper/core";
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
@@ -50,7 +51,7 @@ const PowerListing = (props) => {
   const permissions = useContext(ApplyPermission);
   const { powerDataList } = useSelector((state) => state.fuel);
   const { initialConfiguration } = useSelector((state) => state.auth);
-
+  const { vendorLabel } = useLabels()
   useEffect(() => {
     if (permissions) {
       getDataList(null, null);
@@ -359,7 +360,7 @@ const PowerListing = (props) => {
                 <AgGridColumn field="CostingType"></AgGridColumn>
                 <AgGridColumn field="StateName"></AgGridColumn>
                 <AgGridColumn field="PlantWithCode" headerName="Plant (Code)" ></AgGridColumn>
-                <AgGridColumn field="VendorWithCode" headerName="Vendor (Code)"></AgGridColumn>
+                <AgGridColumn field="VendorWithCode" headerName={`${vendorLabel} (Code)`}></AgGridColumn>
                 {(reactLocalStorage.getObject('CostingTypePermission').cbc) && <AgGridColumn field="CustomerWithCode" headerName="Customer (Code)"></AgGridColumn>}
                 <AgGridColumn field="NetPowerCostPerUnit" cellRenderer={"costFormatter"}></AgGridColumn>
                 <AgGridColumn field="EffectiveDate" cellRenderer="effectiveDateFormatter" filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>

@@ -36,6 +36,7 @@ function ApprovalSummary(props) {
   const loggedInUser = loggedInUserId()
 
   const dispatch = useDispatch()
+ const { vendorLabel } = useLabels()
 
   const [approveDrawer, setApproveDrawer] = useState(false)
   const [rejectDrawer, setRejectDrawer] = useState(false)
@@ -606,7 +607,7 @@ function ApprovalSummary(props) {
                     <tr>
                       <th>{`Costing Id:`}</th>
                       {approvalDetails.CostingTypeId === VBCTypeId && (
-                        <th>{`ZBC/Vendor (Code):`}</th>
+                        <th>{`ZBC/${vendorLabel} (Code):`}</th>
                       )}
                       {approvalDetails.CostingTypeId === CBCTypeId && reactLocalStorage.getObject('CostingTypePermission').cbc && (
                         <th>{`Customer (Code)`}</th>
@@ -614,7 +615,7 @@ function ApprovalSummary(props) {
                       {
                         checkVendorPlantConfigurable() &&
                         <th>
-                          {approvalDetails.CostingTypeId === VBCTypeId ? 'Vendor Plant' : 'Plant'}{` Code:`}
+                          {approvalDetails.CostingTypeId === VBCTypeId ? `${vendorLabel} Plant` : 'Plant'}{` Code:`}
                         </th>
                       }
                       {(getConfigurationKey() !== undefined && getConfigurationKey()?.IsDestinationPlantConfigure && (approvalDetails.CostingTypeId === VBCTypeId || approvalDetails.CostingTypeId === NCCTypeId)) && <th>{`Plant (Code):`}</th>}

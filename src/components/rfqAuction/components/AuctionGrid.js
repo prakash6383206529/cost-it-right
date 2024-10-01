@@ -25,7 +25,7 @@ const AuctionGrid = (props) => {
         noData: false,
     });
     const dispatch = useDispatch()
-    const { technologyLabel } = useLabels();
+    const { technologyLabel,vendorLabel } = useLabels();
     const onFloatingFilterChanged = (value) => {
 
     };
@@ -208,13 +208,13 @@ const AuctionGrid = (props) => {
                             <AgGridColumn field="BOPNumber" headerName="BOP No." cellRenderer={"hyphenFormatter"}></AgGridColumn>
                             <AgGridColumn field="BOPName" headerName="BOP Name" cellRenderer={"hyphenFormatter"} ></AgGridColumn>
                             <AgGridColumn field="BOPCategory" headerName="Category" cellRenderer={"hyphenFormatter"}></AgGridColumn>
-                            <AgGridColumn field="VendorName" headerName="Vendor Name" cellRenderer={"hyphenFormatter"}></AgGridColumn>
+                            <AgGridColumn field="VendorName" headerName={`${vendorLabel} Name`} cellRenderer={"hyphenFormatter"}></AgGridColumn>
                             <AgGridColumn field="Plant" headerName="Plant" cellRenderer={"hyphenFormatter"} ></AgGridColumn>
                             <AgGridColumn field="TotalVendor" headerName="Total Vendors" cellRenderer={"hyphenFormatter"}></AgGridColumn>
                             <AgGridColumn field="ActiveVendors" headerName="Active Vendors" cellRenderer={"hyphenFormatter"}></AgGridColumn>
                             <AgGridColumn field="BasePrice" headerName="Base Price" cellRenderer={"hyphenFormatter"}></AgGridColumn>
                             <AgGridColumn field="RankOnePrice" headerName="Level One Price" cellRenderer={"hyphenFormatter"}></AgGridColumn>
-                            <AgGridColumn field="RankOneVendor" headerName="Level One Vendor" cellRenderer={"hyphenFormatter"} ></AgGridColumn>
+                            <AgGridColumn field="RankOneVendor" headerName={`Level One ${vendorLabel}`} cellRenderer={"hyphenFormatter"} ></AgGridColumn>
                             <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={180} headerName="Color" marryChildren={true} >
                                 <AgGridColumn width={50} field="GreenCount" headerName="G" ></AgGridColumn>
                                 <AgGridColumn width={50} field="YellowCount" headerName="Y" colId="GreenColor"></AgGridColumn>

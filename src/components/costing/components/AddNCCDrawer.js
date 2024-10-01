@@ -10,9 +10,10 @@ import { EMPTY_GUID_0, searchCount, VBC_VENDOR_TYPE, ZBC } from '../../../config
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { autoCompleteDropdown } from '../../common/CommonFunctions';
 import { MESSAGES } from '../../../config/message';
+import { useLabels } from '../../../helper/core';
 
 function AddNCCDrawer(props) {
-
+  const { vendorLabel } = useLabels()
   const { register, handleSubmit, formState: { errors }, control, setValue } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
@@ -174,7 +175,7 @@ function AddNCCDrawer(props) {
             <Row className="drawer-heading">
               <Col>
                 <div className={"header-wrapper left"}>
-                  <h3>{"Add Vendor"}</h3>
+                  <h3>{`Add ${vendorLabel}`}</h3>
                 </div>
                 <div
                   onClick={cancel}
@@ -203,7 +204,7 @@ function AddNCCDrawer(props) {
                 </Col>
                 <Col md="12">
                   <AsyncSearchableSelectHookForm
-                    label={"Vendor (Code)"}
+                    label={`${vendorLabel} (Code)`}
                     name={"Vendor"}
                     placeholder={"Select"}
                     Controller={Controller}

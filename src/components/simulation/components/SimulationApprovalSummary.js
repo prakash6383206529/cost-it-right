@@ -47,6 +47,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import { costingTypeIdToApprovalTypeIdFunction } from '../../common/CommonFunctions';
 import SimulationApproveReject from '../../costing/components/approval/SimulationApproveReject';
 import RMIndexationSimulation from './SimulationPages/RMIndexationSimulation';
+import { useLabels } from '../../../helper/core';
 
 const gridOptions = {};
 const ExcelFile = ReactExport.ExcelFile;
@@ -54,6 +55,7 @@ const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 function SimulationApprovalSummary(props) {
+    const {vendorLabel} =useLabels()
     const { isbulkUpload } = props;
     const { approvalNumber, approvalId, SimulationTechnologyId, simulationId } = props?.location?.state
     const [showImpactedData, setshowImpactedData] = useState(false)
@@ -1223,7 +1225,7 @@ function SimulationApprovalSummary(props) {
                                             <th>{handleDepartmentHeader()} Code:</th>
                                             {Number(SimulationTechnologyId) !== Number(RAWMATERIALINDEX) && <>
                                                 {String(SimulationTechnologyId) !== EXCHNAGERATE && <th>Costing Head:</th>}
-                                                {simulationDetail?.SimulationHeadId !== CBCTypeId && simulationDetail?.SimulationHeadId !== ZBCTypeId && <th>Vendor (Code):</th>}
+                                                {simulationDetail?.SimulationHeadId !== CBCTypeId && simulationDetail?.SimulationHeadId !== ZBCTypeId && <th>{vendorLabel} (Code):</th>}
                                                 {simulationDetail?.SimulationHeadId === ZBCTypeId && <th>Plant (Code):</th>}
                                                 {simulationDetail?.SimulationHeadId === CBCTypeId && <th>Customer (Code):</th>}
                                                 <th>Impacted Parts:</th>
@@ -1424,7 +1426,7 @@ function SimulationApprovalSummary(props) {
                                                                 <AgGridColumn width={160} field="PartType" tooltipField='PartType' headerName='Part Type'></AgGridColumn>
                                                                 {isMasterAssociatedWithCosting && <AgGridColumn width={150} field="ECNNumber" headerName='ECN No.' cellRenderer='ecnFormatter'></AgGridColumn>}
                                                                 {isMasterAssociatedWithCosting && <AgGridColumn width={150} field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>}
-                                                                {costingList[0]?.CostingHeadId !== CBCTypeId && <AgGridColumn width={150} field="VendorName" tooltipField='VendorName' headerName="Vendor (Code)"></AgGridColumn>}
+                                                                {costingList[0]?.CostingHeadId !== CBCTypeId && <AgGridColumn width={150} field="VendorName" tooltipField='VendorName' headerName={`${vendorLabel} (Code)`}></AgGridColumn>}
                                                                 {costingList[0]?.CostingHeadId !== CBCTypeId && <AgGridColumn width={150} field="InfoCategory" tooltipField='InfoCategory' headerName="Category"></AgGridColumn>}
                                                                 {isMasterAssociatedWithCosting && showSaLineNumber() && <AgGridColumn width={150} field="SANumber" headerName="SA Number"></AgGridColumn>}
                                                                 {isMasterAssociatedWithCosting && showSaLineNumber() && <AgGridColumn width={150} field="LineNumber" headerName="Line Number"></AgGridColumn>}

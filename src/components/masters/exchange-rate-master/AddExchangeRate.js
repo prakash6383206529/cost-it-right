@@ -21,6 +21,8 @@ import { autoCompleteDropdown, getCostingTypeIdByCostingPermission, getEffective
 import { getClientSelectList, } from '../actions/Client';
 import { getExchangeRateSource, getVendorNameByVendorSelectList } from '../../../actions/Common';
 import { subDays } from 'date-fns';
+import { LabelsClass } from '../../../helper/core';
+import { withTranslation } from 'react-i18next';
 const
   selector = formValueSelector('AddExchangeRate');
 
@@ -413,7 +415,9 @@ class AddExchangeRate extends Component {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, } = this.props;
+    const { handleSubmit,t } = this.props;
+    const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
+
     const { isEditFlag, isViewMode, setDisable, costingTypeId } = this.state;
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
@@ -498,7 +502,7 @@ class AddExchangeRate extends Component {
                             }
                             disabled={isEditFlag ? true : false}
                           />{" "}
-                          <span>Vendor Based</span>
+                          <span>{VendorLabel} Based</span>
                         </Label>}
                         {reactLocalStorage.getObject('CostingTypePermission').cbc && <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
                           <input
@@ -520,7 +524,7 @@ class AddExchangeRate extends Component {
                       {costingTypeId === VBCTypeId && (
                         <>
                           <Col md="3" className='mb-4'>
-                            <label>{"Vendor (Code)"}<span className="asterisk-required">*</span></label>
+                            <label>{VendorLabel} (Code)<span className="asterisk-required">*</span></label>
                             <div className="d-flex justify-space-between align-items-center async-select">
                               <div className="fullinput-icon p-relative">
                                 {this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
@@ -802,4 +806,6 @@ export default connect(mapStateToProps, {
 })(reduxForm({
   form: 'AddExchangeRate',
   enableReinitialize: true,
-})(AddExchangeRate));
+
+})(withTranslation(['ExchangeRateMaster', 'MasterLabels'])(AddExchangeRate)),
+)

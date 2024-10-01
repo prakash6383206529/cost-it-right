@@ -21,6 +21,7 @@ import { checkMasterCreateByCostingPermission } from '../../common/CommonFunctio
 import { ApplyPermission } from '.';
 import Button from '../../layout/Button';
 import DayTime from '../../common/DayTimeWrapper';
+import { useLabels } from '../../../helper/core';
 const gridOptions = {};
 const FreightListing = (props) => {
   const dispatch = useDispatch();
@@ -43,6 +44,7 @@ const FreightListing = (props) => {
   })
   const permissions = useContext(ApplyPermission);
   const { freightDetail } = useSelector((state) => state.freight);
+  const { vendorLabel } = useLabels();
 
   useEffect(() => {
     !props.stopApiCallOnCancel && setState((prevState) => ({ ...prevState, isLoader: true }))
@@ -297,7 +299,7 @@ const FreightListing = (props) => {
               >
                 <AgGridColumn width='240px' field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
                 <AgGridColumn field="Mode" headerName="Mode"></AgGridColumn>
-                <AgGridColumn field="VendorName" headerName="Vendor (Code)" cellRenderer={'hyphenFormatter'} ></AgGridColumn>
+                <AgGridColumn field="VendorName" headerName={`${vendorLabel} (Code)`} cellRenderer={'hyphenFormatter'} ></AgGridColumn>
                 <AgGridColumn field="Plant" headerName="Plant (Code)" cellRenderer={'hyphenFormatter'} ></AgGridColumn>
                 {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'}></AgGridColumn>

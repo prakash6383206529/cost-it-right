@@ -65,7 +65,7 @@ function IsolateReRender(control) {
 }
 
 function CostingDetails(props) {
-
+  const { vendorLabel } = useLabels()
   const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
@@ -2521,7 +2521,7 @@ function CostingDetails(props) {
                                       onClick={nccDrawerToggle}
                                       id="NCC_Costing_Add_Vendor"
                                     >
-                                      <div className={"plus"}></div>Vendor
+                                      <div className={"plus"}></div>{vendorLabel}
                                     </button>
                                   ) : (
                                     ""
@@ -2539,7 +2539,7 @@ function CostingDetails(props) {
                                     <thead>
                                       <tr>
                                         <th className="destination-plant">{`Destination Plant (Code)`}</th>
-                                        <th className='vendor'>{`Vendor (Code)`}</th>
+                                        <th className='vendor'>{`${vendorLabel} (Code)`}</th>
                                         <th className="costing-version">{`Costing Version`}</th>
                                         <th className="text-center costing-status">{`Status`}</th>
                                         <th className="costing-price">{`Net Cost`}</th>

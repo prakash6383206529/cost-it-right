@@ -1319,7 +1319,6 @@ export function getAllCities(callback) {
 export function getCityByCountry(CountryId, StateId, CityName, callback) {
   return axios.get(`${API.getCityByCountry}?countryId=${CountryId}&stateId=${StateId}&cityName=${CityName}`, config())
     .then((response) => {
-      console.log('response: ', response);
       if (response.data.Result) {
         if (callback) callback(null, response);
         return response;

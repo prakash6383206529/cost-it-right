@@ -34,6 +34,7 @@ const gridOptions = {
 
 };
 function OperationSTSimulation(props) {
+    
     const { showEditMaster, handleEditMasterPage, showCompressedColumns } = useContext(simulationContext) || {};
 
     const { list, isbulkUpload, rowCount, isImpactedMaster, lastRevision, tokenForMultiSimulation } = props
@@ -58,6 +59,7 @@ function OperationSTSimulation(props) {
         mode: 'onChange',
         reValidateMode: 'onChange',
     })
+    const {vendorLabel} = useLabels()
 
 
     const dispatch = useDispatch()
@@ -224,7 +226,7 @@ function OperationSTSimulation(props) {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return (
             <>
-                {isbulkUpload ? row['Vendor (Code)'] : cell}
+                {isbulkUpload ? row[`Vendor (Code)`] : cell}
 
             </>
         )
@@ -550,8 +552,8 @@ function OperationSTSimulation(props) {
                                                         <p className='technology ml-1' title={list[0].Technology}>{list[0].Technology}</p>
                                                     </div>
                                                     {list[0].CostingTypeId !== CBCTypeId && <div className='d-flex pl-3'>
-                                                        <label className='mr-1'>Vendor (Code):</label>
-                                                        <p title={list[0].VendorName} className='mr-2'>{list[0].VendorName ? list[0].VendorName : list[0]['Vendor (Code)']}</p>
+                                                        <label className='mr-1'>{vendorLabel} (Code):</label>
+                                                        <p title={list[0].VendorName} className='mr-2'>{list[0].VendorName ? list[0].VendorName : list[0][`${vendorLabel} (Code)`]}</p>
 
                                                     </div>}
                                                     <button type="button" className={"apply back_simulationPage"} id="simulation-back" onClick={cancel} disabled={isDisable}> <div className={'back-icon'}></div>Back</button>
@@ -590,7 +592,7 @@ function OperationSTSimulation(props) {
                                                 <AgGridColumn field="OperationName" tooltipField='OperationName' editable='false' headerName="Operation Name" minWidth={190}></AgGridColumn>
                                                 <AgGridColumn field="OperationCode" tooltipField='OperationCode' editable='false' headerName="Operation Code" minWidth={190}></AgGridColumn>
                                                 {!isImpactedMaster && <><AgGridColumn field="Technology" tooltipField='Technology' editable='false' headerName="Technology" minWidth={190}></AgGridColumn></>}
-                                                {!isImpactedMaster && list[0].CostingTypeId !== CBCTypeId && <><AgGridColumn field="VendorName" tooltipField='VendorName' editable='false' headerName="Vendor (Code)" minWidth={190} cellRenderer='vendorFormatter'></AgGridColumn></>}
+                                                {!isImpactedMaster && list[0].CostingTypeId !== CBCTypeId && <><AgGridColumn field="VendorName" tooltipField='VendorName' editable='false' headerName={vendorLabel + " (Code)"} minWidth={190} cellRenderer='vendorFormatter'></AgGridColumn></>}
                                                 {!isImpactedMaster && <><AgGridColumn field={`${isbulkUpload ? 'DestinationPlant' : 'Plants'}`} tooltipField={`${isbulkUpload ? 'DestinationPlant' : 'Plants'}`} editable='false' headerName="Plant (Code)" minWidth={190} cellRenderer='plantFormatter'></AgGridColumn></>}
                                                 {!isImpactedMaster && list[0].CostingTypeId === CBCTypeId && <AgGridColumn width={100} field="CustomerName" tooltipField='CustomerName' editable='false' headerName="Customer (Code)" cellRenderer='customerFormatter'></AgGridColumn>}
                                                 {operationTypes.includes('Welding') && <AgGridColumn field="OperationConsumption" editable='false' headerName="Consumption" minWidth={190} cellRenderer='consumptionFormatter'></AgGridColumn>}
