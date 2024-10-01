@@ -151,7 +151,7 @@ export const checkVendorPlantConfig = (excelData, type = '', isBop = false, isVe
         if (getConfigurationKey().IsShowPaymentTermsFields === false) {
             if (el.value === 'PaymentTerm') return false;
         }
-        if (getConfigurationKey().IsSAPConfigured === false) {
+        if (getConfigurationKey().IsSAPCodeRequired === false) {
             if (el.value === 'SAPCode') return false;
         }
         return true;
@@ -489,3 +489,4 @@ class Downloadxls extends React.Component {
 }
 
 export default withTranslation('MasterLabels')(Downloadxls);
+// CR2-I19

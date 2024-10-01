@@ -389,7 +389,6 @@ function TabDiscountOther(props) {
     setTaxCode(e)
   }
 
-  console.log(errors, 'errors')
   const costingConditionUI = useMemo(() => {
     const sum = conditionTableData.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCostPerQuantity), 0);
 

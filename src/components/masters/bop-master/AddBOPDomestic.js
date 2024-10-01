@@ -1401,7 +1401,7 @@ class AddBOPDomestic extends Component {
                               />
                             </Col>
                           )}
-                          {getConfigurationKey().IsSAPConfigured &&
+                          {getConfigurationKey().IsSAPCodeRequired &&
                             <Col md="3">
                               <div className="d-flex align-items-center">
                                 <Field
