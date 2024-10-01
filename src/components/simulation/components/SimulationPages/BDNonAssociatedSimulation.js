@@ -260,7 +260,7 @@ const {vendorLabel}= useLabels()
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return (
             <>
-                {isbulkUpload ? row[`${vendorLabel} (Code)`] : cell}
+                {isbulkUpload ? row[`Vendor (Code)`] : cell}
 
             </>
         )

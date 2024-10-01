@@ -1794,7 +1794,7 @@ function Simulation(props) {
                                             {/* {inputLoader && <LoaderCustom customClass="vendor-loader" />} */}
                                             <AsyncSearchableSelectHookForm
                                                 label={''}
-                                                name={'Vendor'}
+                                                name={vendorLabel}
                                                 placeholder={'Select'}
                                                 Controller={Controller}
                                                 control={control}

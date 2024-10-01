@@ -41,7 +41,7 @@ import Button from '../../layout/Button';
 import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from './TourMessages';
 import { withTranslation } from 'react-i18next';
-import { labels, LabelsClass, useLabels, useLabelsClass } from '../../../helper/core';
+import { LabelsClass } from '../../../helper/core';
 import { subDays } from 'date-fns';
 
 
