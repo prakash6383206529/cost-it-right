@@ -55,7 +55,9 @@ function UserRegistration(props) {
   const { t } = useTranslation("UserRegistration")
   const [state, setState] = useState({
     city: [],
-    showErrorOnFocus: false,  })
+    showErrorOnFocus: false,
+    inputLoader: false
+    })
   const [token, setToken] = useState("");
   const [lowerCaseCheck, setLowerCaseCheck] = useState(false);
   const [upperCaseCheck, setUpperCaseCheck] = useState(false);
@@ -669,9 +671,20 @@ function UserRegistration(props) {
   * @method cityHandler
   * @description Used to handle city
   */
-  const cityHandler = (newValue, actionMeta) => {
-
-    setState(prevState => ({ ...prevState, city: newValue }));
+  const cityHandler = (selectedOption) => {
+    if (selectedOption) {
+      setState(prevState => ({
+        ...prevState,
+        city: selectedOption
+      }));
+      setValue('CityId', selectedOption.value);
+    } else {
+      setState(prevState => ({
+        ...prevState,
+        city: null
+      }));
+      setValue('CityId', '');
+    }
   };
 
 
@@ -2382,34 +2395,34 @@ function UserRegistration(props) {
     }
   };
 
-  const vendorFilterList = async (inputValue) => {
-    if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
-      inputValue = inputValue.trim();
-    }
-    const resultInput = inputValue.slice(0, searchCount)
-    if (inputValue?.length >= searchCount && vendor !== resultInput) {
-      let res
-      res = await getVendorNameByVendorSelectList(VBC_VENDOR_TYPE, resultInput)
-      setVendor(resultInput)
-      let vendorDataAPI = res?.data?.SelectList
-      if (inputValue) {
-        return autoCompleteDropdown(inputValue, vendorDataAPI, false, [], true)
-      } else {
-        return vendorDataAPI
-      }
-    }
-    else {
-      if (inputValue?.length < searchCount) return false
-      else {
-        let VendorData = reactLocalStorage?.getObject('Data')
-        if (inputValue) {
-          return autoCompleteDropdown(inputValue, VendorData, false, [], false)
-        } else {
-          return VendorData
-        }
-      }
-    }
-  };
+  // const vendorFilterList = async (inputValue) => {
+  //   if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
+  //     inputValue = inputValue.trim();
+  //   }
+  //   const resultInput = inputValue.slice(0, searchCount)
+  //   if (inputValue?.length >= searchCount && vendor !== resultInput) {
+  //     let res
+  //     res = await getVendorNameByVendorSelectList(VBC_VENDOR_TYPE, resultInput)
+  //     setVendor(resultInput)
+  //     let vendorDataAPI = res?.data?.SelectList
+  //     if (inputValue) {
+  //       return autoCompleteDropdown(inputValue, vendorDataAPI, false, [], true)
+  //     } else {
+  //       return vendorDataAPI
+  //     }
+  //   }
+  //   else {
+  //     if (inputValue?.length < searchCount) return false
+  //     else {
+  //       let VendorData = reactLocalStorage?.getObject('Data')
+  //       if (inputValue) {
+  //         return autoCompleteDropdown(inputValue, VendorData, false, [], false)
+  //       } else {
+  //         return VendorData
+  //       }
+  //     }
+  //   }
+  // };
   const onGridReady = (params, setGridApi, setGridColumnApi) => {
     setGridApi(params.api);
     params.api.sizeColumnsToFit();
@@ -2582,6 +2595,9 @@ function UserRegistration(props) {
   const cityFilterList = (inputValue) => {
     return DropDownFilterList(inputValue, '', 'city', (filterType, resultInput) => getCityByCountry(0, 0, resultInput), setState, state);
   };
+const  vendorFilterList = (inputValue) => {
+  return DropDownFilterList(inputValue, '', 'vendor', (filterType, resultInput) => getVendorNameByVendorSelectList(VBC_VENDOR_TYPE, resultInput), setState, state);
+}
   return (
     <div className="container-fluid">
       {isLoader && <Loader />}
@@ -2991,9 +3007,10 @@ function UserRegistration(props) {
                       />
                     </div> */}
                     <div className="col-md-3">
-                      <label>{`City`}<span className="asterisk-required">*</span></label>
+                      {/* <label>{`City`}<span className="asterisk-required">*</span></label>
                       <div className="d-flex justify-space-between align-items-center p-relative async-select">
                         <div className="fullinput-icon p-relative">
+                          {console.log(state.inputLoader, "state.inputLoader")}
                           {state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
                           <Controller
                             name="CityId"
@@ -3015,12 +3032,37 @@ function UserRegistration(props) {
                                 onBlur={() => setState(prevState => ({ ...prevState, showErrorOnFocus: false }))}
                                 placeholder={"Select.."}
                                 className="mb-0 withBorder"
+                                disabled={state.inputLoader}
+                              
                               />
                             )}
+                            disabled={state.inputLoader}
                           />
                           {errors.CityId && <div className="text-help">{errors.CityId.message}</div>}
                         </div>
-                      </div>
+                      </div> */}
+                     
+                        <AsyncSearchableSelectHookForm
+                              name="CityId"
+                              type="text"
+                              label={"City"}
+                              errors={errors.CityId}
+                              Controller={Controller}
+                              control={control}
+                              register={register}
+                              mandatory={true}
+                              rules={{
+                                required: true,
+                              }}
+                              disabled={isEditFlag ? true : false}
+                              placeholder={'Select City'}
+                              //onKeyUp={(e) => this.changeItemDesc(e)}
+                              // validate={(role == null || role.length === 0) ? [required] : []}
+                              // required={true}
+                              handleChange={cityHandler}
+                              asyncOptions={cityFilterList}
+                              NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
+                            />
                     </div>
                     <div className="input-group col-md-3 input-withouticon">
                       <NumberFieldHookForm
@@ -3832,4 +3874,5 @@ function UserRegistration(props) {
 }
 
 export default UserRegistration
+
 

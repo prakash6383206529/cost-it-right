@@ -10,7 +10,7 @@ import { Row, Col } from 'reactstrap'
 import { TextFieldHookForm, SearchableSelectHookForm, NumberFieldHookForm, AsyncSearchableSelectHookForm, TextAreaHookForm, } from '../../layout/HookFormInputs';
 import LoaderCustom from "../../common/LoaderCustom"
 import { MESSAGES } from "../../../config/message"
-import { DropDownFilterList, getCostingTypeIdByCostingPermission } from "../../common/CommonFunctions"
+import { autoCompleteDropdown, DropDownFilterList, getCostingTypeIdByCostingPermission } from "../../common/CommonFunctions"
 import { reactLocalStorage } from "reactjs-localstorage"
 import AsyncSelect from 'react-select/async';
 import Button from '../../layout/Button';

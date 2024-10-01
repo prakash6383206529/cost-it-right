@@ -1542,7 +1542,7 @@ class AddMachineRate extends Component {
                         </Col>
                         {costingTypeId === VBCTypeId &&
                           <Col md="3">
-                            <label>{labels(t, 'VendorLabel', 'MasterLabels')}(Code)<span className="asterisk-required">*</span></label>
+                            <label>{labels(t, 'VendorLabel', 'MasterLabels')} (Code)<span className="asterisk-required">*</span></label>
                             <div className='p-relative'>
                               {this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
                               <AsyncSelect
