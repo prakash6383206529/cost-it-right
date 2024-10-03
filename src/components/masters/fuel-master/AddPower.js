@@ -1593,7 +1593,7 @@ class AddPower extends Component {
                         </Col>
 
                         <Col md="3">
-                          <div className="d-flex justify-space-between align-items-center inputwith-icon date-filed">
+                          <div className="d-flex justify-space-between align-items-center inputwith-icon">
                             <div className="fullinput-icon">
                               <div className="form-group">
                                 <div className="inputbox date-section form-group">
