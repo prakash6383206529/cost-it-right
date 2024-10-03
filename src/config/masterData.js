@@ -8238,8 +8238,6 @@ export const AddBoughtOutPartsHeaderData = [
 
 export const AddRawMaterialTempData = [
     {
-
-
         Technology: "Casting",
         Plant: "Plant A",
         PartType: "Raw Material",
@@ -8334,6 +8332,7 @@ export const AddAssemblyOrComponentTempData = [
         AnnualForecastQuantity: 10000,
         N100Timeline: "2024-08-01",
         Remarks: "Urgent requirement",
+        Notes: "For Component, please leave Asembly Part Number empty"
 
 
     },
@@ -8356,6 +8355,8 @@ export const AddAssemblyOrComponentTempData = [
         AnnualForecastQuantity: 5000,
         N100Timeline: "2023-12-10",
         Remarks: "Review specification",
+        Notes: "For Component, please leave Asembly Part Number empty"
+
 
     },
     {
@@ -8378,8 +8379,18 @@ export const AddAssemblyOrComponentTempData = [
         N100Timeline: "2024-09-15",
         Remarks: "Awaiting approval",
 
+
     }
 ];
+export const AddAssemblyOrComponentAdditionalInfoTempData = [
+    {
+        Notes: "For Component, please leave Asembly Part Number empty"
+    }
+
+]
+export const AddAssemblyOrComponentAdditionalInfoHeaderData = [
+    { label: 'Notes', value: 'Notes' }
+]
 
 
 

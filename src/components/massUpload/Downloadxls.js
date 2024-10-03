@@ -417,7 +417,6 @@ class Downloadxls extends React.Component {
             {dataList && dataList.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
         </ExcelSheet>);
     }
-
     render() {
         const { isFailedFlag, fileName, isZBCVBCTemplate, isMachineMoreTemplate, costingTypeId, bopType } = this.props;
         const downloadFileName = (fileName === 'RM')
@@ -507,6 +506,7 @@ class Downloadxls extends React.Component {
             </ExcelFile >
         );
     }
+
 }
 
 export default withTranslation('MasterLabels')(Downloadxls);
