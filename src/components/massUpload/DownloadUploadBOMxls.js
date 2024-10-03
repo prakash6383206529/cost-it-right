@@ -2,8 +2,6 @@ import React from "react";
 import ReactExport from 'react-export-excel';
 import { BOMUpload, BOMUploadTempData } from '../../config/masterData';
 import { getConfigurationKey } from "../../helper";
-import { withLocalization } from "../../helper/core";
-import { withTranslation } from "react-i18next";
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -31,7 +29,7 @@ class DownloadUploadBOMxls extends React.Component {
 
     switch (master) {
       case 'BOM':
-        return this.returnExcelColumn(checkSAPCodeinExcel(withLocalization(BOMUpload, this.props.t, "MasterLabels")), checkSAPCodeinExcel(BOMUploadTempData));
+        return this.returnExcelColumn(checkSAPCodeinExcel(BOMUpload), checkSAPCodeinExcel(BOMUploadTempData));
       default:
         return 'foo';
     }
@@ -81,4 +79,4 @@ class DownloadUploadBOMxls extends React.Component {
   }
 }
 
-export default withTranslation(DownloadUploadBOMxls, "MasterLabels");
+export default DownloadUploadBOMxls;

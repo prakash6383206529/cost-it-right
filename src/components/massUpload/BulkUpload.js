@@ -396,7 +396,7 @@ class BulkUpload extends Component {
                             break;
                         case String(MACHINEBULKUPLOAD):
                             if (this.state.costingTypeId === ZBCTypeId) {
-                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(withLocalization(MachineZBC, this.props.t, "MasterLabels"), ZBCTypeId), fileHeads)
+                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(MachineZBC, ZBCTypeId), fileHeads)
                             }
                             else if (this.state.costingTypeId === VBCTypeId) {
                                 checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(withLocalization(MachineVBC, this.props.t, "MasterLabels"), VBCTypeId), fileHeads)
@@ -409,7 +409,7 @@ class BulkUpload extends Component {
                             }
                             break;
                         case String(VENDORBULKUPLOAD):
-                            const { updatedLabels } = updateBOPValues(withLocalization(Vendor, this.props.t, "MasterLabels"), [], bopMasterName, 'label')
+                            const { updatedLabels } = updateBOPValues(Vendor, [], bopMasterName, 'label')
 
                             checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(updatedLabels, '', '', true), fileHeads)
                             break;
@@ -418,20 +418,20 @@ class BulkUpload extends Component {
                             break;
                         case String(OPERAIONBULKUPLOAD):
                             if (this.state.costingTypeId === ZBCTypeId) {
-                                checkForFileHead = checkForSameFileUpload(checkLabourRateConfigure(withLocalization(ZBCOperationSmallForm, this.props.t, "MasterLabels")), fileHeads)
+                                checkForFileHead = checkForSameFileUpload(checkLabourRateConfigure(ZBCOperationSmallForm), fileHeads)
                             }
                             else if (this.state.costingTypeId === VBCTypeId) {
-                                checkForFileHead = checkForSameFileUpload(checkLabourRateConfigure(withLocalization(VBCOperationSmallForm, this.props.t, "MasterLabels")), fileHeads)
+                                checkForFileHead = checkForSameFileUpload(checkLabourRateConfigure(VBCOperationSmallForm), fileHeads)
                             }
                             else if (this.state.costingTypeId === CBCTypeId) {
-                                checkForFileHead = checkForSameFileUpload(checkLabourRateConfigure(withLocalization(CBCOperationSmallForm, this.props.t, "MasterLabels")), fileHeads)
+                                checkForFileHead = checkForSameFileUpload(checkLabourRateConfigure(CBCOperationSmallForm), fileHeads)
                             }
                             else if (this.state.costingTypeId === ZBCADDMOREOPERATION) {
-                                checkForFileHead = checkForSameFileUpload(withLocalization(ZBCOperation, this.props.t, "MasterLabels"), fileHeads)
+                                checkForFileHead = checkForSameFileUpload(ZBCOperation, fileHeads)
                             } else if (this.state.costingTypeId === VBCADDMOREOPERATION) {
-                                checkForFileHead = checkForSameFileUpload(withLocalization(VBCOperation, this.props.t, "MasterLabels"), fileHeads)
+                                checkForFileHead = checkForSameFileUpload(VBCOperation, fileHeads)
                             } else if (this.state.costingTypeId === CBCADDMOREOPERATION) {
-                                checkForFileHead = checkForSameFileUpload(withLocalization(CBCOperation, this.props.t, "MasterLabels"), fileHeads)
+                                checkForFileHead = checkForSameFileUpload(CBCOperation, fileHeads)
                             }
                             break;
                         case String(FUELBULKUPLOAD):
