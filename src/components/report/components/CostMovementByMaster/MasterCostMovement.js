@@ -67,7 +67,7 @@ function MasterCostMovement() {
     const processSelectList = useSelector(state => state.machine.processSelectList)
 
 
-    const { technologyLabel } = useLabels();
+    const { technologyLabel, vendorLabel } = useLabels();
 
     const dispatch = useDispatch()
 
@@ -834,8 +834,8 @@ function MasterCostMovement() {
                                 errors={errors.Customer}
                             /> :
                                 <AsyncSearchableSelectHookForm
-                                    label={"Vendor (Code)"}
-                                    name={"vendor"}
+                                    label={`${vendorLabel} (Code)`}
+                                    name={"Vendor"}
                                     placeholder={"Select"}
                                     Controller={Controller}
                                     control={control}

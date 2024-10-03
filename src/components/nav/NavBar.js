@@ -38,7 +38,7 @@ import LanguageDropdown from "../common/Tour/LanguageDropdown";
 import TourWrapper from "../common/Tour/TourWrapper";
 import { Steps } from "./TourMessages";
 import { withTranslation } from "react-i18next";
-import { CirLogo, CompanyLogo } from "../../helper/core";
+import { CirLogo, CompanyLogo, LabelsClass } from "../../helper/core";
 class SideBar extends Component {
   constructor(props) {
     super(props)
@@ -88,6 +88,7 @@ class SideBar extends Component {
    * @description used to called after mounting component
    */
   componentDidMount() {
+
     const { location } = this.props;
     this.setState({ isLoader: true });
     if (location && location !== undefined) {
@@ -208,6 +209,8 @@ class SideBar extends Component {
    * @description Render menus according to user access.
    */
   renderMenus = (module, LandingPageURL) => {
+    const { t } = this.props
+    const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
     switch (module) {
       case "Dashboard":
         return this.renderDashboard(module, LandingPageURL);
@@ -227,7 +230,7 @@ class SideBar extends Component {
         return this.renderAudit(module, LandingPageURL);
       case "NFR":
         return this.renderNFR(module, LandingPageURL);
-      case "Vendor Management":
+      case `${VendorLabel} Management`:
         return this.renderVendorManagement(module, LandingPageURL);
       case "RFQ":
         if (getConfigurationKey().IsRFQConfigured) {
@@ -905,8 +908,9 @@ class SideBar extends Component {
 
 
   renderVendorManagement = (module) => {
-
-    const { menusData, topAndLeftMenuData } = this.props
+    const { t, menusData, topAndLeftMenuData } = this.props
+    const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
+    console.log(VendorLabel, 'VendorLabel')
     return (
       topAndLeftMenuData &&
       topAndLeftMenuData.map((el, i) => {
@@ -923,7 +927,7 @@ class SideBar extends Component {
                   pathname: el.LandingPageURL,
                   state: {
                     ModuleId: el.ModuleId,
-                    PageName: "Vendor Management",
+                    PageName: `${VendorLabel} Management`,
                     PageURL: el.LandingPageURL,
                   },
                 }}
@@ -1179,5 +1183,5 @@ export default connect(mapStateToProps, {
   getMenu,
   getTopAndLeftMenuData,
 
-})(withTranslation(['NavBar'])(SideBar))
+})(withTranslation(['NavBar', 'MasterLabels'])(SideBar))
 

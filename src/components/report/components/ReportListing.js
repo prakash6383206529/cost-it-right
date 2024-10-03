@@ -72,7 +72,7 @@ function ReportListing(props) {
 
 
     const dispatch = useDispatch()
-    const { technologyLabel, discountLabel, toolMaintenanceCostLabel } = useLabels();
+    const { technologyLabel, discountLabel, toolMaintenanceCostLabel, vendorLabel } = useLabels();
     const { register, handleSubmit, control, setValue, formState: { errors }, getValues } = useForm({
         mode: 'onBlur',
         reValidateMode: 'onChange',
@@ -517,8 +517,8 @@ function ReportListing(props) {
                         <AgGridColumn field="Rev" headerName="Revision Number" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="ECN" headerName="ECN Number" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="PartName" headerName="Part Name"></AgGridColumn>
-                        <AgGridColumn field="VendorName" headerName="Vendor" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                        <AgGridColumn field="VendorCode" headerName="Vendor Code" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                        <AgGridColumn field="VendorName" headerName={vendorLabel} cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                        <AgGridColumn field="VendorCode"headerName={vendorLabel + " (Code)"}cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="RawMaterialName" headerName="RM Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="RawMaterialCode" headerName="RM Code" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="RMGrade" headerName="RM Grade" cellRenderer={'hyphenFormatter'}></AgGridColumn>

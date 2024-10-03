@@ -61,7 +61,7 @@ function AddRfq(props) {
     const { t } = useTranslation("Rfq")
     const { data: dataProps } = props
 
-    const { technologyLabel } = useLabels();
+    const { technologyLabel, vendorLabel } = useLabels();
     const dropzone = useRef(null);
     const { register, handleSubmit, setValue, getValues, formState: { errors }, control, reset } = useForm({
         mode: 'onChange',
@@ -3674,7 +3674,7 @@ function AddRfq(props) {
                                                                     {<AgGridColumn width={"230px"} field="UOMSymbol" headerName="UOM" ></AgGridColumn>}
 
                                                                     <AgGridColumn width={"230px"} field="TimeLine" headerName={selectedOption === TOOLING ? 'Delivery Date' : "N-100 Timeline"} cellRenderer={'effectiveDateFormatter'} ></AgGridColumn>
-                                                                    {(selectedOption === 'componentAssembly' || selectedOption === 'Raw Material' || selectedOption === "Bought Out Part") && <AgGridColumn width={"230px"} field="VendorListExisting" headerName="Existing Vendor" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                                                                    {(selectedOption === 'componentAssembly' || selectedOption === 'Raw Material' || selectedOption === "Bought Out Part") && <AgGridColumn width={"230px"} field="VendorListExisting" headerName={`Existing ${vendorLabel}`} cellRenderer={'hyphenFormatter'}></AgGridColumn>}
 
                                                                     {(selectedOption === "componentAssembly" || selectedOption === 'Tooling') && (<AgGridColumn width={"230px"} field="PartId" cellClass="ag-grid-action-container text-right" headerName="Action" floatingFilter={false} type="rightAligned" cellRenderer={'buttonFormatterFirst'} />)}
                                                                     {selectedOption === "Raw Material" && (<AgGridColumn width={"230px"} field="RawMaterialChildId" cellClass="ag-grid-action-container text-right" headerName="Action" floatingFilter={false} type="rightAligned" cellRenderer={'buttonFormatterFirst'} />)}
@@ -3698,11 +3698,11 @@ function AddRfq(props) {
 
 
                                     {!showVendorSection && (<>
-                                        <HeaderTitle title={'Vendor:'} customClass="mt-4" />
+                                        <HeaderTitle title={`${vendorLabel}:`} customClass="mt-4" />
                                         <Row className="mt-1 part-detail-wrapper">
                                             <Col md="3">
                                                 <AsyncSearchableSelectHookForm
-                                                    label={"Vendor (Code)"}
+                                                    label={`${vendorLabel} (Code)`}
                                                     name={"vendor"}
                                                     placeholder={"Select"}
                                                     Controller={Controller}
@@ -3724,7 +3724,7 @@ function AddRfq(props) {
                                             {IsSendQuotationToPointOfContact() && (
                                                 <Col md="3">
                                                     <SearchableSelectHookForm
-                                                        label={"Vendor's Point of Contact"}
+                                                        label={`${vendorLabel}'s Point of Contact`}
                                                         name={"contactPerson"}
                                                         placeholder={"Select"}
                                                         Controller={Controller}
@@ -3858,13 +3858,13 @@ function AddRfq(props) {
                                                                     }}
                                                                     frameworkComponents={frameworkComponents}
                                                                 >
-                                                                    <AgGridColumn field="Vendor" headerName="Vendor (Code)" tooltipField="Vendor"></AgGridColumn>
+                                                                    <AgGridColumn field="Vendor" headerName={vendorLabel + " (Code)"} tooltipField="Vendor"></AgGridColumn>
                                                                     {IsSendQuotationToPointOfContact() && (
                                                                         <AgGridColumn width={"270px"} field="ContactPerson" headerName="Point of Contact" ></AgGridColumn>)}
                                                                     {vendorList && havellsKey && <AgGridColumn field='IncoTerms' header='Inco Terms' cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                                                                     {vendorList && havellsKey && <AgGridColumn field='PaymentTerms' header='Payment Terms' cellRenderer={'hyphenFormatter'} ></AgGridColumn>}
                                                                     {vendorList && havellsKey && ShowLdClause(selectedOption) && <AgGridColumn field='LDClause' header='LD Clause' tooltipField="LDClause" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
-                                                                    <AgGridColumn width={"270px"} field="VendorId" headerName="Vendor Id" hide={true} ></AgGridColumn>
+                                                                    <AgGridColumn width={"270px"} field="VendorId" headerName={`${vendorLabel} Id`} hide={true} ></AgGridColumn>
                                                                     <AgGridColumn width={"180px"} field="VendorId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'buttonFormatterVendorTable'}></AgGridColumn>
                                                                 </AgGridReact>
                                                             </div>

@@ -19,13 +19,15 @@ export const useLabels = () => {
         RMCategoryLabel: tMasterLabels('RMCategoryLabel', { defaultValue: 'Category' }),
         discountLabel: tCosting('discount', { defaultValue: 'Hundi/Discount' }),
         toolMaintenanceCostLabel: tCosting('toolMaintenanceCost', { defaultValue: 'Tool Maintenance Cost (per pcs)' }),
-        vendorLabel : tMasterLabels('VendorLabel', { defaultValue: 'Vendor'})
+        vendorLabel : tMasterLabels('VendorLabel', { defaultValue: 'Vendor'}),
+        RMVendorLabel : tMasterLabels('RMVendorLabel', { defaultValue: 'RM Vendor'})
     };
 };
 
   export const LabelsClass = (t, ns) => {
     return {
         vendorLabel: t('VendorLabel', { ns }),
+        BOPVendorLabel : t('BOPVendorLabel', { ns }),
     }
   }
 export const useWithLocalization = (dataArray, ns) => {

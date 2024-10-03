@@ -122,7 +122,7 @@ function RfqListing(props) {
     const userMasterLevelAPI = useSelector((state) => state.auth.userMasterLevelAPI)
     const isAssemblyTechnology = rowData && rowData?.length > 0 ? rowData[0]?.TechnologyId === ASSEMBLY : false
     let arr = []
-    const { technologyLabel } = useLabels();
+    const { technologyLabel ,vendorLabel } = useLabels();
     const history = useHistory();
     const location = useLocation();
     useEffect(() => {
@@ -1577,7 +1577,7 @@ function RfqListing(props) {
                                             {partType !== 'Bought Out Part' && <AgGridColumn field="TechnologyName" headerName={technologyLabel}></AgGridColumn>}
                                             {partType === 'Bought Out Part' && <AgGridColumn cellClass={cellClass} field="PRNo" headerName='PR Number' cellRenderer={seperateHyphenFormatter}></AgGridColumn>}
 
-                                            <AgGridColumn field="VendorName" tooltipField="VendorName" headerName='Vendor (Code)'></AgGridColumn>
+                                            <AgGridColumn field="VendorName" tooltipField="VendorName" headerName={vendorLabel + " (Code)"}></AgGridColumn>
                                             <AgGridColumn field="PlantName" tooltipField="PlantName" headerName='Plant (Code)'></AgGridColumn>
                                             {/* <AgGridColumn field="PartNumber" headerName="Attachment "></AgGridColumn> */}
                                             <AgGridColumn field="Remark" tooltipField="Remark" headerName='Notes' cellRenderer={hyphenFormatter}></AgGridColumn>
