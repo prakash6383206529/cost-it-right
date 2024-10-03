@@ -56,7 +56,7 @@ import { CirLogo, CompanyLogo, useLabels } from '../../../helper/core'
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
 const CostingSummaryTable = (props) => {
-
+  const { vendorLabel } = useLabels()
   const { register, control, formState: { errors }, setValue, getValues } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
@@ -144,7 +144,7 @@ const CostingSummaryTable = (props) => {
   const [isScrapRecoveryPercentageApplied, setIsScrapRecoveryPercentageApplied] = useState(false)
   const [otherCostDetailsOverhead, setOtherCostDetailsOverhead] = useState([])
   const [otherCostDetailsProcess, setOtherCostDetailsProcess] = useState([])
-
+  const [varianceData, setVarianceData] = useState([])
   const { viewCostingDetailData, viewRejectedCostingDetailData, viewCostingDetailDataForAssembly } = useSelector((state) => state.costing)
   const showCheckbox = viewCostingData && viewCostingData.some(item => item.IsShowCheckBoxForApproval === true);
 
@@ -674,8 +674,12 @@ const CostingSummaryTable = (props) => {
     let temp = [...viewCostingData]
     temp.splice(index, 1)
     if (props?.isRfqCosting) {
-      let tempArr = temp && temp.filter(item => item?.bestCost !== true)
+      let tempArr = temp && temp?.filter(item => item?.bestCost !== true)
       temp = props?.bestCostObjectFunction(tempArr)
+    }
+    if (simulationMode && viewCostingData?.length >= 2) {
+      setIsComparing(false)
+      temp.push(varianceData)
     }
     dispatch(setCostingViewData(temp))
   }
@@ -882,8 +886,6 @@ const CostingSummaryTable = (props) => {
     setaddComparisonToggle(true)
     setIsEditFlag(false)
     setEditObject({})
-    props.setIsComparing(true); // Set to true when comparison is added
-
   }
 
   /**
@@ -897,6 +899,14 @@ const CostingSummaryTable = (props) => {
     }
     setMultipleCostings([])
     setShowWarningMsg(true)
+    if (simulationMode && e === 'submit') {
+
+      const varianceData = viewCostingData?.filter(item => item?.CostingHeading === VARIANCE);
+      setVarianceData(...varianceData)
+      const filteredCostingData = viewCostingData?.filter(item => item?.CostingHeading !== VARIANCE);
+      setIsComparing(true)
+      dispatch(setCostingViewData(filteredCostingData));
+    }
   }
 
   /**
@@ -1130,7 +1140,7 @@ const CostingSummaryTable = (props) => {
             Toaster.warning('Please select at least one costing to send for approval')
             return
           } else if (!allEqual(vendorArray)) {
-            Toaster.warning('Vendor should be same for sending multiple costing for approval')
+            Toaster.warning(`${vendorLabel} should be same for sending multiple costing for approval`)
             return
           } else if (!allEqual(effectiveDateArray)) {
             Toaster.warning('Effective Date should be same for sending multiple costing for approval')
@@ -1146,7 +1156,7 @@ const CostingSummaryTable = (props) => {
               Toaster.warning('Please select at least one costing to send for approval')
               return
             } else if (!allEqual(vendorArray)) {
-              Toaster.warning('Vendor should be same for sending multiple costing for approval')
+              Toaster.warning(`${vendorLabel} should be same for sending multiple costing for approval`)
               return
             } else if (!allEqual(effectiveDateArray)) {
               Toaster.warning('Effective Date should be same for sending multiple costing for approval')
@@ -1184,7 +1194,7 @@ const CostingSummaryTable = (props) => {
         Toaster.warning('Please select at least one costing to send for approval')
         return
       } else if (!allEqual(vendorArray)) {
-        Toaster.warning('Vendor should be same for sending multiple costing for approval')
+        Toaster.warning(`${vendorLabel} should be same for sending multiple costing for approval`)
         return
       } else if (!allEqual(effectiveDateArray)) {
         Toaster.warning('Effective Date should be same for sending multiple costing for approval')
@@ -2085,9 +2095,9 @@ const CostingSummaryTable = (props) => {
 
                     {onBtExport()}
                   </ExcelFile>}
-                  {props.isRfqCosting && !isApproval && !drawerViewMode && <button onClick={() => props?.crossButton()} title='Discard Summary' className='CancelIcon rfq-summary-discard'></button>}
+                  {(props?.isRfqCosting && !isApproval && !drawerViewMode) && <button onClick={() => props?.crossButton()} title='Discard Summary' className='CancelIcon rfq-summary-discard'></button>}
                 </div>
-                {!simulationMode && !props.isRfqCosting && !props.isRfqCosting && downloadAccessibility &&
+                {!simulationMode && !props?.isRfqCosting && !props?.isRfqCosting && downloadAccessibility &&
                   <ReactToPrint
                     bodyClass='mx-2 mt-3 remove-space-border'
                     documentTitle={`${pdfName}-detailed-costing`}
@@ -2135,27 +2145,27 @@ const CostingSummaryTable = (props) => {
               {disableSendForApproval && <WarningMessage dClass={"col-md-12 pr-0 justify-content-end"} message={'This user is not in the approval cycle'} />}
             </Col>}
           </Row>
-          {/* {
+          {
             isComparing &&
-            (<> */}
-          {/* <Row className="mt-2">
+            (<>
+              <Row className="mt-2">
                 <Col md="10">
                   <div id="bar-chart-compare" className="left-border">{'Bar Chart Comparison:'}</div>
                 </Col>
-              </Row> */}
+              </Row>
 
-          {/* <Row>
-                <Col md="12" className="costing-summary-row" style={{ maxWidth: '600px', margin: 'auto' }}>
-                  {isComparing && viewCostingData.length >= 2 &&
+              <Row>
+                <Col md="12" className="costing-summary-row">
+                  {isComparing &&
                     <BarChartComparison
                       costingData={viewCostingData}
-                      currency={viewCostingData[0]?.currency?.currencyTitle || 'INR'}
+                      currency={getConfigurationKey()?.BaseCurrency}
                     />
                   }
                 </Col>
-              </Row> */}
-          {/* </>
-            )} */}
+              </Row>
+            </>
+            )}
           <div ref={componentRef}>
             <Row id="summaryPdf" className={`${customClass} ${vendorNameClass()} ${drawerDetailPDF ? 'remove-space-border' : ''} ${simulationMode ? "simulation-print" : ""}`}>
               {(drawerDetailPDF || pdfHead) &&
@@ -2253,7 +2263,7 @@ const CostingSummaryTable = (props) => {
                                     {((!viewMode && (!pdfHead && !drawerDetailPDF)) && EditAccessibility) && (data?.status === DRAFT) && <button id="costingSummary_edit" className="Edit mr-1 mb-0 align-middle" type={"button"} title={"Edit Costing"} onClick={() => editCostingDetail(index)} />}
                                     {((!viewMode && (!pdfHead && !drawerDetailPDF)) && ViewAccessibility) && (data?.status === DRAFT) && <button id="costingSummary_view" className="View mr-1 mb-0 align-middle" type={"button"} title={"View Costing"} onClick={() => viewCostingDetail(index)} />}
                                     {((!viewMode && (!pdfHead && !drawerDetailPDF)) && AddAccessibility) && <button id="costingSummary_add" className="Add-file mr-1 mb-0 align-middle" type={"button"} title={"Add Costing"} onClick={() => addNewCosting(index)} />}
-                                    {!isApproval && (data?.bestCost === true ? false : ((!viewMode || props.isRfqCosting || (approvalMode && data?.CostingHeading === '-')) && (!pdfHead && !drawerDetailPDF)) && <button id="costingSummary_discard" type="button" className="CancelIcon mb-0 align-middle" title='Discard' onClick={() => deleteCostingFromView(index)}></button>)}
+                                    {(!isApproval || (isComparing && index > 1)) && (data?.bestCost === true ? false : ((!viewMode || props?.isRfqCosting || (isComparing && index > 1) || (approvalMode && data?.CostingHeading === '-')) && (!pdfHead && !drawerDetailPDF)) && <button id="costingSummary_discard" type="button" className="CancelIcon mb-0 align-middle" title='Discard' onClick={() => deleteCostingFromView(index)}></button>)}
                                   </div>
                                 </div >
                               </th >
@@ -2268,7 +2278,7 @@ const CostingSummaryTable = (props) => {
                             <td>
                               <span className="d-block">Costing Version</span>
                               <span className={`d-block mt-${props.isFromViewRFQ ? 4 : 2}`}>Net Cost (Effective from)</span>
-                              <span className="d-block">Vendor (Code)</span>
+                              <span className="d-block">{vendorLabel} (Code)</span>
                               {(reactLocalStorage.getObject('CostingTypePermission').cbc) && <span className="d-block">Customer (Code)</span>}
                               <span className="d-block">Category</span>
                               <span className="d-block">Part Type</span>
@@ -3574,8 +3584,6 @@ const CostingSummaryTable = (props) => {
             editObject={editObject}
             anchor={'right'}
             viewMode={viewMode}
-            // isComparing={isComparing}
-            onComparisonAdded={() => setIsComparing(true)}
           />
         )
       }

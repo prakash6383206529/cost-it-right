@@ -143,13 +143,11 @@ function Plastic(props) {
 
     const finishedWeight = checkForNull(getValues('finishedWeight'))
     const grossWeight = checkForNull(netWeight) + checkForNull(runnerWeight) + Number(findLostWeight(getPlasticData && getPlasticData.length > 0 ? getPlasticData : WeightCalculatorRequest.LossOfTypeDetails ? WeightCalculatorRequest.LossOfTypeDetails : [])) //THIS IS FINAL GROSS WEIGHT -> FIRST GROSS WEIGHT + RUNNER WEIGHT +NET LOSS WEIGHT
-    console.log(grossWeight, "Gross Weight")
     if (finishedWeight !== 0) {
       scrapWeight = calculateScrapWeight(grossWeight, finishedWeight, scrapRecoveryPercent)
       setValue('scrapWeight', checkForDecimalAndNull(scrapWeight, getConfigurationKey().NoOfDecimalForInputOutput))
     }
     const rmCost = (checkForNull(grossWeight) * checkForNull(totalRM)) + getValues('burningAllownace') // FINAL GROSS WEIGHT * RMRATE (HERE RM IS RMRATE +MAMSTER BATCH (IF INCLUDED)) + BURNING ALLOWANCE
-    console.log(rmCost, "RM Cost")
     const scrapCost = checkForNull(scrapWeight) * checkForNull(rmRowData.ScrapRate)
     const materialCost = checkForNull(rmCost) - checkForNull(scrapCost)
 
@@ -159,7 +157,6 @@ function Plastic(props) {
     updatedValue.rmCost = rmCost
     updatedValue.scrapCost = scrapCost
     updatedValue.materialCost = materialCost
-    console.log(updatedValue, "Updated Value")
     setDataToSend(updatedValue)
 
     setValue('grossWeight', checkForDecimalAndNull(grossWeight, getConfigurationKey().NoOfDecimalForInputOutput)) // SETING FINAL GROSS WEIGHT VALUE

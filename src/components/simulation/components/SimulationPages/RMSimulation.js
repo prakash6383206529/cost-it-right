@@ -68,7 +68,7 @@ function RMSimulation(props) {
         reValidateMode: 'onChange',
     })
 
-    const { technologyLabel } = useLabels();
+    const { technologyLabel,vendorLabel } = useLabels();
     const dispatch = useDispatch()
 
     const currencySelectList = useSelector(state => state.comman.currencySelectList)
@@ -861,8 +861,8 @@ function RMSimulation(props) {
                                                         <p className='technology ml-1' title={list[0]?.TechnologyName}>{list[0]?.TechnologyName}</p>
                                                     </div>
                                                     {list[0]?.CostingTypeId !== CBCTypeId && <div className='d-flex pl-3'>
-                                                        <label className='mr-1'>Vendor (Code):</label>
-                                                        <p title={list[0]?.VendorName}>{list[0]?.VendorName ? list[0]?.VendorName : list?.[0]?.['Vendor (Code)']}</p>
+                                                        <label className='mr-1'>{vendorLabel} (Code):</label>
+                                                        <p title={list[0]?.VendorName}>{list[0]?.VendorName ? list[0]?.VendorName : list?.[0]?.[`${vendorLabel} (Code)`]}</p>
 
                                                     </div>}
                                                     <button type="button" className={"apply ml-2 back_simulationPage"} id="simulation-back" onClick={cancel} disabled={isDisable}> <div className={'back-icon'}></div>Back</button>
@@ -912,7 +912,7 @@ function RMSimulation(props) {
                                                 <AgGridColumn width={columnWidths.RawMaterialCode} field="RawMaterialCode" tooltipField='RawMaterialCode' editable='false' headerName='Code' cellRenderer='hyphenFormatter'></AgGridColumn>
                                                 {!isImpactedMaster && <AgGridColumn width={columnWidths.Category} field="Category" tooltipField='Category' editable='false' headerName="Category"></AgGridColumn>}
                                                 {!isImpactedMaster && <AgGridColumn width={columnWidths.TechnologyName} field="TechnologyName" tooltipField='TechnologyName' editable='false' headerName={technologyLabel} ></AgGridColumn>}
-                                                {!isImpactedMaster && list[0]?.CostingTypeId !== CBCTypeId && <AgGridColumn width={columnWidths.VendorCod} field="Vendor (Code)" tooltipField='Vendor (Code)' editable='false' headerName="Vendor (Code)" cellRenderer='vendorFormatter'></AgGridColumn>}
+                                                {!isImpactedMaster && list[0]?.CostingTypeId !== CBCTypeId && <AgGridColumn width={columnWidths.VendorCod} field="Vendor (Code)" tooltipField='Vendor (Code)' editable='false' headerName= {`${vendorLabel} (Code)`} cellRenderer='vendorFormatter'></AgGridColumn>}
                                                 {!isImpactedMaster && list[0]?.CostingTypeId === CBCTypeId && <AgGridColumn width={columnWidths.CustomerName} field="CustomerName" tooltipField='CustomerName' editable='false' headerName="Customer (Code)" cellRenderer='customerFormatter'></AgGridColumn>}
                                                 {!isImpactedMaster && <AgGridColumn width={columnWidths.PlantCode} field="Plant (Code)" editable='false' headerName="Plant (Code)" tooltipField='Plant (Code)' cellRenderer='plantFormatter' ></AgGridColumn>}
                                                 <AgGridColumn width={columnWidths.UnitOfMeasurementName} field="UnitOfMeasurementName" tooltipField='UnitOfMeasurementName' editable='false' headerName="UOM"></AgGridColumn>

@@ -52,7 +52,7 @@ function ComparsionAuction(props) {
     reValidateMode: "onChange",
   });
 
-  const { technologyLabel } = useLabels();
+  const { technologyLabel,vendorLabel } = useLabels();
   const [isViewFlag, setIsViewFlag] = useState(false);
   const [loader, setLoader] = useState(false);
   const [openDropdowns, setOpenDropdowns] = useState({});
@@ -398,7 +398,7 @@ function ComparsionAuction(props) {
                               </div>
                               {state.live && <>  <label className="custom-checkbox w-auto mb-0"
                                 onChange={() => showVendorRank(item, item.IsDisplayRankToVendor)}>
-                                Display Rank to Vendor
+                                Display Rank to {vendorLabel}
                                 <input
                                   type="checkbox"
                                   value={"All"}

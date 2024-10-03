@@ -25,7 +25,6 @@ export function ProcessListingSimulation(props) {
         mode: 'onBlur',
         reValidateMode: 'onChange',
     })
-
     const [isOpenProcessDrawer, setIsOpenProcessDrawer] = useState(false)
     const [isEditFlag, setIsEditFlag] = useState(false)
     const [Id, setId] = useState('')

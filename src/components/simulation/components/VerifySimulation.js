@@ -20,6 +20,7 @@ import DayTime from '../../common/DayTimeWrapper';
 import DatePicker from "react-datepicker";
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { simulationContext } from '.';
+import { useLabels } from '../../../helper/core';
 // import AssemblySimulation from './AssemblySimulation';
 
 const gridOptions = {};
@@ -63,7 +64,7 @@ function VerifySimulation(props) {
     const { selectedVendorForSimulation } = useSelector(state => state.simulation)
 
     const gridRef = useRef();
-
+    const { vendorLabel } = useLabels()
     const verifyList = useSelector(state => state.simulation.simulationVerifyList)
 
     // const isAssemblyCosting = true
@@ -895,7 +896,7 @@ function VerifySimulation(props) {
                                             {isBOPDomesticOrImport === true && <AgGridColumn width={130} field="BoughtOutPartName" tooltipField="BoughtOutPartName" cellRenderer='BoughtOutPartName' headerName={`${showBopLabel()} Name`}></AgGridColumn>}
                                             {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="OperationName" tooltipField="OperationName" headerName="Operation Name"></AgGridColumn>}
                                             {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="OperationCode" tooltipField="OperationCode" headerName="Operation Code"></AgGridColumn>}
-                                            {!isMultiTechnology && verifyList && verifyList[0]?.CostingHeadId !== CBCTypeId && <AgGridColumn width={140} field="VendorName" tooltipField="VendorName" cellRenderer='renderVendor' headerName="Vendor (Code)"></AgGridColumn>}
+                                            {!isMultiTechnology && verifyList && verifyList[0]?.CostingHeadId !== CBCTypeId && <AgGridColumn width={140} field="VendorName" tooltipField="VendorName" cellRenderer='renderVendor'headerName={`${vendorLabel} (Code)`}></AgGridColumn>}
                                             {!isMultiTechnology && verifyList && verifyList[0]?.CostingHeadId === CBCTypeId && <AgGridColumn width={140} field="CustomerName" tooltipField="CustomerName" cellRenderer='renderCustomer' headerName="Customer (Code)"></AgGridColumn>}
                                             <AgGridColumn width={120} field="PlantName" tooltipField="PlantName" cellRenderer='renderPlant' headerName="Plant (Code)"></AgGridColumn>
                                             {isMasterAssociatedWithCosting && !isMultiTechnology && <AgGridColumn width={130} field="POPrice" tooltipField="POPrice" headerName={`Existing Net Cost (${reactLocalStorage.getObject("baseCurrency")})`} cellRenderer='priceFormatter'></AgGridColumn>}

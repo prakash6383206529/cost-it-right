@@ -25,6 +25,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import { checkMasterCreateByCostingPermission, hideCustomerFromExcel } from '../../common/CommonFunctions';
 import { loggedInUserId } from '../../../helper';
 import Button from '../../layout/Button';
+import { useLabels } from '../../../helper/core';
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -60,7 +61,7 @@ const ExchangeRateListing = (props) => {
     const { exchangeRateDataList } = useSelector((state) => state.exchangeRate);
     const { topAndLeftMenuData } = useSelector((state) => state.auth);
     const { filteredRMData } = useSelector((state) => state.material);
-
+    const { vendorLabel } = useLabels();
     useEffect(() => {
         applyPermission(topAndLeftMenuData);
         setState((prevState) => ({ ...prevState, isLoader: true }));
@@ -407,7 +408,7 @@ const ExchangeRateListing = (props) => {
                                 suppressRowClickSelection={true}
                             >
                                 <AgGridColumn field="CostingHead" headerName="Costing Head" ></AgGridColumn>
-                                <AgGridColumn field="vendorWithCode" headerName="Vendor (Code)" ></AgGridColumn>
+                                <AgGridColumn field="vendorWithCode" headerName={`${vendorLabel} (Code)`}></AgGridColumn>
                                 {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="customerWithCode" headerName="Customer (Code)" ></AgGridColumn>}
                                 <AgGridColumn field="FromCurrency" headerName="From Currency" minWidth={135}></AgGridColumn>
                                 <AgGridColumn field="ToCurrency" headerName="To Currency" minWidth={135}></AgGridColumn>

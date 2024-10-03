@@ -14,6 +14,7 @@ import { getConfigurationKey, isUserLoggedIn } from '../../../helper/auth'
 import { TotalTCOCostCal, checkForDecimalAndNull, checkForNull } from '../../../helper'
 import DayTime from '../../common/DayTimeWrapper'
 import TooltipCustom from '../../common/Tooltip'
+import { useLabels } from '../../../helper/core'
 
 function AddToComparisonDrawer(props) {
   const loggedIn = isUserLoggedIn()
@@ -72,7 +73,7 @@ function AddToComparisonDrawer(props) {
 
   /* For getting part no for costing dropdown */
   const partNo = useSelector((state) => state.costing.partNo)
-
+  const { vendorLabel } = useLabels()
 
   /* For getting default value of check box */
   useEffect(() => {
@@ -739,7 +740,7 @@ function AddToComparisonDrawer(props) {
           // setIsZbcSelected(true)
           // setisCbcSelected(false)
 
-          props.closeDrawer('')
+          props.closeDrawer('submit')
         }
       }),
     )
@@ -1005,7 +1006,7 @@ function AddToComparisonDrawer(props) {
                   <>
                     <Col md="12">
                       <SearchableSelectHookForm
-                        label={"Vendor (Code)"}
+                        label={`${vendorLabel} (Code)`}
                         name={"vendor"}
                         placeholder={"Select"}
                         Controller={Controller}
@@ -1022,7 +1023,7 @@ function AddToComparisonDrawer(props) {
                     {getConfigurationKey().IsVendorPlantConfigurable && (
                       <Col md="12">
                         <SearchableSelectHookForm
-                          label={"Vendor Plant"}
+                          label={`${vendorLabel} Plant`}
                           name={"vendorPlant"}
                           placeholder={"Select"}
                           Controller={Controller}
@@ -1119,7 +1120,7 @@ function AddToComparisonDrawer(props) {
                   )}
                   <Col md="12">
                     <SearchableSelectHookForm
-                      label={"Vendor (Code)"}
+                      label={`${vendorLabel} (Code)`}
                       name={"vendor"}
                       placeholder={"Select"}
                       Controller={Controller}

@@ -31,6 +31,7 @@ import { Steps } from './TourMessages';
 import { withTranslation } from 'react-i18next';
 import Button from '../../layout/Button';
 import { subDays } from 'date-fns';
+import { LabelsClass } from '../../../helper/core';
 
 const selector = formValueSelector('AddOverhead');
 
@@ -921,6 +922,8 @@ class AddOverhead extends Component {
   render() {
     const { handleSubmit, t } = this.props;
     const { isRM, isCC, isBOP, isOverheadPercent, isEditFlag, isHideOverhead, isHideBOP, isHideRM, isHideCC, isViewMode, setDisable, IsFinancialDataChanged, costingTypeId } = this.state;
+    const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
+
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
       if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
@@ -1006,7 +1009,7 @@ class AddOverhead extends Component {
                               }
                               disabled={isEditFlag ? true : false}
                             />{" "}
-                            <span>Vendor Based</span>
+                            <span>{VendorLabel} Based</span>
                           </Label>}
                           {reactLocalStorage.getObject('CostingTypePermission').cbc && <Label id="AddOverhead_customerbased" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
                             <input
@@ -1089,7 +1092,7 @@ class AddOverhead extends Component {
                         </Col>
                         {costingTypeId === VBCTypeId && (
                           <Col md="3" >
-                            <label>{"Vendor (Code)"}<span className="asterisk-required">*</span></label>
+                            <label>{VendorLabel} (Code)<span className="asterisk-required">*</span></label>
                             <div className='p-relative vendor-loader'>
                               {this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
                               <AsyncSelect
@@ -1508,5 +1511,5 @@ export default connect(mapStateToProps, {
 })(reduxForm({
   form: 'AddOverhead',
   enableReinitialize: true,
-})(withTranslation(['OverheadsProfits'])(AddOverhead)),
+})(withTranslation(['OverheadsProfits', 'MasterLabels'])(AddOverhead)),
 )
