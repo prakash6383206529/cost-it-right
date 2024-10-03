@@ -38,7 +38,7 @@ import LanguageDropdown from "../common/Tour/LanguageDropdown";
 import TourWrapper from "../common/Tour/TourWrapper";
 import { Steps } from "./TourMessages";
 import { withTranslation } from "react-i18next";
-import { CirLogo, CompanyLogo, LabelsClass } from "../../helper/core";
+import { CirLogo, CompanyLogo } from "../../helper/core";
 class SideBar extends Component {
   constructor(props) {
     super(props)
@@ -88,7 +88,6 @@ class SideBar extends Component {
    * @description used to called after mounting component
    */
   componentDidMount() {
-
     const { location } = this.props;
     this.setState({ isLoader: true });
     if (location && location !== undefined) {
@@ -228,7 +227,7 @@ class SideBar extends Component {
         return this.renderAudit(module, LandingPageURL);
       case "NFR":
         return this.renderNFR(module, LandingPageURL);
-      case `Vendor Management`:
+      case "Vendor Management":
         return this.renderVendorManagement(module, LandingPageURL);
       case "RFQ":
         if (getConfigurationKey().IsRFQConfigured) {
@@ -906,9 +905,8 @@ class SideBar extends Component {
 
 
   renderVendorManagement = (module) => {
-    const { t, menusData, topAndLeftMenuData } = this.props
-    const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
-    console.log(VendorLabel, 'VendorLabel')
+
+    const { menusData, topAndLeftMenuData } = this.props
     return (
       topAndLeftMenuData &&
       topAndLeftMenuData.map((el, i) => {
@@ -925,7 +923,7 @@ class SideBar extends Component {
                   pathname: el.LandingPageURL,
                   state: {
                     ModuleId: el.ModuleId,
-                    PageName: `${VendorLabel} Management`,
+                    PageName: "Vendor Management",
                     PageURL: el.LandingPageURL,
                   },
                 }}
@@ -1181,5 +1179,5 @@ export default connect(mapStateToProps, {
   getMenu,
   getTopAndLeftMenuData,
 
-})(withTranslation(['NavBar', 'MasterLabels'])(SideBar))
+})(withTranslation(['NavBar'])(SideBar))
 
