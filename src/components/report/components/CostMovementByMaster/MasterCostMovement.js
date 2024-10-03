@@ -1,4 +1,3 @@
-
 import React, { Fragment, useState } from 'react';
 import { useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
@@ -167,6 +166,7 @@ function MasterCostMovement() {
                             handleChange={handleRMChange}
                             buttonCross={resetData('RawMaterialId')}
                             errors={errors.RawMaterialId}
+                            isClearable={true}  // Add this prop
                         />
                     </Col>
                     <Col md="3">
@@ -184,6 +184,7 @@ function MasterCostMovement() {
                             handleChange={handleGradeChange}
                             buttonCross={resetData('RawMaterialGradeId')}
                             errors={errors.RawMaterialGradeId}
+                            isClearable={true}  // Add this prop
                         />
                     </Col>
                     <Col md="3">
@@ -201,6 +202,7 @@ function MasterCostMovement() {
                             handleChange={handlespecChange}
                             buttonCross={resetData('RawMaterialSpecificationId')}
                             errors={errors.RawMaterialSpecificationId}
+                            isClearable={true}  // Add this prop
                         />
                     </Col>
                     <Col md="3">
@@ -547,20 +549,25 @@ function MasterCostMovement() {
 
             ))
         } else {
-            setRawMaterial([])
-            setRMGrade([])
-            setRMSpec([])
+            setRawMaterial(null)
+            setRMGrade(null)
+            setRMSpec(null)
+            setValue('RawMaterialId', '');
+            setValue('RawMaterialGradeId', '');
+            setValue('RawMaterialSpecificationId', '');
             dispatch(getRMGradeSelectListByRawMaterial('', true, (res) => { }))
             dispatch(fetchSpecificationDataAPI(0, () => { }))
         }
     };
     const handleGradeChange = (newValue) => {
-        setRMGrade(newValue)
         if (newValue && newValue !== '') {
+            setRMGrade(newValue)
             dispatch(fetchSpecificationDataAPI(newValue.value, (res) => { }))
         } else {
-            setRMGrade([])
-            setRMSpec([])
+            setRMGrade(null)
+            setRMSpec(null)
+            setValue('RawMaterialGradeId', '');
+            setValue('RawMaterialSpecificationId', '');
             dispatch(fetchSpecificationDataAPI(0, () => { }))
         }
     };
@@ -568,7 +575,8 @@ function MasterCostMovement() {
         if (newValue && newValue !== '') {
             setRMSpec(newValue)
         } else {
-            setRMSpec([])
+            setRMSpec(null)
+            setValue('RawMaterialSpecificationId', '')
         }
     }
     const handleCategoryChange = (newValue) => {
