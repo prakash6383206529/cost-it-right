@@ -1738,14 +1738,14 @@ class AddBOPImport extends Component {
                                   placeholder={isViewMode ? "-" : "Enter"}
                                   validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkSpacesInString, hashValidation]}
                                   component={renderText}
-                                  disabled={IsSapCodeEditView && isEditFlag}
+                                  disabled={(IsSapCodeEditView && isEditFlag) || isViewMode}
                                   value={this.state.SapCode}
                                   onChange={this.handleChangeSapCode}
                                   className=" "
                                   customClassName=" withBorder w-100 mb-0"
                                 />
                                 {!IsSAPCodeUpdated && isEditFlag && (
-                                  <Button className={"Edit ms-2 mt-2"} variant="Edit" title={"Edit"} onClick={() => { this.handleSubmitOfSapCode(handleSubmit(this.onSubmit.bind(this))) }} />
+                                  <Button className={"Edit ms-2 mt-2"} variant="Edit" title={"Edit"} onClick={() => { this.handleSubmitOfSapCode(handleSubmit(this.onSubmit.bind(this))) }} disabled={isViewMode} />
                                 )}
                               </div>
                               {IsSAPCodeHandle && isEditFlag && (
