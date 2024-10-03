@@ -28,6 +28,7 @@ import { getSelectListPartType } from '../actions/Part'
 import TourWrapper from '../../common/Tour/TourWrapper'
 import { Steps } from './TourMessages'
 import { withTranslation } from 'react-i18next'
+import { LabelsClass } from '../../../helper/core'
 
 const gridOptions = {};
 
@@ -759,6 +760,8 @@ class AddVolume extends Component {
   */
   render() {
     const { handleSubmit, t } = this.props;
+    const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
+
     const { isEditFlag, isOpenVendor, setDisable, costingTypeId } = this.state;
     const vendorFilterList = async (inputValue) => {
       const { vendorFilter } = this.state
@@ -904,7 +907,7 @@ class AddVolume extends Component {
                                   }
                                   disabled={isEditFlag ? true : false}
                                 />{" "}
-                                <span>Vendor Based</span>
+                                <span>{VendorLabel} Based</span>
                               </Label>}
                               {reactLocalStorage.getObject('CostingTypePermission').cbc && <Label id="Volume_CustomerBased" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
                                 <input
@@ -949,7 +952,7 @@ class AddVolume extends Component {
                             )}
                             {costingTypeId === VBCTypeId && (
                               <Col md="3">
-                                <label>{"Vendor (Code)"}<span className="asterisk-required">*</span></label>
+                                <label>{VendorLabel} (Code)<span className="asterisk-required">*</span></label>
                                 <div className="d-flex justify-space-between align-items-center p-relative async-select">
                                   <div className="fullinput-icon p-relative">
                                     {this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
@@ -1254,5 +1257,5 @@ export default connect(mapStateToProps, {
     form: 'AddVolume',
     enableReinitialize: true,
     touchOnChange: true
-  })(withTranslation(['VolumeMaster'])(AddVolume)),
+  })(withTranslation(['VolumeMaster', 'MasterLabels'])(AddVolume)),
 )

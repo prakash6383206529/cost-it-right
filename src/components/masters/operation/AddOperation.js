@@ -37,6 +37,7 @@ import { withTranslation } from 'react-i18next';
 import Button from '../../layout/Button';
 import TooltipCustom from '../../common/Tooltip';
 import { subDays } from 'date-fns';
+import { LabelsClass } from '../../../helper/core';
 
 const selector = formValueSelector('AddOperation');
 
@@ -999,6 +1000,8 @@ class AddOperation extends Component {
   render() {
     const { handleSubmit, initialConfiguration, isOperationAssociated, t, data } = this.props;
     const { isEditFlag, isOpenVendor, isOpenUOM, isDisableCode, isViewMode, setDisable, costingTypeId, noApprovalCycle, CostingTypePermission, disableSendForApproval } = this.state;
+    const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
+
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
       if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
@@ -1087,7 +1090,7 @@ class AddOperation extends Component {
                             }
                             disabled={isEditFlag ? true : false}
                           />{" "}
-                          <span>Vendor Based</span>
+                          <span>{VendorLabel} Based</span>
                         </Label>}
                         {reactLocalStorage.getObject('CostingTypePermission').cbc && <Label id="Add_operation_customer_based" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
                           <input
@@ -1214,7 +1217,7 @@ class AddOperation extends Component {
                         </Col>
                       )}
                       {costingTypeId === VBCTypeId && (
-                        <Col md="3"><label>{"Vendor (Code)"}<span className="asterisk-required">*</span></label>
+                        <Col md="3"><label>{VendorLabel} (Code)<span className="asterisk-required">*</span></label>
                           <div className="d-flex justify-space-between align-items-center async-select">
                             <div className="fullinput-icon p-relative">
                               {this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}

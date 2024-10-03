@@ -24,6 +24,7 @@ import { reactLocalStorage } from "reactjs-localstorage";
 import { ApplyPermission } from ".";
 import Button from "../../layout/Button";
 import { checkMasterCreateByCostingPermission } from "../../common/CommonFunctions";
+import { useLabels } from "../../../helper/core";
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
@@ -50,6 +51,7 @@ const FuelListing = (props) => {
   const dispatch = useDispatch();
   const permissions = useContext(ApplyPermission);
   const { fuelDataList } = useSelector((state) => state.fuel);
+  const { vendorLabel } = useLabels()
   useEffect(() => {
     if (permissions) {
       getDataList(null, null);
@@ -300,7 +302,7 @@ const FuelListing = (props) => {
                 <AgGridColumn field="StateName" headerName="State"></AgGridColumn>
                 <AgGridColumn field="Rate" headerName={`Rate (${reactLocalStorage.getObject("baseCurrency")})`} cellRenderer={"commonCostFormatter"}></AgGridColumn>
                 <AgGridColumn field="PlantWithCode" headerName="Plant (Code)" cellRenderer={"commonCostFormatter"}></AgGridColumn>
-                <AgGridColumn field="VendorWithCode" headerName="Vendor (Code)" cellRenderer={"commonCostFormatter"}></AgGridColumn>
+                <AgGridColumn field="VendorWithCode" headerName={`${vendorLabel} (Code)`} cellRenderer={"commonCostFormatter"}></AgGridColumn>
                 {(reactLocalStorage.getObject('CostingTypePermission').cbc) && (<AgGridColumn field="CustomerWithCode" headerName="Customer (Code)" cellRenderer={"commonCostFormatter"}></AgGridColumn>)}
                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={"effectiveDateRenderer"}></AgGridColumn>
                 <AgGridColumn field="ModifiedDate" minWidth={170} headerName="Date of Modification" cellRenderer={"effectiveDateRenderer"} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>

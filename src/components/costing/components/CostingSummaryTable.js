@@ -56,7 +56,7 @@ import { CirLogo, CompanyLogo, useLabels } from '../../../helper/core'
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
 const CostingSummaryTable = (props) => {
-
+  const { vendorLabel } = useLabels()
   const { register, control, formState: { errors }, setValue, getValues } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
@@ -1130,7 +1130,7 @@ const CostingSummaryTable = (props) => {
             Toaster.warning('Please select at least one costing to send for approval')
             return
           } else if (!allEqual(vendorArray)) {
-            Toaster.warning('Vendor should be same for sending multiple costing for approval')
+            Toaster.warning(`${vendorLabel} should be same for sending multiple costing for approval`)
             return
           } else if (!allEqual(effectiveDateArray)) {
             Toaster.warning('Effective Date should be same for sending multiple costing for approval')
@@ -1146,7 +1146,7 @@ const CostingSummaryTable = (props) => {
               Toaster.warning('Please select at least one costing to send for approval')
               return
             } else if (!allEqual(vendorArray)) {
-              Toaster.warning('Vendor should be same for sending multiple costing for approval')
+              Toaster.warning(`${vendorLabel} should be same for sending multiple costing for approval`)
               return
             } else if (!allEqual(effectiveDateArray)) {
               Toaster.warning('Effective Date should be same for sending multiple costing for approval')
@@ -1184,7 +1184,7 @@ const CostingSummaryTable = (props) => {
         Toaster.warning('Please select at least one costing to send for approval')
         return
       } else if (!allEqual(vendorArray)) {
-        Toaster.warning('Vendor should be same for sending multiple costing for approval')
+        Toaster.warning(`${vendorLabel} should be same for sending multiple costing for approval`)
         return
       } else if (!allEqual(effectiveDateArray)) {
         Toaster.warning('Effective Date should be same for sending multiple costing for approval')
@@ -2268,7 +2268,7 @@ const CostingSummaryTable = (props) => {
                             <td>
                               <span className="d-block">Costing Version</span>
                               <span className={`d-block mt-${props.isFromViewRFQ ? 4 : 2}`}>Net Cost (Effective from)</span>
-                              <span className="d-block">Vendor (Code)</span>
+                              <span className="d-block">{vendorLabel} (Code)</span>
                               {(reactLocalStorage.getObject('CostingTypePermission').cbc) && <span className="d-block">Customer (Code)</span>}
                               <span className="d-block">Category</span>
                               <span className="d-block">Part Type</span>

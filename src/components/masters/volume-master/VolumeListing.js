@@ -35,9 +35,9 @@ import { resetStatePagination, updateCurrentRowIndex, updateGlobalTake, updatePa
 import TourWrapper from "../../common/Tour/TourWrapper";
 import { Steps } from "../../common/Tour/TourMessages";
 import { useTranslation } from "react-i18next";
+import { useLabels } from "../../../helper/core";
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
-
 const gridOptions = {};
 
 const initialTableData = [
@@ -169,6 +169,7 @@ function VolumeListing(props) {
   const { selectedRowForPagination } = useSelector((state) => state.simulation);
   const dispatch = useDispatch();
   const { t } = useTranslation("Common");
+  const { vendorLabel } = useLabels()
 
   useEffect(() => {
     applyPermission(topAndLeftMenuData);
@@ -720,7 +721,7 @@ function VolumeListing(props) {
                   <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={checkBoxRenderer}></AgGridColumn>
                   <AgGridColumn field="Year" headerName="Year"></AgGridColumn>
                   <AgGridColumn field="Month" headerName="Month"></AgGridColumn>
-                  <AgGridColumn field="VendorName" headerName="Vendor (Code)" cellRenderer={"hyphenFormatter"}></AgGridColumn>
+                  <AgGridColumn field="VendorName" headerName={`${vendorLabel} (Code)`} cellRenderer={"hyphenFormatter"}></AgGridColumn>
                   {reactLocalStorage.getObject('CostingTypePermission').cbc && (<AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={"hyphenFormatter"}></AgGridColumn>)}
                   <AgGridColumn field="Plant" headerName="Plant (Code)" cellRenderer={"hyphenFormatter"}></AgGridColumn>
                   <AgGridColumn field="PartType" headerName="Part Type" cellRenderer={"hyphenFormatter"}></AgGridColumn>

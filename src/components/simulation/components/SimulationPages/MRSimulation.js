@@ -54,7 +54,7 @@ function MRSimulation(props) {
     const [basicRateviewTooltip, setBasicRateViewTooltip] = useState(false)
     const [textFilterSearch, setTextFilterSearch] = useState('')
     const gridRef = useRef();
-
+const {vendorLabel} = useLabels()
     const { technologyLabel } = useLabels();
     const { register, control, setValue, formState: { errors }, } = useForm({
         mode: 'onChange',
@@ -476,8 +476,8 @@ function MRSimulation(props) {
                                                         <p className='technology ml-1' title={list[0].Technology}>{list[0].Technology}</p>
                                                     </div>
                                                     {list[0].CostingTypeId !== CBCTypeId && <div className='d-flex pl-3'>
-                                                        <label className='mr-1'>Vendor (Code):</label>
-                                                        <p className='mr-2' title={list[0].VendorName}>{list[0].VendorName ? list[0].VendorName : list[0]['Vendor (Code)']}</p>
+                                                        <label className='mr-1'>{vendorLabel} (Code):</label>
+                                                        <p className='mr-2' title={list[0].VendorName}>{list[0].VendorName ? list[0].VendorName : list[0][`${vendorLabel} (Code)`]}</p>
                                                     </div>}
                                                     <button type="button" id="simulation-back" className={"apply back_simulationPage"} onClick={cancel}> <div className={'back-icon'}></div>Back</button>
                                                 </div>}
@@ -517,7 +517,7 @@ function MRSimulation(props) {
                                                 <AgGridColumn field="MachineName" tooltipField='MachineName' editable='false' headerName="Machine Name" minWidth={columnWidths.MachineName}></AgGridColumn>
                                                 <AgGridColumn field="MachineNumber" tooltipField='MachineNumber' editable='false' headerName="Machine Number" minWidth={columnWidths.MachineNumber}></AgGridColumn>
                                                 <AgGridColumn field="ProcessName" tooltipField='ProcessName' editable='false' headerName="Process Name" minWidth={columnWidths.ProcessName}></AgGridColumn>
-                                                {!isImpactedMaster && list[0].CostingTypeId !== CBCTypeId && <AgGridColumn field="VendorName" tooltipField='VendorName' editable='false' headerName="Vendor (Code)" minWidth={columnWidths.VendorName} cellRenderer='vendorFormatter'></AgGridColumn>}
+                                                {!isImpactedMaster && list[0].CostingTypeId !== CBCTypeId && <AgGridColumn field="VendorName" tooltipField='VendorName' editable='false' headerName={vendorLabel + " (Code)"} minWidth={columnWidths.VendorName} cellRenderer='vendorFormatter'></AgGridColumn>}
                                                 {!isImpactedMaster && list[0].CostingTypeId === CBCTypeId && <AgGridColumn width={columnWidths.CustomerName} field="CustomerName" tooltipField='CustomerName' editable='false' headerName="Customer (Code)" cellRenderer='customerFormatter'></AgGridColumn>}
                                                 {
                                                     !isImpactedMaster &&

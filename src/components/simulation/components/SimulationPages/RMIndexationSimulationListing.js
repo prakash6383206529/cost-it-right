@@ -83,7 +83,7 @@ function RMIndexationSimulationListing(props) {
     const [showExtraData, setShowExtraData] = useState(false)
     const [render, setRender] = useState(false)
     const { t } = useTranslation("common")
-    const { technologyLabel } = useLabels();
+    const { technologyLabel,vendorLabel } = useLabels();
 
     var filterParams = {
         date: "", inRangeInclusive: true, filterOptions: ['equals', 'inRange'],
@@ -1003,10 +1003,10 @@ function RMIndexationSimulationListing(props) {
                                         <AgGridColumn field="RawMaterialCode" headerName='Code' cellRenderer='hyphenFormatter'></AgGridColumn>
                                         <AgGridColumn field="Category"></AgGridColumn>
                                         <AgGridColumn field="MaterialType"></AgGridColumn>
-                                        {getConfigurationKey()?.IsShowSourceVendorInRawMaterial && !props.isCostingSimulation && <AgGridColumn field="SourceVendorAssociatedAsRawMaterialVendors" width={250} headerName='Raw Material Code (Source Vendor Code)' cellRendererFramework={CustomCellRenderer}></AgGridColumn>}
-                                        {props.isCostingSimulation && <AgGridColumn field="SourceVendorName" width={250} headerName='Source Vendor (Code)' cellRenderer='hyphenFormatter'></AgGridColumn>}
+                                        {getConfigurationKey()?.IsShowSourceVendorInRawMaterial && !props.isCostingSimulation && <AgGridColumn field="SourceVendorAssociatedAsRawMaterialVendors" width={250} headerName={`Raw Material Code (Source ${vendorLabel} Code)`} cellRendererFramework={CustomCellRenderer}></AgGridColumn>}
+                                        {props.isCostingSimulation && <AgGridColumn field="SourceVendorName" width={250} headerName={`Source ${vendorLabel} (Code)`} cellRenderer='hyphenFormatter'></AgGridColumn>}
                                         <AgGridColumn field={props.isCostingSimulation ? 'PlantCode' : "DestinationPlantName"} headerName="Plant (Code)"></AgGridColumn>
-                                        <AgGridColumn field={props.isCostingSimulation ? 'VendorCode' : "VendorName"} headerName="Vendor (Code)"></AgGridColumn>
+                                        <AgGridColumn field={props.isCostingSimulation ? 'VendorCode' : "VendorName"} headerName={`${vendorLabel} (Code)`}></AgGridColumn>
                                         {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
                                         {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field={props.isCostingSimulation ? 'CustomerCode' : "CustomerName"} headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                                         <AgGridColumn field={props.isCostingSimulation ? 'UOM' : "UnitOfMeasurementName"} headerName='UOM'></AgGridColumn>
