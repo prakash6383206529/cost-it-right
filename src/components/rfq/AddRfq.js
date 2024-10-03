@@ -57,6 +57,7 @@ function AddRfq(props) {
     const permissions = useContext(ApplyPermission);
     const Vendor = permissions.permissionDataVendor
     const Part = permissions.permissionDataPart
+
     const dispatch = useDispatch()
     const { t } = useTranslation("Rfq")
     const { data: dataProps } = props
@@ -3291,7 +3292,7 @@ function AddRfq(props) {
                                             </div>
                                         </Col>}
                                     </Row>
-                                    {(!disabledPartUid && selectedOption !== 'Tooling' && Object.keys(prNumber).length === 0) && <Button
+                                    {(!disabledPartUid && selectedOption !== 'Tooling' && Object.keys(prNumber).length === 0 && Part?.BulkUpload) && <Button
                                         id="rfq_bulkUpload"
                                         className={"mr5 Tour_List_BulkUpload"}
                                         onClick={bulkToggle}
