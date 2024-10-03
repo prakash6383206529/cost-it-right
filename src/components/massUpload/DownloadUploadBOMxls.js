@@ -81,4 +81,4 @@ class DownloadUploadBOMxls extends React.Component {
   }
 }
 
-export default withTranslation(DownloadUploadBOMxls, "MasterLabels");
+export default withTranslation("MasterLabels")(DownloadUploadBOMxls);
