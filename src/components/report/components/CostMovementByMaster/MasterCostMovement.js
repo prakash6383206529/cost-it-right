@@ -388,7 +388,7 @@ function MasterCostMovement() {
 
             case 'Technology':
                 return function resetField() {
-                    setValue('technology', '')
+                    setValue('Technology', '')
                     setTechnology([])
                 }
             case 'RawMaterialId':
@@ -821,6 +821,8 @@ function MasterCostMovement() {
                                 handleChange={(e) => { setTechnology(e) }}
                                 buttonCross={resetData('Technology')}
                                 errors={errors.TechnologyId}
+                                isClearable={true} // Add this prop
+
                             />
                         </Col>}
                         {inputFieldsRenderer()}
