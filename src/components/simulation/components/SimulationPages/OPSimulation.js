@@ -20,6 +20,7 @@ import { debounce } from 'lodash'
 import { VBC, ZBC } from '../../../../config/constants';
 import { PaginationWrapper } from '../../../common/commonPagination';
 import { simulationContext } from '..';
+import { useLabels } from '../../../../helper/core';
 
 const gridOptions = {
 
@@ -28,7 +29,7 @@ const gridOptions = {
 
 function OPSImulation(props) {
     const { showEditMaster, handleEditMasterPage } = useContext(simulationContext) || {};
-
+const {vendorLabel} = useLabels()
     const { list, isbulkUpload, rowCount, technology, master, isImpactedMaster, tokenForMultiSimulation } = props
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
     const [showverifyPage, setShowVerifyPage] = useState(false)
@@ -975,7 +976,7 @@ function OPSImulation(props) {
                                             {/* <AgGridColumn field="Technologies" editable='false' headerName="Technology" minWidth={190}></AgGridColumn> */}
                                             <AgGridColumn field="IsVendor" editable='false' headerName="Costing Head" minWidth={190}></AgGridColumn>
                                             <AgGridColumn field="ClientName" editable='false' headerName="Client Name" minWidth={190}></AgGridColumn>
-                                            <AgGridColumn field="VendorName" editable='false' headerName="Vendor Name" minWidth={190}></AgGridColumn>
+                                            <AgGridColumn field="VendorName" editable='false' headerName={vendorLabel + " Name"} minWidth={190}></AgGridColumn>
 
                                             <AgGridColumn field="ModelType" editable={false} headerName="Model Type" minWidth={190}></AgGridColumn>
 

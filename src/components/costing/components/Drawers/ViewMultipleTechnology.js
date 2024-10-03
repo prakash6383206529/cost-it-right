@@ -20,7 +20,7 @@ function ViewMultipleTechnology(props) {
     const partNumber = useSelector(state => state.costing.partNo);
     const [costingTypeId, setCostingTypeId] = useState(props?.costingTypeId)
     const dispatch = useDispatch()
-    const { technologyLabel } = useLabels();
+    const { technologyLabel, vendorLabel } = useLabels();
     useEffect(() => {
         setViewMultiCost(multipleTechnologyData)
     }, [])
@@ -63,7 +63,7 @@ function ViewMultipleTechnology(props) {
                         <thead>
                             <tr>
                                 {props?.costingTypeId === VBCTypeId &&
-                                    <th>{`Vendor (Code)`}</th>}
+                                    <th>{`${vendorLabel} (Code)`}</th>}
                                 {props?.costingTypeId === CBCTypeId &&
                                     <th>{`Customer (Code)`}</th>}
                                 <th>{`Costing Number`}</th>

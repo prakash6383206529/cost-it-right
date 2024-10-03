@@ -5,7 +5,7 @@ import { MESSAGES } from '../../../config/message'
 import { BUDGETING, defaultPageSize, EMPTY_DATA, FILE_URL } from '../../../config/constants'
 import NoContentFound from '../../common/NoContentFound'
 import { deleteBudget, getBudgetDataList, getPartCostingHead, } from '../actions/Budget'
-import { BUDGET_DOWNLOAD_EXCEl } from '../../../config/masterData'
+import { BUDGET_DOWNLOAD_EXCEl, Vendor } from '../../../config/masterData'
 import BulkUpload from '../../massUpload/BulkUpload'
 import { ADDITIONAL_MASTERS } from '../../../config/constants'
 import { checkPermission, searchNocontentFilter, setLoremIpsum } from '../../../helper/util'
@@ -33,6 +33,7 @@ import PaginationControls from '../../common/Pagination/PaginationControls';
 import TourWrapper from '../../common/Tour/TourWrapper'
 import { Steps } from '../../common/Tour/TourMessages'
 import { useTranslation } from 'react-i18next'
+import { useLabels } from '../../../helper/core'
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -79,7 +80,7 @@ function BudgetListing(props) {
     const { selectedRowForPagination } = useSelector((state => state.simulation))
     const dispatch = useDispatch();
     const { t } = useTranslation("common")
-
+    const { vendorLabel } = useLabels()
     useEffect(() => {
         applyPermission(topAndLeftMenuData)
         if (!props?.isMasterSummaryDrawer) {
@@ -591,7 +592,7 @@ function BudgetListing(props) {
                                     enableBrowserTooltips={true}
                                 >
                                     <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={checkBoxRenderer}></AgGridColumn>
-                                    <AgGridColumn field="vendorNameWithCode" headerName="Vendor (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="vendorNameWithCode" headerName={`${vendorLabel} (Code)`} cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="customerNameWithCode" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                                     <AgGridColumn field="plantNameWithCode" headerName="Plant (Code)"></AgGridColumn>
                                     <AgGridColumn field="PartType" headerName="Part Type" cellRenderer={'hyphenFormatter'}></AgGridColumn>

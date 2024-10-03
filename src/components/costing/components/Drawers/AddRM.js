@@ -18,10 +18,11 @@ import { PaginationWrapper } from '../../../common/commonPagination';
 import _ from 'lodash';
 import { IsNFR } from '../CostingDetails';
 import { reactLocalStorage } from 'reactjs-localstorage';
+import { useLabels } from '../../../../helper/core';
 const gridOptions = {};
 
 function AddRM(props) {
-
+  const { vendorLabel } = useLabels()
   const { IsApplyMasterBatch, Ids, rmNameList, item } = props;
 
   const { handleSubmit } = useForm({
@@ -350,9 +351,9 @@ function AddRM(props) {
                         <AgGridColumn field="RMGrade" headerName="Grade"></AgGridColumn>
                         <AgGridColumn field="RMSpec" headerName="Spec"></AgGridColumn>
                         <AgGridColumn field="Category" ></AgGridColumn>
-                        {costData && costData.VendorType === ZBC && <AgGridColumn dataAlign="center" field="VendorName" headerName="Vendor" ></AgGridColumn>}
-                        {costData && costData.VendorType === ZBC && <AgGridColumn dataAlign="center" field="VendorLocation" headerName="Vendor Location" ></AgGridColumn>}
-                        {initialConfiguration?.IsShowSourceVendorInRawMaterial && <AgGridColumn field="SourceVendorName" headerName="Source Vendor Name" cellRenderer={'sourceVendorFormatter'}></AgGridColumn>}
+                        {costData && costData.VendorType === ZBC && <AgGridColumn dataAlign="center" field="VendorName" headerName={vendorLabel} ></AgGridColumn>}
+                        {costData && costData.VendorType === ZBC && <AgGridColumn dataAlign="center" field="VendorLocation" headerName={`${vendorLabel} Location`}></AgGridColumn>}
+                        {initialConfiguration?.IsShowSourceVendorInRawMaterial && <AgGridColumn field="SourceVendorName" headerName={`Source ${vendorLabel} Name`} cellRenderer={'sourceVendorFormatter'}></AgGridColumn>}
                         <AgGridColumn field="Currency" cellRenderer={'currencyFormatter'}></AgGridColumn>
                         <AgGridColumn field="UOM"></AgGridColumn>
                         <AgGridColumn field="BasicRatePerUOM" headerName="Basic Rate/UOM" cellRenderer={'priceFormatter'}></AgGridColumn>

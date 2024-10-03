@@ -37,7 +37,6 @@ const AssociateHierarchy = (props) => {
     })
     const dispatch = useDispatch()
     const { productHierarchyData, storedHierarachyData, loading } = useSelector((state) => state.part);
-    console.log(productHierarchyData, "productHierarchyData")
     useEffect(() => {
         dispatch(getAllProductLevels(() => {
             storedHierarachyData.map(item => setValue(`ProductHierarchyName${item?.ProductHierarchyId}`, { label: item?.ProductHierarchyValue, value: item?.ProductHierarchyValueDetailsId, ProductHierarchyId: item?.ProductHierarchyId }))
@@ -105,7 +104,6 @@ const AssociateHierarchy = (props) => {
                     if (response && response.data && response.data.DataList) {
                         const Data = response.data.DataList[state.levelData?.ProductHierarchyId - 1]
                         const filteredData = Data && Data?.ProductHierarchyValueDetail && Data?.ProductHierarchyValueDetail?.filter(item => item?.ProductHierarchyValue === data[state?.labelName])
-                        console.log(filteredData, "filteredData")
                         const setData = { label: filteredData[0]?.ProductHierarchyValue, value: filteredData[0]?.ProductHierarchyValueDetailsId, ProductHierarchyId: filteredData[0]?.ProductHierarchyId }
                         setValue(`ProductHierarchyName${state.levelData?.ProductHierarchyId}`, setData)
                         setState((prevState) => ({ ...prevState, [`ProductHierarchyName${state.levelData?.ProductHierarchyId}`]: setData, selectedDropdownValue: setData }));
