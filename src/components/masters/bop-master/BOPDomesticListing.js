@@ -57,7 +57,7 @@ const BOPDomesticListing = (props) => {
   const isRfq = props?.quotationId !== null && props?.quotationId !== '' && props?.quotationId !== undefined;
 
   const { t } = useTranslation("common")
-  const { technologyLabel,vendorLabel } = useLabels();
+  const { technologyLabel, vendorLabel } = useLabels();
   const [state, setState] = useState({
     isOpen: false,
     isEditFlag: false,
@@ -663,6 +663,9 @@ const BOPDomesticListing = (props) => {
       if (column.value === "NumberOfPieces") {
         return getConfigurationKey().IsMinimumOrderQuantityVisible
       }
+      if (column.value === "SAPCode") {
+        return getConfigurationKey().IsSAPCodeRequired
+      }
       return true;
     })
     return returnExcelColumn(filteredLabels, tempArr)
@@ -685,8 +688,8 @@ const BOPDomesticListing = (props) => {
     } else {
       tempData = data
     }
-    if (!getConfigurationKey().IsSAPConfigured) {
-      tempData = hideColumnFromExcel(tempData, 'SAPCode')
+    if (!getConfigurationKey().IsSAPCodeRequired) {
+      tempData = hideColumnFromExcel(tempData, "SAPCode")
     }
     temp = TempData && TempData.map((item) => {
       if (item.Plants === '-') {
@@ -920,8 +923,7 @@ const BOPDomesticListing = (props) => {
                 <AgGridColumn field="BoughtOutPartCategory" headerName={`${showBopLabel()} Category`}></AgGridColumn>
                 <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
                 <AgGridColumn field="Specification" headerName="Specification" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                {getConfigurationKey().IsSAPConfigured
-                  && <AgGridColumn field="SAPPartNumber" headerName="SAP Code" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                {getConfigurationKey().IsSAPCodeRequired && <AgGridColumn field="SAPPartNumber" headerName="SAP Code" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                 <AgGridColumn field="Plants" cellRenderer={'hyphenFormatter'} headerName="Plant (Code)"></AgGridColumn>
                 <AgGridColumn field="Vendor" headerName={`${vendorLabel} (Code)`} cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}

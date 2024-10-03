@@ -151,11 +151,19 @@ export const checkVendorPlantConfig = (excelData, type = '', isBop = false, isVe
         if (getConfigurationKey().IsShowPaymentTermsFields === false) {
             if (el.value === 'PaymentTerm') return false;
         }
-        if (getConfigurationKey().IsSAPConfigured === false) {
+        if (getConfigurationKey().IsSAPCodeRequired === false) {
             if (el.value === 'SAPCode') return false;
         }
         return true;
     })
+}
+export const addDynamicModelType = (list, modelText) => {
+    let arr = []
+    list && list?.map(item => {
+        item.ModelType = modelText
+        arr.push(item)
+    })
+    return arr
 }
 class Downloadxls extends React.Component {
     /**
@@ -172,7 +180,7 @@ class Downloadxls extends React.Component {
 
                 return this.returnExcelColumn(checkVendorPlantConfig(updatedLabels, '', false, true), VendorTempData);
             case 'Overhead':
-                return this.returnExcelColumn(Overhead, OverheadTempData);
+                return this.returnExcelColumn(Overhead, addDynamicModelType(OverheadTempData, this.props?.modelText));
             case 'Index Data':
                 return this.returnExcelColumn(IndexDataListing, IndexDataListingTempData);
             case 'Index':
@@ -186,7 +194,7 @@ class Downloadxls extends React.Component {
             case 'Fuel':
                 return this.returnExcelColumn(Fuel, FuelTempData);
             case 'Profit':
-                return this.returnExcelColumn(Profit, ProfitTempData);
+                return this.returnExcelColumn(Profit, addDynamicModelType(ProfitTempData, this.props?.modelText));
             case 'Labour':
                 return this.returnExcelColumn(Labour, LabourTempData);
             case 'Part Component':
@@ -233,10 +241,10 @@ class Downloadxls extends React.Component {
 
             case `Overhead`:
 
-                return this.returnExcelColumn(Overhead, OverheadTempData);
+                return this.returnExcelColumn(Overhead, addDynamicModelType(OverheadTempData, this.props?.modelText));
             case `Profit`:
 
-                return this.returnExcelColumn(Profit, ProfitTempData);
+                return this.returnExcelColumn(Profit, addDynamicModelType(ProfitTempData, this.props?.modelText));
             case 'Actual Volume':
                 return this.returnExcelColumn(VOLUME_ACTUAL_ZBC, VOLUME_ACTUAL_ZBC_TEMPDATA);
             case 'Budgeted Volume':
@@ -293,10 +301,10 @@ class Downloadxls extends React.Component {
                 }
             case `Overhead`:
 
-                return this.returnExcelColumn(OverheadVBC, OverheadVBC_TempData);
+                return this.returnExcelColumn(OverheadVBC, addDynamicModelType(OverheadVBC_TempData, this.props?.modelText));
             case `Profit`:
 
-                return this.returnExcelColumn(ProfitVBC, ProfitTempDataVBC);
+                return this.returnExcelColumn(ProfitVBC, addDynamicModelType(ProfitTempDataVBC, this.props?.modelText));
             case 'Actual Volume':
                 return this.returnExcelColumn(checkVendorPlantConfig(VOLUME_ACTUAL_VBC), VOLUME_ACTUAL_VBC_TEMPDATA);
             case 'Budgeted Volume':
@@ -340,9 +348,9 @@ class Downloadxls extends React.Component {
                 return this.returnExcelColumn(checkVendorPlantConfig(updatedLabels, CBCTypeId, true), BOP_CBC_IMPORT_TempData);
             case `Overhead`:
 
-                return this.returnExcelColumn(OverheadCBC, OverheadCBC_TempData);
+                return this.returnExcelColumn(OverheadCBC, addDynamicModelType(OverheadCBC_TempData, this.props?.modelText));
             case `Profit`:
-                return this.returnExcelColumn(ProfitCBC, ProfitTempDataCBC);
+                return this.returnExcelColumn(ProfitCBC, addDynamicModelType(ProfitTempDataCBC, this.props?.modelText));
             case 'Actual Volume':
                 return this.returnExcelColumn(checkVendorPlantConfig(VOLUME_ACTUAL_CBC, CBCTypeId), VOLUME_ACTUAL_CBC_TEMPDATA);
             case 'Budgeted Volume':
@@ -489,3 +497,4 @@ class Downloadxls extends React.Component {
 }
 
 export default withTranslation('MasterLabels')(Downloadxls);
+// CR2-I19
