@@ -90,7 +90,7 @@ class AddOperation extends Component {
       showErrorOnFocus: false,
       operationName: '',
       operationCode: '',
-      finalApprovalLoader: true,
+      finalApprovalLoader: getConfigurationKey().IsDivisionAllowedForDepartment ? false : true,
       showPopup: false,
       levelDetails: {},
       noApprovalCycle: false,
@@ -102,7 +102,7 @@ class AddOperation extends Component {
       detailObject: {},
       CostingTypePermission: false,
       disableSendForApproval: false,
-      isWelding: false
+      isWelding: false,
     }
   }
 
@@ -127,18 +127,20 @@ class AddOperation extends Component {
       this.props.getCostingSpecificTechnology(loggedInUserId(), () => { })
       this.props.getPlantSelectListByType(ZBC, "MASTER", '', () => { })
       this.props.getClientSelectList(() => { })
-      this.finalUserCheckAndMasterLevelCheckFunction(EMPTY_GUID)
+      if (!getConfigurationKey().IsDivisionAllowedForDepartment) {
+        this.finalUserCheckAndMasterLevelCheckFunction(EMPTY_GUID)
+      }
     }
     this.getDetail()
 
   }
 
-  finalUserCheckAndMasterLevelCheckFunction = (plantId) => {
+  finalUserCheckAndMasterLevelCheckFunction = (plantId, isDivision = false) => {
     const { initialConfiguration } = this.props
     if (!this.state.isViewMode && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(OPERATIONS_ID) === true) {
       this.props.getUsersMasterLevelAPI(loggedInUserId(), OPERATIONS_ID, (res) => {
         setTimeout(() => {
-          this.commonFunction(plantId)
+          this.commonFunction(plantId, isDivision)
         }, 100);
       })
     } else {
@@ -147,7 +149,7 @@ class AddOperation extends Component {
   }
 
 
-  commonFunction(plantId = EMPTY_GUID) {
+  commonFunction(plantId = EMPTY_GUID, isDivision = false) {
     let levelDetailsTemp = []
     levelDetailsTemp = userTechnologyDetailByMasterId(this.state.costingTypeId, OPERATIONS_ID, this.props.userMasterLevelAPI)
     this.setState({ levelDetails: levelDetailsTemp })
@@ -159,7 +161,7 @@ class AddOperation extends Component {
       approvalTypeId: costingTypeIdToApprovalTypeIdFunction(this.state.costingTypeId),
       plantId: plantId
     }
-    if (this.props.initialConfiguration.IsMasterApprovalAppliedConfigure) {
+    if (this.props.initialConfiguration.IsMasterApprovalAppliedConfigure && !isDivision) {
       this.props.checkFinalUser(obj, (res) => {
         if (res?.data?.Result) {
           this.setState({ isFinalApprovar: res?.data?.Data?.IsFinalApprover, CostingTypePermission: true, finalApprovalLoader: false })
@@ -179,7 +181,7 @@ class AddOperation extends Component {
     if (this.props.fieldsObj !== prevProps.fieldsObj && this.state.isWelding === true) {
       this.calculateRate()
     }
-    if ((prevState?.costingTypeId !== this.state.costingTypeId) && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(OPERATIONS_ID) === true) {
+    if (!getConfigurationKey().IsDivisionAllowedForDepartment && (prevState?.costingTypeId !== this.state.costingTypeId) && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(OPERATIONS_ID) === true) {
       this.commonFunction(this.state.selectedPlants[0] && this.state.selectedPlants[0].Value)
     }
   }
@@ -760,6 +762,25 @@ class AddOperation extends Component {
   closePopUp = () => {
     this.setState({ showPopup: false })
   }
+
+  handleOperationAPI = (formData, isUpdate) => {
+    const apiCall = isUpdate ? this.props.updateOperationAPI : this.props.createOperationsAPI;
+    const successMessage = isUpdate ? MESSAGES.OPERATION_UPDATE_SUCCESS : MESSAGES.OPERATION_ADD_SUCCESS;
+    // Add moreOperationData to formData
+    const updatedFormData = {
+      ...formData,
+      ...this.state.moreOperationData
+    };
+    console.log(updatedFormData, 'updatedFormData')
+    apiCall(updatedFormData, (res) => {
+      this.setState({ setDisable: false });
+      if (res?.data?.Result) {
+        Toaster.success(successMessage);
+        this.cancel('submit');
+      }
+    });
+  }
+
   /**
   * @method onSubmit
   * @description Used to Submit the form
@@ -847,13 +868,7 @@ class AddOperation extends Component {
       if (IsFinancialDataChanged) {
 
         if (isDateChange && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
-          this.props.updateOperationAPI(formData, (res) => {
-            this.setState({ setDisable: false })
-            if (res?.data?.Result) {
-              Toaster.success(MESSAGES.OPERATION_UPDATE_SUCCESS);
-              this.cancel('submit')
-            }
-          });
+          this.handleOperationAPI(formData, true)
           return false
 
         } else {
@@ -870,13 +885,7 @@ class AddOperation extends Component {
           return false
         }
         else {
-          this.props.updateOperationAPI(formData, (res) => {
-            this.setState({ setDisable: false })
-            if (res?.data?.Result) {
-              Toaster.success(MESSAGES.OPERATION_UPDATE_SUCCESS);
-              this.cancel('submit')
-            }
-          });
+          this.handleOperationAPI(formData, true)
         }
       }
     } else {/** Add new detail for creating operation master **/
@@ -924,25 +933,8 @@ class AddOperation extends Component {
           }))
         }
       } else {
-        this.props.createOperationsAPI(formData, (res) => {
-          this.setState({ setDisable: false })
-          if (res.data.Result) {
-            Toaster.success(MESSAGES.OPERATION_ADD_SUCCESS);
-            //this.clearForm()
-            this.cancel('submit')
-          }
-        })
+        this.handleOperationAPI(formData, false)
       }
-
-      // this.props.createOperationsAPI(formData, (res) => {
-      //   this.setState({ setDisable: false })
-      //   if (res?.data?.Result) {
-      //     Toaster.success(MESSAGES.OPERATION_ADD_SUCCESS);
-      //     this.cancel();
-      //   }
-      // });
-
-
     }
 
   }, 500)
@@ -965,7 +957,7 @@ class AddOperation extends Component {
       obj.operationName = fieldsObj.OperationName
       obj.operationCode = fieldsObj.OperationCode
       obj.description = fieldsObj.Description
-      obj.plants = this.state.selectedPlants
+      obj.plants = this.state.destinationPlant
       obj.UOM = this.state.UOM
       obj.vendor = this.state.vendorName
       obj.effectiveDate = this.state.effectiveDate
@@ -998,6 +990,7 @@ class AddOperation extends Component {
   * @description Renders the component
   */
   render() {
+    console.log(this.state.moreOperationData, 'moreOperationData')
     const { handleSubmit, initialConfiguration, isOperationAssociated, t, data } = this.props;
     const { isEditFlag, isOpenVendor, isOpenUOM, isDisableCode, isViewMode, setDisable, costingTypeId, noApprovalCycle, CostingTypePermission, disableSendForApproval } = this.state;
     const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
@@ -1602,6 +1595,9 @@ class AddOperation extends Component {
               IsImportEntry={false}
               costingTypeId={this.state.costingTypeId}
               levelDetails={this.state.levelDetails}
+              commonFunction={this.finalUserCheckAndMasterLevelCheckFunction}
+              handleOperation={this.handleOperationAPI}
+              isEdit={this.state.isEditFlag}
             />
           )
         }

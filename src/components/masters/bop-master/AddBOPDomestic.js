@@ -7,11 +7,11 @@ import {
   maxLength, maxLength10, positiveAndDecimalNumber, maxLength512, maxLength80, checkWhiteSpaces, decimalLengthsix, checkSpacesInString, postiveNumber, hashValidation
 } from "../../../helper/validation";
 import { renderText, searchableSelect, renderTextAreaField, focusOnError, renderDatePicker, renderTextInputField } from "../../layout/FormInputs";
-import { getCityBySupplier, getPlantBySupplier, getUOMSelectList, getPlantSelectListByType, getAllCity, getVendorNameByVendorSelectList, getCityByCountryAction } from '../../../actions/Common';
+import { getCityBySupplier, getPlantBySupplier, getUOMSelectList, getPlantSelectListByType, getAllCity, getVendorNameByVendorSelectList, getCityByCountryAction, getExchangeRateSource } from '../../../actions/Common';
 import { createBOP, updateBOP, getBOPCategorySelectList, getBOPDomesticById, fileUploadBOPDomestic, checkAndGetBopPartNo } from '../actions/BoughtOutParts';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { getConfigurationKey, loggedInUserId, showBopLabel, userDetails } from "../../../helper/auth";
+import { getConfigurationKey, IsFetchExchangeRateVendorWise, loggedInUserId, showBopLabel, userDetails } from "../../../helper/auth";
 import "react-datepicker/dist/react-datepicker.css";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
@@ -43,6 +43,7 @@ import { Steps } from './TourMessages';
 import { withTranslation } from 'react-i18next';
 import { LabelsClass } from '../../../helper/core';
 import { subDays } from 'date-fns';
+import { getPlantUnitAPI } from '../actions/Plant';
 
 
 const selector = formValueSelector('AddBOPDomestic');
@@ -117,6 +118,9 @@ class AddBOPDomestic extends Component {
       IsSapCodeEditView: true,
       IsEditBtnClicked: false,
       SapCode: '',
+      ExchangeSource: '',
+      showWarning: false,
+      currencyValue: 1,
     }
   }
 
@@ -163,7 +167,7 @@ class AddBOPDomestic extends Component {
    * @description Called after rendering the component
    */
   componentDidMount() {
-
+    this.props.getExchangeRateSource((res) => { })
     this.setState({ costingTypeId: getCostingTypeIdByCostingPermission() });
     // if (!this.state.isViewMode) {
     //   this.props.getAllCity(cityId => {
@@ -179,7 +183,31 @@ class AddBOPDomestic extends Component {
       this.props.getClientSelectList(() => { })
     }, 300);
   }
+  callExchangeRateAPI = () => {
+    const { initialConfiguration, fieldsObj } = this.props
+    const { costingTypeId, vendorName, client, effectiveDate, ExchangeSource } = this.state;
+    const vendorValue = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? vendorName.value : EMPTY_GUID) : EMPTY_GUID
+    const costingType = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? VBCTypeId : costingTypeId) : ZBCTypeId
+    console.log(this.props.fieldsObj, "fieldsObj")
+    const hasCurrencyAndDate = fieldsObj?.currency && effectiveDate;
+    const isSourceExchangeRateVisible = getConfigurationKey().IsSourceExchangeRateNameVisible;
+    if (hasCurrencyAndDate && (!isSourceExchangeRateVisible || ExchangeSource)) {
+      if (IsFetchExchangeRateVendorWise() && (vendorName?.length === 0 || client?.length === 0)) {
+        this.setState({ showWarning: true });
+        return;
+      }
 
+      this.props.getExchangeRateByCurrency(reactLocalStorage.getObject("baseCurrency"), costingType, DayTime(this.state?.effectiveDate).format('YYYY-MM-DD'), vendorValue, client.value, false, this.props.fieldsObj?.currency.label, this.state.ExchangeSource, res => {
+        console.log(res, "res")
+        if (Object.keys(res.data.Data).length === 0) {
+          this.setState({ showWarning: true });
+        } else {
+          this.setState({ showWarning: false });
+        }
+        this.setState({ currencyValue: checkForNull(res.data.Data.CurrencyExchangeRate) });
+      });
+    }
+  }
   finalUserCheckAndMasterLevelCheckFunction = (plantId, isDivision = false) => {
     const { initialConfiguration } = this.props
     if (!this.state.isViewMode && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(BOP_MASTER_ID) === true) {
@@ -431,7 +459,7 @@ class AddBOPDomestic extends Component {
       return [];
     }
   };
-  
+
 
   /**
   * @method renderListing
@@ -439,7 +467,7 @@ class AddBOPDomestic extends Component {
   */
   renderListing = (label) => {
     const { bopCategorySelectList, plantSelectList, cityList,
-      UOMSelectList, partSelectList, clientSelectList, costingSpecifiTechnology } = this.props;
+      UOMSelectList, exchangeRateSourceList, partSelectList, clientSelectList, costingSpecifiTechnology } = this.props;
     const temp = [];
     if (label === 'BOPCategory') {
       bopCategorySelectList && bopCategorySelectList.map(item => {
@@ -502,6 +530,15 @@ class AddBOPDomestic extends Component {
         })
       return temp
     }
+    if (label === 'ExchangeSource') {
+      exchangeRateSourceList && exchangeRateSourceList.map((item) => {
+        if (item.Value === '--Exchange Rate Source Name--') return false
+
+        temp.push({ label: item.Text, value: item.Value })
+        return null
+      })
+      return temp
+    }
   }
 
   categoryToggler = () => {
@@ -547,6 +584,13 @@ class AddBOPDomestic extends Component {
   handlePlant = (e) => {
     const { initialConfiguration } = this.props
     this.setState({ selectedPlants: e })
+    this.props.getPlantUnitAPI(e?.value, (res) => {
+      let Data = res?.data?.Data
+      if (Data?.Currency !== reactLocalStorage?.getObject("baseCurrency")) {
+        this.props.change('plantCurrency', Data?.Currency)
+        this.callExchangeRateAPI()
+      }
+    })
     if (!this.state.isViewMode && initialConfiguration?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !getConfigurationKey()?.IsDivisionAllowedForDepartment) {
       this.commonFunction(e ? e.value : '')
     }
@@ -725,6 +769,7 @@ class AddBOPDomestic extends Component {
       effectiveDate: date,
       isDateChange: true,
     });
+    this.callExchangeRateAPI()
   };
 
   /**
@@ -1097,6 +1142,10 @@ class AddBOPDomestic extends Component {
   conditionToggle = () => {
     this.setState({ isOpenConditionDrawer: true })
   }
+  handleExchangeRateSource = (newValue) => {
+    this.setState({ ExchangeSource: newValue });
+    this.callExchangeRateAPI()
+  };
 
   /**
   * @method render
@@ -1354,6 +1403,21 @@ class AddBOPDomestic extends Component {
                               />
                             </Col>
                           )}
+                          {getConfigurationKey().IsSourceExchangeRateNameVisible && (
+                            <Col md="3">
+                              <Field
+                                label="Exchange Rate Source"
+                                name="ExchangeSource"
+                                placeholder="Select"
+                                options={this.renderListing("ExchangeSource")}
+                                handleChangeDescription={this.handleExchangeRateSource}
+                                component={searchableSelect}
+                                className="multiselect-with-border"
+                                disabled={isEditFlag}
+                              />
+                            </Col>
+                          )}
+
                           {initialConfiguration?.IsBoughtOutPartCostingConfigured && costingTypeId === VBCTypeId &&
                             <>
                               <Col md="3" className='d-flex align-items-center'>
@@ -1549,10 +1613,25 @@ class AddBOPDomestic extends Component {
                             </>
                           )}
                         </Row>
+
                         <Row className='UOM-label-container'>
                           <Col md="12">
                             <div className="left-border">{"Cost:"}</div>
                           </Col>
+                          {this.props.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency") && <Col md="3">
+                            <Field
+                              name="plantCurrency"
+                              type="text"
+                              label="Plant Currency"
+                              placeholder={"-"}
+                              validate={[]}
+                              component={renderTextInputField}
+                              required={false}
+                              disabled={true}
+                              className=" "
+                              customClassName=" withBorder"
+                            />
+                          </Col>}
                           <Col md="3">
                             <div className="inputbox date-section form-group">
                               <Field
@@ -1561,7 +1640,7 @@ class AddBOPDomestic extends Component {
                                 selected={this.state.effectiveDate}
                                 onChange={this.handleEffectiveDateChange}
                                 type="text"
-                                minDate={isEditFlag ? this.state.minEffectiveDate :getEffectiveDateMinDate()}
+                                minDate={isEditFlag ? this.state.minEffectiveDate : getEffectiveDateMinDate()}
                                 validate={[required]}
                                 autoComplete={'off'}
                                 required={true}
@@ -1796,6 +1875,7 @@ class AddBOPDomestic extends Component {
                       <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                         <div className="col-sm-12 text-right bluefooter-butn d-flex align-items-center justify-content-end">
                           {disableSendForApproval && <WarningMessage dClass={"mr-2"} message={'This user is not in the approval cycle'} />}
+                          {this.state.showWarning && <WarningMessage dClass="mr-2" message={`Net conversion cost is 0, Do you wish to continue.`} />}
                           <Button
                             id="AddBOPDomestic_cancel"
                             onClick={this.cancelHandler}
@@ -1921,10 +2001,10 @@ class AddBOPDomestic extends Component {
 */
 function mapStateToProps(state) {
   const { comman, supplier, boughtOutparts, part, auth, costing, client } = state;
-  const fieldsObj = selector(state, 'NumberOfPieces', 'BasicRateBase', 'Remark', 'BoughtOutPartName', 'SAPPartNumber');
+  const fieldsObj = selector(state, 'NumberOfPieces', 'BasicRateBase', 'Remark', 'BoughtOutPartName', 'SAPPartNumber', 'plantCurrency');
 
   const { bopCategorySelectList, bopData, } = boughtOutparts;
-  const { plantList, filterPlantList, filterCityListBySupplier, cityList, UOMSelectList, plantSelectList, costingHead } = comman;
+  const { plantList, filterPlantList, filterCityListBySupplier, cityList, UOMSelectList, plantSelectList, costingHead, exchangeRateSourceList } = comman;
   const { partSelectList } = part;
   const { vendorWithVendorCodeSelectList } = supplier;
   const { initialConfiguration, userMasterLevelAPI } = auth;
@@ -1949,7 +2029,7 @@ function mapStateToProps(state) {
 
   return {
     vendorWithVendorCodeSelectList, plantList, filterPlantList, filterCityListBySupplier, cityList, UOMSelectList,
-    plantSelectList, bopCategorySelectList, bopData, partSelectList, costingHead, fieldsObj, initialValues, initialConfiguration, clientSelectList, userMasterLevelAPI, costingSpecifiTechnology
+    plantSelectList, bopCategorySelectList, bopData, partSelectList, costingHead, fieldsObj, initialValues, initialConfiguration, clientSelectList, userMasterLevelAPI, costingSpecifiTechnology, exchangeRateSourceList
   }
 
 }
@@ -1977,7 +2057,9 @@ export default connect(mapStateToProps, {
   getUsersMasterLevelAPI,
   getVendorNameByVendorSelectList,
   getCostingSpecificTechnology,
-  checkAndGetBopPartNo
+  checkAndGetBopPartNo,
+  getExchangeRateSource,
+  getPlantUnitAPI
 })(reduxForm({
   form: 'AddBOPDomestic',
   touchOnChange: true,

@@ -646,7 +646,7 @@ const IndexDataListing = (props) => {
                                 <AgGridColumn field="FromCurrency" headerName="From Currency"></AgGridColumn>
                                 <AgGridColumn field="ToCurrency" headerName="To Currency"></AgGridColumn>
                                 <AgGridColumn field="RatePerIndexUOM" headerName="Index Rate (From Currency)/Index UOM" cellRenderer='priceFormatter'></AgGridColumn>
-                                <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>
+                                {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>}
                                 <AgGridColumn field="ExchangeRate" headerName={`Exchange Rate (${reactLocalStorage.getObject("baseCurrency")})`} cellRenderer='priceFormatter'></AgGridColumn>
                                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer="effectiveDateFormatter" filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                                 <AgGridColumn field="RatePerConvertedUOM" headerName="Index Rate (From Currency)/ UOM" cellRenderer='priceFormatter'></AgGridColumn>

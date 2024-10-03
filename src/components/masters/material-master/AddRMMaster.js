@@ -37,7 +37,7 @@ function AddRMMaster(props) {
         mode: 'onChange',
         reValidateMode: 'onChange',
     });
-    const {  vendorLabel } = useLabels();
+    const { vendorLabel } = useLabels();
 
     const dispatch = useDispatch()
     const [state, setState] = useState({

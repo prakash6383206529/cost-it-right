@@ -423,6 +423,7 @@ const ZBCPlantListing = (props) => {
                         >
                             <AgGridColumn field="PlantName" headerName="Plant Name"></AgGridColumn>
                             <AgGridColumn field="PlantCode" headerName="Plant Code"></AgGridColumn>
+                            <AgGridColumn field="Currency" headerName="Currency"></AgGridColumn>
                             {/* THIS IS COMMENTED IN //RE  */}
                             {/* <AgGridColumn field="Purchase Group" headerName="Company Name"></AgGridColumn> */}
                             {getConfigurationKey().IsCompanyConfigureOnPlant && <AgGridColumn field="CompanyName" headerName={`${handleDepartmentHeader()} Name`}></AgGridColumn>}

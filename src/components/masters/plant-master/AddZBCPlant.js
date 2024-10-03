@@ -8,7 +8,7 @@ import { focusOnError, renderText, renderTextInputField, searchableSelect } from
 import { createPlantAPI, getPlantUnitAPI, updatePlantAPI, getComapanySelectList } from '../actions/Plant';
 import {
   fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, fetchSupplierCityDataAPI,
-  getCityByCountryAction,
+  getCityByCountry, getCurrencySelectList
 } from '../../../actions/Common';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
@@ -20,7 +20,6 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from './TourMessages';
 import { withTranslation } from 'react-i18next';
-
 class AddZBCPlant extends Component {
   constructor(props) {
     super(props);
@@ -40,6 +39,8 @@ class AddZBCPlant extends Component {
       showPopup: false,
       isCompanyChanged: false,
       showPopupOnCompanyChange: false,
+      currency: [],
+      isAssociated: false,
     }
   }
 
@@ -50,6 +51,7 @@ class AddZBCPlant extends Component {
   componentDidMount() {
     if (!(this.props.isEditFlag || this.props.isViewMode)) {
       this.props.fetchCountryDataAPI(() => { })
+      this.props.getCurrencySelectList(() => { })
     }
     if (this.props.initialConfiguration.IsCompanyConfigureOnPlant) {
       this.props.getComapanySelectList(() => { })
@@ -80,6 +82,7 @@ class AddZBCPlant extends Component {
         if (res && res.data && res.data.Result) {
 
           const Data = res.data.Data;
+          console.log(Data)
           this.setState({ DataToCheck: Data })
           if (!(this.props.isEditFlag || this.props.isViewMode)) {
             this.props.fetchStateDataAPI(Data.CountryId, () => { })
@@ -92,7 +95,9 @@ class AddZBCPlant extends Component {
               country: Data.CountryName !== undefined ? { label: Data.CountryName, value: Data.CountryId } : [],
               state: Data.StateName !== undefined ? { label: Data.StateName, value: Data.StateId } : [],
               city: Data.CityName !== undefined ? { label: Data.CityName, value: Data.CityIdRef } : [],
-              company: Data.CompanyName !== undefined ? { label: `${Data.CompanyName}${Data.CompanyCode ? ` (${Data.CompanyCode})` : ''}`, value: Data.CompanyId } : []
+              company: Data.CompanyName !== undefined ? { label: `${Data.CompanyName}${Data.CompanyCode ? ` (${Data.CompanyCode})` : ''}`, value: Data.CompanyId } : [],
+              currency: Data.Currency !== undefined ? { label: Data.Currency, value: Data.CurrencyId } : [],
+              isAssociated: Data.IsAssociated
             }, () => this.setState({ isLoader: false }))
           }, 500)
         }
@@ -108,7 +113,8 @@ class AddZBCPlant extends Component {
   * @description Used show listing of unit of measurement
   */
   selectType = (label) => {
-    const { countryList, stateList, cityList, companySelectList } = this.props;
+    const { countryList, stateList, cityList, companySelectList, currencySelectList } = this.props;
+    console.log('currencySelectList', currencySelectList)
     const temp = [];
 
     if (label === 'country') {
@@ -143,13 +149,21 @@ class AddZBCPlant extends Component {
       });
       return temp
     }
+    if (label === 'Currency') {
+      currencySelectList && currencySelectList.map(item => {
+        if (item.Value === '0') return false;
+        temp.push({ label: item.Text, value: item.Value })
+        return null
+      });
+      return temp
+    }
 
   }
 
   getAllCityData = () => {
     const { country } = this.state;
     if (country && country.label !== 'India') {
-      this.props.getCityByCountryAction(country.value, '00000000000000000000000000000000','', () => { })
+      this.props.getCityByCountryAction(country.value, '00000000000000000000000000000000', '', () => { })
     } else {
       this.props.fetchStateDataAPI(country.value, () => { })
     }
@@ -252,7 +266,7 @@ class AddZBCPlant extends Component {
   * @description Used to Submit the form
   */
   onSubmit = debounce(this.props.handleSubmit((values) => {
-    const { city, PlantId, company, DataToCheck, DropdownChanged } = this.state;
+    const { city, PlantId, company, DataToCheck, DropdownChanged, currency } = this.state;
     const { isEditFlag, } = this.props;
     const userDetail = userDetails();
     if (isEditFlag) {
@@ -283,9 +297,10 @@ class AddZBCPlant extends Component {
         CreatedByUserId: loggedInUserId(),
         CityId: city.value || '',
         EVendorType: 0,
-        VendorId: userDetail.ZBCSupplierInfo.VendorId || '',
-        CompanyId: company.value || '',
-        CostingTypeId: ZBCTypeId
+        VendorId: userDetail.ZBCSupplierInfo.VendorId,
+        CompanyId: company.value,
+        CostingTypeId: ZBCTypeId,
+        CurrencyId: currency.value
       }
       this.props.updatePlantAPI(PlantId, updateData, (res) => {
         this.setState({ setDisable: false })
@@ -310,9 +325,10 @@ class AddZBCPlant extends Component {
         CreatedByUserId: loggedInUserId(),
         CityId: city.value || '',
         EVendorType: 0,
-        VendorId: userDetail.ZBCSupplierInfo.VendorId || '',
-        CompanyId: company.value || '',
-        CostingTypeId: ZBCTypeId
+        VendorId: userDetail.ZBCSupplierInfo.VendorId,
+        CompanyId: company.value,
+        CostingTypeId: ZBCTypeId,
+        CurrencyId: currency.value
       }
       this.props.createPlantAPI(formData, (res) => {
         this.setState({ setDisable: false })
@@ -349,6 +365,15 @@ class AddZBCPlant extends Component {
       this.onSubmit()
     }
   }
+  handleCurrencyChange = (value) => {
+    if (value && value !== '') {
+      this.setState({ currency: value });
+    } else {
+      this.setState({ currency: [] });
+    }
+    this.setState({ DropdownChanged: false });
+  }
+
   /**
   * @method render
   * @description Renders the component
@@ -418,7 +443,28 @@ class AddZBCPlant extends Component {
                       disabled={isEditFlag ? true : false}
                     />
                   </Col>
+                  <Col md="6">
+                    <Field
+                      name="Currency"
+                      type="text"
+                      label="Currency"
+                      component={searchableSelect}
+                      placeholder={isViewMode ? '-' : "Select"}
+                      options={this.selectType("Currency")}
+                      disabled={isViewMode || this.state.isAssociated}
+                      validate={
+                        this.state.currency == null ||
+                          this.state.currency.length === 0
+                          ? [required]
+                          : []
+                      }
+                      required={true}
+                      handleChangeDescription={this.handleCurrencyChange}
+                      valueDescription={this.state.currency}
+                    />
+                  </Col>
                 </Row>
+
                 <Row className="pl-3">
                   {
                     this.props.initialConfiguration.IsCompanyConfigureOnPlant &&
@@ -638,7 +684,8 @@ class AddZBCPlant extends Component {
 * @param {*} state
 */
 function mapStateToProps({ comman, plant, auth }) {
-  const { countryList, stateList, cityList } = comman;
+  console.log('comman', comman)
+  const { countryList, stateList, cityList, currencySelectList } = comman;
   const { plantUnitDetail, companySelectList } = plant;
   const { initialConfiguration } = auth
 
@@ -654,7 +701,7 @@ function mapStateToProps({ comman, plant, auth }) {
       ZipCode: plantUnitDetail?.ZipCode || '',
     }
   }
-  return { countryList, stateList, cityList, initialValues, plantUnitDetail, initialConfiguration, companySelectList }
+  return { countryList, stateList, cityList, initialValues, plantUnitDetail, initialConfiguration, companySelectList, currencySelectList }
 }
 
 /**
@@ -671,8 +718,9 @@ export default connect(mapStateToProps, {
   getPlantUnitAPI,
   fetchSupplierCityDataAPI,
   updatePlantAPI,
-  getCityByCountryAction,
-  getComapanySelectList
+  getCityByCountry,
+  getComapanySelectList,
+  getCurrencySelectList
 })(reduxForm({
   form: 'AddZBCPlant',
   enableReinitialize: true,

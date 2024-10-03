@@ -141,7 +141,7 @@ class AddMoreDetails extends Component {
       labourDetailId: '',
       IsIncludeMachineRateDepreciation: false,
       powerIdFromAPI: EMPTY_GUID,
-      finalApprovalLoader: true,
+      finalApprovalLoader: getConfigurationKey().IsDivisionAllowedForDepartment ? false : true,
       showPopup: false,
       levelDetails: {},
       selectedCustomer: editDetails.selectedCustomer ?? [],
@@ -200,12 +200,8 @@ class AddMoreDetails extends Component {
         this.props.change('MachineNumber', Data.MachineNumber)
       })
     }
-    if (initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true) {
-      this.props.getUsersMasterLevelAPI(loggedInUserId(), MACHINE_MASTER_ID, (res) => {
-        setTimeout(() => {
-          this.commonFunction()
-        }, 100);
-      })
+    if (!getConfigurationKey().IsDivisionAllowedForDepartment && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true) {
+      this.finalUserCheckAndMasterLevelCheckFunction(EMPTY_GUID)
     } else {
       this.setState({ finalApprovalLoader: false })
     }
@@ -228,8 +224,19 @@ class AddMoreDetails extends Component {
 
     }
   }
-
-  commonFunction(plantId = EMPTY_GUID) {
+  finalUserCheckAndMasterLevelCheckFunction = (plantId, isDivision = false) => {
+    const { initialConfiguration } = this.props
+    if (!this.state.isViewMode && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true) {
+      this.props.getUsersMasterLevelAPI(loggedInUserId(), MACHINE_MASTER_ID, (res) => {
+        setTimeout(() => {
+          this.commonFunction(plantId, isDivision)
+        }, 100);
+      })
+    } else {
+      this.setState({ finalApprovalLoader: false })
+    }
+  }
+  commonFunction(plantId = EMPTY_GUID, isDivision = false) {
     let levelDetailsTemp = []
     levelDetailsTemp = userTechnologyDetailByMasterId(this.state.CostingTypeId, MACHINE_MASTER_ID, this.props.userMasterLevelAPI)
     this.setState({ levelDetails: levelDetailsTemp })
@@ -241,7 +248,7 @@ class AddMoreDetails extends Component {
       approvalTypeId: costingTypeIdToApprovalTypeIdFunction(this.state.CostingTypeId),
       plantId: plantId
     }
-    if (this.props.initialConfiguration.IsMasterApprovalAppliedConfigure) {
+    if (this.props.initialConfiguration.IsMasterApprovalAppliedConfigure && !isDivision) {
       this.props.checkFinalUser(obj, (res) => {
         if (res?.data?.Result) {
           this.setState({ isFinalApprovar: res?.data?.Data?.IsFinalApprover, CostingTypePermission: true, finalApprovalLoader: false })
@@ -2010,6 +2017,21 @@ class AddMoreDetails extends Component {
   closePopUp = () => {
     this.setState({ showPopup: false })
   }
+  handleMachineDetailsAPI = (data, isUpdate = false) => {
+    const apiCall = isUpdate ? this.props.updateMachineDetails : this.props.createMachineDetails;
+
+    apiCall(data, (res) => {
+      if (res?.data?.Result) {
+        data.isViewFlag = true;
+        this.props.hideMoreDetailsForm(data);
+        Toaster.success(MESSAGES.MACHINE_DETAILS_ADD_SUCCESS);
+        if (!isUpdate) {
+          this.cancel();
+        }
+      }
+    });
+  }
+
   /**
   * @method onSubmit
   * @description Used to Submit the form
@@ -2146,14 +2168,8 @@ class AddMoreDetails extends Component {
         if (this.state.isDateChange) {
           let MachineData = { ...requestData, MachineId: editDetails.Id }
           this.props.reset()
-          this.props.updateMachineDetails(MachineData, (res) => {
-            if (res?.data?.Result) {
-              Toaster.success(MESSAGES.MACHINE_DETAILS_ADD_SUCCESS);
-              MachineData.isViewFlag = true
-              this.props.hideMoreDetailsForm(MachineData)
-              //this.cancel();
-            }
-          })         //IF THE EFFECTIVE DATE IS NOT UPDATED THEN USER SHOULD NOT BE ABLE TO SEND IT FOR APPROVAL IN EDIT MODE
+          this.handleMachineDetailsAPI(MachineData, true)
+          //IF THE EFFECTIVE DATE IS NOT UPDATED THEN USER SHOULD NOT BE ABLE TO SEND IT FOR APPROVAL IN EDIT MODE
         }
         else {
           this.setState({ setDisable: false })
@@ -2170,14 +2186,7 @@ class AddMoreDetails extends Component {
       } else {
         let MachineData = { ...requestData, MachineId: editDetails.Id }
         this.props.reset()
-        this.props.updateMachineDetails(MachineData, (res) => {
-          if (res?.data?.Result) {
-            Toaster.success(MESSAGES.MACHINE_DETAILS_ADD_SUCCESS);
-            MachineData.isViewFlag = true
-            this.props.hideMoreDetailsForm(MachineData)
-            //this.cancel();
-          }
-        })
+        this.handleMachineDetailsAPI(MachineData, true)
       }
 
     }
@@ -2327,16 +2336,8 @@ class AddMoreDetails extends Component {
         }
 
       } else {
-
         this.props.reset()
-        this.props.createMachineDetails(formData, (res) => {
-          if (res.data.Result) {
-            formData.isViewFlag = true
-            this.props.hideMoreDetailsForm(formData)
-            Toaster.success(MESSAGES.MACHINE_DETAILS_ADD_SUCCESS);
-            this.cancel()
-          }
-        });
+        this.handleMachineDetailsAPI(formData, false)
       }
 
     }
@@ -4657,6 +4658,9 @@ class AddMoreDetails extends Component {
               IsImportEntry={false}
               costingTypeId={this.state.CostingTypeId}
               levelDetails={this.state.levelDetails}
+              commonFunction={this.finalUserCheckAndMasterLevelCheckFunction}
+              handleMachineDetailsAPI={this.handleMachineDetailsAPI}
+              isEdit={this.state.isEditFlag}
             />
           )
         }

@@ -33,6 +33,7 @@ import Association from "./Association"
 import { getAssociatedMaterial, getAssociatedMaterialDetails, getIndexSelectList } from "../actions/Indexation"
 import { useTranslation } from "react-i18next"
 import { useLabels } from "../../../helper/core"
+import { getPlantUnitAPI } from "../actions/Plant"
 
 function AddRMDetails(props) {
     const { Controller, control, register, setValue, getValues, errors, reset, useWatch, states, data, disableAll } = props
@@ -89,11 +90,12 @@ function AddRMDetails(props) {
     const rmSpecificationList = useSelector((state) => state.material.rmSpecificationList)
     const cityList = useSelector((state) => state.comman.cityList)
     const RMIndex = getConfigurationKey()?.IsShowMaterialIndexation
+    const exchangeRateSourceList = useSelector((state) => state.comman.exchangeRateSourceList)
     const { t } = useTranslation('MasterLabels');
 
 
     useEffect(() => {
-        dispatch(getPlantSelectListByType(ZBC, "COSTING", '', () => { }))
+        dispatch(getPlantSelectListByType(ZBC, "MASTER", '', () => { }))
         dispatch(getCostingSpecificTechnology(loggedInUserId(), () => { }))
         dispatch(getRawMaterialNameChild(() => { }))
         dispatch(getRawMaterialCategory((res) => { }))
@@ -102,6 +104,7 @@ function AddRMDetails(props) {
             dispatch(getClientSelectList(() => { }))
         }
         dispatch(SetRawMaterialDetails({ HasDifferentSource: state.HasDifferentSource }, () => { }))
+        dispatch(getExchangeRateSource((res) => { }))
 
     }, [])
     useEffect(() => {
@@ -121,7 +124,6 @@ function AddRMDetails(props) {
             setValue('Index', { label: Data?.IndexExchangeName, value: Data?.IndexExchangeId })
             setValue('ExchangeSource', { label: Data?.ExchangeRateSourceName, value: Data?.ExchangeRateSourceName })
             setValue('Material', { label: Data?.MaterialType, value: Data?.MaterialId })
-
             if (!props?.isSourceVendorApiCalled) {
 
                 setValue('Source', Data?.Source)
@@ -238,14 +240,16 @@ function AddRMDetails(props) {
             });
             return temp;
         }
-        // if (label === 'SourceLocation') {
-        //     cityList && cityList.map((item) => {
-        //         if (item.Value === '0') return false
-        //         temp.push({ label: item.Text, value: item.Value })
-        //         return null
-        //     })
-        //     return temp
-        // }
+
+        if (label === 'ExchangeSource') {
+            exchangeRateSourceList && exchangeRateSourceList.map((item) => {
+                if (item.Value === '--Exchange Rate Source Name--') return false
+
+                temp.push({ label: item.Text, value: item.Value })
+                return null
+            })
+            return temp
+        }
     }
     /**
    * @method getmaterial
@@ -618,6 +622,14 @@ function AddRMDetails(props) {
         setState(prevState => ({ ...prevState, isShowIndexCheckBox: !state.isShowIndexCheckBox }))
         dispatch(SetRawMaterialDetails({ isShowIndexCheckBox: !state.isShowIndexCheckBox }, () => { }))
     }
+    const handleExchangeRate = (newValue, actionMeta) => {
+        if (newValue && newValue !== '') {
+            setState(prevState => ({ ...prevState, exchangeRate: newValue }));
+        } else {
+            setState(prevState => ({ ...prevState, exchangeRate: [] }));
+        }
+        dispatch(SetCommodityIndexAverage('', 0, '', 0, newValue?.value, '', ''))
+    };
     return (
         <Fragment>
             {/* <Row> */}
@@ -780,6 +792,22 @@ function AddRMDetails(props) {
                             </Col>
                         </>)
                         )}
+                        {getConfigurationKey().IsSourceExchangeRateNameVisible && <Col className="col-md-15">
+                            <SearchableSelectHookForm
+                                name="ExchangeSource"
+                                label="Exchange Rate Source"
+                                Controller={Controller}
+                                control={control}
+                                register={register}
+                                mandatory={false}
+                                rules={{ required: false }}
+                                placeholder={'Select'}
+                                options={renderListing("ExchangeSource")}
+                                handleChange={handleExchangeRate}
+                                disabled={disableAll || isEditFlag || isViewFlag}
+                                errors={errors.ExchangeSource}
+                            />
+                        </Col>}
                         {/* <Row > */}
                         <Col md="3" className="mt-4 pt-2">
                             <div className=" flex-fills d-flex justify-content-between align-items-center">

@@ -6,7 +6,7 @@ import { required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, maxP
 import { createExchangeRate, getExchangeRateData, updateExchangeRate, getCurrencySelectList, } from '../actions/ExchangeRateMaster';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { loggedInUserId, } from "../../../helper/auth";
+import { getConfigurationKey, loggedInUserId, } from "../../../helper/auth";
 import "react-datepicker/dist/react-datepicker.css";
 import DayTime from '../../common/DayTimeWrapper'
 import { renderDatePicker, renderText, renderTextInputField, searchableSelect, } from "../../layout/FormInputs";
@@ -617,7 +617,7 @@ class AddExchangeRate extends Component {
                           disabled={isEditFlag ? true : false}
                         />
                       </Col>
-                      <Col md="3">
+                      {getConfigurationKey().IsSourceExchangeRateNameVisible && <Col md="3">
                         <Field
                           name="ExchangeSource"
                           type="text"
@@ -632,7 +632,7 @@ class AddExchangeRate extends Component {
                           valueDescription={this.state.exchangeRateSource}
                           disabled={isEditFlag ? true : false}
                         />
-                      </Col>
+                      </Col>}
                       <Col md="3">
                         <Field
                           label={`Currency Exchange Rate (${reactLocalStorage.getObject("baseCurrency")})`}

@@ -23,7 +23,7 @@ import { getListingForSimulationCombined } from '../../simulation/actions/Simula
 import { PaginationWrapper } from '../../common/commonPagination';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { checkMasterCreateByCostingPermission, hideCustomerFromExcel } from '../../common/CommonFunctions';
-import { loggedInUserId } from '../../../helper';
+import { getConfigurationKey, loggedInUserId } from '../../../helper';
 import Button from '../../layout/Button';
 import { useLabels } from '../../../helper/core';
 const ExcelFile = ReactExport.ExcelFile;
@@ -412,7 +412,7 @@ const ExchangeRateListing = (props) => {
                                 {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="customerWithCode" headerName="Customer (Code)" ></AgGridColumn>}
                                 <AgGridColumn field="FromCurrency" headerName="From Currency" minWidth={135}></AgGridColumn>
                                 <AgGridColumn field="ToCurrency" headerName="To Currency" minWidth={135}></AgGridColumn>
-                                <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source" minWidth={135}></AgGridColumn>
+                                {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source" minWidth={135}></AgGridColumn>}
                                 <AgGridColumn suppressSizeToFit="true" field="CurrencyExchangeRate" headerName={`Exchange Rate (${reactLocalStorage.getObject("baseCurrency")}) `} minWidth={160} cellRenderer={'commonCostFormatter'}></AgGridColumn>
                                 <AgGridColumn field="BankRate" headerName={`Bank Rate (${reactLocalStorage.getObject("baseCurrency")})`} minWidth={150} cellRenderer={'commonCostFormatter'}></AgGridColumn>
                                 <AgGridColumn suppressSizeToFit="true" field="BankCommissionPercentage" headerName="Bank Commission (%) " minWidth={160} cellRenderer={'hyphenFormatter'}></AgGridColumn>

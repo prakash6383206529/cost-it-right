@@ -10,13 +10,13 @@ import {
 } from "../../../helper/validation";
 
 import { MESSAGES } from "../../../config/message";
-import { loggedInUserId } from "../../../helper/auth";
+import { getConfigurationKey, loggedInUserId, userDetails } from "../../../helper/auth";
 import { Row, Col } from 'reactstrap';
-import { CBCTypeId, CRMHeads, FILE_URL, VBCTypeId, VBC_VENDOR_TYPE, ZBCTypeId, searchCount } from "../../../config/constants";
+import { CBCTypeId, CRMHeads, EMPTY_GUID, FILE_URL, OPERATIONS_ID, VBCTypeId, VBC_VENDOR_TYPE, ZBCTypeId, searchCount } from "../../../config/constants";
 import HeaderTitle from "../../common/HeaderTitle";
 import { useDispatch, useSelector } from 'react-redux'
 import { reactLocalStorage } from "reactjs-localstorage";
-import { autoCompleteDropdown } from "../../common/CommonFunctions";
+import { autoCompleteDropdown, costingTypeIdToApprovalTypeIdFunction } from "../../common/CommonFunctions";
 import { getClientSelectList } from "../actions/Client";
 import { AcceptableOperationUOM, LOGISTICS } from "../../../config/masterData";
 import { getUOMSelectList, getVendorNameByVendorSelectList } from "../../../actions/Common";
@@ -27,6 +27,12 @@ import Dropzone from "react-dropzone-uploader";
 import imgRedcross from '../../../assests/images/red-cross.png';
 import TooltipCustom from "../../common/Tooltip";
 import { useLabels } from "../../../helper/core";
+import { getUsersMasterLevelAPI } from "../../../actions/auth/AuthActions";
+import { CheckApprovalApplicableMaster, userTechnologyDetailByMasterId } from "../../../helper";
+import { checkFinalUser } from "../../costing/actions/Costing";
+import MasterSendForApproval from "../MasterSendForApproval";
+import Button from "../../layout/Button";
+import { debounce } from "lodash";
 
 function AddMoreOperation(props) {
     const { addMoreDetailObj, isEditFlag, detailObject, isViewMode } = props
@@ -86,7 +92,17 @@ function AddMoreOperation(props) {
         crmHeadConsumableMachineCost: detailObject && detailObject.ConsumableMachineCRMHead && { label: detailObject.ConsumableMachineCRMHead, value: 1 },
 
     }
-
+    const [state, setState] = useState({
+        isFinalApprovar: false,
+        disableSendForApproval: false,
+        CostingTypePermission: false,
+        finalApprovalLoader: true,
+        approveDrawer: false,
+        approvalObj: {},
+        levelDetails: {},
+        isDateChanged: false,
+        disableAll: false,
+    })
 
     const { register, handleSubmit, formState: { errors }, control, setValue, getValues } = useForm({
         mode: 'onChange',
@@ -279,16 +295,15 @@ function AddMoreOperation(props) {
             obj.value = item.Value
             technologyTemp.push(obj)
         })
-
         setValue('technology', technologyTemp)
         setValue('operationName', addMoreDetailObj.operationName)
         setValue('description', addMoreDetailObj.description)
-        setValue('plant', { label: (addMoreDetailObj.costingTypeId === ZBCTypeId) ? addMoreDetailObj?.plants[0]?.Text : addMoreDetailObj?.destinationPlant.label, value: (addMoreDetailObj.costingTypeId === ZBCTypeId) ? addMoreDetailObj?.plants[0]?.Value : addMoreDetailObj?.destinationPlant.value })
+        setValue('plant', { label: addMoreDetailObj?.plants[0]?.Text ?? addMoreDetailObj?.destinationPlant.label, value: addMoreDetailObj?.plants[0]?.Value ?? addMoreDetailObj?.destinationPlant.value })
         setValue('vendorName', { label: addMoreDetailObj?.vendor?.label, value: addMoreDetailObj?.vendor?.value })
         setVendor({ label: addMoreDetailObj?.vendor?.label, value: addMoreDetailObj?.vendor?.value })
         setValue('uom', { label: addMoreDetailObj.UOM.label, value: addMoreDetailObj.UOM.value })
         setUom({ label: addMoreDetailObj.UOM.label, value: addMoreDetailObj.UOM.value })
-        setPlant({ label: (addMoreDetailObj.costingTypeId === ZBCTypeId) ? addMoreDetailObj?.plants[0]?.Text : addMoreDetailObj?.destinationPlant.label, value: (addMoreDetailObj.costingTypeId === ZBCTypeId) ? addMoreDetailObj?.plants[0]?.Value : addMoreDetailObj?.destinationPlant.value })
+        setPlant({ label: addMoreDetailObj?.plants[0]?.Text ?? addMoreDetailObj?.destinationPlant.label, value: addMoreDetailObj?.plants[0]?.Value ?? addMoreDetailObj?.destinationPlant.value })
         setValue('customer', { label: addMoreDetailObj.customer.label, value: addMoreDetailObj.customer.value })
         setClient({ label: addMoreDetailObj.customer.label, value: addMoreDetailObj.customer.value })
 
@@ -367,10 +382,56 @@ function AddMoreOperation(props) {
         dispatch(getOperationPartSelectList(() => { }))
 
     }, [])
+    const finalUserCheckAndMasterLevelCheckFunction = (plantId, isDivision = false) => {
+        if (!isViewMode && getConfigurationKey().IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(OPERATIONS_ID) === true) {
+            dispatch(getUsersMasterLevelAPI(loggedInUserId(), OPERATIONS_ID, (res) => {
+                setTimeout(() => {
+                    commonFunction(plantId, isDivision, res?.data?.Data?.MasterLevels)
+                }, 500);
+            }))
+        }
+    }
+    const commonFunction = (plantId = EMPTY_GUID, isDivision = false, masterLevels = []) => {
+        let levelDetailsTemp = []
+        levelDetailsTemp = userTechnologyDetailByMasterId(addMoreDetailObj?.costingTypeId, OPERATIONS_ID, masterLevels)
+        setState(prevState => ({ ...prevState, levelDetails: levelDetailsTemp }))
+        let obj = {
+            DepartmentId: userDetails().DepartmentId,
+            UserId: loggedInUserId(),
+            TechnologyId: OPERATIONS_ID,
+            Mode: 'master',
+            approvalTypeId: costingTypeIdToApprovalTypeIdFunction(addMoreDetailObj?.costingTypeId),
+            plantId: plantId
+        }
+        if (getConfigurationKey().IsMasterApprovalAppliedConfigure && !isDivision) {
+            dispatch(checkFinalUser(obj, (res) => {
+                if (res?.data?.Result && res?.data?.Data?.IsFinalApprover) {
+
+                    setState(prevState => ({ ...prevState, isFinalApprovar: res?.data?.Data?.IsFinalApprover, CostingTypePermission: true, finalApprovalLoader: false, disableSendForApproval: false }))
+                }
+                else if (res?.data?.Data?.IsUserInApprovalFlow === false || res?.data?.Data?.IsNextLevelUserExist === false) {
+                    setState(prevState => ({ ...prevState, disableSendForApproval: true }))
+                } else {
+                    setState(prevState => ({ ...prevState, disableSendForApproval: false }))
+                }
+            }))
+        }
+        setState(prevState => ({ ...prevState, CostingTypePermission: false, finalApprovalLoader: false }))
+    }
+    const handleOperationAPI = (formData, isEdit) => {
+        const apiFunction = isEdit ? updateOperationAPI : createOperationsAPI;
+        const successMessage = isEdit ? MESSAGES.OPERATION_UPDATE_SUCCESS : MESSAGES.OPERATION_ADD_SUCCESS;
+
+        dispatch(apiFunction(formData, (res) => {
+            if (res?.data?.Result) {
+                Toaster.success(successMessage);
+                props?.cancel('submit');
+            }
+        }));
+    };
 
 
-    const onSubmit = (values) => {
-
+    const onSubmit = debounce(handleSubmit((values) => {
         let technologyArray = []
         let plantArray = [{ PlantName: plant.label, PlantId: plant.value, PlantCode: ' ', }]
 
@@ -470,55 +531,40 @@ function AddMoreOperation(props) {
 
         }
 
+        let isFinancialDataChange = false;
         if (isEditFlag) {
-            let temp = Object.keys(formData).filter((item) => item.includes('CRMHead'))
-            let isFinancialDataChange = false
-
+            let temp = Object.keys(formData).filter((item) => item.includes('CRMHead'));
             temp.map((item) => {
                 if (dataObj[item] && String(dataObj[item]) !== String(formData[item])) {
-                    isFinancialDataChange = true
+                    isFinancialDataChange = true;
                 }
-                return null
-            })
-
+                return null;
+            });
             if (isFinancialDataChange) {
-                formData.IsFinancialDataChanged = true
+                formData.IsFinancialDataChanged = true;
                 if (DayTime(dataObj.EffectiveDate).format('DD/MM/YYYY') === DayTime(values.effectiveDate).format('DD/MM/YYYY')) {
-                    Toaster.warning('Please update the effective date')
-                    return false
-                } else {
-                    dispatch(updateOperationAPI(formData, (res) => {
-                        if (res?.data?.Result) {
-                            Toaster.success(MESSAGES.OPERATION_UPDATE_SUCCESS);
-                            props?.cancel('submit')
-                        }
-                    }))
+                    Toaster.warning('Please update the effective date');
+                    return false;
                 }
-            } else {
-                dispatch(updateOperationAPI(formData, (res) => {
-                    if (res?.data?.Result) {
-                        Toaster.success(MESSAGES.OPERATION_UPDATE_SUCCESS);
-                        props?.cancel('submit')
-                    }
-                }))
             }
-
-        } else {
-            dispatch(createOperationsAPI(formData, (res) => {
-                if (res?.data?.Result) {
-                    Toaster.success(MESSAGES.OPERATION_ADD_SUCCESS);
-                    props?.cancel('submit')
-                }
-            }))
         }
-    }
+        if (CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !state.isFinalApprovar && !isFinancialDataChange) {
+            // this.allFieldsInfoIcon(true)
+            formData.IsSendForApproval = true
+            setState(prevState => ({
+                ...prevState, approveDrawer: true, approvalObj: formData
+            }))
+        } else {
+            formData.IsSendForApproval = false;
+            handleOperationAPI(formData, isEditFlag);
+        }
+    }), 500);
 
 
     const cancel = () => {
         props.cancelAddMoreDetails()
 
     }
-
     const searchableSelectType = (label) => {
 
         let temp = [];
@@ -796,7 +842,12 @@ function AddMoreOperation(props) {
     const getAccordianClassName = (value) => {
         return `accordian-content form-group row mx-0 w-100 ${value ? '' : 'd-none'}`
     }
-
+    const closeApprovalDrawer = (e = '', type) => {
+        setState(prevState => ({ ...prevState, approveDrawer: false, setDisable: false, isEditBuffer: true }))
+        if (type === 'submit') {
+            props?.cancel('submit')
+        }
+    }
     return (
         <div className="container-fluid">
             {isLoader && <Loader />}
@@ -811,9 +862,7 @@ function AddMoreOperation(props) {
                             </div>
 
                         </div>
-                        <form
-                            onSubmit={handleSubmit(onSubmit)}
-                        >
+                        <form>
                             <div className="">
                                 <HeaderTitle
                                     title={'Operation:'}
@@ -2777,16 +2826,51 @@ function AddMoreOperation(props) {
                                         CANCEL
                                     </button>
 
-                                    {!isViewMode && <button
-                                        type="submit"
-                                        disabled={isViewMode}
-                                        className="user-btn save-btn">
-                                        <div className={"save-icon"}></div>
-                                        {isEditFlag ? 'UPDATE' : 'SAVE'}
-                                    </button>}
+                                    {!isViewMode && <>
+                                        {(!isViewMode && (CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !state.isFinalApprovar) && getConfigurationKey().IsMasterApprovalAppliedConfigure) || (getConfigurationKey().IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !state.CostingTypePermission) ?
+                                            <Button
+                                                id="addRMDomestic_sendForApproval"
+                                                type="button"
+                                                className="approval-btn mr5"
+                                                disabled={isViewMode || state.disableSendForApproval}
+                                                onClick={onSubmit}
+                                                icon={(!state.disableSendForApproval) ? "send-for-approval" : "save-icon"}
+                                                buttonName={(!state.disableSendForApproval) ? "Send For Approval" : isEditFlag ? "Update" : "Save1"}
+                                            />
+                                            :
+                                            <Button
+                                                id="addRMDomestic_updateSave"
+                                                type="button"
+                                                className="mr5"
+                                                disabled={isViewMode || state.disableSendForApproval}
+                                                onClick={onSubmit}
+                                                icon={"save-icon"}
+                                                buttonName={isEditFlag ? "Update" : "Save"}
+                                            />
+                                        }
+                                    </>}
                                 </div>
                             </div>
-
+                            {
+                                state.approveDrawer && (
+                                    <MasterSendForApproval
+                                        isOpen={state.approveDrawer}
+                                        closeDrawer={closeApprovalDrawer}
+                                        isEditFlag={false}
+                                        masterId={OPERATIONS_ID}
+                                        type={'Sender'}
+                                        anchor={"right"}
+                                        approvalObj={state.approvalObj}
+                                        isBulkUpload={false}
+                                        levelDetails={state.levelDetails}
+                                        // Technology={state.Technology}
+                                        handleOperation={handleOperationAPI}
+                                        commonFunction={finalUserCheckAndMasterLevelCheckFunction}
+                                        isEdit={isEditFlag}
+                                        costingTypeId={addMoreDetailObj.costingTypeId}
+                                    />
+                                )
+                            }
                         </form>
                     </div>
                 </div>
