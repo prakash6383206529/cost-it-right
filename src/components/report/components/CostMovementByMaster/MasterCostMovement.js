@@ -358,7 +358,7 @@ function MasterCostMovement() {
 
             case 'vendor':
                 return function resetField() {
-                    setValue('vendor', '')
+                    setValue('Vendor', '')
                     setVendor([])
                 }
             case 'Customer':
@@ -637,7 +637,7 @@ function MasterCostMovement() {
             "CostingHeadId": Number(costingHeadType.value),
             "TechnologyId": Number(technology.value),
             "PlantId": plant.value,
-            "VendorId": vendor.value,
+            "VendorId": vendor?.value,
             "IsCustomerDataShow": showCustomer,
             "CustomerId": getValues('Customer').value
         }
@@ -841,12 +841,12 @@ function MasterCostMovement() {
                                     control={control}
                                     rules={{ required: false }}
                                     register={register}
-                                    defaultValue={vendor.length !== 0 ? vendor : ""}
+                                    defaultValue={vendor?.length !== 0 ? vendor : ""}
                                     options={renderListing("vendor")}
                                     mandatory={false}
                                     handleChange={handleVendorChange}
                                     // handleChange={() => { }}
-                                    errors={errors.vendor}
+                                    errors={errors.Vendor}
                                     // isLoading={VendorLoaderObj}
                                     asyncOptions={vendorFilterList}
                                     buttonCross={resetData('vendor')}
@@ -865,7 +865,7 @@ function MasterCostMovement() {
                                 control={control}
                                 rules={{ required: false }}
                                 register={register}
-                                // defaultValue={vendor.length !== 0 ? vendor : ""}
+                                // defaultValue={vendor?.length !== 0 ? vendor : ""}
                                 options={renderListing("plant")}
                                 mandatory={false}
                                 handleChange={(e) => { setPlant(e) }}

@@ -55,7 +55,7 @@ function CostReportForm(props) {
     const [partTypeList, setPartTypeList] = useState([])
 
     const dispatch = useDispatch()
-    const { technologyLabel , vendorLabel} = useLabels();
+    const { technologyLabel, vendorLabel } = useLabels();
     const technologySelectList = useSelector((state) => state.costing.costingSpecifiTechnology)
     const vendorSelectList = useSelector((state) => state.costing.costingVendorList)
     const DestinationplantSelectList = useSelector(state => state.comman.plantSelectList);
@@ -105,12 +105,12 @@ function CostReportForm(props) {
         obj.TechnologyId = getValues('Technology')?.value
         obj.PartId = getValues('Part')?.value
         obj.RevisionNumber = getValues('Revision')?.label ? getValues('Revision')?.label : ''
-        obj.VendorId = getValues('vendor')?.value
+        obj.VendorId = getValues('Vendor')?.value
         obj.PlantId = getValues('Plant')?.value
         obj.TechnologyName = getValues('Technology')?.label
         obj.PartNo = getValues('Part')?.label
         obj.ShowRevisionNumber = getValues('Revision')?.label ? getValues('Revision')?.label : '-'
-        obj.Vendor = getValues('vendor')?.label ? getValues('vendor')?.label : '-'
+        obj.Vendor = getValues('vendor')?.label ? getValues('Vendor')?.label : '-'
         obj.Plant = getValues('Plant')?.label ? getValues('Plant')?.label : '-'
         obj.productCategory = getValues('productCategory')?.label ? getValues('productCategory')?.label : '-'
         obj.productCategoryId = getValues('productCategory')?.value ? getValues('productCategory')?.value : '-'
@@ -474,7 +474,7 @@ function CostReportForm(props) {
         setValue('Technology', '')
         setValue('Part', '')
         setValue('Customer', '')
-        setValue('vendor', '')
+        setValue('Vendor', '')
         setValue('PartType', '')
         resetRevisionVendorPlant()
     }
@@ -673,7 +673,7 @@ function CostReportForm(props) {
                                     mandatory={props.isSaleAndPurchase ? true : false}
                                     handleChange={handleVendorChange}
                                     // handleChange={() => { }}
-                                    errors={errors.vendor}
+                                    errors={errors.Vendor}
                                     asyncOptions={vendorFilterList}
                                     disabled={props.isSaleAndPurchase ? false : (part.length === 0 ? true : false)}
                                     NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
@@ -838,7 +838,7 @@ function CostReportForm(props) {
                             {customerPoamSummary && <AgGridColumn field="productCategory" headerName="Product Category"></AgGridColumn>}
                             {<AgGridColumn field="PartNo" headerName="Part No."></AgGridColumn>}
                             {!customerPoamSummary && <AgGridColumn field="ShowRevisionNumber" headerName="Revision No."></AgGridColumn>}
-                            {(!customerPoamSummary && showVendor) && <AgGridColumn field="Vendor" headerName={vendorLabel + " (Code)"}></AgGridColumn>}
+                            {(!customerPoamSummary && showVendor) && <AgGridColumn field="Vendor" headerName="Vendor (Code)"></AgGridColumn>}
                             {<AgGridColumn field="Plant" headerName="Plant (Code)"></AgGridColumn>}
                             {(!showVendor || customerPoamSummary) && <AgGridColumn field="CustomerName" headerName="Customer (Code)"></AgGridColumn>}
                             {<AgGridColumn field="action" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'buttonFormatter'}></AgGridColumn>}
