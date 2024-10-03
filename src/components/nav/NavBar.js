@@ -209,8 +209,6 @@ class SideBar extends Component {
    * @description Render menus according to user access.
    */
   renderMenus = (module, LandingPageURL) => {
-    const { t } = this.props
-    const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
     switch (module) {
       case "Dashboard":
         return this.renderDashboard(module, LandingPageURL);
@@ -230,7 +228,7 @@ class SideBar extends Component {
         return this.renderAudit(module, LandingPageURL);
       case "NFR":
         return this.renderNFR(module, LandingPageURL);
-      case `${VendorLabel} Management`:
+      case `Vendor Management`:
         return this.renderVendorManagement(module, LandingPageURL);
       case "RFQ":
         if (getConfigurationKey().IsRFQConfigured) {
