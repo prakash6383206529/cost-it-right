@@ -28,7 +28,9 @@ import {
     AddAssemblyOrComponentHeaderData,
     AddBoughtOutPartsTempData,
     AddRawMaterialTempData,
-    AddAssemblyOrComponentTempData
+    AddAssemblyOrComponentTempData,
+    AddAssemblyOrComponentAdditionalInfoTempData,
+    AddAssemblyOrComponentAdditionalInfoHeaderData
 } from '../../config/masterData';
 import { checkVendorPlantConfigurable, getConfigurationKey, showBopLabel, updateBOPValues } from "../../helper";
 import { checkSAPCodeinExcel } from "./DownloadUploadBOMxls";
@@ -169,7 +171,7 @@ class Downloadxls extends React.Component {
     * @description Switch case for different xls file head according to master
     */
     renderSwitch = (master) => {
-
+        console.log("master", master)
         let updatedLabels
         const { selectedOption } = this.props
 
@@ -211,16 +213,48 @@ class Downloadxls extends React.Component {
             case RAWMATERIALSRFQ:
                 return this.returnExcelColumn(AddRawMaterialHeaderData, AddRawMaterialTempData);
             case ASSEMBLYORCOMPONENTSRFQ:
-                return this.returnExcelColumn(AddAssemblyOrComponentHeaderData, AddAssemblyOrComponentTempData);
-
-
-
-
-
-            //return this.returnExcelColumn(AddRFQUpload, AddRFQTempData);
+                return this.returnCombinedExcelColumn(AddAssemblyOrComponentHeaderData, AddAssemblyOrComponentTempData, AddAssemblyOrComponentAdditionalInfoHeaderData, AddAssemblyOrComponentAdditionalInfoTempData);
             default:
                 return 'foo';
         }
+    }
+
+
+    // returnCombinedExcelColumn = (headerData1, tempData1, headerData2, tempData2) => {
+    //     const { fileName } = this.props;
+
+    //     // Combine the two sets of data
+    //     const combinedHeaderData = [...headerData1, ...headerData2];
+    //     const combinedTempData = tempData1.map((item, index) => ({
+    //         ...item,
+    //         ...(tempData2[index] || {})
+    //     }));
+
+    //     return (
+    //         <ExcelSheet data={combinedTempData} name={fileName}>
+    //             {combinedHeaderData.map((ele, index) => (
+    //                 <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />
+    //             ))}
+    //         </ExcelSheet>
+    //     );
+    // }
+    returnCombinedExcelColumn = (headerData1, tempData1, headerData2, tempData2) => {
+        const { fileName } = this.props;
+
+        return (
+            <>
+                <ExcelSheet data={tempData1} name={fileName}>
+                    {headerData1.map((ele, index) => (
+                        <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />
+                    ))}
+                </ExcelSheet>
+                <ExcelSheet data={tempData2} name={`${fileName} - Additional Info`}>
+                    {headerData2.map((ele, index) => (
+                        <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />
+                    ))}
+                </ExcelSheet>
+            </>
+        );
     }
 
     /**
@@ -417,6 +451,7 @@ class Downloadxls extends React.Component {
             {dataList && dataList.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
         </ExcelSheet>);
     }
+
     render() {
         const { isFailedFlag, fileName, isZBCVBCTemplate, isMachineMoreTemplate, costingTypeId, bopType } = this.props;
         const downloadFileName = (fileName === 'RM')
@@ -506,7 +541,6 @@ class Downloadxls extends React.Component {
             </ExcelFile >
         );
     }
-
 }
 
 export default withTranslation('MasterLabels')(Downloadxls);
