@@ -1,18 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { getCurrencySymbol } from '../../../helper';
 import { Bar } from 'react-chartjs-2';
 import { colorArray } from '../../dashboard/ChartsDashboard';
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ChartDataLabels);
 
 export function BarChartComparison({ costingData, currency, graphHeight = 500, graphWidth = 1000 }) {
   const [graphData, setGraphData] = useState(null);
 
   useEffect(() => {
     const prepareGraphData = () => {
-      // Filter out items with costingHeaders === "variance" or "old costing"
-
       const filteredCostingData = costingData.filter(item =>
         item?.CostingHeading !== "Variance" && item?.CostingHeading !== "Old Costing"
       );
@@ -57,15 +56,6 @@ export function BarChartComparison({ costingData, currency, graphHeight = 500, g
           data: filteredCostingData?.map(item => item?.nPackagingAndFreight),
           backgroundColor: colorArray[5],
         },
-        // {
-        //   label: 'Total Net Cost',
-        //   data: filteredCostingData?.map(item =>
-        //     item?.totalTabSum
-        //   ),
-        //   backgroundColor: 'rgba(0, 0, 0, 0.6)',
-        //   type: 'bar',
-        //   stack: 'total'
-        // }
       ];
 
       return { labels, datasets };
@@ -77,11 +67,10 @@ export function BarChartComparison({ costingData, currency, graphHeight = 500, g
   const options = {
     responsive: true,
     maintainAspectRatio: false,
-    barThickness: 40, // Adjust this value to make bars thinner or thicker
-    maxBarThickness: 70, // This sets a maximum thickness
+    barThickness: 40,
+    maxBarThickness: 70,
     indexAxis: 'y',
     scales: {
-
       y: {
         stacked: true,
         ticks: {
@@ -90,10 +79,12 @@ export function BarChartComparison({ costingData, currency, graphHeight = 500, g
           minRotation: 0
         },
         grid: {
-          display: false
+          display: false,
+          color: '#71737b',  // Dark color for y-axis line
+          borderColor: '#71737b',  // Dark color for y-axis border
+          borderWidth: 1.5
         },
       },
-
       x: {
         stacked: true,
         title: { display: true, text: `Cost` },
@@ -103,11 +94,12 @@ export function BarChartComparison({ costingData, currency, graphHeight = 500, g
           }
         },
         grid: {
-          display: false
+          display: false,
+          color: '#71737b',  // Dark color for y-axis line
+          borderColor: '#71737b',  // Dark color for y-axis border
+          borderWidth: 1.5
         },
-
       },
-
     },
     plugins: {
       legend: {
@@ -121,51 +113,22 @@ export function BarChartComparison({ costingData, currency, graphHeight = 500, g
         display: true,
         font: { size: 14 }
       },
+      tooltip: {
+        enabled: true,
+      },
       datalabels: {
-        display: true, // Always display the value
-        color: 'black', // Set the text color (adjust for contrast)
+        display: true,
+        color: 'white',
         font: {
           weight: 'bold',
-          size: 12, // Adjust font size if needed
+          size: 11,
         },
-        align: 'center', // Center text horizontally in each segment
-        anchor: 'center', // Center text vertically in each segment
-        formatter: (value, context) => {
-          // Format the value to display inside each bar segment
-          return `${value.toLocaleString('en-US', {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-          })}`;
+
+        align: 'center',
+        anchor: 'center',
+        formatter: (value) => {
+          return getCurrencySymbol(currency) + value.toFixed(2);
         },
-        afterDatasetsDraw: (chart) => {
-          const ctx = chart.ctx;
-          const datasets = chart.data.datasets;
-
-          datasets.forEach((dataset, i) => {
-            const meta = chart.getDatasetMeta(i);
-            meta.data.forEach((bar, index) => {
-              // Get the value to display
-              const value = dataset.data[index];
-
-              // Get the position of the bar
-              const position = bar.getCenterPoint();
-
-              // Adjust text color based on the background color for contrast
-              ctx.fillStyle = 'black'; // Change color if needed
-              ctx.font = 'bold 12px Arial'; // Set font style and size
-
-              // Display the value inside the bar segment
-              ctx.fillText(
-                value.toLocaleString('en-US', {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2
-                }),
-                position.x,
-                position.y
-              );
-            });
-          });
-        }
       }
     }
   };
