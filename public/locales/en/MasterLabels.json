@@ -4,6 +4,6 @@
     "BOPCategoryLabel": "BOP Category",
     "TechnologyLabel": "Technology",
     "VendorLabel": "Vendor",
-    "RMVendorLabel": "RM Vendor",
-    "BOPVendorLabel": "BOP Vendor"
+    "RMVendorLabel": "Vendor",
+    "BOPVendorLabel": "Vendor"
 }
