@@ -614,7 +614,7 @@ function CostReportForm(props) {
                                 mandatory={true}
                                 handleChange={handlePartTypeChange}
                                 errors={errors.Part}
-                                disabled={(technology.length === 0) ? true : false}
+                                disabled={(technology?.length === 0) ? true : false}
                             />
                         </Col>}
 
@@ -633,7 +633,7 @@ function CostReportForm(props) {
                                 //   isLoading={loaderObj}
                                 handleChange={handlePartChange}
                                 errors={errors.Part}
-                                disabled={(partType.length === 0) ? true : false}
+                                disabled={!technology || !partType || technology.length === 0 || partType.length === 0}
                                 NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
                             />
 
