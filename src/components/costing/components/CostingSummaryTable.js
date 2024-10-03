@@ -674,10 +674,10 @@ const CostingSummaryTable = (props) => {
     let temp = [...viewCostingData]
     temp.splice(index, 1)
     if (props?.isRfqCosting) {
-      let tempArr = temp && temp.filter(item => item?.bestCost !== true)
+      let tempArr = temp && temp?.filter(item => item?.bestCost !== true)
       temp = props?.bestCostObjectFunction(tempArr)
     }
-    if (simulationMode && viewCostingData.length >= 2) {
+    if (simulationMode && viewCostingData?.length >= 2) {
       setIsComparing(false)
       temp.push(varianceData)
     }
@@ -901,9 +901,9 @@ const CostingSummaryTable = (props) => {
     setShowWarningMsg(true)
     if (simulationMode && e === 'submit') {
 
-      const varianceData = viewCostingData.filter(item => item.CostingHeading === VARIANCE);
+      const varianceData = viewCostingData?.filter(item => item?.CostingHeading === VARIANCE);
       setVarianceData(...varianceData)
-      const filteredCostingData = viewCostingData.filter(item => item.CostingHeading !== VARIANCE);
+      const filteredCostingData = viewCostingData?.filter(item => item?.CostingHeading !== VARIANCE);
       setIsComparing(true)
       dispatch(setCostingViewData(filteredCostingData));
     }
@@ -2095,9 +2095,9 @@ const CostingSummaryTable = (props) => {
 
                     {onBtExport()}
                   </ExcelFile>}
-                  {(props.isRfqCosting && !isApproval && !drawerViewMode) && <button onClick={() => props?.crossButton()} title='Discard Summary' className='CancelIcon rfq-summary-discard'></button>}
+                  {(props?.isRfqCosting && !isApproval && !drawerViewMode) && <button onClick={() => props?.crossButton()} title='Discard Summary' className='CancelIcon rfq-summary-discard'></button>}
                 </div>
-                {!simulationMode && !props.isRfqCosting && !props.isRfqCosting && downloadAccessibility &&
+                {!simulationMode && !props?.isRfqCosting && !props?.isRfqCosting && downloadAccessibility &&
                   <ReactToPrint
                     bodyClass='mx-2 mt-3 remove-space-border'
                     documentTitle={`${pdfName}-detailed-costing`}
@@ -2159,7 +2159,7 @@ const CostingSummaryTable = (props) => {
                   {isComparing &&
                     <BarChartComparison
                       costingData={viewCostingData}
-                      currency={getConfigurationKey().BaseCurrency}
+                      currency={getConfigurationKey()?.BaseCurrency}
                     />
                   }
                 </Col>
@@ -2263,7 +2263,7 @@ const CostingSummaryTable = (props) => {
                                     {((!viewMode && (!pdfHead && !drawerDetailPDF)) && EditAccessibility) && (data?.status === DRAFT) && <button id="costingSummary_edit" className="Edit mr-1 mb-0 align-middle" type={"button"} title={"Edit Costing"} onClick={() => editCostingDetail(index)} />}
                                     {((!viewMode && (!pdfHead && !drawerDetailPDF)) && ViewAccessibility) && (data?.status === DRAFT) && <button id="costingSummary_view" className="View mr-1 mb-0 align-middle" type={"button"} title={"View Costing"} onClick={() => viewCostingDetail(index)} />}
                                     {((!viewMode && (!pdfHead && !drawerDetailPDF)) && AddAccessibility) && <button id="costingSummary_add" className="Add-file mr-1 mb-0 align-middle" type={"button"} title={"Add Costing"} onClick={() => addNewCosting(index)} />}
-                                    {(!isApproval || (isComparing && index > 1)) && (data?.bestCost === true ? false : ((!viewMode || props.isRfqCosting || (isComparing && index > 1) || (approvalMode && data?.CostingHeading === '-')) && (!pdfHead && !drawerDetailPDF)) && <button id="costingSummary_discard" type="button" className="CancelIcon mb-0 align-middle" title='Discard' onClick={() => deleteCostingFromView(index)}></button>)}
+                                    {(!isApproval || (isComparing && index > 1)) && (data?.bestCost === true ? false : ((!viewMode || props?.isRfqCosting || (isComparing && index > 1) || (approvalMode && data?.CostingHeading === '-')) && (!pdfHead && !drawerDetailPDF)) && <button id="costingSummary_discard" type="button" className="CancelIcon mb-0 align-middle" title='Discard' onClick={() => deleteCostingFromView(index)}></button>)}
                                   </div>
                                 </div >
                               </th >
