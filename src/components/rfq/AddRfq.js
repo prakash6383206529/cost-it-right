@@ -3072,6 +3072,7 @@ function AddRfq(props) {
             Remark: values?.remark
         }
         dispatch(sendQuotationForReview(obj, () => {
+            Toaster.success("Review request submitted successfully")
             props?.closeDrawer('', {})
         }))
 
@@ -3290,13 +3291,13 @@ function AddRfq(props) {
                                             </div>
                                         </Col>}
                                     </Row>
-                                    <Button
+                                    {(!disabledPartUid && selectedOption !== 'Tooling' && Object.keys(prNumber).length === 0) && <Button
                                         id="rfq_bulkUpload"
                                         className={"mr5 Tour_List_BulkUpload"}
                                         onClick={bulkToggle}
                                         title={"Bulk Upload"}
                                         icon={"upload"}
-                                    />
+                                    />}
                                     {(selectedOption === 'componentAssembly' || selectedOption === 'Tooling') && <>
                                         {heading()}
 
