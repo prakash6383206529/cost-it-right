@@ -969,7 +969,7 @@ class BulkUpload extends Component {
      * @description Renders the component
      */
     render() {
-        const { handleSubmit, isEditFlag, fileName, messageLabel, isZBCVBCTemplate = '', isMachineMoreTemplate } = this.props;
+        const { handleSubmit, isEditFlag, fileName, messageLabel, isZBCVBCTemplate = '', isMachineMoreTemplate, modelText } = this.props;
 
         const { faildRecords, failedData, costingTypeId, setDisable, noApprovalCycle, bopType } = this.state;
         if (faildRecords) {
@@ -981,6 +981,7 @@ class BulkUpload extends Component {
                 costingTypeId={costingTypeId}
                 bopType={bopType}
                 isImport={this.state.isImport}
+                modelText={modelText}
             />
         }
         return (
@@ -1186,6 +1187,7 @@ class BulkUpload extends Component {
                                             costingTypeId={costingTypeId}
                                             bopType={bopType}
                                             isImport={this.state.isImport}
+                                            modelText={modelText}
                                         />
                                     </div>
 
@@ -1310,6 +1312,7 @@ class BulkUpload extends Component {
                                 fileName={fileName}
                                 isFailedFlag={false}
                                 costingTypeId={costingTypeId}
+                                modelText={modelText}
                             />
                         </div>
 
