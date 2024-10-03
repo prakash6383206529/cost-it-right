@@ -113,12 +113,10 @@ const OperationListing = (props) => {
         const fetchData = async () => {
             props.changeSetLoader(true);
             try {
-                const res = await dispatch(getListingForSimulationCombined(props.objectForMultipleSimulation, OPERATIONS, (res) => {
-                    props?.changeSetLoader(false)
-                    setState((prevState) => ({ ...prevState, isLoader: false }))
-                }));
-                setState(prevState => ({ ...prevState, tableData: res?.data?.DataList, isLoader: false }));
+                await dispatch(getListingForSimulationCombined(props.objectForMultipleSimulation, OPERATIONS, (res) => {
+                                setState(prevState => ({ ...prevState, tableData: res?.data?.DataList, isLoader: false }));
                 props.changeSetLoader(false);
+            }));
             } catch (error) {
                 // Handle error state
                 props.changeSetLoader(false);
