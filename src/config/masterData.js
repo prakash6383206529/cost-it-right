@@ -1048,7 +1048,7 @@ export const VendorTempData = [
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const Overhead = [
-    { label: 'CostingHead', value: 'CostingHead', },
+    { label: 'Note', value: 'Note', },
     { label: 'ModelType', value: 'ModelType', },
     { label: 'OverheadApplicability', value: 'OverheadApplicability', },
     { label: 'OverheadPercentage', value: 'OverheadPercentage', },
@@ -1062,7 +1062,7 @@ export const Overhead = [
 
 export const OverheadTempData = [
     {
-        'CostingHead': 'Costing Head',
+        'Note': 'If Applicability is single input percentage in relevant applicability field.',
         'ModelType': 'High volume',
         'OverheadApplicability': 'RM',
         'OverheadPercentage': '',
@@ -1072,12 +1072,23 @@ export const OverheadTempData = [
         "PlantCode": '0503',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remarks': 'Remark Text',
+    }, {
+        'Note': 'If Applicability is combined either input percentage in relevant applicability fields Or in combine percentage field (OverheadApplicability).',
+        'ModelType': 'High volume',
+        'OverheadApplicability': 'BOP',
+        'OverheadPercentage': '',
+        'OverheadCCPercentage': '',
+        'OverheadBOPPercentage': '10',
+        'OverheadRMPercentage': '',
+        "PlantCode": '0503',
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        'Remarks': 'Remark Text',
     }
 ]
 
 
 export const OverheadVBC = [
-    { label: 'CostingHead', value: 'CostingHead', },
+    { label: 'Note', value: 'Note', },
     { label: 'ModelType', value: 'ModelType', },
     { label: 'OverheadApplicability', value: 'OverheadApplicability', },
     { label: 'OverheadPercentage', value: 'OverheadPercentage', },
@@ -1092,7 +1103,7 @@ export const OverheadVBC = [
 
 export const OverheadVBC_TempData = [
     {
-        'CostingHead': 'Costing Head',
+        'Note': 'If Applicability is single input percentage in relevant applicability field.',
         'ModelType': 'High volume',
         'OverheadApplicability': 'RM',
         'OverheadPercentage': '',
@@ -1103,10 +1114,22 @@ export const OverheadVBC_TempData = [
         "PlantCode": '0503',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remarks': 'Remark Text'
+    }, {
+        'Note': 'If Applicability is combined either input percentage in relevant applicability fields Or in combine percentage field (OverheadApplicability).',
+        'ModelType': 'High volume',
+        'OverheadApplicability': 'BOP',
+        'OverheadPercentage': '',
+        'OverheadCCPercentage': '',
+        'OverheadBOPPercentage': '10',
+        'OverheadRMPercentage': '',
+        'VendorCode': '1313',
+        "PlantCode": '0503',
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        'Remarks': 'Remark Text'
     }
 ]
 export const OverheadCBC = [
-    { label: 'CostingHead', value: 'CostingHead', },
+    { label: 'Note', value: 'Note', },
     { label: 'ModelType', value: 'ModelType', },
     { label: 'OverheadApplicability', value: 'OverheadApplicability', },
     { label: 'OverheadPercentage', value: 'OverheadPercentage', },
@@ -1121,7 +1144,7 @@ export const OverheadCBC = [
 
 export const OverheadCBC_TempData = [
     {
-        'CostingHead': 'Costing Head',
+        'Note': 'If Applicability is single input percentage in relevant applicability field.',
         'ModelType': 'High volume',
         'OverheadApplicability': 'RM',
         'OverheadPercentage': '',
@@ -1132,7 +1155,20 @@ export const OverheadCBC_TempData = [
         "CustomerName": 'C-10006',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remarks': 'Remark Text'
+    }, {
+        'Note': 'If Applicability is combined either input percentage in relevant applicability fields Or in combine percentage field (OverheadApplicability).',
+        'ModelType': 'High volume',
+        'OverheadApplicability': 'BOP',
+        'OverheadPercentage': '',
+        'OverheadCCPercentage': '',
+        'OverheadBOPPercentage': '10',
+        'OverheadRMPercentage': '',
+        "PlantCode": '3456',
+        "CustomerName": 'C-10006',
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        'Remarks': 'Remark Text'
     }
+
 ]
 /**
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
@@ -1968,7 +2004,7 @@ export const CBCOperationTempData = [
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const Profit = [
-    { label: 'CostingHead', value: 'CostingHead', },
+    { label: 'Note', value: 'Note', },
     { label: 'ModelType', value: 'ModelType', },
     { label: 'ProfitApplicability', value: 'ProfitApplicability', },
     { label: 'ProfitPercentage', value: 'ProfitPercentage', },
@@ -1982,7 +2018,7 @@ export const Profit = [
 
 export const ProfitTempData = [
     {
-        'CostingHead': 'CostingHead',
+        'Note': 'If Applicability is single input percentage in relevant applicability field.',
         'ModelType': 'High volume',
         'ProfitApplicability': 'RM',
         'ProfitPercentage': '',
@@ -1992,11 +2028,22 @@ export const ProfitTempData = [
         "PlantCode": '3456',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remarks': 'Remark Text',
+    }, {
+        'Note': 'If Applicability is combined either input percentage in relevant applicability fields Or in combine percentage field (OverheadApplicability).',
+        'ModelType': 'High volume',
+        'ProfitApplicability': 'BOP',
+        'ProfitPercentage': '',
+        'ProfitCCPercentage': '',
+        'ProfitBOPPercentage': '10',
+        'ProfitRMPercentage': '',
+        "PlantCode": '3456',
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        'Remarks': 'Remark Text',
     }
 ]
 
 export const ProfitVBC = [
-    { label: 'CostingHead', value: 'CostingHead', },
+    { label: 'Note', value: 'Note', },
     { label: 'ModelType', value: 'ModelType', },
     { label: 'ProfitApplicability', value: 'ProfitApplicability', },
     { label: 'ProfitPercentage', value: 'ProfitPercentage', },
@@ -2011,7 +2058,7 @@ export const ProfitVBC = [
 
 export const ProfitTempDataVBC = [
     {
-        'CostingHead': 'CostingHead',
+        'Note': 'If Applicability is single input percentage in relevant applicability field.',
         'ModelType': 'High volume',
         'ProfitApplicability': 'RM',
         'ProfitPercentage': '',
@@ -2022,10 +2069,22 @@ export const ProfitTempDataVBC = [
         "PlantCode": '3456',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remarks': 'Remark Text'
+    }, {
+        'Note': 'If Applicability is combined either input percentage in relevant applicability fields Or in combine percentage field (OverheadApplicability).',
+        'ModelType': 'High volume',
+        'ProfitApplicability': 'BOP',
+        'ProfitPercentage': '',
+        'ProfitCCPercentage': '',
+        'ProfitBOPPercentage': '10',
+        'ProfitRMPercentage': '',
+        'VendorCode': '1313',
+        "PlantCode": '3456',
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        'Remarks': 'Remark Text'
     }
 ]
 export const ProfitCBC = [
-    { label: 'CostingHead', value: 'CostingHead', },
+    { label: 'Note', value: 'Note', },
     { label: 'ModelType', value: 'ModelType', },
     { label: 'ProfitApplicability', value: 'ProfitApplicability', },
     { label: 'ProfitPercentage', value: 'ProfitPercentage', },
@@ -2040,13 +2099,25 @@ export const ProfitCBC = [
 
 export const ProfitTempDataCBC = [
     {
-        'CostingHead': 'CostingHead',
+        'Note': 'If Applicability is single input percentage in relevant applicability field.',
         'ModelType': 'High volume',
         'ProfitApplicability': 'RM',
         'ProfitPercentage': '',
         'ProfitCCPercentage': '',
         'ProfitBOPPercentage': '',
         'ProfitRMPercentage': '10',
+        "PlantCode": '3456',
+        "CustomerName": 'C-10006',
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        'Remarks': 'Remark Text'
+    }, {
+        'Note': 'If Applicability is combined either input percentage in relevant applicability fields Or in combine percentage field (OverheadApplicability).',
+        'ModelType': 'High volume',
+        'ProfitApplicability': 'BOP',
+        'ProfitPercentage': '',
+        'ProfitCCPercentage': '',
+        'ProfitBOPPercentage': '10',
+        'ProfitRMPercentage': '',
         "PlantCode": '3456',
         "CustomerName": 'C-10006',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),

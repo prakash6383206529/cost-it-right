@@ -796,7 +796,7 @@ class AddFuel extends Component {
       }
     };
 
-
+    const isStateOfCountryAvailable = this.state?.country?.length === 0 || this.state?.country?.label === 'India'
     return (
       <>
         {this.state.isLoader && <LoaderCustom />}
@@ -1034,7 +1034,7 @@ class AddFuel extends Component {
                             </div>
                           </Col>
 
-                          {(this.state.country.length === 0 || this.state.country.label === 'India') &&
+                          {isStateOfCountryAvailable &&
                             <Col md="3">
                               <div className="form-group inputbox withBorder ">
                                 <Field
@@ -1117,13 +1117,13 @@ class AddFuel extends Component {
                             </div>
                           </Col>
                           <Col md="3">
-                            <div className='pt-2 pr-0'>
+                            <div className={`${isStateOfCountryAvailable ? 'pt-2 mt-4' : 'mb-4'} pr-0`}>
                               {this.state.isEditIndex ? (
                                 <>
-                                  <button type="button" className={"btn btn-primary mt30 pull-left mr5"} onClick={this.updateRateGrid}>Update</button>
+                                  <button type="button" className={"btn btn-primary pull-left mr5"} onClick={this.updateRateGrid}>Update</button>
                                   <button
                                     type="button"
-                                    className={"mr15 ml-1 mt30 add-cancel-btn cancel-btn"}
+                                    className={"mr15 ml-1 add-cancel-btn cancel-btn"}
                                     disabled={isViewMode}
                                     onClick={this.rateTableReset}
                                   >
@@ -1134,7 +1134,7 @@ class AddFuel extends Component {
                                 <>
                                   <button id="AddFuel_AddData"
                                     type="button"
-                                    className={"user-btn mt30 pull-left"}
+                                    className={"user-btn pull-left"}
                                     disabled={isViewMode}
                                     onClick={this.rateTableHandler}
                                   >
@@ -1142,7 +1142,7 @@ class AddFuel extends Component {
                                   </button>
                                   <button
                                     type="button"
-                                    className={"mr15 ml-1 mt30 reset-btn"}
+                                    className={"mr15 ml-1 reset-btn"}
                                     disabled={isViewMode}
                                     onClick={this.rateTableReset}
                                   >

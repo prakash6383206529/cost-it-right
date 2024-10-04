@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Field, reduxForm, formValueSelector, clearFields } from 'redux-form'
 import { Row, Col, Table, Label } from 'reactstrap'
-import { required, checkForNull, positiveAndDecimalNumber, maxLength10, checkForDecimalAndNull, decimalLengthsix, number } from '../../../helper/validation'
+import { required, checkForNull, positiveAndDecimalNumber, maxLength10, checkForDecimalAndNull, decimalLengthsix, number, maxPercentValue, percentageLimitValidation } from '../../../helper/validation'
 import { focusOnError, renderTextInputField, searchableSelect } from '../../layout/FormInputs'
 import { getPlantListByState } from '../actions/Fuel'
 import { getProductGroupSelectList } from '../actions/Part'
@@ -1121,12 +1121,12 @@ class AddLabour extends Component {
                       <Col md="3">
                         <div className="form-group">
                           <Field
-                            label={`Efficiency`}
+                            label={`Efficiency (%)`}
                             name={"Efficiency"}
                             type="text"
                             placeholder={isViewMode ? "-" : "Enter"}
                             disabled={isViewMode}
-                            validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
+                            validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix, number, percentageLimitValidation, maxPercentValue]}
                             component={renderTextInputField}
                             onChange={this.handleEfficiency}
                             required={true}

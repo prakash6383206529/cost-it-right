@@ -117,7 +117,7 @@ const BOPImportListing = (props) => {
 
   const { initialConfiguration } = useSelector((state) => state.auth);
   const tourStartData = useSelector(state => state.comman.tourStartData);
-  const { technologyLabel,vendorLabel } = useLabels();
+  const { technologyLabel, vendorLabel } = useLabels();
   const { selectedRowForPagination, tokenForSimulation } = useSelector(
     (state) => state.simulation
   );
@@ -766,7 +766,7 @@ const BOPImportListing = (props) => {
     } else {
       tempData = data;
     }
-    if (!getConfigurationKey().IsSAPConfigured) {
+    if (!getConfigurationKey().IsSAPCodeRequired) {
       tempData = hideColumnFromExcel(tempData, 'SAPCode')
     }
     temp =
@@ -1075,10 +1075,9 @@ const BOPImportListing = (props) => {
                         <AgGridColumn field="BoughtOutPartCategory" headerName={`${showBopLabel()} Category`}></AgGridColumn>
                         <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
                         <AgGridColumn field="Specification" headerName="Specification" cellRenderer={"hyphenFormatter"}></AgGridColumn>
-                        {getConfigurationKey().IsSAPConfigured
-                          && <AgGridColumn field="SAPPartNumber" headerName="SAP Code" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                        {getConfigurationKey().IsSAPCodeRequired && <AgGridColumn field="SAPPartNumber" headerName="SAP Code" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                         <AgGridColumn field="Plants" cellRenderer={"hyphenFormatter"} headerName="Plant (Code)"></AgGridColumn>
-                        <AgGridColumn field="Vendor"  headerName={`${vendorLabel} (Code)`}cellRenderer={"hyphenFormatter"}></AgGridColumn>
+                        <AgGridColumn field="Vendor" headerName={`${vendorLabel} (Code)`} cellRenderer={"hyphenFormatter"}></AgGridColumn>
                         {reactLocalStorage.getObject('CostingTypePermission').cbc && (<AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={"hyphenFormatter"}></AgGridColumn>)}
                         <AgGridColumn field="IncoTermDescriptionAndInfoTerm" headerName="Inco Terms"></AgGridColumn>
                         {getConfigurationKey().IsShowPaymentTermsFields && <AgGridColumn field="PaymentTermDescriptionAndPaymentTerm" headerName="Payment Terms" ></AgGridColumn>}
