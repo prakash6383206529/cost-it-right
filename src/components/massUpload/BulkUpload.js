@@ -1031,7 +1031,7 @@ class BulkUpload extends Component {
      * @description Renders the component
      */
     render() {
-        const { handleSubmit, isEditFlag, fileName, messageLabel, isZBCVBCTemplate = '', isMachineMoreTemplate, selectedOption = "" } = this.props;
+        const { handleSubmit, isEditFlag, fileName, messageLabel, isZBCVBCTemplate = '', isMachineMoreTemplate, selectedOption = "", modelText } = this.props;
 
         const { faildRecords, failedData, costingTypeId, setDisable, noApprovalCycle, bopType } = this.state;
         if (faildRecords) {
@@ -1044,6 +1044,7 @@ class BulkUpload extends Component {
                 bopType={bopType}
                 isImport={this.state.isImport}
                 selectedOption={selectedOption}
+                modelText={modelText}
             />
         }
         return (
@@ -1250,6 +1251,7 @@ class BulkUpload extends Component {
                                             bopType={bopType}
                                             isImport={this.state.isImport}
                                             selectedOption={selectedOption}
+                                            modelText={modelText}
                                         />
                                     </div>
 
@@ -1375,6 +1377,7 @@ class BulkUpload extends Component {
                                 isFailedFlag={false}
                                 costingTypeId={costingTypeId}
                                 selectedOption={selectedOption}
+                                modelText={modelText}
                             />
                         </div>
 
