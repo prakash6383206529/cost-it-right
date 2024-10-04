@@ -38,7 +38,7 @@ function AddOtherDiscount(props) {
     const [applicabilityCost, setApplicabilityCost] = useState('')
     const dispatch = useDispatch()
     const { CostingDataList, isBreakupBoughtOutPartCostingFromAPI, OverheadProfitTabData, PackageAndFreightTabData, DiscountCostData } = useSelector(state => state.costing)
-    
+
     const fieldValuesForPercent = useWatch({
         control,
         name: ['PercentageOtherCost', 'OtherCostApplicability'],
@@ -122,7 +122,7 @@ function AddOtherDiscount(props) {
 
         gridData.push(obj)
         const sumOfNetCost = gridData.reduce((acc, obj) => acc + Number(obj.NetCost), 0);
-        if (CostingDataList[0].TotalCost < sumOfNetCost) {
+        if ((CostingDataList[0].TotalCost + CostingDataList[0].NetOtherCost) < sumOfNetCost) {
             Toaster.warning("Discount should not be greater than Total Cost.")
             return false
         }
@@ -190,7 +190,6 @@ function AddOtherDiscount(props) {
             Description: getValues("OtherCostDescription"),
             ApplicabilityIdRef: state.otherDiscountApplicabilityType?.value,
             ApplicabilityType: state.otherDiscountApplicabilityType?.label,
-            applicability: state.otherDiscountApplicabilityType?.label,
             ApplicabilityCost: applicabilityCost,
             PercentageDiscountCost: getValues("PercentageOtherCost") ?? '-',
             NetCost: otherCostApplicability?.label === 'Fixed' ? getValues('AnyOtherCost') : otherCost,
@@ -198,7 +197,7 @@ function AddOtherDiscount(props) {
 
         let tempArr = Object.assign([...state.tableData], { [state.editIndex]: obj })
         const sumOfNetCost = tempArr.reduce((acc, obj) => acc + Number(obj.NetCost), 0);
-        if (costData.TotalCost < sumOfNetCost) {
+        if ((CostingDataList[0].TotalCost + CostingDataList[0].NetOtherCost) < sumOfNetCost) {
             Toaster.warning("Discount should not be greater than Total Cost.")
             return false
         }
@@ -616,3 +615,4 @@ function AddOtherDiscount(props) {
 }
 
 export default AddOtherDiscount
+// CR2-I27
