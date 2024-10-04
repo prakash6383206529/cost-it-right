@@ -498,7 +498,7 @@ function AddRMMaster(props) {
             }))
         } else {
             formData.IsSendForApproval = false;
-            // handleRMOperation(formData, state.isEditFlag);
+            handleRMOperation(formData, state.isEditFlag);
         }
 
 

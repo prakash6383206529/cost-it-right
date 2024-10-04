@@ -2,6 +2,7 @@ import React from "react";
 import ReactExport from 'react-export-excel';
 import { BOMUpload, BOMUploadTempData } from '../../config/masterData';
 import { getConfigurationKey } from "../../helper";
+import { withTranslation } from "react-i18next";
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -79,4 +80,4 @@ class DownloadUploadBOMxls extends React.Component {
   }
 }
 
-export default DownloadUploadBOMxls;
+export default withTranslation("MasterLabels")(DownloadUploadBOMxls);
