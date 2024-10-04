@@ -161,11 +161,12 @@ function AddRMFinancialDetails(props) {
                 let Data = res?.data?.Data
                 setValue('plantCurrency', Data?.Currency)
                 const { costingTypeId } = states;
-                let currency = states.isImport ? state.currency?.label : reactLocalStorage.getObject("baseCurrency")
+                let fromCurrency = states.isImport ? state.currency?.label : Data?.Currency
+                let toCurrency = !states.isImport ? reactLocalStorage.getObject("baseCurrency") : Data?.Currency
                 const costingType = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? VBCTypeId : costingTypeId) : ZBCTypeId
                 const vendorValue = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? rawMaterailDetails?.Vendor?.value : EMPTY_GUID) : EMPTY_GUID
                 if (getValues('ExchangeSource')?.label && state.effectiveDate) {
-                    dispatch(getExchangeRateByCurrency(currency, costingType, DayTime(state.effectiveDate).format('YYYY-MM-DD'), vendorValue, rawMaterailDetails?.customer?.value, false, Data?.Currency, getValues('ExchangeSource')?.label, res => {
+                    dispatch(getExchangeRateByCurrency(fromCurrency, costingType, DayTime(state.effectiveDate).format('YYYY-MM-DD'), vendorValue, rawMaterailDetails?.customer?.value, false, toCurrency, getValues('ExchangeSource')?.label, res => {
                         if (Object.keys(res.data.Data).length === 0) {
                             setState(prevState => ({ ...prevState, showWarning: true }));
                         } else {

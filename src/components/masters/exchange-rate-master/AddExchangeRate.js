@@ -334,7 +334,7 @@ class AddExchangeRate extends Component {
         VendorId: vendorName.value,
         IsBudgeting: budgeting,
         ToCurrencyId: toCurrency.value,
-        ExchangeRateSourceName: exchangeRateSource.label
+        ExchangeRateSourceName: exchangeRateSource?.label
       }
       if (isEditFlag) {
         this.props.updateExchangeRate(updateData, (res) => {
@@ -362,7 +362,7 @@ class AddExchangeRate extends Component {
         VendorId: vendorName.value,
         IsBudgeting: budgeting,
         ToCurrencyId: toCurrency.value,
-        ExchangeRateSourceName: exchangeRateSource.label
+        ExchangeRateSourceName: exchangeRateSource?.label
       }
       this.props.createExchangeRate(formData, (res) => {
         this.setState({ setDisable: false })
@@ -415,7 +415,7 @@ class AddExchangeRate extends Component {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit,t } = this.props;
+    const { handleSubmit, t } = this.props;
     const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
 
     const { isEditFlag, isViewMode, setDisable, costingTypeId } = this.state;

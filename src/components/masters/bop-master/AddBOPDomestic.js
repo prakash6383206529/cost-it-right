@@ -31,7 +31,7 @@ import { getClientSelectList, } from '../actions/Client';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { autoCompleteDropdown, costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission, getEffectiveDateMinDate } from '../../common/CommonFunctions';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
-import { checkFinalUser } from '../../../components/costing/actions/Costing'
+import { checkFinalUser, getExchangeRateByCurrency } from '../../../components/costing/actions/Costing'
 import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions';
 import TooltipCustom from '../../common/Tooltip';
 import { getCostingSpecificTechnology } from '../../costing/actions/Costing';
@@ -185,11 +185,15 @@ class AddBOPDomestic extends Component {
   }
   callExchangeRateAPI = () => {
     const { initialConfiguration, fieldsObj } = this.props
+    console.log('fieldsObj?.plantCurrency', fieldsObj?.plantCurrency)
     const { costingTypeId, vendorName, client, effectiveDate, ExchangeSource } = this.state;
+    console.log(effectiveDate, "feffectiveDate")
+    console.log(ExchangeSource, "ExchangeSource")
+    console.log(fieldsObj?.plantCurrency && effectiveDate, "fieldsObj?.plantCurrency && effectiveDate")
+
     const vendorValue = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? vendorName.value : EMPTY_GUID) : EMPTY_GUID
     const costingType = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? VBCTypeId : costingTypeId) : ZBCTypeId
-    console.log(this.props.fieldsObj, "fieldsObj")
-    const hasCurrencyAndDate = fieldsObj?.currency && effectiveDate;
+    const hasCurrencyAndDate = fieldsObj?.plantCurrency && effectiveDate;
     const isSourceExchangeRateVisible = getConfigurationKey().IsSourceExchangeRateNameVisible;
     if (hasCurrencyAndDate && (!isSourceExchangeRateVisible || ExchangeSource)) {
       if (IsFetchExchangeRateVendorWise() && (vendorName?.length === 0 || client?.length === 0)) {
@@ -197,7 +201,7 @@ class AddBOPDomestic extends Component {
         return;
       }
 
-      this.props.getExchangeRateByCurrency(reactLocalStorage.getObject("baseCurrency"), costingType, DayTime(this.state?.effectiveDate).format('YYYY-MM-DD'), vendorValue, client.value, false, this.props.fieldsObj?.currency.label, this.state.ExchangeSource, res => {
+      this.props.getExchangeRateByCurrency(fieldsObj?.plantCurrency, costingType, DayTime(this.state?.effectiveDate).format('YYYY-MM-DD'), vendorValue, client.value, false, reactLocalStorage.getObject("baseCurrency"), ExchangeSource?.label, res => {
         console.log(res, "res")
         if (Object.keys(res.data.Data).length === 0) {
           this.setState({ showWarning: true });
@@ -728,22 +732,23 @@ class AddBOPDomestic extends Component {
     let conditionList = this.recalculateConditions(basicPriceBaseCurrency)
 
     const sumBase = conditionList.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCost), 0);
-    let netLandedCostBaseCurrency = checkForNull(sumBase) + checkForNull(basicPriceBaseTemp)
-
+    let netLandedCostPlantCurrency = checkForNull(sumBase) + checkForNull(basicPriceBaseTemp)
+    console.log(this.state.currencyValue, "currencyValue")
+    const netCostBaseCurrency = this.state.currencyValue * netLandedCostPlantCurrency
     this.props.change("BasicPriceBase", checkForDecimalAndNull(basicPriceBaseCurrency, initialConfiguration.NoOfDecimalForPrice))
     this.props.change('ConditionCost', checkForDecimalAndNull(sumBase, initialConfiguration.NoOfDecimalForPrice))
-    this.props.change('NetLandedCostBase', checkForDecimalAndNull(netLandedCostBaseCurrency, initialConfiguration.NoOfDecimalForPrice))
-
+    this.props.change('NetCostPlantCurrency', checkForDecimalAndNull(netLandedCostPlantCurrency, initialConfiguration.NoOfDecimalForPrice))
+    this.props.change('NetCostBaseCurrency', checkForDecimalAndNull(netCostBaseCurrency, initialConfiguration.NoOfDecimalForPrice))
     this.setState({
       FinalBasicRateBaseCurrency: basicRateBaseCurrency,
       FinalBasicPriceBaseCurrency: basicPriceBaseCurrency,
       FinalConditionCostBaseCurrency: conditionCostBaseCurrency,
-      FinalNetLandedCostBaseCurrency: netLandedCostBaseCurrency,
+      FinalNetLandedCostBaseCurrency: netLandedCostPlantCurrency,
       conditionTableData: conditionList,
     })
 
     if (this.state.isEditFlag && checkForNull(basicPriceBaseCurrency) === checkForNull(this.state.DataToCheck?.NetCostWithoutConditionCost) &&
-      checkForNull(NoOfPieces) === checkForNull(this.state.DataToCheck?.NumberOfPieces) && checkForNull(netLandedCostBaseCurrency) === checkForNull(this.state.DataToCheck?.NetLandedCost)) {
+      checkForNull(NoOfPieces) === checkForNull(this.state.DataToCheck?.NumberOfPieces) && checkForNull(netLandedCostPlantCurrency) === checkForNull(this.state.DataToCheck?.NetLandedCost)) {
 
       this.setState({ IsFinancialDataChanged: false, EffectiveDate: DayTime(this.state.DataToCheck?.EffectiveDate).isValid() ? DayTime(this.state.DataToCheck?.EffectiveDate) : '' });
       this.props.change('EffectiveDate', DayTime(this.state.DataToCheck?.EffectiveDate).isValid() ? DayTime(this.state.DataToCheck?.EffectiveDate) : '')
@@ -768,8 +773,9 @@ class AddBOPDomestic extends Component {
     this.setState({
       effectiveDate: date,
       isDateChange: true,
+    }, () => {
+      this.callExchangeRateAPI()
     });
-    this.callExchangeRateAPI()
   };
 
   /**
@@ -1143,8 +1149,11 @@ class AddBOPDomestic extends Component {
     this.setState({ isOpenConditionDrawer: true })
   }
   handleExchangeRateSource = (newValue) => {
-    this.setState({ ExchangeSource: newValue });
-    this.callExchangeRateAPI()
+    this.setState({ ExchangeSource: newValue }
+      , () => {
+        this.callExchangeRateAPI()
+      }
+    );
   };
 
   /**
@@ -1152,7 +1161,7 @@ class AddBOPDomestic extends Component {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, isBOPAssociated, initialConfiguration, t, } = this.props;
+    const { handleSubmit, isBOPAssociated, initialConfiguration, t, fieldsObj } = this.props;
     const { isCategoryDrawerOpen, isOpenVendor, costingTypeId, isOpenUOM, isEditFlag, isViewMode, setDisable, isClientVendorBOP, CostingTypePermission,
       isTechnologyVisible, disableSendForApproval, isOpenConditionDrawer, conditionTableData, FinalBasicPriceBaseCurrency, IsFinancialDataChanged, toolTipTextNetCost, toolTipTextBasicPrice, IsSAPCodeUpdated, IsSapCodeEditView, IsSAPCodeHandle
     } = this.state;
@@ -1727,21 +1736,41 @@ class AddBOPDomestic extends Component {
                               </div>
                             </Col>
                           </>}
-                          {(!isTechnologyVisible || this.state.IsBreakupBoughtOutPart) && <Col md="3">
-                            <TooltipCustom id="bop-net-cost" tooltipText={toolTipTextNetCost} />
-                            <Field
-                              label={`Net Cost/${this.state.UOM.label ? this.state.UOM.label : 'UOM'} (${reactLocalStorage.getObject("baseCurrency")})`}
-                              name={`${this.state.NetLandedCost === 0 ? '' : "NetLandedCostBase"}`}
-                              type="text"
-                              placeholder={"-"}
-                              validate={[]}
-                              component={renderTextInputField}
-                              required={false}
-                              disabled={true}
-                              className=" "
-                              customClassName=" withBorder"
-                            />
-                          </Col>}
+                          {
+                            (!isTechnologyVisible || this.state.IsBreakupBoughtOutPart) &&
+                            <>
+                              <Col md="3">
+                                <TooltipCustom id="bop-net-cost" tooltipText={toolTipTextNetCost} />
+                                <Field
+                                  label={`Net Cost/${this.state.UOM.label ? this.state.UOM.label : 'UOM'} (${fieldsObj?.plantCurrency ?? 'Currency'})`}
+                                  name={`${"NetCostPlantCurrency"}`}
+                                  type="text"
+                                  placeholder={"-"}
+                                  validate={[]}
+                                  component={renderTextInputField}
+                                  required={false}
+                                  disabled={true}
+                                  className=" "
+                                  customClassName=" withBorder"
+                                />
+                              </Col>
+                              {fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency") && <Col md="3">
+                                <TooltipCustom id="bop-net-cost" tooltipText={toolTipTextNetCost} />
+                                <Field
+                                  label={`Net Cost/${this.state.UOM.label ? this.state.UOM.label : 'UOM'} (${reactLocalStorage.getObject("baseCurrency")})`}
+                                  name={`${"NetCostBaseCurrency"}`}
+                                  type="text"
+                                  placeholder={"-"}
+                                  validate={[]}
+                                  component={renderTextInputField}
+                                  required={false}
+                                  disabled={true}
+                                  className=" "
+                                  customClassName=" withBorder"
+                                />
+                              </Col>}
+                            </>
+                          }
 
 
                         </Row>
@@ -2059,7 +2088,8 @@ export default connect(mapStateToProps, {
   getCostingSpecificTechnology,
   checkAndGetBopPartNo,
   getExchangeRateSource,
-  getPlantUnitAPI
+  getPlantUnitAPI,
+  getExchangeRateByCurrency
 })(reduxForm({
   form: 'AddBOPDomestic',
   touchOnChange: true,
