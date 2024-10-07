@@ -359,7 +359,6 @@ function OperationInsights(props) {
         setGridApi(params.api)
         setGridColumnApi(params.columnApi)
         params.api.paginationGoToPage(0);
-        window.screen.width >= 1440 && params.api.sizeColumnsToFit()
 
     };
 
