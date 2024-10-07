@@ -5,12 +5,12 @@ import { Container, Row, Col, } from 'reactstrap';
 import { required, number, minLength10, maxLength12, maxLength6 } from "../../../helper/validation";
 import { renderText, renderTextInputField, searchableSelect } from "../../layout/FormInputs";
 import { createPlantAPI, } from '../actions/Plant';
-import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, fetchSupplierCityDataAPI, getCityByCountry, } from '../../../actions/Common';
+import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, fetchSupplierCityDataAPI, getCityByCountryAction, } from '../../../actions/Common';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId } from "../../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
-import { labels } from '../../../helper/core';
+import { labels, LabelsClass } from '../../../helper/core';
 
 class AddVendorPlantDrawer extends Component {
   constructor(props) {
@@ -70,7 +70,7 @@ class AddVendorPlantDrawer extends Component {
   getAllCityData = () => {
     const { country } = this.state;
     if (country && country.label !== 'India') {
-      this.props.getCityByCountry(country.value, '00000000000000000000000000000000', () => { })
+      this.props.getCityByCountryAction(country.value, '00000000000000000000000000000000','', () => { })
     } else {
       this.props.fetchStateDataAPI(country.value, () => { })
     }
@@ -232,6 +232,8 @@ class AddVendorPlantDrawer extends Component {
   render() {
     const { handleSubmit, isEditFlag, t} = this.props;
     const { country } = this.state;
+    const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
+
     return (
       <div>
         <Drawer
@@ -252,8 +254,8 @@ class AddVendorPlantDrawer extends Component {
                     <div className={"header-wrapper left"}>
                       <h3>
                         {isEditFlag
-                          ? `Update ${labels(t, 'VendorLabel', 'MasterLabels')} Plant`
-                          : `Add ${labels(t, 'VendorLabel', 'MasterLabels')} Plant`}
+                          ? `Update ${VendorLabel} Plant`
+                          : `Add ${VendorLabel} Plant`}
                       </h3>
                     </div>
                     <div
@@ -490,7 +492,7 @@ export default connect(mapStateToProps, {
   fetchStateDataAPI,
   fetchCityDataAPI,
   fetchSupplierCityDataAPI,
-  getCityByCountry,
+  getCityByCountryAction,
 })(reduxForm({
   form: 'AddVendorPlantDrawer',
   enableReinitialize: true,

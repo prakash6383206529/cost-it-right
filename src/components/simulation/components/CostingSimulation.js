@@ -49,7 +49,7 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 function CostingSimulation(props) {
     const { simulationId, isFromApprovalListing, master, statusForLinkedToken } = props
-
+const{vendorLabel} = useLabels()
     const getShowSimulationPage = useSelector((state) => state.simulation.getShowSimulationPage)
     const { isMasterAssociatedWithCosting } = useSelector(state => state.simulation)
 
@@ -1697,7 +1697,7 @@ function CostingSimulation(props) {
                                                     {/* //MINDA */}
                                                     {((isMachineRate || showMachineRateColumn) && !isMultipleMasterSimulation) && <AgGridColumn width={140} field="ProcessName" tooltipField='ProcessName' headerName='Process Name' cellRenderer='processFormatter'></AgGridColumn>}
                                                     {((isMachineRate || showMachineRateColumn) && !isMultipleMasterSimulation) && <AgGridColumn width={140} field="ProcessCode" tooltipField='ProcessCode' headerName='Process Code' cellRenderer='processFormatter'></AgGridColumn>}
-                                                    {amendmentDetails?.SimulationHeadId !== CBCTypeId && <AgGridColumn width={150} field="VendorName" tooltipField='VendorName' headerName='Vendor (Code)'></AgGridColumn>}
+                                                    {amendmentDetails?.SimulationHeadId !== CBCTypeId && <AgGridColumn width={150} field="VendorName" tooltipField='VendorName' headerName={vendorLabel + " (Code)"}></AgGridColumn>}
                                                     {amendmentDetails?.SimulationHeadId === CBCTypeId && <AgGridColumn width={150} field="CustomerName" tooltipField='CustomerName' headerName='Customer (Code)'></AgGridColumn>}
                                                     {isSimulationWithCosting && <AgGridColumn width={150} field="PlantName" tooltipField='PlantName' cellRenderer='plantFormatter' headerName='Plant (Code)'></AgGridColumn>}
                                                     {isSimulationWithCosting && <AgGridColumn width={150} field="InfoCategory" tooltipField='InfoCategory' cellRenderer='hyphenFormatter' headerName='Category'></AgGridColumn>}

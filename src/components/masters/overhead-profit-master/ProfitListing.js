@@ -24,7 +24,7 @@ import WarningMessage from '../../common/WarningMessage';
 import { setSelectedRowForPagination } from '../../simulation/actions/Simulation';
 import _ from 'lodash';
 import SingleDropdownFloationFilter from '../material-master/SingleDropdownFloationFilter';
-import { agGridStatus, getGridHeight, isResetClick, disabledClass } from '../../../actions/Common';
+import { agGridStatus, getGridHeight, isResetClick, disabledClass, fetchModelTypeAPI } from '../../../actions/Common';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { checkMasterCreateByCostingPermission, hideCustomerFromExcel } from '../../common/CommonFunctions';
 import PaginationControls from '../../common/Pagination/PaginationControls';
@@ -34,6 +34,7 @@ import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from '../../common/Tour/TourMessages';
 import { useTranslation } from 'react-i18next';
 import BulkUpload from '../../../../src/components/massUpload/BulkUpload';
+import { useLabels } from '../../../helper/core';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -42,7 +43,7 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
 
 function ProfitListing(props) {
-
+    const { vendorLabel } = useLabels()
     const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = props
     const [showExtraData, setShowExtraData] = useState(false)
     const { t } = useTranslation("common")
@@ -75,6 +76,8 @@ function ProfitListing(props) {
     const statusColumnData = useSelector((state) => state.comman.statusColumnData);
     const { selectedRowForPagination } = useSelector((state => state.simulation))
     const globalTakes = useSelector((state) => state.pagination.globalTakes);
+    const modelTypes = useSelector(state => state.comman?.modelTypes)
+    const [modelText, setModelText] = useState('')
 
     const { isBulkUpload } = state;
     var filterParams = {
@@ -115,6 +118,7 @@ function ProfitListing(props) {
                 getDataList(null, null, null, null, 0, 10, true, floatingFilterData)
             }
         }, 300);
+        dispatch(fetchModelTypeAPI('--Model Types--', (res) => { }))
         dispatch(isResetClick(false, "applicablity"))
         dispatch(agGridStatus("", ""))
         dispatch(resetStatePagination());
@@ -132,6 +136,14 @@ function ProfitListing(props) {
         }
         dispatch(getGridHeight({ value: overheadProfitList?.length, component: 'profit' }))
     }, [overheadProfitList])
+
+    useEffect(() => {
+        const modelText = modelTypes?.reduce((acc, item) => {
+            if (item.Value !== '0') acc.push(item.Text); // Only push valid items
+            return acc;
+        }, []).join('/'); // Join with slashes
+        setModelText(modelText)
+    }, [modelTypes])
 
     useEffect(() => {
 
@@ -738,7 +750,7 @@ function ProfitListing(props) {
                                             {getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC && <AgGridColumn field="RawMaterialName" headerName='Raw Material Name'></AgGridColumn>}
                                             {getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC && <AgGridColumn field="RawMaterialGrade" headerName="Raw Material Grade"></AgGridColumn>}
                                             {(getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate || getConfigurationKey().IsDestinationPlantConfigure) && <AgGridColumn field="PlantName" headerName="Plant (Code)"></AgGridColumn>}
-                                            <AgGridColumn field="VendorName" headerName="Vendor (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                            <AgGridColumn field="VendorName" headerName={`${vendorLabel} (Code)`} cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                             {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                                             <AgGridColumn field="ModelType" headerName="Model Type"></AgGridColumn>
                                             <AgGridColumn field="ProfitApplicabilityType" headerName="Profit Applicability" floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterProfit}></AgGridColumn>
@@ -759,7 +771,7 @@ function ProfitListing(props) {
 
                             </Col>
                         </Row>
-                        {isBulkUpload && <BulkUpload isOpen={isBulkUpload} closeDrawer={closeBulkUploadDrawer} isEditFlag={false} fileName={`Profit`} isZBCVBCTemplate={true} messageLabel={`Profit`} anchor={'right'} />}
+                        {isBulkUpload && <BulkUpload isOpen={isBulkUpload} closeDrawer={closeBulkUploadDrawer} isEditFlag={false} fileName={`Profit`} isZBCVBCTemplate={true} messageLabel={`Profit`} anchor={'right'} modelText={modelText} />}
                         {
                             showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.PROFIT_DELETE_ALERT}`} />
                         }

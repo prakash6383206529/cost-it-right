@@ -85,7 +85,7 @@ const OperationListing = (props) => {
     })
     const tourStartData = useSelector(state => state.comman.tourStartData);
     const { t } = useTranslation("common")
-    const { technologyLabel } = useLabels();
+    const { technologyLabel, vendorLabel } = useLabels();
     const [searchText, setSearchText] = useState('');
     const { operationList, allOperationList, operationDataHold } = useSelector(state => state.otherOperation);
     const { topAndLeftMenuData } = useSelector(state => state.auth);
@@ -893,7 +893,7 @@ const OperationListing = (props) => {
                             <AgGridColumn field="OperationName" tooltipField="OperationName" headerName="Operation Name"></AgGridColumn>
                             <AgGridColumn field="OperationCode" headerName="Operation Code" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="Plants" headerName="Plant (Code)" ></AgGridColumn>
-                            <AgGridColumn field="VendorName" headerName="Vendor (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                            <AgGridColumn field="VendorName" headerName={`${vendorLabel} (Code)`}cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             {reactLocalStorage.getObject('cbcCostingPermission') && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                             {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
                             <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>

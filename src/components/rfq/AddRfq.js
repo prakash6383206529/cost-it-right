@@ -7,7 +7,7 @@ import { getReporterList, getVendorNameByVendorSelectList, getPlantSelectListByT
 import { getCostingSpecificTechnology, getExistingCosting, getPartInfo, } from '../costing/actions/Costing'
 import { IsSendQuotationToPointOfContact, addDays, checkPermission, getConfigurationKey, getTimeZone, loggedInUserId, parseLinks } from '../.././helper';
 import { checkForNull, checkForDecimalAndNull } from '../.././helper/validation'
-import { ASSEMBLYNAME, BOUGHTOUTPARTSPACING, BoughtOutPart, COMPONENT_PART, DRAFT, EMPTY_DATA, FILE_URL, HAVELLS_DESIGN_PARTS, PREDRAFT, PRODUCT_ID, RFQ, RFQVendor, TOOLING, TOOLINGPART, VBC_VENDOR_TYPE, ZBC, searchCount } from '../.././config/constants';
+import { ASSEMBLYNAME, ASSEMBLYORCOMPONENTSRFQ, BOUGHTOUTPARTSPACING, BOUGHTOUTPARTSRFQ, BoughtOutPart, COMPONENT_PART, DRAFT, EMPTY_DATA, FILE_URL, HAVELLS_DESIGN_PARTS, PREDRAFT, PRODUCT_ID, RAWMATERIALSRFQ, RFQ, RFQVendor, TOOLING, TOOLINGPART, VBC_VENDOR_TYPE, ZBC, searchCount } from '../.././config/constants';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
@@ -15,7 +15,7 @@ import Dropzone from 'react-dropzone-uploader'
 import 'react-dropzone-uploader/dist/styles.css'
 import Toaster from '../common/Toaster';
 import { MESSAGES } from '../../config/message';
-import { createRfqQuotation, fileUploadQuotation, getQuotationById, updateRfqQuotation, getContactPerson, checkExistCosting, setRFQBulkUpload, getNfrSelectList, getNfrAnnualForecastQuantity, getNFRRMList, getPartNFRRMList, checkLPSAndSCN, getrRqVendorDetails, getTargetPrice, setVendorDetails, getAssemblyChildpart, getRfqRaiseNumber, saveRfqPartDetails, getRfqPartDetails, deleteQuotationPartDetail, setRfqPartDetails, setQuotationIdForRfq, setTargetPriceDetail, checkRegisteredVendor, setRmSpecificRowData, getPurchaseRequisitionSelectList, setBopSpecificRowData, createQuotationPrParts, getRfqToolingDetails, setToolingSpecificRowData } from './actions/rfq';
+import { createRfqQuotation, fileUploadQuotation, getQuotationById, updateRfqQuotation, getContactPerson, checkExistCosting, setRFQBulkUpload, getNfrSelectList, getNfrAnnualForecastQuantity, getNFRRMList, getPartNFRRMList, checkLPSAndSCN, getrRqVendorDetails, getTargetPrice, setVendorDetails, getAssemblyChildpart, getRfqRaiseNumber, saveRfqPartDetails, getRfqPartDetails, deleteQuotationPartDetail, setRfqPartDetails, setQuotationIdForRfq, setTargetPriceDetail, checkRegisteredVendor, setRmSpecificRowData, getPurchaseRequisitionSelectList, setBopSpecificRowData, createQuotationPrParts, getRfqToolingDetails, setToolingSpecificRowData, sendQuotationForReview, getQuotationDetailsList } from './actions/rfq';
 import PopupMsgWrapper from '../common/PopupMsgWrapper';
 import LoaderCustom from '../common/LoaderCustom';
 import redcrossImg from '../../assests/images/red-cross.png'
@@ -45,6 +45,7 @@ import RaiseRfqBopDetails from './BOP/RaiseRfqBopDetails';
 import TooltipCustom from '../common/Tooltip';
 import { useLabels } from '../../helper/core';
 import BOMViewer from '../masters/part-master/BOMViewer';
+import RemarkFieldDrawer from '../common/CommonRemarkDrawer';
 const gridOptionsPart = {}
 const gridOptionsVendor = {}
 
@@ -85,6 +86,7 @@ function AddRfq(props) {
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [partList, setPartList] = useState([])
+
 
 
     const [vendorList, setVendorList] = useState([])
@@ -134,6 +136,8 @@ function AddRfq(props) {
     const [drawerOpen, setDrawerOpen] = useState(false)
     const [partTypeforRM, setPartTypeforRM] = useState([])
     const [assemblyPartNumber, setAssemblyPartNumber] = useState('')
+    const [partNumberWithName, setPartNumberWithName] = useState('')
+
     const [selectedUOM, setSelectedUOM] = useState('')
     const [requirementDate, setRequirementDate] = useState('')
     // below key is for managing the fields required for havells
@@ -146,13 +150,17 @@ function AddRfq(props) {
     const [tableData, setTableData] = useState([])
     const [specificationList, setSpecificationList] = useState([])
     const [remark, setRemark] = useState("");
+
     const [childPartFiles, setChildPartFiles] = useState([])
+
     const [havellsDesignPart, setHavellsDesignPart] = useState([])
     const [targetPrice, setTargetPrice] = useState("")
     const [quotationIdentity, setQuotationIdentity] = useState('')
     const [partIdentity, setPartIdentity] = useState(0)
     const [showGrid, setShowGrid] = useState(true)
     const [isPartDetailUpdate, setIsPartDeailUpdate] = useState(false)
+
+
     const technologySelectList = useSelector((state) => state.costing.costingSpecifiTechnology)
     const rawMaterialNameSelectList = useSelector(state => state?.material?.rawMaterialNameSelectList);
     const gradeSelectList = useSelector(state => state?.material?.gradeSelectList);
@@ -205,9 +213,12 @@ function AddRfq(props) {
     const [partDetailSent, setPartDetailSent] = useState(false)
     const [isOpenVisualDrawer, setIsOpenVisualDrawer] = useState(false)
     const [visualAdId, setVisualAdId] = useState("")
+    const [remarkDrawer, setRemarkDrawer] = useState(false)
+    const [reviewButtonPermission, setReviewButtonPermission] = useState(false)
+
     const showOnlyFirstModule = initialConfiguration.IsManageSeparateUserPemissionForPartAndVendorInRaiseRFQ;
     const { toolingSpecificRowData } = useSelector(state => state?.rfq);
-
+    const disableUOMFiled = (selectedOption === "Raw Material" || selectedOption === "Bought Out Part") ? (Object.keys(prNumber).length !== 0 || (dataProps?.isViewFlag) ? true : false || disabledPartUid) : true
 
 
 
@@ -296,6 +307,7 @@ function AddRfq(props) {
         if (showSendButton === DRAFT) {
             setDisabledVendoUId((Vendor && (Vendor?.Add || Vendor?.Edit)) ? false : true)
             setShowVendorSection((Vendor && (Vendor?.Add || Vendor?.Edit)) ? false : true)
+            setReviewButtonPermission(Vendor && (Vendor?.SendForReview) ? true : false)
 
         } else if (dataProps?.isAddFlag || showSendButton === PREDRAFT) {
 
@@ -774,6 +786,7 @@ function AddRfq(props) {
                 setPartName({ label: rowData?.PartNumber, value: rowData?.PartId })
                 setRequirementDate(rowData?.TimeLine || '')
                 setAssemblyPartNumber({ label: rowData?.PartNumber, value: rowData?.PartId })
+                //setPartNumberWithName({ label: rowData?.PartNumberWithName, value: rowData?.PartId })
                 setPartTypeforRM(rowData?.PartTypeId)
 
             }, 200);
@@ -797,6 +810,8 @@ function AddRfq(props) {
                 setPartName({ label: rowData?.PartNumber, value: rowData?.PartId })
                 setRequirementDate(rowData?.TimeLine || '')
                 setAssemblyPartNumber({ label: rowData?.PartNumber, value: rowData?.PartId })
+                //setPartNumberWithName({ label: rowData?.PartNumberWithName, value: rowData?.PartId })
+
                 setPartTypeforRM(rowData?.PartTypeId)
 
             }, 200);
@@ -811,9 +826,9 @@ function AddRfq(props) {
             if (selectedOption === "componentAssembly") {
                 const PartList = res?.data?.Data?.PartList
                 setStorePartsDetail(PartList)
-                if (!ProcessDrawer) {
-                    setRemark(PartList?.Remarks)
-                    setChildPartFiles(PartList?.Attachments || [])
+                if (!drawerOpen) {
+                    setRemark(PartList[0]?.Remarks)
+                    setChildPartFiles(PartList[0]?.Attachments || [])
                 }
 
 
@@ -1046,6 +1061,11 @@ function AddRfq(props) {
                 if (bopDataList?.length === 0) {
                     Toaster.warning("Please add at least one BOP.");
                     return false;
+                } else if (isPartDetailsSent && (showSendButton !== PREDRAFT && showSendButton !== "")) {
+                    if (vendorList?.length === 0) {
+                        Toaster.warning("Please add the minimum threshold vendor.");
+                        return false
+                    }
                 }
                 break;
 
@@ -1053,6 +1073,11 @@ function AddRfq(props) {
                 if (rmDataList?.length === 0) {
                     Toaster.warning("Please add at least one RM.");
                     return false;
+                } else if (isPartDetailsSent && (showSendButton !== PREDRAFT && showSendButton !== "")) {
+                    if (vendorList?.length === 0) {
+                        Toaster.warning("Please add the minimum threshold vendor.");
+                        return false
+                    }
                 }
                 break;
 
@@ -1060,12 +1085,22 @@ function AddRfq(props) {
                 if (partList?.length === 0) {
                     Toaster.warning("Please add at least one part.");
                     return false;
+                } else if (isPartDetailsSent && (showSendButton !== PREDRAFT && showSendButton !== "")) {
+                    if (vendorList?.length === 0) {
+                        Toaster.warning("Please add the minimum threshold vendor.");
+                        return false
+                    }
                 }
                 break;
             case "Tooling":
                 if (toolingList?.length === 0) {
                     Toaster.warning("Please add at least one part.");
                     return false;
+                } else if (isPartDetailsSent && (showSendButton !== PREDRAFT && showSendButton !== "")) {
+                    if (vendorList?.length === 0) {
+                        Toaster.warning("Please add the minimum threshold vendor.");
+                        return false
+                    }
                 }
                 break;
             default:
@@ -1133,8 +1168,7 @@ function AddRfq(props) {
                 ? (isPartDetailsSent ? (hasParts || hasRm || hasBop || hasTooling) : false)
                 : partDetailSent;
 
-            isSent = (hasParts || hasRm || hasBop || hasTooling) && hasVendors && isPartDetailsSent;
-
+            isSent = (showSendButton === PREDRAFT || showSendButton === '') ? false : ((hasParts || hasRm || hasBop || hasTooling) && hasVendors && isPartDetailsSent)
         }
         // const IsPartDetailsSent = isShowRfqPartDetail ? ((isPartDetailSent && partList && partList.length > 0) ? true : (partList && partList.length > 0 && vendorList && vendorList.length > 0) ? true : false) : false
         // const isSent = isShowRfqPartDetail ? ((partList && vendorList && partList.length > 0 && vendorList.length > 0) ? IsPartDetailsSent : false) : false
@@ -1259,6 +1293,7 @@ function AddRfq(props) {
 
                 {/*  {<button title='Delete' className="Delete align-middle" disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !dataProps?.isEditFlag)} type={'button'} onClick={() => deleteItemPartTable(final, props)} />} */}
                 {(show && selectedOption !== BOUGHTOUTPARTSPACING) && <button title='Delete' className="Delete align-middle" disabled={isSendButtonVisible} type={'button'} onClick={() => deleteItemPartTable(row, final)} />}
+
             </>
         )
     };
@@ -1528,6 +1563,8 @@ function AddRfq(props) {
                     newObjTemp.HavellsDesignPart = getValues('HavellsDesignPart')?.label;
                     newObjTemp.HavellsDesignPartId = getValues('HavellsDesignPart')?.value;
                     newObjTemp.Description = getValues('Description') || "";
+                    newObjTemp.PartName = getValues('Description') || "";
+
 
 
                     arrTemp.push(newObjTemp);  // Push the new object to the array
@@ -1761,6 +1798,8 @@ function AddRfq(props) {
                 newObjTemp.HavellsDesignPartId = getValues('HavellsDesignPart')?.value;
                 newObjTemp.Description = getValues('Description') || "";
                 newObjTemp.SOPQuantityDetails = sopQuantityList;
+                newObjTemp.PartName = getValues('Description') || "";
+
 
                 if (selectedOption === "Raw Material") {
                     // Set properties specific to Raw Material
@@ -1803,7 +1842,7 @@ function AddRfq(props) {
                             return item?.RawMaterialChildId === editRawMaterialId ? { ...item, ...arrTemp[0] } : item;
                         });
                     } else if (selectedOption === "componentAssembly") {
-                        arr = partList.map(item => {
+                        arr = partList?.map(item => {
                             // Check PartId for componentAssembly
                             if (item?.PartId === getValues('partNumber')?.value) {
                                 QuotationPartId = item?.QuotationPartId
@@ -1922,7 +1961,7 @@ function AddRfq(props) {
 
                     // Populate PartSpecificationList object
                     PartSpecificationList = {
-                        QuotationPartIdRef: temppartObj?.PartId || 0,
+                        QuotationPartIdRef: updateButtonPartNoTable ? QuotationPartId : null,
                         PartSpecification: PartSpecification
                     };
 
@@ -2081,7 +2120,7 @@ function AddRfq(props) {
 
                                     // Populate PartSpecificationList object
                                     PartSpecificationList = {
-                                        QuotationPartIdRef: tempBopObj?.BoughtOutPartChildId || 0,
+                                        QuotationPartIdRef: updateButtonPartNoTable ? QuotationPartId : null,
                                         PartSpecification: PartSpecification
                                     };
                                     tempBopObj.PartSpecificationList = PartSpecificationList;
@@ -2121,7 +2160,7 @@ function AddRfq(props) {
                                 temppartObj.ToolChildList = rmList;
                             }
                             temppartObj.IsChildPart = false
-                            temppartObj.QuotationPartId = updateButtonPartNoTable ? QuotationPartId : ""
+                            temppartObj.QuotationPartId = updateButtonPartNoTable ? QuotationPartId : null
                             temppartObj.PartType = partType?.label || ''
                             temppartObj.TargetPrice = getTargetprice?.TargetPrice || "-"
                             temppartObj.TimeLine = requirementDate || "";
@@ -2286,6 +2325,8 @@ function AddRfq(props) {
                     setSopQuantityList([])
                     setSOPDate('')
                     setAssemblyPartNumber('')
+                    //setPartNumberWithName("")
+
                     // setQuotationIdentity('');
                     setStorePartsDetail([]);
                     dispatch(clearGradeSelectList([]));
@@ -2300,6 +2341,7 @@ function AddRfq(props) {
 
                     setBopList([])
                     setIsDisabled(false)
+                    onResetPartNoTable()
                     // setPrNumber([])
                     //dispatch(setQuotationIdForRfq(""))
                 }, 200)
@@ -2309,7 +2351,13 @@ function AddRfq(props) {
         }
 
     };
+    const handleReviewButtonClick = () => {
 
+        setRemarkDrawer(true)
+    }
+    const handleCloseReamrkDrawer = () => {
+        setRemarkDrawer(false)
+    }
     const onResetPartNoTable = (toggleButton = false) => {
 
         if (!toggleButton) {
@@ -2354,9 +2402,17 @@ function AddRfq(props) {
         setisBulkUpload(true);
     }
 
-    const closeBulkUploadDrawer = () => {
+    const closeBulkUploadDrawer = (event, type, identityKey) => {
+
+
         setisBulkUpload(false);
-    }
+
+        if (type === "save" && identityKey !== null) {
+            getQuotationDataById(identityKey);
+
+        }
+    };
+
 
     const onResetVendorTable = () => {
         setUpdateButtonVendorTable(false)
@@ -2487,6 +2543,9 @@ function AddRfq(props) {
                     setValue('IncoTerms', IncoTerms);
                     setValue('PaymentTerms', PaymentTerms);
                 }));
+            } else {
+                setValue('IncoTerms', "");
+                setValue('PaymentTerms', "");
             }
         }));
 
@@ -2541,23 +2600,67 @@ function AddRfq(props) {
         }
         if (updateButtonPartNoTable) {
             setStorePartsDetail((prevDetails) => {
-                return prevDetails.map((item) => {
+                const updatedDetails = prevDetails?.map((item) => {
+                    let QuotationPartId = null;
+
+                    switch (selectedOption) {
+                        case "Bought Out Part":
+                            bopDataList?.forEach(item => {
+                                if (item?.BoughtOutPartChildId === editBopId) {
+                                    QuotationPartId = item?.QuotationPartId
+                                }
+                            })
+                            break
+                        case "Raw Material":
+                            rmDataList?.forEach(item => {
+                                if (item?.RawMaterialChildId === editRawMaterialId) {
+                                    QuotationPartId = item?.QuotationPartId
+                                }
+                            })
+                            break
+                        case "componentAssembly":
+                            partList?.forEach((part) => {
+                                if (part?.PartId === getValues('partNumber')?.value) {
+                                    QuotationPartId = part?.QuotationPartId;
+                                }
+                            })
+                            break
+                        case "Tooling":
+                            toolingList?.forEach(item => {
+                                if (item?.PartId === editToolingId) {
+                                    QuotationPartId = item?.QuotationPartId
+                                }
+                            })
+                            break
+                        default:
+                    }
+                    const PartSpecificationList = {
+                        QuotationPartIdRef: QuotationPartId || null,
+                        PartSpecification: item?.PartSpecification || [],
+                    };
                     if (item?.PartId === getValues('partNumber')?.value) {
+                        const { PartSpecification, ...rest } = item;
+
                         return {
-                            ...item,
+                            ...rest,
                             UnitOfMeasurementId: getValues('UOM')?.value || null,
                             HavellsDesignPart: newValue?.label || "",
-                            TimeLine: requirementDate || ""
-                        };
+                            TimeLine: requirementDate || "",
+                            PartSpecificationList,
+                            QuotationPartId
+                        }
                     } else {
                         return {
                             ...item,
                             UnitOfMeasurementId: null,
                             HavellsDesignPart: null,
-                            TimeLine: null
+                            TimeLine: null,
+                            PartSpecificationList,
+                            QuotationPartId
                         };
                     }
                 });
+                return updatedDetails;
             });
         }
     }
@@ -2705,23 +2808,62 @@ function AddRfq(props) {
         setRequirementDate(DayTime(value).format('YYYY-MM-DD HH:mm:ss'))
         if (updateButtonPartNoTable && !isPartDetailUpdate) {
             setStorePartsDetail((prevDetails) => {
-                return prevDetails?.map((item) => {
-                    if (item?.PartId === getValues('partNumber')?.value) {
-                        return {
-                            ...item,
-                            UnitOfMeasurementId: getValues('UOM')?.value || null,
-                            HavellsDesignPart: getValues('HavellsDesignPart')?.value || null,
-                            TimeLine: DayTime(value).format('YYYY-MM-DD HH:mm:ss') || null
-                        };
-                    } else {
-                        return {
-                            ...item,
-                            UnitOfMeasurementId: null,
-                            HavellsDesignPart: null,
-                            TimeLine: null
-                        };
+                const updatedDetail = prevDetails?.map((item) => {
+                    let QuotationPartId = null;
+
+                    switch (selectedOption) {
+                        case "Bought Out Part":
+                            bopDataList?.forEach(bopItem => {
+                                if (bopItem?.BoughtOutPartChildId === editBopId) {
+                                    QuotationPartId = bopItem?.QuotationPartId;
+                                }
+                            });
+                            break;
+                        case "Raw Material":
+                            rmDataList?.forEach(rmItem => {
+                                if (rmItem?.RawMaterialChildId === editRawMaterialId) {
+                                    QuotationPartId = rmItem?.QuotationPartId;
+                                }
+                            });
+                            break;
+                        case "componentAssembly":
+                            partList?.forEach(part => {
+                                if (part?.PartId === getValues('partNumber')?.value) {
+                                    QuotationPartId = part?.QuotationPartId;
+                                }
+                            });
+                            break;
+                        case "Tooling":
+                            toolingList?.forEach(toolItem => {
+                                if (toolItem?.PartId === editToolingId) {
+                                    QuotationPartId = toolItem?.QuotationPartId;
+                                }
+                            });
+                            break;
+                        default:
+                            break;
                     }
+
+                    const PartSpecificationList = {
+                        QuotationPartIdRef: QuotationPartId || null,
+                        PartSpecification: item?.PartSpecification || []
+                    };
+
+                    const { PartSpecification, ...rest } = item; // Destructure to omit PartSpecification
+
+                    return {
+                        ...rest,
+                        UnitOfMeasurementId: getValues('UOM')?.value || null,
+                        HavellsDesignPart: getValues('HavellsDesignPart')?.value || null,
+                        TimeLine: DayTime(value).format('YYYY-MM-DD HH:mm:ss') || null,
+                        PartSpecificationList,
+                        QuotationPartId
+                    };
                 });
+
+
+
+                return updatedDetail;
             });
         }
     }
@@ -2793,19 +2935,63 @@ function AddRfq(props) {
         if (updateButtonPartNoTable) {
             setStorePartsDetail((prevDetails) => {
                 return prevDetails.map((item) => {
+                    let QuotationPartId = null;
+
+
+                    switch (selectedOption) {
+                        case "Bought Out Part":
+                            bopDataList?.forEach(bopItem => {
+                                if (bopItem?.BoughtOutPartChildId === editBopId) {
+                                    QuotationPartId = bopItem?.QuotationPartId;
+                                }
+                            });
+                            break;
+                        case "Raw Material":
+                            rmDataList?.forEach(rmItem => {
+                                if (rmItem?.RawMaterialChildId === editRawMaterialId) {
+                                    QuotationPartId = rmItem?.QuotationPartId;
+                                }
+                            });
+                            break;
+                        case "componentAssembly":
+                            partList?.forEach(part => {
+                                if (part?.PartId === getValues('partNumber')?.value) {
+                                    QuotationPartId = part?.QuotationPartId;
+                                }
+                            });
+                            break;
+                        case "Tooling":
+                            toolingList?.forEach(toolingItem => {
+                                if (toolingItem?.PartId === editToolingId) {
+                                    QuotationPartId = toolingItem?.QuotationPartId;
+                                }
+                            });
+                            break;
+                        default:
+                            break;
+                    }
+
+                    const PartSpecificationList = {
+                        QuotationPartIdRef: QuotationPartId || null,
+                        PartSpecification: item?.PartSpecification || []
+                    };
                     if (item?.PartId === getValues('partNumber')?.value) {
                         return {
                             ...item,
                             UnitOfMeasurementId: newValue?.value || null,
                             HavellsDesignPart: getValues('HavellsDesignPart')?.value || null,
-                            TimeLine: requirementDate || ""
+                            TimeLine: requirementDate || "",
+                            PartSpecificationList,
+                            QuotationPartId
                         };
                     } else {
                         return {
                             ...item,
                             UnitOfMeasurementId: null,
                             HavellsDesignPart: null,
-                            TimeLine: null
+                            TimeLine: null,
+                            PartSpecificationList,
+                            QuotationPartId
                         };
                     }
                 });
@@ -2836,10 +3022,12 @@ function AddRfq(props) {
         setAssemblyPartNumber(value)
         dispatch(getPartInfo(value?.value, (res) => {
             let Data = res?.data?.Data
-            let uomObject = { label: Data?.UnitOfMeasurementSymbol, value: Data?.UnitOfMeasurementId }
             setValue("Description", res?.data?.Data?.PartName);
-            setValue("UOM", uomObject);
-            setSelectedUOM(uomObject)
+            if ((selectedOption !== "Raw Material" || selectedOption !== "Bought Out Part")) {
+                let uomObject = { label: Data?.UnitOfMeasurementSymbol, value: Data?.UnitOfMeasurementId }
+                setValue("UOM", uomObject);
+                setSelectedUOM(uomObject)
+            }
 
             setPartEffectiveDate(res.data.Data?.EffectiveDate);
         }));
@@ -2877,7 +3065,18 @@ function AddRfq(props) {
             : true;
     }
 
+    const sendQuotationForReviewHnadle = (values) => {
+        const obj = {
+            loggedInUserId: loggedInUserId(),
+            QuotationId: (getQuotationIdForRFQ ? getQuotationIdForRFQ : null),
+            Remark: values?.remark
+        }
+        dispatch(sendQuotationForReview(obj, () => {
+            props?.closeDrawer('', {})
+        }))
 
+
+    }
     const frameworkComponents = {
         hyphenFormatter: hyphenFormatter,
         buttonFormatterFirst: buttonFormatterFirst,
@@ -2897,6 +3096,18 @@ function AddRfq(props) {
     * @method render
     * @description Renders the component
     */
+    const BulkUploadFileName = () => {
+        switch (selectedOption) {
+            case "Bought Out Part":
+                return BOUGHTOUTPARTSRFQ
+            case "Raw Material":
+                return RAWMATERIALSRFQ
+            case "componentAssembly":
+                return ASSEMBLYORCOMPONENTSRFQ
+
+            default:
+        }
+    }
     return (
         <div className="container-fluid">
             <div className="signup-form raise-rfq">
@@ -3079,9 +3290,16 @@ function AddRfq(props) {
                                             </div>
                                         </Col>}
                                     </Row>
-
+                                    <Button
+                                        id="rfq_bulkUpload"
+                                        className={"mr5 Tour_List_BulkUpload"}
+                                        onClick={bulkToggle}
+                                        title={"Bulk Upload"}
+                                        icon={"upload"}
+                                    />
                                     {(selectedOption === 'componentAssembly' || selectedOption === 'Tooling') && <>
                                         {heading()}
+
                                         <Row className="part-detail-wrapper">
                                             {havellsKey && <Col md="3">
                                                 <SearchableSelectHookForm
@@ -3176,10 +3394,10 @@ function AddRfq(props) {
                                         </Row>
                                     </>}
                                     {loader && <LoaderCustom customClass="Rfq-Loader" />}
-                                    {quotationType === 'Raw Material' && <AddRfqRmDetails updateRawMaterialList={updateRawMaterialList} resetRmFields={resetRmFields} rmSpecificRowData={rmSpecificRowData} updateButtonPartNoTable={updateButtonPartNoTable} dataProps={dataProps} isEditFlag={editQuotationPart} isViewFlag={viewQuotationPart} setViewQuotationPart={setViewQuotationPart} disabledPartUid={disabledPartUid} technology={technology} setDisabled={setDisabled} isDisabled={isDisabled} heading={heading} dataProp={dataProps} resetDrawer={resetDrawer} />}
+                                    {quotationType === 'Raw Material' && <AddRfqRmDetails updateRawMaterialList={updateRawMaterialList} resetRmFields={resetRmFields} rmSpecificRowData={rmSpecificRowData} updateButtonPartNoTable={updateButtonPartNoTable} dataProps={dataProps} isEditFlag={editQuotationPart} isViewFlag={viewQuotationPart} setViewQuotationPart={setViewQuotationPart} disabledPartUid={disabledPartUid} technology={technology} setDisabled={setDisabled} isDisabled={isDisabled} heading={heading} dataProp={dataProps} resetDrawer={resetDrawer} selectedOption={selectedOption} />}
                                     <Row>
 
-                                        {quotationType === "Bought Out Part" && <RaiseRfqBopDetails updateButtonPartNoTable={updateButtonPartNoTable} dataProps={dataProps} isEditFlag={editQuotationPart} isViewFlag={viewQuotationPart} setViewQuotationPart={setViewQuotationPart} updateBopList={updateBopList} resetBopFields={resetBopFields} plant={plant} prNumber={prNumber} disabledPartUid={disabledPartUid} heading={heading} dataProp={dataProps} resetDrawer={resetDrawer} />}
+                                        {quotationType === "Bought Out Part" && <RaiseRfqBopDetails updateButtonPartNoTable={updateButtonPartNoTable} dataProps={dataProps} isEditFlag={editQuotationPart} isViewFlag={viewQuotationPart} setViewQuotationPart={setViewQuotationPart} updateBopList={updateBopList} resetBopFields={resetBopFields} plant={plant} prNumber={prNumber} disabledPartUid={disabledPartUid} heading={heading} dataProp={dataProps} resetDrawer={resetDrawer} selectedOption={selectedOption} />}
 
                                         {!havellsKey && (
                                             checkForNull(technology?.value) !== LOGISTICS && (
@@ -3248,7 +3466,7 @@ function AddRfq(props) {
 
                                             <Row>
 
-                                                {UOMSelectList && havellsKey && selectedOption !== 'Tooling' &&
+                                                {UOMSelectList && havellsKey &&
 
 
                                                     <Col md="3">
@@ -3265,7 +3483,7 @@ function AddRfq(props) {
                                                             mandatory={true}
                                                             handleChange={(newValue) => handleChangeUOM(newValue)}
                                                             errors={errors?.UOM}
-                                                            disabled={true}
+                                                            disabled={disableUOMFiled}
                                                         //Object.keys(prNumber).length !== 0 || (dataProps?.isViewFlag) ? true : false || disabledPartUid
                                                         />
                                                     </Col>
@@ -3393,7 +3611,7 @@ function AddRfq(props) {
 
                                     </Row >
 
-                                    <div className='rfq-part-list'>
+                                    <div>
                                         {/* {showTooltip && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={viewTooltip} toggle={tooltipToggle} target={"quantity-tooltip"} >{"To edit the quantity please double click on the field."}</Tooltip>} */}
                                         {!loader ? <div className={`ag-grid-react`}>
                                             <Row>
@@ -3526,7 +3744,7 @@ function AddRfq(props) {
                                             )}
 
                                             {havellsKey && (<>
-                                                <Col md="3">
+                                                <Col md={ShowLdClause(selectedOption) ? 3 : 2}>
                                                     <TextFieldHookForm
                                                         // title={titleObj.descriptionTitle}
                                                         label="Inco Terms"
@@ -3545,7 +3763,7 @@ function AddRfq(props) {
                                                         placeholder="-"
                                                     />
                                                 </Col>
-                                                <Col md="3">
+                                                <Col md={ShowLdClause(selectedOption) ? 3 : 2}>
                                                     <TextFieldHookForm
                                                         // title={titleObj.descriptionTitle}
                                                         label="Payment Terms"
@@ -3590,7 +3808,7 @@ function AddRfq(props) {
                                                 )}
                                             </>)
                                             }
-                                            <Col md="3" className='d-flex align-items-center pb-1'>
+                                            <Col md="2" className='d-flex align-items-center pb-1'>
                                                 <button
                                                     id="add_vendor"
                                                     type="button"
@@ -3894,6 +4112,18 @@ function AddRfq(props) {
                                                 <div className={"cancel-icon"}></div>
                                                 {"Cancel"}
                                             </button>
+                                            {reviewButtonPermission && (
+                                                <>
+                                                    <Button
+                                                        id="Return_RFQ_for_Review"
+                                                        disabled={isViewFlag}
+                                                        className="save-btn mr-2"
+                                                        variant={"submit-button"}
+                                                        onClick={(data, e) => handleReviewButtonClick(data, e, false)}
+                                                        icon={"send-for-review "}
+                                                        buttonName={"Send for Review"} />
+                                                </>
+                                            )}
 
                                             {
                                                 <button type="button" className="submit-button save-btn mr-2" value="save"
@@ -3924,10 +4154,11 @@ function AddRfq(props) {
                                             closeDrawer={closeBulkUploadDrawer}
                                             isEditFlag={false}
                                             // densityAlert={densityAlert}
-                                            fileName={"ADD RFQ"}
+                                            fileName={BulkUploadFileName()}
                                             messageLabel={"RFQ Part's"}
                                             anchor={"right"}
                                             technologyId={technology}
+                                            selectedOption={selectedOption}
                                         // isFinalApprovar={isFinalLevelUser}
                                         />
                                     )
@@ -3993,6 +4224,9 @@ function AddRfq(props) {
                     isFromVishualAd={true}
                     NewAddedLevelOneChilds={[]}
                 />
+            )}
+            {remarkDrawer && (
+                <RemarkFieldDrawer anchor={"right"} isOpen={remarkDrawer} cancelHandler={handleCloseReamrkDrawer} onSubmitHandler={sendQuotationForReviewHnadle} />
             )}
 
         </div >

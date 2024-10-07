@@ -7,7 +7,7 @@ import {
   maxLength, maxLength10, positiveAndDecimalNumber, maxLength512, maxLength80, checkWhiteSpaces, decimalLengthsix, checkSpacesInString, postiveNumber, hashValidation
 } from "../../../helper/validation";
 import { renderText, searchableSelect, renderTextAreaField, focusOnError, renderDatePicker, renderTextInputField } from "../../layout/FormInputs";
-import { getCityBySupplier, getPlantBySupplier, getUOMSelectList, getPlantSelectListByType, getCityByCountry, getAllCity, getVendorNameByVendorSelectList } from '../../../actions/Common';
+import { getCityBySupplier, getPlantBySupplier, getUOMSelectList, getPlantSelectListByType, getAllCity, getVendorNameByVendorSelectList, getCityByCountryAction } from '../../../actions/Common';
 import { createBOP, updateBOP, getBOPCategorySelectList, getBOPDomesticById, fileUploadBOPDomestic, checkAndGetBopPartNo } from '../actions/BoughtOutParts';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
@@ -15,7 +15,7 @@ import { getConfigurationKey, loggedInUserId, showBopLabel, userDetails } from "
 import "react-datepicker/dist/react-datepicker.css";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
-import { BOP_MASTER_ID, FILE_URL, ZBC, EMPTY_GUID, SPACEBAR, VBCTypeId, CBCTypeId, ZBCTypeId, searchCount, ENTRY_TYPE_DOMESTIC, VBC_VENDOR_TYPE, BOP_VENDOR_TYPE, effectiveDateRangeDays } from '../../../config/constants';
+import { BOP_MASTER_ID, FILE_URL, ZBC, EMPTY_GUID, SPACEBAR, VBCTypeId, CBCTypeId, ZBCTypeId, searchCount, ENTRY_TYPE_DOMESTIC, VBC_VENDOR_TYPE, BOP_VENDOR_TYPE } from '../../../config/constants';
 import AddBOPCategory from './AddBOPCategory';
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import AddUOM from '../uom-master/AddUOM';
@@ -29,7 +29,7 @@ import { debounce } from 'lodash';
 import AsyncSelect from 'react-select/async';
 import { getClientSelectList, } from '../actions/Client';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { autoCompleteDropdown, costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission } from '../../common/CommonFunctions';
+import { autoCompleteDropdown, costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission, getEffectiveDateMinDate } from '../../common/CommonFunctions';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { checkFinalUser } from '../../../components/costing/actions/Costing'
 import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions';
@@ -41,7 +41,7 @@ import Button from '../../layout/Button';
 import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from './TourMessages';
 import { withTranslation } from 'react-i18next';
-import { labels, useLabels } from '../../../helper/core';
+import { LabelsClass } from '../../../helper/core';
 import { subDays } from 'date-fns';
 
 
@@ -165,11 +165,11 @@ class AddBOPDomestic extends Component {
   componentDidMount() {
 
     this.setState({ costingTypeId: getCostingTypeIdByCostingPermission() });
-    if (!this.state.isViewMode) {
-      this.props.getAllCity(cityId => {
-        this.props.getCityByCountry(cityId, 0, () => { })
-      })
-    }
+    // if (!this.state.isViewMode) {
+    //   this.props.getAllCity(cityId => {
+    //     this.props.getCityByCountry(cityId, 0, () => { })
+    //   })
+    // }
     setTimeout(() => {
       this.getDetails()
       this.props.getCostingSpecificTechnology(loggedInUserId(), () => { this.setState({ inputLoader: false }) })
@@ -413,6 +413,25 @@ class AddBOPDomestic extends Component {
     }
   }
 
+  filterSourceLocationList = async (inputValue) => {
+    if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
+      inputValue = inputValue.trim();
+    }
+    if (inputValue?.length >= searchCount) {
+      this.setState({ inputLoader: true });
+      let res = await this.props.getCityByCountryAction(0, 0, inputValue);
+      this.setState({ inputLoader: false });
+      let cityDataAPI = res?.data?.SelectList;
+      if (inputValue) {
+        return autoCompleteDropdown(inputValue, cityDataAPI, false, [], true);
+      } else {
+        return cityDataAPI;
+      }
+    } else {
+      return [];
+    }
+  };
+  
 
   /**
   * @method renderListing
@@ -1088,6 +1107,7 @@ class AddBOPDomestic extends Component {
     const { isCategoryDrawerOpen, isOpenVendor, costingTypeId, isOpenUOM, isEditFlag, isViewMode, setDisable, isClientVendorBOP, CostingTypePermission,
       isTechnologyVisible, disableSendForApproval, isOpenConditionDrawer, conditionTableData, FinalBasicPriceBaseCurrency, IsFinancialDataChanged, toolTipTextNetCost, toolTipTextBasicPrice, IsSAPCodeUpdated, IsSapCodeEditView, IsSAPCodeHandle
     } = this.state;
+    const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
       if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
@@ -1193,7 +1213,7 @@ class AddBOPDomestic extends Component {
                                 }
                                 disabled={isEditFlag ? true : false}
                               />{" "}
-                              <span>{labels(t, 'VendorLabel', 'MasterLabels', 'Vendor')} Based</span>
+                              <span>{VendorLabel} Based</span>
                             </Label>}
                             {reactLocalStorage.getObject('CostingTypePermission').cbc && <Label id='bop_form_customer_based' className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
                               <input
@@ -1401,7 +1421,7 @@ class AddBOPDomestic extends Component {
                               />
                             </Col>
                           )}
-                          {getConfigurationKey().IsSAPConfigured &&
+                          {getConfigurationKey().IsSAPCodeRequired &&
                             <Col md="3">
                               <div className="d-flex align-items-center">
                                 <Field
@@ -1412,14 +1432,14 @@ class AddBOPDomestic extends Component {
                                   placeholder={isViewMode ? "-" : "Enter"}
                                   validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkSpacesInString, hashValidation]}
                                   component={renderText}
-                                  disabled={IsSapCodeEditView && isEditFlag}
+                                  disabled={(IsSapCodeEditView && isEditFlag) || isViewMode}
                                   value={this.state.SapCode}
                                   onChange={this.handleChangeSapCode}
                                   className=" "
                                   customClassName=" withBorder w-100 mb-0"
                                 />
                                 {!IsSAPCodeUpdated && isEditFlag && (
-                                  <Button className={"Edit ms-2 mt-2"} variant="Edit" title={"Edit"} onClick={() => { this.handleSubmitOfSapCode(handleSubmit(this.onSubmit.bind(this))) }} />
+                                  <Button className={"Edit ms-2 mt-2"} variant="Edit" title={"Edit"} onClick={() => { this.handleSubmitOfSapCode(handleSubmit(this.onSubmit.bind(this))) }} disabled={isViewMode} />
                                 )}
                               </div>
                               {IsSAPCodeHandle && isEditFlag && (
@@ -1432,10 +1452,10 @@ class AddBOPDomestic extends Component {
                           {costingTypeId !== CBCTypeId && (
                             <>
                               <Col md="12">
-                                <div className="left-border">{labels(t, 'VendorLabel', 'MasterLabels', 'Vendor')}:</div>
+                                <div className="left-border">{VendorLabel}:</div>
                               </Col>
                               <Col md="3" className='mb-4'>
-                                <label>{costingTypeId === ZBCTypeId ? 'BOP' : ''} {labels(t, 'VendorLabel', 'MasterLabels', 'Vendor')}<span className="asterisk-required">*</span></label>
+                                <label>{costingTypeId === ZBCTypeId ? 'BOP' : ''} {VendorLabel}<span className="asterisk-required">*</span></label>
                                 <div className="d-flex justify-space-between align-items-center async-select">
                                   <div className="fullinput-icon p-relative">
                                     {this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
@@ -1485,7 +1505,7 @@ class AddBOPDomestic extends Component {
                                   customClassName=" withBorder"
                                 />
                               </Col>
-                              <Col md="3">
+                              {/* <Col md="3">
                                 <Field
                                   name="SourceLocation"
                                   type="text"
@@ -1505,6 +1525,26 @@ class AddBOPDomestic extends Component {
                                   }
                                   valueDescription={this.state.sourceLocation}
                                 />
+                              </Col> */}
+                              <Col md="3">
+                                <label>Source Location</label>
+                                <div className="d-flex justify-space-between align-items-center async-select">
+                                  <div id='AddBOPImport_SourceLocation' className="fullinput-icon p-relative">
+                                    {this.state.sourceLocationInputLoader && <LoaderCustom customClass={`input-loader`} />}
+                                    <AsyncSelect
+                                      name="sourceLocation"
+                                      loadOptions={this.filterSourceLocationList}
+                                      onChange={(e) => this.handleSourceSupplierCity(e)}
+                                      value={this.state.sourceLocation}
+                                      noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN : "No results found"}
+                                      isDisabled={isViewMode}
+                                      onFocus={() => onFocus(this)}
+                                      onKeyDown={(onKeyDown) => {
+                                        if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
+                                      }}
+                                    />
+                                  </div>
+                                </div>
                               </Col>
                             </>
                           )}
@@ -1521,7 +1561,7 @@ class AddBOPDomestic extends Component {
                                 selected={this.state.effectiveDate}
                                 onChange={this.handleEffectiveDateChange}
                                 type="text"
-                                minDate={isEditFlag ? this.state.minEffectiveDate : subDays(new Date(), effectiveDateRangeDays)}
+                                minDate={isEditFlag ? this.state.minEffectiveDate :getEffectiveDateMinDate()}
                                 validate={[required]}
                                 autoComplete={'off'}
                                 required={true}
@@ -1631,7 +1671,7 @@ class AddBOPDomestic extends Component {
                             className={`custom-checkbox`}
                             onChange={this.onIsClientVendorBOP}
                           >
-                            Client Approved {labels(t, 'VendorLabel', 'MasterLabels', 'Vendor')}
+                            Client Approved {VendorLabel}
                             <input
                               type="checkbox"
                               checked={isClientVendorBOP}
@@ -1931,7 +1971,7 @@ export default connect(mapStateToProps, {
   fileUploadBOPDomestic,
   getPlantSelectListByType,
   checkFinalUser,
-  getCityByCountry,
+  getCityByCountryAction,
   getAllCity,
   getClientSelectList,
   getUsersMasterLevelAPI,

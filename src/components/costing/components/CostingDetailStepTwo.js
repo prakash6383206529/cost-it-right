@@ -21,6 +21,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import { LOGISTICS } from '../../../config/masterData';
 import { Redirect } from 'react-router';
 import { setOpenAllTabs } from '../../masters/nfr/actions/nfr';
+import { useLabels } from '../../../helper/core';
 
 export const costingInfoContext = React.createContext()
 export const netHeadCostContext = React.createContext()
@@ -29,7 +30,7 @@ export const NetPOPriceContext = React.createContext()
 
 
 function CostingDetailStepTwo(props) {
-
+  const { vendorLabel } = useLabels()
   const dispatch = useDispatch()
 
   useEffect(() => {
@@ -535,7 +536,7 @@ function CostingDetailStepTwo(props) {
 
                       {
                         (costingData.CostingTypeId === VBCTypeId || costingData.CostingTypeId === NCCTypeId || costingData.CostingTypeId === NFRTypeId ||
-                          costingData.CostingTypeId === PFS1TypeId || costingData.CostingTypeId === PFS2TypeId || costingData.CostingTypeId === PFS3TypeId) && <td><div className={'part-info-title costing-head-overflow'}><p><span className="cr-tbl-label">Vendor (Code):</span><span className="dark-blue" title={costingData.VendorName}> {`${costingData.VendorName}`}</span></p></div></td>
+                          costingData.CostingTypeId === PFS1TypeId || costingData.CostingTypeId === PFS2TypeId || costingData.CostingTypeId === PFS3TypeId) && <td><div className={'part-info-title costing-head-overflow'}><p><span className="cr-tbl-label">{vendorLabel} (Code):</span><span className="dark-blue" title={costingData.VendorName}> {`${costingData.VendorName}`}</span></p></div></td>
                       }
 
                       {costingData.CostingTypeId === CBCTypeId && <td><div className={'part-info-title costing-head-overflow'}><p><span className="cr-tbl-label">Customer (Code):</span><span className="dark-blue" title={costingData.Customer}> {`${costingData.Customer}`}</span></p></div></td>}

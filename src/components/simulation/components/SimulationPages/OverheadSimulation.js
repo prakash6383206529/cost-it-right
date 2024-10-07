@@ -18,11 +18,13 @@ import { VBC, ZBC } from '../../../../config/constants';
 import { runVerifyOverheadSimulation } from '../../actions/Simulation';
 import { checkForChangeInOverheadProfit1Values, checkForChangeInOverheadProfit2Values, checkForChangeInOverheadProfit3Values } from '../../SimulationUtils';
 import { PaginationWrapper } from '../../../common/commonPagination';
+import { useLabels } from '../../../../helper/core';
 
 const gridOptions = {};
 
 function OverheadSimulation(props) {
     const { list, technology, master, isImpactedMaster, tokenForMultiSimulation } = props
+    const { vendorLabel } = useLabels()
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
     const [showverifyPage, setShowVerifyPage] = useState(false)
     const [token, setToken] = useState('')
@@ -939,7 +941,7 @@ function OverheadSimulation(props) {
 
                                             <AgGridColumn field="IsVendor" editable='false' headerName="Costing Head" minWidth={190}></AgGridColumn>
                                             <AgGridColumn field="ClientName" editable='false' headerName="Client Name" minWidth={190}></AgGridColumn>
-                                            <AgGridColumn field="VendorName" editable='false' headerName="Vendor Name" minWidth={190}></AgGridColumn>
+                                            <AgGridColumn field="VendorName" editable='false' headerName={vendorLabel + " Name"} minWidth={190}></AgGridColumn>
 
                                             <AgGridColumn field="ModelType" editable={false} headerName="Model Type" minWidth={190}></AgGridColumn>
 

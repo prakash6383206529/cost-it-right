@@ -13,7 +13,7 @@ import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import AddUOM from '../uom-master/AddUOM';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
-import { FILE_URL, ZBC, OPERATIONS_ID, EMPTY_GUID, SPACEBAR, VBCTypeId, CBCTypeId, ZBCTypeId, searchCount, VBC_VENDOR_TYPE, GUIDE_BUTTON_SHOW, effectiveDateRangeDays } from '../../../config/constants';
+import { FILE_URL, ZBC, OPERATIONS_ID, EMPTY_GUID, SPACEBAR, VBCTypeId, CBCTypeId, ZBCTypeId, searchCount, VBC_VENDOR_TYPE } from '../../../config/constants';
 import { AcceptableOperationUOM, LOGISTICS } from '../../../config/masterData'
 import DayTime from '../../common/DayTimeWrapper'
 import imgRedcross from '../../../assests/images/red-cross.png';
@@ -25,7 +25,7 @@ import { CheckApprovalApplicableMaster, onFocus, showDataOnHover, userTechnology
 import { getCostingSpecificTechnology } from '../../costing/actions/Costing'
 import { getClientSelectList, } from '../actions/Client';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { autoCompleteDropdown, costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission } from '../../common/CommonFunctions';
+import { autoCompleteDropdown, costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission, getEffectiveDateMinDate } from '../../common/CommonFunctions';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { checkFinalUser } from '../../../components/costing/actions/Costing'
 import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions';
@@ -37,6 +37,7 @@ import { withTranslation } from 'react-i18next';
 import Button from '../../layout/Button';
 import TooltipCustom from '../../common/Tooltip';
 import { subDays } from 'date-fns';
+import { LabelsClass } from '../../../helper/core';
 
 const selector = formValueSelector('AddOperation');
 
@@ -999,6 +1000,8 @@ class AddOperation extends Component {
   render() {
     const { handleSubmit, initialConfiguration, isOperationAssociated, t, data } = this.props;
     const { isEditFlag, isOpenVendor, isOpenUOM, isDisableCode, isViewMode, setDisable, costingTypeId, noApprovalCycle, CostingTypePermission, disableSendForApproval } = this.state;
+    const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
+
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
       if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
@@ -1087,7 +1090,7 @@ class AddOperation extends Component {
                             }
                             disabled={isEditFlag ? true : false}
                           />{" "}
-                          <span>Vendor Based</span>
+                          <span>{VendorLabel} Based</span>
                         </Label>}
                         {reactLocalStorage.getObject('CostingTypePermission').cbc && <Label id="Add_operation_customer_based" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
                           <input
@@ -1214,7 +1217,7 @@ class AddOperation extends Component {
                         </Col>
                       )}
                       {costingTypeId === VBCTypeId && (
-                        <Col md="3"><label>{"Vendor (Code)"}<span className="asterisk-required">*</span></label>
+                        <Col md="3"><label>{VendorLabel} (Code)<span className="asterisk-required">*</span></label>
                           <div className="d-flex justify-space-between align-items-center async-select">
                             <div className="fullinput-icon p-relative">
                               {this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
@@ -1375,7 +1378,7 @@ class AddOperation extends Component {
                             onChange={this.handleEffectiveDateChange}
                             type="text"
                             validate={[required]}
-                            minDate={isEditFlag ? this.state.minEffectiveDate : subDays(new Date(), effectiveDateRangeDays)}
+                            minDate={isEditFlag ? this.state.minEffectiveDate : getEffectiveDateMinDate()}
                             autoComplete={'off'}
                             required={true}
                             changeHandler={(e) => {

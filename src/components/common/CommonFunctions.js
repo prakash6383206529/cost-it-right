@@ -1,7 +1,8 @@
 import { reactLocalStorage } from "reactjs-localstorage";
 import _ from 'lodash';
-import { CBCAPPROVALTYPEID, CBCTypeId, dropdownLimit, NCCAPPROVALTYPEID, NCCTypeId, NFRAPPROVALTYPEID, NFRTypeId, RELEASESTRATEGYTYPEID1, RELEASESTRATEGYTYPEID2, RELEASESTRATEGYTYPEID3, RELEASESTRATEGYTYPEID4, VBCAPPROVALTYPEID, VBCTypeId, WACAPPROVALTYPEID, WACTypeId, ZBCAPPROVALTYPEID, ZBCTypeId, PFS2APPROVALTYPEID, PFS2TypeId, RELEASE_STRATEGY_B1, RELEASE_STRATEGY_B1_NEW, RELEASE_STRATEGY_B2, RELEASE_STRATEGY_B2_NEW, RELEASE_STRATEGY_B3, RELEASE_STRATEGY_B3_NEW, RELEASE_STRATEGY_B4, RELEASE_STRATEGY_B6, RELEASE_STRATEGY_B6_NEW, RELEASE_STRATEGY_B4_NEW, RELEASESTRATEGYTYPEID6, LPSAPPROVALTYPEID, CLASSIFICATIONAPPROVALTYPEID, RAWMATERIALAPPROVALTYPEID } from "../../config/constants";
+import { CBCAPPROVALTYPEID, CBCTypeId, dropdownLimit, NCCAPPROVALTYPEID, NCCTypeId, NFRAPPROVALTYPEID, NFRTypeId, RELEASESTRATEGYTYPEID1, RELEASESTRATEGYTYPEID2, RELEASESTRATEGYTYPEID3, RELEASESTRATEGYTYPEID4, VBCAPPROVALTYPEID, VBCTypeId, WACAPPROVALTYPEID, WACTypeId, ZBCAPPROVALTYPEID, ZBCTypeId, PFS2APPROVALTYPEID, PFS2TypeId, RELEASE_STRATEGY_B1, RELEASE_STRATEGY_B1_NEW, RELEASE_STRATEGY_B2, RELEASE_STRATEGY_B2_NEW, RELEASE_STRATEGY_B3, RELEASE_STRATEGY_B3_NEW, RELEASE_STRATEGY_B4, RELEASE_STRATEGY_B6, RELEASE_STRATEGY_B6_NEW, RELEASE_STRATEGY_B4_NEW, RELEASESTRATEGYTYPEID6, LPSAPPROVALTYPEID, CLASSIFICATIONAPPROVALTYPEID, RAWMATERIALAPPROVALTYPEID, effectiveDateRangeDays, searchCount } from "../../config/constants";
 import Toaster from "./Toaster";
+import {  subDays } from "date-fns";
 
 // COMMON FILTER FUNCTION FOR AUTOCOMPLETE DROPDOWN
 const commonFilterFunction = (inputValue, dropdownArray, filterByName, selectedParts = false) => {
@@ -32,15 +33,65 @@ const commonDropdownFunction = (array, tempBoolean = false, selectedParts = [], 
         return null
     })
 }
+// ... existing code ...
+
+export const DropDownFilterList = async (inputValue, filterType, stateKey, apiFunction, setState, state) => {
+    if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
+        inputValue = inputValue.trim();
+    }
+    const resultInput = inputValue.slice(0, searchCount);
+    
+    const isNewSearch = !state[stateKey] || 
+    (typeof state[stateKey] === 'string' && state[stateKey] !== resultInput) ||
+    (typeof state[stateKey] === 'object' && state[stateKey].value !== resultInput);
+
+    if (inputValue?.length >= searchCount && isNewSearch) {
+        setState(prevState => ({ ...prevState, inputLoader: true }));
+        let res;
+        try {
+            res = await apiFunction(filterType, resultInput);
+            setState(prevState => ({ 
+                ...prevState, 
+                inputLoader: false, 
+                [stateKey]: { value: resultInput, label: resultInput }  // Store as an object
+            }));
+            let dataAPI = res?.data?.SelectList;
+            if (inputValue) {
+                return autoCompleteDropdown(inputValue, dataAPI, false, [], true);
+            } else {
+                return dataAPI;
+            }
+        } catch (error) {
+            console.error("Error fetching data:", error);
+            setState(prevState => ({ ...prevState, inputLoader: false }));
+            return [];
+        }
+    } else {
+        if (inputValue?.length < searchCount) return [];
+        else {
+            let Data = reactLocalStorage?.getObject('Data') || [];
+            if (inputValue) {
+                return autoCompleteDropdown(inputValue, Data, false, [], false);
+            } else {
+                return Data;
+            }
+        }
+    }
+};
+
+// ... existing code ...
+
 // FOR AUTOCOMPLLETE IN PART AND VENDOR 
 export const autoCompleteDropdown = (inputValue, dropdownArray, tempBoolean = false, selectedParts = [], isApiCall) => {
     let tempArr = []
     let finalArr = []
     let finalArr1 = []
+    let finalArrCity = []
     if (isApiCall) {
         tempArr = commonFilterFunction(inputValue, dropdownArray, 'Text')
         commonDropdownFunction(tempArr, tempBoolean, selectedParts, finalArr1, false)         //TO SHOW THE FILTERED VENDOR OR PART
         commonDropdownFunction(dropdownArray, tempBoolean, selectedParts, finalArr, false)   // TO STORE ALL VENDOR OR PART DATA IN LOCAL STORAGE
+        commonDropdownFunction(dropdownArray, tempBoolean, selectedParts, finalArrCity, false)   // TO STORE ALL cityDATA IN LOCAL STORAGE
         reactLocalStorage?.setObject('Data', finalArr)
         if (finalArr1?.length <= 100) {
             return finalArr1
@@ -299,3 +350,15 @@ export const getCostingConditionTypes = (conditionName) => {
     let costingTypeId = arr && arr?.filter(item => item['CostingConditionTypeName'] === conditionName)
     return costingTypeId[0]?.CostingConditionTypeMasterId
 }
+
+
+export const getEffectiveDateMinDate = ( minDate) => {
+   
+  if (effectiveDateRangeDays === null) {
+    return new Date(new Date().getFullYear() - 100, 0, 1); // Allow dates up to 100 years in the past
+  }
+  if (effectiveDateRangeDays === 0) {
+    return new Date(); // No past dates
+  }
+  return subDays(new Date(), effectiveDateRangeDays);
+};

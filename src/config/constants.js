@@ -159,9 +159,12 @@ export const API = {
   checkStatusCodeAPI: `${BASE_URL}/masters-part/check-status-code`,
   productComponentBulkUpload: `${BASE_URL}/masters-product/bulk-upload-for-product-json`,
   checkRFQBulkUpload: `${BASE_URL}/rfq-quotation/check-valid-part-via-bulk-upload`,
+
   CreatComponentBySap: `${BASE_URL}/sap-sync/create-component-by-sap`,
   updateMultiplecomponentTechnology: `${BASE_URL}/masters-part/update-technology-for-multiple-component`,
-
+  checkBoughtOutPartsRFQBulkUpload: `${BASE_URL}/rfq-quotation/save-quotation-bought-out-part-bulk-upload`,
+  checkComponentOrAssemblyRFQBulkUpload: `${BASE_URL}/rfq-quotation/save-quotation-assembly-or-component-part-bulk-upload`,
+  checkRawMaterialRFQBulkUpload: `${BASE_URL}/rfq-quotation/save-quotation-raw-material-bulk-upload`,
   // PRODUCT MASTER 
   getProductDataList: `${BASE_URL}/masters-product/get-all`,
   getProductById: `${BASE_URL}/masters-product/get-by-id`,
@@ -1144,6 +1147,8 @@ export const API = {
   getRfqBOPCategorySelectList: `${BASE_URL}/masters-bought-out-part/select-list-bought-out-part-category`,
   createQuotationPrParts: `${BASE_URL}/rfq-quotation/create-quotation-pr-parts`,
   // getRfqRaiseNumber: `${BASE_URL}/rfq-quotation/create-quotation`,
+  sendQuotationForReview: `${BASE_URL}/rfq-quotation/review-Quotation`,
+  getRfqReviewHistory: `${BASE_URL}/rfq-quotation/get-reviewHistory-by-quotationId`,
 
   //Auction
   auctionRfqSelectList: `${BASE_URL}/rfq-quotation/select-list-rfq-number`,
@@ -1157,6 +1162,7 @@ export const API = {
   updateShowVendorRank: `${BASE_URL}/rfq-quotation/update-display-rank-to-vendor`,
   updateAuctionDuration: `${BASE_URL}/rfq-quotation/update-auction-duration-extension`,
   closeAuction: `${BASE_URL}/rfq-quotation/closed-auction`,
+  reScheduleAuction: `${BASE_URL}/rfq-quotation/re-schedule-auction`,
 
   //MINDA
   pushNfrOnSap: `${BASE_URL}/nfr/push-nfr-on-sap`,
@@ -3009,6 +3015,9 @@ export const BUDGETBULKUPLOAD = 'Budget'
 //added for OverheadProfit
 export const OVERHEADBULKUPLOAD = 'Overhead'
 export const PROFITBULKUPLOAD = 'Profit'
+export const ASSEMBLYORCOMPONENTSRFQ = "Assembly Or Components RFQ"
+export const BOUGHTOUTPARTSRFQ = "Bought Out Parts RFQ"
+export const RAWMATERIALSRFQ = "Raw Materials RFQ"
 
 
 
@@ -3021,6 +3030,7 @@ export const statusOptionsMasters = _.sortBy([
   { label: "Draft", value: "1" },
   { label: "History", value: "5" },
   { label: "Pending For Approval", value: "2" },
+  {label:"Rejected By System",value:"18"},
 ], ({ label }) => label.toLowerCase());
 
 
@@ -3241,14 +3251,14 @@ export const customHavellsChanges = true
 export const countDownBlinkingTime = 2
 export const clientName = 'Havells'
 export const isShowTaxCode = true
-export const effectiveDateRangeDays = ''
+export const effectiveDateRangeDays = null
 // CONSTANT FOR COSTING ENTRY TYPE ID
 export const COMMODITYCOST = 'Commodity Cost'
 export const RAWMATERIALCOST = 'Raw Material Other Cost'
 export const COSTINGCONDITIONCOST = 'Costing Condition Cost'
 
 //VERSION 
-export const VERSION = "V3.1.10";
+export const VERSION = "V3.1.11";
 
 
 

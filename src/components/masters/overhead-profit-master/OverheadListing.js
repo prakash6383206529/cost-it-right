@@ -19,7 +19,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { setSelectedRowForPagination } from '../../simulation/actions/Simulation';
 import WarningMessage from '../../common/WarningMessage';
-import { disabledClass } from '../../../actions/Common';
+import { disabledClass, fetchModelTypeAPI } from '../../../actions/Common';
 import _ from 'lodash';
 import SingleDropdownFloationFilter from '../material-master/SingleDropdownFloationFilter';
 import { agGridStatus, getGridHeight, isResetClick } from '../../../actions/Common';
@@ -33,6 +33,7 @@ import { useTranslation } from 'react-i18next';
 import { Steps } from '../../common/Tour/TourMessages';
 import { ApplyPermission } from '.';
 import BulkUpload from '../../../../src/components/massUpload/BulkUpload';
+import { useLabels } from '../../../helper/core';
 
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -45,7 +46,7 @@ function OverheadListing(props) {
     const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = props;
     const { t } = useTranslation("common")
     const permissions = useContext(ApplyPermission);
-
+    const { vendorLabel } = useLabels()
 
     const [showPopup, setShowPopup] = useState(false)
     const [deletedId, setDeletedId] = useState('')
@@ -75,6 +76,8 @@ function OverheadListing(props) {
     const { selectedRowForPagination } = useSelector((state => state.simulation))
     const statusColumnData = useSelector((state) => state.comman.statusColumnData);
     const { globalTakes } = useSelector((state) => state.pagination)
+    const modelTypes = useSelector(state => state.comman?.modelTypes)
+    const [modelText, setModelText] = useState('')
 
 
 
@@ -118,6 +121,7 @@ function OverheadListing(props) {
                 getDataList(null, null, null, null, 0, 10, true, floatingFilterData)
             }
         }, 300);
+        dispatch(fetchModelTypeAPI('--Model Types--', (res) => { }))
         dispatch(isResetClick(false, "applicablity"))
         dispatch(agGridStatus("", ""))
         setSelectedRowForPagination([])
@@ -135,6 +139,13 @@ function OverheadListing(props) {
         dispatch(getGridHeight({ value: overheadProfitList?.length, component: 'overhead' }))
     }, [overheadProfitList])
 
+    useEffect(() => {
+        const modelText = modelTypes?.reduce((acc, item) => {
+            if (item.Value !== '0') acc.push(item.Text); // Only push valid items
+            return acc;
+        }, []).join('/'); // Join with slashes
+        setModelText(modelText)
+    }, [modelTypes])
 
     const getDataList = (costingHead = null, vendorName = null, overhead = null, modelType = null, skip = 0, take = 10, isPagination = true, dataObj) => {
         const filterData = {
@@ -729,7 +740,7 @@ function OverheadListing(props) {
                                             {getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC && <AgGridColumn field="RawMaterialName" headerName='Raw Material Name'></AgGridColumn>}
                                             {getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC && <AgGridColumn field="RawMaterialGrade" headerName="Raw Material Grade"></AgGridColumn>}
                                             {(getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate || getConfigurationKey().IsDestinationPlantConfigure) && <AgGridColumn field="PlantName" headerName="Plant (Code)"></AgGridColumn>}
-                                            <AgGridColumn field="VendorName" headerName="Vendor (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                            <AgGridColumn field="VendorName" headerName={`${vendorLabel} (Code)`} cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                             {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                                             <AgGridColumn field="ModelType" headerName="Model Type"></AgGridColumn>
                                             <AgGridColumn field="OverheadApplicabilityType" headerName="Overhead Applicability" floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterOverhead}></AgGridColumn>
@@ -750,7 +761,7 @@ function OverheadListing(props) {
 
                             </Col>
                         </Row>
-                        {isBulkUpload && <BulkUpload isOpen={isBulkUpload} closeDrawer={closeBulkUploadDrawer} isEditFlag={false} fileName={`Overhead`} isZBCVBCTemplate={true} messageLabel={`Overhead`} anchor={'right'} />}
+                        {isBulkUpload && <BulkUpload isOpen={isBulkUpload} closeDrawer={closeBulkUploadDrawer} isEditFlag={false} fileName={`Overhead`} isZBCVBCTemplate={true} messageLabel={`Overhead`} anchor={'right'} modelText={modelText} />}
                         {
                             showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.OVERHEAD_DELETE_ALERT}`} />
                         }

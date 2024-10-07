@@ -11,7 +11,7 @@ import {
 } from '../actions/Fuel';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { CBCTypeId, effectiveDateRangeDays, GENERATOR_DIESEL, GUIDE_BUTTON_SHOW, searchCount, SPACEBAR, VBC_VENDOR_TYPE, VBCTypeId, ZBCTypeId, } from '../../../config/constants';
+import { CBCTypeId, GENERATOR_DIESEL, GUIDE_BUTTON_SHOW, searchCount, SPACEBAR, VBC_VENDOR_TYPE, VBCTypeId, ZBCTypeId, } from '../../../config/constants';
 import { EMPTY_DATA } from '../../../config/constants'
 import { loggedInUserId } from "../../../helper/auth";
 import "react-datepicker/dist/react-datepicker.css";
@@ -24,7 +24,7 @@ import LoaderCustom from '../../common/LoaderCustom';
 import _, { debounce } from 'lodash';
 import AsyncSelect from 'react-select/async';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { autoCompleteDropdown, getCostingTypeIdByCostingPermission } from '../../common/CommonFunctions';
+import { autoCompleteDropdown, getCostingTypeIdByCostingPermission, getEffectiveDateMinDate } from '../../common/CommonFunctions';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { getClientSelectList, } from '../actions/Client';
 import TooltipCustom from '../../common/Tooltip';
@@ -33,6 +33,7 @@ import { Steps } from './TourMessages';
 import { withTranslation } from 'react-i18next';
 import Button from '../../layout/Button';
 import { subDays } from 'date-fns';
+import { LabelsClass } from '../../../helper/core';
 
 const selector = formValueSelector('AddPower');
 
@@ -1377,6 +1378,8 @@ class AddPower extends Component {
     const { handleSubmit, initialConfiguration, t } = this.props;
     const { isEditFlag, source, isOpenVendor, isCostPerUnitConfigurable, isEditFlagForStateElectricity,
       checkPowerContribution, netContributionValue, isViewMode, setDisable, costingTypeId, isDetailEntry } = this.state;
+      const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
+
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
       if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
@@ -1463,7 +1466,7 @@ class AddPower extends Component {
                               }
                               disabled={isEditFlag ? true : false}
                             />{" "}
-                            <span>Vendor Based</span>
+                            <span>{VendorLabel} Based</span>
                           </Label>}
                           {(reactLocalStorage.getObject('CostingTypePermission').cbc) && <Label id="AddPower_customerbased" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
                             <input
@@ -1511,7 +1514,7 @@ class AddPower extends Component {
 
 
                         {costingTypeId === VBCTypeId && <Col md="3">
-                          <label>{"Vendor (Code)"}<span className="asterisk-required">*</span></label>
+                          <label>{VendorLabel} (Code)<span className="asterisk-required">*</span></label>
                           <div className="d-flex justify-space-between align-items-center async-select">
                             <div className="fullinput-icon p-relative">
                               {this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
@@ -1611,7 +1614,7 @@ class AddPower extends Component {
                                     disabled={(isEditFlag || isViewMode) ? true : false}
                                     placeholder={isViewMode ? '-' : "Select Date"}
                                     onFocus={() => onFocus(this, true)}
-                                    minDate={subDays(new Date(), effectiveDateRangeDays)}
+                                    minDate={getEffectiveDateMinDate()}
 
                                   />
                                 </div>

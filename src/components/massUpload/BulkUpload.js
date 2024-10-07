@@ -31,7 +31,11 @@ import {
     RMMASTER,
     COMMODITYSTANDARD,
     OVERHEADBULKUPLOAD,
-    PROFITBULKUPLOAD
+    PROFITBULKUPLOAD,
+    ASSEMBLYORCOMPONENTSRFQ,
+    RAWMATERIALSRFQ,
+    BOUGHTOUTPARTSRFQ,
+    FILE_URL
 } from '../../config/constants';
 //MINDA
 // import { ACTUALVOLUMEBULKUPLOAD, ADDRFQ, BOPDOMESTICBULKUPLOAD, BOPIMPORTBULKUPLOAD, BOP_MASTER_ID, BUDGETBULKUPLOAD, BUDGETEDVOLUMEBULKUPLOAD, CBCADDMORE, CBCADDMOREOPERATION, CBCTypeId, ENTRY_TYPE_IMPORT, FUELBULKUPLOAD, INSERTDOMESTICBULKUPLOAD, INSERTIMPORTBULKUPLOAD, INTERESTRATEBULKUPLOAD, LABOURBULKUPLOAD, MACHINEBULKUPLOAD, MACHINE_MASTER_ID, OPERAIONBULKUPLOAD, OPERATIONS_ID, PARTCOMPONENTBULKUPLOAD, PRODUCTCOMPONENTBULKUPLOAD, VBCADDMORE, RMDOMESTICBULKUPLOAD, RMIMPORTBULKUPLOAD, RMSPECIFICATION, RM_MASTER_ID, VBCADDMOREOPERATION, VBCTypeId, VENDORBULKUPLOAD, ZBCADDMORE, ZBCADDMOREOPERATION, ZBCTypeId } from '../../config/constants';
@@ -45,13 +49,16 @@ import {
     ProfitVBC,
     Profit,
     ProfitCBC,
-    CommodityStandard
+    CommodityStandard,
+    AddRawMaterialHeaderData,
+    AddBoughtOutPartsHeaderData,
+    AddAssemblyOrComponentHeaderData
 } from '../../config/masterData';
 import { CheckApprovalApplicableMaster, checkForSameFileUpload, updateBOPValues, userTechnologyDetailByMasterId } from '../../helper';
 import LoaderCustom from '../common/LoaderCustom';
 import PopupMsgWrapper from '../common/PopupMsgWrapper';
 import { MESSAGES } from '../../config/message';
-import { checkRFQBulkUpload } from '../rfq/actions/rfq';
+import { checkBoughtOutPartsRFQBulkUpload, checkComponentOrAssemblyRFQBulkUpload, checkRawMaterialRFQBulkUpload, checkRFQBulkUpload } from '../rfq/actions/rfq';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { getAllDivisionListAssociatedWithDepartment, getUsersMasterLevelAPI } from '../../actions/auth/AuthActions';
 import { checkFinalUser } from '../../components/costing/actions/Costing';
@@ -92,7 +99,8 @@ class BulkUpload extends Component {
             department: [],
             disableDept: false,
             departmentDropDownList: [],
-            isShowDivision: false
+            isShowDivision: false,
+            newfileData: []
         }
     }
 
@@ -239,13 +247,14 @@ class BulkUpload extends Component {
         this.props.onCancel();
     }
 
-    toggleDrawer = (event, type = 'cancel') => {
+    toggleDrawer = (event, type = 'cancel', identityKey = null) => {
+
         if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
             return;
         }
         this.setState({ isLoading: false });
 
-        this.props.closeDrawer('', type);
+        this.props.closeDrawer('', type, identityKey);
     };
 
     /**
@@ -288,11 +297,11 @@ class BulkUpload extends Component {
     fileHandler = event => {
         this.setState({ bulkUploadLoader: true })
         let fileObj = event.target.files[0];
-
         let fileHeads = [];
         let uploadfileName = fileObj?.name;
 
         let fileType = uploadfileName?.substr(uploadfileName.indexOf('.'));
+        this.setState({ newfileData: fileObj })
 
 
         //pass the fileObj as parameter
@@ -314,7 +323,7 @@ class BulkUpload extends Component {
                     fileHeads = resp.rows[0];
 
                     let checkForFileHead
-                    const { fileName } = this.props;
+                    const { fileName, selectedOption } = this.props;
                     switch (String(this.props.fileName)) {
                         case String(RMMASTER):
                             if (!this.state.isImport) {
@@ -479,9 +488,25 @@ class BulkUpload extends Component {
                                 checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(BUDGET_CBC, CBCTypeId), fileHeads)
                             }
                             break;
-                        case String(ADDRFQ):
-                            checkForFileHead = checkForSameFileUpload(AddRFQUpload, fileHeads)
-                            break;
+                        case String(ASSEMBLYORCOMPONENTSRFQ):
+                            checkForFileHead = checkForSameFileUpload(AddAssemblyOrComponentHeaderData, fileHeads)
+                            break
+                        case String(BOUGHTOUTPARTSRFQ):
+                            checkForFileHead = checkForSameFileUpload(AddBoughtOutPartsHeaderData, fileHeads)
+
+                            break
+                        case String(RAWMATERIALSRFQ):
+                            checkForFileHead = checkForSameFileUpload(AddRawMaterialHeaderData, fileHeads)
+
+                            break
+
+
+
+
+
+                        //checkForFileHead = checkForSameFileUpload(AddRFQUpload, fileHeads)
+
+
                         case String(OVERHEADBULKUPLOAD):
                             if (this.state.costingTypeId === VBCTypeId) {
                                 checkForFileHead = checkForSameFileUpload(OverheadVBC, fileHeads)
@@ -725,20 +750,27 @@ class BulkUpload extends Component {
     }
 
     responseHandlerRFQ = (res) => {
+
         const { messageLabel } = this.props;
-        if (res?.data?.Data) {
-            if (res?.data?.Data?.SuccessRecordCount > 0) {
-                Toaster.success(`${res?.data?.Data?.SuccessRecordCount} ${messageLabel} uploaded successfully.`)
-            }
-            if (res?.data?.Data?.FailedRecordCount > 0) {
-                Toaster.warning(`Part upload failed for ${res?.data?.Data?.FailedRecordCount} records.`)
-                this.setState({
-                    failedData: res?.data?.Data?.FailedRecord,
-                    faildRecords: true,
-                })
-            }
+        let identityKey = null;
+        if (res.status === 400) {
+            let Data = res.data.Data
+            const withOutTild = Data?.FileURL?.replace("~", "");
+            const fileURL = `${FILE_URL}${withOutTild}`;
+            window.open(fileURL, '_blank');
+        } else {
+            identityKey = res?.data?.Identity;
+            Toaster.success(`RFQ uploaded successfully.`)
         }
-        this.toggleDrawer('', 'save')
+        // if (res?.data?.Data?.FailedRecordCount > 0) {
+        //     Toaster.warning(`Part upload failed for ${res?.data?.Data?.FailedRecordCount} records.`)
+        //     this.setState({
+        //         failedData: res?.data?.Data?.FailedRecord,
+        //         faildRecords: true,
+        //     })
+        // }
+
+        this.toggleDrawer('', 'save', identityKey)
     }
 
     /**
@@ -746,8 +778,11 @@ class BulkUpload extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        const { fileData, costingTypeId, IsFinalApprover, bopType } = this.state;
-        const { fileName, typeOfEntryId } = this.props;
+        const { fileData, costingTypeId, IsFinalApprover, bopType, newfileData } = this.state;
+
+
+        const { fileName, typeOfEntryId, selectedOption } = this.props;
+
 
         if (fileData.length === 0) {
             Toaster.warning('Please select a file to upload.')
@@ -928,15 +963,42 @@ class BulkUpload extends Component {
                     this.setState({ setDisable: false })
                     this.responseHandler(res)
                 });
-            } else if (fileName === 'ADD RFQ') {
-                let uploadDataRFQ = {}
-                uploadDataRFQ.PartList = fileData
-                uploadDataRFQ.LoggedInUserId = loggedInUserId()
-                uploadDataRFQ.TechnologyId = this.props?.technologyId?.value
-                this.props.checkRFQBulkUpload(uploadDataRFQ, (res) => {
-                    this.setState({ setDisable: false })
-                    this.responseHandlerRFQ(res)
-                });
+            } else if (fileName === ASSEMBLYORCOMPONENTSRFQ || fileName === RAWMATERIALSRFQ || fileName === BOUGHTOUTPARTSRFQ) {
+                let data = new FormData()
+
+                data.append('file', newfileData)
+
+                data.append('loggedInUserId', loggedInUserId())
+                // uploadDataRFQ.TechnologyId = this.props?.technologyId?.value
+                switch (selectedOption) {
+                    case "Bought Out Part":
+                        this.props.checkBoughtOutPartsRFQBulkUpload(data, (res) => {
+                            this.setState({ setDisable: false })
+                            this.responseHandlerRFQ(res)
+                        });
+                        break
+                    case "Raw Material":
+                        this.props.checkRawMaterialRFQBulkUpload(data, (res) => {
+                            this.setState({ setDisable: false })
+                            this.responseHandlerRFQ(res)
+                        });
+                        break
+                    case "componentAssembly":
+                        this.props.checkComponentOrAssemblyRFQBulkUpload(data, (res) => {
+                            this.setState({ setDisable: false })
+                            this.responseHandlerRFQ(res)
+                        });
+                        break
+
+
+
+                    default:
+                        return
+                }
+                // this.props.checkRFQBulkUpload(uploadDataRFQ, (res) => {
+                //     this.setState({ setDisable: false })
+                //     this.responseHandlerRFQ(res)
+                // });
             }
 
             else {
@@ -969,7 +1031,7 @@ class BulkUpload extends Component {
      * @description Renders the component
      */
     render() {
-        const { handleSubmit, isEditFlag, fileName, messageLabel, isZBCVBCTemplate = '', isMachineMoreTemplate } = this.props;
+        const { handleSubmit, isEditFlag, fileName, messageLabel, isZBCVBCTemplate = '', isMachineMoreTemplate, selectedOption = "", modelText } = this.props;
 
         const { faildRecords, failedData, costingTypeId, setDisable, noApprovalCycle, bopType } = this.state;
         if (faildRecords) {
@@ -981,6 +1043,8 @@ class BulkUpload extends Component {
                 costingTypeId={costingTypeId}
                 bopType={bopType}
                 isImport={this.state.isImport}
+                selectedOption={selectedOption}
+                modelText={modelText}
             />
         }
         return (
@@ -1073,7 +1137,7 @@ class BulkUpload extends Component {
                                 <Row className="pl-3">
                                     {isZBCVBCTemplate &&
                                         <Col md="12">
-                                            {(reactLocalStorage.getObject('CostingTypePermission').zbc) && (fileName !== 'Interest Rate') && (fileName !== 'ADD RFQ') &&
+                                            {(reactLocalStorage.getObject('CostingTypePermission').zbc) && (fileName !== 'Interest Rate') && (fileName !== ASSEMBLYORCOMPONENTSRFQ) && (fileName !== RAWMATERIALSRFQ) && (fileName !== BOUGHTOUTPARTSRFQ) &&
                                                 <Label sm={isMachineMoreTemplate || (fileName === 'Operation' && getConfigurationKey().IsShowDetailedOperationBreakup) ? 6 : 4} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
                                                     <input
                                                         type="radio"
@@ -1086,7 +1150,7 @@ class BulkUpload extends Component {
                                                     <span>Zero Based</span>
                                                 </Label>
                                             }
-                                            {(reactLocalStorage.getObject('CostingTypePermission').vbc) && (fileName !== 'ADD RFQ') && <Label sm={isMachineMoreTemplate || (fileName === 'Operation' && getConfigurationKey().IsShowDetailedOperationBreakup) ? 6 : 4} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
+                                            {(reactLocalStorage.getObject('CostingTypePermission').vbc) && (fileName !== ASSEMBLYORCOMPONENTSRFQ) && (fileName !== RAWMATERIALSRFQ) && (fileName !== BOUGHTOUTPARTSRFQ) && <Label sm={isMachineMoreTemplate || (fileName === 'Operation' && getConfigurationKey().IsShowDetailedOperationBreakup) ? 6 : 4} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
                                                 <input
                                                     type="radio"
                                                     name="costingHead"
@@ -1096,7 +1160,7 @@ class BulkUpload extends Component {
                                                 <span>{this.props.t('VendorLabel', { ns: 'MasterLabels', defaultValue: 'Vendor' }) + " Based"}
                                                 </span>
                                             </Label>}
-                                            {(reactLocalStorage.getObject('CostingTypePermission').cbc) && (fileName !== 'ADD RFQ') && <Label sm={isMachineMoreTemplate || (fileName === 'Operation' && getConfigurationKey().IsShowDetailedOperationBreakup) ? 6 : 4} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
+                                            {(reactLocalStorage.getObject('CostingTypePermission').cbc) && (fileName !== ASSEMBLYORCOMPONENTSRFQ) && (fileName !== RAWMATERIALSRFQ) && (fileName !== BOUGHTOUTPARTSRFQ) && <Label sm={isMachineMoreTemplate || (fileName === 'Operation' && getConfigurationKey().IsShowDetailedOperationBreakup) ? 6 : 4} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
                                                 <input
                                                     type="radio"
                                                     name="costingHead"
@@ -1186,6 +1250,8 @@ class BulkUpload extends Component {
                                             costingTypeId={costingTypeId}
                                             bopType={bopType}
                                             isImport={this.state.isImport}
+                                            selectedOption={selectedOption}
+                                            modelText={modelText}
                                         />
                                     </div>
 
@@ -1237,7 +1303,7 @@ class BulkUpload extends Component {
                     <Row className="pl-3">
                         {isZBCVBCTemplate &&
                             <Col md="12">
-                                {(reactLocalStorage.getObject('CostingTypePermission').zbc) && (fileName !== 'Interest Rate') && (fileName !== 'ADD RFQ') &&
+                                {(reactLocalStorage.getObject('CostingTypePermission').zbc) && (fileName !== 'Interest Rate') && (fileName !== ASSEMBLYORCOMPONENTSRFQ) && (fileName !== RAWMATERIALSRFQ) && (fileName !== BOUGHTOUTPARTSRFQ) &&
                                     <Label sm={isMachineMoreTemplate ? 6 : 4} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
                                         <input
                                             type="radio"
@@ -1250,7 +1316,7 @@ class BulkUpload extends Component {
                                         <span>Zero Based</span>
                                     </Label>
                                 }
-                                {(reactLocalStorage.getObject('CostingTypePermission').vbc) && (fileName !== 'ADD RFQ') && <Label sm={isMachineMoreTemplate ? 6 : 4} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
+                                {(reactLocalStorage.getObject('CostingTypePermission').vbc) && (fileName !== ASSEMBLYORCOMPONENTSRFQ) && (fileName !== RAWMATERIALSRFQ) && (fileName !== BOUGHTOUTPARTSRFQ) && <Label sm={isMachineMoreTemplate ? 6 : 4} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
                                     <input
                                         type="radio"
                                         name="costingHead"
@@ -1259,7 +1325,7 @@ class BulkUpload extends Component {
                                     />{' '}
                                     <span>Vendor Based</span>
                                 </Label>}
-                                {(reactLocalStorage.getObject('CostingTypePermission').cbc) && (fileName !== 'ADD RFQ') && <Label sm={isMachineMoreTemplate ? 6 : 4} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
+                                {(reactLocalStorage.getObject('CostingTypePermission').cbc) && (fileName !== ASSEMBLYORCOMPONENTSRFQ) && (fileName !== RAWMATERIALSRFQ) && (fileName !== BOUGHTOUTPARTSRFQ) && <Label sm={isMachineMoreTemplate ? 6 : 4} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
                                     <input
                                         type="radio"
                                         name="costingHead"
@@ -1310,6 +1376,8 @@ class BulkUpload extends Component {
                                 fileName={fileName}
                                 isFailedFlag={false}
                                 costingTypeId={costingTypeId}
+                                selectedOption={selectedOption}
+                                modelText={modelText}
                             />
                         </div>
 
@@ -1399,6 +1467,9 @@ export default connect(mapStateToProps, {
     bulkUploadInterestRateCBC,
     bulkUploadBudgetMaster,
     checkRFQBulkUpload,
+    checkComponentOrAssemblyRFQBulkUpload,
+    checkRawMaterialRFQBulkUpload,
+    checkBoughtOutPartsRFQBulkUpload,
     getUsersMasterLevelAPI,
     checkFinalUser,
     bulkUploadIndex,

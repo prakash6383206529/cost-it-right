@@ -3,6 +3,7 @@ import { SearchableSelectHookForm, TextFieldHookForm, PasswordFieldHookForm, Asy
 import { useForm, Controller } from "react-hook-form";
 import Toaster from "../common/Toaster";
 import { Loader } from "../common/Loader";
+import AsyncSelect from 'react-select/async';
 import {
   minLength3, minLength10, maxLength12, required, email, minLength6, minLength7, maxLength18, maxLength11,
   maxLength6, checkWhiteSpaces, postiveNumber, maxLength80, maxLength5, acceptAllExceptSingleSpecialCharacter, strongPassword, maxLength25, hashValidation, number, maxLength50, getNameBySplitting, getCodeBySplitting, checkSpacesInString, checkSingleSpaceInString
@@ -12,11 +13,11 @@ import {
   getPermissionByUser, getUsersTechnologyLevelAPI, getLevelByTechnology, getSimulationTechnologySelectList, getSimualationLevelByTechnology, getUsersSimulationTechnologyLevelAPI, getMastersSelectList, getUsersMasterLevelAPI, getMasterLevelDataList, getMasterLevelByMasterId, registerRfqUser, updateRfqUser, getAllLevelAPI, checkHighestApprovalLevelForHeadsAndApprovalType, getOnboardingLevelById, getPlantSelectListForDepartment, getUsersOnboardingLevelAPI,
   getAllDivisionListAssociatedWithDepartment
 } from "../../actions/auth/AuthActions";
-import { getCityByCountry, getAllCity, getReporterList, getApprovalTypeSelectList, getVendorNameByVendorSelectList, getApprovalTypeSelectListUserModule } from "../../actions/Common";
+import { getCityByCountry,getReporterList, getApprovalTypeSelectList, getVendorNameByVendorSelectList, getApprovalTypeSelectListUserModule } from "../../actions/Common";
 import { MESSAGES } from "../../config/message";
 import { IsSendMailToPrimaryContact, IsSendQuotationToPointOfContact, getConfigurationKey, handleDepartmentHeader, loggedInUserId } from "../../helper/auth";
 import { Button, Row, Col } from 'reactstrap';
-import { EMPTY_DATA, IV, IVRFQ, KEY, KEYRFQ, ONBOARDINGID, ONBOARDINGNAME, VBC_VENDOR_TYPE, VENDORNEEDFOR, ZBC, searchCount } from "../../config/constants";
+import { EMPTY_DATA, IV, IVRFQ, KEY, KEYRFQ, ONBOARDINGID, ONBOARDINGNAME, SPACEBAR, VBC_VENDOR_TYPE, VENDORNEEDFOR, ZBC, searchCount } from "../../config/constants";
 import NoContentFound from "../common/NoContentFound";
 import HeaderTitle from "../common/HeaderTitle";
 import PermissionsTabIndex from "./RolePermissions/PermissionsTabIndex";
@@ -24,7 +25,7 @@ import { EMPTY_GUID, COSTING_LEVEL, SIMULATION_LEVEL, MASTER_LEVEL, ONBOARDING_M
 import PopupMsgWrapper from "../common/PopupMsgWrapper";
 import { useDispatch, useSelector } from 'react-redux'
 import { reactLocalStorage } from "reactjs-localstorage";
-import { autoCompleteDropdown } from "../common/CommonFunctions";
+import { autoCompleteDropdown, DropDownFilterList } from "../common/CommonFunctions";
 import _, { debounce } from "lodash";
 import { AgGridColumn, AgGridReact } from "ag-grid-react";
 import { PaginationWrapper } from "../common/commonPagination";
@@ -34,6 +35,7 @@ import { useTranslation } from "react-i18next";
 import { Steps } from "./TourMessages";
 import TooltipCustom from "../common/Tooltip";
 import { useLabels } from "../../helper/core";
+import LoaderCustom from "../common/LoaderCustom";
 
 
 var CryptoJS = require('crypto-js')
@@ -51,6 +53,11 @@ const gridOptions = {
 function UserRegistration(props) {
 
   const { t } = useTranslation("UserRegistration")
+  const [state, setState] = useState({
+    city: [],
+    showErrorOnFocus: false,
+    inputLoader: false
+    })
   const [token, setToken] = useState("");
   const [lowerCaseCheck, setLowerCaseCheck] = useState(false);
   const [upperCaseCheck, setUpperCaseCheck] = useState(false);
@@ -65,7 +72,7 @@ function UserRegistration(props) {
   const [department, setDepartment] = useState([]);
   const [oldDepartment, setOldDepartment] = useState([]);
   const [role, setRole] = useState([]);
-  const [city, setCity] = useState([]);
+  // const [city, setCity] = useState([]);
   const [isEditFlag, setIsEditFlag] = useState(false);
   const [isShowForm, setIsShowForm] = useState(false);
   const [UserId, setUserId] = useState("");
@@ -135,7 +142,7 @@ function UserRegistration(props) {
   const dispatch = useDispatch()
   const { technologyLabel } = useLabels();
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
-  const cityList = useSelector(state => state.comman.cityList)
+  // const cityList = useSelector(state => state.comman.cityList)
   const departmentList = useSelector(state => state.auth.departmentList)
   const roleList = useSelector(state => state.auth.roleList)
   const technologyList = useSelector(state => state.auth.technologyList)
@@ -246,9 +253,6 @@ function UserRegistration(props) {
     dispatch(getAllTechnologyAPI(() => { }))
     dispatch(getLevelByTechnology(false, '', '', () => { }))
     getUserDetail(data);
-    dispatch(getAllCity(cityId => {
-      dispatch(getCityByCountry(cityId, 0, () => { }))
-    }))
     dispatch(getSimulationTechnologySelectList(() => { }))
     dispatch(getMastersSelectList(() => { }))
     if (props?.RFQUser) {
@@ -353,14 +357,14 @@ function UserRegistration(props) {
       return temp;
     }
 
-    if (label === 'city') {
-      cityList && cityList.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ label: item.Text, value: item.Value })
-        return null;
-      });
-      return temp;
-    }
+    // if (label === 'city') {
+    //   cityList && cityList.map(item => {
+    //     if (item.Value === '0') return false;
+    //     temp.push({ label: item.Text, value: item.Value })
+    //     return null;
+    //   });
+    //   return temp;
+    // }
     if (label === 'technology') {
       const temp = [];
 
@@ -668,9 +672,20 @@ function UserRegistration(props) {
   * @method cityHandler
   * @description Used to handle city
   */
-  const cityHandler = (newValue, actionMeta) => {
-
-    setCity(newValue)
+  const cityHandler = (selectedOption) => {
+    if (selectedOption) {
+      setState(prevState => ({
+        ...prevState,
+        city: selectedOption
+      }));
+      setValue('CityId', selectedOption.value);
+    } else {
+      setState(prevState => ({
+        ...prevState,
+        city: null
+      }));
+      setValue('CityId', '');
+    }
   };
 
 
@@ -749,12 +764,14 @@ function UserRegistration(props) {
             setDepartment(depatArr)
             setOldDepartment(depatArr)
             setRole(RoleObj !== undefined ? { label: RoleObj.RoleName, value: RoleObj.RoleId } : [])
-            setCity({ label: registerUserData?.CityName, value: registerUserData?.CityId })
+            // setState(prevState => ({ ...prevState, city: { label: registerUserData?.StateName, value: registerUserData?.StateId } }));
+            // setCity({ label: registerUserData?.CityName, value: registerUserData?.CityId })
             setRoleId(RoleObj !== undefined ? { label: RoleObj.RoleName, value: RoleObj.RoleId } : [])
             setValue('UserName', Data?.UserName)
-            setCity({
-              label: Data?.CityName, value: Data?.CityId
-            })
+            // setCity({
+            //   label: Data?.CityName, value: Data?.CityId
+            // })
+            setState(prevState => ({ ...prevState, city: { label: Data?.CityName, value: Data?.CityId} }));
 
             if (Data.IsAdditionalAccess) {
               getUserPermission(data.UserId)
@@ -1975,7 +1992,8 @@ function UserRegistration(props) {
     setIsShowForm(false)
     setDepartment([])
     setRole([])
-    setCity([])
+    setState(prevState => ({ ...prevState, city: [] }));
+    // setCity([])
     setModules([])
     setOldModules([])
     setIsShowAdditionalPermission(false)
@@ -2201,7 +2219,7 @@ function UserRegistration(props) {
         PlantName: '',
         IsActive: true,
         //AdditionalPermission: registerUserData.AdditionalPermission,
-        CityName: city.label,
+        CityName: state?.city?.label,
         UserProfileId: registerUserData?.UserProfileId,
         UserName: values.UserName ? values.UserName.trim() : '',
         Password: isShowPwdField ? encryptedpassword.toString() : '',
@@ -2224,7 +2242,7 @@ function UserRegistration(props) {
         ZipCode: values.ZipCode,
         PhoneNumber: values.PhoneNumber,
         Extension: values.Extension,
-        CityId: city.value,
+        CityId: state.city.value,
         IsRemoveCosting: false,
         CostingCount: registerUserData.CostingCount,
         IsAdditionalAccess: IsShowAdditionalPermission,
@@ -2316,7 +2334,7 @@ function UserRegistration(props) {
         ZipCode: values.ZipCode,
         PhoneNumber: values.PhoneNumber,
         Extension: values.Extension,
-        CityId: city.value,
+        CityId: state?.city?.value,
         DepartmentsPlantsIdLists: plantArray,
         OnboardingApprovalLevels: [],
         DepartmentsDivisionIdLists: divisionArray
@@ -2378,34 +2396,34 @@ function UserRegistration(props) {
     }
   };
 
-  const vendorFilterList = async (inputValue) => {
-    if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
-      inputValue = inputValue.trim();
-    }
-    const resultInput = inputValue.slice(0, searchCount)
-    if (inputValue?.length >= searchCount && vendor !== resultInput) {
-      let res
-      res = await getVendorNameByVendorSelectList(VBC_VENDOR_TYPE, resultInput)
-      setVendor(resultInput)
-      let vendorDataAPI = res?.data?.SelectList
-      if (inputValue) {
-        return autoCompleteDropdown(inputValue, vendorDataAPI, false, [], true)
-      } else {
-        return vendorDataAPI
-      }
-    }
-    else {
-      if (inputValue?.length < searchCount) return false
-      else {
-        let VendorData = reactLocalStorage?.getObject('Data')
-        if (inputValue) {
-          return autoCompleteDropdown(inputValue, VendorData, false, [], false)
-        } else {
-          return VendorData
-        }
-      }
-    }
-  };
+  // const vendorFilterList = async (inputValue) => {
+  //   if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
+  //     inputValue = inputValue.trim();
+  //   }
+  //   const resultInput = inputValue.slice(0, searchCount)
+  //   if (inputValue?.length >= searchCount && vendor !== resultInput) {
+  //     let res
+  //     res = await getVendorNameByVendorSelectList(VBC_VENDOR_TYPE, resultInput)
+  //     setVendor(resultInput)
+  //     let vendorDataAPI = res?.data?.SelectList
+  //     if (inputValue) {
+  //       return autoCompleteDropdown(inputValue, vendorDataAPI, false, [], true)
+  //     } else {
+  //       return vendorDataAPI
+  //     }
+  //   }
+  //   else {
+  //     if (inputValue?.length < searchCount) return false
+  //     else {
+  //       let VendorData = reactLocalStorage?.getObject('Data')
+  //       if (inputValue) {
+  //         return autoCompleteDropdown(inputValue, VendorData, false, [], false)
+  //       } else {
+  //         return VendorData
+  //       }
+  //     }
+  //   }
+  // };
   const onGridReady = (params, setGridApi, setGridColumnApi) => {
     setGridApi(params.api);
     params.api.sizeColumnsToFit();
@@ -2575,6 +2593,12 @@ function UserRegistration(props) {
       setValue('plant', '');  // Assuming you want to clear the form value when nothing is selected
     }
   }
+  const cityFilterList = (inputValue) => {
+    return DropDownFilterList(inputValue, '', 'city', (filterType, resultInput) => getCityByCountry(0, 0, resultInput), setState, state);
+  };
+const  vendorFilterList = (inputValue) => {
+  return DropDownFilterList(inputValue, '', 'vendor', (filterType, resultInput) => getVendorNameByVendorSelectList(VBC_VENDOR_TYPE, resultInput), setState, state);
+}
   return (
     <div className="container-fluid">
       {isLoader && <Loader />}
@@ -2669,24 +2693,30 @@ function UserRegistration(props) {
                         customClassName={'withBorder'}
                       />
                     </div>
-                    {props?.RFQUser && IsSendMailToPrimaryContact() && <Col md="3" id="primaryContact_container" className="d-flex align-items-center mt-4 pt-2">
-                      <label
-                        className={`custom-checkbox`}
-                        onChange={onPrimaryContactCheck}
-                      >
-                        Primary Contact
-                        <input
-                          type="checkbox"
-                          checked={primaryContact}
-                        />
-                        <TooltipCustom id="Primary_Contact" customClass="mt-1" tooltipText="Please click on the checkbox if this user is the main point of contact for the vendor." />
-                        <span
-                          className=" before-box"
-                          checked={primaryContact}
-                          onChange={onPrimaryContactCheck}
-                        />
-                      </label>
-                    </Col>}
+                    {props?.RFQUser && IsSendMailToPrimaryContact() &&
+                      <Col md="3" id="primaryContact_container" >
+                        <div className="d-flex align-items-center mt-4 pt-2">
+                        <label
+                          className={`custom-checkbox ml-2 mt-1`}
+                          // onChange={onPrimaryContactCheck}
+                        >
+                          Primary Contact
+                          <input
+                            type="checkbox"
+                            checked={primaryContact}
+                            onChange={onPrimaryContactCheck}
+                          />
+                          <span
+                            className=" before-box"
+                          />
+                         
+                        </label>
+                        <TooltipCustom id="Primary_Contact"
+                            customClass="mt-n1 pb-4"
+                            tooltipText="Please click on the checkbox if this user is the main point of contact for the vendor." />
+                      </div>
+                      </Col>
+                    }
                     {!props?.RFQUser && <div className="col-md-3">
                       <div className="row form-group">
                         <div className="Phone phoneNumber col-md-8">
@@ -2954,7 +2984,7 @@ function UserRegistration(props) {
                         customClassName={'withBorder addresss2-field'}
                       />
                     </div>
-                    <div className="col-md-3">
+                    {/* <div className="col-md-3">
                       <SearchableSelectHookForm
                         name="CityId"
                         label="City"
@@ -2963,6 +2993,8 @@ function UserRegistration(props) {
                         control={control}
                         register={register}
                         mandatory={false}
+                        loadOptions={cityFilterList}
+
                         rules={{
                           required: false,
                         }}
@@ -2974,6 +3006,64 @@ function UserRegistration(props) {
                         handleChange={cityHandler}
                         valueDescription={city}
                       />
+                    </div> */}
+                    <div className="col-md-3">
+                      {/* <label>{`City`}<span className="asterisk-required">*</span></label>
+                      <div className="d-flex justify-space-between align-items-center p-relative async-select">
+                        <div className="fullinput-icon p-relative">
+                          {console.log(state.inputLoader, "state.inputLoader")}
+                          {state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
+                          <Controller
+                            name="CityId"
+                            control={control}
+                            rules={{ required: "City is required" }}
+                            render={({ field }) => (
+                              <AsyncSelect
+                                {...field}
+                                loadOptions={cityFilterList}
+                                onChange={(e) => {
+                                  field.onChange(e);
+                                  cityHandler(e);
+                                }}
+                                value={state.city}
+                                noOptionsMessage={({ inputValue }) => inputValue?.length < 3 ? MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN : "No results found"}
+                                onKeyDown={(onKeyDown) => {
+                                  if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
+                                }}
+                                onBlur={() => setState(prevState => ({ ...prevState, showErrorOnFocus: false }))}
+                                placeholder={"Select.."}
+                                className="mb-0 withBorder"
+                                disabled={state.inputLoader}
+                              
+                              />
+                            )}
+                            disabled={state.inputLoader}
+                          />
+                          {errors.CityId && <div className="text-help">{errors.CityId.message}</div>}
+                        </div>
+                      </div> */}
+                     
+                        <AsyncSearchableSelectHookForm
+                              name="CityId"
+                              type="text"
+                              label={"City"}
+                              errors={errors.CityId}
+                              Controller={Controller}
+                              control={control}
+                              register={register}
+                              mandatory={true}
+                              rules={{
+                                required: true,
+                              }}
+                              disabled={isEditFlag ? true : false}
+                              placeholder={'Select City'}
+                              //onKeyUp={(e) => this.changeItemDesc(e)}
+                              // validate={(role == null || role.length === 0) ? [required] : []}
+                              // required={true}
+                              handleChange={cityHandler}
+                              asyncOptions={cityFilterList}
+                              NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
+                            />
                     </div>
                     <div className="input-group col-md-3 input-withouticon">
                       <NumberFieldHookForm
@@ -3785,4 +3875,5 @@ function UserRegistration(props) {
 }
 
 export default UserRegistration
+
 

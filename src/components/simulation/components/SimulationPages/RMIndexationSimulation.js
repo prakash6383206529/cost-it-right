@@ -92,7 +92,7 @@ function RMIndexationSimulation(props) {
         reValidateMode: 'onChange',
     })
 
-    const { technologyLabel } = useLabels();
+    const { technologyLabel,vendorLabel } = useLabels();
     const dispatch = useDispatch()
 
     const currencySelectList = useSelector(state => state.comman.currencySelectList)
@@ -1104,11 +1104,11 @@ function RMIndexationSimulation(props) {
                                                 <AgGridColumn width={columnWidths.RawMaterialGradeName} field={props.isCostingSimulation ? 'RawMaterialGrade' : "RawMaterialGradeName"} tooltipField='RawMaterialGradeName' editable='false' headerName="Grade" ></AgGridColumn>
                                                 <AgGridColumn width={columnWidths.RawMaterialSpecificationName} field={props.isCostingSimulation ? 'RawMaterialSpecs' : "RawMaterialSpecificationName"} tooltipField='RawMaterialSpecificationName' editable='false' headerName="Spec"></AgGridColumn>
                                                 <AgGridColumn width={columnWidths.RawMaterialCode} field="RawMaterialCode" tooltipField='RawMaterialCode' editable='false' headerName='Code' cellRenderer='hyphenFormatter'></AgGridColumn>
-                                                {getConfigurationKey()?.IsShowSourceVendorInRawMaterial && !props.isCostingSimulation && <AgGridColumn field="SourceVendorAssociatedAsRawMaterialVendors" width={250} headerName='Raw Material Code (Source Vendor Code)' cellRendererFramework={CustomCellRenderer}></AgGridColumn>}
-                                                {getConfigurationKey()?.IsShowSourceVendorInRawMaterial && <AgGridColumn width={columnWidths.SourceVendorName} field="SourceVendorName" tooltipField='SourceVendorName' editable='false' headerName='Source Vendor (Code)' cellRenderer='hyphenFormatter'></AgGridColumn>}
+                                                {getConfigurationKey()?.IsShowSourceVendorInRawMaterial && !props.isCostingSimulation && <AgGridColumn field="SourceVendorAssociatedAsRawMaterialVendors" width={250} headerName={`Raw Material Code (Source ${vendorLabel} Code)`} cellRendererFramework={CustomCellRenderer}></AgGridColumn>}
+                                                {getConfigurationKey()?.IsShowSourceVendorInRawMaterial && <AgGridColumn width={columnWidths.SourceVendorName} field="SourceVendorName" tooltipField='SourceVendorName' editable='false' headerName={`Source ${vendorLabel} (Code)`} cellRenderer='hyphenFormatter'></AgGridColumn>}
                                                 {!isImpactedMaster && <AgGridColumn width={columnWidths.RawMaterialCategoryName} field={props.isCostingSimulation ? 'Category' : "RawMaterialCategoryName"} tooltipField='RawMaterialCategoryName' editable='false' headerName="Category"></AgGridColumn>}
                                                 {!isImpactedMaster && <AgGridColumn width={columnWidths.TechnologyName} field={props.isCostingSimulation ? 'Technology' : "TechnologyName"} tooltipField='TechnologyName' editable='false' headerName={technologyLabel} ></AgGridColumn>}
-                                                {!isImpactedMaster && list && list[0]?.CostingTypeId !== CBCTypeId && <AgGridColumn width={columnWidths.VendorCod} field={props.isCostingSimulation ? 'VendorCode' : "Vendor (Code)"} tooltipField='Vendor (Code)' editable='false' headerName="Vendor (Code)" cellRenderer='vendorFormatter'></AgGridColumn>}
+                                                {!isImpactedMaster && list && list[0]?.CostingTypeId !== CBCTypeId && <AgGridColumn width={columnWidths.VendorCod} field={props.isCostingSimulation ? 'VendorCode' : "Vendor (Code)"} tooltipField='Vendor (Code)' editable='false' headerName={vendorLabel + " (Code)"} cellRenderer='vendorFormatter'></AgGridColumn>}
                                                 {!isImpactedMaster && list && list[0]?.CostingTypeId === CBCTypeId && <AgGridColumn width={columnWidths.CustomerName} field={props.isCostingSimulation ? 'CustomerCode' : "CustomerName"} tooltipField='CustomerName' editable='false' headerName="Customer (Code)" cellRenderer='customerFormatter'></AgGridColumn>}
                                                 {!isImpactedMaster && <AgGridColumn width={columnWidths.PlantCode} field={props.isCostingSimulation ? 'PlantCode' : "Plant (Code)"} editable='false' headerName="Plant (Code)" tooltipField='Plant (Code)' cellRenderer='plantFormatter' ></AgGridColumn>}
                                                 <AgGridColumn width={columnWidths.UnitOfMeasurementName} field={props.isCostingSimulation ? 'UOM' : "UnitOfMeasurementName"} tooltipField='UnitOfMeasurementName' editable='false' headerName="UOM"></AgGridColumn>

@@ -916,6 +916,8 @@ function ViewDrawer(props) {
         if (newValue && newValue !== '') {
             setRMCode(newValue)
             setDisabled(true)
+            delete errors?.RawMaterialSpecification
+            delete errors?.RawMaterialGrade
             delete errors.RawMaterialName
             dispatch(getRMSpecificationDataAPI(newValue.value, true, (res) => {
                 if (res.status === 204) {

@@ -36,6 +36,7 @@ import NoContentFound from '../../common/NoContentFound'
 import TourWrapper from '../../common/Tour/TourWrapper'
 import { useTranslation } from 'react-i18next'
 import { Steps } from './TourMessages'
+import { useLabels } from '../../../helper/core'
 const gridOptions = {};
 function AddBudget(props) {
     const { register, handleSubmit, formState: { errors }, control, setValue, getValues, reset } = useForm({
@@ -96,7 +97,7 @@ function AddBudget(props) {
     const [disableCurrency, setDisableCurrency] = useState(true);
     const userMasterLevelAPI = useSelector((state) => state.auth.userMasterLevelAPI)
     const isViewMode = props.data.isViewMode
-
+    const { vendorLabel } = useLabels()
     useEffect(() => {
         setCostingTypeId(getCostingTypeIdByCostingPermission())
         dispatch(getPlantSelectListByType(ZBC, "MASTER", '', () => { }))
@@ -846,7 +847,7 @@ function AddBudget(props) {
                                                                 }
                                                                 disabled={isViewMode ? true : false}
                                                             />{" "}
-                                                            <span>Vendor Based</span>
+                                                            <span>{vendorLabel} Based</span>
                                                         </Label>}
                                                         {reactLocalStorage.getObject('CostingTypePermission').cbc && <Label id='AddBudget_CustomerBased' className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
                                                             <input
@@ -896,7 +897,7 @@ function AddBudget(props) {
                                                             )}
                                                             {costingTypeId === VBCTypeId && (<>
                                                                 <Col md="3">
-                                                                    <label>{"Vendor (Code)"}<span className="asterisk-required">*</span></label>
+                                                                    <label>{vendorLabel} (Code)<span className="asterisk-required">*</span></label>
                                                                     <div className="d-flex justify-space-between align-items-center p-relative async-select">
                                                                         <div className="fullinput-icon p-relative">
                                                                             {inputLoader && <LoaderCustom customClass={`input-loader`} />}
