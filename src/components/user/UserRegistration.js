@@ -588,7 +588,8 @@ function UserRegistration(props) {
   */
   const departmentHandler = (newValue, actionMeta) => {
     let departmentIds = []
-    newValue && newValue?.map(item => {
+    let copiedArr = getConfigurationKey().IsMultipleDepartmentAllowed ? newValue : [newValue]
+    copiedArr && copiedArr?.map(item => {
       departmentIds.push(item?.value)
     })
     dispatch(getAllDivisionListAssociatedWithDepartment(departmentIds, res => {

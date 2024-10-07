@@ -4,7 +4,7 @@ import { Field, reduxForm, formValueSelector, clearFields } from "redux-form";
 import { Row, Col, Label } from 'reactstrap';
 import { required, getCodeBySplitting, number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation, maxLength512, acceptAllExceptSingleSpecialCharacter } from "../../../helper/validation";
 import { searchableSelect, renderTextAreaField, renderDatePicker, renderMultiSelectField, renderText } from "../../layout/FormInputs";
-import { fetchModelTypeAPI, fetchCostingHeadsAPI, getPlantSelectListByType, getVendorNameByVendorSelectList } from '../../../actions/Common';
+import { fetchCostingHeadsAPI, getPlantSelectListByType, getVendorNameByVendorSelectList } from '../../../actions/Common';
 import {
   createOverhead, updateOverhead, getOverheadData, fileUploadOverHead,
 } from '../actions/OverheadProfit';
@@ -101,9 +101,6 @@ class AddOverhead extends Component {
     }
     this.props.getPlantSelectListByType(ZBC, "MASTER", '', () => { })
     this.props.fetchCostingHeadsAPI('master', false, res => { });
-    if (!this.state.isViewMode) {
-      this.props.fetchModelTypeAPI('--Model Types--', res => { });
-    }
     this.getDetails();
   }
   componentWillUnmount() {
@@ -1497,7 +1494,6 @@ function mapStateToProps(state) {
 * @param {function} mapDispatchToProps
 */
 export default connect(mapStateToProps, {
-  fetchModelTypeAPI,
   fetchCostingHeadsAPI,
   getClientSelectList,
   getPlantSelectListByType,
