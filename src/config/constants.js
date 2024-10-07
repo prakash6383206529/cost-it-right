@@ -3030,7 +3030,7 @@ export const statusOptionsMasters = _.sortBy([
   { label: "Draft", value: "1" },
   { label: "History", value: "5" },
   { label: "Pending For Approval", value: "2" },
-  {label:"Rejected By System",value:"18"},
+  { label: "Rejected By System", value: "18" },
 ], ({ label }) => label.toLowerCase());
 
 
@@ -3246,7 +3246,7 @@ export const showLogoFromDataBase = false
 export const showPaperCorrugatedBox = true
 
 export const showDynamicKeys = false
-export const hideDetailOfRubbercalci = true
+export const hideDetailOfRubbercalci = false
 export const customHavellsChanges = true
 export const countDownBlinkingTime = 2
 export const clientName = 'Havells'

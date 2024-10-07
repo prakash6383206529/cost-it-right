@@ -164,4 +164,3 @@ function ViewToolCost(props) {
 }
 
 export default React.memo(ViewToolCost)
-// CR2-I28

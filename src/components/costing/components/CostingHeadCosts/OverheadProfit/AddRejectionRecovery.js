@@ -26,12 +26,12 @@ function AddRejectionRecovery(props) {
     const { rejectionRecovery, RMCCTabData } = useSelector(state => state.costing)
     const { CostingPartDetails } = RMCCTabData[0]
     const [state, setState] = useState({
-        rejectionApplicabilityTypeValue: rejectionRecovery.ApplicabilityIdRef,
-        rejectionApplicabilityType: rejectionRecovery.ApplicabilityType,
-        rejectionRecoveryPercentage: rejectionRecovery.Value,
-        effectiveRecoveryPercentage: rejectionRecovery.EffectiveRecoveryPercentage,
-        recoveryCostApplicability: rejectionRecovery.ApplicabilityCost,
-        netRejectionRecovery: rejectionRecovery.RejectionRecoveryNetCost,
+        rejectionApplicabilityTypeValue: rejectionRecovery?.ApplicabilityIdRef,
+        rejectionApplicabilityType: rejectionRecovery?.ApplicabilityType,
+        rejectionRecoveryPercentage: rejectionRecovery?.Value,
+        effectiveRecoveryPercentage: rejectionRecovery?.EffectiveRecoveryPercentage,
+        recoveryCostApplicability: rejectionRecovery?.ApplicabilityCost,
+        netRejectionRecovery: rejectionRecovery?.RejectionRecoveryNetCost,
     }
     )
     const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
@@ -72,11 +72,11 @@ function AddRejectionRecovery(props) {
 
     useEffect(() => {
         if (Object.keys(rejectionRecovery).length > 0) {
-            setValue('RejectionRecoveryApplicability', rejectionRecovery.ApplicabilityType ? { label: rejectionRecovery.ApplicabilityType, value: rejectionRecovery.ApplicabilityIdRef } : '')
-            setValue('RejectionRecoveryPercentage', checkForDecimalAndNull(rejectionRecovery.Value, initialConfiguration.NoOfDecimalForPrice))
-            setValue('EffectiveRecoveryPercentage', checkForDecimalAndNull(rejectionRecovery.EffectiveRecoveryPercentage, initialConfiguration.NoOfDecimalForPrice))
-            setValue('RecoveryCostApplicability', checkForDecimalAndNull(rejectionRecovery.ApplicabilityCost, initialConfiguration.NoOfDecimalForPrice))
-            setValue('NetRejectionRecovery', checkForDecimalAndNull(rejectionRecovery.RejectionRecoveryNetCost, initialConfiguration.NoOfDecimalForPrice))
+            setValue('RejectionRecoveryApplicability', rejectionRecovery?.ApplicabilityType ? { label: rejectionRecovery?.ApplicabilityType, value: rejectionRecovery?.ApplicabilityIdRef } : '')
+            setValue('RejectionRecoveryPercentage', checkForDecimalAndNull(rejectionRecovery?.Value, initialConfiguration.NoOfDecimalForPrice))
+            setValue('EffectiveRecoveryPercentage', checkForDecimalAndNull(rejectionRecovery?.EffectiveRecoveryPercentage, initialConfiguration.NoOfDecimalForPrice))
+            setValue('RecoveryCostApplicability', checkForDecimalAndNull(rejectionRecovery?.ApplicabilityCost, initialConfiguration.NoOfDecimalForPrice))
+            setValue('NetRejectionRecovery', checkForDecimalAndNull(rejectionRecovery?.RejectionRecoveryNetCost, initialConfiguration.NoOfDecimalForPrice))
         }
     }, [rejectionRecovery])
 

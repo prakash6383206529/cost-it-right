@@ -82,14 +82,14 @@ function TabOverheadProfit(props) {
     // CostingViewMode CONDITION IS USED TO AVOID CALCULATION IN VIEWMODE
     if (CostingViewMode === false) {
       let TopHeaderValues = OverheadProfitTabData && OverheadProfitTabData.length > 0 && OverheadProfitTabData[0]?.CostingPartDetails !== undefined ? OverheadProfitTabData[0]?.CostingPartDetails : null;
-      
+
       let topHeaderData = {
         NetOverheadProfitCost: TopHeaderValues && (checkForNull(TopHeaderValues.OverheadCost) +
           checkForNull(TopHeaderValues.ProfitCost) +
           checkForNull(TopHeaderValues.RejectionCost) +
           checkForNull(TopHeaderValues.ICCCost))
       }
-      
+
       props.setHeaderCost(topHeaderData)
     }
   }, [OverheadProfitTabData]);
@@ -414,11 +414,10 @@ function TabOverheadProfit(props) {
             IsInventoryCarringCost: ICCObj && ICCObj.NetCost ? true : false,
             NetICC: ICCObj && ICCObj.NetCost ? checkForNull(ICCObj.NetCost) : 0,
           };
-          // i?.CostingPartDetails?.NetOverheadAndProfitCost = checkForNull(i?.CostingPartDetails?.OverheadCost) +
-          //   checkForNull(i?.CostingPartDetails?.ProfitCost) +
-          //   checkForNull(i?.CostingPartDetails?.RejectionCost) +
-          //   checkForNull(ICCObj.NetCost) +
-          //   checkForNull(i?.CostingPartDetails?.PaymentTermCost);
+          i.CostingPartDetails.NetOverheadAndProfitCost = checkForNull(i?.CostingPartDetails?.OverheadCost) +
+            checkForNull(i?.CostingPartDetails?.ProfitCost) +
+            checkForNull(i?.CostingPartDetails?.RejectionCost) +
+            checkForNull(ICCObj.NetCost)
 
           formatData(ICCObj, params, i.CostingChildPartDetails)
 
@@ -431,11 +430,10 @@ function TabOverheadProfit(props) {
             IsInventoryCarringCost: ICCObj && ICCObj.NetCost ? true : false,
             NetICC: ICCObj && ICCObj.NetCost ? checkForNull(ICCObj.NetCost) : 0,
           };
-          // i?.CostingPartDetails?.NetOverheadAndProfitCost = checkForNull(i?.CostingPartDetails?.OverheadCost) +
-          //   checkForNull(i?.CostingPartDetails?.ProfitCost) +
-          //   checkForNull(i?.CostingPartDetails?.RejectionCost) +
-          //   checkForNull(ICCObj.NetCost) +
-          //   checkForNull(i?.CostingPartDetails?.PaymentTermCost);
+          i.CostingPartDetails.NetOverheadAndProfitCost = checkForNull(i?.CostingPartDetails?.OverheadCost) +
+            checkForNull(i?.CostingPartDetails?.ProfitCost) +
+            checkForNull(i?.CostingPartDetails?.RejectionCost) +
+            checkForNull(ICCObj.NetCost)
 
         } else {
           i.IsOpen = false;
