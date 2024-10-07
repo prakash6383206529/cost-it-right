@@ -141,7 +141,7 @@ const RejectedCostingSummaryTable = (props) => {
       dispatch(setRejectedCostingViewData([]))
     }
   }, [])
-
+  const { vendorLabel } = useLabels()
   useEffect(() => {
 
     if (!viewMode && viewCostingData?.length !== 0 && partInfo && count === 0 && technologyId) {
@@ -796,7 +796,7 @@ const RejectedCostingSummaryTable = (props) => {
       Toaster.warning('Please select at least one costing to send for approval')
       return
     } else if (!allEqual(vendorArray)) {
-      Toaster.warning('Vendor should be same for sending multiple costing for approval')
+      Toaster.warning(`${vendorLabel} should be same for sending multiple costing for approval`)
       return
     } else if (!allEqual(effectiveDateArray)) {
       Toaster.warning('Effective Date should be same for sending multiple costing for approval')
@@ -1330,7 +1330,7 @@ const RejectedCostingSummaryTable = (props) => {
                             <td>
                               <span className="d-block">Costing Version</span>
                               <span className="d-block mt-2">PO Price (Effective from)</span>
-                              <span className="d-block">Vendor</span>
+                              <span className="d-block">{vendorLabel}</span>
                               <span className="d-block">Part Number</span>
                               <span className="d-block">Part Name</span>
                               <span className="d-block">Revision Number</span>

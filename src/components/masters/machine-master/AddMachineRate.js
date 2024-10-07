@@ -14,7 +14,7 @@ import {
 } from '../actions/MachineMaster';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { CBCTypeId, EMPTY_DATA, EMPTY_GUID, GUIDE_BUTTON_SHOW, SPACEBAR, VBCTypeId, VBC_COSTING, VBC_VENDOR_TYPE, ZBCTypeId, effectiveDateRangeDays, searchCount } from '../../../config/constants'
+import { CBCTypeId, EMPTY_DATA, EMPTY_GUID, GUIDE_BUTTON_SHOW, SPACEBAR, VBCTypeId, VBC_COSTING, VBC_VENDOR_TYPE, ZBCTypeId, searchCount } from '../../../config/constants'
 import { getConfigurationKey, loggedInUserId, userDetails } from "../../../helper/auth";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
@@ -35,7 +35,7 @@ import { ProcessGroup } from '../masterUtil';
 import _ from 'lodash'
 import { getCostingSpecificTechnology } from '../../costing/actions/Costing'
 import { getClientSelectList, } from '../actions/Client';
-import { autoCompleteDropdown, costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission } from '../../common/CommonFunctions';
+import { autoCompleteDropdown, costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission, getEffectiveDateMinDate } from '../../common/CommonFunctions';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { checkFinalUser } from '../../../components/costing/actions/Costing'
@@ -46,7 +46,7 @@ import { Steps } from './TourMessages';
 import { withTranslation } from 'react-i18next';
 import Button from '../../layout/Button';
 import { subDays } from 'date-fns';
-import { labels } from '../../../helper/core';
+import { labels, LabelsClass } from '../../../helper/core';
 
 const selector = formValueSelector('AddMachineRate');
 
@@ -1397,6 +1397,8 @@ class AddMachineRate extends Component {
   render() {
     const { handleSubmit, AddAccessibility, EditAccessibility, initialConfiguration, isMachineAssociated, t } = this.props;
     const { isEditFlag, isOpenMachineType, isOpenProcessDrawer, disableMachineType, IsCopied, isViewFlag, isViewMode, setDisable, lockUOMAndRate, UniqueProcessId, costingTypeId, IsDetailedEntry, CostingTypePermission, disableSendForApproval, tourContainer } = this.state;
+    const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
+
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
       if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
@@ -1495,7 +1497,7 @@ class AddMachineRate extends Component {
                               }
                               disabled={isEditFlag ? true : false}
                             />{" "}
-                            <span>{labels(t, 'VendorLabel', 'MasterLabels')} Based</span>
+                            <span>{VendorLabel} Based</span>
                           </Label>}
                           {reactLocalStorage.getObject('CostingTypePermission').cbc && <Label id="AddMachineRate_customerBased" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
                             <input
@@ -1542,7 +1544,7 @@ class AddMachineRate extends Component {
                         </Col>
                         {costingTypeId === VBCTypeId &&
                           <Col md="3">
-                            <label>{labels(t, 'VendorLabel', 'MasterLabels')}(Code)<span className="asterisk-required">*</span></label>
+                            <label>{VendorLabel} (Code)<span className="asterisk-required">*</span></label>
                             <div className='p-relative'>
                               {this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
                               <AsyncSelect
@@ -1696,7 +1698,7 @@ class AddMachineRate extends Component {
                                 type="text"
                                 validate={[required]}
                                 autoComplete={'off'}
-                                minDate={isEditFlag ? this.state.minEffectiveDate : subDays(new Date(), effectiveDateRangeDays)}
+                                minDate={isEditFlag ? this.state.minEffectiveDate : getEffectiveDateMinDate()}
                                 required={true}
                                 changeHandler={(e) => {
                                   //e.preventDefault()

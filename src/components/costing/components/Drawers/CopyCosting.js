@@ -14,6 +14,7 @@ import _, { debounce } from 'lodash';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import LoaderCustom from '../../../common/LoaderCustom';
 import TooltipCustom from '../../../common/Tooltip';
+import { useLabels } from '../../../../helper/core';
 function CopyCosting(props) {
   const { copyCostingData, partNo, type, zbcPlantGrid, vbcVendorGrid, nccGrid, cbcGrid } = props
 
@@ -23,7 +24,7 @@ function CopyCosting(props) {
   })
 
   const dispatch = useDispatch()
-
+  const { vendorLabel } = useLabels()
   const [plantDropDownList, setPlantDropDownList] = useState([])
   const [vendorName, setVendorName] = useState([])
   const [destinationPlant, setDestinationPlant] = useState([])
@@ -287,7 +288,7 @@ function CopyCosting(props) {
               <Row className="pl-3">
                 {
                   (type === VBCTypeId || type === NCCTypeId) && <Col md="12"> <TextFieldHookForm
-                    label={"Vendor (Code)"}
+                    label={`${vendorLabel} (Code)`}
                     name={"Vendor"}
                     Controller={Controller}
                     control={control}
@@ -387,7 +388,7 @@ function CopyCosting(props) {
                         onPressRadioButton(VBCTypeId)
                       }
                     />{" "}
-                    <span>Vendor Based</span>
+                    <span>{vendorLabel} Based</span>
                   </Label>}
                   {(reactLocalStorage.getObject('CostingTypePermission').cbc) && <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
                     <input
@@ -427,7 +428,7 @@ function CopyCosting(props) {
                   <Row className="pl-3">
                     <div className="form-group mb-1 col-md-12">
                       <SearchableSelectHookForm
-                        label={"Vendor (Code)"}
+                        label={`${vendorLabel} (Code)`}
                         name={"toVendor"}
                         placeholder={"Select"}
                         Controller={Controller}

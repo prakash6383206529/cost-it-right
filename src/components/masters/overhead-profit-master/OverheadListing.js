@@ -33,6 +33,7 @@ import { useTranslation } from 'react-i18next';
 import { Steps } from '../../common/Tour/TourMessages';
 import { ApplyPermission } from '.';
 import BulkUpload from '../../../../src/components/massUpload/BulkUpload';
+import { useLabels } from '../../../helper/core';
 
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -45,7 +46,7 @@ function OverheadListing(props) {
     const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = props;
     const { t } = useTranslation("common")
     const permissions = useContext(ApplyPermission);
-
+    const { vendorLabel } = useLabels()
 
     const [showPopup, setShowPopup] = useState(false)
     const [deletedId, setDeletedId] = useState('')
@@ -739,7 +740,7 @@ function OverheadListing(props) {
                                             {getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC && <AgGridColumn field="RawMaterialName" headerName='Raw Material Name'></AgGridColumn>}
                                             {getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC && <AgGridColumn field="RawMaterialGrade" headerName="Raw Material Grade"></AgGridColumn>}
                                             {(getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate || getConfigurationKey().IsDestinationPlantConfigure) && <AgGridColumn field="PlantName" headerName="Plant (Code)"></AgGridColumn>}
-                                            <AgGridColumn field="VendorName" headerName="Vendor (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                            <AgGridColumn field="VendorName" headerName={`${vendorLabel} (Code)`} cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                             {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                                             <AgGridColumn field="ModelType" headerName="Model Type"></AgGridColumn>
                                             <AgGridColumn field="OverheadApplicabilityType" headerName="Overhead Applicability" floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterOverhead}></AgGridColumn>

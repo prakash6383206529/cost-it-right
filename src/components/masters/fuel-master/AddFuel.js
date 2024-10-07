@@ -6,10 +6,10 @@ import { required, checkForDecimalAndNull, positiveAndDecimalNumber, maxLength10
 import {
   searchableSelect, focusOnError, renderTextInputField,
 } from "../../layout/FormInputs";
-import { getUOMSelectList, fetchStateDataAPI, getAllCity, getPlantSelectListByType, fetchCountryDataAPI, fetchCityDataAPI, getCityByCountry, getVendorNameByVendorSelectList, } from '../../../actions/Common';
+import { getUOMSelectList, fetchStateDataAPI, getAllCity, getPlantSelectListByType, fetchCountryDataAPI, fetchCityDataAPI, getVendorNameByVendorSelectList, getCityByCountryAction, } from '../../../actions/Common';
 import { getFuelByPlant, createFuelDetail, updateFuelDetail, getFuelDetailData, getUOMByFuelId, getAllFuelAPI } from '../actions/Fuel';
 import { MESSAGES } from '../../../config/message';
-import { CBCTypeId, effectiveDateRangeDays, EMPTY_DATA, GUIDE_BUTTON_SHOW, searchCount, SPACEBAR, VBC_VENDOR_TYPE, VBCTypeId, ZBC, ZBCTypeId } from '../../../config/constants'
+import { CBCTypeId, EMPTY_DATA, GUIDE_BUTTON_SHOW, searchCount, SPACEBAR, VBC_VENDOR_TYPE, VBCTypeId, ZBC, ZBCTypeId } from '../../../config/constants'
 import { loggedInUserId } from "../../../helper/auth";
 import Toaster from '../../common/Toaster';
 import DatePicker from "react-datepicker";
@@ -22,7 +22,7 @@ import LoaderCustom from '../../common/LoaderCustom';
 import { debounce } from 'lodash';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import AsyncSelect from 'react-select/async';
-import { autoCompleteDropdown, getCostingTypeIdByCostingPermission } from '../../common/CommonFunctions';
+import { autoCompleteDropdown, getCostingTypeIdByCostingPermission, getEffectiveDateMinDate } from '../../common/CommonFunctions';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { onFocus } from '../../../helper';
 import { getClientSelectList, } from '../actions/Client';
@@ -739,13 +739,13 @@ class AddFuel extends Component {
   };
 
   getAllCityData = () => {
-    const { country } = this.state;
-    if (country && country.label !== 'India') {
-      this.props.getCityByCountry(country.value, '00000000000000000000000000000000', () => { })
-    } else {
-      this.props.fetchStateDataAPI(country.value, () => { })
-    }
+  const { country } = this.state;
+  if (country && country.label !== 'India') {
+    this.props.getCityByCountryAction(country.value, '00000000000000000000000000000000','', (res) =>{ })
+  } else {
+    this.props.fetchStateDataAPI(country.value, () => { })
   }
+}
 
 
   cityHandler = (newValue, actionMeta) => {
@@ -1106,7 +1106,7 @@ class AddFuel extends Component {
                                   disabledKeyboardNavigation
                                   onChangeRaw={(e) => e.preventDefault()}
                                   disabled={isViewMode}
-                                  minDate={subDays(new Date(), effectiveDateRangeDays)}
+                                  minDate={getEffectiveDateMinDate()}
 
                                 />
                                 {this.state.errorObj.effectiveDate && this.state.effectiveDate === "" && <div className='text-help'>This field is required.</div>}
@@ -1297,7 +1297,7 @@ export default connect(mapStateToProps, {
   getPlantSelectListByType,
   fetchCountryDataAPI,
   fetchCityDataAPI,
-  getCityByCountry,
+  getCityByCountryAction,
   getAllFuelAPI
 
 

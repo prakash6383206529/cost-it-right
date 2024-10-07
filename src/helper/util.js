@@ -445,6 +445,7 @@ export function checkPermission(Data) {
     Activate: false,
     Copy: false,
     SOB: false,
+    SendForReview: false
   }
 
   Data && Data.map((item) => {
@@ -474,6 +475,9 @@ export function checkPermission(Data) {
     }
     if (item.ActionName === 'SOB' && item.IsChecked === true) {
       setAccessibleData.SOB = true
+    }
+    if (item?.ActionName === 'Send For Review' && item?.IsChecked === true) {
+      setAccessibleData.SendForReview = true
     }
     return null;
   })
@@ -1464,8 +1468,17 @@ export function encodeQueryParams(params) {
   * @description get time zone
   */
 export function getTimeZone() {
-  return Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+  // Mapping of old names to preferred names
+  const timeZoneMap = {
+    'Asia/Calcutta': 'Asia/Kolkata'
+  };
+
+  // Return the preferred name if it exists in the map, otherwise return the original
+  return timeZoneMap[timeZone] || timeZone;
 }
+
 
 export function encodeQueryParamsAndLog(obj) {
   const queryParams = Object.entries(obj)

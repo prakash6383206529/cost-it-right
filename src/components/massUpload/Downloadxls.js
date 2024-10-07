@@ -1,6 +1,6 @@
 import React from "react";
 import ReactExport from 'react-export-excel';
-import { CBCADDMORE, CBCADDMOREOPERATION, CBCTypeId, VBCADDMORE, VBCADDMOREOPERATION, VBCTypeId, ZBCADDMORE, ZBCADDMOREOPERATION, ZBCTypeId } from "../../config/constants";
+import { ASSEMBLYORCOMPONENTSRFQ, BOUGHTOUTPARTSRFQ, CBCADDMORE, CBCADDMOREOPERATION, CBCTypeId, RAWMATERIALSRFQ, VBCADDMORE, VBCADDMOREOPERATION, VBCTypeId, ZBCADDMORE, ZBCADDMOREOPERATION, ZBCTypeId } from "../../config/constants";
 import {
     Fuel, FuelTempData,
     RMDomesticZBC, RMDomesticZBCTempData, RMDomesticVBC, RMDomesticVBCTempData,
@@ -22,7 +22,13 @@ import {
     CommodityStandardTempData,
     IndexDataListingTempData,
     IndexDataListing,
-    CommodityStandard
+    CommodityStandard,
+    AddBoughtOutPartsHeaderData,
+    AddRawMaterialHeaderData,
+    AddAssemblyOrComponentHeaderData,
+    AddBoughtOutPartsTempData,
+    AddRawMaterialTempData,
+    AddAssemblyOrComponentTempData
 } from '../../config/masterData';
 import { checkVendorPlantConfigurable, getConfigurationKey, showBopLabel, updateBOPValues } from "../../helper";
 import { checkSAPCodeinExcel } from "./DownloadUploadBOMxls";
@@ -171,7 +177,10 @@ class Downloadxls extends React.Component {
     * @description Switch case for different xls file head according to master
     */
     renderSwitch = (master) => {
+
         let updatedLabels
+        const { selectedOption } = this.props
+
         switch (master) {
             case 'RM Specification':
                 return this.returnExcelColumn(checkRM_Process_OperationConfigurable(RMSpecification), RMSpecificationXLTempData);
@@ -203,8 +212,20 @@ class Downloadxls extends React.Component {
                 return this.returnExcelColumn(ProductComponent, ProductComponentTempData);
             case 'BOM':
                 return this.returnExcelColumn(withLocalization(BOMUpload, this.props.t, "MasterLabels"), BOMUploadTempData);
-            case 'ADD RFQ':
-                return this.returnExcelColumn(AddRFQUpload, AddRFQTempData);
+
+
+            case BOUGHTOUTPARTSRFQ:
+                return this.returnExcelColumn(AddBoughtOutPartsHeaderData, AddBoughtOutPartsTempData);
+            case RAWMATERIALSRFQ:
+                return this.returnExcelColumn(AddRawMaterialHeaderData, AddRawMaterialTempData);
+            case ASSEMBLYORCOMPONENTSRFQ:
+                return this.returnExcelColumn(AddAssemblyOrComponentHeaderData, AddAssemblyOrComponentTempData);
+
+
+
+
+
+            //return this.returnExcelColumn(AddRFQUpload, AddRFQTempData);
             default:
                 return 'foo';
         }
@@ -447,7 +468,7 @@ class Downloadxls extends React.Component {
             );
         }
         // DOWNLOAD FILE:- CALLED WHEN FILE FAILED APART FROM ZBC AND VBC
-        if (isFailedFlag && (fileName === 'RM Specification' || fileName === 'Vendor' || fileName === 'Overhead' || fileName === 'Fuel' || fileName === 'Labour' || fileName === 'Part Component' || fileName === 'Product Component' || fileName === 'ADD RFQ' || fileName === 'Index' || fileName === 'Index Data' || fileName === 'Commodity (In Index)' || fileName === 'Commodity Standard' || fileName === 'Commodity Standardization')) {
+        if (isFailedFlag && (fileName === 'RM Specification' || fileName === 'Vendor' || fileName === 'Overhead' || fileName === 'Fuel' || fileName === 'Labour' || fileName === 'Part Component' || fileName === 'Product Component' || fileName === ASSEMBLYORCOMPONENTSRFQ || fileName === BOUGHTOUTPARTSRFQ || fileName === RAWMATERIALSRFQ || fileName === 'Index' || fileName === 'Index Data' || fileName === 'Commodity (In Index)' || fileName === 'Commodity Standard' || fileName === 'Commodity Standardization')) {
 
             return (
                 <ExcelFile hideElement={true} filename={fileName} fileExtension={'.xls'} >

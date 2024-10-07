@@ -31,6 +31,7 @@ import { reactLocalStorage } from 'reactjs-localstorage'
 import { transformApprovalItem } from '../../../common/CommonFunctions'
 import { checkSAPPoPrice } from '../../../simulation/actions/Simulation'
 import SAPApproval from '../../../SAPApproval'
+import { useLabels } from '../../../../helper/core'
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 const SendForApproval = (props) => {
@@ -72,7 +73,7 @@ const SendForApproval = (props) => {
   const [tentativeCost, setTentativeCost] = useState(false);
   const [levelDetails, setLevelDetails] = useState('');
   const [disableDept, setDisableDept] = useState(false)
-
+  const { vendorLabel } = useLabels()
   const [disableRS, setDisableRS] = useState(false);
   const [isPFSOrBudgetingDetailsExistWarning, showIsPFSOrBudgetingDetailsExistWarning] = useState(false);
   const [approvalTypeId, setApprovalTypeId] = useState('')
@@ -1031,7 +1032,7 @@ const SendForApproval = (props) => {
                         <span className="grey-text">{`${isApprovalisting ? data.partNo : partNo.partNumber}`}</span>
                       </div>
                       <div className=" d-inline-block mr-4">
-                        {(data.costingTypeId === ZBCTypeId) ? `Plant Code: ` : (data.costingTypeId === VBCTypeId || data.costingTypeId === NCCTypeId) ? `Vendor Code: ` : `Customer Code: `}
+                        {(data.costingTypeId === ZBCTypeId) ? `Plant Code: ` : (data.costingTypeId === VBCTypeId || data.costingTypeId === NCCTypeId) ? `${vendorLabel} Code: ` : `Customer Code: `}
                         <span className="grey-text">{(data.costingTypeId === ZBCTypeId) ? `${data.plantCode}` : (data.costingTypeId === VBCTypeId || data.costingTypeId === NCCTypeId) ? `${data.vendorCode}` : `${data.customerCode}`}</span>
                       </div>
                       <div className=" d-inline-block">

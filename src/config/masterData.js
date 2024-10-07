@@ -8241,13 +8241,10 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADASSEMBLYTECHNOLOGY = [
     { label: "NetBoughtOutPartCostVariance", value: "NetBoughtOutPartCostVariance" },
     { label: "Impact/Quarter (w.r.t. Existing)", value: "ImpactPerQuarter" },
 ]
-
 export const AddRFQUpload = [
     { label: "PartNumber", value: "PartNumber" },
     { label: 'RevisionNumber', value: 'RevisionNumber' },
-    { label: 'Quantity', value: 'Quantity' }
 ]
-
 export const AddRFQTempData = [
     {
         PartNumber: "Part_1",
@@ -8260,6 +8257,204 @@ export const AddRFQTempData = [
         Quantity: 5
     }
 ]
+export const AddAssemblyOrComponentHeaderData = [
+    { label: 'Technology', value: 'Technology' },
+    { label: 'Plant', value: 'Plant' },
+    { label: "Part Type", value: "PartType" },
+    { label: "Part Number", value: "PartNumber" },
+    { label: 'Assembly Part No', value: 'AssemblyPartNo' },
+    { label: 'Part Design Source Name', value: 'PartDesignSourceName' },
+    { label: "PartUOM", value: "PartUOM" },
+    { label: 'RM Code', value: 'RMCode' },
+    { label: 'RM Name', value: 'RMName' },
+    { label: "RM Grade", value: "RMGrade" },
+    { label: 'RM Specification', value: 'RMSpecification' },
+    { label: 'Specification Description', value: 'SpecificationDescription' },
+    { label: "Specification Value", value: "SpecificationValue" },
+    { label: 'SOP Date', value: 'SOPDate' },
+    { label: 'Production Year', value: 'ProductionYear' },
+    { label: 'Annual Forecast Quantity', value: 'AnnualForecastQuantity' },
+    { label: "N-100 Timeline", value: "N100Timeline" },
+    { label: 'Remarks', value: 'Remarks' },
+
+
+
+]
+export const AddRawMaterialHeaderData = [
+
+
+    { label: 'Technology', value: 'Technology' },
+    { label: 'Plant', value: 'Plant' },
+    { label: "Part Type", value: "PartType" },
+    { label: 'RM Code', value: 'RMCode' },
+    { label: 'RM Name', value: 'RMName' },
+    { label: "RM Grade", value: "RMGrade" },
+    { label: 'RM Specification', value: 'RMSpecification' },
+    { label: 'UOM', value: 'UOM' },
+    { label: "N-100 Timeline", value: "N100Timeline" },
+    { label: 'Remark', value: 'Remark' },
+]
+export const AddBoughtOutPartsHeaderData = [
+    { label: 'Plant', value: 'Plant' },
+    { label: "Part Type", value: "PartType" },
+    { label: 'BOP Number', value: 'BOPNumber' },
+    { label: 'BOP Category', value: 'BOPCategory' },
+    { label: "PartUOM", value: "PartUOM" },
+    { label: 'Specification Description', value: 'SpecificationDescription' },
+    { label: "Specification Value", value: "SpecificationValue" },
+    { label: "N-100 Timeline", value: "N100Timeline" },
+
+    { label: 'Remarks', value: 'Remarks' },
+]
+
+export const AddRawMaterialTempData = [
+    {
+
+
+        Technology: "Casting",
+        Plant: "Plant A",
+        PartType: "Raw Material",
+        RMCode: "RM001",
+        RMName: "Aluminum Ingot",
+        RMGrade: "6061",
+        RMSpecification: "3mm thickness",
+        UOM: "Kg",
+        N100Timeline: "2024-07-15",
+        Remark: "Test batch required"
+    },
+    {
+        Technology: "Casting",
+        Plant: "Plant A",
+        PartType: "Raw Material",
+        RMCode: "RM002",
+        RMName: "Copper Wire",
+        RMGrade: "C11000",
+        RMSpecification: "High conductivity",
+        UOM: "Meters",
+        N100Timeline: "2024-10-01",
+        Remark: "Rush order"
+    },
+    {
+        Technology: "Casting",
+        Plant: "Plant A",
+        PartType: "Raw Material",
+        RMCode: "RM003",
+        RMName: "Polypropylene",
+        RMGrade: "PP123",
+        RMSpecification: "Injection grade",
+        UOM: "Ltr",
+        N100Timeline: "2025-01-20",
+        Remark: "Pending approval"
+    }
+];
+export const AddBoughtOutPartsTempData = [
+    {
+        Plant: "Plant X",
+        PartType: "Bought Out Part",
+        BOPNumber: "BOP001",
+        BOPCategory: "Fasteners",
+        PartUOM: "Pcs",
+        SpecificationDescription: "Stainless steel bolts",
+        SpecificationValue: "M10 x 50mm",
+        N100Timeline: "2024-07-15",
+
+        Remarks: "High tensile strength"
+    },
+    {
+        Plant: "Plant X",
+        PartType: "Bought Out Part",
+        BOPNumber: "BOP001",
+        BOPCategory: "Fasteners",
+        PartUOM: "Pcs",
+        SpecificationDescription: "Ball bearing",
+        SpecificationValue: "SKF 6205",
+        N100Timeline: "2024-07-15",
+
+        Remarks: "Standard size"
+    },
+    {
+        Plant: "Plant X",
+        PartType: "Bought Out Part",
+        BOPNumber: "BOP001",
+        BOPCategory: "Fasteners",
+        PartUOM: "Pcs",
+        SpecificationDescription: "High-temperature grease",
+        SpecificationValue: "Mobil SHC 460",
+        N100Timeline: "2024-07-15",
+
+        Remarks: "High load-bearing capacity"
+    }
+];
+export const AddAssemblyOrComponentTempData = [
+    {
+        Technology: "Forging",
+        Plant: "Plant C",
+        PartType: "Assembly",
+        PartNumber: "A12345",
+        AssemblyPartNo: "APN123",
+        PartDesignSourceName: "SourceA",
+        PartUOM: "Pcs",
+        RMCode: "RM123",
+        RMName: "Steel",
+        RMGrade: "A36",
+        RMSpecification: "2.5mm Thickness",
+        SpecificationDescription: "Mild steel with rust resistance",
+        SpecificationValue: "Good",
+        SOPDate: "2024-01-15",
+        ProductionYear: "2025",
+        AnnualForecastQuantity: 10000,
+        N100Timeline: "2024-08-01",
+        Remarks: "Urgent requirement",
+
+
+    },
+    {
+        Technology: "Forging",
+        Plant: "Plant C",
+        PartType: "Component",
+        PartNumber: "C67890",
+        AssemblyPartNo: "APN678",
+        PartDesignSourceName: "SourceB",
+        PartUOM: "Kg",
+        RMCode: "RM456",
+        RMName: "Aluminum",
+        RMGrade: "6061",
+        RMSpecification: "1.2mm Thickness",
+        SpecificationDescription: "High strength alloy",
+        SpecificationValue: "Excellent",
+        SOPDate: "2024-03-22",
+        ProductionYear: "2024",
+        AnnualForecastQuantity: 5000,
+        N100Timeline: "2023-12-10",
+        Remarks: "Review specification",
+
+    },
+    {
+        Technology: "Forging",
+        Plant: "Plant C",
+        PartType: "Assembly",
+        PartNumber: "A78901",
+        AssemblyPartNo: "APN789",
+        PartDesignSourceName: "SourceC",
+        PartUOM: "Ltr",
+        RMCode: "RM789",
+        RMName: "Plastic",
+        RMGrade: "Polypropylene",
+        RMSpecification: "High density",
+        SpecificationDescription: "Durable with chemical resistance",
+        SpecificationValue: "Very Good",
+        SOPDate: "2025-05-10",
+        ProductionYear: "2026",
+        AnnualForecastQuantity: 20000,
+        N100Timeline: "2024-09-15",
+        Remarks: "Awaiting approval",
+
+    }
+];
+
+
+
+
 
 // VISIBILITY MODE ADD RFQ
 export const DATE_STRING = 'Date'

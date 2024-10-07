@@ -1,6 +1,6 @@
 
 import axios from 'axios';
-import { API, API_FAILURE, AUCTION_LIST_BY_STATUS, config, GET_BID_DETAIL_BY_QUATATION, GET_HEADER_DETAIL_BY_QUATATION, SELECT_AUCTION_RFQ_LIST, SET_AUCTION_DATA, SET_AUCTION_DATA_BY_RFQ, SHOW_HIDE_BID_WINDOW } from '../../../config/constants';
+import { API, API_FAILURE, API_REQUEST, AUCTION_LIST_BY_STATUS, config, GET_BID_DETAIL_BY_QUATATION, GET_HEADER_DETAIL_BY_QUATATION, SELECT_AUCTION_RFQ_LIST, SET_AUCTION_DATA, SET_AUCTION_DATA_BY_RFQ, SHOW_HIDE_BID_WINDOW } from '../../../config/constants';
 import { apiErrors, loggedInUserId } from '../../../helper';
 
 
@@ -234,5 +234,19 @@ export function getLiveAndScheduledCount(callback) {
             apiErrors(error);
             callback(error)
         });
+    };
+}
+
+export function reScheduleAuction(requestData, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        axios.put(`${API.reScheduleAuction}`, requestData, config())
+            .then((response) => {
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+                callback(error)
+            });
     };
 }

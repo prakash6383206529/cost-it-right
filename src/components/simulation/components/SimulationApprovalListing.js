@@ -29,8 +29,10 @@ import { Steps } from './TourMessages'
 import TourWrapper from '../../common/Tour/TourWrapper'
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash'
+import { useLabels } from '../../../helper/core'
 const gridOptions = {};
 function SimulationApprovalListing(props) {
+    const {vendorLabel} = useLabels()
     const { isDashboard } = props
     const [approvalData, setApprovalData] = useState('')
     const [selectedRowData, setSelectedRowData] = useState([]);
@@ -913,7 +915,7 @@ function SimulationApprovalListing(props) {
 
                                         <AgGridColumn width={141} field="SimulationTechnologyHead" headerName="Simulation Head"></AgGridColumn>
                                         <AgGridColumn width={130} field="TechnologyName" headerName="Technology"></AgGridColumn>
-                                        <AgGridColumn width={200} field="VendorName" headerName="Vendor (Code)" cellRenderer='hyphenFormatter'></AgGridColumn>
+                                        <AgGridColumn width={200} field="VendorName" headerName={`${vendorLabel} (Code)`} cellRenderer='hyphenFormatter'></AgGridColumn>
                                         <AgGridColumn width={200} field="CustomerName" headerName="Customer (Code)" cellRenderer='hyphenFormatter'></AgGridColumn>
                                         <AgGridColumn width={170} field="ImpactCosting" headerName="Impacted Costing" ></AgGridColumn>
                                         <AgGridColumn width={154} field="ImpactParts" headerName="Impacted Parts"></AgGridColumn>
