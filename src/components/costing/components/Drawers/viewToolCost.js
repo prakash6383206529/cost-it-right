@@ -30,6 +30,7 @@ function ViewToolCost(props) {
                 <th>{`Process/Operation`}</th>
                 <th>{`Process/Operation Type`}</th>
                 {/* <th>{`Process/Operation Quantity`}</th> */}
+                <th>{`Category`}</th>
                 <th>{`Tool Name`}</th>
                 <th>{`Tool Cost`}</th>
                 <th>{`Quantity`}</th>
@@ -50,10 +51,10 @@ function ViewToolCost(props) {
                       <td>{item?.PartType ?? '-'}</td>
                       <td>{item?.ProcessOrOperation ?? '-'}</td>
                       <td>{item?.ProcessOrOperationType ?? "-"}</td>
-                      <td>{item?.ProcessOrOperationQuantity ?? '-'}</td>
                       <td>{item?.ToolCategory ?? '-'}</td>
                       <td>{item?.ToolName ?? '-'}</td>
                       <td>{checkForDecimalAndNull(item?.ToolCost, initialConfiguration.NoOfDecimalForPrice) ?? '-'}</td>
+                      <td>{item?.Quantity ?? '-'}</td>
                       <td>{item?.Life ?? '-'}</td>
                       <td>{checkForDecimalAndNull(item?.NetToolCost, initialConfiguration.NoOfDecimalForPrice) ?? '-'}</td>
 
@@ -163,3 +164,4 @@ function ViewToolCost(props) {
 }
 
 export default React.memo(ViewToolCost)
+// CR2-I28
