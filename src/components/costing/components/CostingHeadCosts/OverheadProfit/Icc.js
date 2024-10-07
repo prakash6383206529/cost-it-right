@@ -109,6 +109,7 @@ function Icc(props) {
                     setInventoryObj(Data)
                     checkInventoryApplicability(Data.ICCApplicability)
 
+                    props.setICCDetail(Data, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
                 } else if (res && res.status === 204) {
                     setValue('InterestRatePercentage', '')
                     setValue('CostApplicability', '')

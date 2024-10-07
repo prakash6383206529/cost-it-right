@@ -72,7 +72,7 @@ function AddRejectionRecovery(props) {
 
     useEffect(() => {
         if (Object.keys(rejectionRecovery).length > 0) {
-            setValue('RejectionRecoveryApplicability', { label: rejectionRecovery.ApplicabilityType, value: rejectionRecovery.ApplicabilityType })
+            setValue('RejectionRecoveryApplicability', rejectionRecovery.ApplicabilityType ? { label: rejectionRecovery.ApplicabilityType, value: rejectionRecovery.ApplicabilityIdRef } : '')
             setValue('RejectionRecoveryPercentage', checkForDecimalAndNull(rejectionRecovery.Value, initialConfiguration.NoOfDecimalForPrice))
             setValue('EffectiveRecoveryPercentage', checkForDecimalAndNull(rejectionRecovery.EffectiveRecoveryPercentage, initialConfiguration.NoOfDecimalForPrice))
             setValue('RecoveryCostApplicability', checkForDecimalAndNull(rejectionRecovery.ApplicabilityCost, initialConfiguration.NoOfDecimalForPrice))
