@@ -213,7 +213,9 @@ class Downloadxls extends React.Component {
             case RAWMATERIALSRFQ:
                 return this.returnExcelColumn(AddRawMaterialHeaderData, AddRawMaterialTempData);
             case ASSEMBLYORCOMPONENTSRFQ:
-                return this.returnCombinedExcelColumn(AddAssemblyOrComponentHeaderData, AddAssemblyOrComponentTempData, AddAssemblyOrComponentAdditionalInfoHeaderData, AddAssemblyOrComponentAdditionalInfoTempData);
+                return this.returnExcelColumn(AddAssemblyOrComponentHeaderData, AddAssemblyOrComponentTempData);
+
+            //return this.returnCombinedExcelColumn(AddAssemblyOrComponentHeaderData, AddAssemblyOrComponentTempData, AddAssemblyOrComponentAdditionalInfoHeaderData, AddAssemblyOrComponentAdditionalInfoTempData);
             default:
                 return 'foo';
         }
@@ -238,24 +240,24 @@ class Downloadxls extends React.Component {
     //         </ExcelSheet>
     //     );
     // }
-    returnCombinedExcelColumn = (headerData1, tempData1, headerData2, tempData2) => {
-        const { fileName } = this.props;
+    // returnCombinedExcelColumn = (headerData1, tempData1, headerData2, tempData2) => {
+    //     const { fileName } = this.props;
 
-        return (
-            <>
-                <ExcelSheet data={tempData1} name={fileName}>
-                    {headerData1.map((ele, index) => (
-                        <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />
-                    ))}
-                </ExcelSheet>
-                <ExcelSheet data={tempData2} name={`${fileName} - Additional Info`}>
-                    {headerData2.map((ele, index) => (
-                        <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />
-                    ))}
-                </ExcelSheet>
-            </>
-        );
-    }
+    //     return (
+    //         <>
+    //             <ExcelSheet data={tempData1} name={fileName}>
+    //                 {headerData1.map((ele, index) => (
+    //                     <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />
+    //                 ))}
+    //             </ExcelSheet>
+    //             <ExcelSheet data={tempData2} name={`${fileName} - Additional Info`}>
+    //                 {headerData2.map((ele, index) => (
+    //                     <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />
+    //                 ))}
+    //             </ExcelSheet>
+    //         </>
+    //     );
+    // }
 
     /**
     * @method renderZBCSwitch
