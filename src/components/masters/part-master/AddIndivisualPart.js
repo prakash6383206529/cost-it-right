@@ -662,7 +662,7 @@ class AddIndivisualPart extends Component {
                             />
                           </Col>
                           {initialConfiguration?.IsShowUnitOfMeasurementInPartMaster && <Col md="3">
-                            <TooltipCustom id="uom_tooltip" tooltipText="If no UOM is selected, 'No' will be set by default." />
+                            <TooltipCustom id="uom_tooltip" tooltipText="If no UOM is selected, 'No.' will be set by default." />
 
                             <Field
                               name="UOM"
