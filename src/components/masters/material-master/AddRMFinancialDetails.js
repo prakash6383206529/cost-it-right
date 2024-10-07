@@ -265,8 +265,8 @@ function AddRMFinancialDetails(props) {
             return obj
         } else {
             let obj = {
-                toolTipTextNetCostSelectedCurrency: `Net Cost (${state.currency?.label === undefined ? 'Currency' : state.currency?.label}) = Basic Rate (${state.currency?.label === undefined ? 'Currency' : state.currency?.label})${IsShowFreightAndShearingCostFields() ? ` + Freight Cost (${state.currency?.label === undefined ? 'Currency' : state.currency?.label}) + Shearing Cost (${state.currency?.label === undefined ? 'Currency' : state.currency?.label})` : ''} + Other Cost (${state.currency?.label === undefined ? 'Currency' : state.currency?.label})`,
-                toolTipTextNetCostBaseCurrency: `Net Cost (${reactLocalStorage.getObject("baseCurrency")}) = Basic Rate (${reactLocalStorage.getObject("baseCurrency")}) ${IsShowFreightAndShearingCostFields() ? `+ Freight Cost (${reactLocalStorage.getObject("baseCurrency")}) + Shearing Cost (${reactLocalStorage.getObject("baseCurrency")})` : ''} + Other Cost (${reactLocalStorage.getObject("baseCurrency")})`
+                toolTipTextNetCostSelectedCurrency: `Net Cost (${state.currency?.label === undefined ? 'Currency' : state.currency?.label}) = Basic Rate (${state.currency?.label === undefined ? 'Currency' : state.currency?.label}) + Other Cost (${state.currency?.label === undefined ? 'Currency' : state.currency?.label})`,
+                toolTipTextNetCostBaseCurrency: `Net Cost (${reactLocalStorage.getObject("baseCurrency")}) = Basic Rate (${reactLocalStorage.getObject("baseCurrency")}) + Other Cost (${reactLocalStorage.getObject("baseCurrency")})`
             }
             return obj
         }
@@ -275,8 +275,8 @@ function AddRMFinancialDetails(props) {
     const basicPriceTitle = () => {
         if (getConfigurationKey().IsBasicRateAndCostingConditionVisible && Number(states.costingTypeId) === Number(ZBCTypeId)) {
             let obj = {
-                toolTipTextBasicPriceSelectedCurrency: `Basic Price (${state.currency?.label === undefined ? 'Currency' : state.currency?.label}) = Basic Rate (${state.currency?.label === undefined ? 'Currency' : state.currency?.label})${IsShowFreightAndShearingCostFields() ? ` + Freight Cost (${state.currency?.label === undefined ? 'Currency' : state.currency?.label}) + Shearing Cost (${state.currency?.label === undefined ? 'Currency' : state.currency?.label})` : ''}`,
-                toolTipTextBasicPriceBaseCurrency: `Basic Price (${reactLocalStorage.getObject("baseCurrency")}) = Basic Rate (${reactLocalStorage.getObject("baseCurrency")}) ${IsShowFreightAndShearingCostFields() ? `+ Freight Cost (${reactLocalStorage.getObject("baseCurrency")}) + Shearing Cost (${reactLocalStorage.getObject("baseCurrency")})` : ''}`
+                toolTipTextBasicPriceSelectedCurrency: `Basic Price (${state.currency?.label === undefined ? 'Currency' : state.currency?.label}) = Basic Rate (${state.currency?.label === undefined ? 'Currency' : state.currency?.label})`,
+                toolTipTextBasicPriceBaseCurrency: `Basic Price (${reactLocalStorage.getObject("baseCurrency")}) = Basic Rate (${reactLocalStorage.getObject("baseCurrency")})`
             }
             return obj
         }
@@ -1924,3 +1924,4 @@ function AddRMFinancialDetails(props) {
     )
 }
 export default AddRMFinancialDetails
+// CR2-I33
