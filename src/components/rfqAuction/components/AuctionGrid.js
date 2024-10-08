@@ -210,8 +210,8 @@ const AuctionGrid = (props) => {
                             <AgGridColumn field="BOPCategory" headerName="Category" cellRenderer={"hyphenFormatter"}></AgGridColumn>
                             <AgGridColumn field="VendorName" headerName={`${vendorLabel} Name`} cellRenderer={"hyphenFormatter"}></AgGridColumn>
                             <AgGridColumn field="Plant" headerName="Plant" cellRenderer={"hyphenFormatter"} ></AgGridColumn>
-                            <AgGridColumn field="TotalVendor" headerName="Total Vendors" cellRenderer={"hyphenFormatter"}></AgGridColumn>
-                            <AgGridColumn field="ActiveVendors" headerName="Active Vendors" cellRenderer={"hyphenFormatter"}></AgGridColumn>
+                            <AgGridColumn field="TotalVendor" headerName={`Total ${vendorLabel}`} cellRenderer={"hyphenFormatter"}></AgGridColumn>
+                            <AgGridColumn field="ActiveVendors" headerName={`Active ${vendorLabel}`} cellRenderer={"hyphenFormatter"}></AgGridColumn>
                             <AgGridColumn field="BasePrice" headerName="Base Price" cellRenderer={"hyphenFormatter"}></AgGridColumn>
                             <AgGridColumn field="RankOnePrice" headerName="Level One Price" cellRenderer={"hyphenFormatter"}></AgGridColumn>
                             <AgGridColumn field="RankOneVendor" headerName={`Level One ${vendorLabel}`} cellRenderer={"hyphenFormatter"} ></AgGridColumn>

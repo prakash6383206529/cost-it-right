@@ -69,7 +69,7 @@ import { checkSAPCodeinExcel } from './DownloadUploadBOMxls';
 import WarningMessage from '../common/WarningMessage';
 import Switch from 'react-switch'
 import { searchableSelect } from '../layout/FormInputs';
-import { localizeLabels, LabelsClass } from '../../helper/core';
+import { LabelsClass, localizeHeadersWithLabels } from '../../helper/core';
 import { withTranslation } from 'react-i18next';
 const bopMasterName = showBopLabel();
 
@@ -102,24 +102,13 @@ class BulkUpload extends Component {
             isShowDivision: false,
             newfileData: []
         }
-        this.labelMap = this.initializeLabelMap();
+        this.localizeHeaders = this.localizeHeaders.bind(this);
         
     }
-    initializeLabelMap = () => {
-        const labels = [
-            'Vendor',
-            'Technology',
-                ];
 
-        return labels.reduce((acc, label) => {
-            acc[label] = this.props.t(`${label}Label`, { defaultValue: label });
-            return acc;
-        }, {});
-    }
-
-    localizeHeaders = (headers) => {
-        return localizeLabels(headers, this.labelMap);
-    }
+       localizeHeaders(headers) {
+        return localizeHeadersWithLabels(headers, this.props.t);
+      }
 
     /**
      * @method componentDidMount

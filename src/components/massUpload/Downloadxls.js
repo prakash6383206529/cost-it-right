@@ -33,7 +33,7 @@ import {
 import { checkVendorPlantConfigurable, getConfigurationKey, showBopLabel, updateBOPValues } from "../../helper";
 import { checkSAPCodeinExcel } from "./DownloadUploadBOMxls";
 import { IsShowFreightAndShearingCostFields } from "../../helper";
-import { localizeLabels } from "../../helper/core";
+import { localizeHeadersWithLabels } from "../../helper/core";
 import { withTranslation } from "react-i18next";
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -174,25 +174,13 @@ export const addDynamicModelType = (list, modelText) => {
 class Downloadxls extends React.Component {
     constructor(props) {
         super(props);
-        this.labelMap = this.initializeLabelMap();
+        this.localizeHeaders = this.localizeHeaders.bind(this);
+        
     }
 
-    initializeLabelMap = () => {
-        const labels = [
-            'Vendor',
-            'Technology',
-            // Add more label keys as needed
-        ];
-
-        return labels.reduce((acc, label) => {
-            acc[label] = this.props.t(`${label}Label`, { defaultValue: label });
-            return acc;
-        }, {});
-    }
-
-    localizeHeaders = (headers) => {
-        return localizeLabels(headers, this.labelMap);
-    }
+       localizeHeaders(headers) {
+        return localizeHeadersWithLabels(headers, this.props.t);
+      }
     /**
     * @method renderSwitch
     * @description Switch case for different xls file head according to master
