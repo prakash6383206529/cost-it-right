@@ -1163,7 +1163,7 @@ function ViewDrawer(props) {
                                                         options={renderListingRM('rmname')}
                                                         mandatory={true}
                                                         handleChange={(newValue) => handleRMName(newValue)}
-                                                        disabled={disabled || (isViewFlag || (isEditFlag && type === Component && tableData.length > 0)) ? true : false}
+                                                        disabled={disabled || (isViewFlag || (isEditFlag && type === Component && tableData.length > 0 && !isEdit)) ? true : false}
                                                     />
                                                 </Col>
 
@@ -1181,7 +1181,7 @@ function ViewDrawer(props) {
                                                         options={renderListingRM('rmgrade')}
                                                         mandatory={true}
                                                         handleChange={(newValue) => handleRMGrade(newValue)}
-                                                        disabled={disabled || (isViewFlag || (isEditFlag && type === Component && tableData.length > 0)) ? true : false}
+                                                        disabled={disabled || (isViewFlag || (isEditFlag && type === Component && tableData.length > 0 && !isEdit)) ? true : false}
                                                     />
                                                 </Col>
 
@@ -1199,7 +1199,7 @@ function ViewDrawer(props) {
                                                         options={renderListingRM('rmspecification')}
                                                         mandatory={true}
                                                         handleChange={(newValue) => handleRMSpecification(newValue)}
-                                                        disabled={disabled || (isViewFlag || (isEditFlag && type === Component && tableData.length > 0)) ? true : false}
+                                                        disabled={disabled || (isViewFlag || (isEditFlag && type === Component && tableData.length > 0 && !isEdit)) ? true : false}
                                                     />
                                                 </Col>
 
@@ -1217,7 +1217,7 @@ function ViewDrawer(props) {
                                                         handleChange={handleCode}
                                                         isClearable={true}
                                                         errors={errors.Code}
-                                                        disabled={(isViewFlag || (isEditFlag && type === Component && tableData.length > 0)) ? true : false}
+                                                        disabled={(isViewFlag || (isEditFlag && type === Component && tableData.length > 0 && !isEdit)) ? true : false}
                                                     />
                                                 </Col>
                                             </Row>

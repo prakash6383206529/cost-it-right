@@ -8273,7 +8273,7 @@ export const AddRFQTempData = [
 ]
 export const AddAssemblyOrComponentHeaderData = [
     { label: 'Technology', value: 'Technology' },
-    { label: 'Plant', value: 'Plant' },
+    { label: 'PlantCode', value: 'PlantCode' },
     { label: "Part Type", value: "PartType" },
     { label: "Part Number", value: "PartNumber" },
     { label: 'Assembly Part No', value: 'AssemblyPartNo' },
@@ -8298,8 +8298,7 @@ export const AddRawMaterialHeaderData = [
 
 
     { label: 'Technology', value: 'Technology' },
-    { label: 'Plant', value: 'Plant' },
-    { label: "Part Type", value: "PartType" },
+    { label: 'PlantCode', value: 'PlantCode' },
     { label: 'RM Code', value: 'RMCode' },
     { label: 'RM Name', value: 'RMName' },
     { label: "RM Grade", value: "RMGrade" },
@@ -8309,8 +8308,7 @@ export const AddRawMaterialHeaderData = [
     { label: 'Remark', value: 'Remark' },
 ]
 export const AddBoughtOutPartsHeaderData = [
-    { label: 'Plant', value: 'Plant' },
-    { label: "Part Type", value: "PartType" },
+    { label: 'PlantCode', value: 'PlantCode' },
     { label: 'BOP Number', value: 'BOPNumber' },
     { label: 'BOP Category', value: 'BOPCategory' },
     { label: "PartUOM", value: "PartUOM" },
@@ -8323,51 +8321,45 @@ export const AddBoughtOutPartsHeaderData = [
 
 export const AddRawMaterialTempData = [
     {
-
-
         Technology: "Casting",
-        Plant: "Plant A",
-        PartType: "Raw Material",
+        PlantCode: "Plant A",
         RMCode: "RM001",
         RMName: "Aluminum Ingot",
         RMGrade: "6061",
         RMSpecification: "3mm thickness",
-        UOM: "Kg",
+        UOM: "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         N100Timeline: "2024-07-15",
         Remark: "Test batch required"
     },
     {
         Technology: "Casting",
-        Plant: "Plant A",
-        PartType: "Raw Material",
+        PlantCode: "Plant A",
         RMCode: "RM002",
         RMName: "Copper Wire",
         RMGrade: "C11000",
         RMSpecification: "High conductivity",
-        UOM: "Meters",
+        UOM: "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         N100Timeline: "2024-10-01",
         Remark: "Rush order"
     },
     {
         Technology: "Casting",
-        Plant: "Plant A",
-        PartType: "Raw Material",
+        PlantCode: "Plant A",
         RMCode: "RM003",
         RMName: "Polypropylene",
         RMGrade: "PP123",
         RMSpecification: "Injection grade",
-        UOM: "Ltr",
+        UOM: "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         N100Timeline: "2025-01-20",
         Remark: "Pending approval"
     }
 ];
 export const AddBoughtOutPartsTempData = [
     {
-        Plant: "Plant X",
-        PartType: "Bought Out Part",
+        PlantCode: "Plant X",
         BOPNumber: "BOP001",
         BOPCategory: "Fasteners",
-        PartUOM: "Pcs",
+        PartUOM: "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         SpecificationDescription: "Stainless steel bolts",
         SpecificationValue: "M10 x 50mm",
         N100Timeline: "2024-07-15",
@@ -8375,11 +8367,10 @@ export const AddBoughtOutPartsTempData = [
         Remarks: "High tensile strength"
     },
     {
-        Plant: "Plant X",
-        PartType: "Bought Out Part",
+        PlantCode: "Plant X",
         BOPNumber: "BOP001",
         BOPCategory: "Fasteners",
-        PartUOM: "Pcs",
+        PartUOM: "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         SpecificationDescription: "Ball bearing",
         SpecificationValue: "SKF 6205",
         N100Timeline: "2024-07-15",
@@ -8387,11 +8378,10 @@ export const AddBoughtOutPartsTempData = [
         Remarks: "Standard size"
     },
     {
-        Plant: "Plant X",
-        PartType: "Bought Out Part",
+        PlantCode: "Plant X",
         BOPNumber: "BOP001",
         BOPCategory: "Fasteners",
-        PartUOM: "Pcs",
+        PartUOM: "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         SpecificationDescription: "High-temperature grease",
         SpecificationValue: "Mobil SHC 460",
         N100Timeline: "2024-07-15",
@@ -8402,69 +8392,78 @@ export const AddBoughtOutPartsTempData = [
 export const AddAssemblyOrComponentTempData = [
     {
         Technology: "Forging",
-        Plant: "Plant C",
+        PlantCode: "Plant C",
         PartType: "Assembly",
         PartNumber: "A12345",
         AssemblyPartNo: "APN123",
-        PartDesignSourceName: "SourceA",
-        PartUOM: "Pcs",
+        PartDesignSourceName: "Havells Design part /Proprietary part",
+        PartUOM: "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         RMCode: "RM123",
         RMName: "Steel",
         RMGrade: "A36",
         RMSpecification: "2.5mm Thickness",
         SpecificationDescription: "Mild steel with rust resistance",
         SpecificationValue: "Good",
-        SOPDate: "2024-01-15",
+        SOPDate: "15-09-2024",
         ProductionYear: "2025",
         AnnualForecastQuantity: 10000,
-        N100Timeline: "2024-08-01",
+        N100Timeline: "13-09-2024",
         Remarks: "Urgent requirement",
 
 
     },
     {
         Technology: "Forging",
-        Plant: "Plant C",
+        PlantCode: "Plant C",
         PartType: "Component",
         PartNumber: "C67890",
         AssemblyPartNo: "APN678",
-        PartDesignSourceName: "SourceB",
-        PartUOM: "Kg",
+        PartDesignSourceName: "Havells Design part /Proprietary part",
+        PartUOM: "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         RMCode: "RM456",
         RMName: "Aluminum",
         RMGrade: "6061",
         RMSpecification: "1.2mm Thickness",
         SpecificationDescription: "High strength alloy",
         SpecificationValue: "Excellent",
-        SOPDate: "2024-03-22",
+        SOPDate: "15-09-2024",
         ProductionYear: "2024",
         AnnualForecastQuantity: 5000,
-        N100Timeline: "2023-12-10",
+        N100Timeline: "14-09-2024",
         Remarks: "Review specification",
 
     },
     {
         Technology: "Forging",
-        Plant: "Plant C",
+        PlantCode: "Plant C",
         PartType: "Assembly",
         PartNumber: "A78901",
         AssemblyPartNo: "APN789",
-        PartDesignSourceName: "SourceC",
-        PartUOM: "Ltr",
+        PartDesignSourceName: "Havells Design part /Proprietary part",
+        PartUOM: "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         RMCode: "RM789",
         RMName: "Plastic",
         RMGrade: "Polypropylene",
         RMSpecification: "High density",
         SpecificationDescription: "Durable with chemical resistance",
         SpecificationValue: "Very Good",
-        SOPDate: "2025-05-10",
+        SOPDate: "15-09-2024",
         ProductionYear: "2026",
         AnnualForecastQuantity: 20000,
-        N100Timeline: "2024-09-15",
+        N100Timeline: "15-09-2024",
         Remarks: "Awaiting approval",
 
     }
 ];
+export const AddAssemblyOrComponentAdditionalInfoTempData = [
+    {
+        Notes: "For Component, please leave Asembly Part Number empty"
+    }
+
+]
+export const AddAssemblyOrComponentAdditionalInfoHeaderData = [
+    { label: 'Notes', value: 'Notes' }
+]
 
 
 
