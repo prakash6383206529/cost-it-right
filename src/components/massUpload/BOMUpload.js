@@ -17,6 +17,8 @@ import { BOMUpload } from '../../config/masterData';
 import LoaderCustom from '../common/LoaderCustom';
 import PopupMsgWrapper from '../common/PopupMsgWrapper';
 import { MESSAGES } from '../../config/message';
+import { localizeHeadersWithLabels } from '../../helper/core';
+import { withTranslation } from 'react-i18next';
 
 class BOMUploadDrawer extends Component {
   constructor(props) {
@@ -32,8 +34,14 @@ class BOMUploadDrawer extends Component {
       bomUploadLoader: false,
       showPopup: false
     }
-  }
+    this.localizeHeaders = this.localizeHeaders.bind(this);
 
+  }
+  
+
+  localizeHeaders(headers) {
+    return localizeHeadersWithLabels(headers, this.props.t);
+  }
   /**
   * @method toggleModel
   * @description Used to cancel modal
@@ -91,7 +99,9 @@ class BOMUploadDrawer extends Component {
           let fileData = [];
           switch (String(this.props.fileName)) {
             case String(BOMBULKUPLOAD):
-              checkForFileHead = checkForSameFileUpload(checkSAPCodeinExcel(BOMUpload), fileHeads)
+              console.log(BOMUpload);
+              const localizedBOMUpload = this.localizeHeaders(checkSAPCodeinExcel(BOMUpload));
+              checkForFileHead = checkForSameFileUpload(localizedBOMUpload, fileHeads)
               break;
             default:
               break;
@@ -306,4 +316,5 @@ export default connect(mapStateToProps, {
   form: 'BOMUpload',
   enableReinitialize: true,
   touchOnChange: true
-})(BOMUploadDrawer));
+})(withTranslation('MasterLabels')(BOMUploadDrawer)));
+

@@ -35,7 +35,7 @@ function OperationApproval(props) {
     const [approvalDrawer, setApprovalDrawer] = useState(false)
     const [isFinalApprover, setIsFinalApprover] = useState(false)
     const dispatch = useDispatch()
-    const { technologyLabel } = useLabels();
+    const { technologyLabel, vendorLabel } = useLabels();
     useEffect(() => {
         getTableData()
 
@@ -251,7 +251,7 @@ function OperationApproval(props) {
                                     <AgGridColumn width="145" field="OperationName" headerName='Operation Name'></AgGridColumn>
                                     <AgGridColumn width="145" field="OperationCode" headerName='Operation Code'></AgGridColumn>
                                     <AgGridColumn width="150" field="Plants" headerName='Plant (Code)'></AgGridColumn>
-                                    <AgGridColumn width="180" field="VendorName" headerName='Vendor (Code)'></AgGridColumn>
+                                    <AgGridColumn width="180" field="VendorName" headerName={`${vendorLabel} (Code)`}></AgGridColumn>
                                     <AgGridColumn width="140" field="UnitOfMeasurement" headerName='UOM'></AgGridColumn>
                                     <AgGridColumn field="Rate" headerName='Rate'></AgGridColumn>
                                     <AgGridColumn field="EffectiveDate" headerName="EffectiveDate" cellRenderer='effectiveDateRenderer'></AgGridColumn>

@@ -23,11 +23,12 @@ import _ from 'lodash'
 import { MESSAGES } from '../../config/message';
 import LoaderCustom from '../common/LoaderCustom';
 import DayTime from '../common/DayTimeWrapper';
+import { useLabels } from '../../helper/core';
 
 const InitiateUnblocking = (props) => {
     const location = useLocation();
     const { plantId, vendorId } = location.state || {};
-
+const vendorLabel = useLabels()
 
     const dispatch = useDispatch();
     const { register, control, setValue, formState: { errors } } = useForm({
@@ -392,7 +393,7 @@ const InitiateUnblocking = (props) => {
                             <Col md="3">
                                 <div className="form-group">
                                     <AsyncSearchableSelectHookForm
-                                        label={'Supplier (Code)'}
+                                        label={`${vendorLabel} (Code)`}
                                         name={'vendor'}
                                         placeholder={'Select'}
                                         Controller={Controller}
@@ -483,12 +484,12 @@ const InitiateUnblocking = (props) => {
 
 
                                 <Col md="12">
-                                    <div className="left-border">{'Supplier Details:'}</div>
+                                    <div className="left-border">{`${vendorLabel} Details:`}</div>
                                     <div>
                                         <Table bordered>
                                             <thead>
                                                 <tr>
-                                                    <th>Supplier (Code)</th>
+                                                    <th>{vendorLabel} (Code)</th>
                                                     <th>Plant (Code)</th>
                                                     {((props?.isMasterSummaryDrawer && props.deviationData?.DeviationType === 'Classification') || !props?.isMasterSummaryDrawer) && <th>Classification</th>}
                                                     {((props?.isMasterSummaryDrawer && props.deviationData?.DeviationType === 'Classification') || !props?.isMasterSummaryDrawer) && <th>Classification Status</th>}

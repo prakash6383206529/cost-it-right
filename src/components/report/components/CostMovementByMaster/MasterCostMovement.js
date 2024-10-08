@@ -1,4 +1,3 @@
-
 import React, { Fragment, useState } from 'react';
 import { useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
@@ -67,7 +66,7 @@ function MasterCostMovement() {
     const processSelectList = useSelector(state => state.machine.processSelectList)
 
 
-    const { technologyLabel } = useLabels();
+    const { technologyLabel, vendorLabel } = useLabels();
 
     const dispatch = useDispatch()
 
@@ -167,6 +166,7 @@ function MasterCostMovement() {
                             handleChange={handleRMChange}
                             buttonCross={resetData('RawMaterialId')}
                             errors={errors.RawMaterialId}
+                            isClearable={true}  // Add this prop
                         />
                     </Col>
                     <Col md="3">
@@ -184,6 +184,7 @@ function MasterCostMovement() {
                             handleChange={handleGradeChange}
                             buttonCross={resetData('RawMaterialGradeId')}
                             errors={errors.RawMaterialGradeId}
+                            isClearable={true}  // Add this prop
                         />
                     </Col>
                     <Col md="3">
@@ -201,6 +202,7 @@ function MasterCostMovement() {
                             handleChange={handlespecChange}
                             buttonCross={resetData('RawMaterialSpecificationId')}
                             errors={errors.RawMaterialSpecificationId}
+                            isClearable={true}  // Add this prop
                         />
                     </Col>
                     <Col md="3">
@@ -358,7 +360,7 @@ function MasterCostMovement() {
 
             case 'vendor':
                 return function resetField() {
-                    setValue('vendor', '')
+                    setValue('Vendor', '')
                     setVendor([])
                 }
             case 'Customer':
@@ -386,7 +388,7 @@ function MasterCostMovement() {
 
             case 'Technology':
                 return function resetField() {
-                    setValue('technology', '')
+                    setValue('Technology', '')
                     setTechnology([])
                 }
             case 'RawMaterialId':
@@ -547,20 +549,25 @@ function MasterCostMovement() {
 
             ))
         } else {
-            setRawMaterial([])
-            setRMGrade([])
-            setRMSpec([])
+            setRawMaterial(null)
+            setRMGrade(null)
+            setRMSpec(null)
+            setValue('RawMaterialId', '');
+            setValue('RawMaterialGradeId', '');
+            setValue('RawMaterialSpecificationId', '');
             dispatch(getRMGradeSelectListByRawMaterial('', true, (res) => { }))
             dispatch(fetchSpecificationDataAPI(0, () => { }))
         }
     };
     const handleGradeChange = (newValue) => {
-        setRMGrade(newValue)
         if (newValue && newValue !== '') {
+            setRMGrade(newValue)
             dispatch(fetchSpecificationDataAPI(newValue.value, (res) => { }))
         } else {
-            setRMGrade([])
-            setRMSpec([])
+            setRMGrade(null)
+            setRMSpec(null)
+            setValue('RawMaterialGradeId', '');
+            setValue('RawMaterialSpecificationId', '');
             dispatch(fetchSpecificationDataAPI(0, () => { }))
         }
     };
@@ -568,7 +575,8 @@ function MasterCostMovement() {
         if (newValue && newValue !== '') {
             setRMSpec(newValue)
         } else {
-            setRMSpec([])
+            setRMSpec(null)
+            setValue('RawMaterialSpecificationId', '')
         }
     }
     const handleCategoryChange = (newValue) => {
@@ -637,7 +645,7 @@ function MasterCostMovement() {
             "CostingHeadId": Number(costingHeadType.value),
             "TechnologyId": Number(technology.value),
             "PlantId": plant.value,
-            "VendorId": vendor.value,
+            "VendorId": vendor?.value,
             "IsCustomerDataShow": showCustomer,
             "CustomerId": getValues('Customer').value
         }
@@ -813,6 +821,8 @@ function MasterCostMovement() {
                                 handleChange={(e) => { setTechnology(e) }}
                                 buttonCross={resetData('Technology')}
                                 errors={errors.TechnologyId}
+                                isClearable={true} // Add this prop
+
                             />
                         </Col>}
                         {inputFieldsRenderer()}
@@ -834,19 +844,19 @@ function MasterCostMovement() {
                                 errors={errors.Customer}
                             /> :
                                 <AsyncSearchableSelectHookForm
-                                    label={"Vendor (Code)"}
-                                    name={"vendor"}
+                                    label={`${vendorLabel} (Code)`}
+                                    name={"Vendor"}
                                     placeholder={"Select"}
                                     Controller={Controller}
                                     control={control}
                                     rules={{ required: false }}
                                     register={register}
-                                    defaultValue={vendor.length !== 0 ? vendor : ""}
+                                    defaultValue={vendor?.length !== 0 ? vendor : ""}
                                     options={renderListing("vendor")}
                                     mandatory={false}
                                     handleChange={handleVendorChange}
                                     // handleChange={() => { }}
-                                    errors={errors.vendor}
+                                    errors={errors.Vendor}
                                     // isLoading={VendorLoaderObj}
                                     asyncOptions={vendorFilterList}
                                     buttonCross={resetData('vendor')}
@@ -865,7 +875,7 @@ function MasterCostMovement() {
                                 control={control}
                                 rules={{ required: false }}
                                 register={register}
-                                // defaultValue={vendor.length !== 0 ? vendor : ""}
+                                // defaultValue={vendor?.length !== 0 ? vendor : ""}
                                 options={renderListing("plant")}
                                 mandatory={false}
                                 handleChange={(e) => { setPlant(e) }}

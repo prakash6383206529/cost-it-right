@@ -38,7 +38,7 @@ import { Steps } from '../../common/Tour/TourMessages';
 import TourWrapper from '../../common/Tour/TourWrapper';
 import { useTranslation } from 'react-i18next';
 import { TourStartAction } from '../../../actions/Common';
-import { useLabels } from '../../../helper/core';
+import { useLabels, useWithLocalization } from '../../../helper/core';
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -536,13 +536,13 @@ const MachineRateListing = (props) => {
       getDataList("", 0, "", 0, "", "", 0, defaultPageSize, false, state.floatingFilterData)  // FOR EXCEL DOWNLOAD OF COMPLETE DATA
     }
   }
-
+  const MACHINERATE_DOWNLOAD_EXCEl_LOCALIZATION = useWithLocalization(MACHINERATE_DOWNLOAD_EXCEl, "MasterLabels")
   const onBtExport = () => {
     let tempArr = []
     //tempArr = state.gridApi && state.gridApi?.getSelectedRows()
     tempArr = selectedRowForPagination
     tempArr = (tempArr && tempArr.length > 0) ? tempArr : (allMachineDataList ? allMachineDataList : [])
-    return returnExcelColumn(MACHINERATE_DOWNLOAD_EXCEl, tempArr)
+    return returnExcelColumn(MACHINERATE_DOWNLOAD_EXCEl_LOCALIZATION, tempArr)
   };
   /**
                  @method toggleExtraData

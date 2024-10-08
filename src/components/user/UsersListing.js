@@ -28,6 +28,7 @@ import TourWrapper from '../common/Tour/TourWrapper';
 import { Steps } from '../common/Tour/TourMessages';
 import { useTranslation } from 'react-i18next'
 import { hideMultipleColumnFromExcel } from '../../components/common/CommonFunctions';
+import { useLabels } from '../../helper/core';
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -38,7 +39,7 @@ const UsersListing = (props) => {
 	const dispatch = useDispatch();
 	const searchRef = useRef(null);
 	const { t } = useTranslation("common")
-
+	const vendorLabel = useLabels()
 	const { userDataList, rfqUserList, initialConfiguration, topAndLeftMenuData } = useSelector((state) => state.auth);
 	const [state, setState] = useState({
 		isEditFlag: false,
@@ -455,7 +456,7 @@ const UsersListing = (props) => {
 							{initialConfiguration && !initialConfiguration.IsLoginEmailConfigure ? (
 								<AgGridColumn field="UserName" headerName="User Name"></AgGridColumn>
 							) : null}
-							{props?.RFQUser && <AgGridColumn field="VendorName" headerName="Vendor (code)"></AgGridColumn>}
+							{props?.RFQUser && <AgGridColumn field="VendorName" headerName={`${vendorLabel} (Code)`}></AgGridColumn>}
 							<AgGridColumn field="EmailAddress" headerName="Email Id"></AgGridColumn>
 							<AgGridColumn field="Mobile" headerName="Mobile No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
 							<AgGridColumn field="PhoneNumber" headerName="Phone No." cellRenderer={'hyphenFormatter'}></AgGridColumn>

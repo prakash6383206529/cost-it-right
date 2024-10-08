@@ -17,6 +17,7 @@ import { MESSAGES } from '../../../config/message';
 import { checkFinalUser } from '../../costing/actions/Costing';
 import WarningMessage from '../../common/WarningMessage';
 import LoaderCustom from '../../common/LoaderCustom';
+import { useLabels } from '../../../helper/core';
 
 
 const ApprovalDrawer = (props) => {
@@ -25,6 +26,7 @@ const ApprovalDrawer = (props) => {
         mode: 'onChange',
         reValidateMode: 'onChange',
     });
+    const vendorLabel = useLabels()
     const deptList = useSelector((state) => state.approval.approvalDepartmentList)
     const reasonsList = useSelector((state) => state.approval.reasonsList)
     const [approvalDropDown, setApprovalDropDown] = useState([])
@@ -423,7 +425,7 @@ const ApprovalDrawer = (props) => {
                                 <Table className='table cr-brdr-main'>
                                     <thead>
                                         <tr>
-                                            <th>{"Vendor (Code)"}</th>
+                                            <th>{`${vendorLabel} (Code)`}</th>
                                             <th>{"Plant (Code)"}</th>
                                             <th>{"Costing"}</th>
                                             <th>{"Net PO"}</th>

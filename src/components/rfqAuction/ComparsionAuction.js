@@ -212,7 +212,7 @@ function ComparsionAuction(props) {
   }
   const { headerDetails } = state
   const vendorName = state.vendorNameList.join(',')
-  const popupMessage = state.vendorIdList.length === 0 ? 'You have not awarded any vendor. Do you still want to close the auction?' : `You have awarded ${vendorName}. Do you want to close the auction?`
+  const popupMessage = state.vendorIdList.length === 0 ? `You have not awarded any ${vendorLabel}. Do you still want to close the auction?` : `You have awarded ${vendorName}. Do you want to close the auction?`
   const isExtendedTime = (headerDetails?.TotalAuctionExtensionDuration && headerDetails?.TotalAuctionExtensionDuration !== "00:00") ? true : false
   return (
     <div className="container-fluid">

@@ -3,5 +3,7 @@
     "RMCategoryLabel": "RM Category",
     "BOPCategoryLabel": "BOP Category",
     "TechnologyLabel": "Technology",
-    "VendorLabel": "Vendor"
+    "VendorLabel": "Vendor",
+    "RMVendorLabel": "Vendor",
+    "BOPVendorLabel": "Vendor"
 }

@@ -37,7 +37,7 @@ const GotGivenReport = (props) => {
         mode: 'onChange',
         reValidateMode: 'onChange',
     })
-    const { technologyLabel } = useLabels();
+    const { technologyLabel, vendorLabel } = useLabels();
     const productGroupSelectList = useSelector(state => state.part.productGroupSelectList)
     const technologySelectList = useSelector((state) => state.costing.costingSpecifiTechnology)
     const clientSelectList = useSelector((state) => state.client.clientSelectList)
@@ -284,7 +284,7 @@ const GotGivenReport = (props) => {
                             </Col>
                             <Col md="3">
                                 <AsyncSearchableSelectHookForm
-                                    label={"Vendor (Code)"}
+                                    label={`${vendorLabel} (Code)`}
                                     name={"vendor"}
                                     placeholder={"Select"}
                                     Controller={Controller}

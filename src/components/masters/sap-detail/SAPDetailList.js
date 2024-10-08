@@ -13,6 +13,7 @@ import ScrollToTop from '../../common/ScrollToTop';
 import { PaginationWrapper } from '../../common/commonPagination';
 import { getSAPDetailList } from '../actions/SAPDetail';
 import SAPPushDetail from './SAPPushDetail';
+import { useLabels } from '../../../helper/core';
 
 
 
@@ -22,25 +23,17 @@ const SAPDetailList = (props) => {
     const [isEditFlag, setIsEditFlag] = useState(false);
     const [isOpenDrawer, setIsOpenDrawer] = useState(false);
     const [ID, setID] = useState('');
+    const vendorLabel = useLabels()
     const [tableData, setTableData] = useState([]);
-    const [ViewAccessibility, setViewAccessibility] = useState(false);
-    const [AddAccessibility, setAddAccessibility] = useState(false);
-    const [EditAccessibility, setEditAccessibility] = useState(false);
-    const [DeleteAccessibility, setDeleteAccessibility] = useState(false);
     const [DownloadAccessibility, setDownloadAccessibility] = useState(false);
-    const [ActivateAccessibility, setActivateAccessibility] = useState(false);
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [isLoader, setIsLoader] = useState(false);
     const [renderState, setRenderState] = useState(true);
-
     const [selectedRowData, setSelectedRowData] = useState(false);
-
     const [noData, setNoData] = useState(false);
     const [dataCount, setDataCount] = useState(0);
-
     const [gridLoad, setGridLoad] = useState(false);
-    const { topAndLeftMenuData } = useSelector(state => state.auth);
     const dispatch = useDispatch();
     useEffect(() => {
 
@@ -255,7 +248,7 @@ const SAPDetailList = (props) => {
                             <AgGridColumn field="MaterialGroup" headerName="Material Group"></AgGridColumn>
                             <AgGridColumn field="PurchasingOrg" headerName="Purchasing Org"></AgGridColumn>
                             <AgGridColumn field="PurchasingGroup" headerName="Purchasing Group"></AgGridColumn>
-                            <AgGridColumn field="VendorCode" headerName="Vendor Code"></AgGridColumn>
+                            <AgGridColumn field="VendorCode" headerName={`${vendorLabel} Code`}></AgGridColumn>
                             <AgGridColumn field="SapPushDetailId" cellClass="ag-grid-action-container" headerName="Actions" type="rightAligned" floatingFilter={false} cellRenderer='totalValueRenderer'></AgGridColumn>
                         </AgGridReact>
                         {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
