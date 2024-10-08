@@ -161,17 +161,19 @@ function AssemblyOverheadProfit(props) {
             dispatch(gridDataAdded(true))
           }, 500);
       }
-      dispatch(saveAssemblyOverheadProfitTab(reqData, res => {
-        if (res.data.Result) {
-          Toaster.success(MESSAGES.OVERHEAD_PROFIT_COSTING_SAVE_SUCCESS);
-          dispatch(isOverheadProfitDataChange(false))
-          dispatch(setComponentOverheadItemData({}, () => { }))
-          InjectDiscountAPICall()
-          let arrTemp = [...OverheadProfitTabData]
-          arrTemp[0].IsOpen = false
-          dispatch(setOverheadProfitData(arrTemp, () => { }))
-        }
-      }))
+      setTimeout(() => {
+        dispatch(saveAssemblyOverheadProfitTab(reqData, res => {
+          if (res.data.Result) {
+            Toaster.success(MESSAGES.OVERHEAD_PROFIT_COSTING_SAVE_SUCCESS);
+            dispatch(isOverheadProfitDataChange(false))
+            dispatch(setComponentOverheadItemData({}, () => { }))
+            InjectDiscountAPICall()
+            let arrTemp = [...OverheadProfitTabData]
+            arrTemp[0].IsOpen = false
+            dispatch(setOverheadProfitData(arrTemp, () => { }))
+          }
+        }))
+      }, 500);
     }
   }
 
