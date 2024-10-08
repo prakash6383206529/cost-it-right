@@ -73,7 +73,8 @@ function MachineInsights(props) {
                 Maximum: item.Maximum,
                 Average: item.Average,
                 WeightedAverage: item.WeightedAverage,
-                EffectiveDate: item.EffectiveDate
+                EffectiveFromDate: item.EffectiveFromDate,
+                EffectiveToDate: item.EffectiveToDate
 
             }
 
@@ -365,7 +366,6 @@ function MachineInsights(props) {
         setGridApi(params.api)
         setGridColumnApi(params.columnApi)
         params.api.paginationGoToPage(0);
-        window.screen.width >= 1440 && params.api.sizeColumnsToFit()
 
     };
 
