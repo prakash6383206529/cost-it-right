@@ -9,14 +9,18 @@ import { number, percentageLimitValidation, checkWhiteSpaces, decimalNumberLimit
 import { REJECTION_RECOVERY_APPLICABILITY } from '../../../../../config/masterData';
 import { setRejectionRecoveryData } from '../../../actions/Costing';
 import TooltipCustom from '../../../../common/Tooltip';
+import { IsPartType, ViewCostingContext } from '../../CostingDetails';
+import { ASSEMBLYNAME } from '../../../../../config/constants';
+import Toaster from '../../../../common/Toaster';
 
 function AddRejectionRecovery(props) {
 
-    const { rejectionPercentage, isOpen, closeDrawer } = props;
+    const { rejectionPercentage, isOpen, closeDrawer, rejectionTotalCost } = props;
 
     const defaultValues = {
 
     }
+    const CostingViewMode = useContext(ViewCostingContext);
 
     const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors } } = useForm({
         mode: 'onChange',
@@ -25,6 +29,7 @@ function AddRejectionRecovery(props) {
     });
     const { rejectionRecovery, RMCCTabData } = useSelector(state => state.costing)
     const { CostingPartDetails } = RMCCTabData[0]
+    const isPartType = useContext(IsPartType);
     const [state, setState] = useState({
         rejectionApplicabilityTypeValue: rejectionRecovery?.ApplicabilityIdRef,
         rejectionApplicabilityType: rejectionRecovery?.ApplicabilityType,
@@ -43,6 +48,23 @@ function AddRejectionRecovery(props) {
         }
         closeDrawer('', formData)
     };
+
+    /**
+    * @method renderListing
+    * @description RENDER LISTING IN DROPDOWN
+    */
+    const renderListing = (label) => {
+        const temp = [];
+
+        if (label === 'recoveryApplicability') {
+            REJECTION_RECOVERY_APPLICABILITY && REJECTION_RECOVERY_APPLICABILITY.map(item => {
+                if (isPartType?.label === ASSEMBLYNAME && item.value === '24') return false;
+                temp.push({ label: item.label, value: item.value })
+                return null;
+            });
+            return temp;
+        }
+    }
 
     const HandleRejectionRecovery = (e) => {
         if (e !== null) {
@@ -83,7 +105,7 @@ function AddRejectionRecovery(props) {
     const handlePercentage = (e) => {
         const EffectiveRecovery = checkForNull(rejectionPercentage) * checkForNull(e.target.value) / 100
         let CostApplicability = 0
-        CostingPartDetails.CostingRawMaterialsCost.map(item => {
+        CostingPartDetails.CostingRawMaterialsCost?.map(item => {
             CostApplicability += checkForNull(item.ScrapRate) * checkForNull(item.FinishWeight)
         })
         setValue('EffectiveRecoveryPercentage', checkForDecimalAndNull(EffectiveRecovery, initialConfiguration.NoOfDecimalForPrice))
@@ -109,6 +131,10 @@ function AddRejectionRecovery(props) {
         })
     }
     const onSubmit = data => {
+        if (checkForNull(state.netRejectionRecovery) > checkForNull(rejectionTotalCost)) {
+            Toaster.warning('Net Rejection Recovery Cost should be less than Rejection Total Cost')
+            return
+        }
         closeDrawer('submit', state.netRejectionRecovery)
         dispatch(setRejectionRecoveryData({
             ApplicabilityIdRef: state.rejectionApplicabilityTypeValue,
@@ -136,12 +162,12 @@ function AddRejectionRecovery(props) {
     }
     const applicabilityTooltip = () => {
         const rmData = CostingPartDetails?.CostingRawMaterialsCost ?? [];
-        if (rmData.length === 0) {
+        if (rmData?.length === 0) {
             return { tooltipText: false, width: '0' };
-        } else if (rmData.length === 1) {
-            return { tooltipText: `Cost Applicability = RM Scrap Rate (${rmData[0].ScrapRate}) * RM Finish Weight (${rmData[0].FinishWeight}${rmData[0].UOMSymbol})`, width: '280px' };
+        } else if (rmData?.length === 1) {
+            return { tooltipText: `Cost Applicability = RM Scrap Rate (${rmData && rmData[0]?.ScrapRate}) * RM Finish Weight (${rmData && rmData[0]?.FinishWeight}${rmData && rmData[0]?.UOMSymbol})`, width: '280px' };
         } else {
-            return { tooltipText: `Cost Applicability = (RM Scrap Rate (${rmData[0].ScrapRate}) * RM Finish Weight (${rmData[0].FinishWeight}${rmData[0].UOMSymbol})) + (RM Scrap Rate (${rmData[1].ScrapRate}) * RM Finish Weight (${rmData[1].FinishWeight}${rmData[1].UOMSymbol}))...`, width: '380px' };
+            return { tooltipText: `Cost Applicability = (RM Scrap Rate (${rmData && rmData[0]?.ScrapRate}) * RM Finish Weight (${rmData && rmData[0]?.FinishWeight}${rmData && rmData[0]?.UOMSymbol})) + (RM Scrap Rate (${rmData && rmData[1]?.ScrapRate}) * RM Finish Weight (${rmData && rmData[1]?.FinishWeight}${rmData && rmData[1]?.UOMSymbol}))...`, width: '380px' };
         }
     }
     return (
@@ -175,11 +201,11 @@ function AddRejectionRecovery(props) {
                                             register={register}
                                             isClearable={true}
                                             defaultValue={''}
-                                            options={REJECTION_RECOVERY_APPLICABILITY}
+                                            options={renderListing('recoveryApplicability')}
                                             mandatory={true}
                                             handleChange={HandleRejectionRecovery}
                                             errors={errors.RejectionRecoveryApplicability}
-                                            disabled={false}
+                                            disabled={CostingViewMode ? true : false}
                                         />
                                     </Col>
                                     <Col md="12">
@@ -203,7 +229,7 @@ function AddRejectionRecovery(props) {
                                             className=""
                                             customClassName={'withBorder'}
                                             errors={errors.RejectionRecoveryPercentage}
-                                            disabled={state.rejectionApplicabilityType === 'Fixed'}
+                                            disabled={(state.rejectionApplicabilityType === 'Fixed' || CostingViewMode) ? true : false}
                                         />
                                     </Col>
 
@@ -268,7 +294,7 @@ function AddRejectionRecovery(props) {
                                             className=""
                                             customClassName={'withBorder'}
                                             errors={errors.NetRejectionRecovery}
-                                            disabled={state.rejectionApplicabilityType !== 'Fixed'}
+                                            disabled={(state.rejectionApplicabilityType !== 'Fixed' || CostingViewMode) ? true : false}
                                         />
                                     </Col>
 
@@ -280,7 +306,8 @@ function AddRejectionRecovery(props) {
                                             id="AddRejectionRecovery_Reset"
                                             type={'button'}
                                             className="undo cancel-btn"
-                                            onClick={ResetAndSave} >
+                                            onClick={ResetAndSave}
+                                            disabled={CostingViewMode} >
                                             <div className={"undo-icon"}></div> {'Reset & Save'}
                                         </button>
 
@@ -289,14 +316,16 @@ function AddRejectionRecovery(props) {
                                                 id="AddRejectionRecovery_Cancel"
                                                 type={'button'}
                                                 className="reset mr15 cancel-btn"
-                                                onClick={cancel} >
+                                                onClick={cancel}
+                                                disabled={CostingViewMode} >
                                                 <div className={"cancel-icon"}></div> {'Cancel'}
                                             </button>
 
                                             <button
                                                 id="AddRejectionRecovery_Save"
                                                 type={'submit'}
-                                                className="submit-button save-btn">
+                                                className="submit-button save-btn"
+                                                disabled={CostingViewMode} >
                                                 <div className={"save-icon"}></div>
                                                 {'Save'}
                                             </button>

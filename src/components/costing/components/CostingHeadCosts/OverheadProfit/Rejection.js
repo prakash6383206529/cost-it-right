@@ -751,6 +751,7 @@ function Rejection(props) {
                 rejectionPercentage={getValues('RejectionPercentage')}
                 closeDrawer={closeDrawer}
                 calculateRecoveryCost={calculateRecoveryCost}
+                rejectionTotalCost={rejectionObj.RejectionTotalCost}
             />}
 
 
