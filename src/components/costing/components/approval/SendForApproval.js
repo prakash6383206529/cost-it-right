@@ -157,6 +157,7 @@ const SendForApproval = (props) => {
         setSelectedApproverLevelId({ levelName: Data.LevelName, levelId: Data.LevelId })
         if (tempDropdownList?.length !== 0) {
           // setValue('approver', { label: Data.Text, value: Data.Value })
+          setShowValidation(false)
         } else {
           setShowValidation(true)
         }
@@ -410,6 +411,7 @@ const SendForApproval = (props) => {
             setShowValidation(true)
           } else {
             setApprover(Data.Text ? Data.Text : '')
+            setShowValidation(false)
             // setValue('approver', { label: Data.Text ? Data.Text : '', value: Data.Value ? Data.Value : '', levelId: Data.LevelId ? Data.LevelId : '', levelName: Data.LevelName ? Data.LevelName : '' })
           }
           setApprovalDropDown(tempDropdownList)
