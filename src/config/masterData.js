@@ -8259,7 +8259,7 @@ export const AddRFQTempData = [
 ]
 export const AddAssemblyOrComponentHeaderData = [
     { label: 'Technology', value: 'Technology' },
-    { label: 'Plant (Code)', value: 'PlantCode' },
+    { label: 'PlantCode', value: 'PlantCode' },
     { label: "Part Type", value: "PartType" },
     { label: "Part Number", value: "PartNumber" },
     { label: 'Assembly Part No', value: 'AssemblyPartNo' },
@@ -8284,7 +8284,7 @@ export const AddRawMaterialHeaderData = [
 
 
     { label: 'Technology', value: 'Technology' },
-    { label: 'Plant (Code)', value: 'PlantCode' },
+    { label: 'PlantCode', value: 'PlantCode' },
     { label: 'RM Code', value: 'RMCode' },
     { label: 'RM Name', value: 'RMName' },
     { label: "RM Grade", value: "RMGrade" },
@@ -8294,7 +8294,7 @@ export const AddRawMaterialHeaderData = [
     { label: 'Remark', value: 'Remark' },
 ]
 export const AddBoughtOutPartsHeaderData = [
-    { label: 'Plant (Code)', value: 'PlantCode' },
+    { label: 'PlantCode', value: 'PlantCode' },
     { label: 'BOP Number', value: 'BOPNumber' },
     { label: 'BOP Category', value: 'BOPCategory' },
     { label: "PartUOM", value: "PartUOM" },
