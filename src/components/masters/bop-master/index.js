@@ -228,16 +228,7 @@ const BOPMaster = () => {
                   </NavLink>
                 </NavItem>
 
-                <NavItem>
-                  <NavLink
-                    className={classnames({ active: state.activeTab === "4" })}
-                    onClick={() => {
-                      toggle("4");
-                    }}
-                  >
-                    Manage Specification
-                  </NavLink>
-                </NavItem>
+             
                 <NavItem>
                   <NavLink
                     className={classnames({ active: state.activeTab === "3" })}
@@ -248,7 +239,16 @@ const BOPMaster = () => {
                     Manage SOB
                   </NavLink>
                 </NavItem>
-
+                <NavItem>
+                  <NavLink
+                    className={classnames({ active: state.activeTab === "4" })}
+                    onClick={() => {
+                      toggle("4");
+                    }}
+                  >
+                    Manage Specification
+                  </NavLink>
+                </NavItem>
                 {CheckApprovalApplicableMaster(BOP_MASTER_ID) && (
                   <NavItem>
                     <NavLink
