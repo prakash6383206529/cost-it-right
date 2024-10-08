@@ -3246,7 +3246,7 @@ export const showLogoFromDataBase = false
 export const showPaperCorrugatedBox = true
 
 export const showDynamicKeys = false
-export const hideDetailOfRubbercalci = true
+export const hideDetailOfRubbercalci = false
 export const customHavellsChanges = true
 export const countDownBlinkingTime = 2
 export const clientName = 'Havells'
