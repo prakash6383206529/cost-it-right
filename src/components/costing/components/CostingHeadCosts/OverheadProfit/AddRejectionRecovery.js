@@ -9,6 +9,7 @@ import { number, percentageLimitValidation, checkWhiteSpaces, decimalNumberLimit
 import { REJECTION_RECOVERY_APPLICABILITY } from '../../../../../config/masterData';
 import { setRejectionRecoveryData } from '../../../actions/Costing';
 import TooltipCustom from '../../../../common/Tooltip';
+import { ViewCostingContext } from '../../CostingDetails';
 
 function AddRejectionRecovery(props) {
 
@@ -34,6 +35,7 @@ function AddRejectionRecovery(props) {
         netRejectionRecovery: rejectionRecovery?.RejectionRecoveryNetCost,
     }
     )
+    const CostingViewMode = useContext(ViewCostingContext);
     const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
     const dispatch = useDispatch()
 
@@ -179,7 +181,7 @@ function AddRejectionRecovery(props) {
                                             mandatory={true}
                                             handleChange={HandleRejectionRecovery}
                                             errors={errors.RejectionRecoveryApplicability}
-                                            disabled={false}
+                                            disabled={CostingViewMode}
                                         />
                                     </Col>
                                     <Col md="12">
@@ -203,7 +205,7 @@ function AddRejectionRecovery(props) {
                                             className=""
                                             customClassName={'withBorder'}
                                             errors={errors.RejectionRecoveryPercentage}
-                                            disabled={state.rejectionApplicabilityType === 'Fixed'}
+                                            disabled={state.rejectionApplicabilityType === 'Fixed' || CostingViewMode}
                                         />
                                     </Col>
 
@@ -280,7 +282,9 @@ function AddRejectionRecovery(props) {
                                             id="AddRejectionRecovery_Reset"
                                             type={'button'}
                                             className="undo cancel-btn"
-                                            onClick={ResetAndSave} >
+                                            onClick={ResetAndSave}
+                                            disabled={CostingViewMode}
+                                        >
                                             <div className={"undo-icon"}></div> {'Reset & Save'}
                                         </button>
 
@@ -289,14 +293,17 @@ function AddRejectionRecovery(props) {
                                                 id="AddRejectionRecovery_Cancel"
                                                 type={'button'}
                                                 className="reset mr15 cancel-btn"
-                                                onClick={cancel} >
+                                                onClick={cancel}
+                                            >
                                                 <div className={"cancel-icon"}></div> {'Cancel'}
                                             </button>
 
                                             <button
                                                 id="AddRejectionRecovery_Save"
                                                 type={'submit'}
-                                                className="submit-button save-btn">
+                                                className="submit-button save-btn"
+                                                disabled={CostingViewMode}
+                                            >
                                                 <div className={"save-icon"}></div>
                                                 {'Save'}
                                             </button>
