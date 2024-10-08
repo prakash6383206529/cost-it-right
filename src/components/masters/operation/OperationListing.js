@@ -35,7 +35,7 @@ import { resetStatePagination, updateCurrentRowIndex, updateGlobalTake, updatePa
 import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from '../../common/Tour/TourMessages';
 import { useTranslation } from 'react-i18next';
-import { useLabels } from '../../../helper/core';
+import { useLabels, useWithLocalization } from '../../../helper/core';
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
@@ -613,13 +613,13 @@ const OperationListing = (props) => {
             getTableListData(null, null, null, null, 0, defaultPageSize, false, state.floatingFilterData)  // FOR EXCEL DOWNLOAD OF COMPLETE DATA
         }
     }
-
+    const OPERATION_DOWNLOAD_EXCEl_LOCALIZATION = useWithLocalization(OPERATION_DOWNLOAD_EXCEl, "MasterLabels")
     const onBtExport = () => {
         let tempArr = []
         //tempArr = state.gridApi && state.gridApi?.getSelectedRows()
         tempArr = selectedRowForPagination
         tempArr = (tempArr && tempArr.length > 0) ? tempArr : (allOperationList ? allOperationList : [])
-        return returnExcelColumn(OPERATION_DOWNLOAD_EXCEl, tempArr)
+        return returnExcelColumn(OPERATION_DOWNLOAD_EXCEl_LOCALIZATION, tempArr)
     };
 
     const returnExcelColumn = (data = [], TempData) => {

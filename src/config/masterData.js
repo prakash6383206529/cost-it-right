@@ -5712,6 +5712,20 @@ export const BOP_SOBLISTING_DOWNLOAD_EXCEl = [
     { label: "Entry Type", value: "BoughtOutPartEntryType", },
 ]
 
+export const BOP_SOB_DOWNLOAD_EXCEL = [
+    { label: "BOP Part No.", value: "BoughtOutPartNumber" },
+    { label: "BOP Part Name", value: "BoughtOutPartName" },
+    { label: "BOP Category", value: "BoughtOutPartCategory" },
+    { label: "Specification", value: "Specification" },
+    { label: "UOM", value: "UOM" },
+    { label: "Plant", value: "Plant" },
+    { label: "No. of Vendors", value: "NoOfVendors" },
+    { label: "Net Landed Cost", value: "NetLandedCost" },
+    { label: "Share of Business (%)", value: "ShareOfBusinessPercentage" },
+    { label: "Weighted Net Landed Cost", value: "WeightedNetLandedCost" },
+    { label: "Effective Date", value: "EffectiveDate" }
+];
+
 export const EXCHANGERATE_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead", },
     { label: "Vendor (Code)", value: "vendorWithCode", },

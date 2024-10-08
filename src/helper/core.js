@@ -30,12 +30,20 @@ export const useLabels = () => {
         BOPVendorLabel : t('BOPVendorLabel', { ns }),
     }
   }
+
+ 
 export const useWithLocalization = (dataArray, ns) => {
-    const { t } = useTranslation(ns); // Adjust the namespace as needed
+    const { t } = useTranslation(ns);
+    const labels = useLabels();
 
     return dataArray.map(item => ({
         ...item,
         label: t(item.label, { defaultValue: item.defaultValue })
+            // .replace(/Technology/g, labels.technologyLabel) //       THIS CODE FOR THE TECHNOLOGY LABEL WILL USE FURTHER IN FUTURE .
+
+            .replace(/Vendor/g, labels.vendorLabel)
+            // .replace(/Category/g, labels.RMCategoryLabel)
+        // Add more .replace() calls for other labels as needed
     }));
 };
 export const withLocalization = (dataArray, t, ns) => {
@@ -51,3 +59,17 @@ export const CompanyLogo = (props) => {
 export const CirLogo = (props) => {
     return <img className="logo-second" src={SecondaryLogo} height={props.height ?? ''} alt="Cost It Right" />
 }
+
+
+  export const localizeLabels = (headers, labelMap) => {
+    return headers.map(header => {
+      let newLabel = header.label;
+      
+      Object.entries(labelMap).forEach(([originalTerm, localizedTerm]) => {
+        const regex = new RegExp(originalTerm, 'g');
+        newLabel = newLabel.replace(regex, localizedTerm);
+      });
+      
+      return { ...header, label: newLabel };
+    });
+  };

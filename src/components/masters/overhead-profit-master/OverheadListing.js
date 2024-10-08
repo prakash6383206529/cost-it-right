@@ -33,7 +33,7 @@ import { useTranslation } from 'react-i18next';
 import { Steps } from '../../common/Tour/TourMessages';
 import { ApplyPermission } from '.';
 import BulkUpload from '../../../../src/components/massUpload/BulkUpload';
-import { useLabels } from '../../../helper/core';
+import { useLabels, useWithLocalization } from '../../../helper/core';
 
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -545,13 +545,13 @@ function OverheadListing(props) {
         }
 
     }
-
+    const OVERHEAD_DOWNLOAD_EXCEl_LOCALIZATION = useWithLocalization(OVERHEAD_DOWNLOAD_EXCEl, "MasterLabels")
     const onBtExport = () => {
 
         let tempArr = []
         tempArr = selectedRowForPagination
         tempArr = (tempArr && tempArr.length > 0) ? tempArr : (overheadProfitListAll ? overheadProfitListAll : [])
-        return returnExcelColumn(OVERHEAD_DOWNLOAD_EXCEl, tempArr)
+        return returnExcelColumn(OVERHEAD_DOWNLOAD_EXCEl_LOCALIZATION, tempArr)
     };
 
     const returnExcelColumn = (data = [], TempData) => {

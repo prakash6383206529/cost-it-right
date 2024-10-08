@@ -33,7 +33,7 @@ import {
 import { checkVendorPlantConfigurable, getConfigurationKey, showBopLabel, updateBOPValues } from "../../helper";
 import { checkSAPCodeinExcel } from "./DownloadUploadBOMxls";
 import { IsShowFreightAndShearingCostFields } from "../../helper";
-import { withLocalization, useWithLocalization } from "../../helper/core";
+import { localizeLabels } from "../../helper/core";
 import { withTranslation } from "react-i18next";
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -172,54 +172,89 @@ export const addDynamicModelType = (list, modelText) => {
     return arr
 }
 class Downloadxls extends React.Component {
+    constructor(props) {
+        super(props);
+        this.labelMap = this.initializeLabelMap();
+    }
+
+    initializeLabelMap = () => {
+        const labels = [
+            'Vendor',
+            'Technology',
+            // Add more label keys as needed
+        ];
+
+        return labels.reduce((acc, label) => {
+            acc[label] = this.props.t(`${label}Label`, { defaultValue: label });
+            return acc;
+        }, {});
+    }
+
+    localizeHeaders = (headers) => {
+        return localizeLabels(headers, this.labelMap);
+    }
     /**
     * @method renderSwitch
     * @description Switch case for different xls file head according to master
     */
     renderSwitch = (master) => {
-
         let updatedLabels
-        const { selectedOption } = this.props
-
         switch (master) {
             case 'RM Specification':
-                return this.returnExcelColumn(checkRM_Process_OperationConfigurable(RMSpecification), RMSpecificationXLTempData);
+                const localizedHeaders = this.localizeHeaders(RMSpecification);
+                return this.returnExcelColumn(checkRM_Process_OperationConfigurable(localizedHeaders), RMSpecificationXLTempData);
             case 'Vendor':
-                ({ updatedLabels } = updateBOPValues(Vendor, VendorTempData, bopMasterName, 'label'));
+                const localizedVendorHeaders = this.localizeHeaders(Vendor);
+                ({ updatedLabels } = updateBOPValues(localizedVendorHeaders, VendorTempData, bopMasterName, 'label'));
 
                 return this.returnExcelColumn(checkVendorPlantConfig(updatedLabels, '', false, true), VendorTempData);
             case 'Overhead':
-                return this.returnExcelColumn(Overhead, addDynamicModelType(OverheadTempData, this.props?.modelText));
+                const localizedOverheadHeaders = this.localizeHeaders(Overhead);
+                return this.returnExcelColumn(localizedOverheadHeaders, addDynamicModelType(OverheadTempData, this.props?.modelText) );
             case 'Index Data':
-                return this.returnExcelColumn(IndexDataListing, IndexDataListingTempData);
+                const localizedIndexDataHeaders = this.localizeHeaders(IndexDataListing);
+                return this.returnExcelColumn(localizedIndexDataHeaders, IndexDataListingTempData);
             case 'Index':
-                return this.returnExcelColumn(IndexCommodityListing, IndexCommodityListingTempData);
+                const localizedIndexHeaders = this.localizeHeaders(IndexCommodityListing);
+                return this.returnExcelColumn(localizedIndexHeaders, IndexCommodityListingTempData);
             case 'Commodity (In Index)':
-                return this.returnExcelColumn(CommodityInIndexListing, CommodityInIndexListingTempData);
+                const localizedCommodityInIndexHeaders = this.localizeHeaders(CommodityInIndexListing);
+                return this.returnExcelColumn(localizedCommodityInIndexHeaders, CommodityInIndexListingTempData);
             case 'Commodity Standardization':
-                return this.returnExcelColumn(StandardizedCommodityNameListing, StandardizedCommodityNameTempData);
+                const localizedCommodityStandardizationHeaders = this.localizeHeaders(StandardizedCommodityNameListing);
+                return this.returnExcelColumn(localizedCommodityStandardizationHeaders, StandardizedCommodityNameTempData);
             case 'Commodity Standard':
-                return this.returnExcelColumn(CommodityStandard, CommodityStandardTempData);
+                const localizedCommodityStandardHeaders = this.localizeHeaders(CommodityStandard);
+                return this.returnExcelColumn(localizedCommodityStandardHeaders, CommodityStandardTempData);
             case 'Fuel':
-                return this.returnExcelColumn(Fuel, FuelTempData);
+                const localizedFuelHeaders = this.localizeHeaders(Fuel);
+                return this.returnExcelColumn(localizedFuelHeaders, FuelTempData);
             case 'Profit':
-                return this.returnExcelColumn(Profit, addDynamicModelType(ProfitTempData, this.props?.modelText));
+                const localizedProfitHeaders = this.localizeHeaders(Profit);
+                return this.returnExcelColumn(localizedProfitHeaders,  addDynamicModelType(ProfitTempData, this.props?.modelText));
             case 'Labour':
-                return this.returnExcelColumn(Labour, LabourTempData);
+                const localizedLabourHeaders = this.localizeHeaders(Labour);
+                return this.returnExcelColumn(localizedLabourHeaders, LabourTempData);
             case 'Part Component':
-                return this.returnExcelColumn(checkSAPCodeinExcel(withLocalization(PartComponent, this.props.t, "MasterLabels")), checkSAPCodeinExcel(PartComponentTempData));
+                const localizedPartComponentHeaders = this.localizeHeaders(PartComponent);
+                return this.returnExcelColumn(checkSAPCodeinExcel(localizedPartComponentHeaders), checkSAPCodeinExcel(PartComponentTempData));
             case 'Product Component':
-                return this.returnExcelColumn(ProductComponent, ProductComponentTempData);
+                const localizedProductComponentHeaders = this.localizeHeaders(ProductComponent);
+                return this.returnExcelColumn(localizedProductComponentHeaders, ProductComponentTempData);
             case 'BOM':
-                return this.returnExcelColumn(withLocalization(BOMUpload, this.props.t, "MasterLabels"), BOMUploadTempData);
+                const localizedBOMHeaders = this.localizeHeaders(BOMUpload);
+                return this.returnExcelColumn(localizedBOMHeaders, BOMUploadTempData);
 
 
             case BOUGHTOUTPARTSRFQ:
-                return this.returnExcelColumn(AddBoughtOutPartsHeaderData, AddBoughtOutPartsTempData);
+                const localizedBoughtOutPartsHeaders = this.localizeHeaders(AddBoughtOutPartsHeaderData);
+                return this.returnExcelColumn(localizedBoughtOutPartsHeaders, AddBoughtOutPartsTempData);
             case RAWMATERIALSRFQ:
-                return this.returnExcelColumn(AddRawMaterialHeaderData, AddRawMaterialTempData);
+                const localizedRawMaterialHeaders = this.localizeHeaders(AddRawMaterialHeaderData);
+                return this.returnExcelColumn(localizedRawMaterialHeaders, AddRawMaterialTempData);
             case ASSEMBLYORCOMPONENTSRFQ:
-                return this.returnExcelColumn(AddAssemblyOrComponentHeaderData, AddAssemblyOrComponentTempData);
+                const localizedAssemblyOrComponentHeaders = this.localizeHeaders(AddAssemblyOrComponentHeaderData);
+                return this.returnExcelColumn(localizedAssemblyOrComponentHeaders, AddAssemblyOrComponentTempData);
 
 
 
@@ -241,43 +276,56 @@ class Downloadxls extends React.Component {
         switch (master) {
             case 'RM':
                 if (!this.props.isImport) {
-                    return this.returnExcelColumn(checkRM_Process_OperationConfigurable(withLocalization(RMDomesticZBC, this.props.t, "MasterLabels")), RMDomesticZBCTempData, true);
+                    const localizedRMHeaders = this.localizeHeaders(RMDomesticZBC);
+                    return this.returnExcelColumn(checkRM_Process_OperationConfigurable(localizedRMHeaders), RMDomesticZBCTempData, true);
                 } else {
-                    return this.returnExcelColumn(checkRM_Process_OperationConfigurable(withLocalization(RMImportZBC, this.props.t, "MasterLabels")), RMImportZBCTempData);
+                    const localizedRMHeaders = this.localizeHeaders(RMImportZBC);
+                    return this.returnExcelColumn(checkRM_Process_OperationConfigurable(localizedRMHeaders), RMImportZBCTempData);
                 }
             case 'Operation':
-                return this.returnExcelColumn(checkLabourRateConfigure(withLocalization(ZBCOperationSmallForm, this.props.t, "MasterLabels")), ZBCOperationTempData, true);
+                const localizedOperationHeaders = this.localizeHeaders(ZBCOperationSmallForm);
+                return this.returnExcelColumn(checkLabourRateConfigure(localizedOperationHeaders), ZBCOperationTempData, true);
             case 'Machine':
-                return this.returnExcelColumn(checkVendorPlantConfig(withLocalization(MachineZBC, this.props.t, "MasterLabels")), MachineZBCTempData);
+                const localizedMachineHeaders = this.localizeHeaders(MachineZBC);
+                return this.returnExcelColumn(checkVendorPlantConfig(localizedMachineHeaders), MachineZBCTempData);
             case ZBCADDMORE:
             case VBCADDMORE:
             case CBCADDMORE:
-                return this.returnExcelColumn(checkRM_Process_OperationConfigurable(withLocalization(MHRMoreZBC, this.props.t, "MasterLabels")), MHRMoreZBCTempData);
+                const localizedMHRMoreHeaders = this.localizeHeaders(MHRMoreZBC);
+                return this.returnExcelColumn(checkRM_Process_OperationConfigurable(localizedMHRMoreHeaders), MHRMoreZBCTempData);
             case `${showBopLabel()} Domestic`:
-                ({ updatedLabels } = updateBOPValues(BOP_ZBC_DOMESTIC, BOP_ZBC_DOMESTIC_TempData, bopMasterName, 'label'));
+                const localizedBOPHeaders = this.localizeHeaders(BOP_ZBC_DOMESTIC);
+                ({ updatedLabels } = updateBOPValues(localizedBOPHeaders, BOP_ZBC_DOMESTIC_TempData, bopMasterName, 'label'));
                 return this.returnExcelColumn(checkVendorPlantConfig(updatedLabels, '', true), BOP_ZBC_DOMESTIC_TempData);
             case `${showBopLabel()} Import`:
-                ({ updatedLabels } = updateBOPValues(BOP_ZBC_IMPORT, BOP_ZBC_IMPORT_TempData, bopMasterName, 'label'));
+                const localizedBOPImportHeaders = this.localizeHeaders(BOP_ZBC_IMPORT);
+                ({ updatedLabels } = updateBOPValues(localizedBOPImportHeaders, BOP_ZBC_IMPORT_TempData, bopMasterName, 'label'));
                 return this.returnExcelColumn(checkVendorPlantConfig(updatedLabels, '', true), BOP_ZBC_IMPORT_TempData);
 
             case `Overhead`:
-
-                return this.returnExcelColumn(Overhead, addDynamicModelType(OverheadTempData, this.props?.modelText));
+                const localizedOverheadHeaders = this.localizeHeaders(Overhead);
+                return this.returnExcelColumn(localizedOverheadHeaders, addDynamicModelType(OverheadTempData, this.props?.modelText));
             case `Profit`:
-
-                return this.returnExcelColumn(Profit, addDynamicModelType(ProfitTempData, this.props?.modelText));
+                const localizedProfitHeaders = this.localizeHeaders(Profit);
+                return this.returnExcelColumn(localizedProfitHeaders, addDynamicModelType(ProfitTempData, this.props?.modelText));
             case 'Actual Volume':
-                return this.returnExcelColumn(VOLUME_ACTUAL_ZBC, VOLUME_ACTUAL_ZBC_TEMPDATA);
+                const localizedVolumeHeaders = this.localizeHeaders(VOLUME_ACTUAL_ZBC);
+                return this.returnExcelColumn(localizedVolumeHeaders, VOLUME_ACTUAL_ZBC_TEMPDATA);
             case 'Budgeted Volume':
-                return this.returnExcelColumn(VOLUME_BUDGETED_ZBC, VOLUME_BUDGETED_ZBC_TEMPDATA);
+                const localizedBudgetedVolumeHeaders = this.localizeHeaders(VOLUME_BUDGETED_ZBC);
+                return this.returnExcelColumn(localizedBudgetedVolumeHeaders, VOLUME_BUDGETED_ZBC_TEMPDATA);
             case 'Interest Rate':
-                return this.returnExcelColumn(ZBCInterestRate, ZBCInterestRateTempData);
+                const localizedInterestRateHeaders = this.localizeHeaders(ZBCInterestRate);
+                return this.returnExcelColumn(localizedInterestRateHeaders, ZBCInterestRateTempData);
             case 'Budget':
-                return this.returnExcelColumn(BUDGET_ZBC, BUDGET_ZBC_TEMPDATA);
+                const localizedBudgetHeaders = this.localizeHeaders(BUDGET_ZBC);
+                return this.returnExcelColumn(localizedBudgetHeaders, BUDGET_ZBC_TEMPDATA);
             case 'Labour':
-                return this.returnExcelColumn(Labour, LabourTempData);
+                const localizedLabourHeaders = this.localizeHeaders(Labour);
+                return this.returnExcelColumn(localizedLabourHeaders, LabourTempData);
             case ZBCADDMOREOPERATION:
-                return this.returnExcelColumn(withLocalization(ZBCOperation, this.props.t, "MasterLabels"), ZBCOperationTempData);
+                const localizedAddMoreOperationHeaders = this.localizeHeaders(ZBCOperation);
+                return this.returnExcelColumn(localizedAddMoreOperationHeaders, ZBCOperationTempData);
             default:
                 return 'foo';
         }
@@ -292,52 +340,68 @@ class Downloadxls extends React.Component {
         switch (master) {
             case 'RM':
                 if (!this.props.isImport) {
-                    return this.returnExcelColumn(checkVendorPlantConfig(withLocalization(RMDomesticVBC, this.props.t, "MasterLabels")), RMDomesticVBCTempData, true);
+                    const localizedHeaders = this.localizeHeaders(RMDomesticVBC);
+                    return this.returnExcelColumn(checkVendorPlantConfig(localizedHeaders), RMDomesticVBCTempData, true);
                 } else {
-                    return this.returnExcelColumn(checkVendorPlantConfig(withLocalization(RMDomesticVBC, this.props.t, "MasterLabels")), RMImportVBCTempData);
+                    const localizedHeaders = this.localizeHeaders(RMImportVBC);
+                    return this.returnExcelColumn(checkVendorPlantConfig(localizedHeaders), RMImportVBCTempData);
                 }
             case 'Operation':
-                return this.returnExcelColumn(checkLabourRateConfigure(withLocalization(VBCOperationSmallForm, this.props.t, "MasterLabels")), VBCOperationTempData, true);
+                const localizedOperationHeaders = this.localizeHeaders(VBCOperationSmallForm);
+
+                return this.returnExcelColumn(checkLabourRateConfigure(localizedOperationHeaders), VBCOperationTempData, true);
             case 'Machine':
-                return this.returnExcelColumn(checkVendorPlantConfig(withLocalization(MachineVBC, this.props.t, "MasterLabels")), MachineVBCTempData);
+                const localizedMachineHeaders = this.localizeHeaders(MachineVBC);
+                return this.returnExcelColumn(checkVendorPlantConfig(localizedMachineHeaders), MachineVBCTempData);
             case `${showBopLabel()} Domestic`:
                 if (bopType === DETAILED_BOP) {
-                    ({ updatedLabels } = updateBOPValues(withLocalization(BOP_DETAILED_DOMESTIC, this.props.t, "MasterLabels"), [], bopMasterName, 'label'));
+                    const localizedBOPHeaders = this.localizeHeaders(BOP_DETAILED_DOMESTIC);
+                    ({ updatedLabels } = updateBOPValues(localizedBOPHeaders, [], bopMasterName, 'label'));
 
                     return this.returnExcelColumn(checkVendorPlantConfig(updatedLabels, '', true), BOP_DETAILED_DOMESTIC_TempData);
                 } else {
-                    ({ updatedLabels } = updateBOPValues(BOP_VBC_DOMESTIC, [], bopMasterName, 'label'));
+                    const localizedBOPHeaders = this.localizeHeaders(BOP_VBC_DOMESTIC);
+                    ({ updatedLabels } = updateBOPValues(localizedBOPHeaders, [], bopMasterName, 'label'));
 
                     return this.returnExcelColumn(checkVendorPlantConfig(updatedLabels, '', true), BOP_VBC_DOMESTIC_TempData);
                 }
             case `${showBopLabel()} Import`:
                 if (bopType === DETAILED_BOP) {
-                    ({ updatedLabels } = updateBOPValues(withLocalization(BOP_DETAILED_IMPORT, this.props.t, "MasterLabels"), [], bopMasterName, 'label'));
+                    const localizedBOPHeaders = this.localizeHeaders(BOP_DETAILED_IMPORT);
+                    ({ updatedLabels } = updateBOPValues(localizedBOPHeaders, [], bopMasterName, 'label'));
 
                     return this.returnExcelColumn(checkVendorPlantConfig(updatedLabels, '', true), BOP_DETAILED_IMPORT_TempData);
                 } else {
-                    ({ updatedLabels } = updateBOPValues(BOP_VBC_IMPORT, [], bopMasterName, 'label'));
+                    const localizedBOPHeaders = this.localizeHeaders(BOP_VBC_IMPORT);
+                    ({ updatedLabels } = updateBOPValues(localizedBOPHeaders, [], bopMasterName, 'label'));
 
                     return this.returnExcelColumn(checkVendorPlantConfig(updatedLabels, '', true), BOP_VBC_IMPORT_TempData);
                 }
             case `Overhead`:
+                const localizedOverheadHeaders = this.localizeHeaders(OverheadVBC);
 
-                return this.returnExcelColumn(OverheadVBC, addDynamicModelType(OverheadVBC_TempData, this.props?.modelText));
+                return this.returnExcelColumn(localizedOverheadHeaders,  addDynamicModelType(OverheadVBC_TempData, this.props?.modelText));
             case `Profit`:
-
-                return this.returnExcelColumn(ProfitVBC, addDynamicModelType(ProfitTempDataVBC, this.props?.modelText));
+                const localizedProfitHeaders = this.localizeHeaders(ProfitVBC);
+                return this.returnExcelColumn(localizedProfitHeaders, addDynamicModelType(ProfitTempDataVBC, this.props?.modelText));
             case 'Actual Volume':
-                return this.returnExcelColumn(checkVendorPlantConfig(VOLUME_ACTUAL_VBC), VOLUME_ACTUAL_VBC_TEMPDATA);
+                const localizedVolumeHeaders = this.localizeHeaders(VOLUME_ACTUAL_VBC);
+                return this.returnExcelColumn(checkVendorPlantConfig(localizedVolumeHeaders), VOLUME_ACTUAL_VBC_TEMPDATA);
             case 'Budgeted Volume':
-                return this.returnExcelColumn(checkVendorPlantConfig(VOLUME_BUDGETED_VBC), VOLUME_BUDGETED_VBC_TEMPDATA);
+                const localizedBudgetedVolumeHeaders = this.localizeHeaders(VOLUME_BUDGETED_VBC);
+                return this.returnExcelColumn(checkVendorPlantConfig(localizedBudgetedVolumeHeaders), VOLUME_BUDGETED_VBC_TEMPDATA);
             case 'Interest Rate':
-                return this.returnExcelColumn(checkInterestRateConfigure(VBCInterestRate), VBCInterestRateTempData);
+                const localizedInterestRateHeaders = this.localizeHeaders(VBCInterestRate);
+                return this.returnExcelColumn(checkInterestRateConfigure(localizedInterestRateHeaders), VBCInterestRateTempData);
             case 'Budget':
-                return this.returnExcelColumn(BUDGET_VBC, BUDGET_VBC_TEMPDATA);
+                const localizedBudgetHeaders = this.localizeHeaders(BUDGET_VBC);
+                return this.returnExcelColumn(localizedBudgetHeaders, BUDGET_VBC_TEMPDATA);
             case 'Labour':
-                return this.returnExcelColumn(Labour, LabourTempData);
+                const localizedLabourHeaders = this.localizeHeaders(Labour);
+                return this.returnExcelColumn(localizedLabourHeaders, LabourTempData);
             case VBCADDMOREOPERATION:
-                return this.returnExcelColumn(withLocalization(VBCOperation, this.props.t, "MasterLabels"), VBCOperationTempData);
+                const localizedAddMoreOperationHeaders = this.localizeHeaders(VBCOperation);
+                return this.returnExcelColumn(checkLabourRateConfigure(localizedAddMoreOperationHeaders), VBCOperationTempData, true);
             default:
                 return 'foo';
         }
@@ -351,39 +415,52 @@ class Downloadxls extends React.Component {
         switch (master) {
             case 'RM':
                 if (!this.props.isImport) {
-                    return this.returnExcelColumn(checkVendorPlantConfig(withLocalization(RMDomesticCBC, this.props.t, "MasterLabels"), CBCTypeId), RMDomesticCBCTempData, true);
+                    const localizedRMHeaders = this.localizeHeaders(RMDomesticCBC);
+                    return this.returnExcelColumn(checkVendorPlantConfig(localizedRMHeaders), RMDomesticCBCTempData, true);
                 } else {
-                    return this.returnExcelColumn(checkVendorPlantConfig(withLocalization(RMImportCBC, this.props.t, "MasterLabels"), CBCTypeId), RMImportCBCTempData);
+                    const localizedRMHeaders = this.localizeHeaders(RMImportCBC);
+                    return this.returnExcelColumn(checkVendorPlantConfig(localizedRMHeaders), RMImportCBCTempData);
                 }
             case 'Operation':
-                return this.returnExcelColumn(checkLabourRateConfigure(withLocalization(CBCOperationSmallForm, this.props.t, "MasterLabels")), CBCOperationTempData, true);
+                const localizedOperationHeaders = this.localizeHeaders(CBCOperationSmallForm);
+                return this.returnExcelColumn(checkLabourRateConfigure(localizedOperationHeaders), CBCOperationTempData, true);
             case 'Machine':
-                return this.returnExcelColumn(checkVendorPlantConfig(withLocalization(MachineCBC, this.props.t, "MasterLabels"), CBCTypeId), MachineCBCTempData);
+                const localizedMachineHeaders = this.localizeHeaders(MachineCBC);
+                return this.returnExcelColumn(checkVendorPlantConfig(localizedMachineHeaders), MachineCBCTempData);
             case `${showBopLabel()} Domestic`:
-                ({ updatedLabels } = updateBOPValues(BOP_CBC_DOMESTIC, [], bopMasterName, 'label'));
+                const localizedBOPHeaders = this.localizeHeaders(BOP_CBC_DOMESTIC);
+                ({ updatedLabels } = updateBOPValues(localizedBOPHeaders, [], bopMasterName, 'label'));
 
                 return this.returnExcelColumn(checkVendorPlantConfig(updatedLabels, CBCTypeId, true), BOP_CBC_DOMESTIC_TempData);
             case `${showBopLabel()} Import`:
-                ({ updatedLabels } = updateBOPValues(BOP_CBC_IMPORT, [], bopMasterName, 'label'));
+                const localizedBOPImportHeaders = this.localizeHeaders(BOP_CBC_IMPORT);
+                ({ updatedLabels } = updateBOPValues(localizedBOPImportHeaders, [], bopMasterName, 'label'));
 
                 return this.returnExcelColumn(checkVendorPlantConfig(updatedLabels, CBCTypeId, true), BOP_CBC_IMPORT_TempData);
             case `Overhead`:
-
-                return this.returnExcelColumn(OverheadCBC, addDynamicModelType(OverheadCBC_TempData, this.props?.modelText));
+                const localizedOverheadHeaders = this.localizeHeaders(OverheadCBC);
+                return this.returnExcelColumn(localizedOverheadHeaders, addDynamicModelType(OverheadCBC_TempData, this.props?.modelText));
             case `Profit`:
-                return this.returnExcelColumn(ProfitCBC, addDynamicModelType(ProfitTempDataCBC, this.props?.modelText));
+                const localizedProfitHeaders = this.localizeHeaders(ProfitCBC);
+                return this.returnExcelColumn(localizedProfitHeaders, addDynamicModelType(ProfitTempDataCBC, this.props?.modelText));
             case 'Actual Volume':
-                return this.returnExcelColumn(checkVendorPlantConfig(VOLUME_ACTUAL_CBC, CBCTypeId), VOLUME_ACTUAL_CBC_TEMPDATA);
+                const localizedVolumeHeaders = this.localizeHeaders(VOLUME_ACTUAL_CBC);
+                return this.returnExcelColumn(checkVendorPlantConfig(localizedVolumeHeaders), VOLUME_ACTUAL_CBC_TEMPDATA);
             case 'Budgeted Volume':
-                return this.returnExcelColumn(checkVendorPlantConfig(VOLUME_BUDGETED_CBC, CBCTypeId), VOLUME_BUDGETED_CBC_TEMPDATA);
+                const localizedBudgetedVolumeHeaders = this.localizeHeaders(VOLUME_BUDGETED_CBC);
+                return this.returnExcelColumn(checkVendorPlantConfig(localizedBudgetedVolumeHeaders), VOLUME_BUDGETED_CBC_TEMPDATA);
             case 'Interest Rate':
-                return this.returnExcelColumn(checkInterestRateConfigure(CBCInterestRate), CBCInterestRateTempData);
+                const localizedInterestRateHeaders = this.localizeHeaders(CBCInterestRate);
+                return this.returnExcelColumn(checkInterestRateConfigure(localizedInterestRateHeaders), CBCInterestRateTempData);
             case 'Budget':
-                return this.returnExcelColumn(BUDGET_CBC, BUDGET_CBC_TEMPDATA);
+                const localizedBudgetHeaders = this.localizeHeaders(BUDGET_CBC);
+                return this.returnExcelColumn(localizedBudgetHeaders, BUDGET_CBC_TEMPDATA);
             case 'Labour':
-                return this.returnExcelColumn(Labour, LabourTempData);
+                const localizedLabourHeaders = this.localizeHeaders(Labour);
+                return this.returnExcelColumn(localizedLabourHeaders, LabourTempData);
             case CBCADDMOREOPERATION:
-                return this.returnExcelColumn(withLocalization(CBCOperation, this.props.t, "MasterLabels"), CBCOperationTempData);
+                const localizedAddMoreOperationHeaders = this.localizeHeaders(CBCOperation);
+                return this.returnExcelColumn(checkLabourRateConfigure(localizedAddMoreOperationHeaders), CBCOperationTempData, true);
             default:
                 return 'foo';
         }

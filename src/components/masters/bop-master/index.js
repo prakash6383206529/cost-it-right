@@ -230,9 +230,9 @@ const BOPMaster = () => {
 
                 <NavItem>
                   <NavLink
-                    className={classnames({ active: state.activeTab === "3" })}
+                    className={classnames({ active: state.activeTab === "4" })}
                     onClick={() => {
-                      toggle("3");
+                      toggle("4");
                     }}
                   >
                     Manage Specification
@@ -240,9 +240,9 @@ const BOPMaster = () => {
                 </NavItem>
                 <NavItem>
                   <NavLink
-                    className={classnames({ active: state.activeTab === "4" })}
+                    className={classnames({ active: state.activeTab === "3" })}
                     onClick={() => {
-                      toggle("4");
+                      toggle("3");
                     }}
                   >
                     Manage SOB

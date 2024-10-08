@@ -30,7 +30,7 @@ import Button from '../../layout/Button';
 import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from '../../common/Tour/TourMessages';
 import { useTranslation } from 'react-i18next';
-import { useLabels } from '../../../helper/core';
+import { useLabels, useWithLocalization } from '../../../helper/core';
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
@@ -290,12 +290,12 @@ const InterestRateListing = (props) => {
     const selectedRows = gridApi?.getSelectedRows()
     setState((prevState) => ({ ...prevState, selectedRowData: selectedRows, dataCount: selectedRows.length }))
   }
-
+  const INTERESTRATE_DOWNLOAD_EXCEl_LOCALIZATION = useWithLocalization(INTERESTRATE_DOWNLOAD_EXCEl, "MasterLabels")
   const onBtExport = () => {
     let tempArr = []
     tempArr = gridApi && gridApi?.getSelectedRows()
     tempArr = (tempArr && tempArr.length > 0) ? tempArr : (interestRateDataList ? interestRateDataList : [])
-    return returnExcelColumn(INTERESTRATE_DOWNLOAD_EXCEl, tempArr)
+    return returnExcelColumn(INTERESTRATE_DOWNLOAD_EXCEl_LOCALIZATION, tempArr)
   };
 
   const returnExcelColumn = (data = [], TempData) => {
