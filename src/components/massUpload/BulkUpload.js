@@ -103,12 +103,12 @@ class BulkUpload extends Component {
             newfileData: []
         }
         this.localizeHeaders = this.localizeHeaders.bind(this);
-        
+
     }
 
-       localizeHeaders(headers) {
+    localizeHeaders(headers) {
         return localizeHeadersWithLabels(headers, this.props.t);
-      }
+    }
 
     /**
      * @method componentDidMount
@@ -296,13 +296,20 @@ class BulkUpload extends Component {
         }, 300);
     }
 
+    getValueFromMasterData(keyName, masterDataArray) {
+        const matchingItem = masterDataArray.find(item => item.label === keyName);
+        return matchingItem ? matchingItem.value : keyName;
+    }
+
     /**
      * @method fileChangedHandler
      * @description called for profile pic change
      */
     fileHandler = event => {
+
         this.setState({ bulkUploadLoader: true })
         let fileObj = event.target.files[0];
+        let masterDataArray = []
         let fileHeads = [];
         let uploadfileName = fileObj?.name;
 
@@ -321,13 +328,11 @@ class BulkUpload extends Component {
 
             ExcelRenderer(fileObj, (err, resp) => {
 
-
                 if (err) {
 
                 } else {
 
                     fileHeads = resp.rows[0];
-console.log(fileHeads);
                     let checkForFileHead
                     const { fileName, selectedOption } = this.props;
                     switch (String(this.props.fileName)) {
@@ -335,6 +340,7 @@ console.log(fileHeads);
                             if (!this.state.isImport) {
                                 if (this.state.costingTypeId === ZBCTypeId) {
                                     const localizedRMDomesticZBC = this.localizeHeaders(RMDomesticZBC);
+                                    masterDataArray = localizedRMDomesticZBC
                                     checkForFileHead = checkForSameFileUpload(checkRM_Process_OperationConfigurable(localizedRMDomesticZBC, ZBCTypeId), fileHeads, true)
                                 }
                                 else if (this.state.costingTypeId === VBCTypeId) {
@@ -374,13 +380,13 @@ console.log(fileHeads);
                                 const { updatedLabels } = updateBOPValues(localizedBOPVBC, [], bopMasterName, 'label')
                                 checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(updatedLabels, VBCTypeId), fileHeads, true)
                             }
-                            else if (this.state.costingTypeId === ZBCTypeId) {  
+                            else if (this.state.costingTypeId === ZBCTypeId) {
                                 const localizedBOPZBC = this.localizeHeaders(BOP_ZBC_DOMESTIC);
                                 const { updatedLabels } = updateBOPValues(localizedBOPZBC, [], bopMasterName, 'label')
                                 checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(updatedLabels), fileHeads, true)
 
                             }
-                            else if (this.state.costingTypeId === CBCTypeId) {  
+                            else if (this.state.costingTypeId === CBCTypeId) {
                                 const localizedBOPCBC = this.localizeHeaders(BOP_CBC_DOMESTIC);
                                 const { updatedLabels } = updateBOPValues(localizedBOPCBC, [], bopMasterName, 'label')
 
@@ -435,7 +441,7 @@ console.log(fileHeads);
                                 const localizedMachineVBC = this.localizeHeaders(MachineVBC);
                                 checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(localizedMachineVBC, VBCTypeId), fileHeads)
                             }
-                                        else if (this.state.costingTypeId === CBCTypeId) {
+                            else if (this.state.costingTypeId === CBCTypeId) {
                                 const localizedMachineCBC = this.localizeHeaders(MachineCBC);
                                 checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(localizedMachineCBC, ZBCTypeId), fileHeads)
                             }
@@ -514,7 +520,7 @@ console.log(fileHeads);
                             }
                             else if (this.state.costingTypeId === VBCTypeId) {
                                 const localizedVOLUME_BUDGETED_VBC = this.localizeHeaders(VOLUME_BUDGETED_VBC);
-                                    checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(localizedVOLUME_BUDGETED_VBC, VBCTypeId), fileHeads)
+                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(localizedVOLUME_BUDGETED_VBC, VBCTypeId), fileHeads)
                             }
                             else if (this.state.costingTypeId === CBCTypeId) {
                                 const localizedVOLUME_BUDGETED_CBC = this.localizeHeaders(VOLUME_BUDGETED_CBC);
@@ -580,7 +586,7 @@ console.log(fileHeads);
                                 const localizedProfitZBC = this.localizeHeaders(Profit);
                                 checkForFileHead = checkForSameFileUpload(localizedProfitZBC, fileHeads)
                             }
-                            else if (this.state.costingTypeId === CBCTypeId) {  
+                            else if (this.state.costingTypeId === CBCTypeId) {
                                 const localizedProfitCBC = this.localizeHeaders(ProfitCBC);
                                 checkForFileHead = checkForSameFileUpload(localizedProfitCBC, fileHeads)
                             }
@@ -593,7 +599,7 @@ console.log(fileHeads);
                             const localizedIndexCommodityListing = this.localizeHeaders(IndexCommodityListing);
                             checkForFileHead = checkForSameFileUpload(localizedIndexCommodityListing, fileHeads)
                             break;
-                        case String(COMMODITYININDEXBULKUPLOAD):    
+                        case String(COMMODITYININDEXBULKUPLOAD):
                             const localizedCommodityInIndexListing = this.localizeHeaders(CommodityInIndexListing);
                             checkForFileHead = checkForSameFileUpload(localizedCommodityInIndexListing, fileHeads)
                             break;
@@ -631,7 +637,6 @@ console.log(fileHeads);
 
                             let obj = {}
                             val.map((el, i) => {
-
 
                                 if ((fileHeads[i] === 'EffectiveDate' || fileHeads[i] === 'DateOfPurchase' || fileHeads[i] === 'Indexed On') && typeof el === 'string' && el !== '') {
                                     if (isDateFormatter(el)) {
@@ -762,7 +767,9 @@ console.log(fileHeads);
                                 if (fileHeads[i] === 'To Currency') {
                                     fileHeads[i] = 'ToCurrency'
                                 }
-                                obj[fileHeads[i]] = el;
+                                const key = this.getValueFromMasterData(fileHeads[i], masterDataArray)
+
+                                obj[key] = el;
                                 return null;
                             })
                             if ((fileName === `${showBopLabel()} Domestic` || fileName === `${showBopLabel()} Import`) && this.state.costingTypeId === VBCTypeId && this.state.bopType !== DETAILED_BOP) {
