@@ -68,7 +68,7 @@ export const RMDomesticZBC = [
     { label: "Spec", value: "RMSpec" }, //*
     { label: "Code", value: "RawMaterialCode" }, //*
     { label: "Category", value: "Category" }, //*
-    { label: "TechnologyLabel", value: "TechnologyName", defaultValue: "Technology" }, //*
+    { label: "TechnologyName", value: "TechnologyName" },
     { label: "PlantCode", value: "DestinationPlantCode" }, //*
     { label: "VendorCode", value: "VendorCode" }, //*
     { label: "HasDifferentSource", value: "HasDifferentSource" },
