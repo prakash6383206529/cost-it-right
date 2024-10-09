@@ -39,7 +39,8 @@ class DownloadUploadBOMxls extends React.Component {
 
     switch (master) {
       case 'BOM':
-        return this.returnExcelColumn(checkSAPCodeinExcel(BOMUpload), checkSAPCodeinExcel(BOMUploadTempData));
+        const localizedBOMUpload = this.localizeHeaders(checkSAPCodeinExcel(BOMUpload));
+        return this.returnExcelColumn(localizedBOMUpload, checkSAPCodeinExcel(BOMUploadTempData));
       default:
         return 'foo';
     }
