@@ -66,8 +66,8 @@ function Rejection(props) {
         let request = partType ? 'multiple technology assembly' : ''
         dispatch(fetchCostingHeadsAPI(request, false, (res) => { }))
         setValue('RejectionPercentage', rejectionObj?.RejectionApplicability === "Fixed" ? rejectionObj?.RejectionCost : rejectionObj?.RejectionPercentage)
-        setValue('crmHeadRejection', rejectionObj && rejectionObj.RejectionCRMHead && { label: rejectionObj.RejectionCRMHead, value: 1 })
-        setValue('rejectionRemark', rejectionObj && rejectionObj.Remark ? rejectionObj.Remark : '')
+        setValue('crmHeadRejection', rejectionObj && rejectionObj?.RejectionCRMHead && { label: rejectionObj?.RejectionCRMHead, value: 1 })
+        setValue('rejectionRemark', rejectionObj && rejectionObj?.Remark ? rejectionObj?.Remark : '')
         dispatch(setRejectionRecoveryData(CostingRejectionDetail.CostingRejectionRecoveryDetails ?? rejectionRecovery))
     }, [])
 
@@ -85,7 +85,7 @@ function Rejection(props) {
 
 
     useEffect(() => {
-        setValue('NetRejectionCost', checkForDecimalAndNull(rejectionObj.RejectionTotalCost - checkForNull(rejectionRecovery.RejectionRecoveryNetCost), initialConfiguration.NoOfDecimalForPrice))
+        setValue('NetRejectionCost', checkForDecimalAndNull(rejectionObj?.RejectionTotalCost - checkForNull(rejectionRecovery.RejectionRecoveryNetCost), initialConfiguration.NoOfDecimalForPrice))
         setValue('RejectionRecovery', checkForDecimalAndNull(rejectionRecovery.RejectionRecoveryNetCost, initialConfiguration.NoOfDecimalForPrice))
     }, [rejectionObj, rejectionRecovery.RejectionRecoveryNetCost])
 
@@ -108,12 +108,12 @@ function Rejection(props) {
                 "RejectionApplicabilityId": applicability ? applicability.value : '',
                 "RejectionApplicability": applicability ? applicability.label : '',
                 "RejectionPercentage": applicability.label === 'Fixed' ? '' : getValues('RejectionPercentage'),
-                "RejectionCost": applicability ? rejectionObj.RejectionCost : '',
-                "RejectionTotalCost": applicability ? checkForNull(rejectionObj.RejectionTotalCost) - checkForNull(rejectionRecovery.RejectionRecoveryNetCost) : '',
+                "RejectionCost": applicability ? rejectionObj?.RejectionCost : '',
+                "RejectionTotalCost": applicability ? checkForNull(rejectionObj?.RejectionTotalCost) - checkForNull(rejectionRecovery.RejectionRecoveryNetCost) : '',
                 "IsSurfaceTreatmentApplicable": true,
-                "NetCost": applicability ? rejectionObj.RejectionTotalCost : '',
+                "NetCost": applicability ? rejectionObj?.RejectionTotalCost : '',
                 "RejectionCRMHead": getValues('crmHeadRejection') ? getValues('crmHeadRejection').label : '',
-                "Remark": rejectionObj.Remark ? rejectionObj.Remark : '',
+                "Remark": rejectionObj?.Remark ? rejectionObj?.Remark : '',
                 "IsRejectionRecoveryApplicable": rejectionRecovery.ApplicabilityType !== '' ? true : false,
                 "CostingRejectionRecoveryDetails": rejectionRecoveryObj && rejectionRecovery.RejectionRecoveryNetCost ? rejectionRecoveryObj : null
             }
@@ -434,7 +434,7 @@ function Rejection(props) {
 
     const onRemarkPopUpCloseRejection = () => {
         let button = document.getElementById(`popUpTriggerRejection`)
-        setValue(`rejectionRemark`, rejectionObj.Remark)
+        setValue(`rejectionRemark`, rejectionObj?.Remark)
         if (errors.rejectionRemark) {
             delete errors.rejectionRemark;
         }
@@ -751,6 +751,7 @@ function Rejection(props) {
                 rejectionPercentage={getValues('RejectionPercentage')}
                 closeDrawer={closeDrawer}
                 calculateRecoveryCost={calculateRecoveryCost}
+                rejectionTotalCost={rejectionObj?.RejectionTotalCost}
             />}
 
 

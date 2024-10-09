@@ -431,7 +431,7 @@ class AddBOPDomestic extends Component {
       return [];
     }
   };
-  
+
 
   /**
   * @method renderListing
@@ -1006,7 +1006,12 @@ class AddBOPDomestic extends Component {
         checkForNull(fieldsObj?.BasicRateBase) === checkForNull(DataToCheck?.BasicRate) && checkForNull(basicPriceBaseCurrency) === checkForNull(DataToCheck?.NetCostWithoutConditionCost) &&
         checkForNull(netLandedCostBaseCurrency) === checkForNull(DataToCheck?.NetLandedCost) && checkForNull(FinalConditionCostBaseCurrency) === checkForNull(DataToCheck?.NetConditionCost) && DropdownChanged && ((DataToCheck.TechnologyId ? String(DataToCheck.TechnologyId) : '') === (Technology?.value ? String(Technology?.value) : ''))) {
         this.setState({ isEditBuffer: true })
-        Toaster.warning(`Please change data to send ${showBopLabel()} for approval`)
+        if (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar && !isTechnologyVisible) {
+          Toaster.warning(`Please change data to send ${showBopLabel()} for approval`)
+        }
+        else {
+          Toaster.warning(`Please change data to update ${showBopLabel()}`)
+        }
         return false
       }
       //  ELSE: CHANGE
@@ -1561,7 +1566,7 @@ class AddBOPDomestic extends Component {
                                 selected={this.state.effectiveDate}
                                 onChange={this.handleEffectiveDateChange}
                                 type="text"
-                                minDate={isEditFlag ? this.state.minEffectiveDate :getEffectiveDateMinDate()}
+                                minDate={isEditFlag ? this.state.minEffectiveDate : getEffectiveDateMinDate()}
                                 validate={[required]}
                                 autoComplete={'off'}
                                 required={true}
