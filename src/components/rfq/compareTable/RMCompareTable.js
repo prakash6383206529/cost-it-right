@@ -95,7 +95,7 @@ const RMCompareTable = (props) => {
                     isCheckBox: !props?.compare ? item.bestCost ? false : item.IsShowCheckBoxForApproval : false,
                     // isCheckBox:true,
                     bestCost: item.bestCost,
-                    shouldCost: props?.uniqueShouldCostingId?.includes(item.RawMaterialId) ? "Should Cost" : "",
+                    shouldCost: props?.uniqueShouldCostingId?.includes(item?.RawMaterialId) ? "Should Cost" : "",
                     costingType: item.CostingType === "Zero Based" ? "ZBC" : item.costingType === "Vendor Based" ? "VBC" : "",
                     vendorCode: item.VendorCode,
 

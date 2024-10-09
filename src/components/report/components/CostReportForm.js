@@ -55,7 +55,7 @@ function CostReportForm(props) {
     const [partTypeList, setPartTypeList] = useState([])
 
     const dispatch = useDispatch()
-    const { technologyLabel } = useLabels();
+    const { technologyLabel, vendorLabel } = useLabels();
     const technologySelectList = useSelector((state) => state.costing.costingSpecifiTechnology)
     const vendorSelectList = useSelector((state) => state.costing.costingVendorList)
     const DestinationplantSelectList = useSelector(state => state.comman.plantSelectList);
@@ -105,12 +105,12 @@ function CostReportForm(props) {
         obj.TechnologyId = getValues('Technology')?.value
         obj.PartId = getValues('Part')?.value
         obj.RevisionNumber = getValues('Revision')?.label ? getValues('Revision')?.label : ''
-        obj.VendorId = getValues('vendor')?.value
+        obj.VendorId = getValues('Vendor')?.value
         obj.PlantId = getValues('Plant')?.value
         obj.TechnologyName = getValues('Technology')?.label
         obj.PartNo = getValues('Part')?.label
         obj.ShowRevisionNumber = getValues('Revision')?.label ? getValues('Revision')?.label : '-'
-        obj.Vendor = getValues('vendor')?.label ? getValues('vendor')?.label : '-'
+        obj.Vendor = getValues('vendor')?.label ? getValues('Vendor')?.label : '-'
         obj.Plant = getValues('Plant')?.label ? getValues('Plant')?.label : '-'
         obj.productCategory = getValues('productCategory')?.label ? getValues('productCategory')?.label : '-'
         obj.productCategoryId = getValues('productCategory')?.value ? getValues('productCategory')?.value : '-'
@@ -474,7 +474,7 @@ function CostReportForm(props) {
         setValue('Technology', '')
         setValue('Part', '')
         setValue('Customer', '')
-        setValue('vendor', '')
+        setValue('Vendor', '')
         setValue('PartType', '')
         resetRevisionVendorPlant()
     }
@@ -614,7 +614,7 @@ function CostReportForm(props) {
                                 mandatory={true}
                                 handleChange={handlePartTypeChange}
                                 errors={errors.Part}
-                                disabled={(technology.length === 0) ? true : false}
+                                disabled={(technology?.length === 0) ? true : false}
                             />
                         </Col>}
 
@@ -633,7 +633,7 @@ function CostReportForm(props) {
                                 //   isLoading={loaderObj}
                                 handleChange={handlePartChange}
                                 errors={errors.Part}
-                                disabled={(partType.length === 0) ? true : false}
+                                disabled={!technology || !partType || technology.length === 0 || partType.length === 0}
                                 NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
                             />
 
@@ -661,8 +661,8 @@ function CostReportForm(props) {
                         {showVendor &&
                             <Col md="3">
                                 <AsyncSearchableSelectHookForm
-                                    label={"Vendor (Code)"}
-                                    name={"vendor"}
+                                    label={`${vendorLabel} (Code)`}
+                                    name={"Vendor"}
                                     placeholder={"Select"}
                                     Controller={Controller}
                                     control={control}
@@ -673,7 +673,7 @@ function CostReportForm(props) {
                                     mandatory={props.isSaleAndPurchase ? true : false}
                                     handleChange={handleVendorChange}
                                     // handleChange={() => { }}
-                                    errors={errors.vendor}
+                                    errors={errors.Vendor}
                                     asyncOptions={vendorFilterList}
                                     disabled={props.isSaleAndPurchase ? false : (part.length === 0 ? true : false)}
                                     NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}

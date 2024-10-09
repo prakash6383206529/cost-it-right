@@ -27,7 +27,7 @@ import { useTranslation } from "react-i18next";
 import { TourStartAction } from "../../../actions/Common";
 import { showTitleForActiveToggle } from '../../../../src/helper/util';
 import Switch from "react-switch";
-import { useLabels } from "../../../helper/core";
+import { useLabels, useWithLocalization } from "../../../helper/core";
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -389,11 +389,11 @@ const AssemblyPartListing = React.memo((props) => {
       }));
     }
   }, [state.gridApi]);
-
+const ASSEMBLYPART_DOWNLOAD_EXCEL_LOCALIZATION = useWithLocalization(ASSEMBLYPART_DOWNLOAD_EXCEl, "MasterLabels")
   const onBtExport = useCallback(() => {
     // Use the selectedRowData for export
     const tempArr = selectedRowData.length > 0 ? selectedRowData : tableData;
-    const filteredLabels = ASSEMBLYPART_DOWNLOAD_EXCEl.filter(column => {
+    const filteredLabels = ASSEMBLYPART_DOWNLOAD_EXCEL_LOCALIZATION.filter(column => {
       if (column.value === "UnitOfMeasurement") {
         return initialConfiguration?.IsShowUnitOfMeasurementInPartMaster
       }

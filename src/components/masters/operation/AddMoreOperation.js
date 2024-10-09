@@ -67,7 +67,7 @@ function AddMoreOperation(props) {
     const dropzone = useRef(null);
     const dispatch = useDispatch();
     const operationSelectList = useSelector(state => state.otherOperation.operationSelectList)
-    const { technologyLabel } = useLabels();
+    const { technologyLabel, vendorLabel } = useLabels();
     let defaultValues = {
         remark: detailObject && detailObject.Remark ? detailObject.Remark : '',
         crmHeadWireRate: detailObject && detailObject.MaterialWireCRMHead && { label: detailObject.MaterialWireCRMHead, value: 1 },
@@ -1004,7 +1004,7 @@ function AddMoreOperation(props) {
 
                                     {addMoreDetailObj.costingTypeId === VBCTypeId && <div className="input-group col-md-3 input-withouticon" >
                                         <AsyncSearchableSelectHookForm
-                                            label={"Vendor (Code)"}
+                                            label={`${vendorLabel} (Code)`}
                                             name={"vendorName"}
                                             placeholder={"Select"}
                                             Controller={Controller}

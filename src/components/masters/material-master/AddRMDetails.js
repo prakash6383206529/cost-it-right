@@ -38,7 +38,7 @@ import { getPlantUnitAPI } from "../actions/Plant"
 function AddRMDetails(props) {
     const { Controller, control, register, setValue, getValues, errors, reset, useWatch, states, data, disableAll } = props
     const { isEditFlag, isViewFlag } = data
-    const { vendorLabel } = useLabels()
+    const { vendorLabel, RMVendorLabel } = useLabels()
     const dropzone = useRef(null);
     const [state, setState] = useState({
         vendor: [],
@@ -284,7 +284,7 @@ function AddRMDetails(props) {
         }
         dispatch(SetRawMaterialDetails({ Plants: newValue }, () => { }))
         if (getConfigurationKey()?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !getConfigurationKey()?.IsDivisionAllowedForDepartment) {
-            props?.commonFunction(newValue ? newValue.value : '')
+            props?.commonFunction(newValue ? newValue.value : '', false, props?.masterLevels)
         }
     }
     /**
@@ -873,7 +873,7 @@ function AddRMDetails(props) {
                 {<Row className={`align-items-center mb-3 ${state.isVendorAccOpen ? '' : 'd-none'}`}>
                     {states.costingTypeId !== CBCTypeId && (<>
                         <Col md="3">
-                            <label>{(states.costingTypeId === ZBCTypeId ? `RM ${vendorLabel} (Code)` : `${vendorLabel} (Code)`)}<span className="asterisk-required">*</span></label>
+                            <label>{(states.costingTypeId === ZBCTypeId ? `${RMVendorLabel} (Code)` : `${vendorLabel} (Code)`)}<span className="asterisk-required">*</span></label>
                             <div className="d-flex justify-space-between align-items-center p-relative async-select">
                                 <div className="fullinput-icon p-relative">
                                     {state.inputLoader && <LoaderCustom customClass={`input-loader`} />}

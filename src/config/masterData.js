@@ -1048,7 +1048,7 @@ export const VendorTempData = [
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const Overhead = [
-    { label: 'CostingHead', value: 'CostingHead', },
+    { label: 'Note', value: 'Note', },
     { label: 'ModelType', value: 'ModelType', },
     { label: 'OverheadApplicability', value: 'OverheadApplicability', },
     { label: 'OverheadPercentage', value: 'OverheadPercentage', },
@@ -1062,7 +1062,7 @@ export const Overhead = [
 
 export const OverheadTempData = [
     {
-        'CostingHead': 'Costing Head',
+        'Note': 'If Applicability is single input percentage in relevant applicability field.',
         'ModelType': 'High volume',
         'OverheadApplicability': 'RM',
         'OverheadPercentage': '',
@@ -1072,12 +1072,23 @@ export const OverheadTempData = [
         "PlantCode": '0503',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remarks': 'Remark Text',
+    }, {
+        'Note': 'If Applicability is combined either input percentage in relevant applicability fields Or in combine percentage field (OverheadApplicability).',
+        'ModelType': 'High volume',
+        'OverheadApplicability': 'BOP',
+        'OverheadPercentage': '',
+        'OverheadCCPercentage': '',
+        'OverheadBOPPercentage': '10',
+        'OverheadRMPercentage': '',
+        "PlantCode": '0503',
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        'Remarks': 'Remark Text',
     }
 ]
 
 
 export const OverheadVBC = [
-    { label: 'CostingHead', value: 'CostingHead', },
+    { label: 'Note', value: 'Note', },
     { label: 'ModelType', value: 'ModelType', },
     { label: 'OverheadApplicability', value: 'OverheadApplicability', },
     { label: 'OverheadPercentage', value: 'OverheadPercentage', },
@@ -1092,7 +1103,7 @@ export const OverheadVBC = [
 
 export const OverheadVBC_TempData = [
     {
-        'CostingHead': 'Costing Head',
+        'Note': 'If Applicability is single input percentage in relevant applicability field.',
         'ModelType': 'High volume',
         'OverheadApplicability': 'RM',
         'OverheadPercentage': '',
@@ -1103,10 +1114,22 @@ export const OverheadVBC_TempData = [
         "PlantCode": '0503',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remarks': 'Remark Text'
+    }, {
+        'Note': 'If Applicability is combined either input percentage in relevant applicability fields Or in combine percentage field (OverheadApplicability).',
+        'ModelType': 'High volume',
+        'OverheadApplicability': 'BOP',
+        'OverheadPercentage': '',
+        'OverheadCCPercentage': '',
+        'OverheadBOPPercentage': '10',
+        'OverheadRMPercentage': '',
+        'VendorCode': '1313',
+        "PlantCode": '0503',
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        'Remarks': 'Remark Text'
     }
 ]
 export const OverheadCBC = [
-    { label: 'CostingHead', value: 'CostingHead', },
+    { label: 'Note', value: 'Note', },
     { label: 'ModelType', value: 'ModelType', },
     { label: 'OverheadApplicability', value: 'OverheadApplicability', },
     { label: 'OverheadPercentage', value: 'OverheadPercentage', },
@@ -1121,7 +1144,7 @@ export const OverheadCBC = [
 
 export const OverheadCBC_TempData = [
     {
-        'CostingHead': 'Costing Head',
+        'Note': 'If Applicability is single input percentage in relevant applicability field.',
         'ModelType': 'High volume',
         'OverheadApplicability': 'RM',
         'OverheadPercentage': '',
@@ -1132,7 +1155,20 @@ export const OverheadCBC_TempData = [
         "CustomerName": 'C-10006',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remarks': 'Remark Text'
+    }, {
+        'Note': 'If Applicability is combined either input percentage in relevant applicability fields Or in combine percentage field (OverheadApplicability).',
+        'ModelType': 'High volume',
+        'OverheadApplicability': 'BOP',
+        'OverheadPercentage': '',
+        'OverheadCCPercentage': '',
+        'OverheadBOPPercentage': '10',
+        'OverheadRMPercentage': '',
+        "PlantCode": '3456',
+        "CustomerName": 'C-10006',
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        'Remarks': 'Remark Text'
     }
+
 ]
 /**
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
@@ -1968,7 +2004,7 @@ export const CBCOperationTempData = [
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const Profit = [
-    { label: 'CostingHead', value: 'CostingHead', },
+    { label: 'Note', value: 'Note', },
     { label: 'ModelType', value: 'ModelType', },
     { label: 'ProfitApplicability', value: 'ProfitApplicability', },
     { label: 'ProfitPercentage', value: 'ProfitPercentage', },
@@ -1982,7 +2018,7 @@ export const Profit = [
 
 export const ProfitTempData = [
     {
-        'CostingHead': 'CostingHead',
+        'Note': 'If Applicability is single input percentage in relevant applicability field.',
         'ModelType': 'High volume',
         'ProfitApplicability': 'RM',
         'ProfitPercentage': '',
@@ -1992,11 +2028,22 @@ export const ProfitTempData = [
         "PlantCode": '3456',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remarks': 'Remark Text',
+    }, {
+        'Note': 'If Applicability is combined either input percentage in relevant applicability fields Or in combine percentage field (OverheadApplicability).',
+        'ModelType': 'High volume',
+        'ProfitApplicability': 'BOP',
+        'ProfitPercentage': '',
+        'ProfitCCPercentage': '',
+        'ProfitBOPPercentage': '10',
+        'ProfitRMPercentage': '',
+        "PlantCode": '3456',
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        'Remarks': 'Remark Text',
     }
 ]
 
 export const ProfitVBC = [
-    { label: 'CostingHead', value: 'CostingHead', },
+    { label: 'Note', value: 'Note', },
     { label: 'ModelType', value: 'ModelType', },
     { label: 'ProfitApplicability', value: 'ProfitApplicability', },
     { label: 'ProfitPercentage', value: 'ProfitPercentage', },
@@ -2011,7 +2058,7 @@ export const ProfitVBC = [
 
 export const ProfitTempDataVBC = [
     {
-        'CostingHead': 'CostingHead',
+        'Note': 'If Applicability is single input percentage in relevant applicability field.',
         'ModelType': 'High volume',
         'ProfitApplicability': 'RM',
         'ProfitPercentage': '',
@@ -2022,10 +2069,22 @@ export const ProfitTempDataVBC = [
         "PlantCode": '3456',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remarks': 'Remark Text'
+    }, {
+        'Note': 'If Applicability is combined either input percentage in relevant applicability fields Or in combine percentage field (OverheadApplicability).',
+        'ModelType': 'High volume',
+        'ProfitApplicability': 'BOP',
+        'ProfitPercentage': '',
+        'ProfitCCPercentage': '',
+        'ProfitBOPPercentage': '10',
+        'ProfitRMPercentage': '',
+        'VendorCode': '1313',
+        "PlantCode": '3456',
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        'Remarks': 'Remark Text'
     }
 ]
 export const ProfitCBC = [
-    { label: 'CostingHead', value: 'CostingHead', },
+    { label: 'Note', value: 'Note', },
     { label: 'ModelType', value: 'ModelType', },
     { label: 'ProfitApplicability', value: 'ProfitApplicability', },
     { label: 'ProfitPercentage', value: 'ProfitPercentage', },
@@ -2040,13 +2099,25 @@ export const ProfitCBC = [
 
 export const ProfitTempDataCBC = [
     {
-        'CostingHead': 'CostingHead',
+        'Note': 'If Applicability is single input percentage in relevant applicability field.',
         'ModelType': 'High volume',
         'ProfitApplicability': 'RM',
         'ProfitPercentage': '',
         'ProfitCCPercentage': '',
         'ProfitBOPPercentage': '',
         'ProfitRMPercentage': '10',
+        "PlantCode": '3456',
+        "CustomerName": 'C-10006',
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        'Remarks': 'Remark Text'
+    }, {
+        'Note': 'If Applicability is combined either input percentage in relevant applicability fields Or in combine percentage field (OverheadApplicability).',
+        'ModelType': 'High volume',
+        'ProfitApplicability': 'BOP',
+        'ProfitPercentage': '',
+        'ProfitCCPercentage': '',
+        'ProfitBOPPercentage': '10',
+        'ProfitRMPercentage': '',
         "PlantCode": '3456',
         "CustomerName": 'C-10006',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -5641,6 +5712,20 @@ export const BOP_SOBLISTING_DOWNLOAD_EXCEl = [
     { label: "Entry Type", value: "BoughtOutPartEntryType", },
 ]
 
+export const BOP_SOB_DOWNLOAD_EXCEL = [
+    { label: "BOP Part No.", value: "BoughtOutPartNumber" },
+    { label: "BOP Part Name", value: "BoughtOutPartName" },
+    { label: "BOP Category", value: "BoughtOutPartCategory" },
+    { label: "Specification", value: "Specification" },
+    { label: "UOM", value: "UOM" },
+    { label: "Plant", value: "Plant" },
+    { label: "No. of Vendors", value: "NoOfVendors" },
+    { label: "Net Landed Cost", value: "NetLandedCost" },
+    { label: "Share of Business (%)", value: "ShareOfBusinessPercentage" },
+    { label: "Weighted Net Landed Cost", value: "WeightedNetLandedCost" },
+    { label: "Effective Date", value: "EffectiveDate" }
+];
+
 export const EXCHANGERATE_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead", },
     { label: "Vendor (Code)", value: "vendorWithCode", },
@@ -8188,7 +8273,7 @@ export const AddRFQTempData = [
 ]
 export const AddAssemblyOrComponentHeaderData = [
     { label: 'Technology', value: 'Technology' },
-    { label: 'Plant', value: 'Plant' },
+    { label: 'PlantCode', value: 'PlantCode' },
     { label: "Part Type", value: "PartType" },
     { label: "Part Number", value: "PartNumber" },
     { label: 'Assembly Part No', value: 'AssemblyPartNo' },
@@ -8213,8 +8298,7 @@ export const AddRawMaterialHeaderData = [
 
 
     { label: 'Technology', value: 'Technology' },
-    { label: 'Plant', value: 'Plant' },
-    { label: "Part Type", value: "PartType" },
+    { label: 'PlantCode', value: 'PlantCode' },
     { label: 'RM Code', value: 'RMCode' },
     { label: 'RM Name', value: 'RMName' },
     { label: "RM Grade", value: "RMGrade" },
@@ -8224,8 +8308,7 @@ export const AddRawMaterialHeaderData = [
     { label: 'Remark', value: 'Remark' },
 ]
 export const AddBoughtOutPartsHeaderData = [
-    { label: 'Plant', value: 'Plant' },
-    { label: "Part Type", value: "PartType" },
+    { label: 'PlantCode', value: 'PlantCode' },
     { label: 'BOP Number', value: 'BOPNumber' },
     { label: 'BOP Category', value: 'BOPCategory' },
     { label: "PartUOM", value: "PartUOM" },
@@ -8238,51 +8321,45 @@ export const AddBoughtOutPartsHeaderData = [
 
 export const AddRawMaterialTempData = [
     {
-
-
         Technology: "Casting",
-        Plant: "Plant A",
-        PartType: "Raw Material",
+        PlantCode: "Plant A",
         RMCode: "RM001",
         RMName: "Aluminum Ingot",
         RMGrade: "6061",
         RMSpecification: "3mm thickness",
-        UOM: "Kg",
+        UOM: "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         N100Timeline: "2024-07-15",
         Remark: "Test batch required"
     },
     {
         Technology: "Casting",
-        Plant: "Plant A",
-        PartType: "Raw Material",
+        PlantCode: "Plant A",
         RMCode: "RM002",
         RMName: "Copper Wire",
         RMGrade: "C11000",
         RMSpecification: "High conductivity",
-        UOM: "Meters",
+        UOM: "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         N100Timeline: "2024-10-01",
         Remark: "Rush order"
     },
     {
         Technology: "Casting",
-        Plant: "Plant A",
-        PartType: "Raw Material",
+        PlantCode: "Plant A",
         RMCode: "RM003",
         RMName: "Polypropylene",
         RMGrade: "PP123",
         RMSpecification: "Injection grade",
-        UOM: "Ltr",
+        UOM: "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         N100Timeline: "2025-01-20",
         Remark: "Pending approval"
     }
 ];
 export const AddBoughtOutPartsTempData = [
     {
-        Plant: "Plant X",
-        PartType: "Bought Out Part",
+        PlantCode: "Plant X",
         BOPNumber: "BOP001",
         BOPCategory: "Fasteners",
-        PartUOM: "Pcs",
+        PartUOM: "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         SpecificationDescription: "Stainless steel bolts",
         SpecificationValue: "M10 x 50mm",
         N100Timeline: "2024-07-15",
@@ -8290,11 +8367,10 @@ export const AddBoughtOutPartsTempData = [
         Remarks: "High tensile strength"
     },
     {
-        Plant: "Plant X",
-        PartType: "Bought Out Part",
+        PlantCode: "Plant X",
         BOPNumber: "BOP001",
         BOPCategory: "Fasteners",
-        PartUOM: "Pcs",
+        PartUOM: "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         SpecificationDescription: "Ball bearing",
         SpecificationValue: "SKF 6205",
         N100Timeline: "2024-07-15",
@@ -8302,11 +8378,10 @@ export const AddBoughtOutPartsTempData = [
         Remarks: "Standard size"
     },
     {
-        Plant: "Plant X",
-        PartType: "Bought Out Part",
+        PlantCode: "Plant X",
         BOPNumber: "BOP001",
         BOPCategory: "Fasteners",
-        PartUOM: "Pcs",
+        PartUOM: "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         SpecificationDescription: "High-temperature grease",
         SpecificationValue: "Mobil SHC 460",
         N100Timeline: "2024-07-15",
@@ -8317,69 +8392,78 @@ export const AddBoughtOutPartsTempData = [
 export const AddAssemblyOrComponentTempData = [
     {
         Technology: "Forging",
-        Plant: "Plant C",
+        PlantCode: "Plant C",
         PartType: "Assembly",
         PartNumber: "A12345",
         AssemblyPartNo: "APN123",
-        PartDesignSourceName: "SourceA",
-        PartUOM: "Pcs",
+        PartDesignSourceName: "Havells Design part /Proprietary part",
+        PartUOM: "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         RMCode: "RM123",
         RMName: "Steel",
         RMGrade: "A36",
         RMSpecification: "2.5mm Thickness",
         SpecificationDescription: "Mild steel with rust resistance",
         SpecificationValue: "Good",
-        SOPDate: "2024-01-15",
+        SOPDate: "15-09-2024",
         ProductionYear: "2025",
         AnnualForecastQuantity: 10000,
-        N100Timeline: "2024-08-01",
+        N100Timeline: "13-09-2024",
         Remarks: "Urgent requirement",
 
 
     },
     {
         Technology: "Forging",
-        Plant: "Plant C",
+        PlantCode: "Plant C",
         PartType: "Component",
         PartNumber: "C67890",
         AssemblyPartNo: "APN678",
-        PartDesignSourceName: "SourceB",
-        PartUOM: "Kg",
+        PartDesignSourceName: "Havells Design part /Proprietary part",
+        PartUOM: "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         RMCode: "RM456",
         RMName: "Aluminum",
         RMGrade: "6061",
         RMSpecification: "1.2mm Thickness",
         SpecificationDescription: "High strength alloy",
         SpecificationValue: "Excellent",
-        SOPDate: "2024-03-22",
+        SOPDate: "15-09-2024",
         ProductionYear: "2024",
         AnnualForecastQuantity: 5000,
-        N100Timeline: "2023-12-10",
+        N100Timeline: "14-09-2024",
         Remarks: "Review specification",
 
     },
     {
         Technology: "Forging",
-        Plant: "Plant C",
+        PlantCode: "Plant C",
         PartType: "Assembly",
         PartNumber: "A78901",
         AssemblyPartNo: "APN789",
-        PartDesignSourceName: "SourceC",
-        PartUOM: "Ltr",
+        PartDesignSourceName: "Havells Design part /Proprietary part",
+        PartUOM: "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         RMCode: "RM789",
         RMName: "Plastic",
         RMGrade: "Polypropylene",
         RMSpecification: "High density",
         SpecificationDescription: "Durable with chemical resistance",
         SpecificationValue: "Very Good",
-        SOPDate: "2025-05-10",
+        SOPDate: "15-09-2024",
         ProductionYear: "2026",
         AnnualForecastQuantity: 20000,
-        N100Timeline: "2024-09-15",
+        N100Timeline: "15-09-2024",
         Remarks: "Awaiting approval",
 
     }
 ];
+export const AddAssemblyOrComponentAdditionalInfoTempData = [
+    {
+        Notes: "For Component, please leave Asembly Part Number empty"
+    }
+
+]
+export const AddAssemblyOrComponentAdditionalInfoHeaderData = [
+    { label: 'Notes', value: 'Notes' }
+]
 
 
 

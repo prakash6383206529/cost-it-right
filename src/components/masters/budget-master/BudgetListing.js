@@ -33,7 +33,7 @@ import PaginationControls from '../../common/Pagination/PaginationControls';
 import TourWrapper from '../../common/Tour/TourWrapper'
 import { Steps } from '../../common/Tour/TourMessages'
 import { useTranslation } from 'react-i18next'
-import { useLabels } from '../../../helper/core'
+import { useLabels, useWithLocalization } from '../../../helper/core'
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -321,13 +321,13 @@ function BudgetListing(props) {
         }
 
     }
-
+    const BUDGET_DOWNLOAD_EXCEl_LOCALIZATION = useWithLocalization(BUDGET_DOWNLOAD_EXCEl, "MasterLabels")
     const onBtExport = () => {
         let tempArr = []
         //tempArr = gridApi && gridApi?.getSelectedRows()
         tempArr = selectedRowForPagination
         tempArr = (tempArr && tempArr.length > 0) ? tempArr : (volumeDataListForDownload ? volumeDataListForDownload : [])
-        return returnExcelColumn(BUDGET_DOWNLOAD_EXCEl, tempArr)
+        return returnExcelColumn(BUDGET_DOWNLOAD_EXCEl_LOCALIZATION, tempArr)
     };
 
     /**

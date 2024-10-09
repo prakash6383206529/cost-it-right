@@ -11,10 +11,12 @@ import NoContentFound from "../../../common/NoContentFound";
 import { EMPTY_DATA, EMPTY_GUID } from "../../../../config/constants";
 import LoaderCustom from "../../../common/LoaderCustom";
 import { showBopLabel } from "../../../../helper";
+import { useLabels } from "../../../../helper/core";
 
 
 const DisplayCharts = ({ productId }) => {
     const dispatch = useDispatch()
+    const vendorLabel = useLabels()
     const [pieChartObj, setPieChartObj] = useState({});
     const [doughnutObj, setDoughnutObj] = useState({})
     const [chartStates, setChartStates] = useState({
@@ -204,7 +206,7 @@ const DisplayCharts = ({ productId }) => {
             <Row className="product-rollout-graph">
                 <Col md="6">
                     <div className="seprate-box">
-                        <h6>Supplier Contribution</h6>
+                        <h6>{vendorLabel} Contribution</h6>
                         {chartStates.isLoader.doughnut && <LoaderCustom />}
                         {chartStates.noContent.doughnut ? <NoContentFound title={EMPTY_DATA} /> : <Suppliercontributiongraph data={doughnutData} options={doughnutOptions} />}
                     </div>

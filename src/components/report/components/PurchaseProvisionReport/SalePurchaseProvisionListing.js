@@ -13,11 +13,13 @@ import ReactExport from 'react-export-excel';
 import { SALES_PROVISION_EXCEL_TEMPLATE } from '../../ExcelTemplate';
 import { hideColumnFromExcel } from '../../../common/CommonFunctions';
 import { reactLocalStorage } from 'reactjs-localstorage';
+import { useLabels } from '../../../../helper/core';
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
 function SalePurchaseProvisionListing(props) {
+    const { vendorLabel } = useLabels();
 
     const dispatch = useDispatch()
     const [showList, setShowList] = useState(false)
@@ -260,7 +262,7 @@ function SalePurchaseProvisionListing(props) {
                                                 rowSelection={'multiple'}
                                             >
                                                 {<AgGridColumn field="PlantName" width="150" headerName="Plant (Code)" cellClass={"colorWhite"} floatingFilter={true}></AgGridColumn>}
-                                                {!(props.isSaleProvision) && <AgGridColumn field="VendorName" headerName="Vendor (Code)" cellClass={"colorWhite"} floatingFilter={true}></AgGridColumn>}
+                                                {!(props.isSaleProvision) && <AgGridColumn field="VendorName" headerName={vendorLabel + " (Code)"} cellClass={"colorWhite"} floatingFilter={true}></AgGridColumn>}
                                                 {(props.isSaleProvision) && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellClass={"colorWhite"} floatingFilter={true}></AgGridColumn>}
                                                 {<AgGridColumn field="PartNumber" headerName="Part Number" width="120" cellClass={"colorWhite"} floatingFilter={true}></AgGridColumn>}
                                                 {<AgGridColumn field="PartDescription" width="120" headerName="Part Description" cellClass={"colorWhite"} floatingFilter={true}></AgGridColumn>}

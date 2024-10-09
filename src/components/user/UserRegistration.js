@@ -140,7 +140,7 @@ function UserRegistration(props) {
   const [isShowDivision, setIsShowDivision] = useState(false)
   const [selectedDivision, setSelectedDivision] = useState([])
   const dispatch = useDispatch()
-  const { technologyLabel } = useLabels();
+  const { technologyLabel , vendorLabel } = useLabels();
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
   // const cityList = useSelector(state => state.comman.cityList)
   const departmentList = useSelector(state => state.auth.departmentList)
@@ -588,7 +588,8 @@ function UserRegistration(props) {
   */
   const departmentHandler = (newValue, actionMeta) => {
     let departmentIds = []
-    newValue && newValue?.map(item => {
+    let copiedArr = getConfigurationKey().IsMultipleDepartmentAllowed ? newValue : [newValue]
+    copiedArr && copiedArr?.map(item => {
       departmentIds.push(item?.value)
     })
     dispatch(getAllDivisionListAssociatedWithDepartment(departmentIds, res => {
@@ -2712,7 +2713,7 @@ const  vendorFilterList = (inputValue) => {
                         </label>
                         <TooltipCustom id="Primary_Contact"
                             customClass="mt-n1 pb-4"
-                            tooltipText="Please click on the checkbox if this user is the main point of contact for the vendor." />
+                            tooltipText={`Please click on the checkbox if this user is the main point of contact for the ${vendorLabel}.`} />
                       </div>
                       </Col>
                     }
@@ -2770,7 +2771,7 @@ const  vendorFilterList = (inputValue) => {
                             <AsyncSearchableSelectHookForm
                               name="Vendor"
                               type="text"
-                              label="Vendor (Code)"
+                              label={`${vendorLabel} (Code)`}
                               errors={errors.Vendor}
                               Controller={Controller}
                               control={control}
@@ -2780,7 +2781,7 @@ const  vendorFilterList = (inputValue) => {
                                 required: true,
                               }}
                               disabled={isEditFlag ? true : false}
-                              placeholder={'Select Vendor'}
+                              placeholder={`Select ${vendorLabel}`}
                               //onKeyUp={(e) => this.changeItemDesc(e)}
                               validate={(role == null || role.length === 0) ? [required] : []}
                               required={true}

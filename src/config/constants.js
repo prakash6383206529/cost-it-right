@@ -2321,6 +2321,8 @@ export const Assembly = '1'
 export const BoughtOutPart = '3'
 export const Component = '2'
 export const Product = '4'
+export const ToolingId = '5'
+
 
 export const COSTING_PATH = '/costing'
 export const COSTING_SUMMARY = '/costing-summary'
@@ -3030,7 +3032,7 @@ export const statusOptionsMasters = _.sortBy([
   { label: "Draft", value: "1" },
   { label: "History", value: "5" },
   { label: "Pending For Approval", value: "2" },
-  {label:"Rejected By System",value:"18"},
+  { label: "Rejected By System", value: "18" },
 ], ({ label }) => label.toLowerCase());
 
 
@@ -3246,7 +3248,7 @@ export const showLogoFromDataBase = false
 export const showPaperCorrugatedBox = true
 
 export const showDynamicKeys = false
-export const hideDetailOfRubbercalci = true
+export const hideDetailOfRubbercalci = false
 export const customHavellsChanges = true
 export const countDownBlinkingTime = 2
 export const clientName = 'Havells'
@@ -3258,7 +3260,7 @@ export const RAWMATERIALCOST = 'Raw Material Other Cost'
 export const COSTINGCONDITIONCOST = 'Costing Condition Cost'
 
 //VERSION 
-export const VERSION = "V3.1.11";
+export const VERSION = "V3.1.13";
 
 
 

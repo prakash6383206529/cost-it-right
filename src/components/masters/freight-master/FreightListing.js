@@ -21,7 +21,7 @@ import { checkMasterCreateByCostingPermission } from '../../common/CommonFunctio
 import { ApplyPermission } from '.';
 import Button from '../../layout/Button';
 import DayTime from '../../common/DayTimeWrapper';
-import { useLabels } from '../../../helper/core';
+import { useLabels, useWithLocalization } from '../../../helper/core';
 const gridOptions = {};
 const FreightListing = (props) => {
   const dispatch = useDispatch();
@@ -201,12 +201,12 @@ const FreightListing = (props) => {
     const selectedRows = state.gridApi?.getSelectedRows()
     setState((prevState) => ({ ...prevState, selectedRowData: selectedRows, dataCount: selectedRows.length }))
   }
-
+  const FREIGHT_DOWNLOAD_EXCEl_LOCALIZATION = useWithLocalization(FREIGHT_DOWNLOAD_EXCEl, "MasterLabels")
   const onBtExport = () => {
     let tempArr = []
     tempArr = state.gridApi && state.gridApi?.getSelectedRows()
     tempArr = (tempArr && tempArr.length > 0) ? tempArr : (freightDetail ? freightDetail : [])
-    return returnExcelColumn(FREIGHT_DOWNLOAD_EXCEl, tempArr)
+    return returnExcelColumn(FREIGHT_DOWNLOAD_EXCEl_LOCALIZATION, tempArr)
   };
 
   const onFilterTextBoxChanged = (e) => {

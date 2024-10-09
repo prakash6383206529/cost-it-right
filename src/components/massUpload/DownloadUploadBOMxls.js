@@ -2,6 +2,7 @@ import React from "react";
 import ReactExport from 'react-export-excel';
 import { BOMUpload, BOMUploadTempData } from '../../config/masterData';
 import { getConfigurationKey } from "../../helper";
+import { localizeHeadersWithLabels } from "../../helper/core";
 import { withTranslation } from "react-i18next";
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -19,8 +20,16 @@ export const checkSAPCodeinExcel = (excelData) => {
 
 class DownloadUploadBOMxls extends React.Component {
 
+  constructor(props) {
+    super(props);
+    this.localizeHeaders = this.localizeHeaders.bind(this);
+  }
 
 
+
+  localizeHeaders(headers) {
+    return localizeHeadersWithLabels(headers, this.props.t);
+  }
 
   /**
   * @method renderSwitch
@@ -34,50 +43,49 @@ class DownloadUploadBOMxls extends React.Component {
       default:
         return 'foo';
     }
-  }
 
-  /**
-  * @method returnExcelColumn
-  * @description Used to get excel column names
-  */
-  returnExcelColumn = (data = [], TempData) => {
+    /**
+    * @method returnExcelColumn
+    * @description Used to get excel column names
+    */
+    returnExcelColumn = (data = [], TempData) => {
 
-    const { fileName, failedData, isFailedFlag } = this.props;
-    let dataList = [...data]
-    if (isFailedFlag) {
+      const { fileName, failedData, isFailedFlag } = this.props;
+      let dataList = [...data]
+      if (isFailedFlag) {
 
-      //BELOW CONDITION TO ADD 'REASON' COLUMN WHILE DOWNLOAD EXCEL SHEET IN CASE OF FAILED
-      let isContentReason = dataList.filter(d => d.label === 'Reason')
-      if (isContentReason.length === 0) {
-        let addObj = { label: 'Reason', value: 'Reason' }
-        dataList.push(addObj)
+        //BELOW CONDITION TO ADD 'REASON' COLUMN WHILE DOWNLOAD EXCEL SHEET IN CASE OF FAILED
+        let isContentReason = dataList.filter(d => d.label === 'Reason')
+        if (isContentReason.length === 0) {
+          let addObj = { label: 'Reason', value: 'Reason' }
+          dataList.push(addObj)
+        }
       }
+
+      return (<ExcelSheet data={isFailedFlag ? failedData : TempData} name={fileName}>
+        {dataList && dataList.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.label} />)}
+      </ExcelSheet>);
     }
 
-    return (<ExcelSheet data={isFailedFlag ? failedData : TempData} name={fileName}>
-      {dataList && dataList.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.label} />)}
-    </ExcelSheet>);
-  }
+    render() {
+      const { isFailedFlag, fileName, } = this.props;
 
-  render() {
-    const { isFailedFlag, fileName, } = this.props;
+      // DOWNLOAD FILE:- CALLED WHEN FILE FAILED APART FROM ZBC AND VBC
+      if (isFailedFlag && fileName === 'BOM') {
+        return (
+          <ExcelFile hideElement={true} filename={fileName} fileExtension={'.xls'} >
+            {this.renderSwitch(fileName)}
+          </ExcelFile>
+        );
+      }
 
-    // DOWNLOAD FILE:- CALLED WHEN FILE FAILED APART FROM ZBC AND VBC
-    if (isFailedFlag && fileName === 'BOM') {
+      // DISPLAY DOWNLOAD FILE BUTTON EXCEPT ZBC AND VBC TEMPLATES
       return (
-        <ExcelFile hideElement={true} filename={fileName} fileExtension={'.xls'} >
-          {this.renderSwitch(fileName)}
+        <ExcelFile filename={fileName} fileExtension={'.xls'} element={<button type="button" className={'btn btn-primary pull-right w-100'}><div class="download"></div> Download File</button>}>
+          {fileName ? this.renderSwitch(fileName) : ''}
         </ExcelFile>
       );
     }
-
-    // DISPLAY DOWNLOAD FILE BUTTON EXCEPT ZBC AND VBC TEMPLATES
-    return (
-      <ExcelFile filename={fileName} fileExtension={'.xls'} element={<button type="button" className={'btn btn-primary pull-right w-100'}><div class="download"></div> Download File</button>}>
-        {fileName ? this.renderSwitch(fileName) : ''}
-      </ExcelFile>
-    );
   }
-}
 
 export default withTranslation("MasterLabels")(DownloadUploadBOMxls);

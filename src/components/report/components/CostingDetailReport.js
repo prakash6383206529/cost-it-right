@@ -74,7 +74,7 @@ function ReportListing(props) {
     const statusColumnData = useSelector((state) => state.comman.statusColumnData);
     const [dataCount, setDataCount] = useState(0)
     const [applicabilityDropdown, setApplicabilityDropdown] = useState([])
-    const { technologyLabel, discountLabel, toolMaintenanceCostLabel } = useLabels();
+    const { technologyLabel, discountLabel, toolMaintenanceCostLabel, vendorLabel } = useLabels();
     const { selectedRowForPagination } = useSelector((state => state.simulation))
     var filterParams = {
         comparator: function (filterLocalDateAtMidnight, cellValue) {
@@ -1059,7 +1059,7 @@ function ReportListing(props) {
                             <AgGridColumn field='CostingHead' headerName='Costing head' cellRenderer='hyphenFormatter'></AgGridColumn>
                             <AgGridColumn field="TechnologyName" headerName={technologyLabel} cellRenderer='hyphenFormatter'></AgGridColumn>
                             <AgGridColumn field='Plant' headerName='Plant (Code)' cellRenderer='hyphenFormatter'></AgGridColumn>
-                            <AgGridColumn field='Vendor' headerName='Vendor (Code)' cellRenderer='hyphenFormatter'></AgGridColumn>
+                            <AgGridColumn field='Vendor' headerName={vendorLabel + " (Code)"} cellRenderer='hyphenFormatter'></AgGridColumn>
                             <AgGridColumn field='InfoCategory' headerName='Category' cellRenderer='hyphenFormatter'></AgGridColumn>
                             {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field='Customer' headerName='Customer (Code)' cellRenderer='hyphenFormatter'></AgGridColumn>}
                             <AgGridColumn field='PartNumber' headerName='Part Number' cellRenderer='hyphenFormatter'></AgGridColumn>

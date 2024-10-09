@@ -99,7 +99,7 @@ function RfqListing(props) {
     });
 
     const [filterModel, setFilterModel] = useState({});
-    const { technologyLabel } = useLabels();
+    const { technologyLabel, vendorLabel } = useLabels();
 
     const { topAndLeftMenuData } = useSelector(state => state.auth);
     const agGridRef = useRef(null);
@@ -785,7 +785,7 @@ function RfqListing(props) {
                                                     <AgGridColumn field="PRNumber" headerName="PR No." width={150} cellRenderer={"hyphenFormatter"}></AgGridColumn>
 
                                                     <AgGridColumn field="NoOfQuotationReceived" headerName='Quotation Received (No.)' maxWidth={150} cellRenderer={'quotationReceiveFormatter'}></AgGridColumn>
-                                                    <AgGridColumn field="VendorName" tooltipField="VendorName" headerName='Vendor (Code)' cellRendererFramework={CustomCellRenderer}></AgGridColumn>
+                                                    <AgGridColumn field="VendorName" tooltipField="VendorName" headerName={vendorLabel + " (Code)"} cellRendererFramework={CustomCellRenderer}></AgGridColumn>
                                                     <AgGridColumn field="PlantName" tooltipField="PlantName" headerName='Plant (Code)'></AgGridColumn>
                                                     <AgGridColumn field="TechnologyName" width={"160px"} headerName={technologyLabel}></AgGridColumn>
                                                     <AgGridColumn field="RaisedBy" width={"160px"} headerName='Initiated By'></AgGridColumn>
