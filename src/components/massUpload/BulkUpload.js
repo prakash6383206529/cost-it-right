@@ -583,20 +583,15 @@ class BulkUpload extends Component {
                             }
                             break;
                         case String(ASSEMBLYORCOMPONENTSRFQ):
-                            const localizedAddAssemblyOrComponentHeaderData = this.localizeHeaders(AddAssemblyOrComponentHeaderData);
-                            masterDataArray = localizedAddAssemblyOrComponentHeaderData
-                            checkForFileHead = checkForSameFileUpload(localizedAddAssemblyOrComponentHeaderData, fileHeads)
+                                                        checkForFileHead = checkForSameFileUpload(AddAssemblyOrComponentHeaderData, fileHeads)
                             break
                         case String(BOUGHTOUTPARTSRFQ):
-                            const localizedAddBoughtOutPartsHeaderData = this.localizeHeaders(AddBoughtOutPartsHeaderData);
-                            masterDataArray = localizedAddBoughtOutPartsHeaderData
-                            checkForFileHead = checkForSameFileUpload(localizedAddBoughtOutPartsHeaderData, fileHeads)
+                            checkForFileHead = checkForSameFileUpload(AddBoughtOutPartsHeaderData, fileHeads)
 
                             break
                         case String(RAWMATERIALSRFQ):
-                            const localizedAddRawMaterialHeaderData = this.localizeHeaders(AddRawMaterialHeaderData);
-                            masterDataArray = localizedAddRawMaterialHeaderData
-                            checkForFileHead = checkForSameFileUpload(localizedAddRawMaterialHeaderData, fileHeads)
+                            
+                            checkForFileHead = checkForSameFileUpload(AddRawMaterialHeaderData, fileHeads)
 
                             break
 
