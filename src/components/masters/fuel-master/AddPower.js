@@ -4,16 +4,16 @@ import { Field, reduxForm, formValueSelector, clearFields } from "redux-form";
 import { Row, Col, Table, Label } from 'reactstrap';
 import { required, checkForNull, getCodeBySplitting, checkForDecimalAndNull, positiveAndDecimalNumber, maxLength10, decimalLengthFour, decimalLengthThree, number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation } from "../../../helper/validation";
 import { searchableSelect, renderMultiSelectField, focusOnError, renderDatePicker, renderText, renderTextInputField } from "../../layout/FormInputs";
-import { getPowerTypeSelectList, getUOMSelectList, getPlantBySupplier, getAllCity, fetchStateDataAPI, getVendorNameByVendorSelectList } from '../../../actions/Common';
+import { getPowerTypeSelectList, getUOMSelectList, getPlantBySupplier, getAllCity, fetchStateDataAPI, getVendorNameByVendorSelectList, getExchangeRateSource, getCurrencySelectList } from '../../../actions/Common';
 import {
   getFuelByPlant, createPowerDetail, updatePowerDetail, getPlantListByState, createVendorPowerDetail, updateVendorPowerDetail, getDieselRateByStateAndUOM,
   getPowerDetailData, getVendorPowerDetailData,
 } from '../actions/Fuel';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { CBCTypeId, GENERATOR_DIESEL, GUIDE_BUTTON_SHOW, searchCount, SPACEBAR, VBC_VENDOR_TYPE, VBCTypeId, ZBCTypeId, } from '../../../config/constants';
+import { CBCTypeId, EMPTY_GUID, GENERATOR_DIESEL, GUIDE_BUTTON_SHOW, searchCount, SPACEBAR, VBC_VENDOR_TYPE, VBCTypeId, ZBCTypeId, } from '../../../config/constants';
 import { EMPTY_DATA } from '../../../config/constants'
-import { loggedInUserId } from "../../../helper/auth";
+import { getConfigurationKey, IsFetchExchangeRateVendorWise, loggedInUserId } from "../../../helper/auth";
 import "react-datepicker/dist/react-datepicker.css";
 import NoContentFound from '../../common/NoContentFound';
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
@@ -34,6 +34,8 @@ import { withTranslation } from 'react-i18next';
 import Button from '../../layout/Button';
 import { subDays } from 'date-fns';
 import { LabelsClass } from '../../../helper/core';
+import { getExchangeRateByCurrency } from '../../costing/actions/Costing';
+import { getPlantUnitAPI } from '../actions/Plant';
 
 const selector = formValueSelector('AddPower');
 
@@ -84,6 +86,11 @@ class AddPower extends Component {
       AddChanged: true,
       setDisable: false,
       inputLoader: false,
+      isImport: false,
+      hidePlantCurrency: false,
+      settlementCurrency: [],
+      plantCurrency: [],
+      ExchangeSource: [],
       errorObj: {
         minDemand: false,
         demandCharge: false,
@@ -112,6 +119,7 @@ class AddPower extends Component {
   componentDidMount() {
     this.setState({ costingTypeId: getCostingTypeIdByCostingPermission() })
     if (!this.state.isViewMode) {
+      this.props.getExchangeRateSource((res) => { })
       this.props.getPowerTypeSelectList(() => { })
       this.props.getUOMSelectList(() => { })
     }
@@ -137,6 +145,32 @@ class AddPower extends Component {
   }
   componentWillUnmount() {
     reactLocalStorage?.setObject('vendorData', [])
+  }
+
+  callExchangeRateAPI = () => {
+    const { fieldsObj } = this.props
+    const { costingTypeId, vendorName, client, effectiveDate, ExchangeSource } = this.state;
+
+    const vendorValue = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? vendorName.value : EMPTY_GUID) : EMPTY_GUID
+    const costingType = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? VBCTypeId : costingTypeId) : ZBCTypeId
+    const hasCurrencyAndDate = fieldsObj?.plantCurrency && effectiveDate;
+    const isSourceExchangeRateVisible = getConfigurationKey().IsSourceExchangeRateNameVisible;
+    if (hasCurrencyAndDate && (!isSourceExchangeRateVisible || ExchangeSource)) {
+      if (IsFetchExchangeRateVendorWise() && (vendorName?.length === 0 || client?.length === 0)) {
+        this.setState({ showWarning: true });
+        return;
+      }
+
+      this.props.getExchangeRateByCurrency(fieldsObj?.plantCurrency, costingType, DayTime(this.state?.effectiveDate).format('YYYY-MM-DD'), vendorValue, client.value, false, reactLocalStorage.getObject("baseCurrency"), ExchangeSource?.label, res => {
+        console.log(res, "res")
+        if (Object.keys(res.data.Data).length === 0) {
+          this.setState({ showWarning: true });
+        } else {
+          this.setState({ showWarning: false });
+        }
+        this.setState({ currencyValue: checkForNull(res.data.Data.CurrencyExchangeRate) });
+      });
+    }
   }
   /**
    * @method minMonthlyChargeCalculation
@@ -494,8 +528,24 @@ class AddPower extends Component {
   */
   handlePlants = (e) => {
     this.setState({ selectedPlants: e })
+    this.props.getPlantUnitAPI(e?.value, (res) => {
+      let Data = res?.data?.Data
+      if (Data?.Currency !== reactLocalStorage?.getObject("baseCurrency")) {
+        this.props.change('plantCurrency', Data?.Currency)
+        this.setState({ hidePlantCurrency: false })
+        this.callExchangeRateAPI()
+      } else {
+        this.setState({ hidePlantCurrency: true })
+      }
+    })
   }
-
+  handleExchangeRateSource = (newValue) => {
+    this.setState({ ExchangeSource: newValue }
+      , () => {
+        this.callExchangeRateAPI()
+      }
+    );
+  };
   /**
  * @method handleChange
  * @description Handle Effective Date
@@ -503,6 +553,8 @@ class AddPower extends Component {
   handleEffectiveDateChange = (date) => {
     this.setState({
       effectiveDate: date,
+    }, () => {
+      this.callExchangeRateAPI()
     });
   };
 
@@ -529,6 +581,7 @@ class AddPower extends Component {
     }
     this.setState({ handleChange: false })
   };
+
   findSourceType = (clickedData, arr) => {
     let isSourceType = _.find(arr, function (obj) {
       if (obj.SourcePowerType === clickedData) {
@@ -1066,7 +1119,7 @@ class AddPower extends Component {
   * @description Used to show type of listing
   */
   renderListing = (label) => {
-    const { powerTypeSelectList, UOMSelectList, plantSelectList, stateList, clientSelectList } = this.props;
+    const { powerTypeSelectList, UOMSelectList, plantSelectList, stateList, clientSelectList, exchangeRateSourceList } = this.props;
     const temp = [];
 
     if (label === 'state') {
@@ -1114,6 +1167,14 @@ class AddPower extends Component {
         return null;
       });
       return temp;
+    }
+    if (label === 'ExchangeSource') {
+      exchangeRateSourceList && exchangeRateSourceList.map((item) => {
+        if (item.Value === '--Exchange Rate Source Name--') return false
+        temp.push({ label: item.Text, value: item.Value })
+        return null
+      })
+      return temp
     }
   }
 
@@ -1377,8 +1438,8 @@ class AddPower extends Component {
   render() {
     const { handleSubmit, initialConfiguration, t } = this.props;
     const { isEditFlag, source, isOpenVendor, isCostPerUnitConfigurable, isEditFlagForStateElectricity,
-      checkPowerContribution, netContributionValue, isViewMode, setDisable, costingTypeId, isDetailEntry } = this.state;
-      const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
+      checkPowerContribution, netContributionValue, isViewMode, setDisable, costingTypeId, isDetailEntry, hidePlantCurrency } = this.state;
+    const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
 
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
@@ -1594,7 +1655,34 @@ class AddPower extends Component {
                             </div>
                           </div>
                         </Col>
-
+                        {getConfigurationKey().IsSourceExchangeRateNameVisible && (
+                          <Col md="3">
+                            <Field
+                              label="Exchange Rate Source"
+                              name="ExchangeSource"
+                              placeholder="Select"
+                              options={this.renderListing("ExchangeSource")}
+                              handleChangeDescription={this.handleExchangeRateSource}
+                              component={searchableSelect}
+                              className="multiselect-with-border"
+                              disabled={isEditFlag}
+                            />
+                          </Col>
+                        )}
+                        {!hidePlantCurrency && <Col md="3">
+                          <Field
+                            name="plantCurrency"
+                            type="text"
+                            label="Plant Currency"
+                            placeholder={"-"}
+                            validate={[]}
+                            component={renderTextInputField}
+                            required={false}
+                            disabled={true}
+                            className=" "
+                            customClassName=" withBorder"
+                          />
+                        </Col>}
                         <Col md="3">
                           <div className="d-flex justify-space-between align-items-center inputwith-icon">
                             <div className="fullinput-icon">
@@ -2287,6 +2375,10 @@ export default connect(mapStateToProps, {
   getAllCity,
   fetchStateDataAPI,
   getClientSelectList,
+  getExchangeRateByCurrency,
+  getPlantUnitAPI,
+  getExchangeRateSource,
+  getCurrencySelectList
 })(reduxForm({
   form: 'AddPower',
   enableReinitialize: true,

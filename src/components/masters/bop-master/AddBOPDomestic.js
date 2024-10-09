@@ -121,6 +121,7 @@ class AddBOPDomestic extends Component {
       ExchangeSource: '',
       showWarning: false,
       currencyValue: 1,
+      hidePlantCurrency: false,
     }
   }
 
@@ -184,12 +185,8 @@ class AddBOPDomestic extends Component {
     }, 300);
   }
   callExchangeRateAPI = () => {
-    const { initialConfiguration, fieldsObj } = this.props
-    console.log('fieldsObj?.plantCurrency', fieldsObj?.plantCurrency)
+    const { fieldsObj } = this.props
     const { costingTypeId, vendorName, client, effectiveDate, ExchangeSource } = this.state;
-    console.log(effectiveDate, "feffectiveDate")
-    console.log(ExchangeSource, "ExchangeSource")
-    console.log(fieldsObj?.plantCurrency && effectiveDate, "fieldsObj?.plantCurrency && effectiveDate")
 
     const vendorValue = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? vendorName.value : EMPTY_GUID) : EMPTY_GUID
     const costingType = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? VBCTypeId : costingTypeId) : ZBCTypeId
@@ -537,7 +534,6 @@ class AddBOPDomestic extends Component {
     if (label === 'ExchangeSource') {
       exchangeRateSourceList && exchangeRateSourceList.map((item) => {
         if (item.Value === '--Exchange Rate Source Name--') return false
-
         temp.push({ label: item.Text, value: item.Value })
         return null
       })
@@ -592,7 +588,10 @@ class AddBOPDomestic extends Component {
       let Data = res?.data?.Data
       if (Data?.Currency !== reactLocalStorage?.getObject("baseCurrency")) {
         this.props.change('plantCurrency', Data?.Currency)
+        this.setState({ hidePlantCurrency: false })
         this.callExchangeRateAPI()
+      } else {
+        this.setState({ hidePlantCurrency: true })
       }
     })
     if (!this.state.isViewMode && initialConfiguration?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !getConfigurationKey()?.IsDivisionAllowedForDepartment) {
@@ -1093,7 +1092,7 @@ class AddBOPDomestic extends Component {
   labelWithUOM = (value) => {
     const { initialConfiguration } = this.props
     return <div>
-      <span className='d-flex'>Basic Rate/{displayUOM(value)} ({reactLocalStorage.getObject("baseCurrency")})</span>
+      <span className='d-flex'>Basic Rate/{displayUOM(value)} (${this.props.fieldsObj?.plantCurrency ?? 'Currency'})</span>
     </div>
   }
   onIsClientVendorBOP = () => {
@@ -1163,7 +1162,7 @@ class AddBOPDomestic extends Component {
   render() {
     const { handleSubmit, isBOPAssociated, initialConfiguration, t, fieldsObj } = this.props;
     const { isCategoryDrawerOpen, isOpenVendor, costingTypeId, isOpenUOM, isEditFlag, isViewMode, setDisable, isClientVendorBOP, CostingTypePermission,
-      isTechnologyVisible, disableSendForApproval, isOpenConditionDrawer, conditionTableData, FinalBasicPriceBaseCurrency, IsFinancialDataChanged, toolTipTextNetCost, toolTipTextBasicPrice, IsSAPCodeUpdated, IsSapCodeEditView, IsSAPCodeHandle
+      isTechnologyVisible, disableSendForApproval, isOpenConditionDrawer, conditionTableData, FinalBasicPriceBaseCurrency, IsFinancialDataChanged, toolTipTextNetCost, toolTipTextBasicPrice, IsSAPCodeUpdated, IsSapCodeEditView, IsSAPCodeHandle, hidePlantCurrency
     } = this.state;
     const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
     const BOPVendorLabel = LabelsClass(t, 'MasterLabels').BOPVendorLabel;
@@ -1628,7 +1627,7 @@ class AddBOPDomestic extends Component {
                           <Col md="12">
                             <div className="left-border">{"Cost:"}</div>
                           </Col>
-                          {this.props.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency") && <Col md="3">
+                          {!hidePlantCurrency && <Col md="3">
                             <Field
                               name="plantCurrency"
                               type="text"
@@ -1755,7 +1754,7 @@ class AddBOPDomestic extends Component {
                                   customClassName=" withBorder"
                                 />
                               </Col>
-                              {fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency") && <Col md="3">
+                              {!hidePlantCurrency && <Col md="3">
                                 <TooltipCustom id="bop-net-cost" tooltipText={toolTipTextNetCost} />
                                 <Field
                                   label={`Net Cost/${this.state.UOM.label ? this.state.UOM.label : 'UOM'} (${reactLocalStorage.getObject("baseCurrency")})`}
@@ -2031,7 +2030,7 @@ class AddBOPDomestic extends Component {
 */
 function mapStateToProps(state) {
   const { comman, supplier, boughtOutparts, part, auth, costing, client } = state;
-  const fieldsObj = selector(state, 'NumberOfPieces', 'BasicRateBase', 'Remark', 'BoughtOutPartName', 'SAPPartNumber', 'plantCurrency');
+  const fieldsObj = selector(state, 'NumberOfPieces', 'BasicRateBase', 'Remark', 'BoughtOutPartName', 'SAPPartNumber', 'plantCurrency', 'NetCostPlantCurrency');
 
   const { bopCategorySelectList, bopData, } = boughtOutparts;
   const { plantList, filterPlantList, filterCityListBySupplier, cityList, UOMSelectList, plantSelectList, costingHead, exchangeRateSourceList } = comman;

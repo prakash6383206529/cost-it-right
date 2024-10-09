@@ -1,22 +1,22 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { Field, reduxForm, formValueSelector, clearFields } from "redux-form";
 import { Row, Col, Table, Label } from "reactstrap";
+import { Field, reduxForm, formValueSelector, clearFields } from "redux-form";
 import { required, checkForNull, maxLength10, checkForDecimalAndNull, number, decimalNumberLimit6, checkWhiteSpaces } from "../../../helper/validation";
 import { renderTextInputField, searchableSelect } from "../../layout/FormInputs";
-import { fetchSupplierCityDataAPI, getAllCity, getVendorNameByVendorSelectList, getPlantSelectListByType, getCityByCountryAction } from "../../../actions/Common";
+import { fetchSupplierCityDataAPI, getAllCity, getVendorNameByVendorSelectList, getPlantSelectListByType, getCityByCountryAction, getExchangeRateSource, getCurrencySelectList } from "../../../actions/Common";
 import {
   createFreight, updateFright, getFreightData, getFreightModeSelectList, getFreigtFullTruckCapacitySelectList, getFreigtRateCriteriaSelectList,
 } from "../actions/Freight";
 import Toaster from "../../common/Toaster";
 import { MESSAGES } from "../../../config/message";
-import { loggedInUserId, userDetails } from "../../../helper/auth";
+import { getConfigurationKey, IsFetchExchangeRateVendorWise, loggedInUserId, userDetails } from "../../../helper/auth";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import AddVendorDrawer from "../supplier-master/AddVendorDrawer";
 import DayTime from "../../common/DayTimeWrapper"
 import NoContentFound from "../../common/NoContentFound";
-import { CBCTypeId, EMPTY_DATA, FullTruckLoad, SPACEBAR, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, searchCount } from "../../../config/constants";
+import { CBCTypeId, EMPTY_DATA, EMPTY_GUID, ENTRY_TYPE_DOMESTIC, ENTRY_TYPE_IMPORT, FullTruckLoad, SPACEBAR, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, searchCount } from "../../../config/constants";
 import LoaderCustom from "../../common/LoaderCustom";
 import { debounce } from "lodash";
 import AsyncSelect from 'react-select/async';
@@ -30,6 +30,10 @@ import { label } from "react-dom-factories";
 import { subDays } from "date-fns";
 import { withTranslation } from "react-i18next";
 import { LabelsClass } from "../../../helper/core";
+import { getExchangeRateByCurrency } from "../../costing/actions/Costing";
+import { getPlantUnitAPI } from "../actions/Plant";
+import Switch from 'react-switch'
+import WarningMessage from "../../common/WarningMessage";
 
 
 const selector = formValueSelector("AddFreight");
@@ -75,7 +79,16 @@ class AddFreight extends Component {
       vendorFilterList: [],
       Plant: [],
       showEffectiveDateError: false,
-      Load: []
+      Load: [],
+      isImport: false,
+      hidePlantCurrency: false,
+      settlementCurrency: null,
+      plantCurrency: null,
+      ExchangeSource: [],
+      currency: null,
+      plantExchangeRateId: '',
+      settlementExchangeRateId: '',
+      plantCurrencyID: '',
     };
   }
   /**
@@ -85,13 +98,15 @@ class AddFreight extends Component {
   componentDidMount() {
     this.setState({ costingTypeId: getCostingTypeIdByCostingPermission() })
     if (!this.state.isViewMode) {
+      this.props.getCurrencySelectList(() => { })
+      this.props.getExchangeRateSource((res) => { })
       this.props.getFreigtFullTruckCapacitySelectList((res) => { });
       this.props.getFreigtRateCriteriaSelectList((res) => { });
     }
     if (!(this.props.data.isEditFlag || this.state.isViewMode)) {
       // this.props.getAllCity(cityId => {
-        // this.props.getCityByCountry(0, 0,'', () => { })
-        this.props.getClientSelectList(() => { })
+      // this.props.getCityByCountry(0, 0,'', () => { })
+      this.props.getClientSelectList(() => { })
       // })
     }
     this.props.getPlantSelectListByType(ZBC, "MASTER", '', () => { })
@@ -100,6 +115,90 @@ class AddFreight extends Component {
   }
   componentWillUnmount() {
     reactLocalStorage?.setObject('vendorData', [])
+  }
+
+  callExchangeRateAPI = () => {
+    const { fieldsObj } = this.props
+    const { costingTypeId, vendorName, client, effectiveDate, ExchangeSource, currency, isImport } = this.state;
+
+    const vendorValue = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? vendorName.value : EMPTY_GUID) : EMPTY_GUID
+    const costingType = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? VBCTypeId : costingTypeId) : ZBCTypeId
+    const fromCurrency = isImport ? currency?.label : fieldsObj?.plantCurrency
+    const toCurrency = reactLocalStorage.getObject("baseCurrency")
+    const hasCurrencyAndDate = fieldsObj?.plantCurrency && effectiveDate;
+    const isSourceExchangeRateVisible = getConfigurationKey().IsSourceExchangeRateNameVisible;
+
+    if (hasCurrencyAndDate && (!isSourceExchangeRateVisible || ExchangeSource)) {
+      if (IsFetchExchangeRateVendorWise() && (vendorName?.length === 0 || client?.length === 0)) {
+        this.setState({ showWarning: true });
+        return;
+      }
+
+      const callAPI = (from, to) => {
+        return new Promise((resolve) => {
+          this.props.getExchangeRateByCurrency(
+            from,
+            costingType,
+            DayTime(this.state?.effectiveDate).format('YYYY-MM-DD'),
+            vendorValue,
+            client.value,
+            false,
+            to,
+            ExchangeSource?.label,
+            res => {
+              if (Object.keys(res.data.Data).length === 0) {
+                this.setState({ showWarning: true });
+              } else {
+                this.setState({ showWarning: false });
+              }
+              // Resolve with an object containing both values
+              resolve({
+                rate: checkForNull(res.data.Data.CurrencyExchangeRate),
+                exchangeRateId: res?.data?.Data?.ExchangeRateId
+              });
+            }
+          );
+        });
+      };
+
+      if (isImport) {
+        // First API call
+        callAPI(fromCurrency, fieldsObj?.plantCurrency).then(({ rate: rate1, exchangeRateId: exchangeRateId1 }) => {
+          // Second API call
+          callAPI(fromCurrency, reactLocalStorage.getObject("baseCurrency")).then(({ rate: rate2, exchangeRateId: exchangeRateId2 }) => {
+            this.setState({
+              plantCurrency: rate1,
+              settlementCurrency: rate2,
+              plantExchangeRateId: exchangeRateId1,
+              settlementExchangeRateId: exchangeRateId2
+            }, () => {
+              this.handleCalculation(fieldsObj?.Rate)
+            });
+          });
+        });
+      } else {
+        // Original single API call for non-import case
+        callAPI(fromCurrency, toCurrency).then(({ rate, exchangeRateId }) => {
+          this.setState({ plantCurrency: rate, plantExchangeRateId: exchangeRateId }, () => {
+            this.handleCalculation(fieldsObj?.RateLocalConversion)
+          });
+        });
+      }
+    }
+
+  }
+  handleCalculation = (rate) => {
+    const { plantCurrency, settlementCurrency, isImport } = this.state
+
+    if (isImport) {
+      const ratePlantCurrency = checkForNull(rate) * checkForNull(plantCurrency)
+      this.props.change('RateLocalConversion', checkForDecimalAndNull(ratePlantCurrency, getConfigurationKey().NoOfDecimalForPrice))
+      const rateBaseCurrency = checkForNull(rate) * checkForNull(settlementCurrency)
+      this.props.change('RateConversion', checkForDecimalAndNull(rateBaseCurrency, getConfigurationKey().NoOfDecimalForPrice))
+    } else {
+      const ratebaseCurrency = checkForNull(rate) * checkForNull(plantCurrency)
+      this.props.change('RateConversion', checkForDecimalAndNull(ratebaseCurrency, getConfigurationKey().NoOfDecimalForPrice))
+    }
   }
   /**
   * @method onPressVendor
@@ -143,7 +242,9 @@ class AddFreight extends Component {
 */
   handleClient = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ client: newValue });
+      this.setState({ client: newValue }, () => {
+        this.callExchangeRateAPI()
+      });
     } else {
       this.setState({ client: [] })
     }
@@ -156,11 +257,28 @@ class AddFreight extends Component {
   handlePlant = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
       this.setState({ Plant: newValue });
+      this.props.getPlantUnitAPI(newValue?.value, (res) => {
+        let Data = res?.data?.Data
+        this.props.change('plantCurrency', Data?.Currency)
+        this.setState({ plantCurrencyID: Data?.CurrencyId })
+        if (Data?.Currency !== reactLocalStorage?.getObject("baseCurrency")) {
+          this.setState({ hidePlantCurrency: false })
+          this.callExchangeRateAPI()
+        } else {
+          this.setState({ hidePlantCurrency: true })
+        }
+      })
     } else {
       this.setState({ Plant: [] })
     }
   };
-
+  handleExchangeRateSource = (newValue) => {
+    this.setState({ ExchangeSource: newValue }
+      , () => {
+        this.callExchangeRateAPI()
+      }
+    );
+  };
   /**
   * @method handleLoad
   * @description Load
@@ -210,11 +328,15 @@ class AddFreight extends Component {
                   Capacity: item?.Capacity,
                   RateCriteria: item?.RateCriteria,
                   Rate: item?.Rate,
+                  RateConversion: item?.RateConversion,
+                  RateLocalConversion: item?.RateLocalConversion,
                   Load: { label: item?.FreightLoadType, value: item?.EFreightLoadType },
                   EFreightLoadType: item?.EFreightLoadType,
                   IsFreightAssociated: item?.IsFreightAssociated,
                 };
               });
+            this.props.change('ExchangeSource', { label: Data?.ExchangeRateSourceName, value: Data?.ExchangeRateSourceName })
+            this.props.change("plantCurrency", Data?.LocalCurrency)
             this.setState({
               isEditFlag: true,
               // isLoader: false,
@@ -230,7 +352,14 @@ class AddFreight extends Component {
               destinationLocation: Data.DestinationCityName !== undefined ? { label: Data.DestinationCityName, value: Data.DestinationCityId } : [],
               gridTable: GridArray,
               Plant: { label: Data.PlantName, value: Data.PlantId },
-              effectiveDate: DayTime(Data?.EffectiveDate).isValid() ? new Date(Data?.EffectiveDate) : ''
+              effectiveDate: DayTime(Data?.EffectiveDate).isValid() ? new Date(Data?.EffectiveDate) : '',
+
+              ExchangeSource: Data?.ExchangeRateSourceName !== undefined ? { label: Data?.ExchangeRateSourceName, value: Data?.ExchangeRateSourceName } : [],
+              plantCurrency: Data?.LocalCurrencyExchangeRate,
+              plantExchangeRateId: Data?.LocalCurrencyExchangeRateId,
+              settlementCurrency: Data?.ExchangeRate,
+              settlementExchangeRateId: Data?.ExchangeRateId,
+              plantCurrencyID: Data?.LocalCurrencyId
             }, () => this.setState({ isLoader: false }));
           }, 200);
         }
@@ -247,7 +376,7 @@ class AddFreight extends Component {
    * @description Used to show type of listing
    */
   renderListing = (label) => {
-    const { cityList, clientSelectList, freightModeSelectList, freightFullTruckCapacitySelectList, freightRateCriteriaSelectList, plantSelectList } = this.props;
+    const { cityList, clientSelectList, freightModeSelectList, freightFullTruckCapacitySelectList, freightRateCriteriaSelectList, plantSelectList, exchangeRateSourceList, currencySelectList } = this.props;
     const temp = [];
     if (label === "SourceLocation") {
       cityList &&
@@ -317,6 +446,22 @@ class AddFreight extends Component {
       })
       return temp
     }
+    if (label === 'ExchangeSource') {
+      exchangeRateSourceList && exchangeRateSourceList.map((item) => {
+        if (item.Value === '--Exchange Rate Source Name--') return false
+        temp.push({ label: item.Text, value: item.Value })
+        return null
+      })
+      return temp
+    }
+    if (label === 'currency') {
+      currencySelectList && currencySelectList.map(item => {
+        if (item.Value === '0') return false;
+        temp.push({ label: item.Text, value: item.Value })
+        return null;
+      });
+      return temp;
+    }
   };
   /**
    * @method handleVendorName
@@ -324,7 +469,9 @@ class AddFreight extends Component {
    */
   handleVendorName = (newValue, actionMeta) => {
     if (newValue && newValue !== "") {
-      this.setState({ vendorName: newValue, isVendorNameNotSelected: false });
+      this.setState({ vendorName: newValue, isVendorNameNotSelected: false }, () => {
+        this.callExchangeRateAPI()
+      });
     } else {
       this.setState({ vendorName: [] });
     }
@@ -404,6 +551,7 @@ class AddFreight extends Component {
   };
 
   rateChange = (newValue) => {
+    this.handleCalculation(newValue?.target?.value)
     const { errorObj } = this.state
     let obj = { ...errorObj }
     if (decimalNumberLimit6(newValue?.target?.value) !== undefined || checkWhiteSpaces(newValue?.target?.value) !== undefined || number(newValue?.target?.value) !== undefined) {
@@ -420,7 +568,9 @@ class AddFreight extends Component {
    * @description Handle Effective Date
    */
   handleEffectiveDateChange = (date) => {
-    this.setState({ effectiveDate: date, showEffectiveDateError: false });
+    this.setState({ effectiveDate: date, showEffectiveDateError: false }, () => {
+      this.callExchangeRateAPI()
+    });
   };
 
   checkValidation = () => {
@@ -483,14 +633,15 @@ class AddFreight extends Component {
       return false;
     }
 
-    const Rate = fieldsObj && fieldsObj !== undefined ? checkForNull(fieldsObj) : 0;
     const tempArray = [
       ...gridTable,
       {
         FullTruckLoadId: "",
         Capacity: FullTruckCapacity.label,
         RateCriteria: RateCriteria.label,
-        Rate: Rate,
+        Rate: fieldsObj?.Rate ?? fieldsObj?.RateLocalConversion,
+        RateLocalConversion: fieldsObj?.RateLocalConversion,
+        RateConversion: fieldsObj?.RateConversion,
         Load: Load,
         EFreightLoadType: Load?.value,
         IsFreightAssociated: false
@@ -504,10 +655,16 @@ class AddFreight extends Component {
         RateCriteria: [],
         Load: [],
         AddUpdate: false,
-        errorObj: { capacity: false, criteria: false, rate: false, load: false }
+        // errorObj: { capacity: false, criteria: false, rate: false, load: false }
       },
-      () => this.props.change("Rate", '')
+      () => () => {
+        // Clear the fields after state has been updated
+      }
     );
+    // this.props.dispatch(clearFields('AddFreight', false, false, 'RateConversion', 'RateLocalConversion', 'Rate'));
+    this.props.change("RateConversion", '')
+    this.props.change("RateLocalConversion", '')
+    this.props.change("Rate", '')
   };
 
   /**
@@ -517,8 +674,7 @@ class AddFreight extends Component {
   updateGrid = () => {
     const { FullTruckCapacity, RateCriteria, gridTable, gridEditIndex, Load } = this.state;
     const { fieldsObj } = this.props;
-    const Rate =
-      fieldsObj && fieldsObj !== undefined ? checkForNull(fieldsObj) : 0;
+
     //CONDITION TO SKIP DUPLICATE ENTRY IN GRID
     let skipEditedItem = gridTable.filter((el, i) => {
       if (i === gridEditIndex) return false;
@@ -551,7 +707,9 @@ class AddFreight extends Component {
       ...tempData,
       Capacity: FullTruckCapacity.label,
       RateCriteria: RateCriteria.label,
-      Rate: Rate,
+      Rate: fieldsObj?.Rate,
+      RateLocalConversion: fieldsObj?.RateLocalConversion,
+      RateConversion: fieldsObj?.RateConversion,
       Load: Load,
       EFreightLoadType: Load?.value,
     };
@@ -589,8 +747,10 @@ class AddFreight extends Component {
           load: false
         }
       },
-      () => this.props.change("Rate", '')
     );
+    this.props.change("RateConversion", '')
+    this.props.change("RateLocalConversion", '')
+    this.props.change("Rate", '')
   };
   /**
    * @method editGridItemDetails
@@ -613,7 +773,9 @@ class AddFreight extends Component {
         },
         Load: tempData?.Load
       },
-      () => this.props.change("Rate", tempData.Rate)
+      () => this.props.change("RateConversion", tempData.RateConversion),
+      this.props.change("RateLocalConversion", tempData.RateLocalConversion),
+      this.props.change("Rate", tempData.Rate),
     );
 
   };
@@ -667,7 +829,8 @@ class AddFreight extends Component {
    */
   onSubmit = debounce((values) => {
     const { TransportMode, vendorName, IsLoadingUnloadingApplicable, sourceLocation, destinationLocation, client,
-      FreightID, gridTable, isEditFlag, DataToChange, HandleChanged, AddUpdate, DeleteChanged, costingTypeId } = this.state;
+      FreightID, gridTable, isEditFlag, DataToChange, HandleChanged, AddUpdate, DeleteChanged, costingTypeId, isImport, plantCurrency, settlementCurrency, plantExchangeRateId, ExchangeSource } = this.state;
+    console.log(this.state, 'this.state')
 
     if (this.state.effectiveDate === '' || !this.state.effectiveDate) {
       this.setState({ showEffectiveDateError: true })
@@ -741,6 +904,16 @@ class AddFreight extends Component {
         CustomerId: costingTypeId === CBCTypeId ? client.value : '',
         EffectiveDate: DayTime(this.state.effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
         PlantId: this.state.Plant?.value,
+        FreightEntryType: isImport ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC,
+        ExchangeRateSourceName: this.state.ExchangeSource?.label || null,
+        LocalCurrencyId: this.state.plantCurrencyID || null,
+        LocalCurrency: this.props.fieldsObj?.plantCurrency || null,
+        ExchangeRate: this.state.settlementCurrency || null,
+        LocalCurrencyExchangeRate: this.state.plantCurrency || null,
+        CurrencyId: this.state.currency?.value || null,
+        Currency: this.state.currency?.label || null,
+        ExchangeRateId: this.state.settlementExchangeRateId || null,
+        LocalExchangeRateId: this.state.plantExchangeRateId || null
       };
       this.props.createFreight(formData, (res) => {
         this.setState({ setDisable: false })
@@ -757,6 +930,22 @@ class AddFreight extends Component {
       e.preventDefault();
     }
   };
+  importToggle = () => {
+    this.setState({ isImport: !this.state.isImport })
+  }
+  /**
+* @method handleCurrency
+* @description called
+*/
+  handleCurrency = (newValue) => {
+    if (newValue && newValue !== '') {
+      this.setState({ currency: newValue }, () => {
+        this.callExchangeRateAPI()
+      })
+    } else {
+      this.setState({ currency: [] })
+    }
+  };
 
   /**
    * @method render
@@ -764,8 +953,8 @@ class AddFreight extends Component {
    */
   render() {
     const { handleSubmit, initialConfiguration, t } = this.props;
+    const { hidePlantCurrency } = this.state;
     const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
-
     const { isOpenVendor, isEditFlag, isViewMode, setDisable, costingTypeId, isEditMode } = this.state;
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
@@ -824,6 +1013,29 @@ class AddFreight extends Component {
                       onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
                     >
                       <div className="add-min-height">
+                        <Row>
+                          <Col md="4" className="switch mb15">
+                            <label className="switch-level">
+                              <div className={"left-title"}>Domestic</div>
+                              <Switch
+                                onChange={this.importToggle}
+                                checked={this.state.isImport}
+                                id="normal-switch"
+                                disabled={isEditFlag}
+                                background="#4DC771"
+                                onColor="#4DC771"
+                                onHandleColor="#ffffff"
+                                offColor="#4DC771"
+                                uncheckedIcon={false}
+                                checkedIcon={false}
+                                height={20}
+                                width={46}
+                              />
+                              <div className={"right-title"}>Import</div>
+                            </label>
+                          </Col>
+
+                        </Row>
                         <Row>
                           <Col md="12">
                             {(reactLocalStorage.getObject('CostingTypePermission').zbc) && <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
@@ -976,6 +1188,57 @@ class AddFreight extends Component {
                               disabled={isEditFlag ? true : false}
                             />
                           </Col>
+                          {getConfigurationKey().IsSourceExchangeRateNameVisible && (
+                            <Col md="3">
+                              <Field
+                                label="Exchange Rate Source"
+                                name="ExchangeSource"
+                                placeholder="Select"
+                                options={this.renderListing("ExchangeSource")}
+                                handleChangeDescription={this.handleExchangeRateSource}
+                                component={searchableSelect}
+                                className="multiselect-with-border"
+                                disabled={isEditFlag}
+                                valueDescription={this.state.ExchangeSource}
+                              />
+                            </Col>
+                          )}
+                          {!hidePlantCurrency && <Col md="3">
+                            <Field
+                              name="plantCurrency"
+                              type="text"
+                              label="Plant Currency"
+                              placeholder={"-"}
+                              validate={[]}
+                              component={renderTextInputField}
+                              required={false}
+                              disabled={true}
+                              className=" "
+                              customClassName=" withBorder"
+                            />
+                          </Col>}
+                          {this.state.isImport && <Col md="3">
+                            <Field
+                              name="Currency"
+                              type="text"
+                              label="Currency"
+                              component={searchableSelect}
+                              placeholder={isEditFlag ? '-' : "Select"}
+                              options={this.renderListing("currency")}
+                              validate={
+                                this.state.currency == null ||
+                                  this.state.currency.length === 0
+                                  ? [required]
+                                  : []
+                              }
+                              required={true}
+                              handleChangeDescription={this.handleCurrency}
+                              valueDescription={this.state.currency}
+                              disabled={isEditFlag ? true : false}
+                            >{this.state.showWarning && <WarningMessage dClass="mt-1" message={`${this.state.currency.label} rate is not present in the Exchange Master`} />}
+                            </Field>
+                          </Col>}
+
                           <Col md="3">
                             <div className="form-group">
                               <label>Effective Date<span className="asterisk-required">*</span></label>
@@ -1176,9 +1439,9 @@ class AddFreight extends Component {
                             />
                             {this.state.errorObj.criteria && this.state.RateCriteria.length === 0 && <div className='text-help p-absolute'>This field is required.</div>}
                           </Col>
-                          <Col md="2">
+                          {this.state.isImport && <Col md="2">
                             <Field
-                              label={`Rate (${reactLocalStorage.getObject("baseCurrency")})`}
+                              label={`Rate (${this.state.currency?.label ?? 'Currency'})`}
                               name={"Rate"}
                               type="text"
                               placeholder={isViewMode ? '-' : 'Enter'}
@@ -1191,7 +1454,38 @@ class AddFreight extends Component {
                               customClassName="withBorder"
                             />
                             {this.state.errorObj.rate && (this.props.fieldsObj === undefined || Number(this.props.fieldsObj) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
+                          </Col>}
+                          <Col md="2">
+                            <Field
+                              label={`Rate (${this.props.fieldsObj?.plantCurrency ?? 'Currency'})`}
+                              name={"RateLocalConversion"}
+                              type="text"
+                              placeholder={isViewMode || this.state.isImport ? '-' : 'Enter'}
+                              validate={[decimalNumberLimit6, maxLength10, number]}
+                              component={renderTextInputField}
+                              onChange={this.rateChange}
+                              required={true}
+                              disabled={isViewMode || this.state.isImport}
+                              className=" "
+                              customClassName="withBorder"
+                            />
+                            {this.state.errorObj.rate && (this.props.fieldsObj === undefined || Number(this.props.fieldsObj) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
                           </Col>
+                          {!hidePlantCurrency && <Col md="2">
+                            <Field
+                              label={`Rate (${reactLocalStorage.getObject("baseCurrency")})`}
+                              name={"RateConversion"}
+                              type="text"
+                              placeholder={'-'}
+                              validate={[]}
+                              component={renderTextInputField}
+                              onChange={() => { }}
+                              required={false}
+                              disabled={true}
+                              className=" "
+                              customClassName="withBorder"
+                            />
+                          </Col>}
                           <Col md="2">
                             <div className="pt-2">
                               {this.state.isEditIndex ? (
@@ -1246,7 +1540,9 @@ class AddFreight extends Component {
                                   <th>{`Load`}</th>
                                   <th>{`Capacity`}</th>
                                   <th>{`Criteria`}</th>
-                                  <th>{`Rate`}</th>
+                                  {this.state.isImport && <th>{`Rate (${this.state.currency?.label ?? 'Currency'})`}</th>}
+                                  <th>{`Rate (${this.props.fieldsObj?.plantCurrency ?? 'Currency'})`}</th>
+                                  <th>{`Rate (${reactLocalStorage.getObject("baseCurrency")})`}</th>
                                   <th>{`Action`}</th>
                                 </tr>
                               </thead>
@@ -1258,7 +1554,9 @@ class AddFreight extends Component {
                                         <td>{item?.Load?.label ? item?.Load?.label : '-'}</td>
                                         <td>{item?.Capacity ? item?.Capacity : '-'}</td>
                                         <td>{item?.RateCriteria ? item?.RateCriteria : '-'}</td>
-                                        <td>{item?.Rate ? checkForDecimalAndNull(item?.Rate, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+                                        {this.state.isImport && <td>{item?.Rate ? checkForDecimalAndNull(item?.Rate, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>}
+                                        <td>{item?.RateLocalConversion ? checkForDecimalAndNull(item?.RateLocalConversion, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+                                        <td>{item?.RateConversion ? checkForDecimalAndNull(item?.RateConversion, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
                                         <td>
                                           <button className="Edit mr-2" type={"button"} disabled={isViewMode || item?.IsFreightAssociated} onClick={() => this.editGridItemDetails(index)} />
                                           <button className="Delete" type={"button"} disabled={isViewMode || item?.IsFreightAssociated} onClick={() => this.deleteGridItem(index)} />
@@ -1328,10 +1626,10 @@ class AddFreight extends Component {
  * @param {*} state
  */
 function mapStateToProps(state) {
-  const fieldsObj = selector(state, "Rate");
+  const fieldsObj = selector(state, "Rate", "RateLocalConversion", "Currency", "ExchangeSource", "plantCurrency", "RateConversion", 'vendorName');
   const { comman, freight, auth, client } = state;
   const { initialConfiguration } = auth;
-  const { cityList, vendorWithVendorCodeSelectList, plantSelectList } = comman;
+  const { cityList, vendorWithVendorCodeSelectList, plantSelectList, exchangeRateSourceList, currencySelectList } = comman;
   const { clientSelectList } = client;
   const {
     freightData,
@@ -1358,7 +1656,9 @@ function mapStateToProps(state) {
     initialValues,
     initialConfiguration,
     clientSelectList,
-    plantSelectList
+    plantSelectList,
+    exchangeRateSourceList,
+    currencySelectList
   };
 }
 /**
@@ -1379,6 +1679,10 @@ export default connect(mapStateToProps, {
   getAllCity,
   getClientSelectList,
   getPlantSelectListByType,
+  getExchangeRateByCurrency,
+  getPlantUnitAPI,
+  getExchangeRateSource,
+  getCurrencySelectList
 })(
   reduxForm({
     form: "AddFreight",
