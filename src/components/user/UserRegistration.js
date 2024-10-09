@@ -134,6 +134,8 @@ function UserRegistration(props) {
   const [masterTableChanged, setMasterTableChanged] = useState(false)
   const [isDepartmentUpdated, setIsDepartmentUpdated] = useState(false)
   const [selectedPlants, setSelectedPlants] = useState([])
+  const [isPermissionLoading, setIsPermissionLoading] = useState(false);
+
   const [inputLoader, setInputLoader] = useState({
     plant: false
   })
@@ -654,7 +656,7 @@ function UserRegistration(props) {
       setRole(newValue)
       setModules([])
       setIsShowAdditionalPermission(false)
-      getRoleDetail(newValue.value)
+      // getRoleDetail(newValue.value)
 
     } else {
       setRole([])
@@ -710,6 +712,7 @@ function UserRegistration(props) {
     if (data && data.isEditFlag) {
 
       setIsLoader(true)
+      setIsPermissionLoading(true)
       setIsEditFlag(false)
       setIsShowForm(true)
       setIsShowAdditionalPermission(true)
@@ -795,11 +798,16 @@ function UserRegistration(props) {
   * @description used to get user additional permissions
   */
   const getUserPermission = (UserId) => {
+    // setIsPermissionLoading(true)
+
     dispatch(getPermissionByUser(UserId, (res) => {
       if (res && res.data && res.data.Data) {
         let Data = res.data.Data;
         setModules(Data.Modules)
         setOldModules(Data.Modules)
+        
+        // setIsPermissionLoading(false);
+
         //child.getUpdatedData(Data.Modules)  //need to convertt  to functional
       }
     }))
@@ -871,19 +879,34 @@ function UserRegistration(props) {
    * @method onPressUserPermission
    * @description Used for User's additional permission
    */
-  const onPressUserPermission = () => {
-
+  const onPressUserPermission = (e) => {
+    console.log(e,"E.")
+   
+    ; // Set loading to true when starting
+    
     if (role && role.value) {
+      console.log(IsShowAdditionalPermission);
+      
       setIsShowAdditionalPermission(!IsShowAdditionalPermission)
       setModules([])
 
       if (isEditFlag && grantUserWisePermission) {
+        console.log(isEditFlag);
+        console.log(grantUserWisePermission);
+      if(!e){
+        setIsPermissionLoading(true)
+      }
         getUserPermission(UserId)
       } else {
+        console.log(role.value);
+        if(!e){
+          setIsPermissionLoading(true)
+        }
         getRoleDetail(role.value, !IsShowAdditionalPermission)
       }
     } else {
       Toaster.warning('Please select role.')
+
     }
   }
 
@@ -927,6 +950,8 @@ function UserRegistration(props) {
     if (isAvailable !== -1 && Modules) {
       let tempArray = Object.assign([...Modules], { [isAvailable]: Object.assign({}, Modules[isAvailable], { SelectAll: isSelectAll, IsChecked: isParentChecked !== -1 ? true : false, Pages: temp111, }) })
       setModules(tempArray)
+      setIsPermissionLoading(false);
+
     }
   }
 
@@ -936,6 +961,7 @@ function UserRegistration(props) {
    * @description used to get role detail
    */
   const getRoleDetail = (RoleId, IsShowAdditionalPermission) => {
+    // setIsPermissionLoading(true)
 
     if (RoleId !== '') {
       dispatch(getRoleDataAPI(RoleId, (res) => {
@@ -946,6 +972,8 @@ function UserRegistration(props) {
           setModules(Data.Modules)
           setOldModules(Data.Modules)
           setIsLoader(false)
+          // setIsPermissionLoading(false);
+
           if (IsShowAdditionalPermission === true) {
             // child.getUpdatedData(Data.Modules)      // need to be converted into functional
           }
@@ -3240,14 +3268,14 @@ const  vendorFilterList = (inputValue) => {
                         <div className={'col-md-4'}>
                           <label id="AddUser_Checkbox"
                             className="custom-checkbox"
-                            onChange={onPressUserPermission}
+                            onChange={(e)=>{onPressUserPermission(IsShowAdditionalPermission)}}
                           >
                             Grant User Wise Permission
                             <input type="checkbox" disabled={false} checked={IsShowAdditionalPermission} />
                             <span
                               className=" before-box"
                               checked={IsShowAdditionalPermission}
-                              onChange={onPressUserPermission}
+                              onChange={(e)=>{onPressUserPermission(IsShowAdditionalPermission)}}
                             />
                           </label>
                         </div>
@@ -3856,7 +3884,7 @@ const  vendorFilterList = (inputValue) => {
                       type="button"
                       id="AddUser_Save"
                       onClick={onSubmit}
-                      disabled={isSubmitted || isUpdateResponded ? true : false}
+                      disabled={isSubmitted || isUpdateResponded|| isPermissionLoading }
                       className="user-btn save-btn">
                       <div className={"save-icon"}></div>
                       {isEditFlag ? 'UPDATE' : 'SAVE'}
