@@ -1166,6 +1166,7 @@ class AddBOPDomestic extends Component {
       isTechnologyVisible, disableSendForApproval, isOpenConditionDrawer, conditionTableData, FinalBasicPriceBaseCurrency, IsFinancialDataChanged, toolTipTextNetCost, toolTipTextBasicPrice, IsSAPCodeUpdated, IsSapCodeEditView, IsSAPCodeHandle
     } = this.state;
     const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
+    const BOPVendorLabel = LabelsClass(t, 'MasterLabels').BOPVendorLabel;
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
       if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
@@ -1494,7 +1495,7 @@ class AddBOPDomestic extends Component {
                               />
                             </Col>
                           )}
-                          {getConfigurationKey().IsSAPConfigured &&
+                          {getConfigurationKey().IsSAPCodeRequired &&
                             <Col md="3">
                               <div className="d-flex align-items-center">
                                 <Field
@@ -1505,14 +1506,14 @@ class AddBOPDomestic extends Component {
                                   placeholder={isViewMode ? "-" : "Enter"}
                                   validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkSpacesInString, hashValidation]}
                                   component={renderText}
-                                  disabled={IsSapCodeEditView && isEditFlag}
+                                  disabled={(IsSapCodeEditView && isEditFlag) || isViewMode}
                                   value={this.state.SapCode}
                                   onChange={this.handleChangeSapCode}
                                   className=" "
                                   customClassName=" withBorder w-100 mb-0"
                                 />
                                 {!IsSAPCodeUpdated && isEditFlag && (
-                                  <Button className={"Edit ms-2 mt-2"} variant="Edit" title={"Edit"} onClick={() => { this.handleSubmitOfSapCode(handleSubmit(this.onSubmit.bind(this))) }} />
+                                  <Button className={"Edit ms-2 mt-2"} variant="Edit" title={"Edit"} onClick={() => { this.handleSubmitOfSapCode(handleSubmit(this.onSubmit.bind(this))) }} disabled={isViewMode} />
                                 )}
                               </div>
                               {IsSAPCodeHandle && isEditFlag && (
@@ -1528,7 +1529,7 @@ class AddBOPDomestic extends Component {
                                 <div className="left-border">{VendorLabel}:</div>
                               </Col>
                               <Col md="3" className='mb-4'>
-                                <label>{costingTypeId === ZBCTypeId ? 'BOP' : ''} {VendorLabel}<span className="asterisk-required">*</span></label>
+                                <label>{costingTypeId === ZBCTypeId ? `${BOPVendorLabel}` : `${VendorLabel}`}<span className="asterisk-required">*</span></label>
                                 <div className="d-flex justify-space-between align-items-center async-select">
                                   <div className="fullinput-icon p-relative">
                                     {this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}

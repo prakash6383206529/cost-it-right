@@ -1003,7 +1003,7 @@ function CommonApproval(props) {
                                     {/* {props?.OnboardingApprovalId === ONBOARDINGID && <AgGridColumn width="160" cellClass="has-checkbox" field="ApprovalNumber" cellRenderer="linkableFormatter" headerName="Token No."></AgGridColumn>} */}
                                     {props?.OnboardingApprovalId === ONBOARDINGID && <AgGridColumn width="160" field="ApprovalType" headerName='Type'></AgGridColumn>}
                                     {props?.OnboardingApprovalId === ONBOARDINGID && <AgGridColumn width="160" field="PlantName" headerName='Plant (Code)'></AgGridColumn>}
-                                    {props?.OnboardingApprovalId === ONBOARDINGID && <AgGridColumn width="160" field="VendorName" headerName='Supplier (Code)' ></AgGridColumn>}
+                                    {props?.OnboardingApprovalId === ONBOARDINGID && <AgGridColumn width="160" field="VendorName" headerName={`${vendorLabel} (Code)`} ></AgGridColumn>}
                                     {props?.OnboardingApprovalId === ONBOARDINGID && <AgGridColumn width="160" field="DeviationDuration" headerName='Deviation Duration' ></AgGridColumn>}
                                     {/* {props?.OnboardingApprovalId === ONBOARDINGID && <AgGridColumn width="145" field="Department" headerName={`${handleDepartmentHeader()} (Code)`}></AgGridColumn>} */}
                                     {getConfigurationKey().IsBoughtOutPartCostingConfigured && props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="150" field="IsBreakupBoughtOutPart" cellRenderer='breakupFormatter' headerName={`Breakup ${showBopLabel()} `}></AgGridColumn>}

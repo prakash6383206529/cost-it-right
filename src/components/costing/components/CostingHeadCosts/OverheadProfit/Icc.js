@@ -46,7 +46,7 @@ function Icc(props) {
     const { CostingEffectiveDate } = useSelector(state => state.costing)
 
     // partType USED FOR MANAGING CONDITION IN CASE OF NORMAL COSTING AND ASSEMBLY TECHNOLOGY COSTING (TRUE FOR ASSEMBLY TECHNOLOGY)
-    const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId)
+    const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData?.CostingTypeId === WACTypeId)
 
     const dispatch = useDispatch()
 
@@ -91,24 +91,25 @@ function Icc(props) {
     const callInventoryAPI = (callAPI) => {
         if (Object.keys(costData).length > 0 && callAPI && !CostingViewMode) {
             const reqParams = {
-                VendorId: (costData?.CostingTypeId === VBCTypeId || costData?.CostingTypeId === NFRTypeId) ? costData.VendorId : EMPTY_GUID,
-                costingTypeId: Number(costData.CostingTypeId) === NFRTypeId ? VBCTypeId : Number(costData.CostingTypeId === WACTypeId) ? ZBCTypeId : costData.CostingTypeId,
-                plantId: (getConfigurationKey()?.IsPlantRequiredForOverheadProfitInterestRate && costData?.CostingTypeId === ZBCTypeId) ? costData.PlantId : ((getConfigurationKey()?.IsDestinationPlantConfigure && costData?.CostingTypeId === VBCTypeId) || costData?.CostingTypeId === CBCTypeId || costData?.CostingTypeId === NFRTypeId) ? costData.DestinationPlantId : EMPTY_GUID,
-                customerId: costData?.CostingTypeId === CBCTypeId ? costData.CustomerId : EMPTY_GUID,
+                VendorId: (costData?.CostingTypeId === VBCTypeId || costData?.CostingTypeId === NFRTypeId) ? costData?.VendorId : EMPTY_GUID,
+                costingTypeId: Number(costData?.CostingTypeId) === NFRTypeId ? VBCTypeId : Number(costData?.CostingTypeId === WACTypeId) ? ZBCTypeId : costData?.CostingTypeId,
+                plantId: (getConfigurationKey()?.IsPlantRequiredForOverheadProfitInterestRate && costData?.CostingTypeId === ZBCTypeId) ? costData?.PlantId : ((getConfigurationKey()?.IsDestinationPlantConfigure && costData?.CostingTypeId === VBCTypeId) || costData?.CostingTypeId === CBCTypeId || costData?.CostingTypeId === NFRTypeId) ? costData?.DestinationPlantId : EMPTY_GUID,
+                customerId: costData?.CostingTypeId === CBCTypeId ? costData?.CustomerId : EMPTY_GUID,
                 effectiveDate: CostingEffectiveDate ? (DayTime(CostingEffectiveDate).format('DD/MM/YYYY')) : '',
                 rawMaterialGradeId: initialConfiguration.IsShowRawMaterialInOverheadProfitAndICC ? OverheadProfitTabData[0]?.CostingPartDetails?.RawMaterialGradeId : EMPTY_GUID,
                 rawMaterialChildId: initialConfiguration.IsShowRawMaterialInOverheadProfitAndICC ? OverheadProfitTabData[0]?.CostingPartDetails?.RawMaterialChildId : EMPTY_GUID,
                 technologyId: null,
             }
             dispatch(getInventoryDataByHeads(reqParams, res => {
-                if (res && res.data && res.data.Result) {
-                    let Data = res.data.Data;
-                    setValue('InterestRatePercentage', Data.InterestRate)
-                    setICCInterestRateId(Data.InterestRateId !== null ? Data.InterestRateId : EMPTY_GUID)
-                    setICCapplicability({ label: Data.ICCApplicability, value: Data.ICCApplicability })
+                if (res && res.data && res.data?.Result) {
+                    let Data = res.data?.Data;
+                    setValue('InterestRatePercentage', Data?.InterestRate)
+                    setICCInterestRateId(Data?.InterestRateId !== null ? Data?.InterestRateId : EMPTY_GUID)
+                    setICCapplicability({ label: Data?.ICCApplicability, value: Data?.ICCApplicability })
                     setInventoryObj(Data)
-                    checkInventoryApplicability(Data.ICCApplicability)
+                    checkInventoryApplicability(Data?.ICCApplicability)
 
+                    props.setICCDetail(Data, { BOMLevel: data?.BOMLevel, PartNumber: data?.PartNumber })
                 } else if (res && res.status === 204) {
                     setValue('InterestRatePercentage', '')
                     setValue('CostApplicability', '')
@@ -122,7 +123,7 @@ function Icc(props) {
         } else {
             setICCapplicability([])
             if (!CostingViewMode) {
-                props.setICCDetail(null, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
+                props.setICCDetail(null, { BOMLevel: data?.BOMLevel, PartNumber: data?.PartNumber })
             }
         }
     }
@@ -157,7 +158,7 @@ function Icc(props) {
         if (headerCosts !== undefined && Text !== '' && !CostingViewMode) {
 
             let NetRawMaterialsCost;
-            if (isNetWeight && !(costData.IsAssemblyPart) && !(isPartApplicability)) {
+            if (isNetWeight && !(costData?.IsAssemblyPart) && !(isPartApplicability)) {
                 let rmValue = JSON.parse(sessionStorage.getItem('costingArray'))
                 let newRmCost = (Array.isArray(rmValue) && rmValue[0]?.CostingPartDetails?.CostingRawMaterialsCost[0]?.RMRate) * (Array.isArray(rmValue) && rmValue[0]?.CostingPartDetails?.CostingRawMaterialsCost[0]?.FinishWeight)
                 NetRawMaterialsCost = newRmCost
@@ -165,7 +166,7 @@ function Icc(props) {
                 NetRawMaterialsCost = headerCosts.NetRawMaterialsCost
             }
             const toolCost = checkForNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost)
-            const ConversionCostForCalculation = costData.IsAssemblyPart ? (checkForNull(headerCosts.NetConversionCost) - checkForNull(headerCosts.TotalOtherOperationCostPerAssembly)) + checkForNull(includeToolCostIcc ? toolCost : 0) : headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal + checkForNull(includeToolCostIcc ? toolCost : 0);
+            const ConversionCostForCalculation = costData?.IsAssemblyPart ? (checkForNull(headerCosts.NetConversionCost) - checkForNull(headerCosts.TotalOtherOperationCostPerAssembly)) + checkForNull(includeToolCostIcc ? toolCost : 0) : headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal + checkForNull(includeToolCostIcc ? toolCost : 0);
             const RMBOPCC = NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost + ConversionCostForCalculation + checkForNull(includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0)
             const RMBOP = NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost + checkForNull(includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0);
             const RMCC = NetRawMaterialsCost + ConversionCostForCalculation + checkForNull(includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0);
@@ -316,7 +317,7 @@ function Icc(props) {
             setValue('CostApplicability', IsInventoryApplicable ? checkForDecimalAndNull(tempInventoryObj.CostApplicability, initialConfiguration.NoOfDecimalForPrice) : '')
             if (!CostingViewMode) {
 
-                props.setICCDetail(tempObj, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
+                props.setICCDetail(tempObj, { BOMLevel: data?.BOMLevel, PartNumber: data?.PartNumber })
             }
         }, 200)
     }, [tempInventoryObj])
@@ -430,18 +431,18 @@ function Icc(props) {
                     <Row>
                         <Col md="11" className='first-section'>
                             <Row className="costing-border-inner-section border-bottom-none m-0">
-                                <Col md={ICCapplicability?.label?.includes('RM') && !(costData.IsAssemblyPart) && IsShowRmcAndNetWeightToggleForIcc ? '2' : '3'}>
+                                <Col md={ICCapplicability?.label?.includes('RM') && !(costData?.IsAssemblyPart) && IsShowRmcAndNetWeightToggleForIcc ? '2' : '3'}>
                                     <span className="head-text">
                                         Applicability
                                     </span>
                                 </Col>
-                                <Col md={ICCapplicability?.label?.includes('RM') && !(costData.IsAssemblyPart) && IsShowRmcAndNetWeightToggleForIcc ? '2' : '3'}>
+                                <Col md={ICCapplicability?.label?.includes('RM') && !(costData?.IsAssemblyPart) && IsShowRmcAndNetWeightToggleForIcc ? '2' : '3'}>
                                     <span className="head-text">
                                         {ICCapplicability.label !== 'Fixed' ? 'Interest Rate (%)' : 'Interest Rate'}
                                     </span>
                                 </Col>
 
-                                {ICCapplicability?.label?.includes('RM') && !(costData.IsAssemblyPart) && IsShowRmcAndNetWeightToggleForIcc && <Col md="2"></Col>}
+                                {ICCapplicability?.label?.includes('RM') && !(costData?.IsAssemblyPart) && IsShowRmcAndNetWeightToggleForIcc && <Col md="2"></Col>}
                                 {ICCapplicability.label !== 'Fixed' && <Col md="3">
                                     <span className="head-text">
                                         Cost (Applicability)
@@ -455,13 +456,13 @@ function Icc(props) {
                             </Row>
                             <Row className="costing-border costing-border-with-labels  pt-3 m-0 overhead-profit-tab-costing">
                                 <>
-                                    <Col md={ICCapplicability?.label?.includes('RM') && !(costData.IsAssemblyPart) && IsShowRmcAndNetWeightToggleForIcc ? '2' : '3'}>
+                                    <Col md={ICCapplicability?.label?.includes('RM') && !(costData?.IsAssemblyPart) && IsShowRmcAndNetWeightToggleForIcc ? '2' : '3'}>
                                         <label className="col-label">
                                             {ICCapplicability.label}
                                         </label>
                                     </Col>
 
-                                    <Col md={ICCapplicability?.label?.includes('RM') && !(costData.IsAssemblyPart) && IsShowRmcAndNetWeightToggleForIcc ? '2' : '3'}>
+                                    <Col md={ICCapplicability?.label?.includes('RM') && !(costData?.IsAssemblyPart) && IsShowRmcAndNetWeightToggleForIcc ? '2' : '3'}>
                                         {ICCapplicability.label !== 'Fixed' ?
                                             <TextFieldHookForm
                                                 label={false}
@@ -503,7 +504,7 @@ function Icc(props) {
                                                 {ICCapplicability.label === 'Fixed' && InterestRateFixedLimit && <WarningMessage dClass={"error-message fixed-error"} message={errorMessage} />}           {/* //MANUAL CSS FOR ERROR VALIDATION MESSAGE */}
                                             </div>}
                                     </Col>
-                                    {ICCapplicability?.label?.includes('RM') && !(costData.IsAssemblyPart) && IsShowRmcAndNetWeightToggleForIcc && <Col md="2" className="switch mb-2 d-flex justify-content-center pl-4">
+                                    {ICCapplicability?.label?.includes('RM') && !(costData?.IsAssemblyPart) && IsShowRmcAndNetWeightToggleForIcc && <Col md="2" className="switch mb-2 d-flex justify-content-center pl-4">
                                         <label className="switch-level">
                                             <div className={'right-title mr-2'}>RMC</div>
                                             <Switch

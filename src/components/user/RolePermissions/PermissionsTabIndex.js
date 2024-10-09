@@ -27,6 +27,7 @@ import { Steps } from "./TourMessages";
 import { withTranslation } from "react-i18next";
 import VendorManagementTab from "./SupplierManagementTab";
 import SupplierManagementTab from "./SupplierManagementTab";
+import { LabelsClass } from "../../../helper/core";
 class PermissionsTabIndex extends Component {
     constructor(props) {
         super(props);
@@ -191,6 +192,7 @@ class PermissionsTabIndex extends Component {
     render() {
         const { t } = this.props;
         const { isLoader, } = this.state;
+        const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
 
         return (
             <div>
@@ -357,7 +359,7 @@ class PermissionsTabIndex extends Component {
                                         this.state.supplierManagement?.length > 0 &&
                                         <NavItem>
                                             <NavLink className={classnames({ active: this.state.activeTab === '11' })} onClick={() => { this.toggle('11'); }}>
-                                                Supplier Management
+                                                {VendorLabel} Management
                                             </NavLink>
                                         </NavItem>
                                     }

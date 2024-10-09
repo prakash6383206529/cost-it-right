@@ -7,7 +7,7 @@ import { getReporterList, getVendorNameByVendorSelectList, getPlantSelectListByT
 import { getCostingSpecificTechnology, getExistingCosting, getPartInfo, } from '../costing/actions/Costing'
 import { IsSendQuotationToPointOfContact, addDays, checkPermission, getConfigurationKey, getTimeZone, loggedInUserId, parseLinks } from '../.././helper';
 import { checkForNull, checkForDecimalAndNull } from '../.././helper/validation'
-import { ASSEMBLYNAME, ASSEMBLYORCOMPONENTSRFQ, BOUGHTOUTPARTSPACING, BOUGHTOUTPARTSRFQ, BoughtOutPart, COMPONENT_PART, DRAFT, EMPTY_DATA, FILE_URL, HAVELLS_DESIGN_PARTS, PREDRAFT, PRODUCT_ID, RAWMATERIALSRFQ, RFQ, RFQVendor, TOOLING, TOOLINGPART, VBC_VENDOR_TYPE, ZBC, searchCount } from '../.././config/constants';
+import { ASSEMBLYNAME, ASSEMBLYORCOMPONENTSRFQ, BOUGHTOUTPARTSPACING, BOUGHTOUTPARTSRFQ, BoughtOutPart, COMPONENT_PART, DRAFT, EMPTY_DATA, FILE_URL, HAVELLS_DESIGN_PARTS, PREDRAFT, PRODUCT_ID, RAWMATERIALSRFQ, RFQ, RFQVendor, TOOLING, TOOLINGPART, ToolingId, VBC_VENDOR_TYPE, ZBC, searchCount } from '../.././config/constants';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
@@ -57,11 +57,12 @@ function AddRfq(props) {
     const permissions = useContext(ApplyPermission);
     const Vendor = permissions.permissionDataVendor
     const Part = permissions.permissionDataPart
+
     const dispatch = useDispatch()
     const { t } = useTranslation("Rfq")
     const { data: dataProps } = props
 
-    const { technologyLabel } = useLabels();
+    const { technologyLabel, vendorLabel } = useLabels();
     const dropzone = useRef(null);
     const { register, handleSubmit, setValue, getValues, formState: { errors }, control, reset } = useForm({
         mode: 'onChange',
@@ -245,14 +246,14 @@ function AddRfq(props) {
 
     useEffect(() => {
         if (selectedOption === "Bought Out Part" || selectedOption === "Tooling") {
+            const SelectedPartTypeId = selectedOption === "Bought Out Part" ? BoughtOutPart : ToolingId
             const filterObj = {
-                "partType": selectedOption,
-                "plantId": plant
-
+                "partType": SelectedPartTypeId,
+                "plantId": plant?.value
             }
-            dispatch(getPurchaseRequisitionSelectList((/* filterObj */) => { }))
+            dispatch(getPurchaseRequisitionSelectList(filterObj, () => { }))
         }
-    }, [selectedOption])
+    }, [selectedOption, plant])
     useEffect(() => {
         if (dataProps?.rowData && dataProps?.rowData?.PartType !== "") {
             const partTypes = dataProps?.rowData?.PartType?.split(',');
@@ -1292,7 +1293,7 @@ function AddRfq(props) {
                 {show && < button title='View' className="View mr-2 align-middle" disabled={false} type={'button'} onClick={() => ViewItemPartTable(rowData, props, false)} />}
 
                 {/*  {<button title='Delete' className="Delete align-middle" disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !dataProps?.isEditFlag)} type={'button'} onClick={() => deleteItemPartTable(final, props)} />} */}
-                {(show && selectedOption !== BOUGHTOUTPARTSPACING) && <button title='Delete' className="Delete align-middle" disabled={isSendButtonVisible} type={'button'} onClick={() => deleteItemPartTable(row, final)} />}
+                {show && <button title='Delete' className="Delete align-middle" disabled={isSendButtonVisible} type={'button'} onClick={() => deleteItemPartTable(row, final)} />}
 
             </>
         )
@@ -3072,6 +3073,7 @@ function AddRfq(props) {
             Remark: values?.remark
         }
         dispatch(sendQuotationForReview(obj, () => {
+            Toaster.success("Review request submitted successfully")
             props?.closeDrawer('', {})
         }))
 
@@ -3215,27 +3217,6 @@ function AddRfq(props) {
                                                         || (partList?.length !== 0 || rmDataList?.length !== 0 || bopDataList?.length !== 0 || vendorList?.length !== 0)}
                                                 />
                                             </Col>)}
-                                        {(quotationType === "Bought Out Part" || quotationType === 'Tooling') && <Col md="3" className={isRmSelected ? 'd-none' : ''}>
-                                            <SearchableSelectHookForm
-                                                label={(quotationType === "Bought Out Part" || quotationType === 'Tooling') ? "PR No." : "NFR No."}
-                                                name={(quotationType === "Bought Out Part" || quotationType === 'Tooling') ? "prId" : "nfrId"}
-                                                isClearable={true}
-                                                placeholder={"Select"}
-                                                Controller={Controller}
-                                                control={control}
-                                                rules={{ required: false }}
-                                                register={register}
-                                                defaultValue={nfrId?.length !== 0 ? nfrId : ""}
-                                                options={renderListing(quotationType === "Bought Out Part" || quotationType === 'Tooling' ? "prNo" : "nfrId")}
-                                                mandatory={quotationType === 'Tooling' ? true : false}
-
-                                                handleChange={handleNfrChnage}
-                                                errors={errors.nfrId}
-                                                disabled={Object.keys(prNumber).length !== 0 || ((dataProps?.isViewFlag /* || dataProps?.isEditFlag */ || showSendButton === DRAFT) ? true : false)
-                                                    || (partList?.length !== 0 || bopDataList?.length !== 0 || vendorList?.length !== 0)}
-                                            // isLoading={VendorLoaderObj}
-                                            />
-                                        </Col>}
                                         <Col md="3">
                                             <SearchableSelectHookForm
                                                 label={"Plant (Code)"}
@@ -3257,6 +3238,28 @@ function AddRfq(props) {
                                                 disabled={Object.keys(prNumber).length !== 0 || ((partList?.length !== 0 || rmDataList?.length !== 0 || bopDataList?.length !== 0 || vendorList?.length !== 0) /* || showSendButton === PREDRAFT  */ || (dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll || disabledPartUid)))}
                                             />
                                         </Col>
+                                        {(quotationType === "Bought Out Part" || quotationType === 'Tooling') && <Col md="3" className={isRmSelected ? 'd-none' : ''}>
+                                            <SearchableSelectHookForm
+                                                label={(quotationType === "Bought Out Part" || quotationType === 'Tooling') ? "PR No." : "NFR No."}
+                                                name={(quotationType === "Bought Out Part" || quotationType === 'Tooling') ? "prId" : "nfrId"}
+                                                isClearable={true}
+                                                placeholder={"Select"}
+                                                Controller={Controller}
+                                                control={control}
+                                                rules={{ required: false }}
+                                                register={register}
+                                                defaultValue={nfrId?.length !== 0 ? nfrId : ""}
+                                                options={renderListing(quotationType === "Bought Out Part" || quotationType === 'Tooling' ? "prNo" : "nfrId")}
+                                                mandatory={quotationType === 'Tooling' ? true : false}
+
+                                                handleChange={handleNfrChnage}
+                                                errors={errors.nfrId}
+                                                disabled={Object.keys(prNumber).length !== 0 || ((dataProps?.isViewFlag /* || dataProps?.isEditFlag */ || showSendButton === DRAFT) ? true : false)
+                                                    || (partList?.length !== 0 || bopDataList?.length !== 0 || vendorList?.length !== 0)}
+                                            // isLoading={VendorLoaderObj}
+                                            />
+                                        </Col>}
+
 
                                         {ShowQuoteSubmissionDate(quotationType) && <Col md="3">
                                             <div className="inputbox date-section">
@@ -3290,13 +3293,13 @@ function AddRfq(props) {
                                             </div>
                                         </Col>}
                                     </Row>
-                                    <Button
+                                    {(!disabledPartUid && selectedOption !== 'Tooling' && Object.keys(prNumber).length === 0 && Part?.BulkUpload) && <Button
                                         id="rfq_bulkUpload"
                                         className={"mr5 Tour_List_BulkUpload"}
                                         onClick={bulkToggle}
                                         title={"Bulk Upload"}
                                         icon={"upload"}
-                                    />
+                                    />}
                                     {(selectedOption === 'componentAssembly' || selectedOption === 'Tooling') && <>
                                         {heading()}
 
@@ -3674,7 +3677,7 @@ function AddRfq(props) {
                                                                     {<AgGridColumn width={"230px"} field="UOMSymbol" headerName="UOM" ></AgGridColumn>}
 
                                                                     <AgGridColumn width={"230px"} field="TimeLine" headerName={selectedOption === TOOLING ? 'Delivery Date' : "N-100 Timeline"} cellRenderer={'effectiveDateFormatter'} ></AgGridColumn>
-                                                                    {(selectedOption === 'componentAssembly' || selectedOption === 'Raw Material' || selectedOption === "Bought Out Part") && <AgGridColumn width={"230px"} field="VendorListExisting" headerName="Existing Vendor" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                                                                    {(selectedOption === 'componentAssembly' || selectedOption === 'Raw Material' || selectedOption === "Bought Out Part") && <AgGridColumn width={"230px"} field="VendorListExisting" headerName={`Existing ${vendorLabel}`} cellRenderer={'hyphenFormatter'}></AgGridColumn>}
 
                                                                     {(selectedOption === "componentAssembly" || selectedOption === 'Tooling') && (<AgGridColumn width={"230px"} field="PartId" cellClass="ag-grid-action-container text-right" headerName="Action" floatingFilter={false} type="rightAligned" cellRenderer={'buttonFormatterFirst'} />)}
                                                                     {selectedOption === "Raw Material" && (<AgGridColumn width={"230px"} field="RawMaterialChildId" cellClass="ag-grid-action-container text-right" headerName="Action" floatingFilter={false} type="rightAligned" cellRenderer={'buttonFormatterFirst'} />)}
@@ -3698,11 +3701,11 @@ function AddRfq(props) {
 
 
                                     {!showVendorSection && (<>
-                                        <HeaderTitle title={'Vendor:'} customClass="mt-4" />
+                                        <HeaderTitle title={`${vendorLabel}:`} customClass="mt-4" />
                                         <Row className="mt-1 part-detail-wrapper">
                                             <Col md="3">
                                                 <AsyncSearchableSelectHookForm
-                                                    label={"Vendor (Code)"}
+                                                    label={`${vendorLabel} (Code)`}
                                                     name={"vendor"}
                                                     placeholder={"Select"}
                                                     Controller={Controller}
@@ -3724,7 +3727,7 @@ function AddRfq(props) {
                                             {IsSendQuotationToPointOfContact() && (
                                                 <Col md="3">
                                                     <SearchableSelectHookForm
-                                                        label={"Vendor's Point of Contact"}
+                                                        label={`${vendorLabel}'s Point of Contact`}
                                                         name={"contactPerson"}
                                                         placeholder={"Select"}
                                                         Controller={Controller}
@@ -3858,13 +3861,13 @@ function AddRfq(props) {
                                                                     }}
                                                                     frameworkComponents={frameworkComponents}
                                                                 >
-                                                                    <AgGridColumn field="Vendor" headerName="Vendor (Code)" tooltipField="Vendor"></AgGridColumn>
+                                                                    <AgGridColumn field="Vendor" headerName={vendorLabel + " (Code)"} tooltipField="Vendor"></AgGridColumn>
                                                                     {IsSendQuotationToPointOfContact() && (
                                                                         <AgGridColumn width={"270px"} field="ContactPerson" headerName="Point of Contact" ></AgGridColumn>)}
                                                                     {vendorList && havellsKey && <AgGridColumn field='IncoTerms' header='Inco Terms' cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                                                                     {vendorList && havellsKey && <AgGridColumn field='PaymentTerms' header='Payment Terms' cellRenderer={'hyphenFormatter'} ></AgGridColumn>}
                                                                     {vendorList && havellsKey && ShowLdClause(selectedOption) && <AgGridColumn field='LDClause' header='LD Clause' tooltipField="LDClause" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
-                                                                    <AgGridColumn width={"270px"} field="VendorId" headerName="Vendor Id" hide={true} ></AgGridColumn>
+                                                                    <AgGridColumn width={"270px"} field="VendorId" headerName={`${vendorLabel} Id`} hide={true} ></AgGridColumn>
                                                                     <AgGridColumn width={"180px"} field="VendorId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'buttonFormatterVendorTable'}></AgGridColumn>
                                                                 </AgGridReact>
                                                             </div>

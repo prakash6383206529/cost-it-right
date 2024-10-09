@@ -36,7 +36,7 @@ import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from '../../common/Tour/TourMessages';
 import { useTranslation } from 'react-i18next';
 import RfqMasterApprovalDrawer from '../material-master/RfqMasterApprovalDrawer';
-import { useLabels } from '../../../helper/core';
+import { useLabels, useWithLocalization } from '../../../helper/core';
 
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -57,7 +57,7 @@ const BOPDomesticListing = (props) => {
   const isRfq = props?.quotationId !== null && props?.quotationId !== '' && props?.quotationId !== undefined;
 
   const { t } = useTranslation("common")
-  const { technologyLabel,vendorLabel } = useLabels();
+  const { technologyLabel, vendorLabel } = useLabels();
   const [state, setState] = useState({
     isOpen: false,
     isEditFlag: false,
@@ -645,6 +645,7 @@ const BOPDomesticListing = (props) => {
       getDataList("", 0, "", "", 0, defaultPageSize, false, state.floatingFilterData)  // FOR EXCEL DOWNLOAD OF COMPLETE DATA
     }
   }
+  const BOP_DOMESTIC_DOWNLOAD_EXCEl_LOCALIZATION = useWithLocalization(BOP_DOMESTIC_DOWNLOAD_EXCEl, "MasterLabels")
 
   const onBtExport = () => {
     const bopMasterName = showBopLabel();
@@ -652,7 +653,7 @@ const BOPDomesticListing = (props) => {
     //tempArr = state.gridApi && state.gridApi?.getSelectedRows()
     tempArr = selectedRowForPagination
     tempArr = (tempArr && tempArr.length > 0) ? tempArr : (allBopDataList ? allBopDataList : [])
-    const { updatedLabels } = updateBOPValues(BOP_DOMESTIC_DOWNLOAD_EXCEl, [], bopMasterName, 'label')
+    const { updatedLabels } = updateBOPValues(BOP_DOMESTIC_DOWNLOAD_EXCEl_LOCALIZATION, [], bopMasterName, 'label')
     const filteredLabels = updatedLabels.filter(column => {
       if (column.value === "NetConditionCost" || column.value === "NetCostWithoutConditionCost") {
         return initialConfiguration?.IsBasicRateAndCostingConditionVisible && ((props.isMasterSummaryDrawer && bopDomesticList[0]?.CostingTypeId === ZBCTypeId) || !props.isMasterSummaryDrawer)
@@ -662,6 +663,9 @@ const BOPDomesticListing = (props) => {
       }
       if (column.value === "NumberOfPieces") {
         return getConfigurationKey().IsMinimumOrderQuantityVisible
+      }
+      if (column.value === "SAPCode") {
+        return getConfigurationKey().IsSAPCodeRequired
       }
       return true;
     })
@@ -685,8 +689,8 @@ const BOPDomesticListing = (props) => {
     } else {
       tempData = data
     }
-    if (!getConfigurationKey().IsSAPConfigured) {
-      tempData = hideColumnFromExcel(tempData, 'SAPCode')
+    if (!getConfigurationKey().IsSAPCodeRequired) {
+      tempData = hideColumnFromExcel(tempData, "SAPCode")
     }
     temp = TempData && TempData.map((item) => {
       if (item.Plants === '-') {
@@ -920,8 +924,7 @@ const BOPDomesticListing = (props) => {
                 <AgGridColumn field="BoughtOutPartCategory" headerName={`${showBopLabel()} Category`}></AgGridColumn>
                 <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
                 <AgGridColumn field="Specification" headerName="Specification" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                {getConfigurationKey().IsSAPConfigured
-                  && <AgGridColumn field="SAPPartNumber" headerName="SAP Code" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                {getConfigurationKey().IsSAPCodeRequired && <AgGridColumn field="SAPPartNumber" headerName="SAP Code" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                 <AgGridColumn field="Plants" cellRenderer={'hyphenFormatter'} headerName="Plant (Code)"></AgGridColumn>
                 <AgGridColumn field="Vendor" headerName={`${vendorLabel} (Code)`} cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}

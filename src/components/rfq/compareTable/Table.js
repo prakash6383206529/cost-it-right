@@ -1,9 +1,11 @@
 // Table.js
 import React from 'react';
+import { getVendorPlantSelectList } from '../../../actions/Common';
+import { useLabels } from '../../../helper/core';
 
 const Table = (props) => {
     const { headerData, sectionData, children } = props;
-
+    const vendorLabel = useLabels()
 
     const renderList = (sectionData) => {
         const { isHighlightedRow, header, data } = sectionData
@@ -58,7 +60,7 @@ const Table = (props) => {
                     })}
                 </tr>
                 <tr>
-                    <th>Vendor</th>
+                    <th>{vendorLabel}</th>
                     {headerData.map((item, index) => {
                         return <th key={index}><div>{item.isCheckBox && <div className="custom-check1 d-inline-block">
                             <label

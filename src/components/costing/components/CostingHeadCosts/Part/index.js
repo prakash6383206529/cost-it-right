@@ -29,6 +29,7 @@ import { createToprowObjAndSave, errorCheck, errorCheckObject, findSurfaceTreatm
 import _ from 'lodash';
 import { PreviousTabData } from '../../CostingHeaderTabs';
 import { TOOLING_ID } from '../../../../../config/masterData';
+import { useLabels } from '../../../../../helper/core';
 function PartCompoment(props) {
 
   const { rmData, bopData, ccData, item } = props;
@@ -43,7 +44,7 @@ function PartCompoment(props) {
   const dispatch = useDispatch()
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const { ComponentItemDiscountData, CloseOpenAccordion, ErrorObjRMCC, ErrorObjOverheadProfit, openAllTabs } = useSelector(state => state.costing)
-
+  const vendorLabel = useLabels()
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
   const netPOPrice = useContext(NetPOPriceContext);
@@ -57,7 +58,7 @@ function PartCompoment(props) {
     dispatch(openCloseStatus({ RMC: !IsOpen }))
 
     if (isNFR && !openAllTabs) {
-      Toaster.warning("All Raw Material's price has not added in the Raw Material master against this vendor and plant.")
+      Toaster.warning(`All Raw Material's price has not added in the Raw Material master against this ${vendorLabel} and plant.`)
       return false;
     }
     let tempErrorObjRMCC = { ...ErrorObjRMCC }

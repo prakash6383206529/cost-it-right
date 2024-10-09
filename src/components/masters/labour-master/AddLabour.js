@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Field, reduxForm, formValueSelector, clearFields } from 'redux-form'
 import { Row, Col, Table, Label } from 'reactstrap'
-import { required, checkForNull, positiveAndDecimalNumber, maxLength10, checkForDecimalAndNull, decimalLengthsix, number } from '../../../helper/validation'
+import { required, checkForNull, positiveAndDecimalNumber, maxLength10, checkForDecimalAndNull, decimalLengthsix, number, maxPercentValue, percentageLimitValidation } from '../../../helper/validation'
 import { focusOnError, renderTextInputField, searchableSelect } from '../../layout/FormInputs'
 import { getPlantListByState } from '../actions/Fuel'
 import { getProductGroupSelectList } from '../actions/Part'
@@ -28,6 +28,7 @@ import { reactLocalStorage } from 'reactjs-localstorage'
 import { autoCompleteDropdown, getEffectiveDateMinDate } from '../../common/CommonFunctions'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper'
 import { subDays } from 'date-fns'
+import { LabelsClass } from '../../../helper/core'
 
 const selector = formValueSelector('AddLabour')
 
@@ -787,8 +788,10 @@ class AddLabour extends Component {
    * @description Renders the component
    */
   render() {
-    const { handleSubmit, initialConfiguration } = this.props;
+    const { handleSubmit, initialConfiguration,t } = this.props;
     const { isEditFlag, isOpenMachineType, isViewMode, setDisable, gridTable, isEditMode, costingTypeId } = this.state;
+    const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
+
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
       if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
@@ -871,7 +874,7 @@ class AddLabour extends Component {
                           }
                           disabled={isEditFlag ? true : false}
                         />{" "}
-                        <span>Vendor Based</span>
+                        <span>{VendorLabel} Based</span>
                       </Label>}
                       {(reactLocalStorage.getObject('CostingTypePermission').cbc) && <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
                         <input
@@ -916,12 +919,12 @@ class AddLabour extends Component {
                     <Row>
                       <Col md="12" className="filter-block">
                         <div className=" flex-fills mb-2 w-100 pl-0">
-                          <h5>{costingTypeId === CBCTypeId ? "Product:" : "Vendor:"}</h5>
+                          <h5>{costingTypeId === CBCTypeId ? "Product:" : {VendorLabel} + ":"}</h5>
                         </div>
                       </Col>
                       {this.state.IsEmployeContractual && costingTypeId !== CBCTypeId && (
                         <Col md="3" className='mb-4'>
-                          <label>{"Vendor (Code)"}<span className="asterisk-required">*</span></label>
+                          <label>{VendorLabel} (Code)<span className="asterisk-required">*</span></label>
                           <div className="p-relative">
                             {this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
                             <AsyncSelect
@@ -1118,12 +1121,12 @@ class AddLabour extends Component {
                       <Col md="3">
                         <div className="form-group">
                           <Field
-                            label={`Efficiency`}
+                            label={`Efficiency (%)`}
                             name={"Efficiency"}
                             type="text"
                             placeholder={isViewMode ? "-" : "Enter"}
                             disabled={isViewMode}
-                            validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
+                            validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix, number, percentageLimitValidation, maxPercentValue]}
                             component={renderTextInputField}
                             onChange={this.handleEfficiency}
                             required={true}

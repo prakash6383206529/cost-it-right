@@ -13,6 +13,7 @@ import CostingDetailSimulationDrawer from '../../../simulation/components/Costin
 import { getSingleCostingDetails, setCostingViewData } from '../../../costing/actions/Costing';
 import ReactExport from 'react-export-excel';
 import { GOT_GIVEN_EXCEL_TEMPLATE } from '../../ExcelTemplate';
+import { useLabels } from '../../../../helper/core';
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -21,6 +22,7 @@ const gridOptions = {};
 function GotGivenListing(props) {
 
     const { part, product } = props
+    const { vendorLabel } = useLabels();
 
     const simulationInsights = []
     const [gridApi, setGridApi] = useState(null);
@@ -254,7 +256,7 @@ function GotGivenListing(props) {
                                 suppressRowClickSelection={true}
                                 rowSelection={'multiple'}
                             >
-                                <AgGridColumn field="VendorName" headerName="Vendor Name" cellRenderer={hyphenFormatter}></AgGridColumn>
+                                <AgGridColumn field="VendorName" headerName={vendorLabel + " Name"} cellRenderer={hyphenFormatter}></AgGridColumn>
                                 <AgGridColumn field="SAPCode" headerName="SAP Code" cellRenderer={hyphenFormatter}></AgGridColumn>
 
                                 <AgGridColumn field="PartDescription" headerName="Material Description" cellRenderer={hyphenFormatter}></AgGridColumn>

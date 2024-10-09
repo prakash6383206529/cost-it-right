@@ -25,7 +25,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import { checkMasterCreateByCostingPermission, hideCustomerFromExcel } from '../../common/CommonFunctions';
 import { getConfigurationKey, loggedInUserId } from '../../../helper';
 import Button from '../../layout/Button';
-import { useLabels } from '../../../helper/core';
+import { useLabels, useWithLocalization } from '../../../helper/core';
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -268,13 +268,13 @@ const ExchangeRateListing = (props) => {
         }
         setState((prevState) => ({ ...prevState, selectedRowData: selectedRows, dataCount: selectedRows.length }))
     }
-
+    const EXCHANGERATE_DOWNLOAD_EXCEl_LOCALIZATION = useWithLocalization(EXCHANGERATE_DOWNLOAD_EXCEl, "MasterLabels")
     const onBtExport = () => {
 
         let tempArr = []
         tempArr = state.gridApi && state.gridApi?.getSelectedRows()
         tempArr = (tempArr && tempArr.length > 0) ? tempArr : (exchangeRateDataList ? exchangeRateDataList : [])
-        return returnExcelColumn(EXCHANGERATE_DOWNLOAD_EXCEl, tempArr)
+        return returnExcelColumn(EXCHANGERATE_DOWNLOAD_EXCEl_LOCALIZATION, tempArr)
     };
 
 

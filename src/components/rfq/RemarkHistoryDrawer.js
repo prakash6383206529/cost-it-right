@@ -52,7 +52,8 @@ function RemarkHistoryDrawer(props) {
                             message: (
                                 <div className='chat-container'>
                                     <div className='sender-name'> {item.SenderName}</div> {item.Message ? <div className='sender-message'>{item.Message}</div> : '-'}
-                                    <div className='sender-date'>{dateObject.toLocaleDateString()}<span className='sender-time'>{dateObject.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}</span></div>
+                                    <div className='sender-date'>{dateObject.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })}<span className='sender-time'>{dateObject?.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}</span></div>
+
                                 </div>
                             ),
                         })
@@ -66,7 +67,7 @@ function RemarkHistoryDrawer(props) {
         } else {
 
             let reqData = {
-                quotationId: data.QuotationId,
+                quotationId: data?.QuotationId,
 
 
             }
@@ -81,8 +82,8 @@ function RemarkHistoryDrawer(props) {
                             // message: `(${item.SenderName}) : ${item.Message ? item.Message : '-'} `,     //RE
                             message: (
                                 <div className='chat-container'>
-                                    <div className='review-message'></div> {item?.Remark ? <div className='sender-message'>{item?.Remark}</div> : '-'}
-                                    <div className='sender-date'>{dateObject?.toLocaleDateString()}<span className='sender-time'>{dateObject?.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}</span></div>
+                                    <div className='sender-name'> {item?.SenderName}</div> {item?.Remark ? <div className='sender-message'>{item?.Remark}</div> : '-'}
+                                    <div className='sender-date'>{dateObject.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })}<span className='sender-time'>{dateObject?.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}</span></div>
                                 </div>
                             ),
                         })

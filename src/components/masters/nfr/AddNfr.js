@@ -27,6 +27,7 @@ import OutsourcingDrawer from './OutsourcingDrawer';
 import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from './TourMessages';
 import { useTranslation } from 'react-i18next';
+import { useLabels } from '../../../helper/core';
 
 
 
@@ -79,7 +80,7 @@ function AddNfr(props) {
     const { t } = useTranslation("Nfr")
     const [showExtraData, setShowExtraData] = useState(false)
     const [render, setRender] = useState(false)
-
+    const vendorLabel = useLabels()
     const [costingObj, setCostingObj] = useState({
         item: {},
         index: []
@@ -924,7 +925,7 @@ function AddNfr(props) {
                     <Col md="3">
                         <TooltipCustom customClass="ml-1 add-nfr-tooltip" id="variance" tooltipText="Vendors should not exceed a selection limit of 4" />
                         <AsyncSearchableSelectHookForm
-                            label={"Vendor (Code)"}
+                            label={`${vendorLabel} (Code)`}
                             name={"VendorName"}
                             placeholder={"Select"}
                             Controller={Controller}
@@ -980,7 +981,7 @@ function AddNfr(props) {
                             <tr>
                                 <th className="table-record">Group Name</th>
                                 <th className="table-record">Status</th>
-                                <th>Vendor</th>
+                                <th>{vendorLabel}</th>
                                 <th>Costing Version</th>
                                 <th className="text-center">Status</th>
                                 <th>Net Cost</th>

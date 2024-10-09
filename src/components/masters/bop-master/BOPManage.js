@@ -320,14 +320,14 @@ const BOPManage = (props) => {
                                 <>
                                     <ExcelFile filename={Sob} fileExtension={'.xls'}
                                         element={
-                                            <Button id={"Excel-Downloads-sobListing"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5 Tour_List_Download'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
+                                            <Button id={"Excel-Downloads-bopManage"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5 Tour_List_Download'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
                                         }>
                                         {onBtExport()}
                                     </ExcelFile>
                                 </>
                             }
                             <Button
-                                id={"sobListing_refresh"} className="user-btn Tour_List_Reset" onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
+                                id={"bopManage_refresh"} className="user-btn Tour_List_Reset" onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
                         </div>
                     </Col>
                 </Row>

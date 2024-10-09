@@ -24,7 +24,7 @@ import { reactLocalStorage } from "reactjs-localstorage";
 import { ApplyPermission } from ".";
 import Button from "../../layout/Button";
 import { checkMasterCreateByCostingPermission } from "../../common/CommonFunctions";
-import { useLabels } from "../../../helper/core";
+import { useLabels, useWithLocalization } from "../../../helper/core";
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
@@ -195,12 +195,13 @@ const FuelListing = (props) => {
     const selectedRows = state.gridApi?.getSelectedRows();
     setState((prevState) => ({ ...prevState, selectedRowData: selectedRows, dataCount: selectedRows.length, }));
   };
+  const FUELLISTING_DOWNLOAD_EXCEl_LOCALIZATION = useWithLocalization(FUELLISTING_DOWNLOAD_EXCEl, "MasterLabels")
   const onBtExport = () => {
     let tempArr = [];
     tempArr = state.gridApi && state.gridApi?.getSelectedRows();
     tempArr = tempArr && tempArr.length > 0 ? tempArr : fuelDataList ? fuelDataList : [];
 
-    return returnExcelColumn(FUELLISTING_DOWNLOAD_EXCEl, tempArr);
+    return returnExcelColumn(FUELLISTING_DOWNLOAD_EXCEl_LOCALIZATION, tempArr);
   };
 
   const onFilterTextBoxChanged = (e) => {
