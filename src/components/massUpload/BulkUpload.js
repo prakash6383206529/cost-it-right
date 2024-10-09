@@ -348,29 +348,35 @@ class BulkUpload extends Component {
                                 }
                                 else if (this.state.costingTypeId === VBCTypeId) {
                                     const localizedRMDomesticVBC = this.localizeHeaders(RMDomesticVBC);
+                                    masterDataArray = localizedRMDomesticVBC
                                     checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(localizedRMDomesticVBC, VBCTypeId), fileHeads, true)
                                 }
                                 else if (this.state.costingTypeId === CBCTypeId) {
                                     const localizedRMDomesticCBC = this.localizeHeaders(RMDomesticCBC);
+                                    masterDataArray = localizedRMDomesticCBC
                                     checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(localizedRMDomesticCBC, CBCTypeId), fileHeads, true)
                                 }
                             } else {
                                 if (this.state.costingTypeId === ZBCTypeId) {
                                     const localizedRMImportZBC = this.localizeHeaders(RMImportZBC);
+                                    masterDataArray = localizedRMImportZBC
                                     checkForFileHead = checkForSameFileUpload(checkRM_Process_OperationConfigurable(localizedRMImportZBC, ZBCTypeId), fileHeads, true)
                                 }
                                 else if (this.state.costingTypeId === VBCTypeId) {
                                     const localizedRMImportVBC = this.localizeHeaders(RMImportVBC);
+                                    masterDataArray = localizedRMImportVBC
                                     checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(localizedRMImportVBC, VBCTypeId), fileHeads, true)
                                 }
                                 else if (this.state.costingTypeId === CBCTypeId) {
                                     const localizedRMImportCBC = this.localizeHeaders(RMImportCBC);
+                                    masterDataArray = localizedRMImportCBC
                                     checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(localizedRMImportCBC, CBCTypeId), fileHeads, true)
                                 }
                             }
                             break;
                         case String(RMSPECIFICATION):
                             const localizedRMSpecification = this.localizeHeaders(RMSpecification);
+                            masterDataArray = localizedRMSpecification
                             checkForFileHead = checkForSameFileUpload(localizedRMSpecification, fileHeads)
                             break;
                         case String(BOPDOMESTICBULKUPLOAD):
@@ -380,23 +386,28 @@ class BulkUpload extends Component {
 
                             if (this.state.costingTypeId === VBCTypeId) {
                                 const localizedBOPVBC = this.localizeHeaders(BOP_VBC_DOMESTIC);
+                                masterDataArray = localizedBOPVBC
                                 const { updatedLabels } = updateBOPValues(localizedBOPVBC, [], bopMasterName, 'label')
                                 checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(updatedLabels, VBCTypeId), fileHeads, true)
                             }
                             else if (this.state.costingTypeId === ZBCTypeId) {
                                 const localizedBOPZBC = this.localizeHeaders(BOP_ZBC_DOMESTIC);
+                                masterDataArray = localizedBOPZBC   
                                 const { updatedLabels } = updateBOPValues(localizedBOPZBC, [], bopMasterName, 'label')
                                 checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(updatedLabels), fileHeads, true)
 
                             }
                             else if (this.state.costingTypeId === CBCTypeId) {
                                 const localizedBOPCBC = this.localizeHeaders(BOP_CBC_DOMESTIC);
+                                masterDataArray = localizedBOPCBC
                                 const { updatedLabels } = updateBOPValues(localizedBOPCBC, [], bopMasterName, 'label')
 
                                 checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(updatedLabels), fileHeads, true)
 
                             } else if (this.state.bopType === DETAILED_BOP) {
+
                                 const localizedBOPDetailed = this.localizeHeaders(BOP_DETAILED_DOMESTIC);
+                                masterDataArray = localizedBOPDetailed
                                 const { updatedLabels } = updateBOPValues(localizedBOPDetailed, [], bopMasterName, 'label')
 
 
@@ -406,22 +417,26 @@ class BulkUpload extends Component {
                         case String(BOPIMPORTBULKUPLOAD):
                             if (this.state.costingTypeId === ZBCTypeId) {
                                 const localizedBOPZBC = this.localizeHeaders(BOP_ZBC_IMPORT);
+                                masterDataArray = localizedBOPZBC
                                 const { updatedLabels } = updateBOPValues(localizedBOPZBC, [], bopMasterName, 'label')
 
                                 checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(updatedLabels), fileHeads, true)
                             }
                             else if (this.state.costingTypeId === VBCTypeId) {
                                 const localizedBOPVBC = this.localizeHeaders(BOP_VBC_IMPORT);
+                                masterDataArray = localizedBOPVBC
                                 const { updatedLabels } = updateBOPValues(localizedBOPVBC, [], bopMasterName, 'label')
 
                                 checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(updatedLabels, VBCTypeId), fileHeads, true)
                             } else if (this.state.bopType === DETAILED_BOP) {
                                 const localizedBOPDetailed = this.localizeHeaders(BOP_DETAILED_IMPORT);
+                                masterDataArray = localizedBOPDetailed
                                 const { updatedLabels } = updateBOPValues(localizedBOPDetailed, [], bopMasterName, 'label')
 
                                 checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(updatedLabels), fileHeads, true)
                             } else {
                                 const localizedBOPCBC = this.localizeHeaders(BOP_CBC_IMPORT);
+                                masterDataArray = localizedBOPCBC
                                 const { updatedLabels } = updateBOPValues(localizedBOPCBC, [], bopMasterName, 'label')
 
                                 checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(updatedLabels, CBCTypeId), fileHeads, true)
@@ -429,133 +444,157 @@ class BulkUpload extends Component {
                             break;
                         case String(PARTCOMPONENTBULKUPLOAD):
                             const localizedPartComponent = this.localizeHeaders(PartComponent);
+                            masterDataArray = localizedPartComponent
                             checkForFileHead = checkForSameFileUpload(checkSAPCodeinExcel(localizedPartComponent), fileHeads)
                             break;
                         case String(PRODUCTCOMPONENTBULKUPLOAD):
                             const localizedProductComponent = this.localizeHeaders(ProductComponent);
+                            masterDataArray = localizedProductComponent
                             checkForFileHead = checkForSameFileUpload(checkSAPCodeinExcel(localizedProductComponent), fileHeads)
                             break;
                         case String(MACHINEBULKUPLOAD):
                             if (this.state.costingTypeId === ZBCTypeId) {
                                 const localizedMachineZBC = this.localizeHeaders(MachineZBC);
+                                masterDataArray = localizedMachineZBC
                                 checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(localizedMachineZBC, ZBCTypeId), fileHeads)
                             }
                             else if (this.state.costingTypeId === VBCTypeId) {
                                 const localizedMachineVBC = this.localizeHeaders(MachineVBC);
+                                masterDataArray = localizedMachineVBC
                                 checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(localizedMachineVBC, VBCTypeId), fileHeads)
                             }
                             else if (this.state.costingTypeId === CBCTypeId) {
                                 const localizedMachineCBC = this.localizeHeaders(MachineCBC);
+                                masterDataArray = localizedMachineCBC
                                 checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(localizedMachineCBC, ZBCTypeId), fileHeads)
                             }
                             else {
                                 const localizedMHRMoreZBC = this.localizeHeaders(MHRMoreZBC);
+                                masterDataArray = localizedMHRMoreZBC
                                 checkForFileHead = checkForSameFileUpload(checkRM_Process_OperationConfigurable(localizedMHRMoreZBC, ZBCTypeId), fileHeads)
                             }
                             break;
                         case String(VENDORBULKUPLOAD):
                             const localizedVendor = this.localizeHeaders(Vendor);
+                            masterDataArray = localizedVendor
                             const { updatedLabels } = updateBOPValues(localizedVendor, [], bopMasterName, 'label')
 
                             checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(updatedLabels, '', '', true), fileHeads)
                             break;
                         case String(LABOURBULKUPLOAD):
                             const localizedLabour = this.localizeHeaders(Labour);
+                            masterDataArray = localizedLabour
                             checkForFileHead = checkForSameFileUpload(localizedLabour, fileHeads)
                             break;
                         case String(OPERAIONBULKUPLOAD):
                             if (this.state.costingTypeId === ZBCTypeId) {
                                 const localizedZBCOperationSmallForm = this.localizeHeaders(ZBCOperationSmallForm);
+                                masterDataArray = localizedZBCOperationSmallForm    
                                 checkForFileHead = checkForSameFileUpload(checkLabourRateConfigure(localizedZBCOperationSmallForm), fileHeads)
                             }
                             else if (this.state.costingTypeId === VBCTypeId) {
                                 const localizedVBCOperationSmallForm = this.localizeHeaders(VBCOperationSmallForm);
+                                masterDataArray = localizedVBCOperationSmallForm    
                                 checkForFileHead = checkForSameFileUpload(checkLabourRateConfigure(localizedVBCOperationSmallForm), fileHeads)
                             }
                             else if (this.state.costingTypeId === CBCTypeId) {
                                 const localizedCBCOperationSmallForm = this.localizeHeaders(CBCOperationSmallForm);
-                                checkForFileHead = checkForSameFileUpload(checkLabourRateConfigure(localizedCBCOperationSmallForm), fileHeads)
+                                masterDataArray = localizedCBCOperationSmallForm    
+                                    checkForFileHead = checkForSameFileUpload(checkLabourRateConfigure(localizedCBCOperationSmallForm), fileHeads)
                             }
                             else if (this.state.costingTypeId === ZBCADDMOREOPERATION) {
                                 const localizedZBCOperation = this.localizeHeaders(ZBCOperation);
+                                masterDataArray = localizedZBCOperation     
                                 checkForFileHead = checkForSameFileUpload(localizedZBCOperation, fileHeads)
                             } else if (this.state.costingTypeId === VBCADDMOREOPERATION) {
                                 const localizedVBCOperation = this.localizeHeaders(VBCOperation);
+                                masterDataArray = localizedVBCOperation    
                                 checkForFileHead = checkForSameFileUpload(localizedVBCOperation, fileHeads)
                             } else if (this.state.costingTypeId === CBCADDMOREOPERATION) {
                                 const localizedCBCOperation = this.localizeHeaders(CBCOperation);
+                                masterDataArray = localizedCBCOperation    
                                 checkForFileHead = checkForSameFileUpload(localizedCBCOperation, fileHeads)
                             }
                             break;
                         case String(FUELBULKUPLOAD):
                             const localizedFuel = this.localizeHeaders(Fuel);
+                            masterDataArray = localizedFuel 
                             checkForFileHead = checkForSameFileUpload(localizedFuel, fileHeads)
                             break;
                         case String(INTERESTRATEBULKUPLOAD):
                             if (this.state.costingTypeId === VBCTypeId) {
                                 const localizedVBCInterestRate = this.localizeHeaders(VBCInterestRate);
+                                masterDataArray = localizedVBCInterestRate  
                                 checkForFileHead = checkForSameFileUpload(checkInterestRateConfigure(localizedVBCInterestRate), fileHeads)
 
                             }
                             else if (this.state.costingTypeId === CBCTypeId) {
                                 const localizedCBCInterestRate = this.localizeHeaders(CBCInterestRate);
+                                masterDataArray = localizedCBCInterestRate    
                                 checkForFileHead = checkForSameFileUpload(checkInterestRateConfigure(localizedCBCInterestRate), fileHeads)
                             }
                             break;
                         case String(ACTUALVOLUMEBULKUPLOAD):
                             if (this.state.costingTypeId === ZBCTypeId) {
                                 const localizedVOLUME_ACTUAL_ZBC = this.localizeHeaders(VOLUME_ACTUAL_ZBC);
+                                masterDataArray = localizedVOLUME_ACTUAL_ZBC    
                                 checkForFileHead = checkForSameFileUpload(localizedVOLUME_ACTUAL_ZBC, fileHeads)
                             }
                             else if (this.state.costingTypeId === VBCTypeId) {
                                 const localizedVOLUME_ACTUAL_VBC = this.localizeHeaders(VOLUME_ACTUAL_VBC);
+                                masterDataArray = localizedVOLUME_ACTUAL_VBC    
                                 checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(localizedVOLUME_ACTUAL_VBC, VBCTypeId), fileHeads)
                             }
                             else {
                                 const localizedVOLUME_ACTUAL_CBC = this.localizeHeaders(VOLUME_ACTUAL_CBC);
+                                masterDataArray = localizedVOLUME_ACTUAL_CBC    
                                 checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(localizedVOLUME_ACTUAL_CBC, CBCTypeId), fileHeads)
                             }
                             break;
                         case String(BUDGETEDVOLUMEBULKUPLOAD):
                             if (this.state.costingTypeId === ZBCTypeId) {
                                 const localizedVOLUME_BUDGETED_ZBC = this.localizeHeaders(VOLUME_BUDGETED_ZBC);
+                                masterDataArray = localizedVOLUME_BUDGETED_ZBC    
                                 checkForFileHead = checkForSameFileUpload(localizedVOLUME_BUDGETED_ZBC, fileHeads)
                             }
                             else if (this.state.costingTypeId === VBCTypeId) {
                                 const localizedVOLUME_BUDGETED_VBC = this.localizeHeaders(VOLUME_BUDGETED_VBC);
+                                masterDataArray = localizedVOLUME_BUDGETED_VBC    
                                 checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(localizedVOLUME_BUDGETED_VBC, VBCTypeId), fileHeads)
                             }
                             else if (this.state.costingTypeId === CBCTypeId) {
                                 const localizedVOLUME_BUDGETED_CBC = this.localizeHeaders(VOLUME_BUDGETED_CBC);
+                                masterDataArray = localizedVOLUME_BUDGETED_CBC    
                                 checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(localizedVOLUME_BUDGETED_CBC, CBCTypeId), fileHeads)
                             }
                             break;
                         case String(BUDGETBULKUPLOAD):
                             if (this.state.costingTypeId === ZBCTypeId) {
                                 const localizedBUDGET_ZBC = this.localizeHeaders(BUDGET_ZBC);
+                                masterDataArray = localizedBUDGET_ZBC    
                                 checkForFileHead = checkForSameFileUpload(localizedBUDGET_ZBC, fileHeads)
                             }
                             else if (this.state.costingTypeId === VBCTypeId) {
                                 const localizedBUDGET_VBC = this.localizeHeaders(BUDGET_VBC);
+                                masterDataArray = localizedBUDGET_VBC       
                                 checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(localizedBUDGET_VBC, VBCTypeId), fileHeads)
                             }
                             else if (this.state.costingTypeId === CBCTypeId) {
                                 const localizedBUDGET_CBC = this.localizeHeaders(BUDGET_CBC);
+                                masterDataArray = localizedBUDGET_CBC    
                                 checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(localizedBUDGET_CBC, CBCTypeId), fileHeads)
                             }
                             break;
                         case String(ASSEMBLYORCOMPONENTSRFQ):
-                            const localizedAddAssemblyOrComponentHeaderData = this.localizeHeaders(AddAssemblyOrComponentHeaderData);
-                            checkForFileHead = checkForSameFileUpload(localizedAddAssemblyOrComponentHeaderData, fileHeads)
+                                                        checkForFileHead = checkForSameFileUpload(AddAssemblyOrComponentHeaderData, fileHeads)
                             break
                         case String(BOUGHTOUTPARTSRFQ):
-                            const localizedAddBoughtOutPartsHeaderData = this.localizeHeaders(AddBoughtOutPartsHeaderData);
-                            checkForFileHead = checkForSameFileUpload(localizedAddBoughtOutPartsHeaderData, fileHeads)
+                            checkForFileHead = checkForSameFileUpload(AddBoughtOutPartsHeaderData, fileHeads)
 
                             break
                         case String(RAWMATERIALSRFQ):
-                            const localizedAddRawMaterialHeaderData = this.localizeHeaders(AddRawMaterialHeaderData);
-                            checkForFileHead = checkForSameFileUpload(localizedAddRawMaterialHeaderData, fileHeads)
+                            
+                            checkForFileHead = checkForSameFileUpload(AddRawMaterialHeaderData, fileHeads)
 
                             break
 
@@ -569,49 +608,60 @@ class BulkUpload extends Component {
                         case String(OVERHEADBULKUPLOAD):
                             if (this.state.costingTypeId === VBCTypeId) {
                                 const localizedOverheadVBC = this.localizeHeaders(OverheadVBC);
+                                masterDataArray = localizedOverheadVBC
                                 checkForFileHead = checkForSameFileUpload(localizedOverheadVBC, fileHeads)
                             }
                             else if (this.state.costingTypeId === ZBCTypeId) {
                                 const localizedOverheadZBC = this.localizeHeaders(Overhead);
+                                masterDataArray = localizedOverheadZBC
                                 checkForFileHead = checkForSameFileUpload(localizedOverheadZBC, fileHeads)
                             }
                             else if (this.state.costingTypeId === CBCTypeId) {
                                 const localizedOverheadCBC = this.localizeHeaders(OverheadCBC);
+                                masterDataArray = localizedOverheadCBC  
                                 checkForFileHead = checkForSameFileUpload(localizedOverheadCBC, fileHeads)
                             }
                             break;
                         case String(PROFITBULKUPLOAD):
                             if (this.state.costingTypeId === VBCTypeId) {
                                 const localizedProfitVBC = this.localizeHeaders(ProfitVBC);
+                                masterDataArray = localizedProfitVBC
                                 checkForFileHead = checkForSameFileUpload(localizedProfitVBC, fileHeads)
                             }
                             else if (this.state.costingTypeId === ZBCTypeId) {
                                 const localizedProfitZBC = this.localizeHeaders(Profit);
+                                masterDataArray = localizedProfitZBC    
                                 checkForFileHead = checkForSameFileUpload(localizedProfitZBC, fileHeads)
                             }
                             else if (this.state.costingTypeId === CBCTypeId) {
                                 const localizedProfitCBC = this.localizeHeaders(ProfitCBC);
-                                checkForFileHead = checkForSameFileUpload(localizedProfitCBC, fileHeads)
+                                masterDataArray = localizedProfitCBC    
+                                    checkForFileHead = checkForSameFileUpload(localizedProfitCBC, fileHeads)
                             }
                             break;
                         case String(RMMATERIALBULKUPLOAD):
                             const localizedIndexDataListing = this.localizeHeaders(IndexDataListing);
+                            masterDataArray = localizedIndexDataListing
                             checkForFileHead = checkForSameFileUpload(localizedIndexDataListing, fileHeads)
                             break;
                         case String(INDEXCOMMODITYBULKUPLOAD):
                             const localizedIndexCommodityListing = this.localizeHeaders(IndexCommodityListing);
+                            masterDataArray = localizedIndexCommodityListing
                             checkForFileHead = checkForSameFileUpload(localizedIndexCommodityListing, fileHeads)
                             break;
                         case String(COMMODITYININDEXBULKUPLOAD):
                             const localizedCommodityInIndexListing = this.localizeHeaders(CommodityInIndexListing);
+                            masterDataArray = localizedCommodityInIndexListing
                             checkForFileHead = checkForSameFileUpload(localizedCommodityInIndexListing, fileHeads)
                             break;
                         case String(COMMODITYSTANDARDIZATION):
                             const localizedStandardizedCommodityNameListing = this.localizeHeaders(StandardizedCommodityNameListing);
+                            masterDataArray = localizedStandardizedCommodityNameListing
                             checkForFileHead = checkForSameFileUpload(localizedStandardizedCommodityNameListing, fileHeads)
                             break;
                         case String(COMMODITYSTANDARD):
                             const localizedCommodityStandard = this.localizeHeaders(CommodityStandard);
+                            masterDataArray = localizedCommodityStandard
                             checkForFileHead = checkForSameFileUpload(localizedCommodityStandard, fileHeads)
                             break;
                         case String(SAP_PUSH):
