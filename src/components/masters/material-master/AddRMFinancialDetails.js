@@ -435,7 +435,7 @@ function AddRMFinancialDetails(props) {
             obj.CalculatedFactor = conversionFactorTemp
         }
 
-        const basicPriceCurrencyTemp = checkForNull(getValues('BasicRateBaseCurrency')) + checkForNull(getValues('FreightChargeBaseCurrency')) + checkForNull(getValues('ShearingCostBaseCurrency'))
+        const basicPriceCurrencyTemp = checkForNull(getValues('BasicRateBaseCurrency')) + checkForNull(getValues('FreightChargeBaseCurrency')) + checkForNull(getValues('ShearingCostBaseCurrency')) + checkForNull(getValues('OtherCostBaseCurrency'))
         let basicPriceBaseCurrency
         if (costingTypeId === ZBCTypeId) {
             basicPriceBaseCurrency = basicPriceCurrencyTemp
@@ -789,7 +789,9 @@ function AddRMFinancialDetails(props) {
         if (type === 'Save') {
             setState(prevState => ({ ...prevState, isOpenOtherCostDrawer: false, otherCostTableData: data, totalOtherCost: totalBase }))
             setValue('OtherCostBaseCurrency', totalBase)
+            setValue('NetLandedCostBaseCurrency', checkForNull(totalBase) + checkForNull(getValues('BasicRateBaseCurrency')))
             dispatch(setOtherCostDetails(data))
+            setState(prevState => ({ ...prevState, NetLandedCostBaseCurrency: checkForNull(totalBase) + checkForNull(getValues('BasicRateBaseCurrency')) }))
         } else {
             setState(prevState => ({ ...prevState, isOpenOtherCostDrawer: false }))
         }
