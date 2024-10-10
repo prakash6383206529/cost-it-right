@@ -13,7 +13,7 @@ import {
   getPermissionByUser, getUsersTechnologyLevelAPI, getLevelByTechnology, getSimulationTechnologySelectList, getSimualationLevelByTechnology, getUsersSimulationTechnologyLevelAPI, getMastersSelectList, getUsersMasterLevelAPI, getMasterLevelDataList, getMasterLevelByMasterId, registerRfqUser, updateRfqUser, getAllLevelAPI, checkHighestApprovalLevelForHeadsAndApprovalType, getOnboardingLevelById, getPlantSelectListForDepartment, getUsersOnboardingLevelAPI,
   getAllDivisionListAssociatedWithDepartment
 } from "../../actions/auth/AuthActions";
-import { getCityByCountry,getReporterList, getApprovalTypeSelectList, getVendorNameByVendorSelectList, getApprovalTypeSelectListUserModule } from "../../actions/Common";
+import { getCityByCountry, getReporterList, getApprovalTypeSelectList, getVendorNameByVendorSelectList, getApprovalTypeSelectListUserModule } from "../../actions/Common";
 import { MESSAGES } from "../../config/message";
 import { IsSendMailToPrimaryContact, IsSendQuotationToPointOfContact, getConfigurationKey, handleDepartmentHeader, loggedInUserId } from "../../helper/auth";
 import { Button, Row, Col } from 'reactstrap';
@@ -57,7 +57,7 @@ function UserRegistration(props) {
     city: [],
     showErrorOnFocus: false,
     inputLoader: false
-    })
+  })
   const [token, setToken] = useState("");
   const [lowerCaseCheck, setLowerCaseCheck] = useState(false);
   const [upperCaseCheck, setUpperCaseCheck] = useState(false);
@@ -142,7 +142,7 @@ function UserRegistration(props) {
   const [isShowDivision, setIsShowDivision] = useState(false)
   const [selectedDivision, setSelectedDivision] = useState([])
   const dispatch = useDispatch()
-  const { technologyLabel , vendorLabel } = useLabels();
+  const { technologyLabel, vendorLabel } = useLabels();
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
   // const cityList = useSelector(state => state.comman.cityList)
   const departmentList = useSelector(state => state.auth.departmentList)
@@ -774,10 +774,12 @@ function UserRegistration(props) {
             // setCity({
             //   label: Data?.CityName, value: Data?.CityId
             // })
-            setState(prevState => ({ ...prevState, city: { label: Data?.CityName, value: Data?.CityId} }));
+            setState(prevState => ({ ...prevState, city: { label: Data?.CityName, value: Data?.CityId } }));
 
             if (Data.IsAdditionalAccess) {
               getUserPermission(data.UserId)
+            } else {
+              setIsPermissionLoading(false)
             }
 
           }, 700)
@@ -805,7 +807,7 @@ function UserRegistration(props) {
         let Data = res.data.Data;
         setModules(Data.Modules)
         setOldModules(Data.Modules)
-        
+
         // setIsPermissionLoading(false);
 
         //child.getUpdatedData(Data.Modules)  //need to convertt  to functional
@@ -880,26 +882,26 @@ function UserRegistration(props) {
    * @description Used for User's additional permission
    */
   const onPressUserPermission = (e) => {
-    console.log(e,"E.")
-   
-    ; // Set loading to true when starting
-    
+    console.log(e, "E.")
+
+      ; // Set loading to true when starting
+
     if (role && role.value) {
       console.log(IsShowAdditionalPermission);
-      
+
       setIsShowAdditionalPermission(!IsShowAdditionalPermission)
       setModules([])
 
       if (isEditFlag && grantUserWisePermission) {
         console.log(isEditFlag);
         console.log(grantUserWisePermission);
-      if(!e){
-        setIsPermissionLoading(true)
-      }
+        if (!e) {
+          setIsPermissionLoading(true)
+        }
         getUserPermission(UserId)
       } else {
         console.log(role.value);
-        if(!e){
+        if (!e) {
           setIsPermissionLoading(true)
         }
         getRoleDetail(role.value, !IsShowAdditionalPermission)
@@ -2624,9 +2626,9 @@ function UserRegistration(props) {
   const cityFilterList = (inputValue) => {
     return DropDownFilterList(inputValue, '', 'city', (filterType, resultInput) => getCityByCountry(0, 0, resultInput), setState, state);
   };
-const  vendorFilterList = (inputValue) => {
-  return DropDownFilterList(inputValue, '', 'vendor', (filterType, resultInput) => getVendorNameByVendorSelectList(VBC_VENDOR_TYPE, resultInput), setState, state);
-}
+  const vendorFilterList = (inputValue) => {
+    return DropDownFilterList(inputValue, '', 'vendor', (filterType, resultInput) => getVendorNameByVendorSelectList(VBC_VENDOR_TYPE, resultInput), setState, state);
+  }
   return (
     <div className="container-fluid">
       {isLoader && <Loader />}
@@ -2724,25 +2726,25 @@ const  vendorFilterList = (inputValue) => {
                     {props?.RFQUser && IsSendMailToPrimaryContact() &&
                       <Col md="3" id="primaryContact_container" >
                         <div className="d-flex align-items-center mt-4 pt-2">
-                        <label
-                          className={`custom-checkbox ml-2 mt-1`}
+                          <label
+                            className={`custom-checkbox ml-2 mt-1`}
                           // onChange={onPrimaryContactCheck}
-                        >
-                          Primary Contact
-                          <input
-                            type="checkbox"
-                            checked={primaryContact}
-                            onChange={onPrimaryContactCheck}
-                          />
-                          <span
-                            className=" before-box"
-                          />
-                         
-                        </label>
-                        <TooltipCustom id="Primary_Contact"
+                          >
+                            Primary Contact
+                            <input
+                              type="checkbox"
+                              checked={primaryContact}
+                              onChange={onPrimaryContactCheck}
+                            />
+                            <span
+                              className=" before-box"
+                            />
+
+                          </label>
+                          <TooltipCustom id="Primary_Contact"
                             customClass="mt-n1 pb-4"
                             tooltipText={`Please click on the checkbox if this user is the main point of contact for the ${vendorLabel}.`} />
-                      </div>
+                        </div>
                       </Col>
                     }
                     {!props?.RFQUser && <div className="col-md-3">
@@ -3070,28 +3072,28 @@ const  vendorFilterList = (inputValue) => {
                           {errors.CityId && <div className="text-help">{errors.CityId.message}</div>}
                         </div>
                       </div> */}
-                     
-                        <AsyncSearchableSelectHookForm
-                              name="CityId"
-                              type="text"
-                              label={"City"}
-                              errors={errors.CityId}
-                              Controller={Controller}
-                              control={control}
-                              register={register}
-                              mandatory={true}
-                              rules={{
-                                required: true,
-                              }}
-                              disabled={isEditFlag ? true : false}
-                              placeholder={'Select City'}
-                              //onKeyUp={(e) => this.changeItemDesc(e)}
-                              // validate={(role == null || role.length === 0) ? [required] : []}
-                              // required={true}
-                              handleChange={cityHandler}
-                              asyncOptions={cityFilterList}
-                              NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
-                            />
+
+                      <AsyncSearchableSelectHookForm
+                        name="CityId"
+                        type="text"
+                        label={"City"}
+                        errors={errors.CityId}
+                        Controller={Controller}
+                        control={control}
+                        register={register}
+                        mandatory={true}
+                        rules={{
+                          required: true,
+                        }}
+                        disabled={isEditFlag ? true : false}
+                        placeholder={'Select City'}
+                        //onKeyUp={(e) => this.changeItemDesc(e)}
+                        // validate={(role == null || role.length === 0) ? [required] : []}
+                        // required={true}
+                        handleChange={cityHandler}
+                        asyncOptions={cityFilterList}
+                        NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
+                      />
                     </div>
                     <div className="input-group col-md-3 input-withouticon">
                       <NumberFieldHookForm
@@ -3268,14 +3270,14 @@ const  vendorFilterList = (inputValue) => {
                         <div className={'col-md-4'}>
                           <label id="AddUser_Checkbox"
                             className="custom-checkbox"
-                            onChange={(e)=>{onPressUserPermission(IsShowAdditionalPermission)}}
+                            onChange={(e) => { onPressUserPermission(IsShowAdditionalPermission) }}
                           >
                             Grant User Wise Permission
                             <input type="checkbox" disabled={false} checked={IsShowAdditionalPermission} />
                             <span
                               className=" before-box"
                               checked={IsShowAdditionalPermission}
-                              onChange={(e)=>{onPressUserPermission(IsShowAdditionalPermission)}}
+                              onChange={(e) => { onPressUserPermission(IsShowAdditionalPermission) }}
                             />
                           </label>
                         </div>
@@ -3884,7 +3886,7 @@ const  vendorFilterList = (inputValue) => {
                       type="button"
                       id="AddUser_Save"
                       onClick={onSubmit}
-                      disabled={isSubmitted || isUpdateResponded|| isPermissionLoading }
+                      disabled={isSubmitted || isUpdateResponded || isPermissionLoading}
                       className="user-btn save-btn">
                       <div className={"save-icon"}></div>
                       {isEditFlag ? 'UPDATE' : 'SAVE'}
