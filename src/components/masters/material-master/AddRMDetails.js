@@ -37,7 +37,7 @@ import { useLabels } from "../../../helper/core"
 function AddRMDetails(props) {
     const { Controller, control, register, setValue, getValues, errors, reset, useWatch, states, data, disableAll } = props
     const { isEditFlag, isViewFlag } = data
-    const { vendorLabel } = useLabels()
+    const { vendorLabel, RMVendorLabel } = useLabels()
     const dropzone = useRef(null);
     const [state, setState] = useState({
         vendor: [],
@@ -845,7 +845,7 @@ function AddRMDetails(props) {
                 {<Row className={`align-items-center mb-3 ${state.isVendorAccOpen ? '' : 'd-none'}`}>
                     {states.costingTypeId !== CBCTypeId && (<>
                         <Col md="3">
-                            <label>{(states.costingTypeId === ZBCTypeId ? `RM ${vendorLabel} (Code)` : `${vendorLabel} (Code)`)}<span className="asterisk-required">*</span></label>
+                            <label>{(states.costingTypeId === ZBCTypeId ? `${RMVendorLabel} (Code)` : `${vendorLabel} (Code)`)}<span className="asterisk-required">*</span></label>
                             <div className="d-flex justify-space-between align-items-center p-relative async-select">
                                 <div className="fullinput-icon p-relative">
                                     {state.inputLoader && <LoaderCustom customClass={`input-loader`} />}

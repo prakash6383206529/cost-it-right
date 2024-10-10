@@ -11,9 +11,10 @@ import { Costratiograph } from "./CostRatioGraph";
 import { Costratiobuyinggraph } from './CostRatioBuyingGraph';
 import ApprovalListing from '../costing/components/approval/ApprovalListing';
 import SimulationApprovalListing from '../simulation/components/SimulationApprovalListing';
+import { useLabels } from '../../helper/core';
 export function Dashboardwithgraph(props) {
     const { handleSubmit } = props
-
+    const vendorLabel = useLabels()
     const [acc1, setAcc1] = useState(true)
     const [acc2, setAcc2] = useState(false)
 
@@ -111,7 +112,7 @@ export function Dashboardwithgraph(props) {
                     <Row className="graph-section">
                         <Col md="3">
                             <div className="graph-box">
-                                <h3 className="mb-3">Supplier Contribution(SOB)</h3>
+                                <h3 className="mb-3">{vendorLabel} Contribution(SOB)</h3>
                                 <Suppliercontributiongraph />
                             </div>
                         </Col>

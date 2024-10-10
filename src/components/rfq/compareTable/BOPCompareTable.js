@@ -10,6 +10,7 @@ import _, { isNumber } from 'lodash';
 import ProcessDrawer from '../ProcessDrawer';
 import PartSpecificationDrawer from '../../costing/components/PartSpecificationDrawer';
 import WarningMessage from '../../common/WarningMessage';
+import { useLabels } from '../../../helper/core';
 const BOPCompareTable = (props) => {
     const dispatch = useDispatch()
     const { viewBOPDetails } = useSelector((state) => state.boughtOutparts);
@@ -21,6 +22,7 @@ const BOPCompareTable = (props) => {
     const [checkBoxCheck, setCheckBoxCheck] = useState({})
     const [selectedItems, setSelectedItems] = useState([])
     const [selectedIndices, setSelectedIndices] = useState([])
+    const { vendorLabel } = useLabels();
 
     const [isLoader, setIsLoader] = useState(false)
     const showCheckbox = viewBOPDetails && viewBOPDetails?.some(item => item?.IsShowCheckBoxForApproval === true);
@@ -53,7 +55,7 @@ const BOPCompareTable = (props) => {
             let sectionOne = [];
             let sectionTwo = [];
             let sectionThree = []
-            let sectionOneHeader = ["BOP No.", "BOP Name", "Category", "UOM", /* "Specification", */ 'Plant (Code)', "vendor (Code)", 'Effective Date', 'Basic Rate']
+            let sectionOneHeader = ["BOP No.", "BOP Name", "Category", "UOM", /* "Specification", */ 'Plant (Code)', `${vendorLabel} (Code)`, 'Effective Date', 'Basic Rate']
             let sectionTwoHeader = ['Minimum Order Quantity', 'BOP Net Cost']
             let sectionThreeHeader = [
                 <span className="d-block small-grey-text p-relative">
@@ -104,9 +106,9 @@ const BOPCompareTable = (props) => {
                     vendorName: item?.Vendor,
                     onChange: () => checkBoxHandle(item, index),
                     checked: checkBoxCheck[index],
-                    isCheckBox: !props?.compare ?item?.bestCost ? false : item?.IsShowCheckBoxForApproval : false,
+                    isCheckBox: !props?.compare ? item?.bestCost ? false : item?.IsShowCheckBoxForApproval : false,
                     bestCost: item?.bestCost,
-                    shouldCost: props?.uniqueShouldCostingId?.includes(item?.RawMaterialId) ? "Should Cost" : "",
+                    shouldCost: props?.uniqueShouldCostingId?.includes(item?.BoughtOutPartId) ? "Should Cost" : "",
                     costingType: item?.CostingType === "Zero Based" ? "ZBC" : item?.costingType === "Vendor Based" ? "VBC" : "",
                     vendorCode: item?.VendorCode,
 
@@ -259,8 +261,7 @@ const BOPCompareTable = (props) => {
 
 
     useEffect(() => {
-if(!props?.compare)
-      {  props?.checkCostingSelected(selectedItems, selectedIndices)}
+        if (!props?.compare) { props?.checkCostingSelected(selectedItems, selectedIndices) }
     }, [selectedItems, selectedIndices])
     // const checkBoxHanlde = (item , index) => {
     //     setCheckBoxCheck(prevState => ({ ...prevState, index: true }))
@@ -268,7 +269,7 @@ if(!props?.compare)
     // }
     return (
         <div>
-            {showCheckbox &&  !props?.compare&&  < WarningMessage dClass={"float-right justify-content-end"} message={'Click the checkbox to approve, reject, or return the quotation'} />}
+            {showCheckbox && !props?.compare && < WarningMessage dClass={"float-right justify-content-end"} message={'Click the checkbox to approve, reject, or return the quotation'} />}
 
             <Table headerData={mainHeadingData} sectionData={sectionData}>
                 {isLoader && <LoaderCustom customClass="" />}

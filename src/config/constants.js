@@ -388,7 +388,7 @@ export const API = {
   getFuelByPlant: `${BASE_URL}/masters-fuel/get-fuel-by-plant`,
   getStateListByFuel: `${BASE_URL}/masters-fuel/get-state-by-fuel-select-list`,
   getFuelListByState: `${BASE_URL}/masters-fuel/get-fuel-by-state-select-list`,
-  fuelBulkUpload: `${BASE_URL}/masters-fuel/bulk-upload-for-fuel-details-json`,
+  fuelBulkUpload: `${BASE_URL}/masters-fuel/bulk-upload-for-fuel-json`,
   getUOMByFuelId: `${BASE_URL}/masters-fuel/get-uom-by-fuel-id`,
 
   //POWER MASTER
@@ -2321,6 +2321,8 @@ export const Assembly = '1'
 export const BoughtOutPart = '3'
 export const Component = '2'
 export const Product = '4'
+export const ToolingId = '5'
+
 
 export const COSTING_PATH = '/costing'
 export const COSTING_SUMMARY = '/costing-summary'
@@ -3258,7 +3260,7 @@ export const RAWMATERIALCOST = 'Raw Material Other Cost'
 export const COSTINGCONDITIONCOST = 'Costing Condition Cost'
 
 //VERSION 
-export const VERSION = "V3.1.13";
+export const VERSION = "V3.1.14";
 
 
 

@@ -30,12 +30,13 @@ import PopupMsgWrapper from '../../../common/PopupMsgWrapper';
 import { updateCostingIdFromRfqToNfrPfs } from '../../actions/Costing'
 import { pushNfrOnSap } from '../../../masters/nfr/actions/nfr'
 import { MESSAGES } from '../../../../config/message'
+import { useLabels } from '../../../../helper/core'
 function ApproveRejectDrawer(props) {
   // ********* INITIALIZE REF FOR DROPZONE ********
   const dropzone = useRef(null);
 
   const { type, approvalData, IsFinalLevel, IsPushDrawer, isSimulation, dataSend, reasonId, simulationDetail, selectedRowData, costingArr, isSaveDone, Attachements, vendorId, SimulationTechnologyId, SimulationType, costingList, isSimulationApprovalListing, attachments, apiData, SimulationHeadId, TechnologyId, releaseStrategyDetails, showFinalLevelButtons } = props
-
+  const vendorLabel = useLabels()
   const userLoggedIn = loggedInUserId()
   const userData = userDetails()
   const { TokensList } = useSelector(state => state.simulation)
@@ -1385,7 +1386,7 @@ function ApproveRejectDrawer(props) {
           </div>
         </Container>
         {
-          (showPopup && props.isShowNFRPopUp) && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`Do you want to push this vendor's costing to SAP for PFS2`} nfrPopup={true} />
+          (showPopup && props.isShowNFRPopUp) && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`Do you want to push this ${vendorLabel}'s costing to SAP for PFS2`} nfrPopup={true} />
         }
       </Drawer>
       {(openPushButton || showFinalLevelButtons) && (

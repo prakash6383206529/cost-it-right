@@ -31,6 +31,7 @@ import { Steps } from './TourMessages';
 import { withTranslation } from 'react-i18next';
 import Button from '../../layout/Button';
 import { subDays } from 'date-fns';
+import { LabelsClass } from '../../../helper/core';
 
 const selector = formValueSelector('AddFuel');
 
@@ -764,6 +765,8 @@ class AddFuel extends Component {
   render() {
     const { handleSubmit, initialConfiguration, t } = this.props;
     const { isOpenFuelDrawer, isEditFlag, isViewMode, setDisable, isGridEdit, costingTypeId } = this.state;
+    const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
+
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
       const resultInput = inputValue.slice(0, searchCount)
@@ -850,7 +853,7 @@ class AddFuel extends Component {
                                 }
                                 disabled={isEditFlag ? true : false}
                               />{" "}
-                              <span>Vendor Based</span>
+                              <span>{VendorLabel} Based</span>
                             </Label>}
                             {(reactLocalStorage.getObject('CostingTypePermission').cbc) && <Label id="AddFuel_customerbased" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
                               <input
@@ -920,7 +923,7 @@ class AddFuel extends Component {
                           )}
 
                           {costingTypeId === VBCTypeId && <Col md="3" className='mb-4'>
-                            <label>{"Vendor (Code)"}<span className="asterisk-required">*</span></label>
+                            <label>{`${VendorLabel} (Code)`}<span className="asterisk-required">*</span></label>
                             <div className="d-flex justify-space-between align-items-center async-select">
                               <div className="fullinput-icon p-relative">
                                 {this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
@@ -1309,5 +1312,5 @@ export default connect(mapStateToProps, {
   onSubmitFail: errors => {
     focusOnError(errors);
   },
-})(withTranslation(['FuelPowerMaster'])(AddFuel)),
+})(withTranslation(['FuelPowerMaster', 'MasterLabels'])(AddFuel)),
 )

@@ -4,7 +4,7 @@ import { Row, Col, } from 'reactstrap';
 import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
 import { getManageBOPSOBDataList } from '../actions/BoughtOutParts';
 import NoContentFound from '../../common/NoContentFound';
-import { BOP_SOBLISTING_DOWNLOAD_EXCEl } from '../../../config/masterData';
+import { BOP_SOB_DOWNLOAD_EXCEL, BOP_SOBLISTING_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import ManageSOBDrawer from './ManageSOBDrawer';
 import LoaderCustom from '../../common/LoaderCustom';
 import { searchNocontentFilter, setLoremIpsum, showBopLabel } from '../../../helper';
@@ -24,7 +24,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from '../../common/Tour/TourMessages';
 import { useTranslation } from 'react-i18next';
-import { useLabels } from '../../../helper/core';
+import { useLabels, useWithLocalization } from '../../../helper/core';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -171,12 +171,12 @@ const SOBListing = (props) => {
     const selectedRows = state.gridApi?.getSelectedRows()
     setState((prevState) => ({ ...prevState, selectedRowData: selectedRows, dataCount: selectedRows.length }))
   }
-
+  const BOP_SOBLISTING_DOWNLOAD_EXCEl_LOCALIZATION = useWithLocalization(BOP_SOB_DOWNLOAD_EXCEL, "MasterLabels")
   const onBtExport = () => {
     let tempArr = []
     tempArr = state.gridApi && state.gridApi?.getSelectedRows()
-    tempArr = (tempArr && tempArr.length > 0) ? tempArr : (bopSobList ? bopSobList : [])
-    return returnExcelColumn(BOP_SOBLISTING_DOWNLOAD_EXCEl, tempArr)
+        tempArr = (tempArr && tempArr.length > 0) ? tempArr : (bopSobList ? bopSobList : [])
+    return returnExcelColumn(BOP_SOBLISTING_DOWNLOAD_EXCEl_LOCALIZATION, tempArr)
   };
 
   var filterParams = {

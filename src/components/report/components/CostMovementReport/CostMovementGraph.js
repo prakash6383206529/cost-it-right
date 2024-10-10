@@ -14,6 +14,7 @@ import _ from 'lodash';
 import { colorArray } from '../../../dashboard/ChartsDashboard';
 import NoContentFound from '../../../common/NoContentFound';
 import LoaderCustom from '../../../common/LoaderCustom';
+import { useLabels } from '../../../../helper/core';
 
 function CostMovementGraph(props) {
     const { ModeId, importEntry } = props
@@ -33,6 +34,7 @@ function CostMovementGraph(props) {
     let tableData = costReportFormData && costReportFormData.gridData ? costReportFormData.gridData : [];
     let startDate = costReportFormData && costReportFormData.fromDate
     let endDate = costReportFormData && costReportFormData.toDate
+    const { vendorLabel } = useLabels();
 
     const getGraphColour = (index) => {
         let bgColor = ''
@@ -502,7 +504,7 @@ function CostMovementGraph(props) {
                                                             }}></AgGridColumn>}   //DONT DELETE (WILL BE USED FOR ROW MERGING LATER) */}
                                                 {<AgGridColumn field="PartNumber" headerName="Part Number" cellRenderer={hyphenFormatter} floatingFilter={true}></AgGridColumn>}
                                                 {<AgGridColumn field="PlantNameWithCode" headerName="Plant (Code)" cellRenderer={hyphenFormatter} floatingFilter={true}></AgGridColumn>}
-                                                {<AgGridColumn field="VendorNameWithCode" headerName="Vendor (Code)" cellRenderer={hyphenFormatter} floatingFilter={true}></AgGridColumn>}
+                                                {<AgGridColumn field="VendorNameWithCode" headerName={vendorLabel + " (Code)"} cellRenderer={hyphenFormatter} floatingFilter={true}></AgGridColumn>}
                                                 {(ModeId === 1 || ModeId === 2) && importEntry && <AgGridColumn field="NetLandedCostCurrency" headerName="Landed Total (Currency)" cellRenderer={hyphenFormatter} floatingFilter={true}></AgGridColumn>}
                                                 {initialConfiguration?.IsBasicRateAndCostingConditionVisible && <AgGridColumn field="BasicRate" headerName="Basic Price" cellRenderer={POPriceFormatter} floatingFilter={true}></AgGridColumn>}
                                                 {<AgGridColumn field="NetPOPrice" headerName="Net Cost" cellRenderer={POPriceFormatter} floatingFilter={true}></AgGridColumn>}

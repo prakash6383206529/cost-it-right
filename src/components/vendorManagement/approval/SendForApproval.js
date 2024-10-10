@@ -19,11 +19,12 @@ import { getAllDivisionListAssociatedWithDepartment, getUsersOnboardingLevelAPI 
 import LoaderCustom from '../../common/LoaderCustom';
 import { REMARKMAXLENGTH } from '../../../config/masterData';
 import { checkFinalUser } from '../../costing/actions/Costing';
+import { useLabels } from '../../../helper/core';
 
 
 const SendForApproval = (props) => {
   const [isLoader, setIsLoader] = useState(false)
-
+  const vendorLabel = useLabels()
   const dispatch = useDispatch()
   const { register, control, setValue, handleSubmit, reset, getValues, formState: { errors } } = useForm({
     mode: 'onChange',
@@ -712,7 +713,7 @@ const SendForApproval = (props) => {
             {isClassification && (<div className="">
               <Row>
                 <Col md="12">
-                  <div className="left-border">{`Supplier Classification`}</div>
+                  <div className="left-border">{`${vendorLabel} Classification`}</div>
                 </Col>
               </Row>
               <form>

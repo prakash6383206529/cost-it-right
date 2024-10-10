@@ -38,7 +38,7 @@ import LanguageDropdown from "../common/Tour/LanguageDropdown";
 import TourWrapper from "../common/Tour/TourWrapper";
 import { Steps } from "./TourMessages";
 import { withTranslation } from "react-i18next";
-import { CirLogo, CompanyLogo } from "../../helper/core";
+import { CirLogo, CompanyLogo, LabelsClass } from "../../helper/core";
 class SideBar extends Component {
   constructor(props) {
     super(props)
@@ -872,8 +872,8 @@ class SideBar extends Component {
               <Link
                 key={i}
                 id={this.getSpecificIdForElement(el)}
-                className={`nav-link ${reactLocalStorage.get("ModuleId") === 'NFR' ? 'IsActive' : ''} NFR_NavBar`}
-                onClick={() => this.setLeftMenu('NFR')}
+                className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''} NFR_NavBar`}
+                onClick={() => this.setLeftMenu(el.ModuleId)}
                 to={{
                   pathname: el.LandingPageURL,
                   state: {
@@ -885,10 +885,10 @@ class SideBar extends Component {
               >
                 <img
                   className=""
-                  src={reactLocalStorage.get("ModuleId") === 'NFR' ? activeRFQ : RFQ}
+                  src={reactLocalStorage.get("ModuleId") === el.ModuleId ? activeRFQ : RFQ}
                   alt={module + " icon"}
                 />
-                <span className="rfq">{'NFR'}</span>
+                <span className="rfq">{el.ModuleName}</span>
               </Link>
             </li>
           );
@@ -905,8 +905,9 @@ class SideBar extends Component {
 
 
   renderVendorManagement = (module) => {
+    const { menusData, topAndLeftMenuData ,t} = this.props
+    const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
 
-    const { menusData, topAndLeftMenuData } = this.props
     return (
       topAndLeftMenuData &&
       topAndLeftMenuData.map((el, i) => {
@@ -933,7 +934,7 @@ class SideBar extends Component {
                   src={reactLocalStorage.get("ModuleId") === el.ModuleId ? activeAudit : auditImg}
                   alt={module + " icon"}
                 />
-                <span className="vendor_management">{el.ModuleName}</span>
+                <span className="vendor_management">{VendorLabel} Management</span>
                 <div className={`dropdown-menu ${this.state.showAllCategory ? "" : "sub-menu"}`}>
                   <ul>
                     {
@@ -1179,5 +1180,5 @@ export default connect(mapStateToProps, {
   getMenu,
   getTopAndLeftMenuData,
 
-})(withTranslation(['NavBar'])(SideBar))
+})(withTranslation(['NavBar', 'MasterLabels'])(SideBar))
 
