@@ -405,7 +405,7 @@ function CostingSimulation(props) {
                 tempArrayCosting = Data.SimulationBoughtOutPart
             }
             tempArrayCosting && tempArrayCosting.map(item => {
-                item.Variance = (item.OldPOPrice - item.NewPOPrice).toFixed(getConfigurationKey().NoOfDecimalForPrice)
+                item.Variance = (item?.CostingHeadId !== CBCTypeId ? item.OldPOPrice - item.NewPOPrice : item.NewPOPrice - item.OldPOPrice).toFixed(getConfigurationKey().NoOfDecimalForPrice)
                 //  ********** ADDED NEW FIELDS FOR ADDING THE OLD AND NEW RM COST / PC BUT NOT GETTING THE AS SUM IN DOWNLOAD **********
                 item.RMCVariance = (checkForNull(item.OldRMPrice).toFixed(TOFIXEDVALUE) -
                     checkForNull(item.NewRMPrice).toFixed(TOFIXEDVALUE))
@@ -782,10 +782,11 @@ function CostingSimulation(props) {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         return cell ? cell : '-'
     }
-    const returnVarianceClass = (value1, value2) => {
-        if (amendmentDetails?.SimulationHeadId === CBCTypeId ? value1 < value2 : value1 > value2) {
+    const returnVarianceClass = (rowData, value1, value2) => {
+
+        if (rowData?.CostingHeadId === CBCTypeId ? value1 < value2 : value1 > value2) {
             return 'red-value form-control'
-        } else if (amendmentDetails?.SimulationHeadId === CBCTypeId ? value1 > value2 : value1 < value2) {
+        } else if (rowData?.CostingHeadId === CBCTypeId ? value1 > value2 : value1 < value2) {
             return 'green-value form-control'
         } else {
             return 'form-class'
@@ -794,100 +795,100 @@ function CostingSimulation(props) {
     const oldPOFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const classGreen = returnVarianceClass(row.NewPOPrice, row.OldPOPrice)
+        const classGreen = returnVarianceClass(row, row.NewPOPrice, row.OldPOPrice)
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
 
     const newPOFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const classGreen = returnVarianceClass(row.NewPOPrice, row.OldPOPrice)
+        const classGreen = returnVarianceClass(row, row.NewPOPrice, row.OldPOPrice)
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
 
     const oldRMFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const classGreen = returnVarianceClass(row.NewRMPrice, row.OldRMPrice)
+        const classGreen = returnVarianceClass(row, row.NewRMPrice, row.OldRMPrice)
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
 
     const newRMFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const classGreen = returnVarianceClass(row.NewRMPrice, row.OldRMPrice)
+        const classGreen = returnVarianceClass(row, row.NewRMPrice, row.OldRMPrice)
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
     const overheadFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const classGreen = returnVarianceClass(row.NewOverheadCost, row.OldOverheadCost)
+        const classGreen = returnVarianceClass(row, row.NewOverheadCost, row.OldOverheadCost)
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
     const profitFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const classGreen = returnVarianceClass(row.NewProfitCost, row.OldProfitCost)
+        const classGreen = returnVarianceClass(row, row.NewProfitCost, row.OldProfitCost)
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
     const rejectionFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const classGreen = returnVarianceClass(row.NewRejectionCost, row.OldRejectionCost)
+        const classGreen = returnVarianceClass(row, row.NewRejectionCost, row.OldRejectionCost)
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
     const costICCFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const classGreen = returnVarianceClass(row.NewICCCost, row.OldICCCost)
+        const classGreen = returnVarianceClass(row, row.NewICCCost, row.OldICCCost)
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
     const paymentTermFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const classGreen = returnVarianceClass(row.NewPaymentTermsCost, row.OldPaymentTermsCost)
+        const classGreen = returnVarianceClass(row, row.NewPaymentTermsCost, row.OldPaymentTermsCost)
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
     const otherCostFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const classGreen = returnVarianceClass(row.NewOtherCost, row.OldOtherCost)
+        const classGreen = returnVarianceClass(row, row.NewOtherCost, row.OldOtherCost)
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
     const discountCostFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const classGreen = returnVarianceClass(row.NewDiscountCost, row.OldDiscountCost)
+        const classGreen = returnVarianceClass(row, row.NewDiscountCost, row.OldDiscountCost)
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
     const toolCostFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const classGreen = returnVarianceClass(row.NewNetToolCost, row.OldNetToolCost)
+        const classGreen = returnVarianceClass(row, row.NewNetToolCost, row.OldNetToolCost)
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
     const freightCostFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const classGreen = returnVarianceClass(row.NewNetFreightCost, row.OldNetFreightCost)
+        const classGreen = returnVarianceClass(row, row.NewNetFreightCost, row.OldNetFreightCost)
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
     const packagingCostFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const classGreen = returnVarianceClass(row.NewNetPackagingCost, row.OldNetPackagingCost)
+        const classGreen = returnVarianceClass(row, row.NewNetPackagingCost, row.OldNetPackagingCost)
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
     const freightPackagingCostFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const classGreen = returnVarianceClass(row.NewNetFreightPackagingCost, row.OldNetFreightPackagingCost)
+        const classGreen = returnVarianceClass(row, row.NewNetFreightPackagingCost, row.OldNetFreightPackagingCost)
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
     const netOverheadAndProfitFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const classGreen = returnVarianceClass(row.NewNetOverheadAndProfitCost, row.OldNetOverheadAndProfitCost)
+        const classGreen = returnVarianceClass(row, row.NewNetOverheadAndProfitCost, row.OldNetOverheadAndProfitCost)
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
 
@@ -902,7 +903,7 @@ function CostingSimulation(props) {
 
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const classGreen = returnVarianceClass(row.NewNetRawMaterialsCost, row.OldNetRawMaterialsCost)
+        const classGreen = returnVarianceClass(row, row.NewNetRawMaterialsCost, row.OldNetRawMaterialsCost)
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
     // // ********** THIS IS RE SPECIFIC **********                    //RE
@@ -920,7 +921,7 @@ function CostingSimulation(props) {
         // return <span className={classGreen}>{checkForDecimalAndNull(sumnew, getConfigurationKey().NoOfDecimalForPrice)}</span>
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const classGreen = returnVarianceClass(row.NewNetRawMaterialsCost, row.OldNetRawMaterialsCost)
+        const classGreen = returnVarianceClass(row, row.NewNetRawMaterialsCost, row.OldNetRawMaterialsCost)
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
 
         // // ********** THIS IS RE SPECIFIC **********                    //RE
@@ -932,14 +933,14 @@ function CostingSimulation(props) {
     const oldOPERFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const classGreen = returnVarianceClass(row.NewOperationCost, row.OldOperationCost)
+        const classGreen = returnVarianceClass(row, row.NewOperationCost, row.OldOperationCost)
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
 
     const newOPERFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const classGreen = returnVarianceClass(row.NewOperationCost, row.OldOperationCost)
+        const classGreen = returnVarianceClass(row, row.NewOperationCost, row.OldOperationCost)
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
 
@@ -1057,7 +1058,9 @@ function CostingSimulation(props) {
 
     const decimalFormatter = (props) => {
         const cell = props?.value;
-        return cell != null ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : ''
+        let variance = checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)
+        variance = variance > 0 ? `+${variance}` : variance;
+        return variance;
     }
 
     const varianceSTFormatter = (props) => {

@@ -20,7 +20,6 @@ function AddRejectionRecovery(props) {
     const defaultValues = {
 
     }
-    const CostingViewMode = useContext(ViewCostingContext);
 
     const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors } } = useForm({
         mode: 'onChange',
@@ -39,6 +38,7 @@ function AddRejectionRecovery(props) {
         netRejectionRecovery: rejectionRecovery?.RejectionRecoveryNetCost,
     }
     )
+    const CostingViewMode = useContext(ViewCostingContext);
     const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
     const dispatch = useDispatch()
 
@@ -317,7 +317,7 @@ function AddRejectionRecovery(props) {
                                                 type={'button'}
                                                 className="reset mr15 cancel-btn"
                                                 onClick={cancel}
-                                                disabled={CostingViewMode} >
+                                            >
                                                 <div className={"cancel-icon"}></div> {'Cancel'}
                                             </button>
 
