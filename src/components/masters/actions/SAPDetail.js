@@ -11,6 +11,7 @@ import { apiErrors } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 
+
 // const config() = config
 
 /**
@@ -144,6 +145,30 @@ export function getSAPDetailList(callback) {
 
             apiErrors(error);
 
+        });
+    };
+}
+
+export function getSapPushDetailsHeader(callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getSapPushDetailsHeader}`, config());
+        request.then((response) => {
+            if (response.data.Result || response.status === 204) {
+
+                callback(response)
+            }
+        })
+    }
+}
+export function sapPushBulkUpload(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.sapPushBulkUpload, data, config());
+        request.then((response) => {
+            callback(response);
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+            callback(error);
         });
     };
 }

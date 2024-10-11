@@ -35,7 +35,8 @@ import {
     ASSEMBLYORCOMPONENTSRFQ,
     RAWMATERIALSRFQ,
     BOUGHTOUTPARTSRFQ,
-    FILE_URL
+    FILE_URL,
+    SAP_PUSH
 } from '../../config/constants';
 //MINDA
 // import { ACTUALVOLUMEBULKUPLOAD, ADDRFQ, BOPDOMESTICBULKUPLOAD, BOPIMPORTBULKUPLOAD, BOP_MASTER_ID, BUDGETBULKUPLOAD, BUDGETEDVOLUMEBULKUPLOAD, CBCADDMORE, CBCADDMOREOPERATION, CBCTypeId, ENTRY_TYPE_IMPORT, FUELBULKUPLOAD, INSERTDOMESTICBULKUPLOAD, INSERTIMPORTBULKUPLOAD, INTERESTRATEBULKUPLOAD, LABOURBULKUPLOAD, MACHINEBULKUPLOAD, MACHINE_MASTER_ID, OPERAIONBULKUPLOAD, OPERATIONS_ID, PARTCOMPONENTBULKUPLOAD, PRODUCTCOMPONENTBULKUPLOAD, VBCADDMORE, RMDOMESTICBULKUPLOAD, RMIMPORTBULKUPLOAD, RMSPECIFICATION, RM_MASTER_ID, VBCADDMOREOPERATION, VBCTypeId, VENDORBULKUPLOAD, ZBCADDMORE, ZBCADDMOREOPERATION, ZBCTypeId } from '../../config/constants';
@@ -52,7 +53,8 @@ import {
     CommodityStandard,
     AddRawMaterialHeaderData,
     AddBoughtOutPartsHeaderData,
-    AddAssemblyOrComponentHeaderData
+    AddAssemblyOrComponentHeaderData,
+    SAP_PUSH_HEADER_DATA
 } from '../../config/masterData';
 import { CheckApprovalApplicableMaster, checkForSameFileUpload, updateBOPValues, userTechnologyDetailByMasterId } from '../../helper';
 import LoaderCustom from '../common/LoaderCustom';
@@ -71,6 +73,7 @@ import Switch from 'react-switch'
 import { searchableSelect } from '../layout/FormInputs';
 import { LabelsClass, localizeHeadersWithLabels } from '../../helper/core';
 import { withTranslation } from 'react-i18next';
+import { sapPushBulkUpload } from '../masters/actions/SAPDetail';
 const bopMasterName = showBopLabel();
 
 class BulkUpload extends Component {
@@ -661,6 +664,10 @@ class BulkUpload extends Component {
                             masterDataArray = localizedCommodityStandard
                             checkForFileHead = checkForSameFileUpload(localizedCommodityStandard, fileHeads)
                             break;
+                        case String(SAP_PUSH):
+                            const localizedSAPPush = this.localizeHeaders(SAP_PUSH_HEADER_DATA);
+                            checkForFileHead = checkForSameFileUpload(localizedSAPPush, fileHeads)
+                            break;
                         default:
                             break;
                     }
@@ -1050,7 +1057,11 @@ class BulkUpload extends Component {
                     this.setState({ setDisable: false })
                     this.responseHandler(res)
                 });
-
+            } else if (fileName === SAP_PUSH) {
+                this.props.sapPushBulkUpload(uploadData, (res) => {
+                    this.setState({ setDisable: false })
+                    this.responseHandler(res)
+                });
             } else if (fileName === 'Actual Volume' || fileName === 'Budgeted Volume') {
                 this.props.volumeBulkUpload(uploadData, (res) => {
                     this.setState({ setDisable: false })
@@ -1597,7 +1608,8 @@ export default connect(mapStateToProps, {
     bulkUploadStandardizedCommodity,
     bulkUploadCommodityStandard,
     getAllMasterApprovalDepartment,
-    getAllDivisionListAssociatedWithDepartment
+    getAllDivisionListAssociatedWithDepartment,
+    sapPushBulkUpload
 })(reduxForm({
     form: 'BulkUpload',
     enableReinitialize: true,

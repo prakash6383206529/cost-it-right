@@ -25,6 +25,7 @@ import Toaster from '../common/Toaster';
 import DayTime from '../common/DayTimeWrapper';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import InitiateUnblocking from '../vendorManagement/InitiateUnblocking';
+import { ErrorMessage } from '../simulation/SimulationUtils';
 
 function SummaryDrawer(props) {
     const { approvalData } = props
@@ -207,7 +208,8 @@ function SummaryDrawer(props) {
             "BaseCositngId": null,
             "LoggedInUserId": loggedInUserId(),
             "SimulationId": null,
-            "BoughtOutPartId": bopDataResponse[0].BoughtOutPartId,
+            "BoughtOutPartId": (bopDataResponse && bopDataResponse[0]?.BoughtOutPartId) ?? null,
+            "RawMaterialId": (rmDataResponse && rmDataResponse[0]?.RawMaterialId) ?? null
         }
         dispatch(approvalPushedOnSap(obj, res => {
             if (res?.data?.DataList && res?.data?.DataList[0]?.IsPushed === false) {
@@ -240,6 +242,7 @@ function SummaryDrawer(props) {
                         </Row>
                         {loader ? <LoaderCustom /> :
                             <Row className="mx-0 mb-3">
+                                {getConfigurationKey()?.IsSAPConfigured && <ErrorMessage module={isRMApproval ? 'RM' : isBOPApproval ? 'BOP' : ''} id={approvalData?.id} />}
                                 <Col>
                                     <ApprovalWorkFlow approvalLevelStep={approvalLevelStep} approvalNo={approvalDetails.Token} approverData={dataForFetchingAllApprover} />
 
@@ -275,7 +278,7 @@ function SummaryDrawer(props) {
                                 </Col>
                             </Row>
                         }
-                        {(checkForNull(props?.masterId) === BOP_MASTER_ID) && costingTypeId === ZBCTypeId && showPushButton &&
+                        {(checkForNull(props?.masterId) === BOP_MASTER_ID || checkForNull(props?.masterId) === RM_MASTER_ID) && costingTypeId === ZBCTypeId && showPushButton &&
                             <div className='d-flex justify-content-end'>
                                 <button type="submit" className="submit-button mr5 save-btn" onClick={() => callPushAPI()}>
                                     <div className={"save-icon"}></div>
