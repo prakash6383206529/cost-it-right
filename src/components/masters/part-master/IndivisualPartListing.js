@@ -32,7 +32,7 @@ import { Steps } from "../../common/Tour/TourMessages";
 import { useTranslation } from "react-i18next";
 import { showTitleForActiveToggle } from '../../../../src/helper/util';
 import Switch from "react-switch";
-import { useLabels } from "../../../helper/core";
+import { useLabels, useWithLocalization } from "../../../helper/core";
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
@@ -553,14 +553,14 @@ const IndivisualPartListing = (props) => {
     }
   };
 
-
+const INDIVIDUALPART_DOWNLOAD_EXCEL_LOCALIZATION = useWithLocalization(INDIVIDUALPART_DOWNLOAD_EXCEl, "MasterLabels")
   const onBtExport = () => {
 
     let tempArr = [];
     //tempArr = gridApi && gridApi?.getSelectedRows()
     tempArr = selectedRowForPagination;
     tempArr = (tempArr && tempArr.length > 0) ? tempArr : allNewPartsListing ? allNewPartsListing : []
-    const filteredLabels = INDIVIDUALPART_DOWNLOAD_EXCEl.filter(column => {
+    const filteredLabels = INDIVIDUALPART_DOWNLOAD_EXCEL_LOCALIZATION.filter(column => {
       if (column.value === "UnitOfMeasurement") {
         return initialConfiguration?.IsShowUnitOfMeasurementInPartMaster
       }

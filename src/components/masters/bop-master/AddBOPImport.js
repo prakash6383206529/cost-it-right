@@ -1373,7 +1373,12 @@ class AddBOPImport extends Component {
         checkForNull(netLandedCostSelectedCurrency) === checkForNull(DataToChange?.NetLandedCost) && checkForNull(FinalConditionCostSelectedCurrency) === checkForNull(DataToChange?.NetConditionCost) && DropdownChanged &&
         ((DataToChange.TechnologyId ? String(DataToChange.TechnologyId) : '') === (Technology?.value ? String(Technology?.value) : ''))) {
         this.setState({ isEditBuffer: true })
-        Toaster.warning(`Please change data to send ${showBopLabel()} for approval`)
+        if (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar && !isTechnologyVisible) {
+          Toaster.warning(`Please change data to send ${showBopLabel()} for approval`)
+        }
+        else {
+          Toaster.warning(`Please change data to update ${showBopLabel()}`)
+        }
         return false
       }
       //  ELSE: CHANGE

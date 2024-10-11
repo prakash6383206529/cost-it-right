@@ -5,7 +5,9 @@ import {
   setCostingDataList, setPOPrice, setRMCCBOPCostData, setSurfaceCostData,
   setOverheadProfitCostData, setDiscountCost, showLoader, hideLoader, saveAssemblyPartRowCostingCalculation, savePartNumber, setPartNumberArrayAPICALL, saveBOMLevel, saveAssemblyNumber, setRMCCErrors, setOverheadProfitErrors, setToolsErrors, setDiscountErrors, setComponentDiscountOtherItemData, isDiscountDataChange, setIsBreakupBoughtOutPartCostingFromAPI, setOtherCostData,
   setOtherDiscountData,
-  setCostingtype
+  setCostingtype,
+  setRejectionRecoveryData,
+  setOverheadProfitData
 } from '../actions/Costing';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, showBopLabel } from '../../../helper';
 import DayTime from '../../common/DayTimeWrapper'
@@ -41,6 +43,11 @@ function CostingDetailStepTwo(props) {
 
       dispatch(hideLoader())
     }, 4000)
+
+    return () => {
+      dispatch(setOverheadProfitData([], () => { }))
+      dispatch(setRejectionRecoveryData({}))
+    }
 
   }, []);
 
