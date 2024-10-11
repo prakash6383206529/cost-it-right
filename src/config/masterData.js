@@ -8457,7 +8457,7 @@ export const AddAssemblyOrComponentTempData = [
 ];
 export const getSAPPushHeaderData = () => {
     // Retrieve the stored data from reactLocalStorage
-    const storedSAPDetailKeys = reactLocalStorage.getObject('SAPDetailKeys');
+    const storedSAPDetailKeys = Object.keys(reactLocalStorage.getObject('SAPDetailKeys')).length === 0 ? [] : reactLocalStorage.getObject('SAPDetailKeys');
     // If there's no stored data, return the default array
     if (!storedSAPDetailKeys || storedSAPDetailKeys.length === 0) {
         return [

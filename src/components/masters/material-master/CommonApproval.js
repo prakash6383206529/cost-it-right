@@ -72,7 +72,7 @@ function CommonApproval(props) {
     const { globalTakes } = useSelector((state) => state.pagination)
     const statusColumnData = useSelector((state) => state.comman.statusColumnData);
     const netCostHeader = `Net Cost (${reactLocalStorage.getObject("baseCurrency")})`
-    const { technologyLabel,vendorLabel } = useLabels();
+    const { technologyLabel, vendorLabel } = useLabels();
     useEffect(() => {
         dispatch(agGridStatus("", ""))
         dispatch(setSelectedRowForPagination([]))
@@ -426,8 +426,8 @@ function CommonApproval(props) {
         return cell != null ? cell : '';
     }
 
-    const viewDetails = (approvalNumber = '', approvalProcessId = '', costingTypeId = '') => {
-        setApprovalData({ approvalProcessId: approvalProcessId, approvalNumber: approvalNumber, costingTypeId: costingTypeId })
+    const viewDetails = (approvalNumber = '', approvalProcessId = '', costingTypeId = '', id = '') => {
+        setApprovalData({ approvalProcessId: approvalProcessId, approvalNumber: approvalNumber, costingTypeId: costingTypeId, id: id })
         setShowApprovalSummary(true)
 
     }
@@ -438,33 +438,55 @@ function CommonApproval(props) {
     */
     const linkableFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        let id = ''
+        switch (master) {
+            case RM_MASTER_ID:
+                id = row?.RawMaterialId
+                break;
+            case BOP_MASTER_ID:
+                id = row?.BoughtOutPartId
+                break;
+            case OPERATIONS_ID:
+                id = row?.OperationId
+                break;
+            case MACHINE_MASTER_ID:
+                id = row?.MachineId
+                break;
+            default:
+                break;
+        }
         if (selectedCostingListSimulation?.length > 0) {
             selectedCostingListSimulation.map((item) => {
 
                 switch (master) {
                     case 1:
                         if (item?.RawMaterialId === props?.node?.data?.RawMaterialId) {
+                            id = item?.RawMaterialId
                             props.node.setSelected(true)
                         }
                         break;
                     case 2:
                         if (item?.BoughtOutPartId === props?.node?.data?.BoughtOutPartId) {
+                            id = item?.BoughtOutPartId
                             props.node.setSelected(true)
                         }
                         break;
                     case 3:
                         if (item?.OperationId === props?.node?.data?.OperationId) {
+                            id = item?.OperationId
                             props.node.setSelected(true)
                         }
                         break;
                     case 4:
                         if (item?.MachineId === props?.node?.data?.MachineId) {
+                            id = item?.MachineId
                             props.node.setSelected(true)
                         }
                         break;
                     default:
                         // code block
                         if (item?.ApprovalProcessId === props?.node?.data?.ApprovalProcessId) {
+                            id = item?.ApprovalProcessId
                             props.node.setSelected(true)
                         }
                 }
@@ -476,7 +498,7 @@ function CommonApproval(props) {
             <Fragment>
                 {
                     row.Status !== DRAFT ?
-                        <div onClick={() => viewDetails(row.ApprovalNumber, row.ApprovalProcessId, row.CostingTypeId)} className={row.Status !== DRAFT ? 'link' : ''}>
+                        <div onClick={() => viewDetails(row.ApprovalNumber, row.ApprovalProcessId, row.CostingTypeId, id)} className={row.Status !== DRAFT ? 'link' : ''}>
                             {row.ApprovalNumber === 0 ? row.ApprovalNumber : row.ApprovalNumber}
                         </div> :
                         row.ApprovalNumber === 0 ? row.ApprovalNumber : row.ApprovalNumber

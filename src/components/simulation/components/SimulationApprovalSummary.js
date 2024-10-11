@@ -55,7 +55,7 @@ const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 function SimulationApprovalSummary(props) {
-    const {vendorLabel} =useLabels()
+    const { vendorLabel } = useLabels()
     const { isbulkUpload } = props;
     const { approvalNumber, approvalId, SimulationTechnologyId, simulationId } = props?.location?.state
     const [showImpactedData, setshowImpactedData] = useState(false)
@@ -1170,7 +1170,7 @@ function SimulationApprovalSummary(props) {
                     <CalculatorWrapper />
                     {/* {!loader && <LoaderCustom />} */}
                     <div className={`container-fluid  smh-approval-summary-page ${!loader === true ? '' : ''}`} id="go-to-top">
-                        {getConfigurationKey()?.IsSAPConfigured && costingList[0]?.CostingId && <ErrorMessage isCosting={false} approvalNumber={approvalNumber} />}
+                        {getConfigurationKey()?.IsSAPConfigured && costingList[0]?.CostingId && <ErrorMessage module="Simulation" id={simulationDetail?.SimulationId} approvalNumber={approvalNumber} />}
                         <h2 className="heading-main">Approval Summary</h2>
                         <ScrollToTop pointProp={"go-to-top"} />
                         <Row>
