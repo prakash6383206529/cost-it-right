@@ -156,6 +156,12 @@
             margin-bottom: 1px !important;
         }
     }
+
+    &:disabled {
+        .undo-icon {
+            @include icons("../../images/undo-white.png", 20px, 17px);
+        }
+    }
 }
 
 .CalculatorIcon {
