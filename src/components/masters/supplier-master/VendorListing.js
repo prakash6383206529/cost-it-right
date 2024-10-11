@@ -34,7 +34,7 @@ import { updateGlobalTake, updatePageNumber, updatePageSize, updateCurrentRowInd
 import TourWrapper from "../../common/Tour/TourWrapper";
 import { Steps } from "../../common/Tour/TourMessages";
 import { useTranslation } from "react-i18next";
-import { useLabels } from "../../../helper/core";
+import { useLabels, useWithLocalization } from "../../../helper/core";
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -637,6 +637,7 @@ const VendorListing = (props) => {
     setState((prevState) => ({ ...prevState, selectedRowData: selectedRows }))
 
   }
+  const VENDOR_DOWNLOAD_EXCEl_LOCALIZATION = useWithLocalization(VENDOR_DOWNLOAD_EXCEl, "MasterLabels")
   const onBtExport = () => {
     let tempArr = [];
     const bopMasterName = showBopLabel();
@@ -644,7 +645,7 @@ const VendorListing = (props) => {
     tempArr = selectedRowForPagination
 
     tempArr = tempArr && tempArr.length > 0 ? tempArr : allSupplierDataList ? allSupplierDataList : [];
-    return returnExcelColumn(VENDOR_DOWNLOAD_EXCEl, tempArr);
+    return returnExcelColumn(VENDOR_DOWNLOAD_EXCEl_LOCALIZATION, tempArr);
 
   };
   const returnExcelColumn = (data = [], TempData) => {

@@ -2,7 +2,7 @@ import React from "react";
 import ReactExport from 'react-export-excel';
 import { BOMUpload, BOMUploadTempData } from '../../config/masterData';
 import { getConfigurationKey } from "../../helper";
-import { withLocalization } from "../../helper/core";
+import { localizeHeadersWithLabels } from "../../helper/core";
 import { withTranslation } from "react-i18next";
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -20,8 +20,16 @@ export const checkSAPCodeinExcel = (excelData) => {
 
 class DownloadUploadBOMxls extends React.Component {
 
+  constructor(props) {
+    super(props);
+    this.localizeHeaders = this.localizeHeaders.bind(this);
+  }
 
 
+ 
+  localizeHeaders(headers) {
+    return localizeHeadersWithLabels(headers, this.props.t);
+  }
 
   /**
   * @method renderSwitch
@@ -31,7 +39,8 @@ class DownloadUploadBOMxls extends React.Component {
 
     switch (master) {
       case 'BOM':
-        return this.returnExcelColumn(checkSAPCodeinExcel(withLocalization(BOMUpload, this.props.t, "MasterLabels")), checkSAPCodeinExcel(BOMUploadTempData));
+        const localizedBOMUpload = this.localizeHeaders(checkSAPCodeinExcel(BOMUpload));
+        return this.returnExcelColumn(localizedBOMUpload, checkSAPCodeinExcel(BOMUploadTempData));
       default:
         return 'foo';
     }

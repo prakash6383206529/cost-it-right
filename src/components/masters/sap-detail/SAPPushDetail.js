@@ -14,10 +14,11 @@ import { getPartSelectListWtihRevNo } from '../actions/Volume';
 import { getMaterialGroupByPart, getPurcahseOrganisationByPlant, getSAPDetailById, saveSAPDetail, updateSAPDetail } from '../actions/SAPDetail';
 import Toaster from '../../common/Toaster';
 import Button from '../../layout/Button';
+import { useLabels } from '../../../helper/core';
 
 function SAPPushDetail(props) {
     const { isEditFlag, id } = props
-
+    const vendorLabel = useLabels()
     const [data, setData] = useState({})
     //dropdown loader 
     const [inputLoader, setInputLoader] = useState(false)
@@ -280,7 +281,7 @@ function SAPPushDetail(props) {
                                 </Col>
                                 <Col md="12">
                                     <AsyncSearchableSelectHookForm
-                                        label={"Vendor (Code)"}
+                                        label={`${vendorLabel} (Code)`}
                                         name={"Vendor"}
                                         placeholder={"Select"}
                                         Controller={Controller}

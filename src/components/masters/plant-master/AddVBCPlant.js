@@ -11,6 +11,8 @@ import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import Drawer from '@material-ui/core/Drawer';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import { LabelsClass } from '../../../helper/core';
+import { withTranslation } from 'react-i18next';
 
 class AddVBCPlant extends Component {
   constructor(props) {
@@ -294,8 +296,10 @@ class AddVBCPlant extends Component {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, isEditFlag, isViewMode } = this.props;
+    const { handleSubmit, isEditFlag, isViewMode,t } = this.props;
     const { country } = this.state;
+    const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
+
     return (
       <>
         <Drawer
@@ -329,7 +333,7 @@ class AddVBCPlant extends Component {
                     <Field
                       name="VendorId"
                       type="text"
-                      label="Vendor (Code)"
+                      label={`${VendorLabel} (Code)`}
                       component={searchableSelect}
                       placeholder={"Select Vendor"}
                       options={this.selectType("vendors")}
@@ -605,4 +609,4 @@ export default connect(mapStateToProps, {
   form: 'AddVBCPlant',
   enableReinitialize: true,
   touchOnChange: true
-})(AddVBCPlant));
+})(withTranslation(['MasterLabels'])(AddVBCPlant)));

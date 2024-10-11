@@ -1113,6 +1113,7 @@ class AddBOPDomestic extends Component {
       isTechnologyVisible, disableSendForApproval, isOpenConditionDrawer, conditionTableData, FinalBasicPriceBaseCurrency, IsFinancialDataChanged, toolTipTextNetCost, toolTipTextBasicPrice, IsSAPCodeUpdated, IsSapCodeEditView, IsSAPCodeHandle
     } = this.state;
     const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
+    const BOPVendorLabel = LabelsClass(t, 'MasterLabels').BOPVendorLabel;
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
       if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
@@ -1460,7 +1461,7 @@ class AddBOPDomestic extends Component {
                                 <div className="left-border">{VendorLabel}:</div>
                               </Col>
                               <Col md="3" className='mb-4'>
-                                <label>{costingTypeId === ZBCTypeId ? 'BOP' : ''} {VendorLabel}<span className="asterisk-required">*</span></label>
+                                <label>{costingTypeId === ZBCTypeId ? `${BOPVendorLabel}` : `${VendorLabel}`}<span className="asterisk-required">*</span></label>
                                 <div className="d-flex justify-space-between align-items-center async-select">
                                   <div className="fullinput-icon p-relative">
                                     {this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}

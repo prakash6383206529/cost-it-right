@@ -23,7 +23,7 @@ import { ApplyPermission } from ".";
 import { checkMasterCreateByCostingPermission } from '../../common/CommonFunctions';
 import { useRef } from 'react';
 import Button from "../../layout/Button";
-import { useLabels } from "../../../helper/core";
+import { useLabels, useWithLocalization } from "../../../helper/core";
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
@@ -223,11 +223,12 @@ const PowerListing = (props) => {
     const selectedRows = state.gridApi?.getSelectedRows();
     setState((prevState) => ({ ...prevState, selectedRowData: selectedRows, dataCount: selectedRows.length, }));
   };
+  const POWERLISTING_DOWNLOAD_EXCEl_LOCALIZATION = useWithLocalization(POWERLISTING_DOWNLOAD_EXCEl, "MasterLabels")
   const onBtExport = () => {
     let tempArr = [];
     tempArr = state.gridApi && state.gridApi?.getSelectedRows();
     tempArr = tempArr && tempArr.length > 0 ? tempArr : powerDataList ? powerDataList : [];
-    return returnExcelColumn(POWERLISTING_DOWNLOAD_EXCEl, tempArr);
+    return returnExcelColumn(POWERLISTING_DOWNLOAD_EXCEl_LOCALIZATION, tempArr);
   };
 
   const onFilterTextBoxChanged = (e) => {

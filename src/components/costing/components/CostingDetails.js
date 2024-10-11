@@ -2645,7 +2645,7 @@ function CostingDetails(props) {
                                   >
                                     <thead>
                                       <tr>
-                                        <th className='vendor'>{`Vendor (Code)`}</th>
+                                        <th className='vendor'>{`${vendorLabel} (Code)`}</th>
                                         {initialConfiguration?.IsDestinationPlantConfigure && <th className="destination-plant">{`Destination Plant (Code)`}</th>}
                                         <th className=' '>{`Category`}</th>
                                         <th className="share-of-business">{`SOB (%)`}{SOBAccessibility && vbcVendorGrid.length > 0 && <button className="edit-details-btn ml5" type={"button"} onClick={updateVBCState} />}</th>

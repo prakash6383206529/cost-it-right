@@ -36,7 +36,7 @@ import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from '../../common/Tour/TourMessages';
 import { useTranslation } from 'react-i18next';
 import RfqMasterApprovalDrawer from '../material-master/RfqMasterApprovalDrawer';
-import { useLabels } from '../../../helper/core';
+import { useLabels, useWithLocalization } from '../../../helper/core';
 
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -645,6 +645,7 @@ const BOPDomesticListing = (props) => {
       getDataList("", 0, "", "", 0, defaultPageSize, false, state.floatingFilterData)  // FOR EXCEL DOWNLOAD OF COMPLETE DATA
     }
   }
+  const BOP_DOMESTIC_DOWNLOAD_EXCEl_LOCALIZATION = useWithLocalization(BOP_DOMESTIC_DOWNLOAD_EXCEl, "MasterLabels")
 
   const onBtExport = () => {
     const bopMasterName = showBopLabel();
@@ -652,7 +653,7 @@ const BOPDomesticListing = (props) => {
     //tempArr = state.gridApi && state.gridApi?.getSelectedRows()
     tempArr = selectedRowForPagination
     tempArr = (tempArr && tempArr.length > 0) ? tempArr : (allBopDataList ? allBopDataList : [])
-    const { updatedLabels } = updateBOPValues(BOP_DOMESTIC_DOWNLOAD_EXCEl, [], bopMasterName, 'label')
+    const { updatedLabels } = updateBOPValues(BOP_DOMESTIC_DOWNLOAD_EXCEl_LOCALIZATION, [], bopMasterName, 'label')
     const filteredLabels = updatedLabels.filter(column => {
       if (column.value === "NetConditionCost" || column.value === "NetCostWithoutConditionCost") {
         return initialConfiguration?.IsBasicRateAndCostingConditionVisible && ((props.isMasterSummaryDrawer && bopDomesticList[0]?.CostingTypeId === ZBCTypeId) || !props.isMasterSummaryDrawer)
