@@ -11,7 +11,7 @@ import { checkWhiteSpaces, getCodeBySplitting, } from "../../../helper/validatio
 import { VBC_VENDOR_TYPE, ZBC, searchCount } from '../../../config/constants';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { getPartSelectListWtihRevNo } from '../actions/Volume';
-import { getMaterialGroupByPart, getPurcahseOrganisationByPlant, getSAPDetailById, saveSAPDetail, updateSAPDetail } from '../actions/SAPDetail';
+import { getAllPartBopRmList, getMaterialGroupByPart, getPurcahseOrganisationByPlant, getSAPDetailById, saveSAPDetail, updateSAPDetail } from '../actions/SAPDetail';
 import Toaster from '../../common/Toaster';
 import Button from '../../layout/Button';
 import { getExternalIntegrationEvaluationType } from '../../costing/actions/Costing';
@@ -152,7 +152,7 @@ function SAPPushDetail(props) {
         const resultInput = inputValue.slice(0, searchCount)
         if (inputValue?.length >= searchCount && partName !== resultInput) {
 
-            const res = await getPartSelectListWtihRevNo(resultInput, null, null, null)
+            const res = await getAllPartBopRmList(resultInput)
 
             setPartName(resultInput)
             let partDataAPI = res?.data?.DataList

@@ -1245,6 +1245,7 @@ export const API = {
   getMaterialGroupByPart: `${BASE_URL}/ExternalIntegration/get-material-group-by-part-id`,
   getAllSAPPushDetail: `${BASE_URL}/ExternalIntegration/get-all-sap-push-details`,
   getSAPDetailById: `${BASE_URL}/ExternalIntegration/get-sap-push-details-by-id`,
+  getAllPartBopRmList: `${BASE_URL}/ExternalIntegration/get-part-number-and-rm-code-and-bop-number-list`,
 
   //SAP API FOR APPROVAL PUSH
   getEvaluationType: `${BASE_URL}/ExternalIntegration/select-list-of-valuations`,
@@ -3265,7 +3266,7 @@ export const RAWMATERIALCOST = 'Raw Material Other Cost'
 export const COSTINGCONDITIONCOST = 'Costing Condition Cost'
 
 //VERSION 
-export const VERSION = "V3.1.14";
+export const VERSION = "V3.1.15";
 
 
 
