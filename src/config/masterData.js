@@ -3949,6 +3949,7 @@ export const PartComponentTempData = [
 export const ProductComponent = [
     { label: 'ProductName', value: 'ProductName', }, //*
     { label: 'ProductNumber', value: 'ProductNumber', }, //*
+    { label: 'Note', value: 'Note', },
     { label: 'ProductGroupCode', value: 'ProductGroupCode', }, //*
     { label: 'ProductDescription', value: 'ProductDescription', },
     { label: 'ECNNumber', value: 'ECNNumber', },
@@ -3964,7 +3965,8 @@ export const ProductComponentTempData = [
     {
         'ProductName': 'Screw',
         'ProductNumber': 'Product123',
-        'ProductGroupCode': 'GC1',
+        'Note': 'Add all the levels here to the ProductGroupCode, separated by a colon (:). Dummy data for 4 levels has been provided.',
+        'ProductGroupCode': 'ICE:MoterCycle:Rider 125 CC',
         'ProductDescription': 'Part Description',
         'ECNNumber': '1',
         'RevisionNo': '1',
