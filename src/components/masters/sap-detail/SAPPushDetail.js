@@ -157,7 +157,7 @@ function SAPPushDetail(props) {
             setPartName(resultInput)
             let partDataAPI = res?.data?.DataList
             if (inputValue) {
-                return autoCompleteDropdownPart(inputValue, partDataAPI, false, [], true)
+                return autoCompleteDropdownPart(inputValue, partDataAPI, false, [], true, true)
             } else {
                 return partDataAPI
             }
@@ -168,7 +168,7 @@ function SAPPushDetail(props) {
             else {
                 let partData = reactLocalStorage?.getObject('PartData')
                 if (inputValue) {
-                    return autoCompleteDropdownPart(inputValue, partData, false, [], false)
+                    return autoCompleteDropdownPart(inputValue, partData, false, [], false, true)
                 } else {
                     return partData
                 }

@@ -174,7 +174,7 @@ export function sapPushBulkUpload(data, callback) {
 }
 
 export function getAllPartBopRmList(partNumber, callback) {
-    return axios.get(`${API.getPartSelectListWtihRevNo}?${partNumber ? `&number=${partNumber}` : ''}`, config()).catch(error => {
+    return axios.get(`${API.getAllPartBopRmList}?${partNumber ? `&number=${partNumber}` : ''}`, config()).catch(error => {
         apiErrors(error);
         callback(error);
         return Promise.reject(error)
