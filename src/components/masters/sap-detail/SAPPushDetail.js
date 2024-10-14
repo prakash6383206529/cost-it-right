@@ -40,6 +40,7 @@ function SAPPushDetail(props) {
 
     const plantSelectList = useSelector(state => state.comman.plantSelectList);
     const taxCodeList = useSelector(state => state.comman.taxCodeList)
+    const { evaluationType } = useSelector((state) => state?.costing)
     const VendorLoaderObj = { isLoader: VendorInputLoader }
     const plantLoaderObj = { isLoader: inputLoader }
 
@@ -101,6 +102,12 @@ function SAPPushDetail(props) {
             reasonOption && reasonOption.map(item => {
                 if (item?.Value === '0') return false
                 temp.push({ label: item?.Reason, value: item?.ReasonId })
+            });
+            return temp;
+        } else if (label === 'ValuationType') {
+            evaluationType && evaluationType?.map(item => {
+                if (item?.Value === '') return false
+                temp.push({ label: item?.Text, value: item?.Value })
             });
             return temp;
         }
@@ -251,14 +258,14 @@ function SAPPushDetail(props) {
         if (value.value && partNumber !== '') {
             getEvaluationType(value.PlantCode, partNumber)
         }
-        dispatch(getPurcahseOrganisationByPlant(value.value, res => {
-            if (res?.data.Result) {
-                setValue('PurcahaseOrganisation', res.data.Data)
-            }
-            else if (res.status === 204) {
-                Toaster.warning('Purchase Organisation does not exist for this plant.')
-            }
-        }))
+        // dispatch(getPurcahseOrganisationByPlant(value.value, res => {
+        //     if (res?.data.Result) {
+        //         setValue('PurcahaseOrganisation', res.data.Data)
+        //     }
+        //     else if (res.status === 204) {
+        //         Toaster.warning('Purchase Organisation does not exist for this plant.')
+        //     }
+        // }))
 
     }
     /**
