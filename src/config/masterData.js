@@ -1057,7 +1057,7 @@ export const Overhead = [
     { label: 'OverheadRMPercentage', value: 'OverheadRMPercentage', },
     { label: 'PlantCode', value: 'PlantCode', },
     { label: 'EffectiveDate', value: 'EffectiveDate', },
-    { label: 'Remarks', value: 'Remarks', },
+    { label: 'Remark', value: 'Remark', },
 ]
 
 export const OverheadTempData = [
@@ -1071,7 +1071,7 @@ export const OverheadTempData = [
         'OverheadRMPercentage': '10',
         "PlantCode": '0503',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        'Remarks': 'Remark Text',
+        'Remark': 'Remark Text',
     }, {
         'Note': 'If Applicability is combined either input percentage in relevant applicability fields Or in combine percentage field (OverheadApplicability).',
         'ModelType': 'High volume',
@@ -1082,7 +1082,7 @@ export const OverheadTempData = [
         'OverheadRMPercentage': '',
         "PlantCode": '0503',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        'Remarks': 'Remark Text',
+        'Remark': 'Remark Text',
     }
 ]
 
@@ -1098,7 +1098,7 @@ export const OverheadVBC = [
     { label: 'VendorCode', value: 'VendorCode', },
     { label: 'PlantCode', value: 'PlantCode' },
     { label: 'EffectiveDate', value: 'EffectiveDate', },
-    { label: 'Remarks', value: 'Remarks', },
+    { label: 'Remark', value: 'Remark', },
 ]
 
 export const OverheadVBC_TempData = [
@@ -1113,7 +1113,7 @@ export const OverheadVBC_TempData = [
         'VendorCode': '1313',
         "PlantCode": '0503',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        'Remarks': 'Remark Text'
+        'Remark': 'Remark Text'
     }, {
         'Note': 'If Applicability is combined either input percentage in relevant applicability fields Or in combine percentage field (OverheadApplicability).',
         'ModelType': 'High volume',
@@ -1125,7 +1125,7 @@ export const OverheadVBC_TempData = [
         'VendorCode': '1313',
         "PlantCode": '0503',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        'Remarks': 'Remark Text'
+        'Remark': 'Remark Text'
     }
 ]
 export const OverheadCBC = [
@@ -1139,7 +1139,7 @@ export const OverheadCBC = [
     { label: 'PlantCode', value: 'PlantCode' },
     { label: "CustomerCode", value: "CustomerName" },
     { label: 'EffectiveDate', value: 'EffectiveDate', },
-    { label: 'Remarks', value: 'Remarks', },
+    { label: 'Remark', value: 'Remark', },
 ]
 
 export const OverheadCBC_TempData = [
@@ -1154,7 +1154,7 @@ export const OverheadCBC_TempData = [
         "PlantCode": '3456',
         "CustomerName": 'C-10006',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        'Remarks': 'Remark Text'
+        'Remark': 'Remark Text'
     }, {
         'Note': 'If Applicability is combined either input percentage in relevant applicability fields Or in combine percentage field (OverheadApplicability).',
         'ModelType': 'High volume',
@@ -1166,7 +1166,7 @@ export const OverheadCBC_TempData = [
         "PlantCode": '3456',
         "CustomerName": 'C-10006',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        'Remarks': 'Remark Text'
+        'Remark': 'Remark Text'
     }
 
 ]
@@ -2013,7 +2013,7 @@ export const Profit = [
     { label: 'ProfitRMPercentage', value: 'ProfitRMPercentage', },
     { label: 'PlantCode', value: 'PlantCode' },
     { label: 'EffectiveDate', value: 'EffectiveDate', },
-    { label: 'Remarks', value: 'Remarks', },
+    { label: 'Remark', value: 'Remark', },
 ]
 
 export const ProfitTempData = [
@@ -2027,9 +2027,9 @@ export const ProfitTempData = [
         'ProfitRMPercentage': '10',
         "PlantCode": '3456',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        'Remarks': 'Remark Text',
+        'Remark': 'Remark Text',
     }, {
-        'Note': 'If Applicability is combined either input percentage in relevant applicability fields Or in combine percentage field (OverheadApplicability).',
+        'Note': 'If Applicability is combined either input percentage in relevant applicability fields Or in combine percentage field (ProfitApplicability).',
         'ModelType': 'High volume',
         'ProfitApplicability': 'BOP',
         'ProfitPercentage': '',
@@ -2038,7 +2038,7 @@ export const ProfitTempData = [
         'ProfitRMPercentage': '',
         "PlantCode": '3456',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        'Remarks': 'Remark Text',
+        'Remark': 'Remark Text',
     }
 ]
 
@@ -2053,7 +2053,7 @@ export const ProfitVBC = [
     { label: 'VendorCode', value: 'VendorCode', },
     { label: 'PlantCode', value: 'PlantCode' },
     { label: 'EffectiveDate', value: 'EffectiveDate', },
-    { label: 'Remarks', value: 'Remarks', }
+    { label: 'Remark', value: 'Remark', }
 ]
 
 export const ProfitTempDataVBC = [
@@ -2068,9 +2068,9 @@ export const ProfitTempDataVBC = [
         'VendorCode': '1313',
         "PlantCode": '3456',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        'Remarks': 'Remark Text'
+        'Remark': 'Remark Text'
     }, {
-        'Note': 'If Applicability is combined either input percentage in relevant applicability fields Or in combine percentage field (OverheadApplicability).',
+        'Note': 'If Applicability is combined either input percentage in relevant applicability fields Or in combine percentage field (ProfitApplicability).',
         'ModelType': 'High volume',
         'ProfitApplicability': 'BOP',
         'ProfitPercentage': '',
@@ -2080,7 +2080,7 @@ export const ProfitTempDataVBC = [
         'VendorCode': '1313',
         "PlantCode": '3456',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        'Remarks': 'Remark Text'
+        'Remark': 'Remark Text'
     }
 ]
 export const ProfitCBC = [
@@ -2094,7 +2094,7 @@ export const ProfitCBC = [
     { label: 'PlantCode', value: 'PlantCode' },
     { label: 'CustomerCode', value: 'CustomerName' },
     { label: 'EffectiveDate', value: 'EffectiveDate', },
-    { label: 'Remarks', value: 'Remarks', }
+    { label: 'Remark', value: 'Remark', }
 ]
 
 export const ProfitTempDataCBC = [
@@ -2109,9 +2109,9 @@ export const ProfitTempDataCBC = [
         "PlantCode": '3456',
         "CustomerName": 'C-10006',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        'Remarks': 'Remark Text'
+        'Remark': 'Remark Text'
     }, {
-        'Note': 'If Applicability is combined either input percentage in relevant applicability fields Or in combine percentage field (OverheadApplicability).',
+        'Note': 'If Applicability is combined either input percentage in relevant applicability fields Or in combine percentage field (ProfitApplicability).',
         'ModelType': 'High volume',
         'ProfitApplicability': 'BOP',
         'ProfitPercentage': '',
@@ -2121,7 +2121,7 @@ export const ProfitTempDataCBC = [
         "PlantCode": '3456',
         "CustomerName": 'C-10006',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        'Remarks': 'Remark Text'
+        'Remark': 'Remark Text'
     }
 ]
 /**
