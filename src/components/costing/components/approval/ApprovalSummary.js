@@ -36,7 +36,7 @@ function ApprovalSummary(props) {
   const loggedInUser = loggedInUserId()
 
   const dispatch = useDispatch()
- const { vendorLabel } = useLabels()
+  const { vendorLabel } = useLabels()
 
   const [approveDrawer, setApproveDrawer] = useState(false)
   const [rejectDrawer, setRejectDrawer] = useState(false)
@@ -519,7 +519,7 @@ function ApprovalSummary(props) {
         showListing === false &&
         <>
           {isLoader && <LoaderCustom />}
-          {getConfigurationKey()?.IsSAPConfigured && approvalData?.CostingId && <ErrorMessage isCosting={true} CostingId={approvalData?.CostingId} />}
+          {getConfigurationKey()?.IsSAPConfigured && approvalData?.CostingId && <ErrorMessage id={approvalData?.CostingId} CostingId={approvalData?.CostingId} />}
           <div className="container-fluid approval-summary-page">
             <h2 className="heading-main">Approval Summary</h2>
             <Row>
