@@ -101,6 +101,7 @@ function SummaryDrawer(props) {
                 setRmDataResponse(Data?.ImpactedMasterDataList.RawMaterialListResponse)
                 masterPlantId = Data?.ImpactedMasterDataList.RawMaterialListResponse[0]?.MasterApprovalPlantId
                 Data?.ImpactedMasterDataList?.RawMaterialListResponse.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
+                setShowPushButton(Data?.IsPushedButtonShow)
                 if (Data?.ImpactedMasterDataList.RawMaterialListResponse[0]?.Currency === reactLocalStorage.getObject("baseCurrency")) {
                     setShowImport(false)
                 } else {
@@ -123,16 +124,19 @@ function SummaryDrawer(props) {
                 setFiles(Data?.ImpactedMasterDataList.OperationListResponse[0].Attachements)
                 Data?.ImpactedMasterDataList?.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
                 masterPlantId = Data?.ImpactedMasterDataList.OperationListResponse[0]?.MasterApprovalPlantId
+                setShowPushButton(Data?.IsPushedButtonShow)
             } else if (checkForNull(props?.masterId) === MACHINE_MASTER_ID) {
                 CostingTypeId = Data?.ImpactedMasterDataList.MachineListResponse[0]?.CostingTypeId
                 setFiles(Data?.ImpactedMasterDataList.MachineListResponse[0].Attachements)
                 Data?.ImpactedMasterDataList?.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
                 masterPlantId = Data?.ImpactedMasterDataList.MachineListResponse[0]?.MasterApprovalPlantId
+                setShowPushButton(Data?.IsPushedButtonShow)
             } else if (checkForNull(props?.masterId) === BUDGET_ID) {
                 CostingTypeId = Data?.ImpactedMasterDataList.BudgetingListResponse[0]?.CostingHeadId
                 setFiles(Data?.ImpactedMasterDataList.BudgetingListResponse[0].Attachements)
                 Data?.ImpactedMasterDataList?.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
                 masterPlantId = Data?.ImpactedMasterDataList.BudgetingListResponse[0]?.MasterApprovalPlantId
+                setShowPushButton(Data?.IsPushedButtonShow)
             }
             else if (Number(props?.masterId) === 0 && checkForNull(props?.OnboardingApprovalId) === Number(ONBOARDINGID)) {
 
