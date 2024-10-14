@@ -177,12 +177,12 @@ class Downloadxls extends React.Component {
     constructor(props) {
         super(props);
         this.localizeHeaders = this.localizeHeaders.bind(this);
-        
+
     }
 
-       localizeHeaders(headers) {
+    localizeHeaders(headers) {
         return localizeHeadersWithLabels(headers, this.props.t);
-      }
+    }
     /**
     * @method renderSwitch
     * @description Switch case for different xls file head according to master
@@ -200,7 +200,7 @@ class Downloadxls extends React.Component {
                 return this.returnExcelColumn(checkVendorPlantConfig(updatedLabels, '', false, true), VendorTempData);
             case 'Overhead':
                 const localizedOverheadHeaders = this.localizeHeaders(Overhead);
-                return this.returnExcelColumn(localizedOverheadHeaders, addDynamicModelType(OverheadTempData, this.props?.modelText) );
+                return this.returnExcelColumn(localizedOverheadHeaders, addDynamicModelType(OverheadTempData, this.props?.modelText));
             case 'Index Data':
                 const localizedIndexDataHeaders = this.localizeHeaders(IndexDataListing);
                 return this.returnExcelColumn(localizedIndexDataHeaders, IndexDataListingTempData);
@@ -221,7 +221,7 @@ class Downloadxls extends React.Component {
                 return this.returnExcelColumn(localizedFuelHeaders, FuelTempData);
             case 'Profit':
                 const localizedProfitHeaders = this.localizeHeaders(Profit);
-                return this.returnExcelColumn(localizedProfitHeaders,  addDynamicModelType(ProfitTempData, this.props?.modelText));
+                return this.returnExcelColumn(localizedProfitHeaders, addDynamicModelType(ProfitTempData, this.props?.modelText));
             case 'Labour':
                 const localizedLabourHeaders = this.localizeHeaders(Labour);
                 return this.returnExcelColumn(localizedLabourHeaders, LabourTempData);
@@ -404,7 +404,7 @@ class Downloadxls extends React.Component {
             case `Overhead`:
                 const localizedOverheadHeaders = this.localizeHeaders(OverheadVBC);
 
-                return this.returnExcelColumn(localizedOverheadHeaders,  addDynamicModelType(OverheadVBC_TempData, this.props?.modelText));
+                return this.returnExcelColumn(localizedOverheadHeaders, addDynamicModelType(OverheadVBC_TempData, this.props?.modelText));
             case `Profit`:
                 const localizedProfitHeaders = this.localizeHeaders(ProfitVBC);
                 return this.returnExcelColumn(localizedProfitHeaders, addDynamicModelType(ProfitTempDataVBC, this.props?.modelText));
@@ -569,7 +569,7 @@ class Downloadxls extends React.Component {
             );
         }
         // DOWNLOAD FILE:- CALLED WHEN FILE FAILED APART FROM ZBC AND VBC
-        if (isFailedFlag && (fileName === 'RM Specification' || fileName === 'Vendor' || fileName === 'Overhead' || fileName === 'Fuel' || fileName === 'Labour' || fileName === 'Part Component' || fileName === 'Product Component' || fileName === ASSEMBLYORCOMPONENTSRFQ || fileName === BOUGHTOUTPARTSRFQ || fileName === RAWMATERIALSRFQ || fileName === 'Index' || fileName === 'Index Data' || fileName === 'Commodity (In Index)' || fileName === 'Commodity Standard' || fileName === 'Commodity Standardization')) {
+        if (isFailedFlag && (fileName === 'RM Specification' || fileName === 'Vendor' || fileName === 'Overhead' || fileName === 'Profit' || fileName === 'Fuel' || fileName === 'Labour' || fileName === 'Part Component' || fileName === 'Product Component' || fileName === ASSEMBLYORCOMPONENTSRFQ || fileName === BOUGHTOUTPARTSRFQ || fileName === RAWMATERIALSRFQ || fileName === 'Index' || fileName === 'Index Data' || fileName === 'Commodity (In Index)' || fileName === 'Commodity Standard' || fileName === 'Commodity Standardization')) {
 
             return (
                 <ExcelFile hideElement={true} filename={fileName} fileExtension={'.xls'} >
