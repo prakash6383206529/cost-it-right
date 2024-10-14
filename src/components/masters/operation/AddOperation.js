@@ -5,15 +5,15 @@ import { Row, Col, Label, } from 'reactstrap';
 import { required, getCodeBySplitting, maxLength80, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, maxLength10, maxLength15, positiveAndDecimalNumber, maxLength512, decimalLengthsix, checkSpacesInString, number, hashValidation, checkForNull, checkForDecimalAndNull } from "../../../helper/validation";
 import { renderText, renderMultiSelectField, searchableSelect, renderTextAreaField, renderDatePicker, focusOnError, renderTextInputField } from "../../layout/FormInputs";
 import { createOperationsAPI, getOperationDataAPI, updateOperationAPI, fileUploadOperation, checkAndGetOperationCode } from '../actions/OtherOperation';
-import { getPlantSelectListByType, getPlantBySupplier, getUOMSelectList, getVendorNameByVendorSelectList, } from '../../../actions/Common';
+import { getPlantSelectListByType, getPlantBySupplier, getUOMSelectList, getVendorNameByVendorSelectList, getExchangeRateSource, getCurrencySelectList, } from '../../../actions/Common';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { getConfigurationKey, loggedInUserId, userDetails } from "../../../helper/auth";
+import { getConfigurationKey, IsFetchExchangeRateVendorWise, loggedInUserId, userDetails } from "../../../helper/auth";
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import AddUOM from '../uom-master/AddUOM';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
-import { FILE_URL, ZBC, OPERATIONS_ID, EMPTY_GUID, SPACEBAR, VBCTypeId, CBCTypeId, ZBCTypeId, searchCount, VBC_VENDOR_TYPE } from '../../../config/constants';
+import { FILE_URL, ZBC, OPERATIONS_ID, EMPTY_GUID, SPACEBAR, VBCTypeId, CBCTypeId, ZBCTypeId, searchCount, VBC_VENDOR_TYPE, ENTRY_TYPE_IMPORT, ENTRY_TYPE_DOMESTIC } from '../../../config/constants';
 import { AcceptableOperationUOM, LOGISTICS } from '../../../config/masterData'
 import DayTime from '../../common/DayTimeWrapper'
 import imgRedcross from '../../../assests/images/red-cross.png';
@@ -22,7 +22,7 @@ import { debounce } from 'lodash';
 import AsyncSelect from 'react-select/async';
 import LoaderCustom from '../../common/LoaderCustom';
 import { CheckApprovalApplicableMaster, onFocus, showDataOnHover, userTechnologyDetailByMasterId } from '../../../helper';
-import { getCostingSpecificTechnology } from '../../costing/actions/Costing'
+import { getCostingSpecificTechnology, getExchangeRateByCurrency } from '../../costing/actions/Costing'
 import { getClientSelectList, } from '../actions/Client';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { autoCompleteDropdown, costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission, getEffectiveDateMinDate } from '../../common/CommonFunctions';
@@ -38,6 +38,8 @@ import Button from '../../layout/Button';
 import TooltipCustom from '../../common/Tooltip';
 import { subDays } from 'date-fns';
 import { LabelsClass } from '../../../helper/core';
+import { getPlantUnitAPI } from '../actions/Plant';
+import Switch from 'react-switch'
 
 const selector = formValueSelector('AddOperation');
 
@@ -103,6 +105,15 @@ class AddOperation extends Component {
       CostingTypePermission: false,
       disableSendForApproval: false,
       isWelding: false,
+      isImport: false,
+      hidePlantCurrency: false,
+      settlementCurrency: null,
+      plantCurrency: null,
+      ExchangeSource: [],
+      currency: null,
+      plantExchangeRateId: '',
+      settlementExchangeRateId: '',
+      plantCurrencyID: '',
     }
   }
 
@@ -127,6 +138,8 @@ class AddOperation extends Component {
       this.props.getCostingSpecificTechnology(loggedInUserId(), () => { })
       this.props.getPlantSelectListByType(ZBC, "MASTER", '', () => { })
       this.props.getClientSelectList(() => { })
+      this.props.getExchangeRateSource((res) => { })
+      this.props.getCurrencySelectList(() => { })
       if (!getConfigurationKey().IsDivisionAllowedForDepartment) {
         this.finalUserCheckAndMasterLevelCheckFunction(EMPTY_GUID)
       }
@@ -134,7 +147,76 @@ class AddOperation extends Component {
     this.getDetail()
 
   }
+  callExchangeRateAPI = () => {
+    const { fieldsObj } = this.props
+    const { costingTypeId, vendorName, client, effectiveDate, ExchangeSource, currency, isImport } = this.state;
 
+    const vendorValue = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? vendorName.value : EMPTY_GUID) : EMPTY_GUID
+    const costingType = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? VBCTypeId : costingTypeId) : ZBCTypeId
+    const fromCurrency = isImport ? currency?.label : fieldsObj?.plantCurrency
+    const toCurrency = reactLocalStorage.getObject("baseCurrency")
+    const hasCurrencyAndDate = fieldsObj?.plantCurrency && effectiveDate;
+    const isSourceExchangeRateVisible = getConfigurationKey().IsSourceExchangeRateNameVisible;
+
+    if (hasCurrencyAndDate && (!isSourceExchangeRateVisible || ExchangeSource)) {
+      if (IsFetchExchangeRateVendorWise() && (vendorName?.length === 0 || client?.length === 0)) {
+        this.setState({ showWarning: true });
+        return;
+      }
+
+      const callAPI = (from, to) => {
+        return new Promise((resolve) => {
+          this.props.getExchangeRateByCurrency(
+            from,
+            costingType,
+            DayTime(this.state?.effectiveDate).format('YYYY-MM-DD'),
+            vendorValue,
+            client.value,
+            false,
+            to,
+            ExchangeSource?.label,
+            res => {
+              if (Object.keys(res.data.Data).length === 0) {
+                this.setState({ showWarning: true });
+              } else {
+                this.setState({ showWarning: false });
+              }
+              // Resolve with an object containing both values
+              resolve({
+                rate: checkForNull(res.data.Data.CurrencyExchangeRate),
+                exchangeRateId: res?.data?.Data?.ExchangeRateId
+              });
+            }
+          );
+        });
+      };
+
+      if (isImport) {
+        // First API call
+        callAPI(fromCurrency, fieldsObj?.plantCurrency).then(({ rate: rate1, exchangeRateId: exchangeRateId1 }) => {
+          // Second API call
+          callAPI(fromCurrency, reactLocalStorage.getObject("baseCurrency")).then(({ rate: rate2, exchangeRateId: exchangeRateId2 }) => {
+            this.setState({
+              plantCurrency: rate1,
+              settlementCurrency: rate2,
+              plantExchangeRateId: exchangeRateId1,
+              settlementExchangeRateId: exchangeRateId2
+            }, () => {
+              this.handleCalculation(fieldsObj?.Rate)
+            });
+          });
+        });
+      } else {
+        // Original single API call for non-import case
+        callAPI(fromCurrency, toCurrency).then(({ rate, exchangeRateId }) => {
+          this.setState({ plantCurrency: rate, plantExchangeRateId: exchangeRateId }, () => {
+            this.handleCalculation(fieldsObj?.RateLocalConversion)
+          });
+        });
+      }
+    }
+
+  }
   finalUserCheckAndMasterLevelCheckFunction = (plantId, isDivision = false) => {
     const { initialConfiguration } = this.props
     if (!this.state.isViewMode && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(OPERATIONS_ID) === true) {
@@ -193,59 +275,36 @@ class AddOperation extends Component {
   * @description Used show listing of unit of measurement
   */
   renderListing = (label) => {
-    const { costingSpecifiTechnology, plantSelectList, UOMSelectList, clientSelectList } = this.props;
-    const temp = [];
+    const { costingSpecifiTechnology, plantSelectList, UOMSelectList, clientSelectList, exchangeRateSourceList, currencySelectList } = this.props;
 
-    if (label === 'technology') {
-      costingSpecifiTechnology && costingSpecifiTechnology.map(item => {
-        if (item.Value === '0' || (item.Value === String(LOGISTICS))) return false;
-        temp.push({ Text: item.Text, Value: item.Value })
-        return null;
-      });
-      return temp;
-    }
-    if (label === 'plant') {
-      plantSelectList && plantSelectList.map(item => {
-        if (item.PlantId === '0') return false;
-        temp.push({ Text: item.PlantNameCode, Value: item.PlantId })
-        return null;
-      });
-      return temp;
-    }
-    if (label === 'singlePlant') {
-      plantSelectList && plantSelectList.map((item) => {
-        if (item.PlantId === '0') return false
-        temp.push({ label: item.PlantNameCode, value: item.PlantId })
-        return null
-      })
-      return temp
-    }
-    if (label === 'UOM') {
-      UOMSelectList && UOMSelectList.map(item => {
-        const accept = AcceptableOperationUOM.includes(item.Type)
-        if (accept === false) return false
-        if (item.Value === '0') return false;
-        temp.push({ label: item.Display, value: item.Value })
-        return null;
-      });
-      return temp;
-    }
-    if (label === 'ClientList') {
-      clientSelectList && clientSelectList.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ label: item.Text, value: item.Value })
-        return null;
-      });
-      return temp;
-    }
+    const listingMap = {
+      technology: { list: costingSpecifiTechnology, labelKey: 'Text', valueKey: 'Value', filter: item => item.Value !== '0' && item.Value !== String(LOGISTICS) },
+      plant: { list: plantSelectList, labelKey: 'PlantNameCode', valueKey: 'PlantId' },
+      singlePlant: { list: plantSelectList, labelKey: 'PlantNameCode', valueKey: 'PlantId' },
+      UOM: { list: UOMSelectList, labelKey: 'Display', valueKey: 'Value', filter: item => AcceptableOperationUOM.includes(item.Type) },
+      ClientList: { list: clientSelectList, labelKey: 'Text', valueKey: 'Value' },
+      operationType: {
+        list: [
+          { label: "Welding", value: 1 },
+          { label: "Surface Treatment", value: 2 },
+          { label: "Other Operation", value: 3 },
+          { label: "Ni Cr Plating", value: 4 }
+        ], labelKey: 'label', valueKey: 'value'
+      },
+      ExchangeSource: { list: exchangeRateSourceList, labelKey: 'Text', valueKey: 'Value', filter: item => item.Value !== '--Exchange Rate Source Name--' },
+      currency: { list: currencySelectList, labelKey: 'Text', valueKey: 'Value' }
+    };
 
-    if (label === 'operationType') {
-      temp.push({ label: "Welding", value: 1 })
-      temp.push({ label: "Surface Treatment", value: 2 })
-      temp.push({ label: "Other Operation", value: 3 })
-      temp.push({ label: "Ni Cr Plating", value: 4 })
-      return temp;
-    }
+    const { list, labelKey, valueKey, filter } = listingMap[label] || {};
+
+    if (!list) return [];
+
+    return list.reduce((acc, item) => {
+      if (item[valueKey] === '0') return acc;
+      if (filter && !filter(item)) return acc;
+      acc.push({ label: item[labelKey], value: item[valueKey] });
+      return acc;
+    }, []);
   }
   /**
    * @method onPressVendor
@@ -290,8 +349,26 @@ class AddOperation extends Component {
   * @description Used handle Plants
   */
   handlePlants = (e) => {
-    this.setState({ selectedPlants: e })
-  }
+    if (e && e !== '') {
+      this.setState({ selectedPlants: e })
+      if (!this.state.isViewMode && getConfigurationKey()?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !getConfigurationKey()?.IsDivisionAllowedForDepartment) {
+        this.commonFunction(e?.value)
+      }
+      this.props.getPlantUnitAPI(e?.value, (res) => {
+        let Data = res?.data?.Data
+        this.props.change('plantCurrency', Data?.Currency)
+        this.setState({ plantCurrencyID: Data?.CurrencyId })
+        if (Data?.Currency !== reactLocalStorage?.getObject("baseCurrency")) {
+          this.setState({ hidePlantCurrency: false })
+          this.callExchangeRateAPI()
+        } else {
+          this.setState({ hidePlantCurrency: true })
+        }
+      })
+    } else {
+      this.setState({ selectedPlants: [] })
+    }
+  };
 
   /**
   * @method handleVendorName
@@ -302,12 +379,19 @@ class AddOperation extends Component {
       this.setState({ vendorName: newValue, isVendorNameNotSelected: false }, () => {
         const { vendorName } = this.state;
         this.props.getPlantBySupplier(vendorName.value, () => { })
+        this.callExchangeRateAPI()
       });
     } else {
       this.setState({ vendorName: [] })
     }
   };
-
+  handleExchangeRateSource = (newValue) => {
+    this.setState({ ExchangeSource: newValue }
+      , () => {
+        this.callExchangeRateAPI()
+      }
+    );
+  };
   vendorToggler = () => {
     this.setState({ isOpenVendor: true })
   }
@@ -406,10 +490,23 @@ class AddOperation extends Component {
     this.setState({
       effectiveDate: date,
       isDateChange: true,
+    }, () => {
+      this.callExchangeRateAPI()
     })
-
   }
+  handleCalculation = (rate) => {
+    const { plantCurrency, settlementCurrency, isImport } = this.state
 
+    if (isImport) {
+      const ratePlantCurrency = checkForNull(rate) * checkForNull(plantCurrency)
+      this.props.change('RateLocalConversion', checkForDecimalAndNull(ratePlantCurrency, getConfigurationKey().NoOfDecimalForPrice))
+      const rateBaseCurrency = checkForNull(rate) * checkForNull(settlementCurrency)
+      this.props.change('RateConversion', checkForDecimalAndNull(rateBaseCurrency, getConfigurationKey().NoOfDecimalForPrice))
+    } else {
+      const ratebaseCurrency = checkForNull(rate) * checkForNull(plantCurrency)
+      this.props.change('RateConversion', checkForDecimalAndNull(ratebaseCurrency, getConfigurationKey().NoOfDecimalForPrice))
+    }
+  }
   calculateRate = (value) => {
     const { fieldsObj } = this.props
     const weldingRate = fieldsObj?.WeldingRate
@@ -423,12 +520,18 @@ class AddOperation extends Component {
     } else if (weldingRate && consumption) {
       rate = weldingRate * consumption; // Multiply normally if both values are present
     }
+    if (this.state.isImport) {
+      this.props.change('Rate', checkForDecimalAndNull(rate, getConfigurationKey().NoOfDecimalForPrice));
+    } else {
+      this.props.change('RateLocalConversion', checkForDecimalAndNull(rate, getConfigurationKey().NoOfDecimalForPrice));
+    }
+    this.handleCalculation(rate)
 
-    this.props.change('Rate', checkForDecimalAndNull(rate, getConfigurationKey().NoOfDecimalForPrice));
   }
 
 
   handleRateChange = (value) => {
+    this.handleCalculation(value?.target?.value)
     if (this.state.isEditFlag && Number(this.state.DataToChange?.Rate) === Number(value?.target?.value)) {
       this.setState({ IsFinancialDataChanged: false })
 
@@ -497,6 +600,7 @@ class AddOperation extends Component {
           if (Data?.ForType === 'Welding') {
             this.setState({ isWelding: true })
           }
+          this.props.change('plantCurrency', Data?.LocalCurrency)
           setTimeout(() => {
             this.setState({
               isEditFlag: true,
@@ -517,7 +621,15 @@ class AddOperation extends Component {
               oldDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
               destinationPlant: Data.DestinationPlantName !== undefined ? { label: Data.DestinationPlantName, value: Data.DestinationPlantId } : [],
               dataToChange: Data,
-              operationType: { label: Data.ForType, value: 1 }
+              operationType: { label: Data.ForType, value: 1 },
+              ExchangeSource: Data?.ExchangeRateSourceName ? { label: Data?.ExchangeRateSourceName, value: Data?.ExchangeRateSourceId } : [],
+              plantCurrency: Data?.LocalCurrencyExchangeRate,
+              plantCurrencyID: Data?.LocalCurrencyId,
+              settlementCurrency: Data?.ExchangeRate,
+              plantExchangeRateId: Data?.LocalExchangeRateId,
+              settlementExchangeRateId: Data?.ExchangeRateId,
+              isImport: Data?.FuelEntryType === ENTRY_TYPE_IMPORT ? true : false,
+              currency: Data?.Currency ? { label: Data?.Currency, value: Data?.CurrencyId } : []
             })
             // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
             let files = Data.Attachements && Data.Attachements.map((item) => {
@@ -709,10 +821,26 @@ class AddOperation extends Component {
   }
 
   handleDestinationPlant = (newValue) => {
-    this.setState({ destinationPlant: newValue })
-    if (!this.state.isViewMode && getConfigurationKey()?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !getConfigurationKey()?.IsDivisionAllowedForDepartment) {
-      this.commonFunction(newValue ? newValue.value : '')
+    if (newValue && newValue !== '') {
+      this.setState({ destinationPlant: newValue })
+      if (!this.state.isViewMode && getConfigurationKey()?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !getConfigurationKey()?.IsDivisionAllowedForDepartment) {
+        this.commonFunction(newValue ? newValue.value : '')
+      }
+      this.props.getPlantUnitAPI(newValue?.value, (res) => {
+        let Data = res?.data?.Data
+        this.props.change('plantCurrency', Data?.Currency)
+        this.setState({ plantCurrencyID: Data?.CurrencyId })
+        if (Data?.Currency !== reactLocalStorage?.getObject("baseCurrency")) {
+          this.setState({ hidePlantCurrency: false })
+          this.callExchangeRateAPI()
+        } else {
+          this.setState({ hidePlantCurrency: true })
+        }
+      })
+    } else {
+      this.setState({ destinationPlant: [] })
     }
+
   }
   /**
   * @method handleClient
@@ -787,7 +915,7 @@ class AddOperation extends Component {
   */
   onSubmit = debounce((values) => {
     const { selectedPlants, vendorName, files,
-      UOM, oldUOM, isSurfaceTreatment, selectedTechnology, client, costingTypeId, remarks, OperationId, oldDate, effectiveDate, destinationPlant, DataToChange, isDateChange, IsFinancialDataChanged, isEditFlag } = this.state;
+      UOM, oldUOM, isSurfaceTreatment, selectedTechnology, client, costingTypeId, remarks, OperationId, oldDate, effectiveDate, destinationPlant, DataToChange, isDateChange, IsFinancialDataChanged, isEditFlag, isImport } = this.state;
     const { initialConfiguration } = this.props;
     const userDetailsOperation = JSON.parse(localStorage.getItem('userDetail'))
     const userDetail = userDetails()
@@ -855,7 +983,17 @@ class AddOperation extends Component {
       IsDetailedEntry: false,
       ForType: this.state.operationType?.label,
       OperationBasicRate: values.WeldingRate,
-      OperationConsumption: values.Consumption
+      OperationConsumption: values.Consumption,
+      OperationEntryType: isImport ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC,
+      ExchangeRateSourceName: this.state.ExchangeSource?.label || null,
+      LocalCurrencyId: this.state.plantCurrencyID || null,
+      LocalCurrency: this.props.fieldsObj?.plantCurrency || null,
+      ExchangeRate: this.state.settlementCurrency || null,
+      LocalCurrencyExchangeRate: this.state.plantCurrency || null,
+      CurrencyId: this.state.currency?.value || null,
+      Currency: this.state.currency?.label || null,
+      ExchangeRateId: this.state.settlementExchangeRateId || null,
+      LocalExchangeRateId: this.state.plantExchangeRateId || null,
     }
     if ((isEditFlag && this.state.isFinalApprovar) || (isEditFlag && CheckApprovalApplicableMaster(OPERATIONS_ID) !== true)) {
 
@@ -984,7 +1122,22 @@ class AddOperation extends Component {
     this.setState({ addMoreDetails: false })
 
   }
-
+  importToggle = () => {
+    this.setState({ isImport: !this.state.isImport })
+  }
+  /**
+* @method handleCurrency
+* @description called
+*/
+  handleCurrency = (newValue) => {
+    if (newValue && newValue !== '') {
+      this.setState({ currency: newValue }, () => {
+        this.callExchangeRateAPI()
+      })
+    } else {
+      this.setState({ currency: [] })
+    }
+  };
   /**
   * @method render
   * @description Renders the component
@@ -992,7 +1145,7 @@ class AddOperation extends Component {
   render() {
     console.log(this.state.moreOperationData, 'moreOperationData')
     const { handleSubmit, initialConfiguration, isOperationAssociated, t, data } = this.props;
-    const { isEditFlag, isOpenVendor, isOpenUOM, isDisableCode, isViewMode, setDisable, costingTypeId, noApprovalCycle, CostingTypePermission, disableSendForApproval } = this.state;
+    const { isEditFlag, isOpenVendor, isOpenUOM, isDisableCode, isViewMode, setDisable, costingTypeId, noApprovalCycle, CostingTypePermission, disableSendForApproval, hidePlantCurrency } = this.state;
     const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
 
     const filterList = async (inputValue) => {
@@ -1055,6 +1208,29 @@ class AddOperation extends Component {
                   onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
                 >
                   <div className="add-min-height">
+                    <Row>
+                      <Col md="4" className="switch mb15">
+                        <label className="switch-level">
+                          <div className={"left-title"}>Domestic</div>
+                          <Switch
+                            onChange={this.importToggle}
+                            checked={this.state.isImport}
+                            id="normal-switch"
+                            disabled={isEditFlag}
+                            background="#4DC771"
+                            onColor="#4DC771"
+                            onHandleColor="#ffffff"
+                            offColor="#4DC771"
+                            uncheckedIcon={false}
+                            checkedIcon={false}
+                            height={20}
+                            width={46}
+                          />
+                          <div className={"right-title"}>Import</div>
+                        </label>
+                      </Col>
+
+                    </Row>
                     <Row>
                       <Col md="12">
                         {reactLocalStorage.getObject('CostingTypePermission').zbc && <Label id="Add_operation_zero_based" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
@@ -1261,6 +1437,78 @@ class AddOperation extends Component {
                           />
                         </Col>
                       }
+                      {getConfigurationKey().IsSourceExchangeRateNameVisible && (
+                        <Col md="3">
+                          <Field
+                            label="Exchange Rate Source"
+                            name="ExchangeSource"
+                            placeholder="Select"
+                            options={this.renderListing("ExchangeSource")}
+                            handleChangeDescription={this.handleExchangeRateSource}
+                            component={searchableSelect}
+                            className="multiselect-with-border"
+                            disabled={isEditFlag}
+                            valueDescription={this.state.ExchangeSource}
+                          />
+                        </Col>
+                      )}
+                      {<Col md="3">
+                        <Field
+                          name="plantCurrency"
+                          type="text"
+                          label="Plant Currency"
+                          placeholder={"-"}
+                          validate={[]}
+                          component={renderTextInputField}
+                          required={false}
+                          disabled={true}
+                          className=" "
+                          customClassName=" withBorder"
+                        />
+                      </Col>}
+                      {this.state.isImport && <Col md="3">
+                        <Field
+                          name="Currency"
+                          type="text"
+                          label="Currency"
+                          component={searchableSelect}
+                          placeholder={isEditFlag ? '-' : "Select"}
+                          options={this.renderListing("currency")}
+                          validate={
+                            this.state.currency == null ||
+                              this.state.currency.length === 0
+                              ? [required]
+                              : []
+                          }
+                          required={true}
+                          handleChangeDescription={this.handleCurrency}
+                          valueDescription={this.state.currency}
+                          disabled={isEditFlag ? true : false}
+                        >{this.state.showWarning && <WarningMessage dClass="mt-1" message={`${this.state.currency.label} rate is not present in the Exchange Master`} />}
+                        </Field>
+                      </Col>}
+                      <Col md="3">
+                        <div className="inputbox date-section form-group">
+                          <Field
+                            label="Effective Date"
+                            name="EffectiveDate"
+                            selected={this.state.effectiveDate}
+                            onChange={this.handleEffectiveDateChange}
+                            type="text"
+                            validate={[required]}
+                            minDate={isEditFlag ? this.state.minEffectiveDate : getEffectiveDateMinDate()}
+                            autoComplete={'off'}
+                            required={true}
+                            changeHandler={(e) => {
+                            }}
+                            component={renderDatePicker}
+                            className=" "
+                            disabled={isViewMode || !this.state.IsFinancialDataChanged}
+                            customClassName=" withBorder"
+                            placeholder={isViewMode || !this.state.IsFinancialDataChanged ? '-' : "Select Date"}
+                          />
+                        </div>
+                      </Col>
                       {costingTypeId === CBCTypeId && (
                         <Col md="3">
                           <Field
@@ -1332,10 +1580,9 @@ class AddOperation extends Component {
                             />
                           </Col>
                         </>}
-                      <Col md="3">
-                        {this?.state?.isWelding && <TooltipCustom disabledIcon={true} width={"350px"} id="rate" tooltipText={'Rate = Welding Material Rate/Kg * Consumption'} />}
+                      {this.state.isImport && <Col md="3">
                         <Field
-                          label={`Rate (${reactLocalStorage.getObject("baseCurrency")})`}
+                          label={`Rate (${this.state.currency?.label ?? 'Currency'})`}
                           name={"Rate"}
                           type="text"
                           id="rate"
@@ -1348,7 +1595,37 @@ class AddOperation extends Component {
                           className=" "
                           customClassName=" withBorder"
                         />
+                      </Col>}
+                      <Col md="3">
+                        {this?.state?.isWelding && <TooltipCustom disabledIcon={true} width={"350px"} id="rate" tooltipText={'Rate = Welding Material Rate/Kg * Consumption'} />}
+                        <Field
+                          label={`Rate (${this.props.fieldsObj?.plantCurrency ?? 'Currency'})`}
+                          name={"RateLocalConversion"}
+                          type="text"
+                          id="rate"
+                          placeholder={isViewMode || (isEditFlag && isOperationAssociated) || this.state.isWelding ? '-' : "Enter"}
+                          validate={this.state.isWelding ? [] : [required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
+                          component={renderTextInputField}
+                          required={true}
+                          disabled={isViewMode || (isEditFlag && isOperationAssociated) || this.state.isWelding}
+                          onChange={this.handleRateChange}
+                          className=" "
+                          customClassName=" withBorder"
+                        />
                       </Col>
+                      {!hidePlantCurrency && <Col md="3">
+                        <Field
+                          name="RateConversion"
+                          type="text"
+                          label={`Rate (${reactLocalStorage.getObject("baseCurrency")})`}
+                          component={renderTextInputField}
+                          disabled={true}
+                          className=" "
+                          customClassName=" withBorder"
+                        />
+                      </Col>}
+
+
                       {initialConfiguration && initialConfiguration.IsOperationLabourRateConfigure && <Col md="3">
                         <Field
                           label={`Labour Rate/${this.state.UOM.label ? this.state.UOM.label : 'UOM'}`}
@@ -1362,28 +1639,7 @@ class AddOperation extends Component {
                           customClassName=" withBorder"
                         />
                       </Col>}
-                      <Col md="3">
-                        <div className="inputbox date-section form-group">
-                          <Field
-                            label="Effective Date"
-                            name="EffectiveDate"
-                            selected={this.state.effectiveDate}
-                            onChange={this.handleEffectiveDateChange}
-                            type="text"
-                            validate={[required]}
-                            minDate={isEditFlag ? this.state.minEffectiveDate : getEffectiveDateMinDate()}
-                            autoComplete={'off'}
-                            required={true}
-                            changeHandler={(e) => {
-                            }}
-                            component={renderDatePicker}
-                            className=" "
-                            disabled={isViewMode || !this.state.IsFinancialDataChanged}
-                            customClassName=" withBorder"
-                            placeholder={isViewMode || !this.state.IsFinancialDataChanged ? '-' : "Select Date"}
-                          />
-                        </div>
-                      </Col>
+
                     </Row>
                     <Row>
                       <Col md="8" className="mb-5 pb-1 st-operation">
@@ -1613,8 +1869,8 @@ class AddOperation extends Component {
 */
 function mapStateToProps(state) {
   const { comman, otherOperation, supplier, auth, costing, client } = state;
-  const fieldsObj = selector(state, 'OperationCode', 'text', 'OperationName', 'Description', 'operationType', 'technology', 'clientName', 'EffectiveDate', 'Plant', 'WeldingRate', 'Consumption');
-  const { plantSelectList, filterPlantList, UOMSelectList, } = comman;
+  const fieldsObj = selector(state, 'OperationCode', 'text', 'OperationName', 'Description', 'operationType', 'technology', 'clientName', 'EffectiveDate', 'Plant', 'WeldingRate', 'Consumption', "Currency", "ExchangeSource", "plantCurrency", "RateConversion");
+  const { plantSelectList, filterPlantList, UOMSelectList, exchangeRateSourceList, currencySelectList } = comman;
   const { operationData } = otherOperation;
   const { vendorWithVendorCodeSelectList } = supplier;
   const { initialConfiguration, userMasterLevelAPI } = auth;
@@ -1631,7 +1887,7 @@ function mapStateToProps(state) {
   return {
     plantSelectList, UOMSelectList,
     operationData, filterPlantList, vendorWithVendorCodeSelectList, fieldsObj,
-    initialValues, initialConfiguration, costingSpecifiTechnology, clientSelectList, userMasterLevelAPI
+    initialValues, initialConfiguration, costingSpecifiTechnology, clientSelectList, userMasterLevelAPI, exchangeRateSourceList, currencySelectList
   }
 }
 
@@ -1654,7 +1910,11 @@ export default connect(mapStateToProps, {
   getCostingSpecificTechnology,
   getClientSelectList,
   getUsersMasterLevelAPI,
-  getVendorNameByVendorSelectList
+  getVendorNameByVendorSelectList,
+  getExchangeRateByCurrency,
+  getPlantUnitAPI,
+  getExchangeRateSource,
+  getCurrencySelectList
 })(reduxForm({
   form: 'AddOperation',
   // touchOnChange: true,
