@@ -388,7 +388,7 @@ export const API = {
   getFuelByPlant: `${BASE_URL}/masters-fuel/get-fuel-by-plant`,
   getStateListByFuel: `${BASE_URL}/masters-fuel/get-state-by-fuel-select-list`,
   getFuelListByState: `${BASE_URL}/masters-fuel/get-fuel-by-state-select-list`,
-  fuelBulkUpload: `${BASE_URL}/masters-fuel/bulk-upload-for-fuel-details-json`,
+  fuelBulkUpload: `${BASE_URL}/masters-fuel/bulk-upload-for-fuel-json`,
   getUOMByFuelId: `${BASE_URL}/masters-fuel/get-uom-by-fuel-id`,
 
   //POWER MASTER
@@ -1075,6 +1075,9 @@ export const API = {
   getAmmendentStatus: `${BASE_URL}/ExternalIntegration/get-ammendent-status`,
   getMasterSelectListSimulation: `${BASE_URL}/simulation/select-list-get-simulation-applied-for-master-with-permission`,
   getAllSimulationBoughtOutPart: `${BASE_URL}/simulation/get-all-simulation-bought-out-part`,
+  getSapPushDetailsHeader: `${BASE_URL}/ExternalIntegration/get-sap-push-details-header`,
+  sapPushBulkUpload: `${BASE_URL}/ExternalIntegration/bulk-upload-for-sap-push-details`,
+
 
   // ASSEMBLY TECHNOLOGY
   getAssemblyTechnologySimulation: `${BASE_URL}/simulation/get-assembly-technology-simulation`,
@@ -1236,12 +1239,13 @@ export const API = {
   // getNFRRMList: `${BASE_URL}/rfq-quotation/get-nfr-rm-list`,
   // getNFRPartRMList: `${BASE_URL}/rfq-quotation/get-nfr-part-raw-material-details`,
   // // SAP PUSH Detail
-  // saveSAPDetail: `${BASE_URL}/sap-sync/save-sap-push-details`,
-  // updateSAPDetail: `${BASE_URL}/sap-sync/update-sap-push-details`,
+  saveSAPDetail: `${BASE_URL}/ExternalIntegration/save-sap-push-details`,
+  updateSAPDetail: `${BASE_URL}/ExternalIntegration/update-sap-push-details`,
   // getPurcahseOrganisationByPlant: `${BASE_URL}/sap-sync/get-purchase-organization-by-plant-id`,
-  getMaterialGroupByPart: `${BASE_URL}/sap-sync/get-material-group-by-part-id`,
-  // getAllSAPPushDetail: `${BASE_URL}/sap-sync/get-all-sap-push-details`,
-  // getSAPDetailById: `${BASE_URL}/sap-sync/get-sap-push-details-by-id`
+  getMaterialGroupByPart: `${BASE_URL}/ExternalIntegration/get-material-group-by-part-id`,
+  getAllSAPPushDetail: `${BASE_URL}/ExternalIntegration/get-all-sap-push-details`,
+  getSAPDetailById: `${BASE_URL}/ExternalIntegration/get-sap-push-details-by-id`,
+  getAllPartBopRmList: `${BASE_URL}/ExternalIntegration/get-part-number-and-rm-code-and-bop-number-list`,
 
   //SAP API FOR APPROVAL PUSH
   getEvaluationType: `${BASE_URL}/ExternalIntegration/select-list-of-valuations`,
@@ -2073,6 +2077,7 @@ export const SET_BOP_PR_QUOTATION_IDENTITY = "SET_BOP_PR_QUOTATION_IDENTITY"
 export const GET_RFQ_TOOLING_DETAILS = "GET_RFQ_TOOLING_DETAILS"
 export const UPDATED_TOOLING_DATA = "UPDATED_TOOLING_DATA"
 export const SET_TOOLING_SPECIFIC_ROW_DATA = "SET_TOOLING_SPECIFIC_ROW_DATA"
+export const SET_SAP_DETAIL_KEYS = "SET_SAP_DETAIL_KEYS"
 
 //AUCTION 
 export const SET_AUCTION_DATA = 'SET_AUCTION_DATA'
@@ -3020,6 +3025,7 @@ export const PROFITBULKUPLOAD = 'Profit'
 export const ASSEMBLYORCOMPONENTSRFQ = "Assembly Or Components RFQ"
 export const BOUGHTOUTPARTSRFQ = "Bought Out Parts RFQ"
 export const RAWMATERIALSRFQ = "Raw Materials RFQ"
+export const SAP_PUSH = "SAP Push"
 
 
 
@@ -3260,7 +3266,7 @@ export const RAWMATERIALCOST = 'Raw Material Other Cost'
 export const COSTINGCONDITIONCOST = 'Costing Condition Cost'
 
 //VERSION 
-export const VERSION = "V3.1.13";
+export const VERSION = "V3.1.15";
 
 
 

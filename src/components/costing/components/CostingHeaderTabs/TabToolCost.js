@@ -206,8 +206,13 @@ function TabToolCost(props) {
   * @description SET APPLICABILITY
   */
   const onPressApplicability = () => {
-    setIsApplicableProcessWise(!IsApplicableProcessWise)
-    dispatch(isToolDataChange(true))
+    setGridData([])
+    setToolCost([], true)
+    setTimeout(() => {
+      setIsApplicableProcessWise(!IsApplicableProcessWise)
+      dispatch(isToolDataChange(true))
+    }, 300);
+
   }
 
   useEffect(() => {

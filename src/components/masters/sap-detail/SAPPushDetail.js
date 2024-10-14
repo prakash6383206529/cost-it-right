@@ -4,27 +4,33 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Container, Row, Col, } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
 import { AsyncSearchableSelectHookForm, SearchableSelectHookForm, TextFieldHookForm } from '../../layout/HookFormInputs';
-import { getPlantSelectListByType, getVendorNameByVendorSelectList } from '../../../actions/Common';
+import { getPlantSelectListByType, getTaxCodeSelectList, getVendorNameByVendorSelectList } from '../../../actions/Common';
 import { autoCompleteDropdown, autoCompleteDropdownPart } from '../../common/CommonFunctions';
 import { MESSAGES } from '../../../config/message';
 import { checkWhiteSpaces, getCodeBySplitting, } from "../../../helper/validation";
 import { VBC_VENDOR_TYPE, ZBC, searchCount } from '../../../config/constants';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { getPartSelectListWtihRevNo } from '../actions/Volume';
-import { getMaterialGroupByPart, getPurcahseOrganisationByPlant, getSAPDetailById, saveSAPDetail, updateSAPDetail } from '../actions/SAPDetail';
+import { getAllPartBopRmList, getMaterialGroupByPart, getPurcahseOrganisationByPlant, getSAPDetailById, saveSAPDetail, updateSAPDetail } from '../actions/SAPDetail';
 import Toaster from '../../common/Toaster';
 import Button from '../../layout/Button';
+import { getExternalIntegrationEvaluationType } from '../../costing/actions/Costing';
+import { getAllReasonAPI } from '../actions/ReasonMaster';
 import { useLabels } from '../../../helper/core';
 
 function SAPPushDetail(props) {
     const { isEditFlag, id } = props
-    const vendorLabel = useLabels()
+    const { vendorLabel } = useLabels()
     const [data, setData] = useState({})
     //dropdown loader 
     const [inputLoader, setInputLoader] = useState(false)
     const [VendorInputLoader, setVendorInputLoader] = useState(false)
+    const [reasonOption, setReasonOption] = useState([])
+    const [selectedReason, setSelectedReason] = useState(null);
     const [vendorName, setVendorName] = useState('')
     const [partName, setPartName] = useState('')
+    const [partNumber, setPartNumber] = useState('')
+    const [plantCode, setPlantCode] = useState('')
     const dispatch = useDispatch()
     const { register, handleSubmit, control, setValue, getValues, formState: { errors } } = useForm({
         mode: 'onChange',
@@ -33,27 +39,38 @@ function SAPPushDetail(props) {
     })
 
     const plantSelectList = useSelector(state => state.comman.plantSelectList);
+    const taxCodeList = useSelector(state => state.comman.taxCodeList)
+    const { evaluationType } = useSelector((state) => state?.costing)
     const VendorLoaderObj = { isLoader: VendorInputLoader }
     const plantLoaderObj = { isLoader: inputLoader }
 
     useEffect(() => {
         dispatch(getPlantSelectListByType(ZBC, 'MASTER', '', () => { }))
+        dispatch(getTaxCodeSelectList(() => { }))
+        dispatch(getAllReasonAPI(true, (res) => {
+            if (res.data.Result) {
+                setReasonOption(res.data.DataList);
+                setSelectedReason(res.data.DataList[0] || null);
+            }
+        }));
         if (isEditFlag) {
             dispatch(getSAPDetailById(id, res => {
                 if (res?.data?.Result) {
-                    setData(res?.data?.Data)
-                    setValue('MaterialGroup', res?.data?.Data?.MaterialGroup)
-                    setValue('PurcahaseOrganisation', res?.data?.Data?.PurchasingOrg)
-                    setValue('PurcahaseGroup', res?.data?.Data?.PurchasingGroup)
-                    setValue('Vendor', { label: res?.data?.Data.Vendor, value: res?.data?.Data?.VendorId })
-                    setValue('PartNumber', { label: res?.data?.Data.PartNumber, value: res?.data?.Data?.PartId })
-                    setValue('Plant', { label: res?.data?.Data.Plant, value: res?.data?.Data?.PlantId })
+                    const sapData = res?.data?.Data;
+                    setData(sapData);
+
+                    // Set values for each field
+                    setValue('PartNumber', { label: sapData?.PartNumber, value: sapData?.PartId });
+                    setValue('PlantCode', { label: sapData?.Plant, value: sapData?.PlantId });
+                    setValue('VendorCode', { label: sapData?.Vendor, value: sapData?.VendorId });
+                    setValue('MaterialGroup', sapData?.MaterialGroup);
+                    setValue('PurcahaseOrg', sapData?.PurchasingOrg);
+                    setValue('ValuationType', sapData?.ValuationType);
+                    setValue('InfoCategory', sapData?.InfoCategory);
+                    setValue('TaxCode', { label: sapData?.TaxCode, value: sapData?.TaxCode });
+                    setValue('PlannedDelTime', sapData?.PlannedDelTime);
                 }
             }))
-        }
-        return () => {
-            reactLocalStorage?.setObject('vendorData', [])
-            reactLocalStorage?.setObject('partData', [])
         }
     }, []);
 
@@ -63,13 +80,36 @@ function SAPPushDetail(props) {
     */
     const renderListing = (label) => {
         const temp = [];
-        if (label === 'DestinationPlant') {
+        if (label === 'PlantCode') {
             plantSelectList && plantSelectList.map((item) => {
                 if (item.PlantId === '0') return false
                 temp.push({ label: item.PlantNameCode, value: item.PlantId, PlantName: item.PlantName, PlantCode: item.PlantCode })
                 return null
             })
             return temp
+        }
+        else if (label === 'TaxCode') {
+            taxCodeList && taxCodeList?.map((item) => {
+                if (item?.TaxCodeId === '0') return false
+                temp.push({ label: item.TaxCodeAndDescription, value: item.TaxCodeId, TaxCode: item.TaxCode, Description: item.Description })
+                return null
+            })
+            return temp
+        }
+        else if (label === 'reason') {
+            // Map options for 'department'
+            // Example logic...
+            reasonOption && reasonOption.map(item => {
+                if (item?.Value === '0') return false
+                temp.push({ label: item?.Reason, value: item?.ReasonId })
+            });
+            return temp;
+        } else if (label === 'ValuationType') {
+            evaluationType && evaluationType?.map(item => {
+                if (item?.Value === '') return false
+                temp.push({ label: item?.Text, value: item?.Value })
+            });
+            return temp;
         }
     }
 
@@ -119,12 +159,12 @@ function SAPPushDetail(props) {
         const resultInput = inputValue.slice(0, searchCount)
         if (inputValue?.length >= searchCount && partName !== resultInput) {
 
-            const res = await getPartSelectListWtihRevNo(resultInput, null, null, null)
+            const res = await getAllPartBopRmList(resultInput)
 
             setPartName(resultInput)
             let partDataAPI = res?.data?.DataList
             if (inputValue) {
-                return autoCompleteDropdownPart(inputValue, partDataAPI, false, [], true)
+                return autoCompleteDropdownPart(inputValue, partDataAPI, false, [], true, true)
             } else {
                 return partDataAPI
             }
@@ -135,7 +175,7 @@ function SAPPushDetail(props) {
             else {
                 let partData = reactLocalStorage?.getObject('PartData')
                 if (inputValue) {
-                    return autoCompleteDropdownPart(inputValue, partData, false, [], false)
+                    return autoCompleteDropdownPart(inputValue, partData, false, [], false, true)
                 } else {
                     return partData
                 }
@@ -147,33 +187,36 @@ function SAPPushDetail(props) {
      * @method onSubmit
      * @description For saving or updation
     */
-    const onSubmit = () => {
+    const onSubmit = (formData) => {
+        const preparedData = {};
 
-        if (getValues('PurcahaseOrganisation') === null || getValues('PurcahaseOrganisation') === '' || getValues('PurcahaseOrganisation') === '-') {
-            Toaster.warning('Purcahase Organisation is mandatory')
+        for (const [key, value] of Object.entries(formData)) {
+            if (typeof value === 'object' && value !== null) {
+                if (key === 'PartNumber' || key === 'VendorCode') {
+                    preparedData[key] = value.label;
+                } else if (key === 'PlantCode') {
+                    preparedData[key] = value.PlantCode;
+                } else if (key === 'TaxCode') {
+                    preparedData[key] = value.TaxCode;
+                } else if (key === 'reason') {
+                    preparedData[key] = value.value;
+                } else {
+                    preparedData[key] = value.label || value.value;
+                }
+            } else {
+                preparedData[key] = value;
+            }
         }
-
-        if (getValues('MaterialGroup') === null || getValues('MaterialGroup') === '' || getValues('MaterialGroup') === '-') {
-            Toaster.warning('Material Group is mandatory')
-        }
-        let obj = {}
-
-        obj.PartNumber = getValues('PartNumber').label
-        obj.PlantCode = getCodeBySplitting(getValues('Plant').label)
-        obj.MaterialGroup = getValues('MaterialGroup')
-        obj.PurchasingOrg = getValues('PurcahaseOrganisation')
-        obj.PurchasingGroup = getValues('PurcahaseGroup')
-        obj.VendorCode = getCodeBySplitting(getValues('Vendor').label)
         if (isEditFlag) {
-            obj.SapPushDetailId = data.SapPushDetailId
-            dispatch(updateSAPDetail(obj, res => {
+            preparedData.SapPushDetailId = data.SapPushDetailId
+            dispatch(updateSAPDetail(preparedData, res => {
                 if (res?.data?.Result) {
                     Toaster.success('SAP Detail updated successfully.')
                     props.closeDrawer('submit')
                 }
             }))
         } else {
-            dispatch(saveSAPDetail(obj, res => {
+            dispatch(saveSAPDetail(preparedData, res => {
                 if (res?.data?.Result) {
                     Toaster.success('SAP Detail added successfully.')
                     props.closeDrawer('submit')
@@ -185,7 +228,18 @@ function SAPPushDetail(props) {
      * @method handlePartName
      * @description Get Material group from API on change of part
     */
+    const getEvaluationType = (plantCode, partNumber) => {
+        let reqData = {
+            plantCode: plantCode,
+            partNumber: partNumber
+        }
+        dispatch(getExternalIntegrationEvaluationType(reqData, res => { }))
+    }
     const handlePartName = (value) => {
+        setPartNumber(value.label)
+        if (value.value && plantCode !== '') {
+            getEvaluationType(plantCode, value.label)
+        }
         dispatch(getMaterialGroupByPart(value.value, res => {
             if (res?.data.Result) {
                 setValue('MaterialGroup', res.data.Data)
@@ -200,14 +254,18 @@ function SAPPushDetail(props) {
     * @description Get Purchase Organisation from API on change of plant
    */
     const handlePlantNameChange = (value) => {
-        dispatch(getPurcahseOrganisationByPlant(value.value, res => {
-            if (res?.data.Result) {
-                setValue('PurcahaseOrganisation', res.data.Data)
-            }
-            else if (res.status === 204) {
-                Toaster.warning('Purchase Organisation does not exist for this plant.')
-            }
-        }))
+        setPlantCode(value.PlantCode)
+        if (value.value && partNumber !== '') {
+            getEvaluationType(value.PlantCode, partNumber)
+        }
+        // dispatch(getPurcahseOrganisationByPlant(value.value, res => {
+        //     if (res?.data.Result) {
+        //         setValue('PurcahaseOrganisation', res.data.Data)
+        //     }
+        //     else if (res.status === 204) {
+        //         Toaster.warning('Purchase Organisation does not exist for this plant.')
+        //     }
+        // }))
 
     }
     /**
@@ -230,134 +288,91 @@ function SAPPushDetail(props) {
                 onClose={(e) => cancelHandler(e)}
             >
                 <Container>
-                    <div className={"drawer-wrapper drawer-768px"}>
+                    <div className={"drawer-wrapper layout-min-width-700px"}>
                         <Row className="drawer-heading">
                             <Col>
                                 <div className={"header-wrapper left"}>
                                     <h3>{"Add SAP Detail"}</h3>
                                 </div>
-
+                                <div
+                                    onClick={cancelHandler}
+                                    className={'close-button right'}
+                                ></div>
                             </Col>
                         </Row>
 
                         <form onSubmit={handleSubmit(onSubmit)}>
                             <Row className="pl-3">
-                                <Col md="12">
-                                    <AsyncSearchableSelectHookForm
-                                        label={"Part Number"}
-                                        name="PartNumber"
-                                        placeholder={"Select"}
-                                        Controller={Controller}
-                                        control={control}
-                                        rules={{ required: true }}
-                                        register={register}
-                                        handleChange={(e) => handlePartName(e)}
-                                        mandatory={true}
-                                        errors={errors.PartNumber}
-                                        // isLoading={VendorLoaderObj}
-                                        asyncOptions={partFilterList}
-                                        NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
-                                        disabled={isEditFlag ? true : false}
-                                    />
-                                </Col>
-                                <Col md="12">
-                                    <TextFieldHookForm
-                                        label="Material Group"
-                                        name={`MaterialGroup`}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        mandatory={false}
-                                        rules={{
-                                            required: false,
-                                            validate: { checkWhiteSpaces },
-                                        }}
+                                {props.SAPDetailKeys?.map((el, index) => {
+                                    const [key, value] = Object.entries(el)[0];
+                                    if (key === 'PartNumber' || key === 'VendorCode') {
+                                        return (
+                                            <Col md="6" key={index}>
+                                                <AsyncSearchableSelectHookForm
+                                                    label={key === 'VendorCode' ? `${vendorLabel} Code` : value}
+                                                    name={`${key}`}
+                                                    placeholder={"Select"}
+                                                    Controller={Controller}
+                                                    control={control}
+                                                    rules={{ required: true }}
+                                                    register={register}
+                                                    handleChange={(e) => key === 'PartNumber' ? handlePartName(e) : {}}
+                                                    mandatory={true}
+                                                    errors={errors[key]}
+                                                    // isLoading={VendorLoaderObj}
+                                                    asyncOptions={key === 'PartNumber' ? partFilterList : filterList}
+                                                    NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
+                                                    disabled={isEditFlag ? true : false}
+                                                />
+                                            </Col>
+                                        )
+                                    } else if (key === 'PlantCode' || key === 'TaxCode' || key === 'ValuationType') {
+                                        return (
+                                            <Col md="6" key={index}>
+                                                <SearchableSelectHookForm
+                                                    label={value}
+                                                    name={key}
+                                                    placeholder={"Select"}
+                                                    Controller={Controller}
+                                                    control={control}
+                                                    rules={{ required: key === 'ValuationType' ? false : true }}
+                                                    register={register}
+                                                    options={renderListing(key)}
+                                                    mandatory={key === 'ValuationType' ? false : true}
+                                                    handleChange={(e) => handlePlantNameChange(e)}
+                                                    errors={errors[key]}
+                                                    disabled={isEditFlag && key === 'PlantCode' ? true : false}
+                                                    isLoading={plantLoaderObj}
 
-                                        className=""
-                                        customClassName={'withBorder scrap-recovery'}
-                                        errors={errors.MaterialGroup}
-                                        disabled={true}
-                                    />
-                                </Col>
-                                <Col md="12">
-                                    <AsyncSearchableSelectHookForm
-                                        label={`${vendorLabel} (Code)`}
-                                        name={"Vendor"}
-                                        placeholder={"Select"}
-                                        Controller={Controller}
-                                        control={control}
-                                        rules={{ required: true }}
-                                        register={register}
-                                        options={renderListing("Vendor")}
-                                        mandatory={true}
-                                        handleChange={() => { }}
-                                        errors={errors.Vendor}
-                                        isLoading={VendorLoaderObj}
-                                        asyncOptions={filterList}
-                                        NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
-                                        disabled={isEditFlag ? true : false}
-                                    />
-                                </Col>
+                                                />
+                                            </Col>
+                                        )
+                                    }
+                                    else {
+                                        return (
+                                            <Col md="6" key={index}>
+                                                <TextFieldHookForm
+                                                    label={value}
+                                                    name={key}
+                                                    Controller={Controller}
+                                                    control={control}
+                                                    register={register}
+                                                    mandatory={true}
+                                                    rules={{
+                                                        required: true,
+                                                        validate: { checkWhiteSpaces },
+                                                    }}
+                                                    handleChange={(e) => { }}
+                                                    className=""
+                                                    customClassName={'withBorder scrap-recovery'}
+                                                    errors={errors[key]}
+                                                    disabled={false}
+                                                />
+                                            </Col>
+                                        )
+                                    }
+                                })}
 
-                                <Col md="12">
-                                    <SearchableSelectHookForm
-                                        label={"Plant (Code)"}
-                                        name={"Plant"}
-                                        placeholder={"Select"}
-                                        Controller={Controller}
-                                        control={control}
-                                        rules={{ required: true }}
-                                        register={register}
-                                        options={renderListing("DestinationPlant")}
-                                        mandatory={true}
-                                        handleChange={(e) => handlePlantNameChange(e)}
-                                        errors={errors.Plant}
-                                        disabled={isEditFlag ? true : false}
-                                        isLoading={plantLoaderObj}
-
-                                    />
-                                </Col>
-                                <Col md="12">
-                                    <TextFieldHookForm
-                                        label="Purcahase Organisation"
-                                        name={`PurcahaseOrganisation`}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        mandatory={false}
-                                        rules={{
-                                            required: false,
-                                            validate: { checkWhiteSpaces },
-                                        }}
-
-                                        className=""
-                                        customClassName={'withBorder scrap-recovery'}
-                                        errors={errors.PurcahaseOrganisation}
-                                        disabled={true}
-                                    />
-                                </Col>
-                                <Col md="12">
-                                    <TextFieldHookForm
-                                        label="Purcahase Group"
-                                        name={`PurcahaseGroup`}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        mandatory={true}
-                                        rules={{
-                                            required: true,
-                                            validate: { checkWhiteSpaces },
-                                            maxLength: {
-                                                value: 5,
-                                                message: 'Length should not be more than 5'
-                                            },
-                                        }}
-                                        handleChange={() => { }}
-                                        className=""
-                                        customClassName={'withBorder scrap-recovery'}
-                                        errors={errors.PurcahaseGroup}
-                                    />
-                                </Col>
                             </Row>
 
                             <Row className="justify-content-between">

@@ -68,7 +68,7 @@ export const RMDomesticZBC = [
     { label: "Spec", value: "RMSpec" }, //*
     { label: "Code", value: "RawMaterialCode" }, //*
     { label: "Category", value: "Category" }, //*
-    { label: "TechnologyLabel", value: "TechnologyName", defaultValue: "Technology" }, //*
+    { label: "TechnologyName", value: "TechnologyName" },
     { label: "PlantCode", value: "DestinationPlantCode" }, //*
     { label: "VendorCode", value: "VendorCode" }, //*
     { label: "HasDifferentSource", value: "HasDifferentSource" },
@@ -8455,6 +8455,50 @@ export const AddAssemblyOrComponentTempData = [
 
     }
 ];
+export const getSAPPushHeaderData = () => {
+    // Retrieve the stored data from reactLocalStorage
+    const storedSAPDetailKeys = Object.keys(reactLocalStorage.getObject('SAPDetailKeys')).length === 0 ? [] : reactLocalStorage.getObject('SAPDetailKeys');
+    // If there's no stored data, return the default array
+    if (!storedSAPDetailKeys || storedSAPDetailKeys.length === 0) {
+        return [
+            { label: 'Part Number', value: 'PartNumber' },
+            { label: 'Plant Code', value: 'PlantCode' },
+            { label: 'Vendor Code', value: 'VendorCode' },
+            { label: 'Purchase Org', value: 'PurchaseOrg' },
+            { label: 'Valuation Type', value: 'ValuationType' },
+            { label: 'Info Category', value: 'InfoCategory' },
+            { label: 'Planned Del Time', value: 'PlannedDelTime' },
+            { label: 'Tax Code', value: 'TaxCode' },
+        ];
+    }
+
+    return storedSAPDetailKeys.map(item => {
+        const key = Object.keys(item)[0];
+        return {
+            label: key,
+            value: key
+        };
+    });
+};
+
+export const SAP_PUSH_HEADER_DATA = getSAPPushHeaderData()
+export const generateSAPPushTempData = (count = 3) => {
+    const headers = getSAPPushHeaderData();
+
+    return Array.from({ length: count }, (_, index) => {
+        const item = {};
+        headers && headers.forEach(header => {
+            if (header.value === 'PlannedDelTime') {
+                item[header.value] = (index + 1) * 10; // 10, 20, 30, ...
+            } else {
+                item[header.value] = `${header.value}${index + 1}`;
+            }
+        });
+        return item;
+    });
+};
+export const SAP_PUSH_TEMP_DATA = generateSAPPushTempData(3)
+
 export const AddAssemblyOrComponentAdditionalInfoTempData = [
     {
         Notes: "For Component, please leave Asembly Part Number empty"
@@ -8483,6 +8527,8 @@ export const typeofNpvDropdown = [
     { label: 'Additional Investment', value: 'Additional Investment' },
     { label: 'One Time Investment', value: 'One Time Investment' }
 ]
+
+
 
 export const tokenStatus = {
     PendingForApproval: 'The token is pending for approval from your side.',

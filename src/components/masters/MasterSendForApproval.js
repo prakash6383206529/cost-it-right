@@ -342,6 +342,8 @@ function MasterSendForApproval(props) {
         const approver = getValues('approver')
         if (initialConfiguration?.IsDivisionAllowedForDepartment && isFinalApprover) {
             approvalObj.IsSendForApproval = false;
+            approvalObj.ApprovalDepartmentId = userDetails().DepartmentId
+            approvalObj.DivisionId = division?.value ?? props?.divisionId ?? null
             props.handleOperation(approvalObj, props.isEdit)
         } else {
             setIsDisable(true)

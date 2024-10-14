@@ -9,7 +9,7 @@ import {
 import { getUOMSelectList, fetchStateDataAPI, getAllCity, getPlantSelectListByType, fetchCountryDataAPI, fetchCityDataAPI, getVendorNameByVendorSelectList, getCityByCountryAction, getExchangeRateSource, getCurrencySelectList, } from '../../../actions/Common';
 import { getFuelByPlant, createFuelDetail, updateFuelDetail, getFuelDetailData, getUOMByFuelId, getAllFuelAPI } from '../actions/Fuel';
 import { MESSAGES } from '../../../config/message';
-import { CBCTypeId, EMPTY_DATA, EMPTY_GUID, GUIDE_BUTTON_SHOW, searchCount, SPACEBAR, VBC_VENDOR_TYPE, VBCTypeId, ZBC, ZBCTypeId } from '../../../config/constants'
+import { CBCTypeId, EMPTY_DATA, EMPTY_GUID, ENTRY_TYPE_DOMESTIC, ENTRY_TYPE_IMPORT, GUIDE_BUTTON_SHOW, searchCount, SPACEBAR, VBC_VENDOR_TYPE, VBCTypeId, ZBC, ZBCTypeId } from '../../../config/constants'
 import { getConfigurationKey, IsFetchExchangeRateVendorWise, loggedInUserId } from "../../../helper/auth";
 import Toaster from '../../common/Toaster';
 import DatePicker from "react-datepicker";
@@ -218,13 +218,15 @@ class AddFuel extends Component {
                 StateId: item.StateId,
                 effectiveDate: DayTime(item.EffectiveDate),
                 Rate: item.Rate,
+                RateConversion: item.RateConversion,
+                RateLocalConversion: item.RateLocalConversion,
                 country: item.CountryName,
                 countryId: item.CountryId,
                 city: item.CityName,
                 cityId: item.CityId,
               }
             })
-
+            this.props.change('plantCurrency', Data?.LocalCurrency)
             this.setState({
               singlePlantSelected: { label: `${Data.FuelDetails[0]?.PlantName} (${Data.FuelDetails[0]?.PlantCode})`, value: Data.FuelDetails[0]?.PlantId },
               vendorName: { label: `${Data.FuelDetails[0]?.VendorName} (${Data.FuelDetails[0]?.VendorCode})`, value: Data.FuelDetails[0]?.VendorId },
@@ -233,7 +235,15 @@ class AddFuel extends Component {
               fuel: Data.FuelName && Data.FuelName !== undefined ? { label: Data.FuelName, value: Data.FuelId } : [],
               UOM: Data.UnitOfMeasurement !== undefined ? { label: Data.UnitOfMeasurement, value: Data.UnitOfMeasurementId } : [],
               rateGrid: rateGridArray,
-              costingTypeId: Data.FuelDetails[0]?.CostingHeadId
+              costingTypeId: Data.FuelDetails[0]?.CostingHeadId,
+              ExchangeSource: Data?.ExchangeRateSourceName ? { label: Data?.ExchangeRateSourceName, value: Data?.ExchangeRateSourceId } : [],
+              plantCurrency: Data?.LocalCurrencyExchangeRate,
+              plantCurrencyID: Data?.LocalCurrencyId,
+              settlementCurrency: Data?.ExchangeRate,
+              plantExchangeRateId: Data?.LocalExchangeRateId,
+              settlementExchangeRateId: Data?.ExchangeRateId,
+              isImport: Data?.FuelEntryType === ENTRY_TYPE_IMPORT ? true : false,
+              currency: Data?.Currency ? { label: Data?.Currency, value: Data?.CurrencyId } : []
             }, () => this.setState({ isLoader: false }))
           }, 200)
         }
@@ -650,7 +660,7 @@ class AddFuel extends Component {
   * @description Used to Submit the form
   */
   onSubmit = debounce((values) => {
-    const { isEditFlag, rateGrid, fuel, UOM, FuelDetailId, DeleteChanged, HandleChanged, singlePlantSelected, country, StateName, city, costingTypeId, client, vendorName } = this.state;
+    const { isEditFlag, rateGrid, fuel, UOM, isImport, FuelDetailId, DeleteChanged, HandleChanged, singlePlantSelected, country, StateName, city, costingTypeId, client, vendorName } = this.state;
 
     if (rateGrid.length === 0) {
       Toaster.warning("Please fill fuel's rate details for atleast one state");
@@ -661,7 +671,9 @@ class AddFuel extends Component {
     let fuelDetailArray = rateGrid && rateGrid.map((item) => {
       return {
         Id: item.Id ? item.Id : null,
-        Rate: Number(item.Rate),
+        Rate: Number(item?.Rate),
+        RateConversion: Number(item?.RateConversion),
+        RateLocalConversion: Number(item?.RateLocalConversion),
         EffectiveDate: DayTime(item.effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
         // StateId: item.StateId,
         PlantId: singlePlantSelected?.value,
@@ -670,7 +682,7 @@ class AddFuel extends Component {
         CityId: item.cityId ? Number(item.cityId) : '',
         VendorId: vendorName.value ? vendorName.value : null,
         CustomerId: client.value ? client.value : null,
-        CostingHeadId: Number(costingTypeId)
+        CostingHeadId: Number(costingTypeId),
       }
     })
 
@@ -704,6 +716,16 @@ class AddFuel extends Component {
         LoggedInUserId: loggedInUserId(),
         FuelId: fuel.value,
         UnitOfMeasurementId: UOM.value,
+        FuelEntryType: isImport ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC,
+        ExchangeRateSourceName: this.state.ExchangeSource?.label || null,
+        LocalCurrencyId: this.state.plantCurrencyID || null,
+        LocalCurrency: this.props.fieldsObj?.plantCurrency || null,
+        ExchangeRate: this.state.settlementCurrency || null,
+        LocalCurrencyExchangeRate: this.state.plantCurrency || null,
+        CurrencyId: this.state.currency?.value || null,
+        Currency: this.state.currency?.label || null,
+        ExchangeRateId: this.state.settlementExchangeRateId || null,
+        LocalExchangeRateId: this.state.plantExchangeRateId || null,
         FuelDetails: fuelDetailArray,
       }
 
@@ -722,9 +744,18 @@ class AddFuel extends Component {
         LoggedInUserId: loggedInUserId(),
         FuelId: Number(fuel.value),
         UnitOfMeasurementId: UOM.value,
+        FuelEntryType: isImport ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC,
+        ExchangeRateSourceName: this.state.ExchangeSource?.label || null,
+        LocalCurrencyId: this.state.plantCurrencyID || null,
+        LocalCurrency: this.props.fieldsObj?.plantCurrency || null,
+        ExchangeRate: this.state.settlementCurrency || null,
+        LocalCurrencyExchangeRate: this.state.plantCurrency || null,
+        CurrencyId: this.state.currency?.value || null,
+        Currency: this.state.currency?.label || null,
+        ExchangeRateId: this.state.settlementExchangeRateId || null,
+        LocalExchangeRateId: this.state.plantExchangeRateId || null,
         FuelDetails: fuelDetailArray,
       }
-
 
 
       this.props.createFuelDetail(formData, (res) => {
@@ -1037,6 +1068,7 @@ class AddFuel extends Component {
                                 component={searchableSelect}
                                 className="multiselect-with-border"
                                 disabled={isEditFlag}
+                                valueDescription={this.state.ExchangeSource}
                               />
                             </Col>
                           )}
@@ -1315,7 +1347,7 @@ class AddFuel extends Component {
                                 label={`Rate (${reactLocalStorage.getObject("baseCurrency")})`}
                                 name={"RateConversion"}
                                 type="text"
-                                placeholder={isViewMode ? '-' : 'Enter'}
+                                placeholder={'-'}
                                 validate={[]}
                                 component={renderTextInputField}
                                 required={false}

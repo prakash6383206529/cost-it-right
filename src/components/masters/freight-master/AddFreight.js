@@ -353,13 +353,14 @@ class AddFreight extends Component {
               gridTable: GridArray,
               Plant: { label: Data.PlantName, value: Data.PlantId },
               effectiveDate: DayTime(Data?.EffectiveDate).isValid() ? new Date(Data?.EffectiveDate) : '',
-
               ExchangeSource: Data?.ExchangeRateSourceName !== undefined ? { label: Data?.ExchangeRateSourceName, value: Data?.ExchangeRateSourceName } : [],
               plantCurrency: Data?.LocalCurrencyExchangeRate,
               plantExchangeRateId: Data?.LocalCurrencyExchangeRateId,
               settlementCurrency: Data?.ExchangeRate,
               settlementExchangeRateId: Data?.ExchangeRateId,
-              plantCurrencyID: Data?.LocalCurrencyId
+              plantCurrencyID: Data?.LocalCurrencyId,
+              isImport: Data?.FuelEntryType === ENTRY_TYPE_IMPORT ? true : false,
+              currency: Data?.Currency ? { label: Data?.Currency, value: Data?.CurrencyId } : []
             }, () => this.setState({ isLoader: false }));
           }, 200);
         }

@@ -289,19 +289,22 @@ export const ErrorMessage = (props) => {
     useEffect(() => {
         if (getConfigurationKey()?.IsSAPConfigured) {
             const obj = {
-                TokenNumber: props?.isCosting === false ? props?.approvalNumber : null,
-                CostingId: props?.isCosting === true ? props?.CostingId : null,
+                costingId: props?.module === 'Costing' ? props?.id : null,
+                simulationId: props?.module === 'Simulation' ? props?.id : null,
+                rawMaterialId: props?.module === 'RM' ? props?.id : null,
+                boughtOutPartId: props?.module === 'BOP' ? props?.id : null
             }
             dispatch(getAmmendentStatus(obj, res => {
                 if (res?.status !== 204) {
-                    const { IsSuccessfullyUpdated, ErrorStatus } = res?.data?.DataList[0]
+                    const { IsSuccessfullyUpdated, ErrorStatus, Status } = res?.data?.DataList[0]
                     if (IsSuccessfullyUpdated === true) {
                         setIsGreen(true)
-                        setAmendentstatus(ErrorStatus)
-                        setShowButton(ErrorStatus?.length > 245 ? true : false)
+                        setAmendentstatus(Status)
+                        setShowButton(Status?.length > 245 ? true : false)
                     } else {
                         setIsGreen(false)
                         setAmendentstatus(ErrorStatus)
+                        setShowButton(ErrorStatus?.length > 245 ? true : false)
                     }
                     setRecordInsertStatusBox(true)
                 }
