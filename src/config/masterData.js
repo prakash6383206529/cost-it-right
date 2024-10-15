@@ -1137,7 +1137,7 @@ export const OverheadCBC = [
     { label: 'OverheadBOPPercentage', value: 'OverheadBOPPercentage', },
     { label: 'OverheadRMPercentage', value: 'OverheadRMPercentage', },
     { label: 'PlantCode', value: 'PlantCode' },
-    { label: "CustomerCode", value: "CustomerName" },
+    { label: "CustomerCode", value: "CustomerCode" },
     { label: 'EffectiveDate', value: 'EffectiveDate', },
     { label: 'Remark', value: 'Remark', },
 ]
@@ -1152,7 +1152,7 @@ export const OverheadCBC_TempData = [
         'OverheadBOPPercentage': '',
         'OverheadRMPercentage': '10',
         "PlantCode": '3456',
-        "CustomerName": 'C-10006',
+        "CustomerCode": 'C-10006',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
     }, {
@@ -1164,7 +1164,7 @@ export const OverheadCBC_TempData = [
         'OverheadBOPPercentage': '10',
         'OverheadRMPercentage': '',
         "PlantCode": '3456',
-        "CustomerName": 'C-10006',
+        "CustomerCode": 'C-10006',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
     }
@@ -2092,7 +2092,7 @@ export const ProfitCBC = [
     { label: 'ProfitBOPPercentage', value: 'ProfitBOPPercentage', },
     { label: 'ProfitRMPercentage', value: 'ProfitRMPercentage', },
     { label: 'PlantCode', value: 'PlantCode' },
-    { label: 'CustomerCode', value: 'CustomerName' },
+    { label: 'CustomerCode', value: 'CustomerCode' },
     { label: 'EffectiveDate', value: 'EffectiveDate', },
     { label: 'Remark', value: 'Remark', }
 ]
@@ -2107,7 +2107,7 @@ export const ProfitTempDataCBC = [
         'ProfitBOPPercentage': '',
         'ProfitRMPercentage': '10',
         "PlantCode": '3456',
-        "CustomerName": 'C-10006',
+        "CustomerCode": 'C-10006',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
     }, {
@@ -2119,7 +2119,7 @@ export const ProfitTempDataCBC = [
         'ProfitBOPPercentage': '10',
         'ProfitRMPercentage': '',
         "PlantCode": '3456',
-        "CustomerName": 'C-10006',
+        "CustomerCode": 'C-10006',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
     }
