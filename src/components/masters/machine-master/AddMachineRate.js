@@ -390,7 +390,7 @@ class AddMachineRate extends Component {
       effectiveDate: effectiveDate,
       currency: this.state.currency,
       entryType: this.state.isImport ? "Import" : "Domestic",
-      ExchangeRateSourceName: this.state.ExchangeSource?.label || null,
+      ExchangeRate: this.state.ExchangeSource || null,
       plantCurrencyRate: this.state.plantCurrency,
       settlementCurrencyRate: this.state.settlementCurrency,
       plantExchangeRateId: this.state.plantExchangeRateId,
@@ -855,10 +855,11 @@ class AddMachineRate extends Component {
     if (selectedTechnology == null || selectedTechnology.length === 0 || Object.keys(selectedTechnology).length < 0) {
       Toaster.warning(`${this.props.t('Technology', { ns: 'MasterLabels', defaultValue: 'Technology' })} should not be empty.`)
       return false;
-    } else if (this.state.isImport && this.state.currency.length === 0) {
-      Toaster.warning(`Currency should not be empty.`)
-      return false;
     }
+    // else if (this.state.isImport && this.state.currency.length === 0) {
+    //   Toaster.warning(`Currency should not be empty.`)
+    //   return false;
+    // }
     if (costingTypeId === VBCTypeId && vendorName.length === 0) {
       Toaster.warning(`Vendor and ${this.props.t('Technology', { ns: 'MasterLabels', defaultValue: 'Technology' })} should not be empty.`)
       return false;
@@ -875,7 +876,7 @@ class AddMachineRate extends Component {
       selectedEffectiveDate: this.props.fieldsObj.EffectiveDate,
       selectedCustomer: client ?? [],
       fieldsObj: this.props.fieldsObj,
-      ExchangeRateSourceName: this.state.ExchangeSource?.label || null,
+      ExchangeSource: this.state.ExchangeSource || null,
       plantCurrency: plantCurrency,
       settlementCurrency: settlementCurrency,
       plantExchangeRateId: plantExchangeRateId,

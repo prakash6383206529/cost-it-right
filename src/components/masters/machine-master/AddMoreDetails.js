@@ -170,11 +170,11 @@ class AddMoreDetails extends Component {
         processGroupTour: false
       },
       UniqueProcessId: [],
-      ExchangeSource: editDetails?.ExchangeRateSourceName || "",
+      ExchangeSource: editDetails?.ExchangeSource || "",
       entryType: editDetails?.entryType || null,
       powerIsImport: false,
       //plantCurrency: editDetails?.fieldsObj?.plantCurrency || "",
-      currency: editDetails?.currency || {},
+      currency: editDetails?.currency,
       plantCurrency: editDetails?.plantCurrency || null,
       settlementCurrency: editDetails?.settlementCurrency || null,
       plantExchangeRateId: editDetails?.plantExchangeRateId || '',
@@ -200,7 +200,9 @@ class AddMoreDetails extends Component {
     this.props.getDepreciationTypeSelectList(() => { })
     this.props.getExchangeRateSource(() => { })
 
-    this.props.change('plantCurrency', editDetails?.fieldsObj?.plantCurrency)
+    this.props.change('plantCurrency', editDetails?.fieldsObj?.plantCurrency ?? '')
+    //this.props.change('ExchangeSource', editDetails?.ExchangeSource ?? '')
+    //this.props.change('currency', editDetails?.currency ?? {})
     if (this.state?.selectedPlants?.value && this.state?.selectedPlants?.value !== null) {
       let obj = {
         plantId: this.state.selectedPlants?.value,
@@ -501,8 +503,8 @@ class AddMoreDetails extends Component {
                 LabourDetailId: el.LabourDetailId,
                 LabourCRMHead: el.LabourCRMHead,
                 MachineRate: el.MachineRate,
-                MachineRatePlantCurrency: el.MachineRatePlantCurrency,
-                MachineRateBasicCurrency: el.MachineRateBasicCurrency
+                MachineRatePlantCurrency: el?.MachineRateLocalConversion,
+                MachineRateBasicCurrency: el?.MachineRateConversion
               }
             })
 
@@ -515,6 +517,8 @@ class AddMoreDetails extends Component {
                 OutputPerHours: el.OutputPerHours,
                 OutputPerYear: el.OutputPerYear,
                 MachineRate: el.MachineRate,
+                MachineRatePlantCurrency: el?.MachineRateLocalConversion,
+                MachineRateBasicCurrency: el?.MachineRateConversion
               }
             })
 
@@ -716,6 +720,13 @@ class AddMoreDetails extends Component {
             this.setState({ plantCurrency: Data?.Currency })
             this.setState({ plantCurrencyID: Data?.CurrencyId })
             this.props.editDetails?.callExchangeRateAPI(costingTypeId, fieldsObj?.plantCurrency, currency, entryType, ExchangeSource, effectiveDate, selectedCustomer, selectedVedor, newValue)
+              .then(result => {
+                if (result) {
+                  this.setState({ ...result, showWarning: result.showWarning }, () => {
+                    this.handleCalculation(this.fieldsObj?.MachineRate);
+                  });
+                }
+              });
             if (Data?.Currency !== reactLocalStorage?.getObject("baseCurrency")) {
               this.setState({ hidePlantCurrency: false })
             } else {
@@ -1015,17 +1026,8 @@ class AddMoreDetails extends Component {
       this.props.editDetails?.callExchangeRateAPI(costingTypeId, fieldsObj?.plantCurrency, currency, entryType, ExchangeSource, date, selectedCustomer, selectedVedor, selectedPlants)
         .then(result => {
           if (result) {
-
-            this.setState({
-              ...result,
-              showWarning: result.showWarning
-            }, () => {
+            this.setState({ ...result, showWarning: result.showWarning }, () => {
               this.handleCalculation(this.fieldsObj?.MachineRate);
-              // if (result.plantCurrency) {
-              // }
-              // if (this.state.entryType) {
-              //   this.handleCalculation(this.props.fieldsObj?.MachineRate);
-              // }
             });
           }
         });
@@ -2214,9 +2216,32 @@ class AddMoreDetails extends Component {
   closePopUp = () => {
     this.setState({ showPopup: false })
   }
+  handleCurrency = (newValue) => {
+    const { fieldsObj } = this.props;
+    const { costingTypeId, selectedCustomer, selectedVedor, effectiveDate, ExchangeSource, currency, entryType, selectedPlants } = this.state;
+
+    if (newValue && newValue !== '') {
+      if (fieldsObj?.plantCurrency !== newValue?.label) {
+        this.setState({ hidePlantCurrency: false })
+      } else {
+        this.setState({ hidePlantCurrency: true })
+      }
+      this.setState({ currency: newValue }, () => {
+        this.props.editDetails?.callExchangeRateAPI(costingTypeId, fieldsObj?.plantCurrency, newValue, entryType, ExchangeSource, effectiveDate, selectedCustomer, selectedVedor, selectedPlants)
+          .then(result => {
+            if (result) {
+              this.setState({ ...result, showWarning: result?.showWarning }, () => {
+                this.props.editDetails?.handleCalculation(this.fieldsObj?.MachineRate);
+              });
+            }
+          });
+      });
+    } else {
+      this.setState({ currency: [] })
+    }
+  };
   handleMachineDetailsAPI = (data, isUpdate = false) => {
     const apiCall = isUpdate ? this.props.updateMachineDetails : this.props.createMachineDetails;
-
     apiCall(data, (res) => {
       if (res?.data?.Result) {
         data.isViewFlag = true;
@@ -2355,7 +2380,7 @@ class AddMoreDetails extends Component {
       FuelCRMHead: crmHeads.FuelCRMHead ? crmHeads.FuelCRMHead : '',
       // LabourDetailId: labourType.value,
       MachineEntryType: entryType ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC,
-      ExchangeRateSourceName: this.state.ExchangeSource?.label || null,
+      ExchangeSource: this.state.ExchangeSource || null,
       LocalCurrencyId: this.state.plantCurrencyID || null,
       LocalCurrency: this.props.fieldsObj?.plantCurrency || null,
       ExchangeRate: this.state.settlementCurrency || null,
@@ -2638,10 +2663,17 @@ class AddMoreDetails extends Component {
   }
   handleExchangeRateSource = (newValue) => {
     const { fieldsObj } = this.props
-    const { costingTypeId, vendorName, client, effectiveDate, ExchangeSource, currency, entryType, selectedPlants } = this.state;
+    const { costingTypeId, vendorName, client, effectiveDate, ExchangeSource, currency, entryType, selectedPlants, selectedCustomer, selectedVedor } = this.state;
     this.setState({ ExchangeSource: newValue }
       , () => {
-        this.props.editDetails?.callExchangeRateAPI(costingTypeId, fieldsObj?.plantCurrency, currency, entryType, newValue, effectiveDate, client, vendorName, selectedPlants)
+        this.props.editDetails?.callExchangeRateAPI(costingTypeId, fieldsObj?.plantCurrency, currency, entryType, newValue, effectiveDate, selectedCustomer, selectedVedor, selectedPlants)
+          .then(result => {
+            if (result) {
+              this.setState({ ...result, showWarning: result.showWarning }, () => {
+                this.handleCalculation(this.fieldsObj?.MachineRate);
+              });
+            }
+          });
       }
     );
   };
@@ -4866,7 +4898,7 @@ class AddMoreDetails extends Component {
                                     <th>{`UOM`}</th>
                                     {/* <th>{`Output/Hr`}</th>     COMMENTED FOR NOW MAY BE USED LATER
                                     <th>{`Output/Annum`}</th> */}
-                                    <th>{`Machine Rate (${this.state.entryType && this.state.currency?.label !== undefined ? this.state.currency.label : this.state.isImport ? "Currency" : this.state?.plantCurrency ? this.state?.plantCurrency : "Plant Currency"})`}</th>
+                                    <th>{`Machine Rate (${this.state.entryType && this.state?.currency?.label !== undefined ? this.state?.currency.label : this.state?.isImport ? "Currency" : this.state?.plantCurrency ? this.state?.plantCurrency : "Plant Currency"})`}</th>
                                     {this?.state?.entryType && <th>{`Machine Rate (${this.state?.plantCurrency ? this.state?.plantCurrency : "Plant Currency"})`}</th>}
                                     <th>{`Machine Rate (${reactLocalStorage.getObject("baseCurrency")})`}</th>
                                     <th>{`Action`}</th>
@@ -5121,7 +5153,7 @@ class AddMoreDetails extends Component {
               costingTypeId={this.state.CostingTypeId}
               levelDetails={this.state.levelDetails}
               commonFunction={this.finalUserCheckAndMasterLevelCheckFunction}
-              handleMachineDetailsAPI={this.handleMachineDetailsAPI}
+              handleOperation={this.handleMachineDetailsAPI}
               isEdit={this.state.isEditFlag}
             />
           )
@@ -5149,7 +5181,7 @@ function mapStateToProps(state) {
     'FuelCostPerUnit', 'ConsumptionPerYear',
     'NumberOfLabour', 'LabourCost', 'OutputPerHours', 'OutputPerYear', 'MachineRate', 'DateOfPurchase', 'Description', 'Specification', 'LoanCRMHead',
     'InterestCRMHead', 'WorkingShiftCRMHead', 'DepreciationCRMHead', 'AnnualMaintanceCRMHead', 'AnnualConsumableCRMHead', 'AnnualInsuranceCRMHead', 'BuildingCRMHead',
-    'MachineFloorCRMHead', 'OtherYearlyCRMHead', 'PowerCRMHead', 'FuelCRMHead', "MachineRateBasicCurrency", "MachineRatePlantCurrency", "plantCurrency");
+    'MachineFloorCRMHead', 'OtherYearlyCRMHead', 'PowerCRMHead', 'FuelCRMHead', "MachineRateBasicCurrency", "MachineRatePlantCurrency", "plantCurrency", "Currency");
 
   const { technologySelectList, plantSelectList, UOMSelectList,
     ShiftTypeSelectList, DepreciationTypeSelectList, exchangeRateSourceList, currencySelectList } = comman;
