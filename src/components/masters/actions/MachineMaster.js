@@ -443,7 +443,7 @@ export function checkAndGetMachineNumber(number, callback) {
 export function getFuelUnitCost(data, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const queryParams = `fuelId=${data?.fuelId}&plantId=${data?.plantId}&effectiveDate=${data?.effectiveDate}&toCurrency=${data?.toCurrency}&exchangeRateSourceName=${data?.exchangeRateSourceName}&costingTypeId=${data?.costingTypeId}&vendorId=${data?.vendorId}&customerId=${data?.customerId}&entryType=${data?.entryType}`
+        const queryParams = `fuelId=${data?.fuelId}&plantId=${data?.plantId}&effectiveDate=${data?.effectiveDate}&toCurrency=${data?.toCurrency}&exchangeRateSourceName=${data?.ExchangeSource}&costingTypeId=${data?.costingTypeId}&vendorId=${data?.vendorId}&customerId=${data?.customerId}&entryType=${data?.entryType}`
         axios.get(`${API.getFuelUnitCost}?${queryParams}`, config())
             .then((response) => {
                 if (response && response.data && response.data.Result === true) {
@@ -464,7 +464,7 @@ export function getFuelUnitCost(data, callback) {
 export function getLabourCost(data, date, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const queryParams = `labourTypeId=${data?.labourTypeId}&machineTypeId=${data?.machineTypeId}&plantId=${data?.plantId}&effectiveDate=${DayTime(date).format('YYYY-MM-DDTHH:mm:ss')}&toCurrency=${data?.toCurrency}&exchangeRateSourceName=${data?.exchangeRateSourceName}&vendorId=${data?.vendorId}&customerId=${data?.customerId}&costingTypeId=${data?.costingTypeId}`
+        const queryParams = `labourTypeId=${data?.labourTypeId}&machineTypeId=${data?.machineTypeId}&plantId=${data?.plantId}&effectiveDate=${DayTime(date).format('YYYY-MM-DDTHH:mm:ss')}&toCurrency=${data?.toCurrency}&exchangeRateSourceName=${data?.ExchangeSource}&vendorId=${data?.vendorId}&customerId=${data?.customerId}&costingTypeId=${data?.costingTypeId}`
         axios.get(`${API.getLabourCost}?${queryParams}`, config())
             .then((response) => {
                 if (response.data.Result === true) {

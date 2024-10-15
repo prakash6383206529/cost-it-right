@@ -167,15 +167,15 @@ class AddMachineRate extends Component {
     }
 
     /*WHEN ADD MORE DETAIL FORM IS CANCELLED in ADD FORMAT*/
-    if (data.cancelFlag) {
-      this.props.checkAndGetMachineNumber('', res => {
-        let Data = res.data.DynamicData;
-        this.props.change('MachineNumber', Data.MachineNumber)
-      })
+    // if (data.cancelFlag) {
+    //   this.props.checkAndGetMachineNumber('', res => {
+    //     let Data = res.data.DynamicData;
+    //     this.props.change('MachineNumber', Data.MachineNumber)
+    //   })
 
-      this.setState({ isFinalApprovar: data?.isFinalApprovar, finalApprovalLoader: false })
-      return true
-    }
+    //   this.setState({ isFinalApprovar: data?.isFinalApprovar, finalApprovalLoader: false })
+    //   return true
+    // }
 
     if (!editDetails.isViewMode) {
       this.props.getUOMSelectList(() => { })
@@ -307,13 +307,13 @@ class AddMachineRate extends Component {
 
     const MachineRate = fieldsObj && fieldsObj.MachineRate !== undefined ? fieldsObj.MachineRate : ""
     if (isImport) {
-      const MachineRatePlantCurrency = checkForNull(fieldsObj?.MachineRate) * checkForNull(plantCurrency)
-      this.props.change('MachineRatePlantCurrency', checkForNull(MachineRatePlantCurrency, initialConfiguration.NoOfDecimalForPrice));
-      const MachineRateBasicCurrency = checkForNull(fieldsObj?.MachineRate) * checkForNull(settlementCurrency)
-      this.props.change('MachineRateBasicCurrency', checkForNull(MachineRateBasicCurrency, initialConfiguration.NoOfDecimalForPrice));
+      const MachineRateLocalConversion = checkForNull(fieldsObj?.MachineRate) * checkForNull(plantCurrency)
+      this.props.change('MachineRateLocalConversion', checkForNull(MachineRateLocalConversion, initialConfiguration.NoOfDecimalForPrice));
+      const MachineRateConversion = checkForNull(fieldsObj?.MachineRate) * checkForNull(settlementCurrency)
+      this.props.change('MachineRateConversion', checkForNull(MachineRateConversion, initialConfiguration.NoOfDecimalForPrice));
     } else {
-      const MachineRateBasicCurrency = checkForNull(fieldsObj?.MachineRate) * checkForNull(plantCurrency)
-      this.props.change('MachineRateBasicCurrency', checkForDecimalAndNull(MachineRateBasicCurrency, initialConfiguration.NoOfDecimalForPrice));
+      const MachineRateConversion = checkForNull(fieldsObj?.MachineRate) * checkForNull(plantCurrency)
+      this.props.change('MachineRateConversion', checkForDecimalAndNull(MachineRateConversion, initialConfiguration.NoOfDecimalForPrice));
     }
   }
 
@@ -521,6 +521,7 @@ class AddMachineRate extends Component {
           // }
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
           this.props.change('Specification', Data.Specification)
+          this.props.change('plantCurrency', Data?.LocalCurrency)
           this.setState({ minEffectiveDate: Data.EffectiveDate })
           setTimeout(() => {
             let MachineProcessArray = Data && Data.MachineProcessRates.map(el => {
@@ -530,11 +531,10 @@ class AddMachineRate extends Component {
                 UnitOfMeasurement: el.UnitOfMeasurement,
                 UnitOfMeasurementId: el.UnitOfMeasurementId,
                 MachineRate: el.MachineRate,
-                MachineRatePlantCurrency: el.MachineRatePlantCurrency,
-                MachineRateBasicCurrency: el.MachineRateBasicCurrency
+                MachineRateLocalConversion: el.MachineRateLocalConversion,
+                MachineRateConversion: el.MachineRateConversion
               }
             })
-
             this.setState({
               isEditFlag: true,
               IsFinancialDataChanged: false,
@@ -558,7 +558,9 @@ class AddMachineRate extends Component {
               plantExchangeRateId: Data?.LocalCurrencyExchangeRateId,
               settlementCurrency: Data?.ExchangeRate,
               settlementExchangeRateId: Data?.ExchangeRateId,
-              plantCurrencyID: Data?.LocalCurrencyId
+              plantCurrencyID: Data?.LocalCurrencyId,
+              currency: Data?.Currency && { label: Data?.Currency, value: Data?.CurrencyId },
+              isImport: Data?.MachineEntryType === ENTRY_TYPE_IMPORT ? true : false
             }, () => {
               this.setState({ isLoader: false })
               this.props.change('MachineRate', (this.state.isProcessGroup && !this.state.isViewMode) ? Data.MachineProcessRates[0].MachineRate : '')
@@ -948,9 +950,9 @@ class AddMachineRate extends Component {
   //   const value = e.target.value;
   //   this.setState({ machineRatePlantCurrency: value })
   // }
-  // MachineRateBasicCurrency = (e) => {
+  // MachineRateConversion = (e) => {
   //   const value = e.target.value;
-  //   this.setState({ MachineRateBasicCurrency: value })
+  //   this.setState({ MachineRateConversion: value })
   // }
   HandleMachineRateSelectedCurrency = (e) => {
     const value = e.target.value;
@@ -998,8 +1000,8 @@ class AddMachineRate extends Component {
       // const MachineRate = fieldsObj && fieldsObj.MachineRate !== undefined ? checkForNull(fieldsObj.MachineRate) : 0;
 
       const MachineRate = fieldsObj.MachineRate
-      const MachineRateBasicCurrency = fieldsObj.MachineRateBasicCurrency
-      const MachineRatePlantCurrency = fieldsObj.MachineRatePlantCurrency
+      const MachineRateConversion = fieldsObj.MachineRateConversion
+      const MachineRateLocalConversion = fieldsObj.MachineRateLocalConversion
 
 
       tempArray.push(...processGrid, {
@@ -1008,8 +1010,8 @@ class AddMachineRate extends Component {
         UnitOfMeasurement: UOM.label,
         UnitOfMeasurementId: UOM.value,
         MachineRate: MachineRate,
-        MachineRateBasicCurrency: MachineRateBasicCurrency,
-        MachineRatePlantCurrency: MachineRatePlantCurrency,
+        MachineRateConversion: MachineRateConversion,
+        MachineRateLocalConversion: MachineRateLocalConversion,
       })
 
 
@@ -1022,8 +1024,8 @@ class AddMachineRate extends Component {
       }, () => this.props.change('MachineRate', isProcessGroup ? MachineRate : ''));
       this.setState({ DropdownChange: false, errorObj: { processName: false, processUOM: false, machineRate: false, machineRatePlantCurrency: false } })
     }, 200);
-    this.props.change("MachineRatePlantCurrency", '')
-    this.props.change("MachineRateBasicCurrency", '')
+    this.props.change("MachineRateLocalConversion", '')
+    this.props.change("MachineRateConversion", '')
     this.props.change("MachineRate", '')
   }
 
@@ -1053,8 +1055,8 @@ class AddMachineRate extends Component {
       return false;
     }
     const MachineRate = fieldsObj.MachineRate
-    const MachineRateBasicCurrency = fieldsObj.MachineRateBasicCurrency
-    const MachineRatePlantCurrency = fieldsObj.MachineRatePlantCurrency
+    const MachineRateConversion = fieldsObj.MachineRateConversion
+    const MachineRateLocalConversion = fieldsObj.MachineRateLocalConversion
 
     // CONDITION TO CHECK MACHINE RATE IS NEGATIVE OR NOT A NUMBER
     if (MachineRate <= 0 || isNaN(MachineRate)) {
@@ -1072,8 +1074,8 @@ class AddMachineRate extends Component {
       UnitOfMeasurement: UOM.label,
       UnitOfMeasurementId: UOM.value,
       MachineRate: MachineRate,
-      MachineRateBasicCurrency: MachineRateBasicCurrency,
-      MachineRatePlantCurrency: MachineRatePlantCurrency,
+      MachineRateConversion: MachineRateConversion,
+      MachineRateLocalConversion: MachineRateLocalConversion,
     }
 
     tempArray = Object.assign([...processGrid], { [processGridEditIndex]: tempData })
@@ -1087,8 +1089,8 @@ class AddMachineRate extends Component {
       isEditIndex: false,
 
     }, () => this.props.change('MachineRate', isProcessGroup ? MachineRate : ''),
-      // this.props.change("MachineRatePlantCurrency", isProcessGroup ? MachineRatePlantCurrency : ''),
-      // this.props.change("MachineRateBasicCurrency", isProcessGroup ? MachineRateBasicCurrency : '')
+      // this.props.change("MachineRateLocalConversion", isProcessGroup ? MachineRateLocalConversion : ''),
+      // this.props.change("MachineRateConversion", isProcessGroup ? MachineRateConversion : '')
     );
   };
 
@@ -1101,16 +1103,16 @@ class AddMachineRate extends Component {
 
     const { fieldsObj } = this.props;
     const MachineRate = fieldsObj.MachineRate
-    const MachineRatePlantCurrency = fieldsObj.MachineRatePlantCurrency
-    const MachineRateBasicCurrency = fieldsObj.MachineRateBasicCurrency
+    const MachineRateLocalConversion = fieldsObj.MachineRateLocalConversion
+    const MachineRateConversion = fieldsObj.MachineRateConversion
     this.setState({
       processName: [],
       UOM: isProcessGroup && this.state.processGrid.length !== 0 ? UOM : [],
       processGridEditIndex: '',
       isEditIndex: false,
     }, () => this.props.change('MachineRate', isProcessGroup && this.state.processGrid.length !== 0 ? MachineRate : ''),
-      this.props.change("MachineRatePlantCurrency", isProcessGroup && this.state.processGrid.length !== 0 ? MachineRatePlantCurrency : ''),
-      this.props.change("MachineRateBasicCurrency", isProcessGroup && this.state.processGrid.length !== 0 ? MachineRateBasicCurrency : '')
+      this.props.change("MachineRateLocalConversion", isProcessGroup && this.state.processGrid.length !== 0 ? MachineRateLocalConversion : ''),
+      this.props.change("MachineRateConversion", isProcessGroup && this.state.processGrid.length !== 0 ? MachineRateConversion : '')
     );
   };
 
@@ -1128,8 +1130,8 @@ class AddMachineRate extends Component {
       processName: { label: tempData.processName, value: tempData.ProcessId },
       UOM: { label: tempData.UnitOfMeasurement, value: tempData.UnitOfMeasurementId },
     }, () => this.props.change('MachineRate', tempData.MachineRate),
-      this.props.change("MachineRatePlantCurrency", tempData.MachineRatePlantCurrency),
-      this.props.change("MachineRateBasicCurrency", tempData.MachineRateBasicCurrency)
+      this.props.change("MachineRateLocalConversion", tempData.MachineRateLocalConversion),
+      this.props.change("MachineRateConversion", tempData.MachineRateConversion)
     );
     // this.setState({ DropdownChange: false })
   }
@@ -1584,8 +1586,11 @@ class AddMachineRate extends Component {
     let technologyArray = [{ label: data.Technology && data.Technology[0].Technology, value: data.Technology && data.Technology[0].TechnologyId }]
     setTimeout(() => {
       const { vendorWithVendorCodeSelectList, machineTypeSelectList, plantSelectList, } = this.props;
+      const currency = data?.Currency && { label: data?.Currency, value: data?.CurrencyId }
 
       // let technologyArray = data && data.Technology.map((item) => ({ Text: item.Technology, Value: item.TechnologyId }))
+      this.props.change('plantCurrency', data?.LocalCurrency)
+      this.props.change('Currency', currency)
 
       let MachineProcessArray = data && data.MachineProcessRates && data.MachineProcessRates.map(el => {
         return {
@@ -1619,7 +1624,10 @@ class AddMachineRate extends Component {
         processGrid: MachineProcessArray ?? [],
         remarks: data.Remark,
         files: data.Attachements,
-        effectiveDate: data.EffectiveDate
+        effectiveDate: data.EffectiveDate,
+        isImport: data.MachineEntryType === ENTRY_TYPE_IMPORT ? true : false,
+        currency: data?.Currency && { label: data?.Currency, value: data?.CurrencyId },
+        ExchangeSource: data?.ExchangeRateSourceName !== undefined ? { label: data?.ExchangeRateSourceName, value: data?.ExchangeRateSourceName } : [],
       }, () => this.setState({ isLoader: false }))
     }, 100)
   }
@@ -1703,8 +1711,8 @@ class AddMachineRate extends Component {
     const { costingTypeId, vendorName, client, effectiveDate, ExchangeSource, currency, isImport, selectedPlants } = this.state;
     this.setState({ isImport: !this.state.isImport }, () => {
       this.props.change("MachineRate", "")
-      this.props.change("MachineRatePlantCurrency", "")
-      this.props.change("MachineRateBasicCurrency", "")
+      this.props.change("MachineRateLocalConversion", "")
+      this.props.change("MachineRateConversion", "")
       this.callExchangeRateAPI(costingTypeId, fieldsObj?.plantCurrency, currency, isImport, ExchangeSource, effectiveDate, client, vendorName, selectedPlants).then(result => {
         if (result) {
 
@@ -1874,7 +1882,7 @@ class AddMachineRate extends Component {
                                 onChange={this.ImportToggle}
                                 checked={this.state.isImport}
                                 id="normal-switch"
-                                //disabled={data.isEditFlag || isViewFlag}
+                                disabled={isEditFlag || isViewFlag}
                                 background="#4DC771"
                                 onColor="#4DC771"
                                 onHandleColor="#ffffff"
@@ -1910,7 +1918,7 @@ class AddMachineRate extends Component {
                               onClick={() =>
                                 this.onPressVendor(ZBCTypeId)
                               }
-                              disabled={isEditFlag ? true : false}
+                              disabled={isEditFlag ? true : false || isViewFlag}
                             />{" "}
                             <span>Zero Based</span>
                           </Label>}
@@ -1924,7 +1932,7 @@ class AddMachineRate extends Component {
                               onClick={() =>
                                 this.onPressVendor(VBCTypeId)
                               }
-                              disabled={isEditFlag ? true : false}
+                              disabled={isEditFlag ? true : false || isViewFlag}
                             />{" "}
                             <span>{VendorLabel} Based</span>
                           </Label>}
@@ -1938,7 +1946,7 @@ class AddMachineRate extends Component {
                               onClick={() =>
                                 this.onPressVendor(CBCTypeId)
                               }
-                              disabled={isEditFlag ? true : false}
+                              disabled={isEditFlag ? true : false || isViewFlag}
                             />{" "}
                             <span>Customer Based</span>
                           </Label>}
@@ -2021,7 +2029,8 @@ class AddMachineRate extends Component {
                               handleChangeDescription={this.handleExchangeRateSource}
                               component={searchableSelect}
                               className="multiselect-with-border"
-                              disabled={isEditFlag}
+                              valueDescription={this?.state?.ExchangeSource}
+                              disabled={isEditFlag || isViewMode || isViewFlag}
                             />
                           </Col>
                         )}
@@ -2159,8 +2168,8 @@ class AddMachineRate extends Component {
                             required={true}
                             handleChangeDescription={this.handleCurrency}
                             valueDescription={this.state.currency}
-                            disabled={isEditFlag ? true : false}
-                          >{this.state.showWarning && <WarningMessage dClass="mt-1" message={`${this.state.currency.label} rate is not present in the Exchange Master`} />}
+                            disabled={isEditFlag ? true : false || isViewMode || isViewFlag}
+                          > {/* {this.state.showWarning && <WarningMessage dClass="mt-1" message={`${this.state.currency.label} rate is not present in the Exchange Master`} />} */}
                           </Field>
                         </Col>}
                         <Col md="3">
@@ -2288,7 +2297,7 @@ class AddMachineRate extends Component {
                         {(this?.state?.isImport && !this?.state?.hidePlantCurrency) && <Col md="3" className='UOM-label-container p-relative'>
                           <Field
                             label={this.DisplayMachineRatePlantCurrencyLabel()}
-                            name={"MachineRatePlantCurrency"}
+                            name={"MachineRateLocalConversion"}
                             type="text"
                             placeholder={isViewMode || lockUOMAndRate || (isEditFlag && isMachineAssociated) ? '-' : 'Enter'}
                             validate={[number, maxLength10, decimalLengthsix, hashValidation]}
@@ -2299,13 +2308,13 @@ class AddMachineRate extends Component {
                             className=" "
                             customClassName=" withBorder"
                           />
-                          {this.state.errorObj.MachineRatePlantCurrency && (this.props.fieldsObj.MachineRatePlantCurrency === undefined || Number(this.props.fieldsObj.MachineRatePlantCurrency) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
+                          {this.state?.errorObj?.MachineRateLocalConversion && (this.props?.fieldsObj?.MachineRateLocalConversion === undefined || Number(this.props?.fieldsObj?.MachineRateLocalConversion) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
                         </Col>}
 
                         {!this?.state?.hidePlantCurrency && <Col md="3" className='UOM-label-container p-relative'>
                           <Field
                             label={this.DisplayMachineRateBaseCurrencyLabel()}
-                            name={"MachineRateBasicCurrency"}
+                            name={"MachineRateConversion"}
                             type="text"
                             placeholder={isViewMode || lockUOMAndRate || (isEditFlag && isMachineAssociated) ? '-' : 'Enter'}
                             validate={[number, maxLength10, decimalLengthsix, hashValidation]}
@@ -2316,7 +2325,7 @@ class AddMachineRate extends Component {
                             className=" "
                             customClassName=" withBorder"
                           />
-                          {this.state.errorObj.MachineRateBasicCurrency && (this.props.fieldsObj.MachineRateBasicCurrency === undefined || Number(this.props.fieldsObj.MachineRateBasicCurrency) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
+                          {this.state?.errorObj?.MachineRateConversion && (this.props?.fieldsObj?.MachineRateConversion === undefined || Number(this.props?.fieldsObj?.MachineRateConversion) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
                         </Col>}
                         <Col md="3" className='mb-2 d-flex align-items-center'>
                           <div>
@@ -2377,8 +2386,8 @@ class AddMachineRate extends Component {
                                       <td>{item.processName}</td>
                                       <td className='UOM-label-container'>{displayUOM(item.UnitOfMeasurement)}</td>
                                       <td>{checkForDecimalAndNull(item.MachineRate, initialConfiguration.NoOfDecimalForPrice)}</td>
-                                      {this?.state?.isImport && <td>{checkForDecimalAndNull(item.MachineRatePlantCurrency, initialConfiguration.NoOfDecimalForPrice)}</td>}
-                                      <td>{checkForDecimalAndNull(item.MachineRateBasicCurrency, initialConfiguration.NoOfDecimalForPrice)}</td>
+                                      {this?.state?.isImport && <td>{checkForDecimalAndNull(item?.MachineRateLocalConversion, initialConfiguration?.NoOfDecimalForPrice)}</td>}
+                                      <td>{checkForDecimalAndNull(item?.MachineRateConversion, initialConfiguration?.NoOfDecimalForPrice)}</td>
 
                                       <td>
                                         {/* {!this.state.IsDetailedEntry && */}
@@ -2615,7 +2624,7 @@ class AddMachineRate extends Component {
 */
 function mapStateToProps(state) {
   const { comman, machine, auth, costing, client, supplier } = state;
-  const fieldsObj = selector(state, 'MachineNumber', 'MachineName', 'TonnageCapacity', 'MachineRate', 'Description', 'EffectiveDate', 'Specification', 'vendorName', "plantCurrency", "currency", "MachineRateBasicCurrency", "MachineRatePlantCurrency");
+  const fieldsObj = selector(state, 'MachineNumber', 'MachineName', 'TonnageCapacity', 'MachineRate', 'Description', 'EffectiveDate', 'Specification', 'vendorName', "plantCurrency", "currency", "MachineRateConversion", "MachineRateLocalConversion", "ExchangeSource");
 
   const { plantList, plantSelectList, filterPlantList, UOMSelectList, exchangeRateSourceList, currencySelectList } = comman;
   const { machineTypeSelectList, processSelectList, machineData, loading, processGroupApiData } = machine;
