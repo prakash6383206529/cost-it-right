@@ -3809,7 +3809,8 @@ class AddMoreDetails extends Component {
                             <Col md="3">
                               <TooltipCustom disabledIcon={true} id="DepreciationAmount" width={'340px'} tooltipText={`Depreciation Amount = Total Cost - Cost of Scrap / ${this.state.depreciationType && this.state.depreciationType.value === SLM ? 'Life of Asset(Years)' : '(Depreciation Rate %) * Day of Purchase / 365'}`} />
                               <Field
-                                label={`Depreciation Amount (${reactLocalStorage.getObject("baseCurrency")})`}
+                                label={`Depreciation Amount  (${!entryType ? (data?.fieldsObj?.plantCurrency || 'Plant Currency') :
+                                  (data?.currency?.label || 'Currency')})`}
                                 name={this.props.fieldsObj.DepreciationAmount === 0 ? '-' : "DepreciationAmount"}
                                 type="text"
                                 id="DepreciationAmount"
@@ -3908,7 +3909,8 @@ class AddMoreDetails extends Component {
                             <Col md="3">
                               {this.state.IsAnnualMaintenanceFixed && <TooltipCustom disabledIcon={true} width={"250px"} id="AnnualMaintanceAmount" tooltipText={`Annual Maintenance Amount = ((Machine Cost + Accessories Cost) * Annual Maintenance Percentage / 100)`} />}
                               <Field
-                                label={`Annual Maintenance Amount (${reactLocalStorage.getObject("baseCurrency")})`}
+                                label={`Annual Maintenance Amount  (${!entryType ? (data?.fieldsObj?.plantCurrency || 'Plant Currency') :
+                                  (data?.currency?.label || 'Currency')})`}
                                 name={"AnnualMaintanceAmount"}
                                 id="AnnualMaintanceAmount"
                                 type="text"
@@ -3976,7 +3978,8 @@ class AddMoreDetails extends Component {
                               {this.state.IsAnnualConsumableFixed && <TooltipCustom disabledIcon={true} width={"250px"} id="AnnualConsumableAmount" tooltipText={`Annual Consumable Amount = ((Machine Cost + Accessories Cost) * % / 100)`} />}
 
                               <Field
-                                label={`Annual Consumable Amount (${reactLocalStorage.getObject("baseCurrency")})`}
+                                label={`Annual Consumable Amount  (${!entryType ? (data?.fieldsObj?.plantCurrency || 'Plant Currency') :
+                                  (data?.currency?.label || 'Currency')})`}
                                 name={"AnnualConsumableAmount"}
                                 id="AnnualConsumableAmount"
                                 type="text"
@@ -4044,7 +4047,8 @@ class AddMoreDetails extends Component {
                             <Col md="3">
                               {this.state.IsInsuranceFixed && <TooltipCustom disabledIcon={true} width={"250px"} id="AnnualInsuranceAmount" tooltipText={`Insurance Amount = ((Machine Cost + Accessories Cost) * % / 100)`} />}
                               <Field
-                                label={`Insurance Amount (${reactLocalStorage.getObject("baseCurrency")})`}
+                                label={`Insurance Amount  (${!entryType ? (data?.fieldsObj?.plantCurrency || 'Plant Currency') :
+                                  (data?.currency?.label || 'Currency')})`}
                                 name={"AnnualInsuranceAmount"}
                                 id="AnnualInsuranceAmount"
                                 type="text"
@@ -4121,7 +4125,8 @@ class AddMoreDetails extends Component {
                               <TooltipCustom disabledIcon={true} width={"250px"} id="AnnualAreaCost" tooltipText={`Annual Area Cost = Building Cost * Machine Floor Area`} />
 
                               <Field
-                                label={`Annual Area Cost (${reactLocalStorage.getObject("baseCurrency")})`}
+                                label={`Annual Area Cost  (${!entryType ? (data?.fieldsObj?.plantCurrency || 'Plant Currency') :
+                                  (data?.currency?.label || 'Currency')})`}
                                 name={this.props.fieldsObj.AnnualAreaCost === 0 ? '-' : "AnnualAreaCost"}
                                 type="text"
                                 id="AnnualAreaCost"
@@ -4152,7 +4157,8 @@ class AddMoreDetails extends Component {
 
                             <Col md="3">
                               <Field
-                                label={`Other Yearly Cost (${reactLocalStorage.getObject("baseCurrency")})`}
+                                label={`Other Yearly Cost  (${!entryType ? (data?.fieldsObj?.plantCurrency || 'Plant Currency') :
+                                  (data?.currency?.label || 'Currency')})`}
                                 name={"OtherYearlyCost"}
                                 type="text"
                                 placeholder={disableAllForm ? '-' : 'Enter'}
@@ -4168,7 +4174,8 @@ class AddMoreDetails extends Component {
                               <TooltipCustom disabledIcon={true} width={"300px"} id="TotalMachineCostPerAnnum" tooltipText={`Total Machine Cost (${reactLocalStorage.getObject("baseCurrency")}) = Annual Maintenance Amount (${reactLocalStorage.getObject("baseCurrency")}) + Annual Consumable Amount (${reactLocalStorage.getObject("baseCurrency")}) + Annual Insurance Amount (${reactLocalStorage.getObject("baseCurrency")}) + Annual Area Cost (${reactLocalStorage.getObject("baseCurrency")}) + Other Yearly Cost (${reactLocalStorage.getObject("baseCurrency")})`} />
 
                               <Field
-                                label={`Total Machine Cost/Annum (${reactLocalStorage.getObject("baseCurrency")})`}
+                                label={`Total Machine Cost/Annum  (${!entryType ? (data?.fieldsObj?.plantCurrency || 'Plant Currency') :
+                                  (data?.currency?.label || 'Currency')})`}
                                 name={this.props.fieldsObj.TotalMachineCostPerAnnum === 0 ? '-' : "TotalMachineCostPerAnnum"}
                                 type="text"
                                 id="TotalMachineCostPerAnnum"
@@ -4423,7 +4430,8 @@ class AddMoreDetails extends Component {
                                 <TooltipCustom disabledIcon={true} id="TotalPowerCostPerHour" width={"240px"} tooltipText={'Power Cost/Hour = (Efficiency %) * Power Rating * Cost/Unit'} />
 
                                 <Field
-                                  label={`Power Cost/Hour (${reactLocalStorage.getObject("baseCurrency")})`}
+                                  label={`Power Cost/Hour  (${!entryType ? (data?.fieldsObj?.plantCurrency || 'Plant Currency') :
+                                    (data?.currency?.label || 'Currency')})`}
                                   name={this.props.fieldsObj.TotalPowerCostPerHour === 0 ? '-' : "TotalPowerCostPerHour"}
                                   type="text"
                                   placeholder={'-'}
@@ -4438,7 +4446,8 @@ class AddMoreDetails extends Component {
                               </Col>
                               <Col md="3">
                                 <Field
-                                  label={`Power Cost/Annum (${reactLocalStorage.getObject("baseCurrency")})`}
+                                  label={`Power Cost/Annum  (${!entryType ? (data?.fieldsObj?.plantCurrency || 'Plant Currency') :
+                                    (data?.currency?.label || 'Currency')})`}
                                   name={this.props.fieldsObj.TotalPowerCostPerYear === 0 ? '-' : "TotalPowerCostPerYear"}
                                   type="text"
                                   placeholder={'-'}
@@ -4519,7 +4528,8 @@ class AddMoreDetails extends Component {
                             </Col>
                             <Col md="2">
                               <Field
-                                label={`Cost/Annum (${reactLocalStorage.getObject("baseCurrency")})`}
+                                label={`Cost/Annum  (${!entryType ? (data?.fieldsObj?.plantCurrency || 'Plant Currency') :
+                                  (data?.currency?.label || 'Currency')})`}
                                 name={"LabourCostPerAnnum"}
                                 type="text"
                                 placeholder={'-'}
@@ -4552,7 +4562,8 @@ class AddMoreDetails extends Component {
                             <Col md="2">
                               <TooltipCustom disabledIcon={true} id="LabourCost" tooltipText={`Total Cost = Cost/Annum * No. of People`} />
                               <Field
-                                label={`Total Cost (${reactLocalStorage.getObject("baseCurrency")})`}
+                                label={`Total Cost (${!entryType ? (data?.fieldsObj?.plantCurrency || 'Plant Currency') :
+                                  (data?.currency?.label || 'Currency')})`}
                                 name={this.props.fieldsObj.LabourCost === 0 ? '-' : "LabourCost"}
                                 type="text"
                                 id="LabourCost"
