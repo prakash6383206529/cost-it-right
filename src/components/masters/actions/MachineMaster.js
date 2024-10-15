@@ -443,7 +443,7 @@ export function checkAndGetMachineNumber(number, callback) {
 export function getFuelUnitCost(data, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const queryParams = `fuelId=${data?.fuelId}&plantId=${data?.plantId}&effectiveDate=${data?.effectiveDate}`
+        const queryParams = `fuelId=${data?.fuelId}&plantId=${data?.plantId}&effectiveDate=${data?.effectiveDate}&toCurrency=${data?.toCurrency}&exchangeRateSourceName=${data?.exchangeRateSourceName}&costingTypeId=${data?.costingTypeId}&vendorId=${data?.vendorId}&customerId=${data?.customerId}&entryType=${data?.entryType}`
         axios.get(`${API.getFuelUnitCost}?${queryParams}`, config())
             .then((response) => {
                 if (response && response.data && response.data.Result === true) {
@@ -464,7 +464,7 @@ export function getFuelUnitCost(data, callback) {
 export function getLabourCost(data, date, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const queryParams = `labourTypeId=${data?.labourTypeId}&machineTypeId=${data?.machineTypeId}&plantId=${data?.plantId}&effectiveDate=${DayTime(date).format('YYYY-MM-DDTHH:mm:ss')}`
+        const queryParams = `labourTypeId=${data?.labourTypeId}&machineTypeId=${data?.machineTypeId}&plantId=${data?.plantId}&effectiveDate=${DayTime(date).format('YYYY-MM-DDTHH:mm:ss')}&toCurrency=${data?.toCurrency}&exchangeRateSourceName=${data?.exchangeRateSourceName}&vendorId=${data?.vendorId}&customerId=${data?.customerId}&costingTypeId=${data?.costingTypeId}`
         axios.get(`${API.getLabourCost}?${queryParams}`, config())
             .then((response) => {
                 if (response.data.Result === true) {
@@ -485,7 +485,7 @@ export function getLabourCost(data, date, callback) {
 export function getPowerCostUnit(obj, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.get(`${API.getPowerCostUnit}?plantId=${obj.plantId}&effectiveDate=${DayTime(obj.effectiveDate).format('YYYY-MM-DDTHH:mm:ss')}&costingTypeId=${obj.costingTypeId}&vendorId=${obj.vendorId}&customerId=${obj.customerId}`, config())
+        axios.get(`${API.getPowerCostUnit}?plantId=${obj?.plantId}&effectiveDate=${DayTime(obj.effectiveDate).format('YYYY-MM-DDTHH:mm:ss')}&costingTypeId=${obj?.costingTypeId}&vendorId=${obj?.vendorId}&customerId=${obj?.customerId}&toCurrency=${obj?.toCurrency}&exchangeRateSourceName=${obj?.exchangeRateSourceName}&entryType=${obj?.entryType}`, config())
             .then((response) => {
                 if (response.data.Result === true) {
                     callback(response);

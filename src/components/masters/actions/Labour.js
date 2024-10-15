@@ -174,7 +174,7 @@ export function getLabourTypeByPlantSelectList(ID, callback) {
  */
 export function getLabourTypeByMachineTypeSelectList(data, callback) {
     return (dispatch) => {
-        const queryParams = `machineTypeId=${data?.machineTypeId}&plantId=${data?.plantId}&effectiveDate=${DayTime(data?.effectiveDate).format('YYYY-MM-DDTHH:mm:ss')}`
+        const queryParams = `machineTypeId=${data?.machineTypeId || ''}&plantId=${data?.plantId || ''}&effectiveDate=${data?.effectiveDate ? DayTime(data?.effectiveDate).format('YYYY-MM-DDTHH:mm:ss') : ''}&vendorId=${data?.vendorId || ''}&customerId=${data?.customerId || ''}&costingTypeId=${data?.costingTypeId || ''}`;
         if (data.machineTypeId !== '') {
             const request = axios.get(`${API.getLabourTypeByMachineTypeSelectList}?${queryParams}`, config());
             request.then((response) => {

@@ -86,7 +86,7 @@ const MachineRateListing = (props) => {
   const { globalTakes } = useSelector(state => state.pagination);
   const permissions = useContext(ApplyPermission);
   const tourStartData = useSelector(state => state.comman.tourStartData);
-  const { technologyLabel ,vendorLabel} = useLabels();
+  const { technologyLabel, vendorLabel } = useLabels();
   useEffect(() => {
     const fetchData = async () => {
       setTimeout(() => {
@@ -772,6 +772,14 @@ const MachineRateListing = (props) => {
                 { }
                 <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
                 {!isSimulation && <AgGridColumn field="Technology" headerName={technologyLabel}></AgGridColumn>}
+                <AgGridColumn field="MachineEntryType" headerName="Entry Type" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                <AgGridColumn field="Currency" headerName="Currency" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                <AgGridColumn field="LocalCurrency" headerName="Local Currency" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+
+                <AgGridColumn field="ExchangeRateSourceName" headerName="ExchangeRate SourceName" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                <AgGridColumn field="LocalCurrencyExchangeRate" headerName="Local Currency Exchange Rate" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                <AgGridColumn field="ExchangeRate" headerName="Exchange Rate" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+
                 <AgGridColumn field="MachineName" headerName="Machine Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 <AgGridColumn field="MachineNumber" headerName="Machine Number" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 <AgGridColumn field="MachineTypeName" headerName="Machine Type" cellRenderer={'hyphenFormatter'}></AgGridColumn>
