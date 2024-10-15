@@ -1730,57 +1730,15 @@ class AddMachineRate extends Component {
         }
       });
     })
-    // this.setState(prevState => ({
-    //   ...prevState,
-    //   isImport: !prevState.isImport
-    // }));
   };
-  // handleCurrency = (newValue) => {
 
-  //   const { effectiveDate } = this.state
-  //   if (newValue && newValue !== '') {
-  //     const { costingTypeId, vendorName, client } = this.state;
-  //     const vendorValue = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? vendorName.value : EMPTY_GUID) : EMPTY_GUID
-  //     const costingType = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? VBCTypeId : costingTypeId) : ZBCTypeId
-
-  //     if (newValue && newValue.length !== 0 && effectiveDate) {
-
-  //       if (IsFetchExchangeRateVendorWise() && (vendorName?.length === 0 || client?.length === 0)) {
-  //         this.setState({ showWarning: true });
-  //         return;
-  //       }
-  //       this.props.getExchangeRateByCurrency(newValue.label, costingType, DayTime(effectiveDate).format('YYYY-MM-DD'), vendorValue, client.value, false, res => {
-  //         if (Object.keys(res.data.Data).length === 0) {
-  //           this.setState({ showWarning: true });
-  //         } else {
-  //           this.setState({ showWarning: false });
-  //         }
-  //         this.setState({ currencyValue: checkForNull(res?.data?.Data?.CurrencyExchangeRate) });
-  //       });
-  //     }
-
-  //     // this.setState({ showCurrency: true })
-  //     this.setState({ currency: newValue, }, () => {
-
-  //       setTimeout(() => {
-  //         this.handleCalculation()
-  //       }, 200);
-  //     })
-  //   } else {
-  //     this.setState({ currency: [] })
-  //   }
-  // };
   handleCurrency = (newValue) => {
     const { fieldsObj } = this.props;
     const { costingTypeId, vendorName, client, effectiveDate, ExchangeSource, currency, isImport, selectedPlants } = this.state;
-
     if (newValue && newValue !== '') {
       if (fieldsObj?.plantCurrency !== newValue?.label) {
-
         this.setState({ hidePlantCurrency: false })
-
       } else {
-
         this.setState({ hidePlantCurrency: true })
       }
       this.setState({ currency: newValue }, () => {
@@ -1788,14 +1746,9 @@ class AddMachineRate extends Component {
           if (result) {
             this.setState({
               ...result,
-              showWarning: result.showWarning
+              showWarning: result?.showWarning
             }, () => {
               this.handleCalculation(this.fieldsObj?.MachineRate);
-              // if (result.plantCurrency) {
-              // }
-              // if (this.state.entryType) {
-              //   this.handleCalculation(this.props.fieldsObj?.MachineRate);
-              // }
             });
           }
         });
@@ -2169,7 +2122,8 @@ class AddMachineRate extends Component {
                             handleChangeDescription={this.handleCurrency}
                             valueDescription={this.state.currency}
                             disabled={isEditFlag ? true : false || isViewMode || isViewFlag}
-                          > {/* {this.state.showWarning && <WarningMessage dClass="mt-1" message={`${this.state.currency.label} rate is not present in the Exchange Master`} />} */}
+                          >
+                            {this.state?.showWarning && <WarningMessage dClass="mt-1" message={`${this.state?.currency?.label} rate is not present in the Exchange Master`} />}
                           </Field>
                         </Col>}
                         <Col md="3">
