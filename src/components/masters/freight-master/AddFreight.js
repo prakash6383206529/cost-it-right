@@ -1376,7 +1376,7 @@ class AddFreight extends Component {
 
 
                         </Row>
-                        <Row className="truck-load-form-container">
+                        <Row className="truck-load-form-container align-items-center pb-2">
                           <Col md="12">
                             <div className="left-border">
                               {"Load:"}
@@ -1401,7 +1401,7 @@ class AddFreight extends Component {
                               </div>
                             </div>
                           </Col>
-                          {this.state.Load?.value === FullTruckLoad && <Col md="2">
+                          {this.state.Load?.value === FullTruckLoad && <Col md="3">
                             <div className="d-flex justify-space-between align-items-center inputwith-icon">
                               <div className="fullinput-icon">
                                 <Field
@@ -1423,7 +1423,7 @@ class AddFreight extends Component {
                               </div>
                             </div>
                           </Col>}
-                          <Col md="2">
+                          <Col md="3">
                             <Field
                               name="RateCriteria"
                               type="text"
@@ -1440,7 +1440,7 @@ class AddFreight extends Component {
                             />
                             {this.state.errorObj.criteria && this.state.RateCriteria.length === 0 && <div className='text-help p-absolute'>This field is required.</div>}
                           </Col>
-                          {this.state.isImport && <Col md="2">
+                          {this.state.isImport && <Col md="3">
                             <Field
                               label={`Rate (${this.state.currency?.label ?? 'Currency'})`}
                               name={"Rate"}
@@ -1456,7 +1456,7 @@ class AddFreight extends Component {
                             />
                             {this.state.errorObj.rate && (this.props.fieldsObj === undefined || Number(this.props.fieldsObj) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
                           </Col>}
-                          <Col md="2">
+                          <Col md="3">
                             <Field
                               label={`Rate (${this.props.fieldsObj?.plantCurrency ?? 'Currency'})`}
                               name={"RateLocalConversion"}
@@ -1472,7 +1472,7 @@ class AddFreight extends Component {
                             />
                             {this.state.errorObj.rate && (this.props.fieldsObj === undefined || Number(this.props.fieldsObj) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
                           </Col>
-                          {!hidePlantCurrency && <Col md="2">
+                          {!hidePlantCurrency && <Col md="3">
                             <Field
                               label={`Rate (${reactLocalStorage.getObject("baseCurrency")})`}
                               name={"RateConversion"}
@@ -1487,50 +1487,49 @@ class AddFreight extends Component {
                               customClassName="withBorder"
                             />
                           </Col>}
-                          <Col md="2">
-                            <div className="pt-2">
-                              {this.state.isEditIndex ? (
-                                <>
-                                  <button
-                                    type="button"
-                                    className={
-                                      "btn btn-primary mt30 pull-left mr5 px-2 mb-2"
-                                    }
-                                    onClick={this.updateGrid}
-                                  >
-                                    Update
-                                  </button>
-                                  <button
-                                    type="button"
-                                    className={"reset-btn mt30 pull-left mb-2 w-auto px-1"}
+                          <Col md="3" className="pb-2">
 
-                                    onClick={this.resetGridData}
-                                  >
-                                    Cancel
-                                  </button>
-                                </>
-                              ) : (
-                                <>
-                                  <button
-                                    type="button"
-                                    disabled={isViewMode}
-                                    className={"user-btn mt30 pull-left"}
-                                    onClick={this.gridHandler}
-                                  >
-                                    <div className={"plus"}></div>
-                                    ADD
-                                  </button>
-                                  <button
-                                    type="button"
-                                    className={"reset-btn mt30 ml5 pull-left"}
-                                    onClick={this.resetGridData}
-                                    disabled={isViewMode}
-                                  >
-                                    Reset
-                                  </button>
-                                </>
-                              )}
-                            </div>
+                            {this.state.isEditIndex ? (
+                              <>
+                                <button
+                                  type="button"
+                                  className={
+                                    "btn btn-primary pull-left mr5 px-2 mb-2"
+                                  }
+                                  onClick={this.updateGrid}
+                                >
+                                  Update
+                                </button>
+                                <button
+                                  type="button"
+                                  className={"reset-btn pull-left mb-2 w-auto px-1"}
+
+                                  onClick={this.resetGridData}
+                                >
+                                  Cancel
+                                </button>
+                              </>
+                            ) : (
+                              <>
+                                <button
+                                  type="button"
+                                  disabled={isViewMode}
+                                  className={"user-btn pull-left"}
+                                  onClick={this.gridHandler}
+                                >
+                                  <div className={"plus"}></div>
+                                  ADD
+                                </button>
+                                <button
+                                  type="button"
+                                  className={"reset-btn ml5 pull-left"}
+                                  onClick={this.resetGridData}
+                                  disabled={isViewMode}
+                                >
+                                  Reset
+                                </button>
+                              </>
+                            )}
                           </Col>
                         </Row >
                         <Row>
@@ -1568,7 +1567,7 @@ class AddFreight extends Component {
                               </tbody>
                               {this.state.gridTable.length === 0 && <tbody className="border">
                                 <tr>
-                                  <td colSpan={"5"}> <NoContentFound title={EMPTY_DATA} /></td>
+                                  <td colSpan={"10"}> <NoContentFound title={EMPTY_DATA} /></td>
                                 </tr>
                               </tbody>}
                             </Table>
