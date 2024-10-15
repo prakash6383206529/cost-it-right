@@ -44,49 +44,50 @@ class DownloadUploadBOMxls extends React.Component {
       default:
         return 'foo';
     }
+  }
 
-    /**
-    * @method returnExcelColumn
-    * @description Used to get excel column names
-    */
-    returnExcelColumn = (data = [], TempData) => {
+  /**
+  * @method returnExcelColumn
+  * @description Used to get excel column names
+  */
+  returnExcelColumn = (data = [], TempData) => {
 
-      const { fileName, failedData, isFailedFlag } = this.props;
-      let dataList = [...data]
-      if (isFailedFlag) {
+    const { fileName, failedData, isFailedFlag } = this.props;
+    let dataList = [...data]
+    if (isFailedFlag) {
 
-        //BELOW CONDITION TO ADD 'REASON' COLUMN WHILE DOWNLOAD EXCEL SHEET IN CASE OF FAILED
-        let isContentReason = dataList.filter(d => d.label === 'Reason')
-        if (isContentReason.length === 0) {
-          let addObj = { label: 'Reason', value: 'Reason' }
-          dataList.push(addObj)
-        }
+      //BELOW CONDITION TO ADD 'REASON' COLUMN WHILE DOWNLOAD EXCEL SHEET IN CASE OF FAILED
+      let isContentReason = dataList.filter(d => d.label === 'Reason')
+      if (isContentReason.length === 0) {
+        let addObj = { label: 'Reason', value: 'Reason' }
+        dataList.push(addObj)
       }
-
-      return (<ExcelSheet data={isFailedFlag ? failedData : TempData} name={fileName}>
-        {dataList && dataList.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.label} />)}
-      </ExcelSheet>);
     }
 
-    render() {
-      const { isFailedFlag, fileName, } = this.props;
+    return (<ExcelSheet data={isFailedFlag ? failedData : TempData} name={fileName}>
+      {dataList && dataList.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.label} />)}
+    </ExcelSheet>);
+  }
 
-      // DOWNLOAD FILE:- CALLED WHEN FILE FAILED APART FROM ZBC AND VBC
-      if (isFailedFlag && fileName === 'BOM') {
-        return (
-          <ExcelFile hideElement={true} filename={fileName} fileExtension={'.xls'} >
-            {this.renderSwitch(fileName)}
-          </ExcelFile>
-        );
-      }
+  render() {
+    const { isFailedFlag, fileName, } = this.props;
 
-      // DISPLAY DOWNLOAD FILE BUTTON EXCEPT ZBC AND VBC TEMPLATES
+    // DOWNLOAD FILE:- CALLED WHEN FILE FAILED APART FROM ZBC AND VBC
+    if (isFailedFlag && fileName === 'BOM') {
       return (
-        <ExcelFile filename={fileName} fileExtension={'.xls'} element={<button type="button" className={'btn btn-primary pull-right w-100'}><div class="download"></div> Download File</button>}>
-          {fileName ? this.renderSwitch(fileName) : ''}
+        <ExcelFile hideElement={true} filename={fileName} fileExtension={'.xls'} >
+          {this.renderSwitch(fileName)}
         </ExcelFile>
       );
     }
+
+    // DISPLAY DOWNLOAD FILE BUTTON EXCEPT ZBC AND VBC TEMPLATES
+    return (
+      <ExcelFile filename={fileName} fileExtension={'.xls'} element={<button type="button" className={'btn btn-primary pull-right w-100'}><div class="download"></div> Download File</button>}>
+        {fileName ? this.renderSwitch(fileName) : ''}
+      </ExcelFile>
+    );
   }
+}
 
 export default withTranslation("MasterLabels")(DownloadUploadBOMxls);
