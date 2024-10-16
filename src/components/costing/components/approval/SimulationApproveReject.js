@@ -361,7 +361,7 @@ function SimulationApproveReject(props) {
     }
 
   }
-  const callApproverAPI = (divisionId) => {
+  const callApproverAPI = (dept, divisionId) => {
     let appTypeId = dataInFields?.ApprovalType?.value
     let technologyIdTemp = technologyId
     if (IsExchangeRateSimulation) {
@@ -374,7 +374,7 @@ function SimulationApproveReject(props) {
 
     let obj = {
       LoggedInUserId: userData.LoggedInUserId,
-      DepartmentId: dataInFields?.Department?.value,
+      DepartmentId: dept?.value,
       //NEED TO MAKE THIS 2   
       TechnologyId: technologyIdTemp,
       ReasonId: selectedRowData && selectedRowData[0].ReasonId ? selectedRowData[0].ReasonId : 0,
@@ -647,21 +647,21 @@ function SimulationApproveReject(props) {
         } else {
           setIsShowDivision(false)
           checkFinalUserAndGetApprovers(value, levelDetails, obj)
-          callApproverAPI()
+          callApproverAPI(value)
         }
       }))
       obj.Division = { label: value?.label, value: value?.value }
     }
     else {
       checkFinalUserAndGetApprovers(value, levelDetails, obj)
-      callApproverAPI()
+      callApproverAPI(value)
     }
     setDataInFields(obj)
   }
   const handleDivisionChange = (e) => {
     setDivision(e?.value)
     checkFinalUserAndGetApprovers(dataInFields?.Department, levelDetails, dataInFields, e?.value)
-    callApproverAPI(e?.value)
+    callApproverAPI(dataInFields?.Department, e?.value)
   }
   const fileDataCallback = (fileList) => {
     setFiles(fileList)

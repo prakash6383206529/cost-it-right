@@ -29,6 +29,7 @@ import { autoCompleteDropdown, getEffectiveDateMinDate } from '../../common/Comm
 import PopupMsgWrapper from '../../common/PopupMsgWrapper'
 import { subDays } from 'date-fns'
 import { LabelsClass } from '../../../helper/core'
+import { withTranslation } from 'react-i18next'
 
 const selector = formValueSelector('AddLabour')
 
@@ -788,7 +789,7 @@ class AddLabour extends Component {
    * @description Renders the component
    */
   render() {
-    const { handleSubmit, initialConfiguration,t } = this.props;
+    const { handleSubmit, initialConfiguration, t } = this.props;
     const { isEditFlag, isOpenMachineType, isViewMode, setDisable, gridTable, isEditMode, costingTypeId } = this.state;
     const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
 
@@ -919,7 +920,7 @@ class AddLabour extends Component {
                     <Row>
                       <Col md="12" className="filter-block">
                         <div className=" flex-fills mb-2 w-100 pl-0">
-                          <h5>{costingTypeId === CBCTypeId ? "Product:" : {VendorLabel} + ":"}</h5>
+                          <h5>{costingTypeId === CBCTypeId ? "Product:" : `${VendorLabel}:`}</h5>
                         </div>
                       </Col>
                       {this.state.IsEmployeContractual && costingTypeId !== CBCTypeId && (
@@ -1372,5 +1373,4 @@ export default connect(mapStateToProps, {
     onSubmitFail: errors => {
       focusOnError(errors);
     },
-  })(AddLabour),
-)
+  })(withTranslation(['MasterLabels'])(AddLabour)),)
