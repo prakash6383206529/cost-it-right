@@ -1358,7 +1358,7 @@ class AddFuel extends Component {
                             </div>
                           </Col>
                           <Col md="3">
-                            <div className={`${isStateOfCountryAvailable ? 'pt-2 mt-4' : 'mb-4'} pr-0`}>
+                            <div className={`pt-2 mt-4 pr-0`}>
                               {this.state.isEditIndex ? (
                                 <>
                                   <button type="button" className={"btn btn-primary pull-left mr5"} onClick={this.updateRateGrid}>Update</button>
@@ -1452,7 +1452,7 @@ class AddFuel extends Component {
                               {this.state.rateGrid.length === 0 && (
                                 <tbody className='border'>
                                   <tr>
-                                    <td colSpan={"4"}> <NoContentFound title={EMPTY_DATA} /></td>
+                                    <td colSpan={"10"}> <NoContentFound title={EMPTY_DATA} /></td>
                                   </tr>
                                 </tbody>
                               )}
