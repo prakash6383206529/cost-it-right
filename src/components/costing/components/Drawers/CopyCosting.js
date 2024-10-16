@@ -162,7 +162,7 @@ function CopyCosting(props) {
     checkCostingObj.ToCostingHeadId = costingTypeId
     checkCostingObj.ToPlantId = toPlant?.value
     checkCostingObj.ToVendorId = costingTypeId === VBCTypeId || costingTypeId === NCCTypeId ? toVendor?.value : null
-    checkCostingObj.ToCustomerId = costingTypeId === VBCTypeId ? toCustomer?.value : null
+    checkCostingObj.ToCustomerId = costingTypeId === CBCTypeId ? toCustomer?.value : null
 
     // COPY COSTING OBJECT
     copyCostingObj.ToCostingHeadId = costingTypeId

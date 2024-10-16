@@ -306,11 +306,7 @@ function ApproveRejectUI(props) {
   const submitForm = handleSubmit(() => {
     onSubmit()
   })
-  // const handleDivisionChange = (e) => {
-  //   setDivision(e?.value)
-  //   props.checkFinalUserAndGetApprovers(dataInFields?.Department, props.levelDetails, dataInFields, e?.value)
-  //   props.callApproverAPI(e?.value)
-  // }
+
   return (
     <>
       <Drawer

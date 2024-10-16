@@ -302,7 +302,7 @@ class AddIndivisualProduct extends Component {
                 DrawingNumber: values.DrawingNumber,
                 ProductGroupCode: values.ProductGroupCode,
                 Remark: values.Remark,
-                LevelValueIdRef: this.state.ProductHierarachyValueId,
+                ProductHierarchyValueDetailsIdRef: this.state.ProductHierarachyValueId,
                 EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
                 // Plants: [],
                 Attachements: updatedFiles,
@@ -334,7 +334,7 @@ class AddIndivisualProduct extends Component {
                 RevisionNumber: values.RevisionNumber,
                 DrawingNumber: values.DrawingNumber,
                 ProductGroupCode: values.ProductGroupCode,
-                LevelValueIdRef: this.state.ProductHierarachyValueId,
+                ProductHierarchyValueDetailsIdRef: this.state.ProductHierarachyValueId,
                 // Plants: [],
                 Attachements: files,
                 IsConsideredForMBOM: isImpactCalculation,
@@ -529,7 +529,7 @@ class AddIndivisualProduct extends Component {
                                                                     name="EffectiveDate"
                                                                     placeholder={isViewMode ? '-' : "Select Date"}
                                                                     selected={this.state.effectiveDate}
-                                                                    minDate={isEditFlag ? this.state.minEffectiveDate :getEffectiveDateMinDate()}
+                                                                    minDate={isEditFlag ? this.state.minEffectiveDate : getEffectiveDateMinDate()}
                                                                     onChange={this.handleEffectiveDateChange}
                                                                     type="text"
                                                                     validate={[required]}

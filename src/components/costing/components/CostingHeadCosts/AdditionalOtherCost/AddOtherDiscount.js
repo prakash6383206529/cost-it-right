@@ -501,6 +501,7 @@ function AddOtherDiscount(props) {
                                                 mandatory={true}
                                                 rules={{
                                                     required: !(CostingViewMode || Object.keys(otherCostApplicability).length === 0 || (otherCostApplicability && otherCostApplicability?.value === 'Percentage')),
+                                                    validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
                                                 }}
                                                 handleChange={(e) => {
                                                     e.preventDefault();
@@ -525,7 +526,6 @@ function AddOtherDiscount(props) {
                                             mandatory={false}
                                             rules={{
                                                 required: false,
-                                                validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
                                             }}
                                             handleChange={(e) => {
                                                 e.preventDefault();
@@ -533,7 +533,6 @@ function AddOtherDiscount(props) {
                                             defaultValue={""}
                                             className=""
                                             customClassName={"withBorder"}
-                                            errors={errors.AnyOtherCost}
                                             disabled={true}
                                         />
 
