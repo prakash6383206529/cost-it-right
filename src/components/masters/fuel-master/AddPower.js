@@ -560,17 +560,18 @@ class AddPower extends Component {
   * @description Used handle Plants
   */
   handlePlants = (e) => {
+    console.log(e, "e")
     this.setState({ selectedPlants: e })
-    this.props.getPlantUnitAPI(e?.value, (res) => {
-      let Data = res?.data?.Data
-      if (Data?.Currency !== reactLocalStorage?.getObject("baseCurrency")) {
-        this.props.change('plantCurrency', Data?.Currency)
-        this.setState({ hidePlantCurrency: false })
-        this.callExchangeRateAPI()
-      } else {
-        this.setState({ hidePlantCurrency: true })
-      }
-    })
+    // this.props.getPlantUnitAPI(e?.value, (res) => {
+    //   let Data = res?.data?.Data
+    //   if (Data?.Currency !== reactLocalStorage?.getObject("baseCurrency")) {
+    //     this.props.change('plantCurrency', Data?.Currency)
+    //     this.setState({ hidePlantCurrency: false })
+    //     this.callExchangeRateAPI()
+    //   } else {
+    //     this.setState({ hidePlantCurrency: true })
+    //   }
+    // })
   }
   handleExchangeRateSource = (newValue) => {
     this.setState({ ExchangeSource: newValue }
