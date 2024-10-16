@@ -540,6 +540,7 @@ function OtherCostDrawer(props) {
                                                 mandatory={true}
                                                 rules={{
                                                     required: false,
+                                                    validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
                                                 }}
                                                 handleChange={(e) => {
                                                     e.preventDefault();
@@ -564,7 +565,6 @@ function OtherCostDrawer(props) {
                                             mandatory={true}
                                             rules={{
                                                 required: true,
-                                                validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
                                             }}
                                             handleChange={(e) => {
                                                 e.preventDefault();
