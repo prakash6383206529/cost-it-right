@@ -4,7 +4,7 @@ import { Field, reduxForm, formValueSelector, clearFields } from 'redux-form'
 import { Row, Col, Table, Label } from 'reactstrap'
 import { required, checkForNull, positiveAndDecimalNumber, maxLength10, checkForDecimalAndNull, decimalLengthsix, number, maxPercentValue, percentageLimitValidation } from '../../../helper/validation'
 import { focusOnError, renderTextInputField, searchableSelect } from '../../layout/FormInputs'
-import { getPlantListByState } from '../actions/Fuel'
+import { getPlantListByAddress } from '../actions/Fuel'
 import { getProductGroupSelectList } from '../actions/Part'
 import { createLabour, getLabourData, updateLabour, getLabourTypeByMachineTypeSelectList, } from '../actions/Labour'
 import { getMachineTypeSelectList } from '../actions/MachineMaster'
@@ -95,7 +95,7 @@ class AddLabour extends Component {
         this.props.fetchStateDataAPI(countryId, () => { })
       })
       this.props.getLabourTypeByMachineTypeSelectList({ machineTypeId: '' }, (res) => { this.setState({ labourData: res?.data?.SelectList }) })
-      this.props.getPlantListByState('', () => { })
+      this.props.getPlantListByAddress('', () => { })
     }
     this.getDetail()
   }
@@ -282,32 +282,17 @@ class AddLabour extends Component {
     }
   }
 
-  /**
-   * @method handleState
-   * @description called
-   */
-  // handleState = (newValue, actionMeta) => {
-  //   if (newValue && newValue !== '') {
-  //     this.setState({ StateName: newValue }, () => {
-  //       const { StateName } = this.state
-  //       this.setState({ selectedPlants: [] })
-  //       this.props.getPlantListByState(StateName.value, () => { })
-  //     })
-  //   } else {
-  //     this.setState({ StateName: [] })
-  //     this.props.getPlantListByState('', () => { })
-  //   }
-  // }
+
   handleState = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
       this.setState({ StateName: newValue }, () => {
         const { StateName } = this.state
         this.setState({ selectedPlants: [] })
-        this.props.getPlantListByState(StateName.value, () => { })
+        this.props.getPlantListByAddress(StateName.value, () => { })
       })
     } else {
       this.setState({ StateName: [] })
-      this.props.getPlantListByState('', () => { })
+      this.props.getPlantListByAddress('', () => { })
 
     }
   };
@@ -1363,7 +1348,7 @@ export default connect(mapStateToProps, {
   getLabourTypeByMachineTypeSelectList,
   fetchStateDataAPI,
   getAllCity,
-  getPlantListByState,
+  getPlantListByAddress,
   getProductGroupSelectList, getClientSelectList
 })(
   reduxForm({

@@ -445,14 +445,14 @@ export function getVendorPowerDetailDataList(data, callback) {
 }
 
 /**
- * @method getPlantListByState
+ * @method getPlantListByAddress
  * @description USED TO GET PLANT SELECT LIST BY STATE
  */
-export function getPlantListByState(ID, callback) {
+export function getPlantListByAddress(cityId, stateId, countryId, callback) {
     return (dispatch) => {
-        if (ID !== '') {
+        if (cityId !== '') {
             //dispatch({ type: API_REQUEST });
-            const request = axios.get(`${API.getPlantListByState}/${ID}`, config());
+            const request = axios.get(`${API.getPlantListByAddress}?cityId=${cityId}&stateId=${stateId}&countryId=${countryId}`, config());
             request.then((response) => {
                 if (response.data.Result) {
                     dispatch({

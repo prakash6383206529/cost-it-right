@@ -18,7 +18,8 @@ export const config = () => {
 }
 
 
-const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
+// const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
+const BASE_URL = `http://10.10.1.100:4001/api/v1`;
 export const FILE_URL = `${process.env.REACT_APP_FILE_URL}`;
 
 /** Export API */
@@ -397,7 +398,7 @@ export const API = {
   updatePowerDetail: `${BASE_URL}/masters-power/update-power-detail`,
   deletePowerDetail: `${BASE_URL}/masters-power/delete-power-detail`,
   getPowerDetailDataList: `${BASE_URL}/masters-power/get-all-power-details`,
-  getPlantListByState: `${BASE_URL}/masters-fuel/get-plant-by-state-select-list`,
+  getPlantListByAddress: `${BASE_URL}/masters-fuel/get-plants-select-list-by-address-details`,
   getDieselRateByStateAndUOM: `${BASE_URL}/masters-fuel/get-fuel-rate-by-state-uom`,
   getZBCPlantList: `${BASE_URL}/masters-fuel/get-all-zbc-plant-select-list`,
   getStateSelectList: `${BASE_URL}/masters-fuel/get-all-state-select-list`,

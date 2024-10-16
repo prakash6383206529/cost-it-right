@@ -4,9 +4,9 @@ import { Field, reduxForm, formValueSelector, clearFields } from "redux-form";
 import { Row, Col, Table, Label } from 'reactstrap';
 import { required, checkForNull, getCodeBySplitting, checkForDecimalAndNull, positiveAndDecimalNumber, maxLength10, decimalLengthFour, decimalLengthThree, number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation } from "../../../helper/validation";
 import { searchableSelect, renderMultiSelectField, focusOnError, renderDatePicker, renderText, renderTextInputField } from "../../layout/FormInputs";
-import { getPowerTypeSelectList, getUOMSelectList, getPlantBySupplier, getAllCity, fetchStateDataAPI, getVendorNameByVendorSelectList, getExchangeRateSource, getCurrencySelectList } from '../../../actions/Common';
+import { getPowerTypeSelectList, getUOMSelectList, getPlantBySupplier, getVendorNameByVendorSelectList, getExchangeRateSource, getCurrencySelectList, fetchCountryDataAPI, fetchCityDataAPI, getCityByCountryAction, fetchStateDataAPI } from '../../../actions/Common';
 import {
-  getFuelByPlant, createPowerDetail, updatePowerDetail, getPlantListByState, createVendorPowerDetail, updateVendorPowerDetail, getDieselRateByStateAndUOM,
+  getFuelByPlant, createPowerDetail, updatePowerDetail, getPlantListByAddress, createVendorPowerDetail, updateVendorPowerDetail, getDieselRateByStateAndUOM,
   getPowerDetailData, getVendorPowerDetailData,
 } from '../actions/Fuel';
 import Toaster from '../../common/Toaster';
@@ -91,6 +91,10 @@ class AddPower extends Component {
       settlementCurrency: [],
       plantCurrency: [],
       ExchangeSource: [],
+      currency: null,
+      plantExchangeRateId: '',
+      settlementExchangeRateId: '',
+      plantCurrencyID: '',
       errorObj: {
         minDemand: false,
         demandCharge: false,
@@ -109,7 +113,10 @@ class AddPower extends Component {
       client: [],
       costPerUnitTooltipText: 'Please fill in the mandatory fields of State Electricity Board Power Changes section, as the calculation will be based on them.',
       segCostUnittooltipText: 'Please select the Source of Power, as the calculation will be based on them.',
+      country: [],
+      city: [],
     }
+
   }
 
   /**
@@ -124,17 +131,24 @@ class AddPower extends Component {
       this.props.getUOMSelectList(() => { })
     }
     if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
-      this.props.getAllCity(countryId => {
-        this.props.fetchStateDataAPI(countryId, () => { })
-      })
-      this.props.getPlantListByState('', () => { })
+      this.props.fetchCountryDataAPI(() => { })
+      this.props.fetchCityDataAPI(0, () => { })
       this.props.getPlantBySupplier('', () => { })
       this.props.getPowerDetailData('', () => { })
       this.props.getClientSelectList(() => { })
+      this.props.fetchStateDataAPI(0, () => { })
     }
     this.getDetails();
   }
+  callPlantApi = () => {
+    const { city, StateName, country } = this.state;
+    console.log(city)
+    const isStateOfCountryAvailable = this.state?.country?.length === 0 || this.state?.country?.label === 'India';
 
+    if (city.value) {
+      this.props.getPlantListByAddress(city.value, isStateOfCountryAvailable ? StateName.value : null, country.value, () => { })
+    }
+  }
   componentDidUpdate(prevProps) {
     if (this.props.fieldsObj !== prevProps.fieldsObj) {
       this.SEBPowerCalculation()
@@ -162,7 +176,6 @@ class AddPower extends Component {
       }
 
       this.props.getExchangeRateByCurrency(fieldsObj?.plantCurrency, costingType, DayTime(this.state?.effectiveDate).format('YYYY-MM-DD'), vendorValue, client.value, false, reactLocalStorage.getObject("baseCurrency"), ExchangeSource?.label, res => {
-        console.log(res, "res")
         if (Object.keys(res.data.Data).length === 0) {
           this.setState({ showWarning: true });
         } else {
@@ -506,21 +519,41 @@ class AddPower extends Component {
       this.setState({ isOpenVendor: false })
     }
   }
-  /**
-  * @method handleState
-  * @description called
-  */
-  handleState = (newValue, actionMeta) => {
+  countryHandler = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ StateName: newValue, selectedPlants: [] }, () => {
-        const { StateName } = this.state;
-        this.props.getPlantListByState(StateName.value, () => { })
-      })
+      this.setState({ country: newValue, state: [], city: [] }, () => {
+        this.getAllCityData()
+      });
     } else {
-      this.setState({ StateName: [], selectedPlants: [] })
-      this.props.getPlantListByState('', () => { })
+      this.setState({ country: [], state: [], city: [] })
     }
+    this.setState({ DropdownChanged: false })
   };
+
+  /**
+  * @method stateHandler
+  * @description Used to handle state
+  */
+  stateHandler = (newValue, actionMeta) => {
+    if (newValue && newValue !== '') {
+      this.setState({ StateName: newValue, city: [] }, () => {
+        const { StateName } = this.state;
+        this.props.fetchCityDataAPI(StateName.value, () => { })
+      });
+    } else {
+      this.setState({ StateName: [], city: [] });
+    }
+
+  };
+
+  getAllCityData = () => {
+    const { country } = this.state;
+    if (country && country.label !== 'India') {
+      this.props.getCityByCountryAction(country.value, '00000000000000000000000000000000', '', (res) => { })
+    } else {
+      this.props.fetchStateDataAPI(country.value, () => { })
+    }
+  }
 
   /**
   * @method handlePlants
@@ -1113,17 +1146,43 @@ class AddPower extends Component {
     this.setState({ DeleteChanged: false })
     this.resetpowerKeyValue()
   }
+  cityHandler = (newValue, actionMeta) => {
+    if (newValue && newValue !== '') {
+      this.setState({ city: newValue }, () => {
+        this.callPlantApi()
+      });
+    } else {
+      this.setState({ city: [] });
+    }
+    this.setState({ DropdownChanged: false })
+  };
 
   /**
   * @method renderListing
   * @description Used to show type of listing
   */
   renderListing = (label) => {
-    const { powerTypeSelectList, UOMSelectList, plantSelectList, stateList, clientSelectList, exchangeRateSourceList } = this.props;
+    const { powerTypeSelectList, UOMSelectList, plantSelectList, stateList, clientSelectList, exchangeRateSourceList, countryList, cityList } = this.props;
     const temp = [];
 
     if (label === 'state') {
       stateList && stateList.map(item => {
+        if (item.Value === '0') return false;
+        temp.push({ label: item.Text, value: item.Value })
+        return null
+      });
+      return temp;
+    }
+    if (label === 'country') {
+      countryList && countryList.map(item => {
+        if (item.Value === '0') return false;
+        temp.push({ label: item.Text, value: item.Value })
+        return null
+      });
+      return temp;
+    }
+    if (label === 'city') {
+      cityList && cityList.map(item => {
         if (item.Value === '0') return false;
         temp.push({ label: item.Text, value: item.Value })
         return null
@@ -1470,6 +1529,7 @@ class AddPower extends Component {
         }
       }
     };
+    const isStateOfCountryAvailable = this.state?.country?.length === 0 || this.state?.country?.label === 'India'
     return (
       <>
         {this.state.isLoader && <LoaderCustom />}
@@ -1553,25 +1613,60 @@ class AddPower extends Component {
                             <h5>{'Power For:'}</h5>
                           </div>
                         </Col>
-                        {<Col md="3">
-                          <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                            <div className="fullinput-icon">
+                        <Col md="3">
+                          <div className="form-group inputbox withBorder ">
+                            <Field
+                              name="CountryId"
+                              type="text"
+                              label="Country"
+                              component={searchableSelect}
+                              placeholder={'Select'}
+                              options={this.renderListing('country')}
+                              validate={(this.state.country == null || this.state.country.length === 0) ? [required] : []}
+                              required={true}
+                              handleChangeDescription={this.countryHandler}
+                              valueDescription={this.state.country}
+                              disabled={isViewMode}
+                            />
+                          </div>
+                        </Col>
+
+                        {isStateOfCountryAvailable &&
+                          <Col md="3">
+                            <div className="form-group inputbox withBorder ">
                               <Field
-                                name="state"
+                                name="StateId"
                                 type="text"
                                 label="State"
                                 component={searchableSelect}
-                                placeholder={isEditFlag ? '-' : 'Select'}
+                                placeholder={'Select'}
                                 options={this.renderListing('state')}
                                 validate={(this.state.StateName == null || this.state.StateName.length === 0) ? [required] : []}
                                 required={true}
-                                handleChangeDescription={this.handleState}
+                                handleChangeDescription={this.stateHandler}
                                 valueDescription={this.state.StateName}
-                                disabled={isEditFlag ? true : false}
+                                disabled={isViewMode}
                               />
                             </div>
+                          </Col>}
+
+                        <Col md="3">
+                          <div className="form-group inputbox withBorder ">
+                            <Field
+                              name="CityId"
+                              type="text"
+                              label="City"
+                              component={searchableSelect}
+                              placeholder={'Select'}
+                              options={this.renderListing('city')}
+                              validate={(this.state.city == null || this.state.city.length === 0) ? [required] : []}
+                              required={true}
+                              handleChangeDescription={this.cityHandler}
+                              valueDescription={this.state.city}
+                              disabled={isViewMode}
+                            />
                           </div>
-                        </Col>}
+                        </Col>
 
 
                         {costingTypeId === VBCTypeId && <Col md="3">
@@ -2322,9 +2417,9 @@ function mapStateToProps(state) {
     'UnitConsumptionPerAnnum', 'MaxDemandChargesKW', 'SEBCostPerUnit', 'MeterRentAndOtherChargesPerAnnum',
     'DutyChargesAndFCA', 'TotalUnitCharges', 'SEBPowerContributaion', 'AssetCost', 'AnnualCost',
     'CostPerUnitOfMeasurement', 'UnitGeneratedPerUnitOfFuel', 'UnitGeneratedPerAnnum', 'SelfGeneratedCostPerUnit',
-    'SelfPowerContribution', 'NetPowerCostPerUnit');
+    'SelfPowerContribution', 'NetPowerCostPerUnit', 'city', 'state', 'country');
 
-  const { powerTypeSelectList, UOMSelectList, filterPlantList, stateList } = comman;
+  const { powerTypeSelectList, UOMSelectList, filterPlantList, stateList, countryList, cityList, } = comman;
   const { vendorWithVendorCodeSelectList } = supplier;
   const { plantSelectList, powerData } = fuel;
   const { initialConfiguration } = auth;
@@ -2349,7 +2444,7 @@ function mapStateToProps(state) {
 
   return {
     vendorWithVendorCodeSelectList, powerTypeSelectList, UOMSelectList, filterPlantList,
-    plantSelectList, powerData, initialValues, fieldsObj, initialConfiguration, stateList, clientSelectList
+    plantSelectList, powerData, initialValues, fieldsObj, initialConfiguration, stateList, clientSelectList, countryList, cityList
   }
 }
 
@@ -2368,17 +2463,19 @@ export default connect(mapStateToProps, {
   updatePowerDetail,
   createVendorPowerDetail,
   updateVendorPowerDetail,
-  getPlantListByState,
+  getPlantListByAddress,
   getDieselRateByStateAndUOM,
   getPowerDetailData,
   getVendorPowerDetailData,
-  getAllCity,
-  fetchStateDataAPI,
   getClientSelectList,
   getExchangeRateByCurrency,
   getPlantUnitAPI,
   getExchangeRateSource,
-  getCurrencySelectList
+  getCurrencySelectList,
+  fetchCountryDataAPI,
+  fetchCityDataAPI,
+  getCityByCountryAction,
+  fetchStateDataAPI,
 })(reduxForm({
   form: 'AddPower',
   enableReinitialize: true,
