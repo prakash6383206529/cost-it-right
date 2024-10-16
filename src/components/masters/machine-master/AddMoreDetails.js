@@ -927,6 +927,8 @@ class AddMoreDetails extends Component {
   handleFuelType = (newValue, actionMeta) => {
     const { machineFullValue, effectiveDate } = this.state;
     const { data } = this.props;
+    this.props.change('FuelCostPerUnit', 0)
+
     if (newValue && newValue !== '') {
       this.setState({ fuelType: newValue }, () => {
         const { fuelType, selectedPlants, currency, ExchangeSource, costingTypeId, vendorId, customerId, selectedCustomer, selectedVedor } = this.state;
@@ -940,7 +942,7 @@ class AddMoreDetails extends Component {
             costingTypeId: costingTypeId || '',
             vendorId: selectedVedor?.value || '',
             customerId: selectedCustomer?.value || '',
-            entryType: this?.state?.entryType ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC,
+            entryType: this?.state?.powerIsImport ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC,
           }
           this.props.getFuelUnitCost(requestData, res => {
             let responseData = res?.data?.Data;
@@ -2929,6 +2931,20 @@ class AddMoreDetails extends Component {
   }
   ImportToggle = () => {
     this.setState({ powerIsImport: !this.state.powerIsImport }, () => {
+      if (this.state?.selectedPlants?.value && this.state?.selectedPlants?.value !== null) {
+        let obj = {
+          plantId: this.state.selectedPlants?.value,
+          vendorId: this.state.selectedVedor?.value ? this.state.selectedVedor?.value : '',
+          customerId: this.state.selectedCustomer?.value ? this.state.selectedCustomer?.value : '',
+          costingTypeId: this.state.CostingTypeId || null,
+          entryType: this.state.powerIsImport ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC,
+          countryId: this.state.countryId || null,
+          stateId: this.state.stateId || null,
+          cityId: this.state.cityId || null
+        }
+        // this.props.getFuelByPlant(this.state.selectedPlants?.value, () => { })
+        this.props.getFuelList(obj, () => { })
+      }
       // this.props.change("MachineRate", "")
       // this.props.change("MachineRateLocalConversion", "")
       // this.props.change("MachineRateConversion", "")
@@ -4309,6 +4325,8 @@ class AddMoreDetails extends Component {
                               <div className={'right-title'}>Yes</div>
                             </label>
                           </Col>
+                          {/* <TooltipCustom disabledIcon={true} width={"250px"} id="FuelPowerContainer" tooltipText={`Fuel data can only be fetched if the selected plant's country and city match.`} /> */}
+
                           {this.state.IsUsesFuel &&
                             <>
                               {getConfigurationKey().IsShowCRMHead && <Col md="3">
