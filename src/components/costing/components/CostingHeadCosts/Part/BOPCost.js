@@ -58,6 +58,8 @@ function BOPCost(props) {
   const { CostingEffectiveDate, ErrorObjRMCC } = useSelector(state => state.costing)
   const CostingViewMode = useContext(ViewCostingContext);
   const { t } = useTranslation("Costing")
+  const { currencySource } = useSelector((state) => state?.costing);
+
   // useEffect(() => {
   //   setValue('BOPHandlingCharges', item?.CostingPartDetails?.BOPHandlingCharges)
   // }, [])
@@ -165,7 +167,7 @@ function BOPCost(props) {
   * @description TOGGLE DRAWER
   */
   const DrawerToggle = () => {
-    if (CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
+    if (CheckIsCostingDateSelected(CostingEffectiveDate, currencySource)) return false;
     setDrawerOpen(true)
   }
 
@@ -183,9 +185,9 @@ function BOPCost(props) {
           BOPPartNumber: el.BoughtOutPartNumber,
           BOPPartName: el.BoughtOutPartName,
           Currency: el.Currency !== '-' ? el.Currency : INR,
-          LandedCostINR: (el.EntryType === 'Domestic') ? el.NetLandedCost : el.NetLandedCostConversion,
+          LandedCostINR: el.NetLandedCost,
           Quantity: 1,
-          NetBoughtOutPartCost: (el.EntryType === 'Domestic') ? el.NetLandedCost * 1 : el.NetLandedCostConversion * 1,
+          NetBoughtOutPartCost: el.NetLandedCost,
           BoughtOutPartUOM: el.UOM
         }
       })

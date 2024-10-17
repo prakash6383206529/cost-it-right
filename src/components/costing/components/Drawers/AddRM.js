@@ -40,7 +40,7 @@ function AddRM(props) {
 
   const costData = useContext(costingInfoContext)
 
-  const { rmDrawerList, CostingEffectiveDate } = useSelector(state => state.costing)
+  const { rmDrawerList, CostingEffectiveDate, currencySource } = useSelector(state => state.costing)
   const { initialConfiguration } = useSelector(state => state.auth)
   const isNFR = useContext(IsNFR);
 
@@ -358,7 +358,7 @@ function AddRM(props) {
                         <AgGridColumn field="UOM"></AgGridColumn>
                         <AgGridColumn field="BasicRatePerUOM" headerName="Basic Rate/UOM" cellRenderer={'priceFormatter'}></AgGridColumn>
                         <AgGridColumn field="ScrapRate" headerName='Scrap Rate/UOM' cellRenderer={'priceFormatter'}></AgGridColumn>
-                        <AgGridColumn field="NetLandedCostCombine" headerName={'Net Cost INR/UOM'} cellRenderer={'netLandedFormat'}></AgGridColumn>
+                        <AgGridColumn field="NetLandedCostCombine" headerName={`Net Cost ${currencySource?.label}/UOM`} cellRenderer={'netLandedFormat'}></AgGridColumn>
                         <AgGridColumn field="NetLandedCostCurrency" headerName={'Net Cost Currency/UOM'} cellRenderer={'netLandedConversionFormat'}></AgGridColumn>
 
                       </AgGridReact >

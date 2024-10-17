@@ -831,7 +831,6 @@ class AddFreight extends Component {
   onSubmit = debounce((values) => {
     const { TransportMode, vendorName, IsLoadingUnloadingApplicable, sourceLocation, destinationLocation, client,
       FreightID, gridTable, isEditFlag, DataToChange, HandleChanged, AddUpdate, DeleteChanged, costingTypeId, isImport, plantCurrency, settlementCurrency, plantExchangeRateId, ExchangeSource } = this.state;
-    console.log(this.state, 'this.state')
 
     if (this.state.effectiveDate === '' || !this.state.effectiveDate) {
       this.setState({ showEffectiveDateError: true })

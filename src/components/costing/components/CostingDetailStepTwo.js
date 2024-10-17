@@ -7,7 +7,9 @@ import {
   setOtherDiscountData,
   setCostingtype,
   setRejectionRecoveryData,
-  setOverheadProfitData
+  setOverheadProfitData,
+  setCurrencySource,
+  setExchangeRateSourceValue
 } from '../actions/Costing';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, showBopLabel } from '../../../helper';
 import DayTime from '../../common/DayTimeWrapper'
@@ -500,6 +502,8 @@ function CostingDetailStepTwo(props) {
       dispatch(setOtherCostData({ gridData: [], otherCostTotal: 0 }))
       dispatch(setOtherDiscountData({ gridData: [], totalCost: 0 }))
       dispatch(setCostingtype({}))
+      dispatch(setCurrencySource(''))
+      dispatch(setExchangeRateSourceValue(''))
       props.backBtn()
     }
   }

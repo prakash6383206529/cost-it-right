@@ -199,7 +199,6 @@ class AddBOPDomestic extends Component {
       }
 
       this.props.getExchangeRateByCurrency(fieldsObj?.plantCurrency, costingType, DayTime(this.state?.effectiveDate).format('YYYY-MM-DD'), vendorValue, client.value, false, reactLocalStorage.getObject("baseCurrency"), ExchangeSource?.label, res => {
-        console.log(res, "res")
         if (Object.keys(res.data.Data).length === 0) {
           this.setState({ showWarning: true });
         } else {
@@ -732,7 +731,6 @@ class AddBOPDomestic extends Component {
 
     const sumBase = conditionList.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCost), 0);
     let netLandedCostPlantCurrency = checkForNull(sumBase) + checkForNull(basicPriceBaseTemp)
-    console.log(this.state.currencyValue, "currencyValue")
     const netCostBaseCurrency = this.state.currencyValue * netLandedCostPlantCurrency
     this.props.change("BasicPriceBase", checkForDecimalAndNull(basicPriceBaseCurrency, initialConfiguration.NoOfDecimalForPrice))
     this.props.change('ConditionCost', checkForDecimalAndNull(sumBase, initialConfiguration.NoOfDecimalForPrice))

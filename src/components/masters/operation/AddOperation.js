@@ -899,7 +899,6 @@ class AddOperation extends Component {
       ...formData,
       ...this.state.moreOperationData
     };
-    console.log(updatedFormData, 'updatedFormData')
     apiCall(updatedFormData, (res) => {
       this.setState({ setDisable: false });
       if (res?.data?.Result) {
@@ -1143,7 +1142,6 @@ class AddOperation extends Component {
   * @description Renders the component
   */
   render() {
-    console.log(this.state.moreOperationData, 'moreOperationData')
     const { handleSubmit, initialConfiguration, isOperationAssociated, t, data } = this.props;
     const { isEditFlag, isOpenVendor, isOpenUOM, isDisableCode, isViewMode, setDisable, costingTypeId, noApprovalCycle, CostingTypePermission, disableSendForApproval, hidePlantCurrency } = this.state;
     const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;

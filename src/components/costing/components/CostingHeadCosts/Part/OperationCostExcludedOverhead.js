@@ -40,7 +40,7 @@ function OperationCostExcludedOverhead(props) {
   const [headerPinned, setHeaderPinned] = useState(true)
   const CostingViewMode = useContext(ViewCostingContext);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const { CostingEffectiveDate, ErrorObjRMCC } = useSelector(state => state.costing)
+  const { CostingEffectiveDate, ErrorObjRMCC, currencySource } = useSelector(state => state.costing)
   const [openOperationForm, setOpenOperationForm] = useState(false)
 
   useEffect(() => {
@@ -69,7 +69,7 @@ function OperationCostExcludedOverhead(props) {
   * @description TOGGLE DRAWER
   */
   const DrawerToggle = () => {
-    if (CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
+    if (CheckIsCostingDateSelected(CostingEffectiveDate, currencySource)) return false;
     setDrawerOpen(true)
   }
 

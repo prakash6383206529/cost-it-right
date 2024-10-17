@@ -55,6 +55,8 @@ function OperationCost(props) {
   const [tourState, setTourState] = useState({
     steps: []
   })
+  const { currencySource } = useSelector((state) => state?.costing);
+
   useEffect(() => {
     const Params = {
       index: 0,
@@ -91,7 +93,7 @@ function OperationCost(props) {
   * @description TOGGLE DRAWER
   */
   const DrawerToggle = () => {
-    if (CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
+    if (CheckIsCostingDateSelected(CostingEffectiveDate, currencySource)) return false;
 
     setDrawerOpen(true)
   }

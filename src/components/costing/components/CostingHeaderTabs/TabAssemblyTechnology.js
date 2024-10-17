@@ -19,7 +19,7 @@ function TabAssemblyTechnology(props) {
 
   const dispatch = useDispatch()
 
-  const { CostingEffectiveDate, checkIsDataChange } = useSelector(state => state.costing)
+  const { CostingEffectiveDate, checkIsDataChange, currencySource } = useSelector(state => state.costing)
 
   const [isOpenBOPDrawer, setIsOpenBOPDrawer] = useState(false)
 
@@ -230,7 +230,7 @@ function TabAssemblyTechnology(props) {
   }
 
   const bopHandlingDrawer = () => {
-    if (CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
+    if (CheckIsCostingDateSelected(CostingEffectiveDate, currencySource)) return false;
     setIsOpenBOPDrawer(true)
   }
 

@@ -102,7 +102,6 @@ class BOMUploadDrawer extends Component {
           let fileData = [];
           switch (String(this.props.fileName)) {
             case String(BOMBULKUPLOAD):
-              console.log(BOMUpload);
               const localizedBOMUpload = this.localizeHeaders(checkSAPCodeinExcel(BOMUpload));
               masterDataArray = localizedBOMUpload
               checkForFileHead = checkForSameFileUpload(localizedBOMUpload, fileHeads)

@@ -41,7 +41,7 @@ function SurfaceTreatmentCost(props) {
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const { CostingEffectiveDate } = useSelector(state => state.costing)
-  const { RMCCTabData } = useSelector(state => state.costing)
+  const { RMCCTabData, currencySource } = useSelector(state => state.costing)
 
   useEffect(() => {
     if (RMCCTabData?.length > 0 && RMCCTabData[index]?.CostingPartDetails?.CostingRawMaterialsCost?.length > 0) {
@@ -95,7 +95,7 @@ function SurfaceTreatmentCost(props) {
   * @description TOGGLE DRAWER
   */
   const DrawerToggle = () => {
-    if (CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
+    if (CheckIsCostingDateSelected(CostingEffectiveDate, currencySource)) return false;
     setDrawerOpen(true)
   }
 

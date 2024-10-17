@@ -1294,13 +1294,11 @@ export function getAllCities(callback) {
  * @description Used to GET ALL CITIES BY COUNTRY
  */
 // export function getCityByCountry(CountryId, StateId,CityName, callback) {
-//   console.log(CountryId, StateId,CityName);
 //   return (dispatch) => {
 //     dispatch({ type: API_REQUEST });
 //     // const request = axios.get(`${API.getCityByCountry}/${CountryId}/${StateId}`, config());
 //     const request = axios.get(`${API.getCityByCountry}?countryId=${CountryId}&stateId=${StateId}&cityName=${CityName}`, config());
 //     request.then((response) => {
-//       console.log('response: ', response);
 //       if (response.data.Result) {
 //         dispatch({
 //           type: GET_CITY_SUCCESS,

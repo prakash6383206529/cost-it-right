@@ -51,10 +51,11 @@ function PartCompoment(props) {
   const isNFR = useContext(IsNFR);
   const isPartType = useContext(IsPartType);
   const previousTab = useContext(PreviousTabData) || 0;
+  const { currencySource } = useSelector((state) => state?.costing);
 
   const toggle = (BOMLevel, PartNumber, IsOpen, AssemblyPartNumber) => {
     let isOpen = IsOpen
-    if (CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
+    if (CheckIsCostingDateSelected(CostingEffectiveDate, currencySource)) return false;
     dispatch(openCloseStatus({ RMC: !IsOpen }))
 
     if (isNFR && !openAllTabs) {
