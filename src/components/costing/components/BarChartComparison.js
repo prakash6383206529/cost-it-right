@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
-import { getCurrencySymbol } from '../../../helper';
+import { checkForDecimalAndNull, getCurrencySymbol } from '../../../helper';
 import { Bar } from 'react-chartjs-2';
 import { colorArray } from '../../dashboard/ChartsDashboard';
+import { useSelector } from 'react-redux';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ChartDataLabels);
 
 export function BarChartComparison({ costingData, currency, graphHeight = 500, graphWidth = 1000 }) {
   const [graphData, setGraphData] = useState(null);
+  const { NoOfDecimalForPrice } = useSelector(state => state.auth?.initialConfiguration)
 
   useEffect(() => {
     const prepareGraphData = () => {
@@ -17,9 +19,9 @@ export function BarChartComparison({ costingData, currency, graphHeight = 500, g
       );
       const labels = filteredCostingData?.map(item => {
         if (item?.zbc === 2) {
-          return `${item?.plantName} (${item?.vendorName})`;
+          return `${item?.plantName} - (${item?.vendorName})`;
         } else if (item?.zbc === 3) {
-          return `${item?.plantName} (${item?.customerName})`;
+          return `${item?.plantName} - (${item?.customerName})`;
         } else {
           return item?.plantName;
         }
@@ -27,34 +29,49 @@ export function BarChartComparison({ costingData, currency, graphHeight = 500, g
 
       const datasets = [
         {
-          label: 'Net RM',
+          label: 'RM Cost',
           data: filteredCostingData?.map(item => item?.netRM),
           backgroundColor: colorArray[0],
         },
         {
-          label: 'Net BOP',
-          data: filteredCostingData?.map(item => item?.netBOP),
+          label: 'BOP Cost',
+          data: filteredCostingData?.map(item => checkForDecimalAndNull(item?.netBOP, NoOfDecimalForPrice)),
           backgroundColor: colorArray[1],
         },
         {
-          label: 'Net Conversion Cost',
-          data: filteredCostingData?.map(item => item?.nConvCost),
+          label: 'Conversion Cost',
+          data: filteredCostingData?.map(item => checkForDecimalAndNull(item?.nConvCost, NoOfDecimalForPrice)),
           backgroundColor: colorArray[2],
         },
         {
-          label: 'Net Surface Treatment Cost',
-          data: filteredCostingData?.map(item => item?.netSurfaceTreatmentCost),
+          label: 'Surface Treatment Cost',
+          data: filteredCostingData?.map(item => checkForDecimalAndNull(item?.netSurfaceTreatmentCost, NoOfDecimalForPrice)),
           backgroundColor: colorArray[3],
         },
         {
-          label: 'Net Overheads & Profits',
-          data: filteredCostingData?.map(item => item?.nOverheadProfit),
+          label: 'Overheads & Profits',
+          data: filteredCostingData?.map(item => checkForDecimalAndNull(item?.nOverheadProfit, NoOfDecimalForPrice)),
           backgroundColor: colorArray[4],
         },
         {
-          label: 'Net Packaging & Freight',
-          data: filteredCostingData?.map(item => item?.nPackagingAndFreight),
+          label: 'Packaging & Freight',
+          data: filteredCostingData?.map(item => checkForDecimalAndNull(item?.nPackagingAndFreight, NoOfDecimalForPrice)),
           backgroundColor: colorArray[5],
+        },
+        {
+          label: 'Tool Cost',
+          data: filteredCostingData?.map(item => checkForDecimalAndNull(item?.toolPrice, NoOfDecimalForPrice)),
+          backgroundColor: colorArray[6],
+        },
+        {
+          label: 'Discount Cost',
+          data: filteredCostingData?.map(item => checkForDecimalAndNull(item?.otherDiscountCost, NoOfDecimalForPrice)),
+          backgroundColor: colorArray[7],
+        },
+        {
+          label: 'Other Cost',
+          data: filteredCostingData?.map(item => checkForDecimalAndNull(item?.anyOtherCostTotal, NoOfDecimalForPrice)),
+          backgroundColor: colorArray[8],
         },
       ];
 
@@ -80,14 +97,13 @@ export function BarChartComparison({ costingData, currency, graphHeight = 500, g
         },
         grid: {
           display: false,
-          color: '#71737b',  // Dark color for y-axis line
-          borderColor: '#71737b',  // Dark color for y-axis border
+          color: '#71737b',
+          borderColor: '#71737b',
           borderWidth: 1.5
         },
       },
       x: {
         stacked: true,
-        title: { display: true, text: `Cost` },
         ticks: {
           callback: function (value) {
             return getCurrencySymbol(currency) + value.toFixed(2);
@@ -95,8 +111,8 @@ export function BarChartComparison({ costingData, currency, graphHeight = 500, g
         },
         grid: {
           display: false,
-          color: '#71737b',  // Dark color for y-axis line
-          borderColor: '#71737b',  // Dark color for y-axis border
+          color: '#71737b',
+          borderColor: '#71737b',
           borderWidth: 1.5
         },
       },
@@ -106,12 +122,8 @@ export function BarChartComparison({ costingData, currency, graphHeight = 500, g
         position: 'bottom',
         labels: {
           boxWidth: 15,
-          font: { size: 10 }
+          font: { size: 13 }
         }
-      },
-      title: {
-        display: true,
-        font: { size: 14 }
       },
       tooltip: {
         enabled: true,
@@ -123,20 +135,31 @@ export function BarChartComparison({ costingData, currency, graphHeight = 500, g
           weight: 'bold',
           size: 11,
         },
-
         align: 'center',
         anchor: 'center',
         formatter: (value) => {
-          return getCurrencySymbol(currency) + value.toFixed(2);
+          return value !== 0 ? getCurrencySymbol(currency) + value : "";
         },
       }
     }
   };
 
   return (
-    <div className="chart-container" style={{ width: window.screen.width - 100, margin: '0 auto' }}>
-      <div className="graph-container d-flex align-items-center" style={{ height: `${graphHeight}px` }}>
-        {graphData && <Bar data={graphData} options={options} />}
+    <div className="chart-container mt-4 mb-2" style={{ width: window.screen.width - 100, margin: '0 auto' }}>
+      <div style={{ position: 'relative', height: `${graphHeight}px` }}>
+        <div style={{
+          position: 'absolute',
+          top: '-20px',
+          left: '0px',
+          zIndex: 10,
+          fontSize: '12px',
+          fontWeight: 'bold'
+        }}>
+          Ref: Plant (Code) - Vendor/Customer
+        </div>
+        <div className="graph-container d-flex align-items-center" style={{ height: '100%' }}>
+          {graphData && <Bar data={graphData} options={options} />}
+        </div>
       </div>
     </div>
   );

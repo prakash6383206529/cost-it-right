@@ -134,6 +134,7 @@ const CostingSummaryTable = (props) => {
   const [showPieChartObj, setShowPieChartObj] = useState([])
   const [releaseStrategyDetails, setReleaseStrategyDetails] = useState({})
   const [viewCostingData, setViewCostingData] = useState([])
+  const [viewBarChart, setviewBarChart] = useState(false)
 
   const [viewButton, setViewButton] = useState(true)
   const [editButton, setEditButton] = useState(true)
@@ -677,7 +678,7 @@ const CostingSummaryTable = (props) => {
       let tempArr = temp && temp?.filter(item => item?.bestCost !== true)
       temp = props?.bestCostObjectFunction(tempArr)
     }
-    if (simulationMode && viewCostingData?.length >= 2) {
+    if (simulationMode && viewCostingData?.length > 2 && viewCostingData?.length <= 3) {
       setIsComparing(false)
       temp.push(varianceData)
     }
@@ -900,9 +901,11 @@ const CostingSummaryTable = (props) => {
     setMultipleCostings([])
     setShowWarningMsg(true)
     if (simulationMode && e === 'submit') {
-
+      setviewBarChart(true)
       const varianceData = viewCostingData?.filter(item => item?.CostingHeading === VARIANCE);
-      setVarianceData(...varianceData)
+      if (varianceData?.length > 0) {
+        setVarianceData(...varianceData)
+      }
       const filteredCostingData = viewCostingData?.filter(item => item?.CostingHeading !== VARIANCE);
       setIsComparing(true)
       dispatch(setCostingViewData(filteredCostingData));
@@ -2152,9 +2155,16 @@ const CostingSummaryTable = (props) => {
                 <Col md="10">
                   <div id="bar-chart-compare" className="left-border">{'Bar Chart Comparison:'}</div>
                 </Col>
+                <Col md="2" className="text-right">
+                  <div className="right-border">
+                    <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setviewBarChart(!viewBarChart) }}>
+                      {viewBarChart ? <i className="fa fa-minus"></i> : <i className="fa fa-plus"></i>}
+                    </button>
+                  </div>
+                </Col>
               </Row>
 
-              <Row>
+              {viewBarChart && <Row>
                 <Col md="12" className="costing-summary-row">
                   {isComparing &&
                     <BarChartComparison
@@ -2164,6 +2174,7 @@ const CostingSummaryTable = (props) => {
                   }
                 </Col>
               </Row>
+              }
             </>
             )}
           <div ref={componentRef}>
