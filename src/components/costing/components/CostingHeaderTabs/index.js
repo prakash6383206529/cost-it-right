@@ -653,84 +653,74 @@ function CostingHeaderTabs(props) {
   return (
     <>
       <div className="user-page p-0">
-
         <Row className="justify-content-between align-items-end">
-          <Col md="auto">
+          <Row>
+            {getConfigurationKey().IsSourceExchangeRateNameVisible && <Col md="3">
+              <SearchableSelectHookForm
+                label="Exchange Rate Source"
+                name="ExchangeSource"
+                Controller={Controller}
+                control={control}
+                register={register}
+                mandatory={false}
+                rules={{ required: false }}
+                placeholder={'Select'}
+                options={renderListing("ExchangeSource")}
+                handleChange={handleExchangeRateSource}
+                defaultValue={exchangeRateSource?.length !== 0 ? exchangeRateSource : ""}
+                disabled={(costData?.ExchangeRateId ? true : false) || CostingViewMode}
+              />
+            </Col>}
+            <Col md="3">
+              <SearchableSelectHookForm
+                label="Currency"
+                name="Currency"
+                Controller={Controller}
+                control={control}
+                register={register}
+                mandatory={false}
+                rules={{ required: true }}
+                placeholder={'Select'}
+                options={renderListing("Currency")}
+                handleChange={handleChangeCurrency}
+                defaultValue={currency?.length !== 0 ? currency : ""}
+                disabled={(costData?.CostingCurrencyId ? true : false) || CostingViewMode}
+              />
+            </Col>
+            <Col md="3">
+              <div className="form-group mb-0">
+                <label>Costing Effective Date<span className="asterisk-required">*</span></label>
+                <div className="inputbox date-section d-flex align-items-center ">
+                  <DatePicker
+                    name="EffectiveDate"
+                    id="costing_effective_date"
+                    //selected={effectiveDate ? new Date(effectiveDate) : ''}
+                    selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
+                    onChange={handleEffectiveDateChange}
+                    showMonthDropdown
+                    showYearDropdown
+                    dropdownMode="select"
+                    dateFormat="dd/MM/yyyy"
+                    //maxDate={new Date()}
+                    // USER SHOULD NOT BE ABLE TO SELECT EFFECTIVE DATE, OF BEFORE THE PART WAS CREATED
+                    minDate={(customHavellsChanges && costingData.CostingTypeId === ZBCTypeId) ? new Date() : dateFunction()}
 
-            <div className="form-group mb-0">
-              <div className="inputbox  ">
-                {getConfigurationKey().IsSourceExchangeRateNameVisible && <Col  >
-                  <SearchableSelectHookForm
-                    label="Exchange Rate Source"
-                    name="ExchangeSource"
-                    Controller={Controller}
-                    control={control}
-                    register={register}
-                    mandatory={false}
-                    rules={{ required: false }}
-                    placeholder={'Select'}
-                    options={renderListing("ExchangeSource")}
-                    handleChange={handleExchangeRateSource}
-                    defaultValue={exchangeRateSource?.length !== 0 ? exchangeRateSource : ""}
-                    disabled={(costData?.ExchangeRateId ? true : false) || CostingViewMode}
+                    placeholderText="Select date"
+                    className="withBorder"
+                    autoComplete={"off"}
+                    disabledKeyboardNavigation
+                    onChangeRaw={(e) => e.preventDefault()}
+                    disabled={(CostingViewMode || IsCostingDateDisabled || (CostingEditMode & costData?.EffectiveDate !== null && costData?.EffectiveDate !== undefined && DayTime(new Date(costData?.EffectiveDate)).isValid())) ? true : false}
                   />
-                </Col>}
-              </div>
-            </div >
-
-            <div className="form-group mb-0">
-              <div className="inputbox  ">
-                <SearchableSelectHookForm
-                  label="Currency"
-                  name="Currency"
-                  Controller={Controller}
-                  control={control}
-                  register={register}
-                  mandatory={false}
-                  rules={{ required: true }}
-                  placeholder={'Select'}
-                  options={renderListing("Currency")}
-                  handleChange={handleChangeCurrency}
-                  defaultValue={currency?.length !== 0 ? currency : ""}
-                  disabled={(costData?.CostingCurrencyId ? true : false) || CostingViewMode}
-                />
-              </div>
-            </div >
-            <div className="form-group mb-0">
-              <label>Costing Effective Date<span className="asterisk-required">*</span></label>
-              <div className="inputbox date-section  ">
-                <DatePicker
-                  name="EffectiveDate"
-                  id="costing_effective_date"
-                  //selected={effectiveDate ? new Date(effectiveDate) : ''}
-                  selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
-                  onChange={handleEffectiveDateChange}
-                  showMonthDropdown
-                  showYearDropdown
-                  dropdownMode="select"
-                  dateFormat="dd/MM/yyyy"
-                  //maxDate={new Date()}
-                  // USER SHOULD NOT BE ABLE TO SELECT EFFECTIVE DATE, OF BEFORE THE PART WAS CREATED
-                  minDate={(customHavellsChanges && costingData.CostingTypeId === ZBCTypeId) ? new Date() : dateFunction()}
-
-                  placeholderText="Select date"
-                  className="withBorder"
-                  autoComplete={"off"}
-                  disabledKeyboardNavigation
-                  onChangeRaw={(e) => e.preventDefault()}
-                  disabled={(CostingViewMode || IsCostingDateDisabled || (CostingEditMode & costData?.EffectiveDate !== null && costData?.EffectiveDate !== undefined && DayTime(new Date(costData?.EffectiveDate)).isValid())) ? true : false}
-                />
-                {!CostingViewMode && <TourWrapper
-                  buttonSpecificProp={{ id: "Costing_Tabs", onClick: tourStart }}
-                  stepsSpecificProp={{
-                    steps: tabsTour.steps,
-                    hints: tabsTour.hints
-                  }} />}
-              </div>
-            </div >
-          </Col >
-
-
+                  {!CostingViewMode && <TourWrapper
+                    buttonSpecificProp={{ id: "Costing_Tabs", onClick: tourStart }}
+                    stepsSpecificProp={{
+                      steps: tabsTour.steps,
+                      hints: tabsTour.hints
+                    }} />}
+                </div>
+              </div ></Col>
+          </Row>
           {
             costData.IsAssemblyPart &&
             <Col md="auto">
