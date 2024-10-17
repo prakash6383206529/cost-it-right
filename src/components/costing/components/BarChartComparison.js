@@ -19,9 +19,9 @@ export function BarChartComparison({ costingData, currency, graphHeight = 500, g
       );
       const labels = filteredCostingData?.map(item => {
         if (item?.zbc === 2) {
-          return `${item?.plantName} - (${item?.vendorName})`;
+          return `${item?.plantName} - (${item?.vendorName}) (${item?.vendorCode})`;
         } else if (item?.zbc === 3) {
-          return `${item?.plantName} - (${item?.customerName})`;
+          return `${item?.plantName} - (${item?.customerName}) (${item?.customerCode})`;
         } else {
           return item?.plantName;
         }
@@ -60,7 +60,7 @@ export function BarChartComparison({ costingData, currency, graphHeight = 500, g
         },
         {
           label: 'Tool Cost',
-          data: filteredCostingData?.map(item => checkForDecimalAndNull(item?.toolPrice, NoOfDecimalForPrice)),
+          data: filteredCostingData?.map(item => checkForDecimalAndNull(item?.totalToolCost, NoOfDecimalForPrice)),
           backgroundColor: colorArray[6],
         },
         {
@@ -155,7 +155,7 @@ export function BarChartComparison({ costingData, currency, graphHeight = 500, g
           fontSize: '12px',
           fontWeight: 'bold'
         }}>
-          Ref: Plant (Code) - Vendor/Customer
+          Plant (Code) - Vendor (Code) / Customer (Code)
         </div>
         <div className="graph-container d-flex align-items-center" style={{ height: '100%' }}>
           {graphData && <Bar data={graphData} options={options} />}
