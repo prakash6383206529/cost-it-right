@@ -633,16 +633,10 @@ function AddBudget(props) {
     }
     const callExchangeRateAPI = () => {
         const finalYear = year?.label && year?.label?.slice(0, 4);
-
-        const selectedCurrency = getValues('currency')
-
-
         let date = (`${finalYear}-04-01`);
         const plantCurrency = getValues('plantCurrency')
         const vendorValue = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? vendorName.value : EMPTY_GUID) : EMPTY_GUID;
         const costingType = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? VBCTypeId : costingTypeId) : ZBCTypeId;
-        const fromCurrency = currency?.label
-        const toCurrency = reactLocalStorage.getObject("baseCurrency");
         const hasCurrencyAndDate = plantCurrency && date;
         const isSourceExchangeRateVisible = getConfigurationKey().IsSourceExchangeRateNameVisible;
 
@@ -776,6 +770,7 @@ function AddBudget(props) {
                 LoggedInUserId: loggedInUserId(), FinancialYear: values.FinancialYear.label, NetPoPrice: values.currentPrice,
                 //  BudgetedPoPrice: totalSum,
                 BudgetedPoPrice: totalSum,
+                BudgetedEntryType: budgetedEntryType,
                 BudgetedPoPriceInCurrency: checkForNull(totalSum * settlementCurrency),
                 CostingHeadId: costingTypeId, PartId: part.value, PartName: part.label, RevisionNumber: part.RevisionNumber, PlantId: selectedPlants.value,
                 PlantName: selectedPlants.label, VendorId: vendorName.value, VendorName: vendorName.label, CustomerId: client.value, BudgetingPartCostingDetails: temp,
