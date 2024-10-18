@@ -5,7 +5,7 @@ import AddOperation from '../../Drawers/AddOperation';
 import { Col, Row, Table } from 'reactstrap';
 import { SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import NoContentFound from '../../../../common/NoContentFound';
-import { CRMHeads, EMPTY_DATA, MASS, WACTypeId, ASSEMBLYNAME } from '../../../../../config/constants';
+import { CRMHeads, EMPTY_DATA, MASS, WACTypeId, ASSEMBLYNAME, EMPTY_GUID } from '../../../../../config/constants';
 import Toaster from '../../../../common/Toaster';
 import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected } from '../../../../../helper';
 import { ViewCostingContext } from '../../CostingDetails';
@@ -129,6 +129,8 @@ function OperationCost(props) {
           OperationCost: OperationCost,
           IsChecked: el.IsChecked,
           UOMType: el.UOMType,
+          ConvertedExchangeRateId: el.ConvertedExchangeRateId === EMPTY_GUID ? null : el.ConvertedExchangeRateId,
+          CurrencyExchangeRate: el.CurrencyExchangeRate
         }
       })
       let tempArr = [...GridArray, ...rowArray]

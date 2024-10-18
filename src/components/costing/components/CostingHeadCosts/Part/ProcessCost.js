@@ -576,7 +576,9 @@ function ProcessCost(props) {
               UOMTypeId: el.UnitTypeId,
               ProductionPerHour: productionPerHour,
               ProcessTechnologyId: el.ProcessTechnologyId,
-              Technologies: el.Technologies
+              Technologies: el.Technologies,
+              ConvertedExchangeRateId: el.ConvertedExchangeRateId === EMPTY_GUID ? null : el.ConvertedExchangeRateId,
+              CurrencyExchangeRate: el.CurrencyExchangeRate
             }
           })
           return {
@@ -600,7 +602,10 @@ function ProcessCost(props) {
             ProductionPerHour: productionPerHrs(rowArray, rowArray.length > 0 ? rowArray[0].UOMType : item.UOMType, processQuantityMain),
             ProcessTechnologyId: item.ProcessTechnologyId,
             Technologies: item.Technologies,
-            ProcessList: rowArray
+            ProcessList: rowArray,
+            ConvertedExchangeRateId: item.ConvertedExchangeRateId === EMPTY_GUID ? null : item.ConvertedExchangeRateId,
+            CurrencyExchangeRate: item.CurrencyExchangeRate
+
           }
         })
 
@@ -639,7 +644,9 @@ function ProcessCost(props) {
             UOMTypeId: el.UnitTypeId,
             ProductionPerHour: productionPerHourMain,
             ProcessTechnologyId: el.ProcessTechnologyId,
-            Technologies: el.Technologies
+            Technologies: el.Technologies,
+            ConvertedExchangeRateId: item.ConvertedExchangeRateId === EMPTY_GUID ? null : item.ConvertedExchangeRateId,
+            CurrencyExchangeRate: el.CurrencyExchangeRate
           }
 
         })

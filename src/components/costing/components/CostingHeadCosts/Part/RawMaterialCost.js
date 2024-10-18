@@ -5,7 +5,7 @@ import AddRM from '../../Drawers/AddRM'
 import { costingInfoContext } from '../../CostingDetailStepTwo'
 import NoContentFound from '../../../../common/NoContentFound'
 import { useDispatch, useSelector } from 'react-redux'
-import { CRMHeads, EMPTY_DATA } from '../../../../../config/constants'
+import { CRMHeads, EMPTY_DATA, EMPTY_GUID } from '../../../../../config/constants'
 import { TextFieldHookForm, TextAreaHookForm, SearchableSelectHookForm } from '../../../../layout/HookFormInputs'
 import Toaster from '../../../../common/Toaster'
 import { calculateNetLandedCost, calculatePercentage, calculatePercentageValue, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, corrugatedBoxPermission, getConfigurationKey, isRMDivisorApplicable } from '../../../../../helper'
@@ -290,6 +290,8 @@ function RawMaterialCost(props) {
             ScrapUnitOfMeasurement: el.ScrapUnitOfMeasurement,
             Currency: el.Currency,
             UOMSymbol: el.UOMSymbol,
+            ConvertedExchangeRateId: el.ConvertedExchangeRateId === EMPTY_GUID ? null : el.ConvertedExchangeRateId,
+            CurrencyExchangeRate: el.CurrencyExchangeRate
           }
         })
 
@@ -321,7 +323,9 @@ function RawMaterialCost(props) {
           ScrapRatePerScrapUOMConversion: rowData.ScrapRatePerScrapUOMConversion,
           Currency: rowData.Currency,
           UOMSymbol: rowData.UOMSymbol,
-          ScrapRecoveryPercentage: 100
+          ScrapRecoveryPercentage: 100,
+          ConvertedExchangeRateId: rowData.ConvertedExchangeRateId === EMPTY_GUID ? null : rowData.ConvertedExchangeRateId,
+          CurrencyExchangeRate: rowData.CurrencyExchangeRate
         }
         setGridData([...gridData, tempObj])
         tempArray = [...gridData, tempObj]

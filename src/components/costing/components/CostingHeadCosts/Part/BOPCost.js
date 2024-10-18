@@ -5,7 +5,7 @@ import { Col, Row, Table } from 'reactstrap';
 import AddBOP from '../../Drawers/AddBOP';
 import { SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import NoContentFound from '../../../../common/NoContentFound';
-import { CRMHeads, EMPTY_DATA } from '../../../../../config/constants';
+import { CRMHeads, EMPTY_DATA, EMPTY_GUID } from '../../../../../config/constants';
 import Toaster from '../../../../common/Toaster';
 import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, decimalAndNumberValidationBoolean, getConfigurationKey, NoSignNoDecimalMessage, showBopLabel } from '../../../../../helper';
 import { ViewCostingContext } from '../../CostingDetails';
@@ -188,7 +188,9 @@ function BOPCost(props) {
           LandedCostINR: el.NetLandedCost,
           Quantity: 1,
           NetBoughtOutPartCost: el.NetLandedCost,
-          BoughtOutPartUOM: el.UOM
+          BoughtOutPartUOM: el.UOM,
+          ConvertedExchangeRateId: el.ConvertedExchangeRateId === EMPTY_GUID ? null : el.ConvertedExchangeRateId,
+          CurrencyExchangeRate: el.CurrencyExchangeRate
         }
       })
 
