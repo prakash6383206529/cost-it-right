@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, } from 'reactstrap';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
+import { defaultPageSize, EMPTY_DATA, ZBCTypeId } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { getLabourDataList, deleteLabour } from '../actions/Labour';
 import AddLabour from './AddLabour';
@@ -60,6 +60,10 @@ function LabourListing(props) {
     selectedRowData: false,
     noData: false,
     dataCount: 0,
+    effectiveDate: '',
+    selectedVendor: [],
+    selectedCustomer: [],
+    costingTypeId: ZBCTypeId
   });
   const dispatch = useDispatch();
   const { labourDataList, topAndLeftMenuData } = useSelector(state => ({ labourDataList: state.labour.labourDataList, topAndLeftMenuData: state.auth.topAndLeftMenuData, }));
@@ -99,13 +103,23 @@ function LabourListing(props) {
 
 
 
-  const getTableListData = (employment_terms = '', state = 0, plant = '', labour_type = 0, machine_type = 0) => {
+  const getTableListData = (employment_terms = '', state = 0, plant = '', labour_type = 0, machine_type = 0, effectiveDate = '', vendorId = '', customerId = '', costingHeadId = '', selectedPart = '') => {
     let filterData = {
       employment_terms: employment_terms,
       state: state,
       plant: plant,
       labour_type: labour_type,
       machine_type: machine_type,
+      isCustomerDataShow: reactLocalStorage.getObject('CostingTypePermission').cbc,
+      isVendorDataShow: reactLocalStorage.getObject('CostingTypePermission').vbc,
+      isZeroDataShow: reactLocalStorage.getObject('CostingTypePermission').zbc,
+      effectiveDate: /* DayTime(effectiveDate).isValid() ? DayTime(effectiveDate).format('YYYY-MM-DD') :  */'',
+      vendorId: "",
+      customerId: "",
+      costingHeadId: null,
+      partId: "",
+      isRequestForCosting: null,
+      baseCostingId: null,
     }
     dispatch(getLabourDataList(true, filterData, (res) => {
       setState((prevState) => ({ ...prevState, isLoader: false }))
@@ -243,7 +257,7 @@ function LabourListing(props) {
   const closeBulkUploadDrawer = (event, type) => {
     setState((prevState) => ({ ...prevState, isBulkUpload: false }))
     if (type !== 'cancel') {
-      getTableListData('' ,0 ,'' ,0,0 ) 
+      getTableListData('', 0, '', 0, 0)
     }
   }
 
