@@ -4272,8 +4272,8 @@ class AddMoreDetails extends Component {
                               }
                             </div>)}
                           {/* {this.state?.entryType &&  */}<Row>
-                            <Col md="4" className="switch mb15">
-                              <label className="switch-level">
+                            <Col md="4" className="switch mr-3">
+                              <label className="switch-level mb-0">
                                 <div className="left-title">Domestic</div>
                                 <Switch
                                   onChange={this.ImportToggle}
@@ -4830,92 +4830,95 @@ class AddMoreDetails extends Component {
                             } */}
 
 
-                            <Col className="d-flex col-auto UOM-label-container p-relative">
+                            <Col md="7" className="UOM-label-container p-relative">
                               {this.state.UOM.type === TIME && <TooltipCustom disabledIcon={true} id="machineRate" tooltipClass={'machine-rate'} tooltipText={this.machineRateTooltip()} />}
-                              <div className="machine-rate-filed pr-3">
-                                <Field
-                                  label={this.DisplayMachineRateLabel()}
-                                  name={"MachineRate"}
-                                  type="text"
-                                  validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
-                                  component={renderText}
-                                  // onChange={this.handleMachineRate}
-                                  required={true}
-                                  disabled={this.state.UOM.type === TIME ? true : this.state.isViewMode || this.state.lockUOMAndRate || (isEditFlag && isMachineAssociated)}
-                                  className=" "
-                                  customClassName=" withBorder"
-                                  id="machineRate"
-                                  placeholder={this.state.UOM.type === TIME ? '-' : this.state.isViewMode || this.state.lockUOMAndRate || (isEditFlag && isMachineAssociated) ? '-' : "Enter"}
-                                />
-                                {this.state.errorObj.processMachineRate && (this.props.fieldsObj.MachineRate === undefined || this.state.UOM.type === TIME ? true : Number(this.props.fieldsObj.MachineRate) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
+                              <Row>
+                                <Col md="4">
+                                  <div className="machine-rate-filed pr-3">
+                                    <Field
+                                      label={this.DisplayMachineRateLabel()}
+                                      name={"MachineRate"}
+                                      type="text"
+                                      validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
+                                      component={renderText}
+                                      // onChange={this.handleMachineRate}
+                                      required={true}
+                                      disabled={this.state.UOM.type === TIME ? true : this.state.isViewMode || this.state.lockUOMAndRate || (isEditFlag && isMachineAssociated)}
+                                      className=" "
+                                      customClassName=" withBorder"
+                                      id="machineRate"
+                                      placeholder={this.state.UOM.type === TIME ? '-' : this.state.isViewMode || this.state.lockUOMAndRate || (isEditFlag && isMachineAssociated) ? '-' : "Enter"}
+                                    />
+                                    {this.state.errorObj.processMachineRate && (this.props.fieldsObj.MachineRate === undefined || this.state.UOM.type === TIME ? true : Number(this.props.fieldsObj.MachineRate) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
 
-                              </div>
-                              {(this?.state?.entryType /* && !this?.state?.hidePlantCurrency */) && <Col md="3" className='UOM-label-container p-relative'>
-                                <Field
-                                  label={this.DisplayMachineRatePlantCurrencyLabel()}
-                                  name={"MachineRateLocalConversion"}
-                                  type="text"
-                                  placeholder={isViewMode || (isEditFlag && isMachineAssociated) ? '-' : 'Enter'}
-                                  validate={[number, maxLength10, decimalLengthsix, hashValidation]}
-                                  component={renderText}
-                                  onChange={this.handleMachineRatePlantCurrency}
-                                  required={true}
-                                  disabled={true}
-                                  className=" "
-                                  customClassName=" withBorder"
-                                />
-                                {this.state.errorObj?.MachineRateLocalConversion && (this.props?.fieldsObj?.MachineRateLocalConversion === undefined || Number(this.props?.fieldsObj?.MachineRateLocalConversion) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
-                              </Col>}
+                                  </div>
+                                </Col>
+                                {(this?.state?.entryType /* && !this?.state?.hidePlantCurrency */) && <Col md="4" className='UOM-label-container p-relative'>
+                                  <Field
+                                    label={this.DisplayMachineRatePlantCurrencyLabel()}
+                                    name={"MachineRateLocalConversion"}
+                                    type="text"
+                                    placeholder={isViewMode || (isEditFlag && isMachineAssociated) ? '-' : 'Enter'}
+                                    validate={[number, maxLength10, decimalLengthsix, hashValidation]}
+                                    component={renderText}
+                                    onChange={this.handleMachineRatePlantCurrency}
+                                    required={true}
+                                    disabled={true}
+                                    className=" "
+                                    customClassName=" withBorder"
+                                  />
+                                  {this.state.errorObj?.MachineRateLocalConversion && (this.props?.fieldsObj?.MachineRateLocalConversion === undefined || Number(this.props?.fieldsObj?.MachineRateLocalConversion) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
+                                </Col>}
+                                {/* !this?.state?.hidePlantCurrency &&  */<Col md="4" className='UOM-label-container p-relative'>
+                                  <Field
+                                    label={this.DisplayMachineRateBaseCurrencyLabel()}
+                                    name={"MachineRateConversion"}
+                                    type="text"
+                                    placeholder={isViewMode || (isEditFlag && isMachineAssociated) ? '-' : 'Enter'}
+                                    validate={[number, maxLength10, decimalLengthsix, hashValidation]}
+                                    component={renderText}
+                                    onChange={this.handleMachineRateBasicCurrency}
+                                    required={true}
+                                    disabled={true}
+                                    className=" "
+                                    customClassName=" withBorder"
+                                  />
+                                  {this.state?.errorObj?.MachineRateConversion && (this.props?.fieldsObj?.MachineRateConversion === undefined || Number(this.props?.fieldsObj?.MachineRateConversion) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
+                                </Col>}
+                                <Col md="4">
+                                  <div className="btn-mr-rate pt-2 pr-0 col-auto">
+                                    {this.state.isEditIndex ?
+                                      <>
+                                        <button
+                                          type="button"
+                                          disabled={this.state.isViewMode || (isEditFlag && isMachineAssociated)}
+                                          className={'btn btn-primary pull-left mr5'}
+                                          onClick={this.updateProcessGrid}
+                                        >Update</button>
 
-                              {/* !this?.state?.hidePlantCurrency &&  */<Col md="3" className='UOM-label-container p-relative'>
-                                <Field
-                                  label={this.DisplayMachineRateBaseCurrencyLabel()}
-                                  name={"MachineRateConversion"}
-                                  type="text"
-                                  placeholder={isViewMode || (isEditFlag && isMachineAssociated) ? '-' : 'Enter'}
-                                  validate={[number, maxLength10, decimalLengthsix, hashValidation]}
-                                  component={renderText}
-                                  onChange={this.handleMachineRateBasicCurrency}
-                                  required={true}
-                                  disabled={true}
-                                  className=" "
-                                  customClassName=" withBorder"
-                                />
-                                {this.state?.errorObj?.MachineRateConversion && (this.props?.fieldsObj?.MachineRateConversion === undefined || Number(this.props?.fieldsObj?.MachineRateConversion) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
-                              </Col>}
-
-                              <div className="btn-mr-rate pt-2 pr-0 col-auto">
-                                {this.state.isEditIndex ?
-                                  <>
-                                    <button
-                                      type="button"
-                                      disabled={this.state.isViewMode || (isEditFlag && isMachineAssociated)}
-                                      className={'btn btn-primary pull-left mr5'}
-                                      onClick={this.updateProcessGrid}
-                                    >Update</button>
-
-                                    <button
-                                      type="button"
-                                      disabled={this.state.isViewMode || (isEditFlag && isMachineAssociated)}
-                                      className={'reset-btn pull-left'}
-                                      onClick={this.resetProcessGridData}
-                                    >Cancel</button>
-                                  </>
-                                  :
-                                  <>
-                                    <button id="AddMoreDetails_Process_Add"
-                                      type="button"
-                                      className={'user-btn pull-left'}
-                                      disabled={this.state.isViewMode || (isEditFlag && isMachineAssociated)}
-                                      onClick={this.processTableHandler}>
-                                      <div className={'plus'}></div>ADD</button>
-                                    <button
-                                      type="button"
-                                      disabled={this.state.isViewMode}
-                                      className={'reset-btn pull-left ml5'}
-                                      onClick={this.resetProcessGridData}
-                                    >Reset</button> </>}
-                              </div>
+                                        <button
+                                          type="button"
+                                          disabled={this.state.isViewMode || (isEditFlag && isMachineAssociated)}
+                                          className={'reset-btn pull-left'}
+                                          onClick={this.resetProcessGridData}
+                                        >Cancel</button>
+                                      </>
+                                      :
+                                      <>
+                                        <button id="AddMoreDetails_Process_Add"
+                                          type="button"
+                                          className={'user-btn pull-left'}
+                                          disabled={this.state.isViewMode || (isEditFlag && isMachineAssociated)}
+                                          onClick={this.processTableHandler}>
+                                          <div className={'plus'}></div>ADD</button>
+                                        <button
+                                          type="button"
+                                          disabled={this.state.isViewMode}
+                                          className={'reset-btn pull-left ml5'}
+                                          onClick={this.resetProcessGridData}
+                                        >Reset</button> </>}
+                                  </div></Col>
+                              </Row>
                             </Col >
 
                             <Col md="12">
