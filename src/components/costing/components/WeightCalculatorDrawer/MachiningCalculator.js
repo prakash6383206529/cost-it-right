@@ -1,7 +1,7 @@
 import React, { useState, useEffect, Fragment } from 'react'
 import { Row, Col, Nav, NavItem, NavLink, TabContent, TabPane, } from 'reactstrap'
 import { useForm, Controller, useWatch } from 'react-hook-form'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { TextFieldHookForm, NumberFieldHookForm } from '../../../layout/HookFormInputs'
 import { checkForNull, getConfigurationKey, getWeightFromDensity, loggedInUserId } from '../../../../helper'
 import { saveRawMaterialCalculationForMachining } from '../../actions/CostWorking'
@@ -12,11 +12,13 @@ import TooltipCustom from '../../../common/Tooltip'
 import { reactLocalStorage } from 'reactjs-localstorage'
 import classnames from 'classnames'
 import Bar from './sheetMetal/Bar'
+import { sourceCurrencyFormatter } from '../Drawers/processCalculatorDrawer/CommonFormula'
 
 function Machining(props) {
     const { item, rmRowData, CostingViewMode } = props
     const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest
     const dispatch = useDispatch()
+    const { currencySource } = useSelector((state) => state?.costing);
 
     const defaultValues = {
         outerDiameter: WeightCalculatorRequest && WeightCalculatorRequest.OuterDiameter !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.OuterDiameter, getConfigurationKey().NoOfDecimalForInputOutput) : '',
@@ -449,7 +451,7 @@ function Machining(props) {
                                                 </Col>
                                                 <Col md="3" >
                                                     <TextFieldHookForm
-                                                        label={`RM Rate (${reactLocalStorage.getObject("baseCurrency")})`}
+                                                        label={`RM Rate (${sourceCurrencyFormatter(currencySource?.label)})`}
                                                         name={'rmRate'}
                                                         Controller={Controller}
                                                         control={control}
@@ -464,7 +466,7 @@ function Machining(props) {
                                                     />
                                                 </Col>
                                                 <Col md="3">
-                                                    <TooltipCustom disabledIcon={true} id={'rm-per-piece'} tooltipText={`RM/Pc = RM Rate (${reactLocalStorage.getObject("baseCurrency")})/(Pc/meter)`} />
+                                                    <TooltipCustom disabledIcon={true} id={'rm-per-piece'} tooltipText={`RM/Pc = RM Rate (${sourceCurrencyFormatter(currencySource?.label)})/(Pc/meter)`} />
                                                     <TextFieldHookForm
                                                         label={`RM/Pc`}
                                                         name={'rmPerPiece'}
@@ -546,7 +548,7 @@ function Machining(props) {
                                                 </Col>
                                                 <Col md="3">
                                                     <TextFieldHookForm
-                                                        label={`Scrap Rate (${reactLocalStorage.getObject("baseCurrency")}/Kg)`}
+                                                        label={`Scrap Rate (${sourceCurrencyFormatter(currencySource?.label)}/Kg)`}
                                                         name={'ScrapRate'}
                                                         Controller={Controller}
                                                         control={control}
@@ -566,7 +568,7 @@ function Machining(props) {
                                                 <Col md="3">
                                                     <TooltipCustom disabledIcon={true} id={'Scrap-Cost'} tooltipText={"Scrap Cost =  Scrap Weight * Scrap Rate"} />
                                                     <TextFieldHookForm
-                                                        label={`Scrap Cost (${reactLocalStorage.getObject("baseCurrency")})`}
+                                                        label={`Scrap Cost (${sourceCurrencyFormatter(currencySource?.label)})`}
                                                         name={'ScrapCost'}
                                                         Controller={Controller}
                                                         control={control}

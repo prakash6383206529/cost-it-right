@@ -884,6 +884,8 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
   obj.CalculatorType = dataFromAPI?.CostingPartDetails?.CalculatorType ?? ''
   obj.InfoCategory = dataFromAPI?.InfoCategory ? dataFromAPI?.InfoCategory : '-'
   obj.TaxCodeList = dataFromAPI?.CostingPartDetails?.TaxCodeList ? dataFromAPI?.CostingPartDetails?.TaxCodeList : []
+  obj.ExchangeRateSourceName = dataFromAPI?.ExchangeRateSourceName
+  obj.CostingCurrency = dataFromAPI?.CostingCurrency
   temp.push(obj)
   return temp
 }

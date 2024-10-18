@@ -12,6 +12,7 @@ import LossStandardTable from '../LossStandardTable'
 import { debounce } from 'lodash'
 import TooltipCustom from '../../../../common/Tooltip'
 import { reactLocalStorage } from 'reactjs-localstorage'
+import { sourceCurrencyFormatter } from '../../Drawers/processCalculatorDrawer/CommonFormula'
 
 function HotForging(props) {
   const { rmRowData, CostingViewMode, item } = props
@@ -50,7 +51,7 @@ function HotForging(props) {
     reValidateMode: 'onChange',
     defaultValues: defaultValues,
   })
-  const { forgingCalculatorMachiningStockSectionValue } = useSelector(state => state.costing)
+  const { forgingCalculatorMachiningStockSectionValue, currencySource } = useSelector(state => state.costing)
 
   const fieldValues = useWatch({
     control,
@@ -694,7 +695,7 @@ function HotForging(props) {
               <Col md="3">
                 <TooltipCustom disabledIcon={true} id={'forging-scrapCost'} tooltipClass={'weight-of-sheet'} tooltipText={' Forging Scrap Cost = ((Forging Scrap Weight * Forging Scrap Recovery (%)) / 100) * Forging Scrap Rate'} />
                 <TextFieldHookForm
-                  label={`Forging Scrap Cost (${reactLocalStorage.getObject("baseCurrency")})`}
+                  label={`Forging Scrap Cost (${sourceCurrencyFormatter(currencySource?.label)})`}
                   name={'forgingScrapCost'}
                   Controller={Controller}
                   control={control}
@@ -756,7 +757,7 @@ function HotForging(props) {
               <Col md="3">
                 <TooltipCustom disabledIcon={true} id={'machining-scrapCost'} tooltipClass={'weight-of-sheet'} tooltipText={' Machining Scrap Cost = ((Machining Scrap Weight * Machining Scrap Recovery (%)) / 100) * Machining Scrap Rate'} />
                 <TextFieldHookForm
-                  label={`Machining Scrap Cost (${reactLocalStorage.getObject("baseCurrency")})`}
+                  label={`Machining Scrap Cost (${sourceCurrencyFormatter(currencySource?.label)})`}
                   name={'machiningScrapCost'}
                   Controller={Controller}
                   control={control}
@@ -794,7 +795,7 @@ function HotForging(props) {
               <Col md="3">
                 <TooltipCustom disabledIcon={true} id={'scrap-cost'} tooltipClass={'weight-of-sheet'} tooltipText={'Scrap Cost = (Forging Scrap Cost + Machining Scrap Cost)'} />
                 <TextFieldHookForm
-                  label={`Scrap Cost (${reactLocalStorage.getObject("baseCurrency")})`}
+                  label={`Scrap Cost (${sourceCurrencyFormatter(currencySource?.label)})`}
                   name={'ScrapCost'}
                   Controller={Controller}
                   control={control}
@@ -813,7 +814,7 @@ function HotForging(props) {
               <Col md="3">
                 <TooltipCustom disabledIcon={true} id={'rm-cost'} tooltipClass={'weight-of-sheet'} tooltipText={' Net RM Cost = (Total Input Weight * RM Rate - Scrap Cost)'} />
                 <TextFieldHookForm
-                  label={`Net RM Cost/Component(${reactLocalStorage.getObject("baseCurrency")})`}
+                  label={`Net RM Cost/Component(${sourceCurrencyFormatter(currencySource?.label)})`}
                   name={'NetRMCostComponent'}
                   Controller={Controller}
                   control={control}

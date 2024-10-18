@@ -23,6 +23,7 @@ function SAPApproval(props) {
 
     const dispatch = useDispatch()
     const SAPData = useSelector(state => state.approval.SAPObj)
+    const { initialConfiguration } = useSelector(state => state.auth)
 
 
 
@@ -30,12 +31,13 @@ function SAPApproval(props) {
 
 
     useEffect(() => {
-        let data = {
-            PlantCode: '',
-            Material: ''
+        if (initialConfiguration?.IsSAPCodeRequired) {
+            let data = {
+                PlantCode: '',
+                Material: ''
+            }
+            dispatch(getExternalIntegrationEvaluationType(data, res => { }))
         }
-
-        dispatch(getExternalIntegrationEvaluationType(data, res => { }))
     }, [])
     const { evaluationType } = useSelector((state) => state?.costing)
 

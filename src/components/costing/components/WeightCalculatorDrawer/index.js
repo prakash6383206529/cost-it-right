@@ -19,12 +19,16 @@ import { reactLocalStorage } from 'reactjs-localstorage'
 import Stamping from './Stamping'
 import { showPaperCorrugatedBox } from '../../../../config/constants'
 import PaperCorrugatedBox from './corrugatedBox/PaperCorrugatedBox'
+import { useSelector } from 'react-redux'
+import { sourceCurrencyFormatter } from '../Drawers/processCalculatorDrawer/CommonFormula'
 
 function OpenWeightCalculator(props) {
   const { rmRowData, item, isSummary, rmMBDetail, CostingViewMode, rmData, technology, DisableMasterBatchCheckbox, calculatorType } = props
 
   let appyMasterBatch;
   let totalRM;
+  const { currencySource } = useSelector((state) => state?.costing);
+
   if (!isSummary) {
     const { CostingPartDetails } = item
     const { IsApplyMasterBatch, MasterBatchTotal, MasterBatchPercentage } = CostingPartDetails
@@ -273,11 +277,11 @@ function OpenWeightCalculator(props) {
                   <div className="d-inline-block overflow"><span className="grey-text d-block">RM Name:</span><span className="text-dark-blue one-line-overflow" title={rmRowData.RMName}>{`${rmRowData.RMName !== undefined ? rmRowData.RMName : ''}`}</span></div>
                   <div className="d-inline-block "><span className="grey-text d-block">Material:</span><span className="text-dark-blue">{`${rmRowData.MaterialType !== undefined ? rmRowData.MaterialType : ''}`}</span></div>
                   {(Number(technology) === Number(SHEETMETAL) || Number(technology) === Number(FORGING) || Number(technology) === Number(MACHINING) || Number(technology) === Number(INSULATION)) && <div className="d-inline-block "><span className="grey-text d-block">Density(g/cm){<sup>3</sup>}:</span><span className="text-dark-blue">{`${rmRowData.Density !== undefined ? rmRowData.Density : ''}`}</span></div>}
-                  <div className="d-inline-block "><span className="grey-text d-block">RM Rate ({reactLocalStorage.getObject("baseCurrency")}):</span><span className="text-dark-blue">{`${rmRowData.RMRate !== undefined ? checkForDecimalAndNull(rmRowData.RMRate, getConfigurationKey().NoOfDecimalForPrice) : ''}`}</span></div>
+                  <div className="d-inline-block "><span className="grey-text d-block">RM Rate ({sourceCurrencyFormatter(currencySource?.label)}):</span><span className="text-dark-blue">{`${rmRowData.RMRate !== undefined ? checkForDecimalAndNull(rmRowData.RMRate, getConfigurationKey().NoOfDecimalForPrice) : ''}`}</span></div>
                   {appyMasterBatch && < div className="d-inline-block "><span className="grey-text d-block">RM Rate(including Master Batch):</span><span className="text-dark-blue">{`${rmRowData.RMRate !== undefined ? checkForDecimalAndNull(totalRM, getConfigurationKey().NoOfDecimalForPrice) : ''}`}</span></div>}
-                  {Number(technology) === Number(MACHINING) && <div className="d-inline-block "><span className="grey-text d-block">{`Scrap Rate Per Scrap UOM(${reactLocalStorage.getObject("baseCurrency")}/${rmRowData.ScrapUnitOfMeasurement}):`}</span><span className="text-dark-blue">{`${rmRowData.ScrapRate !== undefined ? Number(technology) === Number(MACHINING) ? (rmRowData.ScrapRatePerScrapUOMConversion ? checkForDecimalAndNull(rmRowData.ScrapRatePerScrapUOMConversion, getConfigurationKey().NoOfDecimalForPrice) : checkForDecimalAndNull(rmRowData.ScrapRatePerScrapUOM, getConfigurationKey().NoOfDecimalForPrice)) : checkForDecimalAndNull(rmRowData.ScrapRate, getConfigurationKey().NoOfDecimalForPrice) : ''}`}</span></div>}
-                  <div className="d-inline-block "><span className="grey-text d-block">{Number(technology) === Number(FORGING) ? 'Forging Scrap' : 'Scrap'} Rate({reactLocalStorage.getObject("baseCurrency")}/{rmRowData?.UOMSymbol}):</span><span className="text-dark-blue">{`${rmRowData.ScrapRate !== undefined ? checkForDecimalAndNull(rmRowData.ScrapRate, getConfigurationKey().NoOfDecimalForPrice) : ''}`}</span></div>
-                  {Number(technology) === Number(FORGING) && <div className="d-inline-block "><span className="grey-text d-block">Machining Scrap Rate({reactLocalStorage.getObject("baseCurrency")}/{rmRowData.UOMSymbol}):</span><span className="text-dark-blue">{`${rmRowData.MachiningScrapRate ? checkForDecimalAndNull(rmRowData.MachiningScrapRate, getConfigurationKey().NoOfDecimalForPrice) : 0}`}</span></div>}
+                  {Number(technology) === Number(MACHINING) && <div className="d-inline-block "><span className="grey-text d-block">{`Scrap Rate Per Scrap UOM(${sourceCurrencyFormatter(currencySource?.label)}/${rmRowData.ScrapUnitOfMeasurement}):`}</span><span className="text-dark-blue">{`${rmRowData.ScrapRate !== undefined ? Number(technology) === Number(MACHINING) ? (rmRowData.ScrapRatePerScrapUOMConversion ? checkForDecimalAndNull(rmRowData.ScrapRatePerScrapUOMConversion, getConfigurationKey().NoOfDecimalForPrice) : checkForDecimalAndNull(rmRowData.ScrapRatePerScrapUOM, getConfigurationKey().NoOfDecimalForPrice)) : checkForDecimalAndNull(rmRowData.ScrapRate, getConfigurationKey().NoOfDecimalForPrice) : ''}`}</span></div>}
+                  <div className="d-inline-block "><span className="grey-text d-block">{Number(technology) === Number(FORGING) ? 'Forging Scrap' : 'Scrap'} Rate({sourceCurrencyFormatter(currencySource?.label)}/{rmRowData?.UOMSymbol}):</span><span className="text-dark-blue">{`${rmRowData.ScrapRate !== undefined ? checkForDecimalAndNull(rmRowData.ScrapRate, getConfigurationKey().NoOfDecimalForPrice) : ''}`}</span></div>
+                  {Number(technology) === Number(FORGING) && <div className="d-inline-block "><span className="grey-text d-block">Machining Scrap Rate({sourceCurrencyFormatter(currencySource?.label)}/{rmRowData.UOMSymbol}):</span><span className="text-dark-blue">{`${rmRowData.MachiningScrapRate ? checkForDecimalAndNull(rmRowData.MachiningScrapRate, getConfigurationKey().NoOfDecimalForPrice) : 0}`}</span></div>}
                   <div className="d-inline-block"><span className="grey-text d-block">Category:</span><span className="text-dark-blue">{`${rmRowData.RawMaterialCategory !== undefined ? rmRowData.RawMaterialCategory : ''}`}</span></div>
 
                 </Col>

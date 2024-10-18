@@ -432,8 +432,6 @@ function AddRMFinancialDetails(props) {
         return checkForNull(price) * checkForNull(currencyValue)
     }
     const calculateNetCost = () => {
-        console.log(getValues('BasicRate'), 'BasicRate')
-        console.log(CurrencyExchangeRate, 'CurrencyExchangeRate')
 
         const { showScrapKeys } = state
         const { costingTypeId } = states

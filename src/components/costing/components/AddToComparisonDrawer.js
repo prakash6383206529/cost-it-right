@@ -700,6 +700,8 @@ function AddToComparisonDrawer(props) {
           obj.CalculatorType = dataFromAPI?.CostingPartDetails?.CalculatorType ?? ''
           obj.InfoCategory = dataFromAPI?.InfoCategory ? dataFromAPI?.InfoCategory : '-'
           obj.TaxCodeList = dataFromAPI?.CostingPartDetails?.TaxCodeList ? dataFromAPI?.CostingPartDetails?.TaxCodeList : []
+          obj.ExchangeRateSourceName = dataFromAPI?.ExchangeRateSourceName
+          obj.CostingCurrency = dataFromAPI?.CostingCurrency
           // temp.push(VIEW_COSTING_DATA)
           if (index >= 0) {
 

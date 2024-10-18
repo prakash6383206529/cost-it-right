@@ -16,6 +16,7 @@ import { checkForDecimalAndNull, getConfigurationKey, searchNocontentFilter } fr
 import { PaginationWrapper } from '../../../common/commonPagination';
 import _ from 'lodash';
 import { useLabels } from '../../../../helper/core';
+import WarningMessage from '../../../common/WarningMessage';
 const gridOptions = {};
 
 
@@ -148,8 +149,9 @@ function AddSurfaceTreatment(props) {
   }
 
   const rateFormat = (props) => {
+    const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-    return cellValue !== null ? checkForDecimalAndNull(cellValue, getConfigurationKey().NoOfDecimalForPrice) : '-'
+    return rowData?.IsValidExchangeRate ? checkForDecimalAndNull(cellValue, getConfigurationKey().NoOfDecimalForPrice) : '-'
   }
   const onFloatingFilterChanged = (value) => {
     setTimeout(() => {
@@ -214,6 +216,9 @@ function AddSurfaceTreatment(props) {
                       <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
                         <div className="refresh mr-0"></div>
                       </button>
+                    </div>
+                    <div className="d-flex justify-content-end">
+                      <WarningMessage message={"Please add the exchange rate for the selected currency in the exchange rate master for the record where the net cost field is marked as '-'."} />
                     </div>
                     <div className="ag-theme-material p-relative">
                       {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found drawer" />}

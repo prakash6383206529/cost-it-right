@@ -2278,6 +2278,8 @@ const CostingSummaryTable = (props) => {
                             <td>
                               <span className="d-block">Costing Version</span>
                               <span className={`d-block mt-${props.isFromViewRFQ ? 4 : 2}`}>Net Cost (Effective from)</span>
+                              {getConfigurationKey().IsSourceExchangeRateNameVisible && <span className="d-block">Exchange Rate Source</span>}
+                              <span className="d-block">Currency</span>
                               <span className="d-block">{vendorLabel} (Code)</span>
                               {(reactLocalStorage.getObject('CostingTypePermission').cbc) && <span className="d-block">Customer (Code)</span>}
                               <span className="d-block">Category</span>
@@ -2340,6 +2342,8 @@ const CostingSummaryTable = (props) => {
                                       </span>
                                     )}
                                     {/* USE PART NUMBER KEY HERE */}
+                                    {getConfigurationKey().IsSourceExchangeRateNameVisible && <span className="d-block">{(data?.bestCost === true) ? ' ' : (data?.ExchangeRateSourceName ? data?.ExchangeRateSourceName : '-')}</span>}
+                                    <span className="d-block">{(data?.bestCost === true) ? ' ' : (data?.CostingCurrency ? data?.CostingCurrency : '-')}</span>
                                     <span className="d-block">{(data?.bestCost === true) ? ' ' : (data?.costingTypeId !== ZBCTypeId || data?.costingTypeId !== CBCTypeId || data?.costingTypeId !== WACTypeId) ? data?.vendor : ''}</span>
                                     {(reactLocalStorage.getObject('CostingTypePermission').cbc) && <span className="d-block">{(data?.bestCost === true) ? ' ' : data?.costingTypeId === CBCTypeId ? data?.customer : '-'}</span>}
                                     <span className="d-block">{(data?.bestCost === true) ? ' ' : data?.InfoCategory}</span>
