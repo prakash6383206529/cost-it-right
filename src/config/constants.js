@@ -387,6 +387,7 @@ export const API = {
   deleteFuelAPI: `${BASE_URL}/masters-fuel/delete-fuel`,
   deleteFuelDetailAPI: `${BASE_URL}/masters-fuel/delete-fuel-detail`,
   getFuelByPlant: `${BASE_URL}/masters-fuel/get-fuel-by-plant`,
+  getFuelList: `${BASE_URL}/masters-fuel/get-fuel-list`,
   getStateListByFuel: `${BASE_URL}/masters-fuel/get-state-by-fuel-select-list`,
   getFuelListByState: `${BASE_URL}/masters-fuel/get-fuel-by-state-select-list`,
   fuelBulkUpload: `${BASE_URL}/masters-fuel/bulk-upload-for-fuel-json`,
