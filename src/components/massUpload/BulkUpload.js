@@ -1232,7 +1232,7 @@ class BulkUpload extends Component {
                                 <Row>
                                     {getConfigurationKey().IsDivisionAllowedForDepartment && (fileName === 'RM' || fileName === `${showBopLabel()} Domestic` || fileName === `${showBopLabel()} Import` || fileName === 'Operation' || fileName === 'Budget' || fileName === 'Machine') && <>
 
-                                        <Col md="6" className='dropdown-flex'>
+                                        {/* <Col md="6" className='dropdown-flex'>
                                             <Field
                                                 label={`${handleDepartmentHeader()}`}
                                                 name={"dept"}
@@ -1246,7 +1246,7 @@ class BulkUpload extends Component {
                                                 valueDescription={this.state.department}
                                                 disabled={this.state.disableDept}
                                             />
-                                        </Col>
+                                        </Col> */}
                                         {this.state.isShowDivision && <Col md="6" className='dropdown-flex'>
                                             <Field
                                                 label={"Division"}
