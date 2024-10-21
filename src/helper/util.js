@@ -8,6 +8,7 @@ import {
   PLASTIC, SHEET_METAL, WIRING_HARNESS, PLATING, SPRINGS, HARDWARE, NON_FERROUS_LPDDC, MACHINING,
   ELECTRONICS, RIVET, NON_FERROUS_HPDC, RUBBER, NON_FERROUS_GDC, FORGINGNAME, FASTNERS, RIVETS, RMDOMESTIC, RMIMPORT, BOPDOMESTIC, BOPIMPORT, COMBINED_PROCESS, PROCESS, OPERATIONS, SURFACETREATMENT, MACHINERATE, OVERHEAD, PROFIT, EXCHNAGERATE, DISPLAY_G, DISPLAY_KG, DISPLAY_MG, VARIANCE, EMPTY_GUID, ZBCTypeId, DIECASTING, MECHANICAL_PROPRIETARY, ELECTRICAL_PROPRIETARY, LOGISTICS, CORRUGATEDBOX, FABRICATION, FERROUSCASTING, WIREFORMING, ELECTRONICSNAME, ELECTRIC, Assembly, ASSEMBLYNAME, PLASTICNAME,
   RAWMATERIALINDEX,
+  ENTRY_TYPE_IMPORT,
 } from '../config/constants'
 import { IsShowFreightAndShearingCostFields, getConfigurationKey, showBopLabel } from './auth'
 import _ from 'lodash';
@@ -1665,3 +1666,7 @@ export const removeSpaces = (str = '') => {
 export const getChangeHighlightClass = (originalValue, updatedValue) => {
   return updatedValue && updatedValue !== originalValue ? 'red-value' : '';
 };
+
+export const showEntryType = (entryTypeValue) => {
+  return entryTypeValue === ENTRY_TYPE_IMPORT ? "Import" : "Domestic";
+}

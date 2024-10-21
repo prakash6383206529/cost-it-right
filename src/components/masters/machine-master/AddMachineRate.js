@@ -535,6 +535,11 @@ class AddMachineRate extends Component {
                 MachineRateConversion: el.MachineRateConversion
               }
             })
+            if (Data?.LocalCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
+              this.setState({ hidePlantCurrency: false })
+            } else {
+              this.setState({ hidePlantCurrency: true })
+            }
             this.setState({
               isEditFlag: true,
               IsFinancialDataChanged: false,
@@ -543,7 +548,7 @@ class AddMachineRate extends Component {
               IsCopied: Data.IsCopied,
               IsDetailedEntry: Data.IsDetailedEntry,
               selectedTechnology: Data.Technology[0].Technology !== undefined ? { label: Data.Technology[0].Technology, value: Data.Technology[0].TechnologyId } : [],
-              selectedPlants: Data && Data.Plant.length > 0 ? { label: Data.Plant[0].PlantName, value: Data.Plant[0].PlantId } : [],
+              selectedPlants: Data && Data?.Plant?.length > 0 ? { label: Data?.Plant[0]?.PlantName, value: Data?.Plant[0]?.PlantId } : [],
               vendorName: Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.VendorId } : [],
               machineType: Data.MachineType !== undefined ? { label: Data.MachineType, value: Data.MachineTypeId } : [],
               processGrid: MachineProcessArray ?? [],
@@ -2326,8 +2331,8 @@ class AddMachineRate extends Component {
                                 <th>{`Process (Code)`}</th>
                                 <th>{`UOM`}</th>
                                 <th>{`Machine Rate (${this.state.isImport && this.state.currency?.label !== undefined ? this.state.currency.label : this.state.isImport ? "Currency" : this.props.fieldsObj.plantCurrency ? this.props.fieldsObj.plantCurrency : "Plant Currency"})`}</th>
-                                {this?.state?.isImport && <th>{`Machine Rate (${this.props.fieldsObj.plantCurrency ? this.props.fieldsObj.plantCurrency : "Plant Currency"})`}</th>}
-                                <th>{`Machine Rate (${reactLocalStorage.getObject("baseCurrency")})`}</th>
+                                {(this?.state?.isImport && !this?.state?.hidePlantCurrency) && <th>{`Machine Rate (${this.props.fieldsObj.plantCurrency ? this.props.fieldsObj.plantCurrency : "Plant Currency"})`}</th>}
+                                {!this?.state?.hidePlantCurrency && <th>{`Machine Rate (${reactLocalStorage.getObject("baseCurrency")})`}</th>}
                                 <th>{`Action`}</th>
                               </tr>
                             </thead>
@@ -2340,8 +2345,8 @@ class AddMachineRate extends Component {
                                       <td>{item.processName}</td>
                                       <td className='UOM-label-container'>{displayUOM(item.UnitOfMeasurement)}</td>
                                       <td>{checkForDecimalAndNull(item.MachineRate, initialConfiguration.NoOfDecimalForPrice)}</td>
-                                      {this?.state?.isImport && <td>{checkForDecimalAndNull(item?.MachineRateLocalConversion, initialConfiguration?.NoOfDecimalForPrice)}</td>}
-                                      <td>{checkForDecimalAndNull(item?.MachineRateConversion, initialConfiguration?.NoOfDecimalForPrice)}</td>
+                                      {(this?.state?.isImport && !this?.state?.hidePlantCurrency) && <td>{checkForDecimalAndNull(item?.MachineRateLocalConversion, initialConfiguration?.NoOfDecimalForPrice)}</td>}
+                                      {!this?.state?.hidePlantCurrency && <td>{checkForDecimalAndNull(item?.MachineRateConversion, initialConfiguration?.NoOfDecimalForPrice)}</td>}
 
                                       <td>
                                         {/* {!this.state.IsDetailedEntry && */}
