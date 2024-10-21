@@ -92,6 +92,7 @@ const SendForApproval = (props) => {
   const [isShowDivision, setIsShowDivision] = useState(false)
   const [divisionList, setDivisionList] = useState([])
   const [division, setDivision] = useState('')
+  const [checkMultiDept, setCheckMultiDept] = useState(false)
 
   const apicall = (technologyId, depart, ApprovalTypeId, isdisable, levelsList, divisionId = '') => {
 
@@ -227,7 +228,8 @@ const SendForApproval = (props) => {
       const Data = res?.data?.SelectList
       const Departments = userDetails().Department && userDetails().Department.map(item => item.DepartmentName)
       const updateList = Data && Data.filter(item => Departments.includes(item.Text))
-      if (updateList && updateList?.length === 1) {
+      if ((updateList && updateList?.length === 1) || !checkMultiDept) {
+
         setDisableDept(true)
         setValue('dept', { label: updateList[0]?.Text, value: updateList[0]?.Value })
         setSelectedDepartment({ label: updateList[0]?.Text, value: updateList[0]?.Value })
@@ -396,7 +398,7 @@ const SendForApproval = (props) => {
       Mode: 'costing',
       approvalTypeId: approvaltypeTest,
       plantId: (IsApprovalLevelFilterByPlant && viewApprovalData[0]?.destinationPlantId) ? viewApprovalData[0]?.destinationPlantId : null,
-      divisionId: divisionId ?? null
+      divisionId: (divisionId || divisionId !== '') ? divisionId : null
     }
     dispatch(checkFinalUser(obj, (res) => {
       const data = res?.data?.Data
@@ -434,7 +436,7 @@ const SendForApproval = (props) => {
         Toaster.warning('This user is not in approval flow.')
         setNoApprovalExistMessage('')
         return false
-      } else if (data?.IsNextLevelUserExist === false && data?.IsUserInApprovalFlow === true) {
+      } else if (data?.IsNextLevelUserExist === false && data?.IsUserInApprovalFlow === true && data?.IsFinalApprover === false) {
         setValue('approver', { label: '', value: '', levelId: '', levelName: '' })
         setApprover('')
         setSelectedApprover('')
@@ -442,13 +444,14 @@ const SendForApproval = (props) => {
         setApproverIdList([])
         setNoApprovalExistMessage('There is no higher approver available for this user in this department.')
         return false
-      } else if (data?.IsUserInApprovalFlow === false) {
+      } else if (data?.IsUserInApprovalFlow === true && data?.IsFinalApprover === true && data?.IsNextLevelUserExist === false) {
         setValue('approver', { label: '', value: '', levelId: '', levelName: '' })
         setApprover('')
         setSelectedApprover('')
         setApprovalDropDown([])
         setApproverIdList([])
-        Toaster.warning('This user is not in approval flow.')
+        setNoApprovalExistMessage('This user is final approver.')
+        Toaster.warning('This user is final approver.')
         setNoApprovalExistMessage('')
         return false
       }
@@ -1289,7 +1292,7 @@ const SendForApproval = (props) => {
                           errors={errors.ApprovalType}
                         />
                       </Col>}
-                      <Col md="6">
+                      {!getConfigurationKey().IsDivisionAllowedForDepartment && <Col md="6">
                         <SearchableSelectHookForm
                           label={`${handleDepartmentHeader()}`}
                           name={"dept"}
@@ -1305,7 +1308,7 @@ const SendForApproval = (props) => {
                           handleChange={handleDepartmentChange}
                           errors={errors.dept}
                         />
-                      </Col >
+                      </Col >}
                       {getConfigurationKey().IsDivisionAllowedForDepartment && isShowDivision && <Col md="6">
                         <SearchableSelectHookForm
                           label={"Division"}
