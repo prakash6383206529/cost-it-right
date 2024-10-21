@@ -459,7 +459,11 @@ const SendForApproval = (props) => {
     }))
   }
   const fetchDivisionList = (departmentIds) => {
-    dispatch(getAllDivisionListAssociatedWithDepartment(departmentIds, res => {
+    let obj = {
+      DepartmentIdList: departmentIds,
+      IsApproval: false
+    }
+    dispatch(getAllDivisionListAssociatedWithDepartment(obj, res => {
       if (res && res?.data && res?.data?.Identity === true) {
         setIsShowDivision(true)
         const divisionArray = res?.data?.DataList

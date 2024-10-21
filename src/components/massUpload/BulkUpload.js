@@ -230,7 +230,11 @@ class BulkUpload extends Component {
 
     }
     callDivisionApi = (deptId) => {
-        this.props.getAllDivisionListAssociatedWithDepartment([deptId], res => {
+        let obj = {
+            DepartmentIdList: [deptId],
+            IsApproval: false
+        }
+        this.props.getAllDivisionListAssociatedWithDepartment(obj, res => {
             if (res && res?.data && res?.data?.Identity === true) {
                 this.setState({ isShowDivision: true })
                 let divisionArray = []
