@@ -16,7 +16,8 @@ import {
     GET_STATE_SELECTLIST,
     GET_ZBC_POWER_DATA_SUCCESS,
     GET_POWER_DATA_LIST,
-    GET_POWER_VENDOR_DATA_LIST
+    GET_POWER_VENDOR_DATA_LIST,
+    GET_PLANT_CURRENCY_BY_PLANT_IDS
 } from '../../../config/constants';
 import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper';
 
@@ -173,6 +174,13 @@ export default function fuelReducer(state = initialState, action) {
                 loading: false,
                 error: false,
                 vendorPowerDataList: action.payload
+            }
+        case GET_PLANT_CURRENCY_BY_PLANT_IDS:
+            return {
+                ...state,
+                loading: false,
+                error: false,
+                plantCurrencyList: action.payload
             }
         default:
             return state;

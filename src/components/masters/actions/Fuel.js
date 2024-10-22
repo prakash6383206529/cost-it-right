@@ -17,11 +17,14 @@ import {
     config,
     GET_POWER_DATA_LIST,
     GET_POWER_VENDOR_DATA_LIST,
-    EMPTY_GUID
+    EMPTY_GUID,
+    GET_PLANT_CURRENCY_BY_PLANT_IDS
 } from '../../../config/constants';
 import { userDetails } from '../../../helper';
 import { apiErrors } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
+import Toaster from '../../common/Toaster';
+import { MESSAGES } from '../../../config/message';
 
 // const config() = config;
 
@@ -662,3 +665,36 @@ export function getUOMByFuelId(data, callback) {
         });
     };
 }
+
+/**
+ * @method getPlantCurrencyByPlantIds
+ * @description get plant currency by plant ids
+ */
+export function getPlantCurrencyByPlantIds(data, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.post(`${API.getPlantCurrencyByPlantIds}`, data, config());
+        request.then((response) => {
+            if (response.status === 200) {
+                dispatch({
+                    type: GET_PLANT_CURRENCY_BY_PLANT_IDS,
+                    payload: response.data.DataList,
+                });
+                callback(response);
+            } else if (response.status === 204) {
+                dispatch({
+                    type: GET_PLANT_CURRENCY_BY_PLANT_IDS,
+                    payload: [],
+                });
+                callback(response);
+            } else {
+                Toaster.error(MESSAGES.SOME_ERROR);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+

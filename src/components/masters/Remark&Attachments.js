@@ -1,10 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Row, Col } from 'reactstrap';
 import Dropzone from 'react-dropzone-uploader';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { maxLength512, acceptAllExceptSingleSpecialCharacter, checkForNull, getConfigurationKey } from '../../helper';
 import Toaster from '../common/Toaster';
-import { SetRawMaterialDetails, fileUploadRMDomestic } from './actions/Material';
+import { setRawMaterialDetails, fileUploadRMDomestic } from './actions/Material';
 import imgRedcross from '../../assests/images/red-cross.png';
 import LoaderCustom from '../common/LoaderCustom';
 import { FILE_URL } from '../../config/constants';
@@ -21,6 +21,7 @@ const Preview = ({ meta }) => (
 function RemarksAndAttachments(props) {
     const { Controller, control, register, setValue, getValues, errors, useWatch, states, data } = props
     const { isEditFlag, isViewFlag } = data
+    const rawMaterailDetails = useSelector((state) => state.material.rawMaterailDetails)
     const [state, setState] = useState({
         remarks: '',
         attachmentLoader: false,
@@ -38,7 +39,7 @@ function RemarksAndAttachments(props) {
         handleNonFinancialData()
     }, [nonFinancialFieldValues, files])
     useEffect(() => {
-        dispatch(SetRawMaterialDetails({ Files: files }, () => { }))
+        dispatch(setRawMaterialDetails({ ...rawMaterailDetails, Files: files }, () => { }))
     }, [files])
 
     useEffect(() => {
@@ -164,9 +165,9 @@ function RemarksAndAttachments(props) {
         let remark = getValues('Remarks')
         if (isEditFlag) {
             if (remark === props?.DataToChange?.Remark && JSON.stringify(files) === JSON.stringify(props?.DataToChange?.FileList)) {
-                dispatch(SetRawMaterialDetails({ nonFinancialDataChanged: false }, () => { }))
+                dispatch(setRawMaterialDetails({ ...rawMaterailDetails, nonFinancialDataChanged: false }, () => { }))
             } else {
-                dispatch(SetRawMaterialDetails({ nonFinancialDataChanged: true }, () => { }))
+                dispatch(setRawMaterialDetails({ ...rawMaterailDetails, nonFinancialDataChanged: true }, () => { }))
             }
 
         }
