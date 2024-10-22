@@ -9,7 +9,7 @@ import {
     GET_VENDOR_FILTER_BY_RAW_MATERIAL_SELECTLIST, GET_RAW_MATERIAL_FILTER_BY_GRADE_SELECTLIST, GET_VENDOR_FILTER_BY_GRADE_SELECTLIST, GET_RAWMATERIAL_FILTER_BY_VENDOR_SELECTLIST,
     GET_GRADE_FILTER_BY_VENDOR_SELECTLIST, GET_MATERIAL_DATA_SELECTLIST_SUCCESS, GET_RM_DOMESTIC_LIST, GET_RM_IMPORT_LIST,
     GET_MANAGE_SPECIFICATION, GET_UNASSOCIATED_RM_NAME_SELECTLIST, SET_FILTERED_RM_DATA, GET_ALL_MASTER_APPROVAL_DEPARTMENT, GET_RM_APPROVAL_LIST, GET_ALL_RM_DOMESTIC_LIST, RAW_MATERIAL_DETAILS,
-    COMMODITY_INDEX_RATE_AVERAGE,
+    COMMODITY_INDEX_RATE_AVERAGE, EXCHANGE_RATE_DETAILS,
     GET_RM_DETAILS
 } from '../../../config/constants';
 import { checkForDecimalAndNull, getConfigurationKey, userDetails } from '../../../helper';
@@ -472,6 +472,12 @@ export default function materialReducer(state = initialState, action) {
                 ...state,
                 loading: false,
                 commodityAverage: action.payload
+            }
+        case EXCHANGE_RATE_DETAILS:
+            return {
+                ...state,
+                loading: false,
+                exchangeRateDetails: action.payload
             }
         default:
             return state;

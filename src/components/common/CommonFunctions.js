@@ -3,6 +3,7 @@ import _ from 'lodash';
 import { CBCAPPROVALTYPEID, CBCTypeId, dropdownLimit, NCCAPPROVALTYPEID, NCCTypeId, NFRAPPROVALTYPEID, NFRTypeId, RELEASESTRATEGYTYPEID1, RELEASESTRATEGYTYPEID2, RELEASESTRATEGYTYPEID3, RELEASESTRATEGYTYPEID4, VBCAPPROVALTYPEID, VBCTypeId, WACAPPROVALTYPEID, WACTypeId, ZBCAPPROVALTYPEID, ZBCTypeId, PFS2APPROVALTYPEID, PFS2TypeId, RELEASE_STRATEGY_B1, RELEASE_STRATEGY_B1_NEW, RELEASE_STRATEGY_B2, RELEASE_STRATEGY_B2_NEW, RELEASE_STRATEGY_B3, RELEASE_STRATEGY_B3_NEW, RELEASE_STRATEGY_B4, RELEASE_STRATEGY_B6, RELEASE_STRATEGY_B6_NEW, RELEASE_STRATEGY_B4_NEW, RELEASESTRATEGYTYPEID6, LPSAPPROVALTYPEID, CLASSIFICATIONAPPROVALTYPEID, RAWMATERIALAPPROVALTYPEID, effectiveDateRangeDays, searchCount } from "../../config/constants";
 import Toaster from "./Toaster";
 import { subDays } from "date-fns";
+import { checkForNull } from "../../helper";
 
 // COMMON FILTER FUNCTION FOR AUTOCOMPLETE DROPDOWN
 const commonFilterFunction = (inputValue, dropdownArray, filterByName, selectedParts = false) => {
@@ -66,7 +67,6 @@ export const DropDownFilterList = async (inputValue, filterType, stateKey, apiFu
                 return dataAPI;
             }
         } catch (error) {
-            console.error("Error fetching data:", error);
             setState(prevState => ({ ...prevState, inputLoader: false }));
             return [];
         }
@@ -366,3 +366,6 @@ export const getEffectiveDateMinDate = (minDate) => {
     }
     return subDays(new Date(), effectiveDateRangeDays);
 };
+export const convertIntoBase = (price, currencyValue) => {
+    return checkForNull(price) * checkForNull(currencyValue)
+}

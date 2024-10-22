@@ -70,6 +70,7 @@ export const RMDomesticZBC = [
     { label: "Category", value: "Category" }, //*
     { label: "TechnologyName", value: "TechnologyName" },
     { label: "PlantCode", value: "DestinationPlantCode" }, //*
+    { label: "Exchange Rate Source", value: "ExchangeRateSourceName" },
     { label: "VendorCode", value: "VendorCode" }, //*
     { label: "HasDifferentSource", value: "HasDifferentSource" },
     { label: "Source", value: "Source" }, //NOUI
@@ -101,6 +102,7 @@ export const RMDomesticZBCTempData = [
         "Category": "STD",
         "TechnologyName": "Sheet Metal",
         "DestinationPlantCode": "1511",
+        "ExchangeRateSourceName": "SBI",
         "VendorCode": "P123",
         "HasDifferentSource": "Yes",
         "Source": "Tata Steel",
@@ -129,6 +131,7 @@ export const RMDomesticZBCTempData = [
         "Category": "CTS",
         "TechnologyName": "Sheet Metal",
         "DestinationPlantCode": "PC01",
+        "ExchangeRateSourceName": "RBI",
         "VendorCode": "P123",
         "HasDifferentSource": "No",
         "Source": "Tata Steel",
@@ -157,6 +160,7 @@ export const RMDomesticZBCTempData = [
         "Category": "CTS",
         "TechnologyName": "Sheet Metal",
         "DestinationPlantCode": "PC01",
+        "ExchangeRateSourceName": "Custom",
         "VendorCode": "P123",
         "HasDifferentSource": "No",
         "Source": "Tata Steel",
@@ -185,6 +189,7 @@ export const RMDomesticZBCTempData = [
         "Category": "CTS",
         "TechnologyName": "Sheet Metal",
         "DestinationPlantCode": "PC01",
+        "ExchangeRateSourceName": "SBI",
         "VendorCode": "P123",
         "HasDifferentSource": "No",
         "Source": "Tata Steel",
@@ -220,6 +225,7 @@ export const RMDomesticVBC = [
     { label: "TechnologyLabel", value: "TechnologyName", defaultValue: "Technology" }, //*
     { label: "VendorCode", value: "VendorCode" }, //NOUI,*
     { label: "PlantCode", value: "DestinationPlantCode" }, //NOUI
+    { label: "Exchange Rate Source", value: "ExchangeRateSourceName" },
     { label: "Source", value: "Source" },
     { label: "SourceLocation", value: "SourceLocation" },
     { label: "UOM", value: "UOM" }, //*
@@ -250,6 +256,7 @@ export const RMDomesticVBCTempData = [
         "TechnologyName": "Sheet Metal",
         "VendorCode": "V123",
         "DestinationPlantCode": "P123",
+        "ExchangeRateSourceName": "SBI",
         "Source": "TATA Steel",
         "SourceLocation": "Jamshedpur",
         "UOM": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
@@ -277,6 +284,7 @@ export const RMDomesticVBCTempData = [
         "TechnologyName": "Sheet Metal",
         "VendorCode": "V123",
         "DestinationPlantCode": "P123",
+        "ExchangeRateSourceName": "RBI",
         "Source": "TATA Steel",
         "SourceLocation": "Jamshedpur",
         "UOM": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
@@ -304,6 +312,7 @@ export const RMDomesticVBCTempData = [
         "TechnologyName": "Sheet Metal",
         "VendorCode": "V123",
         "DestinationPlantCode": "P123",
+        "ExchangeRateSourceName": "Custom",
         "Source": "TATA Steel",
         "SourceLocation": "Jamshedpur",
         "UOM": "shot/stroke/Number",
@@ -331,6 +340,7 @@ export const RMDomesticVBCTempData = [
         "TechnologyName": "Sheet Metal",
         "VendorCode": "V123",
         "DestinationPlantCode": "P123",
+        "ExchangeRateSourceName": "SBI",
         "Source": "TATA Steel",
         "SourceLocation": "Jamshedpur",
         "UOM": "micrometer/kilometer/Feet/Inch/Millimeter/Centimeter/Meter",
@@ -363,6 +373,7 @@ export const RMImportZBC = [
     { label: "Category", value: "Category" }, //*
     { label: "TechnologyLabel", value: "TechnologyName", defaultValue: "Technology" }, //*
     { label: "PlantCode", value: "DestinationPlantCode" }, //*
+    { label: "Exchange Rate Source", value: "ExchangeRateSourceName" },
     { label: "VendorCode", value: "VendorCode" }, //NOUI
     { label: "HasDifferentSource", value: "HasDifferentSource" },
     { label: "Source", value: "Source" }, //NOUI
@@ -407,6 +418,7 @@ export const RMDomesticCBCTempData = [
         "CircleScrapRate": "20",
         "MachiningScrapRate": "20",
         "DestinationPlantCode": "1032",
+        "ExchangeRateSourceName": "SBI",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Content",
     },
@@ -431,6 +443,7 @@ export const RMDomesticCBCTempData = [
         "CircleScrapRate": "20",
         "MachiningScrapRate": "20",
         "DestinationPlantCode": "EC1",
+        "ExchangeRateSourceName": "RBI",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Content",
     },
@@ -455,6 +468,7 @@ export const RMDomesticCBCTempData = [
         "CircleScrapRate": "20",
         "MachiningScrapRate": "20",
         "DestinationPlantCode": "EC1",
+        "ExchangeRateSourceName": "SBI",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Content",
     },
@@ -479,6 +493,7 @@ export const RMDomesticCBCTempData = [
         "CircleScrapRate": "20",
         "MachiningScrapRate": "20",
         "DestinationPlantCode": "EC1",
+        "ExchangeRateSourceName": "SBI",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Content",
     }
@@ -495,6 +510,7 @@ export const RMImportZBCTempData = [
         "Category": "STD",
         "TechnologyName": "Sheet Metal",
         "DestinationPlantCode": "PC01",
+        "ExchangeRateSourceName": "SBI",
         "VendorCode": "P123",
         "HasDifferentSource": "Yes",
         "Source": "Tata Steel",
@@ -525,6 +541,7 @@ export const RMImportZBCTempData = [
         "TechnologyName": "Sheet Metal",
         "DestinationPlantCode": "PC01",
         "VendorCode": "P123",
+        "ExchangeRateSourceName": "RBI",
         "HasDifferentSource": "No",
         "Source": "Tata Steel",
         "SourceLocation": "Jamshedpur",
@@ -554,6 +571,7 @@ export const RMImportZBCTempData = [
         "TechnologyName": "Sheet Metal",
         "DestinationPlantCode": "PC01",
         "VendorCode": "P123",
+        "ExchangeRateSourceName": "SBI",
         "HasDifferentSource": "No",
         "Source": "Tata Steel",
         "SourceLocation": "Jamshedpur",
@@ -583,6 +601,7 @@ export const RMImportZBCTempData = [
         "TechnologyName": "Sheet Metal",
         "DestinationPlantCode": "PC01",
         "VendorCode": "P123",
+        "ExchangeRateSourceName": "RBI",
         "HasDifferentSource": "No",
         "Source": "Tata Steel",
         "SourceLocation": "Jamshedpur",
@@ -625,6 +644,7 @@ export const RMDomesticCBC = [
     { label: "CircleScrapRate", value: "CircleScrapRate" }, //*
     { label: "MachiningScrapRate", value: "MachiningScrapRate" }, //*
     { label: 'PlantCode', value: 'DestinationPlantCode', }, //*
+    { label: "Exchange Rate Source", value: "ExchangeRateSourceName" },
     { label: "EffectiveDate", value: "EffectiveDate" }, //*
     { label: "Remark", value: "Remark" },
 ]
@@ -643,6 +663,7 @@ export const RMImportVBC = [
     { label: "TechnologyLabel", value: "TechnologyName", defaultValue: "Technology" }, //*
     { label: "VendorCode", value: "VendorCode" }, //NOUI
     { label: "PlantCode", value: "DestinationPlantCode" }, //NOUI
+    { label: "Exchange Rate Source", value: "ExchangeRateSourceName" },
     { label: "Source", value: "Source" },
     { label: "SourceLocation", value: "SourceLocation" },
     { label: "UOM", value: "UOM" }, //*
@@ -674,6 +695,7 @@ export const RMImportVBCTempData = [
         "TechnologyName": "Sheet Metal",
         "VendorCode": "V123",
         "DestinationPlantCode": "P123",
+        "ExchangeRateSourceName": "SBI",
         "Source": "TATA Steel",
         "SourceLocation": "Jamshedpur",
         "UOM": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
@@ -702,6 +724,7 @@ export const RMImportVBCTempData = [
         "TechnologyName": "Sheet Metal",
         "VendorCode": "V123",
         "DestinationPlantCode": "P123",
+        "ExchangeRateSourceName": "SBI",
         "Source": "TATA Steel",
         "SourceLocation": "Jamshedpur",
         "UOM": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
@@ -730,6 +753,7 @@ export const RMImportVBCTempData = [
         "TechnologyName": "Sheet Metal",
         "VendorCode": "V123",
         "DestinationPlantCode": "P123",
+        "ExchangeRateSourceName": "RBI",
         "Source": "TATA Steel",
         "SourceLocation": "Jamshedpur",
         "UOM": "shot/stroke/Number",
@@ -758,6 +782,7 @@ export const RMImportVBCTempData = [
         "TechnologyName": "Sheet Metal",
         "VendorCode": "V123",
         "DestinationPlantCode": "P123",
+        "ExchangeRateSourceName": "RBI",
         "Source": "TATA Steel",
         "SourceLocation": "Jamshedpur",
         "UOM": "micrometer/kilometer/Feet/Inch/Millimeter/Centimeter/Meter",
@@ -801,6 +826,7 @@ export const RMImportCBC = [
     { label: "CircleScrapRate", value: "CircleScrapRate" }, //*
     { label: "MachiningScrapRate", value: "MachiningScrapRate" }, //*
     { label: 'PlantCode', value: 'DestinationPlantCode', }, //*
+    { label: "Exchange Rate Source", value: "ExchangeRateSourceName" },
     { label: "EffectiveDate", value: "EffectiveDate" }, //*
     { label: "Remark", value: "Remark" },
 ]
@@ -829,6 +855,7 @@ export const RMImportCBCTempData = [
         "CircleScrapRate": "20",
         "MachiningScrapRate": "20",
         "DestinationPlantCode": "EC1",
+        "ExchangeRateSourceName": "SBI",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Text",
     },
@@ -854,6 +881,7 @@ export const RMImportCBCTempData = [
         "CircleScrapRate": "20",
         "MachiningScrapRate": "20",
         "DestinationPlantCode": "EC1",
+        "ExchangeRateSourceName": "RBI",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Text",
     },
@@ -879,6 +907,7 @@ export const RMImportCBCTempData = [
         "CircleScrapRate": "20",
         "MachiningScrapRate": "20",
         "DestinationPlantCode": "EC1",
+        "ExchangeRateSourceName": "SBI",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Text",
     },
@@ -904,6 +933,7 @@ export const RMImportCBCTempData = [
         "CircleScrapRate": "20",
         "MachiningScrapRate": "20",
         "DestinationPlantCode": "EC1",
+        "ExchangeRateSourceName": "RBI",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Text",
     }
@@ -2249,6 +2279,7 @@ export const BOP_ZBC_DOMESTIC = [
     { label: "SAPCode", value: "SAPCode", },
     { label: 'UnitOfMeasurement', value: 'UnitOfMeasurement', }, //*
     { label: 'PlantCode', value: 'DestinationPlantCode', }, //*
+    { label: 'Exchange Rate Source', value: 'ExchangeRateSourceName' },
     { label: 'VendorCode', value: 'VendorCode', }, //NOUI
     { label: 'MinimumOrderQuantity', value: 'NumberOfPieces', },
     { label: 'BasicRate', value: 'BasicRate', }, //*
@@ -2265,6 +2296,7 @@ export const BOP_ZBC_DOMESTIC_TempData = [
         'SAPCode': 'SAP 01',
         "UnitOfMeasurement": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         'DestinationPlantCode': 'Plant101',
+        "ExchangeRateSourceName": "SBI",
         'VendorCode': 'Sys01',
         'NumberOfPieces': '1',
         'BasicRate': '100',
@@ -2278,6 +2310,7 @@ export const BOP_ZBC_DOMESTIC_TempData = [
         'SAPCode': 'SAP 01',
         "UnitOfMeasurement": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
         'DestinationPlantCode': 'Plant101',
+        "ExchangeRateSourceName": "SBI",
         'VendorCode': 'Sys01',
         'NumberOfPieces': '1',
         'BasicRate': '100',
@@ -2291,6 +2324,7 @@ export const BOP_ZBC_DOMESTIC_TempData = [
         'SAPCode': 'SAP 01',
         "UnitOfMeasurement": "shot/stroke/Number",
         'DestinationPlantCode': 'Plant101',
+        "ExchangeRateSourceName": "SBI",
         'VendorCode': 'Sys01',
         'NumberOfPieces': '1',
         'BasicRate': '100',
@@ -2310,6 +2344,7 @@ export const BOP_VBC_DOMESTIC = [
     { label: "SAPCode", value: "SAPCode", },
     { label: 'UnitOfMeasurement', value: 'UnitOfMeasurement', }, //*
     { label: 'PlantCode', value: 'DestinationPlantCode', }, //*
+    { label: 'Exchange Rate Source', value: 'ExchangeRateSourceName' },
     { label: 'ClientApprovedVendor', value: 'IsClientVendorBOP', },
     { label: 'VendorCode', value: 'VendorCode', }, //NOUI
     { label: 'Source', value: 'Source', },
@@ -2329,6 +2364,7 @@ export const BOP_VBC_DOMESTIC_TempData = [
         'SAPCode': 'SAP 01',
         "UnitOfMeasurement": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         'DestinationPlantCode': "1032",
+        "ExchangeRateSourceName": "SBI",
         "IsClientVendorBOP": "YES",
         'VendorCode': 'Sys01',
         'VendorPlant': 'VPlant',
@@ -2347,6 +2383,7 @@ export const BOP_VBC_DOMESTIC_TempData = [
         'SAPCode': 'SAP 01',
         "UnitOfMeasurement": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
         'DestinationPlantCode': "1032",
+        "ExchangeRateSourceName": "SBI",
         "IsClientVendorBOP": "NO",
         'VendorCode': 'Sys01',
         'VendorPlant': 'VPlant',
@@ -2365,6 +2402,7 @@ export const BOP_VBC_DOMESTIC_TempData = [
         'SAPCode': 'SAP 01',
         "UnitOfMeasurement": "shot/stroke/Number",
         'DestinationPlantCode': "1032",
+        "ExchangeRateSourceName": "SBI",
         "IsClientVendorBOP": "YES",
         'VendorCode': 'Sys01',
         'VendorPlant': 'VPlant',
@@ -2386,6 +2424,7 @@ export const BOP_DETAILED_DOMESTIC = [
     { label: "SAPCode", value: "SAPCode", },
     { label: 'UnitOfMeasurement', value: 'UnitOfMeasurement', }, //*
     { label: 'PlantCode', value: 'DestinationPlantCode', }, //*
+    { label: 'Exchange Rate Source', value: 'ExchangeRateSourceName' },
     { label: 'VendorCode', value: 'VendorCode', }, //NOUI
     { label: 'IsBreakupBoughtOutPart', value: 'IsBreakupBoughtOutPart', }, //NOUI
     { label: "TechnologyLabel", value: 'TechnologyName', defaultValue: "Technology" }, //NOUI
@@ -2404,6 +2443,7 @@ export const BOP_DETAILED_DOMESTIC_TempData = [
         'SAPCode': 'SAP 01',
         "UnitOfMeasurement": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         'DestinationPlantCode': "1032",
+        "ExchangeRateSourceName": "SBI",
         'VendorCode': 'Sys01',
         'IsBreakupBoughtOutPart': 'Yes',
         'TechnologyName': 'Sheet Metal',
@@ -2421,6 +2461,7 @@ export const BOP_DETAILED_DOMESTIC_TempData = [
         'SAPCode': 'SAP 01',
         "UnitOfMeasurement": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
         'DestinationPlantCode': "1032",
+        "ExchangeRateSourceName": "SBI",
         'VendorCode': 'Sys01',
         'IsBreakupBoughtOutPart': 'Yes',
         'TechnologyName': 'Sheet Metal',
@@ -2438,6 +2479,7 @@ export const BOP_DETAILED_DOMESTIC_TempData = [
         'SAPCode': 'SAP 01',
         "UnitOfMeasurement": "shot/stroke/Number",
         'DestinationPlantCode': "1032",
+        "ExchangeRateSourceName": "SBI",
         'VendorCode': 'Sys01',
         'IsBreakupBoughtOutPart': 'Yes',
         'TechnologyName': 'Sheet Metal',
@@ -2461,6 +2503,7 @@ export const BOP_ZBC_IMPORT = [
     { label: "SAPCode", value: "SAPCode", },
     { label: 'UnitOfMeasurement', value: 'UnitOfMeasurement', }, //*
     { label: 'PlantCode', value: 'DestinationPlantCode', }, //*
+    { label: 'Exchange Rate Source', value: 'ExchangeRateSourceName' },
     { label: 'VendorCode', value: 'VendorCode', }, //*
     { label: 'Currency', value: 'Currency', }, //*
     { label: 'MinimumOrderQuantity', value: 'NumberOfPieces', },
@@ -2480,6 +2523,7 @@ export const BOP_ZBC_IMPORT_TempData = [
         'SAPCode': 'SAP 01',
         "UnitOfMeasurement": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         'DestinationPlantCode': 'Plant101',
+        "ExchangeRateSourceName": "SBI",
         'VendorName': 'Systematix',
         'VendorCode': 'VC1',
         'Currency': 'INR or USD',
@@ -2497,6 +2541,7 @@ export const BOP_ZBC_IMPORT_TempData = [
         'SAPCode': 'SAP 01',
         "UnitOfMeasurement": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
         'DestinationPlantCode': 'Plant101',
+        "ExchangeRateSourceName": "RBI",
         'VendorName': 'Systematix',
         'VendorCode': 'VC1',
         'Currency': 'INR or USD',
@@ -2514,6 +2559,7 @@ export const BOP_ZBC_IMPORT_TempData = [
         'SAPCode': 'SAP 01',
         "UnitOfMeasurement": "shot/stroke/Number",
         'DestinationPlantCode': 'Plant101',
+        "ExchangeRateSourceName": "RBI",
         'VendorName': 'Systematix',
         'VendorCode': 'VC1',
         'Currency': 'INR or USD',
@@ -2598,6 +2644,7 @@ export const BOP_DETAILED_IMPORT = [
     { label: "SAPCode", value: "SAPCode", },
     { label: 'UnitOfMeasurement', value: 'UnitOfMeasurement', }, //*
     { label: 'PlantCode', value: 'DestinationPlantCode', },
+    { label: 'Exchange Rate Source', value: 'ExchangeRateSourceName' },
     { label: 'VendorCode', value: 'VendorCode', }, //NOUI
     { label: 'IsBreakupBoughtOutPart', value: 'IsBreakupBoughtOutPart', }, //NOUI
     { label: "TechnologyLabel", value: 'TechnologyName', defaultValue: "Technology" }, //NOUI
@@ -2622,6 +2669,7 @@ export const BOP_DETAILED_IMPORT_TempData = [
         'SAPCode': 'SAP 01',
         "UnitOfMeasurement": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         'DestinationPlantCode': '1032',
+        "ExchangeRateSourceName": "SBI",
         "IsClientVendorBOP": "YES",
         'VendorCode': 'Sys01',
         'IsBreakupBoughtOutPart': 'Yes',
@@ -2642,6 +2690,7 @@ export const BOP_DETAILED_IMPORT_TempData = [
         'SAPCode': 'SAP 01',
         "UnitOfMeasurement": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
         'DestinationPlantCode': '1032',
+        "ExchangeRateSourceName": "RBI",
         "IsClientVendorBOP": "YES",
         'VendorCode': 'Sys01',
         'IsBreakupBoughtOutPart': 'Yes',
@@ -2662,6 +2711,7 @@ export const BOP_DETAILED_IMPORT_TempData = [
         'SAPCode': 'SAP 01',
         "UnitOfMeasurement": "shot/stroke/Number",
         'DestinationPlantCode': '1032',
+        "ExchangeRateSourceName": "RBI",
         "IsClientVendorBOP": "NO",
         'VendorCode': 'Sys01',
         'IsBreakupBoughtOutPart': 'Yes',
@@ -2688,6 +2738,7 @@ export const BOP_VBC_IMPORT = [
     { label: "SAPCode", value: "SAPCode", },
     { label: 'UnitOfMeasurement', value: 'UnitOfMeasurement', }, //*
     { label: 'PlantCode', value: 'DestinationPlantCode', },
+    { label: 'Exchange Rate Source', value: 'ExchangeRateSourceName' },
     { label: 'ClientApprovedVendor', value: 'IsClientVendorBOP', },
     { label: 'VendorCode', value: 'VendorCode', }, //NOUI
     // { label: 'VendorPlant', value: 'VendorPlant' },
@@ -2712,6 +2763,7 @@ export const BOP_VBC_IMPORT_TempData = [
         'SAPCode': 'SAP 01',
         "UnitOfMeasurement": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         'DestinationPlantCode': '1032',
+        "ExchangeRateSourceName": "SBI",
         "IsClientVendorBOP": "YES",
         'VendorCode': 'Sys01',
         'SourceVendorName': 'TATA Steel',
@@ -2731,6 +2783,7 @@ export const BOP_VBC_IMPORT_TempData = [
         'SAPCode': 'SAP 01',
         "UnitOfMeasurement": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
         'DestinationPlantCode': '1032',
+        "ExchangeRateSourceName": "RBI",
         "IsClientVendorBOP": "YES",
         'VendorCode': 'Sys01',
         'SourceVendorName': 'TATA Steel',
@@ -2750,6 +2803,7 @@ export const BOP_VBC_IMPORT_TempData = [
         'SAPCode': 'SAP 01',
         "UnitOfMeasurement": "shot/stroke/Number",
         'DestinationPlantCode': '1032',
+        "ExchangeRateSourceName": "RBI",
         "IsClientVendorBOP": "NO",
         'VendorCode': 'Sys01',
         'SourceVendorName': 'TATA Steel',
@@ -2771,6 +2825,7 @@ export const BOP_CBC_IMPORT = [
     { label: "SAPCode", value: "SAPCode", },
     { label: 'UnitOfMeasurement', value: 'UnitOfMeasurement', }, //*
     { label: 'PlantCode', value: 'DestinationPlantCode', },
+    { label: 'Exchange Rate Source', value: 'ExchangeRateSourceName' },
     { label: 'CustomerCode', value: 'CustomerCode', }, //NOUI
     { label: 'MinimumOrderQuantity', value: 'NumberOfPieces', }, //*
     { label: 'Currency', value: 'Currency', }, //*
@@ -2791,6 +2846,7 @@ export const BOP_CBC_IMPORT_TempData = [
         'SAPCode': 'SAP 01',
         "UnitOfMeasurement": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         'DestinationPlantCode': '1032',
+        "ExchangeRateSourceName": "SBI",
         "CustomerCode": "C-10008",
         'Currency': 'INR or USD',
         'NumberOfPieces': '1',
@@ -2808,6 +2864,7 @@ export const BOP_CBC_IMPORT_TempData = [
         'SAPCode': 'SAP 01',
         "UnitOfMeasurement": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
         'DestinationPlantCode': '1032',
+        "ExchangeRateSourceName": "RBI",
         "CustomerCode": "C-10008",
         'Currency': 'INR or USD',
         'NumberOfPieces': '1',
@@ -2825,6 +2882,7 @@ export const BOP_CBC_IMPORT_TempData = [
         'SAPCode': 'SAP 01',
         "UnitOfMeasurement": "shot/stroke/Number",
         'DestinationPlantCode': '1032',
+        "ExchangeRateSourceName": "RBI",
         "CustomerCode": "C-10008",
         'Currency': 'INR or USD',
         'NumberOfPieces': '1',

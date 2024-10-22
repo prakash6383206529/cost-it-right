@@ -599,16 +599,7 @@ class BulkUpload extends Component {
                         case String(RAWMATERIALSRFQ):
 
                             checkForFileHead = checkForSameFileUpload(AddRawMaterialHeaderData, fileHeads)
-
                             break
-
-
-
-
-
-                        //checkForFileHead = checkForSameFileUpload(AddRFQUpload, fileHeads)
-
-
                         case String(OVERHEADBULKUPLOAD):
                             if (this.state.costingTypeId === VBCTypeId) {
                                 const localizedOverheadVBC = this.localizeHeaders(OverheadVBC);
@@ -751,6 +742,9 @@ class BulkUpload extends Component {
 
                                     fileHeads[i] = 'BoughtOutPartName'
 
+                                }
+                                if (fileHeads[i] === 'Exchange Rate Source') {
+                                    fileHeads[i] = 'ExchangeRateSourceName'
                                 }
                                 if (fileHeads[i] === `Insert${VendorLabel}`) {
                                     fileHeads[i] = `BOP${VendorLabel}`

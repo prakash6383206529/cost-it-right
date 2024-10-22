@@ -8,6 +8,7 @@ import { getPowerTypeSelectList, getUOMSelectList, getPlantBySupplier, getVendor
 import {
   getFuelByPlant, createPowerDetail, updatePowerDetail, getPlantListByAddress, createVendorPowerDetail, updateVendorPowerDetail, getDieselRateByStateAndUOM,
   getPowerDetailData, getVendorPowerDetailData,
+  getPlantCurrencyByPlantIds,
 } from '../actions/Fuel';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
@@ -36,6 +37,7 @@ import { subDays } from 'date-fns';
 import { LabelsClass } from '../../../helper/core';
 import { getExchangeRateByCurrency } from '../../costing/actions/Costing';
 import { getPlantUnitAPI } from '../actions/Plant';
+import Switch from 'react-switch'
 
 const selector = formValueSelector('AddPower');
 
@@ -372,6 +374,8 @@ class AddPower extends Component {
               vendorName: Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.VendorId } : [],
             })
             this.props.change('NetPowerCostPerUnit', Data.NetPowerCostPerUnit)
+            this.props.change('NetPowerCostPerUnitLocalConversion', Data.NetPowerCostPerUnitLocalConversion)
+            this.props.change('NetPowerCostPerUnitConversion', Data.NetPowerCostPerUnitConversion)
           }, 200)
         }
       })
@@ -561,7 +565,12 @@ class AddPower extends Component {
   */
   handlePlants = (e) => {
     console.log(e, "e")
+    const plantValues = e?.map(plant => plant.Value);
+    console.log(plantValues, "plantValues")
     this.setState({ selectedPlants: e })
+    this.props.getPlantCurrencyByPlantIds(plantValues, (res) => {
+      console.log(res, "res")
+    })
     // this.props.getPlantUnitAPI(e?.value, (res) => {
     //   let Data = res?.data?.Data
     //   if (Data?.Currency !== reactLocalStorage?.getObject("baseCurrency")) {
@@ -1490,6 +1499,9 @@ class AddPower extends Component {
       this.setState({ client: [] })
     }
   };
+  importToggle = () => {
+    this.setState({ isImport: !this.state.isImport })
+  }
 
   /**
   * @method render
@@ -1530,6 +1542,8 @@ class AddPower extends Component {
         }
       }
     };
+
+
     const isStateOfCountryAvailable = this.state?.country?.length === 0 || this.state?.country?.label === 'India'
     return (
       <>
@@ -1559,6 +1573,29 @@ class AddPower extends Component {
                     onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
                   >
                     <div className="add-min-height">
+                      <Row>
+                        <Col md="4" className="switch mb15">
+                          <label className="switch-level">
+                            <div className={"left-title"}>Domestic</div>
+                            <Switch
+                              onChange={this.importToggle}
+                              checked={this.state.isImport}
+                              id="normal-switch"
+                              disabled={isEditFlag}
+                              background="#4DC771"
+                              onColor="#4DC771"
+                              onHandleColor="#ffffff"
+                              offColor="#4DC771"
+                              uncheckedIcon={false}
+                              checkedIcon={false}
+                              height={20}
+                              width={46}
+                            />
+                            <div className={"right-title"}>Import</div>
+                          </label>
+                        </Col>
+
+                      </Row>
                       <Row>
 
                         <Col md="12">
@@ -1807,25 +1844,67 @@ class AddPower extends Component {
                           </div>
                         </Col>
 
-                        {!isDetailEntry && < Col md="3">
-                          <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                            <div className="fullinput-icon">
-                              <Field
-                                label={`Net Cost/Unit (${reactLocalStorage.getObject("baseCurrency")})`}
-                                name={"NetPowerCostPerUnit"}
-                                type="text"
-                                placeholder={isViewMode ? '-' : 'Enter'}
-                                validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthFour, number]}
-                                component={renderTextInputField}
-                                onChange={this.onNetCostChange}
-                                required={true}
-                                className=""
-                                customClassName=" withBorder"
-                                disabled={isViewMode}
-                              />
-                            </div>
-                          </div>
-                        </Col>}
+                        {!isDetailEntry &&
+                          <>
+                            {this.state.isImport && < Col md="3">
+                              <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                                <div className="fullinput-icon">
+                                  <Field
+                                    label={`Net Cost/Unit (${this.state.currency?.label ?? 'Currency'})`}
+                                    name={"NetPowerCostPerUnit"}
+                                    type="text"
+                                    placeholder={isViewMode ? '-' : 'Enter'}
+                                    validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthFour, number]}
+                                    component={renderTextInputField}
+                                    onChange={this.onNetCostChange}
+                                    required={true}
+                                    className=""
+                                    customClassName=" withBorder"
+                                    disabled={isViewMode}
+                                  />
+                                </div>
+                              </div>
+                            </Col>}
+                            < Col md="3">
+                              <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                                <div className="fullinput-icon">
+                                  <Field
+                                    label={`Net Cost/Unit (${this.props.fieldsObj?.plantCurrency ?? 'Currency'})`}
+                                    name={"NetPowerCostPerUnitLocalConversion"}
+                                    type="text"
+                                    placeholder={isViewMode || this.state.isImport ? '-' : 'Enter'}
+                                    validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthFour, number]}
+                                    component={renderTextInputField}
+                                    onChange={this.onNetCostChange}
+                                    required={true}
+                                    className=""
+                                    customClassName=" withBorder"
+                                    disabled={isViewMode || this.state.isImport}
+                                  />
+                                </div>
+                              </div>
+                            </Col>
+                            < Col md="3">
+                              <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                                <div className="fullinput-icon">
+                                  <Field
+                                    label={`Net Cost/Unit (${reactLocalStorage.getObject("baseCurrency")})`}
+                                    name={"NetPowerCostPerUnitConversion"}
+                                    type="text"
+                                    placeholder={'-'}
+                                    validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthFour, number]}
+                                    component={renderTextInputField}
+                                    onChange={this.onNetCostChange}
+                                    required={true}
+                                    className=""
+                                    customClassName=" withBorder"
+                                    disabled={true}
+                                  />
+                                </div>
+                              </div>
+                            </Col>
+                          </>
+                        }
 
                         <Col md="6" className={(costingTypeId === ZBCTypeId || isDetailEntry) ? "" : "mt30 pt-1"}>
                           <label id="AddPower_AddMoreDetails"
@@ -2418,7 +2497,7 @@ function mapStateToProps(state) {
     'UnitConsumptionPerAnnum', 'MaxDemandChargesKW', 'SEBCostPerUnit', 'MeterRentAndOtherChargesPerAnnum',
     'DutyChargesAndFCA', 'TotalUnitCharges', 'SEBPowerContributaion', 'AssetCost', 'AnnualCost',
     'CostPerUnitOfMeasurement', 'UnitGeneratedPerUnitOfFuel', 'UnitGeneratedPerAnnum', 'SelfGeneratedCostPerUnit',
-    'SelfPowerContribution', 'NetPowerCostPerUnit', 'city', 'state', 'country');
+    'SelfPowerContribution', 'NetPowerCostPerUnit', 'city', 'state', 'country', 'PlantCurrency', 'NetPowerCostPerUnitLocalConversion', 'NetPowerCostPerUnitConversion', "Currency", "ExchangeSource",);
 
   const { powerTypeSelectList, UOMSelectList, filterPlantList, stateList, countryList, cityList, } = comman;
   const { vendorWithVendorCodeSelectList } = supplier;
@@ -2477,6 +2556,7 @@ export default connect(mapStateToProps, {
   fetchCityDataAPI,
   getCityByCountryAction,
   fetchStateDataAPI,
+  getPlantCurrencyByPlantIds
 })(reduxForm({
   form: 'AddPower',
   enableReinitialize: true,

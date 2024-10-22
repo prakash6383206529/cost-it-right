@@ -4,7 +4,7 @@ import { CBCTypeId, FILE_URL, RAW_MATERIAL_VENDOR_TYPE, RM_MASTER_ID, SPACEBAR, 
 import { useDispatch, useSelector } from "react-redux"
 import { getCostingSpecificTechnology } from "../../costing/actions/Costing"
 import { CheckApprovalApplicableMaster, getConfigurationKey, loggedInUserId } from "../../../helper"
-import { SetRawMaterialDetails, fileUploadRMDomestic, getMaterialTypeDataAPI, getRMGradeSelectListByRawMaterial, getRMSpecificationDataAPI, getRMSpecificationDataList, getRawMaterialNameChild, SetCommodityIndexAverage } from "../actions/Material"
+import { setRawMaterialDetails, fileUploadRMDomestic, getMaterialTypeDataAPI, getRMGradeSelectListByRawMaterial, getRMSpecificationDataAPI, getRMSpecificationDataList, getRawMaterialNameChild, SetCommodityIndexAverage } from "../actions/Material"
 import { useForm, Controller, useWatch } from "react-hook-form"
 import { Row, Col } from 'reactstrap'
 import { TextFieldHookForm, SearchableSelectHookForm, NumberFieldHookForm, AsyncSearchableSelectHookForm, TextAreaHookForm, } from '../../layout/HookFormInputs';
@@ -39,6 +39,7 @@ function AddRMDetails(props) {
     const { Controller, control, register, setValue, getValues, errors, reset, useWatch, states, data, disableAll } = props
     const { isEditFlag, isViewFlag } = data
     const { vendorLabel, RMVendorLabel } = useLabels()
+    const rawMaterailDetails = useSelector((state) => state.material.rawMaterailDetails)
     const dropzone = useRef(null);
     const [state, setState] = useState({
         vendor: [],
@@ -103,7 +104,7 @@ function AddRMDetails(props) {
         if (getCostingTypeIdByCostingPermission() === CBCTypeId) {
             dispatch(getClientSelectList(() => { }))
         }
-        dispatch(SetRawMaterialDetails({ HasDifferentSource: state.HasDifferentSource }, () => { }))
+        dispatch(setRawMaterialDetails({ ...rawMaterailDetails, HasDifferentSource: state.HasDifferentSource }, () => { }))
         dispatch(getExchangeRateSource((res) => { }))
 
     }, [])
@@ -138,8 +139,6 @@ function AddRMDetails(props) {
                 setValue('RawMaterialCode', { label: Data?.RawMaterialCode, value: Data?.RMSpec })
                 setValue('Vendor', { label: Data?.VendorName, value: Data?.Vendor })
                 setValue('sourceVendorName', Data?.IsSourceVendor ? { label: Data?.SourceVendorName, value: Data?.SourceVendorId } : [])
-                dispatch(SetRawMaterialDetails({ SourceVendor: Data?.IsSourceVendor ? { label: Data?.SourceVendorName, value: Data?.SourceVendorId } : [], isShowIndexCheckBox: Data?.IsIndexationDetails }, () => { }))
-                dispatch(SetRawMaterialDetails({ Technology: { label: Data?.TechnologyName, value: Data?.TechnologyId }, }, () => { }))
                 setState(prevState => ({
                     ...prevState,
                     technology: { label: Data?.TechnologyName, value: Data?.TechnologyId },
@@ -158,10 +157,12 @@ function AddRMDetails(props) {
                     isShowIndexCheckBox: Data?.IsIndexationDetails
                 }))
             }
+            dispatch(setRawMaterialDetails({ ...rawMaterailDetails, Technology: { label: Data?.TechnologyName, value: Data?.TechnologyId }, }, () => { }))
+            dispatch(setRawMaterialDetails({ ...rawMaterailDetails, SourceVendor: Data?.IsSourceVendor ? { label: Data?.SourceVendorName, value: Data?.SourceVendorId } : [], isShowIndexCheckBox: Data?.IsIndexationDetails }, () => { }))
         }
     }, [props?.DataToChange])
     useEffect(() => {
-        dispatch(SetRawMaterialDetails({ HasDifferentSource: state.HasDifferentSource }, () => { }))
+        dispatch(setRawMaterialDetails({ ...rawMaterailDetails, HasDifferentSource: state.HasDifferentSource }, () => { }))
     }, [state.HasDifferentSource])
     /**
      * @method renderListing
@@ -282,7 +283,7 @@ function AddRMDetails(props) {
         } else {
             setState(prevState => ({ ...prevState, plants: [] }));
         }
-        dispatch(SetRawMaterialDetails({ Plants: newValue }, () => { }))
+        dispatch(setRawMaterialDetails({ ...rawMaterailDetails, Plants: newValue }, () => { }))
         if (getConfigurationKey()?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !getConfigurationKey()?.IsDivisionAllowedForDepartment) {
             props?.commonFunction(newValue ? newValue.value : '', false, props?.masterLevels)
         }
@@ -297,7 +298,7 @@ function AddRMDetails(props) {
         } else {
             setState(prevState => ({ ...prevState, technology: [] }));
         }
-        dispatch(SetRawMaterialDetails({ Technology: newValue }, () => { }))
+        dispatch(setRawMaterialDetails({ ...rawMaterailDetails, Technology: newValue }, () => { }))
     }
     /**
 * @method handleCustomer
@@ -309,7 +310,7 @@ function AddRMDetails(props) {
         } else {
             setState(prevState => ({ ...prevState, customer: [] }));
         }
-        dispatch(SetRawMaterialDetails({ customer: newValue }, () => { }))
+        dispatch(setRawMaterialDetails({ ...rawMaterailDetails, customer: newValue }, () => { }))
     };
 
     const handleVendor = (newValue, actionMeta) => {
@@ -317,14 +318,14 @@ function AddRMDetails(props) {
             if (newValue.value === state?.sourceVendor?.value) {
                 Toaster.warning(`${vendorLabel} and Source ${vendorLabel} cannot be the same`);
                 setState(prevState => ({ ...prevState, vendor: [] }));
-                dispatch(SetRawMaterialDetails({ Vendor: [] }, () => { }));
+                dispatch(setRawMaterialDetails({ ...rawMaterailDetails, Vendor: [] }, () => { }));
             } else {
                 setState(prevState => ({ ...prevState, vendor: newValue }));
-                dispatch(SetRawMaterialDetails({ Vendor: newValue }, () => { }));
+                dispatch(setRawMaterialDetails({ ...rawMaterailDetails, Vendor: newValue }, () => { }));
             }
         } else {
             setState(prevState => ({ ...prevState, vendor: [] }));
-            dispatch(SetRawMaterialDetails({ Vendor: [] }, () => { }));
+            dispatch(setRawMaterialDetails({ ...rawMaterailDetails, Vendor: [] }, () => { }));
         }
     };
 
@@ -337,11 +338,11 @@ function AddRMDetails(props) {
             } else {
                 setState(prevState => ({ ...prevState, sourceVendor: newValue }));
                 setValue("sourceVendorName", { label: newValue?.label, value: newValue?.value })
-                dispatch(SetRawMaterialDetails({ SourceVendor: newValue }, () => { }));
+                dispatch(setRawMaterialDetails({ ...rawMaterailDetails, SourceVendor: newValue }, () => { }));
             }
         } else {
             setState(prevState => ({ ...prevState, sourceVendor: [] }));
-            dispatch(SetRawMaterialDetails({ SourceVendor: [] }, () => { }));
+            dispatch(setRawMaterialDetails({ ...rawMaterailDetails, SourceVendor: [] }, () => { }));
         }
     };
     /**
@@ -448,7 +449,7 @@ function AddRMDetails(props) {
         const { isEditFlag, DataToChange } = state
         if (newValue && newValue !== '') {
             setState(prevState => ({ ...prevState, source: newValue, isSourceChange: true, isDropDownChanged: true }))
-            dispatch(SetRawMaterialDetails({ Source: newValue }, () => { }));
+            dispatch(setRawMaterialDetails({ ...rawMaterailDetails, Source: newValue }, () => { }));
 
         }
         if (isEditFlag && (DataToChange.Source !== newValue)) {
@@ -468,10 +469,10 @@ function AddRMDetails(props) {
         if (newValue && newValue !== '') {
             if (newValue.value === state?.sourceLocation?.value) {
                 setState(prevState => ({ ...prevState, sourceLocation: [] }));
-                dispatch(SetRawMaterialDetails({ SourceLocation: [] }, () => { }));
+                dispatch(setRawMaterialDetails({ ...rawMaterailDetails, SourceLocation: [] }, () => { }));
             } else {
                 setState(prevState => ({ ...prevState, sourceLocation: newValue }));
-                dispatch(SetRawMaterialDetails({ SourceLocation: newValue }, () => { }));
+                dispatch(setRawMaterialDetails({ ...rawMaterailDetails, SourceLocation: newValue }, () => { }));
             }
         }
         if (isEditFlag && (DataToChange.SourceLocation !== newValue.value)) {
@@ -532,7 +533,7 @@ function AddRMDetails(props) {
  */
     const onPressDifferentSource = () => {
         setState(prevState => ({ ...prevState, HasDifferentSource: !state.HasDifferentSource }));
-        dispatch(SetRawMaterialDetails({ HasDifferentSource: state.HasDifferentSource }, () => { }))
+        dispatch(setRawMaterialDetails({ ...rawMaterailDetails, HasDifferentSource: state.HasDifferentSource }, () => { }))
     }
     const closeRMDrawer = (e = '', data = {}) => {
         setState(prevState => ({ ...prevState, isRMDrawerOpen: false }))
@@ -620,7 +621,7 @@ function AddRMDetails(props) {
     }
     const isShowIndexCheckBox = () => {
         setState(prevState => ({ ...prevState, isShowIndexCheckBox: !state.isShowIndexCheckBox }))
-        dispatch(SetRawMaterialDetails({ isShowIndexCheckBox: !state.isShowIndexCheckBox }, () => { }))
+        dispatch(setRawMaterialDetails({ ...rawMaterailDetails, isShowIndexCheckBox: !state.isShowIndexCheckBox }, () => { }))
     }
     const handleExchangeRate = (newValue, actionMeta) => {
         if (newValue && newValue !== '') {
