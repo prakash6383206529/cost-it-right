@@ -6,9 +6,9 @@ import { Container, Row, Col, Label, } from 'reactstrap';
 import Toaster from '../../common/Toaster';
 import Drawer from '@material-ui/core/Drawer';
 import Dropzone from 'react-dropzone-uploader'
-import { bulkUploadCosting, plasticBulkUploadCosting, machiningBulkUploadCosting, corrugatedBoxBulkUploadCosting, assemblyBulkUploadCosting, wiringHarnessBulkUploadCosting, diecastingBulkUploadCosting, InsulationBulkUploadCosting, ElectricalStampingCostingBulkImport } from '../actions/CostWorking'
+import { bulkUploadCosting, plasticBulkUploadCosting, machiningBulkUploadCosting, corrugatedBoxBulkUploadCosting, assemblyBulkUploadCosting, wiringHarnessBulkUploadCosting, diecastingBulkUploadCosting, InsulationBulkUploadCosting, ElectricalStampingCostingBulkImport, MonocartonBulkUploadCosting } from '../actions/CostWorking'
 import { CostingBulkUploadTechnologyDropdown, TechnologyDropdownBulkUploadV1, TechnologyDropdownBulkUploadV2, TechnologyDropdownBulkUploadV4 } from '../../../config/masterData'
-import { ASSEMBLY, CORRUGATED_BOX, MACHINING_GROUP_BULKUPLOAD, PLASTIC_GROUP_BULKUPLOAD, SHEETMETAL_GROUP_BULKUPLOAD, FILE_URL, WIRINGHARNESS, SHEET_METAL, SHEETMETAL, DIE_CASTING, INSULATION, ELECTRICAL_STAMPING } from '../../../config/constants';
+import { ASSEMBLY, CORRUGATED_BOX, MACHINING_GROUP_BULKUPLOAD, PLASTIC_GROUP_BULKUPLOAD, SHEETMETAL_GROUP_BULKUPLOAD, FILE_URL, WIRINGHARNESS, SHEET_METAL, SHEETMETAL, DIE_CASTING, INSULATION, ELECTRICAL_STAMPING, MONOCARTON } from '../../../config/constants';
 import { getCostingTechnologySelectList, } from '../actions/Costing'
 import { searchableSelect } from '../../layout/FormInputs';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -191,21 +191,29 @@ const CostingBulkUploadDrawer = (props) => {
             Toaster.warning('File type should be .xls or .xlsx')
         }
     }
-    const handleApiResponse = (res, files) => {
+    const handleApiResponse = (res) => {
         setState((prev) => ({ ...prev, isLoader: false }));
-        if (res.status === 400) {
-
-            let Data = res.data.Data
+        if (res?.status === 400) {
+            let Data = res?.data.Data
             const withOutTild = Data?.FileURL?.replace("~", "");
             const fileURL = `${FILE_URL}${withOutTild}`;
             window.open(fileURL, '_blank');
-        } else {
-            let Data = res.data[0]
-            const { files } = state
-            files.push(Data)
-        }
+            // Display error message in Toaster
+            Toaster.error(res?.data.Message );
+        } else if (res?.status === 200) {
+            let Data = res?.data[0]
+            setState((prev) => ({
+                ...prev,
+                files: [...prev.files, Data]
+            }));
+            // Display success message in Toaster
+            Toaster.success(res?.data.Message || 'File uploaded successfully');
+        } 
+        // else {
+        //     // Display unexpected response message in Toaster
+        //     Toaster.error(res?.data.Message || 'Unexpected response from server');
+        // }
         cancel(); // Close the drawer after handling the response
-
     }
     const uploadFunctions = {
         [SHEETMETAL_GROUP_BULKUPLOAD]: bulkUploadCosting,
@@ -218,6 +226,7 @@ const CostingBulkUploadDrawer = (props) => {
         [DIE_CASTING]: diecastingBulkUploadCosting,
         [INSULATION]: InsulationBulkUploadCosting,
         [ELECTRICAL_STAMPING]: ElectricalStampingCostingBulkImport,
+        [MONOCARTON]: MonocartonBulkUploadCosting,
     };
     const onSubmit = (value) => {
         const { fileData, Technology, costingVersion } = state;
@@ -238,12 +247,26 @@ const CostingBulkUploadDrawer = (props) => {
         data.append('IsShowRawMaterialInOverheadProfitAndICC', getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC)
         data.append('version', costingVersion)
         setState((prev) => ({ ...prev, isLoader: true }));
-        const uploadFunction = uploadFunctions[Number(Technology.value)];
-        if (uploadFunction) {
-            dispatch(uploadFunction(data, costingVersion, handleApiResponse));
-        } else {
-            setState((prev) => ({ ...prev, isLoader: false }));
-            Toaster.error('Invalid technology selected');
+        switch (Number(Technology.value)) {
+            case SHEETMETAL_GROUP_BULKUPLOAD:
+            case SHEETMETAL:
+            case PLASTIC_GROUP_BULKUPLOAD:
+            case MACHINING_GROUP_BULKUPLOAD:
+                dispatch(uploadFunctions[Number(Technology.value)](data, costingVersion, handleApiResponse));
+                break;
+            case CORRUGATED_BOX:
+            case ASSEMBLY:
+            case WIRINGHARNESS:
+            case DIE_CASTING:
+            case INSULATION:
+            case ELECTRICAL_STAMPING:
+            case MONOCARTON:
+                dispatch(uploadFunctions[Number(Technology.value)](data, handleApiResponse));
+                break;
+            default:
+                setState((prev) => ({ ...prev, isLoader: false }));
+                Toaster.error('Invalid technology selected');
+                break;
         }
     }
 
@@ -426,7 +449,9 @@ const CostingBulkUploadDrawer = (props) => {
                                             classNames="draper-drop"
                                         />
                                     )}
-                                    {state.attachmentLoader && <LoaderCustom customClass="attachment-loader" />}
+                                    {state.attachmentLoader &&  <div className="position-absolute top-0 left-0 w-100 h-100 d-flex justify-content-center align-items-center bg-white bg-opacity-75">
+                    <LoaderCustom customClass="attachment-loader" />
+                </div>}
                                 </Col>
                             </Row>
                             <Row className="sf-btn-footer no-gutters justify-content-between">
