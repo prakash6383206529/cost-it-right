@@ -71,6 +71,7 @@ function SimulationApproveReject(props) {
     dispatch(getSimulationApprovalByDepartment(res => {
       const Data = res?.data?.SelectList
       const departObj = Data && Data.filter(item => item?.Value === (type === 'Sender' ? userData?.DepartmentId : simulationDetail?.DepartmentId))
+
       let dataInFieldTemp = {
         ...dataInFields, Department: { label: departObj[0]?.Text, value: departObj[0]?.Value },
         ApprovalType: { label: approvalTypeIdValue, value: approvalTypeIdValue }
@@ -163,7 +164,14 @@ function SimulationApproveReject(props) {
 
     if (levelDetailsTemp?.length !== 0) {
       setLevelDetails(levelDetailsTemp)
-      getApproversList(dataInFields?.Department?.value, dataInFields?.Department?.label, levelDetailsTemp, dataInFields)
+
+      let obj = {
+        ...dataInFields, Department: { label: dataInFields?.Department?.label, value: dataInFields?.Department?.value }
+        , Approver: { label: '', value: '', levelId: '', levelName: '' }
+      }
+      checkFinalUserAndGetApprovers(dataInFields?.Department, levelDetailsTemp, obj)
+      callApproverAPI(dataInFields?.Department)
+      // getApproversList(dataInFields?.Department?.value, dataInFields?.Department?.label, levelDetailsTemp, dataInFields)
     } else {
       if (getConfigurationKey().IsReleaseStrategyConfigured && props?.showApprovalTypeDropdown) {
         Toaster.warning("You don't have permission to send simulation for approval.")
@@ -173,7 +181,9 @@ function SimulationApproveReject(props) {
   }
 
   useEffect(() => {
+
     if (isResponseTrueObj?.Department && technologyLevelsList !== '' && type !== 'Reject' && !IsFinalLevel) {
+
       checkPermission(dataInFields?.ApprovalType?.value)
     }
   }, [isResponseTrueObj, technologyLevelsList, dataInFields?.ApprovalType])
@@ -206,6 +216,9 @@ function SimulationApproveReject(props) {
 
   const getApproversList = (departId, departmentName, levelDetailsTemp, dataInFieldsTemp) => {
 
+
+
+
     let values = []
     let approverDropdownValue = []
     let count = 0
@@ -220,6 +233,7 @@ function SimulationApproveReject(props) {
       return null
     })
     if (!IsFinalLevel) {
+
 
       if (values.length > 1) {
         values.map((item, index) => {
@@ -633,7 +647,11 @@ function SimulationApproveReject(props) {
     setApprovalDropDown([])
     if (getConfigurationKey().IsDivisionAllowedForDepartment) {
       let departmentIds = [value.value]
-      dispatch(getAllDivisionListAssociatedWithDepartment(departmentIds, res => {
+      let obj = {
+        DepartmentIdList: departmentIds,
+        IsApproval: false
+      }
+      dispatch(getAllDivisionListAssociatedWithDepartment(obj, res => {
         if (res && res?.data && res?.data?.Identity === true) {
           setIsShowDivision(true)
           let divisionArray = []

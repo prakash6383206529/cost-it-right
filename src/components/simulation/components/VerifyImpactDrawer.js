@@ -128,7 +128,6 @@ function VerifyImpactDrawer(props) {
                           {isSimulationWithCosting ? <th>Technology:</th> : <th>Association:</th>}
                           <th>Master:</th>
                           <th>Costing Head:</th>
-                          {CostingTypeId === CBCTypeId && <th>CUSTOMER:</th>}
                           <th>Effective Date:</th>
                           <th>Impact/Quarter (w.r.t. Existing):</th>
                           <th>Impact/Quarter (w.r.t. Budgeted Price):</th>

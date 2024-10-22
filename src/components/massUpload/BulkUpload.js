@@ -230,7 +230,11 @@ class BulkUpload extends Component {
 
     }
     callDivisionApi = (deptId) => {
-        this.props.getAllDivisionListAssociatedWithDepartment([deptId], res => {
+        let obj = {
+            DepartmentIdList: [deptId],
+            IsApproval: false
+        }
+        this.props.getAllDivisionListAssociatedWithDepartment(obj, res => {
             if (res && res?.data && res?.data?.Identity === true) {
                 this.setState({ isShowDivision: true })
                 let divisionArray = []
@@ -1232,7 +1236,7 @@ class BulkUpload extends Component {
                                 <Row>
                                     {getConfigurationKey().IsDivisionAllowedForDepartment && (fileName === 'RM' || fileName === `${showBopLabel()} Domestic` || fileName === `${showBopLabel()} Import` || fileName === 'Operation' || fileName === 'Budget' || fileName === 'Machine') && <>
 
-                                        <Col md="6" className='dropdown-flex'>
+                                        {/* <Col md="6" className='dropdown-flex'>
                                             <Field
                                                 label={`${handleDepartmentHeader()}`}
                                                 name={"dept"}
@@ -1246,7 +1250,7 @@ class BulkUpload extends Component {
                                                 valueDescription={this.state.department}
                                                 disabled={this.state.disableDept}
                                             />
-                                        </Col>
+                                        </Col> */}
                                         {this.state.isShowDivision && <Col md="6" className='dropdown-flex'>
                                             <Field
                                                 label={"Division"}

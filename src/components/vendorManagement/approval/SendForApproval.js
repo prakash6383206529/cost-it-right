@@ -476,7 +476,11 @@ const SendForApproval = (props) => {
   }
   const fetchDivisionList = (departmentId, dispatch, callback) => {
     let departmentIds = [departmentId];
-    dispatch(getAllDivisionListAssociatedWithDepartment(departmentIds, res => {
+    let obj = {
+      DepartmentIdList: departmentIds,
+      IsApproval: true
+    }
+    dispatch(getAllDivisionListAssociatedWithDepartment(obj, res => {
       if (res && res?.data && res?.data?.Identity === true) {
         let divisionArray = res?.data?.DataList
           .filter(item => String(item?.DivisionId) !== '0')
