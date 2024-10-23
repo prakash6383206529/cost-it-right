@@ -210,6 +210,7 @@ class AddOperation extends Component {
         // Original single API call for non-import case
         callAPI(fromCurrency, toCurrency).then(({ rate, exchangeRateId }) => {
           this.setState({ plantCurrency: rate, plantExchangeRateId: exchangeRateId }, () => {
+            console.log(fieldsObj?.RateLocalConversion, 'fieldsObj?.RateLocalConversion')
             this.handleCalculation(fieldsObj?.RateLocalConversion)
           });
         });
@@ -276,35 +277,75 @@ class AddOperation extends Component {
   */
   renderListing = (label) => {
     const { costingSpecifiTechnology, plantSelectList, UOMSelectList, clientSelectList, exchangeRateSourceList, currencySelectList } = this.props;
+    const temp = [];
 
-    const listingMap = {
-      technology: { list: costingSpecifiTechnology, labelKey: 'Text', valueKey: 'Value', filter: item => item.Value !== '0' && item.Value !== String(LOGISTICS) },
-      plant: { list: plantSelectList, labelKey: 'PlantNameCode', valueKey: 'PlantId' },
-      singlePlant: { list: plantSelectList, labelKey: 'PlantNameCode', valueKey: 'PlantId' },
-      UOM: { list: UOMSelectList, labelKey: 'Display', valueKey: 'Value', filter: item => AcceptableOperationUOM.includes(item.Type) },
-      ClientList: { list: clientSelectList, labelKey: 'Text', valueKey: 'Value' },
-      operationType: {
-        list: [
-          { label: "Welding", value: 1 },
-          { label: "Surface Treatment", value: 2 },
-          { label: "Other Operation", value: 3 },
-          { label: "Ni Cr Plating", value: 4 }
-        ], labelKey: 'label', valueKey: 'value'
-      },
-      ExchangeSource: { list: exchangeRateSourceList, labelKey: 'Text', valueKey: 'Value', filter: item => item.Value !== '--Exchange Rate Source Name--' },
-      currency: { list: currencySelectList, labelKey: 'Text', valueKey: 'Value' }
-    };
+    if (label === 'technology') {
+      costingSpecifiTechnology && costingSpecifiTechnology.map(item => {
+        if (item.Value === '0' || (item.Value === String(LOGISTICS))) return false;
+        temp.push({ Text: item.Text, Value: item.Value })
+        return null;
+      });
+      return temp;
+    }
+    if (label === 'plant') {
+      plantSelectList && plantSelectList.map(item => {
+        if (item.PlantId === '0') return false;
+        temp.push({ Text: item.PlantNameCode, Value: item.PlantId })
+        return null;
+      });
+      return temp;
+    }
+    if (label === 'singlePlant') {
+      plantSelectList && plantSelectList.map((item) => {
+        if (item.PlantId === '0') return false
+        temp.push({ label: item.PlantNameCode, value: item.PlantId })
+        return null
+      })
+      return temp
+    }
+    if (label === 'UOM') {
+      UOMSelectList && UOMSelectList.map(item => {
+        const accept = AcceptableOperationUOM.includes(item.Type)
+        if (accept === false) return false
+        if (item.Value === '0') return false;
+        temp.push({ label: item.Display, value: item.Value })
+        return null;
+      });
+      return temp;
+    }
+    if (label === 'ClientList') {
+      clientSelectList && clientSelectList.map(item => {
+        if (item.Value === '0') return false;
+        temp.push({ label: item.Text, value: item.Value })
+        return null;
+      });
+      return temp;
+    }
 
-    const { list, labelKey, valueKey, filter } = listingMap[label] || {};
+    if (label === 'operationType') {
+      temp.push({ label: "Welding", value: 1 })
+      temp.push({ label: "Surface Treatment", value: 2 })
+      temp.push({ label: "Other Operation", value: 3 })
+      temp.push({ label: "Ni Cr Plating", value: 4 })
+      return temp;
+    }
+    if (label === 'ExchangeSource') {
+      exchangeRateSourceList && exchangeRateSourceList.map((item) => {
+        if (item.Value === '--Exchange Rate Source Name--') return false
 
-    if (!list) return [];
-
-    return list.reduce((acc, item) => {
-      if (item[valueKey] === '0') return acc;
-      if (filter && !filter(item)) return acc;
-      acc.push({ label: item[labelKey], value: item[valueKey] });
-      return acc;
-    }, []);
+        temp.push({ label: item.Text, value: item.Value })
+        return null
+      })
+      return temp
+    }
+    if (label === 'currency') {
+      currencySelectList && currencySelectList.map(item => {
+        if (item.Value === '0') return false;
+        temp.push({ label: item.Text, value: item.Value })
+        return null;
+      });
+      return temp;
+    }
   }
   /**
    * @method onPressVendor
@@ -592,15 +633,17 @@ class AddOperation extends Component {
             return technologyArray;
           })
           let plantArray = [];
-          Data && Data.Plant.map((item) => {
-            plantArray.push({ Text: item.PlantName, Value: item.PlantId })
-            return plantArray;
-          })
+          if (Data && Data?.Plant?.length > 0) {
+            plantArray = Data?.Plant?.map(plant => ({ label: plant?.PlantName, value: plant?.PlantId }));
+          }
           this.finalUserCheckAndMasterLevelCheckFunction(plantArray[0].Value)
           if (Data?.ForType === 'Welding') {
             this.setState({ isWelding: true })
           }
           this.props.change('plantCurrency', Data?.LocalCurrency)
+          this.props.change('Rate', Data?.Rate)
+          this.props.change('RateLocalConversion', Data?.RateLocalConversion)
+          this.props.change('RateConversion', Data?.RateConversion)
           setTimeout(() => {
             this.setState({
               isEditFlag: true,
@@ -610,6 +653,7 @@ class AddOperation extends Component {
               selectedTechnology: technologyArray,
               client: Data.CustomerName !== undefined ? { label: Data.CustomerName, value: Data.CustomerId } : [],
               selectedPlants: plantArray,
+              destinationPlant: plantArray ?? [],
               vendorName: Data.VendorName && Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.VendorId } : [],
               UOM: Data.UnitOfMeasurement !== undefined ? { label: Data.UnitOfMeasurement, value: Data.UnitOfMeasurementId } : [],
               oldUOM: Data.UnitOfMeasurement !== undefined ? { label: Data.UnitOfMeasurement, value: Data.UnitOfMeasurementId } : [],
@@ -619,7 +663,7 @@ class AddOperation extends Component {
               // effectiveDate: moment(Data.EffectiveDate).isValid ? moment(Data.EffectiveDate)._d : '',
               effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
               oldDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
-              destinationPlant: Data.DestinationPlantName !== undefined ? { label: Data.DestinationPlantName, value: Data.DestinationPlantId } : [],
+              //destinationPlant: Data.DestinationPlantName !== undefined ? { label: Data.DestinationPlantName, value: Data.DestinationPlantId } : [],
               dataToChange: Data,
               operationType: { label: Data.ForType, value: 1 },
               ExchangeSource: Data?.ExchangeRateSourceName ? { label: Data?.ExchangeRateSourceName, value: Data?.ExchangeRateSourceId } : [],
@@ -913,6 +957,7 @@ class AddOperation extends Component {
   * @description Used to Submit the form
   */
   onSubmit = debounce((values) => {
+    console.log(values, 'values')
     const { selectedPlants, vendorName, files,
       UOM, oldUOM, isSurfaceTreatment, selectedTechnology, client, costingTypeId, remarks, OperationId, oldDate, effectiveDate, destinationPlant, DataToChange, isDateChange, IsFinancialDataChanged, isEditFlag, isImport } = this.state;
     const { initialConfiguration } = this.props;
@@ -970,6 +1015,8 @@ class AddOperation extends Component {
       IsSurfaceTreatmentOperation: isSurfaceTreatment,
       //SurfaceTreatmentCharges: values.SurfaceTreatmentCharges,
       Rate: values.Rate,
+      RateLocalConversion: values.RateLocalConversion,
+      RateConversion: values.RateConversion,
       LabourRatePerUOM: initialConfiguration && initialConfiguration.IsOperationLabourRateConfigure ? values.LabourRatePerUOM : '',
       Technology: technologyArray,
       Remark: remarks,
@@ -1103,6 +1150,15 @@ class AddOperation extends Component {
       obj.customer = this.state.client
       obj.isSurfaceTreatment = isSurfaceTreatment
       obj.OperationId = OperationId
+      obj.isImport = this.state.isImport
+      obj.currency = this.state.currency
+      obj.plantCurrencyState = this.state.plantCurrency
+      obj.settlementCurrency = this.state.settlementCurrency
+      obj.plantExchangeRateId = this.state.plantExchangeRateId
+      obj.settlementExchangeRateId = this.state.settlementExchangeRateId
+      obj.ExchangeSource = this.state.ExchangeSource
+      obj.plantCurrencyID = this.state.plantCurrencyID
+      obj.plantCurrency = this.props.fieldsObj?.plantCurrency
 
       if (String(this.state.operationType.label) === "Ni Cr Plating") {
 
@@ -1308,7 +1364,7 @@ class AddOperation extends Component {
                           options={this.renderListing("technology")}
                           selectionChanged={this.handleTechnology}
                           optionValue={(option) => option.Value}
-                          optionLabel={(option) => option.Text}
+                          optionLabel={(option) => option?.label}
                           component={renderMultiSelectField}
                           mendatory={true}
                           validate={this.state.selectedTechnology == null || this.state.selectedTechnology.length === 0 ? [required] : []}
@@ -1601,11 +1657,11 @@ class AddOperation extends Component {
                           name={"RateLocalConversion"}
                           type="text"
                           id="rate"
-                          placeholder={isViewMode || (isEditFlag && isOperationAssociated) || this.state.isWelding ? '-' : "Enter"}
+                          placeholder={this.state.isImport ? '' : 'Enter'}
                           validate={this.state.isWelding ? [] : [required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
                           component={renderTextInputField}
                           required={true}
-                          disabled={isViewMode || (isEditFlag && isOperationAssociated) || this.state.isWelding}
+                          disabled={this.state.isImport ? true : false}
                           onChange={this.handleRateChange}
                           className=" "
                           customClassName=" withBorder"
@@ -1805,6 +1861,7 @@ class AddOperation extends Component {
             cancel={this.cancel}
             isEditFlag={this.state.isEditFlag}
             isViewMode={this.state.isViewMode}
+            callExchangeRateAPI={this.callExchangeRateAPI}
           />
         }
 
@@ -1867,7 +1924,7 @@ class AddOperation extends Component {
 */
 function mapStateToProps(state) {
   const { comman, otherOperation, supplier, auth, costing, client } = state;
-  const fieldsObj = selector(state, 'OperationCode', 'text', 'OperationName', 'Description', 'operationType', 'technology', 'clientName', 'EffectiveDate', 'Plant', 'WeldingRate', 'Consumption', "Currency", "ExchangeSource", "plantCurrency", "RateConversion");
+  const fieldsObj = selector(state, 'OperationCode', 'text', 'OperationName', 'Description', 'operationType', 'technology', 'clientName', 'EffectiveDate', 'Plant', 'WeldingRate', 'Consumption', "Currency", "ExchangeSource", "plantCurrency", "RateConversion", 'Rate', 'RateLocalConversion');
   const { plantSelectList, filterPlantList, UOMSelectList, exchangeRateSourceList, currencySelectList } = comman;
   const { operationData } = otherOperation;
   const { vendorWithVendorCodeSelectList } = supplier;

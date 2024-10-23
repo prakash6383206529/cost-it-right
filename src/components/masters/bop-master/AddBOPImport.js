@@ -550,12 +550,14 @@ class AddBOPImport extends Component {
             let plantObj;
             // this.handleEffectiveDateChange(DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
 
-            if (getConfigurationKey().IsDestinationPlantConfigure) {
-              plantObj = Data.DestinationPlantName !== undefined ? { label: Data.DestinationPlantName, value: Data.DestinationPlantId } : []
-            } else {
-              plantObj = Data && Data.Plant.length > 0 ? { label: Data.Plant[0].PlantName, value: Data.Plant[0].PlantId } : []
+            // if (getConfigurationKey().IsDestinationPlantConfigure) {
+            //   plantObj = Data.DestinationPlantName !== undefined ? { label: Data.DestinationPlantName, value: Data.DestinationPlantId } : []
+            // } else {
+            //   plantObj = Data && Data.Plant.length > 0 ? { label: Data.Plant[0].PlantName, value: Data.Plant[0].PlantId } : []
+            // }
+            if (Data && Data?.Plant?.length > 0) {
+              plantObj = Data?.Plant?.map(plant => ({ label: plant?.PlantName, value: plant?.PlantId }));
             }
-
             this.setState({
               IsFinancialDataChanged: false,
               costingTypeId: Data.CostingTypeId,
@@ -1287,8 +1289,9 @@ class AddBOPImport extends Component {
     this.setState({ isVendorNameNotSelected: false })
 
 
-    let plantArray = { PlantName: selectedPlants.label, PlantId: selectedPlants.value, PlantCode: '' }
-
+    //let plantArray = { PlantName: selectedPlants.label, PlantId: selectedPlants.value, PlantCode: '' }
+    let plantArray = Array?.isArray(selectedPlants) ? selectedPlants?.map(plant => ({ PlantId: plant?.value, PlantName: plant?.label, PlantCode: '' })) :
+      selectedPlants ? [{ PlantId: selectedPlants?.value, PlantName: selectedPlants?.label, PlantCode: '' }] : [];
     if (selectedPlants.length === 0 && costingTypeId === ZBCTypeId) {
       return false;
     }
@@ -1312,7 +1315,7 @@ class AddBOPImport extends Component {
     formData.Remark = values?.Remark
     formData.IsActive = true
     formData.LoggedInUserId = loggedInUserId()
-    formData.Plant = [plantArray]
+    formData.Plant = plantArray ?? []
     formData.DestinationPlantId = (costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? selectedPlants.value : (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) ? selectedPlants.value : userDetailsBop.Plants[0].PlantId
     formData.Attachements = isEditFlag ? updatedFiles : files
     formData.UnitOfMeasurementId = UOM.value

@@ -8,7 +8,8 @@ import { focusOnError, renderText, renderTextInputField, searchableSelect } from
 import { createPlantAPI, getPlantUnitAPI, updatePlantAPI, getComapanySelectList } from '../actions/Plant';
 import {
   fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, fetchSupplierCityDataAPI,
-  getCityByCountry, getCurrencySelectList
+  getCityByCountry, getCurrencySelectList,
+  getCityByCountryAction
 } from '../../../actions/Common';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
@@ -717,7 +718,8 @@ export default connect(mapStateToProps, {
   updatePlantAPI,
   getCityByCountry,
   getComapanySelectList,
-  getCurrencySelectList
+  getCurrencySelectList,
+  getCityByCountryAction
 })(reduxForm({
   form: 'AddZBCPlant',
   enableReinitialize: true,

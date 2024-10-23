@@ -594,7 +594,11 @@ function UserRegistration(props) {
     copiedArr && copiedArr?.map(item => {
       departmentIds.push(item?.value)
     })
-    dispatch(getAllDivisionListAssociatedWithDepartment(departmentIds, res => {
+    let obj = {
+      DepartmentIdList: departmentIds,
+      IsApproval: true
+    }
+    dispatch(getAllDivisionListAssociatedWithDepartment(obj, res => {
       if (res && res?.data && res?.data?.Identity === true) {
         setIsShowDivision(true)
       } else {
@@ -733,7 +737,11 @@ function UserRegistration(props) {
             idArr.push(item.DepartmentId)
           })
           dispatch(getPlantSelectListForDepartment(idArr, res => { }))
-          dispatch(getAllDivisionListAssociatedWithDepartment(idArr, res => {
+          let obj = {
+            DepartmentIdList: idArr,
+            IsApproval: true
+          }
+          dispatch(getAllDivisionListAssociatedWithDepartment(obj, res => {
             if (res && res?.data && res?.data?.Identity === true) {
               setIsShowDivision(true)
             } else {

@@ -8,6 +8,7 @@ import { getPowerTypeSelectList, getUOMSelectList, getPlantBySupplier, getVendor
 import {
   getFuelByPlant, createPowerDetail, updatePowerDetail, getPlantListByAddress, createVendorPowerDetail, updateVendorPowerDetail, getDieselRateByStateAndUOM,
   getPowerDetailData, getVendorPowerDetailData,
+  getPlantCurrencyByPlantIds,
 } from '../actions/Fuel';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
@@ -36,6 +37,8 @@ import { subDays } from 'date-fns';
 import { LabelsClass } from '../../../helper/core';
 import { getExchangeRateByCurrency } from '../../costing/actions/Costing';
 import { getPlantUnitAPI } from '../actions/Plant';
+import Switch from 'react-switch'
+import WarningMessage from '../../common/WarningMessage';
 
 const selector = formValueSelector('AddPower');
 
@@ -91,7 +94,7 @@ class AddPower extends Component {
       settlementCurrency: [],
       plantCurrency: [],
       ExchangeSource: [],
-      currency: null,
+      currency: [],
       plantExchangeRateId: '',
       settlementExchangeRateId: '',
       plantCurrencyID: '',
@@ -115,6 +118,8 @@ class AddPower extends Component {
       segCostUnittooltipText: 'Please select the Source of Power, as the calculation will be based on them.',
       country: [],
       city: [],
+      isDisabled: false
+
     }
 
   }
@@ -139,10 +144,10 @@ class AddPower extends Component {
       this.props.fetchStateDataAPI(0, () => { })
     }
     this.getDetails();
+    this.props.getCurrencySelectList(() => { })
   }
   callPlantApi = () => {
     const { city, StateName, country } = this.state;
-    console.log(city)
     const isStateOfCountryAvailable = this.state?.country?.length === 0 || this.state?.country?.label === 'India';
 
     if (city.value) {
@@ -163,10 +168,11 @@ class AddPower extends Component {
 
   callExchangeRateAPI = () => {
     const { fieldsObj } = this.props
-    const { costingTypeId, vendorName, client, effectiveDate, ExchangeSource } = this.state;
-
+    const { costingTypeId, vendorName, client, effectiveDate, ExchangeSource, currency, isImport } = this.state;
     const vendorValue = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? vendorName.value : EMPTY_GUID) : EMPTY_GUID
     const costingType = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? VBCTypeId : costingTypeId) : ZBCTypeId
+    const fromCurrency = isImport ? currency?.label : fieldsObj?.plantCurrency
+    const toCurrency = reactLocalStorage.getObject("baseCurrency")
     const hasCurrencyAndDate = fieldsObj?.plantCurrency && effectiveDate;
     const isSourceExchangeRateVisible = getConfigurationKey().IsSourceExchangeRateNameVisible;
     if (hasCurrencyAndDate && (!isSourceExchangeRateVisible || ExchangeSource)) {
@@ -175,15 +181,75 @@ class AddPower extends Component {
         return;
       }
 
-      this.props.getExchangeRateByCurrency(fieldsObj?.plantCurrency, costingType, DayTime(this.state?.effectiveDate).format('YYYY-MM-DD'), vendorValue, client.value, false, reactLocalStorage.getObject("baseCurrency"), ExchangeSource?.label, res => {
-        if (Object.keys(res.data.Data).length === 0) {
-          this.setState({ showWarning: true });
-        } else {
-          this.setState({ showWarning: false });
-        }
-        this.setState({ currencyValue: checkForNull(res.data.Data.CurrencyExchangeRate) });
-      });
+      const callAPI = (from, to) => {
+        return new Promise((resolve) => {
+          this.props.getExchangeRateByCurrency(
+            from,
+            costingType,
+            DayTime(this.state?.effectiveDate).format('YYYY-MM-DD'),
+            vendorValue,
+            client.value,
+            false,
+            to,
+            ExchangeSource?.label,
+            res => {
+              if (Object.keys(res.data.Data).length === 0) {
+                this.setState({ showWarning: true });
+              } else {
+                this.setState({ showWarning: false });
+              }
+              // Resolve with an object containing both values
+              resolve({
+                rate: checkForNull(res.data.Data.CurrencyExchangeRate),
+                exchangeRateId: res?.data?.Data?.ExchangeRateId
+              });
+            }
+          );
+        });
+      };
+
+      if (isImport) {
+        // First API call
+        callAPI(fromCurrency, fieldsObj?.plantCurrency).then(({ rate: rate1, exchangeRateId: exchangeRateId1 }) => {
+          // Second API call
+          callAPI(fromCurrency, reactLocalStorage.getObject("baseCurrency")).then(({ rate: rate2, exchangeRateId: exchangeRateId2 }) => {
+            this.setState({
+              plantCurrency: rate1,
+              settlementCurrency: rate2,
+              plantExchangeRateId: exchangeRateId1,
+              settlementExchangeRateId: exchangeRateId2
+            }, () => {
+              this.handleCalculation(fieldsObj?.NetPowerCostPerUnit)
+            });
+          });
+        });
+      } else {
+        // Original single API call for non-import case
+        callAPI(fromCurrency, toCurrency).then(({ rate, exchangeRateId }) => {
+          this.setState({ plantCurrency: rate, plantExchangeRateId: exchangeRateId }, () => {
+            this.handleCalculation(fieldsObj?.NetPowerCostPerUnitLocalConversion)
+          });
+        });
+      }
     }
+
+  }
+  handleCalculation = (rate) => {
+
+    const { fieldsObj } = this.props
+
+    const { plantCurrency, settlementCurrency, isImport } = this.state
+
+    if (isImport) {
+      const ratePlantCurrency = checkForNull(rate) * checkForNull(plantCurrency)
+      this.props.change('NetPowerCostPerUnitLocalConversion', checkForDecimalAndNull(ratePlantCurrency, getConfigurationKey().NoOfDecimalForPrice))
+      const rateBaseCurrency = checkForNull(rate) * checkForNull(settlementCurrency)
+      this.props.change('NetPowerCostPerUnitConversion', checkForDecimalAndNull(rateBaseCurrency, getConfigurationKey().NoOfDecimalForPrice))
+    } else {
+      const ratebaseCurrency = checkForNull(rate) * checkForNull(plantCurrency)
+      this.props.change('NetPowerCostPerUnitConversion', checkForDecimalAndNull(ratebaseCurrency, getConfigurationKey().NoOfDecimalForPrice))
+    }
+
   }
   /**
    * @method minMonthlyChargeCalculation
@@ -372,6 +438,8 @@ class AddPower extends Component {
               vendorName: Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.VendorId } : [],
             })
             this.props.change('NetPowerCostPerUnit', Data.NetPowerCostPerUnit)
+            this.props.change('NetPowerCostPerUnitLocalConversion', Data.NetPowerCostPerUnitLocalConversion)
+            this.props.change('NetPowerCostPerUnitConversion', Data.NetPowerCostPerUnitConversion)
           }, 200)
         }
       })
@@ -560,8 +628,29 @@ class AddPower extends Component {
   * @description Used handle Plants
   */
   handlePlants = (e) => {
-    console.log(e, "e")
+    const plantValues = e?.map(plant => plant.Value);
     this.setState({ selectedPlants: e })
+    if (plantValues !== undefined) {
+      this.props.getPlantCurrencyByPlantIds(plantValues, (res) => {
+        let Data = res?.data?.Data;
+        if (res?.response?.status === 412) {
+          this.setState({ isDisabled: true });
+          return;
+        } else {
+          this.setState({ isDisabled: false });
+        }
+        this.props.change('plantCurrency', Data[0]?.Currency);
+        this.setState({ plantCurrencyID: Data[0]?.CurrencyId });
+        if (Data?.Currency !== reactLocalStorage?.getObject("baseCurrency")) {
+          this.setState({ hidePlantCurrency: false });
+        } else {
+          this.setState({ hidePlantCurrency: true });
+        }
+        this.callExchangeRateAPI();
+      });
+    } else {
+      this.setState({ isDisabled: false });
+    }
     // this.props.getPlantUnitAPI(e?.value, (res) => {
     //   let Data = res?.data?.Data
     //   if (Data?.Currency !== reactLocalStorage?.getObject("baseCurrency")) {
@@ -596,6 +685,7 @@ class AddPower extends Component {
     if (e.target.value) {
       this.setState({ DropdownChanged: false })
     }
+    this.handleCalculation(e?.target?.value)
   }
 
   /**
@@ -1087,7 +1177,15 @@ class AddPower extends Component {
       });
     }
   }
-
+  handleCurrency = (newValue) => {
+    if (newValue && newValue !== '') {
+      this.setState({ currency: newValue }, () => {
+        this.callExchangeRateAPI()
+      })
+    } else {
+      this.setState({ currency: [] })
+    }
+  };
   /**
   * @method deleteItem
   * @description used to Reset form
@@ -1163,7 +1261,7 @@ class AddPower extends Component {
   * @description Used to show type of listing
   */
   renderListing = (label) => {
-    const { powerTypeSelectList, UOMSelectList, plantSelectList, stateList, clientSelectList, exchangeRateSourceList, countryList, cityList } = this.props;
+    const { powerTypeSelectList, UOMSelectList, plantSelectList, stateList, clientSelectList, exchangeRateSourceList, countryList, cityList, currencySelectList } = this.props;
     const temp = [];
 
     if (label === 'state') {
@@ -1235,6 +1333,13 @@ class AddPower extends Component {
         return null
       })
       return temp
+    } if (label === 'currency') {
+      currencySelectList && currencySelectList.map(item => {
+        if (item.Value === '0') return false;
+        temp.push({ label: item.Text, value: item.Value })
+        return null;
+      });
+      return temp;
     }
   }
 
@@ -1283,8 +1388,8 @@ class AddPower extends Component {
   onSubmit = debounce((values) => {
     const { isEditFlag, PowerDetailID, IsVendor, VendorCode, selectedPlants, StateName, powerGrid,
       effectiveDate, vendorName, DataToChangeVendor, DataToChangeZ, DropdownChanged,
-      handleChange, DeleteChanged, AddChanged, costingTypeId, isDetailEntry, client } = this.state;
-
+      handleChange, DeleteChanged, AddChanged, costingTypeId, isDetailEntry, client, city, country } = this.state;
+    const { fieldsObj } = this.props
     if (IsVendor && vendorName.length <= 0) {
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
       return false
@@ -1377,6 +1482,8 @@ class AddPower extends Component {
           NetPowerCostPerUnit: isDetailEntry ? NetPowerCostPerUnit : this.props.fieldsObj.NetPowerCostPerUnit,
           VendorPlant: [],
           EffectiveDate: effectiveDate,
+          CountryId: country?.value,
+          CityId: city?.value,
           SEBChargesDetails: [
             {
               PowerSEBPCId: '',
@@ -1396,6 +1503,8 @@ class AddPower extends Component {
           ],
           SGChargesDetails: selfGridDataArray,
           LoggedInUserId: loggedInUserId(),
+          NetPowerCostPerUnitConversion: fieldsObj?.NetPowerCostPerUnitConversion,
+          NetPowerCostPerUnitLocalConversion: fieldsObj?.NetPowerCostPerUnitLocalConversion
         }
 
         this.props.updatePowerDetail(requestData, (res) => {
@@ -1440,6 +1549,8 @@ class AddPower extends Component {
           NetPowerCostPerUnit: isDetailEntry ? NetPowerCostPerUnit : this.props.fieldsObj.NetPowerCostPerUnit,
           VendorPlant: [],
           EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
+          CountryId: country?.value,
+          CityId: city?.value,
           SEBChargesDetails: [
             {
               PowerSEBPCId: '',
@@ -1459,6 +1570,8 @@ class AddPower extends Component {
           ],
           SGChargesDetails: selfGridDataArray,
           LoggedInUserId: loggedInUserId(),
+          NetPowerCostPerUnitConversion: fieldsObj?.NetPowerCostPerUnitConversion,
+          NetPowerCostPerUnitLocalConversion: fieldsObj?.NetPowerCostPerUnitLocalConversion
         }
 
         this.props.createPowerDetail(formData, (res) => {
@@ -1490,6 +1603,9 @@ class AddPower extends Component {
       this.setState({ client: [] })
     }
   };
+  importToggle = () => {
+    this.setState({ isImport: !this.state.isImport })
+  }
 
   /**
   * @method render
@@ -1530,6 +1646,8 @@ class AddPower extends Component {
         }
       }
     };
+
+
     const isStateOfCountryAvailable = this.state?.country?.length === 0 || this.state?.country?.label === 'India'
     return (
       <>
@@ -1559,6 +1677,29 @@ class AddPower extends Component {
                     onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
                   >
                     <div className="add-min-height">
+                      <Row>
+                        <Col md="4" className="switch mb15">
+                          <label className="switch-level">
+                            <div className={"left-title"}>Domestic</div>
+                            <Switch
+                              onChange={this.importToggle}
+                              checked={this.state.isImport}
+                              id="normal-switch"
+                              disabled={isEditFlag}
+                              background="#4DC771"
+                              onColor="#4DC771"
+                              onHandleColor="#ffffff"
+                              offColor="#4DC771"
+                              uncheckedIcon={false}
+                              checkedIcon={false}
+                              height={20}
+                              width={46}
+                            />
+                            <div className={"right-title"}>Import</div>
+                          </label>
+                        </Col>
+
+                      </Row>
                       <Row>
 
                         <Col md="12">
@@ -1779,6 +1920,28 @@ class AddPower extends Component {
                             customClassName=" withBorder"
                           />
                         </Col>}
+                        {this.state?.isImport && <Col md="3">
+                          <Field
+                            name="Currency"
+                            type="text"
+                            label="Currency"
+                            component={searchableSelect}
+                            placeholder={isEditFlag ? '-' : "Select"}
+                            options={this.renderListing("currency")}
+                            validate={
+                              this.state.currency == null ||
+                                this.state.currency.length === 0
+                                ? [required]
+                                : []
+                            }
+                            required={true}
+                            handleChangeDescription={this.handleCurrency}
+                            valueDescription={this.state.currency}
+                            disabled={isEditFlag ? true : false || isViewMode}
+                          >
+                            {this.state?.showWarning && <WarningMessage dClass="mt-1" message={`${this.state?.currency?.label} rate is not present in the Exchange Master`} />}
+                          </Field>
+                        </Col>}
                         <Col md="3">
                           <div className="d-flex justify-space-between align-items-center inputwith-icon">
                             <div className="fullinput-icon">
@@ -1807,25 +1970,67 @@ class AddPower extends Component {
                           </div>
                         </Col>
 
-                        {!isDetailEntry && < Col md="3">
-                          <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                            <div className="fullinput-icon">
-                              <Field
-                                label={`Net Cost/Unit (${reactLocalStorage.getObject("baseCurrency")})`}
-                                name={"NetPowerCostPerUnit"}
-                                type="text"
-                                placeholder={isViewMode ? '-' : 'Enter'}
-                                validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthFour, number]}
-                                component={renderTextInputField}
-                                onChange={this.onNetCostChange}
-                                required={true}
-                                className=""
-                                customClassName=" withBorder"
-                                disabled={isViewMode}
-                              />
-                            </div>
-                          </div>
-                        </Col>}
+                        {!isDetailEntry &&
+                          <>
+                            {this.state.isImport && < Col md="3">
+                              <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                                <div className="fullinput-icon">
+                                  <Field
+                                    label={`Net Cost/Unit (${this.state.currency?.label ?? 'Currency'})`}
+                                    name={"NetPowerCostPerUnit"}
+                                    type="text"
+                                    placeholder={isViewMode ? '-' : 'Enter'}
+                                    validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthFour, number]}
+                                    component={renderTextInputField}
+                                    onChange={this.onNetCostChange}
+                                    required={true}
+                                    className=""
+                                    customClassName=" withBorder"
+                                    disabled={isViewMode}
+                                  />
+                                </div>
+                              </div>
+                            </Col>}
+                            < Col md="3">
+                              <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                                <div className="fullinput-icon">
+                                  <Field
+                                    label={`Net Cost/Unit (${this.props.fieldsObj?.plantCurrency ?? 'Currency'})`}
+                                    name={"NetPowerCostPerUnitLocalConversion"}
+                                    type="text"
+                                    placeholder={isViewMode || this.state.isImport ? '-' : 'Enter'}
+                                    validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthFour, number]}
+                                    component={renderTextInputField}
+                                    onChange={this.onNetCostChange}
+                                    required={true}
+                                    className=""
+                                    customClassName=" withBorder"
+                                    disabled={isViewMode || this.state.isImport}
+                                  />
+                                </div>
+                              </div>
+                            </Col>
+                            < Col md="3">
+                              <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                                <div className="fullinput-icon">
+                                  <Field
+                                    label={`Net Cost/Unit (${reactLocalStorage.getObject("baseCurrency")})`}
+                                    name={"NetPowerCostPerUnitConversion"}
+                                    type="text"
+                                    placeholder={'-'}
+                                    validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthFour, number]}
+                                    component={renderTextInputField}
+                                    // onChange={this.onNetCostChange}
+                                    required={true}
+                                    className=""
+                                    customClassName=" withBorder"
+                                    disabled={true}
+                                  />
+                                </div>
+                              </div>
+                            </Col>
+                          </>
+                        }
 
                         <Col md="6" className={(costingTypeId === ZBCTypeId || isDetailEntry) ? "" : "mt30 pt-1"}>
                           <label id="AddPower_AddMoreDetails"
@@ -2376,7 +2581,7 @@ class AddPower extends Component {
                         </button>
                         {!isViewMode && <button id="AddPower_Save"
                           type="submit"
-                          disabled={isViewMode || setDisable}
+                          disabled={isViewMode || setDisable || this?.state?.isDisabled}
                           className="user-btn mr5 save-btn" >
                           <div className={"save-icon"}></div>
                           {isEditFlag ? 'Update' : 'Save'}
@@ -2418,9 +2623,9 @@ function mapStateToProps(state) {
     'UnitConsumptionPerAnnum', 'MaxDemandChargesKW', 'SEBCostPerUnit', 'MeterRentAndOtherChargesPerAnnum',
     'DutyChargesAndFCA', 'TotalUnitCharges', 'SEBPowerContributaion', 'AssetCost', 'AnnualCost',
     'CostPerUnitOfMeasurement', 'UnitGeneratedPerUnitOfFuel', 'UnitGeneratedPerAnnum', 'SelfGeneratedCostPerUnit',
-    'SelfPowerContribution', 'NetPowerCostPerUnit', 'city', 'state', 'country');
+    'SelfPowerContribution', 'NetPowerCostPerUnit', 'city', 'state', 'country', 'plantCurrency', 'NetPowerCostPerUnitLocalConversion', 'NetPowerCostPerUnitConversion', "NetPowerCostPerUnit", "Currency", "ExchangeSource", "NetPowerCostPerUnitLocalConversion", "NetPowerCostPerUnit", "SEBBaseCostPerUnitConversion", "SEBCostPerUnitLocalConversion");
 
-  const { powerTypeSelectList, UOMSelectList, filterPlantList, stateList, countryList, cityList, } = comman;
+  const { powerTypeSelectList, UOMSelectList, filterPlantList, stateList, countryList, cityList, currencySelectList, exchangeRateSourceList } = comman;
   const { vendorWithVendorCodeSelectList } = supplier;
   const { plantSelectList, powerData } = fuel;
   const { initialConfiguration } = auth;
@@ -2445,7 +2650,7 @@ function mapStateToProps(state) {
 
   return {
     vendorWithVendorCodeSelectList, powerTypeSelectList, UOMSelectList, filterPlantList,
-    plantSelectList, powerData, initialValues, fieldsObj, initialConfiguration, stateList, clientSelectList, countryList, cityList
+    plantSelectList, powerData, initialValues, fieldsObj, initialConfiguration, stateList, clientSelectList, countryList, cityList, currencySelectList, exchangeRateSourceList
   }
 }
 
@@ -2477,6 +2682,7 @@ export default connect(mapStateToProps, {
   fetchCityDataAPI,
   getCityByCountryAction,
   fetchStateDataAPI,
+  getPlantCurrencyByPlantIds,
 })(reduxForm({
   form: 'AddPower',
   enableReinitialize: true,

@@ -4,7 +4,7 @@ import AddRMDetails from "./AddRMDetails"
 import AddRMFinancialDetails from "./AddRMFinancialDetails"
 import { CBCTypeId, EMPTY_GUID, ENTRY_TYPE_DOMESTIC, ENTRY_TYPE_IMPORT, RM_MASTER_ID, VBCTypeId, ZBCTypeId } from "../../../config/constants"
 import { getCommodityIndexRateAverage } from '../../../../src/actions/Common';
-import { costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission } from "../../common/CommonFunctions"
+import { convertIntoBase, costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission } from "../../common/CommonFunctions"
 import { reactLocalStorage } from "reactjs-localstorage"
 import { useForm, Controller, useWatch, } from 'react-hook-form';
 import Switch from 'react-switch'
@@ -18,7 +18,7 @@ import { CheckApprovalApplicableMaster, checkForDecimalAndNull, checkForNull, ge
 import Toaster from "../../common/Toaster";
 import { MESSAGES } from "../../../config/message";
 import { fetchSpecificationDataAPI } from "../../../actions/Common";
-import { SetRawMaterialDetails, createRM, getRMDataById, updateRMAPI, getMaterialTypeDataAPI } from "../actions/Material";
+import { setRawMaterialDetails, createRM, getRMDataById, updateRMAPI, getMaterialTypeDataAPI } from "../actions/Material";
 import DayTime from "../../common/DayTimeWrapper";
 import LoaderCustom from "../../common/LoaderCustom";
 import { isFinalApprover } from "../../costing/actions/Approval";
@@ -71,6 +71,7 @@ function AddRMMaster(props) {
     })
     const isViewFlag = data?.isViewFlag === true ? true : false
     const rawMaterailDetails = useSelector((state) => state.material.rawMaterailDetails)
+    const exchangeRateDetails = useSelector((state) => state.material.exchangeRateDetails)
 
     const { commodityDetailsArray } = useSelector((state) => state.indexation)
     const { otherCostDetailsArray } = useSelector((state) => state.indexation)
@@ -191,7 +192,7 @@ function AddRMMaster(props) {
         setState(prevState => ({ ...prevState, costingTypeId: getCostingTypeIdByCostingPermission() }))
 
         return () => {
-            dispatch(SetRawMaterialDetails({ states: {}, SourceVendor: {}, Technology: {}, ShowScrapKeys: {}, isShowIndexCheckBox: false }, () => { }))
+            dispatch(setRawMaterialDetails({}, () => { }))
             dispatch(setCommodityDetails([]))
             dispatch(setOtherCostDetails([]))
         }
@@ -329,42 +330,52 @@ function AddRMMaster(props) {
     };
 
     const onSubmit = debounce(handleSubmit((values, isDivision) => {
+        console.log(values, "values")
+        console.log(rawMaterailDetails, "rawMaterailDetails")
+        console.log(exchangeRateDetails, 'exchangeRateDetails')
         const { DataToChange } = state
         let scrapRate = ''
         let jaliRateBaseCurrency = ''
         let machiningRateBaseCurrency = ''
         let scrapRateInr = ''
-        const { ShowScrapKeys } = rawMaterailDetails
+        let scrapRateLocalConversion = ''
+        const { states: { showScrapKeys } } = rawMaterailDetails
+        console.log(showScrapKeys, 'showScrapKeys')
         const Plants = values.Plants
-        if (ShowScrapKeys?.showCircleJali) {
-            scrapRate = state?.isImport ? checkForNull(values?.JaliScrapCostSelectedCurrency) : checkForNull(values?.JaliScrapCostBaseCurrency)
-            scrapRateInr = state?.isImport ? checkForNull(values?.JaliScrapCostBaseCurrency) : 0
-            jaliRateBaseCurrency = checkForNull(values?.CircleScrapCostBaseCurrency)
-            if (checkForNull(values?.BasicRateBaseCurrency) < checkForNull(jaliRateBaseCurrency) || checkForNull(values?.BasicRateBaseCurrency) < checkForNull(scrapRate)) {
+        if (showScrapKeys?.showCircleJali) {
+            scrapRate = values?.JaliScrapCost
+            scrapRateLocalConversion = state?.isImport ? convertIntoBase(values?.JaliScrapCost, exchangeRateDetails?.LocalCurrencyExchangeRate) : values?.JaliScrapCost
+            scrapRateInr = state?.isImport ? convertIntoBase(values?.JaliScrapCost, exchangeRateDetails?.CurrencyExchangeRate) : convertIntoBase(values?.JaliScrapCost, exchangeRateDetails?.LocalCurrencyExchangeRate)
+            jaliRateBaseCurrency = checkForNull(values?.CircleScrapCost)
+            if (checkForNull(values?.BasicRate) < checkForNull(jaliRateBaseCurrency) || checkForNull(values?.BasicRate) < checkForNull(scrapRate)) {
                 setState(prevState => ({ ...prevState, setDisable: false }))
                 Toaster.warning("Scrap rate/cost should not be greater than the basic rate.")
                 return false
             }
 
-        } else if (ShowScrapKeys?.showForging) {
-            scrapRate = state?.isImport ? checkForNull(values?.ForgingScrapSelectedCurrency) : checkForNull(values?.ForgingScrapBaseCurrency)
-            scrapRateInr = state?.isImport ? checkForNull(values?.ForgingScrapSelectedCurrency) : 0
-            machiningRateBaseCurrency = state?.isImport ? checkForNull(values?.MachiningScrapSelectedCurrency) : checkForNull(values?.MachiningScrapBaseCurrency)
-            if (checkForNull(values?.BasicRateBaseCurrency) < checkForNull(scrapRate) || checkForNull(values?.BasicRateBaseCurrency) < checkForNull(machiningRateBaseCurrency)) {
+        } else if (showScrapKeys?.showForging) {
+            scrapRate = values?.ForgingScrap
+            scrapRateLocalConversion = state?.isImport ? convertIntoBase(values?.ForgingScrap, exchangeRateDetails?.LocalCurrencyExchangeRate) : values?.ForgingScrap
+            scrapRateInr = state?.isImport ? convertIntoBase(values?.ForgingScrap, exchangeRateDetails?.CurrencyExchangeRate) : convertIntoBase(values?.ForgingScrap, exchangeRateDetails?.LocalCurrencyExchangeRate)
+            machiningRateBaseCurrency = checkForNull(values?.MachiningScrap)
+            if (checkForNull(values?.BasicRate) < checkForNull(scrapRate) || checkForNull(values?.BasicRate) < checkForNull(machiningRateBaseCurrency)) {
                 setState(prevState => ({ ...prevState, setDisable: false }))
                 Toaster.warning("Scrap rate/cost should not be greater than the basic rate.")
                 return false
             }
 
-        } else if (ShowScrapKeys?.showScrap) {
-            scrapRate = state?.isImport ? checkForNull(values?.ScrapRateSelectedCurrency) : checkForNull(values?.ScrapRateBaseCurrency)
-            scrapRateInr = state?.isImport ? checkForNull(values?.ScrapRateBaseCurrency) : 0
-            if (checkForNull(values?.BasicRateBaseCurrency) < checkForNull(scrapRate)) {
+        } else if (showScrapKeys?.showScrap) {
+            scrapRate = checkForNull(values?.ScrapRate)
+            scrapRateLocalConversion = state?.isImport ? convertIntoBase(values?.ScrapRate, exchangeRateDetails?.LocalCurrencyExchangeRate) : values?.ScrapRate
+            scrapRateInr = state?.isImport ? convertIntoBase(values?.ScrapRate, exchangeRateDetails?.CurrencyExchangeRate) : convertIntoBase(values?.ScrapRate, exchangeRateDetails?.LocalCurrencyExchangeRate)
+            if (checkForNull(values?.BasicRate) < checkForNull(scrapRate)) {
                 setState(prevState => ({ ...prevState, setDisable: false }))
                 Toaster.warning("Scrap rate/cost should not be greater than the basic rate.")
                 return false
             }
         }
+        console.log(scrapRate, 'scrapRate')
+
         let plantArray = []
         if ((state.costingTypeId === ZBCTypeId && !getConfigurationKey().IsMultipleUserAllowForApproval) || state.isEditFlag) {
             Plants && Plants.map((item) => {
@@ -374,102 +385,105 @@ function AddRMMaster(props) {
         } else {
             plantArray.push({ PlantName: values?.Plants?.label, PlantId: values?.Plants?.value, PlantCode: '', })
         }
-        let formData = {
-            "RawMaterialId": state.RawMaterialID,
-            "IsSendForApproval": false,
-            "CostingTypeId": state?.costingTypeId,
-            "RawMaterialCode": values?.RawMaterialCode?.value,
-            "CutOffPrice": state?.isImport ? values?.cutOffPriceSelectedCurrency : values?.cutOffPriceBaseCurrency,
-            "IsCutOffApplicable": (values?.cutOffPriceBaseCurrency < values?.NetLandedCostBaseCurrency && checkForNull(values.cutOffPriceBaseCurrency) !== 0 && values.cutOffPriceBaseCurrency !== '') ? true : false,
-            "TechnologyId": values?.Technology?.value,
-            "TechnologyName": values?.Technology?.label,
-            "RawMaterialEntryType": state.isImport ? checkForNull(ENTRY_TYPE_IMPORT) : checkForNull(ENTRY_TYPE_DOMESTIC),
-            "RawMaterial": values?.RawMaterialName?.value,
-            "RMGrade": values?.RawMaterialGrade?.value,
-            "RawMaterialGradeName": values?.RawMaterialGrade?.label,
-            "RMSpec": values?.RawMaterialSpecification?.value,
-            "RawMaterialSpecificationName": values?.RawMaterialSpecification?.label,
+        let formData =
+        {
+            "Attachements": rawMaterailDetails?.Files,
+            "BasicRatePerUOM": values?.BasicRate,
+            "BasicRatePerUOMLocalConversion": state?.isImport ? convertIntoBase(values?.BasicRate, exchangeRateDetails?.LocalCurrencyExchangeRate) : values?.BasicRate,
+            "BasicRatePerUOMConversion": state?.isImport ? convertIntoBase(values?.BasicRate, exchangeRateDetails?.CurrencyExchangeRate) : convertIntoBase(values?.BasicRate, exchangeRateDetails?.LocalCurrencyExchangeRate),
+            "CalculatedFactor": rawMaterailDetails?.states?.IsApplyHasDifferentUOM === true ? rawMaterailDetails?.states?.CalculatedFactor : '',
             "Category": values?.RawMaterialCategory?.value,
-            "RawMaterialCategoryName": values?.RawMaterialCategory?.label,
+            "CommodityNetCost": rawMaterailDetails?.states?.totalBasicRate,
+            "CommodityNetCostLocalConversion": state?.isImport ? convertIntoBase(rawMaterailDetails?.states?.totalBasicRate, exchangeRateDetails?.LocalCurrencyExchangeRate) : rawMaterailDetails?.states?.totalBasicRate,
+            "CommodityNetCostConversion": state?.isImport ? convertIntoBase(rawMaterailDetails?.states?.totalBasicRate, exchangeRateDetails?.CurrencyExchangeRate) : convertIntoBase(rawMaterailDetails?.states?.totalBasicRate, exchangeRateDetails?.LocalCurrencyExchangeRate),
+            "CostingTypeId": state?.costingTypeId,
+            "Currency": values?.currency?.label,
+            "CurrencyExchangeRate": rawMaterailDetails?.CurrencyValue,
+            "CurrencyId": values?.currency?.value,
             "CustomerId": state.costingTypeId === CBCTypeId ? values?.clientName?.value : '',
-            "CustomerName": state.costingTypeId === CBCTypeId ? getNameBySplitting(values?.clientName?.label) : '',
             "CustomerCode": state.costingTypeId === CBCTypeId ? getCodeBySplitting(values?.clientName?.label) : '',
-            "Vendor": !state.isEditFlag ? rawMaterailDetails?.Vendor?.value : values?.Vendor?.value,
-            "VendorName": state.costingTypeId === VBCTypeId ? !state.isEditFlag ? getNameBySplitting(rawMaterailDetails?.Vendor?.label) : getNameBySplitting(values?.Vendor?.label) : '',
-            "VendorCode": state.costingTypeId === VBCTypeId ? !state.isEditFlag ? getCodeBySplitting(rawMaterailDetails?.Vendor?.label) : getCodeBySplitting(values?.Vendor?.label) : '',
+            "CustomerName": state.costingTypeId === CBCTypeId ? getNameBySplitting(values?.clientName?.label) : '',
+            "CutOffPrice": values?.cutOffPrice,
+            "CutOffPriceLocalConversion": state?.isImport ? convertIntoBase(values?.cutOffPrice, exchangeRateDetails?.LocalCurrencyExchangeRate) : values?.cutOffPrice,
+            "CutOffPriceInINR": state?.isImport ? convertIntoBase(values?.cutOffPrice, exchangeRateDetails?.CurrencyExchangeRate) : convertIntoBase(values?.cutOffPrice, exchangeRateDetails?.LocalCurrencyExchangeRate),
+            "EffectiveDate": DayTime(values?.effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
+            "ExchangeRateId": exchangeRateDetails?.ExchangeRateId,
+            "ExchangeRateSourceName": values?.ExchangeSource?.label,
+            "FrequencyOfSettlement": values?.frequencyOfSettlement?.label,
+            "FromDate": DayTime(values?.fromDate).format('YYYY-MM-DD HH:mm:ss'),
             "HasDifferentSource": rawMaterailDetails?.states?.HasDifferentSource,
+            "IndexExchangeId": values?.Index?.value,
+            "IndexExchangeName": values?.Index?.label,
+            "IsIndexationDetails": rawMaterailDetails?.states?.isShowIndexCheckBox === true ? true : false,
+            "IsCutOffApplicable": (values?.cutOffPriceBaseCurrency < values?.NetLandedCostBaseCurrency && checkForNull(values.cutOffPriceBaseCurrency) !== 0 && values.cutOffPriceBaseCurrency !== '') ? true : false,
+            "IsScrapUOMApply": rawMaterailDetails?.states?.IsApplyHasDifferentUOM,
+            "IsSendForApproval": false,
+            "JaliScrapCost": values?.CircleScrapCost,
+            "JaliScrapCostLocalConversion": state?.isImport ? convertIntoBase(values?.CircleScrapCost, exchangeRateDetails?.LocalCurrencyExchangeRate) : values?.CircleScrapCost,
+            "JaliScrapCostConversion": state?.isImport ? convertIntoBase(values?.CircleScrapCost, exchangeRateDetails?.CurrencyExchangeRate) : convertIntoBase(values?.CircleScrapCost, exchangeRateDetails?.LocalCurrencyExchangeRate),
+            "LoggedInUserId": loggedInUserId(),
+            "LocalCurrency": values?.plantCurrency,
+            "LocalCurrencyExchangeRate": exchangeRateDetails?.LocalCurrencyExchangeRate,
+            "LocalCurrencyId": exchangeRateDetails?.LocalCurrencyId,
+            "LocalExchangeRateId": exchangeRateDetails?.LocalExchangeRateId,
+            "MachiningScrapRate": values?.MachiningScrap,
+            "MachiningScrapRateLocalConversion": state?.isImport ? convertIntoBase(values?.MachiningScrap, exchangeRateDetails?.LocalCurrencyExchangeRate) : values?.MachiningScrap,
+            "MachiningScrapRateInINR": state?.isImport ? convertIntoBase(values?.MachiningScrap, exchangeRateDetails?.CurrencyExchangeRate) : convertIntoBase(values?.MachiningScrap, exchangeRateDetails?.LocalCurrencyExchangeRate),
+            "MaterialCommodityIndexRateDetails": commodityDetailsArray,
+            "NetConditionCost": rawMaterailDetails?.states?.NetConditionCost,
+            "NetConditionCostLocalConversion": state?.isImport ? convertIntoBase(rawMaterailDetails?.states?.NetConditionCost, exchangeRateDetails?.LocalCurrencyExchangeRate) : rawMaterailDetails?.states?.NetConditionCost,
+            "NetConditionCostConversion": state?.isImport ? convertIntoBase(rawMaterailDetails?.states?.NetConditionCost, exchangeRateDetails?.CurrencyExchangeRate) : convertIntoBase(rawMaterailDetails?.states?.NetConditionCost, exchangeRateDetails?.LocalCurrencyExchangeRate),
+            "NetCostWithoutConditionCost": rawMaterailDetails?.states?.NetCostWithoutConditionCost,
+            "NetCostWithoutConditionCostLocalConversion": state?.isImport ? convertIntoBase(rawMaterailDetails?.states?.NetCostWithoutConditionCost, exchangeRateDetails?.LocalCurrencyExchangeRate) : rawMaterailDetails?.states?.NetCostWithoutConditionCost,
+            "NetCostWithoutConditionCostConversion": state?.isImport ? convertIntoBase(rawMaterailDetails?.states?.NetCostWithoutConditionCost, exchangeRateDetails?.CurrencyExchangeRate) : convertIntoBase(rawMaterailDetails?.states?.NetCostWithoutConditionCost, exchangeRateDetails?.LocalCurrencyExchangeRate),
+            "NetLandedCost": rawMaterailDetails?.states?.NetLandedCost,
+            "NetLandedCostLocalConversion": state?.isImport ? convertIntoBase(rawMaterailDetails?.states?.NetLandedCost, exchangeRateDetails?.LocalCurrencyExchangeRate) : rawMaterailDetails?.states?.NetLandedCost,
+            "NetLandedCostConversion": state?.isImport ? convertIntoBase(rawMaterailDetails?.states?.NetLandedCost, exchangeRateDetails?.CurrencyExchangeRate) : convertIntoBase(rawMaterailDetails?.states?.NetLandedCost, exchangeRateDetails?.LocalCurrencyExchangeRate),
+            "OtherNetCost": rawMaterailDetails?.states?.totalOtherCost,
+            "OtherNetCostLocalConversion": state?.isImport ? convertIntoBase(rawMaterailDetails?.states?.totalOtherCost, exchangeRateDetails?.LocalCurrencyExchangeRate) : rawMaterailDetails?.states?.totalOtherCost,
+            "OtherNetCostConversion": state?.isImport ? convertIntoBase(rawMaterailDetails?.states?.totalOtherCost, exchangeRateDetails?.CurrencyExchangeRate) : convertIntoBase(rawMaterailDetails?.states?.totalOtherCost, exchangeRateDetails?.LocalCurrencyExchangeRate),
+            "Plant": plantArray,
+            "RMGrade": values?.RawMaterialGrade?.value,
+            "RMSpec": values?.RawMaterialSpecification?.value,
+            "RawMaterial": values?.RawMaterialName?.value,
+            "RawMaterialCategoryName": values?.RawMaterialCategory?.label,
+            "RawMaterialCode": values?.RawMaterialCode?.value,
+            "RawMaterialConditionsDetails": rawMaterailDetails?.ConditionTableData,
+            "RawMaterialEntryType": state.isImport ? checkForNull(ENTRY_TYPE_IMPORT) : checkForNull(ENTRY_TYPE_DOMESTIC),
+            "RawMaterialGradeName": values?.RawMaterialGrade?.label,
+            "RawMaterialId": state.RawMaterialID,
+            "RawMaterialName": values?.RawMaterialName?.label,
+            "RawMaterialOtherCostDetails": otherCostDetailsArray,
+            "RawMaterialSpecificationName": values?.RawMaterialSpecification?.label,
+            "Remark": values?.Remarks,
+            "ScrapRate": scrapRate,
+            "ScrapRateLocalConversion": scrapRateLocalConversion,
+            "ScrapRateInINR": scrapRateInr,
+            "ScrapRatePerScrapUOM": values?.ScrapRatePerScrapUOM,
+            "ScrapRatePerScrapUOMConversion": state?.isImport ? convertIntoBase(values?.ScrapRatePerScrapUOM, exchangeRateDetails?.CurrencyExchangeRate) : convertIntoBase(values?.ScrapRatePerScrapUOM, exchangeRateDetails?.LocalCurrencyExchangeRate),
+            "ScrapUnitOfMeasurement": rawMaterailDetails?.states?.IsApplyHasDifferentUOM === true ? values?.ScrapRateUOM?.label : '',
+            "ScrapUnitOfMeasurementId": rawMaterailDetails?.states?.IsApplyHasDifferentUOM === true ? values?.ScrapRateUOM?.value : '',
             "Source": values?.source,
             "SourceLocation": rawMaterailDetails?.SourceLocation?.value ?? '',
             "SourceSupplierLocationName": values?.SourceSupplierCityId?.label,
-            "UOM": values?.UnitOfMeasurement?.value,
-            "UnitOfMeasurementName": values?.UnitOfMeasurement?.label,
-            "BasicRatePerUOM": state.isImport ? values?.BasicRateSelectedCurrency : values?.BasicRateBaseCurrency,
-            "ScrapRate": scrapRate,
-            "MachiningScrapRate": state?.isImport ? values?.MachiningScrapSelectedCurrency : values?.MachiningScrapBaseCurrency,
-            "NetLandedCost": state?.isImport ? values?.NetLandedCostSelectedCurrency : values?.NetLandedCostBaseCurrency,
-            "RMFreightCost": state?.isImport ? values?.FreightChargeSelectedCurrency : values?.FreightChargeBaseCurrency,
-            "RMShearingCost": state?.isImport ? values?.ShearingCostSelectedCurrency : values?.ShearingCostBaseCurrency,
-            "JaliScrapCost": state.isImport ? values?.CircleScrapCostSelectedCurrency : values?.CircleScrapCostBaseCurrency,
-            "Remark": values?.Remarks,
-            "ScrapRateInINR": scrapRateInr,
-            "MachiningScrapRateInINR": state?.isImport ? values?.MachiningScrapBaseCurrency : 0,
-            "CutOffPriceInINR": state?.isImport ? values?.cutOffPriceBaseCurrency : 0,
-            "EffectiveDate": DayTime(values?.effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
-            "LoggedInUserId": loggedInUserId(),
-            "Plant": plantArray,
-            "VendorPlant": [],
-            "Attachements": rawMaterailDetails?.Files,
-            "RawMaterialName": values?.RawMaterialName?.label,
-            "NetLandedCostConversion": state?.isImport ? values?.NetLandedCostBaseCurrency : 0,
-            "CurrencyId": values?.currency?.value,
-            "Currency": values?.currency?.label,
-            "BasicRatePerUOMConversion": state.isImport ? values?.BasicPriceBaseCurrency : 0,
-            "NetCostWithoutConditionCost": state?.isImport ? values?.BasicPriceSelectedCurrency : values?.BasicPriceBaseCurrency,
-            "NetCostWithoutConditionCostConversion": state?.isImport ? values?.BasicPriceBaseCurrency : 0,
-            "NetConditionCost": state?.isImport ? values?.FinalConditionCostSelectedCurrency : values?.FinalConditionCostBaseCurrency,
-            "NetConditionCostConversion": state?.isImport ? values?.FinalConditionCostBaseCurrency : 0,
-            "CurrencyExchangeRate": rawMaterailDetails?.CurrencyValue,
-            "RawMaterialFreightCostConversion": state?.isImport ? values?.FreightChargeBaseCurrency : 0,
-            "RawMaterialShearingCostConversion": state?.isImport ? values?.ShearingCostBaseCurrency : 0,
-            "JaliScrapCostConversion": state.isImport ? values?.CircleScrapCostBaseCurrency : 0,
-            "RawMaterialConditionsDetails": rawMaterailDetails?.ConditionTableData,
-            "IsScrapUOMApply": rawMaterailDetails?.states?.IsApplyHasDifferentUOM,
-            "ScrapUnitOfMeasurementId": rawMaterailDetails?.states?.IsApplyHasDifferentUOM === true ? values?.ScrapRateUOM?.value : '',
-            "ScrapUnitOfMeasurement": rawMaterailDetails?.states?.IsApplyHasDifferentUOM === true ? values?.ScrapRateUOM?.label : '',
-            "UOMToScrapUOMRatio": rawMaterailDetails?.states?.IsApplyHasDifferentUOM === true ? values?.ConversionRatio : '',
-            "CalculatedFactor": rawMaterailDetails?.states?.IsApplyHasDifferentUOM === true ? values?.CalculatedFactor : '',
-            "ScrapRatePerScrapUOM": rawMaterailDetails?.states?.IsApplyHasDifferentUOM === true ? state?.isImport ? values?.ScrapRatePerScrapUOM : values.ScrapRatePerScrapUOMBaseCurrency : '',
-            "ScrapRatePerScrapUOMConversion": rawMaterailDetails?.states?.IsApplyHasDifferentUOM === true || state?.isImport ? values?.ScrapRatePerScrapUOMBaseCurrency : '',
-            "MaterialCommodityIndexRateDetails": commodityDetailsArray,
-            "FromDate": DayTime(values?.fromDate).format('YYYY-MM-DD HH:mm:ss'),
-            "ToDate": DayTime(values?.toDate).format('YYYY-MM-DD HH:mm:ss'),
-            "ExchangeRateSourceName": values?.ExchangeSource?.label,
-            "IndexExchangeId": values?.Index?.value,
-            "IndexExchangeName": values?.Index?.label,
-            "FrequencyOfSettlement": values?.frequencyOfSettlement?.label,
-            "CommodityNetCost": values.BasicPriceBaseCurrency,
-            "CommodityNetCostConversion": values.BasicPriceBaseCurrency,
-            "OtherNetCost": values.OtherCostBaseCurrency,
-            "OtherNetCostConversion": values.OtherCostBaseCurrency,
-            "RawMaterialOtherCostDetails": otherCostDetailsArray,
-            "IsIndexationDetails": rawMaterailDetails?.isShowIndexCheckBox === true ? true : false,
+            "SourceVendorId": rawMaterailDetails?.SourceVendor?.value ?? null,
             "SourceVendorRawMaterialId": state?.sourceVendorRawMaterialId ?? null,
-            "SourceVendorId": rawMaterailDetails?.SourceVendor?.value ?? null
+            "TechnologyId": values?.Technology?.value,
+            "TechnologyName": values?.Technology?.label,
+            "ToDate": DayTime(values?.toDate).format('YYYY-MM-DD HH:mm:ss'),
+            "UOM": values?.UnitOfMeasurement?.value,
+            "UOMToScrapUOMRatio": rawMaterailDetails?.states?.IsApplyHasDifferentUOM === true ? values?.ConversionRatio : '',
+            "UnitOfMeasurementName": values?.UnitOfMeasurement?.label,
+            "Vendor": !state.isEditFlag ? rawMaterailDetails?.Vendor?.value : values?.Vendor?.value,
+            "VendorCode": state.costingTypeId === VBCTypeId ? !state.isEditFlag ? getCodeBySplitting(rawMaterailDetails?.Vendor?.label) : getCodeBySplitting(values?.Vendor?.label) : '',
+            "VendorName": state.costingTypeId === VBCTypeId ? !state.isEditFlag ? getNameBySplitting(rawMaterailDetails?.Vendor?.label) : getNameBySplitting(values?.Vendor?.label) : '',
+            "VendorPlant": []
         }
+        console.log(formData, 'formData')
 
-        let basicRate = state.isImport ? checkForNull(values?.BasicRateSelectedCurrency) : checkForNull(values.BasicRateBaseCurrency)
-        let cuttOffPrice = state.isImport ? checkForNull(values?.cutOffPriceSelectedCurrency) : checkForNull(values.cutOffPriceBaseCurrency)
-        let shearingCost = state.isImport ? checkForNull(values?.ShearingCostSelectedCurrency) : checkForNull(values.ShearingCostBaseCurrency)
-        let freightCost = state.isImport ? checkForNull(values?.FreightChargeSelectedCurrency) : checkForNull(values.FreightChargeBaseCurrency)
-        let machiningScrapCost = state.isImport ? checkForNull(values?.MachiningScrapSelectedCurrency) : checkForNull(values.MachiningScrapBaseCurrency)
-        let circleScrapCost = state.isImport ? checkForNull(values?.CircleScrapCostSelectedCurrency) : checkForNull(values.CircleScrapCostBaseCurrency)
-        let otherCost = state.isImport ? checkForNull(values?.OtherCostSelectedCurrency) : checkForNull(values.OtherCostBaseCurrency)
-
-
-
-        let financialDataNotChanged = (cuttOffPrice === checkForNull(DataToChange?.CutOffPrice)) && (basicRate === checkForNull(DataToChange?.BasicRatePerUOM)) && rawMaterailDetails?.states?.IsApplyHasDifferentUOM === DataToChange?.IsScrapUOMApply
-            && checkForNull(values?.ConversionRatio) === checkForNull(DataToChange?.UOMToScrapUOMRatio) && checkForNull(values?.ScrapRatePerScrapUOM) === checkForNull(DataToChange?.ScrapRatePerScrapUOM) && (freightCost === checkForNull(DataToChange?.RMFreightCost) && otherCost === checkForNull(DataToChange?.OtherNetCost))
-            && (shearingCost === checkForNull(DataToChange?.RMShearingCost)) && (circleScrapCost === checkForNull(DataToChange?.JaliScrapCost)) && (machiningScrapCost === checkForNull(DataToChange?.MachiningScrapRate))
+        let financialDataNotChanged = (checkForNull(values.cutOffPrice) === checkForNull(DataToChange?.CutOffPrice)) && (checkForNull(values.BasicRate) === checkForNull(DataToChange?.BasicRatePerUOM)) && rawMaterailDetails?.states?.IsApplyHasDifferentUOM === DataToChange?.IsScrapUOMApply
+            && checkForNull(values?.ConversionRatio) === checkForNull(DataToChange?.UOMToScrapUOMRatio) && checkForNull(values?.ScrapRatePerScrapUOM) === checkForNull(DataToChange?.ScrapRatePerScrapUOM) && (checkForNull(values.OtherCost) === checkForNull(DataToChange?.OtherNetCost))
+            && (checkForNull(values.CircleScrapCost) === checkForNull(DataToChange?.JaliScrapCost)) && (checkForNull(values.MachiningScrap) === checkForNull(DataToChange?.MachiningScrapRate))
         let nonFinancialDataNotChanged = (JSON.stringify(rawMaterailDetails.Files) === JSON.stringify(DataToChange?.FileList) && values?.Remarks === DataToChange?.Remark)
         if (state.isEditFlag) {
             if (!isRMAssociated) {

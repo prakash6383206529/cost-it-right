@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, } from 'reactstrap';
-import { defaultPageSize, EMPTY_DATA, MACHINERATE, MACHINE_MASTER_ID, FILE_URL } from '../../../config/constants';
+import { defaultPageSize, EMPTY_DATA, MACHINERATE, MACHINE_MASTER_ID, FILE_URL, ENTRY_TYPE_DOMESTIC, ENTRY_TYPE_IMPORT } from '../../../config/constants';
 import { getMachineDataList, deleteMachine, copyMachine, getProcessGroupByMachineId } from '../actions/MachineMaster';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
@@ -17,7 +17,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import ReactExport from 'react-export-excel';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { PaginationWrapper } from '../../common/commonPagination'
-import { loggedInUserId, getConfigurationKey, userDepartmetList, searchNocontentFilter, setLoremIpsum } from '../../../helper'
+import { loggedInUserId, getConfigurationKey, userDepartmetList, searchNocontentFilter, setLoremIpsum, showEntryType } from '../../../helper'
 import { getListingForSimulationCombined } from '../../simulation/actions/Simulation';
 import ProcessGroupDrawer from './ProcessGroupDrawer'
 import WarningMessage from '../../common/WarningMessage';
@@ -86,7 +86,7 @@ const MachineRateListing = (props) => {
   const { globalTakes } = useSelector(state => state.pagination);
   const permissions = useContext(ApplyPermission);
   const tourStartData = useSelector(state => state.comman.tourStartData);
-  const { technologyLabel ,vendorLabel} = useLabels();
+  const { technologyLabel, vendorLabel } = useLabels();
   useEffect(() => {
     const fetchData = async () => {
       setTimeout(() => {
@@ -696,6 +696,13 @@ const MachineRateListing = (props) => {
     }
   };
 
+  const currencyRenderer = (params) => {
+    const { MachineEntryType, LocalCurrency, Currency } = params.data;
+    if (MachineEntryType === null || MachineEntryType === undefined) {
+      return LocalCurrency;
+    }
+    return MachineEntryType === ENTRY_TYPE_IMPORT ? Currency : LocalCurrency;
+  }
   return (
     <div className={`ag-grid-react ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${permissions?.Download ? "show-table-btn" : ""} ${props.isSimulation ? 'simulation-height' : ''}`}>
       {(state.isLoader && !props.isMasterSummaryDrawer) && <LoaderCustom customClass="simulation-Loader" />} {state.disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
@@ -772,6 +779,14 @@ const MachineRateListing = (props) => {
                 { }
                 <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
                 {!isSimulation && <AgGridColumn field="Technology" headerName={technologyLabel}></AgGridColumn>}
+                <AgGridColumn field="MachineEntryType" headerName="Entry Type" cellRenderer={'hyphenFormatter'} valueGetter={(params) => showEntryType(params?.data?.MachineEntryType)}></AgGridColumn>
+                <AgGridColumn field="Currency" headerName="Currency" cellRenderer={currencyRenderer}></AgGridColumn>
+                {/* <AgGridColumn field="LocalCurrency" headerName="Local Currency" cellRenderer={'hyphenFormatter'}></AgGridColumn> */}
+
+                <AgGridColumn field="ExchangeRateSourceName" headerName="ExchangeRate SourceName" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                {/* <AgGridColumn field="LocalCurrencyExchangeRate" headerName="Local Currency Exchange Rate" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                <AgGridColumn field="ExchangeRate" headerName="Exchange Rate" cellRenderer={'hyphenFormatter'}></AgGridColumn> */}
+
                 <AgGridColumn field="MachineName" headerName="Machine Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 <AgGridColumn field="MachineNumber" headerName="Machine Number" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 <AgGridColumn field="MachineTypeName" headerName="Machine Type" cellRenderer={'hyphenFormatter'}></AgGridColumn>
@@ -781,7 +796,8 @@ const MachineRateListing = (props) => {
                 <AgGridColumn field="VendorName" headerName={`${vendorLabel} (Code)`} cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                 <AgGridColumn field="Plant" headerName="Plant (Code)" cellRenderer='hyphenFormatter'></AgGridColumn>
-                <AgGridColumn field="MachineRate" headerName="Machine Rate"></AgGridColumn>
+                <AgGridColumn width={200} field="MachineRate" headerName="Machine Rate" cellRenderer={hyphenFormatter}></AgGridColumn>
+                {/* <AgGridColumn width={200} field="MachineRate" headerName="Machine Rate (Currency)" cellRenderer={hyphenFormatter}></AgGridColumn> */}
                 <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                 {!isSimulation && !props?.isMasterSummaryDrawer && <AgGridColumn field="MachineId" width={230} cellClass={"actions-wrapper ag-grid-action-container"} pinned="right" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                 {props.isMasterSummaryDrawer && <AgGridColumn field="Attachements" headerName='Attachments' cellRenderer={'attachmentFormatter'}></AgGridColumn>}

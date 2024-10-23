@@ -387,6 +387,7 @@ export const API = {
   deleteFuelAPI: `${BASE_URL}/masters-fuel/delete-fuel`,
   deleteFuelDetailAPI: `${BASE_URL}/masters-fuel/delete-fuel-detail`,
   getFuelByPlant: `${BASE_URL}/masters-fuel/get-fuel-by-plant`,
+  getFuelList: `${BASE_URL}/masters-fuel/get-fuel-list`,
   getStateListByFuel: `${BASE_URL}/masters-fuel/get-state-by-fuel-select-list`,
   getFuelListByState: `${BASE_URL}/masters-fuel/get-fuel-by-state-select-list`,
   fuelBulkUpload: `${BASE_URL}/masters-fuel/bulk-upload-for-fuel-json`,
@@ -402,6 +403,7 @@ export const API = {
   getDieselRateByStateAndUOM: `${BASE_URL}/masters-fuel/get-fuel-rate-by-state-uom`,
   getZBCPlantList: `${BASE_URL}/masters-fuel/get-all-zbc-plant-select-list`,
   getStateSelectList: `${BASE_URL}/masters-fuel/get-all-state-select-list`,
+  getPlantCurrencyByPlantIds: `${BASE_URL}/masters-plant/get-plants-currency`,
 
   createVendorPowerDetail: `${BASE_URL}/masters-power/create-vendor-power-details`,
   updateVendorPowerDetail: `${BASE_URL}/masters-power/update-vendor-power-detail`,
@@ -697,6 +699,7 @@ export const API = {
   getSettledSimulationCostingDetails: `${BASE_URL}/simulation/get-settled-simulation-costing-details`,
   uploadInsulationCosting: `${BASE_URL}/bulk-costing/save-costing-insulation`,
   uploadElectricalStampingCosting: `${BASE_URL}/bulk-costing/save-costing-electrical-stamping`,
+  uploadMonocartonCosting: `${BASE_URL}/bulk-costing/save-costing-corrugated-mono-carton-box`,
 
   //COST SUMMARY
   getCostingByCostingId: `${BASE_URL}/costing-sheet-metal/get-costing-by-id`,
@@ -1463,6 +1466,7 @@ export const GET_MATERIAL_LIST_TYPE_SUCCESS = 'GET_MATERIAL_LIST_TYPE_SUCCESS'
 export const RAWMATERIAL_ADDED_FOR_COSTING = 'RAWMATERIAL_ADDED_FOR_COSTING'
 export const GET_MATERIAL_TYPE_DATA_SUCCESS = 'GET_MATERIAL_TYPE_DATA_SUCCESS'
 export const RAW_MATERIAL_DETAILS = 'RAW_MATERIAL_DETAILS'
+export const EXCHANGE_RATE_DETAILS = 'EXCHANGE_RATE_DETAILS'
 
 
 
@@ -1958,6 +1962,7 @@ export const GET_UOM_SELECTLIST_SUCCESS = 'GET_UOM_SELECTLIST_SUCCESS'
 export const GET_POWER_DATALIST_SUCCESS = 'GET_POWER_DATALIST_SUCCESS'
 export const GET_POWER_DATA_SUCCESS = 'GET_POWER_DATA_SUCCESS'
 export const GET_UOM_SELECTLIST_BY_UNITTYPE = 'GET_UOM_SELECTLIST_BY_UNITTYPE'
+export const GET_PLANT_CURRENCY_BY_PLANT_IDS = 'GET_PLANT_CURRENCY_BY_PLANT_IDS'
 
 //CURRENCY EXCHANGE
 export const GET_CURRENCY_SELECTLIST_SUCCESS = 'GET_CURRENCY_SELECTLIST_SUCCESS'
@@ -2873,6 +2878,7 @@ export const WIRINGHARNESS = 6
 export const DIE_CASTING = 7
 //changed the sheet metal to 8 bcz the version 3 code is not working or deployed
 export const SHEETMETAL = 8
+export const MONOCARTON = 13
 
 
 export const REASON_ID = 2
@@ -3273,7 +3279,7 @@ export const RAWMATERIALCOST = 'Raw Material Other Cost'
 export const COSTINGCONDITIONCOST = 'Costing Condition Cost'
 
 //VERSION 
-export const VERSION = "V3.1.15";
+export const VERSION = "V3.1.18";
 
 
 

@@ -5,7 +5,7 @@ import { useLabels } from '../../../helper/core';
 
 const Table = (props) => {
     const { headerData, sectionData, children } = props;
-    const vendorLabel = useLabels()
+    const { vendorLabel } = useLabels()
 
     const renderList = (sectionData) => {
         const { isHighlightedRow, header, data } = sectionData
@@ -49,7 +49,7 @@ const Table = (props) => {
                 </tr>}
         </>
     }
-    
+
     return (
         <table className='table table-bordered costing-summary-table'>
             <thead>

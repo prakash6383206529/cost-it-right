@@ -10,9 +10,9 @@ import {
 } from "../../../helper/validation";
 
 import { MESSAGES } from "../../../config/message";
-import { getConfigurationKey, loggedInUserId, userDetails } from "../../../helper/auth";
-import { Row, Col } from 'reactstrap';
-import { CBCTypeId, CRMHeads, EMPTY_GUID, FILE_URL, OPERATIONS_ID, VBCTypeId, VBC_VENDOR_TYPE, ZBCTypeId, searchCount } from "../../../config/constants";
+import { getConfigurationKey, IsFetchExchangeRateVendorWise, loggedInUserId, userDetails } from "../../../helper/auth";
+import { Row, Col, Label } from 'reactstrap';
+import { CBCTypeId, CRMHeads, EMPTY_GUID, ENTRY_TYPE_DOMESTIC, ENTRY_TYPE_IMPORT, FILE_URL, OPERATIONS_ID, VBCTypeId, VBC_VENDOR_TYPE, ZBCTypeId, searchCount } from "../../../config/constants";
 import HeaderTitle from "../../common/HeaderTitle";
 import { useDispatch, useSelector } from 'react-redux'
 import { reactLocalStorage } from "reactjs-localstorage";
@@ -29,18 +29,21 @@ import TooltipCustom from "../../common/Tooltip";
 import { useLabels } from "../../../helper/core";
 import { getUsersMasterLevelAPI } from "../../../actions/auth/AuthActions";
 import { CheckApprovalApplicableMaster, userTechnologyDetailByMasterId } from "../../../helper";
-import { checkFinalUser } from "../../costing/actions/Costing";
+import { checkFinalUser, getExchangeRateByCurrency } from "../../costing/actions/Costing";
 import MasterSendForApproval from "../MasterSendForApproval";
 import Button from "../../layout/Button";
 import { debounce } from "lodash";
+import Switch from 'react-switch'
 
 function AddMoreOperation(props) {
     const { addMoreDetailObj, isEditFlag, detailObject, isViewMode } = props
+    console.log("addMoreDetailObj", addMoreDetailObj)
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
     const costingSpecifiTechnology = useSelector(state => state.costing.costingSpecifiTechnology)
     const clientSelectList = useSelector(state => state.client.clientSelectList)
     const UOMSelectList = useSelector(state => state.comman.UOMSelectList)
     const plantSelectList = useSelector(state => state.comman.plantSelectList)
+    const currencySelectList = useSelector(state => state.comman.currencySelectList)
     const [technology, setTechnology] = useState("");
     const [isLoader, setIsLoader] = useState(false);
     const [isMaterialCostOpen, setIsMaterialCostOpen] = useState(false);
@@ -102,6 +105,16 @@ function AddMoreOperation(props) {
         levelDetails: {},
         isDateChanged: false,
         disableAll: false,
+        showWarning: false,
+        plantCurrency: null,
+        settlementCurrency: null,
+        plantExchangeRateId: null,
+        settlementExchangeRateId: null,
+        isImport: addMoreDetailObj?.isImport,
+        currency: null,
+        ExchangeSource: null,
+        plantCurrencyID: null,
+        costingTypeId: addMoreDetailObj?.costingTypeId
     })
 
     const { register, handleSubmit, formState: { errors }, control, setValue, getValues } = useForm({
@@ -129,8 +142,103 @@ function AddMoreOperation(props) {
             setRejectionReworkAndProfitCostPlating(obj)
             setNetCostPlating(obj)
         }
+        callExchangeRateAPI(obj)
 
     }, [fieldValues, includeInterestInRejection])
+    const callExchangeRateAPI = (obj) => {
+        const vendorValue = IsFetchExchangeRateVendorWise() ?
+            ((addMoreDetailObj.costingTypeId === VBCTypeId || addMoreDetailObj.costingTypeId === ZBCTypeId) ? vendor.value : EMPTY_GUID) :
+            EMPTY_GUID;
+        const costingType = IsFetchExchangeRateVendorWise() ?
+            ((addMoreDetailObj.costingTypeId === VBCTypeId || addMoreDetailObj.costingTypeId === ZBCTypeId) ? VBCTypeId : addMoreDetailObj.costingTypeId) :
+            ZBCTypeId;
+        const fromCurrency = state.isImport ? state.currency?.label : getValues('plantCurrency');
+        const toCurrency = reactLocalStorage.getObject("baseCurrency");
+        const hasCurrencyAndDate = getValues('plantCurrency') && getValues('effectiveDate');
+        const isSourceExchangeRateVisible = getConfigurationKey().IsSourceExchangeRateNameVisible;
+
+        if (hasCurrencyAndDate && (!isSourceExchangeRateVisible || state.ExchangeSource)) {
+            if (IsFetchExchangeRateVendorWise() && (vendor?.length === 0 || client?.length === 0)) {
+                setState(prevState => ({ ...prevState, showWarning: true }));
+                return;
+            }
+
+            const callAPI = (from, to) => {
+                return new Promise((resolve) => {
+                    dispatch(getExchangeRateByCurrency(
+                        from,
+                        costingType,
+                        DayTime(getValues('effectiveDate')).format('YYYY-MM-DD'),
+                        vendorValue,
+                        client.value,
+                        false,
+                        to,
+                        state.ExchangeSource?.label,
+                        res => {
+                            if (Object.keys(res.data.Data).length === 0) {
+                                setState(prevState => ({ ...prevState, showWarning: true }));
+                            } else {
+                                setState(prevState => ({ ...prevState, showWarning: false }));
+                            }
+                            resolve({
+                                rate: checkForNull(res.data.Data.CurrencyExchangeRate),
+                                exchangeRateId: res?.data?.Data?.ExchangeRateId
+                            });
+                        }
+                    ));
+                });
+            };
+
+            if (state.isImport) {
+                // First API call
+                callAPI(fromCurrency, getValues('plantCurrency')).then(({ rate: rate1, exchangeRateId: exchangeRateId1 }) => {
+                    // Second API call
+                    callAPI(fromCurrency, reactLocalStorage.getObject("baseCurrency")).then(({ rate: rate2, exchangeRateId: exchangeRateId2 }) => {
+                        setState(prevState => ({
+                            ...prevState,
+                            plantCurrency: rate1,
+                            settlementCurrency: rate2,
+                            plantExchangeRateId: exchangeRateId1,
+                            settlementExchangeRateId: exchangeRateId2
+                        }));
+                        if (isWelding) {
+                            obj = { ...setMaterialCostWelding(), ...setPowerCostWelding(), ...setLabourCostWelding() }
+                            setDataToSend(prevState => ({ ...prevState, ...obj }))
+                            setNetCostWelding(obj)
+                        } else if (other) {
+                            setRejectionReworkAndProfitCost()
+                        } else {
+                            obj = { ...setMaterialCostWelding(), ...setPowerCostWelding() }
+                            setDataToSend(prevState => ({ ...prevState, ...obj }))
+                            setRejectionReworkAndProfitCostPlating(obj)
+                            setNetCostPlating(obj)
+                        }
+                    });
+                });
+            } else {
+                // Original single API call for non-import case
+                callAPI(fromCurrency, toCurrency).then(({ rate, exchangeRateId }) => {
+                    setState(prevState => ({
+                        ...prevState,
+                        plantCurrency: rate,
+                        plantExchangeRateId: exchangeRateId
+                    }));
+                    if (isWelding) {
+                        obj = { ...setMaterialCostWelding(), ...setPowerCostWelding(), ...setLabourCostWelding() }
+                        setDataToSend(prevState => ({ ...prevState, ...obj }))
+                        setNetCostWelding(obj)
+                    } else if (other) {
+                        setRejectionReworkAndProfitCost()
+                    } else {
+                        obj = { ...setMaterialCostWelding(), ...setPowerCostWelding() }
+                        setDataToSend(prevState => ({ ...prevState, ...obj }))
+                        setRejectionReworkAndProfitCostPlating(obj)
+                        setNetCostPlating(obj)
+                    }
+                });
+            }
+        }
+    };
 
     const setMaterialCostWelding = () => {
 
@@ -188,7 +296,17 @@ function AddMoreOperation(props) {
         let interestDepriciationCost = checkForNull(Number(getValues('interestDepriciationCost')))
         let totalCost = wireCost + gasCost + electricityCost + labourCost + machineConsumableCost + welderCost + otherCostWelding + interestDepriciationCost
         setDataToSend(prevState => ({ ...prevState, netCostWelding: totalCost }))
-        setValue('netCost', checkForDecimalAndNull(totalCost, initialConfiguration.NoOfDecimalForPrice))
+        if (state.isImport) {
+            const rateConversion = checkForNull(state.settlementCurrency) * checkForNull(totalCost)
+            const rateLocalConversion = checkForNull(state.plantCurrency) * checkForNull(totalCost)
+            setValue('Rate', checkForDecimalAndNull(totalCost, initialConfiguration.NoOfDecimalForPrice))
+            setValue('RateLocalConversion', checkForDecimalAndNull(rateLocalConversion, initialConfiguration.NoOfDecimalForPrice))
+            setValue('RateConversion', checkForDecimalAndNull(rateConversion, initialConfiguration.NoOfDecimalForPrice))
+        } else {
+            const rateConversion = checkForNull(state.plantCurrency) * checkForNull(totalCost)
+            setValue('RateLocalConversion', checkForDecimalAndNull(totalCost, initialConfiguration.NoOfDecimalForPrice))
+            setValue('RateConversion', checkForDecimalAndNull(rateConversion, initialConfiguration.NoOfDecimalForPrice))
+        }
     }
 
     const setRejectionReworkAndProfitCost = () => {
@@ -208,17 +326,17 @@ function AddMoreOperation(props) {
         let rejnReworkPercent = checkForNull(Number(getValues('rejnReworkPercent'))) / 100
         let profitPercent = checkForNull(Number(getValues('profitPercent'))) / 100
 
-        let netCost = 0
+        let RateLocalConversion = 0
         if (includeInterestInRejection) {
-            netCost = gasCost + electricityCost + manPowerCost + staffCost + maintenanceCost + consumablesCost + waterCost + jigStripping + interestCost + depriciationCost + statuatoryLicense + rateOperation
+            RateLocalConversion = gasCost + electricityCost + manPowerCost + staffCost + maintenanceCost + consumablesCost + waterCost + jigStripping + interestCost + depriciationCost + statuatoryLicense + rateOperation
 
         } else {
 
-            netCost = gasCost + electricityCost + manPowerCost + staffCost + maintenanceCost + consumablesCost + waterCost + jigStripping + statuatoryLicense + rateOperation
+            RateLocalConversion = gasCost + electricityCost + manPowerCost + staffCost + maintenanceCost + consumablesCost + waterCost + jigStripping + statuatoryLicense + rateOperation
         }
 
-        let rejectionReworkCost = netCost * rejnReworkPercent
-        let profitCost = netCost * profitPercent
+        let rejectionReworkCost = RateLocalConversion * rejnReworkPercent
+        let profitCost = RateLocalConversion * profitPercent
         setDataToSend(prevState => ({ ...prevState, rejectionReworkCostState: rejectionReworkCost, profitCostState: profitCost }))
         setValue('rejoinReworkCost', checkForDecimalAndNull(rejectionReworkCost, initialConfiguration.NoOfDecimalForPrice))
         setValue('profitCost', checkForDecimalAndNull(profitCost, initialConfiguration.NoOfDecimalForPrice))
@@ -227,8 +345,19 @@ function AddMoreOperation(props) {
         let profitCostState = checkForNull(profitCost)
         let otherCost = checkForNull(Number(getValues('otherCost')))
         let totalCost = gasCost + electricityCost + manPowerCost + staffCost + maintenanceCost + consumablesCost + waterCost + jigStripping + interestCost + depriciationCost + statuatoryLicense + rateOperation + rejectionReworkCost + profitCostState + otherCost
-        setDataToSend(prevState => ({ ...prevState, netCost: totalCost }))
-        setValue('netCost', checkForDecimalAndNull(totalCost, initialConfiguration.NoOfDecimalForPrice))
+        setDataToSend(prevState => ({ ...prevState, RateLocalConversion: totalCost }))
+        if (state.isImport) {
+            const rateConversion = checkForNull(state.settlementCurrency) * checkForNull(totalCost)
+            const rateLocalConversion = checkForNull(state.plantCurrency) * checkForNull(totalCost)
+            setValue('Rate', checkForDecimalAndNull(totalCost, initialConfiguration.NoOfDecimalForPrice))
+            setValue('RateLocalConversion', checkForDecimalAndNull(rateLocalConversion, initialConfiguration.NoOfDecimalForPrice))
+            setValue('RateConversion', checkForDecimalAndNull(rateConversion, initialConfiguration.NoOfDecimalForPrice))
+        } else {
+            const rateConversion = checkForNull(state.plantCurrency) * checkForNull(totalCost)
+            console.log(rateConversion, "rateConversiojnjn")
+            setValue('RateLocalConversion', checkForDecimalAndNull(totalCost, initialConfiguration.NoOfDecimalForPrice))
+            setValue('RateConversion', checkForDecimalAndNull(rateConversion, initialConfiguration.NoOfDecimalForPrice))
+        }
     }
 
 
@@ -245,9 +374,9 @@ function AddMoreOperation(props) {
         let rejnReworkPercent = checkForNull(Number(getValues('rejnReworkPercent'))) / 100
         let profitPercent = checkForNull(Number(getValues('profitPercent'))) / 100
 
-        let netCost = (wireCost - gasCost + electricityCost + manPowerCost + staffCost + waterCost + jigStripping + statuatoryLicense)
-        let rejectionReworkCost = netCost * rejnReworkPercent
-        let profitCost = netCost * profitPercent
+        let RateLocalConversion = (wireCost - gasCost + electricityCost + manPowerCost + staffCost + waterCost + jigStripping + statuatoryLicense)
+        let rejectionReworkCost = RateLocalConversion * rejnReworkPercent
+        let profitCost = RateLocalConversion * profitPercent
 
         setDataToSend(prevState => ({ ...prevState, rejectionReworkCostState: rejectionReworkCost, profitCostState: profitCost }))
         setValue('rejoinReworkCost', checkForDecimalAndNull(rejectionReworkCost, initialConfiguration.NoOfDecimalForPrice))
@@ -257,6 +386,7 @@ function AddMoreOperation(props) {
     }
 
     const setNetCostPlating = (obj) => {
+        console.log(obj, "obj")
 
         let wireCost = checkForNull(obj.wireCost)
         let gasCost = checkForNull(obj.gasCost)
@@ -269,9 +399,21 @@ function AddMoreOperation(props) {
         let rejectionReworkCost = checkForNull(Number(getValues('rejoinReworkCost')))
         let profitCostState = checkForNull(Number(getValues('profitCost')))
 
-        let netCost = (wireCost - gasCost + electricityCost + manPowerCost + staffCost + waterCost + jigStripping + statuatoryLicense + rejectionReworkCost + profitCostState)
-        setDataToSend(prevState => ({ ...prevState, netCost: netCost }))
-        setValue('netCost', checkForDecimalAndNull(netCost, initialConfiguration.NoOfDecimalForPrice))
+        let Rate = (wireCost - gasCost + electricityCost + manPowerCost + staffCost + waterCost + jigStripping + statuatoryLicense + rejectionReworkCost + profitCostState)
+        setDataToSend(prevState => ({ ...prevState, RateLocalConversion: Rate }))
+        if (state.isImport) {
+            const rateConversion = checkForNull(state.settlementCurrency) * checkForNull(Rate)
+            const rateLocalConversion = checkForNull(state.plantCurrency) * checkForNull(Rate)
+            setValue('Rate', checkForDecimalAndNull(Rate, initialConfiguration.NoOfDecimalForPrice))
+            setValue('RateLocalConversion', checkForDecimalAndNull(rateLocalConversion, initialConfiguration.NoOfDecimalForPrice))
+            setValue('RateConversion', checkForDecimalAndNull(rateConversion, initialConfiguration.NoOfDecimalForPrice))
+        } else {
+            const rateConversion = checkForNull(state.plantCurrency) * checkForNull(Rate)
+            console.log(rateConversion, "rateConversion")
+            setValue('RateLocalConversion', checkForDecimalAndNull(Rate, initialConfiguration.NoOfDecimalForPrice))
+            setValue('RateConversion', checkForDecimalAndNull(rateConversion, initialConfiguration.NoOfDecimalForPrice))
+        }
+
     }
 
 
@@ -306,7 +448,10 @@ function AddMoreOperation(props) {
         setPlant({ label: addMoreDetailObj?.plants[0]?.Text ?? addMoreDetailObj?.destinationPlant.label, value: addMoreDetailObj?.plants[0]?.Value ?? addMoreDetailObj?.destinationPlant.value })
         setValue('customer', { label: addMoreDetailObj.customer.label, value: addMoreDetailObj.customer.value })
         setClient({ label: addMoreDetailObj.customer.label, value: addMoreDetailObj.customer.value })
-
+        setValue('plantCurrency', addMoreDetailObj?.plantCurrency)
+        setState(prevState => ({ ...prevState, isImport: addMoreDetailObj?.isImport, currency: addMoreDetailObj?.currency, plantCurrencyID: addMoreDetailObj?.plantCurrencyID, ExchangeSource: addMoreDetailObj?.ExchangeSource, plantExchangeRateId: addMoreDetailObj?.plantExchangeRateId, settlementExchangeRateId: addMoreDetailObj?.settlementExchangeRateId, plantCurrency: addMoreDetailObj?.plantCurrencyState, settlementCurrency: addMoreDetailObj?.settlementCurrency }))
+        setValue('ExchangeSource', { label: addMoreDetailObj?.ExchangeSource?.label, value: addMoreDetailObj?.ExchangeSource?.value })
+        setValue('currency', { label: addMoreDetailObj?.currency?.label, value: addMoreDetailObj?.currency?.value })
         if (isEditFlag) {
             setValue('effectiveDate', DayTime(addMoreDetailObj.effectiveDate).$d)
             if (String(props?.addMoreDetailObj?.operationType?.label) === "Welding") {
@@ -322,7 +467,7 @@ function AddMoreOperation(props) {
                 setValue('otherCostWelding', detailObject && detailObject.OtherCost ? checkForDecimalAndNull(detailObject.OtherCost, initialConfiguration.NoOfDecimalForPrice) : '',)
 
             } else {
-                setDataToSend(prevState => ({ ...prevState, netCost: detailObject && detailObject.Rate ? detailObject.Rate : '', rejectionReworkCostState: detailObject && detailObject.RejectionAndReworkCost ? detailObject.RejectionAndReworkCost : '', profitCostState: detailObject && detailObject.ProfitCRMCost ? detailObject.ProfitCRMCost : '' }))
+                setDataToSend(prevState => ({ ...prevState, RateLocalConversion: detailObject && detailObject.Rate ? detailObject.Rate : '', rejectionReworkCostState: detailObject && detailObject.RejectionAndReworkCost ? detailObject.RejectionAndReworkCost : '', profitCostState: detailObject && detailObject.ProfitCRMCost ? detailObject.ProfitCRMCost : '' }))
                 setIncludeInterestInRejection(detailObject?.IsIncludeInterestRateAndDepriciationInRejectionAndProfit)
                 setValue('crmHeadMaterialCost', detailObject && detailObject.MaterialGasCRMHead && { label: detailObject.MaterialGasCRMHead, value: 1 })
                 setValue('gasCost', detailObject && detailObject.MaterialGasCost ? checkForDecimalAndNull(detailObject.MaterialGasCost, initialConfiguration.NoOfDecimalForPrice) : '',)
@@ -366,7 +511,9 @@ function AddMoreOperation(props) {
             }
 
             setTimeout(() => {
-                setValue('netCost', detailObject && detailObject.Rate ? checkForDecimalAndNull(detailObject.Rate, initialConfiguration.NoOfDecimalForPrice) : '',)
+                setValue('Rate', detailObject && detailObject.Rate ? checkForDecimalAndNull(detailObject.Rate, initialConfiguration.NoOfDecimalForPrice) : '',)
+                setValue('RateLocalConversion', detailObject && detailObject.RateLocalConversion ? checkForDecimalAndNull(detailObject.RateLocalConversion, initialConfiguration.NoOfDecimalForPrice) : '',)
+                setValue('RateConversion', detailObject && detailObject.RateConversion ? checkForDecimalAndNull(detailObject.RateConversion, initialConfiguration.NoOfDecimalForPrice) : '',)
             }, 600);
 
         } else {
@@ -432,9 +579,11 @@ function AddMoreOperation(props) {
 
 
     const onSubmit = debounce(handleSubmit((values) => {
+        console.log(values, 'values')
         let technologyArray = []
-        let plantArray = [{ PlantName: plant.label, PlantId: plant.value, PlantCode: ' ', }]
-
+        // let plantArray = [{ PlantName: plant.label, PlantId: plant.value, PlantCode: ' ', }]
+        let plantArray = Array?.isArray(plant) ? plant?.map(plant => ({ PlantId: plant?.value, PlantName: plant?.label, PlantCode: '' })) :
+            plant ? [{ PlantId: plant?.value, PlantName: plant?.label, PlantCode: '' }] : [];
         values && values.technology && values.technology.map((item, index) => {
             let obj = {}
             obj.Technology = item.Label
@@ -453,12 +602,13 @@ function AddMoreOperation(props) {
             VendorId: addMoreDetailObj.costingTypeId === VBCTypeId ? vendor.value : null,
             UnitOfMeasurementId: uom.value,
             IsSurfaceTreatmentOperation: addMoreDetailObj?.isSurfaceTreatment,
-
-            Rate: isWelding ? dataToSend.netCostWelding : dataToSend.netCost,
+            Rate: isWelding ? dataToSend.netCostWelding : values.Rate,
+            RateLocalConversion: values.RateLocalConversion,
+            RateConversion: values.RateConversion,
             LabourRatePerUOM: initialConfiguration && initialConfiguration.IsOperationLabourRateConfigure ? values.LabourRatePerUOM : '',
             Technology: technologyArray,
             Remark: values.remark ? values.remark : '',
-            Plant: plantArray,
+            Plant: plantArray ? plantArray : [],
             Attachements: files,
             LoggedInUserId: loggedInUserId(),
             EffectiveDate: DayTime(values.effectiveDate).format('YYYY/MM/DD HH:mm:ss'),
@@ -527,8 +677,17 @@ function AddMoreOperation(props) {
             IsDetailedEntry: true,
             IsIncludeInterestRateAndDepriciationInRejectionAndProfit: includeInterestInRejection,
             InterestAndDepriciationCRMHead: values?.crmHeadInterestDepriciationWelding?.label,
-            InterestAndDepriciationCost: values?.interestDepriciationCost
-
+            InterestAndDepriciationCost: values?.interestDepriciationCost,
+            OperationEntryType: state.isImport ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC,
+            ExchangeRateSourceName: state.ExchangeSource?.label || null,
+            LocalCurrencyId: state.plantCurrencyID || null,
+            LocalCurrency: state.plantCurrency || null,
+            ExchangeRate: state.settlementCurrency || null,
+            LocalCurrencyExchangeRate: state.plantCurrency || null,
+            CurrencyId: state.currency?.value || null,
+            Currency: state.currency?.label || null,
+            ExchangeRateId: state.settlementExchangeRateId || null,
+            LocalExchangeRateId: state.plantExchangeRateId || null,
         }
 
         let isFinancialDataChange = false;
@@ -620,6 +779,14 @@ function AddMoreOperation(props) {
             temp = CRMHeads
             return temp;
         }
+        if (label === 'currency') {
+            currencySelectList && currencySelectList.map(item => {
+                if (item.Value === '0') return false;
+                temp.push({ label: item.Text, value: item.Value })
+                return null;
+            });
+            return temp;
+        }
 
     }
 
@@ -675,6 +842,17 @@ function AddMoreOperation(props) {
     const handlePlant = (value) => {
         if (value && value !== '') {
             setPlant(value)
+            callExchangeRateAPI()
+        }
+    }
+    const handleExchangeRateSource = (newValue) => {
+        setState(prevState => ({ ...prevState, ExchangeSource: newValue }))
+        callExchangeRateAPI()
+    };
+    const handleCurrency = (newValue) => {
+        if (newValue && newValue !== '') {
+            setState(prevState => ({ ...prevState, currency: newValue }))
+            callExchangeRateAPI()
         }
     }
 
@@ -813,25 +991,25 @@ function AddMoreOperation(props) {
         let label;
         switch (value) {
             case 'wireRate':
-                label = isWelding ? `Wire Rate` : `Ni Rate`
+                label = isWelding ? `Wire Rate (${state.isImport ? state.currency?.label : getValues('plantCurrency')})` : `Ni Rate (${state.isImport ? state.currency?.label : getValues('plantCurrency')})`
                 break;
             case 'wireCost':
-                label = isWelding ? `Wire Cost` : `Cost`
+                label = isWelding ? `Wire Cost (${state.isImport ? state.currency?.label : getValues('plantCurrency')})` : `Cost (${state.isImport ? state.currency?.label : getValues('plantCurrency')})`
                 break;
             case 'gasRate':
-                label = isWelding ? `Gas Rate` : `Ni Scrap Rate`
+                label = isWelding ? `Gas Rate (${state.isImport ? state.currency?.label : getValues('plantCurrency')})` : `Ni Scrap Rate (${state.isImport ? state.currency?.label : getValues('plantCurrency')})`
                 break;
             case 'consumablesCost':
-                label = other ? `Consumables Cost` : `Office Exp`
+                label = other ? `Consumables Cost (${state.isImport ? state.currency?.label : getValues('plantCurrency')})` : `Office Exp (${state.isImport ? state.currency?.label : getValues('plantCurrency')})`
                 break;
             case 'waterCost':
-                label = other ? `Water Cost` : `Additional Chemical Cost`
+                label = other ? `Water Cost (${state.isImport ? state.currency?.label : getValues('plantCurrency')})` : `Additional Chemical Cost (${state.isImport ? state.currency?.label : getValues('plantCurrency')})`
                 break;
             case 'jigStripping':
-                label = other ? `Jig Stripping` : `CETP Charge`
+                label = other ? `Jig Stripping (${state.isImport ? state.currency?.label : getValues('plantCurrency')})` : `CETP Charge (${state.isImport ? 'Currency' : getValues('plantCurrency') ?? 'Currency'})`
                 break;
             case 'statuatoryLicense':
-                label = other ? `Statuatory & License` : `Fixed Cost`
+                label = other ? `Statuatory & License (${state.isImport ? state.currency?.label : getValues('plantCurrency')})` : `Fixed Cost (${state.isImport ? state.currency?.label : getValues('plantCurrency')})`
                 break;
             default:
                 label = ''
@@ -848,6 +1026,9 @@ function AddMoreOperation(props) {
             props?.cancel('submit')
         }
     }
+    const handleEffectiveDate = (e) => {
+        callExchangeRateAPI()
+    }
     return (
         <div className="container-fluid">
             {isLoader && <Loader />}
@@ -863,6 +1044,74 @@ function AddMoreOperation(props) {
 
                         </div>
                         <form>
+                            <Row>
+                                <Col md="4" className="switch mb15">
+                                    <label className="switch-level">
+                                        <div className={"left-title"}>Domestic</div>
+                                        <Switch
+                                            onChange={() => { }}
+                                            checked={state.isImport}
+                                            id="normal-switch"
+                                            disabled={true}
+                                            background="#4DC771"
+                                            onColor="#4DC771"
+                                            onHandleColor="#ffffff"
+                                            offColor="#4DC771"
+                                            uncheckedIcon={false}
+                                            checkedIcon={false}
+                                            height={20}
+                                            width={46}
+                                        />
+                                        <div className={"right-title"}>Import</div>
+                                    </label>
+                                </Col>
+                            </Row>
+                            <Row>
+                                <Col md="12">
+                                    {(reactLocalStorage.getObject('CostingTypePermission').zbc) && <Label id="rm_domestic_form_zero_based" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                                        <input
+                                            type="radio"
+                                            name="costingHead"
+                                            className='zero-based'
+                                            id='zeroBased'
+                                            checked={
+                                                state.costingTypeId === ZBCTypeId ? true : false
+                                            }
+                                            onClick={() => { }}
+                                            disabled={true}
+                                        />{" "}
+                                        <span>Zero Based</span>
+                                    </Label>}
+                                    {(reactLocalStorage.getObject('CostingTypePermission').vbc) && <Label id="rm_domestic_form_vendor_based" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                                        <input
+                                            type="radio"
+                                            name="costingHead"
+                                            className='vendor-based'
+                                            id='vendorBased'
+                                            checked={
+                                                state.costingTypeId === VBCTypeId ? true : false
+                                            }
+                                            onClick={() => { }}
+                                            disabled={true}
+                                        />{" "}
+                                        <span>{vendorLabel} Based</span>
+                                    </Label>}
+                                    {(reactLocalStorage.getObject('CostingTypePermission').cbc) && <Label id="rm_domestic_form_customer_based" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
+                                        <input
+                                            type="radio"
+                                            name="costingHead"
+                                            className='customer-based'
+                                            id='customerBased'
+                                            checked={
+                                                state.costingTypeId === CBCTypeId ? true : false
+                                            }
+                                            onClick={() => { }}
+                                            disabled={true}
+                                        />{" "}
+                                        <span>Customer Based</span>
+                                    </Label>}
+                                </Col>
+                            </Row>
                             <div className="">
                                 <HeaderTitle
                                     title={'Operation:'}
@@ -1001,6 +1250,42 @@ function AddMoreOperation(props) {
                                             disabled={isViewMode || isEditFlag}
                                         />
                                     </div>
+                                    {getConfigurationKey().IsSourceExchangeRateNameVisible && <Col className="col-md-15">
+                                        <SearchableSelectHookForm
+                                            name="ExchangeSource"
+                                            label="Exchange Rate Source"
+                                            Controller={Controller}
+                                            control={control}
+                                            register={register}
+                                            mandatory={false}
+                                            rules={{ required: false }}
+                                            placeholder={'Select'}
+                                            options={searchableSelectType("ExchangeSource")}
+                                            handleChange={handleExchangeRateSource}
+                                            disabled={(isViewMode || isEditFlag) ? true : false}
+                                            errors={errors.ExchangeSource}
+                                        />
+                                    </Col>}
+                                    <Col className="col-md-15">
+                                        <TextFieldHookForm
+                                            name="plantCurrency"
+                                            label="Plant Currency"
+                                            placeholder={'-'}
+                                            defaultValue={''}
+                                            Controller={Controller}
+                                            control={control}
+                                            register={register}
+                                            rules={{
+                                                required: false,
+                                            }}
+                                            mandatory={false}
+                                            disabled={true}
+                                            className=" "
+                                            customClassName=" withBorder"
+                                            handleChange={() => { }}
+                                            errors={errors.plantCurrency}
+                                        />
+                                    </Col>
 
                                     {addMoreDetailObj.costingTypeId === VBCTypeId && <div className="input-group col-md-3 input-withouticon" >
                                         <AsyncSearchableSelectHookForm
@@ -1067,12 +1352,32 @@ function AddMoreOperation(props) {
                                             valueDescription={uom}
                                         />
                                     </div>
+                                    {state.isImport && <Col className="col-md-15">
+                                        <SearchableSelectHookForm
+                                            name="currency"
+                                            label="Currency"
+                                            errors={errors.currency}
+                                            Controller={Controller}
+                                            control={control}
+                                            register={register}
+                                            mandatory={true}
+                                            rules={{
+                                                required: true,
+                                            }}
+                                            placeholder={'Select'}
+                                            options={searchableSelectType("currency")}
+                                            handleChange={handleCurrency}
+                                            disabled={isEditFlag || isViewMode}
+                                        />
+                                    </Col>}
                                     <div className="col-md-3 mb-5">
                                         <div className="inputbox date-section">
                                             <DatePickerHookForm
                                                 name={`effectiveDate`}
                                                 label={'Effective Date'}
-                                                handleChange={() => { }}
+                                                handleChange={(date) => {
+                                                    handleEffectiveDate(date);
+                                                }}
                                                 rules={{ required: false }}
                                                 Controller={Controller}
                                                 control={control}
@@ -1138,7 +1443,7 @@ function AddMoreOperation(props) {
                                                 <Col md="3">
 
                                                     <NumberFieldHookForm
-                                                        label={`Gas Cost`}
+                                                        label={`Gas Cost (${state.isImport ? state.currency?.label : getValues('plantCurrency')})`}
                                                         name={'gasCost'}
                                                         Controller={Controller}
                                                         control={control}
@@ -1338,7 +1643,7 @@ function AddMoreOperation(props) {
                                                 <TooltipCustom id={"gasCostWelding"} width={"230px"} disabledIcon={true} tooltipText={`Cost = ${getLabel('gasRate')} * Consumption`} />
 
                                                 <NumberFieldHookForm
-                                                    label={`Cost`}
+                                                    label={`Cost (${state.isImport ? state.currency?.label : getValues('plantCurrency')})`}
                                                     id={"gasCostWelding"}
                                                     name={'gasCostWelding'}
                                                     Controller={Controller}
@@ -1406,7 +1711,7 @@ function AddMoreOperation(props) {
                                         </Col>
                                             <Col md="3">
                                                 <NumberFieldHookForm
-                                                    label={`Electricity Cost`}
+                                                    label={`Electricity Cost (${state.isImport ? state.currency?.label : getValues('plantCurrency')})`}
                                                     name={'electricityCost'}
                                                     id={"electricityCost"}
                                                     Controller={Controller}
@@ -1456,7 +1761,7 @@ function AddMoreOperation(props) {
                                             <Col md="3">
 
                                                 <NumberFieldHookForm
-                                                    label={`Electricity Rate`}
+                                                    label={`Electricity Rate (${state.isImport ? state.currency?.label : getValues('plantCurrency')})`}
                                                     name={'electricityRate'}
                                                     Controller={Controller}
                                                     control={control}
@@ -1507,7 +1812,7 @@ function AddMoreOperation(props) {
                                             <Col md="3">
                                                 <TooltipCustom id={"electricityCostWelding"} width={"230px"} disabledIcon={true} tooltipText={`Electricity Cost = Electricity Rate * Consumption`} />
                                                 <NumberFieldHookForm
-                                                    label={`Electricity Cost`}
+                                                    label={`Electricity Cost (${state.isImport ? state.currency?.label : getValues('plantCurrency')})`}
                                                     name={'electricityCostWelding'}
                                                     Controller={Controller}
                                                     id={"electricityCostWelding"}
@@ -1576,7 +1881,7 @@ function AddMoreOperation(props) {
                                             <Col md="3">
 
                                                 <NumberFieldHookForm
-                                                    label={`ManPower Cost`}
+                                                    label={`ManPower Cost (${state.isImport ? state.currency?.label : getValues('plantCurrency')})`}
                                                     name={'manPowerCost'}
                                                     Controller={Controller}
                                                     control={control}
@@ -1624,7 +1929,7 @@ function AddMoreOperation(props) {
                                             <Col md="3">
 
                                                 <NumberFieldHookForm
-                                                    label={`Staff Cost`}
+                                                    label={`Staff Cost (${state.isImport ? state.currency?.label : getValues('plantCurrency')})`}
                                                     name={'staffCost'}
                                                     Controller={Controller}
                                                     control={control}
@@ -1673,7 +1978,7 @@ function AddMoreOperation(props) {
                                                 <Col md="3">
 
                                                     <NumberFieldHookForm
-                                                        label={`Labour Rate`}
+                                                        label={`Labour Rate (${state.isImport ? state.currency?.label : getValues('plantCurrency')})`}
                                                         name={'labourRate'}
                                                         Controller={Controller}
                                                         control={control}
@@ -1724,7 +2029,7 @@ function AddMoreOperation(props) {
                                                 <Col md="3">
                                                     <TooltipCustom id={"labourCost"} width={"230px"} disabledIcon={true} tooltipText={`Labour Cost = Labour Rate / Welding/Shift`} />
                                                     <NumberFieldHookForm
-                                                        label={`Labour Cost`}
+                                                        label={`Labour Cost (${state.isImport ? state.currency?.label : getValues('plantCurrency')})`}
                                                         name={'labourCost'}
                                                         id={"labourCost"}
                                                         Controller={Controller}
@@ -1793,7 +2098,7 @@ function AddMoreOperation(props) {
                                         </Col>
                                             <Col md="3">
                                                 <NumberFieldHookForm
-                                                    label={`Maintenance Cost`}
+                                                    label={`Maintenance Cost (${state.isImport ? state.currency?.label : getValues('plantCurrency')})`}
                                                     name={'maintenanceCost'}
                                                     Controller={Controller}
                                                     control={control}
@@ -1980,7 +2285,7 @@ function AddMoreOperation(props) {
                                             <Col md="3">
 
                                                 <NumberFieldHookForm
-                                                    label={`Machine Consumable Cost`}
+                                                    label={`Machine Consumable Cost (${state.isImport ? state.currency?.label : getValues('plantCurrency')})`}
                                                     name={'machineConsumableCost'}
                                                     Controller={Controller}
                                                     control={control}
@@ -2027,7 +2332,7 @@ function AddMoreOperation(props) {
 
                                             <Col md="3">
                                                 <NumberFieldHookForm
-                                                    label={`Welder Cost`}
+                                                    label={`Welder Cost (${state.isImport ? state.currency?.label : getValues('plantCurrency')})`}
                                                     name={'welderCost'}
                                                     Controller={Controller}
                                                     control={control}
@@ -2097,7 +2402,7 @@ function AddMoreOperation(props) {
                                             <Col md="3">
 
                                                 <NumberFieldHookForm
-                                                    label={`Interest  Cost`}
+                                                    label={`Interest  Cost (${state.isImport ? state.currency?.label : getValues('plantCurrency')})`}
                                                     name={'interestCost'}
                                                     Controller={Controller}
                                                     control={control}
@@ -2143,7 +2448,7 @@ function AddMoreOperation(props) {
                                             </Col>
                                             <Col md="3">
                                                 <NumberFieldHookForm
-                                                    label={`Depreciation Cost`}
+                                                    label={`Depreciation Cost (${state.isImport ? state.currency?.label : getValues('plantCurrency')})`}
                                                     name={'depriciationCost'}
                                                     Controller={Controller}
                                                     control={control}
@@ -2209,7 +2514,7 @@ function AddMoreOperation(props) {
 
                                             <Col md="3">
                                                 <NumberFieldHookForm
-                                                    label={`Interest And Depreciation Cost`}
+                                                    label={`Interest And Depreciation Cost (${state.isImport ? state.currency?.label : getValues('plantCurrency')})`}
                                                     name={'interestDepriciationCost'}
                                                     Controller={Controller}
                                                     control={control}
@@ -2298,7 +2603,7 @@ function AddMoreOperation(props) {
 
                                         <Col md="3">
                                             <NumberFieldHookForm
-                                                label={`Rate`}
+                                                label={`Rate (${state.isImport ? state.currency?.label : getValues('plantCurrency')})`}
                                                 name={'rateOperation'}
                                                 Controller={Controller}
                                                 control={control}
@@ -2444,7 +2749,7 @@ function AddMoreOperation(props) {
                                                 <Col md="3">
                                                     <TooltipCustom id={"rejoinReworkCost"} disabledIcon={true} width={"270px"} tooltipText={`Rejection & Rework Cost = Statuatory & License * Rejection & Rework / 100`} />
                                                     <NumberFieldHookForm
-                                                        label={`Rejection & Rework Cost`}
+                                                        label={`Rejection & Rework Cost (${state.isImport ? state.currency?.label : getValues('plantCurrency')})`}
                                                         name={'rejoinReworkCost'}
                                                         Controller={Controller}
                                                         id={"rejoinReworkCost"}
@@ -2522,7 +2827,7 @@ function AddMoreOperation(props) {
                                                 <Col md="3">
                                                     <TooltipCustom id={"profitCost"} disabledIcon={true} width={"270px"} tooltipText={`Profit Cost = Statuatory & License * Profit  / 100`} />
                                                     <NumberFieldHookForm
-                                                        label={`Profit Cost`}
+                                                        label={`Profit Cost (${state.isImport ? state.currency?.label : getValues('plantCurrency')})`}
                                                         id={"profitCost"}
                                                         name={'profitCost'}
                                                         Controller={Controller}
@@ -2594,7 +2899,7 @@ function AddMoreOperation(props) {
 
                                                     <Col md="3">
                                                         <NumberFieldHookForm
-                                                            label={`Other Cost`}
+                                                            label={`Other Cost (${state.isImport ? state.currency?.label : getValues('plantCurrency')})`}
                                                             name={'otherCost'}
                                                             Controller={Controller}
                                                             control={control}
@@ -2668,7 +2973,7 @@ function AddMoreOperation(props) {
 
                                             <Col md="3">
                                                 <NumberFieldHookForm
-                                                    label={`Other Cost`}
+                                                    label={`Other Cost (${state.isImport ? state.currency?.label : getValues('plantCurrency')})`}
                                                     name={'otherCostWelding'}
                                                     Controller={Controller}
                                                     control={control}
@@ -2694,33 +2999,56 @@ function AddMoreOperation(props) {
                                     </div>
                                 }
                             </Row>
-
-                            <TooltipCustom id={"netCost"} disabledIcon={true} tooltipText={`Rate = Total Cost of all Section`} />
-                            <Col md="3">
+                            {state.isImport && <Col className="col-md-15">
                                 <NumberFieldHookForm
-                                    label={`Rate (${reactLocalStorage.getObject("baseCurrency")})`}
-                                    name={'netCost'}
+                                    label={`Rate (${state.currency?.label ?? 'Currency'})`}
+                                    name={'Rate'}
                                     Controller={Controller}
-                                    id={"netCost"}
                                     control={control}
                                     register={register}
                                     mandatory={false}
-                                    rules={{
-                                        required: false,
-                                        pattern: {
-                                            value: /^\d{0,4}(\.\d{0,7})?$/i,
-                                            message: 'Maximum length for integer is 4 and for decimal is 7',
-                                        },
-                                    }}
                                     handleChange={() => { }}
                                     defaultValue={''}
                                     className=""
                                     customClassName={'withBorder'}
-                                    errors={errors.netCost}
+                                    errors={errors.Rate}
+                                    disabled={true}
+                                />
+                            </Col>}
+                            <TooltipCustom id={"RateLocalConversion"} disabledIcon={true} tooltipText={`Rate = Total Cost of all Section`} />
+                            <Col className="col-md-15">
+                                <NumberFieldHookForm
+                                    label={`Rate (${getValues('plantCurrency') ?? 'Currency'})`}
+                                    name={'RateLocalConversion'}
+                                    Controller={Controller}
+                                    id={"RateLocalConversion"}
+                                    control={control}
+                                    register={register}
+                                    mandatory={false}
+                                    handleChange={() => { }}
+                                    defaultValue={''}
+                                    className=""
+                                    customClassName={'withBorder'}
+                                    errors={errors.RateLocalConversion}
                                     disabled={true}
                                 />
                             </Col>
-
+                            <Col className="col-md-15">
+                                <NumberFieldHookForm
+                                    label={`Rate (${reactLocalStorage.getObject("baseCurrency")})`}
+                                    name={'RateConversion'}
+                                    Controller={Controller}
+                                    control={control}
+                                    register={register}
+                                    mandatory={false}
+                                    handleChange={() => { }}
+                                    defaultValue={''}
+                                    className=""
+                                    customClassName={'withBorder'}
+                                    errors={errors.RateConversion}
+                                    disabled={true}
+                                />
+                            </Col>
 
                             <Row>
                                 <Col md="12">
