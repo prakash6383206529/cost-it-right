@@ -460,6 +460,10 @@ class AddMoreDetails extends Component {
           this.props.change('FuelCostPerUnit', Data.FuelCostPerUnit ? Data.FuelCostPerUnit : '')
           this.setState({ minDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '' })
           const { machineType, effectiveDate, selectedCustomer, selectedVedor, costingTypeId } = this.state;
+          let plantObj;
+          if (Data && Data?.Plant?.length > 0) {
+            plantObj = Data?.Plant?.map(plant => ({ label: plant?.PlantName, value: plant?.PlantId }));
+          }
           if (machineType.value) {
             const data = {
               machineTypeId: machineType?.value,
@@ -546,7 +550,7 @@ class AddMoreDetails extends Component {
               machineType: machineTypeObj && machineTypeObj !== undefined ? { label: machineTypeObj.Text, value: machineTypeObj.Value } : [],
               shiftType: shiftObj && shiftObj !== undefined ? { label: shiftObj.Text, value: shiftObj.Value } : [],
               depreciationType: depreciationObj && depreciationObj !== undefined ? { label: depreciationObj.Text, value: depreciationObj.Value } : [],
-              selectedPlants: Data && Data.Plant.length > 0 ? { label: Data.Plant[0].PlantName, value: Data.Plant[0].PlantId } : [],
+              selectedPlants: plantObj ? plantObj : [],
               DateOfPurchase: DayTime(Data.DateOfPurchase).isValid() === true ? new Date(DayTime(Data.DateOfPurchase)) : '',
               IsAnnualMaintenanceFixed: Data.IsMaintanceFixed === true ? false : true,
               IsAnnualConsumableFixed: Data.IsConsumableFixed === true ? false : true,
@@ -2291,7 +2295,10 @@ class AddMoreDetails extends Component {
     let technologyArray = selectedTechnology && [{ Technology: selectedTechnology.label ? selectedTechnology.label : selectedTechnology[0].label, TechnologyId: selectedTechnology.value ? selectedTechnology.value : selectedTechnology[0].value }]
 
     let updatedFiles = files.map((file) => ({ ...file, ContextId: MachineID }))
-
+    let plantArray = Array?.isArray(selectedPlants) ? selectedPlants?.map(plant => ({ PlantId: plant?.value, PlantName: plant?.label, PlantCode: '' })) :
+      selectedPlants ? [{ PlantId: selectedPlants?.value, PlantName: selectedPlants?.label, PlantCode: '' }] : [];
+    console.log("plantArray", plantArray)
+    console.log("selectedPlants", selectedPlants)
     let requestData = {
       IsSendForApproval: CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar,
       CostingTypeId: this.state.CostingTypeId,
@@ -2364,7 +2371,7 @@ class AddMoreDetails extends Component {
       LoggedInUserId: loggedInUserId(),
       MachineProcessRates: processGrid,
       Technology: (technologyArray.length > 0 && technologyArray[0]?.Technology !== undefined) ? technologyArray : [{ Technology: selectedTechnology.label ? selectedTechnology.label : selectedTechnology[0].label, TechnologyId: selectedTechnology.value ? selectedTechnology.value : selectedTechnology[0].value }],
-      Plant: [{ PlantId: selectedPlants.value, PlantName: selectedPlants.label }],
+      Plant: plantArray ? plantArray : [],
       selectedPlants: selectedPlants,
       DestinationPlantId: '',
       Attachements: updatedFiles,

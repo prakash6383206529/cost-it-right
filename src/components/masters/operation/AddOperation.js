@@ -633,10 +633,9 @@ class AddOperation extends Component {
             return technologyArray;
           })
           let plantArray = [];
-          Data && Data.Plant.map((item) => {
-            plantArray.push({ Text: item.PlantName, Value: item.PlantId })
-            return plantArray;
-          })
+          if (Data && Data?.Plant?.length > 0) {
+            plantArray = Data?.Plant?.map(plant => ({ label: plant?.PlantName, value: plant?.PlantId }));
+          }
           this.finalUserCheckAndMasterLevelCheckFunction(plantArray[0].Value)
           if (Data?.ForType === 'Welding') {
             this.setState({ isWelding: true })
@@ -654,6 +653,7 @@ class AddOperation extends Component {
               selectedTechnology: technologyArray,
               client: Data.CustomerName !== undefined ? { label: Data.CustomerName, value: Data.CustomerId } : [],
               selectedPlants: plantArray,
+              destinationPlant: plantArray ?? [],
               vendorName: Data.VendorName && Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.VendorId } : [],
               UOM: Data.UnitOfMeasurement !== undefined ? { label: Data.UnitOfMeasurement, value: Data.UnitOfMeasurementId } : [],
               oldUOM: Data.UnitOfMeasurement !== undefined ? { label: Data.UnitOfMeasurement, value: Data.UnitOfMeasurementId } : [],
@@ -663,7 +663,7 @@ class AddOperation extends Component {
               // effectiveDate: moment(Data.EffectiveDate).isValid ? moment(Data.EffectiveDate)._d : '',
               effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
               oldDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
-              destinationPlant: Data.DestinationPlantName !== undefined ? { label: Data.DestinationPlantName, value: Data.DestinationPlantId } : [],
+              //destinationPlant: Data.DestinationPlantName !== undefined ? { label: Data.DestinationPlantName, value: Data.DestinationPlantId } : [],
               dataToChange: Data,
               operationType: { label: Data.ForType, value: 1 },
               ExchangeSource: Data?.ExchangeRateSourceName ? { label: Data?.ExchangeRateSourceName, value: Data?.ExchangeRateSourceId } : [],

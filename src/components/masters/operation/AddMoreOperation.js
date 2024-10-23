@@ -580,8 +580,9 @@ function AddMoreOperation(props) {
     const onSubmit = debounce(handleSubmit((values) => {
         console.log(values, 'values')
         let technologyArray = []
-        let plantArray = [{ PlantName: plant.label, PlantId: plant.value, PlantCode: ' ', }]
-
+        // let plantArray = [{ PlantName: plant.label, PlantId: plant.value, PlantCode: ' ', }]
+        let plantArray = Array?.isArray(plant) ? plant?.map(plant => ({ PlantId: plant?.value, PlantName: plant?.label, PlantCode: '' })) :
+            plant ? [{ PlantId: plant?.value, PlantName: plant?.label, PlantCode: '' }] : [];
         values && values.technology && values.technology.map((item, index) => {
             let obj = {}
             obj.Technology = item.Label
@@ -606,7 +607,7 @@ function AddMoreOperation(props) {
             LabourRatePerUOM: initialConfiguration && initialConfiguration.IsOperationLabourRateConfigure ? values.LabourRatePerUOM : '',
             Technology: technologyArray,
             Remark: values.remark ? values.remark : '',
-            Plant: plantArray,
+            Plant: plantArray ? plantArray : [],
             Attachements: files,
             LoggedInUserId: loggedInUserId(),
             EffectiveDate: DayTime(values.effectiveDate).format('YYYY/MM/DD HH:mm:ss'),

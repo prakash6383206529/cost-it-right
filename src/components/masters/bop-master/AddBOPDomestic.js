@@ -199,7 +199,7 @@ class AddBOPDomestic extends Component {
       }
 
       this.props.getExchangeRateByCurrency(fieldsObj?.plantCurrency, costingType, DayTime(this.state?.effectiveDate).format('YYYY-MM-DD'), vendorValue, client.value, false, reactLocalStorage.getObject("baseCurrency"), ExchangeSource?.label, res => {
-        console.log(res, "res")
+
         if (Object.keys(res.data.Data).length === 0) {
           this.setState({ showWarning: true });
         } else {
@@ -257,7 +257,7 @@ class AddBOPDomestic extends Component {
       this.handleCalculation()
     }
     if (!getConfigurationKey().IsDivisionAllowedForDepartment && (prevState?.costingTypeId !== this.state.costingTypeId) && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(BOP_MASTER_ID) === true) {
-      this.commonFunction(this.state.selectedPlants && this.state.selectedPlants.value)
+      this.commonFunction(this.state?.selectedPlants && this.state?.selectedPlants?.value)
     }
   }
   componentWillUnmount() {
@@ -376,10 +376,13 @@ class AddBOPDomestic extends Component {
           // this.props.getPlantBySupplier(Data.Vendor, () => { })
           setTimeout(() => {
             let plantObj;
-            if (getConfigurationKey().IsDestinationPlantConfigure) {
-              plantObj = Data.DestinationPlantName !== undefined ? { label: Data.DestinationPlantName, value: Data.DestinationPlantId } : []
-            } else {
-              plantObj = Data && Data.Plant.length > 0 ? { label: Data.Plant[0].PlantName, value: Data.Plant[0].PlantId } : []
+            // if (getConfigurationKey().IsDestinationPlantConfigure) {
+            //   plantObj = Data.DestinationPlantName !== undefined ? { label: Data.DestinationPlantName, value: Data.DestinationPlantId } : []
+            // } else {
+            //   plantObj = Data && Data.Plant.length > 0 ? { label: Data.Plant[0].PlantName, value: Data.Plant[0].PlantId } : []
+            // }
+            if (Data && Data?.Plant?.length > 0) {
+              plantObj = Data?.Plant?.map(plant => ({ label: plant?.PlantName, value: plant?.PlantId }));
             }
             this.finalUserCheckAndMasterLevelCheckFunction(plantObj.value)
             // this.commonFunction(plantObj && plantObj.value)
@@ -732,7 +735,6 @@ class AddBOPDomestic extends Component {
 
     const sumBase = conditionList.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCost), 0);
     let netLandedCostPlantCurrency = checkForNull(sumBase) + checkForNull(basicPriceBaseTemp)
-    console.log(this.state.currencyValue, "currencyValue")
     const netCostBaseCurrency = this.state.currencyValue * netLandedCostPlantCurrency
     this.props.change("BasicPriceBase", checkForDecimalAndNull(basicPriceBaseCurrency, initialConfiguration.NoOfDecimalForPrice))
     this.props.change('ConditionCost', checkForDecimalAndNull(sumBase, initialConfiguration.NoOfDecimalForPrice))
@@ -987,9 +989,8 @@ class AddBOPDomestic extends Component {
       return false
     }
     this.setState({ isVendorNameNotSelected: false })
-
-    let plantArray = selectedPlants !== undefined ? { PlantName: selectedPlants.label, PlantId: selectedPlants.value, PlantCode: '' } : {}
-
+    let plantArray = Array?.isArray(selectedPlants) ? selectedPlants?.map(plant => ({ PlantId: plant?.value, PlantName: plant?.label, PlantCode: '' })) :
+      selectedPlants ? [{ PlantId: selectedPlants?.value, PlantName: selectedPlants?.label, PlantCode: '' }] : [];
     if (selectedPlants.length === 0 && costingTypeId === ZBCTypeId) {
       return false;
     }
@@ -1015,7 +1016,7 @@ class AddBOPDomestic extends Component {
     formData.Remark = values?.Remark
     formData.IsActive = true
     formData.LoggedInUserId = loggedInUserId()
-    formData.Plant = [plantArray]
+    formData.Plant = plantArray ? plantArray : []
     formData.VendorPlant = []
     formData.DestinationPlantId = (costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? selectedPlants.value : (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) ? selectedPlants.value : userDetailsBop.Plants[0].PlantId
     formData.Attachements = isEditFlag ? updatedFiles : files
@@ -1405,11 +1406,11 @@ class AddBOPDomestic extends Component {
                                 //   selection={ this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [] : this.state.selectedPlants} 
                                 options={this.renderListing("plant")}
                                 handleChangeDescription={this.handlePlant}
-                                validate={this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [required] : []}
+                                validate={this.state.selectedPlants == null || this.state.selectedPlants?.length === 0 ? [required] : []}
                                 // optionValue={(option) => option.Value}
                                 // optionLabel={(option) => option.Text}
                                 component={searchableSelect}
-                                valueDescription={this.state.selectedPlants}
+                                valueDescription={this.state?.selectedPlants}
                                 mendatory={true}
                                 required={true}
                                 className="multiselect-with-border bop_plant_form_zero_based"

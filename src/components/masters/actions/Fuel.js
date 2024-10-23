@@ -689,6 +689,7 @@ export function getPlantCurrencyByPlantIds(data, callback) {
                 callback(response);
             } else {
                 Toaster.error(MESSAGES.SOME_ERROR);
+                callback({ response }); // Pass the response to the callback
             }
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
