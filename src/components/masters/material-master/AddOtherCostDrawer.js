@@ -16,8 +16,14 @@ function AddOtherCostDrawer(props) {
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
     const dispatch = useDispatch();
 
-    const { currency, rmBasicRate, isFromImport, isFromMaster, RowData, RowIndex } = props
+    const { rmBasicRate, isFromImport, RowData, RowIndex, isImport, plantCurrency, settlementCurrency } = props
+
     const Currency = props?.RowData?.IndexCurrency
+    const CurrencyLabel = !props.rawMaterial ? reactLocalStorage.getObject('baseCurrency') : isImport && props.rawMaterial ? settlementCurrency : plantCurrency
+    console.log(CurrencyLabel, 'CurrencyLabel')
+    console.log(props.rawMaterial, 'props.rawMaterial')
+
+
     const UOM = props?.RowData?.IndexUOM || (Array.isArray(props?.uom) ? '' : props?.uom?.label) || '';
     const [tableData, setTableData] = useState([]);
     const [disableTotalCost, setDisableTotalCost] = useState(true)
@@ -604,7 +610,7 @@ function AddOtherCostDrawer(props) {
                                                 <Col md={3} className={'px-2'}>
 
                                                     <TextFieldHookForm
-                                                        label={`Applicability Cost (${reactLocalStorage.getObject("baseCurrency")}${UOM ? `/${UOM}` : ''})`}
+                                                        label={`Applicability Cost (${CurrencyLabel}${UOM ? `/${UOM}` : ''})`}
                                                         name={'ApplicabilityBaseCost'}
                                                         id={'cost-by-percent'}
                                                         Controller={Controller}
@@ -675,7 +681,7 @@ function AddOtherCostDrawer(props) {
                                         <Col md={3} className={'px-2'}>
 
                                             <TextFieldHookForm
-                                                label={`Cost (${reactLocalStorage.getObject("baseCurrency")}${UOM ? `/${UOM}` : ''})`}
+                                                label={`Cost (${CurrencyLabel}${UOM ? `/${UOM}` : ''})`}
                                                 name={'CostBaseCurrency'}
                                                 id={'cost-by-percent'}
                                                 Controller={Controller}
@@ -744,10 +750,10 @@ function AddOtherCostDrawer(props) {
                                                     <th>{`Type`}</th>
                                                     <th>{`Applicability`}</th>
                                                     {!props.rawMaterial && <th>{`Applicability Cost (${Currency}${UOM ? `/${UOM}` : ''})`}</th>}
-                                                    <th>{`Applicability Cost (${reactLocalStorage.getObject("baseCurrency")}${UOM ? `/${UOM}` : ''})`}</th>
+                                                    <th>{`Applicability Cost (${CurrencyLabel}${UOM ? `/${UOM}` : ''})`}</th>
                                                     <th>{`Percentage (%)`}</th>
                                                     {!props.rawMaterial && <th>{`Cost (${Currency}${UOM ? `/${UOM}` : ''})`}</th>}
-                                                    <th>{`Cost (${reactLocalStorage.getObject("baseCurrency")}${UOM ? `/${UOM}` : ''})`}</th>
+                                                    <th>{`Cost (${CurrencyLabel}${UOM ? `/${UOM}` : ''})`}</th>
                                                     <th>{`Remark`}</th>
                                                     {!props.hideAction && <th className='text-right'>{`Action`}</th>}
                                                 </tr>
