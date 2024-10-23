@@ -1364,7 +1364,7 @@ class AddOperation extends Component {
                           options={this.renderListing("technology")}
                           selectionChanged={this.handleTechnology}
                           optionValue={(option) => option.Value}
-                          optionLabel={(option) => option.Text}
+                          optionLabel={(option) => option?.label}
                           component={renderMultiSelectField}
                           mendatory={true}
                           validate={this.state.selectedTechnology == null || this.state.selectedTechnology.length === 0 ? [required] : []}

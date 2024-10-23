@@ -540,6 +540,10 @@ class AddMachineRate extends Component {
             } else {
               this.setState({ hidePlantCurrency: true })
             }
+            let plantObj;
+            if (Data && Data?.Plant?.length > 0) {
+              plantObj = Data?.Plant?.map(plant => ({ label: plant?.PlantName, value: plant?.PlantId }));
+            }
             this.setState({
               isEditFlag: true,
               IsFinancialDataChanged: false,
@@ -548,7 +552,7 @@ class AddMachineRate extends Component {
               IsCopied: Data.IsCopied,
               IsDetailedEntry: Data.IsDetailedEntry,
               selectedTechnology: Data.Technology[0].Technology !== undefined ? { label: Data.Technology[0].Technology, value: Data.Technology[0].TechnologyId } : [],
-              selectedPlants: Data && Data?.Plant?.length > 0 ? { label: Data?.Plant[0]?.PlantName, value: Data?.Plant[0]?.PlantId } : [],
+              selectedPlants: plantObj ?? [],
               vendorName: Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.VendorId } : [],
               machineType: Data.MachineType !== undefined ? { label: Data.MachineType, value: Data.MachineTypeId } : [],
               processGrid: MachineProcessArray ?? [],
@@ -1399,10 +1403,12 @@ class AddMachineRate extends Component {
     let technologyArray = [{ Technology: selectedTechnology.label, TechnologyId: selectedTechnology.value }]
     let updatedFiles = files.map((file) => ({ ...file, ContextId: MachineID }))
 
+    let plantArray = Array?.isArray(selectedPlants) ? selectedPlants?.map(plant => ({ PlantId: plant?.value, PlantName: plant?.label, PlantCode: '' })) :
+      selectedPlants ? [{ PlantId: selectedPlants?.value, PlantName: selectedPlants?.label, PlantCode: '' }] : [];
+
 
     // if (this.state.isEditFlag && this.state.isFinalApprovar) {
-    if ((isEditFlag && this.state.isFinalApprovar) || (isEditFlag && CheckApprovalApplicableMaster(MACHINE_MASTER_ID) !== true)) {
-
+    if ((isEditFlag && (this.state.isFinalApprovar || userDetails().Role === 'SuperAdmin')) || (isEditFlag && CheckApprovalApplicableMaster(MACHINE_MASTER_ID) !== true)) {
 
       // if (DropdownChange) {
 
@@ -1411,10 +1417,9 @@ class AddMachineRate extends Component {
       if (IsDetailedEntry) {
         // EXECUTED WHEN:- EDIT MODE && MACHINE MORE DETAILED == TRUE
         let detailedRequestData = { ...machineData, MachineId: MachineID, Remark: remarks, Attachements: updatedFiles }
+
         this.handleMachineOperation(detailedRequestData, true);
-
       } else {
-
         // EXECUTED WHEN:- EDIT MODE OF BASIC MACHINE && MACHINE MORE DETAILED NOT CREATED
         let requestData = {
           MachineId: MachineID,
@@ -1430,7 +1435,7 @@ class AddMachineRate extends Component {
           LoggedInUserId: loggedInUserId(),
           MachineProcessRates: processGrid,
           Technology: [{ Technology: selectedTechnology.label ? selectedTechnology.label : selectedTechnology[0].label, TechnologyId: selectedTechnology.value ? selectedTechnology.value : selectedTechnology[0].value }],
-          Plant: [{ PlantId: selectedPlants.value, PlantName: selectedPlants.label }],
+          Plant: plantArray,
           Remark: remarks,
           Attachements: updatedFiles,
           IsForcefulUpdated: true,
@@ -1489,7 +1494,7 @@ class AddMachineRate extends Component {
       }
     } else {
 
-      if (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) {
+      if (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && (!this.state.isFinalApprovar || !userDetails().Role === 'SuperAdmin')) {
         this.setState({ IsSendForApproval: true })
       } else {
         this.setState({ IsSendForApproval: false })
@@ -1540,7 +1545,7 @@ class AddMachineRate extends Component {
         CostingTypeId: costingTypeId,
       }
 
-      if (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) {
+      if (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && (!this.state.isFinalApprovar || !userDetails().Role === 'SuperAdmin')) {
 
         if (IsFinancialDataChanged) {
 
@@ -2481,7 +2486,7 @@ class AddMachineRate extends Component {
                               </button>
                               {!isViewMode && <>
 
-                                {(!isViewMode && (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure) || (initialConfiguration.IsMasterApprovalAppliedConfigure && !CostingTypePermission) ?
+                                {(!userDetails().Role === 'SuperAdmin') && ((!isViewMode && (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure) || (initialConfiguration.IsMasterApprovalAppliedConfigure && !CostingTypePermission)) ?
                                   <button id="AddMachineRate_SendForApproval" type="submit"
                                     class="user-btn approval-btn save-btn mr5"
                                     disabled={isViewMode || setDisable || disableSendForApproval || (isEditFlag && IsDetailedEntry)}

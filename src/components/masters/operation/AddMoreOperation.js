@@ -37,6 +37,7 @@ import Switch from 'react-switch'
 
 function AddMoreOperation(props) {
     const { addMoreDetailObj, isEditFlag, detailObject, isViewMode } = props
+    console.log("addMoreDetailObj", addMoreDetailObj)
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
     const costingSpecifiTechnology = useSelector(state => state.costing.costingSpecifiTechnology)
     const clientSelectList = useSelector(state => state.client.clientSelectList)
