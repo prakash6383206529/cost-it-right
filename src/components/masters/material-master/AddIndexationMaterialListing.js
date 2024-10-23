@@ -272,6 +272,7 @@ function AddIndexationMaterialListing(props) {
                                         RowData={state.commodityDetailsState[state?.rowIndex]}
                                         tableData={state.commodityDetailsState[state?.rowIndex]?.RawMaterialCommodityIndexRateDetailsRequest ? state.commodityDetailsState[state?.rowIndex]?.RawMaterialCommodityIndexRateDetailsRequest : []} //commodityDetailsState[state?.rowIndex]?.data}
                                         RowIndex={state?.rowIndex}
+                                        rawMaterial={false}
                                     />
                                 }
                             </div >}

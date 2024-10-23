@@ -219,7 +219,7 @@ function AddRMFinancialDetails(props) {
             setValue('frequencyOfSettlement', { label: Data?.FrequencyOfSettlement, value: Data?.FrequencyOfSettlementId })
             setValue('fromDate', DayTime(Data?.FromDate).$d)
             setValue('toDate', DayTime(Data?.ToDate).$d)
-            setValue('OtherCost', Data?.OtherNetCostConversion)
+            setValue('OtherCost', Data?.OtherNetCost)
             setValue('Index', { label: Data?.IndexExchangeName, value: Data?.IndexExchangeId })
             setValue('plantCurrency', Data?.LocalCurrency)
             setValue('FinalConditionCost', Data?.NetConditionCost)
@@ -244,7 +244,6 @@ function AddRMFinancialDetails(props) {
                 totalOtherCost: Data?.OtherNetCost
             }))
             let obj = showRMScrapKeys(Data?.TechnologyId)
-            console.log(obj, 'obj')
             setShowScrapKeys(obj)
             setCurrencyExchangeRate(prevState => ({
                 ...prevState, plantCurrencyRate: checkForNull(Data?.LocalCurrencyExchangeRate),
@@ -429,7 +428,7 @@ function AddRMFinancialDetails(props) {
             obj.CalculatedFactor = conversionFactorTemp
         }
 
-        const basicPriceCurrencyTemp = checkForNull(getValues('BasicRate')) + checkForNull(getValues('OtherCost'))
+        const basicPriceCurrencyTemp = checkForNull(getValues('BasicRate')) + checkForNull(state?.totalOtherCost)
         let basicPriceBaseCurrency
         if (costingTypeId === ZBCTypeId) {
             basicPriceBaseCurrency = basicPriceCurrencyTemp
@@ -437,7 +436,8 @@ function AddRMFinancialDetails(props) {
         let conditionList = recalculateConditions('', basicPriceBaseCurrency)
 
         const sumBaseCurrency = conditionList?.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCost), 0);
-        let NetLandedCost = RMIndex ? checkForNull(sumBaseCurrency) + checkForNull(basicPriceCurrencyTemp) + state.totalOtherCost : checkForNull(sumBaseCurrency) + checkForNull(basicPriceCurrencyTemp)
+        let NetLandedCost = checkForNull(sumBaseCurrency) + checkForNull(basicPriceCurrencyTemp)
+
         let NetLandedCostLocalConversion = NetLandedCost * checkForNull(CurrencyExchangeRate?.plantCurrencyRate)
         let NetLandedCostConversion = NetLandedCost * checkForNull(CurrencyExchangeRate?.settlementCurrencyRate)
         if (states.isImport) {
@@ -448,8 +448,6 @@ function AddRMFinancialDetails(props) {
             setValue('NetLandedCostLocalConversion', checkForDecimalAndNull(NetLandedCost, getConfigurationKey().NoOfDecimalForPrice))
             setValue('NetLandedCostConversion', checkForDecimalAndNull(NetLandedCostLocalConversion, getConfigurationKey().NoOfDecimalForPrice))
         }
-
-
         setValue('FinalConditionCostBaseCurrency', checkForDecimalAndNull(sumBaseCurrency, getConfigurationKey().NoOfDecimalForPrice))
         setValue('NetCostWithoutConditionCost', checkForDecimalAndNull(basicPriceBaseCurrency, getConfigurationKey().NoOfDecimalForPrice));
         if (isEditFlag) {
@@ -750,7 +748,7 @@ function AddRMFinancialDetails(props) {
             dispatch(setRawMaterialDetails({ ...rawMaterailDetails, netCostChanged: true }, () => { }))
         }
         const sumBaseCurrency = data?.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCost), 0);
-        let netLandedCost = checkForNull(sumBaseCurrency) + checkForNull(state.NetCostWithoutConditionCost) //Condition cost + Basic price
+        let netLandedCost = checkForNull(sumBaseCurrency) + checkForNull(state.NetCostWithoutConditionCost)  //Condition cost + Basic price
         let netConditionCost = checkForNull(sumBaseCurrency)
         setValue('FinalConditionCost', checkForDecimalAndNull(netConditionCost, getConfigurationKey().NoOfDecimalForPrice))
         if (states.isImport) {
@@ -842,7 +840,6 @@ function AddRMFinancialDetails(props) {
             obj.ScrapRateUOMConverted = scrapRateTemp
             setValue('ScrapRate', checkForDecimalAndNull(scrapRateTemp, getConfigurationKey().NoOfDecimalForPrice));
         }
-        console.log(obj, "obj")
         let updatedState = {
             ...state,
             ...obj
@@ -1466,7 +1463,7 @@ function AddRMFinancialDetails(props) {
                                     />}
                                 </div>
                             </Col>
-                            {!getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && states.costingTypeId === ZBCTypeId && <>
+                            {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && states.costingTypeId === ZBCTypeId && <>
 
                                 <Col className="col-md-15">
                                     <TooltipCustom disabledIcon={true} width={"350px"} id="rm-basic-price" tooltipText={basicPriceTitle()?.toolTipTextBasicPriceBaseCurrency} />
@@ -1569,7 +1566,7 @@ function AddRMFinancialDetails(props) {
                 }
             </Row >
             {
-                !getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && state.isOpenConditionDrawer &&
+                getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && state.isOpenConditionDrawer &&
                 <AddConditionCosting
                     isOpen={state.isOpenConditionDrawer}
                     tableData={state.conditionTableData}
@@ -1587,7 +1584,7 @@ function AddRMFinancialDetails(props) {
                 />
             }
             {
-                true && state.isOpenOtherCostDrawer &&
+                state.isOpenOtherCostDrawer &&
                 <AddOtherCostDrawer
                     isOpen={state.isOpenOtherCostDrawer}
                     rmTableData={state.otherCostTableData}
@@ -1597,6 +1594,9 @@ function AddRMFinancialDetails(props) {
                     rmBasicRate={state.totalBasicRate}
                     ViewMode={isViewFlag}
                     uom={state.UOM}
+                    isImport={states.isImport}
+                    plantCurrency={getValues('plantCurrency')}
+                    settlementCurrency={state.currency.label}
                 />
             }
 
