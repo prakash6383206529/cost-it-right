@@ -698,6 +698,7 @@ export const API = {
   getSettledSimulationCostingDetails: `${BASE_URL}/simulation/get-settled-simulation-costing-details`,
   uploadInsulationCosting: `${BASE_URL}/bulk-costing/save-costing-insulation`,
   uploadElectricalStampingCosting: `${BASE_URL}/bulk-costing/save-costing-electrical-stamping`,
+  uploadMonocartonCosting: `${BASE_URL}/bulk-costing/save-costing-corrugated-mono-carton-box`,
 
   //COST SUMMARY
   getCostingByCostingId: `${BASE_URL}/costing-sheet-metal/get-costing-by-id`,
@@ -2871,6 +2872,7 @@ export const WIRINGHARNESS = 6
 export const DIE_CASTING = 7
 //changed the sheet metal to 8 bcz the version 3 code is not working or deployed
 export const SHEETMETAL = 8
+export const MONOCARTON = 13
 
 
 export const REASON_ID = 2

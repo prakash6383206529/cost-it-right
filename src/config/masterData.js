@@ -6913,7 +6913,8 @@ export const TechnologyDropdownBulkUploadV4 = [
     { label: 'Wiring Harness', value: '6' },
     { label: 'Die Casting', value: '7' },
     { label: 'Electrical Stamping', value: '12' },
-    { label: 'Insulation', value: '11' }
+    { label: 'Insulation', value: '11' },
+    { label: 'Monocarton', value: '13' }
 ]
 
 
