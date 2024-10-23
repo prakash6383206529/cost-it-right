@@ -6008,6 +6008,7 @@ export const ASSEMBLYPART_DOWNLOAD_EXCEl = [
     { label: "Drawing No.", value: "DrawingNumber", },
     { label: "Effective Date", value: "EffectiveDate", },
     { label: 'UnitOfMeasurement', value: 'UnitOfMeasurement', }, //*
+    { label: "Status", value: "IsActive", },
 
 ]
 
@@ -6020,6 +6021,7 @@ export const INDIVIDUALPART_DOWNLOAD_EXCEl = [
     { label: "Revision No.", value: "RevisionNumber", },
     { label: "Drawing No.", value: "DrawingNumber", },
     { label: "Effective Date", value: "EffectiveDate", },
+    { label: "Status", value: "IsActive", },
     { label: 'UnitOfMeasurement', value: 'UnitOfMeasurement', },
 
 ]
