@@ -119,11 +119,12 @@ function AddRMFinancialDetails(props) {
     })
 
     useEffect(() => {
-        setState(prevState => ({
-            ...prevState,
+        let updatedState = {
+            ...state,
             totalBasicRate: getValues('BasicRate')
-        }))
-        dispatch(setRawMaterialDetails({ ...rawMaterailDetails, states: state }, () => { }))
+        }
+        setState(updatedState)
+        dispatch(setRawMaterialDetails({ ...rawMaterailDetails, states: updatedState }, () => { }))
         calculateNetCostDomestic();
     }, [values])
     useEffect(() => {
@@ -249,7 +250,9 @@ function AddRMFinancialDetails(props) {
                 ...prevState, plantCurrencyRate: checkForNull(Data?.LocalCurrencyExchangeRate),
                 settlementCurrencyRate: checkForNull(Data?.CurrencyExchangeRate)
             }))
-            dispatch(setRawMaterialDetails({ ...rawMaterailDetails, states: state, isShowIndexCheckBox: Data?.IsIndexationDetails, ShowScrapKeys: obj }, () => { }))
+            let updatedState = { ...state, }
+            setState(updatedState)
+            dispatch(setRawMaterialDetails({ ...rawMaterailDetails, states: updatedState, isShowIndexCheckBox: Data?.IsIndexationDetails, ShowScrapKeys: obj }, () => { }))
             dispatch(setExchangeRateDetails({
                 ...exchangeRateDetails, LocalCurrencyExchangeRate: Data?.LocalCurrencyExchangeRate, LocalExchangeRateId: Data?.LocalExchangeRateId, LocalCurrencyId: Data?.LocalCurrencyId,
                 CurrencyExchangeRate: Data?.CurrencyExchangeRate, ExchangeRateId: Data?.ExchangeRateId
@@ -458,37 +461,23 @@ function AddRMFinancialDetails(props) {
             }
         }
 
-        setState(prevState => ({
-            ...prevState,
-
-            FinalCutOffBaseCurrency: getValues('cutOffPrice'),
-
+        let updatedState = {
+            ...state, FinalCutOffBaseCurrency: getValues('cutOffPrice'),
             BasicRatePerUOM: getValues('BasicRate'),
-
             ForgingScrapCostUOMConverted: getValues("ForgingScrap"),
-
             FinalMachiningScrapCostBaseCurrency: getValues('MachiningScrap'),
-
             FinalCircleScrapCostBaseCurrency: getValues("CircleScrapCost"),
-
             JaliScrapCostUOMConverted: getValues('JaliScrapCost'),
-
-            FinalFreightCostBaseCurrency: getValues("FreightCharge"),
-
-            FinalShearingCostBaseCurrency: getValues('ShearingCost'),
-
             NetCostWithoutConditionCost: basicPriceBaseCurrency,
-
-            NetLandedCostConversion: NetLandedCost,
-
+            NetLandedCost: NetLandedCost,
             conditionTableData: conditionList,
-
             ConversionRatio: getValues('ConversionRatio'),
             ScrapRatePerScrapUOM: getValues('ScrapRatePerScrapUOM'),
             ...obj,
-        }))
+        }
+        setState(updatedState)
         setTimeout(() => {
-            dispatch(setRawMaterialDetails({ ...rawMaterailDetails, states: state }, () => { }))
+            dispatch(setRawMaterialDetails({ ...rawMaterailDetails, states: updatedState }, () => { }))
         }, 50);
     }
 
@@ -508,7 +497,11 @@ function AddRMFinancialDetails(props) {
 
     const onPressHasDifferentUOM = () => {
         setState(prevState => ({ ...prevState, IsApplyHasDifferentUOM: !state.IsApplyHasDifferentUOM }));
-        dispatch(setRawMaterialDetails({ ...rawMaterailDetails, states: state }, () => { }))
+        let updatedState = {
+            ...state,
+        }
+        setState(updatedState)
+        dispatch(setRawMaterialDetails({ ...rawMaterailDetails, states: updatedState }, () => { }))
     }
     const checkTechnology = () => {
         let obj = showRMScrapKeys(rawMaterailDetails?.Technology ? rawMaterailDetails?.Technology?.value : props?.DataToChange.TechnologyId)

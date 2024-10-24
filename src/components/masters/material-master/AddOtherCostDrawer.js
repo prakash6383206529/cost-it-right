@@ -16,14 +16,9 @@ function AddOtherCostDrawer(props) {
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
     const dispatch = useDispatch();
 
-    const { rmBasicRate, isFromImport, RowData, RowIndex, isImport, plantCurrency, settlementCurrency } = props
-
-    const Currency = props?.RowData?.IndexCurrency
-    const CurrencyLabel = !props.rawMaterial ? reactLocalStorage.getObject('baseCurrency') : isImport && props.rawMaterial ? settlementCurrency : plantCurrency
-    console.log(CurrencyLabel, 'CurrencyLabel')
-    console.log(props.rawMaterial, 'props.rawMaterial')
-
-
+    const { rmBasicRate, isFromImport, RowData, RowIndex, isImport, plantCurrency, settlementCurrency, isBOP } = props
+    const Currency = isBOP && isImport ? settlementCurrency : isBOP && !isImport ? plantCurrency : props?.RowData?.IndexCurrency
+    const CurrencyLabel = !props.rawMaterial ? reactLocalStorage.getObject('baseCurrency') : isImport && (props.rawMaterial || isBOP) ? settlementCurrency : plantCurrency
     const UOM = props?.RowData?.IndexUOM || (Array.isArray(props?.uom) ? '' : props?.uom?.label) || '';
     const [tableData, setTableData] = useState([]);
     const [disableTotalCost, setDisableTotalCost] = useState(true)
@@ -79,11 +74,11 @@ function AddOtherCostDrawer(props) {
 
     }, [tableData]);
     useEffect(() => {
-        if (props.rawMaterial === true) {
+        if (props.rawMaterial === true || isBOP) {
             setTableData(props.rmTableData)
         } else {
 
-            if (Array.isArray(props.RowData.RawMaterialCommodityIndexRateDetailsRequest)) {
+            if (Array.isArray(props.RowData?.RawMaterialCommodityIndexRateDetailsRequest)) {
                 const filteredData = props?.tableData?.filter(item =>
                     props.RowData.RawMaterialCommodityIndexRateDetailsRequest.some(req =>
                         req.RawMaterialCommodityIndexRateAndOtherCostDetailsId === item.RawMaterialCommodityIndexRateAndOtherCostDetailsId
@@ -749,11 +744,11 @@ function AddOtherCostDrawer(props) {
                                                     <th>{`Cost Description`}</th>
                                                     <th>{`Type`}</th>
                                                     <th>{`Applicability`}</th>
-                                                    {!props.rawMaterial && <th>{`Applicability Cost (${Currency}${UOM ? `/${UOM}` : ''})`}</th>}
-                                                    <th>{`Applicability Cost (${CurrencyLabel}${UOM ? `/${UOM}` : ''})`}</th>
+                                                    {(!props.rawMaterial || isBOP) && <th>{`Applicability Cost (${Currency}${UOM ? `/${UOM}` : ''})`}</th>}
+                                                    {!isBOP && <th>{`Applicability Cost (${CurrencyLabel}${UOM ? `/${UOM}` : ''})`}</th>}
                                                     <th>{`Percentage (%)`}</th>
-                                                    {!props.rawMaterial && <th>{`Cost (${Currency}${UOM ? `/${UOM}` : ''})`}</th>}
-                                                    <th>{`Cost (${CurrencyLabel}${UOM ? `/${UOM}` : ''})`}</th>
+                                                    {(!props.rawMaterial || isBOP) && <th>{`Cost (${Currency}${UOM ? `/${UOM}` : ''})`}</th>}
+                                                    {!isBOP && <th>{`Cost (${CurrencyLabel}${UOM ? `/${UOM}` : ''})`}</th>}
                                                     <th>{`Remark`}</th>
                                                     {!props.hideAction && <th className='text-right'>{`Action`}</th>}
                                                 </tr>
@@ -765,11 +760,11 @@ function AddOtherCostDrawer(props) {
                                                             <td>{item.Description}</td>
                                                             <td>{item.Type}</td>
                                                             <td>{item.Applicability}</td>
-                                                            {!props.rawMaterial && <td>{item.ApplicabilityCost}</td>}
-                                                            <td>{item.ApplicabilityCostConversion}</td>
+                                                            {(!props.rawMaterial || isBOP) && <td>{item.ApplicabilityCost}</td>}
+                                                            {!isBOP && <td>{item.ApplicabilityCostConversion}</td>}
                                                             <td>{item.Value !== '-' ? checkForDecimalAndNull(item.Value, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
-                                                            {!props.rawMaterial && <td>{item.NetCost !== '-' ? item.NetCost : '-'}</td>}
-                                                            <td>{item.NetCostConversion !== '-' ? item.NetCostConversion : '-'}</td>
+                                                            {(!props.rawMaterial || isBOP) && <td>{item.NetCost !== '-' ? item.NetCost : '-'}</td>}
+                                                            {!isBOP && <td>{item.NetCostConversion !== '-' ? item.NetCostConversion : '-'}</td>}
                                                             <td>{item.Remark}</td>
                                                             {!props.hideAction && (
                                                                 <td>
