@@ -119,12 +119,6 @@ function AddRMFinancialDetails(props) {
     })
 
     useEffect(() => {
-        let updatedState = {
-            ...state,
-            totalBasicRate: getValues('BasicRate')
-        }
-        setState(updatedState)
-        dispatch(setRawMaterialDetails({ ...rawMaterailDetails, states: updatedState }, () => { }))
         calculateNetCostDomestic();
     }, [values])
     useEffect(() => {
@@ -255,7 +249,6 @@ function AddRMFinancialDetails(props) {
                 ...prevState, plantCurrencyRate: checkForNull(Data?.LocalCurrencyExchangeRate),
                 settlementCurrencyRate: checkForNull(Data?.CurrencyExchangeRate)
             }))
-            console.log(updatedState, 'updatedState')
             setState(updatedState)
             dispatch(setRawMaterialDetails({ ...rawMaterailDetails, states: updatedState, isShowIndexCheckBox: Data?.IsIndexationDetails, ShowScrapKeys: obj }, () => { }))
             dispatch(setExchangeRateDetails({
@@ -477,6 +470,7 @@ function AddRMFinancialDetails(props) {
             conditionTableData: conditionList,
             ConversionRatio: getValues('ConversionRatio'),
             ScrapRatePerScrapUOM: getValues('ScrapRatePerScrapUOM'),
+            totalBasicRate: getValues('BasicRate'),
             ...obj,
         }
         setState(updatedState)
@@ -1579,6 +1573,7 @@ function AddRMFinancialDetails(props) {
                     PlantCurrency={getValues('plantCurrency')}
                 />
             }
+            {console.log(state.totalBasicRate, 'state.totalBasicRate')}
             {
                 state.isOpenOtherCostDrawer &&
                 <AddOtherCostDrawer
