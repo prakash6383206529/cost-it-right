@@ -920,7 +920,7 @@ class AddLabour extends Component {
                     <Row>
                       <Col md="12" className="filter-block">
                         <div className=" flex-fills mb-2 w-100 pl-0">
-                          <h5>{costingTypeId === CBCTypeId ? "Product:" : `${VendorLabel}:`}</h5>
+                          <h5>{costingTypeId === CBCTypeId ? "Customer:" : `${VendorLabel}:`}</h5>
                         </div>
                       </Col>
                       {this.state.IsEmployeContractual && costingTypeId !== CBCTypeId && (
@@ -974,7 +974,7 @@ class AddLabour extends Component {
                         </Col>
                       )}
 
-                      {costingTypeId === CBCTypeId &&
+                      {(costingTypeId === CBCTypeId && initialConfiguration?.IsShowProductInLabour) &&
                         < Col md="3">
                           <div className="form-group">
                             <Field
