@@ -10,7 +10,7 @@ import BulkUpload from "../../massUpload/BulkUpload";
 import { BOP_IMPORT_DOWNLOAD_EXCEl } from "../../../config/masterData";
 import LoaderCustom from "../../common/LoaderCustom";
 import { BopImport, BOP_MASTER_ID } from "../../../config/constants";
-import { getConfigurationKey, loggedInUserId, searchNocontentFilter, setLoremIpsum, showBopLabel, updateBOPValues, userDepartmetList, } from "../../../helper";
+import { getConfigurationKey, getLocalizedCostingHeadValue, loggedInUserId, searchNocontentFilter, setLoremIpsum, showBopLabel, updateBOPValues, userDepartmetList, } from "../../../helper";
 import ReactExport from "react-export-excel";
 import { AgGridColumn, AgGridReact } from "ag-grid-react";
 import "ag-grid-community/dist/styles/ag-grid.css";
@@ -18,7 +18,7 @@ import "ag-grid-community/dist/styles/ag-theme-material.css";
 import PopupMsgWrapper from "../../common/PopupMsgWrapper";
 import { getListingForSimulationCombined, setSelectedRowForPagination, } from "../../simulation/actions/Simulation";
 import WarningMessage from "../../common/WarningMessage";
-import { TourStartAction, disabledClass } from "../../../actions/Common";
+import { TourStartAction, disabledClass, isResetClick } from "../../../actions/Common";
 import _ from "lodash";
 import AnalyticsDrawer from "../material-master/AnalyticsDrawer";
 import { reactLocalStorage } from "reactjs-localstorage";
@@ -35,12 +35,12 @@ import TourWrapper from "../../common/Tour/TourWrapper";
 import { Steps } from "../../common/Tour/TourMessages";
 import { useTranslation } from "react-i18next";
 import { useLabels, useWithLocalization } from "../../../helper/core";
+import CostingHeadDropdownFilter from "../material-master/CostingHeadDropdownFilter";
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
 const BOPImportListing = (props) => {
   const { t } = useTranslation("common")
-
   const [state, setState] = useState({
     isOpen: false,
     isEditFlag: false,
@@ -117,7 +117,7 @@ const BOPImportListing = (props) => {
 
   const { initialConfiguration } = useSelector((state) => state.auth);
   const tourStartData = useSelector(state => state.comman.tourStartData);
-  const { technologyLabel, vendorLabel } = useLabels();
+  const { technologyLabel, vendorLabel,vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels();
   const { selectedRowForPagination, tokenForSimulation } = useSelector(
     (state) => state.simulation
   );
@@ -138,6 +138,8 @@ const BOPImportListing = (props) => {
         return () => {
           dispatch(setSelectedRowForPagination([]))
           dispatch(resetStatePagination());
+          dispatch(isResetClick(false, "costingHead"))
+
 
           // reactLocalStorage.setObject('selectedRow', {})
         }
@@ -298,6 +300,8 @@ const BOPImportListing = (props) => {
               setState((prevState) => ({
                 ...prevState, warningMessage: false,
               }));
+              dispatch(isResetClick(false, "costingHead"))
+
             }, 335);
 
             setTimeout(() => {
@@ -406,6 +410,8 @@ const BOPImportListing = (props) => {
       ...prevState, noData: false, inRangeDate: [], isFilterButtonClicked: false
     }));
     state.gridApi.deselectAll();
+    dispatch(isResetClick(true, "costingHead"))
+
     gridOptions?.columnApi?.resetColumnState(null);
     gridOptions?.api?.setFilterModel(null);
     for (var prop in state.floatingFilterData) {
@@ -571,7 +577,17 @@ const BOPImportListing = (props) => {
     const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
     return cell != null ? cell : "-";
   };
-
+  const combinedCostingHeadRenderer = (props) => {
+    // Call the existing checkBoxRenderer
+    costingHeadFormatter(props);
+  
+    // Get and localize the cell value
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    const localizedValue = getLocalizedCostingHeadValue(cellValue, vendorBasedLabel, zeroBasedLabel, customerBasedLabel);
+  
+    // Return the localized value (the checkbox will be handled by AgGrid's default renderer)
+    return localizedValue;
+  };
   /**
    * @method costingHeadFormatter
    * @description Renders Costing head
@@ -884,15 +900,25 @@ const BOPImportListing = (props) => {
     headerCheckboxSelection:
       props.isSimulation || props.benchMark ? isFirstColumn : false,
   };
-
+  const floatingFilterStatus = {
+    maxValue: 1,
+    suppressFilterButton: true,
+    component: CostingHeadDropdownFilter,
+    onFilterChange: (originalValue, value) => {
+        setState((prevState) => ({ ...prevState, disableFilter: false }));
+        setState((prevState) => ({ ...prevState, floatingFilterData: { ...prevState.floatingFilterData, CostingHead: value } }));
+    
+    }
+};
   const frameworkComponents = {
     totalValueRenderer: buttonFormatter,
     customNoRowsOverlay: NoContentFound,
     hyphenFormatter: hyphenFormatter,
-    costingHeadFormatter: costingHeadFormatter,
+    costingHeadFormatter: combinedCostingHeadRenderer,
     effectiveDateFormatter: effectiveDateFormatter,
     commonCostFormatter: commonCostFormatter,
     attachmentFormatter: attachmentFormatter,
+    statusFilter : CostingHeadDropdownFilter
   };
 
   const onRowSelect = (event) => {
@@ -1069,7 +1095,8 @@ const BOPImportListing = (props) => {
                         onFilterModified={onFloatingFilterChanged}
                       >
                         {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
-                        <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={"costingHeadFormatter"}></AgGridColumn>
+                        <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={"costingHeadFormatter"}  floatingFilterComponentParams={floatingFilterStatus} 
+                                            floatingFilterComponent="statusFilter"></AgGridColumn>
                         <AgGridColumn field="BoughtOutPartNumber" headerName={`${showBopLabel()} No.`}></AgGridColumn>
                         <AgGridColumn field="BoughtOutPartName" headerName={`${showBopLabel()} Name`}></AgGridColumn>
                         <AgGridColumn field="BoughtOutPartCategory" headerName={`${showBopLabel()} Category`}></AgGridColumn>

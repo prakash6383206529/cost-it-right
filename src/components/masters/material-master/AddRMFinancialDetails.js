@@ -583,7 +583,7 @@ function AddRMFinancialDetails(props) {
     }
 
     const onPressHasDifferentUOM = () => {
-        setState(prevState => ({ ...prevState, IsApplyHasDifferentUOM: !state.IsApplyHasDifferentUOM }));
+        setState(prevState => ({ ...prevState, IsApplyHasDifferentUOM: state.IsApplyHasDifferentUOM }));
         dispatch(SetRawMaterialDetails({ states: state }, () => { }))
     }
     const checkTechnology = () => {

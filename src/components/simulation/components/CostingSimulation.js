@@ -6,7 +6,7 @@ import NoContentFound from '../../common/NoContentFound';
 import { BOPDOMESTIC, BOPIMPORT, TOFIXEDVALUE, EMPTY_DATA, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, ImpactMaster, EXCHNAGERATE, COMBINED_PROCESS, defaultPageSize, CBCTypeId, FORGINGNAME } from '../../../config/constants';
 import { getComparisionSimulationData, getCostingBoughtOutPartSimulationList, getCostingSimulationList, getCostingSurfaceTreatmentSimulationList, setShowSimulationPage, getSimulatedAssemblyWiseImpactDate, getImpactedMasterData, getExchangeCostingSimulationList, getMachineRateCostingSimulationList, getCombinedProcessCostingSimulationList, getAllMultiTechnologyCostings, getAllSimulatedMultiTechnologyCosting, getAllSimulatedBoughtOutPart, setTechnologyForSimulation } from '../actions/Simulation';
 import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer'
-import { checkForDecimalAndNull, checkForNull, formViewData, getConfigurationKey, loggedInUserId, searchNocontentFilter, showBopLabel, showSaLineNumber, userDetails } from '../../../helper';
+import { checkForDecimalAndNull, checkForNull, formViewData, getConfigurationKey, getLocalizedCostingHeadValue, loggedInUserId, searchNocontentFilter, showBopLabel, showSaLineNumber, userDetails } from '../../../helper';
 import VerifyImpactDrawer from './VerifyImpactDrawer';
 import { AssemblyWiseImpactt } from '../../../config/constants';
 import Toaster from '../../common/Toaster';
@@ -40,6 +40,7 @@ import { costingTypeIdToApprovalTypeIdFunction } from '../../common/CommonFuncti
 import SimulationApproveReject from '../../costing/components/approval/SimulationApproveReject';
 import { simulationContext } from '.';
 import { useLabels } from '../../../helper/core';
+import CostingHeadDropdownFilter from '../../masters/material-master/CostingHeadDropdownFilter';
 
 const gridOptions = {};
 
@@ -49,7 +50,7 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 function CostingSimulation(props) {
     const { simulationId, isFromApprovalListing, master, statusForLinkedToken } = props
-    const { vendorLabel } = useLabels()
+    const { vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels()
     const getShowSimulationPage = useSelector((state) => state.simulation.getShowSimulationPage)
     const { isMasterAssociatedWithCosting } = useSelector(state => state.simulation)
 
@@ -147,6 +148,20 @@ function CostingSimulation(props) {
 
     const dispatch = useDispatch()
     const { technologyLabel } = useLabels();
+    const { costingHeadFilter } = useSelector((state) => state.comman);
+    useEffect(() => {
+   
+        if (costingHeadFilter && costingHeadFilter.data) {
+          
+          const matchedOption = costingHeadFilter.CostingHeadOptions.find(option => option.value === costingHeadFilter.data.value);
+          if (matchedOption) {
+            
+            gridApi?.setQuickFilter(matchedOption.label);
+          }
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+      }, [ costingHeadFilter]);
+      /**
     useEffect(() => {
         getCostingList()
         dispatch(getImpactedMasterData(simulationId, () => { }))
@@ -1476,6 +1491,12 @@ function CostingSimulation(props) {
         }
 
     };
+    const floatingFilterStatus = {
+        maxValue: 1,
+        suppressFilterButton: true,
+        component: CostingHeadDropdownFilter,
+      
+    };
 
     const onPageSizeChanged = (newPageSize) => {
         gridApi.paginationSetPageSize(Number(newPageSize));
@@ -1543,9 +1564,18 @@ function CostingSimulation(props) {
         }
     }
 
-
+    const combinedCostingHeadRenderer = (props) => {
+        // Call the existing checkBoxRenderer
+      
+        // Get and localize the cell value
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const localizedValue = getLocalizedCostingHeadValue(cellValue, vendorBasedLabel, zeroBasedLabel, customerBasedLabel);
+      
+        // Return the localized value (the checkbox will be handled by AgGrid's default renderer)
+        return localizedValue;
+      };
     const frameworkComponents = {
-
+        combinedCostingHeadRenderer: combinedCostingHeadRenderer,
         descriptionFormatter: descriptionFormatter,
         ecnFormatter: ecnFormatter,
         revisionFormatter: revisionFormatter,
@@ -1601,7 +1631,9 @@ function CostingSimulation(props) {
         processFormatter: processFormatter,
         // processVarianceFormatter: processVarianceFormatter,          //RE
         varianceFormatter: varianceFormatter,
-        partTypeFormatter: partTypeFormatter
+        partTypeFormatter: partTypeFormatter,
+        statusFilter: CostingHeadDropdownFilter,
+
     };
 
     const isRowSelectable = rowNode => statusForLinkedToken === true ? false : true;
@@ -1699,7 +1731,9 @@ function CostingSimulation(props) {
                                                 <AgGridColumn width={140} field="VendorName" cellRenderer='vendorFormatter' headerName='Vendor'></AgGridColumn> */}
 
                                                     {isSimulationWithCosting && <AgGridColumn width={150} field="CostingNumber" tooltipField='CostingNumber' headerName='Costing Id'></AgGridColumn>}
-                                                    <AgGridColumn width={140} field="CostingHead" tooltipField='CostingHead' headerName='Costing Head'></AgGridColumn>
+                                                    <AgGridColumn width={140} field="CostingHead" tooltipField='CostingHead' headerName='Costing Head' cellRenderer={'combinedCostingHeadRenderer'} floatingFilterComponentParams={floatingFilterStatus} 
+                                            floatingFilterComponent="statusFilter"
+                                                    ></AgGridColumn>
                                                     {isSimulationWithCosting && <AgGridColumn width={130} field="PartNo" tooltipField='PartNo' headerName='Part No.'></AgGridColumn>}
                                                     {isSimulationWithCosting && <AgGridColumn width={130} field="PartName" tooltipField='PartName' headerName='Part Name' cellRenderer='descriptionFormatter'></AgGridColumn>}
                                                     {isSimulationWithCosting && <AgGridColumn width={120} field="PartType" tooltipField='PartType' cellRenderer='partTypeFormatter' headerName="Part Type"></AgGridColumn>}

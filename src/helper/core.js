@@ -17,12 +17,12 @@ export const CirLogo = (props) => {
 //
 export const useLabels = () => {
   // const { t } = useTranslation('MasterLabels');
-  const labels = ['MasterLabels', 'CostingLabels'];
+  const labels = ['MasterLabels', 'CostingLabels','CommonLabels'];
   const { i18n } = useTranslation(labels);
   // Create separate translation functions for each namespace
   const tMasterLabels = i18n.getFixedT(null, 'MasterLabels');
   const tCosting = i18n.getFixedT(null, 'CostingLabels');
-
+  const tCommon = i18n.getFixedT(null, 'CommonLabels');
   return {
     technologyLabel: tMasterLabels('TechnologyLabel', { defaultValue: 'Technology' }),
     partTypeLabel: tMasterLabels('commonFields.partType', { defaultValue: 'Part Type' }),
@@ -30,14 +30,17 @@ export const useLabels = () => {
     discountLabel: tCosting('discount', { defaultValue: 'Hundi/Discount' }),
     toolMaintenanceCostLabel: tCosting('toolMaintenanceCost', { defaultValue: 'Tool Maintenance Cost (per pcs)' }),
     vendorLabel: tMasterLabels('VendorLabel', { defaultValue: 'Vendor' }),
-    RMVendorLabel: tMasterLabels('RMVendorLabel', { defaultValue: 'RM Vendor' })
+    RMVendorLabel: tMasterLabels('RMVendorLabel', { defaultValue: 'RM Vendor' }),
+    vendorBasedLabel: tCommon('VendorBasedLabel', { defaultValue: 'Vendor Based' }),
+    zeroBasedLabel: tCommon('ZeroBasedLabel', { defaultValue: 'Zero Based' }),
+    customerBasedLabel: tCommon('CustomerBasedLabel', { defaultValue: 'Customer Based' })
   };
 };
 
 export const LabelsClass = (t, ns) => {
   return {
-    vendorLabel: t('VendorLabel', { ns }),
-    BOPVendorLabel: t('BOPVendorLabel', { ns }),
+    vendorLabel: t('VendorLabel', { ns, defaultValue: 'Vendor' }),
+    BOPVendorLabel: t('BOPVendorLabel', { ns, defaultValue: 'BOP Vendor' }),
   }
 }
 
@@ -93,3 +96,4 @@ export const localizeHeadersWithLabels = (headers, t) => {
     return { ...header, label: newLabel };
   });
 };
+//lisitng manupulation 

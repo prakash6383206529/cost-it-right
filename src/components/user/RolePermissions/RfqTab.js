@@ -337,7 +337,7 @@ class RFQTab extends Component {
                             <tbody>
                                 {this.state.Modules &&
                                     this.state.Modules.map((item, index) => {
-                                        if (index === 0 || !showOnlyFirstModule) {
+                                        if (index === 0 || showOnlyFirstModule) {
                                             return (
                                                 <tr key={index}>
                                                     <td>

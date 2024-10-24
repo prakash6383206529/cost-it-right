@@ -24,7 +24,7 @@ import { useLabels } from '../../../helper/core';
 
 const SendForApproval = (props) => {
   const [isLoader, setIsLoader] = useState(false)
-  const vendorLabel = useLabels()
+  const {vendorLabel} = useLabels()
   const dispatch = useDispatch()
   const { register, control, setValue, handleSubmit, reset, getValues, formState: { errors } } = useForm({
     mode: 'onChange',

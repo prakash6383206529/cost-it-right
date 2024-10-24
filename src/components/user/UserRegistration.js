@@ -890,25 +890,20 @@ function UserRegistration(props) {
    * @description Used for User's additional permission
    */
   const onPressUserPermission = (e) => {
-    console.log(e, "E.")
 
       ; // Set loading to true when starting
 
     if (role && role.value) {
-      console.log(IsShowAdditionalPermission);
 
       setIsShowAdditionalPermission(!IsShowAdditionalPermission)
       setModules([])
 
       if (isEditFlag && grantUserWisePermission) {
-        console.log(isEditFlag);
-        console.log(grantUserWisePermission);
         if (!e) {
           setIsPermissionLoading(true)
         }
         getUserPermission(UserId)
       } else {
-        console.log(role.value);
         if (!e) {
           setIsPermissionLoading(true)
         }

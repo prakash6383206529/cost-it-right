@@ -9,7 +9,7 @@ import { getOperationsDataList, deleteOperationAPI, setOperationList } from '../
 import AddOperation from './AddOperation';
 import BulkUpload from '../../massUpload/BulkUpload';
 import { ADDITIONAL_MASTERS, OPERATION, OperationMaster, OPERATIONS_ID } from '../../../config/constants';
-import { checkPermission, searchNocontentFilter, setLoremIpsum } from '../../../helper/util';
+import { checkPermission, getLocalizedCostingHeadValue, searchNocontentFilter, setLoremIpsum } from '../../../helper/util';
 import { loggedInUserId } from '../../../helper/auth';
 import { userDepartmetList, getConfigurationKey } from '../../../helper'
 import { OPERATION_DOWNLOAD_EXCEl } from '../../../config/masterData';
@@ -36,12 +36,14 @@ import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from '../../common/Tour/TourMessages';
 import { useTranslation } from 'react-i18next';
 import { useLabels, useWithLocalization } from '../../../helper/core';
+import CostingHeadDropdownFilter from '../material-master/CostingHeadDropdownFilter';
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {};
 
 const OperationListing = (props) => {
+
     const dispatch = useDispatch();
     const [state, setState] = useState({
         tableData: [],
@@ -85,7 +87,7 @@ const OperationListing = (props) => {
     })
     const tourStartData = useSelector(state => state.comman.tourStartData);
     const { t } = useTranslation("common")
-    const { technologyLabel, vendorLabel } = useLabels();
+    const { technologyLabel, vendorLabel ,vendorBasedLabel, zeroBasedLabel, customerBasedLabel} = useLabels();
     const [searchText, setSearchText] = useState('');
     const { operationList, allOperationList, operationDataHold } = useSelector(state => state.otherOperation);
     const { topAndLeftMenuData } = useSelector(state => state.auth);
@@ -461,6 +463,18 @@ const OperationListing = (props) => {
         return cell != null ? cell : '-';
     }
 
+    
+    const combinedCostingHeadRenderer = (props) => {
+        // Call the existing checkBoxRenderer
+        costingHeadFormatter(props);
+      
+        // Get and localize the cell value
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const localizedValue = getLocalizedCostingHeadValue(cellValue, vendorBasedLabel, zeroBasedLabel, customerBasedLabel);
+      
+        // Return the localized value (the checkbox will be handled by AgGrid's default renderer)
+        return localizedValue;
+      };
     /**
     * @method costingHeadFormatter
     * @description Renders Costing head
@@ -774,16 +788,25 @@ const OperationListing = (props) => {
         checkboxSelection: isFirstColumn,
         headerCheckboxSelection: (props.isSimulation || props.benchMark) ? isFirstColumn : false,
     };
-
+    const floatingFilterStatus = {
+        maxValue: 1,
+        suppressFilterButton: true,
+        component: CostingHeadDropdownFilter,
+        onFilterChange: (originalValue, value) => {
+          setState((prevState) => ({ ...prevState, floatingFilterData: { ...prevState.floatingFilterData, CostingHead: value } }));   
+          setState((prevState) => ({ ...prevState, disableFilter: false }));
+        }
+    };
     const frameworkComponents = {
         totalValueRenderer: buttonFormatter,
         customNoRowsOverlay: NoContentFound,
-        costingHeadFormatter: costingHeadFormatter,
+        combinedCostingHeadRenderer: combinedCostingHeadRenderer,
         renderPlantFormatter: renderPlantFormatter,
         effectiveDateFormatter: effectiveDateFormatter,
         hyphenFormatter: hyphenFormatter,
         commonCostFormatter: commonCostFormatter,
         attachmentFormatter: attachmentFormatter,
+        statusFilter : CostingHeadDropdownFilter
     };
     return (
         <div className={`${isSimulation ? 'simulation-height' : props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
@@ -888,7 +911,9 @@ const OperationListing = (props) => {
                         >
                             {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
 
-                            <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
+                            <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'combinedCostingHeadRenderer'}
+                               floatingFilterComponentParams={floatingFilterStatus} 
+                               floatingFilterComponent="statusFilter"></AgGridColumn>
                             {!isSimulation && <AgGridColumn field="Technology" tooltipField='Technology' filter={true} floatingFilter={true} headerName={technologyLabel}></AgGridColumn>}
                             <AgGridColumn field="ForType" headerName="Operation Type" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="OperationName" tooltipField="OperationName" headerName="Operation Name"></AgGridColumn>

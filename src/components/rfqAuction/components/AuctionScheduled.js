@@ -24,7 +24,6 @@ const AuctionScheduled = (props) => {
     }))
   }, []);
   const formToggle = (id) => {
-    console.log(id)
     history.push({
       pathname: '/add-auction',
       state: { source: 'auction', quotationId: id, isEdit: true }

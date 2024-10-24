@@ -8,7 +8,7 @@ import NoContentFound from '../../../common/NoContentFound'
 import { defaultPageSize, DRAFT, EMPTY_DATA, EMPTY_GUID, REJECTED, ZBCTypeId } from '../../../../config/constants'
 import DayTime from '../../../common/DayTimeWrapper'
 import CostingApproveReject from './CostingApproveReject'
-import { allEqual, checkForDecimalAndNull, checkForNull, formViewData, removeSpaces, searchNocontentFilter, setLoremIpsum } from '../../../../helper'
+import { allEqual, checkForDecimalAndNull, checkForNull, formViewData, getLocalizedCostingHeadValue, removeSpaces, searchNocontentFilter, setLoremIpsum } from '../../../../helper'
 import { PENDING } from '../../../../config/constants'
 import Toaster from '../../../common/Toaster'
 import imgArrowDown from "../../../../assests/images/arrow-down.svg";
@@ -36,11 +36,13 @@ import TourWrapper from '../../../common/Tour/TourWrapper'
 import { Steps } from '../TourMessages'
 import { useTranslation } from 'react-i18next';
 import { useLabels } from '../../../../helper/core'
+import CostingHeadDropdownFilter from '../../../masters/material-master/CostingHeadDropdownFilter'
 
 const gridOptions = {};
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
 function ApprovalListing(props) {
+
   const { isDashboard } = props
   const loggedUser = loggedInUserId()
   const [loader, setloader] = useState(false);
@@ -83,14 +85,13 @@ function ApprovalListing(props) {
   const isApproval = props.isApproval;
   let approvalGridData = isDashboard ? approvalList : approvalListDraft
   const statusColumnData = useSelector((state) => state.comman.statusColumnData);
-  const { technologyLabel } = useLabels();
+  const { technologyLabel,vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels();
   var floatingFilterStatus = {
     maxValue: 1,
     suppressFilterButton: true,
     component: 'costingApproval',
     location: "costing"
   }
-  const { vendorLabel } = useLabels()
   useEffect(() => {
     setIsSuperAdmin(userDetails()?.Role === "SuperAdmin")
   }, [])
@@ -212,7 +213,19 @@ function ApprovalListing(props) {
     browserDatePicker: true,
     minValidYear: 2000,
   };
-
+  const floatingFilterStatusCostingHead = {
+    maxValue: 1,
+    suppressFilterButton: true,
+    component: CostingHeadDropdownFilter,
+    onFilterChange: (originalValue, value) => {
+        // setSelectedCostingHead(originalValue);
+        setDisableFilter(false);
+        setFloatingFilterData(prevState => ({
+            ...prevState,
+            CostingHead: value
+        }));
+    }
+};
 
   /**
    * @method getTableData
@@ -999,8 +1012,18 @@ function ApprovalListing(props) {
       }
     }
   }
-
+  const combinedCostingHeadRenderer = (props) => {
+    // Call the existing checkBoxRenderer
+  
+    // Get and localize the cell value
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    const localizedValue = getLocalizedCostingHeadValue(cellValue, vendorBasedLabel, zeroBasedLabel, customerBasedLabel);
+  
+    // Return the localized value (the checkbox will be handled by AgGrid's default renderer)
+    return localizedValue;
+  };
   const frameworkComponents = {
+    combinedCostingHeadRenderer: combinedCostingHeadRenderer,
     renderPlant: renderPlant,
     renderCustomer: renderCustomer,
     renderVendor: renderVendor,
@@ -1016,7 +1039,8 @@ function ApprovalListing(props) {
     reasonFormatter: reasonFormatter,
     lastApprovalFormatter: lastApprovalFormatter,
     statusFilter: SingleDropdownFloationFilter,
-    basicRateFormatter: basicRateFormatter
+    basicRateFormatter: basicRateFormatter,
+    statusFilterCostingHead : CostingHeadDropdownFilter
   };
 
   const isRowSelectable = rowNode => rowNode.data ? (rowNode.data.Status === PENDING || rowNode.data.Status === REJECTED) : false
@@ -1120,7 +1144,8 @@ function ApprovalListing(props) {
                           <AgGridColumn cellClass="has-checkbox" field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Approval No."></AgGridColumn>
                           {/* {isApproval && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" field="Status" cellRenderer='statusFormatter' headerName="Status" floatingFilterComponent="statusFilter" floatingFilterComponentParams={floatingFilterStatus} ></AgGridColumn>} */}
                           <AgGridColumn field="CostingNumber" headerName="Costing Id" cellRenderer='hyperLinkableFormatter' ></AgGridColumn>
-                          <AgGridColumn field="CostingHead" headerName="Costing Head"  ></AgGridColumn>
+                          <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'combinedCostingHeadRenderer'}floatingFilterComponentParams={floatingFilterStatusCostingHead} 
+                                            floatingFilterComponent="statusFilterCostingHead" ></AgGridColumn>
                           <AgGridColumn field="PartNumber" headerName='Part No.'></AgGridColumn>
                           <AgGridColumn field="PartName" headerName="Part Name"></AgGridColumn>
                           <AgGridColumn field="VendorName" cellRenderer='renderVendor' headerName={`${vendorLabel} (Code)`}></AgGridColumn>

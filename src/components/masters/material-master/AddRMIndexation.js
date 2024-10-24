@@ -23,7 +23,7 @@ function AddRMIndexation(props) {
         mode: 'onChange',
         reValidateMode: 'onChange',
     });
-    const vendorLabel = useLabels()
+    const {vendorLabel} = useLabels()
     const [state, setState] = useState({
         costingTypeId: ZBCTypeId,
         vendor: [],

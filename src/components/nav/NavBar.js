@@ -39,6 +39,7 @@ import TourWrapper from "../common/Tour/TourWrapper";
 import { Steps } from "./TourMessages";
 import { withTranslation } from "react-i18next";
 import { CirLogo, CompanyLogo, LabelsClass } from "../../helper/core";
+import { getApprovalTypeSelectList } from "../../actions/Common";
 class SideBar extends Component {
   constructor(props) {
     super(props)
@@ -123,6 +124,19 @@ class SideBar extends Component {
     disabledLogo.addEventListener('contextmenu', function (e) {
       e.preventDefault();
     }, false);
+  // Add this new API call for vendor, cx, zero based dropdown
+
+    this.props.getApprovalTypeSelectList(3, (response) => {
+      if (response && response.data && response.data.Result) {
+        const options = response.data.SelectList
+        .filter(item => item.Value !== '0') // Filter out the item with Value '0'
+        .map(item => ({
+          value: item.Value,
+          label: item.Text
+        }));
+        reactLocalStorage.setObject('CostingHeadOptions', options);
+      }
+    });
   }
 
   /**
@@ -1179,6 +1193,7 @@ export default connect(mapStateToProps, {
   getPermissionByUser,
   getMenu,
   getTopAndLeftMenuData,
+  getApprovalTypeSelectList
 
 })(withTranslation(['NavBar', 'MasterLabels'])(SideBar))
 

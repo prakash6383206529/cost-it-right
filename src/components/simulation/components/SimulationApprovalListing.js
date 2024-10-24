@@ -15,7 +15,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import LoaderCustom from '../../common/LoaderCustom'
 import { MESSAGES } from '../../../config/message'
-import { allEqual, checkForNull, getConfigurationKey, removeSpaces, searchNocontentFilter, setLoremIpsum } from '../../../helper'
+import { allEqual, checkForNull, getConfigurationKey, getLocalizedCostingHeadValue, removeSpaces, searchNocontentFilter, setLoremIpsum } from '../../../helper'
 import SimulationApproveReject from '../../costing/components/approval/SimulationApproveReject'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import WarningMessage from '../../common/WarningMessage'
@@ -30,11 +30,15 @@ import TourWrapper from '../../common/Tour/TourWrapper'
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash'
 import { useLabels } from '../../../helper/core'
+import CostingHeadDropdownFilter from '../../masters/material-master/CostingHeadDropdownFilter'
+import { reactLocalStorage } from 'reactjs-localstorage'
 const gridOptions = {};
 function SimulationApprovalListing(props) {
-    const {vendorLabel} = useLabels()
+
+    const {vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel} = useLabels()
     const { isDashboard } = props
     const [approvalData, setApprovalData] = useState('')
+    const [selectedCostingHead, setSelectedCostingHead] = useState(null);
     const [selectedRowData, setSelectedRowData] = useState([]);
     const [approveDrawer, setApproveDrawer] = useState(false)
     const [showApprovalSumary, setShowApprovalSummary] = useState(false)
@@ -430,7 +434,17 @@ function SimulationApprovalListing(props) {
             </Fragment>
         )
     }
-
+    const combinedCostingHeadRenderer = (props) => {
+        // Call the existing checkBoxRenderer
+        hyphenFormatter(props);
+      
+        // Get and localize the cell value
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const localizedValue = getLocalizedCostingHeadValue(cellValue, vendorBasedLabel, zeroBasedLabel, customerBasedLabel);
+      
+        // Return the localized value (the checkbox will be handled by AgGrid's default renderer)
+        return localizedValue;
+      };
     /**
     * @method hyphenFormatter
     */
@@ -810,7 +824,24 @@ function SimulationApprovalListing(props) {
         }
 
     }
+    const floatingFilterStatusCostingHead = {
+        maxValue: 1,
+        suppressFilterButton: true,
+        component: CostingHeadDropdownFilter,
+        onFilterChange: (originalValue, value) => {
+    
+            setSelectedCostingHead(originalValue);
+            setDisableFilter(false);
+            setFloatingFilterData(prevState => ({
+                ...prevState,
+                CostingHead: value
+            }));
+        }
+    };
+      
+    
     const frameworkComponents = {
+        combinedCostingHeadRenderer: combinedCostingHeadRenderer,
         // totalValueRenderer: this.buttonFormatter,
         // effectiveDateRenderer: this.effectiveDateFormatter,
         // costingHeadRenderer: this.costingHeadFormatter,
@@ -824,7 +855,8 @@ function SimulationApprovalListing(props) {
         reasonFormatter: reasonFormatter,
         conditionFormatter: conditionFormatter,
         hyphenFormatter: hyphenFormatter,
-        statusFilter: SingleDropdownFloationFilter
+        statusFilter: SingleDropdownFloationFilter,
+        statusFilterCostingHead: CostingHeadDropdownFilter,
     };
 
     return (
@@ -906,7 +938,8 @@ function SimulationApprovalListing(props) {
                                     >
 
                                         <AgGridColumn width={120} field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Token No." cellClass="token-no-grid"></AgGridColumn>
-                                        <AgGridColumn width={141} field="CostingHead" headerName="Costing Head" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                        <AgGridColumn width={141} field="CostingHead" headerName="Costing Head" cellRenderer={'combinedCostingHeadRenderer'}               floatingFilterComponentParams={floatingFilterStatusCostingHead} 
+                                            floatingFilterComponent="statusFilterCostingHead"></AgGridColumn>
                                         {/* // <AgGridColumn width={141} field="SimulationTechnologyHead" headerName="Simulation Head"></AgGridColumn>                //RE */}
                                         {/* THIS FEILD WILL ALWAYS COME BEFORE */}
                                         {getConfigurationKey().IsProvisionalSimulation && <AgGridColumn width={145} field="SimulationType" headerName='Simulation Type' ></AgGridColumn>}

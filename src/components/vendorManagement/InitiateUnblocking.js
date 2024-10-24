@@ -28,8 +28,7 @@ import { useLabels } from '../../helper/core';
 const InitiateUnblocking = (props) => {
     const location = useLocation();
     const { plantId, vendorId } = location.state || {};
-const vendorLabel = useLabels()
-
+const {vendorLabel} = useLabels()
     const dispatch = useDispatch();
     const { register, control, setValue, formState: { errors } } = useForm({
         mode: 'onBlur',
