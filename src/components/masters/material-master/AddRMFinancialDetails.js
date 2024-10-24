@@ -226,6 +226,10 @@ function AddRMFinancialDetails(props) {
             setValue('FinalConditionCost', Data?.NetConditionCost)
             setState(prevState => ({
                 ...prevState,
+
+            }))
+            let updatedState = {
+                ...state,
                 effectiveDate: Data?.EffectiveDate ? DayTime(Data?.EffectiveDate).$d : '',
                 sourceLocation: Data?.SourceSupplierLocationName !== undefined ? { label: Data?.SourceSupplierLocationName, value: Data?.SourceLocation } : [],
                 UOM: { label: Data?.UnitOfMeasurementName, value: Data?.UOM },
@@ -243,14 +247,15 @@ function AddRMFinancialDetails(props) {
                 totalBasicRate: Data?.CommodityNetCost,
                 NetConditionCost: Data?.NetConditionCost,
                 totalOtherCost: Data?.OtherNetCost
-            }))
+            }
+            setState(updatedState)
             let obj = showRMScrapKeys(Data?.TechnologyId)
             setShowScrapKeys(obj)
             setCurrencyExchangeRate(prevState => ({
                 ...prevState, plantCurrencyRate: checkForNull(Data?.LocalCurrencyExchangeRate),
                 settlementCurrencyRate: checkForNull(Data?.CurrencyExchangeRate)
             }))
-            let updatedState = { ...state, }
+            console.log(updatedState, 'updatedState')
             setState(updatedState)
             dispatch(setRawMaterialDetails({ ...rawMaterailDetails, states: updatedState, isShowIndexCheckBox: Data?.IsIndexationDetails, ShowScrapKeys: obj }, () => { }))
             dispatch(setExchangeRateDetails({
@@ -438,7 +443,7 @@ function AddRMFinancialDetails(props) {
         }
         let conditionList = recalculateConditions('', basicPriceBaseCurrency)
 
-        const sumBaseCurrency = conditionList?.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCost), 0);
+        const sumBaseCurrency = conditionList?.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCostPerQuantity), 0);
         let NetLandedCost = checkForNull(sumBaseCurrency) + checkForNull(basicPriceCurrencyTemp)
 
         let NetLandedCostLocalConversion = NetLandedCost * checkForNull(CurrencyExchangeRate?.plantCurrencyRate)
@@ -460,7 +465,6 @@ function AddRMFinancialDetails(props) {
                 dispatch(setRawMaterialDetails({ ...rawMaterailDetails, netCostChanged: true }, () => { }))
             }
         }
-
         let updatedState = {
             ...state, FinalCutOffBaseCurrency: getValues('cutOffPrice'),
             BasicRatePerUOM: getValues('BasicRate'),
@@ -740,7 +744,7 @@ function AddRMFinancialDetails(props) {
         if (data && data.length > 0 && type === 'save') {
             dispatch(setRawMaterialDetails({ ...rawMaterailDetails, netCostChanged: true }, () => { }))
         }
-        const sumBaseCurrency = data?.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCost), 0);
+        const sumBaseCurrency = data?.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCostPerQuantity), 0);
         let netLandedCost = checkForNull(sumBaseCurrency) + checkForNull(state.NetCostWithoutConditionCost)  //Condition cost + Basic price
         let netConditionCost = checkForNull(sumBaseCurrency)
         setValue('FinalConditionCost', checkForDecimalAndNull(netConditionCost, getConfigurationKey().NoOfDecimalForPrice))
@@ -748,7 +752,6 @@ function AddRMFinancialDetails(props) {
             setValue('NetLandedCost', checkForDecimalAndNull(netLandedCost, getConfigurationKey().NoOfDecimalForPrice))
             setValue('NetLandedCostConversion', checkForDecimalAndNull(netLandedCost * checkForNull(CurrencyExchangeRate?.settlementCurrencyRate), getConfigurationKey().NoOfDecimalForPrice))
             setValue('NetLandedCostLocalConversion', checkForDecimalAndNull((netLandedCost * checkForNull(CurrencyExchangeRate?.plantCurrencyRate)), getConfigurationKey().NoOfDecimalForPrice))
-
         } else {
             setValue('NetLandedCostConversion', checkForDecimalAndNull(netLandedCost * checkForNull(CurrencyExchangeRate?.plantCurrencyRate), getConfigurationKey().NoOfDecimalForPrice))
             setValue('NetLandedCostLocalConversion', checkForDecimalAndNull((netLandedCost), getConfigurationKey().NoOfDecimalForPrice))
