@@ -198,7 +198,7 @@ function AddConditionCosting(props) {
     const handleCostChangeCurrency = (e) => {
         errors.CostBase = {}
         if (e?.target?.value) {
-            const costBase = checkForNull(e.target.value) * checkForNull(currencyValue)
+            const costBase = checkForNull(e.target.value)
             setValue("CostBase", checkForDecimalAndNull(costBase, initialConfiguration.NoOfDecimalForPrice))
             const ConditionCostPerQuantity = checkForNull(e.target.value) / checkForNull(getValues('Quantity'))
             setValue("ConditionCostPerQuantity", checkForDecimalAndNull(ConditionCostPerQuantity, initialConfiguration.NoOfDecimalForPrice))
@@ -216,23 +216,6 @@ function AddConditionCosting(props) {
             setTotalCostBase('')
         }
     }
-
-    const handleCostChangeBase = (e) => {
-        errors.CostCurrency = {}
-        if (e?.target?.value) {
-            const costCurrency = checkForNull(e.target.value) / checkForNull(currencyValue)
-            setValue("CostCurrency", checkForDecimalAndNull(costCurrency, initialConfiguration.NoOfDecimalForPrice))
-            setDisableCurrency(true)
-            setTotalCostBase(e.target.value)
-            setTotalCostCurrency(costCurrency)
-        } else {
-            setValue("CostCurrency", '')
-            setDisableCurrency(false)
-            setTotalCostCurrency('')
-            setTotalCostBase('')
-        }
-    }
-
 
     const onPercentChange = (e) => {
         if (e?.target?.value) {

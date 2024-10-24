@@ -119,11 +119,12 @@ function AddRMFinancialDetails(props) {
     })
 
     useEffect(() => {
-        setState(prevState => ({
-            ...prevState,
+        let updatedState = {
+            ...state,
             totalBasicRate: getValues('BasicRate')
-        }))
-        dispatch(setRawMaterialDetails({ ...rawMaterailDetails, states: state }, () => { }))
+        }
+        setState(updatedState)
+        dispatch(setRawMaterialDetails({ ...rawMaterailDetails, states: updatedState }, () => { }))
         calculateNetCostDomestic();
     }, [values])
     useEffect(() => {
@@ -225,6 +226,10 @@ function AddRMFinancialDetails(props) {
             setValue('FinalConditionCost', Data?.NetConditionCost)
             setState(prevState => ({
                 ...prevState,
+
+            }))
+            let updatedState = {
+                ...state,
                 effectiveDate: Data?.EffectiveDate ? DayTime(Data?.EffectiveDate).$d : '',
                 sourceLocation: Data?.SourceSupplierLocationName !== undefined ? { label: Data?.SourceSupplierLocationName, value: Data?.SourceLocation } : [],
                 UOM: { label: Data?.UnitOfMeasurementName, value: Data?.UOM },
@@ -242,14 +247,17 @@ function AddRMFinancialDetails(props) {
                 totalBasicRate: Data?.CommodityNetCost,
                 NetConditionCost: Data?.NetConditionCost,
                 totalOtherCost: Data?.OtherNetCost
-            }))
+            }
+            setState(updatedState)
             let obj = showRMScrapKeys(Data?.TechnologyId)
             setShowScrapKeys(obj)
             setCurrencyExchangeRate(prevState => ({
                 ...prevState, plantCurrencyRate: checkForNull(Data?.LocalCurrencyExchangeRate),
                 settlementCurrencyRate: checkForNull(Data?.CurrencyExchangeRate)
             }))
-            dispatch(setRawMaterialDetails({ ...rawMaterailDetails, states: state, isShowIndexCheckBox: Data?.IsIndexationDetails, ShowScrapKeys: obj }, () => { }))
+            console.log(updatedState, 'updatedState')
+            setState(updatedState)
+            dispatch(setRawMaterialDetails({ ...rawMaterailDetails, states: updatedState, isShowIndexCheckBox: Data?.IsIndexationDetails, ShowScrapKeys: obj }, () => { }))
             dispatch(setExchangeRateDetails({
                 ...exchangeRateDetails, LocalCurrencyExchangeRate: Data?.LocalCurrencyExchangeRate, LocalExchangeRateId: Data?.LocalExchangeRateId, LocalCurrencyId: Data?.LocalCurrencyId,
                 CurrencyExchangeRate: Data?.CurrencyExchangeRate, ExchangeRateId: Data?.ExchangeRateId
@@ -435,7 +443,7 @@ function AddRMFinancialDetails(props) {
         }
         let conditionList = recalculateConditions('', basicPriceBaseCurrency)
 
-        const sumBaseCurrency = conditionList?.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCost), 0);
+        const sumBaseCurrency = conditionList?.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCostPerQuantity), 0);
         let NetLandedCost = checkForNull(sumBaseCurrency) + checkForNull(basicPriceCurrencyTemp)
 
         let NetLandedCostLocalConversion = NetLandedCost * checkForNull(CurrencyExchangeRate?.plantCurrencyRate)
@@ -457,38 +465,23 @@ function AddRMFinancialDetails(props) {
                 dispatch(setRawMaterialDetails({ ...rawMaterailDetails, netCostChanged: true }, () => { }))
             }
         }
-
-        setState(prevState => ({
-            ...prevState,
-
-            FinalCutOffBaseCurrency: getValues('cutOffPrice'),
-
+        let updatedState = {
+            ...state, FinalCutOffBaseCurrency: getValues('cutOffPrice'),
             BasicRatePerUOM: getValues('BasicRate'),
-
             ForgingScrapCostUOMConverted: getValues("ForgingScrap"),
-
             FinalMachiningScrapCostBaseCurrency: getValues('MachiningScrap'),
-
             FinalCircleScrapCostBaseCurrency: getValues("CircleScrapCost"),
-
             JaliScrapCostUOMConverted: getValues('JaliScrapCost'),
-
-            FinalFreightCostBaseCurrency: getValues("FreightCharge"),
-
-            FinalShearingCostBaseCurrency: getValues('ShearingCost'),
-
             NetCostWithoutConditionCost: basicPriceBaseCurrency,
-
-            NetLandedCostConversion: NetLandedCost,
-
+            NetLandedCost: NetLandedCost,
             conditionTableData: conditionList,
-
             ConversionRatio: getValues('ConversionRatio'),
             ScrapRatePerScrapUOM: getValues('ScrapRatePerScrapUOM'),
             ...obj,
-        }))
+        }
+        setState(updatedState)
         setTimeout(() => {
-            dispatch(setRawMaterialDetails({ ...rawMaterailDetails, states: state }, () => { }))
+            dispatch(setRawMaterialDetails({ ...rawMaterailDetails, states: updatedState }, () => { }))
         }, 50);
     }
 
@@ -508,7 +501,11 @@ function AddRMFinancialDetails(props) {
 
     const onPressHasDifferentUOM = () => {
         setState(prevState => ({ ...prevState, IsApplyHasDifferentUOM: !state.IsApplyHasDifferentUOM }));
-        dispatch(setRawMaterialDetails({ ...rawMaterailDetails, states: state }, () => { }))
+        let updatedState = {
+            ...state,
+        }
+        setState(updatedState)
+        dispatch(setRawMaterialDetails({ ...rawMaterailDetails, states: updatedState }, () => { }))
     }
     const checkTechnology = () => {
         let obj = showRMScrapKeys(rawMaterailDetails?.Technology ? rawMaterailDetails?.Technology?.value : props?.DataToChange.TechnologyId)
@@ -747,7 +744,7 @@ function AddRMFinancialDetails(props) {
         if (data && data.length > 0 && type === 'save') {
             dispatch(setRawMaterialDetails({ ...rawMaterailDetails, netCostChanged: true }, () => { }))
         }
-        const sumBaseCurrency = data?.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCost), 0);
+        const sumBaseCurrency = data?.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCostPerQuantity), 0);
         let netLandedCost = checkForNull(sumBaseCurrency) + checkForNull(state.NetCostWithoutConditionCost)  //Condition cost + Basic price
         let netConditionCost = checkForNull(sumBaseCurrency)
         setValue('FinalConditionCost', checkForDecimalAndNull(netConditionCost, getConfigurationKey().NoOfDecimalForPrice))
@@ -755,7 +752,6 @@ function AddRMFinancialDetails(props) {
             setValue('NetLandedCost', checkForDecimalAndNull(netLandedCost, getConfigurationKey().NoOfDecimalForPrice))
             setValue('NetLandedCostConversion', checkForDecimalAndNull(netLandedCost * checkForNull(CurrencyExchangeRate?.settlementCurrencyRate), getConfigurationKey().NoOfDecimalForPrice))
             setValue('NetLandedCostLocalConversion', checkForDecimalAndNull((netLandedCost * checkForNull(CurrencyExchangeRate?.plantCurrencyRate)), getConfigurationKey().NoOfDecimalForPrice))
-
         } else {
             setValue('NetLandedCostConversion', checkForDecimalAndNull(netLandedCost * checkForNull(CurrencyExchangeRate?.plantCurrencyRate), getConfigurationKey().NoOfDecimalForPrice))
             setValue('NetLandedCostLocalConversion', checkForDecimalAndNull((netLandedCost), getConfigurationKey().NoOfDecimalForPrice))

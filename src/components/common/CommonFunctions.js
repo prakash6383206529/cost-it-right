@@ -366,6 +366,6 @@ export const getEffectiveDateMinDate = (minDate) => {
     }
     return subDays(new Date(), effectiveDateRangeDays);
 };
-export const convertIntoBase = (price, currencyValue) => {
+export const convertIntoCurrency = (price, currencyValue) => {
     return checkForNull(price) * checkForNull(currencyValue)
 }
