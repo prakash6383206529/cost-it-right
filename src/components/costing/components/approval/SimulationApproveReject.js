@@ -647,7 +647,11 @@ function SimulationApproveReject(props) {
     setApprovalDropDown([])
     if (getConfigurationKey().IsDivisionAllowedForDepartment) {
       let departmentIds = [value.value]
-      dispatch(getAllDivisionListAssociatedWithDepartment(departmentIds, res => {
+      let obj = {
+        DepartmentIdList: departmentIds,
+        IsApproval: false
+      }
+      dispatch(getAllDivisionListAssociatedWithDepartment(obj, res => {
         if (res && res?.data && res?.data?.Identity === true) {
           setIsShowDivision(true)
           let divisionArray = []
