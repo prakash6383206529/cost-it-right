@@ -127,7 +127,11 @@ class AddBOPDomestic extends Component {
       otherCostTableData: [],
       LocalCurrencyId: null,
       LocalExchangeRateId: null,
+      totalOtherCost: 0,
+      OtherNetCostConversion: 0
+
     }
+
   }
 
   // NOTE :: ALL COST KEYS ARE OF BASE CURRENCY IRRESPECTIVE OF THEIR NAME IN DOMESTIC
@@ -209,7 +213,10 @@ class AddBOPDomestic extends Component {
         } else {
           this.setState({ showWarning: false });
         }
-        this.setState({ currencyValue: checkForNull(res.data.Data.CurrencyExchangeRate), LocalExchangeRateId: res.data.Data.ExchangeRateId });
+        // this.setState({ currencyValue: checkForNull(res.data.Data.CurrencyExchangeRate), LocalExchangeRateId: res.data.Data.ExchangeRateId })
+        this.setState({ currencyValue: checkForNull(res.data.Data.CurrencyExchangeRate), LocalExchangeRateId: res.data.Data.ExchangeRateId }, () => {
+          this.handleCalculation()
+        });
       });
     }
   }
@@ -379,6 +386,7 @@ class AddBOPDomestic extends Component {
           this.setState({ minEffectiveDate: Data.EffectiveDate })
           this.props.change('plantCurrency', Data.LocalCurrency)
           this.props.change('ExchangeSource', { label: Data.ExchangeRateSourceName, value: Data.ExchangeRateSourceName })
+          this.props.change("OtherCost", checkForDecimalAndNull(Data.OtherNetCost, initialConfiguration.NoOfDecimalForPrice))
           // this.props.getPlantBySupplier(Data.Vendor, () => { })
           setTimeout(() => {
             let plantObj;
@@ -411,7 +419,8 @@ class AddBOPDomestic extends Component {
               currencyValue: Data.LocalCurrencyExchangeRate,
               LocalExchangeRateId: Data.LocalExchangeRateId,
               LocalCurrencyId: Data.LocalCurrencyId,
-              ExchangeSource: { label: Data.ExchangeRateSourceName, value: Data.ExchangeRateSourceName }
+              ExchangeSource: { label: Data.ExchangeRateSourceName, value: Data.ExchangeRateSourceName },
+              totalOtherCost: Data?.OtherNetCost
             }, () => {
               this.toolTipNetCost()
               this.setState({ isLoader: false })
@@ -722,25 +731,26 @@ class AddBOPDomestic extends Component {
     return tempList
   }
 
-  handleCalculation = () => {
-    const { fieldsObj, initialConfiguration } = this.props
-    const { FinalConditionCostBaseCurrency, costingTypeId } = this.state
-    const NoOfPieces = fieldsObj && fieldsObj.NumberOfPieces !== undefined ? fieldsObj.NumberOfPieces : 1;
 
+  handleCalculation = (totalBase = "") => {
+    const { fieldsObj, initialConfiguration } = this.props
+    const { FinalConditionCostBaseCurrency, costingTypeId, totalOtherCost } = this.state
+    const NoOfPieces = fieldsObj && fieldsObj.NumberOfPieces !== undefined ? fieldsObj.NumberOfPieces : 1;
     const basicRateBaseCurrency = checkForNull(fieldsObj?.BasicRate)
     const basicPriceBaseTemp = !NoOfPieces ? checkForNull(basicRateBaseCurrency) : checkForNull(basicRateBaseCurrency) / checkForNull(NoOfPieces)
+    const basicPriceAndOtherCost = checkForNull(basicPriceBaseTemp) + checkForNull(totalOtherCost)
+    const OtherCostConversion = this.convertIntoBase(checkForNull(totalOtherCost), this?.state?.currencyValue)
+    this.setState({ OtherNetCostConversion: OtherCostConversion })
     let basicPriceBaseCurrency
     if (costingTypeId === ZBCTypeId) {
-      basicPriceBaseCurrency = basicPriceBaseTemp
+      basicPriceBaseCurrency = basicPriceAndOtherCost
     }
     const conditionCostBaseCurrency = checkForNull(FinalConditionCostBaseCurrency)
-
-    let conditionList = this.recalculateConditions(basicPriceBaseCurrency)
-
-    const sumBase = conditionList.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCost), 0);
-    let netLandedCostPlantCurrency = checkForNull(sumBase) + checkForNull(basicPriceBaseTemp)
+    let conditionList = this.recalculateConditions(basicPriceAndOtherCost)
+    const sumBase = conditionList.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCostPerQuantity), 0);
+    let netLandedCostPlantCurrency = checkForNull(sumBase) + checkForNull(basicPriceAndOtherCost)
     const netCostBaseCurrency = this.state.currencyValue * netLandedCostPlantCurrency
-    this.props.change("BasicPrice", checkForDecimalAndNull(basicPriceBaseCurrency, initialConfiguration.NoOfDecimalForPrice))
+    this.props.change("BasicPrice", checkForDecimalAndNull(basicPriceAndOtherCost, initialConfiguration.NoOfDecimalForPrice))
     this.props.change('ConditionCost', checkForDecimalAndNull(sumBase, initialConfiguration.NoOfDecimalForPrice))
     this.props.change('NetCostPlantCurrency', checkForDecimalAndNull(netLandedCostPlantCurrency, initialConfiguration.NoOfDecimalForPrice))
     this.props.change('NetCostBaseCurrency', checkForDecimalAndNull(netCostBaseCurrency, initialConfiguration.NoOfDecimalForPrice))
@@ -984,11 +994,11 @@ class AddBOPDomestic extends Component {
   * @description Used to Submit the form
   */
   onSubmit = debounce((values) => {
-    console.log(values, 'values')
+
     const { BOPCategory, selectedPlants, vendorName, costingTypeId, sourceLocation, BOPID, isEditFlag, files, DropdownChanged, oldDate, client, effectiveDate, UOM, DataToCheck, isDateChange, IsFinancialDataChanged,
-      isClientVendorBOP, isTechnologyVisible, Technology, FinalConditionCostBaseCurrency, BasicPrice, NetLandedCost, FinalBasicRateBaseCurrency, conditionTableData, isBOPAssociated, IsSAPCodeHandle, IsSAPCodeUpdated, currencyValue, LocalCurrencyId, LocalExchangeRateId, ExchangeSource } = this.state;
+      isClientVendorBOP, isTechnologyVisible, Technology, FinalConditionCostBaseCurrency, BasicPrice, NetLandedCost, FinalBasicRateBaseCurrency, conditionTableData, isBOPAssociated, IsSAPCodeHandle, IsSAPCodeUpdated, currencyValue, LocalCurrencyId, LocalExchangeRateId, ExchangeSource, otherCostTableData, OtherNetCostConversion, totalOtherCost } = this.state;
     const { fieldsObj } = this.props;
-    console.log(this.state, 'this.state')
+
     const userDetailsBop = JSON.parse(localStorage.getItem('userDetail'))
 
     if (costingTypeId !== CBCTypeId && vendorName.length <= 0) {
@@ -1045,7 +1055,7 @@ class AddBOPDomestic extends Component {
       NetLandedCostLocalConversion: NetLandedCost,
       NetLandedCostConversion: NetLandedCost * checkForNull(currencyValue),
       NumberOfPieces: getConfigurationKey().IsMinimumOrderQuantityVisible ? values?.NumberOfPieces : 1,
-      Plant: [plantArray],
+      Plant: plantArray,
       Remark: values?.Remark,
       SAPPartNumber: values?.SAPPartNumber,
       Source: values?.Source,
@@ -1055,7 +1065,11 @@ class AddBOPDomestic extends Component {
       TechnologyName: Technology?.label,
       UnitOfMeasurementId: UOM.value,
       Vendor: vendorName.value,
-      VendorPlant: []
+      VendorPlant: [],
+      OtherNetCostLocalConversion: totalOtherCost,
+      OtherNetCostConversion: OtherNetCostConversion,
+      OtherNetCost: totalOtherCost,
+      BoughtOutPartOtherCostDetailsSchema: otherCostTableData
     };
 
     formData.BoughtOutPartConditionsDetails = conditionTableData;
@@ -1118,7 +1132,7 @@ class AddBOPDomestic extends Component {
   labelWithUOM = (value) => {
     const { initialConfiguration } = this.props
     return <div>
-      <span className='d-flex'>Basic Rate/{displayUOM(value)} (${this.props.fieldsObj?.plantCurrency ?? 'Currency'})</span>
+      <span className='d-flex'>Basic Rate/{displayUOM(value)} ({this.props.fieldsObj?.plantCurrency ?? 'Currency'})</span>
     </div>
   }
   onIsClientVendorBOP = () => {
@@ -1154,19 +1168,27 @@ class AddBOPDomestic extends Component {
   }
 
   openAndCloseAddConditionCosting = (type, data = this.state.conditionTableData) => {
+
     const { initialConfiguration } = this.props
     if (type === 'save') {
       this.setState({ IsFinancialDataChanged: true })
     }
     const sum = data.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCostPerQuantity), 0);
+
     let netLandedCost = checkForNull(sum) + checkForNull(this.state.BasicPrice)
+    const netCostConversion = this.convertIntoBase(netLandedCost, this?.state?.currencyValue)
+
     this.props.change('ConditionCost', checkForDecimalAndNull(sum, initialConfiguration.NoOfDecimalForPrice))
     this.props.change('NetLandedCostBase', checkForDecimalAndNull(netLandedCost, initialConfiguration.NoOfDecimalForPrice))
+    this.props.change('NetCostPlantCurrency', checkForDecimalAndNull(netLandedCost, initialConfiguration.NoOfDecimalForPrice))
+    this.props.change('NetCostBaseCurrency', checkForDecimalAndNull(netCostConversion, initialConfiguration.NoOfDecimalForPrice))
+
     this.setState({
       isOpenConditionDrawer: false,
       conditionTableData: data,
       FinalConditionCostBaseCurrency: sum,
-      NetLandedCost: netLandedCost
+      NetLandedCost: netLandedCost,
+
     })
   }
 
@@ -1183,8 +1205,27 @@ class AddBOPDomestic extends Component {
   otherCostToggle = () => {
     this.setState({ isOpenOtherCostDrawer: true })
   }
-  closeOtherCostToggle = () => {
-    this.setState({ isOpenOtherCostDrawer: false })
+  convertIntoBase = (price) => {
+    const { currencyValue } = this.state;
+    return checkForNull(price) * checkForNull(currencyValue)
+  }
+  closeOtherCostToggle = (type, data, total, totalBase) => {
+
+    // setState(prevState => ({ ...prevState, isOpenOtherCostDrawer: false, otherCostTableData: data, totalOtherCost: totalBase }))
+    const netCost = checkForNull(totalBase) + checkForNull(this.props.fieldsObj?.BasicRate)
+    this.setState({ isOpenOtherCostDrawer: true })
+    this.props.change('OtherCost', totalBase)
+    this.setState({ isOpenOtherCostDrawer: false, otherCostTableData: data })
+    const netCostConversion = this.convertIntoBase(netCost, this?.state?.currencyValue)
+    // 
+    // const OtherCostConversion = this.convertIntoBase(checkForNull(totalBase), this?.state?.currencyValue)
+    // this.setState({ OtherNetCostConversion: OtherCostConversion })
+    this.setState({ isOpenOtherCostDrawer: false, otherCostTableData: data, BasicPrice: checkForNull(netCost) })
+    this.setState(prevState => ({ ...prevState, NetCostPlantCurrency: checkForNull(totalBase) + checkForNull(this.props.fieldsObj?.BasicRate) }))
+    this.props.change("BasicPrice", checkForDecimalAndNull(netCost, getConfigurationKey().NoOfDecimalForPrice))
+    this.setState({ totalOtherCost: totalBase }, () => {
+      this.handleCalculation()
+    })
   }
 
   /**
@@ -2051,6 +2092,10 @@ class AddBOPDomestic extends Component {
               ViewMode={((isEditFlag && isBOPAssociated) || isViewMode)}
               isFromMaster={true}
               EntryType={checkForNull(ENTRY_TYPE_DOMESTIC)}
+              basicRateBase={this.state.BasicPrice}
+              isFromImport={false}
+              currencyValue={this.state.currencyValue}
+              PlantCurrency={this.props.fieldsObj.plantCurrency}
             />
           }
           {
@@ -2081,16 +2126,16 @@ class AddBOPDomestic extends Component {
             this.state.isOpenOtherCostDrawer &&
             <AddOtherCostDrawer
               isOpen={this.state.isOpenOtherCostDrawer}
-              // rmTableData={state.otherCostTableData}
+              rmTableData={this.state?.otherCostTableData}
               closeDrawer={this.closeOtherCostToggle}
               anchor={'right'}
               rawMaterial={true}
-            // rmBasicRate={state.totalBasicRate}
-            // ViewMode={isViewFlag}
-            // uom={state.UOM}
-            // isImport={states.isImport}
-            // plantCurrency={getValues('plantCurrency')}
-            // settlementCurrency={state.currency.label}
+              rmBasicRate={this.props.fieldsObj?.BasicRate}
+              ViewMode={this.state?.isViewFlag}
+              uom={this.state.UOM}
+              isImport={false}
+              plantCurrency={this.props?.fieldsObj?.plantCurrency}
+              settlementCurrency={this.state?.currency?.label}
             />
           }
         </div >
