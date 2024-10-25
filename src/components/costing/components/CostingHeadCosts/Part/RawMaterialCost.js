@@ -1297,7 +1297,7 @@ function RawMaterialCost(props) {
    * @method setRMCCErrors
    * @description CALLING TO SET RAWMATERIAL COST FORM'S ERROR THAT WILL USE WHEN HITTING SAVE RMCC TAB API.
    */
-  let temp = ErrorObjRMCC
+  let temp = ErrorObjRMCC ? ErrorObjRMCC : {}
   if (Object.keys(errors).length > 0 && counter < 2) {
     temp.rmGridFields = errors.rmGridFields;
     dispatch(setRMCCErrors(temp))

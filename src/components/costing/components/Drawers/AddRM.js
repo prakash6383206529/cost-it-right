@@ -82,7 +82,7 @@ function AddRM(props) {
 
   const netLandedFormat = (props) => {
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-    return rowData?.IsValidExchangeRate ? checkForDecimalAndNull(rowData.NetLandedCostCombine, getConfigurationKey().NoOfDecimalForPrice) : '-'
+    return rowData?.IsValidExchangeRate ? (rowData.NetLandedCostCombine ? checkForDecimalAndNull(rowData.NetLandedCostCombine, getConfigurationKey().NoOfDecimalForPrice) : '-') : '-'
   }
 
   const currencyFormatter = (props) => {

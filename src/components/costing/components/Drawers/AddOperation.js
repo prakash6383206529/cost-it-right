@@ -141,7 +141,7 @@ function AddOperation(props) {
   const rateFormat = (props) => {
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-    return rowData?.IsValidExchangeRate ? checkForDecimalAndNull(cellValue, getConfigurationKey().NoOfDecimalForPrice) : '-'
+    return rowData?.IsValidExchangeRate ? (cellValue ? checkForDecimalAndNull(cellValue, getConfigurationKey().NoOfDecimalForPrice) : '-') : '-'
   }
 
   const frameworkComponents = {

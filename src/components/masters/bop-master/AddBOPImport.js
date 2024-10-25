@@ -949,7 +949,6 @@ class AddBOPImport extends Component {
       this.props.change('BasicPrice', checkForDecimalAndNull(basicPrice, initialConfiguration.NoOfDecimalForPrice));
     }
     let conditionList = this.recalculateConditions(basicPrice)
-    console.log(conditionList, 'conditionList')
     const sumBaseCurrency = conditionList.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCostPerQuantity), 0);
     let netLandedCost = checkForNull(sumBaseCurrency) + checkForNull(basicPrice)
     let netLandedCostPlantCurrency = checkForNull(netLandedCost) * checkForNull(this.state.plantCurrencyValue)
@@ -1430,14 +1429,12 @@ class AddBOPImport extends Component {
   }
 
   openAndCloseAddConditionCosting = (type, data = this.state.conditionTableData) => {
-    console.log(data, 'data')
     const { initialConfiguration } = this.props
     const { NetCostWithoutConditionCost, plantCurrencyValue, currencyValue } = this.state
     if (type === 'save') {
       this.setState({ IsFinancialDataChanged: true })
     }
     const sumSelectedCurrency = data.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCostPerQuantity), 0);
-    console.log(sumSelectedCurrency, 'sumSelectedCurrency')
     const netLandedCost = checkForNull(sumSelectedCurrency) + checkForNull(NetCostWithoutConditionCost)
     this.props.change('NetConditionCost', checkForDecimalAndNull(sumSelectedCurrency, initialConfiguration.NoOfDecimalForPrice))
     this.props.change('NetLandedCost', checkForDecimalAndNull(netLandedCost, initialConfiguration.NoOfDecimalForPrice))
@@ -1471,7 +1468,6 @@ class AddBOPImport extends Component {
     this.setState({ isOpenOtherCostDrawer: true })
   }
   closeOtherCostToggle = (type, data, total, totalBase) => {
-    console.log(data, 'data')
     const { NetConditionCost, plantCurrencyValue, currencyValue, NetCostWithoutConditionCost } = this.state
     if (type === 'Save') {
       const basicPrice = checkForNull(NetCostWithoutConditionCost) + checkForNull(total)

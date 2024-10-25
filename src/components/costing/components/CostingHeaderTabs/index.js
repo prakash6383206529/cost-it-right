@@ -98,7 +98,7 @@ function CostingHeaderTabs(props) {
     dispatch(setCurrencySource({ label: costData?.CostingCurrency, value: costData?.CostingCurrencyId }))
     setValue('Currency', { label: costData?.CostingCurrency, value: costData?.CostingCurrencyId })
     setValue('ExchangeSource', { label: costData?.ExchangeRateSourceName, value: costData?.ExchangeRateSourceName })
-  }, [costingData])
+  }, [costingData, costData])
 
   useEffect(() => {
     dispatch(getCurrencySelectList(true, () => { }))
@@ -116,13 +116,13 @@ function CostingHeaderTabs(props) {
   useEffect(() => {
     if (currency && effectiveDate && exchangeRateSource && !costData?.ExchangeRateId && !costData?.CostingCurrencyId) {
       let arr = []
-      callExchangeRateAPI('USD').then(res => { //plant
+      callExchangeRateAPI(costData?.LocalCurrency).then(res => { //plant
         arr.push(res?.data?.Data)
         callExchangeRateAPI(initialConfiguration?.BaseCurrency).then(resp => {
           arr.push(resp?.data?.Data)
 
           let obj = {
-            "BaseCostingId": ComponentItemData.CostingId,
+            "BaseCostingId": costData?.CostingId,
             "EffectiveDate": DayTime(effectiveDate).format('YYYY-MM-DD'),
             "ExchangeRateSourceName": exchangeRateSource?.value,
             "CostingCurrencyId": currency?.value,// selected currency
@@ -668,7 +668,7 @@ function CostingHeaderTabs(props) {
                 options={renderListing("ExchangeSource")}
                 handleChange={handleExchangeRateSource}
                 defaultValue={exchangeRateSource?.length !== 0 ? exchangeRateSource : ""}
-                disabled={(costData?.ExchangeRateId ? true : false) || CostingViewMode}
+                disabled={(costData?.ExchangeRateSourceName ? true : false) || CostingViewMode}
               />
             </Col>}
             <Col md="3">
