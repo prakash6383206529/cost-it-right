@@ -39,7 +39,7 @@ const UsersListing = (props) => {
 	const dispatch = useDispatch();
 	const searchRef = useRef(null);
 	const { t } = useTranslation("common")
-	const vendorLabel = useLabels()
+	const { vendorLabel } = useLabels()
 	const { userDataList, rfqUserList, initialConfiguration, topAndLeftMenuData } = useSelector((state) => state.auth);
 	const [state, setState] = useState({
 		isEditFlag: false,

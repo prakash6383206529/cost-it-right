@@ -14,7 +14,7 @@ import SimulationApprovalListing from '../simulation/components/SimulationApprov
 import { useLabels } from '../../helper/core';
 export function Dashboardwithgraph(props) {
     const { handleSubmit } = props
-    const vendorLabel = useLabels()
+    const { vendorLabel } = useLabels()
     const [acc1, setAcc1] = useState(true)
     const [acc2, setAcc2] = useState(false)
 
