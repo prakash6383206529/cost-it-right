@@ -37,7 +37,7 @@ import Switch from 'react-switch'
 
 function AddMoreOperation(props) {
     const { addMoreDetailObj, isEditFlag, detailObject, isViewMode } = props
-    console.log("addMoreDetailObj", addMoreDetailObj)
+
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
     const costingSpecifiTechnology = useSelector(state => state.costing.costingSpecifiTechnology)
     const clientSelectList = useSelector(state => state.client.clientSelectList)
@@ -354,7 +354,7 @@ function AddMoreOperation(props) {
             setValue('RateConversion', checkForDecimalAndNull(rateConversion, initialConfiguration.NoOfDecimalForPrice))
         } else {
             const rateConversion = checkForNull(state.plantCurrency) * checkForNull(totalCost)
-            console.log(rateConversion, "rateConversiojnjn")
+
             setValue('RateLocalConversion', checkForDecimalAndNull(totalCost, initialConfiguration.NoOfDecimalForPrice))
             setValue('RateConversion', checkForDecimalAndNull(rateConversion, initialConfiguration.NoOfDecimalForPrice))
         }
@@ -386,7 +386,7 @@ function AddMoreOperation(props) {
     }
 
     const setNetCostPlating = (obj) => {
-        console.log(obj, "obj")
+
 
         let wireCost = checkForNull(obj.wireCost)
         let gasCost = checkForNull(obj.gasCost)
@@ -409,7 +409,7 @@ function AddMoreOperation(props) {
             setValue('RateConversion', checkForDecimalAndNull(rateConversion, initialConfiguration.NoOfDecimalForPrice))
         } else {
             const rateConversion = checkForNull(state.plantCurrency) * checkForNull(Rate)
-            console.log(rateConversion, "rateConversion")
+
             setValue('RateLocalConversion', checkForDecimalAndNull(Rate, initialConfiguration.NoOfDecimalForPrice))
             setValue('RateConversion', checkForDecimalAndNull(rateConversion, initialConfiguration.NoOfDecimalForPrice))
         }
@@ -579,7 +579,7 @@ function AddMoreOperation(props) {
 
 
     const onSubmit = debounce(handleSubmit((values) => {
-        console.log(values, 'values')
+
         let technologyArray = []
         // let plantArray = [{ PlantName: plant.label, PlantId: plant.value, PlantCode: ' ', }]
         let plantArray = Array?.isArray(plant) ? plant?.map(plant => ({ PlantId: plant?.value, PlantName: plant?.label, PlantCode: '' })) :
@@ -602,9 +602,9 @@ function AddMoreOperation(props) {
             VendorId: addMoreDetailObj.costingTypeId === VBCTypeId ? vendor.value : null,
             UnitOfMeasurementId: uom.value,
             IsSurfaceTreatmentOperation: addMoreDetailObj?.isSurfaceTreatment,
-            Rate: isWelding ? dataToSend.netCostWelding : values.Rate,
-            RateLocalConversion: values.RateLocalConversion,
-            RateConversion: values.RateConversion,
+            Rate: isWelding ? dataToSend.netCostWelding : (values.Rate ? values?.Rate : values?.RateLocalConversion),
+            RateLocalConversion: values?.RateLocalConversion,
+            RateConversion: values?.RateConversion,
             LabourRatePerUOM: initialConfiguration && initialConfiguration.IsOperationLabourRateConfigure ? values.LabourRatePerUOM : '',
             Technology: technologyArray,
             Remark: values.remark ? values.remark : '',
@@ -680,14 +680,14 @@ function AddMoreOperation(props) {
             InterestAndDepriciationCost: values?.interestDepriciationCost,
             OperationEntryType: state.isImport ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC,
             ExchangeRateSourceName: state.ExchangeSource?.label || null,
-            LocalCurrencyId: state.plantCurrencyID || null,
-            LocalCurrency: state.plantCurrency || null,
-            ExchangeRate: state.settlementCurrency || null,
-            LocalCurrencyExchangeRate: state.plantCurrency || null,
-            CurrencyId: state.currency?.value || null,
-            Currency: state.currency?.label || null,
-            ExchangeRateId: state.settlementExchangeRateId || null,
-            LocalExchangeRateId: state.plantExchangeRateId || null,
+            LocalCurrencyId: state.isImport ? state?.plantCurrencyID : null,
+            LocalCurrency: state.isImport ? getValues("plantCurrency") : null,
+            LocalExchangeRateId: state.isImport ? state?.plantExchangeRateId : null,
+            LocalCurrencyExchangeRate: state.isImport ? state?.plantCurrency : null,
+            ExchangeRate: state.isImport ? state?.settlementCurrency : state?.plantCurrency,
+            ExchangeRateId: state.isImport ? state?.settlementExchangeRateId : state?.plantExchangeRateId,
+            CurrencyId: state.isImport ? state.currency?.value : state?.plantCurrencyID,
+            Currency: state.isImport ? state?.currency?.label : getValues("plantCurrency"),
         }
 
         let isFinancialDataChange = false;

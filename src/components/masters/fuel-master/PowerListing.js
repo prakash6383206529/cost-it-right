@@ -359,7 +359,9 @@ const PowerListing = (props) => {
                 suppressRowClickSelection={true}
               >
                 <AgGridColumn field="CostingType"></AgGridColumn>
+                <AgGridColumn field="CountryName"></AgGridColumn>
                 <AgGridColumn field="StateName"></AgGridColumn>
+                <AgGridColumn field="CityName"></AgGridColumn>
                 <AgGridColumn field="PlantWithCode" headerName="Plant (Code)" ></AgGridColumn>
                 <AgGridColumn field="VendorWithCode" headerName={`${vendorLabel} (Code)`}></AgGridColumn>
                 {(reactLocalStorage.getObject('CostingTypePermission').cbc) && <AgGridColumn field="CustomerWithCode" headerName="Customer (Code)"></AgGridColumn>}
