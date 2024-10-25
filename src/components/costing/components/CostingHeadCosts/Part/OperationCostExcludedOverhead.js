@@ -291,7 +291,7 @@ function OperationCostExcludedOverhead(props) {
    * @method setRMCCErrors
    * @description CALLING TO SET BOP COST FORM'S ERROR THAT WILL USE WHEN HITTING SAVE RMCC TAB API.
    */
-  let temp = ErrorObjRMCC
+  let temp = ErrorObjRMCC ? ErrorObjRMCC : {}
   if (Object.keys(errors).length > 0 && counter < 2) {
     temp.OperationGridFields = errors.OperationGridFields;
     dispatch(setRMCCErrors(temp))

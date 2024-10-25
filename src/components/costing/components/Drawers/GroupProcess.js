@@ -103,6 +103,7 @@ function GroupProcess(props) {
                     <thead>
                         <tr>
                             <th>Process Group</th>
+                            <th>Process Type</th>
                             <th>{technologyLabel}</th>
                             <th>Machine Name</th>
                             <th>MachineTonnage</th>
@@ -127,6 +128,7 @@ function GroupProcess(props) {
                                         </label>
                                     </span>
                                     </td>
+                                    <td>{item?.EntryType ? item?.EntryType : '-'}</td>
                                     <td>{item.Technology}</td>
                                     <td>{item.MachineName}</td>
                                     <td ><div className='process-name'>{item.Tonnage}
@@ -135,7 +137,7 @@ function GroupProcess(props) {
                                         }} className={`${processAccObj[index] ? 'Open' : 'Close'}`}></div> </div></td>
                                 </tr>
                                 {processAccObj[index] && <tr>
-                                    <td colSpan={4}>
+                                    <td colSpan={5}>
                                         <table className='table cr-brdr-main mb-0'>
                                             <thead>
                                                 <tr>

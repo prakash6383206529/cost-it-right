@@ -330,9 +330,6 @@ function AddRMMaster(props) {
     };
 
     const onSubmit = debounce(handleSubmit((values, isDivision) => {
-        console.log(values, "values")
-        console.log(rawMaterailDetails, "rawMaterailDetails")
-        console.log(exchangeRateDetails, 'exchangeRateDetails')
         const { DataToChange } = state
         let scrapRate = ''
         let jaliRateBaseCurrency = ''
@@ -340,7 +337,6 @@ function AddRMMaster(props) {
         let scrapRateInr = ''
         let scrapRateLocalConversion = ''
         const { states: { showScrapKeys } } = rawMaterailDetails
-        console.log(showScrapKeys, 'showScrapKeys')
         const Plants = values.Plants
         if (showScrapKeys?.showCircleJali) {
             scrapRate = values?.JaliScrapCost
@@ -374,7 +370,6 @@ function AddRMMaster(props) {
                 return false
             }
         }
-        console.log(scrapRate, 'scrapRate')
 
         let plantArray = []
         if ((state.costingTypeId === ZBCTypeId && !getConfigurationKey().IsMultipleUserAllowForApproval) || state.isEditFlag) {
@@ -479,7 +474,6 @@ function AddRMMaster(props) {
             "VendorName": state.costingTypeId === VBCTypeId ? !state.isEditFlag ? getNameBySplitting(rawMaterailDetails?.Vendor?.label) : getNameBySplitting(values?.Vendor?.label) : '',
             "VendorPlant": []
         }
-        console.log(formData, 'formData')
 
         let financialDataNotChanged = (checkForNull(values.cutOffPrice) === checkForNull(DataToChange?.CutOffPrice)) && (checkForNull(values.BasicRate) === checkForNull(DataToChange?.BasicRatePerUOM)) && rawMaterailDetails?.states?.IsApplyHasDifferentUOM === DataToChange?.IsScrapUOMApply
             && checkForNull(values?.ConversionRatio) === checkForNull(DataToChange?.UOMToScrapUOMRatio) && checkForNull(values?.ScrapRatePerScrapUOM) === checkForNull(DataToChange?.ScrapRatePerScrapUOM) && (checkForNull(values.OtherCost) === checkForNull(DataToChange?.OtherNetCost))

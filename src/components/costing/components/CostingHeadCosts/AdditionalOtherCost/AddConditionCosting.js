@@ -17,7 +17,6 @@ import { reactLocalStorage } from 'reactjs-localstorage'
 
 function AddConditionCosting(props) {
     const { currency, currencyValue, basicRateCurrency, basicRateBase, isFromImport, isFromMaster, EntryType, PlantCurrency } = props
-    console.log(props, 'props')
     const [tableData, setTableData] = useState(props?.tableData)
     // const [tableData, setTableData] = useState([])
     const [disableTotalCost, setDisableTotalCost] = useState(true)
@@ -258,7 +257,6 @@ function AddConditionCosting(props) {
             ConditionCostPerQuantityConversion: getValues('CostPerQuantityConversion') ? getValues('CostPerQuantityConversion') : '',
             CostingConditionEntryTypeId: costingConditionEntryType
         };
-        console.log(newData, 'newData')
         let isDuplicate = false
         tableData.map((item, index) => {
             if (index !== editIndex) {

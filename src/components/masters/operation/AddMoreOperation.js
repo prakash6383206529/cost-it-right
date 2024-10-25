@@ -37,7 +37,6 @@ import Switch from 'react-switch'
 
 function AddMoreOperation(props) {
     const { addMoreDetailObj, isEditFlag, detailObject, isViewMode } = props
-    console.log("addMoreDetailObj", addMoreDetailObj)
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
     const costingSpecifiTechnology = useSelector(state => state.costing.costingSpecifiTechnology)
     const clientSelectList = useSelector(state => state.client.clientSelectList)
@@ -354,7 +353,6 @@ function AddMoreOperation(props) {
             setValue('RateConversion', checkForDecimalAndNull(rateConversion, initialConfiguration.NoOfDecimalForPrice))
         } else {
             const rateConversion = checkForNull(state.plantCurrency) * checkForNull(totalCost)
-            console.log(rateConversion, "rateConversiojnjn")
             setValue('RateLocalConversion', checkForDecimalAndNull(totalCost, initialConfiguration.NoOfDecimalForPrice))
             setValue('RateConversion', checkForDecimalAndNull(rateConversion, initialConfiguration.NoOfDecimalForPrice))
         }
@@ -386,7 +384,6 @@ function AddMoreOperation(props) {
     }
 
     const setNetCostPlating = (obj) => {
-        console.log(obj, "obj")
 
         let wireCost = checkForNull(obj.wireCost)
         let gasCost = checkForNull(obj.gasCost)
@@ -409,7 +406,6 @@ function AddMoreOperation(props) {
             setValue('RateConversion', checkForDecimalAndNull(rateConversion, initialConfiguration.NoOfDecimalForPrice))
         } else {
             const rateConversion = checkForNull(state.plantCurrency) * checkForNull(Rate)
-            console.log(rateConversion, "rateConversion")
             setValue('RateLocalConversion', checkForDecimalAndNull(Rate, initialConfiguration.NoOfDecimalForPrice))
             setValue('RateConversion', checkForDecimalAndNull(rateConversion, initialConfiguration.NoOfDecimalForPrice))
         }
@@ -579,7 +575,6 @@ function AddMoreOperation(props) {
 
 
     const onSubmit = debounce(handleSubmit((values) => {
-        console.log(values, 'values')
         let technologyArray = []
         // let plantArray = [{ PlantName: plant.label, PlantId: plant.value, PlantCode: ' ', }]
         let plantArray = Array?.isArray(plant) ? plant?.map(plant => ({ PlantId: plant?.value, PlantName: plant?.label, PlantCode: '' })) :

@@ -16,7 +16,6 @@ function ConditionCosting(props) {
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
 
     useEffect(() => {
-        console.log(props?.tableData, 'props?.tableData')
         const sum = props?.tableData?.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj?.ConditionCostPerQuantityConversion), 0);
         setTotalCostBase(checkForDecimalAndNull(sum, initialConfiguration.NoOfDecimalForPrice))
 
@@ -42,7 +41,6 @@ function ConditionCosting(props) {
                             </tr>
                             {props?.tableData &&
                                 props?.tableData.map((item, index) => {
-                                    console.log(item, 'item')
                                     return (
                                         <Fragment>
                                             <tr key={index}>

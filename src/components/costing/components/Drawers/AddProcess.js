@@ -396,6 +396,7 @@ function AddProcess(props) {
                                   isRowSelectable={isRowSelectable}
                                 >
                                   <AgGridColumn field="MachineRateId" hide={true}></AgGridColumn>
+                                  <AgGridColumn field='EntryType' headerName={'Process Type'}></AgGridColumn>
                                   <AgGridColumn cellClass="has-checkbox" field="ProcessName" headerName="Process Name" cellRenderer={checkBoxRenderer}  ></AgGridColumn>
                                   <AgGridColumn field='Technologies' headerName={technologyLabel}></AgGridColumn>
                                   <AgGridColumn field="MachineNumber" headerName="Machine No."></AgGridColumn>
