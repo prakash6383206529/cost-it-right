@@ -210,7 +210,6 @@ class AddOperation extends Component {
         // Original single API call for non-import case
         callAPI(fromCurrency, toCurrency).then(({ rate, exchangeRateId }) => {
           this.setState({ plantCurrency: rate, plantExchangeRateId: exchangeRateId }, () => {
-            console.log(fieldsObj?.RateLocalConversion, 'fieldsObj?.RateLocalConversion')
             this.handleCalculation(fieldsObj?.RateLocalConversion)
           });
         });
@@ -957,7 +956,6 @@ class AddOperation extends Component {
   * @description Used to Submit the form
   */
   onSubmit = debounce((values) => {
-    console.log(values, 'values')
     const { selectedPlants, vendorName, files,
       UOM, oldUOM, isSurfaceTreatment, selectedTechnology, client, costingTypeId, remarks, OperationId, oldDate, effectiveDate, destinationPlant, DataToChange, isDateChange, IsFinancialDataChanged, isEditFlag, isImport } = this.state;
     const { initialConfiguration } = this.props;
@@ -1364,7 +1362,7 @@ class AddOperation extends Component {
                           options={this.renderListing("technology")}
                           selectionChanged={this.handleTechnology}
                           optionValue={(option) => option.Value}
-                          optionLabel={(option) => option?.label}
+                          optionLabel={(option) => option?.Text}
                           component={renderMultiSelectField}
                           mendatory={true}
                           validate={this.state.selectedTechnology == null || this.state.selectedTechnology.length === 0 ? [required] : []}
