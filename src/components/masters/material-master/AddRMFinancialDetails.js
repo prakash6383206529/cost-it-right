@@ -342,8 +342,9 @@ function AddRMFinancialDetails(props) {
             if (item?.ConditionType === "Percentage") {
                 let costSelectedCurrency = checkForNull((item?.Percentage) / 100) * checkForNull(basicPriceSelectedCurrency)
                 let costBaseCurrency = checkForNull((item?.Percentage) / 100) * checkForNull(basicPriceBaseCurrency)
-                item.ConditionCost = costSelectedCurrency
+                item.ConditionCost = costBaseCurrency
                 item.ConditionCostConversion = costBaseCurrency
+                item.ConditionCostPerQuantity = costBaseCurrency
             }
             return item
         })
@@ -711,6 +712,7 @@ function AddRMFinancialDetails(props) {
 
     const closeOtherCostToggle = (type, data, total, totalBase) => {
         if (type === 'Save') {
+            Toaster.warning("Please click on refresh button, if you have already added data in Condition Cost Drawer.")
             const netCost = checkForNull(totalBase) + checkForNull(getValues('BasicRate'))
             const netCostLocalCurrency = convertIntoBase(netCost, CurrencyExchangeRate?.plantCurrencyRate)
             const netCostConversion = convertIntoBase(netCost, CurrencyExchangeRate?.settlementCurrencyRate)
@@ -891,6 +893,21 @@ function AddRMFinancialDetails(props) {
         }
         return true;
     };
+
+    const updateConditionCostValue = () => {
+        let conditnCostTable = recalculateConditions('', state.NetCostWithoutConditionCost)
+        let sum = conditnCostTable && conditnCostTable.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCostConversion), 0);
+        let updatedState = {
+            ...state,
+            NetConditionCost: sum,
+        }
+        setValue('FinalConditionCost', checkForDecimalAndNull(sum, getConfigurationKey().NoOfDecimalForPrice))
+        setState(updatedState)
+        setTimeout(() => {
+            dispatch(setRawMaterialDetails({ ...rawMaterailDetails, states: updatedState }, () => { }))
+        }, 50);
+    }
+
     return (
         <Fragment>
 
@@ -1489,13 +1506,19 @@ function AddRMFinancialDetails(props) {
                                                 customClassName=" withBorder"
                                             />
                                         </div>
-                                        <Button
-                                            id="addRMDomestic_conditionToggle"
-                                            onClick={conditionToggle}
-                                            className={"right mt-0 mb-2"}
-                                            variant={isViewFlag ? "view-icon-primary" : "plus-icon-square"}
-                                            title={isViewFlag ? "View" : "Add"}
-                                        />
+                                        <div className="d-flex align-items-center mt-1">
+                                            <button type="button" id="condition-cost-refresh" className={'refresh-icon mt-1 ml-1'} onClick={() => updateConditionCostValue()}>
+                                                <TooltipCustom disabledIcon={true} id="condition-cost-refresh" tooltipText="Refresh to update Condition cost" />
+                                            </button>
+                                            <Button
+                                                id="addRMDomestic_conditionToggle"
+                                                onClick={conditionToggle}
+                                                className={"right ml-1"}
+                                                variant={isViewFlag ? "view-icon-primary" : "plus-icon-square"}
+                                                title={isViewFlag ? "View" : "Add"}
+                                            />
+                                        </div>
+
                                     </div>
                                 </Col>
 
@@ -1573,7 +1596,6 @@ function AddRMFinancialDetails(props) {
                     PlantCurrency={getValues('plantCurrency')}
                 />
             }
-            {console.log(state.totalBasicRate, 'state.totalBasicRate')}
             {
                 state.isOpenOtherCostDrawer &&
                 <AddOtherCostDrawer
