@@ -420,7 +420,8 @@ class AddBOPDomestic extends Component {
               LocalExchangeRateId: Data.ExchangeRateId,
               LocalCurrencyId: Data.CurrencyId,
               ExchangeSource: { label: Data.ExchangeRateSourceName, value: Data.ExchangeRateSourceName },
-              totalOtherCost: Data?.OtherNetCost
+              totalOtherCost: Data?.OtherNetCost,
+              otherCostTableData: Data?.BoughtOutPartOtherCostDetailsSchema,
             }, () => {
               this.toolTipNetCost()
               this.setState({ isLoader: false })
@@ -725,6 +726,8 @@ class AddBOPDomestic extends Component {
       if (item?.ConditionType === "Percentage") {
         let costBase = checkForNull((item?.Percentage) / 100) * checkForNull(basicPriceBase)
         item.ConditionCost = costBase
+        item.ConditionCostPerQuantity = costBase
+        item.ConditionCostConversion = costBase
       }
       return item
     })
@@ -1212,6 +1215,7 @@ class AddBOPDomestic extends Component {
   closeOtherCostToggle = (type, data, total, totalBase) => {
 
     // setState(prevState => ({ ...prevState, isOpenOtherCostDrawer: false, otherCostTableData: data, totalOtherCost: totalBase }))
+    Toaster.warning("Please click on refresh button, if you have already added data in Condition Cost Drawer.")
     const netCost = checkForNull(totalBase) + checkForNull(this.props.fieldsObj?.BasicRate)
     this.setState({ isOpenOtherCostDrawer: true })
     this.props.change('OtherCost', totalBase)
@@ -1226,6 +1230,13 @@ class AddBOPDomestic extends Component {
     this.setState({ totalOtherCost: totalBase }, () => {
       this.handleCalculation()
     })
+  }
+
+  updateConditionCostValue = () => {
+    let conditnCostTable = this.recalculateConditions(this.state.BasicPrice)
+    let sum = conditnCostTable && conditnCostTable.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCost), 0);
+    this.props.change('ConditionCost', checkForDecimalAndNull(sum, getConfigurationKey().NoOfDecimalForPrice))
+    this.setState({ FinalConditionCostBaseCurrency: sum, ConditionCostConversion: sum, })
   }
 
   /**
@@ -1827,13 +1838,17 @@ class AddBOPDomestic extends Component {
                                     customClassName=" withBorder"
                                   />
                                 </div>
-                                <Button
-                                  id="addBOPDomestic_condition"
-                                  onClick={this.conditionToggle}
-                                  className={"right mt-0 mb-2"}
-                                  variant={isViewMode ? "view-icon-primary" : "plus-icon-square"}
-                                />
-
+                                <div className="d-flex align-items-center mb-2">
+                                  <button type="button" id="condition-cost-refresh" className={'refresh-icon mt-1 ml-1'} onClick={() => this.updateConditionCostValue()}>
+                                    <TooltipCustom disabledIcon={true} id="condition-cost-refresh" tooltipText="Refresh to update Condition cost" />
+                                  </button>
+                                  <Button
+                                    id="addBOPDomestic_condition"
+                                    onClick={this.conditionToggle}
+                                    className={"right ml-1"}
+                                    variant={isViewMode ? "view-icon-primary" : "plus-icon-square"}
+                                  />
+                                </div>
                               </div>
                             </Col>
                           </>}
