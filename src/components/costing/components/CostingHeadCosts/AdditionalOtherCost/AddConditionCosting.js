@@ -11,12 +11,12 @@ import { getCostingCondition } from '../../../../../actions/Common'
 import Toaster from '../../../../common/Toaster'
 import TooltipCustom from '../../../../common/Tooltip'
 import { trim } from 'lodash'
-import { getCostingConditionTypes } from '../../../../common/CommonFunctions'
+import { generateCombinations, getCostingConditionTypes } from '../../../../common/CommonFunctions'
 import { COSTINGCONDITIONCOST } from '../../../../../config/constants'
 import { reactLocalStorage } from 'reactjs-localstorage'
 
 function AddConditionCosting(props) {
-    const { currency, currencyValue, basicRateCurrency, basicRateBase, isFromImport, isFromMaster, EntryType, PlantCurrency } = props
+    const { currency, basicRateBase, isFromImport, isFromMaster, EntryType, PlantCurrency } = props
     const [tableData, setTableData] = useState(props?.tableData)
     // const [tableData, setTableData] = useState([])
     const [disableTotalCost, setDisableTotalCost] = useState(true)
@@ -31,8 +31,14 @@ function AddConditionCosting(props) {
     const [disableCurrency, setDisableCurrency] = useState(false)
     const [disableEntryType, setDisableEntryType] = useState(false)
     const [costingConditionEntryType, setCostingConditionEntryType] = useState(props?.costingConditionEntryType)
+    const [availableApplicabilities, setAvailableApplicabilities] = useState(["Basic Price"]);
+    const [state, setState] = useState({
+        Applicability: false,
+        disableApplicability: true,
+        disableType: true,
+        ApplicabilityCost: 0
+    })
     const conditionTypeId = getCostingConditionTypes(COSTINGCONDITIONCOST)
-
     const conditionEntryTypeDropdown = [
         {
             label: 'Domestic',
@@ -43,6 +49,16 @@ function AddConditionCosting(props) {
             value: 1,
         },
     ]
+    const renderListing = (label) => {
+        if (label === 'Type') {
+            return [
+                { label: "Percentage", value: "Percentage" },
+                { label: "Fixed", value: 'Fixed' },
+                { label: "Quantity", value: "Quantity" }
+            ]
+        }
+        return [];
+    }
     const { register, control, setValue, getValues, reset, formState: { errors }, } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
@@ -116,27 +132,43 @@ function AddConditionCosting(props) {
         calculateCostPerQuantity()
 
     }, [fieldValues])
+
+    useEffect(() => {
+        updateAvailableApplicabilities();
+    }, [tableData, state.costDropdown]);
+
+    const updateAvailableApplicabilities = () => {
+        const newApplicabilities = ["Basic Price"];
+        tableData.forEach(item => {
+            if (item.Description !== "Basic Price" && !newApplicabilities.includes(item.Description)) {
+                newApplicabilities.push(item.Description);
+            }
+        });
+        setAvailableApplicabilities(newApplicabilities);
+    };
+    const combinations = generateCombinations(availableApplicabilities, "Basic Price");
+
     const toggleCondition = () => {
         // isFromImport ? type === 'Fixed' ? 'mb-3' : 'mt-4 pt-1' : type === 'Percentage' ? 'mb-3' : 'mt-4 pt-1'
         let cssClass = '';
         if (isFromImport) {
-            if (type === "") {
+            if (type?.label === "") {
                 cssClass = 'mb-3';
-            } else if (type === "Fixed") {
+            } else if (type?.label === "Fixed") {
                 cssClass = 'mb-3';
             } else {
                 cssClass = 'mt-4 pt-1';
             }
         } else {
-            if (type === "") {
+            if (type?.label === "") {
                 cssClass = 'mb-3';
-            } else if (type === "Fixed") {
+            } else if (type?.label === "Fixed") {
                 cssClass = 'mb-3';
             } else {
                 cssClass = 'mt-4 pt-1';
             }
             if (props.isFromMaster) {
-                if (type === "Percentage") {
+                if (type?.label === "Percentage") {
                     cssClass = 'mb-3';
                 } else {
                     cssClass = 'mt-4 pt-1';
@@ -146,8 +178,8 @@ function AddConditionCosting(props) {
         return cssClass
     }
     const onConditionChange = (e) => {
-        setType(e?.ConditionType)
-        setValue('Type', e?.ConditionType)
+        setType({ label: e?.ConditionType, value: e?.ConditionType })
+        setValue('Type', { label: e?.ConditionType, value: e?.ConditionType })
         setValue('Percentage', '')
         setValue('Quantity', '')
         setValue('CostCurrency', '')
@@ -159,12 +191,15 @@ function AddConditionCosting(props) {
             setDisableBase(false)
             setDisableAllFields(true)
             setValue('Percentage', '')
+            setState(prevState => ({ ...prevState, disableType: true }));
         } else if (e?.ConditionType === 'Percentage') {
+            setState(prevState => ({ ...prevState, disableApplicability: false, disableType: true }));
             setDisableAllFields(false)
             setDisableTotalCost(true)
             setTotalCostCurrency('')
             setTotalCostBase('')
         } else {
+            setState(prevState => ({ ...prevState, disableType: false }));
             setDisableAllFields(false)
             setDisableTotalCost(true)
             setTotalCostCurrency('')
@@ -191,7 +226,6 @@ function AddConditionCosting(props) {
             setCostingConditionEntryType(props.costingConditionEntryType)
             setConditionDropdown([])
         }
-
     }
 
     const handleCostChangeCurrency = (e) => {
@@ -218,7 +252,7 @@ function AddConditionCosting(props) {
 
     const onPercentChange = (e) => {
         if (e?.target?.value) {
-            let costBase = checkForNull((e.target.value) / 100) * checkForNull(basicRateBase)
+            let costBase = checkForNull((e.target.value) / 100) * checkForNull(state.ApplicabilityCost)
             setValue('CostCurrency', checkForDecimalAndNull(costBase, initialConfiguration.NoOfDecimalForPrice))
             setTotalCostCurrency(costBase)
             setTotalCostBase(costBase)
@@ -236,27 +270,39 @@ function AddConditionCosting(props) {
 
 
     const addData = () => {
+        const Applicability = getValues('Applicability')?.label
+        const ApplicabilityCost = getValues('ApplicabilityCost')
+        const Percentage = getValues('Percentage')
+        if (type.label === "Percentage") {
+            // If 'Type' is 'percentage', check for 'Applicability' and 'Percentage'
+            if (!Applicability || !ApplicabilityCost || !Percentage || Percentage === 0) {
+                Toaster.warning('Cost should not be zero or empty.');
+                return false;
+            }
+        }
         if (!getValues('Type') || !getValues('Condition') || ((getValues('Type') === 'Fixed' || getValues('Type') === 'Quantity') && !getValues('CostCurrency')) || (getValues('Type') === 'Percentage' && !getValues('Percentage'))) {
             Toaster.warning("Please enter all details to add a row.");
             return false;
         }
         if (errors.Percentage || errors.Quantity || errors.CostCurrency) return false;
-
         const newCondition = getValues('Condition') ? getValues('Condition') : null;
 
         const newData = {
             CostingConditionMasterId: newCondition ? newCondition.CostingConditionMasterId : '',
             ConditionNumber: newCondition ? newCondition.CostingConditionNumber : '',
             Description: newCondition ? newCondition.label : '',
-            ConditionType: getValues('Type') ? getValues('Type') : '',
+            ConditionType: getValues('Type') ? getValues('Type')?.label : '',
             Percentage: getValues('Percentage') ? getValues('Percentage') : '',
             ConditionCost: totalCostCurrency ? totalCostCurrency : '',
             ConditionCostConversion: totalCostBase ? totalCostBase : '',
             ConditionCostPerQuantity: getValues('ConditionCostPerQuantity') ? getValues('ConditionCostPerQuantity') : '',
             ConditionQuantity: getValues('Quantity') ? getValues('Quantity') : '',
             ConditionCostPerQuantityConversion: getValues('CostPerQuantityConversion') ? getValues('CostPerQuantityConversion') : '',
-            CostingConditionEntryTypeId: costingConditionEntryType
+            CostingConditionEntryTypeId: costingConditionEntryType,
+            Applicability: Applicability,
+            ApplicabilityCost: ApplicabilityCost
         };
+
         let isDuplicate = false
         tableData.map((item, index) => {
             if (index !== editIndex) {
@@ -283,6 +329,7 @@ function AddConditionCosting(props) {
         resetData();
         setIsEditMode(false);
         setEditIndex('');
+
     };
 
     const resetData = (type = '') => {
@@ -343,15 +390,18 @@ function AddConditionCosting(props) {
                 label: Data.Description, value: Data.ConditionNumber,
                 CostingConditionMasterId: Data.CostingConditionMasterId, ConditionNumber: Data.ConditionNumber, ConditionType: Data.ConditionType
             })
-            setValue('Type', Data.ConditionType)
+            setValue('Type', { label: Data.ConditionType, value: Data.ConditionType })
             setValue('Percentage', checkForDecimalAndNull(Data.Percentage, initialConfiguration.NoOfDecimalForPrice))
             setValue('CostCurrency', checkForDecimalAndNull(Data.ConditionCost, initialConfiguration.NoOfDecimalForPrice))
             setValue('CostBase', checkForDecimalAndNull(Data.ConditionCostConversion, initialConfiguration.NoOfDecimalForPrice))
             setValue('Quantity', Data.ConditionQuantity)
+            setValue('Applicability', { label: Data.Applicability, value: Data.Applicability })
+            setValue('ApplicabilityCost', Data?.ApplicabilityCost)
             setTotalCostCurrency(Data?.ConditionCost)
             setTotalCostBase(Data?.ConditionCostConversion)
             setCostingConditionEntryType(Data.CostingConditionEntryTypeId)
-            setType(Data.ConditionType)
+            setState(prevState => ({ ...prevState, ApplicabilityCost: Data?.ApplicabilityCost }));
+            setType({ label: Data.ConditionType, value: Data.ConditionType })
             if (Data.ConditionType === 'Fixed' || Data.ConditionType === 'Quantity') {
                 setDisableTotalCost(false)
                 setDisableCurrency(false)
@@ -372,7 +422,7 @@ function AddConditionCosting(props) {
         let type = getValues('Type')
         let ConditionCostPerQuantity = 0
         let ConditionCostPerQuantityConversion = 0
-        if (type === 'Quantity') {
+        if (type?.label === 'Quantity') {
             ConditionCostPerQuantity = cost / quantity
             ConditionCostPerQuantityConversion = costBase / quantity
         } else {
@@ -383,7 +433,61 @@ function AddConditionCosting(props) {
         setValue('ConditionCostPerQuantity', checkForDecimalAndNull(ConditionCostPerQuantity, initialConfiguration.NoOfDecimalForPrice))
         setValue('CostPerQuantityConversion', checkForDecimalAndNull(ConditionCostPerQuantityConversion, initialConfiguration.NoOfDecimalForPrice))
     }
+    const handleType = (e) => {
+        setType(e)
+    }
+    const applicabilityChange = (e) => {
+        // Handle Basic Rate separately
+        if (e?.label === 'Basic Price') {
+            setValue('ApplicabilityCost', checkForDecimalAndNull(basicRateBase, initialConfiguration?.NoOfDecimalForPrice));
+            setState(prevState => ({ ...prevState, Applicability: e?.label, ApplicabilityCost: basicRateBase }));
+            return; // Exit early for Basic Rate
+        }
 
+        // For other applicabilities
+        // Check which applicabilities are selected
+        const selectedApplicabilities = e?.label?.split(' + ');
+
+        // Calculate total cost currency for selected applicabilities
+        let allExist = true;
+        let missingCosts = []; // Array to hold missing costs
+        let totalConditionCost
+        let total
+
+        selectedApplicabilities.forEach(Applicability => {
+            // Skip checking for "Basic Rate" in tableData
+            if (Applicability === 'Basic Price') {
+                return;
+            }
+            const item = tableData.find(item => item?.Description === Applicability);
+            if (item) {
+                totalConditionCost = checkForNull(item?.ConditionCost);
+                if (selectedApplicabilities.includes('Basic Price')) {
+                    total = checkForNull(totalConditionCost) + checkForNull(basicRateBase)
+                } else {
+                    total = checkForNull(totalConditionCost)
+                }
+            } else {
+                // Add missing Applicability to the array
+                missingCosts.push(Applicability);
+                // Set flag to indicate not all applicabilities exist
+                allExist = false;
+            }
+        });
+
+        // If not all applicabilities exist, handle the condition
+        if (!allExist) {
+            // Show toaster message with all missing costs
+            Toaster.warning(`Cost(s) for ${missingCosts.join(', ')} do not exist in the table, please add data first before proceeding further`);
+            // You may choose to reset values or handle differently
+            setValue('ApplicabilityCost', 0);
+        } else {
+            // Set ApplicabilityCostCurrency and ApplicabilityBaseCost if all exist
+            setValue('ApplicabilityCost', checkForDecimalAndNull(total, initialConfiguration?.NoOfDecimalForPrice));
+        }
+
+        setState(prevState => ({ ...prevState, Applicability: e?.label, ApplicabilityCost: total }));
+    }
     const checkCondtionDisabled = props.ViewMode || (tableData && tableData?.length === 0 && !props.isFromMaster && (costingConditionEntryType === '' || costingConditionEntryType === undefined || costingConditionEntryType === null))
     return (
 
@@ -445,7 +549,7 @@ function AddConditionCosting(props) {
                                             disabled={checkCondtionDisabled}
                                         />
                                     </Col>
-                                    <Col md={3} className='px-2'>
+                                    {/* <Col md={3} className='px-2'>
                                         <TextFieldHookForm
                                             label={`Type`}
                                             name={'Type'}
@@ -458,9 +562,27 @@ function AddConditionCosting(props) {
                                             errors={errors.Type}
                                             disabled={true}
                                         />
+                                    </Col> */}
+                                    <Col md={3} className='px-2'>
+                                        <SearchableSelectHookForm
+                                            label={`Type`}
+                                            name={'Type'}
+                                            placeholder={'Select'}
+                                            Controller={Controller}
+                                            control={control}
+                                            register={register}
+                                            mandatory={true}
+                                            options={renderListing('Type')}
+                                            handleChange={handleType}
+                                            defaultValue={''}
+                                            className=""
+                                            customClassName={'withBorder'}
+                                            errors={errors.Type}
+                                            disabled={state.disableType}
+                                        />
                                     </Col>
                                     {
-                                        type === 'Quantity' && <Col md="3" className='px-2'>
+                                        type?.label === 'Quantity' && <Col md="3" className='px-2'>
                                             <TextFieldHookForm
                                                 label={`Quantity`}
                                                 name={'Quantity'}
@@ -482,32 +604,76 @@ function AddConditionCosting(props) {
                                         </Col>
                                     }
                                     {
-                                        type === 'Percentage' && <Col md={3} className='px-2'>
-                                            <TextFieldHookForm
-                                                label={`Percentage (%)`}
-                                                name={'Percentage'}
-                                                Controller={Controller}
-                                                control={control}
-                                                register={register}
-                                                mandatory={true}
-                                                rules={{
-                                                    required: true,
-                                                    validate: { number, checkWhiteSpaces, percentageLimitValidation },
-                                                    max: {
-                                                        value: 100,
-                                                        message: 'Percentage should be less than 100'
-                                                    },
-                                                }}
-                                                handleChange={onPercentChange}
-                                                defaultValue={''}
-                                                className=""
-                                                customClassName={'withBorder'}
-                                                errors={errors.Percentage}
-                                                disabled={props.ViewMode || disableAllFields}
-                                            />
-                                        </Col >}
+                                        type?.label === 'Percentage' &&
+                                        <>
+                                            <Col md="3" className='px-2'>
+                                                <SearchableSelectHookForm
+                                                    label={`Applicability`}
+                                                    name={'Applicability'}
+                                                    placeholder={'Select'}
+                                                    Controller={Controller}
+                                                    control={control}
+                                                    register={register}
+                                                    mandatory={true}
+                                                    options={combinations}
+                                                    handleChange={applicabilityChange}
+                                                    defaultValue={''}
+                                                    className=""
+                                                    customClassName={'withBorder'}
+                                                    errors={errors.Applicability}
+                                                    disabled={false}
+                                                />
+                                            </Col>
+                                            <Col md={3} className={'px-2'}>
+
+                                                <TextFieldHookForm
+                                                    label={`Applicability Cost (${isFromImport ? currency?.label : PlantCurrency})`}
+                                                    name={'ApplicabilityCost'}
+                                                    id={'cost-by-percent'}
+                                                    Controller={Controller}
+
+                                                    control={control}
+                                                    register={register}
+                                                    mandatory={true}
+                                                    rules={{
+                                                        required: true,
+                                                        validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
+                                                    }}
+                                                    handleChange={() => { }}
+                                                    defaultValue={''}
+                                                    className=""
+                                                    customClassName={'withBorder'}
+                                                    errors={errors.ApplicabilityBaseCost}
+                                                    disabled={props.ViewMode || disableTotalCost || disableCurrency}
+                                                />
+                                            </Col>
+                                            <Col md={3} className='px-2'>
+                                                <TextFieldHookForm
+                                                    label={`Percentage (%)`}
+                                                    name={'Percentage'}
+                                                    Controller={Controller}
+                                                    control={control}
+                                                    register={register}
+                                                    mandatory={true}
+                                                    rules={{
+                                                        required: true,
+                                                        validate: { number, checkWhiteSpaces, percentageLimitValidation },
+                                                        max: {
+                                                            value: 100,
+                                                            message: 'Percentage should be less than 100'
+                                                        },
+                                                    }}
+                                                    handleChange={onPercentChange}
+                                                    defaultValue={''}
+                                                    className=""
+                                                    customClassName={'withBorder'}
+                                                    errors={errors.Percentage}
+                                                    disabled={props.ViewMode || disableAllFields}
+                                                />
+                                            </Col >
+                                        </>}
                                     <Col md={3} className={'px-2'}>
-                                        {type === 'Percentage' && <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'cost-by-percent'} tooltipText={'Cost = (Percentage / 100) * Basic Price'} />}
+                                        {type?.label === 'Percentage' && <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'cost-by-percent'} tooltipText={'Cost = (Percentage / 100) * Basic Price'} />}
                                         <TextFieldHookForm
                                             label={`Cost (${isFromImport ? currency?.label : PlantCurrency})`}
                                             name={'CostCurrency'}
@@ -529,7 +695,7 @@ function AddConditionCosting(props) {
                                         />
                                     </Col>
                                     {
-                                        type === 'Quantity' && <>
+                                        type?.label === 'Quantity' && <>
                                             <Col md={3} className='px-2'>
                                                 <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'cost-per-quantity'} tooltipText={`Cost/Pc = Cost (${isFromImport ? currency?.label : reactLocalStorage.getObject("baseCurrency")}) / Quantity`} />
                                                 <TextFieldHookForm

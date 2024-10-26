@@ -369,3 +369,34 @@ export const getEffectiveDateMinDate = (minDate) => {
 export const convertIntoCurrency = (price, currencyValue) => {
     return checkForNull(price) * checkForNull(currencyValue)
 }
+
+
+export const generateCombinations = (arr, rate) => {
+    const result = [];
+
+    // Helper function to generate combinations
+    const generateCombos = (start, current) => {
+        // Add the current combination to the result
+        if (current.length > 0) {
+            result.push({ label: current.join(" + "), value: result.length });
+        }
+
+        // Generate further combinations
+        for (let i = start; i < arr.length; i++) {
+            generateCombos(i + 1, [...current, arr[i]]);
+        }
+    };
+
+    // Start the combination generation
+    generateCombos(0, []);
+
+    // Sort the result to ensure "Basic Rate" is always first in combinations
+    result.sort((a, b) => {
+        if (a.label.includes(rate) && !b.label.includes(rate)) return -1;
+        if (!a.label.includes(rate) && b.label.includes(rate)) return 1;
+        return 0;
+    });
+
+    return result;
+};
+

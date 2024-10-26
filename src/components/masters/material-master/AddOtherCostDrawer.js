@@ -10,7 +10,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { COMMODITYCOST, EMPTY_DATA, RAWMATERIALCOST } from '../../../../src/config/constants'
 import Toaster from '../../../../src/components/common/Toaster';
 import { getCostingCondition } from '../../../actions/Common'
-import { getCostingConditionTypes } from '../../common/CommonFunctions'
+import { generateCombinations, getCostingConditionTypes } from '../../common/CommonFunctions'
 
 function AddOtherCostDrawer(props) {
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
@@ -29,6 +29,7 @@ function AddOtherCostDrawer(props) {
     const [totalCostCurrency, setTotalCostCurrency] = useState('')
     const [totalCostBase, setTotalCostBase] = useState('')
     const [disableCurrency, setDisableCurrency] = useState(false)
+    const [availableApplicabilities, setAvailableApplicabilities] = useState(["Basic Rate"]);
     const [RawMaterialCommodityIndexRateAndOtherCostDetailsId, setRawMaterialCommodityIndexRateAndOtherCostDetailsId] = useState('')
     const ExchangeRate = RowData?.ExchangeRate
     const BasicRateIndexCurrency = RowData?.BasicRate
@@ -104,6 +105,18 @@ function AddOtherCostDrawer(props) {
             }
         }));
     }, [])
+    useEffect(() => {
+        updateAvailableApplicabilities();
+    }, [tableData, state.costDropdown]);
+    const updateAvailableApplicabilities = () => {
+        const newApplicabilities = ["Basic Rate"];
+        tableData.forEach(item => {
+            if (item.CostHeaderName !== "Basic Rate" && !newApplicabilities.includes(item.CostHeaderName)) {
+                newApplicabilities.push(item.CostHeaderName);
+            }
+        });
+        setAvailableApplicabilities(newApplicabilities);
+    };
     const editData = (indexValue, operation) => {
         if (operation === 'delete') {
             handleDelete(indexValue);
@@ -201,7 +214,7 @@ function AddOtherCostDrawer(props) {
     const applicabilityChange = (e) => {
 
         // Handle Basic Rate separately
-        if (e?.value === 'Basic Rate') {
+        if (e?.label === 'Basic Rate') {
             let basicRate = props.rawMaterial ? rmBasicRate : BasicRateIndexCurrency * ExchangeRate
             setValue('ApplicabilityCostCurrency', checkForDecimalAndNull(BasicRateIndexCurrency, initialConfiguration?.NoOfDecimalForPrice));
             setValue('ApplicabilityBaseCost', checkForDecimalAndNull(basicRate, initialConfiguration?.NoOfDecimalForPrice));
@@ -211,7 +224,7 @@ function AddOtherCostDrawer(props) {
 
         // For other applicabilities
         // Check which applicabilities are selected
-        const selectedApplicabilities = e?.value.split(' + ');
+        const selectedApplicabilities = e?.label?.split(' + ');
 
         // Calculate total cost currency for selected applicabilities
         let totalCostCurrency = 0;
@@ -225,7 +238,6 @@ function AddOtherCostDrawer(props) {
             if (Applicability === 'Basic Rate') {
                 return;
             }
-
             const item = tableData.find(item => item?.CostHeaderName === Applicability);
             if (item) {
                 totalCostCurrency += props.rawMaterial ? item?.NetCostConversion : item?.NetCost;
@@ -300,45 +312,18 @@ function AddOtherCostDrawer(props) {
     * @description RENDER LISTING IN DROPDOWN
     */
     const renderListing = (label) => {
-
         if (label === 'Type') {
-
             return [
                 { label: "Percentage", value: "Percentage" },
                 { label: "Fixed", value: 'Fixed' }
             ]
         }
-
         return [];
     }
-    const applicabilities = [
-        { label: "Basic Rate", value: "Basic Rate" },
-        { label: "Premium Cost", value: "Premium Cost" },
-        { label: "Custom Duty", value: "Custom Duty" },
-        { label: "Shipping Line Charges", value: "Shipping Line Charges" },
-        { label: "Processing Cost", value: "Processing Cost" },
-        { label: "Import Freight", value: "Import Freight" },
-        { label: "Yield Loss", value: "Yield Loss" },
-    ];
 
-    const combinations = [];
-
-    function generateCombinations(arr, index, current) {
-        for (let i = index; i < arr.length; i++) {
-            const newCombination = [...current, arr[i]];
-            combinations.push({
-                label: newCombination.map(item => item.label).join(" + "),
-                value: newCombination.map(item => item.value).join(" + ")
-            });
-            generateCombinations(arr, i + 1, newCombination);
-        }
-    }
-
-    generateCombinations(applicabilities, 0, []);
-
+    const combinations = generateCombinations(availableApplicabilities, "Basic Rate");
 
     const onSubmit = data => {
-
         addData();
     }
     const addData = () => {
@@ -350,6 +335,7 @@ function AddOtherCostDrawer(props) {
         const applicabilityBaseCost = getValues('ApplicabilityBaseCost');
         const remark = getValues('Remark');
         const costDescription = getValues('CostDescription');
+
 
         // If 'Type' is not provided, return false
         if (!type || !cost || !remark || !costDescription) { Toaster.warning('Please enter all mandatory details to add a row.'); return false };
@@ -379,13 +365,11 @@ function AddOtherCostDrawer(props) {
             CostingConditionMasterId: getValues('Cost') ? getValues('Cost').value : '-',
             Remark: getValues('Remark')
         };
-
         // If the CostHeaderName is 'Discount Cost', prepend '-' sign
         if (newData.CostHeaderName === 'Discount Cost') {
             newData.NetCost = `-${newData.NetCost}`;
             newData.NetCostConversion = `-${newData.NetCostConversion}`;
         }
-
         // Assuming 'tableData' is an array of objects and you want to add MaterialCommodityStandardDetailsId separately,
         // you can structure your updated data as follows:
         const updatedData = {
@@ -554,7 +538,6 @@ function AddOtherCostDrawer(props) {
                                                 errors={errors.Type}
                                                 disabled={props.ViewMode}
                                             />
-
                                         </Col>
 
                                         {
@@ -569,7 +552,6 @@ function AddOtherCostDrawer(props) {
                                                         control={control}
                                                         register={register}
                                                         mandatory={true}
-                                                        // options={conditionDropdown}
                                                         options={combinations}
                                                         handleChange={applicabilityChange}
                                                         defaultValue={''}
@@ -580,13 +562,11 @@ function AddOtherCostDrawer(props) {
                                                     />
                                                 </Col>
                                                 {!props.rawMaterial && <Col md={3} className={'px-2'}>
-
                                                     <TextFieldHookForm
                                                         label={`Applicability Cost (${Currency}${UOM ? `/${UOM}` : ''})`}
                                                         name={'ApplicabilityCostCurrency'}
                                                         id={'cost-by-percent'}
                                                         Controller={Controller}
-
                                                         control={control}
                                                         register={register}
                                                         mandatory={true}
