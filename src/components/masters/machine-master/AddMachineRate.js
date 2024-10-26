@@ -301,10 +301,6 @@ class AddMachineRate extends Component {
 
     const { fieldsObj, initialConfiguration } = this.props
     const { plantCurrency, settlementCurrency, isImport } = this.state
-
-
-
-
     const MachineRate = fieldsObj && fieldsObj.MachineRate !== undefined ? fieldsObj.MachineRate : ""
     if (isImport) {
       const MachineRateLocalConversion = checkForNull(fieldsObj?.MachineRate) * checkForNull(plantCurrency)
@@ -369,6 +365,10 @@ class AddMachineRate extends Component {
     if (this.props.fieldsObj !== prevProps.fieldsObj) {
       this.handleCalculation()
     }
+    if (prevProps.processGroupApiData !== this.props.processGroupApiData) {
+
+      this.setState({ DataToChange: true });
+    }
 
 
   }
@@ -396,7 +396,8 @@ class AddMachineRate extends Component {
       plantExchangeRateId: this.state.plantExchangeRateId,
       settlementExchangeRateId: this.state.settlementExchangeRateId,
       plantCurrencyID: this.state.plantCurrencyID,
-      callExchangeRateAPI: this.callExchangeRateAPI
+      callExchangeRateAPI: this.callExchangeRateAPI,
+      handleCalculation: this.handleCalculation
 
 
     }
@@ -521,7 +522,7 @@ class AddMachineRate extends Component {
           // }
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
           this.props.change('Specification', Data.Specification)
-          this.props.change('plantCurrency', Data?.LocalCurrency)
+          this.props.change('plantCurrency', Data?.MachineEntryType === ENTRY_TYPE_IMPORT ? Data?.LocalCurrency : Data?.Currency ?? Data?.LocalCurrency)
           this.setState({ minEffectiveDate: Data.EffectiveDate })
           setTimeout(() => {
             let MachineProcessArray = Data && Data.MachineProcessRates.map(el => {
@@ -544,6 +545,7 @@ class AddMachineRate extends Component {
             if (Data && Data?.Plant?.length > 0) {
               plantObj = Data?.Plant?.map(plant => ({ label: plant?.PlantName, value: plant?.PlantId }));
             }
+
             this.setState({
               isEditFlag: true,
               IsFinancialDataChanged: false,
@@ -563,17 +565,18 @@ class AddMachineRate extends Component {
               UOM: (this.state.isProcessGroup && !this.state.isViewMode) ? { label: Data.MachineProcessRates[0].UnitOfMeasurement, value: Data.MachineProcessRates[0].UnitOfMeasurementId } : [],
               lockUOMAndRate: (this.state.isProcessGroup && !this.state.isViewMode),
               ExchangeSource: Data?.ExchangeRateSourceName !== undefined ? { label: Data?.ExchangeRateSourceName, value: Data?.ExchangeRateSourceName } : [],
-              plantCurrency: Data?.LocalCurrencyExchangeRate,
-              plantExchangeRateId: Data?.LocalCurrencyExchangeRateId,
+              plantCurrency: this?.state?.isImport ? Data?.LocalCurrencyExchangeRate : Data?.ExchangeRate,
+              plantExchangeRateId: this?.state?.isImport ? Data?.LocalCurrencyExchangeRateId : Data?.ExchangeRateId,
               settlementCurrency: Data?.ExchangeRate,
               settlementExchangeRateId: Data?.ExchangeRateId,
-              plantCurrencyID: Data?.LocalCurrencyId,
+              plantCurrencyID: this?.state?.isImport ? Data?.LocalCurrencyId : Data?.CurrencyId,
               currency: Data?.Currency && { label: Data?.Currency, value: Data?.CurrencyId },
               isImport: Data?.MachineEntryType === ENTRY_TYPE_IMPORT ? true : false
             }, () => {
               this.setState({ isLoader: false })
               this.props.change('MachineRate', (this.state.isProcessGroup && !this.state.isViewMode) ? Data.MachineProcessRates[0].MachineRate : '')
             })
+
             // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
             let files = Data.Attachements && Data.Attachements.map((item) => {
               item.meta = {}
@@ -895,7 +898,8 @@ class AddMachineRate extends Component {
       plantCurrencyID: plantCurrencyID,
       entryType: isImport,
       currency: currency,
-      callExchangeRateAPI: this.callExchangeRateAPI
+      callExchangeRateAPI: this.callExchangeRateAPI,
+      handleCalculation: this?.handleCalculation
 
 
     }
@@ -1010,7 +1014,7 @@ class AddMachineRate extends Component {
 
       const MachineRate = fieldsObj.MachineRate
       const MachineRateConversion = fieldsObj.MachineRateConversion
-      const MachineRateLocalConversion = fieldsObj.MachineRateLocalConversion
+      const MachineRateLocalConversion = fieldsObj.MachineRateLocalConversion ?? fieldsObj.MachineRate
 
 
       tempArray.push(...processGrid, {
@@ -1065,7 +1069,7 @@ class AddMachineRate extends Component {
     }
     const MachineRate = fieldsObj.MachineRate
     const MachineRateConversion = fieldsObj.MachineRateConversion
-    const MachineRateLocalConversion = fieldsObj.MachineRateLocalConversion
+    const MachineRateLocalConversion = fieldsObj.MachineRateLocalConversion ?? fieldsObj.MachineRate
 
     // CONDITION TO CHECK MACHINE RATE IS NEGATIVE OR NOT A NUMBER
     if (MachineRate <= 0 || isNaN(MachineRate)) {
@@ -1074,7 +1078,7 @@ class AddMachineRate extends Component {
 
     let tempData = processGrid[processGridEditIndex];
     if (MachineRate !== tempData.MachineRate || UOM.value !== tempData.UnitOfMeasurementId || processName.value !== tempData.ProcessId) {
-      this.setState({ IsFinancialDataChanged: true })
+      this.setState({ IsFinancialDataChanged: true, DataToChange: true })
       this.setState({ DropdownChange: false })
     }
     tempData = {
@@ -1112,7 +1116,7 @@ class AddMachineRate extends Component {
 
     const { fieldsObj } = this.props;
     const MachineRate = fieldsObj.MachineRate
-    const MachineRateLocalConversion = fieldsObj.MachineRateLocalConversion
+    const MachineRateLocalConversion = fieldsObj.MachineRateLocalConversion ?? fieldsObj.MachineRate
     const MachineRateConversion = fieldsObj.MachineRateConversion
     this.setState({
       processName: [],
@@ -1420,6 +1424,7 @@ class AddMachineRate extends Component {
 
         this.handleMachineOperation(detailedRequestData, true);
       } else {
+
         // EXECUTED WHEN:- EDIT MODE OF BASIC MACHINE && MACHINE MORE DETAILED NOT CREATED
         let requestData = {
           MachineId: MachineID,
@@ -1446,14 +1451,14 @@ class AddMachineRate extends Component {
           DestinationPlantId: '',
           MachineEntryType: isImport ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC,
           ExchangeRateSourceName: this.state.ExchangeSource?.label || null,
-          LocalCurrencyId: this.state.plantCurrencyID || null,
-          LocalCurrency: this.props.fieldsObj?.plantCurrency || null,
-          ExchangeRate: this.state.settlementCurrency || null,
-          LocalCurrencyExchangeRate: this.state.plantCurrency || null,
-          CurrencyId: this.state.currency?.value || null,
-          Currency: this.state.currency?.label || null,
-          ExchangeRateId: this.state.settlementExchangeRateId || null,
-          LocalExchangeRateId: this.state.plantExchangeRateId || null
+          LocalCurrencyId: isImport ? this.state?.plantCurrencyID : null,
+          LocalCurrency: isImport ? this.props?.fieldsObj?.plantCurrency : null,
+          ExchangeRate: isImport ? this.state?.settlementCurrency : this.state?.plantCurrency,
+          LocalCurrencyExchangeRate: isImport ? this.state?.plantCurrency : null,
+          CurrencyId: isImport ? this.state.currency?.value : this.state?.plantCurrencyID,
+          Currency: isImport ? this.state?.currency?.label : this.props.fieldsObj?.plantCurrency,
+          ExchangeRateId: isImport ? this.state?.settlementExchangeRateId : this.state?.plantExchangeRateId,
+          LocalExchangeRateId: isImport ? this.state?.plantExchangeRateId : null
         }
 
         if (IsFinancialDataChanged) {
@@ -1499,9 +1504,11 @@ class AddMachineRate extends Component {
       } else {
         this.setState({ IsSendForApproval: false })
       }
-
+      let plantArray = Array?.isArray(selectedPlants) ? selectedPlants?.map(plant => ({ PlantId: plant?.value, PlantName: plant?.label, PlantCode: '' })) :
+        selectedPlants ? [{ PlantId: selectedPlants?.value, PlantName: selectedPlants?.label, PlantCode: '' }] : [];
       // EXECUTED WHEN:- NEW MACHINE WITH BASIC DETAILS
       // this.setState({ setDisable: true })
+
       const formData = {
         IsSendForApproval: this.state.IsSendForApproval,
         IsFinancialDataChanged: isDateChange ? true : false,
@@ -1517,7 +1524,7 @@ class AddMachineRate extends Component {
         LoggedInUserId: loggedInUserId(),
         MachineProcessRates: processGrid,
         Technology: (technologyArray.length > 0 && technologyArray[0]?.Technology !== undefined) ? technologyArray : [{ Technology: selectedTechnology.label ? selectedTechnology.label : selectedTechnology[0].label, TechnologyId: selectedTechnology.value ? selectedTechnology.value : selectedTechnology[0].value }],
-        Plant: [{ PlantId: selectedPlants.value, PlantName: selectedPlants.label }],
+        Plant: plantArray ?? [],
         DestinationPlantId: '',
         Remark: remarks,
         Attachements: files,
@@ -1525,16 +1532,16 @@ class AddMachineRate extends Component {
         MachineProcessGroup: this.props.processGroupApiData,
         VendorPlant: [],
         CustomerId: costingTypeId === CBCTypeId ? client.value : '',
-        ExchangeRateSourceName: this.state.ExchangeSource?.label || null,
-        LocalCurrencyId: this.state.plantCurrencyID || null,
-        LocalCurrency: this.props.fieldsObj?.plantCurrency || null,
-        ExchangeRate: this.state.settlementCurrency || null,
-        LocalCurrencyExchangeRate: this.state.plantCurrency || null,
-        CurrencyId: this.state.currency?.value || null,
-        Currency: this.state.currency?.label || null,
-        ExchangeRateId: this.state.settlementExchangeRateId || null,
-        LocalExchangeRateId: this.state.plantExchangeRateId || null,
         MachineEntryType: isImport ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC,
+        ExchangeRateSourceName: this.state.ExchangeSource?.label || null,
+        LocalCurrencyId: isImport ? this.state?.plantCurrencyID : null,
+        LocalCurrency: isImport ? this.props?.fieldsObj?.plantCurrency : null,
+        ExchangeRate: isImport ? this.state?.settlementCurrency : this.state?.plantCurrency,
+        LocalCurrencyExchangeRate: isImport ? this.state?.plantCurrency : null,
+        CurrencyId: isImport ? this.state.currency?.value : this.state?.plantCurrencyID,
+        Currency: isImport ? this.state?.currency?.label : this.props.fieldsObj?.plantCurrency,
+        ExchangeRateId: isImport ? this.state?.settlementExchangeRateId : this.state?.plantExchangeRateId,
+        LocalExchangeRateId: isImport ? this.state?.plantExchangeRateId : null
       }
 
       let finalObj = {
@@ -1690,6 +1697,7 @@ class AddMachineRate extends Component {
 
 
   checksFinancialDataChanged = (data) => {
+
     this.setState({ IsFinancialDataChanged: data })
   }
   handleExchangeRateSource = (newValue) => {

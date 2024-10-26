@@ -226,7 +226,7 @@ class AddFuel extends Component {
                 cityId: item.CityId,
               }
             })
-            this.props.change('plantCurrency', Data?.LocalCurrency)
+            this.props.change('plantCurrency', Data?.FuelEntryType === ENTRY_TYPE_IMPORT ? Data?.LocalCurrency : Data?.Currency)
             this.setState({
               singlePlantSelected: { label: `${Data.FuelDetails[0]?.PlantName} (${Data.FuelDetails[0]?.PlantCode})`, value: Data.FuelDetails[0]?.PlantId },
               vendorName: { label: `${Data.FuelDetails[0]?.VendorName} (${Data.FuelDetails[0]?.VendorCode})`, value: Data.FuelDetails[0]?.VendorId },
@@ -237,10 +237,10 @@ class AddFuel extends Component {
               rateGrid: rateGridArray,
               costingTypeId: Data.FuelDetails[0]?.CostingHeadId,
               ExchangeSource: Data?.ExchangeRateSourceName ? { label: Data?.ExchangeRateSourceName, value: Data?.ExchangeRateSourceId } : [],
-              plantCurrency: Data?.LocalCurrencyExchangeRate,
-              plantCurrencyID: Data?.LocalCurrencyId,
+              plantCurrency: this?.state?.isImport ? Data?.LocalCurrencyExchangeRate : Data?.ExchangeRate,
+              plantCurrencyID: this?.state?.isImport ? Data?.LocalCurrencyId : Data?.CurrencyId,
               settlementCurrency: Data?.ExchangeRate,
-              plantExchangeRateId: Data?.LocalExchangeRateId,
+              plantExchangeRateId: this?.state?.isImport ? Data?.LocalExchangeRateId : Data?.ExchangeRateId,
               settlementExchangeRateId: Data?.ExchangeRateId,
               isImport: Data?.FuelEntryType === ENTRY_TYPE_IMPORT ? true : false,
               currency: Data?.Currency ? { label: Data?.Currency, value: Data?.CurrencyId } : []
@@ -718,14 +718,14 @@ class AddFuel extends Component {
         UnitOfMeasurementId: UOM.value,
         FuelEntryType: isImport ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC,
         ExchangeRateSourceName: this.state.ExchangeSource?.label || null,
-        LocalCurrencyId: this.state.plantCurrencyID || null,
-        LocalCurrency: this.props.fieldsObj?.plantCurrency || null,
-        ExchangeRate: this.state.settlementCurrency || null,
-        LocalCurrencyExchangeRate: this.state.plantCurrency || null,
-        CurrencyId: this.state.currency?.value || null,
-        Currency: this.state.currency?.label || null,
-        ExchangeRateId: this.state.settlementExchangeRateId || null,
-        LocalExchangeRateId: this.state.plantExchangeRateId || null,
+        ExchangeRate: isImport ? this.state?.settlementCurrency : this.state?.plantCurrency,
+        ExchangeRateId: isImport ? this.state?.settlementExchangeRateId : this.state?.plantExchangeRateId,
+        CurrencyId: isImport ? this.state.currency?.value : this.state?.plantCurrencyID,
+        Currency: isImport ? this.state?.currency?.label : this.props.fieldsObj?.plantCurrency,
+        LocalCurrencyId: isImport ? this.state?.plantCurrencyID : null,
+        LocalCurrency: isImport ? this.props?.fieldsObj?.plantCurrency : null,
+        LocalExchangeRateId: isImport ? this.state?.plantExchangeRateId : null,
+        LocalCurrencyExchangeRate: isImport ? this.state?.plantCurrency : null,
         FuelDetails: fuelDetailArray,
       }
 
@@ -746,14 +746,14 @@ class AddFuel extends Component {
         UnitOfMeasurementId: UOM.value,
         FuelEntryType: isImport ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC,
         ExchangeRateSourceName: this.state.ExchangeSource?.label || null,
-        LocalCurrencyId: this.state.plantCurrencyID || null,
-        LocalCurrency: this.props.fieldsObj?.plantCurrency || null,
-        ExchangeRate: this.state.settlementCurrency || null,
-        LocalCurrencyExchangeRate: this.state.plantCurrency || null,
-        CurrencyId: this.state.currency?.value || null,
-        Currency: this.state.currency?.label || null,
-        ExchangeRateId: this.state.settlementExchangeRateId || null,
-        LocalExchangeRateId: this.state.plantExchangeRateId || null,
+        ExchangeRate: isImport ? this.state?.settlementCurrency : this.state?.plantCurrency,
+        ExchangeRateId: isImport ? this.state?.settlementExchangeRateId : this.state?.plantExchangeRateId,
+        CurrencyId: isImport ? this.state.currency?.value : this.state?.plantCurrencyID,
+        Currency: isImport ? this.state?.currency?.label : this.props.fieldsObj?.plantCurrency,
+        LocalCurrencyId: isImport ? this.state?.plantCurrencyID : null,
+        LocalCurrency: isImport ? this.props?.fieldsObj?.plantCurrency : null,
+        LocalExchangeRateId: isImport ? this.state?.plantExchangeRateId : null,
+        LocalCurrencyExchangeRate: isImport ? this.state?.plantCurrency : null,
         FuelDetails: fuelDetailArray,
       }
 

@@ -222,6 +222,7 @@ class AddOperation extends Component {
     if (!this.state.isViewMode && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(OPERATIONS_ID) === true) {
       this.props.getUsersMasterLevelAPI(loggedInUserId(), OPERATIONS_ID, (res) => {
         setTimeout(() => {
+
           this.commonFunction(plantId, isDivision)
         }, 100);
       })
@@ -264,6 +265,7 @@ class AddOperation extends Component {
       this.calculateRate()
     }
     if (!getConfigurationKey().IsDivisionAllowedForDepartment && (prevState?.costingTypeId !== this.state.costingTypeId) && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(OPERATIONS_ID) === true) {
+
       this.commonFunction(this.state.selectedPlants[0] && this.state.selectedPlants[0].Value)
     }
   }
@@ -392,6 +394,7 @@ class AddOperation extends Component {
     if (e && e !== '') {
       this.setState({ selectedPlants: e })
       if (!this.state.isViewMode && getConfigurationKey()?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !getConfigurationKey()?.IsDivisionAllowedForDepartment) {
+
         this.commonFunction(e?.value)
       }
       this.props.getPlantUnitAPI(e?.value, (res) => {
@@ -635,11 +638,11 @@ class AddOperation extends Component {
           if (Data && Data?.Plant?.length > 0) {
             plantArray = Data?.Plant?.map(plant => ({ label: plant?.PlantName, value: plant?.PlantId }));
           }
-          this.finalUserCheckAndMasterLevelCheckFunction(plantArray[0].Value)
+          // this.finalUserCheckAndMasterLevelCheckFunction(plantArray[0].Value)
           if (Data?.ForType === 'Welding') {
             this.setState({ isWelding: true })
           }
-          this.props.change('plantCurrency', Data?.LocalCurrency)
+          this.props.change('plantCurrency', Data?.OperationEntryType === ENTRY_TYPE_IMPORT ? Data?.LocalCurrency : Data?.Currency)
           this.props.change('Rate', Data?.Rate)
           this.props.change('RateLocalConversion', Data?.RateLocalConversion)
           this.props.change('RateConversion', Data?.RateConversion)
@@ -666,13 +669,14 @@ class AddOperation extends Component {
               dataToChange: Data,
               operationType: { label: Data.ForType, value: 1 },
               ExchangeSource: Data?.ExchangeRateSourceName ? { label: Data?.ExchangeRateSourceName, value: Data?.ExchangeRateSourceId } : [],
-              plantCurrency: Data?.LocalCurrencyExchangeRate,
-              plantCurrencyID: Data?.LocalCurrencyId,
               settlementCurrency: Data?.ExchangeRate,
-              plantExchangeRateId: Data?.LocalExchangeRateId,
               settlementExchangeRateId: Data?.ExchangeRateId,
-              isImport: Data?.FuelEntryType === ENTRY_TYPE_IMPORT ? true : false,
-              currency: Data?.Currency ? { label: Data?.Currency, value: Data?.CurrencyId } : []
+              isImport: Data?.OperationEntryType === ENTRY_TYPE_IMPORT ? true : false,
+              currency: Data?.Currency ? { label: Data?.Currency, value: Data?.CurrencyId } : [],
+              plantCurrency: this?.state?.isImport ? Data?.LocalCurrencyExchangeRate : Data?.ExchangeRate,
+              plantCurrencyID: this?.state?.isImport ? Data?.LocalCurrencyId : Data?.CurrencyId,
+              plantExchangeRateId: this?.state?.isImport ? Data?.LocalExchangeRateId : Data?.ExchangeRateId,
+
             })
             // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
             let files = Data.Attachements && Data.Attachements.map((item) => {
@@ -867,6 +871,7 @@ class AddOperation extends Component {
     if (newValue && newValue !== '') {
       this.setState({ destinationPlant: newValue })
       if (!this.state.isViewMode && getConfigurationKey()?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !getConfigurationKey()?.IsDivisionAllowedForDepartment) {
+
         this.commonFunction(newValue ? newValue.value : '')
       }
       this.props.getPlantUnitAPI(newValue?.value, (res) => {
@@ -974,25 +979,27 @@ class AddOperation extends Component {
       technologyArray.push({ Technology: item.Text, TechnologyId: item.Value })
       return technologyArray;
     })
-    let plantArray = []
-    if (costingTypeId === VBCTypeId || (costingTypeId === ZBCTypeId && initialConfiguration?.IsMultipleUserAllowForApproval)) {
-      plantArray.push({ PlantName: destinationPlant.label, PlantId: destinationPlant.value, PlantCode: '', })
-    } else {
-      selectedPlants && selectedPlants.map((item) => {
-        plantArray.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '', })
-        return plantArray
-      })
-    }
-    let cbcPlantArray = []
-    if (getConfigurationKey().IsCBCApplicableOnPlant && costingTypeId === CBCTypeId) {
-      cbcPlantArray.push({ PlantName: destinationPlant.label, PlantId: destinationPlant.value, PlantCode: '', })
-    }
-    else {
-      userDetailsOperation?.Plants.map((item) => {
-        cbcPlantArray.push({ PlantName: item.PlantName, PlantId: item.PlantId, PlantCode: item.PlantCode, })
-        return cbcPlantArray
-      })
-    }
+    //const plantArray = []
+    let plantArray = Array?.isArray(destinationPlant) ? destinationPlant?.map(plant => ({ PlantId: plant?.value, PlantName: plant?.label, PlantCode: '' })) :
+      destinationPlant ? [{ PlantId: destinationPlant?.value, PlantName: destinationPlant?.label, PlantCode: '' }] : [];
+    // if (costingTypeId === VBCTypeId || (costingTypeId === ZBCTypeId && initialConfiguration?.IsMultipleUserAllowForApproval)) {
+    //   plantArray.push({ PlantName: destinationPlant.label, PlantId: destinationPlant.value, PlantCode: '', })
+    // } else {
+    //   selectedPlants && selectedPlants.map((item) => {
+    //     plantArray.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '', })
+    //     return plantArray
+    //   })
+    // }
+    // let cbcPlantArray = []
+    // if (getConfigurationKey().IsCBCApplicableOnPlant && costingTypeId === CBCTypeId) {
+    //   cbcPlantArray.push({ PlantName: destinationPlant.label, PlantId: destinationPlant.value, PlantCode: '', })
+    // }
+    // else {
+    //   userDetailsOperation?.Plants.map((item) => {
+    //     cbcPlantArray.push({ PlantName: item.PlantName, PlantId: item.PlantId, PlantCode: item.PlantCode, })
+    //     return cbcPlantArray
+    //   })
+    // }
     /** Update existing detail of supplier master **/
     // if (this.state.isEditFlag && this.state.isFinalApprovar) {
     let updatedFiles = files.map((file) => {
@@ -1012,13 +1019,13 @@ class AddOperation extends Component {
       UnitOfMeasurementId: UOM.value,
       IsSurfaceTreatmentOperation: isSurfaceTreatment,
       //SurfaceTreatmentCharges: values.SurfaceTreatmentCharges,
-      Rate: values.Rate,
-      RateLocalConversion: values.RateLocalConversion,
-      RateConversion: values.RateConversion,
+      Rate: values?.Rate ?? values?.RateLocalConversion,
+      RateLocalConversion: values?.RateLocalConversion,
+      RateConversion: values?.RateConversion,
       LabourRatePerUOM: initialConfiguration && initialConfiguration.IsOperationLabourRateConfigure ? values.LabourRatePerUOM : '',
       Technology: technologyArray,
       Remark: remarks,
-      Plant: costingTypeId === CBCTypeId ? cbcPlantArray : plantArray,
+      Plant: /* costingTypeId === CBCTypeId ? cbcPlantArray : */ plantArray ?? [],
       Attachements: isEditFlag ? updatedFiles : files,
       LoggedInUserId: loggedInUserId(),
       EffectiveDate: DayTime(effectiveDate).format('YYYY/MM/DD HH:mm:ss'),
@@ -1030,14 +1037,14 @@ class AddOperation extends Component {
       OperationConsumption: values.Consumption,
       OperationEntryType: isImport ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC,
       ExchangeRateSourceName: this.state.ExchangeSource?.label || null,
-      LocalCurrencyId: this.state.plantCurrencyID || null,
-      LocalCurrency: this.props.fieldsObj?.plantCurrency || null,
-      ExchangeRate: this.state.settlementCurrency || null,
-      LocalCurrencyExchangeRate: this.state.plantCurrency || null,
-      CurrencyId: this.state.currency?.value || null,
-      Currency: this.state.currency?.label || null,
-      ExchangeRateId: this.state.settlementExchangeRateId || null,
-      LocalExchangeRateId: this.state.plantExchangeRateId || null,
+      LocalCurrencyId: isImport ? this.state?.plantCurrencyID : null,
+      LocalCurrency: isImport ? this.props?.fieldsObj?.plantCurrency : null,
+      LocalExchangeRateId: isImport ? this.state?.plantExchangeRateId : null,
+      LocalCurrencyExchangeRate: isImport ? this.state?.plantCurrency : null,
+      ExchangeRate: isImport ? this.state?.settlementCurrency : this.state?.plantCurrency,
+      ExchangeRateId: isImport ? this.state?.settlementExchangeRateId : this.state?.plantExchangeRateId,
+      CurrencyId: isImport ? this.state.currency?.value : this.state?.plantCurrencyID,
+      Currency: isImport ? this.state?.currency?.label : this.props.fieldsObj?.plantCurrency,
     }
     if ((isEditFlag && this.state.isFinalApprovar) || (isEditFlag && CheckApprovalApplicableMaster(OPERATIONS_ID) !== true)) {
 
@@ -1087,6 +1094,7 @@ class AddOperation extends Component {
       }
 
       this.setState({ setDisable: true })
+
 
       if (CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !this.state.isFinalApprovar) {
 
@@ -1157,7 +1165,6 @@ class AddOperation extends Component {
       obj.ExchangeSource = this.state.ExchangeSource
       obj.plantCurrencyID = this.state.plantCurrencyID
       obj.plantCurrency = this.props.fieldsObj?.plantCurrency
-
       if (String(this.state.operationType.label) === "Ni Cr Plating") {
 
         obj.useWatchArray = ['wireRate', 'consumptionWire', 'gasRate', 'consumptionGas', 'electricityRate', 'consumptionPower', 'manPowerCost', 'staffCost', 'maintenanceCost', 'consumablesCost', 'waterCost', 'jigStripping', 'statuatoryLicense', 'rejnReworkPercent', 'profitPercent']
@@ -1199,6 +1206,8 @@ class AddOperation extends Component {
     const { handleSubmit, initialConfiguration, isOperationAssociated, t, data } = this.props;
     const { isEditFlag, isOpenVendor, isOpenUOM, isDisableCode, isViewMode, setDisable, costingTypeId, noApprovalCycle, CostingTypePermission, disableSendForApproval, hidePlantCurrency } = this.state;
     const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
+
+
 
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state

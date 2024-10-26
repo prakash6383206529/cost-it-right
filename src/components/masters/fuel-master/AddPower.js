@@ -12,7 +12,7 @@ import {
 } from '../actions/Fuel';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { CBCTypeId, EMPTY_GUID, GENERATOR_DIESEL, GUIDE_BUTTON_SHOW, searchCount, SPACEBAR, VBC_VENDOR_TYPE, VBCTypeId, ZBCTypeId, } from '../../../config/constants';
+import { CBCTypeId, EMPTY_GUID, ENTRY_TYPE_DOMESTIC, ENTRY_TYPE_IMPORT, GENERATOR_DIESEL, GUIDE_BUTTON_SHOW, searchCount, SPACEBAR, VBC_VENDOR_TYPE, VBCTypeId, ZBCTypeId, } from '../../../config/constants';
 import { EMPTY_DATA } from '../../../config/constants'
 import { getConfigurationKey, IsFetchExchangeRateVendorWise, loggedInUserId } from "../../../helper/auth";
 import "react-datepicker/dist/react-datepicker.css";
@@ -39,6 +39,7 @@ import { getExchangeRateByCurrency } from '../../costing/actions/Costing';
 import { getPlantUnitAPI } from '../actions/Plant';
 import Switch from 'react-switch'
 import WarningMessage from '../../common/WarningMessage';
+import { data1 } from '../../dashboard/ChartsDashboard';
 
 const selector = formValueSelector('AddPower');
 
@@ -416,7 +417,8 @@ class AddPower extends Component {
         isEditFlagForStateElectricity: true
       })
     }
-    if (data && data.isEditFlag && data.IsVendor && false) {
+
+    if (data && data.isEditFlag && data.IsVendor) { // Removed '&& false'
       this.setState({
         isEditFlag: false,
         isLoader: true,
@@ -440,11 +442,17 @@ class AddPower extends Component {
             this.props.change('NetPowerCostPerUnit', Data.NetPowerCostPerUnit)
             this.props.change('NetPowerCostPerUnitLocalConversion', Data.NetPowerCostPerUnitLocalConversion)
             this.props.change('NetPowerCostPerUnitConversion', Data.NetPowerCostPerUnitConversion)
+            this.props.change('plantCurrency', Data?.PowerEntryType === ENTRY_TYPE_IMPORT ? Data?.LocalCurrency : Data?.Currency)
+            this.props.change('Country', Data.CountryName !== undefined ? { label: Data?.CountryName, value: Data?.CountryId } : {})
+            this.props.change('State', Data.StateName !== undefined ? { label: Data?.StateName, value: Data.StateId } : {})
+            this.props.change('City', Data.CityName !== undefined ? { label: Data?.CityName, value: Data?.CityId } : {})
+
           }, 200)
         }
       })
 
-    } else if (data && data.isEditFlag) {
+    }
+    else if (data && data.isEditFlag) {
       this.setState({
         isEditFlag: false,
         isLoader: true,
@@ -485,7 +493,13 @@ class AddPower extends Component {
           setTimeout(() => {
             this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
             let plantArray = Data && Data.Plants.map((item) => ({ Text: item.PlantName, Value: item.PlantId }))
-
+            this.props.change('NetPowerCostPerUnit', Data.NetPowerCostPerUnit)
+            this.props.change('NetPowerCostPerUnitLocalConversion', Data.NetPowerCostPerUnitLocalConversion)
+            this.props.change('NetPowerCostPerUnitConversion', Data.NetPowerCostPerUnitConversion)
+            this.props.change('plantCurrency', Data?.PowerEntryType === ENTRY_TYPE_IMPORT ? Data?.LocalCurrency : Data?.Currency)
+            this.props.change('Country', Data.CountryName !== undefined ? { label: Data?.CountryName, value: Data?.CountryId } : {})
+            this.props.change('State', Data.StateName !== undefined ? { label: Data?.StateName, value: Data.StateId } : {})
+            this.props.change('City', Data.CityName !== undefined ? { label: Data?.CityName, value: Data?.CityId } : {})
 
             this.setState({
               isEditFlag: true,
@@ -501,6 +515,16 @@ class AddPower extends Component {
               costingTypeId: Data.CostingTypeId,
               client: { label: `${Data.CustomerName} (${Data.CustomerCode})`, value: Data.CustomerId },
               vendorName: { label: `${Data?.VendorName} (${Data?.VendorCode})`, value: Data?.VendorId },
+              ExchangeSource: Data?.ExchangeRateSourceName ? { label: Data?.ExchangeRateSourceName, value: Data?.ExchangeRateSourceId } : [],
+              settlementCurrency: Data?.ExchangeRate,
+              settlementExchangeRateId: Data?.ExchangeRateId,
+              isImport: Data?.PowerEntryType === ENTRY_TYPE_IMPORT ? true : false,
+              currency: Data?.Currency ? { label: Data?.Currency, value: Data?.CurrencyId } : [],
+              plantCurrency: Data?.PowerEntryType === ENTRY_TYPE_IMPORT ? Data?.LocalCurrencyExchangeRate : Data?.ExchangeRate,
+              plantCurrencyID: Data?.PowerEntryType === ENTRY_TYPE_IMPORT ? Data?.LocalCurrencyId : Data?.CurrencyId,
+              plantExchangeRateId: Data?.PowerEntryType === ENTRY_TYPE_IMPORT ? Data?.LocalExchangeRateId : Data?.ExchangeRateId,
+              city: Data?.CityName !== undefined ? { label: Data?.CityName, value: Data?.CityId } : [],
+              country: Data?.CountryName !== undefined ? { label: Data?.CountryName, value: Data?.CountryId } : [],
             }, () => this.setState({ isLoader: false }))
 
             if (!Data.IsDetailedForm) {
@@ -1388,7 +1412,7 @@ class AddPower extends Component {
   onSubmit = debounce((values) => {
     const { isEditFlag, PowerDetailID, IsVendor, VendorCode, selectedPlants, StateName, powerGrid,
       effectiveDate, vendorName, DataToChangeVendor, DataToChangeZ, DropdownChanged,
-      handleChange, DeleteChanged, AddChanged, costingTypeId, isDetailEntry, client, city, country } = this.state;
+      handleChange, DeleteChanged, AddChanged, costingTypeId, isDetailEntry, client, city, country, isImport } = this.state;
     const { fieldsObj } = this.props
     if (IsVendor && vendorName.length <= 0) {
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
@@ -1479,7 +1503,7 @@ class AddPower extends Component {
           StateId: StateName.value,
           StateName: StateName.label,
           IsActive: true,
-          NetPowerCostPerUnit: isDetailEntry ? NetPowerCostPerUnit : this.props.fieldsObj.NetPowerCostPerUnit,
+          NetPowerCostPerUnit: isDetailEntry ? NetPowerCostPerUnit : (this.props.fieldsObj.NetPowerCostPerUnit ? this.props.fieldsObj.NetPowerCostPerUnit : fieldsObj?.NetPowerCostPerUnitLocalConversion),
           VendorPlant: [],
           EffectiveDate: effectiveDate,
           CountryId: country?.value,
@@ -1504,7 +1528,17 @@ class AddPower extends Component {
           SGChargesDetails: selfGridDataArray,
           LoggedInUserId: loggedInUserId(),
           NetPowerCostPerUnitConversion: fieldsObj?.NetPowerCostPerUnitConversion,
-          NetPowerCostPerUnitLocalConversion: fieldsObj?.NetPowerCostPerUnitLocalConversion
+          NetPowerCostPerUnitLocalConversion: fieldsObj?.NetPowerCostPerUnitLocalConversion,
+          PowerEntryType: isImport ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC,
+          ExchangeRateSourceName: this.state.ExchangeSource?.label || null,
+          LocalCurrencyId: isImport ? this.state?.plantCurrencyID : null,
+          LocalCurrency: isImport ? this.props?.fieldsObj?.plantCurrency : null,
+          LocalExchangeRateId: isImport ? this.state?.plantExchangeRateId : null,
+          LocalCurrencyExchangeRate: isImport ? this.state?.plantCurrency : null,
+          ExchangeRate: isImport ? this.state?.settlementCurrency : this.state?.plantCurrency,
+          ExchangeRateId: isImport ? this.state?.settlementExchangeRateId : this.state?.plantExchangeRateId,
+          CurrencyId: isImport ? this.state.currency?.value : this.state?.plantCurrencyID,
+          Currency: isImport ? this.state?.currency?.label : this.props.fieldsObj?.plantCurrency,
         }
 
         this.props.updatePowerDetail(requestData, (res) => {
@@ -1546,7 +1580,7 @@ class AddPower extends Component {
           PlantId: plantArray && plantArray[0]?.PlantId,
           Plants: plantArray,
           StateId: StateName.value,
-          NetPowerCostPerUnit: isDetailEntry ? NetPowerCostPerUnit : this.props.fieldsObj.NetPowerCostPerUnit,
+          NetPowerCostPerUnit: isDetailEntry ? NetPowerCostPerUnit : (this.props.fieldsObj.NetPowerCostPerUnit ? this.props.fieldsObj.NetPowerCostPerUnit : fieldsObj?.NetPowerCostPerUnitLocalConversion),
           VendorPlant: [],
           EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
           CountryId: country?.value,
@@ -1571,7 +1605,17 @@ class AddPower extends Component {
           SGChargesDetails: selfGridDataArray,
           LoggedInUserId: loggedInUserId(),
           NetPowerCostPerUnitConversion: fieldsObj?.NetPowerCostPerUnitConversion,
-          NetPowerCostPerUnitLocalConversion: fieldsObj?.NetPowerCostPerUnitLocalConversion
+          NetPowerCostPerUnitLocalConversion: fieldsObj?.NetPowerCostPerUnitLocalConversion,
+          PowerEntryType: isImport ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC,
+          ExchangeRateSourceName: this.state.ExchangeSource?.label || null,
+          LocalCurrencyId: isImport ? this.state?.plantCurrencyID : null,
+          LocalCurrency: isImport ? this.props?.fieldsObj?.plantCurrency : null,
+          LocalExchangeRateId: isImport ? this.state?.plantExchangeRateId : null,
+          LocalCurrencyExchangeRate: isImport ? this.state?.plantCurrency : null,
+          ExchangeRate: isImport ? this.state?.settlementCurrency : this.state?.plantCurrency,
+          ExchangeRateId: isImport ? this.state?.settlementExchangeRateId : this.state?.plantExchangeRateId,
+          CurrencyId: isImport ? this.state.currency?.value : this.state?.plantCurrencyID,
+          Currency: isImport ? this.state?.currency?.label : this.props.fieldsObj?.plantCurrency,
         }
 
         this.props.createPowerDetail(formData, (res) => {
@@ -1768,7 +1812,7 @@ class AddPower extends Component {
                               required={true}
                               handleChangeDescription={this.countryHandler}
                               valueDescription={this.state.country}
-                              disabled={isViewMode}
+                              disabled={isViewMode || isEditFlag}
                             />
                           </div>
                         </Col>
@@ -1787,7 +1831,7 @@ class AddPower extends Component {
                                 required={true}
                                 handleChangeDescription={this.stateHandler}
                                 valueDescription={this.state.StateName}
-                                disabled={isViewMode}
+                                disabled={isViewMode || isEditFlag}
                               />
                             </div>
                           </Col>}
@@ -1805,7 +1849,7 @@ class AddPower extends Component {
                               required={true}
                               handleChangeDescription={this.cityHandler}
                               valueDescription={this.state.city}
-                              disabled={isViewMode}
+                              disabled={isViewMode || isEditFlag}
                             />
                           </div>
                         </Col>
@@ -1902,7 +1946,8 @@ class AddPower extends Component {
                               handleChangeDescription={this.handleExchangeRateSource}
                               component={searchableSelect}
                               className="multiselect-with-border"
-                              disabled={isEditFlag}
+                              disabled={isEditFlag || isEditFlag}
+                              valueDescription={this.state?.ExchangeSource}
                             />
                           </Col>
                         )}

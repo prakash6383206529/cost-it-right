@@ -336,7 +336,8 @@ class AddFreight extends Component {
                 };
               });
             this.props.change('ExchangeSource', { label: Data?.ExchangeRateSourceName, value: Data?.ExchangeRateSourceName })
-            this.props.change("plantCurrency", Data?.LocalCurrency)
+            this.props.change('plantCurrency', Data?.FreightEntryType === ENTRY_TYPE_IMPORT ? Data?.LocalCurrency : Data?.Currency)
+
             this.setState({
               isEditFlag: true,
               // isLoader: false,
@@ -354,12 +355,12 @@ class AddFreight extends Component {
               Plant: { label: Data.PlantName, value: Data.PlantId },
               effectiveDate: DayTime(Data?.EffectiveDate).isValid() ? new Date(Data?.EffectiveDate) : '',
               ExchangeSource: Data?.ExchangeRateSourceName !== undefined ? { label: Data?.ExchangeRateSourceName, value: Data?.ExchangeRateSourceName } : [],
-              plantCurrency: Data?.LocalCurrencyExchangeRate,
-              plantExchangeRateId: Data?.LocalCurrencyExchangeRateId,
+              plantCurrency: this?.state?.isImport ? Data?.LocalCurrencyExchangeRate : Data?.ExchangeRate,
+              plantExchangeRateId: this?.state?.isImport ? Data?.LocalExchangeRateId : Data?.ExchangeRateId,
               settlementCurrency: Data?.ExchangeRate,
               settlementExchangeRateId: Data?.ExchangeRateId,
-              plantCurrencyID: Data?.LocalCurrencyId,
-              isImport: Data?.FuelEntryType === ENTRY_TYPE_IMPORT ? true : false,
+              plantCurrencyID: this?.state?.isImport ? Data?.LocalCurrencyId : Data?.CurrencyId,
+              isImport: Data?.FreightEntryType === ENTRY_TYPE_IMPORT ? true : false,
               currency: Data?.Currency ? { label: Data?.Currency, value: Data?.CurrencyId } : []
             }, () => this.setState({ isLoader: false }));
           }, 200);
@@ -876,6 +877,16 @@ class AddFreight extends Component {
         VendorId: costingTypeId === VBCTypeId ? vendorName.value : userDetail.ZBCSupplierInfo.VendorId,
         CustomerId: costingTypeId === CBCTypeId ? client.value : '',
         EffectiveDate: this.state.effectiveDate,
+        FreightEntryType: isImport ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC,
+        ExchangeRateSourceName: this.state.ExchangeSource?.label || null,
+        LocalCurrencyId: isImport ? this.state?.plantCurrencyID : null,
+        LocalCurrency: isImport ? this.props?.fieldsObj?.plantCurrency : null,
+        ExchangeRate: isImport ? this.state?.settlementCurrency : this.state?.plantCurrency,
+        LocalCurrencyExchangeRate: isImport ? this.state?.plantCurrency : null,
+        CurrencyId: isImport ? this.state.currency?.value : this.state?.plantCurrencyID,
+        Currency: isImport ? this.state?.currency?.label : this.props.fieldsObj?.plantCurrency,
+        ExchangeRateId: isImport ? this.state.settlementExchangeRateId : this.state?.plantExchangeRateId,
+        LocalExchangeRateId: isImport ? this.state?.plantExchangeRateId : null,
       };
 
 
@@ -906,14 +917,14 @@ class AddFreight extends Component {
         PlantId: this.state.Plant?.value,
         FreightEntryType: isImport ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC,
         ExchangeRateSourceName: this.state.ExchangeSource?.label || null,
-        LocalCurrencyId: this.state.plantCurrencyID || null,
-        LocalCurrency: this.props.fieldsObj?.plantCurrency || null,
-        ExchangeRate: this.state.settlementCurrency || null,
-        LocalCurrencyExchangeRate: this.state.plantCurrency || null,
-        CurrencyId: this.state.currency?.value || null,
-        Currency: this.state.currency?.label || null,
-        ExchangeRateId: this.state.settlementExchangeRateId || null,
-        LocalExchangeRateId: this.state.plantExchangeRateId || null
+        LocalCurrencyId: isImport ? this.state?.plantCurrencyID : null,
+        LocalCurrency: isImport ? this.props?.fieldsObj?.plantCurrency : null,
+        ExchangeRate: isImport ? this.state?.settlementCurrency : this.state?.plantCurrency,
+        LocalCurrencyExchangeRate: isImport ? this.state?.plantCurrency : null,
+        CurrencyId: isImport ? this.state.currency?.value : this.state?.plantCurrencyID,
+        Currency: isImport ? this.state?.currency?.label : this.props.fieldsObj?.plantCurrency,
+        ExchangeRateId: isImport ? this.state.settlementExchangeRateId : this.state?.plantExchangeRateId,
+        LocalExchangeRateId: isImport ? this.state?.plantExchangeRateId : null,
       };
       this.props.createFreight(formData, (res) => {
         this.setState({ setDisable: false })

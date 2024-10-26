@@ -454,6 +454,7 @@ class AddMoreDetails extends Component {
             this.setState({ UniqueProcessId: uniqueSet })
 
           })
+          this.props.change('plantCurrency', Data?.MachineEntryType === ENTRY_TYPE_IMPORT ? Data?.LocalCurrency : Data?.Currency)
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
           this.props.change('TotalFuelCostPerYear', Data.TotalFuelCostPerYear ? Data.TotalFuelCostPerYear : '')
           this.props.change('ConsumptionPerYear', Data.ConsumptionPerYear ? Data.ConsumptionPerYear : '')
@@ -481,7 +482,7 @@ class AddMoreDetails extends Component {
               vendorId: this.state.selectedVedor?.value ? this.state.selectedVedor?.value : '',
               customerId: this.state.selectedCustomer?.value ? this.state.selectedCustomer?.value : '',
               costingTypeId: this.state.CostingTypeId || null,
-              entryType: this.state.powerIsImport ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC,
+              powerIsImport: this.state.powerIsImport ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC,
               countryId: this.state.countryId || null,
               stateId: this.state.stateId || null,
               cityId: this.state.cityId || null
@@ -573,13 +574,14 @@ class AddMoreDetails extends Component {
               updateCrmHeadObj: crmHeadObj,
               IsIncludeMachineRateDepreciation: Data?.IsIncludeMachineCost,
               ExchangeSource: Data?.ExchangeRateSourceName !== undefined ? { label: Data?.ExchangeRateSourceName, value: Data?.ExchangeRateSourceName } : [],
-              plantCurrency: Data?.LocalCurrencyExchangeRate,
-              plantExchangeRateId: Data?.LocalCurrencyExchangeRateId,
+              plantCurrency: Data?.MachineEntryType === ENTRY_TYPE_IMPORT ? Data?.LocalCurrencyExchangeRate : Data?.ExchangeRate,
+              plantExchangeRateId: Data?.MachineEntryType === ENTRY_TYPE_IMPORT ? Data?.LocalCurrencyExchangeRateId : Data?.ExchangeRateId,
               settlementCurrency: Data?.ExchangeRate,
               settlementExchangeRateId: Data?.ExchangeRateId,
-              plantCurrencyID: Data?.LocalCurrencyId,
-              currency: Data?.Currency
-
+              plantCurrencyID: Data?.MachineEntryType === ENTRY_TYPE_IMPORT ? Data?.LocalCurrencyId : Data?.CurrencyId,
+              entryType: Data?.MachineEntryType === ENTRY_TYPE_IMPORT ? true : false,
+              currency: Data?.Currency ? { label: Data?.Currency, value: Data?.CurrencyId } : [],
+              //currency: Data?.Currency
               // selectedPlants: Data?.Plant ? { label: Data?.Plant[0]?.PlantName, value: Data?.Plant[0]?.PlantId } : null
 
             }, () => this.props.change('MachineRate', (this.state.isProcessGroup && !this.state.isViewMode) ? Data.MachineProcessRates[0].MachineRate : ''))
@@ -728,7 +730,6 @@ class AddMoreDetails extends Component {
         this.setState({ selectedPlants: newValue }, () => {
           this.props.getPlantUnitAPI(newValue?.value, (res) => {
             let Data = res?.data?.Data
-            this.props.change('plantCurrency', Data?.Currency)
             this.setState({ plantCurrency: Data?.Currency })
             this.setState({ plantCurrencyID: Data?.CurrencyId })
             this.props.editDetails?.callExchangeRateAPI(costingTypeId, fieldsObj?.plantCurrency, currency, entryType, ExchangeSource, effectiveDate, selectedCustomer, selectedVedor, newValue)
@@ -2290,6 +2291,7 @@ class AddMoreDetails extends Component {
     const { editDetails, fieldsObj } = this.props;
     const { DataToChange, IsIncludeMachineRateDepreciation, entryType } = this.state
 
+
     const userDetail = userDetails()
 
     let technologyArray = selectedTechnology && [{ Technology: selectedTechnology.label ? selectedTechnology.label : selectedTechnology[0].label, TechnologyId: selectedTechnology.value ? selectedTechnology.value : selectedTechnology[0].value }]
@@ -2399,14 +2401,14 @@ class AddMoreDetails extends Component {
       // LabourDetailId: labourType.value,
       MachineEntryType: entryType ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC,
       ExchangeSource: this.state.ExchangeSource || null,
-      LocalCurrencyId: this.state.plantCurrencyID || null,
-      LocalCurrency: this.props.fieldsObj?.plantCurrency || null,
-      ExchangeRate: this.state.settlementCurrency || null,
-      LocalCurrencyExchangeRate: this.state.plantCurrency || null,
-      CurrencyId: this.state.currency?.value || null,
-      Currency: this.state.currency?.label || null,
-      ExchangeRateId: this.state.settlementExchangeRateId || null,
-      LocalExchangeRateId: this.state.plantExchangeRateId || null
+      LocalCurrencyId: entryType ? this.state?.plantCurrencyID : null,
+      LocalCurrency: entryType ? this.props?.fieldsObj?.plantCurrency : null,
+      ExchangeRate: entryType ? this.state?.settlementCurrency : this.state?.plantCurrency,
+      LocalCurrencyExchangeRate: entryType ? this.state?.plantCurrency : null,
+      CurrencyId: entryType ? this.state.currency?.value : this.state?.plantCurrencyID,
+      Currency: entryType ? this.state?.currency?.label : this.props.fieldsObj?.plantCurrency,
+      ExchangeRateId: entryType ? this.state?.settlementExchangeRateId : this.state?.plantExchangeRateId,
+      LocalExchangeRateId: entryType ? this.state?.plantExchangeRateId : null
     }
 
     if (isEditFlag && this.state.isFinalApprovar) {               //editDetails.isIncompleteMachine &&
@@ -2447,6 +2449,7 @@ class AddMoreDetails extends Component {
 
     //       }
     // } 
+
     else {
       // EXECUTED WHEN:- ADD MORE MACHINE DETAIL CALLED FROM ADDMACHINERATE.JS FILE
       if (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) {
@@ -2525,7 +2528,7 @@ class AddMoreDetails extends Component {
         LoggedInUserId: loggedInUserId(),
         MachineProcessRates: processGrid,
         Technology: (technologyArray.length > 0 && technologyArray[0]?.Technology !== undefined) ? technologyArray : [{ Technology: selectedTechnology.label ? selectedTechnology.label : selectedTechnology[0].label, TechnologyId: selectedTechnology.value ? selectedTechnology.value : selectedTechnology[0].value }],
-        Plant: [{ PlantId: selectedPlants.value, PlantName: selectedPlants.label }],
+        Plant: plantArray ?? [],
         selectedPlants: selectedPlants,
         DestinationPlantId: '',
         Attachements: files,
@@ -2554,15 +2557,15 @@ class AddMoreDetails extends Component {
         PowerCRMHead: crmHeads.PowerCRMHead ? crmHeads.PowerCRMHead : '',
         FuelCRMHead: crmHeads.FuelCRMHead ? crmHeads.FuelCRMHead : '',
         MachineEntryType: entryType ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC,
-        ExchangeRateSourceName: this.state.ExchangeSource?.label || null,
-        LocalCurrencyId: this.state.plantCurrencyID || null,
-        LocalCurrency: this.props.fieldsObj?.plantCurrency || null,
-        ExchangeRate: this.state.settlementCurrency || null,
-        LocalCurrencyExchangeRate: this.state.plantCurrency || null,
-        CurrencyId: this.state.currency?.value || null,
-        Currency: this.state.currency?.label || null,
-        ExchangeRateId: this.state.settlementExchangeRateId || null,
-        LocalExchangeRateId: this.state.plantExchangeRateId || null
+        ExchangeSource: this.state.ExchangeSource || null,
+        LocalCurrencyId: entryType ? this.state?.plantCurrencyID : null,
+        LocalCurrency: entryType ? this.props?.fieldsObj?.plantCurrency : null,
+        ExchangeRate: entryType ? this.state?.settlementCurrency : this.state?.plantCurrency,
+        LocalCurrencyExchangeRate: entryType ? this.state?.plantCurrency : null,
+        CurrencyId: entryType ? this.state.currency?.value : this.state?.plantCurrencyID,
+        Currency: entryType ? this.state?.currency?.label : this.props.fieldsObj?.plantCurrency,
+        ExchangeRateId: entryType ? this.state?.settlementExchangeRateId : this.state?.plantExchangeRateId,
+        LocalExchangeRateId: entryType ? this.state?.plantExchangeRateId : null
       }
 
       let finalObj = {

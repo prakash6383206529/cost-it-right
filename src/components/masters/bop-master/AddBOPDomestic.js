@@ -384,7 +384,7 @@ class AddBOPDomestic extends Component {
           this.props.change('ConditionCost', checkForDecimalAndNull(Data.NetConditionCost, initialConfiguration.NoOfDecimalForPrice))
           this.props.change('NetLandedCostBase', checkForDecimalAndNull(Data.NetLandedCost, initialConfiguration.NoOfDecimalForPrice))
           this.setState({ minEffectiveDate: Data.EffectiveDate })
-          this.props.change('plantCurrency', Data.LocalCurrency)
+          this.props.change('plantCurrency', Data?.Currency)
           this.props.change('ExchangeSource', { label: Data.ExchangeRateSourceName, value: Data.ExchangeRateSourceName })
           this.props.change("OtherCost", checkForDecimalAndNull(Data.OtherNetCost, initialConfiguration.NoOfDecimalForPrice))
           // this.props.getPlantBySupplier(Data.Vendor, () => { })
@@ -416,9 +416,9 @@ class AddBOPDomestic extends Component {
               IsBreakupBoughtOutPart: Data.IsBreakupBoughtOutPart,
               IsSAPCodeUpdated: Data.IsSAPCodeUpdated,
               SAPPartNumber: Data.SAPPartNumber !== undefined ? { label: Data.SAPPartNumber, value: Data.SAPPartNumber } : [],
-              currencyValue: Data.LocalCurrencyExchangeRate,
-              LocalExchangeRateId: Data.LocalExchangeRateId,
-              LocalCurrencyId: Data.LocalCurrencyId,
+              currencyValue: Data.CurrencyExchangeRate,
+              LocalExchangeRateId: Data.ExchangeRateId,
+              LocalCurrencyId: Data.CurrencyId,
               ExchangeSource: { label: Data.ExchangeRateSourceName, value: Data.ExchangeRateSourceName },
               totalOtherCost: Data?.OtherNetCost
             }, () => {
@@ -1041,10 +1041,10 @@ class AddBOPDomestic extends Component {
       IsSAPCodeHandle: IsSAPCodeHandle ? true : false,
       IsSAPCodeUpdated: IsSAPCodeUpdated,
       LoggedInUserId: loggedInUserId(),
-      LocalCurrency: values.plantCurrency,
-      LocalExchangeRateId: LocalExchangeRateId,
-      LocalCurrencyId: LocalCurrencyId,
-      LocalCurrencyExchangeRate: currencyValue,
+      Currency: values.plantCurrency,
+      ExchangeRateId: LocalExchangeRateId,
+      CurrencyId: LocalCurrencyId,
+      CurrencyExchangeRate: currencyValue,
       NetConditionCost: 0,
       NetConditionCostConversion: 0,
       NetConditionCostLocalConversion: 0,
