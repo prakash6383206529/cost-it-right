@@ -625,7 +625,6 @@ class AddOperation extends Component {
           this.props.change('OperationName', Data.OperationName ? Data.OperationName : '')
           this.props.change('OperationCode', Data.OperationCode ? Data.OperationCode : '')
           this.props.change('Description', Data.Description ? Data.Description : '')
-          this.props.change('Rate', Data.Rate ? Data.Rate : '')
           this.props.change('Remark', Data.Remark ? Data.Remark : '')
           this.props.change('WeldingRate', Data.OperationBasicRate ? Data.OperationBasicRate : '')
           this.props.change('Consumption', Data.OperationConsumption ? Data.OperationConsumption : '')
@@ -644,9 +643,12 @@ class AddOperation extends Component {
             this.setState({ isWelding: true })
           }
           this.props.change('plantCurrency', Data?.OperationEntryType === ENTRY_TYPE_IMPORT ? Data?.LocalCurrency : Data?.Currency)
-          this.props.change('Rate', Data?.Rate)
           this.props.change('RateLocalConversion', Data?.RateLocalConversion)
           this.props.change('RateConversion', Data?.RateConversion)
+          if (Data?.OperationEntryType === ENTRY_TYPE_IMPORT) {
+            this.props.change('Rate', Data?.Rate)
+
+          }
           setTimeout(() => {
             this.setState({
               isEditFlag: true,
@@ -674,9 +676,9 @@ class AddOperation extends Component {
               settlementExchangeRateId: Data?.ExchangeRateId,
               isImport: Data?.OperationEntryType === ENTRY_TYPE_IMPORT ? true : false,
               currency: Data?.Currency ? { label: Data?.Currency, value: Data?.CurrencyId } : [],
-              plantCurrency: this?.state?.isImport ? Data?.LocalCurrencyExchangeRate : Data?.ExchangeRate,
-              plantCurrencyID: this?.state?.isImport ? Data?.LocalCurrencyId : Data?.CurrencyId,
-              plantExchangeRateId: this?.state?.isImport ? Data?.LocalExchangeRateId : Data?.ExchangeRateId,
+              plantCurrency: Data?.OperationEntryType === ENTRY_TYPE_IMPORT ? Data?.LocalCurrencyExchangeRate : Data?.ExchangeRate,
+              plantCurrencyID: Data?.OperationEntryType === ENTRY_TYPE_IMPORT ? Data?.LocalCurrencyId : Data?.CurrencyId,
+              plantExchangeRateId: Data?.OperationEntryType === ENTRY_TYPE_IMPORT ? Data?.LocalExchangeRateId : Data?.ExchangeRateId,
 
             })
             // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
@@ -1142,6 +1144,8 @@ class AddOperation extends Component {
     const { fieldsObj } = this.props
     const { selectedPlants, operationType, selectedTechnology, UOM, destinationPlant, isSurfaceTreatment, OperationId } = this.state
     let isPlant = selectedPlants.length > 0 || destinationPlant.label ? true : false
+    let plantArray = Array?.isArray(destinationPlant) ? destinationPlant?.map(plant => ({ PlantId: plant?.value, PlantName: plant?.label, PlantCode: '' })) :
+      destinationPlant ? [{ PlantId: destinationPlant?.value, PlantName: destinationPlant?.label, PlantCode: '' }] : [];
     if (operationType && selectedTechnology.length > 0 && fieldsObj.OperationName && UOM.label && fieldsObj.EffectiveDate && isPlant) {
       let obj = {}
       obj.operationType = this.state.operationType
@@ -1149,7 +1153,7 @@ class AddOperation extends Component {
       obj.operationName = fieldsObj.OperationName
       obj.operationCode = fieldsObj.OperationCode
       obj.description = fieldsObj.Description
-      obj.plants = this.state.destinationPlant
+      obj.plants = plantArray ?? []
       obj.UOM = this.state.UOM
       obj.vendor = this.state.vendorName
       obj.effectiveDate = this.state.effectiveDate
@@ -1206,7 +1210,7 @@ class AddOperation extends Component {
   */
   render() {
     const { handleSubmit, initialConfiguration, isOperationAssociated, t, data } = this.props;
-    const { isEditFlag, isOpenVendor, isOpenUOM, isDisableCode, isViewMode, setDisable, costingTypeId, noApprovalCycle, CostingTypePermission, disableSendForApproval, hidePlantCurrency } = this.state;
+    const { isEditFlag, isOpenVendor, isOpenUOM, isDisableCode, isViewMode, setDisable, costingTypeId, noApprovalCycle, CostingTypePermission, disableSendForApproval, hidePlantCurrency, isDetailEntry } = this.state;
     const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
 
 
@@ -1419,7 +1423,7 @@ class AddOperation extends Component {
                           placeholder={isViewMode ? '-' : "Select"}
                           validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
                           component={renderText}
-                          disabled={isViewMode ? true : false}
+                          disabled={isViewMode ? true : false || isDetailEntry}
                           className=" "
                           customClassName=" withBorder"
                         />
@@ -1444,7 +1448,7 @@ class AddOperation extends Component {
                             mendatory={true}
                             validate={this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [required] : []}
                             className="multiselect-with-border"
-                            disabled={isEditFlag ? true : false}
+                            disabled={isEditFlag ? true : false || isViewMode}
                           />
                         </Col>
                       )}
@@ -1510,7 +1514,7 @@ class AddOperation extends Component {
                             handleChangeDescription={this.handleExchangeRateSource}
                             component={searchableSelect}
                             className="multiselect-with-border"
-                            disabled={isEditFlag}
+                            disabled={isEditFlag || isViewMode}
                             valueDescription={this.state.ExchangeSource}
                           />
                         </Col>
@@ -1546,7 +1550,7 @@ class AddOperation extends Component {
                           required={true}
                           handleChangeDescription={this.handleCurrency}
                           valueDescription={this.state.currency}
-                          disabled={isEditFlag ? true : false}
+                          disabled={isEditFlag ? true : false || isDetailEntry || isViewMode}
                         >{this.state.showWarning && <WarningMessage dClass="mt-1" message={`${this.state.currency.label} rate is not present in the Exchange Master`} />}
                         </Field>
                       </Col>}
@@ -1607,7 +1611,7 @@ class AddOperation extends Component {
                           required={true}
                           handleChangeDescription={this.handleUOM}
                           valueDescription={this.state.UOM}
-                          disabled={isViewMode || (isEditFlag && isOperationAssociated)}
+                          disabled={isViewMode || (isEditFlag && isOperationAssociated) || isDetailEntry}
                         />
                       </Col>
                       {this.state.isWelding &&
@@ -1621,7 +1625,7 @@ class AddOperation extends Component {
                               validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
                               component={renderTextInputField}
                               required={false}
-                              disabled={isViewMode || (isEditFlag && isOperationAssociated)}
+                              disabled={isViewMode || (isEditFlag && isOperationAssociated) || isDetailEntry}
                               onChange={(e) => { this.handleRates(e.target.value, 'WeldingRate') }}
                               className=" "
                               customClassName=" withBorder"
@@ -1636,7 +1640,7 @@ class AddOperation extends Component {
                               validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
                               component={renderTextInputField}
                               required={false}
-                              disabled={isViewMode || (isEditFlag && isOperationAssociated)}
+                              disabled={isViewMode || (isEditFlag && isOperationAssociated) || isDetailEntry}
                               onChange={(e) => { this.handleRates(e.target.value, 'Consumption') }}
                               className=" "
                               customClassName=" withBorder"
@@ -1653,7 +1657,7 @@ class AddOperation extends Component {
                           validate={this.state.isWelding ? [] : [required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
                           component={renderTextInputField}
                           required={true}
-                          disabled={isViewMode || (isEditFlag && isOperationAssociated) || this.state.isWelding}
+                          disabled={isViewMode || (isEditFlag && isOperationAssociated) || this.state.isWelding || isDetailEntry}
                           onChange={this.handleRateChange}
                           className=" "
                           customClassName=" withBorder"
@@ -1670,7 +1674,7 @@ class AddOperation extends Component {
                           validate={this.state.isWelding ? [] : [required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
                           component={renderTextInputField}
                           required={true}
-                          disabled={this.state.isImport ? true : false}
+                          disabled={this.state.isImport ? true : false || isViewMode || (isEditFlag && isOperationAssociated) || this.state.isWelding || isDetailEntry}
                           onChange={this.handleRateChange}
                           className=" "
                           customClassName=" withBorder"
@@ -1697,7 +1701,7 @@ class AddOperation extends Component {
                           placeholder={isViewMode ? '-' : "Select"}
                           validate={[positiveAndDecimalNumber, maxLength10, number]}
                           component={renderTextInputField}
-                          disabled={isEditFlag ? true : false}
+                          disabled={isEditFlag ? true : false || isDetailEntry || isViewMode}
                           className=" "
                           customClassName=" withBorder"
                         />

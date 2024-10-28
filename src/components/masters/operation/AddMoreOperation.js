@@ -299,6 +299,7 @@ function AddMoreOperation(props) {
         if (state.isImport) {
             const rateConversion = checkForNull(state.settlementCurrency) * checkForNull(totalCost)
             const rateLocalConversion = checkForNull(state.plantCurrency) * checkForNull(totalCost)
+
             setValue('Rate', checkForDecimalAndNull(totalCost, initialConfiguration.NoOfDecimalForPrice))
             setValue('RateLocalConversion', checkForDecimalAndNull(rateLocalConversion, initialConfiguration.NoOfDecimalForPrice))
             setValue('RateConversion', checkForDecimalAndNull(rateConversion, initialConfiguration.NoOfDecimalForPrice))
@@ -437,15 +438,19 @@ function AddMoreOperation(props) {
             obj.value = item.Value
             technologyTemp.push(obj)
         })
+        let plantArray
+        if (addMoreDetailObj && addMoreDetailObj?.plants?.length > 0) {
+            plantArray = addMoreDetailObj?.plants?.map(plant => ({ label: plant?.PlantName, value: plant?.PlantId }));
+        }
         setValue('technology', technologyTemp)
         setValue('operationName', addMoreDetailObj.operationName)
         setValue('description', addMoreDetailObj.description)
-        setValue('plant', { label: addMoreDetailObj?.plants[0]?.Text ?? addMoreDetailObj?.destinationPlant.label, value: addMoreDetailObj?.plants[0]?.Value ?? addMoreDetailObj?.destinationPlant.value })
+        setValue('plant', plantArray ?? [])
         setValue('vendorName', { label: addMoreDetailObj?.vendor?.label, value: addMoreDetailObj?.vendor?.value })
         setVendor({ label: addMoreDetailObj?.vendor?.label, value: addMoreDetailObj?.vendor?.value })
         setValue('uom', { label: addMoreDetailObj.UOM.label, value: addMoreDetailObj.UOM.value })
         setUom({ label: addMoreDetailObj.UOM.label, value: addMoreDetailObj.UOM.value })
-        setPlant({ label: addMoreDetailObj?.plants[0]?.Text ?? addMoreDetailObj?.destinationPlant.label, value: addMoreDetailObj?.plants[0]?.Value ?? addMoreDetailObj?.destinationPlant.value })
+        setPlant(plantArray ?? [])
         setValue('customer', { label: addMoreDetailObj.customer.label, value: addMoreDetailObj.customer.value })
         setClient({ label: addMoreDetailObj.customer.label, value: addMoreDetailObj.customer.value })
         setValue('plantCurrency', addMoreDetailObj?.plantCurrency)
@@ -511,7 +516,9 @@ function AddMoreOperation(props) {
             }
 
             setTimeout(() => {
-                setValue('Rate', detailObject && detailObject.Rate ? checkForDecimalAndNull(detailObject.Rate, initialConfiguration.NoOfDecimalForPrice) : '',)
+                if (detailObject?.OperationEntryType === ENTRY_TYPE_IMPORT) {
+                    setValue('Rate', detailObject && detailObject?.Rate ? checkForDecimalAndNull(detailObject?.Rate, initialConfiguration.NoOfDecimalForPrice) : '',)
+                }
                 setValue('RateLocalConversion', detailObject && detailObject.RateLocalConversion ? checkForDecimalAndNull(detailObject.RateLocalConversion, initialConfiguration.NoOfDecimalForPrice) : '',)
                 setValue('RateConversion', detailObject && detailObject.RateConversion ? checkForDecimalAndNull(detailObject.RateConversion, initialConfiguration.NoOfDecimalForPrice) : '',)
             }, 600);
@@ -692,13 +699,18 @@ function AddMoreOperation(props) {
 
         let isFinancialDataChange = false;
         if (isEditFlag) {
-            let temp = Object.keys(formData).filter((item) => item.includes('CRMHead'));
-            temp.map((item) => {
-                if (dataObj[item] && String(dataObj[item]) !== String(formData[item])) {
-                    isFinancialDataChange = true;
-                }
-                return null;
-            });
+            //let temp = Object.keys(formData)/* .filter((item) => item.includes('CRMHead')); */
+            // temp.map((item) => {
+            //     if (dataObj[item] && String(dataObj[item]) !== String(formData[item])) {
+            //         isFinancialDataChange = true;
+            //     }
+            //     return null;
+            // });
+            isFinancialDataChange = Object.keys(formData)
+                //.filter(item => item.includes('cost') || item.includes('CRMHead')) // Filter keys that include 'cost' or 'CRMHead'
+                .some(item => dataObj[item] && String(dataObj[item]) !== String(formData[item]));
+
+
             if (isFinancialDataChange) {
                 formData.IsFinancialDataChanged = true;
                 if (DayTime(dataObj.EffectiveDate).format('DD/MM/YYYY') === DayTime(values.effectiveDate).format('DD/MM/YYYY')) {
