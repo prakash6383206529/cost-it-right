@@ -111,8 +111,7 @@ function AddBudget(props) {
     const [settlementExchangeRateId, setSettlementExchangeRateId] = useState('')
     const [plantCurrency, setPlantCurrency] = useState(null)
     const [ExchangeSource, setExchangeSource] = useState('')
-    const [selectedCurrency, setSelectedCurrency] = useState("")
-
+    const [costConverSionInLocalCurrency, setCostConverSionInLocalCurrency] = useState(false)
     const { vendorLabel } = useLabels()
     useEffect(() => {
         setCostingTypeId(getCostingTypeIdByCostingPermission())
@@ -137,7 +136,7 @@ function AddBudget(props) {
     }, [plantCurrency, settlementCurrency]);
     useEffect(() => {
         callExchangeRateAPI()
-    }, [currency]);
+    }, [currency, year,]);
     const commonFunction = (plantId = '') => {
         let obj = {
             TechnologyId: BUDGET_ID,
@@ -284,8 +283,7 @@ function AddBudget(props) {
             setSelectedPlants(newValue)
             dispatch(getPlantUnitAPI(newValue?.value, (res) => {
                 let Data = res?.data?.Data
-                setValue('plantCurrency', Data?.Currency)
-                setPlantCurrency(Data?.Currency)
+                setValue("plantCurrency", Data?.Currency)
                 setPlantCurrencyID(Data?.CurrencyId)
                 if (Data?.Currency !== reactLocalStorage?.getObject("baseCurrency")) {
                     setHidePlantCurrency(false)
@@ -340,6 +338,8 @@ function AddBudget(props) {
             setDisableCurrency(false)
             setValue('currency', '')
             setCurrency([])
+            callExchangeRateAPI()
+
         } else {
             setYear([])
         }
@@ -488,8 +488,8 @@ function AddBudget(props) {
         setTotalSum((total + currentPrice))
         setValue('totalSumCurrency', checkForDecimalAndNull((total + currentPrice), getConfigurationKey().NoOfDecimalForPrice))
         if (settlementCurrency !== null || plantCurrency !== null) {
-            setValue("totalSumPlantCurrency", checkForDecimalAndNull(((total + currentPrice) * plantCurrency), getConfigurationKey().NoOfDecimalForPrice))
-            setValue('totalSum', checkForDecimalAndNull(((total + currentPrice) * settlementCurrency), getConfigurationKey().NoOfDecimalForPrice))
+            setValue("totalSumPlantCurrency", checkForDecimalAndNull(((total + currentPrice) * settlementCurrency), getConfigurationKey().NoOfDecimalForPrice))
+            setValue('totalSum', checkForDecimalAndNull(((total + currentPrice) * plantCurrency), getConfigurationKey().NoOfDecimalForPrice))
         }
 
     }
@@ -550,14 +550,23 @@ function AddBudget(props) {
                     setValue('currentPrice', Data.NetPoPrice)
                     setValue('FinancialYear', { label: Data.FinancialYear, value: 0 })
                     setValue('currency', { label: Data.Currency, value: Data.CurrencyId })
-                    setCurrency({ label: Data.Currency, value: Data.CurrencyId })
+                    setCurrency({ label: Data?.Currency, value: Data?.CurrencyId })
                     setValue("plantCurrency", Data?.LocalCurrency)
                     setPartType({ label: Data.PartType, value: Data?.PartTypeId })
                     setExchangeSource({ label: Data.ExchangeRateSourceName, valu: Data.ExchangeRateSourceName })
                     setValue("ExchangeSource", { label: Data.ExchangeRateSourceName, valu: Data.ExchangeRateSourceName })
-                    setSettlementCurrency(Data?.LocalCurrencyExchangeRate)
-                    setPlantCurrency(Data?.ExchangeRate)
                     setCurrentPrice(Data?.NetPoPrice)
+                    setPlantCurrencyID(Data?.CurrencyId === null ? Data?.LocalCurrencyId : Data?.CurrencyId)
+                    setCostConverSionInLocalCurrency(Data?.CurrencyId !== null ? true : false)
+
+                    setPlantCurrency(Data?.CurrencyId !== null ? Data?.LocalCurrencyExchangeRate : Data?.ExchangeRate)
+                    setPlantExchangeRateId(Data?.CurrencyId !== null ? Data?.LocalExchangeRateId : Data?.ExchangeRateId)
+                    setSettlementCurrency(Data?.ExchangeRate)
+                    setSettlementExchangeRateId(Data?.ExchangeRateId)
+                    // LocalCurrencyExchangeRate: costConverSionInLocalCurrency ? plantCurrency : null,
+                    //     LocalExchangeRateId: costConverSionInLocalCurrency ? plantExchangeRateId : null,
+                    //         ExchangeRate: costConverSionInLocalCurrency ? settlementCurrency : plantCurrency,
+                    //             ExchangeRateId: costConverSionInLocalCurrency ? settlementExchangeRateId : plantExchangeRateId,
                     if (Data?.LocalCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
                         setHidePlantCurrency(false)
                     } else {
@@ -632,11 +641,15 @@ function AddBudget(props) {
     const handleCurrencyChange = (newValue) => {
         if (newValue && newValue !== '') {
             setCurrency(newValue)
+            setCostConverSionInLocalCurrency(true)
             // if (getValues("plantCurrency") !== newValue?.label) {
             //     setHidePlantCurrency(false)
             // } else {
             //     setHidePlantCurrency(true)
             // }
+
+        } else {
+            setCostConverSionInLocalCurrency(false)
 
         }
     }
@@ -648,19 +661,14 @@ function AddBudget(props) {
         const costingType = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? VBCTypeId : costingTypeId) : ZBCTypeId;
         const hasCurrencyAndDate = plantCurrency && date;
         const isSourceExchangeRateVisible = getConfigurationKey().IsSourceExchangeRateNameVisible;
-
-
-
-        if (hasCurrencyAndDate && (!isSourceExchangeRateVisible || ExchangeSource) && Object.keys(currency).length !== 0) {
-
+        const fromCurrency = getValues("plantCurrency")
+        if (hasCurrencyAndDate && finalYear && (!isSourceExchangeRateVisible || ExchangeSource) /* && Object.keys(currency).length !== 0 */) {
             if (IsFetchExchangeRateVendorWise() && (vendorName?.length === 0 || client?.length === 0)) {
                 setShowWarning(true)
                 return;
             }
 
             const callAPI = (from, to) => {
-
-
                 return new Promise((resolve) => {
                     dispatch(getExchangeRateByCurrency(
                         from,
@@ -687,28 +695,40 @@ function AddBudget(props) {
             };
 
 
-            callAPI(currency?.label, plantCurrency).then(({ rate: rate1, exchangeRateId: exchangeRateId1 }) => {
-                callAPI(currency?.label, reactLocalStorage.getObject("baseCurrency")).then(({ rate: rate2, exchangeRateId: exchangeRateId2 }) => {
-                    setPlantCurrency(rate1)
-                    setSettlementCurrency(rate2)
-                    setPlantExchangeRateId(exchangeRateId1)
-                    setSettlementExchangeRateId(exchangeRateId2)
+            if (costConverSionInLocalCurrency && Object.keys(currency).length !== 0) {
+                callAPI(currency?.label, plantCurrency).then(({ rate: rate1, exchangeRateId: exchangeRateId1 }) => {
+                    callAPI(currency?.label, reactLocalStorage.getObject("baseCurrency")).then(({ rate: rate2, exchangeRateId: exchangeRateId2 }) => {
+                        setPlantCurrency(rate1);
+                        setSettlementCurrency(rate2);
 
 
+                        setPlantExchangeRateId(exchangeRateId1);
+
+                        setSettlementExchangeRateId(exchangeRateId2);
+                    });
                 });
-            });
-
-
-
+            } else {
+                callAPI(fromCurrency, reactLocalStorage.getObject("baseCurrency")).then(({ rate: rate1, exchangeRateId: exchangeRateId1 }) => {
+                    setPlantCurrency(rate1);
+                    setPlantExchangeRateId(exchangeRateId1);
+                });
+            }
         }
     };
 
     const handleCalculation = (rate = "") => {
 
-        setValue('totalSumCurrency', checkForDecimalAndNull((totalSum + currentPrice), getConfigurationKey().NoOfDecimalForPrice))
-        setValue("totalSumPlantCurrency", checkForDecimalAndNull(((totalSum + currentPrice) * plantCurrency), getConfigurationKey().NoOfDecimalForPrice))
-        setValue('totalSum', checkForDecimalAndNull(((totalSum + currentPrice) * settlementCurrency), getConfigurationKey().NoOfDecimalForPrice))
+        if (costConverSionInLocalCurrency) {
 
+            setValue('totalSumCurrency', checkForDecimalAndNull((totalSum + currentPrice), getConfigurationKey().NoOfDecimalForPrice))
+            setValue("totalSumPlantCurrency", checkForDecimalAndNull(((totalSum + currentPrice) * settlementCurrency), getConfigurationKey().NoOfDecimalForPrice))
+            setValue('totalSum', checkForDecimalAndNull(((totalSum + currentPrice) * plantCurrency), getConfigurationKey().NoOfDecimalForPrice))
+        } else {
+
+            setValue('totalSumCurrency', checkForDecimalAndNull((totalSum + currentPrice), getConfigurationKey().NoOfDecimalForPrice))
+            setValue('totalSum', checkForDecimalAndNull(((totalSum + currentPrice) * plantCurrency), getConfigurationKey().NoOfDecimalForPrice))
+
+        }
     }
     /**
      * @method onSubmit
@@ -747,20 +767,23 @@ function AddBudget(props) {
 
         if (isEditFlag) {
             let formData = {
-                BudgetingId: BudgetId, LoggedInUserId: loggedInUserId(), FinancialYear: DataChanged.FinancialYear, NetPoPrice: values.currentPrice,
+                BudgetingId: BudgetId, LoggedInUserId: loggedInUserId(), FinancialYear: DataChanged.FinancialYear,
+                NetPoPrice: values?.currentPrice,
                 BudgetedPoPrice: totalSum,
-                BudgetedPoPriceInCurrency: checkForNull(totalSum * settlementCurrency),
+                BudgetedPoPriceInCurrency: checkForNull(totalSum * plantCurrency),
                 CostingHeadId: costingTypeId, PartId: DataChanged.PartId, RevisionNumber: DataChanged.RevisionNumber, PlantId: DataChanged.PlantId, VendorId: DataChanged.VendorId, CustomerId: DataChanged.CustomerId, BudgetingPartCostingDetails: temp, BudgetedEntryType: budgetedEntryType ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC,
                 ExchangeRateSourceName: ExchangeSource?.label,
-                LocalCurrencyId: plantCurrencyID,
-                LocalCurrency: getValues("plantCurrency"),
-                ExchangeRate: settlementCurrency,
-                LocalCurrencyExchangeRate: plantCurrency,
-                ExchangeRateId: settlementExchangeRateId,
-                LocalExchangeRateId: plantExchangeRateId,
-                NetPoPriceLocalConversion: checkForNull(totalSum * plantCurrency),
-                NetPoPriceConversion: checkForNull(totalSum * settlementCurrency),
-                BudgetedPoPriceLocalConversion: checkForNull(totalSum * plantCurrency)
+                CurrencyId: costConverSionInLocalCurrency ? currency?.value : null,
+                Currency: costConverSionInLocalCurrency ? currency?.label : getValues("plantCurrency"),
+                LocalCurrencyId: costConverSionInLocalCurrency ? plantCurrencyID : null,
+                LocalCurrency: costConverSionInLocalCurrency ? getValues("plantCurrency") : null,
+                LocalCurrencyExchangeRate: costConverSionInLocalCurrency ? plantCurrency : null,
+                LocalExchangeRateId: costConverSionInLocalCurrency ? plantExchangeRateId : null,
+                ExchangeRate: costConverSionInLocalCurrency ? settlementCurrency : plantCurrency,
+                ExchangeRateId: costConverSionInLocalCurrency ? settlementExchangeRateId : plantExchangeRateId,
+                NetPoPriceConversion: checkForNull(totalSum * plantCurrency),
+                NetPoPriceLocalConversion: costConverSionInLocalCurrency ? checkForNull(totalSum * settlementCurrency) : checkForNull(totalSum),
+                BudgetedPoPriceLocalConversion: costConverSionInLocalCurrency ? checkForNull(totalSum * settlementCurrency) : checkForNull(totalSum),
 
             }
 
@@ -775,24 +798,26 @@ function AddBudget(props) {
         } else {
 
             let formData = {
-                LoggedInUserId: loggedInUserId(), FinancialYear: values.FinancialYear.label, NetPoPrice: values.currentPrice,
+                LoggedInUserId: loggedInUserId(), FinancialYear: values.FinancialYear.label,
+                NetPoPrice: values?.currentPrice,
                 //  BudgetedPoPrice: totalSum,
                 BudgetedPoPrice: totalSum,
                 BudgetedEntryType: budgetedEntryType ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC,
-                BudgetedPoPriceInCurrency: checkForNull(totalSum * settlementCurrency),
+                BudgetedPoPriceInCurrency: checkForNull(totalSum * plantCurrency),
                 CostingHeadId: costingTypeId, PartId: part.value, PartName: part.label, RevisionNumber: part.RevisionNumber, PlantId: selectedPlants.value,
                 PlantName: selectedPlants.label, VendorId: vendorName.value, VendorName: vendorName.label, CustomerId: client.value, BudgetingPartCostingDetails: temp,
-                CurrencyId: currency.value, Currency: currency.label, ConditionsData: conditionTableData,
+                ConditionsData: conditionTableData,
                 ExchangeRateSourceName: ExchangeSource?.label,
-                LocalCurrencyId: plantCurrencyID,
-                LocalCurrency: getValues("plantCurrency"),
-                ExchangeRate: settlementCurrency,
-                LocalCurrencyExchangeRate: plantCurrency,
-                ExchangeRateId: settlementExchangeRateId,
-                LocalExchangeRateId: plantExchangeRateId,
-                NetPoPriceLocalConversion: checkForNull(totalSum * plantCurrency),
-                NetPoPriceConversion: checkForNull(totalSum * settlementCurrency),
-                BudgetedPoPriceLocalConversion: checkForNull(totalSum * plantCurrency)
+                CurrencyId: costConverSionInLocalCurrency ? currency?.value : null,
+                Currency: costConverSionInLocalCurrency ? currency?.label : getValues("plantCurrency"),
+                LocalCurrencyExchangeRate: costConverSionInLocalCurrency ? plantCurrency : null,
+                LocalCurrency: costConverSionInLocalCurrency ? getValues("plantCurrency") : null,
+                LocalExchangeRateId: costConverSionInLocalCurrency ? plantExchangeRateId : null,
+                ExchangeRate: costConverSionInLocalCurrency ? settlementCurrency : plantCurrency,
+                ExchangeRateId: costConverSionInLocalCurrency ? settlementExchangeRateId : plantExchangeRateId,
+                NetPoPriceConversion: checkForNull(totalSum * plantCurrency),
+                NetPoPriceLocalConversion: costConverSionInLocalCurrency ? checkForNull(totalSum * settlementCurrency) : checkForNull(totalSum),
+                BudgetedPoPriceLocalConversion: costConverSionInLocalCurrency ? checkForNull(totalSum * settlementCurrency) : checkForNull(totalSum),
             }
             if (isFinalApprover) {
                 dispatch(createBudget(formData, (res) => {
@@ -835,9 +860,9 @@ function AddBudget(props) {
                 setValue('currentPrice', checkForDecimalAndNull(res?.data?.DataList[0].NetPOPrice, getConfigurationKey().NoOfDecimalForInputOutput))
                 setCurrentPrice(checkForDecimalAndNull(res?.data?.DataList[0].NetPOPrice, getConfigurationKey().NoOfDecimalForInputOutput))
                 setTotalSum(TotalSum)
-                setValue('totalSum', checkForNull(TotalSum * settlementCurrency))
+                setValue('totalSum', checkForNull(TotalSum * plantCurrency))
                 setValue('totalSumCurrency', TotalSum)
-                setValue("totalSumPlantCurrency", checkForNull(TotalSum * plantCurrency))
+                setValue("totalSumPlantCurrency", checkForNull(TotalSum * settlementCurrency))
             }))
         }
     }
@@ -909,9 +934,9 @@ function AddBudget(props) {
         let finalNewSum = Number(sum) + Number(totalSum) - totalConditionCost
 
         setTotalSum(finalNewSum)
-        setValue('totalSum', checkForNull(finalNewSum * settlementCurrency))
+        setValue('totalSum', checkForNull(finalNewSum * plantCurrency))
         setValue("totalSumCurrency", finalNewSum)
-        setValue('totalSumPlantCurrency', checkForNull((finalNewSum) * plantCurrency))
+        setValue('totalSumPlantCurrency', checkForNull((finalNewSum) * settlementCurrency))
 
         setTimeout(() => {
             setTotalConditionCost(sum)
@@ -1273,16 +1298,16 @@ function AddBudget(props) {
                                                                     Controller={Controller}
                                                                     control={control}
                                                                     register={register}
-                                                                    mandatory={false}
+                                                                    mandatory={budgetedEntryType ? true : false}
                                                                     rules={{
-                                                                        required: true,
+                                                                        required: budgetedEntryType ? true : false,
                                                                     }}
                                                                     //component={searchableSelect}
                                                                     placeholder={'Select'}
                                                                     options={renderListing("currency")}
                                                                     //onKeyUp={(e) => this.changeItemDesc(e)}
                                                                     //validate={(role == null || role.length === 0) ? [required] : []}
-                                                                    required={false}
+                                                                    required={budgetedEntryType ? true : false}
                                                                     handleChange={handleCurrencyChange}
                                                                     disabled={disableCurrency || isViewMode ? true : false}
                                                                 />
@@ -1434,7 +1459,7 @@ function AddBudget(props) {
                                                     </>}
 
 
-                                                    {!hidePlantCurrency && <Col md="4">
+                                                    {(!hidePlantCurrency && costConverSionInLocalCurrency) && <Col md="4">
                                                         {/* {currency && currency?.label ? */}
                                                         <div className='budgeting-details  mt-2 '>
                                                             <label className='w-fit'>{`Total Sum (${getValues("plantCurrency") ?? "Plant Currency"}):`}</label>
@@ -1459,7 +1484,7 @@ function AddBudget(props) {
                                                     </Col>}
                                                     <Col md="4">
                                                         <div className='budgeting-details  mt-2 mb-2'>
-                                                            <label className='w-fit'>{`Total Sum (${reactLocalStorage.getObject("baseCurrency")}):`}</label>
+                                                            <label className='w-fit'>{`Total Sum (${reactLocalStorage.getObject("baseCurrency")})):`}</label>
                                                             <NumberFieldHookForm
                                                                 label=""
                                                                 name={"totalSum"}
@@ -1481,7 +1506,7 @@ function AddBudget(props) {
                                                     <Col md="4">
                                                         {/* {currency && currency?.label ? */}
                                                         <div className='budgeting-details  mt-2 '>
-                                                            <label className='w-fit'>{`Total Sum ${currency?.label ? `(${currency.label})` : '(Currency)'}:`}</label>
+                                                            <label className='w-fit'>{`Total Sum (${currency?.label ? `(${currency.label})` : getValues("plantCurrency")}):`}</label>
                                                             <NumberFieldHookForm
                                                                 label=""
                                                                 name={"totalSumCurrency"}
