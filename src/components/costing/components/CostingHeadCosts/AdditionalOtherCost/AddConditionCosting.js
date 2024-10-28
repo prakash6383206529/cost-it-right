@@ -461,7 +461,7 @@ function AddConditionCosting(props) {
             }
             const item = tableData.find(item => item?.Description === Applicability);
             if (item) {
-                totalConditionCost = checkForNull(item?.ConditionCost);
+                totalConditionCost = checkForNull(totalConditionCost) + checkForNull(item?.ConditionCost);
                 if (selectedApplicabilities.includes('Basic Price')) {
                     total = checkForNull(totalConditionCost) + checkForNull(basicRateBase)
                 } else {

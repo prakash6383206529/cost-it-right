@@ -30,7 +30,7 @@ import WarningMessage from '../../common/WarningMessage'
 import imgRedcross from '../../../assests/images/red-cross.png';
 import MasterSendForApproval from '../MasterSendForApproval'
 import { CheckApprovalApplicableMaster, onFocus, userTechnologyDetailByMasterId } from '../../../helper';
-import { debounce } from 'lodash';
+import _, { debounce } from 'lodash';
 import AsyncSelect from 'react-select/async';
 import { getClientSelectList, } from '../actions/Client';
 import { reactLocalStorage } from 'reactjs-localstorage';
@@ -927,18 +927,40 @@ class AddBOPImport extends Component {
     return checkForNull(price) * checkForNull(currencyValue)
   }
 
+  handleApplicability = (value, basicPriceBaseCurrency, arr) => {
+    const selectedApplicabilities = value?.split(' + ');
+
+    // Calculate total cost currency for selected applicabilities
+    const total = selectedApplicabilities.reduce((acc, Applicability) => {
+      // Skip checking for "Basic Rate" in tableData
+
+      const item = arr?.find(item => item?.Description === Applicability);
+      if (item) {
+        let totalConditionCost = acc + item?.ConditionCost
+        return totalConditionCost
+      } else {
+        return basicPriceBaseCurrency
+      }
+
+    }, 0);
+
+    return total
+  }
+
   recalculateConditions = (basicPriceSelectedCurrency) => {
     const { conditionTableData } = this.state;
-    let tempList = conditionTableData && conditionTableData?.map(item => {
+    let copiedConditionData = _.cloneDeep(conditionTableData) ?? []
+    let tempArr = copiedConditionData
+    copiedConditionData && copiedConditionData?.map((item, index) => {
       if (item?.ConditionType === "Percentage") {
-        let costCurrency = checkForNull((item?.Percentage) / 100) * checkForNull(basicPriceSelectedCurrency)
-        item.ConditionCost = costCurrency
-        item.ConditionCostConversion = costCurrency
-        item.ConditionCostPerQuantity = costCurrency
+        let ApplicabilityCost = this.handleApplicability(item.Applicability, basicPriceSelectedCurrency, tempArr)
+        let ConditionCost = checkForNull((item?.Percentage) / 100) * checkForNull(ApplicabilityCost)
+        let ConditionCostConversion = checkForNull((item?.Percentage) / 100) * checkForNull(ApplicabilityCost)
+        let obj = { ...item, ApplicabilityCost: ApplicabilityCost, ConditionCost: ConditionCost, ConditionCostConversion: ConditionCostConversion, ConditionCostPerQuantity: ConditionCostConversion }
+        tempArr = Object.assign([...tempArr], { [index]: obj })
       }
-      return item
     })
-    return tempList
+    return tempArr
   }
 
   handleCalculation = () => {
@@ -1471,7 +1493,9 @@ class AddBOPImport extends Component {
   closeOtherCostToggle = (type, data, total, totalBase) => {
     const { NetConditionCost, plantCurrencyValue, currencyValue, NetCostWithoutConditionCost } = this.state
     if (type === 'Save') {
-      Toaster.warning("Please click on refresh button, if you have already added data in Condition Cost Drawer.")
+      if (Number(this.state.costingTypeId) === Number(ZBCTypeId) && this.state.NetConditionCost) {
+        Toaster.warning("Please click on refresh button to update condition cost data.")
+      }
       const basicPrice = checkForNull(this.props.fieldsObj?.BasicRate) + checkForNull(totalBase)
       const netLandedCost = checkForNull(basicPrice) + checkForNull(NetConditionCost)
       this.props.change('OtherCost', total)

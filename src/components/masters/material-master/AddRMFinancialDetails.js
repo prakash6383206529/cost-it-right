@@ -29,6 +29,7 @@ import { TestHeadless } from "ag-grid-community"
 import AddIndexationMaterialListing from "./AddIndexationMaterialListing"
 import { getIndexSelectList, setOtherCostDetails } from "../actions/Indexation"
 import { getPlantUnitAPI } from "../actions/Plant"
+import _ from 'lodash'
 function AddRMFinancialDetails(props) {
     const { Controller, control, register, setValue, getValues, errors, reset, useWatch, states, data, isRMAssociated, disableAll } = props
     const { isEditFlag, isViewFlag } = data
@@ -336,19 +337,40 @@ function AddRMFinancialDetails(props) {
 
     }
 
+    const handleApplicability = (value, basicPriceBaseCurrency, arr) => {
+        const selectedApplicabilities = value?.split(' + ');
+
+        // Calculate total cost currency for selected applicabilities
+        const total = selectedApplicabilities.reduce((acc, Applicability) => {
+            // Skip checking for "Basic Rate" in tableData
+
+            const item = arr?.find(item => item?.Description === Applicability);
+            if (item) {
+                let totalConditionCost = acc + item?.ConditionCost
+                return totalConditionCost
+            } else {
+                return basicPriceBaseCurrency
+            }
+
+        }, 0);
+
+        return total
+    }
+
     const recalculateConditions = (basicPriceSelectedCurrency, basicPriceBaseCurrency) => {
         const { conditionTableData } = state;
-        let tempList = conditionTableData && conditionTableData?.map(item => {
+        let copiedConditionData = _.cloneDeep(conditionTableData) ?? []
+        let tempArr = copiedConditionData
+        copiedConditionData && copiedConditionData?.map((item, index) => {
             if (item?.ConditionType === "Percentage") {
-                let costSelectedCurrency = checkForNull((item?.Percentage) / 100) * checkForNull(basicPriceSelectedCurrency)
-                let costBaseCurrency = checkForNull((item?.Percentage) / 100) * checkForNull(basicPriceBaseCurrency)
-                item.ConditionCost = costBaseCurrency
-                item.ConditionCostConversion = costBaseCurrency
-                item.ConditionCostPerQuantity = costBaseCurrency
+                let ApplicabilityCost = handleApplicability(item.Applicability, basicPriceBaseCurrency, tempArr)
+                let ConditionCost = checkForNull((item?.Percentage) / 100) * checkForNull(ApplicabilityCost)
+                let ConditionCostConversion = checkForNull((item?.Percentage) / 100) * checkForNull(ApplicabilityCost)
+                let obj = { ...item, ApplicabilityCost: ApplicabilityCost, ConditionCost: ConditionCost, ConditionCostConversion: ConditionCostConversion, ConditionCostPerQuantity: ConditionCostConversion }
+                tempArr = Object.assign([...tempArr], { [index]: obj })
             }
-            return item
         })
-        return tempList
+        return tempArr
     }
     const allFieldsInfoIcon = (setData) => {
         const { currency, currencyValue, ScrapRateUOM, UOM } = state
@@ -712,7 +734,9 @@ function AddRMFinancialDetails(props) {
 
     const closeOtherCostToggle = (type, data, total, totalBase) => {
         if (type === 'Save') {
-            Toaster.warning("Please click on refresh button, if you have already added data in Condition Cost Drawer.")
+            if (Number(states.costingTypeId) === Number(ZBCTypeId) && state.NetConditionCost) {
+                Toaster.warning("Please click on refresh button to update condition cost data.")
+            }
             const netCost = checkForNull(totalBase) + checkForNull(getValues('BasicRate'))
             const netCostLocalCurrency = convertIntoBase(netCost, CurrencyExchangeRate?.plantCurrencyRate)
             const netCostConversion = convertIntoBase(netCost, CurrencyExchangeRate?.settlementCurrencyRate)

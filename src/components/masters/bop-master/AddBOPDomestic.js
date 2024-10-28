@@ -25,7 +25,7 @@ import LoaderCustom from '../../common/LoaderCustom';
 import imgRedcross from '../../../assests/images/red-cross.png';
 import MasterSendForApproval from '../MasterSendForApproval'
 import { CheckApprovalApplicableMaster, displayUOM, onFocus, userTechnologyDetailByMasterId } from '../../../helper';
-import { debounce } from 'lodash';
+import _, { debounce } from 'lodash';
 import AsyncSelect from 'react-select/async';
 import { getClientSelectList, } from '../actions/Client';
 import { reactLocalStorage } from 'reactjs-localstorage';
@@ -720,20 +720,41 @@ class AddBOPDomestic extends Component {
     this.setState({ isOpenUOM: false })
   }
 
-  recalculateConditions = (basicPriceBase) => {
-    const { conditionTableData } = this.state;
-    let tempList = conditionTableData && conditionTableData?.map(item => {
-      if (item?.ConditionType === "Percentage") {
-        let costBase = checkForNull((item?.Percentage) / 100) * checkForNull(basicPriceBase)
-        item.ConditionCost = costBase
-        item.ConditionCostPerQuantity = costBase
-        item.ConditionCostConversion = costBase
+  handleApplicability = (value, basicPriceBaseCurrency, arr) => {
+    const selectedApplicabilities = value?.split(' + ');
+
+    // Calculate total cost currency for selected applicabilities
+    const total = selectedApplicabilities.reduce((acc, Applicability) => {
+      // Skip checking for "Basic Rate" in tableData
+
+      const item = arr?.find(item => item?.Description === Applicability);
+      if (item) {
+        let totalConditionCost = acc + item?.ConditionCost
+        return totalConditionCost
+      } else {
+        return basicPriceBaseCurrency
       }
-      return item
-    })
-    return tempList
+
+    }, 0);
+
+    return total
   }
 
+  recalculateConditions = (basicPriceBase) => {
+    const { conditionTableData } = this.state;
+    let copiedConditionData = _.cloneDeep(conditionTableData) ?? []
+    let tempArr = copiedConditionData
+    copiedConditionData && copiedConditionData?.map((item, index) => {
+      if (item?.ConditionType === "Percentage") {
+        let ApplicabilityCost = this.handleApplicability(item.Applicability, basicPriceBase, tempArr)
+        let ConditionCost = checkForNull((item?.Percentage) / 100) * checkForNull(ApplicabilityCost)
+        let ConditionCostConversion = checkForNull((item?.Percentage) / 100) * checkForNull(ApplicabilityCost)
+        let obj = { ...item, ApplicabilityCost: ApplicabilityCost, ConditionCost: ConditionCost, ConditionCostConversion: ConditionCostConversion, ConditionCostPerQuantity: ConditionCostConversion }
+        tempArr = Object.assign([...tempArr], { [index]: obj })
+      }
+    })
+    return tempArr
+  }
 
   handleCalculation = (totalBase = "") => {
     const { fieldsObj, initialConfiguration } = this.props
@@ -1213,9 +1234,14 @@ class AddBOPDomestic extends Component {
     return checkForNull(price) * checkForNull(currencyValue)
   }
   closeOtherCostToggle = (type, data, total, totalBase) => {
+    console.log('typessssssss: ', type);
 
     // setState(prevState => ({ ...prevState, isOpenOtherCostDrawer: false, otherCostTableData: data, totalOtherCost: totalBase }))
-    Toaster.warning("Please click on refresh button, if you have already added data in Condition Cost Drawer.")
+    if (type === 'Save') {
+      if (Number(this.state.costingTypeId) === Number(ZBCTypeId) && this.state.FinalConditionCostBaseCurrency) {
+        Toaster.warning("Please click on refresh button to update condition cost data.")
+      }
+    }
     const netCost = checkForNull(totalBase) + checkForNull(this.props.fieldsObj?.BasicRate)
     this.setState({ isOpenOtherCostDrawer: true })
     this.props.change('OtherCost', totalBase)
