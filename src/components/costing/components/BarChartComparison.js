@@ -106,7 +106,7 @@ export function BarChartComparison({ costingData, currency, graphHeight = 500, g
         stacked: true,
         ticks: {
           callback: function (value) {
-            return getCurrencySymbol(currency) + value.toFixed(2);
+            return value !== 0 ? getCurrencySymbol(currency) + value.toFixed(2) : "";
           }
         },
         grid: {
