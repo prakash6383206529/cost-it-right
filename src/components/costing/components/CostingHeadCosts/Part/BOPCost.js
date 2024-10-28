@@ -5,7 +5,7 @@ import { Col, Row, Table } from 'reactstrap';
 import AddBOP from '../../Drawers/AddBOP';
 import { SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import NoContentFound from '../../../../common/NoContentFound';
-import { CRMHeads, EMPTY_DATA } from '../../../../../config/constants';
+import { CRMHeads, EMPTY_DATA, EMPTY_GUID } from '../../../../../config/constants';
 import Toaster from '../../../../common/Toaster';
 import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, decimalAndNumberValidationBoolean, getConfigurationKey, NoSignNoDecimalMessage, showBopLabel } from '../../../../../helper';
 import { ViewCostingContext } from '../../CostingDetails';
@@ -58,6 +58,8 @@ function BOPCost(props) {
   const { CostingEffectiveDate, ErrorObjRMCC } = useSelector(state => state.costing)
   const CostingViewMode = useContext(ViewCostingContext);
   const { t } = useTranslation("Costing")
+  const { currencySource } = useSelector((state) => state?.costing);
+
   // useEffect(() => {
   //   setValue('BOPHandlingCharges', item?.CostingPartDetails?.BOPHandlingCharges)
   // }, [])
@@ -165,7 +167,7 @@ function BOPCost(props) {
   * @description TOGGLE DRAWER
   */
   const DrawerToggle = () => {
-    if (CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
+    if (CheckIsCostingDateSelected(CostingEffectiveDate, currencySource)) return false;
     setDrawerOpen(true)
   }
 
@@ -183,10 +185,12 @@ function BOPCost(props) {
           BOPPartNumber: el.BoughtOutPartNumber,
           BOPPartName: el.BoughtOutPartName,
           Currency: el.Currency !== '-' ? el.Currency : INR,
-          LandedCostINR: (el.EntryType === 'Domestic') ? el.NetLandedCost : el.NetLandedCostConversion,
+          LandedCostINR: el.NetLandedCost,
           Quantity: 1,
-          NetBoughtOutPartCost: (el.EntryType === 'Domestic') ? el.NetLandedCost * 1 : el.NetLandedCostConversion * 1,
-          BoughtOutPartUOM: el.UOM
+          NetBoughtOutPartCost: el.NetLandedCost,
+          BoughtOutPartUOM: el.UOM,
+          ConvertedExchangeRateId: el.ConvertedExchangeRateId === EMPTY_GUID ? null : el.ConvertedExchangeRateId,
+          CurrencyExchangeRate: el.CurrencyExchangeRate
         }
       })
 
@@ -471,7 +475,7 @@ function BOPCost(props) {
    * @description CALLING TO SET BOP COST FORM'S ERROR THAT WILL USE WHEN HITTING SAVE RMCC TAB API.
    */
 
-  let temp = ErrorObjRMCC
+  let temp = ErrorObjRMCC ? ErrorObjRMCC : {}
   if (Object.keys(errors).length > 0 && counter < 2) {
     temp.bopGridFields = errors.bopGridFields;
     dispatch(setRMCCErrors(temp))

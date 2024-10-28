@@ -14,8 +14,12 @@ import {
   saveComponentCostingRMCCTab, setComponentItemData, saveComponentOverheadProfitTab, setComponentOverheadItemData,
   saveCostingPackageFreightTab, setComponentPackageFreightItemData, saveToolTab, setComponentToolItemData,
   saveDiscountOtherCostTab, setComponentDiscountOtherItemData, setCostingEffectiveDate, CloseOpenAccordion, saveAssemblyPartRowCostingCalculation, isDataChange, saveAssemblyOverheadProfitTab, isToolDataChange, isOverheadProfitDataChange, setOverheadProfitData, saveCostingPaymentTermDetail,
+  saveCostingBasicDetails,
+  getExchangeRateByCurrency,
+  setCurrencySource,
+  setExchangeRateSourceValue,
 } from '../../actions/Costing';
-import { checkForNull, CheckIsCostingDateSelected, loggedInUserId } from '../../../../helper';
+import { checkForNull, CheckIsCostingDateSelected, getConfigurationKey, loggedInUserId } from '../../../../helper';
 import { customHavellsChanges, LEVEL1, WACTypeId, ZBCTypeId } from '../../../../config/constants';
 import { EditCostingContext, ViewCostingContext, CostingStatusContext, IsPartType, IsNFR } from '../CostingDetails';
 import DatePicker from "react-datepicker";
@@ -34,7 +38,10 @@ import { useTranslation } from 'react-i18next';
 import { getRMFromNFR, setOpenAllTabs } from '../../../masters/nfr/actions/nfr';
 import Toaster from '../../../common/Toaster';
 import TabToolCost from './TabToolCost';
-import { getTaxCodeSelectList } from '../../../../actions/Common';
+import { getExchangeRateSource, getTaxCodeSelectList } from '../../../../actions/Common';
+import { SearchableSelectHookForm } from '../../../layout/HookFormInputs';
+import { Controller, useForm } from 'react-hook-form';
+import { getCurrencySelectList } from '../../../masters/actions/ExchangeRateMaster';
 export const PreviousTabData = React.createContext();
 
 function CostingHeaderTabs(props) {
@@ -74,9 +81,63 @@ function CostingHeaderTabs(props) {
   const { nfrDetailsForDiscount } = useSelector(state => state.costing)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const ActualTotalCost = ActualCostingDataList && ActualCostingDataList.length > 0 && ActualCostingDataList[0].TotalCost !== undefined ? ActualCostingDataList[0].TotalCost : 0;
+  const { register, handleSubmit, formState: { errors }, control, setValue, getValues, reset, isRMAssociated } = useForm({
+    mode: 'onChange',
+    reValidateMode: 'onChange',
+  });
+  const currencySelectList = useSelector(state => state.comman.currencySelectList)
+  const exchangeRateSourceList = useSelector((state) => state.comman.exchangeRateSourceList)
+  const [exchangeRateSource, setExchangeRateSource] = useState('');
+  const [currency, setCurrency] = useState('');
+
   useEffect(() => {
     setActiveTab(costingData?.TechnologyId !== LOGISTICS ? '1' : '4')
-  }, [costingData])
+    setExchangeRateSource({ label: costData?.ExchangeRateSourceName, value: costData?.ExchangeRateSourceName })
+    dispatch(setExchangeRateSourceValue({ label: costData?.ExchangeRateSourceName, value: costData?.ExchangeRateSourceName }))
+    setCurrency({ label: costData?.CostingCurrency, value: costData?.CostingCurrencyId })
+    dispatch(setCurrencySource({ label: costData?.CostingCurrency, value: costData?.CostingCurrencyId }))
+    setValue('Currency', { label: costData?.CostingCurrency, value: costData?.CostingCurrencyId })
+    setValue('ExchangeSource', { label: costData?.ExchangeRateSourceName, value: costData?.ExchangeRateSourceName })
+  }, [costingData, costData])
+
+  useEffect(() => {
+    dispatch(getCurrencySelectList(true, () => { }))
+    dispatch(getExchangeRateSource((res) => { }))
+  }, [])
+
+  const callExchangeRateAPI = (fromCurrency) => {
+    return new Promise((resolve) => {
+      dispatch(getExchangeRateByCurrency(currency?.label, costData.CostingTypeId, DayTime(CostingEffectiveDate).format('YYYY-MM-DD'), costData?.VendorId, costData?.CustomerId, false, fromCurrency, exchangeRateSource?.value, (res) => {
+        resolve(res);
+      }))
+    });
+  }
+
+  useEffect(() => {
+    if (currency && effectiveDate && exchangeRateSource && !costData?.ExchangeRateId && !costData?.CostingCurrencyId) {
+      let arr = []
+      callExchangeRateAPI(costData?.LocalCurrency).then(res => { //plant
+        arr.push(res?.data?.Data)
+        callExchangeRateAPI(initialConfiguration?.BaseCurrency).then(resp => {
+          arr.push(resp?.data?.Data)
+
+          let obj = {
+            "BaseCostingId": costData?.CostingId,
+            "EffectiveDate": DayTime(effectiveDate).format('YYYY-MM-DD'),
+            "ExchangeRateSourceName": exchangeRateSource?.value,
+            "CostingCurrencyId": currency?.value,// selected currency
+            "LocalCurrencyExchangeRate": arr[0]?.CurrencyExchangeRate,  //plant
+            "BaseCurrencyExchangeRate": arr[1]?.CurrencyExchangeRate,    //base
+            "ExchangeRateId": arr[0]?.ExchangeRateId, //base 
+            "LocalExchangeRateId": arr[1]?.ExchangeRateId,//plant 
+            "LoggedInUserId": loggedInUserId()
+          }
+          dispatch(saveCostingBasicDetails(obj, res => {
+          }))
+        })
+      })
+    }
+  }, [currency, exchangeRateSource, effectiveDate])
 
   useEffect(() => {
 
@@ -337,7 +398,7 @@ function CostingHeaderTabs(props) {
       Toaster.warning("Please add RM detail before adding the data in this tab.")
       return false
     }
-    if (CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
+    if (CheckIsCostingDateSelected(CostingEffectiveDate, currency)) return false;
     let tempErrorObjRMCC = { ...ErrorObjRMCC }
     delete tempErrorObjRMCC?.bopGridFields
     // tourStartRef()
@@ -556,48 +617,110 @@ function CostingHeaderTabs(props) {
     tourStartRef()
   }, [activeTab])
 
+  /**
+  * @method renderListing
+  * @description Used show listing of unit of measurement
+  */
+  const renderListing = (label) => {
+    const listingMap = {
+      ExchangeSource: { list: exchangeRateSourceList, labelKey: 'Text', valueKey: 'Value', filter: item => item.Value !== '--Exchange Rate Source Name--' },
+      Currency: { list: currencySelectList, labelKey: 'Text', valueKey: 'Value' }
+    };
+
+    const { list, labelKey, valueKey, filter } = listingMap[label] || {};
+
+    if (!list) return [];
+
+    return list.reduce((acc, item) => {
+      if (item[valueKey] === '0') return acc;
+      if (filter && !filter(item)) return acc;
+      acc.push({ label: item[labelKey], value: item[valueKey] });
+      return acc;
+    }, []);
+  }
+
+  const handleExchangeRateSource = (value) => {
+    setExchangeRateSource(value)
+    dispatch(setExchangeRateSourceValue(value))
+  }
+
+  const handleChangeCurrency = (value) => {
+    setCurrency(value)
+    dispatch(setCurrencySource(value))
+  }
+
   const warningMessage = <span className='part-flow'>Child Parts (<span title={messageForAssembly}>{messageForAssembly}</span>) costing is under approval flow</span>
   return (
     <>
       <div className="user-page p-0">
-
         <Row className="justify-content-between align-items-end">
-          <Col md="auto">
-            <div className="form-group mb-0">
-              <label>Costing Effective Date<span className="asterisk-required">*</span></label>
-              <div className="inputbox date-section d-flex align-items-center">
-                <DatePicker
-                  name="EffectiveDate"
-                  id="costing_effective_date"
-                  //selected={effectiveDate ? new Date(effectiveDate) : ''}
-                  selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
-                  onChange={handleEffectiveDateChange}
-                  showMonthDropdown
-                  showYearDropdown
-                  dropdownMode="select"
-                  dateFormat="dd/MM/yyyy"
-                  //maxDate={new Date()}
-                  // USER SHOULD NOT BE ABLE TO SELECT EFFECTIVE DATE, OF BEFORE THE PART WAS CREATED
-                  minDate={(customHavellsChanges && costingData.CostingTypeId === ZBCTypeId) ? new Date() : dateFunction()}
+          <Row>
+            {getConfigurationKey().IsSourceExchangeRateNameVisible && <Col md="3">
+              <SearchableSelectHookForm
+                label="Exchange Rate Source"
+                name="ExchangeSource"
+                Controller={Controller}
+                control={control}
+                register={register}
+                mandatory={false}
+                rules={{ required: false }}
+                placeholder={'Select'}
+                options={renderListing("ExchangeSource")}
+                handleChange={handleExchangeRateSource}
+                defaultValue={exchangeRateSource?.length !== 0 ? exchangeRateSource : ""}
+                disabled={(costData?.ExchangeRateSourceName ? true : false) || CostingViewMode}
+              />
+            </Col>}
+            <Col md="3">
+              <SearchableSelectHookForm
+                label="Currency"
+                name="Currency"
+                Controller={Controller}
+                control={control}
+                register={register}
+                mandatory={false}
+                rules={{ required: true }}
+                placeholder={'Select'}
+                options={renderListing("Currency")}
+                handleChange={handleChangeCurrency}
+                defaultValue={currency?.length !== 0 ? currency : ""}
+                disabled={(costData?.CostingCurrencyId ? true : false) || CostingViewMode}
+              />
+            </Col>
+            <Col md="3">
+              <div className="form-group mb-0">
+                <label>Costing Effective Date<span className="asterisk-required">*</span></label>
+                <div className="inputbox date-section d-flex align-items-center ">
+                  <DatePicker
+                    name="EffectiveDate"
+                    id="costing_effective_date"
+                    //selected={effectiveDate ? new Date(effectiveDate) : ''}
+                    selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
+                    onChange={handleEffectiveDateChange}
+                    showMonthDropdown
+                    showYearDropdown
+                    dropdownMode="select"
+                    dateFormat="dd/MM/yyyy"
+                    //maxDate={new Date()}
+                    // USER SHOULD NOT BE ABLE TO SELECT EFFECTIVE DATE, OF BEFORE THE PART WAS CREATED
+                    minDate={(customHavellsChanges && costingData.CostingTypeId === ZBCTypeId) ? new Date() : dateFunction()}
 
-                  placeholderText="Select date"
-                  className="withBorder"
-                  autoComplete={"off"}
-                  disabledKeyboardNavigation
-                  onChangeRaw={(e) => e.preventDefault()}
-                  disabled={(CostingViewMode || IsCostingDateDisabled || (CostingEditMode & costData?.EffectiveDate !== null && costData?.EffectiveDate !== undefined && DayTime(new Date(costData?.EffectiveDate)).isValid())) ? true : false}
-                />
-                {!CostingViewMode && <TourWrapper
-                  buttonSpecificProp={{ id: "Costing_Tabs", onClick: tourStart }}
-                  stepsSpecificProp={{
-                    steps: tabsTour.steps,
-                    hints: tabsTour.hints
-                  }} />}
-              </div>
-            </div >
-          </Col >
-
-
+                    placeholderText="Select date"
+                    className="withBorder"
+                    autoComplete={"off"}
+                    disabledKeyboardNavigation
+                    onChangeRaw={(e) => e.preventDefault()}
+                    disabled={(CostingViewMode || IsCostingDateDisabled || (CostingEditMode & costData?.EffectiveDate !== null && costData?.EffectiveDate !== undefined && DayTime(new Date(costData?.EffectiveDate)).isValid())) ? true : false}
+                  />
+                  {!CostingViewMode && <TourWrapper
+                    buttonSpecificProp={{ id: "Costing_Tabs", onClick: tourStart }}
+                    stepsSpecificProp={{
+                      steps: tabsTour.steps,
+                      hints: tabsTour.hints
+                    }} />}
+                </div>
+              </div ></Col>
+          </Row>
           {
             costData.IsAssemblyPart &&
             <Col md="auto">

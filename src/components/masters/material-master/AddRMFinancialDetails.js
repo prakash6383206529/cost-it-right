@@ -119,12 +119,6 @@ function AddRMFinancialDetails(props) {
     })
 
     useEffect(() => {
-        let updatedState = {
-            ...state,
-            totalBasicRate: getValues('BasicRate')
-        }
-        setState(updatedState)
-        dispatch(setRawMaterialDetails({ ...rawMaterailDetails, states: updatedState }, () => { }))
         calculateNetCostDomestic();
     }, [values])
     useEffect(() => {
@@ -226,6 +220,10 @@ function AddRMFinancialDetails(props) {
             setValue('FinalConditionCost', Data?.NetConditionCost)
             setState(prevState => ({
                 ...prevState,
+
+            }))
+            let updatedState = {
+                ...state,
                 effectiveDate: Data?.EffectiveDate ? DayTime(Data?.EffectiveDate).$d : '',
                 sourceLocation: Data?.SourceSupplierLocationName !== undefined ? { label: Data?.SourceSupplierLocationName, value: Data?.SourceLocation } : [],
                 UOM: { label: Data?.UnitOfMeasurementName, value: Data?.UOM },
@@ -243,14 +241,14 @@ function AddRMFinancialDetails(props) {
                 totalBasicRate: Data?.CommodityNetCost,
                 NetConditionCost: Data?.NetConditionCost,
                 totalOtherCost: Data?.OtherNetCost
-            }))
+            }
+            setState(updatedState)
             let obj = showRMScrapKeys(Data?.TechnologyId)
             setShowScrapKeys(obj)
             setCurrencyExchangeRate(prevState => ({
                 ...prevState, plantCurrencyRate: checkForNull(Data?.LocalCurrencyExchangeRate),
                 settlementCurrencyRate: checkForNull(Data?.CurrencyExchangeRate)
             }))
-            let updatedState = { ...state, }
             setState(updatedState)
             dispatch(setRawMaterialDetails({ ...rawMaterailDetails, states: updatedState, isShowIndexCheckBox: Data?.IsIndexationDetails, ShowScrapKeys: obj }, () => { }))
             dispatch(setExchangeRateDetails({
@@ -344,8 +342,9 @@ function AddRMFinancialDetails(props) {
             if (item?.ConditionType === "Percentage") {
                 let costSelectedCurrency = checkForNull((item?.Percentage) / 100) * checkForNull(basicPriceSelectedCurrency)
                 let costBaseCurrency = checkForNull((item?.Percentage) / 100) * checkForNull(basicPriceBaseCurrency)
-                item.ConditionCost = costSelectedCurrency
+                item.ConditionCost = costBaseCurrency
                 item.ConditionCostConversion = costBaseCurrency
+                item.ConditionCostPerQuantity = costBaseCurrency
             }
             return item
         })
@@ -438,7 +437,7 @@ function AddRMFinancialDetails(props) {
         }
         let conditionList = recalculateConditions('', basicPriceBaseCurrency)
 
-        const sumBaseCurrency = conditionList?.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCost), 0);
+        const sumBaseCurrency = conditionList?.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCostPerQuantity), 0);
         let NetLandedCost = checkForNull(sumBaseCurrency) + checkForNull(basicPriceCurrencyTemp)
 
         let NetLandedCostLocalConversion = NetLandedCost * checkForNull(CurrencyExchangeRate?.plantCurrencyRate)
@@ -460,7 +459,6 @@ function AddRMFinancialDetails(props) {
                 dispatch(setRawMaterialDetails({ ...rawMaterailDetails, netCostChanged: true }, () => { }))
             }
         }
-
         let updatedState = {
             ...state, FinalCutOffBaseCurrency: getValues('cutOffPrice'),
             BasicRatePerUOM: getValues('BasicRate'),
@@ -473,6 +471,7 @@ function AddRMFinancialDetails(props) {
             conditionTableData: conditionList,
             ConversionRatio: getValues('ConversionRatio'),
             ScrapRatePerScrapUOM: getValues('ScrapRatePerScrapUOM'),
+            totalBasicRate: getValues('BasicRate'),
             ...obj,
         }
         setState(updatedState)
@@ -713,6 +712,7 @@ function AddRMFinancialDetails(props) {
 
     const closeOtherCostToggle = (type, data, total, totalBase) => {
         if (type === 'Save') {
+            Toaster.warning("Please click on refresh button, if you have already added data in Condition Cost Drawer.")
             const netCost = checkForNull(totalBase) + checkForNull(getValues('BasicRate'))
             const netCostLocalCurrency = convertIntoBase(netCost, CurrencyExchangeRate?.plantCurrencyRate)
             const netCostConversion = convertIntoBase(netCost, CurrencyExchangeRate?.settlementCurrencyRate)
@@ -740,7 +740,7 @@ function AddRMFinancialDetails(props) {
         if (data && data.length > 0 && type === 'save') {
             dispatch(setRawMaterialDetails({ ...rawMaterailDetails, netCostChanged: true }, () => { }))
         }
-        const sumBaseCurrency = data?.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCost), 0);
+        const sumBaseCurrency = data?.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCostPerQuantity), 0);
         let netLandedCost = checkForNull(sumBaseCurrency) + checkForNull(state.NetCostWithoutConditionCost)  //Condition cost + Basic price
         let netConditionCost = checkForNull(sumBaseCurrency)
         setValue('FinalConditionCost', checkForDecimalAndNull(netConditionCost, getConfigurationKey().NoOfDecimalForPrice))
@@ -748,7 +748,6 @@ function AddRMFinancialDetails(props) {
             setValue('NetLandedCost', checkForDecimalAndNull(netLandedCost, getConfigurationKey().NoOfDecimalForPrice))
             setValue('NetLandedCostConversion', checkForDecimalAndNull(netLandedCost * checkForNull(CurrencyExchangeRate?.settlementCurrencyRate), getConfigurationKey().NoOfDecimalForPrice))
             setValue('NetLandedCostLocalConversion', checkForDecimalAndNull((netLandedCost * checkForNull(CurrencyExchangeRate?.plantCurrencyRate)), getConfigurationKey().NoOfDecimalForPrice))
-
         } else {
             setValue('NetLandedCostConversion', checkForDecimalAndNull(netLandedCost * checkForNull(CurrencyExchangeRate?.plantCurrencyRate), getConfigurationKey().NoOfDecimalForPrice))
             setValue('NetLandedCostLocalConversion', checkForDecimalAndNull((netLandedCost), getConfigurationKey().NoOfDecimalForPrice))
@@ -894,6 +893,21 @@ function AddRMFinancialDetails(props) {
         }
         return true;
     };
+
+    const updateConditionCostValue = () => {
+        let conditnCostTable = recalculateConditions('', state.NetCostWithoutConditionCost)
+        let sum = conditnCostTable && conditnCostTable.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCostConversion), 0);
+        let updatedState = {
+            ...state,
+            NetConditionCost: sum,
+        }
+        setValue('FinalConditionCost', checkForDecimalAndNull(sum, getConfigurationKey().NoOfDecimalForPrice))
+        setState(updatedState)
+        setTimeout(() => {
+            dispatch(setRawMaterialDetails({ ...rawMaterailDetails, states: updatedState }, () => { }))
+        }, 50);
+    }
+
     return (
         <Fragment>
 
@@ -1492,13 +1506,19 @@ function AddRMFinancialDetails(props) {
                                                 customClassName=" withBorder"
                                             />
                                         </div>
-                                        <Button
-                                            id="addRMDomestic_conditionToggle"
-                                            onClick={conditionToggle}
-                                            className={"right mt-0 mb-2"}
-                                            variant={isViewFlag ? "view-icon-primary" : "plus-icon-square"}
-                                            title={isViewFlag ? "View" : "Add"}
-                                        />
+                                        <div className="d-flex align-items-center mt-1">
+                                            <button type="button" id="condition-cost-refresh" className={'refresh-icon mt-1 ml-1'} onClick={() => updateConditionCostValue()}>
+                                                <TooltipCustom disabledIcon={true} id="condition-cost-refresh" tooltipText="Refresh to update Condition cost" />
+                                            </button>
+                                            <Button
+                                                id="addRMDomestic_conditionToggle"
+                                                onClick={conditionToggle}
+                                                className={"right ml-1"}
+                                                variant={isViewFlag ? "view-icon-primary" : "plus-icon-square"}
+                                                title={isViewFlag ? "View" : "Add"}
+                                            />
+                                        </div>
+
                                     </div>
                                 </Col>
 

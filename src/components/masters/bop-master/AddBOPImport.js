@@ -934,6 +934,7 @@ class AddBOPImport extends Component {
         let costCurrency = checkForNull((item?.Percentage) / 100) * checkForNull(basicPriceSelectedCurrency)
         item.ConditionCost = costCurrency
         item.ConditionCostConversion = costCurrency
+        item.ConditionCostPerQuantity = costCurrency
       }
       return item
     })
@@ -949,7 +950,6 @@ class AddBOPImport extends Component {
       this.props.change('BasicPrice', checkForDecimalAndNull(basicPrice, initialConfiguration.NoOfDecimalForPrice));
     }
     let conditionList = this.recalculateConditions(basicPrice)
-    console.log(conditionList, 'conditionList')
     const sumBaseCurrency = conditionList.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCostPerQuantity), 0);
     let netLandedCost = checkForNull(sumBaseCurrency) + checkForNull(basicPrice)
     let netLandedCostPlantCurrency = checkForNull(netLandedCost) * checkForNull(this.state.plantCurrencyValue)
@@ -1430,14 +1430,12 @@ class AddBOPImport extends Component {
   }
 
   openAndCloseAddConditionCosting = (type, data = this.state.conditionTableData) => {
-    console.log(data, 'data')
     const { initialConfiguration } = this.props
     const { NetCostWithoutConditionCost, plantCurrencyValue, currencyValue } = this.state
     if (type === 'save') {
       this.setState({ IsFinancialDataChanged: true })
     }
     const sumSelectedCurrency = data.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCostPerQuantity), 0);
-    console.log(sumSelectedCurrency, 'sumSelectedCurrency')
     const netLandedCost = checkForNull(sumSelectedCurrency) + checkForNull(NetCostWithoutConditionCost)
     this.props.change('NetConditionCost', checkForDecimalAndNull(sumSelectedCurrency, initialConfiguration.NoOfDecimalForPrice))
     this.props.change('NetLandedCost', checkForDecimalAndNull(netLandedCost, initialConfiguration.NoOfDecimalForPrice))
@@ -1471,21 +1469,28 @@ class AddBOPImport extends Component {
     this.setState({ isOpenOtherCostDrawer: true })
   }
   closeOtherCostToggle = (type, data, total, totalBase) => {
-    console.log(data, 'data')
     const { NetConditionCost, plantCurrencyValue, currencyValue, NetCostWithoutConditionCost } = this.state
     if (type === 'Save') {
-      const basicPrice = checkForNull(NetCostWithoutConditionCost) + checkForNull(total)
+      Toaster.warning("Please click on refresh button, if you have already added data in Condition Cost Drawer.")
+      const basicPrice = checkForNull(this.props.fieldsObj?.BasicRate) + checkForNull(totalBase)
       const netLandedCost = checkForNull(basicPrice) + checkForNull(NetConditionCost)
       this.props.change('OtherCost', total)
       this.props.change('BasicPrice', checkForDecimalAndNull(basicPrice, this.props.initialConfiguration.NoOfDecimalForPrice))
       this.props.change('NetLandedCost', checkForDecimalAndNull(netLandedCost, this.props.initialConfiguration.NoOfDecimalForPrice))
       this.props.change('NetLandedCostPlantCurrency', checkForDecimalAndNull(netLandedCost * checkForNull(plantCurrencyValue), this.props.initialConfiguration.NoOfDecimalForPrice))
       this.props.change('NetLandedCostBaseCurrency', checkForDecimalAndNull(netLandedCost * checkForNull(currencyValue), this.props.initialConfiguration.NoOfDecimalForPrice))
-      this.setState({ isOpenOtherCostDrawer: false, otherCostTableData: data, totalOtherCost: total, NetLandedCost: netLandedCost })
+      this.setState({ isOpenOtherCostDrawer: false, otherCostTableData: data, totalOtherCost: total, NetLandedCost: netLandedCost, BasicPrice: basicPrice })
     } else {
       this.setState({ isOpenOtherCostDrawer: false })
     }
 
+  }
+
+  updateConditionCostValue = () => {
+    let conditnCostTable = this.recalculateConditions(this.state.BasicPrice)
+    let sum = conditnCostTable && conditnCostTable.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCost), 0);
+    this.props.change('NetConditionCost', checkForDecimalAndNull(sum, getConfigurationKey().NoOfDecimalForPrice))
+    this.setState({ FinalConditionCostBaseCurrency: sum, ConditionCostConversion: sum, })
   }
 
   /**
@@ -2118,13 +2123,18 @@ class AddBOPImport extends Component {
                                     isViewFlag={true}
                                   />
                                 </div>
-                                <Button
-                                  id="addBOPImport_condition"
-                                  onClick={this.conditionToggle}
-                                  className={"right mt-0 mb-2"}
-                                  variant={isViewMode ? "view-icon-primary" : (this.state.currency?.label && (this.props.fieldsObj?.BasicRate || this.state?.NetCostWithoutConditionCost)) ? `plus-icon-square` : `blurPlus-icon-square`}
-                                  disabled={!(this.state.currency?.label && (this.props.fieldsObj?.BasicRate || this.state?.NetCostWithoutConditionCost))}
-                                />
+                                <div className="d-flex align-items-center mb-2">
+                                  <button type="button" id="condition-cost-refresh" className={'refresh-icon ml-1'} onClick={() => this.updateConditionCostValue()}>
+                                    <TooltipCustom disabledIcon={true} id="condition-cost-refresh" tooltipText="Refresh to update Condition cost" />
+                                  </button>
+                                  <Button
+                                    id="addBOPImport_condition"
+                                    onClick={this.conditionToggle}
+                                    className={"right ml-1"}
+                                    variant={isViewMode ? "view-icon-primary" : (this.state.currency?.label && (this.props.fieldsObj?.BasicRate || this.state?.NetCostWithoutConditionCost)) ? `plus-icon-square` : `blurPlus-icon-square`}
+                                    disabled={!(this.state.currency?.label && (this.props.fieldsObj?.BasicRate || this.state?.NetCostWithoutConditionCost))}
+                                  />
+                                </div>
                               </div>
                             </Col>
                           </>}

@@ -2278,6 +2278,8 @@ const CostingSummaryTable = (props) => {
                             <td>
                               <span className="d-block">Costing Version</span>
                               <span className={`d-block mt-${props.isFromViewRFQ ? 4 : 2}`}>Net Cost (Effective from)</span>
+                              {getConfigurationKey().IsSourceExchangeRateNameVisible && <span className="d-block">Exchange Rate Source</span>}
+                              <span className="d-block">Currency</span>
                               <span className="d-block">{vendorLabel} (Code)</span>
                               {(reactLocalStorage.getObject('CostingTypePermission').cbc) && <span className="d-block">Customer (Code)</span>}
                               <span className="d-block">Category</span>
@@ -2340,6 +2342,8 @@ const CostingSummaryTable = (props) => {
                                       </span>
                                     )}
                                     {/* USE PART NUMBER KEY HERE */}
+                                    {getConfigurationKey().IsSourceExchangeRateNameVisible && <span className="d-block">{(data?.bestCost === true) ? ' ' : (data?.ExchangeRateSourceName ? data?.ExchangeRateSourceName : '-')}</span>}
+                                    <span className="d-block">{(data?.bestCost === true) ? ' ' : (data?.CostingCurrency ? data?.CostingCurrency : '-')}</span>
                                     <span className="d-block">{(data?.bestCost === true) ? ' ' : (data?.costingTypeId !== ZBCTypeId || data?.costingTypeId !== CBCTypeId || data?.costingTypeId !== WACTypeId) ? data?.vendor : ''}</span>
                                     {(reactLocalStorage.getObject('CostingTypePermission').cbc) && <span className="d-block">{(data?.bestCost === true) ? ' ' : data?.costingTypeId === CBCTypeId ? data?.customer : '-'}</span>}
                                     <span className="d-block">{(data?.bestCost === true) ? ' ' : data?.InfoCategory}</span>
@@ -2616,12 +2620,12 @@ const CostingSummaryTable = (props) => {
                                 </th></tr>}
 
                               <tr className={highlighter("netRM", "main-row")}>
-                                <th>Net RM Cost {simulationDrawer && (Number(master) === Number(RMDOMESTIC) || Number(master) === Number(RMIMPORT)) && '(Old)'}</th>
+                                <th>Net RM Cost {`(${viewCostingData?.[0]?.CostingCurrency})`} {simulationDrawer && (Number(master) === Number(RMDOMESTIC) || Number(master) === Number(RMIMPORT)) && '(Old)'}</th>
                                 {viewCostingData &&
                                   viewCostingData?.map((data, index) => {
                                     return (
                                       <td className={tableDataClass(data)}>
-                                        {displayValueWithSign(data, 'netRM')}
+                                        {displayValueWithSign(data, 'netRM')} ({displayValueWithSign(data, 'NetRawMaterialsCostConversion')})
                                         {
                                           (data?.bestCost !== true) && (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&
                                           <button
@@ -2649,13 +2653,13 @@ const CostingSummaryTable = (props) => {
                               }
                               {
                                 viewCostingData && !viewCostingData[0]?.CostingPartDetails?.IsBreakupBoughtOutPart && <tr className={highlighter("netBOP", "main-row")}>
-                                  <th>Net {showBopLabel()} Cost {simulationDrawer && (Number(master) === Number(BOPDOMESTIC) || Number(master) === Number(BOPIMPORT)) && '(Old)'}</th>
+                                  <th>Net {showBopLabel()} Cost {`(${viewCostingData?.[0]?.CostingCurrency})`} {simulationDrawer && (Number(master) === Number(BOPDOMESTIC) || Number(master) === Number(BOPIMPORT)) && '(Old)'}</th>
 
                                   {viewCostingData &&
                                     viewCostingData?.map((data, index) => {
                                       return (
                                         <td className={tableDataClass(data)}>
-                                          {displayValueWithSign(data, "netBOP")}
+                                          {displayValueWithSign(data, "netBOP")} ({displayValueWithSign(data, 'NetBoughtOutPartCostConversion')})
                                           {
                                             (data?.bestCost !== true) && (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&
                                             <button
@@ -2741,12 +2745,12 @@ const CostingSummaryTable = (props) => {
                               }
 
                               <tr className={highlighter("nConvCost", "main-row")}>
-                                <th>Net Conversion Cost{simulationDrawer && (Number(master) === Number(OPERATIONS)) && '(Old)'}</th>
+                                <th>Net Conversion Cost {`(${viewCostingData?.[0]?.CostingCurrency})`} {simulationDrawer && (Number(master) === Number(OPERATIONS)) && '(Old)'}</th>
                                 {viewCostingData &&
                                   viewCostingData?.map((data, index) => {
                                     return (
                                       <td className={tableDataClass(data)}>
-                                        {displayValueWithSign(data, 'nConvCost')}
+                                        {displayValueWithSign(data, 'nConvCost')} ({displayValueWithSign(data, 'NetConversionCostConversion')})
                                         {
                                           (data?.bestCost !== true) && (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&
                                           <button
@@ -2807,13 +2811,13 @@ const CostingSummaryTable = (props) => {
 
 
                           <tr className={highlighter("nsTreamnt", "main-row")}>
-                            <th>Net Surface Treatment Cost{simulationDrawer && (Number(master) === Number(SURFACETREATMENT)) && '(Old)'}</th>
+                            <th>Net Surface Treatment Cost {`(${viewCostingData?.[0]?.CostingCurrency})`} {simulationDrawer && (Number(master) === Number(SURFACETREATMENT)) && '(Old)'}</th>
 
                             {viewCostingData &&
                               viewCostingData?.map((data, index) => {
                                 return (
                                   <td className={tableDataClass(data)}>
-                                    {displayValueWithSign(data, 'nsTreamnt')}
+                                    {displayValueWithSign(data, 'nsTreamnt')} ({displayValueWithSign(data, 'NetSurfaceTreatmentCostConversion')})
                                     {
                                       (data?.bestCost !== true) && (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&
                                       <button
@@ -2944,12 +2948,12 @@ const CostingSummaryTable = (props) => {
                           }
 
                           <tr className={highlighter("nOverheadProfit", "main-row")}>
-                            <th>Net Overheads & Profits</th>
+                            <th>Net Overheads & Profits ({viewCostingData?.[0]?.CostingCurrency}) </th>
                             {viewCostingData &&
                               viewCostingData?.map((data, index) => {
                                 return (
                                   <td className={tableDataClass(data)}>
-                                    {displayValueWithSign(data, 'nOverheadProfit')}
+                                    {displayValueWithSign(data, 'nOverheadProfit')} ({displayValueWithSign(data, 'NetOverheadAndProfitCostConversion')})
                                     {
                                       (data?.bestCost !== true) && (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&
                                       <button
@@ -2995,12 +2999,12 @@ const CostingSummaryTable = (props) => {
                           }
 
                           <tr className={highlighter("nPackagingAndFreight", "main-row")}>
-                            <th>Net Packaging & Freight</th>
+                            <th>Net Packaging & Freight ({viewCostingData?.[0]?.CostingCurrency}) </th>
                             {viewCostingData &&
                               viewCostingData?.map((data, index) => {
                                 return (
                                   <td className={tableDataClass(data)}>
-                                    {displayValueWithSign(data, 'nPackagingAndFreight')}
+                                    {displayValueWithSign(data, 'nPackagingAndFreight')} ({displayValueWithSign(data, 'NetFreightPackagingCostConversion')})
                                     {
                                       (data?.bestCost !== true) && (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&
                                       <button
@@ -3088,10 +3092,10 @@ const CostingSummaryTable = (props) => {
 
                                 {/* Net Tool Cost Row */}
                                 <tr className={highlighter("totalToolCost", "main-row")}>
-                                  <th>Net Tool Cost</th>
+                                  <th>Net Tool Cost ({viewCostingData?.[0]?.CostingCurrency}) </th>
                                   {viewCostingData.map((data, index) => (
                                     <td className={tableDataClass(data)}>
-                                      {displayValueWithSign(data, "totalToolCost")}
+                                      {displayValueWithSign(data, "totalToolCost")} ({displayValueWithSign(data, 'NetToolCostConversion')})
                                       {data?.bestCost !== true && data?.CostingHeading !== VARIANCE && !pdfHead && !drawerDetailPDF && (
                                         <button
                                           id="view_toolCost"
@@ -3256,12 +3260,12 @@ const CostingSummaryTable = (props) => {
                           </tr>}
                           {
                             initialConfiguration?.IsBasicRateAndCostingConditionVisible && <tr className={`${highlighter("BasicRate", "main-row")}`}>
-                              <th>Basic Price </th>
+                              <th>Basic Price ({viewCostingData?.[0]?.CostingCurrency}) </th>
                               {viewCostingData &&
                                 viewCostingData?.map((data) => {
                                   return (
                                     <td className={tableDataClass(data)}>
-                                      {displayValueWithSign(data, 'BasicRate')}
+                                      {displayValueWithSign(data, 'BasicRate')} ({displayValueWithSign(data, 'BasicRateConversion')})
                                     </td>
                                   )
                                 })}
@@ -3328,12 +3332,12 @@ const CostingSummaryTable = (props) => {
                             anchor={'right'}
                             isPDFShow={true} /></th></tr>}
                           <tr className={highlighter("nPackagingAndFreight", "main-row")}>
-                            <th>Net Freight </th>
+                            <th>Net Freight ({viewCostingData?.[0]?.CostingCurrency}) </th>
                             {viewCostingData &&
                               viewCostingData?.map((data, index) => {
                                 return (
                                   <td className={tableDataClass(data)}>
-                                    {displayValueWithSign(data, "nPackagingAndFreight")}
+                                    {displayValueWithSign(data, "nPackagingAndFreight")} ({displayValueWithSign(data, 'NetFreightPackagingCostConversion')})
                                     {
                                       (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&
                                       <button
@@ -3350,7 +3354,50 @@ const CostingSummaryTable = (props) => {
                               })}
                           </tr>
                         </>}
-
+                      {
+                        <tr className={`${highlighter("NetPOPriceConversion", "main-row")} netPo-row`}>
+                          <th>Net Cost ({viewCostingData?.[0]?.CostingCurrency}){simulationDrawer && '(Old)'}</th>
+                          {viewCostingData &&
+                            viewCostingData?.map((data, index) => {
+                              return <td className={tableDataClass(data)}>
+                                {displayValueWithSign(data, "NetPOPriceConversion")}
+                                {
+                                  (data?.bestCost !== true) && (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&
+                                  <button
+                                    id="view_otherToolCost"
+                                    type="button"
+                                    title='View'
+                                    className="float-right mb-0 View "
+                                    onClick={() => viewNpvData(index)}
+                                  >
+                                  </button>
+                                }
+                              </td >
+                            })}
+                        </tr >
+                      }
+                      {
+                        <tr className={`${highlighter("NetPOPriceLocalConversion", "main-row")} netPo-row`}>
+                          <th>Net Cost ({viewCostingData?.[0]?.LocalCurrency}){simulationDrawer && '(Old)'}</th>
+                          {viewCostingData &&
+                            viewCostingData?.map((data, index) => {
+                              return <td className={tableDataClass(data)}>
+                                {displayValueWithSign(data, "NetPOPriceLocalConversion")}
+                                {
+                                  (data?.bestCost !== true) && (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&
+                                  <button
+                                    id="view_otherToolCost"
+                                    type="button"
+                                    title='View'
+                                    className="float-right mb-0 View "
+                                    onClick={() => viewNpvData(index)}
+                                  >
+                                  </button>
+                                }
+                              </td >
+                            })}
+                        </tr >
+                      }
                       {
 
                         <tr className={`${highlighter("nPOPrice", "main-row")} netPo-row`}>

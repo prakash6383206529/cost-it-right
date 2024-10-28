@@ -40,12 +40,12 @@ function AssemblyTechnology(props) {
     const { CostingEffectiveDate } = useSelector(state => state.costing)
     const dispatch = useDispatch()
     const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
-    const { ToolTabData, SurfaceTabData, DiscountCostData, PackageAndFreightTabData, RMCCTabData } = useSelector(state => state.costing)
+    const { ToolTabData, SurfaceTabData, DiscountCostData, PackageAndFreightTabData, RMCCTabData, currencySource } = useSelector(state => state.costing)
     const OverheadProfitTabData = useSelector(state => state.costing.OverheadProfitTabData)
     const isPartType = useContext(IsPartType);
 
     const toggle = (BOMLevel, PartNumber, PartType) => {
-        if (CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
+        if (CheckIsCostingDateSelected(CostingEffectiveDate, currencySource)) return false;
         dispatch(openCloseStatus({ RMC: !IsOpen, bopHandling: isBOPExists && !IsOpen, }))
         if (PartType === 'Assembly') {
             // WHEN TOGGLE BUTTON IS PRESSED AT THAT TIME VALUES SHOULD BE CALCULATED UNTIL THEN VALUES SHOULD BE 0
@@ -118,7 +118,7 @@ function AssemblyTechnology(props) {
     * @description TOGGLE DRAWER
     */
     const OperationDrawerToggle = () => {
-        if (CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
+        if (CheckIsCostingDateSelected(CostingEffectiveDate, currencySource)) return false;
         setIsOperationDrawerOpen(true)
     }
 
@@ -135,7 +135,7 @@ function AssemblyTechnology(props) {
     * @description TOGGLE DRAWER
     */
     const ProcessDrawerToggle = () => {
-        if (CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
+        if (CheckIsCostingDateSelected(CostingEffectiveDate, currencySource)) return false;
         setIsProcessDrawerOpen(true)
     }
 
@@ -245,7 +245,7 @@ function AssemblyTechnology(props) {
 
 
     const labourHandlingDrawer = () => {
-        if (CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
+        if (CheckIsCostingDateSelected(CostingEffectiveDate, currencySource)) return false;
         setIsOpenLabourDrawer(true)
     }
 

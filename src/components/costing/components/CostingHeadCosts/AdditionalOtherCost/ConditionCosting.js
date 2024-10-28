@@ -16,7 +16,6 @@ function ConditionCosting(props) {
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
 
     useEffect(() => {
-        console.log(props?.tableData, 'props?.tableData')
         const sum = props?.tableData?.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj?.ConditionCostPerQuantityConversion), 0);
         setTotalCostBase(checkForDecimalAndNull(sum, initialConfiguration.NoOfDecimalForPrice))
 
@@ -34,6 +33,8 @@ function ConditionCosting(props) {
                                 <th>{`Condition`}</th>
                                 {<th>{`Type`}</th>}
                                 {<th>{`Percentage (%)`}</th>}
+                                {<th>{`Applicability`}</th>}
+                                {<th>{`Applicability Cost`}</th>}
                                 {<th>{`Quantity`}</th>}
                                 {<th style={{ minWidth: '100px' }}>{`Cost (${isFromImport ? currency?.label : PlantCurrency})`}</th>}
                                 {<th>{`Cost/Pc (${isFromImport ? currency?.label : PlantCurrency})`}</th>}
@@ -42,13 +43,14 @@ function ConditionCosting(props) {
                             </tr>
                             {props?.tableData &&
                                 props?.tableData.map((item, index) => {
-                                    console.log(item, 'item')
                                     return (
                                         <Fragment>
                                             <tr key={index}>
                                                 <td>{item.condition ? item.condition : item.Description} </td>
                                                 {<td>{item.ConditionType}</td>}
                                                 {<td>{item.Percentage ? checkForDecimalAndNull(item?.Percentage, getConfigurationKey().NoOfDecimalForPrice) : '-'}</td>}
+                                                {<td>{item.Applicability}</td>}
+                                                {<td>{item.ApplicabilityCost ? checkForDecimalAndNull(item?.ApplicabilityCost, getConfigurationKey().NoOfDecimalForPrice) : '-'}</td>}
                                                 {<td>{item.ConditionQuantity ? checkForDecimalAndNull(item?.ConditionQuantity, getConfigurationKey().NoOfDecimalForPrice) : '-'}</td>}
                                                 {<td>{checkForDecimalAndNull(item?.ConditionCostConversion, getConfigurationKey().NoOfDecimalForPrice)}</td>}
                                                 {<td>{item?.ConditionCostPerQuantity ? checkForDecimalAndNull(item?.ConditionCostPerQuantity, getConfigurationKey().NoOfDecimalForPrice) : '-'}</td>}
@@ -70,8 +72,8 @@ function ConditionCosting(props) {
                             )}
                             {<tr className='table-footer'>
 
-                                <td colSpan={5} className="text-right font-weight-600 fw-bold">{`${isFromMaster ? 'Total Cost:' : `Total Cost (${reactLocalStorage.getObject("baseCurrency")}):`}`}</td>
-                                <td colSpan={3}><div className='d-flex justify-content-between'>{checkForDecimalAndNull(totalCostCurrency, initialConfiguration.NoOfDecimalForPrice)} {isFromMaster ? `(${isFromImport ? currency?.label : reactLocalStorage.getObject("baseCurrency")})` : ''}</div></td>
+                                <td colSpan={7} className="text-right font-weight-600 fw-bold">{`${isFromMaster ? 'Total Cost:' : `Total Cost (${reactLocalStorage.getObject("baseCurrency")}):`}`}</td>
+                                <td colSpan={5}><div className='d-flex justify-content-between'>{checkForDecimalAndNull(totalCostCurrency, initialConfiguration.NoOfDecimalForPrice)} {isFromMaster ? `(${isFromImport ? currency?.label : reactLocalStorage.getObject("baseCurrency")})` : ''}</div></td>
                             </tr>}
                         </tbody>
                     </Table>

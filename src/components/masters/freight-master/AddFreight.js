@@ -833,7 +833,6 @@ class AddFreight extends Component {
     const { TransportMode, vendorName, IsLoadingUnloadingApplicable, sourceLocation, destinationLocation, client,
       FreightID, gridTable, isEditFlag, DataToChange, HandleChanged, AddUpdate, DeleteChanged, costingTypeId, isImport, plantCurrency, settlementCurrency, plantExchangeRateId, ExchangeSource } = this.state;
 
-
     if (this.state.effectiveDate === '' || !this.state.effectiveDate) {
       this.setState({ showEffectiveDateError: true })
       return false

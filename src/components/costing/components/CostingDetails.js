@@ -20,7 +20,9 @@ import {
   setOverheadProfitData, setComponentOverheadItemData, setPackageAndFreightData, setComponentPackageFreightItemData, setToolTabData,
   setComponentToolItemData, setComponentDiscountOtherItemData, gridDataAdded, getCostingSpecificTechnology, setRMCCData, setComponentItemData, createNCCCosting, saveAssemblyBOPHandlingCharge, setProcessGroupGrid, savePartNumber, saveBOMLevel, setPartNumberArrayAPICALL, isDataChange, setSurfaceCostData, saveAssemblyNumber, createCosting, getExistingCosting, createMultiTechnologyCosting, setRMCCErrors, setOverheadProfitErrors, setToolsErrors, setDiscountErrors, isDiscountDataChange, setCostingDataList, emptyCostingData, setRMCCBOPCostData, updateSOBDetail, checkPartNoExistInBop, setBreakupBOP, setIsBreakupBoughtOutPartCostingFromAPI, setIncludeOverheadProfitIcc, setOtherCostData, setCostingEffectiveDate, setSurfaceCostInOverheadProfit, setToolCostInOverheadProfit, setSurfaceCostInOverheadProfitRejection, openCloseStatus,
   setOtherDiscountData,
-  setCostingtype
+  setCostingtype,
+  setCurrencySource,
+  setExchangeRateSourceValue
 } from '../actions/Costing'
 import CopyCosting from './Drawers/CopyCosting'
 import { MESSAGES } from '../../../config/message';
@@ -1692,7 +1694,8 @@ function CostingDetails(props) {
       dispatch(setDiscountErrors({}))
       dispatch(setIncludeOverheadProfitIcc(false, () => { }))
       dispatch(setCostingEffectiveDate(null))
-
+      dispatch(setCurrencySource(''))
+      dispatch(setExchangeRateSourceValue(''))
       dispatch(setSurfaceCostInOverheadProfit(false, () => { }))
       dispatch(setSurfaceCostInOverheadProfitRejection(false, () => { }))
       dispatch(setToolCostInOverheadProfit(false, () => { }))

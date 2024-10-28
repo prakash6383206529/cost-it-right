@@ -330,9 +330,6 @@ function AddRMMaster(props) {
     };
 
     const onSubmit = debounce(handleSubmit((values, isDivision) => {
-        console.log(values, "values")
-        console.log(rawMaterailDetails, "rawMaterailDetails")
-        console.log(exchangeRateDetails, 'exchangeRateDetails')
         const { DataToChange } = state
         let scrapRate = ''
         let jaliRateBaseCurrency = ''
@@ -340,7 +337,6 @@ function AddRMMaster(props) {
         let scrapRateInr = ''
         let scrapRateLocalConversion = ''
         const { states: { showScrapKeys } } = rawMaterailDetails
-        console.log(showScrapKeys, 'showScrapKeys')
         const Plants = values.Plants
         if (showScrapKeys?.showCircleJali) {
             scrapRate = values?.JaliScrapCost
@@ -374,7 +370,6 @@ function AddRMMaster(props) {
                 return false
             }
         }
-        console.log(scrapRate, 'scrapRate')
 
         let plantArray = []
         if ((state.costingTypeId === ZBCTypeId && !getConfigurationKey().IsMultipleUserAllowForApproval) || state.isEditFlag) {
@@ -397,9 +392,9 @@ function AddRMMaster(props) {
             "CommodityNetCostLocalConversion": state?.isImport ? convertIntoCurrency(rawMaterailDetails?.states?.totalBasicRate, exchangeRateDetails?.LocalCurrencyExchangeRate) : rawMaterailDetails?.states?.totalBasicRate,
             "CommodityNetCostConversion": state?.isImport ? convertIntoCurrency(rawMaterailDetails?.states?.totalBasicRate, exchangeRateDetails?.CurrencyExchangeRate) : convertIntoCurrency(rawMaterailDetails?.states?.totalBasicRate, exchangeRateDetails?.LocalCurrencyExchangeRate),
             "CostingTypeId": state?.costingTypeId,
-            "Currency": values?.currency?.label,
-            "CurrencyExchangeRate": rawMaterailDetails?.CurrencyValue,
-            "CurrencyId": values?.currency?.value,
+            "Currency": state?.isImport ? values?.currency?.label : values?.plantCurrency,
+            "CurrencyExchangeRate": state?.isImport ? exchangeRateDetails?.CurrencyExchangeRate : exchangeRateDetails?.LocalCurrencyExchangeRate,
+            "CurrencyId": state?.isImport ? values?.currency?.value : exchangeRateDetails?.LocalCurrencyId,
             "CustomerId": state.costingTypeId === CBCTypeId ? values?.clientName?.value : '',
             "CustomerCode": state.costingTypeId === CBCTypeId ? getCodeBySplitting(values?.clientName?.label) : '',
             "CustomerName": state.costingTypeId === CBCTypeId ? getNameBySplitting(values?.clientName?.label) : '',
@@ -407,7 +402,7 @@ function AddRMMaster(props) {
             "CutOffPriceLocalConversion": state?.isImport ? convertIntoCurrency(values?.cutOffPrice, exchangeRateDetails?.LocalCurrencyExchangeRate) : values?.cutOffPrice,
             "CutOffPriceInINR": state?.isImport ? convertIntoCurrency(values?.cutOffPrice, exchangeRateDetails?.CurrencyExchangeRate) : convertIntoCurrency(values?.cutOffPrice, exchangeRateDetails?.LocalCurrencyExchangeRate),
             "EffectiveDate": DayTime(values?.effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
-            "ExchangeRateId": exchangeRateDetails?.ExchangeRateId,
+            "ExchangeRateId": state?.isImport ? exchangeRateDetails?.ExchangeRateId : exchangeRateDetails?.LocalExchangeRateId,
             "ExchangeRateSourceName": values?.ExchangeSource?.label,
             "FrequencyOfSettlement": values?.frequencyOfSettlement?.label,
             "FromDate": DayTime(values?.fromDate).format('YYYY-MM-DD HH:mm:ss'),
@@ -422,10 +417,10 @@ function AddRMMaster(props) {
             "JaliScrapCostLocalConversion": state?.isImport ? convertIntoCurrency(values?.CircleScrapCost, exchangeRateDetails?.LocalCurrencyExchangeRate) : values?.CircleScrapCost,
             "JaliScrapCostConversion": state?.isImport ? convertIntoCurrency(values?.CircleScrapCost, exchangeRateDetails?.CurrencyExchangeRate) : convertIntoCurrency(values?.CircleScrapCost, exchangeRateDetails?.LocalCurrencyExchangeRate),
             "LoggedInUserId": loggedInUserId(),
-            "LocalCurrency": values?.plantCurrency,
-            "LocalCurrencyExchangeRate": exchangeRateDetails?.LocalCurrencyExchangeRate,
-            "LocalCurrencyId": exchangeRateDetails?.LocalCurrencyId,
-            "LocalExchangeRateId": exchangeRateDetails?.LocalExchangeRateId,
+            "LocalCurrency": state?.isImport ? values?.plantCurrency : null,
+            "LocalCurrencyExchangeRate": state?.isImport ? exchangeRateDetails?.LocalCurrencyExchangeRate : null,
+            "LocalCurrencyId": state?.isImport ? exchangeRateDetails?.LocalCurrencyId : null,
+            "LocalExchangeRateId": state?.isImport ? exchangeRateDetails?.LocalExchangeRateId : null,
             "MachiningScrapRate": values?.MachiningScrap,
             "MachiningScrapRateLocalConversion": state?.isImport ? convertIntoCurrency(values?.MachiningScrap, exchangeRateDetails?.LocalCurrencyExchangeRate) : values?.MachiningScrap,
             "MachiningScrapRateInINR": state?.isImport ? convertIntoCurrency(values?.MachiningScrap, exchangeRateDetails?.CurrencyExchangeRate) : convertIntoCurrency(values?.MachiningScrap, exchangeRateDetails?.LocalCurrencyExchangeRate),
@@ -479,7 +474,6 @@ function AddRMMaster(props) {
             "VendorName": state.costingTypeId === VBCTypeId ? !state.isEditFlag ? getNameBySplitting(rawMaterailDetails?.Vendor?.label) : getNameBySplitting(values?.Vendor?.label) : '',
             "VendorPlant": []
         }
-        console.log(formData, 'formData')
 
         let financialDataNotChanged = (checkForNull(values.cutOffPrice) === checkForNull(DataToChange?.CutOffPrice)) && (checkForNull(values.BasicRate) === checkForNull(DataToChange?.BasicRatePerUOM)) && rawMaterailDetails?.states?.IsApplyHasDifferentUOM === DataToChange?.IsScrapUOMApply
             && checkForNull(values?.ConversionRatio) === checkForNull(DataToChange?.UOMToScrapUOMRatio) && checkForNull(values?.ScrapRatePerScrapUOM) === checkForNull(DataToChange?.ScrapRatePerScrapUOM) && (checkForNull(values.OtherCost) === checkForNull(DataToChange?.OtherNetCost))

@@ -18,8 +18,7 @@ export const config = () => {
 }
 
 
-// const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
-const BASE_URL = `http://10.10.1.100:4001/api/v1`;
+const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
 export const FILE_URL = `${process.env.REACT_APP_FILE_URL}`;
 
 /** Export API */
@@ -610,6 +609,7 @@ export const API = {
   getCostingPaymentTermDetail: `${BASE_URL}/costing/get-costing-payment-term-detail`,
   saveCostingPaymentTermDetail: `${BASE_URL}/costing/save-costing-payment-term-detail`,
   getCostingTcoDetails: `${BASE_URL}/costing/get-costing-tco-details`,
+  saveCostingBasicDetails: `${BASE_URL}/costing/save-costing-basic-details`,
 
   //WEIGHT CALCULATION
   getWeightCalculationInfo: `${BASE_URL}/costing-sheet-metal/get-weight-calculation-info-by-costing`,
@@ -1735,6 +1735,9 @@ export const SET_TOOL_COST_ICC = 'SET_TOOL_COST_ICC'
 export const GET_EXTERNAL_INTEGRATION_FG_WISE_IMPACT_DATA = 'GET_EXTERNAL_INTEGRATION_FG_WISE_IMPACT_DATA'
 export const GET_TCO_DATA = 'GET_TCO_DATA'
 export const SET_RFQ_COSTING_TYPE = 'SET_RFQ_COSTING_TYPE'
+export const SET_EXCHANGE_RATE_SOURCE = 'SET_EXCHANGE_RATE_SOURCE'
+export const SET_CURRENCY_SOURCE = 'SET_CURRENCY_SOURCE'
+
 //WEIGHT CALCULATION COSTING
 
 export const GET_WEIGHT_CALC_INFO_SUCCESS = 'GET_WEIGHT_CALC_INFO_SUCCESS';
@@ -2371,6 +2374,8 @@ export const VIEW_COSTING_DATA = {
   costingVersion: 'Costing Version',
   PoPriceWithDate: 'Net Cost (Effective from)',
   InfoCategory: 'Category',
+  ExchangeRateSourceName: 'Exchange Rate Source',
+  CostingCurrency: 'Currency',
   partType: 'Part Type',
   partNumber: 'Part Number',
   partName: 'Part Name',
@@ -3273,7 +3278,7 @@ export const RAWMATERIALCOST = 'Raw Material Other Cost'
 export const COSTINGCONDITIONCOST = 'Costing Condition Cost'
 
 //VERSION 
-export const VERSION = "V3.1.18";
+export const VERSION = "V3.1.19";
 
 
 

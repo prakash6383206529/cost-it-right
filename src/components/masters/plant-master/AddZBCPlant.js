@@ -83,7 +83,6 @@ class AddZBCPlant extends Component {
         if (res && res.data && res.data.Result) {
 
           const Data = res.data.Data;
-          console.log(Data)
           this.setState({ DataToCheck: Data })
           if (!(this.props.isEditFlag || this.props.isViewMode)) {
             this.props.fetchStateDataAPI(Data.CountryId, () => { })
@@ -115,7 +114,6 @@ class AddZBCPlant extends Component {
   */
   selectType = (label) => {
     const { countryList, stateList, cityList, companySelectList, currencySelectList } = this.props;
-    console.log('currencySelectList', currencySelectList)
     const temp = [];
 
     if (label === 'country') {
@@ -685,7 +683,6 @@ class AddZBCPlant extends Component {
 * @param {*} state
 */
 function mapStateToProps({ comman, plant, auth }) {
-  console.log('comman', comman)
   const { countryList, stateList, cityList, currencySelectList } = comman;
   const { plantUnitDetail, companySelectList } = plant;
   const { initialConfiguration } = auth

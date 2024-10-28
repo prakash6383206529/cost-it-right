@@ -43,6 +43,7 @@ function SAPPushDetail(props) {
     const { evaluationType } = useSelector((state) => state?.costing)
     const VendorLoaderObj = { isLoader: VendorInputLoader }
     const plantLoaderObj = { isLoader: inputLoader }
+    const { initialConfiguration } = useSelector(state => state.auth)
 
     useEffect(() => {
         dispatch(getPlantSelectListByType(ZBC, 'MASTER', '', () => { }))
@@ -229,11 +230,13 @@ function SAPPushDetail(props) {
      * @description Get Material group from API on change of part
     */
     const getEvaluationType = (plantCode, partNumber) => {
-        let reqData = {
-            plantCode: plantCode,
-            partNumber: partNumber
+        if (initialConfiguration?.IsSAPCodeRequired) {
+            let reqData = {
+                plantCode: plantCode,
+                partNumber: partNumber
+            }
+            dispatch(getExternalIntegrationEvaluationType(reqData, res => { }))
         }
-        dispatch(getExternalIntegrationEvaluationType(reqData, res => { }))
     }
     const handlePartName = (value) => {
         setPartNumber(value.label)

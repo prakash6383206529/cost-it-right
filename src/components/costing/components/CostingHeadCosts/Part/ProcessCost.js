@@ -61,7 +61,7 @@ function ProcessCost(props) {
   const dispatch = useDispatch()
   const CostingViewMode = useContext(ViewCostingContext);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const { CostingEffectiveDate, selectedProcessId, selectedProcessGroupId, processGroupGrid, ErrorObjRMCC } = useSelector(state => state.costing)
+  const { CostingEffectiveDate, selectedProcessId, selectedProcessGroupId, processGroupGrid, ErrorObjRMCC, currencySource } = useSelector(state => state.costing)
   const { rmFinishWeight, rmGrossWeight } = props
   const [openMachineForm, setOpenMachineForm] = useState(false)
 
@@ -473,7 +473,7 @@ function ProcessCost(props) {
    * @description TOGGLE DRAWER
    */
   const DrawerToggle = () => {
-    if (CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
+    if (CheckIsCostingDateSelected(CostingEffectiveDate, currencySource)) return false;
     setDrawerOpen(true)
   }
 
@@ -576,7 +576,9 @@ function ProcessCost(props) {
               UOMTypeId: el.UnitTypeId,
               ProductionPerHour: productionPerHour,
               ProcessTechnologyId: el.ProcessTechnologyId,
-              Technologies: el.Technologies
+              Technologies: el.Technologies,
+              ConvertedExchangeRateId: el.ConvertedExchangeRateId === EMPTY_GUID ? null : el.ConvertedExchangeRateId,
+              CurrencyExchangeRate: el.CurrencyExchangeRate
             }
           })
           return {
@@ -600,7 +602,10 @@ function ProcessCost(props) {
             ProductionPerHour: productionPerHrs(rowArray, rowArray.length > 0 ? rowArray[0].UOMType : item.UOMType, processQuantityMain),
             ProcessTechnologyId: item.ProcessTechnologyId,
             Technologies: item.Technologies,
-            ProcessList: rowArray
+            ProcessList: rowArray,
+            ConvertedExchangeRateId: item.ConvertedExchangeRateId === EMPTY_GUID ? null : item.ConvertedExchangeRateId,
+            CurrencyExchangeRate: item.CurrencyExchangeRate
+
           }
         })
 
@@ -639,7 +644,9 @@ function ProcessCost(props) {
             UOMTypeId: el.UnitTypeId,
             ProductionPerHour: productionPerHourMain,
             ProcessTechnologyId: el.ProcessTechnologyId,
-            Technologies: el.Technologies
+            Technologies: el.Technologies,
+            ConvertedExchangeRateId: item.ConvertedExchangeRateId === EMPTY_GUID ? null : item.ConvertedExchangeRateId,
+            CurrencyExchangeRate: el.CurrencyExchangeRate
           }
 
         })
@@ -1069,7 +1076,7 @@ function ProcessCost(props) {
    * @method setRMCCErrors
    * @description CALLING TO SET BOP COST FORM'S ERROR THAT WILL USE WHEN HITTING SAVE RMCC TAB API.
   */
-  let temp = ErrorObjRMCC
+  let temp = ErrorObjRMCC ? ErrorObjRMCC : {}
   if (Object.keys(errors).length > 0 && counter < 2) {
     temp.ProcessGridFields = errors.ProcessGridFields;
     dispatch(setRMCCErrors(temp))

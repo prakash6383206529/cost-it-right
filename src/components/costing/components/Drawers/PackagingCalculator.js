@@ -205,8 +205,6 @@ function OpenPackagingCalculator(props) {
             "SpacersRecoveryPercentage": value.SpacersRecoveryPercentage,
             "PackagingCost": value.PackingCost,
         }
-        console.log('formData:', formData);
-        console.log('value:', value);
         // dispatch(saveRawMaterialCalculationForMonoCartonCorrugatedBox(formData, (res) => {
         //     if (res?.data?.Result) {
         //         Toaster.success("Calculation saved successfully")

@@ -5,7 +5,7 @@ import AddRM from '../../Drawers/AddRM'
 import { costingInfoContext } from '../../CostingDetailStepTwo'
 import NoContentFound from '../../../../common/NoContentFound'
 import { useDispatch, useSelector } from 'react-redux'
-import { CRMHeads, EMPTY_DATA } from '../../../../../config/constants'
+import { CRMHeads, EMPTY_DATA, EMPTY_GUID } from '../../../../../config/constants'
 import { TextFieldHookForm, TextAreaHookForm, SearchableSelectHookForm } from '../../../../layout/HookFormInputs'
 import Toaster from '../../../../common/Toaster'
 import { calculateNetLandedCost, calculatePercentage, calculatePercentageValue, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, corrugatedBoxPermission, getConfigurationKey, isRMDivisorApplicable } from '../../../../../helper'
@@ -107,7 +107,7 @@ function RawMaterialCost(props) {
   const RMDivisor = (item?.CostingPartDetails?.RMDivisor !== null) ? item?.CostingPartDetails?.RMDivisor : 0;
   const isScrapRecoveryPercentageApplied = item?.IsScrapRecoveryPercentageApplied
   const isNFR = useContext(IsNFR);
-  const { nfrDetailsForDiscount } = useSelector(state => state.costing)
+  const { nfrDetailsForDiscount, currencySource } = useSelector(state => state.costing)
 
   const dispatch = useDispatch()
 
@@ -139,7 +139,7 @@ function RawMaterialCost(props) {
             let tempList = data && data?.map(item => {
               let obj = { ...item }
               let scrapWeight = item.GrossWeight - item.FinishWeight
-              obj.RMRate = (obj.EntryType === 'Domestic') ? obj.NetLandedCost : obj.NetLandedCostConversion
+              obj.RMRate = obj.NetLandedCost
               obj.RMName = `${obj.RawMaterial} - ${obj.RMGrade}`
               obj.NetLandedCost = calculateNetLandedCost(item.BasicRatePerUOM, item.GrossWeight, scrapWeight, item.ScrapRate)
               // obj.FinishWeight = obj.FinishWeight
@@ -245,7 +245,7 @@ function RawMaterialCost(props) {
    * @description TOGGLE DRAWER
    */
   const DrawerToggle = () => {
-    if (CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
+    if (CheckIsCostingDateSelected(CostingEffectiveDate, currencySource)) return false;
 
     if ((Object.keys(gridData).length > 0 && gridData[0].WeightCalculationId !== null && isMultiCalculatorData && (Number(costData?.TechnologyId) === Number(Ferrous_Casting) || Number(costData?.TechnologyId) === Number(RUBBER) || (Number(costData?.TechnologyId) === Number(CORRUGATEDBOX) && (costData?.TechnologyId === CORRUGATEDBOX && calculatorTypeStore !== 'CorrugatedBox'))))) {
       setShowPopup(true)
@@ -269,7 +269,7 @@ function RawMaterialCost(props) {
           return {
             RMName: `${el.RawMaterial} - ${el.RMGrade}`,
             RawMaterialCode: el.RawMaterialCode,
-            RMRate: (el.EntryType === 'Domestic') ? el.NetLandedCost : el.NetLandedCostConversion,
+            RMRate: el.NetLandedCost,
             MaterialType: el.MaterialType,
             RMGrade: el.RMGrade,
             Density: el.Density,
@@ -290,6 +290,8 @@ function RawMaterialCost(props) {
             ScrapUnitOfMeasurement: el.ScrapUnitOfMeasurement,
             Currency: el.Currency,
             UOMSymbol: el.UOMSymbol,
+            ConvertedExchangeRateId: el.ConvertedExchangeRateId === EMPTY_GUID ? null : el.ConvertedExchangeRateId,
+            CurrencyExchangeRate: el.CurrencyExchangeRate
           }
         })
 
@@ -300,7 +302,7 @@ function RawMaterialCost(props) {
         let tempObj = {
           RMName: `${rowData.RawMaterial} - ${rowData.RMGrade}`,
           RawMaterialCode: rowData.RawMaterialCode,
-          RMRate: (rowData.EntryType === 'Domestic') ? rowData.NetLandedCost : rowData.NetLandedCostConversion,
+          RMRate: rowData.NetLandedCost,
           MaterialType: rowData.MaterialType,
           RMGrade: rowData.RMGrade,
           Density: rowData.Density,
@@ -321,7 +323,9 @@ function RawMaterialCost(props) {
           ScrapRatePerScrapUOMConversion: rowData.ScrapRatePerScrapUOMConversion,
           Currency: rowData.Currency,
           UOMSymbol: rowData.UOMSymbol,
-          ScrapRecoveryPercentage: 100
+          ScrapRecoveryPercentage: 100,
+          ConvertedExchangeRateId: rowData.ConvertedExchangeRateId === EMPTY_GUID ? null : rowData.ConvertedExchangeRateId,
+          CurrencyExchangeRate: rowData.CurrencyExchangeRate
         }
         setGridData([...gridData, tempObj])
         tempArray = [...gridData, tempObj]
@@ -340,7 +344,7 @@ function RawMaterialCost(props) {
     }
 
     if (rowData && rowData.length > 0 && IsApplyMasterBatch) {
-      let value = rowData && (rowData[0].EntryType === 'Domestic') ? rowData[0].NetLandedCost : rowData[0].NetLandedCostConversion
+      let value = rowData && rowData[0].NetLandedCost
       setValue('MBName', rowData && rowData[0].RawMaterial !== undefined ? rowData[0].RawMaterial : '')
       setValue('MBId', rowData && rowData[0].RawMaterialId !== undefined ? rowData[0].RawMaterialId : '')
       setValue('MBPrice', value)
@@ -1293,7 +1297,7 @@ function RawMaterialCost(props) {
    * @method setRMCCErrors
    * @description CALLING TO SET RAWMATERIAL COST FORM'S ERROR THAT WILL USE WHEN HITTING SAVE RMCC TAB API.
    */
-  let temp = ErrorObjRMCC
+  let temp = ErrorObjRMCC ? ErrorObjRMCC : {}
   if (Object.keys(errors).length > 0 && counter < 2) {
     temp.rmGridFields = errors.rmGridFields;
     dispatch(setRMCCErrors(temp))

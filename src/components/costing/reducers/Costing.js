@@ -24,7 +24,9 @@ import {
   SET_COSTING_VIEW_DATA_FOR_ASSEMBLY,
   PARTSPECIFICATIONRFQDATA,
   GET_SAP_EVALUATIONTYPE,
-  SET_RFQ_COSTING_TYPE
+  SET_RFQ_COSTING_TYPE,
+  SET_EXCHANGE_RATE_SOURCE,
+  SET_CURRENCY_SOURCE
 } from '../../../config/constants';
 const initialState = {
   ComponentItemData: {},
@@ -888,7 +890,17 @@ export default function costingReducer(state = initialState, action) {
         loading: false,
         evaluationType: action.payload,
       }
-
+    case SET_EXCHANGE_RATE_SOURCE:
+      return {
+        ...state,
+        loading: false,
+        exchangeRateSource: action.payload,
+      }
+    case SET_CURRENCY_SOURCE:
+      return {
+        ...state,
+        currencySource: action.payload,
+      }
     default:
       return state
   }

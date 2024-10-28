@@ -72,6 +72,8 @@ import {
   SET_RFQ_COSTING_TYPE,
   PARTSPECIFICATIONRFQDATA,
   GET_SAP_EVALUATIONTYPE,
+  SET_EXCHANGE_RATE_SOURCE,
+  SET_CURRENCY_SOURCE,
 } from '../../../config/constants'
 import { apiErrors, encodeQueryParamsAndLog } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -3084,5 +3086,42 @@ export function getExternalIntegrationEvaluationType(data, callback) {
       dispatch({ type: API_FAILURE })
       apiErrors(error)
     })
+  }
+}
+
+/**
+ * @method saveCostingBasicDetails
+ * @description saveCostingBasicDetails
+ */
+export function saveCostingBasicDetails(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.saveCostingBasicDetails, data, config())
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response)
+      }
+    }).catch((error) => {
+      callback(error.response)
+      dispatch({ type: API_FAILURE })
+      apiErrors(error)
+    })
+  }
+}
+
+export function setExchangeRateSourceValue(value) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_EXCHANGE_RATE_SOURCE,
+      payload: value
+    });
+  }
+}
+
+export function setCurrencySource(value) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_CURRENCY_SOURCE,
+      payload: value
+    });
   }
 }
