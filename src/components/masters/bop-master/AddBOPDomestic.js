@@ -2168,6 +2168,7 @@ class AddBOPDomestic extends Component {
               isImport={false}
               plantCurrency={this.props?.fieldsObj?.plantCurrency}
               settlementCurrency={this.state?.currency?.label}
+              isBOP={true}
             />
           }
         </div >

@@ -148,9 +148,9 @@ function AddOtherCostDrawer(props) {
             value: selectedData.Applicability
         });
         setValue('ApplicabilityCostCurrency', selectedData.ApplicabilityCost);
-        setValue('ApplicabilityBaseCost', selectedData.ApplicabilityCostConversion);
+        setValue('ApplicabilityBaseCost', isBOP ? selectedData.ApplicabilityCost : selectedData.ApplicabilityCostConversion);
         setValue('CostCurrency', selectedData.NetCost);
-        setValue('CostBaseCurrency', selectedData.NetCostConversion);
+        setValue('CostBaseCurrency', isBOP ? selectedData?.NetCost : selectedData.NetCostConversion);
         setValue('CostDescription', selectedData.Description);
         setValue('Remark', selectedData.Remark);
         setRawMaterialCommodityIndexRateAndOtherCostDetailsId(selectedData?.RawMaterialCommodityIndexRateAndOtherCostDetailsId ?? null)
@@ -780,7 +780,7 @@ function AddOtherCostDrawer(props) {
                                                         </td>
                                                     }
                                                     <td colSpan={3} className="text-left">
-                                                        {checkForDecimalAndNull(totalCostBase, initialConfiguration?.NoOfDecimalForPrice)}
+                                                        {checkForDecimalAndNull((isBOP ? totalCostCurrency : totalCostBase), initialConfiguration?.NoOfDecimalForPrice)}
                                                     </td>
                                                 </tr>
                                             </tbody>
