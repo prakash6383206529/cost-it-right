@@ -133,9 +133,8 @@ class AddFuel extends Component {
     const fromCurrency = isImport ? currency?.label : fieldsObj?.plantCurrency
     const toCurrency = reactLocalStorage.getObject("baseCurrency")
     const hasCurrencyAndDate = fieldsObj?.plantCurrency && effectiveDate;
-    const isSourceExchangeRateVisible = getConfigurationKey().IsSourceExchangeRateNameVisible;
 
-    if (hasCurrencyAndDate && (!isSourceExchangeRateVisible || ExchangeSource)) {
+    if (hasCurrencyAndDate) {
       if (IsFetchExchangeRateVendorWise() && (vendorName?.length === 0 || client?.length === 0)) {
         this.setState({ showWarning: true });
         return;
@@ -151,7 +150,7 @@ class AddFuel extends Component {
             client.value,
             false,
             to,
-            ExchangeSource?.label,
+            ExchangeSource?.label??null,
             res => {
               if (Object.keys(res.data.Data).length === 0) {
                 this.setState({ showWarning: true });

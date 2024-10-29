@@ -135,14 +135,13 @@ class AddLabour extends Component {
     const vendorValue = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? vendorName.value : EMPTY_GUID) : EMPTY_GUID
     const costingType = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? VBCTypeId : costingTypeId) : ZBCTypeId
     const hasCurrencyAndDate = fieldsObj?.plantCurrency && effectiveDate;
-    const isSourceExchangeRateVisible = getConfigurationKey().IsSourceExchangeRateNameVisible;
-    if (hasCurrencyAndDate && (!isSourceExchangeRateVisible || ExchangeSource)) {
+    if (hasCurrencyAndDate) {
       if (IsFetchExchangeRateVendorWise() && (vendorName?.length === 0 || client?.length === 0)) {
         this.setState({ showWarning: true });
         return;
       }
 
-      this.props.getExchangeRateByCurrency(fieldsObj?.plantCurrency, costingType, DayTime(this.state?.effectiveDate).format('YYYY-MM-DD'), vendorValue, client.value, false, reactLocalStorage.getObject("baseCurrency"), ExchangeSource?.label, res => {
+      this.props.getExchangeRateByCurrency(fieldsObj?.plantCurrency, costingType, DayTime(this.state?.effectiveDate).format('YYYY-MM-DD'), vendorValue, client.value, false, reactLocalStorage.getObject("baseCurrency"), ExchangeSource?.label ?? null, res => {
 
         if (Object.keys(res.data.Data).length === 0) {
           this.setState({ showWarning: true });
@@ -190,14 +189,13 @@ class AddLabour extends Component {
                   LabourType: item.LabourType,
                   EffectiveDate: DayTime(item.EffectiveDate).isValid() ? DayTime(item.EffectiveDate).format('YYYY-MM-DD HH:mm') : '',
                   LabourRate: item.LabourRate,
-                  LabourRateConversion: item?.LabourRateConversion,
                   IsAssociated: item.IsAssociated,
                   WorkingTime: item.WorkingTime,
                   Efficiency: item.Efficiency,
-                  ExchangeSource: item?.ExchangeRateSourceName !== undefined ? { label: item?.ExchangeRateSourceName, value: item?.ExchangeRateSourceName } : [],
-                  plantCurrency: item?.LocalCurrencyExchangeRate,
-                  ExchangeRateId: item?.LocalCurrencyExchangeRateId,
-                  plantCurrencyID: item?.LocalCurrencyId,
+                  LabourRateConversion: item?.LabourRateConversion,
+                  CurrencyExchangeRate: this.state.currencyValue,
+                  ExchangeRateId: this.state.ExchangeRateId,
+
                 }
               })
 
@@ -216,14 +214,11 @@ class AddLabour extends Component {
               costingTypeId: Data.CostingTypeId ? Data.CostingTypeId : '',
               product: Data.ProductName !== undefined ? { label: Data.ProductName, value: Data.ProductId } : [],
               client: { label: Data.CustomerName, value: Data.CustomerId },
-              plantCurrency: GridArray[0]?.LocalCurrency,
-              ExchangeSource: GridArray[0]?.ExchangeSource,
               city: Data.City !== undefined ? { label: Data?.City, value: Data?.CityId } : [],
               country: Data.Country !== undefined ? { label: Data?.Country, value: Data?.CountryId } : [],
-              // currencyValue: Data?.CurrencyExchangeRate,
-              // ExchangeRateId: Data?.ExchangeRateId
-              // ExchangeSource: Data?.ExchangeRateSourceName !== undefined ? { label: Data?.ExchangeRateSourceName, value: Data?.ExchangeRateSourceName } : []
-              //plantCurrencyID: Data?.LocalCurrencyId
+
+              ExchangeSource: Data?.ExchangeRateSourceName !== undefined ? { label: Data?.ExchangeRateSourceName, value: Data?.ExchangeRateSourceName } : [],
+              plantCurrencyID: Data?.LocalCurrencyId,
             }, () => this.setState({ isLoader: false }))
           }, 500)
         }
@@ -546,7 +541,7 @@ class AddLabour extends Component {
   gridHandler = () => {
     const { machineType, labourType, gridTable, effectiveDate, vendorName, selectedPlants, StateName, IsEmployeContractual, costingTypeId, efficiency, workingHours, city, country } = this.state
     const { fieldsObj } = this.props
-    if ((costingTypeId !== CBCTypeId && IsEmployeContractual ? vendorName.length === 0 : false) || selectedPlants.length === 0 || StateName.length === 0 || country.length === 0 || city.length === 0) {
+    if ((costingTypeId !== CBCTypeId && IsEmployeContractual ? vendorName.length === 0 : false) || selectedPlants.length === 0 || country.length === 0 || city.length === 0) {
       Toaster.warning('First fill upper detail')
       return false
     }
@@ -599,11 +594,8 @@ class AddLabour extends Component {
         Efficiency: efficiency,
         WorkingTime: workingHours,
         LabourRateConversion: LabourRateConversion,
-        ExchangeRateSourceName: this.state.ExchangeSource?.label || null,
-        ExchangeRateId: this?.state?.ExchangeRateId || null,
-        LocalCurrencyId: this.state.plantCurrencyID || null,
-        LocalCurrency: this.props.fieldsObj?.plantCurrency || null,
-        CurrencyExchangeRate: this.state.currencyValue || null,
+        CurrencyExchangeRate: this.state.currencyValue,
+        ExchangeRateId: this.state.ExchangeRateId,
       })
 
       this.setState(
@@ -668,11 +660,9 @@ class AddLabour extends Component {
       Efficiency: efficiency,
       WorkingTime: workingHours,
       LabourRateConversion: LabourRateConversion,
-      ExchangeRateSourceName: this.state.ExchangeSource?.label || null,
-      ExchangeRateId: this?.state?.ExchangeRateId || null,
-      LocalCurrencyId: this.state.plantCurrencyID || null,
-      LocalCurrency: this.props.fieldsObj?.plantCurrency || null,
-      CurrencyExchangeRate: this.state.currencyValue || null,
+      CurrencyExchangeRate: this.state.currencyValue,
+      ExchangeRateId: this.state.ExchangeRateId,
+
     }
 
     tempArray = Object.assign([...gridTable], { [gridEditIndex]: tempData })
@@ -723,7 +713,6 @@ class AddLabour extends Component {
   editGridItemDetails = (index) => {
     const { gridTable } = this.state
     const tempData = gridTable[index]
-
     this.props.getLabourTypeByMachineTypeSelectList(
       { machineTypeId: tempData.MachineTypeId },
       (res) => {
@@ -749,16 +738,19 @@ class AddLabour extends Component {
         },
         effectiveDate: tempData.EffectiveDate,
         workingHours: tempData.WorkingTime,
-        efficiency: tempData.Efficiency
+        efficiency: tempData.Efficiency,
+        LabourRateConversion: tempData.LabourRateConversion
       },
       () => this.props.change('LabourRate', tempData.LabourRate),
       () => this.props.change('workingHours', tempData.WorkingTime),
       () => this.props.change('Efficiency', tempData.Efficiency),
-      () => this.props.change('LabourRateConversion', tempData.LabourRateConversion),
+      () => this.props.change('LabourRateConversion', LabourRateConversion),
 
     )
     this.props.change('workingHours', tempData.WorkingTime)
     this.props.change('Efficiency', tempData.Efficiency)
+    this.props.change('LabourRateConversion', tempData.LabourRateConversion)
+
   }
 
   /**
@@ -856,6 +848,11 @@ class AddLabour extends Component {
           { PlantId: selectedPlants.value, PlantName: selectedPlants.label },
         ],
         VendorPlant: [],
+        ExchangeRateSourceName: this.state?.ExchangeSource?.label ?? null,
+        LocalCurrency: this.props.fieldsObj.plantCurrency,
+        LocalCurrencyId: this.state.plantCurrencyID,
+        // ExchangeRateId: this.state?.ExchangeRateId,
+        // CurrencyExchangeRate: this?.state?.currencyValue,
 
 
       }
@@ -887,7 +884,12 @@ class AddLabour extends Component {
         LoggedInUserId: loggedInUserId(),
         VendorPlant: [],
         CountryId: country?.value,
-        CityId: city?.value
+        CityId: city?.value,
+        ExchangeRateSourceName: this.state?.ExchangeSource?.label ?? null,
+        LocalCurrency: this.props.fieldsObj.plantCurrency,
+        LocalCurrencyId: this.state.plantCurrencyID,
+        // ExchangeRateId: this.state?.ExchangeRateId,
+        // CurrencyExchangeRate: this?.state?.currencyValue,
       }
 
       this.props.createLabour(formData, (res) => {
@@ -1258,6 +1260,8 @@ class AddLabour extends Component {
                             component={searchableSelect}
                             className="multiselect-with-border"
                             disabled={isEditFlag}
+                            valueDescription={this.state?.ExchangeSource}
+
                           />
                         </Col>
                       )}

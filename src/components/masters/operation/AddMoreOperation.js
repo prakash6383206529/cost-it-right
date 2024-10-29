@@ -154,9 +154,8 @@ function AddMoreOperation(props) {
         const fromCurrency = state.isImport ? state.currency?.label : getValues('plantCurrency');
         const toCurrency = reactLocalStorage.getObject("baseCurrency");
         const hasCurrencyAndDate = getValues('plantCurrency') && getValues('effectiveDate');
-        const isSourceExchangeRateVisible = getConfigurationKey().IsSourceExchangeRateNameVisible;
 
-        if (hasCurrencyAndDate && (!isSourceExchangeRateVisible || state.ExchangeSource)) {
+        if (hasCurrencyAndDate) {
             if (IsFetchExchangeRateVendorWise() && (vendor?.length === 0 || client?.length === 0)) {
                 setState(prevState => ({ ...prevState, showWarning: true }));
                 return;
@@ -172,7 +171,7 @@ function AddMoreOperation(props) {
                         client.value,
                         false,
                         to,
-                        state.ExchangeSource?.label,
+                        state.ExchangeSource?.label??null,
                         res => {
                             if (Object.keys(res.data.Data).length === 0) {
                                 setState(prevState => ({ ...prevState, showWarning: true }));
@@ -694,16 +693,10 @@ function AddMoreOperation(props) {
 
         let isFinancialDataChange = false;
         if (isEditFlag) {
-            //let temp = Object.keys(formData)/* .filter((item) => item.includes('CRMHead')); */
-            // temp.map((item) => {
-            //     if (dataObj[item] && String(dataObj[item]) !== String(formData[item])) {
-            //         isFinancialDataChange = true;
-            //     }
-            //     return null;
-            // });
-            isFinancialDataChange = Object.keys(formData)
-                //.filter(item => item.includes('cost') || item.includes('CRMHead')) // Filter keys that include 'cost' or 'CRMHead'
-                .some(item => dataObj[item] && String(dataObj[item]) !== String(formData[item]));
+    isFinancialDataChange = Object.keys(formData)
+    .filter(item => item.includes('Cost') || (item.includes('CRMHead') && initialConfiguration?.IsShowCRMHead)  || item.includes('Rate')) // Filter keys that include 'Cost', 'CRMHead', or 'Rate'
+    .some(item => dataObj[item] && String(dataObj[item]) !== String(formData[item]));
+
 
 
             if (isFinancialDataChange) {

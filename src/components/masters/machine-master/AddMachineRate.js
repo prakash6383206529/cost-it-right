@@ -236,10 +236,9 @@ class AddMachineRate extends Component {
     const fromCurrency = isImport ? currency?.label : plantCurrency;
     const toCurrency = reactLocalStorage.getObject("baseCurrency");
     const hasCurrencyAndDate = plantCurrency && effectiveDate;
-    const isSourceExchangeRateVisible = getConfigurationKey().IsSourceExchangeRateNameVisible;
 
     return new Promise((resolve) => {
-      if (!hasCurrencyAndDate || (isSourceExchangeRateVisible && !ExchangeSource)) {
+      if (!hasCurrencyAndDate) {
         resolve(null);
         return;
       }
@@ -259,7 +258,7 @@ class AddMachineRate extends Component {
             client.value,
             false,
             to,
-            ExchangeSource?.label,
+            ExchangeSource?.label??null,
             res => {
               resolveAPI({
                 rate: checkForNull(res.data.Data.CurrencyExchangeRate),

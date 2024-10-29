@@ -486,11 +486,23 @@ function AddBudget(props) {
             total = Number(total) + Number(checkForNull(item.Sum))
         })
         setTotalSum((total + currentPrice))
-        setValue('totalSumCurrency', checkForDecimalAndNull((total + currentPrice), getConfigurationKey().NoOfDecimalForPrice))
-        if (settlementCurrency !== null || plantCurrency !== null) {
-            setValue("totalSumPlantCurrency", checkForDecimalAndNull(((total + currentPrice) * settlementCurrency), getConfigurationKey().NoOfDecimalForPrice))
-            setValue('totalSum', checkForDecimalAndNull(((total + currentPrice) * plantCurrency), getConfigurationKey().NoOfDecimalForPrice))
+
+        if (costConverSionInLocalCurrency) {
+
+            setValue('totalSumCurrency', checkForDecimalAndNull((totalSum + currentPrice), getConfigurationKey().NoOfDecimalForPrice))
+            setValue("totalSumPlantCurrency", checkForDecimalAndNull(((totalSum + currentPrice) * settlementCurrency), getConfigurationKey().NoOfDecimalForPrice))
+            setValue('totalSum', checkForDecimalAndNull(((totalSum + currentPrice) * settlementCurrency), getConfigurationKey().NoOfDecimalForPrice))
+        } else {
+
+            setValue('totalSumCurrency', checkForDecimalAndNull((totalSum + currentPrice), getConfigurationKey().NoOfDecimalForPrice))
+            setValue('totalSum', checkForDecimalAndNull(((totalSum + currentPrice) * plantCurrency), getConfigurationKey().NoOfDecimalForPrice))
+
         }
+        // setValue('totalSumCurrency', checkForDecimalAndNull((total + currentPrice), getConfigurationKey().NoOfDecimalForPrice))
+        // if (settlementCurrency !== null || plantCurrency !== null) {
+        //     setValue("totalSumPlantCurrency", checkForDecimalAndNull(((total + currentPrice) * settlementCurrency), getConfigurationKey().NoOfDecimalForPrice))
+        //     setValue('totalSum', checkForDecimalAndNull(((total + currentPrice) * plantCurrency), getConfigurationKey().NoOfDecimalForPrice))
+        // }
 
     }
     const ImportToggle = () => {
@@ -539,9 +551,11 @@ function AddBudget(props) {
                     setValue('Plant', { label: `${Data.PlantName}(${Data.PlantCode})`, value: Data?.PlantId })
                     setCostingTypeId(Data.CostingHeadId)
                     setTotalSum(Data.BudgetedPoPrice)
-                    setValue('totalSum', Data?.BudgetedPoPriceInCurrency)
-                    setValue("totalSumCurrency", Data?.BudgetedPoPrice)
+                    if (Data?.CurrencyId !== null) {
+                        setValue("totalSumCurrency", Data?.BudgetedPoPrice)
+                    }
                     setValue("totalSumPlantCurrency", Data?.BudgetedPoPriceLocalConversion)
+                    setValue('totalSum', Data?.BudgetedPoPriceInCurrency)
                     setYear({ label: Data.FinancialYear, value: 0 })
                     setPart({ label: Data.PartNumber, value: Data.PartId })
                     setClient({ label: `${Data.CustomerName} (${Data.CustomerCode})`, value: Data.CustomerId })
@@ -660,9 +674,8 @@ function AddBudget(props) {
         const vendorValue = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? vendorName.value : EMPTY_GUID) : EMPTY_GUID;
         const costingType = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? VBCTypeId : costingTypeId) : ZBCTypeId;
         const hasCurrencyAndDate = plantCurrency && date;
-        const isSourceExchangeRateVisible = getConfigurationKey().IsSourceExchangeRateNameVisible;
         const fromCurrency = getValues("plantCurrency")
-        if (hasCurrencyAndDate && finalYear && (!isSourceExchangeRateVisible || ExchangeSource) /* && Object.keys(currency).length !== 0 */) {
+        if (hasCurrencyAndDate && finalYear) {
             if (IsFetchExchangeRateVendorWise() && (vendorName?.length === 0 || client?.length === 0)) {
                 setShowWarning(true)
                 return;
@@ -678,7 +691,7 @@ function AddBudget(props) {
                         client.value,
                         true,
                         to,
-                        ExchangeSource?.label,
+                        ExchangeSource?.label ?? null,
                         res => {
                             if (Object.keys(res.data.Data).length === 0) {
                                 setShowWarning(true)
@@ -700,10 +713,7 @@ function AddBudget(props) {
                     callAPI(currency?.label, reactLocalStorage.getObject("baseCurrency")).then(({ rate: rate2, exchangeRateId: exchangeRateId2 }) => {
                         setPlantCurrency(rate1);
                         setSettlementCurrency(rate2);
-
-
                         setPlantExchangeRateId(exchangeRateId1);
-
                         setSettlementExchangeRateId(exchangeRateId2);
                     });
                 });
@@ -722,7 +732,7 @@ function AddBudget(props) {
 
             setValue('totalSumCurrency', checkForDecimalAndNull((totalSum + currentPrice), getConfigurationKey().NoOfDecimalForPrice))
             setValue("totalSumPlantCurrency", checkForDecimalAndNull(((totalSum + currentPrice) * settlementCurrency), getConfigurationKey().NoOfDecimalForPrice))
-            setValue('totalSum', checkForDecimalAndNull(((totalSum + currentPrice) * plantCurrency), getConfigurationKey().NoOfDecimalForPrice))
+            setValue('totalSum', checkForDecimalAndNull(((totalSum + currentPrice) * settlementCurrency), getConfigurationKey().NoOfDecimalForPrice))
         } else {
 
             setValue('totalSumCurrency', checkForDecimalAndNull((totalSum + currentPrice), getConfigurationKey().NoOfDecimalForPrice))
@@ -860,9 +870,21 @@ function AddBudget(props) {
                 setValue('currentPrice', checkForDecimalAndNull(res?.data?.DataList[0].NetPOPrice, getConfigurationKey().NoOfDecimalForInputOutput))
                 setCurrentPrice(checkForDecimalAndNull(res?.data?.DataList[0].NetPOPrice, getConfigurationKey().NoOfDecimalForInputOutput))
                 setTotalSum(TotalSum)
-                setValue('totalSum', checkForNull(TotalSum * plantCurrency))
-                setValue('totalSumCurrency', TotalSum)
-                setValue("totalSumPlantCurrency", checkForNull(TotalSum * settlementCurrency))
+
+                if (costConverSionInLocalCurrency) {
+
+                    setValue('totalSumCurrency', checkForDecimalAndNull((totalSum + currentPrice), getConfigurationKey().NoOfDecimalForPrice))
+                    setValue("totalSumPlantCurrency", checkForDecimalAndNull(((totalSum + currentPrice) * settlementCurrency), getConfigurationKey().NoOfDecimalForPrice))
+                    setValue('totalSum', checkForDecimalAndNull(((totalSum + currentPrice) * settlementCurrency), getConfigurationKey().NoOfDecimalForPrice))
+                } else {
+
+                    setValue('totalSumCurrency', checkForDecimalAndNull((totalSum + currentPrice), getConfigurationKey().NoOfDecimalForPrice))
+                    setValue('totalSum', checkForDecimalAndNull(((totalSum + currentPrice) * plantCurrency), getConfigurationKey().NoOfDecimalForPrice))
+
+                }
+                // setValue('totalSum', checkForNull(TotalSum * plantCurrency))
+                // setValue('totalSumCurrency', TotalSum)
+                // setValue("totalSumPlantCurrency", checkForNull(TotalSum * settlementCurrency))
             }))
         }
     }
@@ -934,9 +956,21 @@ function AddBudget(props) {
         let finalNewSum = Number(sum) + Number(totalSum) - totalConditionCost
 
         setTotalSum(finalNewSum)
-        setValue('totalSum', checkForNull(finalNewSum * plantCurrency))
-        setValue("totalSumCurrency", finalNewSum)
-        setValue('totalSumPlantCurrency', checkForNull((finalNewSum) * settlementCurrency))
+        // setValue('totalSum', checkForNull(finalNewSum * plantCurrency))
+        // setValue("totalSumCurrency", finalNewSum)
+        // setValue('totalSumPlantCurrency', checkForNull((finalNewSum) * settlementCurrency))
+
+        if (costConverSionInLocalCurrency) {
+
+            setValue('totalSumCurrency', checkForDecimalAndNull((totalSum + currentPrice), getConfigurationKey().NoOfDecimalForPrice))
+            setValue("totalSumPlantCurrency", checkForDecimalAndNull(((totalSum + currentPrice) * settlementCurrency), getConfigurationKey().NoOfDecimalForPrice))
+            setValue('totalSum', checkForDecimalAndNull(((totalSum + currentPrice) * settlementCurrency), getConfigurationKey().NoOfDecimalForPrice))
+        } else {
+
+            setValue('totalSumCurrency', checkForDecimalAndNull((totalSum + currentPrice), getConfigurationKey().NoOfDecimalForPrice))
+            setValue('totalSum', checkForDecimalAndNull(((totalSum + currentPrice) * plantCurrency), getConfigurationKey().NoOfDecimalForPrice))
+
+        }
 
         setTimeout(() => {
             setTotalConditionCost(sum)
