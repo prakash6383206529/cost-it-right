@@ -29,7 +29,7 @@ import { debounce } from 'lodash';
 import AsyncSelect from 'react-select/async';
 import { getClientSelectList, } from '../actions/Client';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { autoCompleteDropdown, costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission, getEffectiveDateMinDate } from '../../common/CommonFunctions';
+import { autoCompleteDropdown, costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission, getEffectiveDateMaxDate, getEffectiveDateMinDate } from '../../common/CommonFunctions';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { checkFinalUser } from '../../../components/costing/actions/Costing'
 import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions';
@@ -73,6 +73,7 @@ class AddBOPDomestic extends Component {
       approveDrawer: false,
       effectiveDate: '',
       minEffectiveDate: '',
+      
       isDateChange: false,
       files: [],
       isFinalApprovar: false,
@@ -163,7 +164,6 @@ class AddBOPDomestic extends Component {
    * @description Called after rendering the component
    */
   componentDidMount() {
-
     this.setState({ costingTypeId: getCostingTypeIdByCostingPermission() });
     // if (!this.state.isViewMode) {
     //   this.props.getAllCity(cityId => {
@@ -1568,6 +1568,8 @@ class AddBOPDomestic extends Component {
                                 onChange={this.handleEffectiveDateChange}
                                 type="text"
                                 minDate={isEditFlag ? this.state.minEffectiveDate : getEffectiveDateMinDate()}
+                                maxDate={getEffectiveDateMaxDate()}
+
                                 validate={[required]}
                                 autoComplete={'off'}
                                 required={true}

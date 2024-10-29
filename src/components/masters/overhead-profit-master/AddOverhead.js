@@ -22,7 +22,7 @@ import { debounce } from 'lodash';
 import AsyncSelect from 'react-select/async';
 import { onFocus, showDataOnHover } from '../../../helper';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { autoCompleteDropdown, getCostingTypeIdByCostingPermission, getEffectiveDateMinDate } from '../../common/CommonFunctions';
+import { autoCompleteDropdown, getCostingTypeIdByCostingPermission, getEffectiveDateMaxDate, getEffectiveDateMinDate } from '../../common/CommonFunctions';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { getRawMaterialNameChild, getRMGradeSelectListByRawMaterial } from '../actions/Material'
 import { ASSEMBLY } from '../../../config/masterData';
@@ -1303,6 +1303,8 @@ class AddOverhead extends Component {
                               onChange={this.handleEffectiveDateChange}
                               type="text"
                               minDate={isEditFlag ? this.state.minEffectiveDate : getEffectiveDateMinDate()}
+                              maxDate={getEffectiveDateMaxDate()}
+
                               validate={[required]}
                               autoComplete={'off'}
                               required={true}

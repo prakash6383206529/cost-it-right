@@ -22,7 +22,7 @@ import LoaderCustom from '../../common/LoaderCustom';
 import { debounce } from 'lodash';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import AsyncSelect from 'react-select/async';
-import { autoCompleteDropdown, getCostingTypeIdByCostingPermission, getEffectiveDateMinDate } from '../../common/CommonFunctions';
+import { autoCompleteDropdown, getCostingTypeIdByCostingPermission, getEffectiveDateMaxDate, getEffectiveDateMinDate } from '../../common/CommonFunctions';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { onFocus } from '../../../helper';
 import { getClientSelectList, } from '../actions/Client';
@@ -1110,6 +1110,8 @@ class AddFuel extends Component {
                                   onChangeRaw={(e) => e.preventDefault()}
                                   disabled={isViewMode}
                                   minDate={getEffectiveDateMinDate()}
+                                  maxDate={getEffectiveDateMaxDate()}
+
 
                                 />
                                 {this.state.errorObj.effectiveDate && this.state.effectiveDate === "" && <div className='text-help'>This field is required.</div>}

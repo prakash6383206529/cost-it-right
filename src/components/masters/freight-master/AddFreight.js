@@ -23,7 +23,7 @@ import AsyncSelect from 'react-select/async';
 import { onFocus } from "../../../helper";
 import { getClientSelectList, } from '../actions/Client';
 import { reactLocalStorage } from "reactjs-localstorage";
-import { autoCompleteDropdown, getCostingTypeIdByCostingPermission, getEffectiveDateMinDate } from "../../common/CommonFunctions";
+import { autoCompleteDropdown, getCostingTypeIdByCostingPermission, getEffectiveDateMaxDate, getEffectiveDateMinDate } from "../../common/CommonFunctions";
 import PopupMsgWrapper from "../../common/PopupMsgWrapper";
 import { FREIGHT_LOAD_OPTIONS } from "../../../config/masterData";
 import { label } from "react-dom-factories";
@@ -995,6 +995,8 @@ class AddFreight extends Component {
                                   onChangeRaw={(e) => e.preventDefault()}
                                   disabled={isViewMode || isEditMode}
                                   minDate={getEffectiveDateMinDate()}
+                                  maxDate={ getEffectiveDateMaxDate()}
+
 
                                 />
                                 {this.state.showEffectiveDateError && <div className='text-help'>This field is required.</div>}

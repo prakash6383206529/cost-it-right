@@ -28,7 +28,7 @@ import { addDays, endOfMonth, addWeeks, addMonths, addQuarters, addYears, isLeap
 import { TestHeadless } from "ag-grid-community"
 import AddIndexationMaterialListing from "./AddIndexationMaterialListing"
 import { getIndexSelectList, setOtherCostDetails } from "../actions/Indexation"
-import { getEffectiveDateMinDate } from "../../common/CommonFunctions"
+import { getEffectiveDateMaxDate, getEffectiveDateMinDate } from "../../common/CommonFunctions"
 function AddRMFinancialDetails(props) {
     const { Controller, control, register, setValue, getValues, errors, reset, useWatch, states, data, isRMAssociated, disableAll } = props
     const { isEditFlag, isViewFlag } = data
@@ -1883,6 +1883,7 @@ function AddRMFinancialDetails(props) {
                                         disabled={disableAll || isViewFlag}
                                         mandatory={true}
                                         errors={errors && errors.effectiveDate}
+                                        maxDate={getEffectiveDateMaxDate()}
                                         minDate={state.isShowIndexCheckBox ? addDays(new Date(state.toDate), 1) : isEditFlag ? state.minDate : getEffectiveDateMinDate()}
                                     />
                                 </div>

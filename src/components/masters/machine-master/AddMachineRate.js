@@ -35,7 +35,7 @@ import { ProcessGroup } from '../masterUtil';
 import _ from 'lodash'
 import { getCostingSpecificTechnology } from '../../costing/actions/Costing'
 import { getClientSelectList, } from '../actions/Client';
-import { autoCompleteDropdown, costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission, getEffectiveDateMinDate } from '../../common/CommonFunctions';
+import { autoCompleteDropdown, costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission, getEffectiveDateMaxDate, getEffectiveDateMinDate } from '../../common/CommonFunctions';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { checkFinalUser } from '../../../components/costing/actions/Costing'
@@ -1699,6 +1699,8 @@ class AddMachineRate extends Component {
                                 validate={[required]}
                                 autoComplete={'off'}
                                 minDate={isEditFlag ? this.state.minEffectiveDate : getEffectiveDateMinDate()}
+                                maxDate={ getEffectiveDateMaxDate()}
+
                                 required={true}
                                 changeHandler={(e) => {
                                   //e.preventDefault()

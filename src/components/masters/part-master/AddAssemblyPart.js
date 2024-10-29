@@ -27,7 +27,7 @@ import Switch from "react-switch";
 import { getCostingSpecificTechnology } from '../../costing/actions/Costing'
 import { getPartSelectList, getUOMSelectList } from '../../../actions/Common';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { autoCompleteDropdown, getEffectiveDateMinDate } from '../../common/CommonFunctions';
+import { autoCompleteDropdown, getEffectiveDateMaxDate, getEffectiveDateMinDate } from '../../common/CommonFunctions';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from './TourMessages';
@@ -1225,6 +1225,8 @@ class AddAssemblyPart extends Component {
                                 validate={[required]}
                                 autoComplete={'off'}
                                 required={true}
+                                maxDate={getEffectiveDateMaxDate()}
+
                                 minDate={isEditFlag ? this.state.minEffectiveDate : getEffectiveDateMinDate()}
                                 changeHandler={(e) => {
                                 }}

@@ -3263,7 +3263,8 @@ export const customHavellsChanges = true
 export const countDownBlinkingTime = 2
 export const clientName = 'Havells'
 export const isShowTaxCode = true
-export const effectiveDateRangeDays = null
+export const effectiveDateRangeDayPrevious = 7
+export const effectiveDateRangeDayFuture = 7
 // CONSTANT FOR COSTING ENTRY TYPE ID
 export const COMMODITYCOST = 'Commodity Cost'
 export const RAWMATERIALCOST = 'Raw Material Other Cost'

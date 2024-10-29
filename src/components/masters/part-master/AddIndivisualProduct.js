@@ -23,7 +23,7 @@ import { withTranslation } from 'react-i18next';
 import Button from '../../layout/Button';
 import AssociateHierarchy from './AssociateHierarchy';
 import { subDays } from 'date-fns';
-import { getEffectiveDateMinDate } from '../../common/CommonFunctions';
+import { getEffectiveDateMaxDate, getEffectiveDateMinDate } from '../../common/CommonFunctions';
 
 class AddIndivisualProduct extends Component {
     constructor(props) {
@@ -530,6 +530,7 @@ class AddIndivisualProduct extends Component {
                                                                     placeholder={isViewMode ? '-' : "Select Date"}
                                                                     selected={this.state.effectiveDate}
                                                                     minDate={isEditFlag ? this.state.minEffectiveDate : getEffectiveDateMinDate()}
+                                                                    maxDate={getEffectiveDateMaxDate()}
                                                                     onChange={this.handleEffectiveDateChange}
                                                                     type="text"
                                                                     validate={[required]}

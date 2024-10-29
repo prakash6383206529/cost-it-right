@@ -14,7 +14,7 @@ import {
 import 'react-dropzone-uploader/dist/styles.css';
 import { MESSAGES } from "../../../config/message"
 import AsyncSelect from 'react-select/async';
-import { autoCompleteDropdown } from "../../common/CommonFunctions"
+import { autoCompleteDropdown, getEffectiveDateMaxDate, getEffectiveDateMinDate } from "../../common/CommonFunctions"
 import HeaderTitle from "../../common/HeaderTitle"
 import { useLabels } from "../../../helper/core"
 function AddRMIndexation(props) {
@@ -450,6 +450,8 @@ function AddRMIndexation(props) {
                                 autoComplete={"off"}
                                 disabledKeyboardNavigation
                                 onChangeRaw={(e) => e.preventDefault()}
+                                minDate={getEffectiveDateMinDate()}
+                                maxDate={getEffectiveDateMaxDate()}
                                 // disabled={rowData.length !== 0}
                                 mandatory={true}
                                 errors={errors && errors.EffectiveDate}

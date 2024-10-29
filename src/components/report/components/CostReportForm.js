@@ -11,7 +11,7 @@ import { getPlantSelectListByType, getVendorNameByVendorSelectList } from "../..
 import { BOUGHTOUTPARTSPACING, COMPONENT_PART, defaultPageSize, EMPTY_DATA, PRODUCT_ID, searchCount, VBC_VENDOR_TYPE, ZBC } from "../../../config/constants"
 import { MESSAGES } from "../../../config/message"
 import { getConfigurationKey, loggedInUserId } from "../../../helper"
-import { autoCompleteDropdown, autoCompleteDropdownPart } from "../../common/CommonFunctions"
+import { autoCompleteDropdown, autoCompleteDropdownPart, getEffectiveDateMaxDate, getEffectiveDateMinDate } from "../../common/CommonFunctions"
 import LoaderCustom from "../../common/LoaderCustom"
 import NoContentFound from "../../common/NoContentFound"
 import Toaster from "../../common/Toaster"
@@ -754,6 +754,8 @@ function CostReportForm(props) {
                                     dateFormat="DD/MM/YYYY"
                                     placeholder="Select date"
                                     customClassName="withBorder"
+                                    maxDate={getEffectiveDateMaxDate()}
+                                    minDate={getEffectiveDateMinDate()}
                                     className="withBorder"
                                     autoComplete={"off"}
                                     disabledKeyboardNavigation

@@ -26,7 +26,7 @@ import { withTranslation } from 'react-i18next';
 import { subDays } from 'date-fns';
 import { getUOMSelectList } from '../../../actions/Common';
 import TooltipCustom from '../../common/Tooltip';
-import { getEffectiveDateMinDate } from '../../common/CommonFunctions';
+import { getEffectiveDateMaxDate, getEffectiveDateMinDate } from '../../common/CommonFunctions';
 
 class AddIndivisualPart extends Component {
   constructor(props) {
@@ -726,6 +726,8 @@ class AddIndivisualPart extends Component {
                                   onChange={this.handleEffectiveDateChange}
                                   type="text"
                                   validate={[required]}
+                                  maxDate={getEffectiveDateMaxDate()}
+
                                   minDate={isEditFlag ? this.state.minEffectiveDate : getEffectiveDateMinDate()}
                                   autoComplete={'off'}
                                   required={true}
