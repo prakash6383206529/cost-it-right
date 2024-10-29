@@ -744,7 +744,7 @@ class AddLabour extends Component {
       () => this.props.change('LabourRate', tempData.LabourRate),
       () => this.props.change('workingHours', tempData.WorkingTime),
       () => this.props.change('Efficiency', tempData.Efficiency),
-      () => this.props.change('LabourRateConversion', LabourRateConversion),
+      // () => this.props.change('LabourRateConversion', LabourRateConversion),
 
     )
     this.props.change('workingHours', tempData.WorkingTime)
