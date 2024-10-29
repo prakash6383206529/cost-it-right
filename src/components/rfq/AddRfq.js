@@ -182,7 +182,7 @@ function AddRfq(props) {
     const [havellsPartTypeList, setHavellsPartTypeList] = useState([]);
     const [editQuotationPart, setEditQuotationPart] = useState(false)
     const [uniquePartList, setUniquePartList] = useState([])
-    const [havellsKey, setHavellsKey] = useState(true)
+    const [havellsKey, setHavellsKey] = useState(false)
     const [storePartsDetail, setStorePartsDetail] = useState([])
     const [partEffectiveDate, setPartEffectiveDate] = useState('')
     const [sopQuantityList, setSopQuantityList] = useState([]);
@@ -3376,7 +3376,7 @@ function AddRfq(props) {
 
                                             }
 
-                                            {havellsKey && quotationType !== 'Tooling' && <Col md="3">
+                                            {/* {havellsKey && quotationType !== 'Tooling' && <Col md="3">
                                                 <SearchableSelectHookForm
                                                     label={"Havells Design part /Proprietary part"}
                                                     name={"HavellsDesignPart"}
@@ -3393,7 +3393,7 @@ function AddRfq(props) {
                                                     errors={errors.Part}
                                                     disabled={(dataProps?.isViewFlag) ? true : false || updateButtonPartNoTable || disabledPartUid}
                                                 />
-                                            </Col>}
+                                            </Col>} */}
                                         </Row>
                                     </>}
                                     {loader && <LoaderCustom customClass="Rfq-Loader" />}
@@ -3672,7 +3672,7 @@ function AddRfq(props) {
 
 
                                                                     {/* {(quotationType=== "BOP" || quotationType=== 'RM' || quotationType=== 'componentAssembly') && <AgGridColumn width={"190px"} field="UOM" cellClass="ag-grid-action-container" headerName="UOM" floatingFilter={false} type="" cellRenderer={'buttonFormatterFirst'}></AgGridColumn>} */}
-                                                                    {selectedOption === "componentAssembly" && <AgGridColumn width={"230px"} field="HavellsDesignPart" headerName="Havells Design Part" ></AgGridColumn>}
+                                                                    {/* {selectedOption === "componentAssembly" && <AgGridColumn width={"230px"} field="HavellsDesignPart" headerName="Havells Design Part" ></AgGridColumn>} */}
 
                                                                     {<AgGridColumn width={"230px"} field="UOMSymbol" headerName="UOM" ></AgGridColumn>}
 
@@ -3864,8 +3864,8 @@ function AddRfq(props) {
                                                                     <AgGridColumn field="Vendor" headerName={vendorLabel + " (Code)"} tooltipField="Vendor"></AgGridColumn>
                                                                     {IsSendQuotationToPointOfContact() && (
                                                                         <AgGridColumn width={"270px"} field="ContactPerson" headerName="Point of Contact" ></AgGridColumn>)}
-                                                                    {vendorList && havellsKey && <AgGridColumn field='IncoTerms' header='Inco Terms' cellRenderer={'hyphenFormatter'}></AgGridColumn>}
-                                                                    {vendorList && havellsKey && <AgGridColumn field='PaymentTerms' header='Payment Terms' cellRenderer={'hyphenFormatter'} ></AgGridColumn>}
+                                                                    {/* {vendorList && havellsKey && <AgGridColumn field='IncoTerms' header='Inco Terms' cellRenderer={'hyphenFormatter'}></AgGridColumn>} */}
+                                                                    {/* {vendorList && havellsKey && <AgGridColumn field='PaymentTerms' header='Payment Terms' cellRenderer={'hyphenFormatter'} ></AgGridColumn>} */}
                                                                     {vendorList && havellsKey && ShowLdClause(selectedOption) && <AgGridColumn field='LDClause' header='LD Clause' tooltipField="LDClause" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                                                                     <AgGridColumn width={"270px"} field="VendorId" headerName={`${vendorLabel} Id`} hide={true} ></AgGridColumn>
                                                                     <AgGridColumn width={"180px"} field="VendorId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'buttonFormatterVendorTable'}></AgGridColumn>
