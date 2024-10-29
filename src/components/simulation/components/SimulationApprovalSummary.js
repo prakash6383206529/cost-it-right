@@ -48,6 +48,7 @@ import { costingTypeIdToApprovalTypeIdFunction } from '../../common/CommonFuncti
 import SimulationApproveReject from '../../costing/components/approval/SimulationApproveReject';
 import RMIndexationSimulation from './SimulationPages/RMIndexationSimulation';
 import { useLabels } from '../../../helper/core';
+import Popup from 'reactjs-popup';
 
 const gridOptions = {};
 const ExcelFile = ReactExport.ExcelFile;
@@ -1171,7 +1172,28 @@ function SimulationApprovalSummary(props) {
     const header = {
         RevisedNetCost: `Revised Net Cost ${reactLocalStorage.getObject("baseCurrency")}`
     }
-
+    const vendorList = (vendorName) => {
+        const vendorArray = vendorName ? vendorName?.split(',').map(vendor => vendor.trim()) : [];
+        switch (vendorArray?.length) {
+            case 0:
+                return ''
+            case 1:
+                return vendorArray[0];
+            default:
+                return <>
+                    <div className='view-all-wrapper word-nowrap'>{vendorArray[0]},<Popup trigger={<button id={`popUpTriggerProfit`} className="view-btn pl-1" type={'button'}><span>+{vendorArray?.length - 1}</span></button>}
+                        position="bottom center">
+                        <ul className="px-1 view-all-list">
+                            {vendorArray && vendorArray.map((item, index) => {
+                                if (index === 0) return false
+                                return <li key={item}>{item}</li>
+                            })}
+                        </ul>
+                    </Popup>
+                    </div>
+                </>
+        }
+    }
     return (
         <>
             {showListing === false &&
@@ -1254,7 +1276,7 @@ function SimulationApprovalSummary(props) {
                                             <td>{simulationDetail && simulationDetail?.DepartmentCode ? simulationDetail?.DepartmentCode : '-'}</td>
                                             {Number(SimulationTechnologyId) !== Number(RAWMATERIALINDEX) && <>
                                                 {String(SimulationTechnologyId) !== EXCHNAGERATE && <td>{simulationDetail && simulationDetail?.AmendmentDetails?.CostingHead}</td>}
-                                                {simulationDetail?.SimulationHeadId !== CBCTypeId && simulationDetail?.SimulationHeadId !== ZBCTypeId && <td>{simulationDetail && simulationDetail?.AmendmentDetails?.VendorName}</td>}
+                                                {simulationDetail?.SimulationHeadId !== CBCTypeId && simulationDetail?.SimulationHeadId !== ZBCTypeId && <td>{vendorList(simulationDetail && simulationDetail?.AmendmentDetails?.VendorName)}</td>}
                                                 {simulationDetail?.SimulationHeadId === ZBCTypeId && <td>{simulationDetail && simulationDetail?.AmendmentDetails?.PlantName}</td>}
                                                 {simulationDetail?.SimulationHeadId === CBCTypeId && <td>{simulationDetail && simulationDetail?.AmendmentDetails?.CustomerName}</td>}
                                                 <td>{simulationDetail && simulationDetail?.AmendmentDetails?.ImpactParts}</td>
