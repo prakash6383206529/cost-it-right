@@ -367,6 +367,10 @@ function AddOtherCostDrawer(props) {
         };
         // If the CostHeaderName is 'Discount Cost', prepend '-' sign
         if (newData.CostHeaderName === 'Discount Cost') {
+            if (newData.NetCost === rmBasicRate) {
+                Toaster.warning('Discount should not be equal to Basic rate')
+                return false
+            }
             newData.NetCost = `-${newData.NetCost}`;
             newData.NetCostConversion = `-${newData.NetCostConversion}`;
         }
