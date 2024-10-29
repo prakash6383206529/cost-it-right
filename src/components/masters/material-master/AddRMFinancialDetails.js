@@ -345,7 +345,7 @@ function AddRMFinancialDetails(props) {
         const total = selectedApplicabilities.reduce((acc, Applicability) => {
             // Skip checking for "Basic Rate" in tableData
 
-            const item = arr?.find(item => item?.Description === Applicability);
+            const item = arr?.find(item => item?.Description.trim() === Applicability.trim());
             if (item) {
                 let totalConditionCost = acc + item?.ConditionCost
                 return totalConditionCost
