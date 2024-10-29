@@ -1117,6 +1117,17 @@ function AddRfq(props) {
             Toaster.warning("Please select Visibility Mode.");
             return false
         }
+        else if (!showVendorSection && visibilityMode?.label === "Date") {
+            if (!dateAndTime) {
+                Toaster.warning("Please select a date and time.");
+                return false;
+            }
+        } else if (!showVendorSection && visibilityMode?.label === "Duration") {
+            if (!getValues("Time")) {
+                Toaster.warning("Please select a time.");
+                return false;
+            }
+        }
         if (!showVendorSection && (getValues('remark') === "" || getValues('remark') === null)) {
             Toaster.warning("Notes field is mandatory.");
             return false
@@ -1311,10 +1322,38 @@ function AddRfq(props) {
         let isDuplicateEntry = false
         let data = {}
         let temp = []
-        partList && partList.map((item) => {
-            temp.push(item?.PartId)
-            return null
-        })
+
+        switch (selectedOption) {
+            case "Bought Out Part":
+
+                bopDataList && bopDataList.map((item) => {
+                    temp.push(item?.BoughtOutPartChildId)
+                    return null
+                })
+                break
+            case "Raw Material":
+                rmDataList && rmDataList.map((item) => {
+                    temp.push(item?.RawMaterialChildId)
+                    return null
+                })
+                break
+            case "componentAssembly":
+                partList && partList.map((item) => {
+                    temp.push(item?.PartId)
+                    return null
+                })
+                break
+            case "Tooling":
+
+                toolingList && toolingList.map((item) => {
+                    temp.push(item?.PartId)
+                    return null
+                })
+                break
+            default:
+        }
+
+
         data.PartIdList = _.uniq(temp)
         data.PlantId = getValues('plant')?.value
         data.VendorId = getValues('vendor')?.value
@@ -1476,10 +1515,33 @@ function AddRfq(props) {
                         Data = res.data.Data
                     }));
                 }
+                let temp = []; // Initialize temp array to hold Part IDs
+                switch (selectedOption) {
+                    case "Bought Out Part":
+                        bopList && bopList.map((item) => {
+                            temp.push(item?.BoughtOutPartChildId);
+                            return null;
+                        });
+                        break;
+                    case "Raw Material":
+                        RawMaterialList && RawMaterialList.map((item) => {
+                            temp.push(item?.RawMaterialChildId);
+                            return null;
+                        });
+                        break;
+                    case "componentAssembly":
+                        temp.push(getValues('partNumber')?.value); // Use getValues for componentAssembly
+                        break;
+                    case "Tooling":
+                        temp.push(getValues('partNumber')?.value); // Use getValues for Tooling
+                        break;
+                    default:
+                }
+
+
+
                 let dataObj = {
-                    "PartIdList": [
-                        getValues('partNumber')?.value
-                    ],
+                    "PartIdList": temp,
                     "PlantId": getValues('plant')?.value,
                     "VendorId": null
                 };
@@ -1706,10 +1768,30 @@ function AddRfq(props) {
                     Data = res.data.Data
                 }));
             }
-            let dataObj = {                 // Part Handle change
-                "PartIdList": [
-                    getValues('partNumber')?.value
-                ],
+            let temp = []; // Initialize temp array to hold Part IDs
+            switch (selectedOption) {
+                case "Bought Out Part":
+                    bopList && bopList.map((item) => {
+                        temp.push(item?.BoughtOutPartChildId);
+                        return null;
+                    });
+                    break;
+                case "Raw Material":
+                    RawMaterialList && RawMaterialList.map((item) => {
+                        temp.push(item?.RawMaterialChildId);
+                        return null;
+                    });
+                    break;
+                case "componentAssembly":
+                    temp.push(getValues('partNumber')?.value); // Use getValues for componentAssembly
+                    break;
+                case "Tooling":
+                    temp.push(getValues('partNumber')?.value); // Use getValues for Tooling
+                    break;
+                default:
+            }
+            let dataObj = {
+                "PartIdList": temp,
                 "PlantId": getValues('plant')?.value,
                 "VendorId": null
             };
@@ -3336,7 +3418,7 @@ function AddRfq(props) {
                                                     mandatory={true}
                                                     handleChange={(newValue) => handlePartNoChange(newValue)}
                                                     errors={errors.partNumber}
-                                                    disabled={Object.keys(prNumber).length !== 0 || disabledPartUid || (dataProps?.isAddFlag ? partNoDisable : (dataProps?.isViewFlag || !isEditAll)) || updateButtonPartNoTable}
+                                                    disabled={Object.keys(prNumber).length !== 0 || disabledPartUid || (dataProps?.isAddFlag ? partNoDisable : (dataProps?.isViewFlag || !isEditAll)) || updateButtonPartNoTable || partType.length === 0}
                                                     isLoading={plantLoaderObj}
                                                     asyncOptions={(inputValue) => partFilterList(inputValue, partTypeforRM)}
                                                     NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
@@ -3929,7 +4011,7 @@ function AddRfq(props) {
                                                 <Col md="3">
                                                     {visibilityMode?.value === DATE_STRING && <div className="inputbox date-section">
                                                         <div className="form-group">
-                                                            <label>Date & Time</label>
+                                                            <label>Date & Time<span className="asterisk-required">*</span></label>
                                                             <div className="inputbox date-section rfq-calendar">
                                                                 <DatePicker
                                                                     name="startPlanDate"
@@ -3958,7 +4040,7 @@ function AddRfq(props) {
                                                     </div>}
                                                     {visibilityMode?.value === DURATION_STRING && <div className="inputbox date-section">
                                                         <div className="form-group">
-                                                            <label>Time</label>
+                                                            <label>Time<span className="asterisk-required">*</span></label>
                                                             <div className="inputbox date-section">
                                                                 {/* <DatePicker
                                                                 name="startPlanDate"
@@ -3981,13 +4063,13 @@ function AddRfq(props) {
                                                                     control={control}
                                                                     register={register}
                                                                     rules={{
-                                                                        required: false,
+                                                                        required: true,
                                                                         pattern: {
                                                                             value: /^([0-9]*):([0-5]?[0-9])$/i,
                                                                             message: 'Hours should be in hh:mm format.',
                                                                         },
                                                                     }}
-                                                                    mandatory={false}
+                                                                    mandatory={true}
                                                                     handleChange={() => { }}
                                                                     defaultValue={''}
                                                                     className=""

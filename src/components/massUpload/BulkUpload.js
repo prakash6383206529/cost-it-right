@@ -103,7 +103,8 @@ class BulkUpload extends Component {
             disableDept: false,
             departmentDropDownList: [],
             isShowDivision: false,
-            newfileData: []
+            newfileData: [],
+            checkMultiDept: false
         }
         this.localizeHeaders = this.localizeHeaders.bind(this);
 
@@ -132,7 +133,7 @@ class BulkUpload extends Component {
                     return null
                 })
             this.setState({ departmentDropDownList: department })
-            if (updateList && updateList.length === 1) {
+            if ((updateList && updateList.length === 1) || !this?.state?.checkMultiDept) {
                 this.setState({ disableDept: true, department: department })
                 this.props.change('dept', { label: department[0].label, value: department[0].value })
                 this.callDivisionApi(department[0].value)
