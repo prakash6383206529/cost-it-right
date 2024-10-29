@@ -200,14 +200,13 @@ class AddBOPDomestic extends Component {
     const vendorValue = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? vendorName.value : EMPTY_GUID) : EMPTY_GUID
     const costingType = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? VBCTypeId : costingTypeId) : ZBCTypeId
     const hasCurrencyAndDate = fieldsObj?.plantCurrency && effectiveDate;
-    const isSourceExchangeRateVisible = getConfigurationKey().IsSourceExchangeRateNameVisible;
-    if (hasCurrencyAndDate && (!isSourceExchangeRateVisible || ExchangeSource)) {
+    if (hasCurrencyAndDate) {
       if (IsFetchExchangeRateVendorWise() && (vendorName?.length === 0 || client?.length === 0)) {
         this.setState({ showWarning: true });
         return;
       }
 
-      this.props.getExchangeRateByCurrency(fieldsObj?.plantCurrency, costingType, DayTime(this.state?.effectiveDate).format('YYYY-MM-DD'), vendorValue, client.value, false, reactLocalStorage.getObject("baseCurrency"), ExchangeSource?.label, res => {
+      this.props.getExchangeRateByCurrency(fieldsObj?.plantCurrency, costingType, DayTime(this.state?.effectiveDate).format('YYYY-MM-DD'), vendorValue, client.value, false, reactLocalStorage.getObject("baseCurrency"), ExchangeSource?.label ?? null, res => {
         if (Object.keys(res.data.Data).length === 0) {
           this.setState({ showWarning: true });
         } else {
@@ -762,7 +761,7 @@ class AddBOPDomestic extends Component {
     const NoOfPieces = fieldsObj && fieldsObj.NumberOfPieces !== undefined ? fieldsObj.NumberOfPieces : 1;
     const basicRateBaseCurrency = checkForNull(fieldsObj?.BasicRate)
     const basicPriceBaseTemp = !NoOfPieces ? checkForNull(basicRateBaseCurrency) : checkForNull(basicRateBaseCurrency) / checkForNull(NoOfPieces)
-    const basicPriceAndOtherCost = checkForNull(basicPriceBaseTemp) + checkForNull(totalOtherCost)
+    const basicPriceAndOtherCost = checkForNull(basicPriceBaseTemp) + checkForNull(totalOtherCost) / NoOfPieces
     const OtherCostConversion = this.convertIntoBase(checkForNull(totalOtherCost), this?.state?.currencyValue)
     this.setState({ OtherNetCostConversion: OtherCostConversion })
     let basicPriceBaseCurrency
@@ -1022,7 +1021,6 @@ class AddBOPDomestic extends Component {
     const { BOPCategory, selectedPlants, vendorName, costingTypeId, sourceLocation, BOPID, isEditFlag, files, DropdownChanged, oldDate, client, effectiveDate, UOM, DataToCheck, isDateChange, IsFinancialDataChanged,
       isClientVendorBOP, isTechnologyVisible, Technology, FinalConditionCostBaseCurrency, BasicPrice, NetLandedCost, FinalBasicRateBaseCurrency, conditionTableData, isBOPAssociated, IsSAPCodeHandle, IsSAPCodeUpdated, currencyValue, LocalCurrencyId, LocalExchangeRateId, ExchangeSource, otherCostTableData, OtherNetCostConversion, totalOtherCost } = this.state;
     const { fieldsObj } = this.props;
-
     const userDetailsBop = JSON.parse(localStorage.getItem('userDetail'))
 
     if (costingTypeId !== CBCTypeId && vendorName.length <= 0) {
@@ -1069,9 +1067,9 @@ class AddBOPDomestic extends Component {
       ExchangeRateId: LocalExchangeRateId,
       CurrencyId: LocalCurrencyId,
       CurrencyExchangeRate: currencyValue,
-      NetConditionCost: 0,
-      NetConditionCostConversion: 0,
-      NetConditionCostLocalConversion: 0,
+      NetConditionCost: FinalConditionCostBaseCurrency,
+      NetConditionCostConversion: FinalConditionCostBaseCurrency * checkForNull(currencyValue),
+      NetConditionCostLocalConversion: FinalConditionCostBaseCurrency,
       NetCostWithoutConditionCost: BasicPrice,
       NetCostWithoutConditionCostLocalConversion: BasicPrice,
       NetCostWithoutConditionCostConversion: BasicPrice * checkForNull(currencyValue),
@@ -1234,9 +1232,6 @@ class AddBOPDomestic extends Component {
     return checkForNull(price) * checkForNull(currencyValue)
   }
   closeOtherCostToggle = (type, data, total, totalBase) => {
-    console.log('typessssssss: ', type);
-
-    // setState(prevState => ({ ...prevState, isOpenOtherCostDrawer: false, otherCostTableData: data, totalOtherCost: totalBase }))
     if (type === 'Save') {
       if (Number(this.state.costingTypeId) === Number(ZBCTypeId) && this.state.FinalConditionCostBaseCurrency) {
         Toaster.warning("Please click on refresh button to update condition cost data.")
@@ -1246,10 +1241,6 @@ class AddBOPDomestic extends Component {
     this.setState({ isOpenOtherCostDrawer: true })
     this.props.change('OtherCost', totalBase)
     this.setState({ isOpenOtherCostDrawer: false, otherCostTableData: data })
-    const netCostConversion = this.convertIntoBase(netCost, this?.state?.currencyValue)
-    // 
-    // const OtherCostConversion = this.convertIntoBase(checkForNull(totalBase), this?.state?.currencyValue)
-    // this.setState({ OtherNetCostConversion: OtherCostConversion })
     this.setState({ isOpenOtherCostDrawer: false, otherCostTableData: data, BasicPrice: checkForNull(netCost) })
     this.setState(prevState => ({ ...prevState, NetCostPlantCurrency: checkForNull(totalBase) + checkForNull(this.props.fieldsObj?.BasicRate) }))
     this.props.change("BasicPrice", checkForDecimalAndNull(netCost, getConfigurationKey().NoOfDecimalForPrice))
@@ -1865,7 +1856,7 @@ class AddBOPDomestic extends Component {
                                   />
                                 </div>
                                 <div className="d-flex align-items-center mb-2">
-                                  <button type="button" id="condition-cost-refresh" className={'refresh-icon mt-1 ml-1'} onClick={() => this.updateConditionCostValue()}>
+                                  <button type="button" id="condition-cost-refresh" className={'refresh-icon mt-1 ml-1'} onClick={() => this.updateConditionCostValue()} disabled={this.props.data.isViewMode}>
                                     <TooltipCustom disabledIcon={true} id="condition-cost-refresh" tooltipText="Refresh to update Condition cost" />
                                   </button>
                                   <Button
@@ -2172,7 +2163,7 @@ class AddBOPDomestic extends Component {
               anchor={'right'}
               rawMaterial={true}
               rmBasicRate={this.props.fieldsObj?.BasicRate}
-              ViewMode={this.state?.isViewFlag}
+              ViewMode={this.props.data.isViewMode}
               uom={this.state.UOM}
               isImport={false}
               plantCurrency={this.props?.fieldsObj?.plantCurrency}

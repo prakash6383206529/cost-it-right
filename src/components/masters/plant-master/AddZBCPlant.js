@@ -450,7 +450,7 @@ class AddZBCPlant extends Component {
                       component={searchableSelect}
                       placeholder={isViewMode ? '-' : "Select"}
                       options={this.selectType("Currency")}
-                      disabled={isViewMode || this.state.isAssociated}
+                      disabled={isViewMode || isEditFlag}
                       validate={
                         this.state.currency == null ||
                           this.state.currency.length === 0
