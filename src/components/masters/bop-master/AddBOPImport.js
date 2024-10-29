@@ -2148,7 +2148,7 @@ class AddBOPImport extends Component {
                                   />
                                 </div>
                                 <div className="d-flex align-items-center mb-2">
-                                  <button type="button" id="condition-cost-refresh" className={'refresh-icon ml-1'} onClick={() => this.updateConditionCostValue()}>
+                                  <button type="button" id="condition-cost-refresh" className={'refresh-icon ml-1'} onClick={() => this.updateConditionCostValue()} disabled={this.props.data.isViewMode}>
                                     <TooltipCustom disabledIcon={true} id="condition-cost-refresh" tooltipText="Refresh to update Condition cost" />
                                   </button>
                                   <Button

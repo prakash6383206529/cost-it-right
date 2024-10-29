@@ -1531,7 +1531,7 @@ function AddRMFinancialDetails(props) {
                                             />
                                         </div>
                                         <div className="d-flex align-items-center mt-1">
-                                            <button type="button" id="condition-cost-refresh" className={'refresh-icon mt-1 ml-1'} onClick={() => updateConditionCostValue()}>
+                                            <button type="button" id="condition-cost-refresh" className={'refresh-icon mt-1 ml-1'} onClick={() => updateConditionCostValue()} disabled={isViewFlag}>
                                                 <TooltipCustom disabledIcon={true} id="condition-cost-refresh" tooltipText="Refresh to update Condition cost" />
                                             </button>
                                             <Button
@@ -1611,7 +1611,7 @@ function AddRMFinancialDetails(props) {
                     anchor={'right'}
                     basicRateCurrency={state.NetCostWithoutConditionCost}
                     basicRateBase={state.NetCostWithoutConditionCost}
-                    ViewMode={((state.isEditFlag && state.isRMAssociated) || state.isViewFlag)}
+                    ViewMode={((state.isEditFlag && state.isRMAssociated) || isViewFlag)}
                     isFromMaster={true}
                     isFromImport={states.isImport}
                     EntryType={checkForNull(ENTRY_TYPE_DOMESTIC)}

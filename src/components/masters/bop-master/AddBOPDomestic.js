@@ -1234,7 +1234,6 @@ class AddBOPDomestic extends Component {
     return checkForNull(price) * checkForNull(currencyValue)
   }
   closeOtherCostToggle = (type, data, total, totalBase) => {
-    console.log('typessssssss: ', type);
 
     // setState(prevState => ({ ...prevState, isOpenOtherCostDrawer: false, otherCostTableData: data, totalOtherCost: totalBase }))
     if (type === 'Save') {
@@ -1865,7 +1864,7 @@ class AddBOPDomestic extends Component {
                                   />
                                 </div>
                                 <div className="d-flex align-items-center mb-2">
-                                  <button type="button" id="condition-cost-refresh" className={'refresh-icon mt-1 ml-1'} onClick={() => this.updateConditionCostValue()}>
+                                  <button type="button" id="condition-cost-refresh" className={'refresh-icon mt-1 ml-1'} onClick={() => this.updateConditionCostValue()} disabled={this.props.data.isViewMode}>
                                     <TooltipCustom disabledIcon={true} id="condition-cost-refresh" tooltipText="Refresh to update Condition cost" />
                                   </button>
                                   <Button
@@ -2172,7 +2171,7 @@ class AddBOPDomestic extends Component {
               anchor={'right'}
               rawMaterial={true}
               rmBasicRate={this.props.fieldsObj?.BasicRate}
-              ViewMode={this.state?.isViewFlag}
+              ViewMode={this.props.data.isViewMode}
               uom={this.state.UOM}
               isImport={false}
               plantCurrency={this.props?.fieldsObj?.plantCurrency}
