@@ -90,7 +90,7 @@ const {vendorLabel} = useLabels()
     }, [isClassification, isLpsRating]);
 
     const handlePlantCheck = (approvalTypeId) => {
-        
+
         if (selectedVendor && selectedPlant) {
             let obj = {};
             obj.DepartmentId = userDetails().DepartmentId;
@@ -100,7 +100,7 @@ const {vendorLabel} = useLabels()
             obj.approvalTypeId = approvalTypeId; // Access the approval type ID from the response
             obj.plantId = selectedPlant?.value ?? EMPTY_GUID;
             dispatch(checkFinalUser(obj, res => {
-                             if (res?.data?.Result) {
+                if (res?.data?.Result) {
                     const { IsUserInApprovalFlow, IsFinalApprover } = res?.data?.Data || {};
 
                     if ((IsUserInApprovalFlow === true && IsFinalApprover === true) || (IsUserInApprovalFlow === false && IsFinalApprover === false)) {
@@ -184,38 +184,39 @@ const {vendorLabel} = useLabels()
 
 
     const handleNext = () => {
-        if(! getConfigurationKey().IsDivisionAllowedForDepartment )
-    {    dispatch(getUsersOnboardingLevelAPI(loggedInUserId(), (res) => {
+        if (!getConfigurationKey().IsDivisionAllowedForDepartment) {
+            dispatch(getUsersOnboardingLevelAPI(loggedInUserId(), (res) => {
 
-            //When user is not in any approval flow
-            if (res.status === 204 && res?.data === '') {
+                //When user is not in any approval flow
+                if (res.status === 204 && res?.data === '') {
 
-                Toaster.warning('User is not in any approval flow');
-                return false;
-            }
-            let approvalTypeIds = Array?.from(res?.data?.Data?.OnboardingApprovalLevels.values(), level => level.ApprovalTypeId);
-            if (approvalTypeIds?.length === 0 || !res?.data?.Data?.OnboardingApprovalLevels?.length || res?.data?.Data?.OnboardingApprovalLevels?.length === 0) {
-                setShowApproval(false)
-                Toaster.warning('User is not in the approval flow');
-                return false;
-            }
+                    Toaster.warning('User is not in any approval flow');
+                    return false;
+                }
+                let approvalTypeIds = Array?.from(res?.data?.Data?.OnboardingApprovalLevels.values(), level => level.ApprovalTypeId);
+                if (approvalTypeIds?.length === 0 || !res?.data?.Data?.OnboardingApprovalLevels?.length || res?.data?.Data?.OnboardingApprovalLevels?.length === 0) {
+                    setShowApproval(false)
+                    Toaster.warning('User is not in the approval flow');
+                    return false;
+                }
 
-            let checkedApproval = [];
-            if (isClassification && isLpsRating) {
+                let checkedApproval = [];
+                if (isClassification && isLpsRating) {
 
-                checkedApproval.push(CLASSIFICATIONAPPROVALTYPEID, LPSAPPROVALTYPEID)
-                handleCombinedApproval(approvalTypeIds, res, checkedApproval);
-            } else if (isClassification || isLpsRating) {
+                    checkedApproval.push(CLASSIFICATIONAPPROVALTYPEID, LPSAPPROVALTYPEID)
+                    handleCombinedApproval(approvalTypeIds, res, checkedApproval);
+                } else if (isClassification || isLpsRating) {
 
-                checkedApproval.push(isClassification ? CLASSIFICATIONAPPROVALTYPEID : LPSAPPROVALTYPEID)
-                const similarApprovals = checkedApproval.filter(approval => approvalTypeIds.includes(approval));
+                    checkedApproval.push(isClassification ? CLASSIFICATIONAPPROVALTYPEID : LPSAPPROVALTYPEID)
+                    const similarApprovals = checkedApproval.filter(approval => approvalTypeIds.includes(approval));
 
-                handleSingleApproval(similarApprovals, res, checkedApproval);
-            } else {
-                Toaster.warning(`User is not in the approval flow for ${isClassification === CLASSIFICATIONAPPROVALTYPEID ? 'LPS Rating' : 'Classification'}`);
-            }
-        }));}
-        else{
+                    handleSingleApproval(similarApprovals, res, checkedApproval);
+                } else {
+                    Toaster.warning(`User is not in the approval flow for ${isClassification === CLASSIFICATIONAPPROVALTYPEID ? 'LPS Rating' : 'Classification'}`);
+                }
+            }));
+        }
+        else {
             setCanGoForApproval(true);
             setShowApproval(true);
             setShouldMakeApiCalls(true);
@@ -277,7 +278,7 @@ const {vendorLabel} = useLabels()
                 obj.approvalTypeId = details?.ApprovalTypeId; // Access the approval type ID from the response
                 obj.plantId = deviationData?.PlantId ?? EMPTY_GUID;
                 dispatch(checkFinalUser(obj, res => {
-                   
+
                     finalUserResponses?.push({ ...res?.data?.Data, type: details?.ApprovalTypeId === LPSAPPROVALTYPEID ? "lps" : "classification" });
                     let tempArr = _.filter(finalUserResponses, ['IsUserInApprovalFlow', true], ['IsFinalApprover', false]);
                     // if (res?.data?.Result) {
@@ -319,22 +320,22 @@ const {vendorLabel} = useLabels()
     };
 
     const handleClassificationCheckboxChange = (e) => {
-        if (e.target.checked && ! getConfigurationKey().IsDivisionAllowedForDepartment ) {
+        if (e.target.checked && !getConfigurationKey().IsDivisionAllowedForDepartment) {
             handlePlantCheck(CLASSIFICATIONAPPROVALTYPEID);
         }
-        else{
-          
+        else {
+
             setSubmit(false)
         }
     };
 
     const handleLpsRatingCheckboxChange = (e) => {
-        if (e.target.checked&& ! getConfigurationKey().IsDivisionAllowedForDepartment ) {
+        if (e.target.checked && !getConfigurationKey().IsDivisionAllowedForDepartment) {
             handlePlantCheck(LPSAPPROVALTYPEID);
         }
-        else{
-               setSubmit
-            (false)
+        else {
+            setSubmit
+                (false)
         }
     };
 

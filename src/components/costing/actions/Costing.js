@@ -3081,8 +3081,10 @@ export function getExternalIntegrationEvaluationType(data, callback) {
         callback(response)
       }
     }).catch((error) => {
-      dispatch({ type: API_FAILURE })
+      dispatch({ type: GET_SAP_EVALUATIONTYPE, payload: [] })
+      callback(error)
       apiErrors(error)
     })
+
   }
 }
