@@ -11,6 +11,7 @@ export default function OtherDiscountTable(props) {
     const { tableData } = props
     const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
     const CostingViewMode = useContext(ViewCostingContext);
+    const { currencySource } = useSelector((state) => state?.costing);
     // const [state, setState] = useState({
     //     gridData: props.gridData.length !== 0 ? props.gridData : [],
     // })
@@ -23,7 +24,7 @@ export default function OtherDiscountTable(props) {
                         <th>{`Description`}</th>
                         {/* <th>{`Other Cost Type`}</th> */}
                         <th>{`Applicability`}</th>
-                        <th>{`Applicability (${reactLocalStorage.getObject("baseCurrency")})`}</th>
+                        <th>{`Applicability (${currencySource?.label ?? "Currency"})`}</th>
                         <th>{'Percentage (%)'}</th>
                         <th>{`Cost`}</th>
                         {!CostingViewMode && <th className='text-right'>{`Action`}</th>}
@@ -68,7 +69,7 @@ export default function OtherDiscountTable(props) {
                     ) : (
                         <tr className='table-footer'>
                             <td colSpan={initialConfiguration.IsShowCRMHead ? 5 : 4} className='text-right'>
-                                Total Discount Cost ({reactLocalStorage.getObject("baseCurrency")}):
+                                Total Discount Cost (${currencySource?.label ?? "Currency"})):
                             </td>
                             <td colSpan={3}>
                                 {checkForDecimalAndNull(tableData.otherCostTotal, initialConfiguration.NoOfDecimalForPrice)}

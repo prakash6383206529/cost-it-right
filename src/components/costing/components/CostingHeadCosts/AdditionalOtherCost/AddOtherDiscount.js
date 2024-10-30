@@ -38,7 +38,7 @@ function AddOtherDiscount(props) {
     const [applicabilityCost, setApplicabilityCost] = useState('')
     const dispatch = useDispatch()
     const { CostingDataList, isBreakupBoughtOutPartCostingFromAPI, OverheadProfitTabData, PackageAndFreightTabData, DiscountCostData } = useSelector(state => state.costing)
-
+    const { currencySource } = useSelector((state) => state?.costing);
     const fieldValuesForPercent = useWatch({
         control,
         name: ['PercentageOtherCost', 'OtherCostApplicability'],
@@ -493,7 +493,7 @@ function AddOtherDiscount(props) {
                                     {
                                         <Col md="4">
                                             <TextFieldHookForm
-                                                label={`Applicability Cost (${reactLocalStorage.getObject("baseCurrency")})`}
+                                                label={`Applicability Cost (${currencySource?.label ?? "Currency"})`}
                                                 name={`ApplicabilityCost`}
                                                 Controller={Controller}
                                                 control={control}

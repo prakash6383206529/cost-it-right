@@ -48,7 +48,7 @@ function ViewBOP(props) {
                 {checkTechnologyIdAndRfq(viewCostingData) && <th>{`${showBopLabel()} Updated Part Name`}</th>}
 
                 <th>{`Currency`}</th>
-                <th>{`Landed Cost (${reactLocalStorage.getObject("baseCurrency")})`}</th>
+                <th>{`Landed Cost `}</th>
                 <th>{`Quantity`}</th>
                 <th className={initialConfiguration.IsShowCRMHead ? "" : 'costing-border-right'}>{`Net ${showBopLabel()} Cost`}</th>
                 {initialConfiguration.IsShowCRMHead && <th className="costing-border-right">{`CRM Head`}</th>}

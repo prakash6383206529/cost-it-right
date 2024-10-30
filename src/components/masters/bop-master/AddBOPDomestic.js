@@ -1239,12 +1239,12 @@ class AddBOPDomestic extends Component {
     }
     const netCost = checkForNull(totalBase) + checkForNull(this.props.fieldsObj?.BasicRate)
     this.setState({ isOpenOtherCostDrawer: true })
-    this.props.change('OtherCost', totalBase)
+    this.props.change('OtherCost', total)
     this.setState({ isOpenOtherCostDrawer: false, otherCostTableData: data })
     this.setState({ isOpenOtherCostDrawer: false, otherCostTableData: data, BasicPrice: checkForNull(netCost) })
     this.setState(prevState => ({ ...prevState, NetCostPlantCurrency: checkForNull(totalBase) + checkForNull(this.props.fieldsObj?.BasicRate) }))
     this.props.change("BasicPrice", checkForDecimalAndNull(netCost, getConfigurationKey().NoOfDecimalForPrice))
-    this.setState({ totalOtherCost: totalBase }, () => {
+    this.setState({ totalOtherCost: total }, () => {
       this.handleCalculation()
     })
   }

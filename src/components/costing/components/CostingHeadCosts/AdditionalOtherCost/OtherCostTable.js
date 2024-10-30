@@ -11,6 +11,7 @@ const OtherCostTable = (props) => {
     const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
     const CostingViewMode = useContext(ViewCostingContext);
     const { gridData, otherCostTotal } = props.tableData
+    const { currencySource } = useSelector((state) => state?.costing);
     return <>
         <Col md="12" className="mb-2">
             <Table className="table mb-0 forging-cal-table" size="sm">
@@ -20,7 +21,7 @@ const OtherCostTable = (props) => {
                         <th>{`Other Cost Description`}</th>
                         {/* <th>{`Other Cost Type`}</th> */}
                         <th>{`Other Cost Applicability`}</th>
-                        <th>{`Cost Applicability (${reactLocalStorage.getObject("baseCurrency")})`}</th>
+                        <th>{`Cost Applicability (${currencySource?.label ?? "Currency"})`}</th>
                         <th>{'Percentage (%)'}</th>
                         <th>{`Cost`}</th>
                         {!CostingViewMode && <th className='text-right'>{`Action`}</th>}
@@ -66,7 +67,7 @@ const OtherCostTable = (props) => {
                     ) : (
                         <tr className='table-footer'>
                             <td colSpan={initialConfiguration.IsShowCRMHead ? 5 : 4} className='text-right'>
-                                Total Other Cost ({reactLocalStorage.getObject("baseCurrency")}):
+                                Total Other Cost (${currencySource?.label ?? "Currency"}):
                             </td>
                             <td colSpan={3}>
                                 {checkForDecimalAndNull(otherCostTotal, initialConfiguration.NoOfDecimalForPrice)}

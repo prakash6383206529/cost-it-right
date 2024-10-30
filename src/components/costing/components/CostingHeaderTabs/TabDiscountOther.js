@@ -126,6 +126,7 @@ function TabDiscountOther(props) {
     loaderTimeline: false,
   })
   const [taxCode, setTaxCode] = useState('')
+  const [isShowValuationType, setIsShowValuationType] = useState(false)
   const taxCodeList = useSelector(state => state.comman.taxCodeList)
 
   const npvDrawerCondition = (
@@ -149,7 +150,7 @@ function TabDiscountOther(props) {
   const [paymentTermsWarning, setPaymentTermsWarning] = useState(false)
   const { getCostingPaymentDetails } = useSelector(state => state.costing);
   const { evaluationType } = useSelector((state) => state?.costing)
-
+  const { currencySource } = useSelector((state) => state?.costing);
 
   const SAPData = useSelector(state => state.approval.SAPObj)
 
@@ -193,7 +194,7 @@ function TabDiscountOther(props) {
   useEffect(() => {
     let request = partType ? 'multiple technology assembly' : ''
     dispatch(fetchCostingHeadsAPI(request, false, (res) => { }))
-    if (getConfigurationKey().IsSAPConfigured) {
+    if (getConfigurationKey().IsSAPConfigured && isShowValuationType) {
 
       let data = {
         plantCode: costData?.PlantCode,
@@ -428,7 +429,9 @@ function TabDiscountOther(props) {
 
 
   useEffect(() => {
-    dispatch(getCurrencySelectList(() => { }))
+    if (props.activeTab === '6') {
+      dispatch(getCurrencySelectList(() => { }))
+    }
     return () => {
       reactLocalStorage.setObject('isFromDiscountObj', false)
       setNfrListing(false)
@@ -2099,7 +2102,7 @@ function TabDiscountOther(props) {
                       <Col md="3">
                         <TooltipCustom disabledIcon={true} width="280px" id="basic-rate" tooltipText={`Basic Price = (Total Cost + Total Other Cost - ${discountLabel} Value)  ${initialConfiguration?.IsAddPaymentTermInNetCost ? "+ Payment Terms Cost" : ""}`} />
                         <TextFieldHookForm
-                          label={`Basic Price (${reactLocalStorage.getObject("baseCurrency")})`}
+                          label={`Basic Price (${currencySource?.label ?? "Currency"})`}
                           name={'BasicRateINR'}
                           Controller={Controller}
                           id="basic-rate"
@@ -2167,7 +2170,7 @@ function TabDiscountOther(props) {
                     <TooltipCustom disabledIcon={true} width="280px" id="net-po-price" tooltipText={`Net Cost = ${initialConfiguration?.IsBasicRateAndCostingConditionVisible ? 'Basic Rate + Total Costing Condition Cost' : `(Total Cost + Total Other Cost - ${discountLabel} Value ${initialConfiguration?.IsAddPaymentTermInNetCost ? " + Payment Terms Cost" : ""})  `}`} />
                     <Col md="3">
                       <TextFieldHookForm
-                        label={`Net Cost (${reactLocalStorage.getObject("baseCurrency")})`}
+                        label={`Net Cost (${currencySource?.label ?? "Currency"})`}
                         name={'NetPOPriceINR'}
                         Controller={Controller}
                         id="net-po-price"
@@ -2221,7 +2224,7 @@ function TabDiscountOther(props) {
                           />
                         </Col></>}
                     {
-                      getConfigurationKey().IsSAPConfigured &&
+                      getConfigurationKey().IsSAPConfigured && isShowValuationType &&
                       <Col md={"2"}>
                         <SearchableSelectHookForm
                           label={"Valuation Type"}

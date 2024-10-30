@@ -53,6 +53,7 @@ function OtherCostDrawer(props) {
     const [editIndex, setEditIndex] = useState('')
     const [otherCost, setOtherCost] = useState('')
     const [applicabilityCost, setApplicabilityCost] = useState('')
+    const { currencySource } = useSelector((state) => state?.costing);
     // partType USED FOR MANAGING CONDITION IN CASE OF NORMAL COSTING AND ASSEMBLY TECHNOLOGY COSTING (TRUE FOR ASSEMBLY TECHNOLOGY)
     const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId)
     const fieldValuesForPercent = useWatch({
@@ -532,7 +533,7 @@ function OtherCostDrawer(props) {
                                     {
                                         <Col md="4">
                                             <TextFieldHookForm
-                                                label={`Applicability Cost (${reactLocalStorage.getObject("baseCurrency")})`}
+                                                label={`Applicability Cost (${currencySource?.label ?? "Currency"})`}
                                                 name={`ApplicabilityCost`}
                                                 Controller={Controller}
                                                 control={control}
