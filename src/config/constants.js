@@ -3129,7 +3129,7 @@ export const typeData = [
 ];
 
 export const LANGUAGES = [
-  { value: 'en-US', label: 'English - EN', },
+  { value: 'en', label: 'English - EN', },
   { value: 'hi', label: 'हिन्दी - HI', },
   { value: 'mr', label: 'मराठी - MR', },
 ]

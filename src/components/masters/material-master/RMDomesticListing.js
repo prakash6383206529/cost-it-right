@@ -36,7 +36,7 @@ import { Steps } from '../../common/Tour/TourMessages';
 import { useTranslation } from 'react-i18next';
 import BulkUpload from '../../massUpload/BulkUpload';
 import RfqMasterApprovalDrawer from './RfqMasterApprovalDrawer';
-import { useLabels, useWithLocalization } from '../../../helper/core';
+import { localizeHeadersWithLabels, useLabels, useLocalizedHeaders, useWithLocalization } from '../../../helper/core';
 import CostingHeadDropdownFilter from './CostingHeadDropdownFilter';
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -83,8 +83,10 @@ function RMDomesticListing(props) {
     const [viewAttachment, setViewAttachment] = useState([])
     const [showExtraData, setShowExtraData] = useState(false)
     const [render, setRender] = useState(false)
-    const { t } = useTranslation("common")
+
+    const { t } = useTranslation("MasterLabel")
     const { technologyLabel, RMCategoryLabel, vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels();
+   
     const [compareDrawer, setCompareDrawer] = useState(false)
     const [rowDataForCompare, setRowDataForCompare] = useState([])
     const isRfq = props?.quotationId !== null || props?.quotationId !== '' || props?.quotationId !== undefined ? true : false
@@ -715,7 +717,7 @@ function RMDomesticListing(props) {
         }
 
     }
-    const RMDOMESTIC_DOWNLOAD_EXCEl_LOCALIZATION = useWithLocalization(RMDOMESTIC_DOWNLOAD_EXCEl, "MasterLabels")
+    const RMDOMESTIC_DOWNLOAD_EXCEl_LOCALIZATION = useLocalizedHeaders(RMDOMESTIC_DOWNLOAD_EXCEl)
     const onBtExport = () => {
         let tempArr = []
         //tempArr = gridApi && gridApi?.getSelectedRows()
