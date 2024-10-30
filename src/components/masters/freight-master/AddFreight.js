@@ -731,9 +731,6 @@ class AddFreight extends Component {
     );
 
     this.setState({ AddUpdate: false, errorObj: { rate: false } })
-    this.props.change("Rate", ''),
-      this.props.change("RateConversion", ''),
-      this.props.change("RateLocalConversion", '')
   };
   /**
    * @method resetGridData
