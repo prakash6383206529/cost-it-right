@@ -336,7 +336,8 @@ function AddRMMaster(props) {
         let machiningRateBaseCurrency = ''
         let scrapRateInr = ''
         let scrapRateLocalConversion = ''
-        const { states: { showScrapKeys } } = rawMaterailDetails
+        const { states: { showScrapKeys, totalOtherCost } } = rawMaterailDetails
+        const NetCostWithoutConditionCost = checkForNull(values?.BasicRate) + checkForNull(totalOtherCost)
         const Plants = values.Plants
         if (showScrapKeys?.showCircleJali) {
             scrapRate = values?.JaliScrapCost
@@ -428,9 +429,9 @@ function AddRMMaster(props) {
             "NetConditionCost": rawMaterailDetails?.states?.NetConditionCost,
             "NetConditionCostLocalConversion": state?.isImport ? convertIntoCurrency(rawMaterailDetails?.states?.NetConditionCost, exchangeRateDetails?.LocalCurrencyExchangeRate) : rawMaterailDetails?.states?.NetConditionCost,
             "NetConditionCostConversion": state?.isImport ? convertIntoCurrency(rawMaterailDetails?.states?.NetConditionCost, exchangeRateDetails?.CurrencyExchangeRate) : convertIntoCurrency(rawMaterailDetails?.states?.NetConditionCost, exchangeRateDetails?.LocalCurrencyExchangeRate),
-            "NetCostWithoutConditionCost": rawMaterailDetails?.states?.NetCostWithoutConditionCost ?? values?.BasicRate,
-            "NetCostWithoutConditionCostLocalConversion": state?.isImport ? convertIntoCurrency(rawMaterailDetails?.states?.NetCostWithoutConditionCost, exchangeRateDetails?.LocalCurrencyExchangeRate) : rawMaterailDetails?.states?.NetCostWithoutConditionCost ?? state?.isImport ? convertIntoCurrency(values?.BasicRate, exchangeRateDetails?.LocalCurrencyExchangeRate) : values?.BasicRate,
-            "NetCostWithoutConditionCostConversion": state?.isImport ? convertIntoCurrency(rawMaterailDetails?.states?.NetCostWithoutConditionCost, exchangeRateDetails?.CurrencyExchangeRate) : convertIntoCurrency(rawMaterailDetails?.states?.NetCostWithoutConditionCost, exchangeRateDetails?.LocalCurrencyExchangeRate) ?? state?.isImport ? convertIntoCurrency(values?.BasicRate, exchangeRateDetails?.CurrencyExchangeRate) : convertIntoCurrency(values?.BasicRate, exchangeRateDetails?.LocalCurrencyExchangeRate),
+            "NetCostWithoutConditionCost": rawMaterailDetails?.states?.NetCostWithoutConditionCost ?? NetCostWithoutConditionCost,
+            "NetCostWithoutConditionCostLocalConversion": state?.isImport ? convertIntoCurrency(rawMaterailDetails?.states?.NetCostWithoutConditionCost ?? NetCostWithoutConditionCost, exchangeRateDetails?.LocalCurrencyExchangeRate) : rawMaterailDetails?.states?.NetCostWithoutConditionCost ?? NetCostWithoutConditionCost,
+            "NetCostWithoutConditionCostConversion": state?.isImport ? convertIntoCurrency(rawMaterailDetails?.states?.NetCostWithoutConditionCost ?? NetCostWithoutConditionCost, exchangeRateDetails?.CurrencyExchangeRate) : convertIntoCurrency(rawMaterailDetails?.states?.NetCostWithoutConditionCost ?? NetCostWithoutConditionCost, exchangeRateDetails?.LocalCurrencyExchangeRate),
             "NetLandedCost": rawMaterailDetails?.states?.NetLandedCost,
             "NetLandedCostLocalConversion": state?.isImport ? convertIntoCurrency(rawMaterailDetails?.states?.NetLandedCost, exchangeRateDetails?.LocalCurrencyExchangeRate) : rawMaterailDetails?.states?.NetLandedCost,
             "NetLandedCostConversion": state?.isImport ? convertIntoCurrency(rawMaterailDetails?.states?.NetLandedCost, exchangeRateDetails?.CurrencyExchangeRate) : convertIntoCurrency(rawMaterailDetails?.states?.NetLandedCost, exchangeRateDetails?.LocalCurrencyExchangeRate),
@@ -474,6 +475,7 @@ function AddRMMaster(props) {
             "VendorName": state.costingTypeId === VBCTypeId ? !state.isEditFlag ? getNameBySplitting(rawMaterailDetails?.Vendor?.label) : getNameBySplitting(values?.Vendor?.label) : '',
             "VendorPlant": []
         }
+
         let financialDataNotChanged = (checkForNull(values.cutOffPrice) === checkForNull(DataToChange?.CutOffPrice)) && (checkForNull(values.BasicRate) === checkForNull(DataToChange?.BasicRatePerUOM)) && rawMaterailDetails?.states?.IsApplyHasDifferentUOM === DataToChange?.IsScrapUOMApply
             && checkForNull(values?.ConversionRatio) === checkForNull(DataToChange?.UOMToScrapUOMRatio) && checkForNull(values?.ScrapRatePerScrapUOM) === checkForNull(DataToChange?.ScrapRatePerScrapUOM) && (checkForNull(values.OtherCost) === checkForNull(DataToChange?.OtherNetCost))
             && (checkForNull(values.CircleScrapCost) === checkForNull(DataToChange?.JaliScrapCost)) && (checkForNull(values.MachiningScrap) === checkForNull(DataToChange?.MachiningScrapRate))

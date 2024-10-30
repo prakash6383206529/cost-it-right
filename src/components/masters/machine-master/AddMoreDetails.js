@@ -143,7 +143,7 @@ class AddMoreDetails extends Component {
       labourDetailId: '',
       IsIncludeMachineRateDepreciation: false,
       powerIdFromAPI: EMPTY_GUID,
-      finalApprovalLoader: getConfigurationKey().IsDivisionAllowedForDepartment ? false : true,
+      finalApprovalLoader: getConfigurationKey().IsDivisionAllowedForDepartment || getConfigurationKey().IsMasterApprovalAppliedConfigure ? false : true,
       showPopup: false,
       levelDetails: {},
       selectedCustomer: editDetails.selectedCustomer ?? [],

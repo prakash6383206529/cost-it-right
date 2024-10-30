@@ -3275,6 +3275,7 @@ export const effectiveDateRangeDays = null
 export const COMMODITYCOST = 'Commodity Cost'
 export const RAWMATERIALCOST = 'Raw Material Other Cost'
 export const COSTINGCONDITIONCOST = 'Costing Condition Cost'
+export const IsSelectSinglePlant = true
 
 //VERSION 
 export const VERSION = "V3.1.27";

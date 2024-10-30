@@ -114,7 +114,7 @@ class AddMachineRate extends Component {
         processUOM: false,
         machineRate: false
       },
-      finalApprovalLoader: getConfigurationKey().IsDivisionAllowedForDepartment ? false : true,
+      finalApprovalLoader: getConfigurationKey().IsDivisionAllowedForDepartment || getConfigurationKey().IsMasterApprovalAppliedConfigure ? false : true,
       costingTypeId: ZBCTypeId,
       levelDetails: {},
       vendorFilterList: [],
@@ -258,7 +258,7 @@ class AddMachineRate extends Component {
             client.value,
             false,
             to,
-            ExchangeSource?.label??null,
+            ExchangeSource?.label ?? null,
             res => {
               resolveAPI({
                 rate: checkForNull(res.data.Data.CurrencyExchangeRate),

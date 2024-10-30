@@ -1,6 +1,6 @@
 import React, { Fragment, useEffect, useRef, useState } from "react"
 import { fetchSpecificationDataAPI, getCityByCountry, getPlantSelectListByType, getRawMaterialCategory, getVendorNameByVendorSelectList, getExchangeRateSource } from "../../../actions/Common"
-import { CBCTypeId, FILE_URL, RAW_MATERIAL_VENDOR_TYPE, RM_MASTER_ID, SPACEBAR, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, searchCount } from "../../../config/constants"
+import { CBCTypeId, FILE_URL, IsSelectSinglePlant, RAW_MATERIAL_VENDOR_TYPE, RM_MASTER_ID, SPACEBAR, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, searchCount } from "../../../config/constants"
 import { useDispatch, useSelector } from "react-redux"
 import { getCostingSpecificTechnology } from "../../costing/actions/Costing"
 import { CheckApprovalApplicableMaster, getConfigurationKey, loggedInUserId } from "../../../helper"
@@ -786,7 +786,7 @@ function AddRMDetails(props) {
                                     options={renderListing("plant")}
                                     defaultValue={state.plants}
                                     handleChange={handlePlants}
-                                    isMulti={(states.costingTypeId === ZBCTypeId && !getConfigurationKey().IsMultipleUserAllowForApproval) ? true : false}
+                                    isMulti={(states.costingTypeId === ZBCTypeId && (!getConfigurationKey().IsMultipleUserAllowForApproval || IsSelectSinglePlant)) ? true : false}
                                     disabled={isEditFlag || isViewFlag}
                                     errors={errors.Plants}
                                 />

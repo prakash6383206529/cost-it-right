@@ -13,7 +13,7 @@ import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import AddUOM from '../uom-master/AddUOM';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
-import { FILE_URL, ZBC, OPERATIONS_ID, EMPTY_GUID, SPACEBAR, VBCTypeId, CBCTypeId, ZBCTypeId, searchCount, VBC_VENDOR_TYPE, ENTRY_TYPE_IMPORT, ENTRY_TYPE_DOMESTIC } from '../../../config/constants';
+import { FILE_URL, ZBC, OPERATIONS_ID, EMPTY_GUID, SPACEBAR, VBCTypeId, CBCTypeId, ZBCTypeId, searchCount, VBC_VENDOR_TYPE, ENTRY_TYPE_IMPORT, ENTRY_TYPE_DOMESTIC, IsSelectSinglePlant } from '../../../config/constants';
 import { AcceptableOperationUOM, LOGISTICS } from '../../../config/masterData'
 import DayTime from '../../common/DayTimeWrapper'
 import imgRedcross from '../../../assests/images/red-cross.png';
@@ -172,7 +172,7 @@ class AddOperation extends Component {
             client.value,
             false,
             to,
-            ExchangeSource?.label??null,
+            ExchangeSource?.label ?? null,
             res => {
               if (Object.keys(res.data.Data).length === 0) {
                 this.setState({ showWarning: true });
@@ -1428,7 +1428,7 @@ class AddOperation extends Component {
 
                     <Row>
                       {/* might use later */}
-                      {(costingTypeId === ZBCTypeId && !initialConfiguration.IsMultipleUserAllowForApproval) && (
+                      {(costingTypeId === ZBCTypeId && (!initialConfiguration.IsMultipleUserAllowForApproval || IsSelectSinglePlant)) && (
                         <Col md="3">
                           <Field
                             label="Plant (Code)"

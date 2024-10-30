@@ -588,7 +588,6 @@ function AddRMFinancialDetails(props) {
         }
 
     };
-
     const handleFrequencyChange = (selectedOption) => {
         if (selectedOption && selectedOption !== '') {
             setState(prevState => ({
