@@ -792,7 +792,6 @@ class AddLabour extends Component {
     const { handleSubmit, initialConfiguration, t } = this.props;
     const { isEditFlag, isOpenMachineType, isViewMode, setDisable, gridTable, isEditMode, costingTypeId } = this.state;
     const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
-console.log(VendorLabel);
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
       if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
