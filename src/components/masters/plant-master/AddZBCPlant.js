@@ -8,7 +8,7 @@ import { focusOnError, renderText, renderTextInputField, searchableSelect } from
 import { createPlantAPI, getPlantUnitAPI, updatePlantAPI, getComapanySelectList } from '../actions/Plant';
 import {
   fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, fetchSupplierCityDataAPI,
-  getCityByCountry, getCurrencySelectList,
+  getCityByCountry,
   getCityByCountryAction
 } from '../../../actions/Common';
 import Toaster from '../../common/Toaster';
@@ -21,6 +21,7 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from './TourMessages';
 import { withTranslation } from 'react-i18next';
+import { getCurrencySelectList } from '../actions/ExchangeRateMaster';
 class AddZBCPlant extends Component {
   constructor(props) {
     super(props);
@@ -52,7 +53,7 @@ class AddZBCPlant extends Component {
   componentDidMount() {
     if (!(this.props.isEditFlag || this.props.isViewMode)) {
       this.props.fetchCountryDataAPI(() => { })
-      this.props.getCurrencySelectList(() => { })
+      this.props.getCurrencySelectList(true, () => { })
     }
     if (this.props.initialConfiguration.IsCompanyConfigureOnPlant) {
       this.props.getComapanySelectList(() => { })
@@ -682,10 +683,11 @@ class AddZBCPlant extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ comman, plant, auth }) {
-  const { countryList, stateList, cityList, currencySelectList } = comman;
+function mapStateToProps({ comman, plant, exchangeRate, auth }) {
+  const { countryList, stateList, cityList } = comman;
   const { plantUnitDetail, companySelectList } = plant;
   const { initialConfiguration } = auth
+  const { currencySelectList } = exchangeRate;
 
   let initialValues = {};
   if (plantUnitDetail && plantUnitDetail !== undefined) {

@@ -2,7 +2,7 @@ import React, { Fragment, useEffect, useRef, useState } from "react"
 import { Row, Col, Label } from 'reactstrap';
 import AddRMDetails from "./AddRMDetails"
 import AddRMFinancialDetails from "./AddRMFinancialDetails"
-import { CBCTypeId, EMPTY_GUID, ENTRY_TYPE_DOMESTIC, ENTRY_TYPE_IMPORT, RM_MASTER_ID, VBCTypeId, ZBCTypeId } from "../../../config/constants"
+import { CBCTypeId, EMPTY_GUID, ENTRY_TYPE_DOMESTIC, ENTRY_TYPE_IMPORT, IsSelectSinglePlant, RM_MASTER_ID, VBCTypeId, ZBCTypeId } from "../../../config/constants"
 import { getCommodityIndexRateAverage } from '../../../../src/actions/Common';
 import { convertIntoCurrency, costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission } from "../../common/CommonFunctions"
 import { reactLocalStorage } from "reactjs-localstorage"
@@ -373,7 +373,7 @@ function AddRMMaster(props) {
         }
 
         let plantArray = []
-        if ((state.costingTypeId === ZBCTypeId && !getConfigurationKey().IsMultipleUserAllowForApproval) || state.isEditFlag) {
+        if ((state.costingTypeId === ZBCTypeId && !getConfigurationKey().IsMultipleUserAllowForApproval && !IsSelectSinglePlant) || state.isEditFlag) {
             Plants && Plants.map((item) => {
                 plantArray.push({ PlantName: item.label, PlantId: item.value, PlantCode: '', })
                 return plantArray
