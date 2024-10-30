@@ -99,10 +99,10 @@ const getLocalizedLabelMap = (t) => {
   console.log("allLabels:", allLabels);
 
   const labelMap = {};
-  Object.entries(allLabels.MasterLabels || {}).forEach(([key, value]) => {
+  Object.entries(allLabels.MasterLabels ? allLabels.MasterLabels : DefaultLocalizationLabel).forEach(([key, value]) => {
     if (key.includes('Label')) {
       const simplifiedKey = key.replace('Label', '');
-      labelMap[simplifiedKey] = t(key, { defaultValue: DefaultLocalizationLabel[key] });
+      labelMap[simplifiedKey] = t(key);
     }
   });
 
@@ -122,7 +122,6 @@ const applyLabelMap = (headers, labelMap) => {
 
 export const localizeHeadersWithLabels = (headers, t) => {
   const labelMap = getLocalizedLabelMap(t);
-  console.log("labelMap:", labelMap);
   return applyLabelMap(headers, labelMap);
 };
 

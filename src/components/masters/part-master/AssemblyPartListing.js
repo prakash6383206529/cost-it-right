@@ -389,7 +389,7 @@ const AssemblyPartListing = React.memo((props) => {
       }));
     }
   }, [state.gridApi]);
-const ASSEMBLYPART_DOWNLOAD_EXCEL_LOCALIZATION = useWithLocalization(ASSEMBLYPART_DOWNLOAD_EXCEl, "MasterLabels")
+  const ASSEMBLYPART_DOWNLOAD_EXCEL_LOCALIZATION = useWithLocalization(ASSEMBLYPART_DOWNLOAD_EXCEl, "MasterLabels")
   const onBtExport = useCallback(() => {
     // Use the selectedRowData for export
     const tempArr = selectedRowData.length > 0 ? selectedRowData : tableData;
@@ -407,13 +407,29 @@ const ASSEMBLYPART_DOWNLOAD_EXCEL_LOCALIZATION = useWithLocalization(ASSEMBLYPAR
     temp =
       TempData &&
       TempData.map((item) => {
-        if (item.Technology === "-") {
-          item.Technology = " ";
-        }
+        let newItem = { ...item };
+        const defaultValues = {
+          ECNNumber: " ",
+          RevisionNumber: " ",
+          DrawingNumber: " ",
+          Technology: " ",
+        };
+
+        // Assign default values if necessary
+        Object.keys(defaultValues).forEach(key => {
+          if (item[key] === null || item[key] === "-") {
+            newItem[key] = defaultValues[key];
+          }
+        });
+
+        // Format dates if they are not empty
         if (item.EffectiveDate?.includes("T")) {
-          item.EffectiveDate = DayTime(item.EffectiveDate).format("DD/MM/YYYY");
+          newItem.EffectiveDate = DayTime(item.EffectiveDate).format("DD/MM/YYYY");
         }
-        return item;
+        // Set IsActive status
+        newItem.IsActive = item.IsActive ? 'Active' : 'Inactive';
+
+        return newItem;
       });
     return (
       <ExcelSheet data={temp} name={AssemblyPart}>
