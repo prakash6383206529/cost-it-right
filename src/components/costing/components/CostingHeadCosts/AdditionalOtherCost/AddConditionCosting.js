@@ -33,7 +33,7 @@ function AddConditionCosting(props) {
     const [costingConditionEntryType, setCostingConditionEntryType] = useState(props?.costingConditionEntryType)
     const [availableApplicabilities, setAvailableApplicabilities] = useState(["Basic Price"]);
     const [state, setState] = useState({
-        Applicability: false,
+        Applicability: '',
         disableApplicability: true,
         disableType: true,
         ApplicabilityCost: 0
@@ -177,7 +177,7 @@ function AddConditionCosting(props) {
         }
         return cssClass
     }
-    const onConditionChange = (e) => {
+    const onConditionChange = (e, isType = false) => {
         setType({ label: e?.ConditionType, value: e?.ConditionType })
         setValue('Type', { label: e?.ConditionType, value: e?.ConditionType })
         setValue('Percentage', '')
@@ -191,9 +191,9 @@ function AddConditionCosting(props) {
             setDisableBase(false)
             setDisableAllFields(true)
             setValue('Percentage', '')
-            setState(prevState => ({ ...prevState, disableType: true }));
+            setState(prevState => ({ ...prevState, disableType: isType ? false : true }));
         } else if (e?.ConditionType === 'Percentage') {
-            setState(prevState => ({ ...prevState, disableApplicability: false, disableType: true }));
+            setState(prevState => ({ ...prevState, disableApplicability: false, disableType: isType ? false : true }));
             setDisableAllFields(false)
             setDisableTotalCost(true)
             setTotalCostCurrency('')
@@ -341,6 +341,7 @@ function AddConditionCosting(props) {
             setType('');
             setEditIndex('');
             setIsEditMode(false)
+            setState(prevState => ({ ...prevState, Applicability: '', ApplicabilityCost: 0, disableType: true }));
             reset({
                 Condition: '',
                 Type: '',
@@ -350,6 +351,8 @@ function AddConditionCosting(props) {
                 ConditionCostPerQuantity: '',
                 Quantity: '',
                 ConditionEntryType: type === 'reset' && tableData.length === 0 ? '' : undefined,
+                ApplicabilityCost: '',
+                Applicability: ''
             });
         };
 
@@ -435,6 +438,11 @@ function AddConditionCosting(props) {
     }
     const handleType = (e) => {
         setType(e)
+        // object with the same structure as expected by onConditionChange
+        const formattedObject = {
+            ConditionType: e?.label
+        }
+        onConditionChange(formattedObject, true)
     }
     const applicabilityChange = (e) => {
         // Handle Basic Rate separately
@@ -461,7 +469,6 @@ function AddConditionCosting(props) {
             }
             const item = tableData.find(item => item?.Description === Applicability);
             if (item) {
-                console.log(item, 'item')
                 totalConditionCost = checkForNull(totalConditionCost) + checkForNull(item?.ConditionCostPerQuantity);
                 if (selectedApplicabilities.includes('Basic Price')) {
                     total = checkForNull(totalConditionCost) + checkForNull(basicRateBase)
@@ -542,7 +549,7 @@ function AddConditionCosting(props) {
                                             register={register}
                                             mandatory={true}
                                             options={conditionDropdown}
-                                            handleChange={onConditionChange}
+                                            handleChange={(e) => { onConditionChange(e, false) }}
                                             defaultValue={''}
                                             className=""
                                             customClassName={'withBorder'}
@@ -550,20 +557,7 @@ function AddConditionCosting(props) {
                                             disabled={checkCondtionDisabled}
                                         />
                                     </Col>
-                                    {/* <Col md={3} className='px-2'>
-                                        <TextFieldHookForm
-                                            label={`Type`}
-                                            name={'Type'}
-                                            Controller={Controller}
-                                            control={control}
-                                            register={register}
-                                            handleChange={() => { }}
-                                            className=""
-                                            customClassName={'withBorder'}
-                                            errors={errors.Type}
-                                            disabled={true}
-                                        />
-                                    </Col> */}
+
                                     <Col md={3} className='px-2'>
                                         <SearchableSelectHookForm
                                             label={`Type`}
