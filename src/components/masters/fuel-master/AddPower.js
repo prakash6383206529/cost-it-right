@@ -191,7 +191,7 @@ class AddPower extends Component {
             client.value,
             false,
             to,
-            ExchangeSource?.label??null,
+            ExchangeSource?.label ?? null,
             res => {
               if (Object.keys(res.data.Data).length === 0) {
                 this.setState({ showWarning: true });
@@ -1502,7 +1502,7 @@ class AddPower extends Component {
           StateId: StateName.value,
           StateName: StateName.label,
           IsActive: true,
-          NetPowerCostPerUnit: isDetailEntry ? NetPowerCostPerUnit : (this.props.fieldsObj.NetPowerCostPerUnit ? this.props.fieldsObj.NetPowerCostPerUnit : fieldsObj?.NetPowerCostPerUnitLocalConversion),
+          NetPowerCostPerUnit: isDetailEntry ? NetPowerCostPerUnit : (this.state?.isImport ? this.props.fieldsObj.NetPowerCostPerUnit : fieldsObj?.NetPowerCostPerUnitLocalConversion),
           VendorPlant: [],
           EffectiveDate: effectiveDate,
           CountryId: country?.value,
@@ -1579,7 +1579,7 @@ class AddPower extends Component {
           PlantId: plantArray && plantArray[0]?.PlantId,
           Plants: plantArray,
           StateId: StateName.value,
-          NetPowerCostPerUnit: isDetailEntry ? NetPowerCostPerUnit : (this.props.fieldsObj.NetPowerCostPerUnit ? this.props.fieldsObj.NetPowerCostPerUnit : fieldsObj?.NetPowerCostPerUnitLocalConversion),
+          NetPowerCostPerUnit: isDetailEntry ? NetPowerCostPerUnit : (this.state?.isImport ? this.props.fieldsObj.NetPowerCostPerUnit : fieldsObj?.NetPowerCostPerUnitLocalConversion),
           VendorPlant: [],
           EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
           CountryId: country?.value,

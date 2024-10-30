@@ -143,7 +143,7 @@ class AddFreight extends Component {
             client.value,
             false,
             to,
-            ExchangeSource?.label??null,
+            ExchangeSource?.label ?? null,
             res => {
               if (Object.keys(res.data.Data).length === 0) {
                 this.setState({ showWarning: true });
@@ -188,7 +188,7 @@ class AddFreight extends Component {
   }
   handleCalculation = (rate) => {
     const { plantCurrency, settlementCurrency, isImport } = this.state
-
+    console.log("heloooooooooooo")
     if (isImport) {
       const ratePlantCurrency = checkForNull(rate) * checkForNull(plantCurrency)
       this.props.change('RateLocalConversion', checkForDecimalAndNull(ratePlantCurrency, getConfigurationKey().NoOfDecimalForPrice))
@@ -354,11 +354,11 @@ class AddFreight extends Component {
               Plant: { label: Data.PlantName, value: Data.PlantId },
               effectiveDate: DayTime(Data?.EffectiveDate).isValid() ? new Date(Data?.EffectiveDate) : '',
               ExchangeSource: Data?.ExchangeRateSourceName !== undefined ? { label: Data?.ExchangeRateSourceName, value: Data?.ExchangeRateSourceName } : [],
-              plantCurrency: this?.state?.isImport ? Data?.LocalCurrencyExchangeRate : Data?.ExchangeRate,
-              plantExchangeRateId: this?.state?.isImport ? Data?.LocalExchangeRateId : Data?.ExchangeRateId,
+              plantCurrency: Data?.FreightEntryType === ENTRY_TYPE_IMPORT ? Data?.LocalCurrencyExchangeRate : Data?.ExchangeRate,
+              plantExchangeRateId: Data?.FreightEntryType === ENTRY_TYPE_IMPORT ? Data?.LocalExchangeRateId : Data?.ExchangeRateId,
               settlementCurrency: Data?.ExchangeRate,
               settlementExchangeRateId: Data?.ExchangeRateId,
-              plantCurrencyID: this?.state?.isImport ? Data?.LocalCurrencyId : Data?.CurrencyId,
+              plantCurrencyID: Data?.FreightEntryType === ENTRY_TYPE_IMPORT ? Data?.LocalCurrencyId : Data?.CurrencyId,
               isImport: Data?.FreightEntryType === ENTRY_TYPE_IMPORT ? true : false,
               currency: Data?.Currency ? { label: Data?.Currency, value: Data?.CurrencyId } : []
             }, () => this.setState({ isLoader: false }));
@@ -656,10 +656,11 @@ class AddFreight extends Component {
         RateCriteria: [],
         Load: [],
         AddUpdate: false,
+
         // errorObj: { capacity: false, criteria: false, rate: false, load: false }
       },
       () => () => {
-        // Clear the fields after state has been updated
+
       }
     );
     // this.props.dispatch(clearFields('AddFreight', false, false, 'RateConversion', 'RateLocalConversion', 'Rate'));
@@ -708,7 +709,7 @@ class AddFreight extends Component {
       ...tempData,
       Capacity: FullTruckCapacity.label,
       RateCriteria: RateCriteria.label,
-      Rate: fieldsObj?.Rate,
+      Rate: fieldsObj?.Rate ?? fieldsObj?.RateLocalConversion,
       RateLocalConversion: fieldsObj?.RateLocalConversion,
       RateConversion: fieldsObj?.RateConversion,
       Load: Load,
@@ -724,10 +725,15 @@ class AddFreight extends Component {
         isEditIndex: false,
         Load: []
       },
-      () => this.props.change("Rate", '')
+      () => this.props.change("Rate", ''),
+      () => this.props.change("RateConversion", ''),
+      () => this.props.change("RateLocalConversion", '')
     );
 
     this.setState({ AddUpdate: false, errorObj: { rate: false } })
+    this.props.change("Rate", ''),
+      this.props.change("RateConversion", ''),
+      this.props.change("RateLocalConversion", '')
   };
   /**
    * @method resetGridData
