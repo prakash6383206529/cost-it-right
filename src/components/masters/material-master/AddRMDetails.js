@@ -786,7 +786,7 @@ function AddRMDetails(props) {
                                     options={renderListing("plant")}
                                     defaultValue={state.plants}
                                     handleChange={handlePlants}
-                                    isMulti={(states.costingTypeId === ZBCTypeId && (!getConfigurationKey().IsMultipleUserAllowForApproval || IsSelectSinglePlant)) ? true : false}
+                                    isMulti={(states.costingTypeId === ZBCTypeId && !getConfigurationKey().IsMultipleUserAllowForApproval && !IsSelectSinglePlant) ? true : false}
                                     disabled={isEditFlag || isViewFlag}
                                     errors={errors.Plants}
                                 />

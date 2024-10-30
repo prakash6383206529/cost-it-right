@@ -1428,7 +1428,7 @@ class AddOperation extends Component {
 
                     <Row>
                       {/* might use later */}
-                      {(costingTypeId === ZBCTypeId && (!initialConfiguration.IsMultipleUserAllowForApproval || IsSelectSinglePlant)) && (
+                      {(costingTypeId === ZBCTypeId && (!initialConfiguration.IsMultipleUserAllowForApproval && !IsSelectSinglePlant)) && (
                         <Col md="3">
                           <Field
                             label="Plant (Code)"
