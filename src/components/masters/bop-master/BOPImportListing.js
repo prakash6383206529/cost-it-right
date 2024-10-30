@@ -1085,7 +1085,8 @@ const BOPImportListing = (props) => {
                         {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
                         {initialConfiguration?.IsBoughtOutPartCostingConfigured && (<AgGridColumn field="IsBreakupBoughtOutPart" headerName={`Detailed ${showBopLabel()}`}></AgGridColumn>)}
                         {initialConfiguration?.IsBoughtOutPartCostingConfigured && (<AgGridColumn field="TechnologyName" headerName={technologyLabel} cellRenderer={"hyphenFormatter"}></AgGridColumn>)}
-                        <AgGridColumn field="Currency"></AgGridColumn>
+                        <AgGridColumn field="Currency" headerName="Currency"></AgGridColumn>
+                        <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>
                         <AgGridColumn field="BasicRate" headerName="Basic Rate (Currency)" cellRenderer={"commonCostFormatter"} ></AgGridColumn>
                         <AgGridColumn field="BasicRateConversion" headerName={headerNames?.BasicRate} cellRenderer={"commonCostFormatter"}></AgGridColumn>
                         {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((props.isMasterSummaryDrawer && bopImportList[0]?.CostingTypeId === ZBCTypeId) || !props.isMasterSummaryDrawer) && !props?.isFromVerifyPage && (<AgGridColumn field="NetCostWithoutConditionCost" headerName="Basic Price (Currency)" cellRenderer={"commonCostFormatter"}></AgGridColumn>)}

@@ -530,7 +530,7 @@ function BOPCost(props) {
                       <th>{`${showBopLabel()} Part No.`}</th>
                       <th>{`${showBopLabel()} Part Name`}</th>
                       <th>{`UOM`}</th>
-                      <th>{`${showBopLabel()} Cost (${reactLocalStorage.getObject("baseCurrency")})`}</th>
+                      <th>{`${showBopLabel()} Cost (${currencySource?.label})`}</th>
                       <th>{`Quantity`}</th>
                       <th>{`Net ${showBopLabel()} Cost`}</th>
                       {initialConfiguration.IsShowCRMHead && <th>{`CRM Head`}</th>}

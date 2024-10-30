@@ -92,7 +92,7 @@ class AddOperation extends Component {
       showErrorOnFocus: false,
       operationName: '',
       operationCode: '',
-      finalApprovalLoader: getConfigurationKey().IsDivisionAllowedForDepartment ? false : true,
+      finalApprovalLoader: getConfigurationKey().IsDivisionAllowedForDepartment || !getConfigurationKey().IsMasterApprovalAppliedConfigure ? false : true,
       showPopup: false,
       levelDetails: {},
       noApprovalCycle: false,
@@ -1482,7 +1482,7 @@ class AddOperation extends Component {
 
                       )}
                       {
-                        ((costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) || initialConfiguration.IsMultipleUserAllowForApproval) &&
+                        ((costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) || (costingTypeId === ZBCTypeId && IsSelectSinglePlant) || initialConfiguration.IsMultipleUserAllowForApproval) &&
                         <Col md="3">
                           <Field
                             label={costingTypeId === VBCTypeId ? 'Destination Plant (Code)' : 'Plant (Code)'}

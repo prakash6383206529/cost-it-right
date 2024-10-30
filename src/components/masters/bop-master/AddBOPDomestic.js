@@ -1826,7 +1826,7 @@ class AddBOPDomestic extends Component {
                             <Col md="3">
                               <TooltipCustom id="bop-basic-price" tooltipText={this.state.toolTipTextObject?.basicPriceSelectedCurrency} />
                               <Field
-                                label={`Basic Price/${this.state.UOM.label ? this.state.UOM.label : 'UOM'} (${reactLocalStorage.getObject("baseCurrency")})`}
+                                label={`Basic Price/${this.state.UOM.label ? this.state.UOM.label : 'UOM'} (${this.props.fieldsObj?.plantCurrency ?? 'Currency'})`}
                                 name={"BasicPrice"}
                                 type="text"
                                 placeholder={"-"}
@@ -1842,7 +1842,7 @@ class AddBOPDomestic extends Component {
                               <div className='d-flex align-items-center'>
                                 <div className="w-100">
                                   <Field
-                                    label={`Condition Cost/${this.state.UOM.label ? this.state.UOM.label : 'UOM'} (${reactLocalStorage.getObject("baseCurrency")})`}
+                                    label={`Condition Cost/${this.state.UOM.label ? this.state.UOM.label : 'UOM'} (${this.props.fieldsObj?.plantCurrency ?? 'Currency'})`}
                                     name={"ConditionCost"}
                                     type="text"
                                     placeholder={"-"}

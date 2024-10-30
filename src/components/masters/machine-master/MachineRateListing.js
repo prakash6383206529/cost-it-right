@@ -780,10 +780,7 @@ const MachineRateListing = (props) => {
                 <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
                 {!isSimulation && <AgGridColumn field="Technology" headerName={technologyLabel}></AgGridColumn>}
                 <AgGridColumn field="MachineEntryType" headerName="Entry Type" cellRenderer={'hyphenFormatter'} valueGetter={(params) => showEntryType(params?.data?.MachineEntryType)}></AgGridColumn>
-                <AgGridColumn field="Currency" headerName="Currency" cellRenderer={currencyRenderer}></AgGridColumn>
-                {/* <AgGridColumn field="LocalCurrency" headerName="Local Currency" cellRenderer={'hyphenFormatter'}></AgGridColumn> */}
 
-                <AgGridColumn field="ExchangeRateSourceName" headerName="ExchangeRate SourceName" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 {/* <AgGridColumn field="LocalCurrencyExchangeRate" headerName="Local Currency Exchange Rate" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 <AgGridColumn field="ExchangeRate" headerName="Exchange Rate" cellRenderer={'hyphenFormatter'}></AgGridColumn> */}
 
@@ -796,6 +793,10 @@ const MachineRateListing = (props) => {
                 <AgGridColumn field="VendorName" headerName={`${vendorLabel} (Code)`} cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                 <AgGridColumn field="Plant" headerName="Plant (Code)" cellRenderer='hyphenFormatter'></AgGridColumn>
+                <AgGridColumn field="Currency" headerName="Currency" cellRenderer={currencyRenderer}></AgGridColumn>
+                {/* <AgGridColumn field="LocalCurrency" headerName="Local Currency" cellRenderer={'hyphenFormatter'}></AgGridColumn> */}
+
+                <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 <AgGridColumn width={200} field="MachineRate" headerName="Machine Rate" cellRenderer={hyphenFormatter}></AgGridColumn>
                 {/* <AgGridColumn width={200} field="MachineRate" headerName="Machine Rate (Currency)" cellRenderer={hyphenFormatter}></AgGridColumn> */}
                 <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>

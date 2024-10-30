@@ -114,7 +114,7 @@ class AddMachineRate extends Component {
         processUOM: false,
         machineRate: false
       },
-      finalApprovalLoader: getConfigurationKey().IsDivisionAllowedForDepartment || getConfigurationKey().IsMasterApprovalAppliedConfigure ? false : true,
+      finalApprovalLoader: getConfigurationKey().IsDivisionAllowedForDepartment || !getConfigurationKey().IsMasterApprovalAppliedConfigure ? false : true,
       costingTypeId: ZBCTypeId,
       levelDetails: {},
       vendorFilterList: [],
