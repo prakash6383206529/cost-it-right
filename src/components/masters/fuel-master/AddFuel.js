@@ -150,7 +150,7 @@ class AddFuel extends Component {
             client.value,
             false,
             to,
-            ExchangeSource?.label??null,
+            ExchangeSource?.label ?? null,
             res => {
               if (Object.keys(res.data.Data).length === 0) {
                 this.setState({ showWarning: true });
@@ -236,10 +236,10 @@ class AddFuel extends Component {
               rateGrid: rateGridArray,
               costingTypeId: Data.FuelDetails[0]?.CostingHeadId,
               ExchangeSource: Data?.ExchangeRateSourceName ? { label: Data?.ExchangeRateSourceName, value: Data?.ExchangeRateSourceId } : [],
-              plantCurrency: this?.state?.isImport ? Data?.LocalCurrencyExchangeRate : Data?.ExchangeRate,
-              plantCurrencyID: this?.state?.isImport ? Data?.LocalCurrencyId : Data?.CurrencyId,
+              plantCurrency: Data?.FuelEntryType === ENTRY_TYPE_IMPORT ? Data?.LocalCurrencyExchangeRate : Data?.ExchangeRate,
+              plantCurrencyID: Data?.FuelEntryType === ENTRY_TYPE_IMPORT ? Data?.LocalCurrencyId : Data?.CurrencyId,
               settlementCurrency: Data?.ExchangeRate,
-              plantExchangeRateId: this?.state?.isImport ? Data?.LocalExchangeRateId : Data?.ExchangeRateId,
+              plantExchangeRateId: Data?.FuelEntryType === ENTRY_TYPE_IMPORT ? Data?.LocalExchangeRateId : Data?.ExchangeRateId,
               settlementExchangeRateId: Data?.ExchangeRateId,
               isImport: Data?.FuelEntryType === ENTRY_TYPE_IMPORT ? true : false,
               currency: Data?.Currency ? { label: Data?.Currency, value: Data?.CurrencyId } : []
@@ -670,7 +670,7 @@ class AddFuel extends Component {
     let fuelDetailArray = rateGrid && rateGrid.map((item) => {
       return {
         Id: item.Id ? item.Id : null,
-        Rate: Number(item?.Rate),
+        Rate: isImport ? Number(item?.Rate) : Number(item?.RateLocalConversion),
         RateConversion: Number(item?.RateConversion),
         RateLocalConversion: Number(item?.RateLocalConversion),
         EffectiveDate: DayTime(item.effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
