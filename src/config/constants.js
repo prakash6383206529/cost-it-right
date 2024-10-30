@@ -695,6 +695,7 @@ export const API = {
   getSettledSimulationCostingDetails: `${BASE_URL}/simulation/get-settled-simulation-costing-details`,
   uploadInsulationCosting: `${BASE_URL}/bulk-costing/save-costing-insulation`,
   uploadElectricalStampingCosting: `${BASE_URL}/bulk-costing/save-costing-electrical-stamping`,
+  uploadMonocartonCosting: `${BASE_URL}/bulk-costing/save-costing-corrugated-mono-carton-box`,
 
   //COST SUMMARY
   getCostingByCostingId: `${BASE_URL}/costing-sheet-metal/get-costing-by-id`,
@@ -1115,7 +1116,6 @@ export const API = {
 
   //RFQ
   getQuotationList: `${BASE_URL}/rfq-quotation/get-quotation-list`,
-  createRfqQuotation: `${BASE_URL}/rfq-quotation/create`,
   getCostingBenchMarkOperationReport: `${BASE_URL}/reports/get-operation-cost-benchmarking-report`,
   getSupplierContributionData: `${BASE_URL}/reports/get-supplier-contribution-report`,
   getCostingBenchMarkMachineReport: `${BASE_URL}/reports/get-process-cost-benchmarking-report`,
@@ -1139,7 +1139,6 @@ export const API = {
   getrRqVendorDetails: `${BASE_URL}/rfq-quotation/get-rfq-vendor-detail`,
   getTargetPrice: `${BASE_URL}/rfq-quotation/get-target-price`,
   saveRfqPartDetails: `${BASE_URL}/rfq-quotation/create-quotation-parts`,
-  getRfqPartDetails: `${BASE_URL}/rfq-quotation/get-rfq-part-details`,
   getRfqRaiseNumber: `${BASE_URL}/rfq-quotation/get-rfq-raise-number`,
   getSpecificationDetailTco: `${BASE_URL}/rfq-quotation/get-costing-specification`,
   getSpecificationDetailBop: `${BASE_URL}/rfq-quotation/get-bought-out-part-specification`,
@@ -2866,6 +2865,7 @@ export const WIRINGHARNESS = 6
 export const DIE_CASTING = 7
 //changed the sheet metal to 8 bcz the version 3 code is not working or deployed
 export const SHEETMETAL = 8
+export const MONOCARTON = 13
 
 
 export const REASON_ID = 2
@@ -3266,7 +3266,7 @@ export const RAWMATERIALCOST = 'Raw Material Other Cost'
 export const COSTINGCONDITIONCOST = 'Costing Condition Cost'
 
 //VERSION 
-export const VERSION = "V3.1.17";
+export const VERSION = "V3.1.18";
 
 
 

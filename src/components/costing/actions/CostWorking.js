@@ -1585,3 +1585,23 @@ export function ElectricalStampingCostingBulkImport(data, callback) {
     });
   }
 }
+/**
+ * @method MonocartonBulkUploadCosting
+ * @description Monocarton bulk upload.
+ */
+export function MonocartonBulkUploadCosting(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.uploadMonocartonCosting, data, config());
+    request.then((response) => {
+      if (response.status === 200) {
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      // if (error?.response?.status === 400) {
+        callback(error.response)
+      // }
+      apiErrors(error);
+    });
+  }
+}

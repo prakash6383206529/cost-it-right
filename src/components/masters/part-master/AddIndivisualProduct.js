@@ -87,7 +87,7 @@ class AddIndivisualProduct extends Component {
 
                     this.props.change("EffectiveDate", DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
                     this.props.change("ProductGroupCode", Data.ProductGroupCode ?? '')
-                    Data?.LevelValueIdRef ? this.props.getPreFilledProductLevelValues(Data?.LevelValueIdRef, res => { }) : this.props.storeHierarchyData([])
+                    Data?.ProductHierarchyValueDetailsIdRef ? this.props.getPreFilledProductLevelValues(Data?.ProductHierarchyValueDetailsIdRef, res => { }) : this.props.storeHierarchyData([])
                     setTimeout(() => {
                         this.setState({
                             isEditFlag: true,
@@ -95,7 +95,7 @@ class AddIndivisualProduct extends Component {
                             effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
                             files: Data.Attachements,
                             isImpactCalculation: Data.IsConsideredForMBOM,
-                            ProductHierarachyValueId: Data.LevelValueIdRef,
+                            ProductHierarachyValueId: Data.ProductHierarchyValueDetailsIdRef,
                             ProductHierarachyLabel: Data.ProductGroupCode
                         }, () => this.setState({ isLoader: false }))
                         // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
@@ -283,7 +283,7 @@ class AddIndivisualProduct extends Component {
         const { ProductId, effectiveDate, isEditFlag, files, DropdownChanged, isImpactCalculation, DataToCheck, uploadAttachements, ProductHierarachyValueId } = this.state;
 
         if (isEditFlag) {
-            if (DropdownChanged && ((files ? JSON.stringify(files) : []) === (DataToCheck.Attachements ? JSON.stringify(DataToCheck.Attachements) : [])) && (DataToCheck.Remark) === (values.Remark) && uploadAttachements && DataToCheck.LevelValueIdRef === ProductHierarachyValueId) {
+            if (DropdownChanged && ((files ? JSON.stringify(files) : []) === (DataToCheck.Attachements ? JSON.stringify(DataToCheck.Attachements) : [])) && (DataToCheck.Remark) === (values.Remark) && uploadAttachements && DataToCheck.ProductHierarchyValueDetailsIdRef === ProductHierarachyValueId) {
                 this.cancel('cancel')
                 return false;
             }

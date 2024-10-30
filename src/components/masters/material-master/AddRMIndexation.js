@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useRef, useState }from "react"
+import React, { Fragment, useEffect, useRef, useState } from "react"
 import { fetchSpecificationDataAPI, getAllCity, getPlantSelectListByType, getRawMaterialCategory, getVendorNameByVendorSelectList } from "../../../actions/Common"
 import { CBCTypeId, FILE_URL, RAW_MATERIAL_VENDOR_TYPE, SPACEBAR, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, searchCount } from "../../../config/constants"
 import { useDispatch, useSelector } from "react-redux"
@@ -23,7 +23,7 @@ function AddRMIndexation(props) {
         mode: 'onChange',
         reValidateMode: 'onChange',
     });
-    const vendorLabel = useLabels()
+    const { vendorLabel } = useLabels()
     const [state, setState] = useState({
         costingTypeId: ZBCTypeId,
         vendor: [],
@@ -58,7 +58,7 @@ function AddRMIndexation(props) {
     const plantSelectList = useSelector(state => state.comman.plantSelectList);
 
     useEffect(() => {
-        
+
         dispatch(getPlantSelectListByType(ZBC, "MASTER", '', () => { }))
     }, [])
 

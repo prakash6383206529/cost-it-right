@@ -1700,6 +1700,9 @@ function CostingSimulation(props) {
 
                                                     {isSimulationWithCosting && <AgGridColumn width={150} field="CostingNumber" tooltipField='CostingNumber' headerName='Costing Id'></AgGridColumn>}
                                                     <AgGridColumn width={140} field="CostingHead" tooltipField='CostingHead' headerName='Costing Head'></AgGridColumn>
+                                                    {!isSimulationWithCosting && isBOPDomesticOrImport && <AgGridColumn width={130} field="BoughtOutPartNumber" tooltipField='BoughtOutPartNumber' headerName='BOP Number'></AgGridColumn>}
+                                                    {!isSimulationWithCosting && isBOPDomesticOrImport && <AgGridColumn width={130} field="BoughtOutPartName" tooltipField='BoughtOutPartName' headerName='BOP Name'></AgGridColumn>}
+
                                                     {isSimulationWithCosting && <AgGridColumn width={130} field="PartNo" tooltipField='PartNo' headerName='Part No.'></AgGridColumn>}
                                                     {isSimulationWithCosting && <AgGridColumn width={130} field="PartName" tooltipField='PartName' headerName='Part Name' cellRenderer='descriptionFormatter'></AgGridColumn>}
                                                     {isSimulationWithCosting && <AgGridColumn width={120} field="PartType" tooltipField='PartType' cellRenderer='partTypeFormatter' headerName="Part Type"></AgGridColumn>}

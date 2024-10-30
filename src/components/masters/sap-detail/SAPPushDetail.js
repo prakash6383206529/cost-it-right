@@ -37,7 +37,7 @@ function SAPPushDetail(props) {
         reValidateMode: 'onChange',
 
     })
-
+    const [disabledSaveButton, setDisabledSaveButton] = useState(true)
     const plantSelectList = useSelector(state => state.comman.plantSelectList);
     const taxCodeList = useSelector(state => state.comman.taxCodeList)
     const { evaluationType } = useSelector((state) => state?.costing)
@@ -58,14 +58,20 @@ function SAPPushDetail(props) {
                 if (res?.data?.Result) {
                     const sapData = res?.data?.Data;
                     setData(sapData);
-
+                    let plantCode = ''
+                    const matches = sapData?.Plant?.match(/\(([^)]+)\)/g);
+                    if (matches && matches?.length > 0) {
+                        const lastMatch = matches[matches.length - 1];
+                        plantCode = lastMatch.slice(1, -1).trim();
+                    }
+                    getEvaluationType(plantCode, sapData?.PartNumber)
                     // Set values for each field
                     setValue('PartNumber', { label: sapData?.PartNumber, value: sapData?.PartId });
                     setValue('PlantCode', { label: sapData?.Plant, value: sapData?.PlantId });
                     setValue('VendorCode', { label: sapData?.Vendor, value: sapData?.VendorId });
                     setValue('MaterialGroup', sapData?.MaterialGroup);
-                    setValue('PurcahaseOrg', sapData?.PurchasingOrg);
-                    setValue('ValuationType', sapData?.ValuationType);
+                    setValue('PurcahasingOrg', sapData?.PurchasingOrg);
+                    setValue('ValuationType', { label: sapData?.ValuationType, value: sapData?.ValuationType });
                     setValue('InfoCategory', sapData?.InfoCategory);
                     setValue('TaxCode', { label: sapData?.TaxCode, value: sapData?.TaxCode });
                     setValue('PlannedDelTime', sapData?.PlannedDelTime);
@@ -192,8 +198,18 @@ function SAPPushDetail(props) {
 
         for (const [key, value] of Object.entries(formData)) {
             if (typeof value === 'object' && value !== null) {
-                if (key === 'PartNumber' || key === 'VendorCode') {
+                if (key === 'PartNumber') {
                     preparedData[key] = value.label;
+                }
+                else if (key === 'VendorCode') {
+                    // Extract the value inside the last set of parentheses
+                    const matches = value.label.match(/\(([^)]+)\)/g);
+                    if (matches && matches.length > 0) {
+                        const lastMatch = matches[matches.length - 1];
+                        preparedData[key] = lastMatch.slice(1, -1).trim();
+                    } else {
+                        preparedData[key] = value.label;
+                    }
                 } else if (key === 'PlantCode') {
                     preparedData[key] = value.PlantCode;
                 } else if (key === 'TaxCode') {
@@ -233,40 +249,40 @@ function SAPPushDetail(props) {
             plantCode: plantCode,
             partNumber: partNumber
         }
-        dispatch(getExternalIntegrationEvaluationType(reqData, res => { }))
+        dispatch(getExternalIntegrationEvaluationType(reqData, res => {
+            if (res?.data?.Result) {
+                setDisabledSaveButton(false)
+            } else {
+                setDisabledSaveButton(true)
+            }
+        }))
     }
     const handlePartName = (value) => {
         setPartNumber(value.label)
         if (value.value && plantCode !== '') {
             getEvaluationType(plantCode, value.label)
         }
-        dispatch(getMaterialGroupByPart(value.value, res => {
-            if (res?.data.Result) {
-                setValue('MaterialGroup', res.data.Data)
-            }
-            else if (res.status === 204) {
-                Toaster.warning('Material group does not exist for this part number.')
-            }
-        }))
+        // dispatch(getMaterialGroupByPart(value.value, res => {
+        //     if (res?.data.Result) {
+        //         setValue('MaterialGroup', res.data.Data)
+        //     }
+        //     else if (res.status === 204) {
+        //         Toaster.warning('Material group does not exist for this part number.')
+        //     }
+        // }))
     }
     /**
     * @method handlePlantNameChange
     * @description Get Purchase Organisation from API on change of plant
    */
-    const handlePlantNameChange = (value) => {
-        setPlantCode(value.PlantCode)
-        if (value.value && partNumber !== '') {
-            getEvaluationType(value.PlantCode, partNumber)
+    const handlePlantNameChange = (value, key) => {
+        if (key === "PlantCode") {
+            setPlantCode(value.PlantCode)
+            setValue('ValuationType', null);
+            if (value.value && partNumber !== '') {
+                getEvaluationType(value.PlantCode, partNumber)
+            }
         }
-        // dispatch(getPurcahseOrganisationByPlant(value.value, res => {
-        //     if (res?.data.Result) {
-        //         setValue('PurcahaseOrganisation', res.data.Data)
-        //     }
-        //     else if (res.status === 204) {
-        //         Toaster.warning('Purchase Organisation does not exist for this plant.')
-        //     }
-        // }))
-
     }
     /**
      * @method cancelHandler
@@ -300,7 +316,6 @@ function SAPPushDetail(props) {
                                 ></div>
                             </Col>
                         </Row>
-
                         <form onSubmit={handleSubmit(onSubmit)}>
                             <Row className="pl-3">
                                 {props.SAPDetailKeys?.map((el, index) => {
@@ -326,6 +341,7 @@ function SAPPushDetail(props) {
                                                 />
                                             </Col>
                                         )
+
                                     } else if (key === 'PlantCode' || key === 'TaxCode' || key === 'ValuationType') {
                                         return (
                                             <Col md="6" key={index}>
@@ -335,11 +351,11 @@ function SAPPushDetail(props) {
                                                     placeholder={"Select"}
                                                     Controller={Controller}
                                                     control={control}
-                                                    rules={{ required: key === 'ValuationType' ? false : true }}
+                                                    rules={{ required: (key === 'ValuationType' && !(evaluationType.length > 1)) ? false : true }}
                                                     register={register}
                                                     options={renderListing(key)}
-                                                    mandatory={key === 'ValuationType' ? false : true}
-                                                    handleChange={(e) => handlePlantNameChange(e)}
+                                                    mandatory={(key === 'ValuationType' && !(evaluationType.length > 1)) ? false : true}
+                                                    handleChange={(e) => handlePlantNameChange(e, key)}
                                                     errors={errors[key]}
                                                     disabled={isEditFlag && key === 'PlantCode' ? true : false}
                                                     isLoading={plantLoaderObj}
@@ -392,6 +408,7 @@ function SAPPushDetail(props) {
                                         className="mr5"
 
                                         icon={"save-icon"}
+                                        disabled={disabledSaveButton}
                                         buttonName={isEditFlag ? "Update" : "Save"}
                                     />
                                 </div>

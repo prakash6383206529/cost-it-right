@@ -24,7 +24,7 @@ import { useLabels } from '../../../helper/core';
 
 const SendForApproval = (props) => {
   const [isLoader, setIsLoader] = useState(false)
-  const vendorLabel = useLabels()
+  const { vendorLabel } = useLabels()
   const dispatch = useDispatch()
   const { register, control, setValue, handleSubmit, reset, getValues, formState: { errors } } = useForm({
     mode: 'onChange',
@@ -476,7 +476,11 @@ const SendForApproval = (props) => {
   }
   const fetchDivisionList = (departmentId, dispatch, callback) => {
     let departmentIds = [departmentId];
-    dispatch(getAllDivisionListAssociatedWithDepartment(departmentIds, res => {
+    let obj = {
+      DepartmentIdList: departmentIds,
+      IsApproval: true
+    }
+    dispatch(getAllDivisionListAssociatedWithDepartment(obj, res => {
       if (res && res?.data && res?.data?.Identity === true) {
         let divisionArray = res?.data?.DataList
           .filter(item => String(item?.DivisionId) !== '0')
