@@ -210,7 +210,7 @@ class AddLabour extends Component {
           if (item.Value === '0') return false
           if (this.findLabourtype(item.Value, this.state.gridTable)) return false;
 
-          if (costingTypeId === CBCTypeId ) {
+          if (costingTypeId === CBCTypeId && this.props.initialConfiguration?.IsShowProductInLabour) {
             if (item.Text === 'Skilled') {
               temp.push({ label: item.Text, value: item.Value })
             }
