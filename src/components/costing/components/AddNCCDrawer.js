@@ -11,6 +11,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import { autoCompleteDropdown } from '../../common/CommonFunctions';
 import { MESSAGES } from '../../../config/message';
 import { useLabels } from '../../../helper/core';
+import TooltipCustom from '../../common/Tooltip';
 
 function AddNCCDrawer(props) {
   const { vendorLabel } = useLabels()
@@ -27,6 +28,9 @@ function AddNCCDrawer(props) {
   const dispatch = useDispatch()
   const plantSelectList = useSelector(state => state.comman.plantSelectList)
   const vendorSelectList = useSelector(state => state.comman.vendorWithVendorCodeSelectList)
+  const [infoCategory, setInfoCategory] = useState([])
+  const [isInfoCategorySelected, setIsInfoCategorySelected] = useState(false)
+  const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
 
   useEffect(() => {
     const { nccGrid } = props;
@@ -43,6 +47,10 @@ function AddNCCDrawer(props) {
     }
   }, []);
 
+  useEffect(() => {
+    setInfoCategory(initialConfiguration?.InfoCategories)
+  }, [initialConfiguration])
+
   const toggleDrawer = (event) => {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return;
@@ -54,7 +62,9 @@ function AddNCCDrawer(props) {
       VendorId: Object.keys(vendor).length > 0 ? vendor.VendorId : EMPTY_GUID_0,
       VendorName: Object.keys(vendor).length > 0 ? `${vendor.VendorName} (${vendor.VendorCode})` : '',
       Vendor: vendor,
-      DestinationPlantName: `${data.DestinationPlantName} (${data.DestinationPlantCode})`
+      DestinationPlantName: `${data.DestinationPlantName} (${data.DestinationPlantCode})`,
+      InfoCategory: isInfoCategorySelected === true ? infoCategory[0]?.Text : infoCategory[1]?.Text,
+      InfoCategoryObj: isInfoCategorySelected === true ? infoCategory[0] : infoCategory[1]
     })
   };
 
@@ -159,6 +169,11 @@ function AddNCCDrawer(props) {
       }
     }
   };
+
+  const categoryTypeOnChange = (e) => {
+    setIsInfoCategorySelected(!isInfoCategorySelected)
+  }
+
   /**
   * @method render
   * @description Renders the component
@@ -219,6 +234,31 @@ function AddNCCDrawer(props) {
                     errors={errors.Vendor}
                     NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
                   />
+                </Col>
+                <Col md="12">
+                  <span className="d-inline-block">
+                    <label
+                      className={`custom-checkbox mb-0`}
+                      onChange={(e) => categoryTypeOnChange(e)}
+                      selected={isInfoCategorySelected}
+                      id={'category'}
+                    >
+                      Category
+                      <input
+                        type="checkbox"
+                      />
+                      <span
+                        className=" before-box"
+                        onChange={(e) => categoryTypeOnChange(e)}
+                        selected={isInfoCategorySelected}
+                      />
+                    </label>
+                    <TooltipCustom
+                      disabledIcon={false}
+                      id={`category`}
+                      tooltipText={infoCategory && `If checkbox is selected then category will be ${infoCategory[0]?.Text}, otherwise category will be ${infoCategory[1]?.Text}.`}
+                    />
+                  </span>
                 </Col>
               </Row>
 

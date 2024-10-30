@@ -210,7 +210,7 @@ class AddLabour extends Component {
           if (item.Value === '0') return false
           if (this.findLabourtype(item.Value, this.state.gridTable)) return false;
 
-          if (costingTypeId === CBCTypeId) {
+          if (costingTypeId === CBCTypeId ) {
             if (item.Text === 'Skilled') {
               temp.push({ label: item.Text, value: item.Value })
             }
@@ -789,7 +789,7 @@ class AddLabour extends Component {
    * @description Renders the component
    */
   render() {
-    const { handleSubmit, initialConfiguration,t } = this.props;
+    const { handleSubmit, initialConfiguration, t } = this.props;
     const { isEditFlag, isOpenMachineType, isViewMode, setDisable, gridTable, isEditMode, costingTypeId } = this.state;
     const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
 console.log(VendorLabel);
@@ -920,7 +920,7 @@ console.log(VendorLabel);
                     <Row>
                       <Col md="12" className="filter-block">
                         <div className=" flex-fills mb-2 w-100 pl-0">
-                          <h5>{costingTypeId === CBCTypeId ? "Product:" : `${VendorLabel}:`}</h5>
+                          <h5>{costingTypeId === CBCTypeId ? "Customer:" : `${VendorLabel}:`}</h5>
                         </div>
                       </Col>
                       {this.state.IsEmployeContractual && costingTypeId !== CBCTypeId && (
@@ -974,7 +974,7 @@ console.log(VendorLabel);
                         </Col>
                       )}
 
-                      {costingTypeId === CBCTypeId &&
+                      {(costingTypeId === CBCTypeId && initialConfiguration?.IsShowProductInLabour) &&
                         < Col md="3">
                           <div className="form-group">
                             <Field
@@ -1373,5 +1373,4 @@ export default connect(mapStateToProps, {
     onSubmitFail: errors => {
       focusOnError(errors);
     },
-  })(withTranslation(['MasterLabels'])(AddLabour)),
-)
+  })(withTranslation(['MasterLabels'])(AddLabour)),)

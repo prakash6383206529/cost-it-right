@@ -123,7 +123,7 @@ function Icc(props) {
         } else {
             setICCapplicability([])
             if (!CostingViewMode) {
-                props.setICCDetail(null, { BOMLevel: data?.BOMLevel, PartNumber: data?.PartNumber })
+                // props.setICCDetail(null, { BOMLevel: data?.BOMLevel, PartNumber: data?.PartNumber })  OPENING THIS CREATED CLEARING OF OVERHEAD REDUCER WHEN CLOSE ICC TOGGLE
             }
         }
     }
