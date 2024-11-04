@@ -840,6 +840,7 @@ export const API = {
   // ApproveReject Drawer final approver
   checkFinalUser: `${BASE_URL}/app-approval-system/final-user-check`,
   getReleaseStrategyApprovalDetails: `${BASE_URL}/app-approval-system/get-release-strategy-approval-details`,
+  checkFinalLevelApproverForApproval: `${BASE_URL}/app-approval-system/check-is-user-final-level-approver-for-approvals`,
 
   //PRIVILEGE
   createPrivilegePage: `${BASE_URL}/app-privilege-permission/create-privilege-page`,
