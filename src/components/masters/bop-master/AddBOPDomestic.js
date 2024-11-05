@@ -424,6 +424,11 @@ class AddBOPDomestic extends Component {
             }, () => {
               this.toolTipNetCost()
               this.setState({ isLoader: false })
+              if (Data?.Currency !== reactLocalStorage?.getObject("baseCurrency")) {
+                this.setState({ hidePlantCurrency: false })
+              } else {
+                this.setState({ hidePlantCurrency: true })
+              }
             })
             // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
             let files = Data.Attachements && Data.Attachements.map((item) => {

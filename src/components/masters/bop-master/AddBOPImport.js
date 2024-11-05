@@ -343,11 +343,12 @@ class AddBOPImport extends Component {
 
   componentDidUpdate(prevProps, prevState) {
     const { initialConfiguration } = this.props
-    if (!this.props.data.isViewMode && !this.state.isCallCalculation) {
-      if (this.props.fieldsObj !== prevProps.fieldsObj) {
-        this.setInStateToolTip()
-        this.handleCalculation()
-      }
+    if (this.props.fieldsObj !== prevProps.fieldsObj) {
+      this.setInStateToolTip()
+      this.handleCalculation()
+    }
+    if (!this.props.data.isViewMode /* && !this.state.isCallCalculation */) {
+
       if (!getConfigurationKey().IsDivisionAllowedForDepartment && (prevState?.costingTypeId !== this.state.costingTypeId) && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(BOP_MASTER_ID) === true) {
         if (!(this.props.data.isViewMode)) {
           this.commonFunction(this.state.selectedPlants && this.state.selectedPlants.value)
@@ -580,7 +581,11 @@ class AddBOPImport extends Component {
 
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
           this.setState({ minEffectiveDate: Data.EffectiveDate })
-
+          if (Data?.LocalCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
+            this.setState({ hidePlantCurrency: false })
+          } else {
+            this.setState({ hidePlantCurrency: true })
+          }
           setTimeout(() => {
             let plantObj;
             // this.handleEffectiveDateChange(DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
