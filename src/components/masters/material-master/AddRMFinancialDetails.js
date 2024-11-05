@@ -518,12 +518,18 @@ function AddRMFinancialDetails(props) {
     }
 
     const onPressHasDifferentUOM = () => {
-        setState(prevState => ({ ...prevState, IsApplyHasDifferentUOM: !state.IsApplyHasDifferentUOM }));
-        let updatedState = {
+        // Create the updated state with all changes at once
+        const updatedState = {
             ...state,
-        }
-        setState(updatedState)
-        dispatch(setRawMaterialDetails({ ...rawMaterailDetails, states: updatedState }, () => { }))
+            IsApplyHasDifferentUOM: !state.IsApplyHasDifferentUOM
+        };
+        // Set state once with all updates
+        setState(updatedState);
+        // Update the raw material details
+        dispatch(setRawMaterialDetails({
+            ...rawMaterailDetails,
+            states: updatedState
+        }, () => { }));
     }
     const checkTechnology = () => {
         let obj = showRMScrapKeys(rawMaterailDetails?.Technology ? rawMaterailDetails?.Technology?.value : props?.DataToChange.TechnologyId)
@@ -1518,7 +1524,7 @@ function AddRMFinancialDetails(props) {
                                     <div className='d-flex align-items-center'>
                                         <div className='w-100'>
                                             <TextFieldHookForm
-                                                label={labelWithUOMAndCurrency("Condition Cost ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, getValues('plantCurrency') ?? 'Currency')}
+                                                label={labelWithUOMAndCurrency("Condition Cost ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, states.isImport ? state.currency?.label : !getValues('plantCurrency') ? 'Currency' : getValues('plantCurrency'))}
                                                 name={"FinalConditionCost"}
                                                 placeholder={"-"}
                                                 Controller={Controller}
