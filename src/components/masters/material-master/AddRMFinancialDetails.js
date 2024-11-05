@@ -91,6 +91,7 @@ function AddRMFinancialDetails(props) {
         BasicRatePerUOM: 0,
         NetConditionCost: 0,
         NetCostWithoutConditionCost: 0,
+        hidePlantCurrency: false
     });
     const [CurrencyExchangeRate, setCurrencyExchangeRate] = useState({
         plantCurrencyRate: 1,
@@ -145,6 +146,11 @@ function AddRMFinancialDetails(props) {
                 let Data = res?.data?.Data
                 let CurrencyId = Data?.CurrencyId
                 setValue('plantCurrency', Data?.Currency)
+                if (Data?.Currency !== reactLocalStorage?.getObject("baseCurrency")) {
+                    setState(prevState => ({ ...prevState, hidePlantCurrency: false }));
+                } else {
+                    setState(prevState => ({ ...prevState, hidePlantCurrency: true }));
+                }
                 const { costingTypeId } = states;
                 let fromCurrency = states.isImport ? state.currency?.label : Data?.Currency
                 let toCurrency = !states.isImport ? reactLocalStorage.getObject("baseCurrency") : Data?.Currency
@@ -219,10 +225,6 @@ function AddRMFinancialDetails(props) {
             setValue('Index', { label: Data?.IndexExchangeName, value: Data?.IndexExchangeId })
             setValue('plantCurrency', Data?.LocalCurrency)
             setValue('FinalConditionCost', Data?.NetConditionCost)
-            setState(prevState => ({
-                ...prevState,
-
-            }))
             let updatedState = {
                 ...state,
                 effectiveDate: Data?.EffectiveDate ? DayTime(Data?.EffectiveDate).$d : '',
@@ -243,13 +245,14 @@ function AddRMFinancialDetails(props) {
                 NetConditionCost: Data?.NetConditionCost,
                 totalOtherCost: Data?.OtherNetCost,
                 NetLandedCost: Data?.NetLandedCost,
+                hidePlantCurrency: Data?.LocalCurrency !== reactLocalStorage?.getObject("baseCurrency") ? false : true
             }
             setState(updatedState)
             let obj = showRMScrapKeys(Data?.TechnologyId)
             setShowScrapKeys(obj)
             setCurrencyExchangeRate(prevState => ({
                 ...prevState, plantCurrencyRate: !states.isImport ? Data?.CurrencyExchangeRate : checkForNull(Data?.LocalCurrencyExchangeRate),
-                settlementCurrencyRate: !states.isImport ? checkForNull(Data?.CurrencyExchangeRate) : null
+                settlementCurrencyRate: states.isImport ? checkForNull(Data?.CurrencyExchangeRate) : null
             }))
             setState(updatedState)
             dispatch(setRawMaterialDetails({ ...rawMaterailDetails, states: updatedState, isShowIndexCheckBox: Data?.IsIndexationDetails, ShowScrapKeys: obj }, () => { }))
@@ -937,6 +940,15 @@ function AddRMFinancialDetails(props) {
             dispatch(setRawMaterialDetails({ ...rawMaterailDetails, states: updatedState }, () => { }))
         }, 50);
     }
+    const showNetCost = () => {
+        let show = false
+        if (state.hidePlantCurrency) {
+            show = false
+        } else {
+            show = true
+        }
+        return show
+    }
 
     return (
         <Fragment>
@@ -1570,7 +1582,7 @@ function AddRMFinancialDetails(props) {
                                     customClassName=" withBorder"
                                 />
                             </Col>}
-                            <Col className="col-md-15">
+                            {showNetCost() && <Col className="col-md-15">
                                 <TooltipCustom disabledIcon={true} id="rm-net-cost-currency" tooltipText={netCostTitle()?.toolTipTextNetCostSelectedCurrency} />
                                 <TextFieldHookForm
                                     label={`Net Cost (${!getValues('plantCurrency') ? 'Plant Currency' : getValues('plantCurrency')})`}
@@ -1585,11 +1597,11 @@ function AddRMFinancialDetails(props) {
                                     handleChange={() => { }}
                                     customClassName=" withBorder"
                                 />
-                            </Col>
-                            {getValues('plantCurrency') !== INR && <Col className="col-md-15">
+                            </Col>}
+                            {<Col className="col-md-15">
                                 <TooltipCustom disabledIcon={true} id="bop-net-cost-currency" tooltipText={netCostTitle()?.toolTipTextNetCostBaseCurrency} />
                                 <TextFieldHookForm
-                                    label={labelWithUOMAndCurrency("Net Cost ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, (reactLocalStorage.getObject("baseCurrency")))}
+                                    label={labelWithUOMAndCurrency("Net Cost", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, (reactLocalStorage.getObject("baseCurrency")))}
                                     name={'NetLandedCostConversion'}
                                     id="bop-net-cost-currency"
                                     placeholder={"-"}

@@ -18,7 +18,7 @@ import { CheckApprovalApplicableMaster, checkForDecimalAndNull, checkForNull, ge
 import Toaster from "../../common/Toaster";
 import { MESSAGES } from "../../../config/message";
 import { fetchSpecificationDataAPI } from "../../../actions/Common";
-import { setRawMaterialDetails, createRM, getRMDataById, updateRMAPI, getMaterialTypeDataAPI } from "../actions/Material";
+import { setRawMaterialDetails, createRM, getRMDataById, updateRMAPI, getMaterialTypeDataAPI, setExchangeRateDetails } from "../actions/Material";
 import DayTime from "../../common/DayTimeWrapper";
 import LoaderCustom from "../../common/LoaderCustom";
 import { isFinalApprover } from "../../costing/actions/Approval";
@@ -193,6 +193,7 @@ function AddRMMaster(props) {
 
         return () => {
             dispatch(setRawMaterialDetails({}, () => { }))
+            dispatch(setExchangeRateDetails({}, () => { }))
             dispatch(setCommodityDetails([]))
             dispatch(setOtherCostDetails([]))
         }
@@ -381,6 +382,7 @@ function AddRMMaster(props) {
         } else {
             plantArray.push({ PlantName: values?.Plants?.label, PlantId: values?.Plants?.value, PlantCode: '', })
         }
+
         let formData =
         {
             "Attachements": rawMaterailDetails?.Files,
@@ -475,7 +477,6 @@ function AddRMMaster(props) {
             "VendorName": state.costingTypeId === VBCTypeId ? !state.isEditFlag ? getNameBySplitting(rawMaterailDetails?.Vendor?.label) : getNameBySplitting(values?.Vendor?.label) : '',
             "VendorPlant": []
         }
-
         let financialDataNotChanged = (checkForNull(values.cutOffPrice) === checkForNull(DataToChange?.CutOffPrice)) && (checkForNull(values.BasicRate) === checkForNull(DataToChange?.BasicRatePerUOM)) && rawMaterailDetails?.states?.IsApplyHasDifferentUOM === DataToChange?.IsScrapUOMApply
             && checkForNull(values?.ConversionRatio) === checkForNull(DataToChange?.UOMToScrapUOMRatio) && checkForNull(values?.ScrapRatePerScrapUOM) === checkForNull(DataToChange?.ScrapRatePerScrapUOM) && (checkForNull(values.OtherCost) === checkForNull(DataToChange?.OtherNetCost))
             && (checkForNull(values.CircleScrapCost) === checkForNull(DataToChange?.JaliScrapCost)) && (checkForNull(values.MachiningScrap) === checkForNull(DataToChange?.MachiningScrapRate))
