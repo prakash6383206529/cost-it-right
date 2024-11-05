@@ -602,8 +602,8 @@ class AddBOPDomestic extends Component {
     this.setState({ selectedPlants: e })
     this.props.getPlantUnitAPI(e?.value, (res) => {
       let Data = res?.data?.Data
+      this.props.change('plantCurrency', Data?.Currency)
       if (Data?.Currency !== reactLocalStorage?.getObject("baseCurrency")) {
-        this.props.change('plantCurrency', Data?.Currency)
         this.setState({ hidePlantCurrency: false, LocalCurrencyId: Data?.CurrencyId })
         this.callExchangeRateAPI()
       } else {
@@ -1729,7 +1729,7 @@ class AddBOPDomestic extends Component {
                           <Col md="12">
                             <div className="left-border">{"Cost:"}</div>
                           </Col>
-                          {!hidePlantCurrency && <Col md="3">
+                          {<Col md="3">
                             <Field
                               name="plantCurrency"
                               type="text"

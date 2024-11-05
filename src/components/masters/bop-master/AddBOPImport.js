@@ -2009,7 +2009,7 @@ class AddBOPImport extends Component {
                           <Col md="12">
                             <div className="left-border">{"Cost:"}</div>
                           </Col>
-                          {!this.state.hidePlantCurrency && <Col md="3">
+                          {<Col md="3">
                             <Field
                               name="plantCurrency"
                               type="text"
