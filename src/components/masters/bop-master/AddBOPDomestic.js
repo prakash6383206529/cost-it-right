@@ -698,8 +698,8 @@ class AddBOPDomestic extends Component {
       conditionTableData: conditionList,
     })
 
-    if (this.state.isEditFlag && checkForNull(basicPriceBaseCurrency) === checkForNull(this.state.DataToCheck?.NetCostWithoutConditionCost) &&
-      checkForNull(NoOfPieces) === checkForNull(this.state.DataToCheck?.NumberOfPieces) && checkForNull(netLandedCostBaseCurrency) === checkForNull(this.state.DataToCheck?.NetLandedCost)) {
+    if (this.state.isEditFlag && checkForNull(basicPriceBaseCurrency).toFixed(initialConfiguration?.NoOfDecimalForPrice) === checkForNull(this.state.DataToCheck?.NetCostWithoutConditionCost).toFixed(initialConfiguration?.NoOfDecimalForPrice) &&
+      checkForNull(NoOfPieces).toFixed(initialConfiguration?.NoOfDecimalForPrice) === checkForNull(this.state.DataToCheck?.NumberOfPieces).toFixed(initialConfiguration?.NoOfDecimalForPrice) && checkForNull(netLandedCostBaseCurrency).toFixed(initialConfiguration?.NoOfDecimalForPrice) === checkForNull(this.state.DataToCheck?.NetLandedCost).toFixed(initialConfiguration?.NoOfDecimalForPrice)) {
 
       this.setState({ IsFinancialDataChanged: false, EffectiveDate: DayTime(this.state.DataToCheck?.EffectiveDate).isValid() ? DayTime(this.state.DataToCheck?.EffectiveDate) : '' });
       this.props.change('EffectiveDate', DayTime(this.state.DataToCheck?.EffectiveDate).isValid() ? DayTime(this.state.DataToCheck?.EffectiveDate) : '')
@@ -930,7 +930,7 @@ class AddBOPDomestic extends Component {
   onSubmit = debounce((values) => {
     const { BOPCategory, selectedPlants, vendorName, costingTypeId, sourceLocation, BOPID, isEditFlag, files, DropdownChanged, oldDate, client, effectiveDate, UOM, DataToCheck, isDateChange, IsFinancialDataChanged,
       isClientVendorBOP, isTechnologyVisible, Technology, FinalConditionCostBaseCurrency, FinalBasicPriceBaseCurrency, FinalNetLandedCostBaseCurrency, FinalBasicRateBaseCurrency, conditionTableData, isBOPAssociated, IsSAPCodeHandle, IsSAPCodeUpdated } = this.state;
-    const { fieldsObj } = this.props;
+    const { fieldsObj, initialConfiguration } = this.props;
     const userDetailsBop = JSON.parse(localStorage.getItem('userDetail'))
     if (costingTypeId !== CBCTypeId && vendorName.length <= 0) {
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
@@ -988,7 +988,7 @@ class AddBOPDomestic extends Component {
     }
 
     formData.BoughtOutPartConditionsDetails = conditionTableData
-
+    let isOnlySAPCodeChanged = false
     // CHECK IF CREATE MODE OR EDIT MODE !!!  IF: EDIT  ||  ELSE: CREATE
     if (isEditFlag) {
       let basicPriceBaseCurrency
@@ -1025,10 +1025,30 @@ class AddBOPDomestic extends Component {
           }
         }
       }
+      if (
+        (((files ? JSON.stringify(files) : []) === (DataToCheck.Attachements ? JSON.stringify(DataToCheck.Attachements) : [])) &&
+          ((DataToCheck.Remark ? DataToCheck.Remark : '') === (values?.Remark ? values?.Remark : '')) &&
+          ((DataToCheck.SAPPartNumber ? DataToCheck.SAPPartNumber : '') !== (values?.SAPPartNumber ? values?.SAPPartNumber : '')) && // SAP code not equal
+          ((DataToCheck.Source ? String(DataToCheck.Source) : '-') === (values?.Source ? String(values?.Source) : '-')) &&
+          ((DataToCheck.SourceLocation ? String(DataToCheck.SourceLocation) : '') === (sourceLocation?.value ? String(sourceLocation?.value) : '')) &&
+          checkForNull(fieldsObj?.BasicRateBase).toFixed(initialConfiguration?.NoOfDecimalForPrice) === checkForNull(DataToCheck?.BasicRate).toFixed(initialConfiguration?.NoOfDecimalForPrice) &&
+          checkForNull(basicPriceBaseCurrency).toFixed(initialConfiguration?.NoOfDecimalForPrice) === checkForNull(DataToCheck?.NetCostWithoutConditionCost).toFixed(initialConfiguration?.NoOfDecimalForPrice) &&
+          checkForNull(netLandedCostBaseCurrency).toFixed(initialConfiguration?.NoOfDecimalForPrice) === checkForNull(DataToCheck?.NetLandedCost).toFixed(initialConfiguration?.NoOfDecimalForPrice) &&
+          checkForNull(FinalConditionCostBaseCurrency).toFixed(initialConfiguration?.NoOfDecimalForPrice) === checkForNull(DataToCheck?.NetConditionCost).toFixed(initialConfiguration?.NoOfDecimalForPrice) &&
+          DropdownChanged &&
+          ((DataToCheck.TechnologyId ? String(DataToCheck.TechnologyId) : '') === (Technology?.value ? String(Technology?.value) : ''))
+        )
+      ) {
+        isOnlySAPCodeChanged = true;
+      } else {
+        isOnlySAPCodeChanged = false;
+      }
+
     }
 
+
     //  IF: APPROVAL FLOW
-    if (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar && !isTechnologyVisible) {
+    if (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar && !isTechnologyVisible && (isEditFlag ? !isOnlySAPCodeChanged : true)) {
       formData.IsSendForApproval = true
       this.setState({ approveDrawer: true, approvalObj: formData })
     }

@@ -210,7 +210,7 @@ class AddLabour extends Component {
           if (item.Value === '0') return false
           if (this.findLabourtype(item.Value, this.state.gridTable)) return false;
 
-          if (costingTypeId === CBCTypeId) {
+          if (costingTypeId === CBCTypeId && this.props.initialConfiguration?.IsShowProductInLabour) {
             if (item.Text === 'Skilled') {
               temp.push({ label: item.Text, value: item.Value })
             }
@@ -792,7 +792,6 @@ class AddLabour extends Component {
     const { handleSubmit, initialConfiguration, t } = this.props;
     const { isEditFlag, isOpenMachineType, isViewMode, setDisable, gridTable, isEditMode, costingTypeId } = this.state;
     const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
-
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
       if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {

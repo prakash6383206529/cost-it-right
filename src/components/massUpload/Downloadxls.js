@@ -160,7 +160,7 @@ export const checkVendorPlantConfig = (excelData, type = '', isBop = false, isVe
             if (el.value === 'PaymentTerm') return false;
         }
         if (getConfigurationKey().IsSAPCodeRequired === false) {
-            if (el.value === 'SAPCode') return false;
+            if (el.value === 'SAPPartNumber') return false;
         }
         return true;
     })
