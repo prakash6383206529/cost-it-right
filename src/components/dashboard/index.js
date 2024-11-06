@@ -66,7 +66,7 @@ function Dashboard(props) {
       }
 
       const accessRMData = masterData && masterData.Pages.find(el => el.PageName === RAW_MATERIAL)
-      const accessBOPData = masterData && masterData.Pages.find(el => el.PageName === BOP)
+      const accessBOPData = masterData && masterData.Pages.find(el => el.PageName === showBopLabel())
       const accessMachineData = masterData && masterData.Pages.find(el => el.PageName === MACHINE)
       const accessOperationData = additionalMasterData && additionalMasterData.Pages.find(el => el.PageName === OPERATION)
 
