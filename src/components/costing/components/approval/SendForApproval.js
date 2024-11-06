@@ -292,25 +292,25 @@ const SendForApproval = (props) => {
   }
 
 
-  useEffect(() => {
-    if (initialConfiguration?.IsSAPConfigured && viewApprovalData && viewApprovalData?.length === 1 && count === 0 && callSapCheckAPI === true) {//&& !isSimulationApprovalListing
-      setIsLoader(true)
-      dispatch(checkSAPPoPrice('', viewApprovalData[0]?.costingId, res => {
-        setCount(count + 1)
-        let status = 200
-        if ('response' in res) {
+  // useEffect(() => {
+  //   if (initialConfiguration?.IsSAPConfigured && viewApprovalData && viewApprovalData?.length === 1 && count === 0 && callSapCheckAPI === true) {//&& !isSimulationApprovalListing
+  //     setIsLoader(true)
+  //     dispatch(checkSAPPoPrice('', viewApprovalData[0]?.costingId, res => {
+  //       setCount(count + 1)
+  //       let status = 200
+  //       if ('response' in res) {
 
-          status = res && res?.response?.status
-        }
-        if (status !== undefined && status === 200) {
-          setIsDisableSubmit(false)
-        } else {
-          setIsDisableSubmit(true)
-        }
-        setIsLoader(false)
-      }))
-    }
-  }, [viewApprovalData])
+  //         status = res && res?.response?.status
+  //       }
+  //       if (status !== undefined && status === 200) {
+  //         setIsDisableSubmit(false)
+  //       } else {
+  //         setIsDisableSubmit(true)
+  //       }
+  //       setIsLoader(false)
+  //     }))
+  //   }
+  // }, [viewApprovalData])
 
   /**
    * @method renderDropdownListing
