@@ -29,7 +29,7 @@ import _, { debounce } from 'lodash';
 import AsyncSelect from 'react-select/async';
 import { getClientSelectList, } from '../actions/Client';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { autoCompleteDropdown, costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission, getEffectiveDateMinDate } from '../../common/CommonFunctions';
+import { autoCompleteDropdown, convertIntoCurrency, costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission, getEffectiveDateMinDate } from '../../common/CommonFunctions';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { checkFinalUser, getExchangeRateByCurrency } from '../../../components/costing/actions/Costing'
 import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions';
@@ -817,7 +817,9 @@ class AddBOPDomestic extends Component {
       effectiveDate: date,
       isDateChange: true,
     }, () => {
-      this.callExchangeRateAPI()
+      if (this.props.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
+        this.callExchangeRateAPI()
+      }
     });
   };
 
@@ -1046,7 +1048,7 @@ class AddBOPDomestic extends Component {
       Attachements: isEditFlag ? updatedFiles : files,
       BasicRate: values?.BasicRate,
       BasicRateLocalConversion: values?.BasicRate,
-      BasicRateConversion: values?.BasicRate * checkForNull(currencyValue),
+      BasicRateConversion: convertIntoCurrency(values?.BasicRate, currencyValue),
       BoughtOutPartConditionsDetails: conditionTableData,
       BoughtOutPartId: BOPID,
       BoughtOutPartName: values?.BoughtOutPartName,
@@ -1073,14 +1075,14 @@ class AddBOPDomestic extends Component {
       CurrencyId: LocalCurrencyId,
       CurrencyExchangeRate: currencyValue,
       NetConditionCost: FinalConditionCostBaseCurrency,
-      NetConditionCostConversion: FinalConditionCostBaseCurrency * checkForNull(currencyValue),
+      NetConditionCostConversion: convertIntoCurrency(FinalConditionCostBaseCurrency, currencyValue),
       NetConditionCostLocalConversion: FinalConditionCostBaseCurrency,
       NetCostWithoutConditionCost: BasicPrice,
       NetCostWithoutConditionCostLocalConversion: BasicPrice,
-      NetCostWithoutConditionCostConversion: BasicPrice * checkForNull(currencyValue),
+      NetCostWithoutConditionCostConversion: convertIntoCurrency(BasicPrice, currencyValue),
       NetLandedCost: NetLandedCost,
       NetLandedCostLocalConversion: NetLandedCost,
-      NetLandedCostConversion: NetLandedCost * checkForNull(currencyValue),
+      NetLandedCostConversion: convertIntoCurrency(NetLandedCost, currencyValue),
       NumberOfPieces: getConfigurationKey().IsMinimumOrderQuantityVisible ? values?.NumberOfPieces : 1,
       Plant: plantArray,
       Remark: values?.Remark,
@@ -1225,7 +1227,9 @@ class AddBOPDomestic extends Component {
   handleExchangeRateSource = (newValue) => {
     this.setState({ ExchangeSource: newValue }
       , () => {
-        this.callExchangeRateAPI()
+        if (this.props.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
+          this.callExchangeRateAPI()
+        }
       }
     );
   };

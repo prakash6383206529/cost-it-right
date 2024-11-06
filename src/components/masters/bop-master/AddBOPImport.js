@@ -34,7 +34,7 @@ import _, { debounce } from 'lodash';
 import AsyncSelect from 'react-select/async';
 import { getClientSelectList, } from '../actions/Client';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { autoCompleteDropdown, costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission, getEffectiveDateMinDate } from '../../common/CommonFunctions';
+import { autoCompleteDropdown, convertIntoCurrency, costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission, getEffectiveDateMinDate } from '../../common/CommonFunctions';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { checkFinalUser } from '../../../components/costing/actions/Costing'
 import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions';
@@ -1093,7 +1093,9 @@ class AddBOPImport extends Component {
     }
     this.setState({ effectiveDate: date, dateCount: this.state.dateCount + 1 }
       , () => {
-        this.callExchangeRateAPI(this.props.fieldsObj?.plantCurrency)
+        if (this.props.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
+          this.callExchangeRateAPI(this.props.fieldsObj?.plantCurrency)
+        }
       });
   };
   filterSourceLocationList = async (inputValue) => {
@@ -1341,11 +1343,12 @@ class AddBOPImport extends Component {
     let updatedFiles = files.map((file) => {
       return { ...file, ContextId: BOPID }
     })
+
     const formData = {
       Attachements: isEditFlag ? updatedFiles : files,
       BasicRate: values?.BasicRate,
-      BasicRateLocalConversion: values?.BasicRate * checkForNull(plantCurrencyValue),
-      BasicRateConversion: values?.BasicRate * checkForNull(currencyValue),
+      BasicRateLocalConversion: convertIntoCurrency(values?.BasicRate * plantCurrencyValue),
+      BasicRateConversion: convertIntoCurrency(values?.BasicRate, currencyValue),
       BoughtOutPartConditionsDetails: conditionTableData,
       BoughtOutPartId: BOPID,
       BoughtOutPartIncoTermId: incoTerm.value,
@@ -1374,18 +1377,18 @@ class AddBOPImport extends Component {
       LocalCurrencyId: LocalCurrencyId,
       LocalCurrencyExchangeRate: plantCurrencyValue,
       NetConditionCost: NetConditionCost,
-      NetConditionCostConversion: NetConditionCost * checkForNull(currencyValue),
-      NetConditionCostLocalConversion: NetConditionCost * checkForNull(plantCurrencyValue),
+      NetConditionCostConversion: convertIntoCurrency(NetConditionCost * currencyValue),
+      NetConditionCostLocalConversion: convertIntoCurrency(NetConditionCost, plantCurrencyValue),
       NetCostWithoutConditionCost: BasicPrice,
-      NetCostWithoutConditionCostLocalConversion: BasicPrice * checkForNull(plantCurrencyValue),
-      NetCostWithoutConditionCostConversion: BasicPrice * checkForNull(currencyValue),
+      NetCostWithoutConditionCostLocalConversion: convertIntoCurrency(BasicPrice, plantCurrencyValue),
+      NetCostWithoutConditionCostConversion: convertIntoCurrency(BasicPrice, currencyValue),
       NetLandedCost: NetLandedCost,
-      NetLandedCostLocalConversion: NetLandedCost * checkForNull(plantCurrencyValue),
-      NetLandedCostConversion: NetLandedCost * checkForNull(currencyValue),
+      NetLandedCostLocalConversion: convertIntoCurrency(NetLandedCost, plantCurrencyValue),
+      NetLandedCostConversion: convertIntoCurrency(NetLandedCost, currencyValue),
       NumberOfPieces: getConfigurationKey().IsMinimumOrderQuantityVisible ? values?.NumberOfPieces : 1,
       OtherNetCost: totalOtherCost,
-      OtherNetCostConversion: totalOtherCost * checkForNull(currencyValue),
-      OtherNetCostLocalConversion: totalOtherCost * checkForNull(plantCurrencyValue),
+      OtherNetCostConversion: convertIntoCurrency(totalOtherCost, currencyValue),
+      OtherNetCostLocalConversion: convertIntoCurrency(totalOtherCost, plantCurrencyValue),
       Plant: plantArray,
       Remark: values?.Remark,
       SAPPartNumber: values.SAPPartNumber,
@@ -1525,8 +1528,9 @@ class AddBOPImport extends Component {
   handleExchangeRateSource = (newValue) => {
     this.setState({ ExchangeSource: newValue }, () => {
       // First call with plant currency
-      this.callExchangeRateAPI(this.props.fieldsObj?.plantCurrency);
-
+      if (this.props.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
+        this.callExchangeRateAPI(this.props.fieldsObj?.plantCurrency)
+      }
       // Second call with base currency
       this.callExchangeRateAPI(reactLocalStorage.getObject("baseCurrency"));
     });
