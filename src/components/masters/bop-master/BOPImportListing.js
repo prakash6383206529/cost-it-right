@@ -90,7 +90,7 @@ const BOPImportListing = (props) => {
       NetConditionCost: "",
       NetConditionCostConversion: "",
       NetLandedCostConversion: "",
-      SAPCode: ""
+      SAPPartNumber: ""
     },
     warningMessage: false,
     filterModel: {},
@@ -767,7 +767,7 @@ const BOPImportListing = (props) => {
       tempData = data;
     }
     if (!getConfigurationKey().IsSAPCodeRequired) {
-      tempData = hideColumnFromExcel(tempData, 'SAPCode')
+      tempData = hideColumnFromExcel(tempData, 'SAPPartNumber')
     }
     temp =
       TempData && TempData.map((item) => {
