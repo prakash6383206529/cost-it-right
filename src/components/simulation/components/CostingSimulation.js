@@ -1288,7 +1288,6 @@ function CostingSimulation(props) {
             } else if (Number(amendmentDetails?.SimulationHeadId) === Number(ZBCTypeId)) {
 
                 tempData = hideMultipleColumnFromExcel(tempData, ['CustomerName', 'VendorName'])
-                console.log("🚀 ~ returnExcelColumn ~ temp:", tempData)
             }
         }
         let temp = []
