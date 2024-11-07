@@ -1195,7 +1195,7 @@ class AddBOPImport extends Component {
       }
     }
   };
-  handleBOPOperation = (formData, isEditFlag) => {
+  handleBOPOperation = (formData, isEditFlag, isOnlySAPCodeChanged) => {
     const operation = isEditFlag ? this.props.updateBOP : this.props.createBOP;
     const successMessage = isEditFlag ? MESSAGES.UPDATE_BOP_SUCESS : MESSAGES.BOP_ADD_SUCCESS;
 
@@ -1204,14 +1204,14 @@ class AddBOPImport extends Component {
       if (res?.data?.Result) {
         Toaster.success(successMessage);
         if (isEditFlag) {
-          if (!this.state.isEditBtnClicked) {
-            this.cancel('submit');
-          } else {
+          if (this.state.isEditBtnClicked && isOnlySAPCodeChanged === true) {
             this.getDetails();
             this.setState({
               IsSapCodeEditView: true,
               IsSAPCodeHandle: false
             });
+          } else {
+            this.cancel('submit');
           }
         } else {
           this.cancel('submit');
@@ -1346,7 +1346,6 @@ class AddBOPImport extends Component {
           }
         }
       }
-
       if (((files ? JSON.stringify(files) : []) === (DataToChange?.Attachements ? JSON.stringify(DataToChange?.Attachements) : [])) &&
         ((DataToChange?.Remark ? DataToChange?.Remark : '') === (values?.Remark ? values?.Remark : '')) &&
         ((DataToChange?.SAPPartNumber ? DataToChange?.SAPPartNumber : '') !== (values?.SAPPartNumber ? values?.SAPPartNumber : '')) &&
@@ -1372,7 +1371,7 @@ class AddBOPImport extends Component {
     //  ELSE: NO APPROVAL FLOW
     else {
       formData.IsSendForApproval = false;
-      this.handleBOPOperation(formData, isEditFlag);
+      this.handleBOPOperation(formData, isEditFlag, isOnlySAPCodeChanged);
     }
 
 
