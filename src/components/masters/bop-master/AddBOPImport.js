@@ -140,6 +140,7 @@ class AddBOPImport extends Component {
       IsSapCodeEditView: true,
       IsEditBtnClicked: false,
       SapCode: '',
+      isSAPCodeDisabled: false,
     }
   }
 
@@ -339,7 +340,10 @@ class AddBOPImport extends Component {
         }
         this.props.checkAndGetBopPartNo(obj, (res) => {
           let Data = res.data.Identity;
+          let sapCode = res?.data?.DynamicData?.sapPartNumber
           this.props.change('BoughtOutPartNumber', Data)
+          this.props.change('SAPPartNumber', sapCode)
+          this.setState({ isSAPCodeDisabled: sapCode === '' ? false : true, IsSAPCodeHandle: sapCode === '' ? false : true })
         })
       }
     } else {
@@ -356,7 +360,10 @@ class AddBOPImport extends Component {
       }
       this.props.checkAndGetBopPartNo(obj, (res) => {
         let Data = res.data.Identity;
+        let sapCode = res?.data?.DynamicData?.sapPartNumber
         this.props.change('BoughtOutPartNumber', Data)
+        this.props.change('SAPPartNumber', sapCode)
+        this.setState({ isSAPCodeDisabled: sapCode === '' ? false : true, IsSAPCodeHandle: sapCode === '' ? false : true })
       })
     }
   }, 500)
@@ -1769,7 +1776,7 @@ class AddBOPImport extends Component {
                                   placeholder={isViewMode ? "-" : "Enter"}
                                   validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkSpacesInString, hashValidation]}
                                   component={renderText}
-                                  disabled={(IsSapCodeEditView && isEditFlag) || isViewMode}
+                                  disabled={(IsSapCodeEditView && isEditFlag) || isViewMode || this?.state?.isSAPCodeDisabled}
                                   value={this.state.SapCode}
                                   onChange={this.handleChangeSapCode}
                                   className=" "

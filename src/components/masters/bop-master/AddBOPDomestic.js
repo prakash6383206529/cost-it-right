@@ -117,6 +117,7 @@ class AddBOPDomestic extends Component {
       IsSapCodeEditView: true,
       IsEditBtnClicked: false,
       SapCode: '',
+      isSAPCodeDisabled: false,
     }
   }
 
@@ -282,7 +283,10 @@ class AddBOPDomestic extends Component {
         }
         this.props.checkAndGetBopPartNo(obj, (res) => {
           let Data = res.data.Identity;
+          let sapCode = res?.data?.DynamicData?.sapPartNumber
           this.props.change('BoughtOutPartNumber', Data)
+          this.props.change('SAPPartNumber', sapCode)
+          this.setState({ isSAPCodeDisabled: sapCode === '' ? false : true, IsSAPCodeHandle: sapCode === '' ? false : true })
         })
       }
     } else {
@@ -299,7 +303,10 @@ class AddBOPDomestic extends Component {
       }
       this.props.checkAndGetBopPartNo(obj, (res) => {
         let Data = res.data.Identity;
+        let sapCode = res?.data?.DynamicData?.sapPartNumber
         this.props.change('BoughtOutPartNumber', Data)
+        this.props.change('SAPPartNumber', sapCode)
+        this.setState({ isSAPCodeDisabled: sapCode === '' ? false : true, IsSAPCodeHandle: sapCode === '' ? false : true })
       })
     }
   }, 500)
@@ -1458,7 +1465,7 @@ class AddBOPDomestic extends Component {
                                   placeholder={isViewMode ? "-" : "Enter"}
                                   validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkSpacesInString, hashValidation]}
                                   component={renderText}
-                                  disabled={(IsSapCodeEditView && isEditFlag) || isViewMode}
+                                  disabled={(IsSapCodeEditView && isEditFlag) || isViewMode || this?.state?.isSAPCodeDisabled}
                                   value={this.state.SapCode}
                                   onChange={this.handleChangeSapCode}
                                   className=" "
