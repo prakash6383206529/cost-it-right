@@ -192,20 +192,18 @@ class AddOperation extends Component {
         // First API call
         callAPI(fromCurrency, fieldsObj?.plantCurrency).then(({ rate: rate1, exchangeRateId: exchangeRateId1 }) => {
           // Second API call
-          if (this.props.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
-            callAPI(fromCurrency, reactLocalStorage.getObject("baseCurrency")).then(({ rate: rate2, exchangeRateId: exchangeRateId2 }) => {
-              this.setState({
-                plantCurrency: rate1,
-                settlementCurrency: rate2,
-                plantExchangeRateId: exchangeRateId1,
-                settlementExchangeRateId: exchangeRateId2
-              }, () => {
-                this.handleCalculation(fieldsObj?.Rate)
-              });
+          callAPI(fromCurrency, reactLocalStorage.getObject("baseCurrency")).then(({ rate: rate2, exchangeRateId: exchangeRateId2 }) => {
+            this.setState({
+              plantCurrency: rate1,
+              settlementCurrency: rate2,
+              plantExchangeRateId: exchangeRateId1,
+              settlementExchangeRateId: exchangeRateId2
+            }, () => {
+              this.handleCalculation(fieldsObj?.Rate)
             });
-          }
+          });
         });
-      } else {
+      } else if (this.props.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
         // Original single API call for non-import case
         callAPI(fromCurrency, toCurrency).then(({ rate, exchangeRateId }) => {
           this.setState({ plantCurrency: rate, plantExchangeRateId: exchangeRateId }, () => {
@@ -400,9 +398,9 @@ class AddOperation extends Component {
         let Data = res?.data?.Data
         this.props.change('plantCurrency', Data?.Currency)
         this.setState({ plantCurrencyID: Data?.CurrencyId })
+        this.callExchangeRateAPI()
         if (Data?.Currency !== reactLocalStorage?.getObject("baseCurrency")) {
           this.setState({ hidePlantCurrency: false })
-          this.callExchangeRateAPI()
         } else {
           this.setState({ hidePlantCurrency: true })
         }
@@ -421,9 +419,7 @@ class AddOperation extends Component {
       this.setState({ vendorName: newValue, isVendorNameNotSelected: false }, () => {
         const { vendorName } = this.state;
         this.props.getPlantBySupplier(vendorName.value, () => { })
-        if (this.props.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
-          this.callExchangeRateAPI()
-        }
+        this.callExchangeRateAPI()
       });
     } else {
       this.setState({ vendorName: [] })
@@ -432,9 +428,7 @@ class AddOperation extends Component {
   handleExchangeRateSource = (newValue) => {
     this.setState({ ExchangeSource: newValue }
       , () => {
-        if (this.props.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
-          this.callExchangeRateAPI()
-        }
+        this.callExchangeRateAPI()
       }
     );
   };
@@ -542,7 +536,6 @@ class AddOperation extends Component {
   }
   handleCalculation = (rate) => {
     const { plantCurrency, settlementCurrency, isImport } = this.state
-
     if (isImport) {
       const ratePlantCurrency = convertIntoCurrency(rate, plantCurrency)
       this.props.change('RateLocalConversion', checkForDecimalAndNull(ratePlantCurrency, getConfigurationKey().NoOfDecimalForPrice))
@@ -883,9 +876,9 @@ class AddOperation extends Component {
         let Data = res?.data?.Data
         this.props.change('plantCurrency', Data?.Currency)
         this.setState({ plantCurrencyID: Data?.CurrencyId })
+        this.callExchangeRateAPI()
         if (Data?.Currency !== reactLocalStorage?.getObject("baseCurrency")) {
           this.setState({ hidePlantCurrency: false })
-          this.callExchangeRateAPI()
         } else {
           this.setState({ hidePlantCurrency: true })
         }
