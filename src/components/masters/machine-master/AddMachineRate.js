@@ -35,7 +35,7 @@ import { ProcessGroup } from '../masterUtil';
 import _ from 'lodash'
 import { getCostingSpecificTechnology, getExchangeRateByCurrency } from '../../costing/actions/Costing'
 import { getClientSelectList, } from '../actions/Client';
-import { autoCompleteDropdown, costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission, getEffectiveDateMinDate } from '../../common/CommonFunctions';
+import { autoCompleteDropdown, convertIntoCurrency, costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission, getEffectiveDateMinDate } from '../../common/CommonFunctions';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { checkFinalUser } from '../../../components/costing/actions/Costing'
@@ -130,11 +130,11 @@ class AddMachineRate extends Component {
       isImport: false,
       currency: [],
       hidePlantCurrency: false,
-      settlementCurrency: null,
+      settlementCurrency: 1,
       plantExchangeRateId: '',
       settlementExchangeRateId: '',
       plantCurrencyID: '',
-      plantCurrency: null,
+      plantCurrency: 1,
     }
   }
 
@@ -300,18 +300,16 @@ class AddMachineRate extends Component {
 
     const { fieldsObj, initialConfiguration } = this.props
     const { plantCurrency, settlementCurrency, isImport } = this.state
-    const MachineRate = fieldsObj && fieldsObj.MachineRate !== undefined ? fieldsObj.MachineRate : ""
     if (isImport) {
-      const MachineRateLocalConversion = checkForNull(fieldsObj?.MachineRate) * checkForNull(plantCurrency)
+      const MachineRateLocalConversion = convertIntoCurrency(fieldsObj?.MachineRate, plantCurrency)
       this.props.change('MachineRateLocalConversion', checkForNull(MachineRateLocalConversion, initialConfiguration.NoOfDecimalForPrice));
-      const MachineRateConversion = checkForNull(fieldsObj?.MachineRate) * checkForNull(settlementCurrency)
+      const MachineRateConversion = convertIntoCurrency(fieldsObj?.MachineRate, settlementCurrency)
       this.props.change('MachineRateConversion', checkForNull(MachineRateConversion, initialConfiguration.NoOfDecimalForPrice));
     } else {
-      const MachineRateConversion = checkForNull(fieldsObj?.MachineRate) * checkForNull(plantCurrency)
+      const MachineRateConversion = convertIntoCurrency(fieldsObj?.MachineRate, plantCurrency)
       this.props.change('MachineRateConversion', checkForDecimalAndNull(MachineRateConversion, initialConfiguration.NoOfDecimalForPrice));
     }
   }
-
 
   finalUserCheckAndMasterLevelCheckFunction = (plantId, isDivision = false) => {
     const { initialConfiguration } = this.props
@@ -795,23 +793,23 @@ class AddMachineRate extends Component {
         let Data = res?.data?.Data
         this.props.change('plantCurrency', Data?.Currency)
         this.setState({ plantCurrencyID: Data?.CurrencyId })
-        this.callExchangeRateAPI(costingTypeId, fieldsObj?.plantCurrency, currency, isImport, ExchangeSource, effectiveDate, client, vendorName, selectedPlants).then(result => {
-          if (result) {
-
-            this.setState({
-              ...result,
-              showWarning: result.showWarning
-            }, () => {
-              this.handleCalculation(this.fieldsObj?.MachineRate);
-              // if (result.plantCurrency) {
-              // }
-              // if (this.state.entryType) {
-              //   this.handleCalculation(this.props.fieldsObj?.MachineRate);
-              // }
-            });
-          }
-        });
         if (Data?.Currency !== reactLocalStorage?.getObject("baseCurrency")) {
+          this.callExchangeRateAPI(costingTypeId, fieldsObj?.plantCurrency, currency, isImport, ExchangeSource, effectiveDate, client, vendorName, selectedPlants).then(result => {
+            if (result) {
+
+              this.setState({
+                ...result,
+                showWarning: result.showWarning
+              }, () => {
+                this.handleCalculation(this.fieldsObj?.MachineRate);
+                // if (result.plantCurrency) {
+                // }
+                // if (this.state.entryType) {
+                //   this.handleCalculation(this.props.fieldsObj?.MachineRate);
+                // }
+              });
+            }
+          });
           this.setState({ hidePlantCurrency: false })
         } else {
           this.setState({ hidePlantCurrency: true })
@@ -899,8 +897,6 @@ class AddMachineRate extends Component {
       currency: currency,
       callExchangeRateAPI: this.callExchangeRateAPI,
       handleCalculation: this?.handleCalculation
-
-
     }
     this.props.displayMoreDetailsForm(data)
   }
@@ -1191,23 +1187,24 @@ class AddMachineRate extends Component {
       effectiveDate: date,
       isDateChange: true,
     }, () => {
-      this.callExchangeRateAPI(costingTypeId, fieldsObj?.plantCurrency, currency, isImport, ExchangeSource, date, client, vendorName, selectedPlants).then(result => {
-        if (result) {
+      if (this.props.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
+        this.callExchangeRateAPI(costingTypeId, fieldsObj?.plantCurrency, currency, isImport, ExchangeSource, date, client, vendorName, selectedPlants).then(result => {
+          if (result) {
 
-          this.setState({
-            ...result,
-            showWarning: result.showWarning
-          }, () => {
-            this.handleCalculation(this.fieldsObj?.MachineRate);
-            // if (result.plantCurrency) {
-            // }
-            // if (this.state.entryType) {
-            //   this.handleCalculation(this.props.fieldsObj?.MachineRate);
-            // }
-          });
-        }
-      });
-
+            this.setState({
+              ...result,
+              showWarning: result.showWarning
+            }, () => {
+              this.handleCalculation(this.fieldsObj?.MachineRate);
+              // if (result.plantCurrency) {
+              // }
+              // if (this.state.entryType) {
+              //   this.handleCalculation(this.props.fieldsObj?.MachineRate);
+              // }
+            });
+          }
+        });
+      }
     });
 
   };
@@ -1704,22 +1701,19 @@ class AddMachineRate extends Component {
     const { costingTypeId, vendorName, client, effectiveDate, ExchangeSource, currency, isImport, selectedPlants } = this.state;
     this.setState({ ExchangeSource: newValue }
       , () => {
-        this.callExchangeRateAPI(costingTypeId, fieldsObj?.plantCurrency, currency, isImport, newValue, effectiveDate, client, vendorName, selectedPlants).then(result => {
-          if (result) {
+        if (this.props.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
+          this.callExchangeRateAPI(costingTypeId, fieldsObj?.plantCurrency, currency, isImport, newValue, effectiveDate, client, vendorName, selectedPlants).then(result => {
+            if (result) {
+              this.setState({
+                ...result,
+                showWarning: result.showWarning
+              }, () => {
+                this.handleCalculation(this.fieldsObj?.MachineRate);
 
-            this.setState({
-              ...result,
-              showWarning: result.showWarning
-            }, () => {
-              this.handleCalculation(this.fieldsObj?.MachineRate);
-              // if (result.plantCurrency) {
-              // }
-              // if (this.state.entryType) {
-              //   this.handleCalculation(this.props.fieldsObj?.MachineRate);
-              // }
-            });
-          }
-        });
+              });
+            }
+          });
+        }
       }
     );
   };
@@ -1732,7 +1726,6 @@ class AddMachineRate extends Component {
       this.props.change("MachineRateConversion", "")
       this.callExchangeRateAPI(costingTypeId, fieldsObj?.plantCurrency, currency, isImport, ExchangeSource, effectiveDate, client, vendorName, selectedPlants).then(result => {
         if (result) {
-
           this.setState({
             ...result,
             showWarning: result.showWarning

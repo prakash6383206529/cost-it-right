@@ -25,7 +25,7 @@ import { CheckApprovalApplicableMaster, onFocus, showDataOnHover, userTechnology
 import { getCostingSpecificTechnology, getExchangeRateByCurrency } from '../../costing/actions/Costing'
 import { getClientSelectList, } from '../actions/Client';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { autoCompleteDropdown, costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission, getEffectiveDateMinDate } from '../../common/CommonFunctions';
+import { autoCompleteDropdown, convertIntoCurrency, costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission, getEffectiveDateMinDate } from '../../common/CommonFunctions';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { checkFinalUser } from '../../../components/costing/actions/Costing'
 import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions';
@@ -161,7 +161,6 @@ class AddOperation extends Component {
         this.setState({ showWarning: true });
         return;
       }
-
       const callAPI = (from, to) => {
         return new Promise((resolve) => {
           this.props.getExchangeRateByCurrency(
@@ -193,16 +192,18 @@ class AddOperation extends Component {
         // First API call
         callAPI(fromCurrency, fieldsObj?.plantCurrency).then(({ rate: rate1, exchangeRateId: exchangeRateId1 }) => {
           // Second API call
-          callAPI(fromCurrency, reactLocalStorage.getObject("baseCurrency")).then(({ rate: rate2, exchangeRateId: exchangeRateId2 }) => {
-            this.setState({
-              plantCurrency: rate1,
-              settlementCurrency: rate2,
-              plantExchangeRateId: exchangeRateId1,
-              settlementExchangeRateId: exchangeRateId2
-            }, () => {
-              this.handleCalculation(fieldsObj?.Rate)
+          if (this.props.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
+            callAPI(fromCurrency, reactLocalStorage.getObject("baseCurrency")).then(({ rate: rate2, exchangeRateId: exchangeRateId2 }) => {
+              this.setState({
+                plantCurrency: rate1,
+                settlementCurrency: rate2,
+                plantExchangeRateId: exchangeRateId1,
+                settlementExchangeRateId: exchangeRateId2
+              }, () => {
+                this.handleCalculation(fieldsObj?.Rate)
+              });
             });
-          });
+          }
         });
       } else {
         // Original single API call for non-import case
@@ -420,7 +421,9 @@ class AddOperation extends Component {
       this.setState({ vendorName: newValue, isVendorNameNotSelected: false }, () => {
         const { vendorName } = this.state;
         this.props.getPlantBySupplier(vendorName.value, () => { })
-        this.callExchangeRateAPI()
+        if (this.props.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
+          this.callExchangeRateAPI()
+        }
       });
     } else {
       this.setState({ vendorName: [] })
@@ -429,7 +432,9 @@ class AddOperation extends Component {
   handleExchangeRateSource = (newValue) => {
     this.setState({ ExchangeSource: newValue }
       , () => {
-        this.callExchangeRateAPI()
+        if (this.props.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
+          this.callExchangeRateAPI()
+        }
       }
     );
   };
@@ -539,12 +544,12 @@ class AddOperation extends Component {
     const { plantCurrency, settlementCurrency, isImport } = this.state
 
     if (isImport) {
-      const ratePlantCurrency = checkForNull(rate) * checkForNull(plantCurrency)
+      const ratePlantCurrency = convertIntoCurrency(rate, plantCurrency)
       this.props.change('RateLocalConversion', checkForDecimalAndNull(ratePlantCurrency, getConfigurationKey().NoOfDecimalForPrice))
-      const rateBaseCurrency = checkForNull(rate) * checkForNull(settlementCurrency)
+      const rateBaseCurrency = convertIntoCurrency(rate, settlementCurrency)
       this.props.change('RateConversion', checkForDecimalAndNull(rateBaseCurrency, getConfigurationKey().NoOfDecimalForPrice))
     } else {
-      const ratebaseCurrency = checkForNull(rate) * checkForNull(plantCurrency)
+      const ratebaseCurrency = convertIntoCurrency(rate, plantCurrency)
       this.props.change('RateConversion', checkForDecimalAndNull(ratebaseCurrency, getConfigurationKey().NoOfDecimalForPrice))
     }
   }
@@ -1873,10 +1878,8 @@ class AddOperation extends Component {
             callExchangeRateAPI={this.callExchangeRateAPI}
           />
         }
-
         {
           this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
-
         }
         {
           isOpenVendor && (
