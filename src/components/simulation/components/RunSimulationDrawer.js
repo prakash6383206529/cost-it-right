@@ -146,9 +146,14 @@ function RunSimulationDrawer(props) {
     useEffect(() => {
         if (applicabilityHeadListSimulation && applicabilityHeadListSimulation.length > 0) {
             const result = applicabilityHeadListSimulation.slice(1, 11).map(item => item.Text);
-            setSelectedData(result)
+            setSelectedData(result);
+            setDisableAdditionalDiscount(true);
+            setDisableAdditionalOtherCost(true);
+            setDisableAdditionalPackaging(true);
+            setDisableAdditionalFreight(true);
+            // setDisableTool(true);
         }
-    }, [applicabilityHeadListSimulation])
+    }, [applicabilityHeadListSimulation]);
     // const costingHead = useSelector(state => state.comman.costingHead)
     const toggleDrawer = (event, mode = false) => {
         if (runSimulationDisable) {
@@ -166,33 +171,17 @@ function RunSimulationDrawer(props) {
     }
 
     const handleApplicabilityChange = (elementObj) => {
+        let tempData = [];
 
-        let temp = multipleHeads
-        let temp1 = selectedData
         if (selectedData.includes(elementObj.Text)) {
-            temp1 = selectedData.filter((el) => el !== elementObj.Text)
-            setSelectedData(temp1)
+            const test = selectedData.filter((el) => el !== elementObj.Text);
+            tempData = test;
         } else {
-            temp1 = [...selectedData, elementObj.Text]
-            setSelectedData(temp1)
+            const test = [...selectedData, elementObj.Text];
+            tempData = test;
         }
-        if (temp && temp.findIndex(el => el.SimulationApplicabilityId === elementObj.Value) !== -1) {
-            const ind = multipleHeads.findIndex((el) => el.SimulationApplicabilityId === elementObj.Value)
-            const indexForCheck = selectedData.findIndex((el) => el === elementObj.Text)
-
-            if (ind !== -1) {
-                temp.splice(ind, 1)
-                temp1.splice(indexForCheck, 1)
-            }
-        } else {
-            temp.push({ SimulationApplicabilityName: elementObj.Text, SimulationApplicabilityId: elementObj.Value })
-            temp1.push(elementObj.Text)
-        }
-
-        setMultipleHeads(temp)
-        setSelectedData(temp1)
-        setIsOpposite(!opposite)
-
+        setSelectedData(tempData);
+        setIsOpposite(!opposite);
         if (elementObj.Text === "Discount And Other Cost") {
             setDisableAdditionalDiscount(!disableAdditionalDiscount)
             setDisableAdditionalOtherCost(!disableAdditionalOtherCost)
@@ -576,7 +565,7 @@ function RunSimulationDrawer(props) {
     const closePopUp = () => {
         setShowPopup(false)
     }
-
+    const disabledFields = (el) => (el.Text === "Discount And Other Cost" && disableDiscountAndOtherCost) || (el.Text === "Discount And Other Cost" && disableDiscountAndOtherCostSecond) || (el.Text === "Additional Discount" && disableAdditionalDiscount) || (el.Text === "Additional Other Cost" && disableAdditionalOtherCost) || (el.Text === "Packaging" && disablePackaging) || (el.Text === "Additional Packaging" && disableAdditionalPackaging) || (el.Text === "Freight" && disableFreight) || (el.Text === "Tool" && disableTool) || (el.Text === "Latest Exchange Rate" && selectedMasterForSimulation?.value === EXCHNAGERATE) ? true : false
     return (
         <>
             {/* <runSimulationDrawerDataContext.Provider value={runSimulationDrawerData}>
@@ -624,7 +613,7 @@ function RunSimulationDrawer(props) {
                                                         if (showCheckBox === false && (el?.Text !== "Additional Discount" && el?.Text !== "Additional Other Cost" && el?.Text !== "Latest Exchange Rate")) return false;
                                                         return (
                                                             <Col md={`${showCheckBox ? '6' : '8'}`} className='mb-3 check-box-container p-0'>
-                                                                <div class={'custom-check1 d-inline-block drawer-side-input-other'} id={`afpplicability-checkbox_${i}`}>
+                                                                <div class={`custom-check1 d-inline-block drawer-side-input-other ${disabledFields(el) ? 'disabled' : ''}`} id={`afpplicability-checkbox_${i}`}>
                                                                     <label
                                                                         id="simulation_checkbox"
                                                                         className="custom-checkbox mb-0"
@@ -634,7 +623,7 @@ function RunSimulationDrawer(props) {
                                                                         <input
                                                                             type="checkbox"
                                                                             value={"All"}
-                                                                            disabled={(el.Text === "Discount And Other Cost" && disableDiscountAndOtherCost) || (el.Text === "Discount And Other Cost" && disableDiscountAndOtherCostSecond) || (el.Text === "Additional Discount" && disableAdditionalDiscount) || (el.Text === "Additional Other Cost" && disableAdditionalOtherCost) || (el.Text === "Packaging" && disablePackaging) || (el.Text === "Freight" && disableFreight) || (el.Text === "Tool" && disableTool) || (el.Text === "Latest Exchange Rate" && selectedMasterForSimulation?.value === EXCHNAGERATE) ? true : false}
+                                                                            disabled={disabledFields(el)}
                                                                             checked={IsAvailable(el.Text)}
                                                                         />
 
@@ -850,7 +839,7 @@ function RunSimulationDrawer(props) {
                                                     <div class={`custom-check1 d-inline-block drawer-side-input-other `}>
                                                         {(
 
-                                                            <div className={`input-group col-md-12 mb-3 px-0 m-height-auto`} id={`applicability-checkbox_16`}>
+                                                            <div className={`input-group col-md-12 mb-3 px-0 m-height-auto ${disableAdditionalPackaging ? 'disabled' : ''}`} id={`applicability-checkbox_16`}>
 
                                                                 <label
                                                                     className="custom-checkbox mb-0"
@@ -972,7 +961,7 @@ function RunSimulationDrawer(props) {
                                                 <Col md="12" className="mb-3 p-0">
                                                     <div class={`custom-check1 d-inline-block drawer-side-input-other `}>
                                                         {(
-                                                            <div className="input-group col-md-12 mb-3 px-0 m-height-auto" id={`applicability-checkbox_17`}>
+                                                            <div className={`input-group col-md-12 mb-3 px-0 m-height-auto ${disableAdditionalFreight ? 'disabled' : ''}`} id={`applicability-checkbox_17`}>
                                                                 <label
                                                                     className="custom-checkbox mb-0"
                                                                     onChange={() => handleAdditional('Freight')}
