@@ -284,7 +284,7 @@ class AddMachineRate extends Component {
                 });
               });
           });
-      } else {
+      } else if (this.props.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
         callAPI(fromCurrency, toCurrency)
           .then(result => {
             resolve({
@@ -533,7 +533,7 @@ class AddMachineRate extends Component {
                 MachineRateConversion: el.MachineRateConversion
               }
             })
-            if (Data?.LocalCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
+            if (Data?.LocalCurrency !== reactLocalStorage?.getObject("baseCurrency") || Data?.MachineEntryType === ENTRY_TYPE_IMPORT) {
               this.setState({ hidePlantCurrency: false })
             } else {
               this.setState({ hidePlantCurrency: true })
@@ -793,23 +793,23 @@ class AddMachineRate extends Component {
         let Data = res?.data?.Data
         this.props.change('plantCurrency', Data?.Currency)
         this.setState({ plantCurrencyID: Data?.CurrencyId })
-        if (Data?.Currency !== reactLocalStorage?.getObject("baseCurrency")) {
-          this.callExchangeRateAPI(costingTypeId, fieldsObj?.plantCurrency, currency, isImport, ExchangeSource, effectiveDate, client, vendorName, selectedPlants).then(result => {
-            if (result) {
+        this.callExchangeRateAPI(costingTypeId, Data?.Currency, currency, isImport, ExchangeSource, effectiveDate, client, vendorName, selectedPlants).then(result => {
+          if (result) {
 
-              this.setState({
-                ...result,
-                showWarning: result.showWarning
-              }, () => {
-                this.handleCalculation(this.fieldsObj?.MachineRate);
-                // if (result.plantCurrency) {
-                // }
-                // if (this.state.entryType) {
-                //   this.handleCalculation(this.props.fieldsObj?.MachineRate);
-                // }
-              });
-            }
-          });
+            this.setState({
+              ...result,
+              showWarning: result.showWarning
+            }, () => {
+              this.handleCalculation(this.fieldsObj?.MachineRate);
+              // if (result.plantCurrency) {
+              // }
+              // if (this.state.entryType) {
+              //   this.handleCalculation(this.props.fieldsObj?.MachineRate);
+              // }
+            });
+          }
+        });
+        if (Data?.Currency !== reactLocalStorage?.getObject("baseCurrency")) {
           this.setState({ hidePlantCurrency: false })
         } else {
           this.setState({ hidePlantCurrency: true })
@@ -1187,24 +1187,22 @@ class AddMachineRate extends Component {
       effectiveDate: date,
       isDateChange: true,
     }, () => {
-      if (this.props.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
-        this.callExchangeRateAPI(costingTypeId, fieldsObj?.plantCurrency, currency, isImport, ExchangeSource, date, client, vendorName, selectedPlants).then(result => {
-          if (result) {
+      this.callExchangeRateAPI(costingTypeId, fieldsObj?.plantCurrency, currency, isImport, ExchangeSource, date, client, vendorName, selectedPlants).then(result => {
+        if (result) {
 
-            this.setState({
-              ...result,
-              showWarning: result.showWarning
-            }, () => {
-              this.handleCalculation(this.fieldsObj?.MachineRate);
-              // if (result.plantCurrency) {
-              // }
-              // if (this.state.entryType) {
-              //   this.handleCalculation(this.props.fieldsObj?.MachineRate);
-              // }
-            });
-          }
-        });
-      }
+          this.setState({
+            ...result,
+            showWarning: result.showWarning
+          }, () => {
+            this.handleCalculation(this.fieldsObj?.MachineRate);
+            // if (result.plantCurrency) {
+            // }
+            // if (this.state.entryType) {
+            //   this.handleCalculation(this.props.fieldsObj?.MachineRate);
+            // }
+          });
+        }
+      });
     });
 
   };
@@ -1701,19 +1699,18 @@ class AddMachineRate extends Component {
     const { costingTypeId, vendorName, client, effectiveDate, ExchangeSource, currency, isImport, selectedPlants } = this.state;
     this.setState({ ExchangeSource: newValue }
       , () => {
-        if (this.props.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
-          this.callExchangeRateAPI(costingTypeId, fieldsObj?.plantCurrency, currency, isImport, newValue, effectiveDate, client, vendorName, selectedPlants).then(result => {
-            if (result) {
-              this.setState({
-                ...result,
-                showWarning: result.showWarning
-              }, () => {
-                this.handleCalculation(this.fieldsObj?.MachineRate);
+        this.callExchangeRateAPI(costingTypeId, fieldsObj?.plantCurrency, currency, isImport, newValue, effectiveDate, client, vendorName, selectedPlants).then(result => {
+          if (result) {
+            this.setState({
+              ...result,
+              showWarning: result.showWarning
+            }, () => {
+              this.handleCalculation(this.fieldsObj?.MachineRate);
 
-              });
-            }
-          });
-        }
+            });
+          }
+        });
+
       }
     );
   };
@@ -1724,21 +1721,21 @@ class AddMachineRate extends Component {
       this.props.change("MachineRate", "")
       this.props.change("MachineRateLocalConversion", "")
       this.props.change("MachineRateConversion", "")
-      this.callExchangeRateAPI(costingTypeId, fieldsObj?.plantCurrency, currency, isImport, ExchangeSource, effectiveDate, client, vendorName, selectedPlants).then(result => {
-        if (result) {
-          this.setState({
-            ...result,
-            showWarning: result.showWarning
-          }, () => {
-            this.handleCalculation(this.fieldsObj?.MachineRate);
-            // if (result.plantCurrency) {
-            // }
-            // if (this.state.entryType) {
-            //   this.handleCalculation(this.props.fieldsObj?.MachineRate);
-            // }
-          });
-        }
-      });
+      // this.callExchangeRateAPI(costingTypeId, fieldsObj?.plantCurrency, currency, isImport, ExchangeSource, effectiveDate, client, vendorName, selectedPlants).then(result => {
+      //   if (result) {
+      //     this.setState({
+      //       ...result,
+      //       showWarning: result.showWarning
+      //     }, () => {
+      //       this.handleCalculation(this.fieldsObj?.MachineRate);
+      //       // if (result.plantCurrency) {
+      //       // }
+      //       // if (this.state.entryType) {
+      //       //   this.handleCalculation(this.props.fieldsObj?.MachineRate);
+      //       // }
+      //     });
+      //   }
+      // });
     })
   };
 
@@ -1746,11 +1743,6 @@ class AddMachineRate extends Component {
     const { fieldsObj } = this.props;
     const { costingTypeId, vendorName, client, effectiveDate, ExchangeSource, currency, isImport, selectedPlants } = this.state;
     if (newValue && newValue !== '') {
-      if (fieldsObj?.plantCurrency !== newValue?.label) {
-        this.setState({ hidePlantCurrency: false })
-      } else {
-        this.setState({ hidePlantCurrency: true })
-      }
       this.setState({ currency: newValue }, () => {
         this.callExchangeRateAPI(costingTypeId, fieldsObj?.plantCurrency, newValue, isImport, ExchangeSource, effectiveDate, client, vendorName, selectedPlants).then(result => {
           if (result) {
@@ -2257,7 +2249,6 @@ class AddMachineRate extends Component {
                           />
                           {this.state.errorObj.machineRate && (this.props.fieldsObj.MachineRate === undefined || Number(this.props.fieldsObj.MachineRate) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
                         </Col>
-
                         {(this?.state?.isImport && !this?.state?.hidePlantCurrency) && <Col md="3" className='UOM-label-container p-relative'>
                           <Field
                             label={this.DisplayMachineRatePlantCurrencyLabel()}
@@ -2275,7 +2266,7 @@ class AddMachineRate extends Component {
                           {this.state?.errorObj?.MachineRateLocalConversion && (this.props?.fieldsObj?.MachineRateLocalConversion === undefined || Number(this.props?.fieldsObj?.MachineRateLocalConversion) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
                         </Col>}
 
-                        {!this?.state?.hidePlantCurrency && <Col md="3" className='UOM-label-container p-relative'>
+                        {<Col md="3" className='UOM-label-container p-relative'>
                           <Field
                             label={this.DisplayMachineRateBaseCurrencyLabel()}
                             name={"MachineRateConversion"}

@@ -188,7 +188,6 @@ class AddFreight extends Component {
   }
   handleCalculation = (rate) => {
     const { plantCurrency, settlementCurrency, isImport } = this.state
-    console.log("heloooooooooooo")
     if (isImport) {
       const ratePlantCurrency = checkForNull(rate) * checkForNull(plantCurrency)
       this.props.change('RateLocalConversion', checkForDecimalAndNull(ratePlantCurrency, getConfigurationKey().NoOfDecimalForPrice))
