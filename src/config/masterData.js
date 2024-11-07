@@ -5652,7 +5652,6 @@ export const BOP_DOMESTIC_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead", },
     { label: "BOP Part No.", value: "BoughtOutPartNumber", },
     { label: "BOP Part Name", value: "BoughtOutPartName", },
-    { label: "Min Order Quantity", value: "Quantity", },
     { label: "BOP Part Category", value: "BoughtOutPartCategory", },
     { label: "UOM", value: "UOM", },
     { label: "Specification", value: "Specification", },
@@ -6355,7 +6354,6 @@ export const RM_IMPACT_DOWNLOAD_EXCEl_IMPORT = [
 export const BOP_IMPACT_DOWNLOAD_EXCEl = [
     { label: "BOP Part No", value: "BoughtOutPartNumber", },
     { label: "BOP Part Name", value: "BoughtOutPartName", },
-    { label: "Min Order Quantity", value: "Quantity", },
     { label: "Existing Basic Rate", value: "OldBOPRate", },
     { label: "Revised Basic Rate", value: "NewBOPRate", },
     { label: "Minimum Order Quantity", value: "Quantity", },
