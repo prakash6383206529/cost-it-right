@@ -1751,6 +1751,7 @@ class AddBOPDomestic extends Component {
                               className=" "
                               customClassName=" withBorder"
                             />
+                            {this.state.showWarning && <WarningMessage dClass="mt-1" message={`${this.props.fieldsObj.plantCurrency} rate is not present in the Exchange Master`} />}
                           </Col>}
                           <Col md="3">
                             <div className="inputbox date-section form-group">
