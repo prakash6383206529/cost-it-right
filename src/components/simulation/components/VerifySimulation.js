@@ -42,6 +42,7 @@ function VerifySimulation(props) {
     const [objs, setObj] = useState({})
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
+    const [isLoader, setIsLoader] = useState(false)
     const [noData, setNoData] = useState(false);
     const [minimumPoPrice, setMinimumPoPrice] = useState('');
     // const [showAssemblyPage, setShowAssemblyPage] = useState(false);   // REJECTED ASSEMBLY
@@ -132,9 +133,11 @@ function VerifySimulation(props) {
             } else if (selectedMasterForSimulation?.value === EXCHNAGERATE && simulationApplicability?.value === APPLICABILITY_BOP_SIMULATION) {
                 masterTemp = BOPIMPORT
             }
+            setIsLoader(true)
             switch (Number(masterTemp)) {
                 case Number(RMDOMESTIC):
                     dispatch(getVerifySimulationList(props.token, plant, rawMatrialId, (res) => {
+                        setIsLoader(false)
                         if (res.data.Result) {
                             const data = res.data.Data
                             if (data.SimulationImpactedCostings.length === 0) {
@@ -153,6 +156,7 @@ function VerifySimulation(props) {
                     break;
                 case Number(RMIMPORT):
                     dispatch(getVerifySimulationList(props.token, plant, rawMatrialId, (res) => {
+                        setIsLoader(false)
                         if (res.data.Result) {
                             const data = res.data.Data
                             if (data.SimulationImpactedCostings.length === 0) {
@@ -172,6 +176,7 @@ function VerifySimulation(props) {
                 case Number(SURFACETREATMENT):
 
                     dispatch(getVerifySurfaceTreatmentSimulationList(props.token, (res) => {
+                        setIsLoader(false)
                         if (res.data.Result) {
                             const data = res.data.Data
                             if (data.SimulationSurfaceTreatmentAndOperationImpactedCosting.length === 0) {           //   for condition
@@ -190,6 +195,7 @@ function VerifySimulation(props) {
                 case Number(OPERATIONS):
 
                     dispatch(getVerifySurfaceTreatmentSimulationList(props.token, (res) => {
+                        setIsLoader(false)
                         if (res.data.Result) {
                             const data = res.data.Data
                             if (data.SimulationSurfaceTreatmentAndOperationImpactedCosting.length === 0) {           //   for condition
@@ -208,6 +214,7 @@ function VerifySimulation(props) {
                 case Number(MACHINERATE):
 
                     dispatch(getVerifyMachineRateSimulationList(props.token, (res) => {
+                        setIsLoader(false)
                         if (res.data.Result) {
                             const data = res.data.Data
                             if (data.SimulationMachineProcesstImpactedCostings.length === 0) {           //   for condition
@@ -226,6 +233,7 @@ function VerifySimulation(props) {
                 case Number(BOPDOMESTIC):
                     if (isMasterAssociatedWithCosting) {
                         dispatch(getVerifyBoughtOutPartSimulationList(props.token, (res) => {
+                            setIsLoader(false)
                             if (res.data.Result) {
                                 const data = res.data.Data
                                 if (data.simulationBoughtOutPartImpactedCostings.length === 0) {
@@ -242,6 +250,7 @@ function VerifySimulation(props) {
                         }))
                     } else {
                         dispatch(getAllSimulationBoughtOutPart(props.token, (res) => {
+                            setIsLoader(false)
                             if (res.data.Result) {
                                 const data = res.data.Data
                                 if (data.SimulationBoughtOutPart.length === 0) {
@@ -263,6 +272,7 @@ function VerifySimulation(props) {
 
                     if (isMasterAssociatedWithCosting) {
                         dispatch(getVerifyBoughtOutPartSimulationList(props.token, (res) => {
+                            setIsLoader(false)
                             if (res.data.Result) {
                                 const data = res.data.Data
                                 if (data.simulationBoughtOutPartImpactedCostings.length === 0) {
@@ -279,6 +289,7 @@ function VerifySimulation(props) {
                         }))
                     } else {
                         dispatch(getAllSimulationBoughtOutPart(props.token, (res) => {
+                            setIsLoader(false)
                             if (res.data.Result) {
                                 const data = res.data.Data
                                 if (data.SimulationBoughtOutPart.length === 0) {
@@ -336,6 +347,7 @@ function VerifySimulation(props) {
                 case Number(EXCHNAGERATE):
 
                     dispatch(getVerifyExchangeSimulationList(props.token, (res) => {
+                        setIsLoader(false)
                         if (res.data.Result) {
                             const data = res.data.Data
                             if (data.SimulationExchangeRateImpactedCostings.length === 0) {
@@ -355,6 +367,7 @@ function VerifySimulation(props) {
                 case Number(COMBINED_PROCESS):          						//RE
 
                     dispatch(getverifyCombinedProcessSimulationList(props.token, (res) => {
+                        setIsLoader(false)
                         if (res.data.Result) {
                             const data = res.data.Data
                             if (data.SimulationCombinedProcessImpactedCostings.length === 0) {           //   for condition
@@ -371,6 +384,7 @@ function VerifySimulation(props) {
                     }))
                     break;
                 default:
+                    setIsLoader(false)
                     break;
             }
         }
@@ -545,11 +559,6 @@ function VerifySimulation(props) {
         setSelectedRowData(selectedRows)
     }
 
-    useEffect(() => {
-        if (verifyList && verifyList.length > 0) {
-            // window.screen.width >= 1600 && gridRef.current.api.sizeColumnsToFit();
-        }
-    }, [verifyList])
 
     const checkForResponse = (res) => {
         if ('response' in res) {
@@ -842,7 +851,7 @@ function VerifySimulation(props) {
                 <>
                     {!assemblyTechnology && <Row>
                         <Col sm="12">
-                            <h3 class="mb-0">Token No:{tokenNo}</h3>
+                            <h3 class="mb-0">Token No:{tokenNo}ll</h3>
                         </Col>
                     </Row>
                     }
@@ -871,7 +880,7 @@ function VerifySimulation(props) {
                                     </div >
                                     <div className="ag-theme-material p-relative">
                                         {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found simulation-lisitng" />}
-                                        {verifyList && <AgGridReact
+                                        {isLoader ? <LoaderCustom customClass="center-loader" /> : <AgGridReact
                                             defaultColDef={defaultColDef}
                                             floatingFilter={true}
                                             domLayout='autoHeight'
