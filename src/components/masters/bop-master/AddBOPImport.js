@@ -266,19 +266,9 @@ class AddBOPImport extends Component {
         fromCurrency,
         this.state?.ExchangeSource?.label ?? null,
         res => {
-          if (Object.keys(res.data.Data).length === 0) {
-            if(fromCurrency === fieldsObj?.plantCurrency){
-              this.setState({ showPlantWarning: true });
-            }else{
-              this.setState({ showWarning: true });
-            }
-          } else {
-            if(fromCurrency === fieldsObj?.plantCurrency){
-              this.setState({ showPlantWarning: false });
-            }else{
-              this.setState({ showWarning: false });
-            }
-          }
+          const isDataEmpty = Object.keys(res.data.Data).length === 0;
+          const showWarningKey = fromCurrency === fieldsObj?.plantCurrency ? 'showPlantWarning' : 'showWarning';
+          this.setState({ [showWarningKey]: isDataEmpty });
 
           // Store in different state variables based on fromCurrency
           if (fromCurrency === fieldsObj?.plantCurrency) {

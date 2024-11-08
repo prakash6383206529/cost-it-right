@@ -176,19 +176,13 @@ class AddOperation extends Component {
             to,
             ExchangeSource?.label ?? null,
             res => {
-              if (Object.keys(res?.data?.Data)?.length === 0) {
-                if(to===this.props.fieldsObj.plantCurrency||!isImport){
-                  this.setState({ showPlantWarning: true });
-                }else{
-                  this.setState({ showWarning: true });
-                }
-              } else {
-                if(to===this.props.fieldsObj.plantCurrency||!isImport){
-                  this.setState({ showPlantWarning: false });
-                }else{
-                  this.setState({ showWarning: false });
-                }
-              }
+              const isEmptyData = Object.keys(res?.data?.Data || {}).length === 0;
+              const isPlantCurrencyOrNotImport = to === this.props.fieldsObj.plantCurrency || !isImport;
+              this.setState(
+               isPlantCurrencyOrNotImport
+               ? { showPlantWarning: isEmptyData }
+                : { showWarning: isEmptyData }
+                  );
               // Resolve with an object containing both values
               resolve({
                 rate: checkForNull(res.data.Data.CurrencyExchangeRate),
