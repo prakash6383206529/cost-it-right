@@ -32,6 +32,7 @@ import { LabelsClass } from '../../../helper/core'
 import { withTranslation } from 'react-i18next';
 import { getExchangeRateByCurrency } from '../../costing/actions/Costing'
 import { getPlantUnitAPI } from '../actions/Plant'
+import WarningMessage from '../../common/WarningMessage'
 
 const selector = formValueSelector('AddLabour')
 
@@ -83,6 +84,9 @@ class AddLabour extends Component {
       city: [],
       plantCurrencyID: '',
       ExchangeRateId: '',
+      disableEffectiveDate: false,
+      showPlantWarning: false,
+      showWarning: false
     }
   }
 
@@ -142,16 +146,10 @@ class AddLabour extends Component {
       }
 
       this.props.getExchangeRateByCurrency(fieldsObj?.plantCurrency, costingType, DayTime(this.state?.effectiveDate).format('YYYY-MM-DD'), vendorValue, client.value, false, reactLocalStorage.getObject("baseCurrency"), ExchangeSource?.label ?? null, res => {
-
-        if (Object.keys(res.data.Data).length === 0) {
-          this.setState({ showWarning: true });
-        } else {
-          this.setState({ showWarning: false });
-        }
-
         this.setState({
           currencyValue: checkForNull(res?.data?.Data?.CurrencyExchangeRate),
-          ExchangeRateId: res?.data?.Data?.ExchangeRateId
+          ExchangeRateId: res?.data?.Data?.ExchangeRateId,
+          showPlantWarning: Object.keys(res.data.Data).length === 0
 
         }, () => {
           this.handleCalculation(this.props?.fieldsObj?.LabourRate);
@@ -179,8 +177,6 @@ class AddLabour extends Component {
             let GridArray =
               Data &&
               Data.LabourDetails.map((item) => {
-                //this.setState(ExchangeSource: Data?.ExchangeRateSourceName !== undefined ? { label: Data?.ExchangeRateSourceName, value: Data?.ExchangeRateSourceName } : [],
-                //)
                 return {
                   LabourDetailId: item.LabourDetailId,
                   MachineTypeId: item.MachineTypeId,
@@ -201,6 +197,7 @@ class AddLabour extends Component {
 
 
             this.props.change('plantCurrency', Data?.LocalCurrency)
+            // this.props.change('EffectiveDate', Data?.EffectiveDate)
 
             this.setState({
               isEditFlag: true,
@@ -219,6 +216,7 @@ class AddLabour extends Component {
 
               ExchangeSource: Data?.ExchangeRateSourceName !== undefined ? { label: Data?.ExchangeRateSourceName, value: Data?.ExchangeRateSourceName } : [],
               plantCurrencyID: Data?.LocalCurrencyId,
+              // effectiveDate: Data?.EffectiveDate
             }, () => this.setState({ isLoader: false }))
           }, 500)
         }
@@ -417,14 +415,13 @@ class AddLabour extends Component {
       this.props.getPlantUnitAPI(newValue?.value, (res) => {
         let Data = res?.data?.Data
         this.setState({ plantCurrencyID: Data?.CurrencyId })
+        this.props.change('plantCurrency', Data?.Currency)
         if (Data?.Currency !== reactLocalStorage?.getObject("baseCurrency")) {
-          this.props.change('plantCurrency', Data?.Currency)
           this.setState({ hidePlantCurrency: false })
-          this.setState({ hidePlantCurrency: false })
-          this.callExchangeRateAPI()
         } else {
           this.setState({ hidePlantCurrency: true })
         }
+        this.callExchangeRateAPI()
       })
     } else {
       this.setState({ selectedPlants: [] })
@@ -676,7 +673,8 @@ class AddLabour extends Component {
         gridEditIndex: '',
         isEditIndex: false,
         efficiency: '',
-        workingHours: ''
+        workingHours: '',
+        disableEffectiveDate: false
       },
       () => this.props.change('LabourRate', 0),
       this.props.change('workingHours', ''),
@@ -698,7 +696,8 @@ class AddLabour extends Component {
         labourType: [],
         gridEditIndex: '',
         isEditIndex: false,
-        effectiveDate: ''
+        effectiveDate: '',
+        disableEffectiveDate: false
       },
       () => this.props.change('LabourRate', ''), this.props.change("LabourRateConversion", "")
       , this.props.change('workingHours', ''), this.props.change('Efficiency', ''), this.props.getLabourTypeByMachineTypeSelectList({ machineTypeId: '' }, (res) => { this.setState({ labourData: res?.data?.SelectList }) })
@@ -711,6 +710,8 @@ class AddLabour extends Component {
    * @description used to Edit grid data
    */
   editGridItemDetails = (index) => {
+    this.setState({ disableEffectiveDate: true })
+
     const { gridTable } = this.state
     const tempData = gridTable[index]
     this.props.getLabourTypeByMachineTypeSelectList(
@@ -739,17 +740,19 @@ class AddLabour extends Component {
         effectiveDate: tempData.EffectiveDate,
         workingHours: tempData.WorkingTime,
         efficiency: tempData.Efficiency,
-        LabourRateConversion: tempData.LabourRateConversion
+        currencyValue: tempData?.CurrencyExchangeRate,
+        ExchangeRateId: tempData?.ExchangeRateId
       },
       () => this.props.change('LabourRate', tempData.LabourRate),
+      () => this.props.change('LabourRateConversion', tempData.LabourRateConversion),
       () => this.props.change('workingHours', tempData.WorkingTime),
       () => this.props.change('Efficiency', tempData.Efficiency),
-      // () => this.props.change('LabourRateConversion', LabourRateConversion),
+
 
     )
+    // console.log("tempData", tempData)
     this.props.change('workingHours', tempData.WorkingTime)
     this.props.change('Efficiency', tempData.Efficiency)
-    this.props.change('LabourRateConversion', tempData.LabourRateConversion)
 
   }
 
@@ -909,7 +912,7 @@ class AddLabour extends Component {
   };
 
   DisplayLabourRatePlantCurrencyLabel = () => {
-    return <>Rate per Person/Annum/ ({this.props.fieldsObj.plantCurrency ? this.props.fieldsObj.plantCurrency : "Plant Currency"})</>
+    return <>Rate per Person/Annum/ ({this.props.fieldsObj.plantCurrency ? this.props.fieldsObj.plantCurrency : "Currency"})</>
   }
   handleCalculation = (rate) => {
 
@@ -1276,6 +1279,8 @@ class AddLabour extends Component {
                           className=" "
                           customClassName="withBorder"
                         />
+                        {this.state.showPlantWarning && <WarningMessage dClass="mt-1" message={`${this.props.fieldsObj.plantCurrency} rate is not present in the Exchange Master`} />}
+
                       </Col>
                       <Row className='sub-form-container'>
                         <Col md="12" className="filter-block">
@@ -1354,13 +1359,13 @@ class AddLabour extends Component {
                             placeholder={"-"}
                             validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
                             component={renderTextInputField}
-                            onChange={this.handleLabourRateBasicCurrency}
+                            //onChange={this.handleLabourRateBasicCurrency}
                             required={true}
                             disabled={true}
                             className=" "
                             customClassName=" withBorder"
                           />
-                          {this.state?.errorObj?.MachineRateConversion && (this.props?.fieldsObj?.MachineRateConversion === undefined || Number(this.props?.fieldsObj?.MachineRateConversion) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
+                          {this.state?.errorObj?.LabourRateConversion && (this.props?.fieldsObj?.LabourRateConversion === undefined || Number(this.props?.fieldsObj?.LabourRateConversion) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
                         </Col>}
                         <Col md="3">
                           <div className="form-group">
@@ -1414,7 +1419,7 @@ class AddLabour extends Component {
                                 autoComplete={"off"}
                                 disabledKeyboardNavigation
                                 onChangeRaw={(e) => e.preventDefault()}
-                                disabled={isViewMode}
+                                disabled={isViewMode || isEditFlag}
                                 valueDescription={this.state.effectiveDate}
                                 minDate={getEffectiveDateMinDate()}
 
