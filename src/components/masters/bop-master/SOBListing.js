@@ -38,7 +38,7 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {};
 const SOBListing = (props) => {
-  const {vendorLabel } = useLabels();
+  const { vendorLabel } = useLabels();
   const dispatch = useDispatch();
   const searchRef = useRef(null);
   const { t } = useTranslation("common")
@@ -66,7 +66,7 @@ const SOBListing = (props) => {
     showExtraData: false,
     render: false,
     filterModel: {},
-    disableDownload : false,
+    disableDownload: false,
 
 
   });
@@ -88,23 +88,23 @@ const SOBListing = (props) => {
   const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false);
   const [warningMessage, setWarningMessage] = useState(false);
   const { selectedRowForPagination } = useSelector((state => state.simulation))
- useEffect(() => {
-  getDataList();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
- }, []);
- 
+  useEffect(() => {
+    getDataList();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   useEffect(() => {
     reactLocalStorage.setObject('selectedRow', {})
     if (!props.stopApiCallOnCancel) {
-        return () => {
-            dispatch(setSelectedRowForPagination([]))
-            dispatch(resetStatePagination());
+      return () => {
+        dispatch(setSelectedRowForPagination([]))
+        dispatch(resetStatePagination());
 
-            reactLocalStorage.setObject('selectedRow', {})
-        }
+        reactLocalStorage.setObject('selectedRow', {})
+      }
     }
-    
-}, [])
+
+  }, [])
   /**
   * @method getDataList
   * @description GET DATALIST OF IMPORT BOP
@@ -112,107 +112,110 @@ const SOBListing = (props) => {
 
   const getDataList = (skip = 0, take = defaultPageSize, isPagination = true, dataObj = {}, isReset = false) => {
     // Construct filter data with all required parameters
-    console.log(floatingFilterData, dataObj);
     
-    const filterData = {
-    // Required API parameters
-    boughtOutPartNumber: isReset? '' : floatingFilterData.BoughtOutPartNumber || '',
-    boughtOutPartName: isReset? '' :  floatingFilterData.BoughtOutPartName || '',
-    category: isReset? '' : floatingFilterData.BoughtOutPartCategory || '',
-    specification: isReset? '' : floatingFilterData.Specification || '',
-    noOfVendor: isReset? 0 : floatingFilterData.NoOfVendors || 0,
-    plantCode: isReset? '' : floatingFilterData.Plant || '',
-    totalSOB: isReset? '' : floatingFilterData.ShareOfBusinessPercentage || '',
-    weightedNetLandedCost: isReset? '' : floatingFilterData.WeightedNetLandedCost || '',
-        vendor: isReset? '' : floatingFilterData.VendorName || '',
-        effectiveDate: isReset ? '' : floatingFilterData.EffectiveDate || '',
-    
-    // Pagination parameters
-    applyPagination: isPagination,
-    skip: skip,
-    take: take,
 
-    // Legacy parameters if needed
-    bought_out_part_id: null,
-    plant_id: null
-};
+    const filterData = {
+      // Required API parameters
+      boughtOutPartNumber: isReset ? '' : floatingFilterData.BoughtOutPartNumber || '',
+      boughtOutPartName: isReset ? '' : floatingFilterData.BoughtOutPartName || '',
+      category: isReset ? '' : floatingFilterData.BoughtOutPartCategory || '',
+      specification: isReset ? '' : floatingFilterData.Specification || '',
+      noOfVendor: isReset ? 0 : floatingFilterData.NoOfVendors || 0,
+      plantCode: isReset ? '' : floatingFilterData.Plant || '',
+      totalSOB: isReset ? '' : floatingFilterData.ShareOfBusinessPercentage || '',
+      weightedNetLandedCost: isReset ? '' : floatingFilterData.WeightedNetLandedCost || '',
+      vendor: isReset ? '' : floatingFilterData.VendorName || '',
+      effectiveDate: isReset ? '' : floatingFilterData.EffectiveDate || '',
+
+
+      // Pagination parameters
+      applyPagination: isPagination,
+      skip: skip,
+      take: take,
+
+      // Legacy parameters if needed
+      bought_out_part_id: null,
+      plant_id: null
+    };
+
+    
 
     // Set loader
-    setState(prevState => ({ 
-        ...prevState, 
-        isLoader: true 
+    setState(prevState => ({
+      ...prevState,
+      isLoader: true
     }));
-    
-    
+
+
     // Dispatch action with callback
     dispatch(getManageBOPSOBDataList(filterData, (res) => {
-        // Reset loader
-        setState(prevState => ({ 
-            ...prevState, 
-            isLoader: false 
+      // Reset loader
+      setState(prevState => ({
+        ...prevState,
+        isLoader: false
+      }));
+
+      if (res?.status === 200) {
+        // Handle success
+        setState(prevState => ({
+          ...prevState,
+          tableData: res.data.DataList[0].Records || []
         }));
-        
-        if (res?.status === 200) {
-            // Handle success
-            setState(prevState => ({ 
-                ...prevState, 
-                tableData: res.data.DataList[0].Records || [] 
-            }));
-            
-            
-            // setTotalRecordCount(res.data.DataList[0].length || 0);
-            setTotalRecordCount(res.data.DataList[0].TotalRecords || 0);
-            if (res && isPagination === false) {
-              setState(prevState => ({
-                  ...prevState,
-                  disableDownload: false
-              }));
-              
-              setTimeout(() => {
-                  dispatch(disabledClass(false));
-                  let button = document.getElementById('Excel-Downloads-sobListing');
-                  button && button.click();
-              }, 500);
-          }
-        } else if (res?.status === 204) {
-            // Handle no content
-            setTotalRecordCount(0);
-            setState(prevState => ({ 
-                ...prevState, 
-                tableData: [] 
-            }));
-        } else {
-            // Handle error
-            setState(prevState => ({ 
-                ...prevState, 
-                tableData: [] 
-            }));
-            setTotalRecordCount(0);
+
+
+        // setTotalRecordCount(res.data.DataList[0].length || 0);
+        setTotalRecordCount(res.data.DataList[0].TotalRecordCount || 0);
+        if (res && isPagination === false) {
+          setState(prevState => ({
+            ...prevState,
+            disableDownload: false
+          }));
+
+          setTimeout(() => {
+            dispatch(disabledClass(false));
+            let button = document.getElementById('Excel-Downloads-sobListing');
+            button && button.click();
+          }, 500);
         }
+      } else if (res?.status === 204) {
+        // Handle no content
+        setTotalRecordCount(0);
+        setState(prevState => ({
+          ...prevState,
+          tableData: []
+        }));
+      } else {
+        // Handle error
+        setState(prevState => ({
+          ...prevState,
+          tableData: []
+        }));
+        setTotalRecordCount(0);
+      }
 
-        // Handle filter model reset
-        if (res) {
-            let shouldReset = true;
-            
-            setTimeout(() => {
-                // Check if any filter is applied
-                Object.keys(filterData).forEach(key => {
-                    if (filterData[key] !== "") {
-                        shouldReset = false;
-                    }
-                });
-                isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(state.filterModel))
+      // Handle filter model reset
+      if (res) {
+        let shouldReset = true;
 
-            }, 300);
+        setTimeout(() => {
+          // Check if any filter is applied
+          Object.keys(filterData).forEach(key => {
+            if (filterData[key] !== "") {
+              shouldReset = false;
+            }
+          });
+          isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(state.filterModel))
 
-            // Reset warning messages
-            setTimeout(() => {
-                setWarningMessage(false);
-                setIsFilterButtonClicked(false);
-            }, 330);
-        }
+        }, 300);
+
+        // Reset warning messages
+        setTimeout(() => {
+          setWarningMessage(false);
+          setIsFilterButtonClicked(false);
+        }, 330);
+      }
     }));
-};
+  };
 
   /**
  * @method editItemDetails
@@ -240,7 +243,7 @@ const SOBListing = (props) => {
 
     // Get current filter model
     const model = gridOptions?.api?.getFilterModel();
-    setState((prevState) => ({  
+    setState((prevState) => ({
       ...prevState,
       filterModel: model
     }));
@@ -249,10 +252,11 @@ const SOBListing = (props) => {
     if (!isFilterButtonClicked) {
       setWarningMessage(true);
     }
+    
 
     // Update floating filter data
-    if (value?.filterInstance?.appliedModel === null || 
-        value?.filterInstance?.appliedModel?.filter === "") {
+    if (value?.filterInstance?.appliedModel === null ||
+      value?.filterInstance?.appliedModel?.filter === "") {
       if (value.column.colId === value.column.colId) {
         setFloatingFilterData(prev => ({
           ...prev,
@@ -260,12 +264,21 @@ const SOBListing = (props) => {
         }));
       }
     } else {
-      setFloatingFilterData(prev => ({
-        ...prev,
-        [value.column.colId]: value.filterInstance.appliedModel.filter
-      }));
-    }
-  };
+      // Handle effective date separately
+      if (value.column.colId === "EffectiveDate") {
+          const dateValue = value.filterInstance.appliedModel.dateFrom;
+          setFloatingFilterData(prev => ({
+              ...prev,
+              EffectiveDate: dateValue ? DayTime(dateValue).format('DD/MM/YYYY') : ""
+          }));
+      } else {
+          setFloatingFilterData(prev => ({
+              ...prev,
+              [value.column.colId]: value.filterInstance.appliedModel.filter
+          }));
+      }
+  }
+}
 
   /**
     * @method buttonFormatter
@@ -318,38 +331,38 @@ const SOBListing = (props) => {
     params.api.paginationGoToPage(0);
   };
 
- 
 
-  
+
+
   const onRowSelect = (event) => {
-console.log(event);
+    
 
     let selectedRowForPagination = reactLocalStorage.getObject('selectedRow').selectedRow
-console.log(selectedRowForPagination);
+    
 
     var selectedRows = state.gridApi && state.gridApi?.getSelectedRows();
-    console.log(selectedRows);
     
+
     if (selectedRows === undefined || selectedRows === null) {    //CONDITION FOR FIRST RENDERING OF COMPONENT
-        selectedRows = selectedRowForPagination
+      selectedRows = selectedRowForPagination
     } else if (selectedRowForPagination && selectedRowForPagination.length > 0) {  // CHECKING IF REDUCER HAS DATA
 
-        let finalData = []
-        if (event.node.isSelected() === false) {    // CHECKING IF CURRENT CHECKBOX IS UNSELECTED
+      let finalData = []
+      if (event.node.isSelected() === false) {    // CHECKING IF CURRENT CHECKBOX IS UNSELECTED
 
-            for (let i = 0; i < selectedRowForPagination.length; i++) {
-              console.log(selectedRowForPagination);
-              
-                if (selectedRowForPagination[i].BoughtOutPartNumber === event.data.BoughtOutPartNumber) {   // REMOVING UNSELECTED CHECKBOX DATA FROM REDUCER
-                    continue;
-                }
-                finalData.push(selectedRowForPagination[i])
-            }
+        for (let i = 0; i < selectedRowForPagination.length; i++) {
+          
 
-        } else {
-            finalData = selectedRowForPagination
+          if (selectedRowForPagination[i].BoughtOutPartNumber === event.data.BoughtOutPartNumber) {   // REMOVING UNSELECTED CHECKBOX DATA FROM REDUCER
+            continue;
+          }
+          finalData.push(selectedRowForPagination[i])
         }
-        selectedRows = [...selectedRows, ...finalData]
+
+      } else {
+        finalData = selectedRowForPagination
+      }
+      selectedRows = [...selectedRows, ...finalData]
 
     }
 
@@ -360,7 +373,7 @@ console.log(selectedRowForPagination);
     let finalArr = selectedRows
     let length = finalArr?.length
     let uniqueArray = _.uniqBy(finalArr, "BoughtOutPartNumber")
-console.log(uniqueArray,length);
+    
 
     // if (isSimulation) {
     //     apply(uniqueArray, length)
@@ -375,7 +388,7 @@ console.log(uniqueArray,length);
     //     //     Toaster.warning(`${technologyLabel} & Raw material should be same`)
     //     // }
     // }
-}
+  }
 
   const onExcelDownload = () => {
     setState((prevState) => ({ ...prevState, disableDownload: true }))
@@ -383,79 +396,72 @@ console.log(uniqueArray,length);
     //let tempArr = gridApi && gridApi?.getSelectedRows()
     let tempArr = selectedRowForPagination
     if (tempArr?.length > 0) {
-        setTimeout(() => {
-          setState((prevState) => ({ ...prevState, disableDownload: false }))
-          dispatch(disabledClass(false))
-            let button = document.getElementById('Excel-Downloads-sobListing')
-            button && button.click()
-        }, 400);
+      setTimeout(() => {
+        setState((prevState) => ({ ...prevState, disableDownload: false }))
+        dispatch(disabledClass(false))
+        let button = document.getElementById('Excel-Downloads-sobListing')
+        button && button.click()
+      }, 400);
 
 
     } else {
-console.log(state.disableDownload);
+      
 
-        getDataList(0,globalTakes ,false ,floatingFilterData) // FOR EXCEL DOWNLOAD OF COMPLETE DATA
+      getDataList(0, globalTakes, false, floatingFilterData) // FOR EXCEL DOWNLOAD OF COMPLETE DATA
     }
 
-}
+  }
   const BOP_SOBLISTING_DOWNLOAD_EXCEl_LOCALIZATION = useWithLocalization(BOP_SOB_DOWNLOAD_EXCEL, "MasterLabels")
   const onBtExport = () => {
     let tempArr = []
     tempArr = state.gridApi && state.gridApi?.getSelectedRows()
-    
-    
-        tempArr = (tempArr && tempArr.length > 0) ? tempArr : (bopSobList ? bopSobList : [])
+
+
+    tempArr = (tempArr && tempArr.length > 0) ? tempArr : (bopSobList ? bopSobList : [])
     return returnExcelColumn(BOP_SOBLISTING_DOWNLOAD_EXCEl_LOCALIZATION, tempArr)
   };
 
-
-const handleDate = (newDate) => {
-  console.log(newDate);
-  
-  if (newDate) {
-      setFloatingFilterData(prevState => ({
-          ...prevState,
-          EffectiveDate: newDate
-      }));
-      
-      setDisableFilter(false);
-      setWarningMessage(true);
-
-      if (props?.benchMark) {
-          props?.handleDate(newDate);
-      }
+  const setDate = (date) => {
+    setFloatingFilterData(prevState => ({
+      ...prevState,
+      EffectiveDate: date
+    }));
   }
-};
-const filterParams = {
-  filterOptions: ['equals'],
-  comparator: function (filterLocalDateAtMidnight, cellValue) {
-      var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
-      var newDate = filterLocalDateAtMidnight != null ? DayTime(filterLocalDateAtMidnight).format('DD/MM/YYYY') : '';
-      
-      // Update floating filter data with single date
-      handleDate(newDate);
 
-      if (dateAsString == null) return -1;
-      var dateParts = dateAsString.split('/');
-      var cellDate = new Date(
-          Number(dateParts[2]),
-          Number(dateParts[1]) - 1,
-          Number(dateParts[0])
-      );
+  var filterParams = {
+    date: "", inRangeInclusive: true, filterOptions: ['equals', 'inRange'],
+    comparator: function (filterLocalDateAtMidnight, cellValue) {
+        var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
+        var newDate = filterLocalDateAtMidnight != null ? DayTime(filterLocalDateAtMidnight).format('DD/MM/YYYY') : '';
+        let date = document.getElementsByClassName('ag-input-field-input')
+        for (let i = 0; i < date.length; i++) {
+            if (date[i].type == 'radio') {
+                date[i].click()
+            }
+        }
 
-      if (filterLocalDateAtMidnight.getTime() === cellDate.getTime()) {
-          return 0;
-      }
-      if (cellDate < filterLocalDateAtMidnight) {
-          return -1;
-      }
-      if (cellDate > filterLocalDateAtMidnight) {
-          return 1;
-      }
-  },
-  browserDatePicker: true,
-  minValidYear: 2000,
-};
+        setDate(newDate)
+        if (dateAsString == null) return -1;
+        var dateParts = dateAsString.split('/');
+        var cellDate = new Date(
+            Number(dateParts[2]),
+            Number(dateParts[1]) - 1,
+            Number(dateParts[0])
+        );
+        if (filterLocalDateAtMidnight.getTime() === cellDate.getTime()) {
+            return 0;
+        }
+        if (cellDate < filterLocalDateAtMidnight) {
+            return -1;
+        }
+        if (cellDate > filterLocalDateAtMidnight) {
+            return 1;
+        }
+    },
+
+    browserDatePicker: true,
+    minValidYear: 2000,
+  }
   const returnExcelColumn = (data = [], TempData) => {
     let temp = []
     temp = TempData && TempData.map((item) => {
@@ -504,10 +510,12 @@ const filterParams = {
 
 
   const resetState = () => {
-       setState((prevState) => ({ ...prevState, noData: false,
-        dataCount : 0,
-        }))
-setDisableFilter(true)
+    setState((prevState) => ({
+      ...prevState, noData: false,
+      dataCount: 0,
+      filterModel : {}
+    }))
+    setDisableFilter(true)
     // setNoData(false)
     // setinRangeDate([])
     setIsFilterButtonClicked(false)
@@ -515,9 +523,19 @@ setDisableFilter(true)
 
     gridOptions?.columnApi?.resetColumnState(null);
     gridOptions?.api?.setFilterModel(null);
-
-
-    setFloatingFilterData(floatingFilterData)
+    setFloatingFilterData(prevState => ({
+      ...prevState,
+      BoughtOutPartNumber: "",
+      BoughtOutPartName: "",
+      BoughtOutPartCategory: "",
+      Specification: "",
+      NoOfVendors: "",
+      Plant: "",
+      ShareOfBusinessPercentage: "",
+      WeightedNetLandedCost: "",
+      VendorName: "",
+      EffectiveDate: ""      
+    }));
     setWarningMessage(false)
     dispatch(updatePageNumber(1))
     dispatch(updateCurrentRowIndex(10))
@@ -525,10 +543,10 @@ setDisableFilter(true)
     dispatch(setSelectedRowForPagination([]))
     dispatch(updateGlobalTake(10))
     dispatch(updatePageSize({ pageSize10: true, pageSize50: false, pageSize100: false }))
-   
+
     reactLocalStorage.setObject('selectedRow', {})
-  
-}
+
+  }
   const handleShown = () => {
     setState((prevState) => ({ ...prevState, shown: !state.shown }))
   }
@@ -545,35 +563,35 @@ setDisableFilter(true)
     var thisIsFirstColumn = displayedColumns[0] === params.column;
 
     if (props?.isMasterSummaryDrawer) {
-        return false
+      return false
     } else {
-        return thisIsFirstColumn;
+      return thisIsFirstColumn;
     }
 
-}
+  }
   const checkBoxRenderer = (props) => {
     let selectedRowForPagination = reactLocalStorage.getObject('selectedRow').selectedRow
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     if (selectedRowForPagination?.length > 0) {
-        selectedRowForPagination.map((item) => {
-          
-          
-            if (item.BoughtOutPartNumber === props.node.data.BoughtOutPartNumber) {
-                props.node.setSelected(true)
-            }
-            return null
-        })
-        return cellValue
+      selectedRowForPagination.map((item) => {
+
+
+        if (item.BoughtOutPartNumber === props.node.data.BoughtOutPartNumber) {
+          props.node.setSelected(true)
+        }
+        return null
+      })
+      return cellValue
     } else {
-        return cellValue
+      return cellValue
     }
-}
+  }
 
   const defaultColDef = {
     resizable: true,
     filter: true,
     sortable: false,
-    headerCheckboxSelection:false,
+    headerCheckboxSelection: false,
 
     headerCheckboxSelectionFilteredOnly: true,
     checkboxSelection: isFirstColumn
@@ -596,9 +614,11 @@ setDisableFilter(true)
     // setPageNo(1)
     dispatch(updatePageNumber(1))
     dispatch(updateCurrentRowIndex(10))
+    
+    
     // setCurrentRowIndex(0)
     gridOptions?.columnApi?.resetColumnState();
-    getDataList(0 ,globalTakes , true , floatingFilterData )
+    getDataList(0, globalTakes, true, floatingFilterData)
   }
   return (
     <div className={`ag-grid-react ${permissions.Download ? "show-table-btn" : ""} min-height100vh`}>
@@ -618,38 +638,38 @@ setDisableFilter(true)
                 </>
               )}
               ' <div className="warning-message d-flex align-items-center">
-                                            {warningMessage && !state.disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
+                {warningMessage && !state.disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
 
-                                            <Button
-                                                id="sobListing_filter"
-                                                className={"mr5 Tour_List_Filter"}
-                                                onClick={() => onSearch()}
-                                                title={"Filtered data"}
-                                                icon={"filter"}
-                                                disabled={disableFilter}
-                                            />
-                                        </div>
+                <Button
+                  id="sobListing_filter"
+                  className={"mr5 Tour_List_Filter"}
+                  onClick={() => onSearch()}
+                  title={"Filtered data"}
+                  icon={"filter"}
+                  disabled={disableFilter}
+                />
+              </div>
               {
                 permissions.Download &&
                 <>
 
-                <Button
+                  <Button
                     className="mr5 Tour_List_Download"
                     id={"sobListing_excel_download"}
                     onClick={onExcelDownload}
                     title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}
                     icon={"download mr-1"}
                     buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}
-                />
-               <ExcelFile filename={Sob} fileExtension={'.xls'}
+                  />
+                  <ExcelFile filename={Sob} fileExtension={'.xls'}
                     element={
-                      <Button id={"Excel-Downloads-sobListing"}className="p-absolute" />
+                      <Button id={"Excel-Downloads-sobListing"} className="p-absolute" />
 
-                }>
+                    }>
                     {onBtExport()}
-                </ExcelFile>
-            </>
-              
+                  </ExcelFile>
+                </>
+
               }
               <Button
                 id={"sobListing_refresh"} className="user-btn Tour_List_Reset" onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
@@ -697,8 +717,8 @@ setDisableFilter(true)
                 <AgGridColumn field="BoughtOutPartName" headerName={`${showBopLabel()} Part Name`}></AgGridColumn>
                 <AgGridColumn field="BoughtOutPartCategory" headerName={`${showBopLabel()} Category`}></AgGridColumn>
                 <AgGridColumn field="Specification" headerName="Specification" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                <AgGridColumn field="NoOfVendors"  headerName={`No. of ${vendorLabel}s`} ></AgGridColumn>
-                
+                <AgGridColumn field="NoOfVendors" headerName={`No. of ${vendorLabel}s`} ></AgGridColumn>
+
                 <AgGridColumn field="Plant" headerName="Plant (Code)"></AgGridColumn>
                 <AgGridColumn field="ShareOfBusinessPercentage" headerName="Total SOB (%)"></AgGridColumn>
                 <AgGridColumn width={205} field="WeightedNetLandedCost" headerName={`Weighted Net Cost (${reactLocalStorage.getObject("baseCurrency")}) `} cellRenderer={'commonCostFormatter'}></AgGridColumn>
@@ -708,13 +728,13 @@ setDisableFilter(true)
               </AgGridReact>
               {/* {<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} />} */}
               <div className='button-wrapper'>
-                                        {<PaginationWrappers gridApi={state.gridApi} totalRecordCount={totalRecordCount} getDataList={getDataList} floatingFilterData={floatingFilterData} module="SOB" />}
-                                        {(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) &&
-                                            <PaginationControls totalRecordCount={totalRecordCount} getDataList={getDataList} floatingFilterData={floatingFilterData} module="SOB" />
+                {<PaginationWrappers gridApi={state.gridApi} totalRecordCount={totalRecordCount} getDataList={getDataList} floatingFilterData={floatingFilterData} module="SOB" />}
+                {(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) &&
+                  <PaginationControls totalRecordCount={totalRecordCount} getDataList={getDataList} floatingFilterData={floatingFilterData} module="SOB" />
 
-                                        }
+                }
 
-                                    </div>
+              </div>
             </div>
           </div>
 

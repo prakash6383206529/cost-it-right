@@ -348,7 +348,7 @@ export function getInitialFilterData(boughtOutPartNumber, callback) {
  * @description get all BOP SOB Data list.
  */
 export function getManageBOPSOBDataList(data, callback) {
-  console.log(data);
+  
     return (dispatch) => {
     dispatch({ type: API_REQUEST });
     // const queryParams = `bought_out_part_id=${data.bought_out_part_id}&plant_id=${data.plant_id}`;
@@ -365,6 +365,7 @@ export function getManageBOPSOBDataList(data, callback) {
       applyPagination: data.applyPagination || false,
       skip: data.skip || 0,
       take: data.take || 10,
+      effectiveDate: data.effectiveDate || '',
       // Keep existing params if needed
       bought_out_part_id: data.bought_out_part_id || '',
       plant_id: data.plant_id || ''
@@ -374,7 +375,7 @@ export function getManageBOPSOBDataList(data, callback) {
       if (response.data.Result || response.status === 204) {
         dispatch({
           type: GET_SOB_LISTING,
-          payload: response.status === 204 ? [] : response.data.DataList[0].Records,
+          payload: response.status === 204 ? [] : response.data.DataList,
         });
         callback(response);
       }
