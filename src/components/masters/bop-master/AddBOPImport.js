@@ -94,6 +94,7 @@ class AddBOPImport extends Component {
       DataToChange: [],
       DropdownChange: true,
       showWarning: false,
+      showPlantWarning:false,
       uploadAttachements: true,
       updatedObj: {},
       setDisable: false,
@@ -266,9 +267,17 @@ class AddBOPImport extends Component {
         this.state?.ExchangeSource?.label ?? null,
         res => {
           if (Object.keys(res.data.Data).length === 0) {
-            this.setState({ showWarning: true });
+            if(fromCurrency === fieldsObj?.plantCurrency){
+              this.setState({ showPlantWarning: true });
+            }else{
+              this.setState({ showWarning: true });
+            }
           } else {
-            this.setState({ showWarning: false });
+            if(fromCurrency === fieldsObj?.plantCurrency){
+              this.setState({ showPlantWarning: false });
+            }else{
+              this.setState({ showWarning: false });
+            }
           }
 
           // Store in different state variables based on fromCurrency
@@ -2031,6 +2040,7 @@ class AddBOPImport extends Component {
                               className=" "
                               customClassName=" withBorder"
                             />
+                             {this.state.showPlantWarning && <WarningMessage dClass="mt-1" message={`${this.props.fieldsObj.plantCurrency} rate is not present in the Exchange Master`} />}
                           </Col>}
                           <Col md="3">
                             <Field

@@ -114,6 +114,8 @@ class AddOperation extends Component {
       plantExchangeRateId: '',
       settlementExchangeRateId: '',
       plantCurrencyID: '',
+      showWarning:false,
+      showPlantWarning:false
     }
   }
 
@@ -162,6 +164,7 @@ class AddOperation extends Component {
         return;
       }
       const callAPI = (from, to) => {
+        console.log(to,this.props.fieldsObj.plantCurrency);
         return new Promise((resolve) => {
           this.props.getExchangeRateByCurrency(
             from,
@@ -173,10 +176,18 @@ class AddOperation extends Component {
             to,
             ExchangeSource?.label ?? null,
             res => {
-              if (Object.keys(res.data.Data).length === 0) {
-                this.setState({ showWarning: true });
+              if (Object.keys(res?.data?.Data)?.length === 0) {
+                if(to===this.props.fieldsObj.plantCurrency||!isImport){
+                  this.setState({ showPlantWarning: true });
+                }else{
+                  this.setState({ showWarning: true });
+                }
               } else {
-                this.setState({ showWarning: false });
+                if(to===this.props.fieldsObj.plantCurrency||!isImport){
+                  this.setState({ showPlantWarning: false });
+                }else{
+                  this.setState({ showWarning: false });
+                }
               }
               // Resolve with an object containing both values
               resolve({
@@ -1526,6 +1537,7 @@ class AddOperation extends Component {
                           className=" "
                           customClassName=" withBorder"
                         />
+                          {this.state.showPlantWarning && <WarningMessage dClass="mt-1" message={`${this.props.fieldsObj.plantCurrency} rate is not present in the Exchange Master`} />}
                       </Col>}
                       {this.state.isImport && <Col md="3">
                         <Field
@@ -1545,7 +1557,7 @@ class AddOperation extends Component {
                           handleChangeDescription={this.handleCurrency}
                           valueDescription={this.state.currency}
                           disabled={isEditFlag ? true : false || isDetailEntry || isViewMode}
-                        >{this.state.showWarning && <WarningMessage dClass="mt-1" message={`${this.state.currency.label} rate is not present in the Exchange Master`} />}
+                        >{this.state.showWarning && <WarningMessage dClass="mt-1" message={`${this.state?.currency?.label} rate is not present in the Exchange Master`} />}
                         </Field>
                       </Col>}
                       <Col md="3">
@@ -1689,7 +1701,7 @@ class AddOperation extends Component {
 
                       {initialConfiguration && initialConfiguration.IsOperationLabourRateConfigure && <Col md="3">
                         <Field
-                          label={`Labour Rate/${this.state.UOM.label ? this.state.UOM.label : 'UOM'}`}
+                          label={`Labour Rate/${this.state.UOM?.label ? this.state.UOM?.label : 'UOM'}`}
                           name={"LabourRatePerUOM"}
                           type="text"
                           placeholder={isViewMode ? '-' : "Select"}

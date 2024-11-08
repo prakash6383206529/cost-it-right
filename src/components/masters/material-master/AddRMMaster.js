@@ -382,7 +382,6 @@ function AddRMMaster(props) {
         } else {
             plantArray.push({ PlantName: values?.Plants?.label, PlantId: values?.Plants?.value, PlantCode: '', })
         }
-
         let formData =
         {
             "Attachements": rawMaterailDetails?.Files,
