@@ -119,7 +119,8 @@ class AddPower extends Component {
       segCostUnittooltipText: 'Please select the Source of Power, as the calculation will be based on them.',
       country: [],
       city: [],
-      isDisabled: false
+      isDisabled: false,
+      showPlantWarning: false
 
     }
 
@@ -193,15 +194,11 @@ class AddPower extends Component {
             to,
             ExchangeSource?.label ?? null,
             res => {
-              if (Object.keys(res.data.Data).length === 0) {
-                this.setState({ showWarning: true });
-              } else {
-                this.setState({ showWarning: false });
-              }
-              // Resolve with an object containing both values
               resolve({
                 rate: checkForNull(res.data.Data.CurrencyExchangeRate),
-                exchangeRateId: res?.data?.Data?.ExchangeRateId
+                exchangeRateId: res?.data?.Data?.ExchangeRateId,
+                showWarning: Object.keys(res.data.Data).length === 0,
+                showPlantWarning: Object.keys(res.data.Data).length === 0
               });
             }
           );
@@ -210,14 +207,17 @@ class AddPower extends Component {
 
       if (isImport) {
         // First API call
-        callAPI(fromCurrency, fieldsObj?.plantCurrency).then(({ rate: rate1, exchangeRateId: exchangeRateId1 }) => {
+        callAPI(fromCurrency, fieldsObj?.plantCurrency).then(({ rate: rate1, exchangeRateId: exchangeRateId1, showPlantWarning: showPlantWarning1, showWarning: showWarning1, }) => {
           // Second API call
-          callAPI(fromCurrency, reactLocalStorage.getObject("baseCurrency")).then(({ rate: rate2, exchangeRateId: exchangeRateId2 }) => {
+          callAPI(fromCurrency, reactLocalStorage.getObject("baseCurrency")).then(({ rate: rate2, exchangeRateId: exchangeRateId2, showWarning: showWarning2, showPlantWarning: showPlantWarning2 }) => {
             this.setState({
               plantCurrency: rate1,
               settlementCurrency: rate2,
               plantExchangeRateId: exchangeRateId1,
-              settlementExchangeRateId: exchangeRateId2
+              settlementExchangeRateId: exchangeRateId2,
+              showPlantWarning: showPlantWarning1,
+              showWarning: showWarning2
+
             }, () => {
               this.handleCalculation(fieldsObj?.NetPowerCostPerUnit)
             });
@@ -225,8 +225,8 @@ class AddPower extends Component {
         });
       } else {
         // Original single API call for non-import case
-        callAPI(fromCurrency, toCurrency).then(({ rate, exchangeRateId }) => {
-          this.setState({ plantCurrency: rate, plantExchangeRateId: exchangeRateId }, () => {
+        callAPI(fromCurrency, toCurrency).then(({ rate, exchangeRateId, showPlantWarning, showWarning }) => {
+          this.setState({ plantCurrency: rate, plantExchangeRateId: exchangeRateId, showPlantWarning: showPlantWarning, showWarning: showWarning }, () => {
             this.handleCalculation(fieldsObj?.NetPowerCostPerUnitLocalConversion)
           });
         });
@@ -1950,7 +1950,7 @@ class AddPower extends Component {
                             />
                           </Col>
                         )}
-                        {!hidePlantCurrency && <Col md="3">
+                        <Col md="3">
                           <Field
                             name="plantCurrency"
                             type="text"
@@ -1963,7 +1963,9 @@ class AddPower extends Component {
                             className=" "
                             customClassName=" withBorder"
                           />
-                        </Col>}
+                          {this.state?.currency?.label && this.state?.showPlantWarning && <WarningMessage dClass="mt-0" message={`${this.props?.fieldsObj?.plantCurrency} rate is not present in the Exchange Master`} />}
+
+                        </Col>
                         {this.state?.isImport && <Col md="3">
                           <Field
                             name="Currency"

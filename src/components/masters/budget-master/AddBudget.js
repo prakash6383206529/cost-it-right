@@ -27,7 +27,7 @@ import { checkFinalUser, getExchangeRateByCurrency } from '../../costing/actions
 import AddConditionCosting from '../../costing/components/CostingHeadCosts/AdditionalOtherCost/AddConditionCosting'
 import ConditionCosting from '../../costing/components/CostingHeadCosts/AdditionalOtherCost/ConditionCosting'
 import MasterSendForApproval from '../MasterSendForApproval'
-import { userTechnologyDetailByMasterId } from '../../../helper'
+import { CheckApprovalApplicableMaster, userTechnologyDetailByMasterId } from '../../../helper'
 import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper'
 import WarningMessage from '../../common/WarningMessage'
@@ -40,6 +40,8 @@ import { useLabels } from '../../../helper/core'
 import { getPlantUnitAPI } from '../actions/Plant'
 import DayTime from '../../common/DayTimeWrapper'
 import ReactSwitch from 'react-switch'
+import { useRef } from "react";
+
 const gridOptions = {};
 function AddBudget(props) {
     const { register, handleSubmit, formState: { errors }, control, setValue, getValues, reset } = useForm({
@@ -48,6 +50,7 @@ function AddBudget(props) {
     });
 
     const { t } = useTranslation("BudgetMaster")
+    const fromCurrencyRef = useRef(null);
 
     const [selectedPlants, setSelectedPlants] = useState([]);
     const [vendorName, setVendorName] = useState([]);
@@ -136,7 +139,10 @@ function AddBudget(props) {
     }, [plantCurrency, settlementCurrency]);
     useEffect(() => {
         callExchangeRateAPI()
-    }, [currency, year, ExchangeSource]);
+    }, [currency, year, ExchangeSource, fromCurrencyRef]);
+    useEffect(() => {
+        fromCurrencyRef.current = fromCurrencyRef
+    }, [fromCurrencyRef]);
     const commonFunction = (plantId = '') => {
         let obj = {
             TechnologyId: BUDGET_ID,
@@ -284,6 +290,7 @@ function AddBudget(props) {
             dispatch(getPlantUnitAPI(newValue?.value, (res) => {
                 let Data = res?.data?.Data
                 setValue("plantCurrency", Data?.Currency)
+                fromCurrencyRef.current = Data?.Currency
                 setPlantCurrencyID(Data?.CurrencyId)
                 if (Data?.Currency !== reactLocalStorage?.getObject("baseCurrency")) {
                     setHidePlantCurrency(false)
@@ -715,7 +722,7 @@ function AddBudget(props) {
                         setSettlementExchangeRateId(exchangeRateId2);
                     });
                 });
-            } else {
+            } else if (fromCurrencyRef.current !== reactLocalStorage?.getObject("baseCurrency")) {
                 callAPI(fromCurrency, reactLocalStorage.getObject("baseCurrency")).then(({ rate: rate1, exchangeRateId: exchangeRateId1 }) => {
                     setPlantCurrency(rate1);
                     setPlantExchangeRateId(exchangeRateId1);
@@ -827,7 +834,8 @@ function AddBudget(props) {
                 NetPoPriceLocalConversion: costConverSionInLocalCurrency ? checkForNull(totalSum * settlementCurrency) : checkForNull(totalSum),
                 BudgetedPoPriceLocalConversion: costConverSionInLocalCurrency ? checkForNull(totalSum * settlementCurrency) : checkForNull(totalSum),
             }
-            if (isFinalApprover) {
+
+            if (isFinalApprover || (userDetails().Role === 'SuperAdmin') || (!initialConfiguration.IsMasterApprovalAppliedConfigure)) {
                 dispatch(createBudget(formData, (res) => {
                     setSetDisable(false)
                     if (res?.data?.Result) {
@@ -1495,7 +1503,7 @@ function AddBudget(props) {
                                                     {(!hidePlantCurrency && costConverSionInLocalCurrency) && <Col md="4">
                                                         {/* {currency && currency?.label ? */}
                                                         <div className='budgeting-details  mt-2 '>
-                                                            <label className='w-fit'>{`Total Sum (${getValues("plantCurrency") ?? "Plant Currency"}):`}</label>
+                                                            <label className='w-fit'>{`Total Sum (${getValues("plantCurrency") ?? "Currency"}):`}</label>
                                                             <NumberFieldHookForm
                                                                 label=""
                                                                 name={"totalSumPlantCurrency"}
@@ -1515,7 +1523,7 @@ function AddBudget(props) {
                                                         </div>  <></>
                                                         {/* } */}
                                                     </Col>}
-                                                    <Col md="4">
+                                                    {(!(!costConverSionInLocalCurrency && reactLocalStorage.getObject("baseCurrency") === getValues("plantCurrency"))) && <Col md="4">
                                                         <div className='budgeting-details  mt-2 mb-2'>
                                                             <label className='w-fit'>{`Total Sum (${reactLocalStorage.getObject("baseCurrency")})):`}</label>
                                                             <NumberFieldHookForm
@@ -1535,7 +1543,7 @@ function AddBudget(props) {
                                                                 customClassName={'withBorder'}
                                                             />
                                                         </div>
-                                                    </Col>
+                                                    </Col>}
                                                     <Col md="4">
                                                         {/* {currency && currency?.label ? */}
                                                         <div className='budgeting-details  mt-2 '>
@@ -1588,8 +1596,7 @@ function AddBudget(props) {
                                                         <div className={"cancel-icon"}></div>{" "}
                                                         {"Cancel"}
                                                     </button>
-
-                                                    {!isFinalApprover ?
+                                                    {!userDetails().Role === 'SuperAdmin' && !isFinalApprover && initialConfiguration.IsMasterApprovalAppliedConfigure ?
                                                         <button type="submit"
                                                             id='AddBudget_SendForApproval'
                                                             className="user-btn approval-btn save-btn mr5"

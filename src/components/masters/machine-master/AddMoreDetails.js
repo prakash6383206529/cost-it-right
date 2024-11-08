@@ -180,7 +180,8 @@ class AddMoreDetails extends Component {
       plantExchangeRateId: editDetails?.plantExchangeRateId || '',
       settlementExchangeRateId: editDetails?.settlementExchangeRateId || '',
       plantCurrencyID: editDetails?.plantCurrencyID || '',
-      hidePlantCurrency: false
+      hidePlantCurrency: false,
+      showPlantWarning: false
     }
     this.dropzone = React.createRef();
   }
@@ -249,6 +250,7 @@ class AddMoreDetails extends Component {
       setTimeout(() => {
         let formData = this.state.formDataState
         formData.isViewFlag = true
+        formData.hidePlant = this.state?.hidePlantCurrency
         this.props.hideMoreDetailsForm(formData)
         //Toaster.success(MESSAGES.MACHINE_DETAILS_ADD_SUCCESS);
         this.cancel()
@@ -454,6 +456,11 @@ class AddMoreDetails extends Component {
             this.setState({ UniqueProcessId: uniqueSet })
 
           })
+          if (Data?.LocalCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
+            this.setState({ hidePlantCurrency: false })
+          } else {
+            this.setState({ hidePlantCurrency: true })
+          }
           this.props.change('plantCurrency', Data?.MachineEntryType === ENTRY_TYPE_IMPORT ? Data?.LocalCurrency : Data?.Currency)
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
           this.props.change('TotalFuelCostPerYear', Data.TotalFuelCostPerYear ? Data.TotalFuelCostPerYear : '')
@@ -730,17 +737,18 @@ class AddMoreDetails extends Component {
         this.setState({ selectedPlants: newValue }, () => {
           this.props.getPlantUnitAPI(newValue?.value, (res) => {
             let Data = res?.data?.Data
-            this.setState({ plantCurrency: Data?.Currency })
+            this.props.change('plantCurrency', Data?.Currency)
+            //this.setState({ plantCurrency: Data?.Currency })
             this.setState({ plantCurrencyID: Data?.CurrencyId })
+            this.props.editDetails?.callExchangeRateAPI(costingTypeId, Data?.Currency, currency, entryType, ExchangeSource, effectiveDate, selectedCustomer, selectedVedor, newValue)
+              .then(result => {
+                if (result) {
+                  this.setState({ ...result, showWarning: result.showWarning, showPlantWarning: result.showPlantWarning }, () => {
+                    this.handleCalculation(this.fieldsObj?.MachineRate);
+                  });
+                }
+              });
             if (Data?.Currency !== reactLocalStorage?.getObject("baseCurrency")) {
-              this.props.editDetails?.callExchangeRateAPI(costingTypeId, fieldsObj?.plantCurrency, currency, entryType, ExchangeSource, effectiveDate, selectedCustomer, selectedVedor, newValue)
-                .then(result => {
-                  if (result) {
-                    this.setState({ ...result, showWarning: result.showWarning }, () => {
-                      this.handleCalculation(this.fieldsObj?.MachineRate);
-                    });
-                  }
-                });
               this.setState({ hidePlantCurrency: false })
             } else {
               this.setState({ hidePlantCurrency: true })
@@ -1035,16 +1043,15 @@ class AddMoreDetails extends Component {
       isDateChange: true,
     }, () => {
       this.callLabourTypeApi()
-      if (this.props.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
-        this.props.editDetails?.callExchangeRateAPI(costingTypeId, fieldsObj?.plantCurrency, currency, entryType, ExchangeSource, date, selectedCustomer, selectedVedor, selectedPlants)
-          .then(result => {
-            if (result) {
-              this.setState({ ...result, showWarning: result.showWarning }, () => {
-                this.handleCalculation(this.fieldsObj?.MachineRate);
-              });
-            }
-          });
-      }
+      this.props.editDetails?.callExchangeRateAPI(costingTypeId, fieldsObj?.plantCurrency, currency, entryType, ExchangeSource, date, selectedCustomer, selectedVedor, selectedPlants)
+        .then(result => {
+          if (result) {
+            this.setState({ ...result, showWarning: result.showWarning, showPlantWarning: result.showPlantWarning }, () => {
+              this.handleCalculation(this.fieldsObj?.MachineRate);
+            });
+          }
+        });
+
     });
     const { initialConfiguration } = this.props
 
@@ -1828,7 +1835,7 @@ class AddMoreDetails extends Component {
       const TotalMachineCostPerAnnum = checkForDecimalAndNull(fieldsObj?.TotalMachineCostPerAnnum)
       // const MachineRate = fieldsObj.MachineRate
       const MachineRateConversion = fieldsObj?.MachineRateConversion
-      const MachineRateLocalConversion = fieldsObj?.MachineRateLocalConversion
+      const MachineRateLocalConversion = fieldsObj?.MachineRateLocalConversion ?? fieldsObj.MachineRate
       // CONDITION TO CHECK OUTPUT PER HOUR, NUMBER OF WORKING HOUR AND TOTAL MACHINE MACHINE COST IS NEGATIVE OR NOT A NUMBER
       if (NumberOfWorkingHoursPerYear < 0 || isNaN(NumberOfWorkingHoursPerYear) || TotalMachineCostPerAnnum < 0 || isNaN(TotalMachineCostPerAnnum) || fieldsObj?.MachineRate <= 0 || isNaN(fieldsObj?.MachineRate)) {
         Toaster.warning('Machine Rate cannot be zero or negative')
@@ -1900,7 +1907,7 @@ class AddMoreDetails extends Component {
     const { processName, UOM, processGrid, processGridEditIndex } = this.state;
     const { fieldsObj } = this.props
     const MachineRateConversion = fieldsObj?.MachineRateConversion
-    const MachineRateLocalConversion = fieldsObj?.MachineRateLocalConversion
+    const MachineRateLocalConversion = fieldsObj?.MachineRateLocalConversion ?? fieldsObj.MachineRate
     //CONDITION TO SKIP DUPLICATE ENTRY IN GRID
     let skipEditedItem = processGrid.filter((el, i) => {
       if (i === processGridEditIndex) return false;
@@ -1997,7 +2004,7 @@ class AddMoreDetails extends Component {
   resetProcessGridData = () => {
     const { isProcessGroup, UOM } = this.state
     const { fieldsObj } = this.props;
-    const MachineRateLocalConversion = fieldsObj?.MachineRateLocalConversion
+    const MachineRateLocalConversion = fieldsObj?.MachineRateLocalConversion ?? fieldsObj.MachineRate
     const MachineRateConversion = fieldsObj?.MachineRateConversion
     this.setState({
       processName: [],
@@ -2209,6 +2216,8 @@ class AddMoreDetails extends Component {
       data.isViewFlag = true
       data.Id = this.state.MachineID ? this.state.MachineID : editDetails.Id
       data.isEditFlag = true
+      data.hidePlant = this.state?.hidePlantCurrency
+
       this.props.hideMoreDetailsForm({}, data)
     } else {
 
@@ -2236,22 +2245,17 @@ class AddMoreDetails extends Component {
     const { costingTypeId, selectedCustomer, selectedVedor, effectiveDate, ExchangeSource, currency, entryType, selectedPlants } = this.state;
 
     if (newValue && newValue !== '') {
-      if (fieldsObj?.plantCurrency !== newValue?.label) {
-        this.setState({ hidePlantCurrency: false })
-      } else {
-        this.setState({ hidePlantCurrency: true })
-      }
+
       this.setState({ currency: newValue }, () => {
-        if (this.props.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
-          this.props.editDetails?.callExchangeRateAPI(costingTypeId, fieldsObj?.plantCurrency, newValue, entryType, ExchangeSource, effectiveDate, selectedCustomer, selectedVedor, selectedPlants)
-            .then(result => {
-              if (result) {
-                this.setState({ ...result, showWarning: result?.showWarning }, () => {
-                  this.props.editDetails?.handleCalculation(this.fieldsObj?.MachineRate);
-                });
-              }
-            });
-        }
+        this.props.editDetails?.callExchangeRateAPI(costingTypeId, fieldsObj?.plantCurrency, newValue, entryType, ExchangeSource, effectiveDate, selectedCustomer, selectedVedor, selectedPlants)
+          .then(result => {
+            if (result) {
+              this.setState({ ...result, showWarning: result?.showWarning, showPlantWarning: result.showPlantWarning }, () => {
+                this.props.editDetails?.handleCalculation(this.fieldsObj?.MachineRate);
+              });
+            }
+          });
+
       });
     } else {
       this.setState({ currency: [] })
@@ -2262,6 +2266,7 @@ class AddMoreDetails extends Component {
     apiCall(data, (res) => {
       if (res?.data?.Result) {
         data.isViewFlag = true;
+        data.hidePlant = this.state?.hidePlantCurrency
         this.props.hideMoreDetailsForm(data);
         Toaster.success(MESSAGES.MACHINE_DETAILS_ADD_SUCCESS);
         if (!isUpdate) {
@@ -2410,7 +2415,7 @@ class AddMoreDetails extends Component {
       LocalExchangeRateId: entryType ? this.state?.plantExchangeRateId : null
     }
 
-    if (isEditFlag && this.state.isFinalApprovar) {               //editDetails.isIncompleteMachine &&
+    if (isEditFlag && (this.state.isFinalApprovar || CheckApprovalApplicableMaster(MACHINE_MASTER_ID) !== true)) {               //editDetails.isIncompleteMachine &&
 
       // EXECUTED WHEN:- ADD MACHINE DONE AND ADD MORE DETAIL CALLED FROM ADDMACHINERATE.JS FILE
 
@@ -2574,8 +2579,8 @@ class AddMoreDetails extends Component {
         MachineId: MachineID,
         IsVendor: false,
       }
-      if (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) {
-        if (IsFinancialDataChanged && isEditFlag) {
+      if (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && (!this.state.isFinalApprovar || !userDetails().Role === 'SuperAdmin')) {
+        if (IsFinancialDataChanged) {
 
           if (this.state.isDateChange) {
             this.setState({ approveDrawer: true, approvalObj: finalObj, formDataState: formData })          //IF THE EFFECTIVE DATE IS NOT UPDATED THEN USER SHOULD NOT BE ABLE TO SEND IT FOR APPROVAL IN EDIT MODE
@@ -2584,16 +2589,17 @@ class AddMoreDetails extends Component {
             this.setState({ setDisable: false })
             Toaster.warning('Please update the effective date')
           }
-        } else if (((files ? JSON.stringify(files) : []) === (DataToChange.Attachements ? JSON.stringify(DataToChange.Attachements) : [])) && String(DataToChange.MachineName) === String(values.MachineName) && String(DataToChange.Specification) === String(values.Specification)
-          && String(DataToChange.Description) === String(values.Description) && ((DataToChange.Remark ? DataToChange.Remark : '') === (values.Remark ? values.Remark : ''))
-          && ((DataToChange.TonnageCapacity ? Number(DataToChange.TonnageCapacity) : '') === (values.TonnageCapacity ? Number(values.TonnageCapacity) : ''))
-          && String(DataToChange.Manufacture) === String(values.Manufacture) && String(DataToChange.MachineType) === String(this.state.machineType.label) && isEditFlag
-        ) {
-
-          Toaster.warning('Please change data to send Machine for approval')
-          return false
+        }
+        if (isEditFlag) {
+          if (((files ? JSON.stringify(files) : []) === (DataToChange.Attachements ? JSON.stringify(DataToChange.Attachements) : [])) && String(DataToChange.MachineName) === String(values.MachineName) && String(DataToChange.Specification) === String(values.Specification)
+            && String(DataToChange.Description) === String(values.Description) && ((DataToChange.Remark ? DataToChange.Remark : '') === (values.Remark ? values.Remark : ''))
+            && ((DataToChange.TonnageCapacity ? Number(DataToChange.TonnageCapacity) : '') === (values.TonnageCapacity ? Number(values.TonnageCapacity) : ''))
+            && String(DataToChange.Manufacture) === String(values.Manufacture) && String(DataToChange.MachineType) === String(this.state.machineType.label) && isEditFlag
+          ) {
+            Toaster.warning('Please change data to send Machine for approval')
+            return false
+          }
         } else {
-
           this.setState({ approveDrawer: true, approvalObj: finalObj, formDataState: formData })
         }
 
@@ -2686,17 +2692,16 @@ class AddMoreDetails extends Component {
     const { costingTypeId, vendorName, client, effectiveDate, ExchangeSource, currency, entryType, selectedPlants, selectedCustomer, selectedVedor } = this.state;
     this.setState({ ExchangeSource: newValue }
       , () => {
-        if (this.props.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
-          this.props.editDetails?.callExchangeRateAPI(costingTypeId, fieldsObj?.plantCurrency, currency, entryType, newValue, effectiveDate, selectedCustomer, selectedVedor, selectedPlants)
-            .then(result => {
-              if (result) {
-                this.setState({ ...result, showWarning: result.showWarning }, () => {
-                  this.handleCalculation(this.fieldsObj?.MachineRate);
-                });
-              }
-            });
-        }
+        this.props.editDetails?.callExchangeRateAPI(costingTypeId, fieldsObj?.plantCurrency, currency, entryType, newValue, effectiveDate, selectedCustomer, selectedVedor, selectedPlants)
+          .then(result => {
+            if (result) {
+              this.setState({ ...result, showWarning: result.showWarning, showPlantWarning: result.showPlantWarning }, () => {
+                this.handleCalculation(this.fieldsObj?.MachineRate);
+              });
+            }
+          });
       }
+
     );
   };
   /**
@@ -2833,21 +2838,21 @@ class AddMoreDetails extends Component {
     let currencyLabel = '';
 
     if (data?.entryType === 'Domestic') {
-      currencyLabel = this?.props?.fieldsObj?.plantCurrency || 'Plant Currency';
+      currencyLabel = this?.props?.fieldsObj?.plantCurrency || 'Currency';
     } else if (data?.entryType === 'Import') {
-      currencyLabel = data?.currency?.label || 'Currency';
+      currencyLabel = this?.state?.currency?.label || 'Currency';
     } else {
       currencyLabel = 'Currency';
     }
 
-    return <>Machine Rate/{(UOM && UOM.length !== 0) ? displayUOM(UOM.label) : "UOM"} ({currencyLabel})</>
+    return <>Machine Rate/{(UOM && UOM.length !== 0) ? displayUOM(UOM?.label) : "UOM"} ({currencyLabel})</>
   }
   DisplayMachineRatePlantCurrencyLabel = () => {
-    return <>Machine Rate/{this.state.UOM && this.state.UOM.length !== 0 ? displayUOM(this.state.UOM.label) : "UOM"} ({this.props.fieldsObj.plantCurrency ? this.props.fieldsObj.plantCurrency : "Plant Currency"})</>
+    return <>Machine Rate/{this.state.UOM && this.state.UOM.length !== 0 ? displayUOM(this.state.UOM.label) : "UOM"} ({this.props.fieldsObj.plantCurrency ? this.props.fieldsObj.plantCurrency : "Currency"})</>
   }
   DisplayMachineCostLabel = () => {
     const { UOM, entryType } = this.state;
-    let currencyLabel = !entryType ? (this?.props?.fieldsObj?.plantCurrency || 'Plant Currency') :
+    let currencyLabel = !entryType ? (this?.props?.fieldsObj?.plantCurrency || 'Currency') :
       (this?.state?.currency?.label || 'Currency')
     return <>Machine Cost/{(UOM && UOM.length !== 0) ? displayUOM(UOM.label) : "UOM"} ({currencyLabel})</>
   }
@@ -3328,8 +3333,8 @@ class AddMoreDetails extends Component {
                         </Col>
                         <Col md="3">
                           <Field
-                            label={`Accessories Cost (${!entryType ? (this?.props?.fieldsObj?.plantCurrency || 'Plant Currency') :
-                              (data?.currency?.label || 'Currency')})`}
+                            label={`Accessories Cost (${!entryType ? (this?.props?.fieldsObj?.plantCurrency || 'Currency') :
+                              (this?.state?.currency?.label || 'Currency')})`}
                             name={"AccessoriesCost"}
                             type="text"
                             placeholder={isEditFlag || disableAllForm ? '-' : 'Enter'}
@@ -3343,8 +3348,8 @@ class AddMoreDetails extends Component {
                         </Col>
                         <Col md="3">
                           <Field
-                            label={`Installation Charges (${!entryType ? (this?.props?.fieldsObj?.plantCurrency || 'Plant Currency') :
-                              (data?.currency?.label || 'Currency')})`}
+                            label={`Installation Charges (${!entryType ? (this?.props?.fieldsObj?.plantCurrency || 'Currency') :
+                              (this?.state?.currency?.label || 'Currency')})`}
                             name={"InstallationCharges"}
                             type="text"
                             placeholder={isEditFlag || disableAllForm ? '-' : 'Enter'}
@@ -3358,8 +3363,8 @@ class AddMoreDetails extends Component {
                         </Col>
                         <Col md="3"> <TooltipCustom disabledIcon={true} tooltipClass={'machine-tooltip'} id="total-cost" tooltipText={"Total Cost = (Machine Cost + Accessories Cost + Installation Charges)"} />
                           <Field
-                            label={`Total Cost (${!entryType ? (this?.props?.fieldsObj?.plantCurrency || 'Plant Currency') :
-                              (data?.currency?.label || 'Currency')})`}
+                            label={`Total Cost (${!entryType ? (this?.props?.fieldsObj?.plantCurrency || 'Currency') :
+                              (this?.state?.currency?.label || 'Currency')})`}
                             name={this.props.fieldsObj.TotalCost === 0 ? '' : "TotalCost"}
                             type="text"
                             id="total-cost"
@@ -3383,7 +3388,9 @@ class AddMoreDetails extends Component {
                             className=" "
                             customClassName="withBorder"
                           />
+                          {this.state.showPlantWarning && <WarningMessage dClass="mt-1" message={`${this.props.fieldsObj.plantCurrency} rate is not present in the Exchange Master`} />}
                         </Col>
+
                         {this.state?.entryType && <Col md="3">
                           <Field
                             name="Currency"
@@ -3402,7 +3409,7 @@ class AddMoreDetails extends Component {
                             handleChangeDescription={this.handleCurrency}
                             valueDescription={this.state.currency}
                             disabled={isEditFlag ? true : false || isViewMode || isViewFlag}
-                          >{this.state.showWarning && <WarningMessage dClass="mt-1" message={`${this.state.currency.label} rate is not present in the Exchange Master`} />}
+                          >{this.state?.currency?.label && this.state.showWarning && <WarningMessage dClass="mt-1" message={`${this.state.currency.label} rate is not present in the Exchange Master`} />}
                           </Field>
                         </Col>}
                         <Col md="3">
@@ -3833,8 +3840,8 @@ class AddMoreDetails extends Component {
                               </Col>}
                             <Col md="3">
                               <Field
-                                label={`Cost of Scrap (${!entryType ? (this?.props?.fieldsObj?.plantCurrency || 'Plant Currency') :
-                                  (data?.currency?.label || 'Currency')})`}
+                                label={`Cost of Scrap (${!entryType ? (this?.props?.fieldsObj?.plantCurrency || 'Currency') :
+                                  (this?.state?.currency?.label || 'Currency')})`}
                                 name={"CastOfScrap"}
                                 type="text"
                                 placeholder={disableAllForm ? '-' : 'Enter'}
@@ -3876,8 +3883,8 @@ class AddMoreDetails extends Component {
                             <Col md="3">
                               <TooltipCustom disabledIcon={true} id="DepreciationAmount" width={'340px'} tooltipText={`Depreciation Amount = Total Cost - Cost of Scrap / ${this.state.depreciationType && this.state.depreciationType.value === SLM ? 'Life of Asset(Years)' : '(Depreciation Rate %) * Day of Purchase / 365'}`} />
                               <Field
-                                label={`Depreciation Amount  (${!entryType ? (this?.props?.fieldsObj?.plantCurrency || 'Plant Currency') :
-                                  (data?.currency?.label || 'Currency')})`}
+                                label={`Depreciation Amount  (${!entryType ? (this?.props?.fieldsObj?.plantCurrency || 'Currency') :
+                                  (this?.state?.currency?.label || 'Currency')})`}
                                 name={this.props.fieldsObj.DepreciationAmount === 0 ? '-' : "DepreciationAmount"}
                                 type="text"
                                 id="DepreciationAmount"
@@ -3976,8 +3983,8 @@ class AddMoreDetails extends Component {
                             <Col md="3">
                               {this.state.IsAnnualMaintenanceFixed && <TooltipCustom disabledIcon={true} width={"250px"} id="AnnualMaintanceAmount" tooltipText={`Annual Maintenance Amount = ((Machine Cost + Accessories Cost) * Annual Maintenance Percentage / 100)`} />}
                               <Field
-                                label={`Annual Maintenance Amount  (${!entryType ? (this?.props?.fieldsObj?.plantCurrency || 'Plant Currency') :
-                                  (data?.currency?.label || 'Currency')})`}
+                                label={`Annual Maintenance Amount  (${!entryType ? (this?.props?.fieldsObj?.plantCurrency || 'Currency') :
+                                  (this?.state?.currency?.label || 'Currency')})`}
                                 name={"AnnualMaintanceAmount"}
                                 id="AnnualMaintanceAmount"
                                 type="text"
@@ -4045,8 +4052,8 @@ class AddMoreDetails extends Component {
                               {this.state.IsAnnualConsumableFixed && <TooltipCustom disabledIcon={true} width={"250px"} id="AnnualConsumableAmount" tooltipText={`Annual Consumable Amount = ((Machine Cost + Accessories Cost) * % / 100)`} />}
 
                               <Field
-                                label={`Annual Consumable Amount  (${!entryType ? (this?.props?.fieldsObj?.plantCurrency || 'Plant Currency') :
-                                  (data?.currency?.label || 'Currency')})`}
+                                label={`Annual Consumable Amount  (${!entryType ? (this?.props?.fieldsObj?.plantCurrency || 'Currency') :
+                                  (this?.state?.currency?.label || 'Currency')})`}
                                 name={"AnnualConsumableAmount"}
                                 id="AnnualConsumableAmount"
                                 type="text"
@@ -4114,8 +4121,8 @@ class AddMoreDetails extends Component {
                             <Col md="3">
                               {this.state.IsInsuranceFixed && <TooltipCustom disabledIcon={true} width={"250px"} id="AnnualInsuranceAmount" tooltipText={`Insurance Amount = ((Machine Cost + Accessories Cost) * % / 100)`} />}
                               <Field
-                                label={`Insurance Amount  (${!entryType ? (this?.props?.fieldsObj?.plantCurrency || 'Plant Currency') :
-                                  (data?.currency?.label || 'Currency')})`}
+                                label={`Insurance Amount  (${!entryType ? (this?.props?.fieldsObj?.plantCurrency || 'Currency') :
+                                  (this?.state?.currency?.label || 'Currency')})`}
                                 name={"AnnualInsuranceAmount"}
                                 id="AnnualInsuranceAmount"
                                 type="text"
@@ -4192,8 +4199,8 @@ class AddMoreDetails extends Component {
                               <TooltipCustom disabledIcon={true} width={"250px"} id="AnnualAreaCost" tooltipText={`Annual Area Cost = Building Cost * Machine Floor Area`} />
 
                               <Field
-                                label={`Annual Area Cost  (${!entryType ? (this?.props?.fieldsObj?.plantCurrency || 'Plant Currency') :
-                                  (data?.currency?.label || 'Currency')})`}
+                                label={`Annual Area Cost  (${!entryType ? (this?.props?.fieldsObj?.plantCurrency || 'Currency') :
+                                  (this?.state?.currency?.label || 'Currency')})`}
                                 name={this.props.fieldsObj.AnnualAreaCost === 0 ? '-' : "AnnualAreaCost"}
                                 type="text"
                                 id="AnnualAreaCost"
@@ -4224,8 +4231,8 @@ class AddMoreDetails extends Component {
 
                             <Col md="3">
                               <Field
-                                label={`Other Yearly Cost  (${!entryType ? (this?.props?.fieldsObj?.plantCurrency || 'Plant Currency') :
-                                  (data?.currency?.label || 'Currency')})`}
+                                label={`Other Yearly Cost  (${!entryType ? (this?.props?.fieldsObj?.plantCurrency || 'Currency') :
+                                  (this?.state?.currency?.label || 'Currency')})`}
                                 name={"OtherYearlyCost"}
                                 type="text"
                                 placeholder={disableAllForm ? '-' : 'Enter'}
@@ -4241,8 +4248,8 @@ class AddMoreDetails extends Component {
                               <TooltipCustom disabledIcon={true} width={"300px"} id="TotalMachineCostPerAnnum" tooltipText={`Total Machine Cost (${reactLocalStorage.getObject("baseCurrency")}) = Annual Maintenance Amount (${reactLocalStorage.getObject("baseCurrency")}) + Annual Consumable Amount (${reactLocalStorage.getObject("baseCurrency")}) + Annual Insurance Amount (${reactLocalStorage.getObject("baseCurrency")}) + Annual Area Cost (${reactLocalStorage.getObject("baseCurrency")}) + Other Yearly Cost (${reactLocalStorage.getObject("baseCurrency")})`} />
 
                               <Field
-                                label={`Total Machine Cost/Annum  (${!entryType ? (this.props?.fieldsObj?.plantCurrency || 'Plant Currency') :
-                                  (data?.currency?.label || 'Currency')})`}
+                                label={`Total Machine Cost/Annum  (${!entryType ? (this.props?.fieldsObj?.plantCurrency || 'Currency') :
+                                  (this?.state?.currency?.label || 'Currency')})`}
                                 name={this.props.fieldsObj.TotalMachineCostPerAnnum === 0 ? '-' : "TotalMachineCostPerAnnum"}
                                 type="text"
                                 id="TotalMachineCostPerAnnum"
@@ -4499,8 +4506,8 @@ class AddMoreDetails extends Component {
                                 <TooltipCustom disabledIcon={true} id="TotalPowerCostPerHour" width={"240px"} tooltipText={'Power Cost/Hour = (Efficiency %) * Power Rating * Cost/Unit'} />
 
                                 <Field
-                                  label={`Power Cost/Hour  (${!entryType ? (this?.props?.fieldsObj?.plantCurrency || 'Plant Currency') :
-                                    (data?.currency?.label || 'Currency')})`}
+                                  label={`Power Cost/Hour  (${!entryType ? (this?.props?.fieldsObj?.plantCurrency || 'Currency') :
+                                    (this?.state?.currency?.label || 'Currency')})`}
                                   name={this.props.fieldsObj.TotalPowerCostPerHour === 0 ? '-' : "TotalPowerCostPerHour"}
                                   type="text"
                                   placeholder={'-'}
@@ -4515,8 +4522,8 @@ class AddMoreDetails extends Component {
                               </Col>
                               <Col md="3">
                                 <Field
-                                  label={`Power Cost/Annum  (${!entryType ? (this?.props?.fieldsObj?.plantCurrency || 'Plant Currency') :
-                                    (data?.currency?.label || 'Currency')})`}
+                                  label={`Power Cost/Annum  (${!entryType ? (this?.props?.fieldsObj?.plantCurrency || 'Currency') :
+                                    (this?.state?.currency?.label || 'Currency')})`}
                                   name={this.props.fieldsObj.TotalPowerCostPerYear === 0 ? '-' : "TotalPowerCostPerYear"}
                                   type="text"
                                   placeholder={'-'}
@@ -4597,8 +4604,8 @@ class AddMoreDetails extends Component {
                             </Col>
                             <Col md="2">
                               <Field
-                                label={`Cost/Annum  (${!entryType ? (this?.props?.fieldsObj?.plantCurrency || 'Plant Currency') :
-                                  (data?.currency?.label || 'Currency')})`}
+                                label={`Cost/Annum  (${!entryType ? (this?.props?.fieldsObj?.plantCurrency || 'Currency') :
+                                  (this?.state?.currency?.label || 'Currency')})`}
                                 name={"LabourCostPerAnnum"}
                                 type="text"
                                 placeholder={'-'}
@@ -4631,8 +4638,8 @@ class AddMoreDetails extends Component {
                             <Col md="2">
                               <TooltipCustom disabledIcon={true} id="LabourCost" tooltipText={`Total Cost = Cost/Annum * No. of People`} />
                               <Field
-                                label={`Total Cost (${!entryType ? (this?.props?.fieldsObj?.plantCurrency || 'Plant Currency') :
-                                  (data?.currency?.label || 'Currency')})`}
+                                label={`Total Cost (${!entryType ? (this?.props?.fieldsObj?.plantCurrency || 'Currency') :
+                                  (this?.state?.currency?.label || 'Currency')})`}
                                 name={this.props.fieldsObj.LabourCost === 0 ? '-' : "LabourCost"}
                                 type="text"
                                 id="LabourCost"
@@ -4862,7 +4869,7 @@ class AddMoreDetails extends Component {
 
                                   </div>
                                 </Col>
-                                {(this?.state?.entryType /* && !this?.state?.hidePlantCurrency */) && <Col md="4" className='UOM-label-container p-relative'>
+                                {(this?.state?.entryType && !this?.state?.hidePlantCurrency) && <Col md="4" className='UOM-label-container p-relative'>
                                   <Field
                                     label={this.DisplayMachineRatePlantCurrencyLabel()}
                                     name={"MachineRateLocalConversion"}
@@ -4878,7 +4885,7 @@ class AddMoreDetails extends Component {
                                   />
                                   {this.state.errorObj?.MachineRateLocalConversion && (this.props?.fieldsObj?.MachineRateLocalConversion === undefined || Number(this.props?.fieldsObj?.MachineRateLocalConversion) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
                                 </Col>}
-                                {/* !this?.state?.hidePlantCurrency &&  */<Col md="4" className='UOM-label-container p-relative'>
+                                {(!(!this?.state?.entryType && reactLocalStorage.getObject("baseCurrency") === this.props.fieldsObj.plantCurrency)) && <Col md="4" className='UOM-label-container p-relative'>
                                   <Field
                                     label={this.DisplayMachineRateBaseCurrencyLabel()}
                                     name={"MachineRateConversion"}
@@ -4938,9 +4945,9 @@ class AddMoreDetails extends Component {
                                     <th>{`UOM`}</th>
                                     {/* <th>{`Output/Hr`}</th>     COMMENTED FOR NOW MAY BE USED LATER
                                     <th>{`Output/Annum`}</th> */}
-                                    <th>{`Machine Rate (${this.state.entryType && this.state?.currency?.label !== undefined ? this.state?.currency.label : this.state?.isImport ? "Currency" : this.state?.plantCurrency ? this.state?.plantCurrency : "Plant Currency"})`}</th>
-                                    {this?.state?.entryType && <th>{`Machine Rate (${this.state?.plantCurrency ? this.state?.plantCurrency : "Plant Currency"})`}</th>}
-                                    <th>{`Machine Rate (${reactLocalStorage.getObject("baseCurrency")})`}</th>
+                                    <th>{`Machine Rate (${this.state.entryType && this.state?.currency?.label !== undefined ? this.state?.currency.label : this.state?.isImport ? "Currency" : this.state?.plantCurrency ? this.state?.plantCurrency : "Currency"})`}</th>
+                                    {(this?.state?.entryType && !this?.state?.hidePlantCurrency) && <th>{`Machine Rate (${this.state?.plantCurrency ? this.state?.plantCurrency : "Currency"})`}</th>}
+                                    {(!(!this?.state?.entryType && reactLocalStorage.getObject("baseCurrency") === this.props.fieldsObj.plantCurrency)) && <th>{`Machine Rate (${reactLocalStorage.getObject("baseCurrency")})`}</th>}
                                     <th>{`Action`}</th>
                                   </tr>
                                 </thead>
@@ -4955,8 +4962,8 @@ class AddMoreDetails extends Component {
                                           {/* <td>{item.OutputPerHours}</td>    COMMENTED FOR NOW MAY BE USED LATER
                                           <td>{checkForDecimalAndNull(item.OutputPerYear, initialConfiguration.NoOfDecimalForInputOutput)}</td> */}
                                           <td>{checkForDecimalAndNull(item?.MachineRate, initialConfiguration?.NoOfDecimalForPrice)}</td>
-                                          {this?.state?.entryType && <td>{checkForDecimalAndNull(item?.MachineRateLocalConversion, initialConfiguration?.NoOfDecimalForPrice)}</td>}
-                                          <td>{checkForDecimalAndNull(item?.MachineRateConversion, initialConfiguration?.NoOfDecimalForPrice)}</td>
+                                          {(this?.state?.entryType && !this?.state?.hidePlantCurrency) && <td>{checkForDecimalAndNull(item?.MachineRateLocalConversion, initialConfiguration?.NoOfDecimalForPrice)}</td>}
+                                          {(!(!this?.state?.entryType && reactLocalStorage.getObject("baseCurrency") === this.props.fieldsObj.plantCurrency)) && <td>{checkForDecimalAndNull(item?.MachineRateConversion, initialConfiguration?.NoOfDecimalForPrice)}</td>}
                                           <td>
                                             <button title='Edit' className="Edit mr-2" type={'button'} disabled={this.state.isViewMode || (isEditFlag && isMachineAssociated) || UniqueProcessId?.includes(item.ProcessId)} onClick={() => this.editItemDetails(index)} />
                                             <button title='Delete' className="Delete" type={'button'} onClick={() => this.deleteItem(index) || (isEditFlag && isMachineAssociated)} disabled={UniqueProcessId?.includes(item.ProcessId) || this.state.isViewMode} />
