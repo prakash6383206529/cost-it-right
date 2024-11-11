@@ -1016,7 +1016,7 @@ function Simulation(props) {
                         //     setEditWarning(true);
                         //     vendorFlag = false
                         // }
-                        if (element.PlantId !== Data[index - 1].PlantId || element.DestinationPlantId !== Data[index - 1].DestinationPlantId) {
+                        if ((element.PlantId && element.PlantId !== Data[index - 1].PlantId) || (element.DestinationPlantId && element.DestinationPlantId !== Data[index - 1].DestinationPlantId)) {
                             (Data.length !== 0) && setFilterStatus('Please filter out the Plant')
                             setEditWarning(true);
                             plantFlag = false
@@ -1063,7 +1063,7 @@ function Simulation(props) {
                         //     setEditWarning(true);
                         //     vendorFlag = false
                         // }
-                        if (element.PlantId !== Data[index - 1].PlantId || element.DestinationPlantId !== Data[index - 1].DestinationPlantId) {
+                        if ((element.PlantId && element.PlantId !== Data[index - 1].PlantId) || (element.DestinationPlantId && element.DestinationPlantId !== Data[index - 1].DestinationPlantId)) {
                             (Data.length !== 0) && setFilterStatus('Please filter out the Plant')
                             setEditWarning(true);
                             plantFlag = false
@@ -1175,7 +1175,7 @@ function Simulation(props) {
                         //     setEditWarning(true);
                         //     vendorFlag = false
                         // }
-                        if (element.DestinationPlant !== Data[index - 1].DestinationPlant) {
+                        if ((element.PlantId && element.PlantId !== Data[index - 1].PlantId) || (element.DestinationPlantId && element.DestinationPlantId !== Data[index - 1].DestinationPlantId)) {
                             (Data.length !== 0) && setFilterStatus('Please filter out the Plant')
                             setEditWarning(true);
                             plantFlag = false
@@ -1212,7 +1212,7 @@ function Simulation(props) {
                         //     setEditWarning(true);
                         //     vendorFlag = false
                         // }
-                        if (element.DestinationPlant !== Data[index - 1].DestinationPlant) {
+                        if ((element.PlantId && element.PlantId !== Data[index - 1].PlantId) || (element.DestinationPlantId && element.DestinationPlantId !== Data[index - 1].DestinationPlantId)) {
                             (Data.length !== 0) && setFilterStatus('Please filter out the Plant')
                             setEditWarning(true);
                             plantFlag = false
@@ -1258,7 +1258,7 @@ function Simulation(props) {
                         //     setEditWarning(true);
                         //     vendorFlag = false
                         // }
-                        if (element.DestinationPlant !== Data[index - 1].DestinationPlant) {
+                        if ((element.Plant && element.Plant !== Data[index - 1].Plant) || (element.DestinationPlantId && element.DestinationPlantId !== Data[index - 1].DestinationPlantId)) {
                             (Data.length !== 0) && setFilterStatus('Please filter out the Plant')
                             setEditWarning(true);
                             plantFlag = false
@@ -1295,7 +1295,7 @@ function Simulation(props) {
                         //     setEditWarning(true);
                         //     vendorFlag = false
                         // }
-                        if (element.DestinationPlant !== Data[index - 1].DestinationPlant) {
+                        if (element.PlantId !== Data[index - 1].PlantId || element.DestinationPlant !== Data[index - 1].DestinationPlant) {
                             (Data.length !== 0) && setFilterStatus('Please filter out the Plant')
                             setEditWarning(true);
                             plantFlag = false
@@ -1332,7 +1332,7 @@ function Simulation(props) {
                         //     setEditWarning(true);
                         //     vendorFlag = false
                         // }
-                        if (element.DestinationPlant !== Data[index - 1].DestinationPlant) {
+                        if (element.PlantId !== Data[index - 1].PlantId || element.DestinationPlant !== Data[index - 1].DestinationPlant) {
                             (Data.length !== 0) && setFilterStatus('Please filter out the Plant')
                             setEditWarning(true);
                             plantFlag = false

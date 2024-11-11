@@ -46,7 +46,7 @@ function AnalyticsDrawer(props) {
 
 
     useEffect(() => {
-        setUomValue(props.rowData?.UnitOfMeasurementName ? props.rowData?.UnitOfMeasurementName : props.rowData?.UOM)
+        setUomValue(props.rowData?.UOM ? props.rowData?.UOM : props.rowData?.UnitOfMeasurement ?? props.rowData?.UnitOfMeasurement)
         let obj = {}
         obj.ModeId = props.ModeId
         obj.MasterIdList = [{
