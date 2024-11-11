@@ -151,7 +151,7 @@ function RunSimulationDrawer(props) {
             setDisableAdditionalOtherCost(true);
             setDisableAdditionalPackaging(true);
             setDisableAdditionalFreight(true);
-            // setDisableTool(true);
+            setDisableAdditionalTool(true)
         }
     }, [applicabilityHeadListSimulation]);
     // const costingHead = useSelector(state => state.comman.costingHead)
@@ -1083,7 +1083,7 @@ function RunSimulationDrawer(props) {
                                                 <Col md="12" className={`p-0 pb-3`}>
                                                     <div class={`custom-check1 d-inline-block drawer-side-input-other `}>
                                                         {(
-                                                            <div className="input-group col-md-12 mb-3 px-0 m-height-auto" id={`applicability-checkbox_18`}>
+                                                            <div className={`input-group col-md-12 mb-3 px-0 m-height-auto ${disableAdditionalTool ? 'disabled' : ''}`} id={`applicability-checkbox_18`}>
 
                                                                 <label
                                                                     className="custom-checkbox mb-0"
