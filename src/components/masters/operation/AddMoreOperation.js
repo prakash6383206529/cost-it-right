@@ -34,6 +34,7 @@ import MasterSendForApproval from "../MasterSendForApproval";
 import Button from "../../layout/Button";
 import { debounce } from "lodash";
 import Switch from 'react-switch'
+import { getPlantUnitAPI } from "../actions/Plant";
 
 function AddMoreOperation(props) {
     const { addMoreDetailObj, isEditFlag, detailObject, isViewMode } = props
@@ -105,28 +106,32 @@ function AddMoreOperation(props) {
         isDateChanged: false,
         disableAll: false,
         showWarning: false,
-        plantCurrency: null,
-        settlementCurrency: null,
+        plantCurrency: addMoreDetailObj.plantCurrencyState ?? 1,
+        settlementCurrency: addMoreDetailObj.settlementCurrency ?? 1,
         plantExchangeRateId: null,
         settlementExchangeRateId: null,
         isImport: addMoreDetailObj?.isImport,
-        currency: null,
+        currency: addMoreDetailObj.currency ?? null,
         ExchangeSource: null,
         plantCurrencyID: null,
-        costingTypeId: addMoreDetailObj?.costingTypeId
+        costingTypeId: addMoreDetailObj?.costingTypeId,
+        hidePlantCurrency: addMoreDetailObj?.hidePlantCurrency ?? false
     })
-
     const { register, handleSubmit, formState: { errors }, control, setValue, getValues } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
         defaultValues: defaultValues,
     });
+    const fromCurrencyRef = useRef(null);
+    const plantCurrencyRef = useRef(1);
+    const settlementCurrencyRef = useRef(1);
+    const localCurrencyLabel = useRef(null)
+
 
     const fieldValues = useWatch({
         control,
         name: addMoreDetailObj?.useWatchArray
     })
-
     useEffect(() => {
         let obj = {}
         if (isWelding) {
@@ -143,7 +148,17 @@ function AddMoreOperation(props) {
         }
         callExchangeRateAPI(obj)
 
-    }, [fieldValues, includeInterestInRejection])
+    }, [fieldValues, includeInterestInRejection, fromCurrencyRef])
+    useEffect(() => {
+        fromCurrencyRef.current = fromCurrencyRef
+        settlementCurrencyRef.current = settlementCurrencyRef
+        plantCurrencyRef.current = plantCurrencyRef
+        localCurrencyLabel.current = localCurrencyLabel
+    }, [fromCurrencyRef, settlementCurrencyRef, plantCurrencyRef, localCurrencyLabel]);
+    useEffect(() => {
+        callExchangeRateAPI()
+    }, [localCurrencyLabel]);
+
     const callExchangeRateAPI = (obj) => {
         const vendorValue = IsFetchExchangeRateVendorWise() ?
             ((addMoreDetailObj.costingTypeId === VBCTypeId || addMoreDetailObj.costingTypeId === ZBCTypeId) ? vendor.value : EMPTY_GUID) :
@@ -151,9 +166,9 @@ function AddMoreOperation(props) {
         const costingType = IsFetchExchangeRateVendorWise() ?
             ((addMoreDetailObj.costingTypeId === VBCTypeId || addMoreDetailObj.costingTypeId === ZBCTypeId) ? VBCTypeId : addMoreDetailObj.costingTypeId) :
             ZBCTypeId;
-        const fromCurrency = state.isImport ? state.currency?.label : getValues('plantCurrency');
+        const fromCurrency = state.isImport ? fromCurrencyRef?.current?.label : localCurrencyLabel?.current;
         const toCurrency = reactLocalStorage.getObject("baseCurrency");
-        const hasCurrencyAndDate = getValues('plantCurrency') && getValues('effectiveDate');
+        const hasCurrencyAndDate = localCurrencyLabel?.current && getValues('effectiveDate');
 
         if (hasCurrencyAndDate) {
             if (IsFetchExchangeRateVendorWise() && (vendor?.length === 0 || client?.length === 0)) {
@@ -171,7 +186,7 @@ function AddMoreOperation(props) {
                         client.value,
                         false,
                         to,
-                        state.ExchangeSource?.label??null,
+                        state.ExchangeSource?.label ?? null,
                         res => {
                             if (Object.keys(res.data.Data).length === 0) {
                                 setState(prevState => ({ ...prevState, showWarning: true }));
@@ -189,8 +204,7 @@ function AddMoreOperation(props) {
 
             if (state.isImport) {
                 // First API call
-                callAPI(fromCurrency, getValues('plantCurrency')).then(({ rate: rate1, exchangeRateId: exchangeRateId1 }) => {
-                    // Second API call
+                callAPI(fromCurrency, localCurrencyLabel?.current).then(({ rate: rate1, exchangeRateId: exchangeRateId1 }) => {
                     callAPI(fromCurrency, reactLocalStorage.getObject("baseCurrency")).then(({ rate: rate2, exchangeRateId: exchangeRateId2 }) => {
                         setState(prevState => ({
                             ...prevState,
@@ -199,6 +213,8 @@ function AddMoreOperation(props) {
                             plantExchangeRateId: exchangeRateId1,
                             settlementExchangeRateId: exchangeRateId2
                         }));
+                        plantCurrencyRef.current = rate1
+                        settlementCurrencyRef.current = rate2
                         if (isWelding) {
                             obj = { ...setMaterialCostWelding(), ...setPowerCostWelding(), ...setLabourCostWelding() }
                             setDataToSend(prevState => ({ ...prevState, ...obj }))
@@ -213,7 +229,7 @@ function AddMoreOperation(props) {
                         }
                     });
                 });
-            } else {
+            } else if (localCurrencyLabel.current !== reactLocalStorage?.getObject("baseCurrency")) {
                 // Original single API call for non-import case
                 callAPI(fromCurrency, toCurrency).then(({ rate, exchangeRateId }) => {
                     setState(prevState => ({
@@ -221,6 +237,7 @@ function AddMoreOperation(props) {
                         plantCurrency: rate,
                         plantExchangeRateId: exchangeRateId
                     }));
+                    plantCurrencyRef.current = rate
                     if (isWelding) {
                         obj = { ...setMaterialCostWelding(), ...setPowerCostWelding(), ...setLabourCostWelding() }
                         setDataToSend(prevState => ({ ...prevState, ...obj }))
@@ -295,8 +312,8 @@ function AddMoreOperation(props) {
         let totalCost = wireCost + gasCost + electricityCost + labourCost + machineConsumableCost + welderCost + otherCostWelding + interestDepriciationCost
         setDataToSend(prevState => ({ ...prevState, netCostWelding: totalCost }))
         if (state.isImport) {
-            const rateConversion = checkForNull(state.settlementCurrency) * checkForNull(totalCost)
-            const rateLocalConversion = checkForNull(state.plantCurrency) * checkForNull(totalCost)
+            const rateConversion = checkForNull(settlementCurrencyRef?.current) * checkForNull(totalCost)
+            const rateLocalConversion = checkForNull(plantCurrencyRef?.current) * checkForNull(totalCost)
 
             setValue('Rate', checkForDecimalAndNull(totalCost, initialConfiguration.NoOfDecimalForPrice))
             setValue('RateLocalConversion', checkForDecimalAndNull(rateLocalConversion, initialConfiguration.NoOfDecimalForPrice))
@@ -346,13 +363,13 @@ function AddMoreOperation(props) {
         let totalCost = gasCost + electricityCost + manPowerCost + staffCost + maintenanceCost + consumablesCost + waterCost + jigStripping + interestCost + depriciationCost + statuatoryLicense + rateOperation + rejectionReworkCost + profitCostState + otherCost
         setDataToSend(prevState => ({ ...prevState, RateLocalConversion: totalCost }))
         if (state.isImport) {
-            const rateConversion = checkForNull(state.settlementCurrency) * checkForNull(totalCost)
-            const rateLocalConversion = checkForNull(state.plantCurrency) * checkForNull(totalCost)
+            const rateConversion = checkForNull(settlementCurrencyRef?.current) * checkForNull(totalCost)
+            const rateLocalConversion = checkForNull(plantCurrencyRef?.current) * checkForNull(totalCost)
             setValue('Rate', checkForDecimalAndNull(totalCost, initialConfiguration.NoOfDecimalForPrice))
             setValue('RateLocalConversion', checkForDecimalAndNull(rateLocalConversion, initialConfiguration.NoOfDecimalForPrice))
             setValue('RateConversion', checkForDecimalAndNull(rateConversion, initialConfiguration.NoOfDecimalForPrice))
         } else {
-            const rateConversion = checkForNull(state.plantCurrency) * checkForNull(totalCost)
+            const rateConversion = checkForNull(plantCurrencyRef?.current) * checkForNull(totalCost)
             setValue('RateLocalConversion', checkForDecimalAndNull(totalCost, initialConfiguration.NoOfDecimalForPrice))
             setValue('RateConversion', checkForDecimalAndNull(rateConversion, initialConfiguration.NoOfDecimalForPrice))
         }
@@ -399,19 +416,18 @@ function AddMoreOperation(props) {
         let Rate = (wireCost - gasCost + electricityCost + manPowerCost + staffCost + waterCost + jigStripping + statuatoryLicense + rejectionReworkCost + profitCostState)
         setDataToSend(prevState => ({ ...prevState, RateLocalConversion: Rate }))
         if (state.isImport) {
-            const rateConversion = checkForNull(state.settlementCurrency) * checkForNull(Rate)
-            const rateLocalConversion = checkForNull(state.plantCurrency) * checkForNull(Rate)
+            const rateConversion = checkForNull(settlementCurrencyRef?.current) * checkForNull(Rate)
+            const rateLocalConversion = checkForNull(plantCurrencyRef?.current) * checkForNull(Rate)
             setValue('Rate', checkForDecimalAndNull(Rate, initialConfiguration.NoOfDecimalForPrice))
             setValue('RateLocalConversion', checkForDecimalAndNull(rateLocalConversion, initialConfiguration.NoOfDecimalForPrice))
             setValue('RateConversion', checkForDecimalAndNull(rateConversion, initialConfiguration.NoOfDecimalForPrice))
         } else {
-            const rateConversion = checkForNull(state.plantCurrency) * checkForNull(Rate)
+            const rateConversion = checkForNull(plantCurrencyRef?.current) * checkForNull(Rate)
             setValue('RateLocalConversion', checkForDecimalAndNull(Rate, initialConfiguration.NoOfDecimalForPrice))
             setValue('RateConversion', checkForDecimalAndNull(rateConversion, initialConfiguration.NoOfDecimalForPrice))
         }
 
     }
-
 
     useEffect(() => {
 
@@ -452,6 +468,10 @@ function AddMoreOperation(props) {
         setState(prevState => ({ ...prevState, isImport: addMoreDetailObj?.isImport, currency: addMoreDetailObj?.currency, plantCurrencyID: addMoreDetailObj?.plantCurrencyID, ExchangeSource: addMoreDetailObj?.ExchangeSource, plantExchangeRateId: addMoreDetailObj?.plantExchangeRateId, settlementExchangeRateId: addMoreDetailObj?.settlementExchangeRateId, plantCurrency: addMoreDetailObj?.plantCurrencyState, settlementCurrency: addMoreDetailObj?.settlementCurrency }))
         setValue('ExchangeSource', { label: addMoreDetailObj?.ExchangeSource?.label, value: addMoreDetailObj?.ExchangeSource?.value })
         setValue('currency', { label: addMoreDetailObj?.currency?.label, value: addMoreDetailObj?.currency?.value })
+        fromCurrencyRef.current = props?.addMoreDetailObj.currency
+        plantCurrencyRef.current = addMoreDetailObj?.plantCurrencyState
+        settlementCurrencyRef.current = addMoreDetailObj?.settlementCurrency
+        localCurrencyLabel.current = addMoreDetailObj?.plantCurrency
         if (isEditFlag) {
             setValue('effectiveDate', DayTime(addMoreDetailObj.effectiveDate).$d)
             if (String(props?.addMoreDetailObj?.operationType?.label) === "Welding") {
@@ -682,20 +702,20 @@ function AddMoreOperation(props) {
             OperationEntryType: state.isImport ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC,
             ExchangeRateSourceName: state.ExchangeSource?.label || null,
             LocalCurrencyId: state.isImport ? state?.plantCurrencyID : null,
-            LocalCurrency: state.isImport ? getValues("plantCurrency") : null,
+            LocalCurrency: state.isImport ? localCurrencyLabel.current : null,
             LocalExchangeRateId: state.isImport ? state?.plantExchangeRateId : null,
             LocalCurrencyExchangeRate: state.isImport ? state?.plantCurrency : null,
             ExchangeRate: state.isImport ? state?.settlementCurrency : state?.plantCurrency,
             ExchangeRateId: state.isImport ? state?.settlementExchangeRateId : state?.plantExchangeRateId,
             CurrencyId: state.isImport ? state.currency?.value : state?.plantCurrencyID,
-            Currency: state.isImport ? state?.currency?.label : getValues("plantCurrency"),
+            Currency: state.isImport ? state?.currency?.label : localCurrencyLabel.current,
         }
 
         let isFinancialDataChange = false;
         if (isEditFlag) {
-    isFinancialDataChange = Object.keys(formData)
-    .filter(item => item.includes('Cost') || (item.includes('CRMHead') && initialConfiguration?.IsShowCRMHead)  || item.includes('Rate')) // Filter keys that include 'Cost', 'CRMHead', or 'Rate'
-    .some(item => dataObj[item] && String(dataObj[item]) !== String(formData[item]));
+            isFinancialDataChange = Object.keys(formData)
+                .filter(item => item.includes('Cost') || (item.includes('CRMHead') && initialConfiguration?.IsShowCRMHead) || item.includes('Rate')) // Filter keys that include 'Cost', 'CRMHead', or 'Rate'
+                .some(item => dataObj[item] && String(dataObj[item]) !== String(formData[item]));
 
 
 
@@ -842,7 +862,20 @@ function AddMoreOperation(props) {
     const handlePlant = (value) => {
         if (value && value !== '') {
             setPlant(value)
-            callExchangeRateAPI()
+            dispatch(getPlantUnitAPI(value?.value, (res) => {
+                let Data = res?.data?.Data
+                localCurrencyLabel.current = Data?.Currency
+                setValue('plantCurrency', Data?.Currency)
+                setState(prevState => ({ ...prevState, plantCurrencyID: Data?.CurrencyId }))
+
+                if (Data?.Currency !== reactLocalStorage?.getObject("baseCurrency")) {
+                    setState(prevState => ({ ...prevState, hidePlantCurrency: false }))
+                } else {
+                    setState(prevState => ({ ...prevState, hidePlantCurrency: true }))
+                }
+                callExchangeRateAPI()
+            }))
+
         }
     }
     const handleExchangeRateSource = (newValue) => {
@@ -851,6 +884,7 @@ function AddMoreOperation(props) {
     };
     const handleCurrency = (newValue) => {
         if (newValue && newValue !== '') {
+            fromCurrencyRef.current = newValue
             setState(prevState => ({ ...prevState, currency: newValue }))
             callExchangeRateAPI()
         }
@@ -3015,40 +3049,50 @@ function AddMoreOperation(props) {
                                     disabled={true}
                                 />
                             </Col>}
-                            <TooltipCustom id={"RateLocalConversion"} disabledIcon={true} tooltipText={`Rate = Total Cost of all Section`} />
-                            <Col className="col-md-15">
-                                <NumberFieldHookForm
-                                    label={`Rate (${getValues('plantCurrency') ?? 'Currency'})`}
-                                    name={'RateLocalConversion'}
-                                    Controller={Controller}
+
+
+
+                            <>
+                                <TooltipCustom
                                     id={"RateLocalConversion"}
-                                    control={control}
-                                    register={register}
-                                    mandatory={false}
-                                    handleChange={() => { }}
-                                    defaultValue={''}
-                                    className=""
-                                    customClassName={'withBorder'}
-                                    errors={errors.RateLocalConversion}
-                                    disabled={true}
+                                    disabledIcon={true}
+                                    tooltipText={`Rate = Total Cost of all Section`}
                                 />
-                            </Col>
-                            <Col className="col-md-15">
-                                <NumberFieldHookForm
-                                    label={`Rate (${reactLocalStorage.getObject("baseCurrency")})`}
-                                    name={'RateConversion'}
-                                    Controller={Controller}
-                                    control={control}
-                                    register={register}
-                                    mandatory={false}
-                                    handleChange={() => { }}
-                                    defaultValue={''}
-                                    className=""
-                                    customClassName={'withBorder'}
-                                    errors={errors.RateConversion}
-                                    disabled={true}
-                                />
-                            </Col>
+                                <Col className="col-md-15">
+                                    <NumberFieldHookForm
+                                        label={`Rate (${getValues('plantCurrency') ?? 'Currency'})`}
+                                        name={'RateLocalConversion'}
+                                        Controller={Controller}
+                                        id={"RateLocalConversion"}
+                                        control={control}
+                                        register={register}
+                                        mandatory={false}
+                                        handleChange={() => { }}
+                                        defaultValue={''}
+                                        className=""
+                                        customClassName={'withBorder'}
+                                        errors={errors.RateLocalConversion}
+                                        disabled={true}
+                                    />
+                                </Col>
+                            </>
+                            {!state.hidePlantCurrency && (
+                                <Col className="col-md-15">
+                                    <NumberFieldHookForm
+                                        label={`Rate (${reactLocalStorage.getObject("baseCurrency")})`}
+                                        name={'RateConversion'}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        mandatory={false}
+                                        handleChange={() => { }}
+                                        defaultValue={''}
+                                        className=""
+                                        customClassName={'withBorder'}
+                                        errors={errors.RateConversion}
+                                        disabled={true}
+                                    />
+                                </Col>)}
 
                             <Row>
                                 <Col md="12">
