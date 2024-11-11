@@ -1181,7 +1181,7 @@ function SimulationApprovalSummary(props) {
                 return vendorArray[0];
             default:
                 return <>
-                    <div className='view-all-wrapper word-nowrap'>{vendorArray[0]},<Popup trigger={<button id={`popUpTriggerProfit`} className="view-btn pl-1" type={'button'}><span>+{vendorArray?.length - 1}</span></button>}
+                    <div className='view-all-wrapper word-nowrap'>{vendorArray[0]}<Popup trigger={<button id={`popUpTriggerProfit`} className="view-btn" type={'button'}><span className="ml-1">+{vendorArray?.length - 1}</span></button>}
                         position="bottom center">
                         <ul className="px-1 view-all-list">
                             {vendorArray && vendorArray.map((item, index) => {
