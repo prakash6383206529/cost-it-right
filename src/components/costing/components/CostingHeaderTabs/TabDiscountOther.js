@@ -2128,8 +2128,12 @@ function TabDiscountOther(props) {
                         closeDrawer={openAndCloseAddConditionCosting}
                         anchor={'right'}
                         netPOPrice={netPOPrice}
-                        basicRateCurrency={getValues('BasicRateINR')}
+                        basicRateBase={getValues('BasicRateINR')}
                         ViewMode={CostingViewMode}
+                        isFromMaster={false}
+                        isFromImport={true}
+                        currency={currencySource}
+                        PlantCurrency={costData?.LocalCurrency}
                       />
                     }
 
