@@ -89,6 +89,7 @@ class AddFreight extends Component {
       plantExchangeRateId: '',
       settlementExchangeRateId: '',
       plantCurrencyID: '',
+      showPlantWarning: false
     };
   }
   /**
@@ -145,15 +146,11 @@ class AddFreight extends Component {
             to,
             ExchangeSource?.label ?? null,
             res => {
-              if (Object.keys(res.data.Data).length === 0) {
-                this.setState({ showWarning: true });
-              } else {
-                this.setState({ showWarning: false });
-              }
-              // Resolve with an object containing both values
               resolve({
                 rate: checkForNull(res.data.Data.CurrencyExchangeRate),
-                exchangeRateId: res?.data?.Data?.ExchangeRateId
+                exchangeRateId: res?.data?.Data?.ExchangeRateId,
+                showWarning: Object.keys(res.data.Data).length === 0,
+                showPlantWarning: Object.keys(res.data.Data).length === 0
               });
             }
           );
@@ -162,14 +159,17 @@ class AddFreight extends Component {
 
       if (isImport) {
         // First API call
-        callAPI(fromCurrency, fieldsObj?.plantCurrency).then(({ rate: rate1, exchangeRateId: exchangeRateId1 }) => {
+        callAPI(fromCurrency, fieldsObj?.plantCurrency).then(({ rate: rate1, exchangeRateId: exchangeRateId1, showPlantWarning: showPlantWarning1, showWarning: showWarning1, }) => {
           // Second API call
-          callAPI(fromCurrency, reactLocalStorage.getObject("baseCurrency")).then(({ rate: rate2, exchangeRateId: exchangeRateId2 }) => {
+          callAPI(fromCurrency, reactLocalStorage.getObject("baseCurrency")).then(({ rate: rate2, exchangeRateId: exchangeRateId2, showWarning: showWarning2, showPlantWarning: showPlantWarning2 }) => {
             this.setState({
               plantCurrency: rate1,
               settlementCurrency: rate2,
               plantExchangeRateId: exchangeRateId1,
-              settlementExchangeRateId: exchangeRateId2
+              settlementExchangeRateId: exchangeRateId2,
+              showPlantWarning: showPlantWarning1,
+              showWarning: showWarning2
+
             }, () => {
               this.handleCalculation(fieldsObj?.Rate)
             });
@@ -177,8 +177,8 @@ class AddFreight extends Component {
         });
       } else {
         // Original single API call for non-import case
-        callAPI(fromCurrency, toCurrency).then(({ rate, exchangeRateId }) => {
-          this.setState({ plantCurrency: rate, plantExchangeRateId: exchangeRateId }, () => {
+        callAPI(fromCurrency, toCurrency).then(({ rate, exchangeRateId, showPlantWarning, showWarning }) => {
+          this.setState({ plantCurrency: rate, plantExchangeRateId: exchangeRateId, showPlantWarning: showPlantWarning, showWarning: showWarning }, () => {
             this.handleCalculation(fieldsObj?.RateLocalConversion)
           });
         });
@@ -188,7 +188,6 @@ class AddFreight extends Component {
   }
   handleCalculation = (rate) => {
     const { plantCurrency, settlementCurrency, isImport } = this.state
-    console.log("heloooooooooooo")
     if (isImport) {
       const ratePlantCurrency = checkForNull(rate) * checkForNull(plantCurrency)
       this.props.change('RateLocalConversion', checkForDecimalAndNull(ratePlantCurrency, getConfigurationKey().NoOfDecimalForPrice))
@@ -1216,7 +1215,7 @@ class AddFreight extends Component {
                               />
                             </Col>
                           )}
-                          {!hidePlantCurrency && <Col md="3">
+                          <Col md="3">
                             <Field
                               name="plantCurrency"
                               type="text"
@@ -1229,7 +1228,9 @@ class AddFreight extends Component {
                               className=" "
                               customClassName=" withBorder"
                             />
-                          </Col>}
+                            {this.state?.showPlantWarning && <WarningMessage dClass="mt-0" message={`${this.props?.fieldsObj?.plantCurrency} rate is not present in the Exchange Master`} />}
+
+                          </Col>
                           {this.state.isImport && <Col md="3">
                             <Field
                               name="Currency"
@@ -1248,7 +1249,7 @@ class AddFreight extends Component {
                               handleChangeDescription={this.handleCurrency}
                               valueDescription={this.state.currency}
                               disabled={isEditFlag ? true : false}
-                            >{this.state.showWarning && <WarningMessage dClass="mt-1" message={`${this.state.currency.label} rate is not present in the Exchange Master`} />}
+                            >{this.state?.currency?.label && this.state?.showWarning && <WarningMessage dClass="mt-1" message={`${this.state?.currency?.label} rate is not present in the Exchange Master`} />}
                             </Field>
                           </Col>}
 

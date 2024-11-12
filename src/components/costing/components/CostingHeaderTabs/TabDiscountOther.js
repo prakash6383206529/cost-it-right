@@ -128,6 +128,7 @@ function TabDiscountOther(props) {
   const [taxCode, setTaxCode] = useState('')
   const [isShowValuationType, setIsShowValuationType] = useState(false)
   const taxCodeList = useSelector(state => state.comman.taxCodeList)
+  const [count, setCount] = useState(0)
 
   const npvDrawerCondition = (
     ((IsRfqCostingType?.costingType || IsRfqCostingType?.isRfqCosting) && !initialConfiguration?.IsShowTCO && initialConfiguration?.IsShowNpvCost) ||
@@ -150,7 +151,7 @@ function TabDiscountOther(props) {
   const [paymentTermsWarning, setPaymentTermsWarning] = useState(false)
   const { getCostingPaymentDetails } = useSelector(state => state.costing);
   const { evaluationType } = useSelector((state) => state?.costing)
-  const { currencySource } = useSelector((state) => state?.costing);
+  const { currencySource, exchangeRateSource } = useSelector((state) => state?.costing);
 
   const SAPData = useSelector(state => state.approval.SAPObj)
 
@@ -237,7 +238,7 @@ function TabDiscountOther(props) {
 
     if (label === 'Currency') {
       currencySelectList && currencySelectList.map(item => {
-        if (item.Value === '0' || item.Text === 'INR') return false;
+        if (item.Value === '0' || item.Text === initialConfiguration?.BaseCurrency || item.Text === currencySource?.label) return false;
         temp.push({ label: item.Text, value: item.Value })
         return null;
       });
@@ -429,14 +430,15 @@ function TabDiscountOther(props) {
 
 
   useEffect(() => {
-    if (props.activeTab === '6') {
+    if (props.activeTab === '6' && count === 0) {
+      setCount(count + 1)
       dispatch(getCurrencySelectList(() => { }))
     }
     return () => {
       reactLocalStorage.setObject('isFromDiscountObj', false)
       setNfrListing(false)
     }
-  }, [])
+  }, [props.activeTab])
 
   // useEffect(() => {
   //   setDiscountObj({
@@ -999,7 +1001,7 @@ function TabDiscountOther(props) {
 
       let costingTypeId = (costData.CostingTypeId === VBCTypeId || costData.CostingTypeId === NFRTypeId) ? VBCTypeId : costData.CostingTypeId
       const costingType = IsFetchExchangeRateVendorWise() ? costingTypeId : ZBCTypeId
-      dispatch(getExchangeRateByCurrency(newValue.label, costingType, DayTime(CostingEffectiveDate).format('YYYY-MM-DD'), vendorValue, costData.CustomerId, false, res => {
+      dispatch(getExchangeRateByCurrency(currencySource?.label, costingType, DayTime(CostingEffectiveDate).format('YYYY-MM-DD'), vendorValue, costData.CustomerId, false, newValue.label, initialConfiguration?.IsSourceExchangeRateNameVisible ? exchangeRateSource?.label : null, res => {
         setIsInputLader(false)
         if (Object.keys(res.data.Data).length === 0) {
           setShowWarning(true)
@@ -2126,8 +2128,12 @@ function TabDiscountOther(props) {
                         closeDrawer={openAndCloseAddConditionCosting}
                         anchor={'right'}
                         netPOPrice={netPOPrice}
-                        basicRateCurrency={getValues('BasicRateINR')}
+                        basicRateBase={getValues('BasicRateINR')}
                         ViewMode={CostingViewMode}
+                        isFromMaster={false}
+                        isFromImport={true}
+                        currency={currencySource}
+                        PlantCurrency={costData?.LocalCurrency}
                       />
                     }
 

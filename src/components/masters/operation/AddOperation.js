@@ -25,7 +25,7 @@ import { CheckApprovalApplicableMaster, onFocus, showDataOnHover, userTechnology
 import { getCostingSpecificTechnology, getExchangeRateByCurrency } from '../../costing/actions/Costing'
 import { getClientSelectList, } from '../actions/Client';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { autoCompleteDropdown, costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission, getEffectiveDateMinDate } from '../../common/CommonFunctions';
+import { autoCompleteDropdown, convertIntoCurrency, costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission, getEffectiveDateMinDate } from '../../common/CommonFunctions';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { checkFinalUser } from '../../../components/costing/actions/Costing'
 import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions';
@@ -114,6 +114,8 @@ class AddOperation extends Component {
       plantExchangeRateId: '',
       settlementExchangeRateId: '',
       plantCurrencyID: '',
+      showWarning:false,
+      showPlantWarning:false
     }
   }
 
@@ -161,8 +163,8 @@ class AddOperation extends Component {
         this.setState({ showWarning: true });
         return;
       }
-
       const callAPI = (from, to) => {
+        console.log(to,this.props.fieldsObj.plantCurrency);
         return new Promise((resolve) => {
           this.props.getExchangeRateByCurrency(
             from,
@@ -174,11 +176,13 @@ class AddOperation extends Component {
             to,
             ExchangeSource?.label ?? null,
             res => {
-              if (Object.keys(res.data.Data).length === 0) {
-                this.setState({ showWarning: true });
-              } else {
-                this.setState({ showWarning: false });
-              }
+              const isEmptyData = Object.keys(res?.data?.Data || {}).length === 0;
+              const isPlantCurrencyOrNotImport = to === this.props.fieldsObj.plantCurrency || !isImport;
+              this.setState(
+               isPlantCurrencyOrNotImport
+               ? { showPlantWarning: isEmptyData }
+                : { showWarning: isEmptyData }
+                  );
               // Resolve with an object containing both values
               resolve({
                 rate: checkForNull(res.data.Data.CurrencyExchangeRate),
@@ -204,7 +208,7 @@ class AddOperation extends Component {
             });
           });
         });
-      } else {
+      } else if (this.props.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
         // Original single API call for non-import case
         callAPI(fromCurrency, toCurrency).then(({ rate, exchangeRateId }) => {
           this.setState({ plantCurrency: rate, plantExchangeRateId: exchangeRateId }, () => {
@@ -399,9 +403,9 @@ class AddOperation extends Component {
         let Data = res?.data?.Data
         this.props.change('plantCurrency', Data?.Currency)
         this.setState({ plantCurrencyID: Data?.CurrencyId })
+        this.callExchangeRateAPI()
         if (Data?.Currency !== reactLocalStorage?.getObject("baseCurrency")) {
           this.setState({ hidePlantCurrency: false })
-          this.callExchangeRateAPI()
         } else {
           this.setState({ hidePlantCurrency: true })
         }
@@ -537,14 +541,13 @@ class AddOperation extends Component {
   }
   handleCalculation = (rate) => {
     const { plantCurrency, settlementCurrency, isImport } = this.state
-
     if (isImport) {
-      const ratePlantCurrency = checkForNull(rate) * checkForNull(plantCurrency)
+      const ratePlantCurrency = convertIntoCurrency(rate, plantCurrency)
       this.props.change('RateLocalConversion', checkForDecimalAndNull(ratePlantCurrency, getConfigurationKey().NoOfDecimalForPrice))
-      const rateBaseCurrency = checkForNull(rate) * checkForNull(settlementCurrency)
+      const rateBaseCurrency = convertIntoCurrency(rate, settlementCurrency)
       this.props.change('RateConversion', checkForDecimalAndNull(rateBaseCurrency, getConfigurationKey().NoOfDecimalForPrice))
     } else {
-      const ratebaseCurrency = checkForNull(rate) * checkForNull(plantCurrency)
+      const ratebaseCurrency = convertIntoCurrency(rate, plantCurrency)
       this.props.change('RateConversion', checkForDecimalAndNull(ratebaseCurrency, getConfigurationKey().NoOfDecimalForPrice))
     }
   }
@@ -878,9 +881,9 @@ class AddOperation extends Component {
         let Data = res?.data?.Data
         this.props.change('plantCurrency', Data?.Currency)
         this.setState({ plantCurrencyID: Data?.CurrencyId })
+        this.callExchangeRateAPI()
         if (Data?.Currency !== reactLocalStorage?.getObject("baseCurrency")) {
           this.setState({ hidePlantCurrency: false })
-          this.callExchangeRateAPI()
         } else {
           this.setState({ hidePlantCurrency: true })
         }
@@ -1528,6 +1531,7 @@ class AddOperation extends Component {
                           className=" "
                           customClassName=" withBorder"
                         />
+                          {this.state.showPlantWarning && <WarningMessage dClass="mt-1" message={`${this.props.fieldsObj.plantCurrency} rate is not present in the Exchange Master`} />}
                       </Col>}
                       {this.state.isImport && <Col md="3">
                         <Field
@@ -1547,7 +1551,7 @@ class AddOperation extends Component {
                           handleChangeDescription={this.handleCurrency}
                           valueDescription={this.state.currency}
                           disabled={isEditFlag ? true : false || isDetailEntry || isViewMode}
-                        >{this.state.showWarning && <WarningMessage dClass="mt-1" message={`${this.state.currency.label} rate is not present in the Exchange Master`} />}
+                        >{this.state.showWarning && <WarningMessage dClass="mt-1" message={`${this.state?.currency?.label} rate is not present in the Exchange Master`} />}
                         </Field>
                       </Col>}
                       <Col md="3">
@@ -1691,7 +1695,7 @@ class AddOperation extends Component {
 
                       {initialConfiguration && initialConfiguration.IsOperationLabourRateConfigure && <Col md="3">
                         <Field
-                          label={`Labour Rate/${this.state.UOM.label ? this.state.UOM.label : 'UOM'}`}
+                          label={`Labour Rate/${this.state.UOM?.label ? this.state.UOM?.label : 'UOM'}`}
                           name={"LabourRatePerUOM"}
                           type="text"
                           placeholder={isViewMode ? '-' : "Select"}
@@ -1873,10 +1877,8 @@ class AddOperation extends Component {
             callExchangeRateAPI={this.callExchangeRateAPI}
           />
         }
-
         {
           this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
-
         }
         {
           isOpenVendor && (
