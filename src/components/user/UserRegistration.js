@@ -890,20 +890,25 @@ function UserRegistration(props) {
    * @description Used for User's additional permission
    */
   const onPressUserPermission = (e) => {
+    
 
       ; // Set loading to true when starting
 
     if (role && role.value) {
+      
 
       setIsShowAdditionalPermission(!IsShowAdditionalPermission)
       setModules([])
 
       if (isEditFlag && grantUserWisePermission) {
+        
+        
         if (!e) {
           setIsPermissionLoading(true)
         }
         getUserPermission(UserId)
       } else {
+        
         if (!e) {
           setIsPermissionLoading(true)
         }
@@ -3044,7 +3049,7 @@ function UserRegistration(props) {
                       {/* <label>{`City`}<span className="asterisk-required">*</span></label>
                       <div className="d-flex justify-space-between align-items-center p-relative async-select">
                         <div className="fullinput-icon p-relative">
-                          {console.log(state.inputLoader, "state.inputLoader")}
+                          {}
                           {state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
                           <Controller
                             name="CityId"
