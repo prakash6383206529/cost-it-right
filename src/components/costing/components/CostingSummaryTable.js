@@ -2131,7 +2131,7 @@ const CostingSummaryTable = (props) => {
                         {'Send For Approval'}
                       </button>
                     )}
-                    <button
+                    {!simulationDrawer && <button
                       type="button"
                       id="costingSummary_addtocomparison"
 
@@ -2140,7 +2140,7 @@ const CostingSummaryTable = (props) => {
                     >
                       <div className="compare-arrows"></div>
                       Add To Comparison{' '}
-                    </button>
+                    </button>}
                   </>
                 }
               </div >
