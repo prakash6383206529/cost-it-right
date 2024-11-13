@@ -199,6 +199,7 @@ function VerifyImpactDrawer(props) {
                       fgWiseAccDisable={fgWiseAccDisable}
                       tooltipEffectiveDate={DayTime(amendmentDetails.EffectiveDate).format('DD-MM-YYYY')}
                       isSimulation={props?.isSimulation}
+                      isCosting={props?.isCosting}
                     />
                   </Col>
                 </Row>
