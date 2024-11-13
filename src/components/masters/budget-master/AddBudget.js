@@ -113,7 +113,7 @@ function AddBudget(props) {
     const [plantExchangeRateId, setPlantExchangeRateId] = useState('')
     const [settlementExchangeRateId, setSettlementExchangeRateId] = useState('')
     const [plantCurrency, setPlantCurrency] = useState(null)
-    const [ExchangeSource, setExchangeSource] = useState('')
+    const [ExchangeSource, setExchangeSource] = useState()
     const [costConverSionInLocalCurrency, setCostConverSionInLocalCurrency] = useState(false)
     const { vendorLabel } = useLabels()
     useEffect(() => {
@@ -345,7 +345,7 @@ function AddBudget(props) {
             setDisableCurrency(false)
             setValue('currency', '')
             setCurrency([])
-            callExchangeRateAPI()
+
 
         } else {
             setYear([])
@@ -495,14 +495,12 @@ function AddBudget(props) {
         setTotalSum((total + currentPrice))
 
         if (costConverSionInLocalCurrency) {
-
-            setValue('totalSumCurrency', checkForDecimalAndNull((totalSum + currentPrice), getConfigurationKey().NoOfDecimalForPrice))
-            setValue("totalSumPlantCurrency", checkForDecimalAndNull(((totalSum + currentPrice) * settlementCurrency), getConfigurationKey().NoOfDecimalForPrice))
-            setValue('totalSum', checkForDecimalAndNull(((totalSum + currentPrice) * settlementCurrency), getConfigurationKey().NoOfDecimalForPrice))
+            setValue('totalSumCurrency', checkForDecimalAndNull((total + currentPrice), getConfigurationKey().NoOfDecimalForPrice))
+            setValue("totalSumPlantCurrency", checkForDecimalAndNull(((total + currentPrice) * plantCurrency), getConfigurationKey().NoOfDecimalForPrice))
+            setValue('totalSum', checkForDecimalAndNull(((total + currentPrice) * settlementCurrency), getConfigurationKey().NoOfDecimalForPrice))
         } else {
-
-            setValue('totalSumCurrency', checkForDecimalAndNull((totalSum + currentPrice), getConfigurationKey().NoOfDecimalForPrice))
-            setValue('totalSum', checkForDecimalAndNull(((totalSum + currentPrice) * plantCurrency), getConfigurationKey().NoOfDecimalForPrice))
+            setValue('totalSumCurrency', checkForDecimalAndNull((total + currentPrice), getConfigurationKey().NoOfDecimalForPrice))
+            setValue('totalSum', checkForDecimalAndNull(((total + currentPrice) * plantCurrency), getConfigurationKey().NoOfDecimalForPrice))
 
         }
         // setValue('totalSumCurrency', checkForDecimalAndNull((total + currentPrice), getConfigurationKey().NoOfDecimalForPrice))
@@ -576,8 +574,9 @@ function AddBudget(props) {
                     setPartType({ label: Data.PartType, value: Data?.PartTypeId })
                     setExchangeSource({ label: Data.ExchangeRateSourceName, valu: Data.ExchangeRateSourceName })
                     setValue("ExchangeSource", { label: Data.ExchangeRateSourceName, valu: Data.ExchangeRateSourceName })
+                    setExchangeSource({ label: Data.ExchangeRateSourceName, valu: Data.ExchangeRateSourceName })
                     setCurrentPrice(Data?.NetPoPrice)
-                    setPlantCurrencyID(Data?.CurrencyId === null ? Data?.LocalCurrencyId : Data?.CurrencyId)
+                    setPlantCurrencyID(Data?.CurrencyId !== null ? Data?.LocalCurrencyId : Data?.CurrencyId)
                     setCostConverSionInLocalCurrency(Data?.CurrencyId !== null ? true : false)
 
                     setPlantCurrency(Data?.CurrencyId !== null ? Data?.LocalCurrencyExchangeRate : Data?.ExchangeRate)
@@ -687,7 +686,6 @@ function AddBudget(props) {
                 setShowWarning(true)
                 return;
             }
-
             const callAPI = (from, to) => {
                 return new Promise((resolve) => {
                     dispatch(getExchangeRateByCurrency(
@@ -698,7 +696,7 @@ function AddBudget(props) {
                         client.value,
                         true,
                         to,
-                        ExchangeSource?.label ?? null,
+                        getValues("ExchangeSource")?.label ?? "",
                         res => {
                             if (Object.keys(res.data.Data).length === 0) {
                                 setShowWarning(true)
@@ -736,12 +734,10 @@ function AddBudget(props) {
     const handleCalculation = (rate = "") => {
 
         if (costConverSionInLocalCurrency) {
-
             setValue('totalSumCurrency', checkForDecimalAndNull((totalSum + currentPrice), getConfigurationKey().NoOfDecimalForPrice))
-            setValue("totalSumPlantCurrency", checkForDecimalAndNull(((totalSum + currentPrice) * settlementCurrency), getConfigurationKey().NoOfDecimalForPrice))
+            setValue("totalSumPlantCurrency", checkForDecimalAndNull(((totalSum + currentPrice) * plantCurrency), getConfigurationKey().NoOfDecimalForPrice))
             setValue('totalSum', checkForDecimalAndNull(((totalSum + currentPrice) * settlementCurrency), getConfigurationKey().NoOfDecimalForPrice))
         } else {
-
             setValue('totalSumCurrency', checkForDecimalAndNull((totalSum + currentPrice), getConfigurationKey().NoOfDecimalForPrice))
             setValue('totalSum', checkForDecimalAndNull(((totalSum + currentPrice) * plantCurrency), getConfigurationKey().NoOfDecimalForPrice))
 
@@ -821,7 +817,9 @@ function AddBudget(props) {
                 BudgetedPoPrice: totalSum,
                 BudgetedEntryType: budgetedEntryType ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC,
                 BudgetedPoPriceInCurrency: checkForNull(totalSum * plantCurrency),
-                CostingHeadId: costingTypeId, PartId: part.value, PartName: part.label, RevisionNumber: part.RevisionNumber, PlantId: selectedPlants.value,
+                CostingHeadId: costingTypeId,
+                PartId: part.value,
+                PartName: part.label, RevisionNumber: part.RevisionNumber, PlantId: selectedPlants.value,
                 PlantName: selectedPlants.label, VendorId: vendorName.value, VendorName: vendorName.label, CustomerId: client.value, BudgetingPartCostingDetails: temp,
                 ConditionsData: conditionTableData,
                 ExchangeRateSourceName: ExchangeSource?.label,
@@ -882,7 +880,7 @@ function AddBudget(props) {
                 if (costConverSionInLocalCurrency) {
 
                     setValue('totalSumCurrency', checkForDecimalAndNull((totalSum + currentPrice), getConfigurationKey().NoOfDecimalForPrice))
-                    setValue("totalSumPlantCurrency", checkForDecimalAndNull(((totalSum + currentPrice) * settlementCurrency), getConfigurationKey().NoOfDecimalForPrice))
+                    setValue("totalSumPlantCurrency", checkForDecimalAndNull(((totalSum + currentPrice) * plantCurrency), getConfigurationKey().NoOfDecimalForPrice))
                     setValue('totalSum', checkForDecimalAndNull(((totalSum + currentPrice) * settlementCurrency), getConfigurationKey().NoOfDecimalForPrice))
                 } else {
 
@@ -971,7 +969,7 @@ function AddBudget(props) {
         if (costConverSionInLocalCurrency) {
 
             setValue('totalSumCurrency', checkForDecimalAndNull((totalSum + currentPrice), getConfigurationKey().NoOfDecimalForPrice))
-            setValue("totalSumPlantCurrency", checkForDecimalAndNull(((totalSum + currentPrice) * settlementCurrency), getConfigurationKey().NoOfDecimalForPrice))
+            setValue("totalSumPlantCurrency", checkForDecimalAndNull(((totalSum + currentPrice) * plantCurrency), getConfigurationKey().NoOfDecimalForPrice))
             setValue('totalSum', checkForDecimalAndNull(((totalSum + currentPrice) * settlementCurrency), getConfigurationKey().NoOfDecimalForPrice))
         } else {
 
@@ -1249,23 +1247,24 @@ function AddBudget(props) {
                                                                     errors={errors.plantCurrency}
                                                                 />
                                                             </Col>
-                                                            <Col className="col-md-15">
-                                                                <SearchableSelectHookForm
-                                                                    label={"Exchange Rate Source"}
-                                                                    name={"ExchangeSource"}
-                                                                    placeholder={"Select"}
-                                                                    Controller={Controller}
-                                                                    control={control}
-                                                                    rules={{ required: true }}
-                                                                    register={register}
-                                                                    defaultValue={partType.length !== 0 ? partType : ""}
-                                                                    options={renderListing('ExchangeSource')}
-                                                                    mandatory={true}
-                                                                    handleChange={handleExchangeRateSource}
-                                                                    errors={errors.ExchangeSource}
-                                                                    disabled={isViewMode ? true : false || isEditFlag ? true : false}
-                                                                />
-                                                            </Col>
+                                                            {getConfigurationKey().IsSourceExchangeRateNameVisible && (
+                                                                <Col className="col-md-15">
+                                                                    <SearchableSelectHookForm
+                                                                        label={"Exchange Rate Source"}
+                                                                        name={"ExchangeSource"}
+                                                                        placeholder={"Select"}
+                                                                        Controller={Controller}
+                                                                        control={control}
+                                                                        rules={{ required: true }}
+                                                                        register={register}
+                                                                        defaultValue={partType.length !== 0 ? partType : ""}
+                                                                        options={renderListing('ExchangeSource')}
+                                                                        mandatory={true}
+                                                                        handleChange={handleExchangeRateSource}
+                                                                        errors={errors.ExchangeSource}
+                                                                        disabled={isViewMode ? true : false || isEditFlag ? true : false}
+                                                                    />
+                                                                </Col>)}
                                                             <Col className="col-md-15">
                                                                 <SearchableSelectHookForm
                                                                     label={"Part Type"}

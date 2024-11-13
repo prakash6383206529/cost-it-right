@@ -174,7 +174,7 @@ class AddMoreDetails extends Component {
       entryType: editDetails?.entryType || null,
       powerIsImport: false,
       //plantCurrency: editDetails?.fieldsObj?.plantCurrency || "",
-      currency: editDetails?.currency,
+      currency: editDetails?.currency ?? null,
       plantCurrency: editDetails?.plantCurrency || null,
       settlementCurrency: editDetails?.settlementCurrency || null,
       plantExchangeRateId: editDetails?.plantExchangeRateId || '',

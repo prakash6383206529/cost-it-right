@@ -107,15 +107,15 @@ class AddOperation extends Component {
       isWelding: false,
       isImport: false,
       hidePlantCurrency: false,
-      settlementCurrency: null,
-      plantCurrency: null,
+      settlementCurrency: 1,
+      plantCurrency: 1,
       ExchangeSource: [],
       currency: null,
       plantExchangeRateId: '',
       settlementExchangeRateId: '',
       plantCurrencyID: '',
-      showWarning:false,
-      showPlantWarning:false
+      showWarning: false,
+      showPlantWarning: false
     }
   }
 
@@ -164,7 +164,7 @@ class AddOperation extends Component {
         return;
       }
       const callAPI = (from, to) => {
-        console.log(to,this.props.fieldsObj.plantCurrency);
+        console.log(to, this.props.fieldsObj.plantCurrency);
         return new Promise((resolve) => {
           this.props.getExchangeRateByCurrency(
             from,
@@ -179,10 +179,10 @@ class AddOperation extends Component {
               const isEmptyData = Object.keys(res?.data?.Data || {}).length === 0;
               const isPlantCurrencyOrNotImport = to === this.props.fieldsObj.plantCurrency || !isImport;
               this.setState(
-               isPlantCurrencyOrNotImport
-               ? { showPlantWarning: isEmptyData }
-                : { showWarning: isEmptyData }
-                  );
+                isPlantCurrencyOrNotImport
+                  ? { showPlantWarning: isEmptyData }
+                  : { showWarning: isEmptyData }
+              );
               // Resolve with an object containing both values
               resolve({
                 rate: checkForNull(res.data.Data.CurrencyExchangeRate),
@@ -649,6 +649,11 @@ class AddOperation extends Component {
             this.props.change('Rate', Data?.Rate)
 
           }
+          if (Data?.LocalCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
+            this.setState({ hidePlantCurrency: false })
+          } else {
+            this.setState({ hidePlantCurrency: true })
+          }
           setTimeout(() => {
             this.setState({
               isEditFlag: true,
@@ -679,7 +684,6 @@ class AddOperation extends Component {
               plantCurrency: Data?.OperationEntryType === ENTRY_TYPE_IMPORT ? Data?.LocalCurrencyExchangeRate : Data?.ExchangeRate,
               plantCurrencyID: Data?.OperationEntryType === ENTRY_TYPE_IMPORT ? Data?.LocalCurrencyId : Data?.CurrencyId,
               plantExchangeRateId: Data?.OperationEntryType === ENTRY_TYPE_IMPORT ? Data?.LocalExchangeRateId : Data?.ExchangeRateId,
-
             })
             // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
             let files = Data.Attachements && Data.Attachements.map((item) => {
@@ -1170,6 +1174,7 @@ class AddOperation extends Component {
       obj.ExchangeSource = this.state.ExchangeSource
       obj.plantCurrencyID = this.state.plantCurrencyID
       obj.plantCurrency = this.props.fieldsObj?.plantCurrency
+      obj.hidePlantCurrency = this.state?.hidePlantCurrency
       if (String(this.state.operationType.label) === "Ni Cr Plating") {
 
         obj.useWatchArray = ['wireRate', 'consumptionWire', 'gasRate', 'consumptionGas', 'electricityRate', 'consumptionPower', 'manPowerCost', 'staffCost', 'maintenanceCost', 'consumablesCost', 'waterCost', 'jigStripping', 'statuatoryLicense', 'rejnReworkPercent', 'profitPercent']
@@ -1531,7 +1536,7 @@ class AddOperation extends Component {
                           className=" "
                           customClassName=" withBorder"
                         />
-                          {this.state.showPlantWarning && <WarningMessage dClass="mt-1" message={`${this.props.fieldsObj.plantCurrency} rate is not present in the Exchange Master`} />}
+                        {this.state.showPlantWarning && <WarningMessage dClass="mt-1" message={`${this.props.fieldsObj.plantCurrency} rate is not present in the Exchange Master`} />}
                       </Col>}
                       {this.state.isImport && <Col md="3">
                         <Field
