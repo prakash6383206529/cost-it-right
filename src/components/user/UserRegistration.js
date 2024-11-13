@@ -899,11 +899,13 @@ function UserRegistration(props) {
       setModules([])
 
       if (isEditFlag && grantUserWisePermission) {
+        
         if (!e) {
           setIsPermissionLoading(true)
         }
         getUserPermission(UserId)
       } else {
+        
         if (!e) {
           setIsPermissionLoading(true)
         }
@@ -3044,6 +3046,7 @@ function UserRegistration(props) {
                       {/* <label>{`City`}<span className="asterisk-required">*</span></label>
                       <div className="d-flex justify-space-between align-items-center p-relative async-select">
                         <div className="fullinput-icon p-relative">
+                          {}
                           {state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
                           <Controller
                             name="CityId"

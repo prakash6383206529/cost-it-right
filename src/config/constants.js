@@ -2891,6 +2891,7 @@ export const RmMaterial = "Raw-material"
 export const BopDomestic = "BOP-domestic"
 export const BopImport = "BOP-import"
 export const Sob = "Manage Specification"
+export const sobManage = "SOB"
 
 export const AssemblyPart = "Assembly-part"
 export const ComponentPart = "Component-part"
