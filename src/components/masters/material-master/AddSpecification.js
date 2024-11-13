@@ -309,8 +309,10 @@ class AddSpecification extends Component {
   }
 
   gradeToggler = (Id = '') => {
+    if (this.state.RawMaterial.length !== 0) {
       this.setState({ DropdownChanged: false })
       this.setState({ isOpenGrade: true, Id: Id })
+    }
   }
 
   /**
@@ -559,16 +561,16 @@ class AddSpecification extends Component {
                           )
                           : AddAccessibilityRMANDGRADE && (
                             <div className='d-flex justify-content-center align-items-center'>
-                            <Button
-                              id="RawMaterialName-add"
-                              className="mb-2"
-                              variant="plus-icon-square"
-                              onClick={() => this.rawMaterialToggler("")}
-                            /></div>
+                              <Button
+                                id="RawMaterialName-add"
+                                className="mb-2"
+                                variant="plus-icon-square"
+                                onClick={() => this.rawMaterialToggler("")}
+                              /></div>
                           )}
                       </div>
                     </Col>
-                    
+
                   </Row>
                   <Row>
                     <Col md="12">

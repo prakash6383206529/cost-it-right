@@ -82,29 +82,29 @@ function OverheadListing(props) {
     const [modelText, setModelText] = useState('')
 
 
-// In CostingHeadDropdownFilter.js
-const onFilterChange = (event) => {
-    // Clean and encode the filter value
-    const filterValue = event.target.value;
-    const cleanedValue = encodeFilterValue(filterValue);
-    
-    // Call the parent's filter change handler
-    if (props.onFilterChange) {
-      props.onFilterChange(filterValue, cleanedValue);
-    }
-  };
-  
-  // Helper function to clean and encode filter value
-  const encodeFilterValue = (value) => {
-    if (!value) return '';
-    
-    // Replace special combinations with encoded versions
-    const encodedValue = value
-      .replace(/\s\+\s/g, '%2B') // Replace ' + ' with encoded plus
-      .replace(/\s/g, '%20');    // Replace spaces with encoded spaces
-      
-    return encodedValue;
-  };
+    // In CostingHeadDropdownFilter.js
+    const onFilterChange = (event) => {
+        // Clean and encode the filter value
+        const filterValue = event.target.value;
+        const cleanedValue = encodeFilterValue(filterValue);
+
+        // Call the parent's filter change handler
+        if (props.onFilterChange) {
+            props.onFilterChange(filterValue, cleanedValue);
+        }
+    };
+
+    // Helper function to clean and encode filter value
+    const encodeFilterValue = (value) => {
+        if (!value) return '';
+
+        // Replace special combinations with encoded versions
+        const encodedValue = value
+            .replace(/\s\+\s/g, '%2B') // Replace ' + ' with encoded plus
+            .replace(/\s/g, '%20');    // Replace spaces with encoded spaces
+
+        return encodedValue;
+    };
     var floatingFilterOverhead = {
         maxValue: 1,
         suppressFilterButton: true,
@@ -112,10 +112,10 @@ const onFilterChange = (event) => {
         onFilterChange: (originalValue, encodedValue) => {
             setDisableFilter(false);
             setFloatingFilterData(prevState => ({
-              ...prevState,
-              OverheadApplicabilityType: encodedValue
+                ...prevState,
+                OverheadApplicabilityType: encodedValue
             }));
-          }
+        }
     }
 
     const { isBulkUpload } = state;
@@ -160,7 +160,7 @@ const onFilterChange = (event) => {
         return () => {
             dispatch(setResetCostingHead(true, "costingHead"))
         }
-       
+
     }, [])
 
     useEffect(() => {
@@ -188,13 +188,13 @@ const onFilterChange = (event) => {
             overhead_applicability_type_id: overhead,
             model_type_id: modelType,
         }
-          // Clean up the dataObj filters before sending to API
-  const cleanedDataObj = {
-    ...dataObj,
-    OverheadApplicabilityType: dataObj?.OverheadApplicabilityType 
-      ? decodeURIComponent(dataObj?.OverheadApplicabilityType)
-      : ''
-  };
+        // Clean up the dataObj filters before sending to API
+        const cleanedDataObj = {
+            ...dataObj,
+            OverheadApplicabilityType: dataObj?.OverheadApplicabilityType
+                ? decodeURIComponent(dataObj?.OverheadApplicabilityType)
+                : ''
+        };
         if (isPagination === true) {
             setIsLoader(true)
         }
@@ -603,7 +603,7 @@ const onFilterChange = (event) => {
         temp = TempData && TempData?.map(item => {
             Object.keys(item).forEach(field => {
                 if (item[field] === null || item[field] === ' ') {
-                    item[field] = '-'; 
+                    item[field] = '-';
                 }
             });
             if (item?.EffectiveDate?.includes('T')) {
@@ -611,7 +611,7 @@ const onFilterChange = (event) => {
             }
             return item;
         });
-        
+
         const isShowRawMaterial = getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC
         const excelColumns = excelData && excelData.map((ele, index) => {
             if ((ele.label === 'Raw Material Name' || ele.label === 'Raw Material Grade') && !isShowRawMaterial) {
