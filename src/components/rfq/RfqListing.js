@@ -25,8 +25,6 @@ import { agGridStatus, getGridHeight, isResetClick, showQuotationDetails } from 
 import TourWrapper from '../common/Tour/TourWrapper';
 import { Steps } from '../common/Tour/TourMessages';
 import { useTranslation } from 'react-i18next';
-import { filterParams } from '../common/DateFilter';
-
 import CustomCellRenderer from './CommonDropdown';
 import { useHistory, useLocation } from "react-router-dom/cjs/react-router-dom";
 import { PaginationWrappers } from '../common/Pagination/PaginationWrappers';
@@ -80,22 +78,24 @@ function RfqListing(props) {
     const [remarkRowData, setRemarkRowData] = useState([])
     const [floatingFilterData, setFloatingFilterData] = useState({
         QuotationNumber: "",
-        PartType: "",
-        PartNumber: "",
-        RawMaterial: "",
-        NoOfQuotationReceived: "",
-        vendorCode: "",
-        plantCode: "",
-        TechnologyName: "",
-        RaisedBy: "",
-        RaisedOn: "",
-        PartDataSentDate: "",
-        VisibilityMode: "",
-        VisibilityDate: "",
-        VisibilityDuration: "",
-        LastSubmissionDate: "",
-        Status: "",
-        boughtOutPart: ""
+    PartType: "",
+    PartNumber: "",
+    RawMaterial: "",
+    NoOfQuotationReceived: "",
+    VendorName: "", // Will be mapped to vendorCode in API call
+    PlantName: "", // Will be mapped to plantCode in API call
+    TechnologyName: "",
+    RaisedBy: "",
+    RaisedOn: "",
+    PartDataSentDate: "",
+    VisibilityMode: "",
+    VisibilityDate: "",
+    VisibilityDuration: "",
+    LastSubmissionDate: "",
+    Status: "",
+        BoughtOutPart: "", // Will be mapped to boughtOutPart in API call
+        PRNumber: "",
+        Notes: "",
     });
 
     const [filterModel, setFilterModel] = useState({});
@@ -106,6 +106,7 @@ function RfqListing(props) {
     const statusColumnData = useSelector((state) => state.comman.statusColumnData);
     const history = useHistory();
     const location = useLocation();
+
 
     useEffect(() => {
         return () => {
@@ -156,6 +157,63 @@ function RfqListing(props) {
             window.removeEventListener('beforeunload', handleBeforeUnload);
         };
     }, []);
+    // Create base filter params
+    const baseFilterParams = {
+        date: "", 
+        inRangeInclusive: true, 
+        filterOptions: ['equals', 'inRange'],
+        browserDatePicker: true,
+        minValidYear: 2000,
+    };
+
+    // Simplified date comparator function
+    const createDateComparator = (fieldName) => (filterLocalDateAtMidnight, cellValue) => {
+        var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
+        var newDate = filterLocalDateAtMidnight != null ? DayTime(filterLocalDateAtMidnight).format('DD/MM/YYYY') : '';
+        
+        setDate(newDate, fieldName);
+
+        // Handle radio button click
+        let date = document.getElementsByClassName('ag-input-field-input')
+        for (let i = 0; i < date.length; i++) {
+            if (date[i].type == 'radio') {
+                date[i].click()
+            }
+        }
+
+        if (dateAsString == null) return -1;
+        var dateParts = dateAsString.split('/');
+        var cellDate = new Date(
+            Number(dateParts[2]),
+            Number(dateParts[1]) - 1,
+            Number(dateParts[0])
+        );
+
+        return filterLocalDateAtMidnight.getTime() === cellDate.getTime() ? 0 
+             : cellDate < filterLocalDateAtMidnight ? -1 : 1;
+    };
+
+    // Simplified filter params
+    const raisedOnFilterParams = {
+        ...baseFilterParams,
+        comparator: createDateComparator('RaisedOn')
+    };
+
+    const partDataSentFilterParams = {
+        ...baseFilterParams,
+        comparator: createDateComparator('PartDataSentDate')
+    };
+
+    const visibilityDateFilterParams = {
+        ...baseFilterParams,
+        comparator: createDateComparator('VisibilityDate')
+    };
+
+    const lastSubmissionDateFilterParams = {
+        ...baseFilterParams,
+        comparator: createDateComparator('LastSubmissionDate')
+    };
+
     /**
       * @method applyPermission
       * @description ACCORDING TO PERMISSION HIDE AND SHOW, ACTION'S
@@ -182,55 +240,95 @@ function RfqListing(props) {
         }
     }
 
+    const setDate = (date, column) => {
+        
+        
+        // Map column names to state fields
+        const fieldMapping = {
+            'RaisedOn': 'RaisedOn',
+            'PartDataSentDate': 'PartDataSentDate',
+            'VisibilityDate': 'VisibilityDate',
+            'LastSubmissionDate': 'LastSubmissionDate'
+        };
+    
+        // Get the correct field name
+        const fieldName = fieldMapping[column] || column;
+        
+        setFloatingFilterData(prevState => ({ 
+            ...prevState, 
+            [fieldName]: date // Use the mapped field name
+        }));
+    };
+
     const getDataList = useCallback((skip = 0, take = 10, isPagination = true) => {
-        const Timezone = getTimeZone()
-        if (isPagination === true) {
+        if (isPagination) {
             setloader(true)
         }
-
+        
+        
+        // Construct query parameters
         const queryParams = {
-            DepartmentCode: userDetails()?.DepartmentCode,
-            Timezone: Timezone,
-            LoggedInUserId: loggedInUserId(),
+            departmentCode: userDetails()?.DepartmentCode,
+            loggedInUserId: loggedInUserId(),
+            timeZone: getTimeZone(),
+            isApplyPagination: isPagination,
             skip: skip,
             take: take,
-            isApplyPagination: isPagination,
-            ...floatingFilterData
+            // Add all filter parameters
+            quotationNumber: floatingFilterData.QuotationNumber || '',
+            partNumber: floatingFilterData.PartNumber || '',
+            rawMaterial: floatingFilterData.RawMaterial || '',
+            boughtOutPart: floatingFilterData.BoughtOutPart || '',
+            noOfQuotationReceived: floatingFilterData.NoOfQuotationReceived || '',
+            vendorCode: floatingFilterData.VendorName || '',
+            plantCode: floatingFilterData.PlantName || '',
+            technologyName: floatingFilterData.TechnologyName || '',
+            raisedBy: floatingFilterData.RaisedBy || '',
+            raisedOn: floatingFilterData.RaisedOn || '',
+            lastSubmissionDate: floatingFilterData.LastSubmissionDate || '',
+            visibilityMode: floatingFilterData.VisibilityMode || '',
+            visibilityDate: floatingFilterData.VisibilityDate || '',
+            visibilityDuration: floatingFilterData.VisibilityDuration || '',
+            status: floatingFilterData.Status || '',
+            partType: floatingFilterData.PartType || '',
+            partDataSentDate: floatingFilterData.PartDataSentDate || '',
+            notes: floatingFilterData.Remark || ''
         };
-
-        // Convert dates to the required format if needed
 
         const encodedQueryParams = encodeQueryParamsAndLog(queryParams);
 
         dispatch(getQuotationList(encodedQueryParams, (res) => {
-            if (res && res.status === 200) {
-                let temp = res?.data?.DataList?.map(item => ({
+            if (res?.status === 200) {
+                const formattedData = res?.data?.DataList?.map(item => ({
                     ...item,
                     Status: item?.IsActive === false ? "Cancelled" : item.Status,
                     tooltipText: getTooltipText(item?.Status)
-                })) || []
+                })) || [];
 
-                setRowData(temp)
-                setloader(false)
+                setRowData(formattedData);
+                setloader(false);
 
-                if (res && res.status === 204) {
-                    setTotalRecordCount(0)
-                    dispatch(updatePageNumber(0))
+                if (res?.data?.DataList?.[0]) {
+                    setTotalRecordCount(res.data.DataList[0].TotalRecordCount);
                 }
 
+                // Handle filter model updates
                 if (res) {
-                    let isReset = !Object.values(floatingFilterData).some(value => value !== "")
+                    const isReset = !Object.values(floatingFilterData).some(value => value !== "");
                     setTimeout(() => {
-                        isReset ? gridOptions?.api?.setFilterModel({}) : gridOptions?.api?.setFilterModel(filterModel)
+                        isReset ? 
+                            gridOptions?.api?.setFilterModel({}) : 
+                            gridOptions?.api?.setFilterModel(filterModel);
                     }, 300);
-                    setWarningMessage(false)
-                    setIsFilterButtonClicked(false)
+                    setWarningMessage(false);
+                    setIsFilterButtonClicked(false);
                 }
             } else {
                 setloader(false);
+                setTotalRecordCount(0);
             }
-        }))
-    }, [floatingFilterData, globalTakes, filterModel])
+        }));
+    }, [floatingFilterData, filterModel, dispatch]);
 
     const getTooltipText = useMemo(() => (status) => {
         switch (status) {
@@ -248,82 +346,50 @@ function RfqListing(props) {
     }, [])
 
     const onFloatingFilterChanged = useCallback((value) => {
-        setTimeout(() => {
-            if (rowData.length !== 0) {
-                setNoData(searchNocontentFilter(value, noData))
-            }
-        }, 500);
-        setDisableFilter(false)
-
+        setDisableFilter(false);
+        
         const model = gridOptions?.api?.getFilterModel();
-
         setFilterModel(model);
+
+        // Show warning if filter changed but not applied
         if (!isFilterButtonClicked) {
-            setWarningMessage(true)
+            setWarningMessage(true);
         }
-        // if (value.column.colId === "Status") {
-        //     setFloatingFilterData(prevState => ({
-        //       ...prevState,
-        //       Status: value.filterInstance.appliedModel.filter
-        //     }));
-        //   }
-        if (value?.filterInstance?.appliedModel === null || value?.filterInstance?.appliedModel?.filter === "") {
-            let isFilterEmpty = true;
-            if (model !== undefined && model !== null) {
-                if (Object.keys(model).length > 0) {
-                    isFilterEmpty = false;
 
-                    setFloatingFilterData(prevState => ({
-                        ...prevState,
-                        [value.column.colId]: ""
-                    }));
-                }
-
-                if (isFilterEmpty) {
-                    setFloatingFilterData({
-                        QuotationNumber: "",
-                        PartType: "",
-                        PartNumber: "",
-                        RawMaterial: "",
-                        PRNumber: "",
-                        NoOfQuotationReceived: "",
-                        VendorName: "",
-                        PlantName: "",
-                        TechnologyName: "",
-                        RaisedBy: "",
-                        RaisedOn: "",
-                        PartDataSentDate: "",
-                        VisibilityMode: "",
-                        VisibilityDate: "",
-                        VisibilityDuration: "",
-                        LastSubmissionDate: "",
-                        Remark: "",
-                        Status: ""
-                    });
-                }
-            }
+        // Handle filter changes
+        if (value?.filterInstance?.appliedModel === null || 
+            value?.filterInstance?.appliedModel?.filter === "") {
+            // Clear the filter value
+            setFloatingFilterData(prev => ({
+                ...prev,
+                [value.column.colId]: ""
+            }));
         } else {
-            if (value.column.colId === "RaisedOn" || value.column.colId === "PartDataSentDate" || value.column.colId === "LastSubmissionDate" || value.column.colId === "VisibilityDate") {
-                // Handle date filters
-                const dateFilter = value.filterInstance.appliedModel;
-                let formattedDate = null;
-                if (dateFilter.type === 'equals') {
-                    formattedDate = DayTime(dateFilter.dateFrom).format('DD/MM/YYYY');
-                } else if (dateFilter.type === 'inRange') {
-                    formattedDate = `${DayTime(dateFilter.dateFrom).format('DD/MM/YYYY')},${DayTime(dateFilter.dateTo).format('DD/MM/YYYY')}`;
-                }
-                setFloatingFilterData(prevState => ({
-                    ...prevState,
-                    [value.column.colId]: formattedDate
+            // Handle date fields
+            const dateFields = ['RaisedOn', 'PartDataSentDate', 'VisibilityDate', 'LastSubmissionDate'];
+            
+            if (dateFields.includes(value.column.colId)) {
+                const dateValue = value.filterInstance.appliedModel.dateFrom;
+                setFloatingFilterData(prev => ({
+                    ...prev,
+                    [value.column.colId]: dateValue ? DayTime(dateValue).format('DD/MM/YYYY') : ""
                 }));
             } else {
-                setFloatingFilterData(prevState => ({
-                    ...prevState,
+                // Handle non-date fields
+                setFloatingFilterData(prev => ({
+                    ...prev,
                     [value.column.colId]: value.filterInstance.appliedModel.filter
                 }));
             }
         }
-    }, [rowData, noData, filterModel]);
+
+        // Check for empty results
+        setTimeout(() => {
+            if (rowData.length !== 0) {
+                setNoData(searchNocontentFilter(value, noData));
+            }
+        }, 500);
+    }, [rowData, isFilterButtonClicked, noData]);
 
     const resetState = () => {
         setNoData(false)
@@ -370,6 +436,7 @@ function RfqListing(props) {
         gridOptions?.columnApi?.resetColumnState();
         getDataList(0, globalTakes, true)
     }, [globalTakes, getDataList])
+  
     /**
     * @method hideForm
     * @description HIDE DOMESTIC, IMPORT FORMS
@@ -583,10 +650,7 @@ function RfqListing(props) {
         const cellValue = props?.value;
         return cellValue ? cellValue : '-';
     }
-    const timeZoneFormatter = (props) => {
-        const cellValue = props?.value;
-        return cellValue ? cellValue : '-'
-    }
+    
 
     const dateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props?.valueFormatted : props?.value;
@@ -597,11 +661,7 @@ function RfqListing(props) {
         const cellValue = props?.valueFormatted ? props?.valueFormatted : props?.value;
         return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY  hh:mm') : '-';
     }
-    // const onFloatingFilterChanged = (value) => {
-    //     setTimeout(() => {
-    //         rowData.length !== 0 && setNoData(searchNocontentFilter(value, noData))
-    //     }, 500);
-    // }
+   
 
     const attachmentFormatter = (props) => {
         const row = props?.valueFormatted ? props?.valueFormatted : props?.data;
@@ -631,10 +691,7 @@ function RfqListing(props) {
         )
 
     }
-    const raisedOnFormatter = (props) => {
-        const cellValue = props?.value;
-        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '-'
-    }
+ 
 
     const viewDetails = (rowData) => {
 
@@ -655,6 +712,7 @@ function RfqListing(props) {
         sortable: false,
     };
     const hyphenFormatter = (props) => {
+
 
         const cellValue = props?.value;
         return cellValue !== " " &&
@@ -789,15 +847,39 @@ function RfqListing(props) {
                                                     <AgGridColumn field="PlantName" tooltipField="PlantName" headerName='Plant (Code)'></AgGridColumn>
                                                     <AgGridColumn field="TechnologyName" width={"160px"} headerName={technologyLabel}></AgGridColumn>
                                                     <AgGridColumn field="RaisedBy" width={"160px"} headerName='Initiated By'></AgGridColumn>
-                                                    <AgGridColumn field="RaisedOn" width={"145px"} headerName='Raised On' cellRenderer='dateFormatter' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-                                                    <AgGridColumn field="PartDataSentDate" width={"145px"} headerName='RFI Date' cellRenderer='dateFormatter' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
+                                                    <AgGridColumn 
+                                                        field="RaisedOn" 
+                                                        headerName="Raised On"
+                                                        cellRenderer="dateFormatter"
+                                                        filter="agDateColumnFilter"
+                                                        filterParams={raisedOnFilterParams}
+                                                    />
+                                                    <AgGridColumn 
+                                                        field="PartDataSentDate" 
+                                                        headerName="RFI Date"
+                                                        cellRenderer="dateFormatter"
+                                                        filter="agDateColumnFilter"
+                                                        filterParams={partDataSentFilterParams}
+                                                    />
 
                                                     <AgGridColumn field="VisibilityMode" width={"200px"} headerName='Visibility Mode' cellRenderer='dashFormatter'></AgGridColumn>
-                                                    <AgGridColumn field="VisibilityDate" width={"160px"} headerName='Visibility Date' cellRenderer='dateTimeFormatter' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
+                                                    <AgGridColumn 
+                                                        field="VisibilityDate" 
+                                                        headerName="Visibility Date"
+                                                        cellRenderer="dateFormatter"
+                                                        filter="agDateColumnFilter"
+                                                        filterParams={visibilityDateFilterParams}
+                                                    />
                                                     <AgGridColumn field="VisibilityDuration" width={"150px"} headerName='Visibility Duration' cellRenderer='dashFormatter'></AgGridColumn>
                                                     {/* <AgGridColumn field="TimeZone" width={"150px"} headerName='Time Zone' cellRenderer='timeZoneFormatter'></AgGridColumn> */}
-                                                    <AgGridColumn field="LastSubmissionDate" width={"160px"} headerName='Quote Submission Date' cellRenderer='dateFormatter' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-                                                    <AgGridColumn field="QuotationNumber" headerName='Attachments' cellRenderer='attachmentFormatter'></AgGridColumn>
+                                                    <AgGridColumn 
+                                                        field="LastSubmissionDate" 
+                                                        headerName="Last Submission Date"
+                                                        cellRenderer="dateFormatter"
+                                                        filter="agDateColumnFilter"
+                                                        filterParams={lastSubmissionDateFilterParams}
+                                                    />
+                                                    <AgGridColumn field="QuotationNumber"floatingFilter={false} headerName='Attachments' cellRenderer='attachmentFormatter'></AgGridColumn>
                                                     <AgGridColumn field="Remark" tooltipField="Remark" headerName='Notes' cellRenderer={"hyphenFormatter"}></AgGridColumn>
                                                     <AgGridColumn field="Status" tooltipField="tooltipText" headerName="Status" headerClass="justify-content-center" cellClass="text-center" cellRenderer="statusFormatter" floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterRFQ}></AgGridColumn>
                                                     {<AgGridColumn field="QuotationId" width={180} cellClass="ag-grid-action-container rfq-listing-action" pinned="right" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}

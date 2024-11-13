@@ -44,7 +44,7 @@ function PartCompoment(props) {
   const dispatch = useDispatch()
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const { ComponentItemDiscountData, CloseOpenAccordion, ErrorObjRMCC, ErrorObjOverheadProfit, openAllTabs } = useSelector(state => state.costing)
-  const vendorLabel = useLabels()
+  const { vendorLabel } = useLabels()
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
   const netPOPrice = useContext(NetPOPriceContext);

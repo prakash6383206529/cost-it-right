@@ -57,6 +57,7 @@ function MasterSendForApproval(props) {
     const reasonsList = useSelector((state) => state.approval.reasonsList)
     const { deptList } = useSelector((state) => state.material)
     const { initialConfiguration } = useSelector(state => state.auth)
+    const [checkMultiDept, setCheckMultiDept] = useState(false)
     // const { lastRevisionRawMaterialDetails } = useSelector(state => state.indexation)
     const toggleDrawer = (event, type = 'cancel') => {
         // if (isDisable) {
@@ -86,7 +87,7 @@ function MasterSendForApproval(props) {
                     return null
                 })
             setDepartmentDropdown(department)
-            if (department?.length === 1) {
+            if (department?.length === 1 || !checkMultiDept) {
                 setValue('dept', { label: department[0]?.label, value: department[0]?.value })
                 setDisableDept(true)
                 setDepartment(department[0])
@@ -226,7 +227,11 @@ function MasterSendForApproval(props) {
     }
     const fetchDivisionList = (departmentId, dispatch, callback) => {
         let departmentIds = [departmentId];
-        dispatch(getAllDivisionListAssociatedWithDepartment(departmentIds, res => {
+        let obj = {
+            DepartmentIdList: departmentIds,
+            IsApproval: false
+        }
+        dispatch(getAllDivisionListAssociatedWithDepartment(obj, res => {
             if (res && res?.data && res?.data?.Identity === true) {
                 let divisionArray = res?.data?.DataList
                     .filter(item => String(item?.DivisionId) !== '0')
@@ -307,7 +312,7 @@ function MasterSendForApproval(props) {
             Mode: 'master',
             approvalTypeId: costingTypeIdToApprovalTypeIdFunction(props?.costingTypeId),
             plantId: (approvalObj?.Plant && approvalObj.Plant[0]?.PlantId) || (approvalData && approvalData[0]?.DestinationPlantId) || null,
-            divisionId: divisionId
+            divisionId: (divisionId || divisionId !== '') ? divisionId : null
         }
 
         dispatch(checkFinalUser(obj, (res) => {
@@ -342,6 +347,8 @@ function MasterSendForApproval(props) {
         const approver = getValues('approver')
         if (initialConfiguration?.IsDivisionAllowedForDepartment && isFinalApprover) {
             approvalObj.IsSendForApproval = false;
+            approvalObj.ApprovalDepartmentId = userDetails().DepartmentId
+            approvalObj.DivisionId = division?.value ?? props?.divisionId ?? null
             props.handleOperation(approvalObj, props.isEdit)
         } else {
             setIsDisable(true)
@@ -818,7 +825,7 @@ function MasterSendForApproval(props) {
                             <Row>
                                 {(!IsFinalLevelButtonShow && (type === 'Approve' || type === 'Sender')) && (
                                     <>
-                                        <div className="input-group form-group col-md-6 input-withouticon">
+                                        {!getConfigurationKey().IsDivisionAllowedForDepartment && <div className="input-group form-group col-md-6 input-withouticon">
                                             <SearchableSelectHookForm
                                                 label={`${handleDepartmentHeader()}`}
                                                 name={"dept"}
@@ -835,7 +842,7 @@ function MasterSendForApproval(props) {
                                                 rules={{ required: true }}
 
                                             />
-                                        </div>
+                                        </div>}
                                         {getConfigurationKey().IsDivisionAllowedForDepartment && isShowDivision && <Col md="6">
                                             <SearchableSelectHookForm
                                                 label={"Division"}

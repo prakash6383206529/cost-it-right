@@ -300,9 +300,9 @@ const BOPMaster = () => {
                       />
                     </TabPane>
                   )}
+
                   {Number(state.activeTab) === 4 && (
                     <TabPane tabId="4">
-
                       <BOPManage
                         displayForm={displayImportForm}
                         getDetails={getImportDetails}
@@ -310,6 +310,7 @@ const BOPMaster = () => {
                       />
                     </TabPane>
                   )}
+
 
                   {Number(state.activeTab) === 5 && (
                     <TabPane tabId="5">

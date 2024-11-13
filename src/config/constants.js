@@ -695,6 +695,7 @@ export const API = {
   getSettledSimulationCostingDetails: `${BASE_URL}/simulation/get-settled-simulation-costing-details`,
   uploadInsulationCosting: `${BASE_URL}/bulk-costing/save-costing-insulation`,
   uploadElectricalStampingCosting: `${BASE_URL}/bulk-costing/save-costing-electrical-stamping`,
+  uploadMonocartonCosting: `${BASE_URL}/bulk-costing/save-costing-corrugated-mono-carton-box`,
 
   //COST SUMMARY
   getCostingByCostingId: `${BASE_URL}/costing-sheet-metal/get-costing-by-id`,
@@ -1076,6 +1077,9 @@ export const API = {
   getAmmendentStatus: `${BASE_URL}/ExternalIntegration/get-ammendent-status`,
   getMasterSelectListSimulation: `${BASE_URL}/simulation/select-list-get-simulation-applied-for-master-with-permission`,
   getAllSimulationBoughtOutPart: `${BASE_URL}/simulation/get-all-simulation-bought-out-part`,
+  getSapPushDetailsHeader: `${BASE_URL}/ExternalIntegration/get-sap-push-details-header`,
+  sapPushBulkUpload: `${BASE_URL}/ExternalIntegration/bulk-upload-for-sap-push-details`,
+
 
   // ASSEMBLY TECHNOLOGY
   getAssemblyTechnologySimulation: `${BASE_URL}/simulation/get-assembly-technology-simulation`,
@@ -1113,7 +1117,6 @@ export const API = {
 
   //RFQ
   getQuotationList: `${BASE_URL}/rfq-quotation/get-quotation-list`,
-  createRfqQuotation: `${BASE_URL}/rfq-quotation/create`,
   getCostingBenchMarkOperationReport: `${BASE_URL}/reports/get-operation-cost-benchmarking-report`,
   getSupplierContributionData: `${BASE_URL}/reports/get-supplier-contribution-report`,
   getCostingBenchMarkMachineReport: `${BASE_URL}/reports/get-process-cost-benchmarking-report`,
@@ -1137,7 +1140,6 @@ export const API = {
   getrRqVendorDetails: `${BASE_URL}/rfq-quotation/get-rfq-vendor-detail`,
   getTargetPrice: `${BASE_URL}/rfq-quotation/get-target-price`,
   saveRfqPartDetails: `${BASE_URL}/rfq-quotation/create-quotation-parts`,
-  getRfqPartDetails: `${BASE_URL}/rfq-quotation/get-rfq-part-details`,
   getRfqRaiseNumber: `${BASE_URL}/rfq-quotation/get-rfq-raise-number`,
   getSpecificationDetailTco: `${BASE_URL}/rfq-quotation/get-costing-specification`,
   getSpecificationDetailBop: `${BASE_URL}/rfq-quotation/get-bought-out-part-specification`,
@@ -1237,12 +1239,13 @@ export const API = {
   // getNFRRMList: `${BASE_URL}/rfq-quotation/get-nfr-rm-list`,
   // getNFRPartRMList: `${BASE_URL}/rfq-quotation/get-nfr-part-raw-material-details`,
   // // SAP PUSH Detail
-  // saveSAPDetail: `${BASE_URL}/sap-sync/save-sap-push-details`,
-  // updateSAPDetail: `${BASE_URL}/sap-sync/update-sap-push-details`,
+  saveSAPDetail: `${BASE_URL}/ExternalIntegration/save-sap-push-details`,
+  updateSAPDetail: `${BASE_URL}/ExternalIntegration/update-sap-push-details`,
   // getPurcahseOrganisationByPlant: `${BASE_URL}/sap-sync/get-purchase-organization-by-plant-id`,
-  getMaterialGroupByPart: `${BASE_URL}/sap-sync/get-material-group-by-part-id`,
-  // getAllSAPPushDetail: `${BASE_URL}/sap-sync/get-all-sap-push-details`,
-  // getSAPDetailById: `${BASE_URL}/sap-sync/get-sap-push-details-by-id`
+  getMaterialGroupByPart: `${BASE_URL}/ExternalIntegration/get-material-group-by-part-id`,
+  getAllSAPPushDetail: `${BASE_URL}/ExternalIntegration/get-all-sap-push-details`,
+  getSAPDetailById: `${BASE_URL}/ExternalIntegration/get-sap-push-details-by-id`,
+  getAllPartBopRmList: `${BASE_URL}/ExternalIntegration/get-part-number-and-rm-code-and-bop-number-list`,
 
   //SAP API FOR APPROVAL PUSH
   getEvaluationType: `${BASE_URL}/ExternalIntegration/select-list-of-valuations`,
@@ -2074,6 +2077,7 @@ export const SET_BOP_PR_QUOTATION_IDENTITY = "SET_BOP_PR_QUOTATION_IDENTITY"
 export const GET_RFQ_TOOLING_DETAILS = "GET_RFQ_TOOLING_DETAILS"
 export const UPDATED_TOOLING_DATA = "UPDATED_TOOLING_DATA"
 export const SET_TOOLING_SPECIFIC_ROW_DATA = "SET_TOOLING_SPECIFIC_ROW_DATA"
+export const SET_SAP_DETAIL_KEYS = "SET_SAP_DETAIL_KEYS"
 
 //AUCTION 
 export const SET_AUCTION_DATA = 'SET_AUCTION_DATA'
@@ -2862,6 +2866,7 @@ export const WIRINGHARNESS = 6
 export const DIE_CASTING = 7
 //changed the sheet metal to 8 bcz the version 3 code is not working or deployed
 export const SHEETMETAL = 8
+export const MONOCARTON = 13
 
 
 export const REASON_ID = 2
@@ -2877,6 +2882,7 @@ export const RmMaterial = "Raw-material"
 export const BopDomestic = "BOP-domestic"
 export const BopImport = "BOP-import"
 export const Sob = "Manage Specification"
+export const sobManage = "SOB"
 
 export const AssemblyPart = "Assembly-part"
 export const ComponentPart = "Component-part"
@@ -3021,6 +3027,7 @@ export const PROFITBULKUPLOAD = 'Profit'
 export const ASSEMBLYORCOMPONENTSRFQ = "Assembly Or Components RFQ"
 export const BOUGHTOUTPARTSRFQ = "Bought Out Parts RFQ"
 export const RAWMATERIALSRFQ = "Raw Materials RFQ"
+export const SAP_PUSH = "SAP Push"
 
 
 

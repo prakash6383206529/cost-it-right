@@ -73,6 +73,7 @@ function ApproveRejectUI(props) {
   }, [props?.showWarningMessage])
 
   useEffect(() => {
+
     if (getConfigurationKey().IsReleaseStrategyConfigured && (!setDataFromSummary || disableReleaseStrategy)) {
 
       let appTypeId = approvalTypeSelectList && approvalTypeSelectList?.filter(element => Number(element?.Value) === Number(dataInFields?.ApprovalType?.value))[0]
@@ -81,6 +82,10 @@ function ApproveRejectUI(props) {
       setValue('approver', dataInFields?.Approver ? dataInFields?.Approver : '')
 
     } else if (!getConfigurationKey().IsDivisionAllowedForDepartment || type === 'Approve') {
+
+      setValue('dept', dataInFields?.Department ? dataInFields?.Department : '')
+      setValue('approver', dataInFields?.Approver ? dataInFields?.Approver : '')
+    } else if (getConfigurationKey().IsDivisionAllowedForDepartment && type === 'Sender') {
       setValue('dept', dataInFields?.Department ? dataInFields?.Department : '')
       setValue('approver', dataInFields?.Approver ? dataInFields?.Approver : '')
     }
@@ -374,7 +379,7 @@ function ApproveRejectUI(props) {
                 </Col>}
                 {type === 'Approve' && IsNotFinalLevel && !isSimulation && (
                   <>
-                    <div className="input-group form-group col-md-12 input-withouticon">
+                    {!getConfigurationKey().IsDivisionAllowedForDepartment && <div className="input-group form-group col-md-12 input-withouticon">
                       <SearchableSelectHookForm
                         label={`${handleDepartmentHeader()}`}
                         name={"dept"}
@@ -390,7 +395,7 @@ function ApproveRejectUI(props) {
                         errors={errors.dept}
                         disabled={(disableReleaseStrategy || !(userData.Department.length > 1 && reasonId !== REASON_ID) || (props.isApprovalListing && approvalData[0]?.DivisionId) ? true : false)}
                       />
-                    </div>
+                    </div>}
                     <div className="input-group form-group col-md-12 input-withouticon">
                       {initialConfiguration.IsMultipleUserAllowForApproval ? <>
                         <AllApprovalField
@@ -422,7 +427,7 @@ function ApproveRejectUI(props) {
                   // REMOVE IT AFTER FUNCTIONING IS DONE FOR SIMUALTION, NEED TO MAKE CHANGES FROM BACKEND FOR SIMULATION TODO
                   isSimulation && (type === 'Approve' || type === 'Sender') && !IsNotFinalLevel &&
                   <>
-                    <div className="input-group form-group col-md-12 input-withouticon">
+                    {!getConfigurationKey().IsDivisionAllowedForDepartment && <div className="input-group form-group col-md-12 input-withouticon">
                       <SearchableSelectHookForm
                         label={`${handleDepartmentHeader()}`}
                         name={"dept"}
@@ -436,10 +441,10 @@ function ApproveRejectUI(props) {
                         mandatory={true}
                         handleChange={handleDepartmentChange}
                         errors={errors.dept}
-                        disabled={(disableReleaseStrategy || (getConfigurationKey().IsDivisionAllowedForDepartment ? false : !(userData.Department.length > 1 && reasonId !== REASON_ID)) || (isSimulationApprovalListing && selectedRowData[0]?.DivisionId) ? true : false)}
+                        disabled={(disableReleaseStrategy || (getConfigurationKey().IsDivisionAllowedForDepartment ? true : !(userData.Department.length > 1 && reasonId !== REASON_ID)) || (isSimulationApprovalListing && selectedRowData[0]?.DivisionId) ? true : false)}
 
                       />
-                    </div>
+                    </div>}
                     {getConfigurationKey().IsDivisionAllowedForDepartment && isShowDivision && <div className="input-group form-group col-md-12 input-withouticon">
                       <SearchableSelectHookForm
                         label={"Division"}

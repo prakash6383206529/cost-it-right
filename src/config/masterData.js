@@ -3949,6 +3949,7 @@ export const PartComponentTempData = [
 export const ProductComponent = [
     { label: 'ProductName', value: 'ProductName', }, //*
     { label: 'ProductNumber', value: 'ProductNumber', }, //*
+    { label: 'Note', value: 'Note', },
     { label: 'ProductGroupCode', value: 'ProductGroupCode', }, //*
     { label: 'ProductDescription', value: 'ProductDescription', },
     { label: 'ECNNumber', value: 'ECNNumber', },
@@ -3964,7 +3965,8 @@ export const ProductComponentTempData = [
     {
         'ProductName': 'Screw',
         'ProductNumber': 'Product123',
-        'ProductGroupCode': 'GC1',
+        'Note': 'Add all the levels here to the ProductGroupCode, separated by a colon (:). Dummy data for 4 levels has been provided.',
+        'ProductGroupCode': 'ICE:MoterCycle:Rider 125 CC',
         'ProductDescription': 'Part Description',
         'ECNNumber': '1',
         'RevisionNo': '1',
@@ -6853,7 +6855,8 @@ export const TechnologyDropdownBulkUploadV4 = [
     { label: 'Wiring Harness', value: '6' },
     { label: 'Die Casting', value: '7' },
     { label: 'Electrical Stamping', value: '12' },
-    { label: 'Insulation', value: '11' }
+    { label: 'Insulation', value: '11' },
+    { label: 'Monocarton', value: '13' }
 ]
 
 
@@ -8455,6 +8458,50 @@ export const AddAssemblyOrComponentTempData = [
 
     }
 ];
+export const getSAPPushHeaderData = () => {
+    // Retrieve the stored data from reactLocalStorage
+    const storedSAPDetailKeys = Object.keys(reactLocalStorage.getObject('SAPDetailKeys')).length === 0 ? [] : reactLocalStorage.getObject('SAPDetailKeys');
+    // If there's no stored data, return the default array
+    if (!storedSAPDetailKeys || storedSAPDetailKeys.length === 0) {
+        return [
+            { label: 'Part Number', value: 'PartNumber' },
+            { label: 'Plant Code', value: 'PlantCode' },
+            { label: 'Vendor Code', value: 'VendorCode' },
+            { label: 'Purchase Org', value: 'PurchaseOrg' },
+            { label: 'Valuation Type', value: 'ValuationType' },
+            { label: 'Info Category', value: 'InfoCategory' },
+            { label: 'Planned Del Time', value: 'PlannedDelTime' },
+            { label: 'Tax Code', value: 'TaxCode' },
+        ];
+    }
+
+    return storedSAPDetailKeys.map(item => {
+        const key = Object.keys(item)[0];
+        return {
+            label: key,
+            value: key
+        };
+    });
+};
+
+export const SAP_PUSH_HEADER_DATA = getSAPPushHeaderData()
+export const generateSAPPushTempData = (count = 3) => {
+    const headers = getSAPPushHeaderData();
+
+    return Array.from({ length: count }, (_, index) => {
+        const item = {};
+        headers && headers.forEach(header => {
+            if (header.value === 'PlannedDelTime') {
+                item[header.value] = (index + 1) * 10; // 10, 20, 30, ...
+            } else {
+                item[header.value] = `${header.value}${index + 1}`;
+            }
+        });
+        return item;
+    });
+};
+export const SAP_PUSH_TEMP_DATA = generateSAPPushTempData(3)
+
 export const AddAssemblyOrComponentAdditionalInfoTempData = [
     {
         Notes: "For Component, please leave Asembly Part Number empty"
@@ -8483,6 +8530,8 @@ export const typeofNpvDropdown = [
     { label: 'Additional Investment', value: 'Additional Investment' },
     { label: 'One Time Investment', value: 'One Time Investment' }
 ]
+
+
 
 export const tokenStatus = {
     PendingForApproval: 'The token is pending for approval from your side.',
