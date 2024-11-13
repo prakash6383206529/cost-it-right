@@ -309,10 +309,8 @@ class AddSpecification extends Component {
   }
 
   gradeToggler = (Id = '') => {
-    if (this.state.RawMaterial.length !== 0) {
-      this.setState({ DropdownChanged: false })
-      this.setState({ isOpenGrade: true, Id: Id })
-    }
+    this.setState({ DropdownChanged: false })
+    this.setState({ isOpenGrade: true, Id: Id })
   }
 
   /**
