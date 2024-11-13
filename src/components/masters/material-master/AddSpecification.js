@@ -307,10 +307,8 @@ class AddSpecification extends Component {
   }
 
   gradeToggler = (Id = '') => {
-    if(this.state.RawMaterial.length!==0){
       this.setState({ DropdownChanged: false })
       this.setState({ isOpenGrade: true, Id: Id })
-    }
   }
 
   /**
@@ -602,9 +600,9 @@ class AddSpecification extends Component {
                           <Button
                             id="GradeId-add"
                             className="mt-2"
-                            variant={`${this.state.RawMaterial == null || this.state.RawMaterial.length === 0 ? "blurPlus-icon-square" : "plus-icon-square"}`}
+                            variant={`${this.state?.RawMaterial == null || this.state?.RawMaterial?.length === 0 ? "blurPlus-icon-square" : "plus-icon-square"}`}
                             onClick={() => this.gradeToggler("")}
-                            disabled={this.state.RawMaterial == null || this.state.RawMaterial.length === 0}
+                            disabled={this.state?.RawMaterial == null || this.state?.RawMaterial?.length === 0}
                           />
                         }
                       </div>

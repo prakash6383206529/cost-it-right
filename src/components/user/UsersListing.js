@@ -194,17 +194,18 @@ const UsersListing = (props) => {
 	};
 
 	//format Date and time 
-	const modifyDate = (TempData)=>{
-		TempData = TempData.map(item => {
-			if (item.CreatedDate?.includes('T')) {
+	const modifyDate = (TempData) => {
+		return TempData && TempData?.map(item => {
+			if (item?.CreatedDate?.includes('T')) {
 				item.CreatedDate = DayTime(item.CreatedDate).format('DD/MM/YYYY HH:mm:ss');
 			}
-			if (item.ModifiedDate?.includes('T')) {
+			if (item?.ModifiedDate?.includes('T')) {
 				item.ModifiedDate = DayTime(item.ModifiedDate).format('DD/MM/YYYY HH:mm:ss');
 			}
 			return item;
 		});
-	}
+	};
+	
 
 	const returnExcelColumn = (data = [], TempData) => {
 
@@ -276,6 +277,7 @@ const UsersListing = (props) => {
 		*/
 	const hyphenFormatter = (props) => {
 		const cellValue = props?.value;
+		console.log("Cell value",cellValue)
 		return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
 	}
 
