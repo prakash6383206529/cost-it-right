@@ -569,7 +569,7 @@ function OverheadListing(props) {
             } if (item.OverheadMachiningCCPercentage === null) {
                 item.OverheadMachiningCCPercentage = ' '
             } if (item.VendorName === '-') {
-                item.VendorName = ' '
+                item.VendorName = '-'
             } if (item.ClientName === '-') {
                 item.ClientName = ' '
             }

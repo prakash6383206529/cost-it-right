@@ -193,29 +193,32 @@ const UsersListing = (props) => {
 		return returnExcelColumn(USER_LISTING_DOWNLOAD_EXCEl, tempArr)
 	};
 
+	//format Date and time 
+	const modifyDate = (TempData)=>{
+		TempData = TempData.map(item => {
+			if (item.CreatedDate?.includes('T')) {
+				item.CreatedDate = DayTime(item.CreatedDate).format('DD/MM/YYYY HH:mm:ss');
+			}
+			if (item.ModifiedDate?.includes('T')) {
+				item.ModifiedDate = DayTime(item.ModifiedDate).format('DD/MM/YYYY HH:mm:ss');
+			}
+			return item;
+		});
+	}
+
 	const returnExcelColumn = (data = [], TempData) => {
 
 		let filteredData = [...data];
 
 		if (TempData != null && (TempData === userDataList || TempData.length > 0)) {
 			if (!props.RFQUser) {
-
 				filteredData = hideMultipleColumnFromExcel(data, ["PointOfContact", "VendorName", "CreatedDate", "ModifiedDate"]);
 			}
 			else {
 				filteredData = hideMultipleColumnFromExcel(data, ["CreatedDateExcel", "ModifiedDateExcel"]);
-				TempData = TempData.map(item => {
-					if (item.CreatedDate?.includes('T')) {
-						item.CreatedDate = DayTime(item.CreatedDate).format('DD/MM/YYYY HH:mm:ss');
-					}
-					if (item.ModifiedDate?.includes('T')) {
-						item.ModifiedDate = DayTime(item.ModifiedDate).format('DD/MM/YYYY HH:mm:ss');
-					}
-					return item;
-				});
 			}
+			modifyDate(TempData)
 		}
-
 
 		return (
 			<ExcelSheet data={TempData} name={UserListing}>
