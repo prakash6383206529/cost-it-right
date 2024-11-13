@@ -219,7 +219,7 @@ export function Steps(t, config) {
             },
             {
                 element: "#AddSpecification_Code",
-                intro: t("addRawMaterialSpecification.AddSpecification_Specification"),
+                intro: t("addRawMaterialSpecification.AddSpecification_Code"),
             },
 
             {
