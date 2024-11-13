@@ -7,6 +7,7 @@ import { SearchableSelectHookForm, } from '../../layout/HookFormInputs';
 import { getPlantSelectListByType } from '../../../actions/Common';
 import { getZBCDetailByPlantId, } from '../actions/Costing';
 import { EMPTY_GUID, ZBC } from '../../../config/constants';
+import TooltipCustom from '../../common/Tooltip';
 
 function AddPlantDrawer(props) {
 
@@ -16,9 +17,12 @@ function AddPlantDrawer(props) {
   const [selectedPlants, setSelectedPlants] = useState([]);
   const [vendor, setVendor] = useState([]);
   const [wacPlant, setWacPlant] = useState([]);
+  const [infoCategory, setInfoCategory] = useState([])
+  const [isInfoCategorySelected, setIsInfoCategorySelected] = useState(false)
 
   const dispatch = useDispatch()
   const plantSelectList = useSelector(state => state.comman.plantSelectList)
+  const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
 
   useEffect(() => {
     const { zbcPlantGrid, wacPlantGrid } = props;
@@ -39,6 +43,10 @@ function AddPlantDrawer(props) {
 
   }, []);
 
+  useEffect(() => {
+    setInfoCategory(initialConfiguration?.InfoCategories)
+  }, [initialConfiguration])
+
   const toggleDrawer = (event) => {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return;
@@ -50,7 +58,9 @@ function AddPlantDrawer(props) {
       Status: 'Draft',
       IsNewCosting: true,
       CostingId: EMPTY_GUID,
-      CostingOptions: []
+      CostingOptions: [],
+      InfoCategory: isInfoCategorySelected === true ? infoCategory[0]?.Text : infoCategory[1]?.Text,
+      InfoCategoryObj: isInfoCategorySelected === true ? infoCategory[0] : infoCategory[1]
       //MINDA
       // ...data,
       // PlantName: `${data.PlantName} (${data.PlantCode})`
@@ -115,6 +125,10 @@ function AddPlantDrawer(props) {
     toggleDrawer('')
   }
 
+  const categoryTypeOnChange = (e) => {
+    setIsInfoCategorySelected(!isInfoCategorySelected)
+  }
+
   /**
   * @method render
   * @description Renders the component
@@ -157,6 +171,31 @@ function AddPlantDrawer(props) {
                     handleChange={handlePlantChange}
                     errors={errors.Plant}
                   />
+                </Col>
+                <Col md="12">
+                  <span className="d-inline-block">
+                    <label
+                      className={`custom-checkbox mb-0`}
+                      onChange={(e) => categoryTypeOnChange(e)}
+                      selected={isInfoCategorySelected}
+                      id={'category'}
+                    >
+                      Category
+                      <input
+                        type="checkbox"
+                      />
+                      <span
+                        className=" before-box"
+                        onChange={(e) => categoryTypeOnChange(e)}
+                        selected={isInfoCategorySelected}
+                      />
+                    </label>
+                    <TooltipCustom
+                      disabledIcon={false}
+                      id={`category`}
+                      tooltipText={infoCategory && `If checkbox is selected then category will be ${infoCategory[0]?.Text}, otherwise category will be ${infoCategory[1]?.Text}.`}
+                    />
+                  </span>
                 </Col>
               </Row>
 

@@ -140,6 +140,7 @@ class AddBOPImport extends Component {
       IsSapCodeEditView: true,
       IsEditBtnClicked: false,
       SapCode: '',
+      isSAPCodeDisabled: false,
     }
   }
 
@@ -339,7 +340,10 @@ class AddBOPImport extends Component {
         }
         this.props.checkAndGetBopPartNo(obj, (res) => {
           let Data = res.data.Identity;
+          let sapCode = res?.data?.DynamicData?.sapPartNumber
           this.props.change('BoughtOutPartNumber', Data)
+          this.props.change('SAPPartNumber', sapCode)
+          this.setState({ isSAPCodeDisabled: sapCode === '' ? false : true, IsSAPCodeHandle: sapCode === '' ? false : true })
         })
       }
     } else {
@@ -356,7 +360,10 @@ class AddBOPImport extends Component {
       }
       this.props.checkAndGetBopPartNo(obj, (res) => {
         let Data = res.data.Identity;
+        let sapCode = res?.data?.DynamicData?.sapPartNumber
         this.props.change('BoughtOutPartNumber', Data)
+        this.props.change('SAPPartNumber', sapCode)
+        this.setState({ isSAPCodeDisabled: sapCode === '' ? false : true, IsSAPCodeHandle: sapCode === '' ? false : true })
       })
     }
   }, 500)
@@ -942,17 +949,17 @@ class AddBOPImport extends Component {
       // this.state.DataToChange.BoughtOutPartPaymentTermId === this.state.paymentTerm.value && (this.state.sourceLocation === this.state.DataToChange?.SourceLocation) && (this.state.source === this.state.DataToChange?.Source)         frontend fixes
       this.state.DataToChange.BoughtOutPartPaymentTermId === this.state.paymentTerm.value &&
 
-      checkForNull(this.state.DataToChange.BasicRateConversion) === checkForNull(basicRateBaseCurrency) &&
-      checkForNull(this.state.DataToChange.BasicRate) === checkForNull(fieldsObj?.BasicRateSelectedCurrency) &&
+      checkForNull(this.state.DataToChange.BasicRateConversion).toFixed(initialConfiguration?.NoOfDecimalForPrice) === checkForNull(basicRateBaseCurrency).toFixed(initialConfiguration?.NoOfDecimalForPrice) &&
+      checkForNull(this.state.DataToChange.BasicRate).toFixed(initialConfiguration?.NoOfDecimalForPrice) === checkForNull(fieldsObj?.BasicRateSelectedCurrency).toFixed(initialConfiguration?.NoOfDecimalForPrice) &&
 
-      checkForNull(this.state.DataToChange.NetCostWithoutConditionCostConversion) === checkForNull(basicPriceBaseCurrency) &&
-      checkForNull(this.state.DataToChange.NetCostWithoutConditionCost) === checkForNull(basicPriceSelectedCurrency) &&
+      checkForNull(this.state.DataToChange.NetCostWithoutConditionCostConversion).toFixed(initialConfiguration?.NoOfDecimalForPrice) === checkForNull(basicPriceBaseCurrency).toFixed(initialConfiguration?.NoOfDecimalForPrice) &&
+      checkForNull(this.state.DataToChange.NetCostWithoutConditionCost).toFixed(initialConfiguration?.NoOfDecimalForPrice) === checkForNull(basicPriceSelectedCurrency).toFixed(initialConfiguration?.NoOfDecimalForPrice) &&
 
-      checkForNull(this.state.DataToChange.NetLandedCostConversion) === checkForNull(netLandedCostBaseCurrency) &&
-      checkForNull(this.state.DataToChange.NetLandedCost) === checkForNull(netLandedCostSelectedCurrency) &&
+      checkForNull(this.state.DataToChange.NetLandedCostConversion).toFixed(initialConfiguration?.NoOfDecimalForPrice) === checkForNull(netLandedCostBaseCurrency).toFixed(initialConfiguration?.NoOfDecimalForPrice) &&
+      checkForNull(this.state.DataToChange.NetLandedCost).toFixed(initialConfiguration?.NoOfDecimalForPrice) === checkForNull(netLandedCostSelectedCurrency).toFixed(initialConfiguration?.NoOfDecimalForPrice) &&
 
-      checkForNull(this.state.DataToChange.NetConditionCostConversion) === sumBaseCurrency &&
-      checkForNull(this.state.DataToChange.NetConditionCost) === sumSelectedCurrency
+      checkForNull(this.state.DataToChange.NetConditionCostConversion).toFixed(initialConfiguration?.NoOfDecimalForPrice) === checkForNull(sumBaseCurrency).toFixed(initialConfiguration?.NoOfDecimalForPrice) &&
+      checkForNull(this.state.DataToChange.NetConditionCost).toFixed(initialConfiguration?.NoOfDecimalForPrice) === checkForNull(sumSelectedCurrency).toFixed(initialConfiguration?.NoOfDecimalForPrice)
     ) {
 
       this.setState({ IsFinancialDataChanged: false, EffectiveDate: DayTime(this.state.DataToChange?.EffectiveDate).isValid() ? DayTime(this.state.DataToChange?.EffectiveDate) : '' });
@@ -1188,7 +1195,7 @@ class AddBOPImport extends Component {
       }
     }
   };
-  handleBOPOperation = (formData, isEditFlag) => {
+  handleBOPOperation = (formData, isEditFlag, isOnlySAPCodeChanged) => {
     const operation = isEditFlag ? this.props.updateBOP : this.props.createBOP;
     const successMessage = isEditFlag ? MESSAGES.UPDATE_BOP_SUCESS : MESSAGES.BOP_ADD_SUCCESS;
 
@@ -1197,14 +1204,14 @@ class AddBOPImport extends Component {
       if (res?.data?.Result) {
         Toaster.success(successMessage);
         if (isEditFlag) {
-          if (!this.state.isEditBtnClicked) {
-            this.cancel('submit');
-          } else {
+          if (this.state.isEditBtnClicked && isOnlySAPCodeChanged === true) {
             this.getDetails();
             this.setState({
               IsSapCodeEditView: true,
               IsSAPCodeHandle: false
             });
+          } else {
+            this.cancel('submit');
           }
         } else {
           this.cancel('submit');
@@ -1225,7 +1232,7 @@ class AddBOPImport extends Component {
       UOM, DataToChange, isDateChange, IsFinancialDataChanged, incoTerm, paymentTerm, isClientVendorBOP, isTechnologyVisible,
       Technology, FinalConditionCostBaseCurrency, FinalConditionCostSelectedCurrency, conditionTableData, FinalBasicPriceSelectedCurrency, FinalBasicPriceBaseCurrency, FinalNetCostSelectedCurrency, FinalNetCostBaseCurrency,
       FinalBasicRateBaseCurrency, FinalBasicRateSelectedCurrency, currencyValue, DropdownChanged, IsSAPCodeUpdated, IsSAPCodeHandle } = this.state;
-    const { fieldsObj, isBOPAssociated } = this.props
+    const { fieldsObj, isBOPAssociated, initialConfiguration } = this.props
 
     const userDetailsBop = JSON.parse(localStorage.getItem('userDetail'))
     if (costingTypeId !== CBCTypeId && vendorName.length <= 0) {
@@ -1291,6 +1298,7 @@ class AddBOPImport extends Component {
 
     formData.BoughtOutPartConditionsDetails = conditionTableData
     formData.CurrencyExchangeRate = currencyValue
+    let isOnlySAPCodeChanged = false
 
 
     // CHECK IF CREATE MODE OR EDIT MODE !!!  IF: EDIT  ||  ELSE: CREATE
@@ -1311,12 +1319,12 @@ class AddBOPImport extends Component {
         &&
         ((DataToChange?.Source ? String(DataToChange?.Source) : '-') === (values?.Source ? String(values?.Source) : '-')) &&
         ((DataToChange?.SourceLocation ? String(DataToChange?.SourceLocation) : '') === (sourceLocation?.value ? String(sourceLocation?.value) : '')) &&
-        checkForNull(basicPriceSelectedCurrency) === checkForNull(DataToChange?.NetCostWithoutConditionCost) &&
+        checkForNull(basicPriceSelectedCurrency).toFixed(initialConfiguration?.NoOfDecimalForPrice) === checkForNull(DataToChange?.NetCostWithoutConditionCost).toFixed(initialConfiguration?.NoOfDecimalForPrice) &&
 
-        checkForNull(fieldsObj?.NumberOfPieces) === checkForNull(DataToChange?.NumberOfPieces) &&
-        checkForNull(fieldsObj?.BasicRateSelectedCurrency) === checkForNull(DataToChange?.BasicRate) &&
+        checkForNull(fieldsObj?.NumberOfPieces).toFixed(initialConfiguration?.NoOfDecimalForPrice) === checkForNull(DataToChange?.NumberOfPieces).toFixed(initialConfiguration?.NoOfDecimalForPrice) &&
+        checkForNull(fieldsObj?.BasicRateSelectedCurrency).toFixed(initialConfiguration?.NoOfDecimalForPrice) === checkForNull(DataToChange?.BasicRate).toFixed(initialConfiguration?.NoOfDecimalForPrice) &&
 
-        checkForNull(netLandedCostSelectedCurrency) === checkForNull(DataToChange?.NetLandedCost) && checkForNull(FinalConditionCostSelectedCurrency) === checkForNull(DataToChange?.NetConditionCost) && DropdownChanged &&
+        checkForNull(netLandedCostSelectedCurrency).toFixed(initialConfiguration?.NoOfDecimalForPrice) === checkForNull(DataToChange?.NetLandedCost).toFixed(initialConfiguration?.NoOfDecimalForPrice) && checkForNull(FinalConditionCostSelectedCurrency).toFixed(initialConfiguration?.NoOfDecimalForPrice) === checkForNull(DataToChange?.NetConditionCost).toFixed(initialConfiguration?.NoOfDecimalForPrice) && DropdownChanged &&
         ((DataToChange.TechnologyId ? String(DataToChange.TechnologyId) : '') === (Technology?.value ? String(Technology?.value) : ''))) {
         this.setState({ isEditBuffer: true })
         if (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar && !isTechnologyVisible) {
@@ -1338,17 +1346,32 @@ class AddBOPImport extends Component {
           }
         }
       }
+      if (((files ? JSON.stringify(files) : []) === (DataToChange?.Attachements ? JSON.stringify(DataToChange?.Attachements) : [])) &&
+        ((DataToChange?.Remark ? DataToChange?.Remark : '') === (values?.Remark ? values?.Remark : '')) &&
+        ((DataToChange?.SAPPartNumber ? DataToChange?.SAPPartNumber : '') !== (values?.SAPPartNumber ? values?.SAPPartNumber : '')) &&
+        ((DataToChange?.Source ? String(DataToChange?.Source) : '-') === (values?.Source ? String(values?.Source) : '-')) &&
+        ((DataToChange?.SourceLocation ? String(DataToChange?.SourceLocation) : '') === (sourceLocation?.value ? String(sourceLocation?.value) : '')) &&
+        checkForNull(basicPriceSelectedCurrency).toFixed(initialConfiguration?.NoOfDecimalForPrice) === checkForNull(DataToChange?.NetCostWithoutConditionCost).toFixed(initialConfiguration?.NoOfDecimalForPrice) &&
+        checkForNull(fieldsObj?.NumberOfPieces).toFixed(initialConfiguration?.NoOfDecimalForPrice) === checkForNull(DataToChange?.NumberOfPieces).toFixed(initialConfiguration?.NoOfDecimalForPrice) &&
+        checkForNull(fieldsObj?.BasicRateSelectedCurrency).toFixed(initialConfiguration?.NoOfDecimalForPrice) === checkForNull(DataToChange?.BasicRate).toFixed(initialConfiguration?.NoOfDecimalForPrice) &&
+        checkForNull(netLandedCostSelectedCurrency).toFixed(initialConfiguration?.NoOfDecimalForPrice) === checkForNull(DataToChange?.NetLandedCost).toFixed(initialConfiguration?.NoOfDecimalForPrice) && checkForNull(FinalConditionCostSelectedCurrency).toFixed(initialConfiguration?.NoOfDecimalForPrice) === checkForNull(DataToChange?.NetConditionCost).toFixed(initialConfiguration?.NoOfDecimalForPrice) && DropdownChanged &&
+        ((DataToChange.TechnologyId ? String(DataToChange.TechnologyId) : '') === (Technology?.value ? String(Technology?.value) : ''))) {
+        isOnlySAPCodeChanged = true;
+      } else {
+        isOnlySAPCodeChanged = false;
+      }
+
     }
 
     //  IF: APPROVAL FLOW
-    if (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar && !isTechnologyVisible) {
+    if (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar && !isTechnologyVisible && (isEditFlag ? !isOnlySAPCodeChanged : true)) {
       formData.IsSendForApproval = true
       this.setState({ approveDrawer: true, approvalObj: formData })
     }
     //  ELSE: NO APPROVAL FLOW
     else {
       formData.IsSendForApproval = false;
-      this.handleBOPOperation(formData, isEditFlag);
+      this.handleBOPOperation(formData, isEditFlag, isOnlySAPCodeChanged);
     }
 
 
@@ -1752,7 +1775,7 @@ class AddBOPImport extends Component {
                                   placeholder={isViewMode ? "-" : "Enter"}
                                   validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkSpacesInString, hashValidation]}
                                   component={renderText}
-                                  disabled={(IsSapCodeEditView && isEditFlag) || isViewMode}
+                                  disabled={(IsSapCodeEditView && isEditFlag) || isViewMode || this?.state?.isSAPCodeDisabled}
                                   value={this.state.SapCode}
                                   onChange={this.handleChangeSapCode}
                                   className=" "

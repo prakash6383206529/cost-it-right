@@ -8,6 +8,7 @@ import { getPlantSelectListByType } from '../../../actions/Common';
 import { getConfigurationKey } from '../../../helper';
 import { ZBC } from '../../../config/constants';
 import { getClientSelectList } from '../../masters/actions/Client';
+import TooltipCustom from '../../common/Tooltip';
 
 function AddClientDrawer(props) {
 
@@ -19,6 +20,8 @@ function AddClientDrawer(props) {
   //dropdown loader 
   const [inputLoader, setInputLoader] = useState(false)
   const [VendorInputLoader, setVendorInputLoader] = useState(false)
+  const [infoCategory, setInfoCategory] = useState([])
+  const [isInfoCategorySelected, setIsInfoCategorySelected] = useState(false)
 
   const dispatch = useDispatch()
 
@@ -42,6 +45,10 @@ function AddClientDrawer(props) {
     initialConfiguration?.IsDestinationPlantConfigure === false && setCustomer(tempArr)
   }, []);
 
+  useEffect(() => {
+    setInfoCategory(initialConfiguration?.InfoCategories)
+  }, [initialConfiguration])
+
   /**
   * @method toggleDrawer
   * @description TOGGLE DRAWER
@@ -60,7 +67,9 @@ function AddClientDrawer(props) {
         DestinationPlantName: getConfigurationKey().IsCBCApplicableOnPlant ? DestinationPlant?.label : userDetailsCosting.Plants[0].PlantName,                 //PlantName
         DestinationPlant: DestinationPlant ? DestinationPlant : userDetailsCosting.Plants,
         CustomerName: customer.label,
-        CustomerId: customer.value
+        CustomerId: customer.value,
+        InfoCategory: isInfoCategorySelected === true ? infoCategory[0]?.Text : infoCategory[1]?.Text,
+        InfoCategoryObj: isInfoCategorySelected === true ? infoCategory[0] : infoCategory[1]
       })
   };
 
@@ -124,6 +133,11 @@ function AddClientDrawer(props) {
   const onSubmit = data => {
     toggleDrawer('')
   }
+
+  const categoryTypeOnChange = (e) => {
+    setIsInfoCategorySelected(!isInfoCategorySelected)
+  }
+
   const VendorLoaderObj = { isLoader: VendorInputLoader }
   const plantLoaderObj = { isLoader: inputLoader }
   /**
@@ -191,6 +205,31 @@ function AddClientDrawer(props) {
                       isLoading={plantLoaderObj}
                     />
                   </Col>}
+                <Col md="12">
+                  <span className="d-inline-block">
+                    <label
+                      className={`custom-checkbox mb-0`}
+                      onChange={(e) => categoryTypeOnChange(e)}
+                      selected={isInfoCategorySelected}
+                      id={'category'}
+                    >
+                      Category
+                      <input
+                        type="checkbox"
+                      />
+                      <span
+                        className=" before-box"
+                        onChange={(e) => categoryTypeOnChange(e)}
+                        selected={isInfoCategorySelected}
+                      />
+                    </label>
+                    <TooltipCustom
+                      disabledIcon={false}
+                      id={`category`}
+                      tooltipText={infoCategory && `If checkbox is selected then category will be ${infoCategory[0]?.Text}, otherwise category will be ${infoCategory[1]?.Text}.`}
+                    />
+                  </span>
+                </Col>
               </Row>
 
               <Row className="justify-content-between">

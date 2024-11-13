@@ -46,7 +46,7 @@ function AnalyticsDrawer(props) {
 
 
     useEffect(() => {
-        setUomValue(props.rowData?.UOM)
+        setUomValue(props.rowData?.UOM ? props.rowData?.UOM : props.rowData?.UnitOfMeasurement ?? props.rowData?.UnitOfMeasurement)
         let obj = {}
         obj.ModeId = props.ModeId
         obj.MasterIdList = [{
@@ -120,7 +120,7 @@ function AnalyticsDrawer(props) {
         labels: dateRangeArray,
         datasets: [
             {
-                label: `Net Landed Rate (${uomValue})`,
+                label: `Net Landed Rate ${uomValue ? `(${uomValue})` : ''}`,
                 fill: false,
                 lineTension: 0,
                 backgroundColor: primaryColor,
@@ -364,14 +364,18 @@ function AnalyticsDrawer(props) {
                                                         tooltip: {
                                                             callbacks: {
                                                                 label: function (context) {
-
                                                                     let label = '';
 
                                                                     if (label) {
                                                                         label += ': ';
                                                                     }
                                                                     if (context.parsed.y !== null) {
-                                                                        label += new Intl.NumberFormat('en-US', { style: 'currency', currency: (props?.rowData?.Currency && props?.rowData?.Currency !== '-') ? props.rowData.Currency : 'INR' }).format(context.parsed.y);
+                                                                        label += new Intl.NumberFormat('en-US', {
+                                                                            style: 'currency',
+                                                                            currency: (props?.rowData?.Currency && props?.rowData?.Currency !== '-')
+                                                                                ? props.rowData.Currency
+                                                                                : 'INR'
+                                                                        }).format(context.parsed.y);
                                                                     }
                                                                     return label;
                                                                 }
@@ -383,17 +387,35 @@ function AnalyticsDrawer(props) {
                                                                 boxWidth: 16,
                                                                 boxHeight: 14,
                                                                 color: '#000',
-
                                                             }
                                                         },
+                                                        datalabels: {
+                                                            display: false,  // Disable by default
+                                                            listeners: {
+                                                                enter: function (context) {  // Show on hover
+                                                                    context.hovered = true;
+                                                                    return true;
+                                                                },
+                                                                leave: function (context) {  // Hide on hover out
+                                                                    context.hovered = false;
+                                                                    return true;
+                                                                }
+                                                            },
+                                                            font: {
+                                                                size: 12,
+                                                            },
+                                                            color: '#000',
+                                                            align: 'top',
+                                                        }
                                                     },
                                                     scales: {
                                                         y: {
                                                             min: 0
                                                         }
-                                                    }
+                                                    },
                                                 }}
                                             />
+
                                         </Col>
                                     </Row>
                                 }

@@ -83,13 +83,29 @@ form {
     }
 }
 
-.view-all-list {
-    li {
-        color: #000;
-        font-weight: 400;
-        font-size: 14px;
+.view-all-wrapper {
+    .view-all-list {
+        li {
+            color: #000;
+            font-weight: 400;
+            font-size: 14px;
+        }
+    }
+
+    padding-right: 18px;
+    width: fit-content;
+    max-width: 100%;
+    position: relative;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    .view-btn {
+        position: absolute;
+        right: -6px;
+        top: -4px;
     }
 }
+
 .all-approval {
     min-height: auto !important;
 }
