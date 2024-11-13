@@ -389,7 +389,7 @@ const AssemblyPartListing = React.memo((props) => {
       }));
     }
   }, [state.gridApi]);
-const ASSEMBLYPART_DOWNLOAD_EXCEL_LOCALIZATION = useWithLocalization(ASSEMBLYPART_DOWNLOAD_EXCEl, "MasterLabels")
+  const ASSEMBLYPART_DOWNLOAD_EXCEL_LOCALIZATION = useWithLocalization(ASSEMBLYPART_DOWNLOAD_EXCEl, "MasterLabels")
   const onBtExport = useCallback(() => {
     // Use the selectedRowData for export
     const tempArr = selectedRowData.length > 0 ? selectedRowData : tableData;
@@ -598,7 +598,7 @@ const ASSEMBLYPART_DOWNLOAD_EXCEL_LOCALIZATION = useWithLocalization(ASSEMBLYPAR
               <AgGridColumn field="RevisionNumber" headerName="Revision No." cellRenderer={"hyphenFormatter"} ></AgGridColumn>
               <AgGridColumn field="DrawingNumber" headerName="Drawing No." cellRenderer={"hyphenFormatter"}></AgGridColumn>
               {initialConfiguration?.IsShowUnitOfMeasurementInPartMaster && <AgGridColumn field="UnitOfMeasurementSymbol" headerName="UOM" cellRenderer={"hyphenFormatter"}  ></AgGridColumn>}
-
+              <AgGridColumn field="Division" headerName="Division" cellRenderer={"hyphenFormatter"}  ></AgGridColumn>
               <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={"effectiveDateFormatter"} filter="agDateColumnFilter" filterParams={filterParams}              ></AgGridColumn>
               <AgGridColumn pinned="right" field="IsActive" headerName="Status" floatingFilter={false} cellRenderer={"statusButtonFormatter"} ></AgGridColumn>
               <AgGridColumn field="PartId" width={250} cellClass="ag-grid-action-container actions-wrapper" headerName="Action" pinned={window.screen.width < 1920 ? "right" : ""} type="rightAligned" floatingFilter={false} cellRenderer={"buttonFormatter"}              ></AgGridColumn>

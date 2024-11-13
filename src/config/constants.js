@@ -772,6 +772,7 @@ export const API = {
   deleteDivisionAPI: `${BASE_URL}/user-department/delete-division`,
   getDivisionListAPI: `${BASE_URL}/user-department/select-list-get-divisions`,
   getAllDivisionListAssociatedWithDepartment: `${BASE_URL}/user-department/get-all-division-list-associated-with-departments`,
+  checkDivisionByPlantAndGetDivisionIdByPart: `${BASE_URL}/user-department/check-and-get-division-applied-on-plant-and-part`,
 
   //LEVEL'S API
   assignUserLevelAPI: `${BASE_URL}/user-level/assign-user-level-for-costing`,

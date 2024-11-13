@@ -50,6 +50,7 @@ import ViewTcoDetail from './CostingHeadCosts/AdditionalOtherCost/ViewTcoDetail'
 import AddNpvCost from './CostingHeadCosts/AdditionalOtherCost/AddNpvCost'
 import { BarChartComparison } from './BarChartComparison'
 import { CirLogo, CompanyLogo, useLabels } from '../../../helper/core'
+import { checkDivisionByPlantAndGetDivisionIdByPart } from '../../../actions/Common'
 
 
 
@@ -1211,6 +1212,15 @@ const CostingSummaryTable = (props) => {
             if (levelDetailsTemp?.length === 0) {
               Toaster.warning("You don't have permission to send costing for approval.")
             } else {
+              if (initialConfiguration?.IsDivisionAllowedForDepartment) {
+                dispatch(checkDivisionByPlantAndGetDivisionIdByPart({
+                  "PlantId": viewCostingData[index]?.destinationPlantId,
+                  "PartId": viewCostingData[index]?.partId
+                  // ""
+                }, (res) => {
+                  console.log("res", res)
+                }))
+              }
               let obj = {}
               obj.DepartmentId = userDetails().DepartmentId
               obj.UserId = loggedInUserId()
