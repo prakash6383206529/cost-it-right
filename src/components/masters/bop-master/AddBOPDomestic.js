@@ -411,7 +411,7 @@ class AddBOPDomestic extends Component {
               IsBreakupBoughtOutPart: Data.IsBreakupBoughtOutPart,
               IsSAPCodeUpdated: Data.IsSAPCodeUpdated,
               SAPPartNumber: Data.SAPPartNumber !== undefined ? { label: Data.SAPPartNumber, value: Data.SAPPartNumber } : [],
-              currencyValue: Data.CurrencyExchangeRate,
+              currencyValue: (Data.CurrencyExchangeRate??1),
               LocalExchangeRateId: Data.ExchangeRateId,
               LocalCurrencyId: Data.CurrencyId,
               ExchangeSource: { label: Data.ExchangeRateSourceName, value: Data.ExchangeRateSourceName },

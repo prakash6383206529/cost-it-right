@@ -145,8 +145,9 @@ function AddRMFinancialDetails(props) {
     }, [])
     useEffect(() => {
         const plantValue = getValues('Plants');
-        if (plantValue && plantValue?.value) {
-            dispatch(getPlantUnitAPI(plantValue?.value, (res) => {
+        if (plantValue && (plantValue?.value||plantValue[0]?.value)) {
+            let plantId=plantValue?.value?plantValue?.value:plantValue[0]?.value
+            dispatch(getPlantUnitAPI(plantId, (res) => {
                 let Data = res?.data?.Data
                 let CurrencyId = Data?.CurrencyId
                 let Currency =Data?.Currency
@@ -175,7 +176,7 @@ function AddRMFinancialDetails(props) {
                 }
             }));
         }
-    }, [getValues('Plants'), getValues('ExchangeSource'), state.effectiveDate ]);
+    }, [getValues('Plants'), getValues('ExchangeSource'),state.effectiveDate ]);
     useEffect(() => {
         dispatch(getFrequencySettlement(() => { }))
         dispatch(getCurrencySelectList(() => { }))
@@ -255,14 +256,14 @@ function AddRMFinancialDetails(props) {
             let obj = showRMScrapKeys(Data?.TechnologyId)
             setShowScrapKeys(obj)
             setCurrencyExchangeRate(prevState => ({
-                ...prevState, plantCurrencyRate: !states.isImport ? Data?.CurrencyExchangeRate : checkForNull(Data?.LocalCurrencyExchangeRate),
-                settlementCurrencyRate: states.isImport ? checkForNull(Data?.CurrencyExchangeRate) : null
+                ...prevState, plantCurrencyRate: !states.isImport ? (Data?.CurrencyExchangeRate??1) : checkForNull(Data?.LocalCurrencyExchangeRate??1),
+                settlementCurrencyRate: states.isImport ? checkForNull(Data?.CurrencyExchangeRate??1) : null
             }))
             setState(updatedState)
             dispatch(setRawMaterialDetails({ ...rawMaterailDetails, states: updatedState, isShowIndexCheckBox: Data?.IsIndexationDetails, ShowScrapKeys: obj }, () => { }))
             dispatch(setExchangeRateDetails({
-                ...exchangeRateDetailsRef.current, LocalCurrencyExchangeRate: !states.isImport ? Data?.CurrencyExchangeRate : Data?.LocalCurrencyExchangeRate, LocalExchangeRateId: !states.isImport ? Data?.ExchangeRateId : Data?.LocalExchangeRateId, LocalCurrencyId: !states.isImport ? Data?.CurrencyId : Data?.LocalCurrencyId,
-                CurrencyExchangeRate: state?.isImport ? Data?.CurrencyExchangeRate : null, ExchangeRateId: state?.isImport ? Data?.ExchangeRateId : null
+                ...exchangeRateDetailsRef.current, LocalCurrencyExchangeRate: !states.isImport ? (Data?.CurrencyExchangeRate??1) : (Data?.LocalCurrencyExchangeRate??1), LocalExchangeRateId: !states.isImport ? Data?.ExchangeRateId : Data?.LocalExchangeRateId, LocalCurrencyId: !states.isImport ? Data?.CurrencyId : Data?.LocalCurrencyId,
+                CurrencyExchangeRate: state?.isImport ? (Data?.CurrencyExchangeRate??1) : null, ExchangeRateId: state?.isImport ? Data?.ExchangeRateId : null
             }, () => { }))
             checkTechnology()
         }
