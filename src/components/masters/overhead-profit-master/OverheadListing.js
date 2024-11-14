@@ -557,27 +557,18 @@ function OverheadListing(props) {
     const returnExcelColumn = (data = [], TempData) => {
         let excelData = hideCustomerFromExcel(data, "CustomerName")
         let temp = []
-        temp = TempData && TempData.map((item) => {
-            if (item.ClientName === null) {
-                item.ClientName = ' '
-            } if (item.OverheadPercentage === null) {
-                item.OverheadPercentage = ' '
-            } if (item.OverheadRMPercentage === null) {
-                item.OverheadRMPercentage = ' '
-            } if (item.OverheadBOPPercentage === null) {
-                item.OverheadBOPPercentage = ' '
-            } if (item.OverheadMachiningCCPercentage === null) {
-                item.OverheadMachiningCCPercentage = ' '
-            } if (item.VendorName === '-') {
-                item.VendorName = ' '
-            } if (item.ClientName === '-') {
-                item.ClientName = ' '
-            }
+        temp = TempData && TempData?.map(item => {
+            Object.keys(item).forEach(field => {
+                if (item[field] === null || item[field] === ' ') {
+                    item[field] = '-'; 
+                }
+            });
             if (item?.EffectiveDate?.includes('T')) {
-                item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')
+                item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY');
             }
-            return item
-        })
+            return item;
+        });
+        
         const isShowRawMaterial = getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC
         const excelColumns = excelData && excelData.map((ele, index) => {
             if ((ele.label === 'Raw Material Name' || ele.label === 'Raw Material Grade') && !isShowRawMaterial) {

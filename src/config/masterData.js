@@ -1016,7 +1016,7 @@ export const Vendor = [
     { label: 'AddressLine1', value: 'AddressLine1', },
     { label: 'AddressLine2', value: 'AddressLine2', },
     { label: 'Potential Vendor', value: 'IsCriticalVendor' },
-    { label: "TechnologyLabel", value: 'Technology', defaultValue: "Technology" },
+    { label: "Technology", value: 'Technology', defaultValue: "Technology" },
     { label: 'PlantCode', value: 'PlantCode' }
 ]
 
