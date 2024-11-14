@@ -61,7 +61,7 @@ export function PaginationWrappers(props) {
                 getDataList(newSkip, numericPageSize, true)
                 break;
                 case 'SOB' :
-                getDataList(newSkip , numericPageSize , true , floatingFilterData)
+                getDataList(newSkip , numericPageSize ,floatingFilterData, true )
                 break;
 
             default:
@@ -141,44 +141,6 @@ export function PaginationWrappers(props) {
             dispatch(updatePageSize(pageSizeValues));
             getDataListByModule(newSkip, numericPageSize, floatingFilterData, module);
 
-            // switch (module) {
-            //     case 'RM':
-            //         getDataList(null, null, null, null, null, 0, newSkip, numericPageSize, true, floatingFilterData);
-            //         break;
-            //     case 'BOP':
-            //         getDataList("", 0, "", "", newSkip, numericPageSize, true, floatingFilterData);
-            //         break;
-            //     case 'Machine':
-            //         getDataList('', 0, "", 0, "", '', newSkip, numericPageSize, true, floatingFilterData);
-            //         break;
-            //     case 'Part':
-
-            //         getDataList(newSkip, numericPageSize, floatingFilterData, true);
-            //         break;
-            //     case 'Vendor':
-            //         getDataList(newSkip, floatingFilterData, numericPageSize, true);
-            //         break;
-            //     case 'overHeadAndProfits':
-            //         getDataList(null, null, null, null, newSkip, numericPageSize, true, floatingFilterData);
-            //         break;
-            //     case 'Operations':
-            //         getDataList(null, null, null, null, newSkip, numericPageSize, true, floatingFilterData);
-            //         break;
-            //     case 'Volume':
-            //         getDataList(newSkip, numericPageSize, true);
-            //         break;
-            //     case 'Outsourcing':
-            //         getDataList(newSkip, numericPageSize, true);
-            //         break;
-            //     case 'Budget':
-            //         getDataList(newSkip, numericPageSize, true);
-            //         break;
-
-
-
-            //     default:
-            //         break;
-            // }
         }
         if (props?.isApproval) {
             // Apply approval logic
