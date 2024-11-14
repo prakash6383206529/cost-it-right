@@ -550,6 +550,7 @@ function UserRegistration(props) {
     }
     if (label === 'plant') {
       plantSelectListForDepartment?.forEach((item) => {
+        
         if (item?.PlantId === '0') {
           temp.push({ label: "Select All", value: '0' });
         } else {
@@ -2075,6 +2076,7 @@ function UserRegistration(props) {
 
 
   }
+console.log(selectedPlants, 'selectedPlants');
 
   /**
    * @name onSubmit
@@ -2226,10 +2228,12 @@ function UserRegistration(props) {
     setOnboardingTableChanged(isForcefulUpdatedForOnboarding);
     let plantArray = []
     selectedPlants && selectedPlants.map(item => {
+      console.log(item, 'item');
+      
       let obj = {
-        PlantId: item.value,
-        PlantName: getNameBySplitting(item.label),
-        PlantCode: getCodeBySplitting(item.label),
+        PlantId: item.PlantId,
+        PlantName: item.PlantName,
+        PlantCode : item.PlantCode,
       }
       plantArray.push(obj)
     })
@@ -2613,11 +2617,13 @@ function UserRegistration(props) {
 
   };
   const handlePlant = (newValue) => {
+    
     if (newValue && (newValue[0]?.value === '0' || newValue?.some(item => item?.value === '0'))) {
       // Select All option is chosen
       const allPlantsExceptZero = plantSelectListForDepartment
         .filter(item => item.PlantId !== '0')
-        .map(item => ({ label: item?.PlantNameCode, value: item?.PlantId }));
+        .map(item => ({ ...item ,label: item?.PlantNameCode, value: item?.PlantId }));
+        
       setSelectedPlants(allPlantsExceptZero);
       setTimeout(() => {
         setValue('plant', allPlantsExceptZero);
