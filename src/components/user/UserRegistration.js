@@ -554,7 +554,7 @@ function UserRegistration(props) {
         if (item?.PlantId === '0') {
           temp.push({ label: "Select All", value: '0' });
         } else {
-          temp.push({ label: item.PlantNameCode, value: item.PlantId })
+          temp.push({ ...item,label: item.PlantNameCode, value: item.PlantId })
         }
       });
       const isSelectAllOnly = temp.length === 1 && temp[0]?.label === "Select All" && temp[0]?.value === "0";
@@ -2628,9 +2628,19 @@ console.log(selectedPlants, 'selectedPlants');
       setTimeout(() => {
         setValue('plant', allPlantsExceptZero);
       }, 50);
-    } else if (newValue && newValue?.length > 0) {
-      // Other options are chosen
-      setSelectedPlants(newValue);
+    }  else if (newValue && newValue?.length > 0) {
+      // Map newValue to include all properties from plantSelectListForDepartment
+      const updatedValue = newValue.map(selected => {
+          const originalItem = plantSelectListForDepartment.find(item => item.PlantId === selected.value);
+          return {
+              ...originalItem,
+              label: selected.label,
+              value: selected.value
+          };
+      });
+      
+      setSelectedPlants(updatedValue);
+      setValue('plant', updatedValue);
     } else {
       // No option is chosen
       setSelectedPlants([]);
