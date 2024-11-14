@@ -49,6 +49,7 @@ import { subDays } from 'date-fns';
 import { labels, LabelsClass } from '../../../helper/core';
 import { getPlantUnitAPI } from '../actions/Plant';
 import Switch from 'react-switch'
+import TooltipCustom from '../../common/Tooltip';
 
 const selector = formValueSelector('AddMachineRate');
 
@@ -262,7 +263,6 @@ class AddMachineRate extends Component {
             to,
             ExchangeSource?.label ?? null,
             res => {
-              console.log("res", res)
               resolveAPI({
                 rate: checkForNull(res.data.Data.CurrencyExchangeRate),
                 exchangeRateId: res?.data?.Data?.ExchangeRateId,
@@ -293,7 +293,6 @@ class AddMachineRate extends Component {
       } else if (plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
         callAPI(fromCurrency, toCurrency)
           .then(result => {
-            console.log(result, "result")
             resolve({
               plantCurrency: result.rate,
               plantExchangeRateId: result.exchangeRateId,
@@ -1768,12 +1767,33 @@ class AddMachineRate extends Component {
       this.setState({ currency: [] })
     }
   };
+  machineRateTitle = () => {
+    return {
+        tooltipTextPlantCurrency: `Machine Rate * Plant Currency Rate (${this.state?.plantCurrency ?? ''})`,
+        toolTipTextNetCostBaseCurrency: `Machine Rate * Currency Rate (${this.state?.settlementCurrency ?? ''})`,
+    };
+};
+getTooltipTextForCurrency = () => {
+  const {fieldsObj}=this.props
+  const {settlementCurrency,plantCurrency,currency}=this.state
+  const currencyLabel = currency?.label??'Currency';
+  const plantCurrencyLabel = fieldsObj?.plantCurrency??'Plant Currency';
+  const baseCurrency = reactLocalStorage.getObject("baseCurrency");
+  
+  // Check the exchange rates or provide a default placeholder if undefined
+  const plantCurrencyRate = plantCurrency?? '-';
+  const settlementCurrencyRate = settlementCurrency ?? '-';
+
+  // Generate tooltip text based on the condition
+  return `${!this.state.hidePlantCurrency 
+      ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrencyLabel}, ` 
+      : ''}Exchange Rate: 1 ${currencyLabel} = ${settlementCurrencyRate} ${baseCurrency}`;
+};
   /**
   * @method render
   * @description Renders the component
   */
   render() {
-    console.log(this.state.showPlantWarning, this.state.showWarning)
     const { handleSubmit, AddAccessibility, EditAccessibility, initialConfiguration, isMachineAssociated, t } = this.props;
     const { isEditFlag, isOpenMachineType, isOpenProcessDrawer, disableMachineType, IsCopied, isViewFlag, isViewMode, setDisable, lockUOMAndRate, UniqueProcessId, costingTypeId, IsDetailedEntry, CostingTypePermission, disableSendForApproval, tourContainer } = this.state;
     const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
@@ -2104,6 +2124,7 @@ class AddMachineRate extends Component {
                           />
                         </Col>
                         <Col Col md="3" className='p-relative'>
+                        {this.props.fieldsObj?.plantCurrency&& !this.state.hidePlantCurrency&&!this.state.isImport&& <TooltipCustom id="plantCurrency" tooltipText = {`Exchange Rate: 1 ${this.props.fieldsObj?.plantCurrency} = ${this.state?.plantCurrency??'-'} ${reactLocalStorage.getObject("baseCurrency")}`} />}
                           <Field
                             label="Plant Currency"
                             name="plantCurrency"
@@ -2118,10 +2139,12 @@ class AddMachineRate extends Component {
                         </Col>
 
                         {this.state?.isImport && <Col md="3">
+                          <TooltipCustom id="currency" tooltipText = {this.getTooltipTextForCurrency()}/>
                           <Field
                             name="Currency"
                             type="text"
                             label="Currency"
+                            id="currency"
                             component={searchableSelect}
                             placeholder={isEditFlag ? '-' : "Select"}
                             options={this.renderListing("currency")}
@@ -2261,9 +2284,11 @@ class AddMachineRate extends Component {
                           {this.state.errorObj.machineRate && (this.props.fieldsObj.MachineRate === undefined || Number(this.props.fieldsObj.MachineRate) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
                         </Col>
                         {(this?.state?.isImport && !this?.state?.hidePlantCurrency) && <Col md="3" className='UOM-label-container p-relative'>
+                          <TooltipCustom disabledIcon={true} id="machine-rate-plant" tooltipText={this.machineRateTitle()?.tooltipTextPlantCurrency} />
                           <Field
                             label={this.DisplayMachineRatePlantCurrencyLabel()}
                             name={"MachineRateLocalConversion"}
+                            id="machine-rate-plant"
                             type="text"
                             placeholder={isViewMode || lockUOMAndRate || (isEditFlag && isMachineAssociated) ? '-' : 'Enter'}
                             validate={[number, maxLength10, decimalLengthsix, hashValidation]}
@@ -2277,10 +2302,12 @@ class AddMachineRate extends Component {
                           {this.state?.errorObj?.MachineRateLocalConversion && (this.props?.fieldsObj?.MachineRateLocalConversion === undefined || Number(this.props?.fieldsObj?.MachineRateLocalConversion) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
                         </Col>}
 
-                        {(!(!this?.state?.isImport && reactLocalStorage.getObject("baseCurrency") === this.props.fieldsObj.plantCurrency)) && <Col md="3" className='UOM-label-container p-relative'>
+                        {(!(!this?.state?.isImport &&this?.state?.hidePlantCurrency)) && <Col md="3" >
+                          <TooltipCustom disabledIcon={true} id="machine-rate" tooltipText={this?.state?.isImport?this.machineRateTitle()?.toolTipTextNetCostBaseCurrency:this.machineRateTitle()?.tooltipTextPlantCurrency} />
                           <Field
                             label={this.DisplayMachineRateBaseCurrencyLabel()}
                             name={"MachineRateConversion"}
+                            id="machine-rate"
                             type="text"
                             placeholder={isViewMode || lockUOMAndRate || (isEditFlag && isMachineAssociated) ? '-' : 'Enter'}
                             validate={[number, maxLength10, decimalLengthsix, hashValidation]}
