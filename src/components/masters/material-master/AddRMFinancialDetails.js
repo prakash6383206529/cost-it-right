@@ -111,9 +111,14 @@ function AddRMFinancialDetails(props) {
     const { indexCommodityData } = useSelector((state) => state.indexation);
     const RMIndex = getConfigurationKey()?.IsShowMaterialIndexation
     const exchangeRateDetailsRef = useRef(exchangeRateDetails);
+    const rawMaterailDetailsRef = useRef(rawMaterailDetails)
     useEffect(() => {
         exchangeRateDetailsRef.current = exchangeRateDetails;
     }, [exchangeRateDetails]);
+    
+    useEffect(() => {
+        rawMaterailDetailsRef.current = rawMaterailDetails;
+    }, [rawMaterailDetails]);
     const values = useWatch({
         control,
         name: ['BasicRate']
@@ -133,10 +138,10 @@ function AddRMFinancialDetails(props) {
         }
     }, [domesticFinancialFields])
     useEffect(() => {
-        dispatch(setRawMaterialDetails({ ...rawMaterailDetails, ShowScrapKeys: showScrapKeys }, () => { }))
+        dispatch(setRawMaterialDetails({ ...rawMaterailDetailsRef.current, ShowScrapKeys: showScrapKeys }, () => { }))
     }, [showScrapKeys])
     useEffect(() => {
-        dispatch(setRawMaterialDetails({ ...rawMaterailDetails, CurrencyValue: state.currencyValue }, () => { }))
+        dispatch(setRawMaterialDetails({ ...rawMaterailDetailsRef.current, CurrencyValue: state.currencyValue }, () => { }))
     }, [state.currencyValue])
     useEffect(() => {
         dispatch(getUOMSelectList(() => { }))
@@ -161,9 +166,9 @@ function AddRMFinancialDetails(props) {
                 let fromCurrency = states.isImport ? state.currency?.label : Data?.Currency
                 let toCurrency = !states.isImport ? reactLocalStorage.getObject("baseCurrency") : Data?.Currency
                 const costingType = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? VBCTypeId : costingTypeId) : ZBCTypeId
-                const vendorValue = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? rawMaterailDetails?.Vendor?.value : EMPTY_GUID) : EMPTY_GUID
+                const vendorValue = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? rawMaterailDetailsRef.current?.Vendor?.value : EMPTY_GUID) : EMPTY_GUID
                 if (state.effectiveDate && Data?.Currency !== INR) {
-                    dispatch(getExchangeRateByCurrency(fromCurrency, costingType, DayTime(state.effectiveDate).format('YYYY-MM-DD'), vendorValue, rawMaterailDetails?.customer?.value, false, toCurrency, getValues('ExchangeSource')?.label ?? null, res => {
+                    dispatch(getExchangeRateByCurrency(fromCurrency, costingType, DayTime(state.effectiveDate).format('YYYY-MM-DD'), vendorValue, rawMaterailDetailsRef.current?.customer?.value, false, toCurrency, getValues('ExchangeSource')?.label ?? null, res => {
                         if (Object.keys(res.data.Data).length === 0) {
                             setState(prevState => ({ ...prevState, showPlantWarning: true }));
                         } else {
@@ -183,19 +188,19 @@ function AddRMFinancialDetails(props) {
         dispatch(getIndexSelectList((res) => { }));
     }, [])
     useEffect(() => {
-        if (rawMaterailDetails && rawMaterailDetails?.Technology && Object.keys(rawMaterailDetails?.Technology).length > 0) {
+        if (rawMaterailDetailsRef.current && rawMaterailDetailsRef.current?.Technology && Object.keys(rawMaterailDetailsRef.current?.Technology).length > 0) {
             checkTechnology()
         }
-    }, [rawMaterailDetails?.Technology])
+    }, [rawMaterailDetailsRef.current?.Technology])
     useEffect(() => {
-        setState(prevState => ({ ...prevState, isShowIndexCheckBox: rawMaterailDetails?.isShowIndexCheckBox }))
-    }, [rawMaterailDetails?.isShowIndexCheckBox])
+        setState(prevState => ({ ...prevState, isShowIndexCheckBox: rawMaterailDetailsRef.current?.isShowIndexCheckBox }))
+    }, [rawMaterailDetailsRef.current?.isShowIndexCheckBox])
     useEffect(() => {
         handleVendor()
-    }, [rawMaterailDetails?.Vendor])
+    }, [rawMaterailDetailsRef.current?.Vendor])
     useEffect(() => {
         handleCustomer()
-    }, [rawMaterailDetails?.customer])
+    }, [rawMaterailDetailsRef.current?.customer])
 
     useEffect(() => {
         calculateNetCostDomestic()
@@ -204,32 +209,32 @@ function AddRMFinancialDetails(props) {
         if (props?.DataToChange && Object.keys(props?.DataToChange).length > 0) {
             let Data = props?.DataToChange
             setValue('UnitOfMeasurement', { label: Data?.UnitOfMeasurementName, value: Data?.UOM })
-            setValue('cutOffPrice', Data?.CutOffPrice)
-            setValue('BasicRate', Data?.BasicRatePerUOM)
-            setValue('ScrapRatePerScrapUOM', Data?.ScrapRatePerScrapUOM)
-            setValue('ScrapRate', Data?.ScrapRate)
-            setValue('ConversionRatio', Data?.UOMToScrapUOMRatio)
-            setValue('UOMToScrapUOMRatio', Data?.UOMToScrapUOMRatio)
-            setValue('BasicPriceSelectedCurrency', Data?.NetCostWithoutConditionCost)
-            setValue('NetCostWithoutConditionCost', states.isImport ? Data?.NetCostWithoutConditionCostConversion : Data?.NetCostWithoutConditionCost)
-            setValue('NetLandedCost', Data?.NetLandedCost)
-            setValue('NetLandedCostConversion', states.isImport ? Data?.NetLandedCostConversion : Data?.NetLandedCost)
-            setValue('FinalConditionCostBaseCurrency', states.isImport ? Data?.NetConditionCostConversion : Data?.NetConditionCost)
+            setValue('cutOffPrice', checkForDecimalAndNull(Data?.CutOffPrice, getConfigurationKey()?.NoOfDecimalForPrice))
+            setValue('BasicRate', checkForDecimalAndNull(Data?.BasicRatePerUOM, getConfigurationKey()?.NoOfDecimalForPrice))
+            setValue('ScrapRatePerScrapUOM', checkForDecimalAndNull(Data?.ScrapRatePerScrapUOM, getConfigurationKey()?.NoOfDecimalForPrice))
+            setValue('ScrapRate', checkForDecimalAndNull(Data?.ScrapRate, getConfigurationKey()?.NoOfDecimalForPrice))
+            setValue('ConversionRatio', checkForDecimalAndNull(Data?.UOMToScrapUOMRatio, getConfigurationKey()?.NoOfDecimalForPrice))
+            setValue('UOMToScrapUOMRatio', checkForDecimalAndNull(Data?.UOMToScrapUOMRatio, getConfigurationKey()?.NoOfDecimalForPrice))
+            setValue('BasicPriceSelectedCurrency', checkForDecimalAndNull(Data?.NetCostWithoutConditionCost, getConfigurationKey()?.NoOfDecimalForPrice))
+            setValue('NetCostWithoutConditionCost', states.isImport ? checkForDecimalAndNull(Data?.NetCostWithoutConditionCostConversion, getConfigurationKey()?.NoOfDecimalForPrice) : checkForDecimalAndNull(Data?.NetCostWithoutConditionCost, getConfigurationKey()?.NoOfDecimalForPrice))
+            setValue('NetLandedCost', checkForDecimalAndNull(Data?.NetLandedCost, getConfigurationKey()?.NoOfDecimalForPrice))
+            setValue('NetLandedCostConversion', states.isImport ? checkForDecimalAndNull(Data?.NetLandedCostConversion, getConfigurationKey()?.NoOfDecimalForPrice) : checkForDecimalAndNull(Data?.NetLandedCost, getConfigurationKey()?.NoOfDecimalForPrice))
+            setValue('FinalConditionCostBaseCurrency', states.isImport ? checkForDecimalAndNull(Data?.NetConditionCostConversion, getConfigurationKey()?.NoOfDecimalForPrice) : checkForDecimalAndNull(Data?.NetConditionCost, getConfigurationKey()?.NoOfDecimalForPrice))
             setValue('ScrapRateUOM', { label: Data?.ScrapUnitOfMeasurement, value: Data?.ScrapUnitOfMeasurementId })
             setValue('CalculatedFactor', Data?.CalculatedFactor)
             setValue('effectiveDate', Data?.EffectiveDate ? DayTime(Data?.EffectiveDate).$d : '')
-            setValue('CircleScrapCost', Data?.JaliScrapCost)
+            setValue('CircleScrapCost', checkForDecimalAndNull(Data?.JaliScrapCost, getConfigurationKey()?.NoOfDecimalForPrice))
             setValue('currency', { label: Data?.Currency, value: Data?.CurrencyId })
-            setValue('MachiningScrap', Data?.MachiningScrapRate)
-            setValue('JaliScrapCost', Data?.ScrapRate)
-            setValue('ForgingScrap', Data?.ScrapRate)
+            setValue('MachiningScrap', checkForDecimalAndNull(Data?.MachiningScrapRate, getConfigurationKey()?.NoOfDecimalForPrice))
+            setValue('JaliScrapCost',  checkForDecimalAndNull(Data?.ScrapRate, getConfigurationKey()?.NoOfDecimalForPrice))
+            setValue('ForgingScrap',  checkForDecimalAndNull(Data?.ScrapRate, getConfigurationKey()?.NoOfDecimalForPrice))
             setValue('frequencyOfSettlement', { label: Data?.FrequencyOfSettlement, value: Data?.FrequencyOfSettlementId })
             setValue('fromDate', DayTime(Data?.FromDate).$d)
             setValue('toDate', DayTime(Data?.ToDate).$d)
-            setValue('OtherCost', Data?.OtherNetCost)
+            setValue('OtherCost', checkForDecimalAndNull(Data?.OtherNetCost, getConfigurationKey()?.NoOfDecimalForPrice))
             setValue('Index', { label: Data?.IndexExchangeName, value: Data?.IndexExchangeId })
             setValue('plantCurrency', Data?.LocalCurrency)
-            setValue('FinalConditionCost', Data?.NetConditionCost)
+            setValue('FinalConditionCost', checkForDecimalAndNull(Data?.NetConditionCost, getConfigurationKey()?.NoOfDecimalForPrice))
             let updatedState = {
                 ...state,
                 effectiveDate: Data?.EffectiveDate ? DayTime(Data?.EffectiveDate).$d : '',
@@ -260,7 +265,7 @@ function AddRMFinancialDetails(props) {
                 settlementCurrencyRate: states.isImport ? checkForNull(Data?.CurrencyExchangeRate??1) : null
             }))
             setState(updatedState)
-            dispatch(setRawMaterialDetails({ ...rawMaterailDetails, states: updatedState, isShowIndexCheckBox: Data?.IsIndexationDetails, ShowScrapKeys: obj }, () => { }))
+            dispatch(setRawMaterialDetails({ ...rawMaterailDetailsRef.current, states: updatedState, isShowIndexCheckBox: Data?.IsIndexationDetails, ShowScrapKeys: obj }, () => { }))
             dispatch(setExchangeRateDetails({
                 ...exchangeRateDetailsRef.current, LocalCurrencyExchangeRate: !states.isImport ? (Data?.CurrencyExchangeRate??1) : (Data?.LocalCurrencyExchangeRate??1), LocalExchangeRateId: !states.isImport ? Data?.ExchangeRateId : Data?.LocalExchangeRateId, LocalCurrencyId: !states.isImport ? Data?.CurrencyId : Data?.LocalCurrencyId,
                 CurrencyExchangeRate: state?.isImport ? (Data?.CurrencyExchangeRate??1) : null, ExchangeRateId: state?.isImport ? Data?.ExchangeRateId : null
@@ -369,13 +374,13 @@ function AddRMFinancialDetails(props) {
         })
         return tempArr
     }
-    const allFieldsInfoIcon = (setData) => {
-        const { currency, currencyValue, ScrapRateUOM, UOM } = state
+    const allFieldsInfoIcon = (scrapLabel) => {
+        const { currency, currencyValue } = state
         let obj = {
             toolTipBasicPrice: `Basic Rate + Other Cost`,
             toolTipTextBasicRateBaseCurrency: `Basic Rate (${reactLocalStorage.getObject("baseCurrency")}) = Basic Rate (${currency?.label === undefined ? 'Currency' : currency?.label}) * Currency Rate (${currency?.label === undefined ? 'Currency' : currencyValue})`,
             toolTipTextCalculatedFactor: <>{labelWithUOMAndUOM("Calculated Factor", state.UOM?.label, state.ScrapRateUOM?.label)} = 1 / {labelWithUOMAndUOM("Calculated Ratio", state.ScrapRateUOM?.label, state.UOM?.label)}</>,
-            toolTipTextScrapCostPerOldUOM:<>{labelWithUOMAndCurrency("Scrap Rate ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, states.isImport ? state.currency?.label : !getValues('plantCurrency') ? 'Currency' : getValues('plantCurrency'))} = {labelForScrapRate()?.labelBaseCurrency} * Calculated Factor</>
+            toolTipTextScrapCostPerOldUOM:<>{labelWithUOMAndCurrency(scrapLabel, state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, states.isImport ? state.currency?.label : !getValues('plantCurrency') ? 'Currency' : getValues('plantCurrency'))} = {labelForScrapRate()?.labelBaseCurrency} * Calculated Factor</>
         }
         return obj
     }
@@ -431,9 +436,9 @@ function AddRMFinancialDetails(props) {
         setValue('NetCostWithoutConditionCost', checkForDecimalAndNull(basicPriceBaseCurrency, getConfigurationKey().NoOfDecimalForPrice));
         if (isEditFlag) {
             if (checkForNull(NetLandedCost) === checkForNull(props?.DataToChange?.NetLandedCost)) {
-                dispatch(setRawMaterialDetails({ ...rawMaterailDetails, netCostChanged: false }, () => { }))
+                dispatch(setRawMaterialDetails({ ...rawMaterailDetailsRef.current, netCostChanged: false }, () => { }))
             } else {
-                dispatch(setRawMaterialDetails({ ...rawMaterailDetails, netCostChanged: true }, () => { }))
+                dispatch(setRawMaterialDetails({ ...rawMaterailDetailsRef.current, netCostChanged: true }, () => { }))
             }
         }
         let updatedState = {
@@ -453,7 +458,7 @@ function AddRMFinancialDetails(props) {
         }
         setState(updatedState)
         setTimeout(() => {
-            dispatch(setRawMaterialDetails({ ...rawMaterailDetails, states: updatedState }, () => { }))
+            dispatch(setRawMaterialDetails({ ...rawMaterailDetailsRef.current, states: updatedState }, () => { }))
         }, 50);
     }
 
@@ -481,12 +486,12 @@ function AddRMFinancialDetails(props) {
         setState(updatedState);
         // Update the raw material details
         dispatch(setRawMaterialDetails({
-            ...rawMaterailDetails,
+            ...rawMaterailDetailsRef.current,
             states: updatedState
         }, () => { }));
     }
     const checkTechnology = () => {
-        let obj = showRMScrapKeys(rawMaterailDetails?.Technology ? rawMaterailDetails?.Technology?.value : props?.DataToChange.TechnologyId)
+        let obj = showRMScrapKeys(rawMaterailDetailsRef.current?.Technology ? rawMaterailDetailsRef.current?.Technology?.value : props?.DataToChange.TechnologyId)
         setShowScrapKeys(obj)
         setState(prevState => ({ ...prevState, showScrapKeys: obj }))
     }
@@ -518,15 +523,15 @@ function AddRMFinancialDetails(props) {
                 setState(prevState => ({ ...prevState, currencyValue: 1, showCurrency: false, }))
             } else {
                 const { costingTypeId } = states;
-                const vendorValue = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? rawMaterailDetails?.Vendor?.value : EMPTY_GUID) : EMPTY_GUID
+                const vendorValue = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? rawMaterailDetailsRef.current?.Vendor?.value : EMPTY_GUID) : EMPTY_GUID
                 const costingType = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? VBCTypeId : costingTypeId) : ZBCTypeId
 
                 if ((currency && currency?.length !== 0 && date)) {
-                    if (IsFetchExchangeRateVendorWise() && !((rawMaterailDetails?.Vendor && rawMaterailDetails?.Vendor?.length !== 0) || (rawMaterailDetails?.customer && rawMaterailDetails?.customer?.length !== 0))) {
+                    if (IsFetchExchangeRateVendorWise() && !((rawMaterailDetailsRef.current?.Vendor && rawMaterailDetailsRef.current?.Vendor?.length !== 0) || (rawMaterailDetailsRef.current?.customer && rawMaterailDetailsRef.current?.customer?.length !== 0))) {
                         setState(prevState => ({ ...prevState, showWarning: true }));
                         return;
                     }
-                    dispatch(getExchangeRateByCurrency(currency?.label, costingType, DayTime(date).format('YYYY-MM-DD'), vendorValue, rawMaterailDetails?.customer?.value, false, reactLocalStorage.getObject("baseCurrency"), getValues('ExchangeSource')?.label ?? null, res => {
+                    dispatch(getExchangeRateByCurrency(currency?.label, costingType, DayTime(date).format('YYYY-MM-DD'), vendorValue, rawMaterailDetailsRef.current?.customer?.value, false, reactLocalStorage.getObject("baseCurrency"), getValues('ExchangeSource')?.label ?? null, res => {
                         if (Object.keys(res.data.Data).length === 0) {
                             setState(prevState => ({ ...prevState, showWarning: true }));
                         } else {
@@ -637,16 +642,16 @@ function AddRMFinancialDetails(props) {
         setState(prevState => ({ ...prevState, toDate: date }));
     };
     const handleVendor = () => {
-        const vendorValue = IsFetchExchangeRateVendorWise() ? ((states.costingTypeId === VBCTypeId || states.costingTypeId === ZBCTypeId) ? rawMaterailDetails?.Vendor?.value : EMPTY_GUID) : EMPTY_GUID
+        const vendorValue = IsFetchExchangeRateVendorWise() ? ((states.costingTypeId === VBCTypeId || states.costingTypeId === ZBCTypeId) ? rawMaterailDetailsRef.current?.Vendor?.value : EMPTY_GUID) : EMPTY_GUID
         const costingType = IsFetchExchangeRateVendorWise() ? ((states.costingTypeId === VBCTypeId || states.costingTypeId === ZBCTypeId) ? VBCTypeId : states.costingTypeId) : ZBCTypeId
 
 
         if (state.currency && state.currency.length !== 0 && state.effectiveDate) {
-            if (IsFetchExchangeRateVendorWise() && !(rawMaterailDetails && rawMaterailDetails?.Vendor?.length !== 0)) {
+            if (IsFetchExchangeRateVendorWise() && !(rawMaterailDetailsRef.current && rawMaterailDetailsRef.current?.Vendor?.length !== 0)) {
                 setState(prevState => ({ ...prevState, showWarning: true }));
                 return;
             }
-            dispatch(getExchangeRateByCurrency(state.currency?.label, costingType, DayTime(state.effectiveDate).format('YYYY-MM-DD'), vendorValue, rawMaterailDetails?.customer?.value, false, reactLocalStorage.getObject("baseCurrency"), getValues('ExchangeSource')?.label ?? null, res => {
+            dispatch(getExchangeRateByCurrency(state.currency?.label, costingType, DayTime(state.effectiveDate).format('YYYY-MM-DD'), vendorValue, rawMaterailDetailsRef.current?.customer?.value, false, reactLocalStorage.getObject("baseCurrency"), getValues('ExchangeSource')?.label ?? null, res => {
                 if (Object.keys(res.data.Data).length === 0) {
                     setState(prevState => ({ ...prevState, showWarning: true }))
                 } else {
@@ -662,8 +667,8 @@ function AddRMFinancialDetails(props) {
     const handleCustomer = () => {
         const { currency, effectiveDate } = state
         const { costingTypeId } = states
-        if (rawMaterailDetails && rawMaterailDetails?.customer?.length !== 0 && state.currency && state.currency.length !== 0 && state.effectiveDate) {
-            dispatch(getExchangeRateByCurrency(currency?.label, (costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? VBCTypeId : costingTypeId, DayTime(effectiveDate).format('YYYY-MM-DD'), (costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? rawMaterailDetails?.Vendor?.value : EMPTY_GUID, rawMaterailDetails?.customer?.value, false, reactLocalStorage.getObject("baseCurrency"), getValues('ExchangeSource')?.label ?? null, res => {
+        if (rawMaterailDetailsRef.current && rawMaterailDetailsRef.current?.customer?.length !== 0 && state.currency && state.currency.length !== 0 && state.effectiveDate) {
+            dispatch(getExchangeRateByCurrency(currency?.label, (costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? VBCTypeId : costingTypeId, DayTime(effectiveDate).format('YYYY-MM-DD'), (costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? rawMaterailDetailsRef.current?.Vendor?.value : EMPTY_GUID, rawMaterailDetailsRef.current?.customer?.value, false, reactLocalStorage.getObject("baseCurrency"), getValues('ExchangeSource')?.label ?? null, res => {
                 if (Object.keys(res.data.Data).length === 0) {
                     setState(prevState => ({ ...prevState, showWarning: true }))
                 } else {
@@ -686,7 +691,7 @@ function AddRMFinancialDetails(props) {
         } else {
             setState(prevState => ({ ...prevState, ScrapRateUOM: [] }))
         }
-        dispatch(setRawMaterialDetails({ ...rawMaterailDetails, ScrapRateUOM: newValue }, () => { }))
+        dispatch(setRawMaterialDetails({ ...rawMaterailDetailsRef.current, ScrapRateUOM: newValue }, () => { }))
     }
     const otherCostToggle = () => {
         setState(prevState => ({ ...prevState, isOpenOtherCostDrawer: true }))
@@ -701,7 +706,7 @@ function AddRMFinancialDetails(props) {
             const netCostLocalCurrency = convertIntoBase(netCost, CurrencyExchangeRate?.plantCurrencyRate)
             const netCostConversion = convertIntoBase(netCost, CurrencyExchangeRate?.settlementCurrencyRate)
             setState(prevState => ({ ...prevState, isOpenOtherCostDrawer: false, otherCostTableData: data, totalOtherCost: totalBase }))
-            setValue('OtherCost', totalBase)
+            setValue('OtherCost', checkForDecimalAndNull(totalBase, getConfigurationKey().NoOfDecimalForPrice))
             if (states.isImport) {
                 setValue('NetLandedCost', checkForDecimalAndNull(netCost, getConfigurationKey().NoOfDecimalForPrice))
                 setValue('NetLandedCostPlantCurrency', checkForDecimalAndNull(netCostLocalCurrency, getConfigurationKey().NoOfDecimalForPrice))
@@ -722,7 +727,7 @@ function AddRMFinancialDetails(props) {
     }
     const openAndCloseAddConditionCosting = (type, data = state.conditionTableData) => {
         if (data && data.length > 0 && type === 'save') {
-            dispatch(setRawMaterialDetails({ ...rawMaterailDetails, netCostChanged: true }, () => { }))
+            dispatch(setRawMaterialDetails({ ...rawMaterailDetailsRef.current, netCostChanged: true }, () => { }))
         }
         const sumBaseCurrency = data?.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCostPerQuantity), 0);
         let netLandedCost = checkForNull(sumBaseCurrency) + checkForNull(state.NetCostWithoutConditionCost)  //Condition cost + Basic price
@@ -743,7 +748,7 @@ function AddRMFinancialDetails(props) {
             NetLandedCost: netLandedCost
         }
         setState(updatedState)
-        dispatch(setRawMaterialDetails({ ...rawMaterailDetails, states: updatedState, ConditionTableData: data }, () => { }))
+        dispatch(setRawMaterialDetails({ ...rawMaterailDetailsRef.current, states: updatedState, ConditionTableData: data }, () => { }))
     }
     /**
     * @method handleCurrency
@@ -763,19 +768,19 @@ function AddRMFinancialDetails(props) {
 
             } else {
                 const { costingTypeId } = states;
-                const vendorValue = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? rawMaterailDetails?.Vendor?.value : EMPTY_GUID) : EMPTY_GUID
+                const vendorValue = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? rawMaterailDetailsRef.current?.Vendor?.value : EMPTY_GUID) : EMPTY_GUID
                 const costingType = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? VBCTypeId : costingTypeId) : ZBCTypeId
 
                 if (newValue && newValue.length !== 0 && effectiveDate) {
                     if (IsFetchExchangeRateVendorWise() &&
-                        !((rawMaterailDetails?.Vendor && rawMaterailDetails?.Vendor?.label) ||
-                            (rawMaterailDetails?.customer && rawMaterailDetails?.customer?.length !== 0))) {
+                        !((rawMaterailDetailsRef.current?.Vendor && rawMaterailDetailsRef.current?.Vendor?.label) ||
+                            (rawMaterailDetailsRef.current?.customer && rawMaterailDetailsRef.current?.customer?.length !== 0))) {
                         setState(prevState => ({ ...prevState, showWarning: true }));
 
                         return;
                     }
 
-                    dispatch(getExchangeRateByCurrency(newValue.label, costingType, DayTime(effectiveDate).format('YYYY-MM-DD'), vendorValue, rawMaterailDetails?.customer?.value, false, reactLocalStorage.getObject("baseCurrency"), getValues('ExchangeSource')?.label ?? null, res => {
+                    dispatch(getExchangeRateByCurrency(newValue.label, costingType, DayTime(effectiveDate).format('YYYY-MM-DD'), vendorValue, rawMaterailDetailsRef.current?.customer?.value, false, reactLocalStorage.getObject("baseCurrency"), getValues('ExchangeSource')?.label ?? null, res => {
                         if (Object.keys(res.data.Data).length === 0) {
                             setState(prevState => ({ ...prevState, showWarning: true }));
                         } else {
@@ -821,7 +826,7 @@ function AddRMFinancialDetails(props) {
             ...obj
         }
         setState(updatedState)
-        dispatch(setRawMaterialDetails({ ...rawMaterailDetails, states: updatedState }, () => { }))
+        dispatch(setRawMaterialDetails({ ...rawMaterailDetailsRef.current, states: updatedState }, () => { }))
 
     }
     const handleFinancialDataChange = () => {
@@ -831,9 +836,9 @@ function AddRMFinancialDetails(props) {
             let CircleScrap = getValues('CircleScrapCost')
             let cutOff = getValues('cutOffPrice')
             if (checkForNull(scrapRate) === checkForNull(props?.DataToChange?.ScrapRate) && checkForNull(cutOff) === checkForNull(props?.DataToChange?.CutOffPrice) && checkForNull(machiningScrap) === checkForNull(props?.DataToChange?.MachiningScrapRate) && checkForNull(CircleScrap) === checkForNull(props?.DataToChange?.JaliScrapCost)) {
-                dispatch(setRawMaterialDetails({ ...rawMaterailDetails, financialDataChanged: false }, () => { }))
+                dispatch(setRawMaterialDetails({ ...rawMaterailDetailsRef.current, financialDataChanged: false }, () => { }))
             } else {
-                dispatch(setRawMaterialDetails({ ...rawMaterailDetails, financialDataChanged: true }, () => { }))
+                dispatch(setRawMaterialDetails({ ...rawMaterailDetailsRef.current, financialDataChanged: true }, () => { }))
             }
         }
     }
@@ -854,7 +859,7 @@ function AddRMFinancialDetails(props) {
     }
     const setTotalBasicRate = (totalBasicRate) => {
         setState(prevState => ({ ...prevState, totalBasicRate: totalBasicRate }))
-        dispatch(setRawMaterialDetails({ ...rawMaterailDetails, states: state }, () => { }))
+        dispatch(setRawMaterialDetails({ ...rawMaterailDetailsRef.current, states: state }, () => { }))
     }
     const handleIndex = (newValue, actionMeta) => {
         if (newValue && newValue !== '') {
@@ -876,7 +881,7 @@ function AddRMFinancialDetails(props) {
 
     const updateConditionCostValue = () => {
         let conditnCostTable = recalculateConditions('', state.NetCostWithoutConditionCost)
-        let sum = conditnCostTable && conditnCostTable.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCostConversion), 0);
+        let sum = conditnCostTable && conditnCostTable.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCostPerQuantity), 0);
         let updatedState = {
             ...state,
             NetConditionCost: sum,
@@ -884,7 +889,7 @@ function AddRMFinancialDetails(props) {
         setValue('FinalConditionCost', checkForDecimalAndNull(sum, getConfigurationKey().NoOfDecimalForPrice))
         setState(updatedState)
         setTimeout(() => {
-            dispatch(setRawMaterialDetails({ ...rawMaterailDetails, states: updatedState }, () => { }))
+            dispatch(setRawMaterialDetails({ ...rawMaterailDetailsRef.current, states: updatedState }, () => { }))
         }, 50);
     }
     const showNetCost = () => {
@@ -1328,7 +1333,7 @@ function AddRMFinancialDetails(props) {
                             {showScrapKeys?.showScrap &&
                                 <>
                                     <Col className="col-md-15">
-                                        {state.IsApplyHasDifferentUOM === true && <TooltipCustom disabledIcon={true} id="scrap-rate-base-currency" tooltipText={allFieldsInfoIcon()?.toolTipTextScrapCostPerOldUOM} />}
+                                        {state.IsApplyHasDifferentUOM === true && <TooltipCustom disabledIcon={true} id="scrap-rate-base-currency" tooltipText={allFieldsInfoIcon('Scrap Rate')?.toolTipTextScrapCostPerOldUOM} />}
                                         <TextFieldHookForm
                                             label={labelWithUOMAndCurrency("Scrap Rate ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, states.isImport ? state.currency?.label : !getValues('plantCurrency') ? 'Currency' : getValues('plantCurrency'))}
                                             name={"ScrapRate"}
@@ -1353,7 +1358,7 @@ function AddRMFinancialDetails(props) {
                             {showScrapKeys?.showForging &&
                                 <>
                                     <Col className="col-md-15">
-                                        {state.IsApplyHasDifferentUOM === true && <TooltipCustom disabledIcon={true} id="forging-scrap-cost-base-currency" width={'450px'} tooltipText={allFieldsInfoIcon()?.toolTipTextForgingScrapCostBaseCurrency} />}
+                                        {state.IsApplyHasDifferentUOM === true && <TooltipCustom disabledIcon={true} id="forging-scrap-cost-base-currency" width={'450px'} tooltipText={allFieldsInfoIcon('Forging Scrap Rate')?.toolTipTextScrapCostPerOldUOM} />}
                                         <TextFieldHookForm
                                             label={labelWithUOMAndCurrency("Forging Scrap Rate", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, states.isImport ? state.currency?.label : !getValues('plantCurrency') ? 'Currency' : getValues('plantCurrency'))}
                                             name={"ForgingScrap"}
@@ -1377,7 +1382,6 @@ function AddRMFinancialDetails(props) {
                                     </Col>
 
                                     <Col className="col-md-15">
-                                        {states.isImport && <TooltipCustom disabledIcon={true} id="rm-machining-base-currency" width={'350px'} tooltipText={allFieldsInfoIcon()?.toolTipTextMachiningScrapCostBaseCurrency} />}
                                         <TextFieldHookForm
                                             label={labelWithUOMAndCurrency("Machining Scrap Rate ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, states.isImport ? state.currency?.label : !getValues('plantCurrency') ? 'Currency' : getValues('plantCurrency'))}
                                             name={"MachiningScrap"}
@@ -1404,7 +1408,7 @@ function AddRMFinancialDetails(props) {
                             {showScrapKeys?.showCircleJali &&
                                 <>
                                     <Col className="col-md-15">
-                                        {state.IsApplyHasDifferentUOM === true && <TooltipCustom disabledIcon={true} id="jali-scrap-cost-base-currency" width={'350px'} tooltipText={allFieldsInfoIcon()?.toolTipTextJaliScrapCostBaseCurrencyPerOldUOM} />}
+                                        {state.IsApplyHasDifferentUOM === true && <TooltipCustom disabledIcon={true} id="jali-scrap-cost-base-currency" width={'350px'} tooltipText={allFieldsInfoIcon('Jali Scrap Rate')?.toolTipTextScrapCostPerOldUOM} />}
                                         <TextFieldHookForm
                                             label={labelWithUOMAndCurrency("Jali Scrap Rate ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, states.isImport ? state.currency?.label : !getValues('plantCurrency') ? 'Currency' : getValues('plantCurrency'))}
                                             name={"JaliScrapCost"}
@@ -1427,7 +1431,6 @@ function AddRMFinancialDetails(props) {
                                     </Col>
 
                                     <Col className="col-md-15">
-                                        {states.isImport && <TooltipCustom disabledIcon={true} id="rm-circle-base-currency" width={'350px'} tooltipText={allFieldsInfoIcon()?.toolTipTextCircleScrapCostBaseCurrency} />}
                                         <TextFieldHookForm
                                             label={labelWithUOMAndCurrency("Circle Scrap Rate ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, (states.isImport ? state.currency?.label : !getValues('plantCurrency') ? 'Currency' : getValues('plantCurrency')))}
                                             name={"CircleScrapCost"}
