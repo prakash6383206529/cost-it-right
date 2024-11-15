@@ -274,7 +274,7 @@ class AddMachineRate extends Component {
         });
       };
 
-      if (isImport) {
+      if (isImport && fromCurrency !== undefined) {
         callAPI(fromCurrency, plantCurrency)
           .then(result1 => {
             callAPI(fromCurrency, toCurrency)
@@ -290,7 +290,7 @@ class AddMachineRate extends Component {
                 });
               });
           });
-      } else if (plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
+      } else if (!isImport && plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
         callAPI(fromCurrency, toCurrency)
           .then(result => {
             console.log(result, "result")
@@ -2590,8 +2590,7 @@ class AddMachineRate extends Component {
 */
 function mapStateToProps(state) {
   const { comman, machine, auth, costing, client, supplier } = state;
-  const fieldsObj = selector(state, 'MachineNumber', 'MachineName', 'TonnageCapacity', 'MachineRate', 'Description', 'EffectiveDate', 'Specification', 'vendorName', "plantCurrency", "currency", "MachineRateConversion", "MachineRateLocalConversion", "ExchangeSource");
-
+  const fieldsObj = selector(state, 'MachineNumber', 'MachineName', 'TonnageCapacity', 'MachineRate', 'Description', 'EffectiveDate', 'Specification', 'vendorName', "plantCurrency", "currency", "MachineRateConversion", "MachineRateLocalConversion", "ExchangeSource", "MachineType");
   const { plantList, plantSelectList, filterPlantList, UOMSelectList, exchangeRateSourceList, currencySelectList } = comman;
   const { machineTypeSelectList, processSelectList, machineData, loading, processGroupApiData } = machine;
   const { initialConfiguration, userMasterLevelAPI } = auth;

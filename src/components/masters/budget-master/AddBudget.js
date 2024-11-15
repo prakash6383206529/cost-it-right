@@ -138,8 +138,12 @@ function AddBudget(props) {
         handleCalculation();
     }, [plantCurrency, settlementCurrency]);
     useEffect(() => {
-        callExchangeRateAPI()
-    }, [currency, year, ExchangeSource, fromCurrencyRef]);
+        if (!isViewMode && !isEditFlag) {
+            callExchangeRateAPI()
+        }
+    }, [currency, year, ExchangeSource, fromCurrencyRef, costConverSionInLocalCurrency, isViewMode, isEditFlag]);
+
+    // ... existing code ...
     useEffect(() => {
         fromCurrencyRef.current = fromCurrencyRef
     }, [fromCurrencyRef]);
@@ -547,6 +551,7 @@ function AddBudget(props) {
 
                         temp.push(obj)
                     })
+                    setCostConverSionInLocalCurrency(Data?.CurrencyId !== null ? true : false)
 
                     setIsEditFlag(true)
                     setSelectedPlants({
@@ -578,7 +583,6 @@ function AddBudget(props) {
                     setCurrentPrice(Data?.NetPoPrice)
                     setPlantCurrencyID(Data?.CurrencyId !== null ? Data?.LocalCurrencyId : Data?.CurrencyId)
                     setCostConverSionInLocalCurrency(Data?.CurrencyId !== null ? true : false)
-
                     setPlantCurrency(Data?.CurrencyId !== null ? Data?.LocalCurrencyExchangeRate : Data?.ExchangeRate)
                     setPlantExchangeRateId(Data?.CurrencyId !== null ? Data?.LocalExchangeRateId : Data?.ExchangeRateId)
                     setSettlementCurrency(Data?.ExchangeRate)
@@ -722,7 +726,7 @@ function AddBudget(props) {
                         setSettlementExchangeRateId(exchangeRateId2);
                     });
                 });
-            } else if (fromCurrencyRef.current !== reactLocalStorage?.getObject("baseCurrency")) {
+            } else if (!costConverSionInLocalCurrency && fromCurrencyRef.current !== reactLocalStorage?.getObject("baseCurrency")) {
                 callAPI(fromCurrency, reactLocalStorage.getObject("baseCurrency")).then(({ rate: rate1, exchangeRateId: exchangeRateId1 }) => {
                     setPlantCurrency(rate1);
                     setPlantExchangeRateId(exchangeRateId1);
@@ -783,7 +787,7 @@ function AddBudget(props) {
                 BudgetingId: BudgetId, LoggedInUserId: loggedInUserId(), FinancialYear: DataChanged.FinancialYear,
                 NetPoPrice: values?.currentPrice,
                 BudgetedPoPrice: totalSum,
-                BudgetedPoPriceInCurrency: checkForNull(totalSum * plantCurrency),
+                BudgetedPoPriceInCurrency: (costConverSionInLocalCurrency || reactLocalStorage?.getObject("baseCurrency") !== getValues("plantCurrency")) ? getValues("totalSum") : checkForNull(totalSum),
                 CostingHeadId: costingTypeId, PartId: DataChanged.PartId, RevisionNumber: DataChanged.RevisionNumber, PlantId: DataChanged.PlantId, VendorId: DataChanged.VendorId, CustomerId: DataChanged.CustomerId, BudgetingPartCostingDetails: temp, BudgetedEntryType: budgetedEntryType ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC,
                 ExchangeRateSourceName: ExchangeSource?.label,
                 CurrencyId: costConverSionInLocalCurrency ? currency?.value : null,
@@ -794,9 +798,9 @@ function AddBudget(props) {
                 LocalExchangeRateId: costConverSionInLocalCurrency ? plantExchangeRateId : null,
                 ExchangeRate: costConverSionInLocalCurrency ? settlementCurrency : plantCurrency,
                 ExchangeRateId: costConverSionInLocalCurrency ? settlementExchangeRateId : plantExchangeRateId,
-                NetPoPriceConversion: checkForNull(totalSum * plantCurrency),
-                NetPoPriceLocalConversion: costConverSionInLocalCurrency ? checkForNull(totalSum * settlementCurrency) : checkForNull(totalSum),
-                BudgetedPoPriceLocalConversion: costConverSionInLocalCurrency ? checkForNull(totalSum * settlementCurrency) : checkForNull(totalSum),
+                NetPoPriceConversion: (costConverSionInLocalCurrency || reactLocalStorage?.getObject("baseCurrency") !== getValues("plantCurrency")) ? getValues("totalSum") : checkForNull(totalSum),
+                NetPoPriceLocalConversion: costConverSionInLocalCurrency ? getValues("totalSumPlantCurrency") : checkForNull(totalSum),
+                BudgetedPoPriceLocalConversion: costConverSionInLocalCurrency ? getValues("totalSumPlantCurrency") : checkForNull(totalSum),
 
             }
 
@@ -816,7 +820,7 @@ function AddBudget(props) {
                 //  BudgetedPoPrice: totalSum,
                 BudgetedPoPrice: totalSum,
                 BudgetedEntryType: budgetedEntryType ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC,
-                BudgetedPoPriceInCurrency: checkForNull(totalSum * plantCurrency),
+                BudgetedPoPriceInCurrency: (costConverSionInLocalCurrency || reactLocalStorage?.getObject("baseCurrency") !== getValues("plantCurrency")) ? getValues("totalSum") : checkForNull(totalSum),
                 CostingHeadId: costingTypeId,
                 PartId: part.value,
                 PartName: part.label, RevisionNumber: part.RevisionNumber, PlantId: selectedPlants.value,
@@ -830,9 +834,10 @@ function AddBudget(props) {
                 LocalExchangeRateId: costConverSionInLocalCurrency ? plantExchangeRateId : null,
                 ExchangeRate: costConverSionInLocalCurrency ? settlementCurrency : plantCurrency,
                 ExchangeRateId: costConverSionInLocalCurrency ? settlementExchangeRateId : plantExchangeRateId,
-                NetPoPriceConversion: checkForNull(totalSum * plantCurrency),
-                NetPoPriceLocalConversion: costConverSionInLocalCurrency ? checkForNull(totalSum * settlementCurrency) : checkForNull(totalSum),
-                BudgetedPoPriceLocalConversion: costConverSionInLocalCurrency ? checkForNull(totalSum * settlementCurrency) : checkForNull(totalSum),
+                NetPoPriceConversion: (costConverSionInLocalCurrency || reactLocalStorage?.getObject("baseCurrency") !== getValues("plantCurrency")) ? getValues("totalSum") : checkForNull(totalSum),
+                NetPoPriceLocalConversion: costConverSionInLocalCurrency ? getValues("totalSumPlantCurrency") : checkForNull(totalSum),
+                BudgetedPoPriceLocalConversion: costConverSionInLocalCurrency ? getValues("totalSumPlantCurrency") : checkForNull(totalSum),
+
             }
 
             if (isFinalApprover || (userDetails().Role === 'SuperAdmin') || (!initialConfiguration.IsMasterApprovalAppliedConfigure)) {

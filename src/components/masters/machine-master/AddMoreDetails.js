@@ -203,6 +203,12 @@ class AddMoreDetails extends Component {
 
     this.props.change('plantCurrency', editDetails?.fieldsObj?.plantCurrency ?? '')
     this.props.change('ExchangeSource', editDetails?.ExchangeSource ?? {})
+    this.props.change('EffectiveDate', editDetails?.fieldsObj?.EffectiveDate ?? "")
+    this.props.change('MachineName', editDetails?.fieldsObj?.MachineName ?? "")
+    this.props.change('MachineNumber', editDetails?.fieldsObj?.MachineNumber ?? "")
+    this.props.change('Specification', editDetails?.fieldsObj?.Specification ?? "")
+    this.props.change('TonnageCapacity', editDetails?.fieldsObj?.TonnageCapacity ?? "")
+    //this.props.change('MachineType', editDetails?.fieldsObj?.MachineType ?? "")
     //this.props.change('currency', editDetails?.currency ?? {})
     if (this.state?.selectedPlants?.value && this.state?.selectedPlants?.value !== null) {
       let obj = {
