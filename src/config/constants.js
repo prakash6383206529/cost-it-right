@@ -18,8 +18,8 @@ export const config = () => {
 }
 
 
-// const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
-const BASE_URL = `http://172.16.0.18:81/api/v1`;
+const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
+// const BASE_URL = `http://172.16.0.18:81/api/v1`;
 export const FILE_URL = `${process.env.REACT_APP_FILE_URL}`;
 
 /** Export API */
@@ -3278,7 +3278,7 @@ export const COSTINGCONDITIONCOST = 'Costing Condition Cost'
 export const IsSelectSinglePlant = true
 
 //VERSION 
-export const VERSION = "V3.1.36";
+export const VERSION = "V3.1.38";
 
 
 

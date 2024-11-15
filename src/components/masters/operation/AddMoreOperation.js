@@ -1063,6 +1063,27 @@ function AddMoreOperation(props) {
     const handleEffectiveDate = (e) => {
         callExchangeRateAPI()
     }
+   const OperationRateTitle = () => {
+        return {
+            tooltipTextPlantCurrency: `Rate * Plant Currency Rate (${state?.plantCurrency ?? ''})`,
+            toolTipTextNetCostBaseCurrency: `Rate * Currency Rate (${state?.settlementCurrency ?? ''})`,
+        };
+    };
+    const getTooltipTextForCurrency = () => {
+      const {settlementCurrency,plantCurrency,currency}=state
+      const currencyLabel = currency?.label??'Currency';
+      const plantCurrencyLabel = getValues('plantCurrency')??'Plant Currency';
+      const baseCurrency = reactLocalStorage.getObject("baseCurrency");
+      
+      // Check the exchange rates or provide a default placeholder if undefined
+      const plantCurrencyRate = plantCurrency?? '-';
+      const settlementCurrencyRate = settlementCurrency ?? '-';
+    
+      // Generate tooltip text based on the condition
+      return `${!state.hidePlantCurrency 
+          ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrencyLabel}, ` 
+          : ''}Exchange Rate: 1 ${currencyLabel} = ${settlementCurrencyRate} ${baseCurrency}`;
+    };
     return (
         <div className="container-fluid">
             {isLoader && <Loader />}
@@ -1301,6 +1322,7 @@ function AddMoreOperation(props) {
                                         />
                                     </Col>}
                                     <Col className="col-md-15">
+                                    {getValues('plantCurrency')&& !state.hidePlantCurrency&&!state.isImport&& <TooltipCustom id="plantCurrency" tooltipText = {`Exchange Rate: 1 ${getValues('plantCurrency')} = ${state?.plantCurrency??'-'} ${reactLocalStorage.getObject("baseCurrency")}`} />}
                                         <TextFieldHookForm
                                             name="plantCurrency"
                                             label="Plant Currency"
@@ -1387,10 +1409,12 @@ function AddMoreOperation(props) {
                                         />
                                     </div>
                                     {state.isImport && <Col className="col-md-15">
+                                        <TooltipCustom id="currency" tooltipText = {getTooltipTextForCurrency()}/>
                                         <SearchableSelectHookForm
                                             name="currency"
                                             label="Currency"
                                             errors={errors.currency}
+                                            id="currency"
                                             Controller={Controller}
                                             control={control}
                                             register={register}
@@ -3034,9 +3058,11 @@ function AddMoreOperation(props) {
                                 }
                             </Row>
                             {state.isImport && <Col className="col-md-15">
+                                {<TooltipCustom id={"Rate"} disabledIcon={true}  tooltipText={`Rate = Total Cost of all Section`}  />}
                                 <NumberFieldHookForm
                                     label={`Rate (${state.currency?.label ?? 'Currency'})`}
                                     name={'Rate'}
+                                    id={"Rate"}
                                     Controller={Controller}
                                     control={control}
                                     register={register}
@@ -3053,11 +3079,8 @@ function AddMoreOperation(props) {
 
 
                             <>
-                                <TooltipCustom
-                                    id={"RateLocalConversion"}
-                                    disabledIcon={true}
-                                    tooltipText={`Rate = Total Cost of all Section`}
-                                />
+                            {!state.isImport&&<TooltipCustom id={"RateLocalConversion"} disabledIcon={true}  tooltipText={`Rate = Total Cost of all Section`}  />}
+                            {state.isImport&&<TooltipCustom disabledIcon={true}  id={"RateLocalConversion"} tooltipText={state.hidePlantCurrency?OperationRateTitle()?.toolTipTextNetCostBaseCurrency:OperationRateTitle()?.tooltipTextPlantCurrency} />}
                                 <Col className="col-md-15">
                                     <NumberFieldHookForm
                                         label={`Rate (${getValues('plantCurrency') ?? 'Currency'})`}
@@ -3076,11 +3099,14 @@ function AddMoreOperation(props) {
                                     />
                                 </Col>
                             </>
-                            {!state.hidePlantCurrency && (
+                            {!state.hidePlantCurrency &&
+                            <> 
+                              <TooltipCustom disabledIcon={true} id="operation-rate" tooltipText={state.isImport?OperationRateTitle()?.toolTipTextNetCostBaseCurrency:OperationRateTitle()?.tooltipTextPlantCurrency} />
                                 <Col className="col-md-15">
                                     <NumberFieldHookForm
                                         label={`Rate (${reactLocalStorage.getObject("baseCurrency")})`}
                                         name={'RateConversion'}
+                                      id="operation-rate"
                                         Controller={Controller}
                                         control={control}
                                         register={register}
@@ -3092,7 +3118,7 @@ function AddMoreOperation(props) {
                                         errors={errors.RateConversion}
                                         disabled={true}
                                     />
-                                </Col>)}
+                                </Col></>}
 
                             <Row>
                                 <Col md="12">
