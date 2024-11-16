@@ -753,7 +753,7 @@ function UserRegistration(props) {
           setTimeout(() => {
             let plantArray = []
             Data && Data?.DepartmentsPlantsIdLists?.map((item) => {
-              plantArray.push({ label: `${item.PlantName}`, value: (item?.PlantId)?.toString() })
+              plantArray.push({ label: `${item.PlantName}`, value: (item?.PlantId)?.toString(), PlantCode: item?.PlantCode, PlantName: item?.PlantName, PlantId: item?.PlantId })
               return null;
             })
             let divisionArray = []
