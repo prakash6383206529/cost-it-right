@@ -11,17 +11,24 @@ import { CostingBulkUploadTechnologyDropdown, TechnologyDropdownBulkUploadV1, Te
 import { ASSEMBLY, CORRUGATED_BOX, MACHINING_GROUP_BULKUPLOAD, PLASTIC_GROUP_BULKUPLOAD, SHEETMETAL_GROUP_BULKUPLOAD, FILE_URL, WIRINGHARNESS, SHEET_METAL, SHEETMETAL, DIE_CASTING, INSULATION, ELECTRICAL_STAMPING, MONOCARTON } from '../../../config/constants';
 import { getCostingTechnologySelectList, } from '../actions/Costing'
 import { searchableSelect } from '../../layout/FormInputs';
-import LoaderCustom from '../../common/LoaderCustom';
 import { getConfigurationKey, loggedInUserId } from '../../../helper';
 import { useForm } from 'react-hook-form';
+import LoaderCustom from '../../common/LoaderCustom';
+import { reduxForm } from 'redux-form';
 
-const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
-const CostingBulkUploadDrawer = (props) => {
+
+const CostingBulkUploadDrawer = ({ 
+    isOpen, 
+    closeDrawer, 
+    anchor,
+    handleSubmit
+}) => {
+    
+    
     const dropzone = useRef(null);
     const dispatch = useDispatch();
-    const { register, handleSubmit, formState: { errors }, control } = useForm();
+    // const { register, formState: { errors }, control } = useForm();
     const [state, setState] = useState({
         files: [],
         fileData: '',
@@ -37,36 +44,7 @@ const CostingBulkUploadDrawer = (props) => {
         dispatch(getCostingTechnologySelectList(() => { }))
     })
 
-    // const renderListing = (label) => {
-    //     const { technologySelectList } = props
-    //     let tempArr = []
-    //     // DON'T REMOVE THIS MIGHT BE USED LATER
-    //     if (label === 'Technology') {
-    //         technologySelectList && technologySelectList.map((item) => {
-    //             if (item.Value === '0') return false
-    //             tempArr.push({ label: item.Text, value: item.Value })
-    //             return null
-    //         })
-    //         return tempArr
-    //     }
-    //     if (label === 'TechnologyMixed') {
-    //         TechnologyDropdownBulkUpload && TechnologyDropdownBulkUpload.map((item) => {
-    //             if (item.value === '0') return false
-    //             tempArr.push({ label: item.label, value: item.value })
-    //             return null
-    //         })
-    //         return tempArr
-    //     }
-    //     if (label === 'TechnologyMixedV4') {
-    //         TechnologyDropdownBulkUploadV4 && TechnologyDropdownBulkUploadV4.map((item) => {
-    //             if (item.value === '0') return false
-    //             tempArr.push({ label: item.label, value: item.value })
-    //             return null
-    //         })
-    //         return tempArr
 
-    //     }
-    // }
 
     const renderListing = (label) => {
         if (label === 'TechnologyV1') {
@@ -136,7 +114,7 @@ const CostingBulkUploadDrawer = (props) => {
         if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
             return;
         }
-        props.closeDrawer('')
+        closeDrawer('')
     };
 
     const cancel = () => {
@@ -156,30 +134,8 @@ const CostingBulkUploadDrawer = (props) => {
         )
     }
 
-    /**
-    * @method returnExcelColumn
-    * @description Used to get excel column names
-    */
-    const returnExcelColumn = (data = [], TempData) => {
-
-        // DON'T REMOVE THIS MIGHT BE USED LATER
-        // const { fileName, failedData, isFailedFlag } = props;
-
-        // if (isFailedFlag) {
-
-        //     //BELOW CONDITION TO ADD 'REASON' COLUMN WHILE DOWNLOAD EXCEL SHEET IN CASE OF FAILED
-        //     let isContentReason = data.filter(d => d.label === 'Reason')
-        //     if (isContentReason.length === 0) {
-        //         let addObj = { label: 'Reason', value: 'Reason' }
-        //         data.push(addObj)
-        //     }
-        // }
-        const fileName = "Costing"
-
-        return (<ExcelSheet data={TempData} name={fileName}>
-            {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.label} />)}
-        </ExcelSheet>);
-    }
+   
+   
     const fileHandler = event => {
 
         let fileObj = event.target.files[0];
@@ -199,7 +155,7 @@ const CostingBulkUploadDrawer = (props) => {
             const fileURL = `${FILE_URL}${withOutTild}`;
             window.open(fileURL, '_blank');
             // Display error message in Toaster
-            Toaster.error(res?.data.Message );
+            Toaster.error(res?.data.Message || "Please upload the file with correct data" );
         } else if (res?.status === 200) {
             let Data = res?.data[0]
             setState((prev) => ({
@@ -278,8 +234,10 @@ const CostingBulkUploadDrawer = (props) => {
     return (
         <>
             <Drawer
-                anchor={props.anchor}
-                open={props.isOpen}
+                anchor={anchor}
+                open={isOpen}
+                onClose={closeDrawer}
+
             // onClose={(e) => toggleDrawer(e)}
             >
 
@@ -289,7 +247,7 @@ const CostingBulkUploadDrawer = (props) => {
                     <div className={"drawer-wrapper"}>
                         <form
                             noValidate
-                            className="form"
+                            // className="form"
                             onSubmit={handleSubmit(onSubmit)}
                         >
                             <Row className="drawer-heading">
@@ -306,27 +264,7 @@ const CostingBulkUploadDrawer = (props) => {
                                 </Col>
                             </Row>
                             <Row className="pl-12">
-                                {/* <Col md="12">
-                                        <ExcelFile fileExtension={'.xls'} filename={"Costing"} element={<button type="button" className={'btn btn-primary pull-right'}><img alt={''} src={require('../../../assests/images/download.png')}></img> Download File</button>}>
-                                            {returnExcelColumn(CostingBulkUpload, CostingBulkUploadTempData)}
-                                        </ExcelFile>
-                                    </Col> */}
-                                {/* <Col md="12">
-                                        <div className="input-group mt25 col-md-12 input-withouticon " >
-                                            <div className="file-uploadsection">
-                                                <label>Drag a file here or<span className="blue-text">Browse</span> for a file to upload <img alt={''} src={require('../../../assests/images/uploadcloud.png')} ></img> </label>
-                                                <input
-                                                    type="file"
-                                                    name="File"
-                                                    onChange={fileHandler}
-                                                    //accept="xls/*"
-                                                    className="" placeholder="bbb" />
-                                                <p> {state.uploadfileName}</p>
-                                            </div>
-                                        </div>
- 
-                                    </Col> */}
-
+                            
                                 <Row>
                                     <Col md="12">
                                         <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
@@ -385,14 +323,6 @@ const CostingBulkUploadDrawer = (props) => {
                                         label="Technology"
                                         component={searchableSelect}
                                         placeholder={"Select"}
-                                        // options={state.costingVersion === 'V3' ? CostingBulkUploadTechnologyDropdown : renderListing("TechnologyMixed")}
-                                        // options={
-                                        //     state.costingVersion === 'V3'
-                                        //         ? CostingBulkUploadTechnologyDropdown
-                                        //         : (state.costingVersion === 'V4'
-                                        //             ? renderListing("TechnologyMixedV4")
-                                        //             : renderListing("TechnologyMixed"))
-                                        // }
                                         options={
                                             state.costingVersion === 'V1'
                                                 ? renderListing("TechnologyV1")
@@ -482,5 +412,14 @@ const CostingBulkUploadDrawer = (props) => {
 
 }
 
+// Wrap the component with reduxForm
+const CostingBulkUploadDrawerForm = reduxForm({
+    form: 'costingBulkUploadForm', // Unique name for the form
+    enableReinitialize: true,
+    initialValues: {
+        Technology: [],
+        costingVersion: 'V1'
+    }
+})(CostingBulkUploadDrawer);
 
-export default CostingBulkUploadDrawer
+export default CostingBulkUploadDrawerForm;
