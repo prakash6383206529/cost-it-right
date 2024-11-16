@@ -78,7 +78,7 @@ function RMDomesticListing(props) {
     const [dataCount, setDataCount] = useState(0)
     const [inRangeDate, setinRangeDate] = useState([])
     // const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
-    const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: "", TechnologyName: "", RawMaterialName: "", RawMaterialGradeName: "", RawMaterialSpecificationName: "", RawMaterialCode: "", Category: "", MaterialType: "", DestinationPlantName: "", UnitOfMeasurementName: "", VendorName: "", BasicRatePerUOM: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", EffectiveDate: "", DepartmentName: isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant ? userDepartmetList() : "", NetConditionCost: "", NetCostWithoutConditionCost: "", MachiningScrapRate: "", IsScrapUOMApply: "", ScrapUnitOfMeasurement: "", CalculatedFactor: "", ScrapRatePerScrapUOM: "" })
+    const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: "", TechnologyName: "", RawMaterialName: "", RawMaterialGradeName: "", RawMaterialSpecificationName: "", RawMaterialCode: "", Category: "", MaterialType: "", DestinationPlantName: "", UnitOfMeasurementName: "", VendorName: "", BasicRatePerUOM: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", EffectiveDate: "", DepartmentName: isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant ? userDepartmetList() : "", NetConditionCost: "", NetCostWithoutConditionCost: "", MachiningScrapRate: "", IsScrapUOMApply: "", ScrapUnitOfMeasurement: "", CalculatedFactor: "", ScrapRatePerScrapUOM: "", Currency: "", ExchangeRateSourceName: "", OtherNetCost: "" })
     const [attachment, setAttachment] = useState(false);
     const [viewAttachment, setViewAttachment] = useState([])
     const [showExtraData, setShowExtraData] = useState(false)
@@ -205,6 +205,10 @@ function RMDomesticListing(props) {
             setloader(true)
         }
         dataObj.RawMaterialEntryType = Number(ENTRY_TYPE_DOMESTIC)
+        dataObj.Currency = floatingFilterData?.Currency
+        dataObj.ExchangeRateSourceName = floatingFilterData?.ExchangeRateSourceName
+        dataObj.OtherNetCost = floatingFilterData?.OtherNetCost
+
         if (!props.isMasterSummaryDrawer) {
             dispatch(getAllRMDataList(filterData, skip, take, isPagination, dataObj, false, (res) => {
                 // apply(selectedRowForPagination, selectedRowForPagination.length)
@@ -708,7 +712,13 @@ function RMDomesticListing(props) {
         //tempArr = gridApi && gridApi?.getSelectedRows()
         tempArr = selectedRowForPagination
         tempArr = (tempArr && tempArr.length > 0) ? tempArr : (allRmDataList ? allRmDataList : [])
-        return returnExcelColumn(RMDOMESTIC_DOWNLOAD_EXCEl_LOCALIZATION, tempArr)
+        const filteredLabels = RMDOMESTIC_DOWNLOAD_EXCEl_LOCALIZATION.filter(column => {
+            if (column.value === "ExchangeRateSourceName") {
+                return getConfigurationKey().IsSourceExchangeRateNameVisible
+            }
+            return true;
+        })
+        return returnExcelColumn(filteredLabels, tempArr)
     };
 
     const onFilterTextBoxChanged = (e) => {
@@ -1025,8 +1035,8 @@ function RMDomesticListing(props) {
                                         {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                                         {getConfigurationKey()?.IsShowSourceVendorInRawMaterial && <AgGridColumn field="SourceVendorName" headerName={`Source ${vendorLabel} Name`} cellRenderer='hyphenFormatter'></AgGridColumn>}
                                         <AgGridColumn field="UnitOfMeasurementName" headerName='UOM'></AgGridColumn>
+                                        {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>}
                                         <AgGridColumn field="Currency" headerName="Currency"></AgGridColumn>
-                                        <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>
                                         <AgGridColumn field="BasicRatePerUOM" headerName='Basic Rate' cellRenderer='commonCostFormatter'></AgGridColumn>
                                         <AgGridColumn field="IsScrapUOMApply" headerName="Has different Scrap Rate UOM" cellRenderer='commonCostFormatter'></AgGridColumn>
                                         <AgGridColumn field="ScrapUnitOfMeasurement" headerName='Scrap Rate UOM' cellRenderer='commonCostFormatter'></AgGridColumn>
@@ -1035,7 +1045,8 @@ function RMDomesticListing(props) {
                                         <AgGridColumn field="ScrapRate" cellRenderer='commonCostFormatter'></AgGridColumn>
                                         {props.isMasterSummaryDrawer && rmDataList[0]?.TechnologyId === FORGING && <AgGridColumn width="140" field="MachiningScrapRate" headerName='Machining Scrap Rate'></AgGridColumn>}
                                         {/* ON RE FREIGHT COST AND SHEARING COST COLUMN IS COMMENTED //RE */}
-                                        {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((props.isMasterSummaryDrawer && rmDataList[0]?.CostingTypeId === ZBCTypeId) || !props.isMasterSummaryDrawer) && <AgGridColumn field="NetCostWithoutConditionCost" headerName="Basic Price" cellRenderer='commonCostFormatter'></AgGridColumn>}
+                                        {/* {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((props.isMasterSummaryDrawer && rmDataList[0]?.CostingTypeId === ZBCTypeId) || !props.isMasterSummaryDrawer) && <AgGridColumn field="NetCostWithoutConditionCost" headerName="Basic Price" cellRenderer='commonCostFormatter'></AgGridColumn>} */}
+                                        <AgGridColumn field="OtherNetCost" headerName='Other Net Cost' cellRenderer='commonCostFormatter'></AgGridColumn>
                                         {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((props.isMasterSummaryDrawer && rmDataList[0]?.CostingTypeId === ZBCTypeId) || !props.isMasterSummaryDrawer) && <AgGridColumn field="NetConditionCost" headerName="Net Condition Cost" cellRenderer='commonCostFormatter'></AgGridColumn>}
                                         <AgGridColumn field="NetLandedCost" headerName="Net Cost" cellRenderer='costFormatter'></AgGridColumn>
 

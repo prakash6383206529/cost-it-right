@@ -5895,8 +5895,11 @@ export const RMDOMESTIC_DOWNLOAD_EXCEl = [
     { label: "UOM", value: "UnitOfMeasurementName", },
 
     { label: "Cut Off Price", value: "CutOffPrice", },
+    { label: "ExchangeRateSourceName", value: "ExchangeRateSourceName" },
+    { label: "Currency", value: "Currency", },
+
     { label: "Basic Rate", value: "BasicRatePerUOM", },
-    { label: "Basic Price", value: "NetCostWithoutConditionCost", },
+    // { label: "Basic Price", value: "NetCostWithoutConditionCost", },
     { label: "Net Condition Cost", value: "NetConditionCost", },
     { label: "Freight Cost", value: "RMFreightCost", },         // KEEP COMMENTED ON RE						//RE
     { label: "Shearing Cost", value: "RMShearingCost", },         // KEEP COMMENTED ON RE						//RE
@@ -5907,6 +5910,7 @@ export const RMDOMESTIC_DOWNLOAD_EXCEl = [
     { label: "Machining Scrap Rate", value: "MachiningScrapRate", },
     { label: "Circle Scrap Rate", value: "JaliScrapCost", },
     { label: "Scrap Rate", value: "ScrapRate", },
+    { label: "OtherNetCost", value: "OtherNetCost", },
     { label: "Net Cost", value: "NetLandedCost", },
     // KEEP COMMENTED ON RE
     //  { label: "Cut Off Price", value: "CutOffPrice", },
@@ -5928,32 +5932,33 @@ export const RMIMPORT_DOWNLOAD_EXCEl = [
     // { label: "Company (Code)", value: "DepartmentName", },
     { label: "Customer (Code)", value: "CustomerName", },
     { label: "UOM", value: "UnitOfMeasurementName", },
+    { label: "ExchangeRateSourceName", value: "ExchangeRateSourceName" },
     { label: "Currency", value: "Currency", },
-
     { label: "CutOff Price", value: "CutOffPrice", },
-    { label: "CutOff Price Conversion", value: "CutOffPriceInINR", },
+    // { label: "CutOff Price Conversion", value: "CutOffPriceInINR", },
     { label: "Basic Rate", value: "BasicRatePerUOM", },
-    { label: "Basic Rate Conversion", value: "BasicRatePerUOMConversion", },
+    // { label: "Basic Rate Conversion", value: "BasicRatePerUOMConversion", },
     { label: "Net Condition Cost", value: "NetConditionCost", },
-    { label: "Net Condition Cost Conversion", value: "NetConditionCostConversion", },
-    { label: "Basic Price", value: "NetCostWithoutConditionCost", },
-    { label: "Basic Price Conversion", value: "NetCostWithoutConditionCostConversion", },
+    // { label: "Net Condition Cost Conversion", value: "NetConditionCostConversion", },
+    // { label: "Basic Price", value: "NetCostWithoutConditionCost", },
+    // { label: "Basic Price Conversion", value: "NetCostWithoutConditionCostConversion", },
     { label: "Freight Cost", value: "RMFreightCost", },         // KEEP COMMENTED ON RE						//RE
-    { label: "Freight Cost Conversion", value: "RawMaterialFreightCostConversion", },         // KEEP COMMENTED ON RE						//RE
+    // { label: "Freight Cost Conversion", value: "RawMaterialFreightCostConversion", },         // KEEP COMMENTED ON RE						//RE
     { label: "Shearing Cost", value: "RMShearingCost", },         // KEEP COMMENTED ON RE						//RE
-    { label: "Shearing Cost Conversion", value: "RawMaterialShearingCostConversion", },         // KEEP COMMENTED ON RE						//RE
+    // { label: "Shearing Cost Conversion", value: "RawMaterialShearingCostConversion", },         // KEEP COMMENTED ON RE						//RE
     { label: "Has different Scrap Rate UOM", value: "IsScrapUOMApply", },
     { label: "Scrap UOM", value: "ScrapUnitOfMeasurement", },
     { label: "UOM To Scrap UOM Ratio", value: "UOMToScrapUOMRatio", },
     { label: "Calculated Factor", value: "CalculatedFactor", },
     { label: "Machining Scrap Rate", value: "MachiningScrapRate", },
-    { label: "Machining Scrap Rate Conversion", value: "MachiningScrapRateInINR", },
+    // { label: "Machining Scrap Rate Conversion", value: "MachiningScrapRateInINR", },
     { label: "Circle Scrap Rate", value: "JaliScrapCost", },
-    { label: "Circle Scrap Rate Conversion", value: "JaliScrapCostConversion", },
+    // { label: "Circle Scrap Rate Conversion", value: "JaliScrapCostConversion", },
     { label: "Scrap Rate", value: "ScrapRate", },
-    { label: "Scrap Rate Conversion", value: "ScrapRateInINR", },
+    // { label: "Scrap Rate Conversion", value: "ScrapRateInINR", },
+    { label: "OtherNetCost", value: "OtherNetCost", },
     { label: "Net Landed Cost", value: "NetLandedCost", },
-    { label: "Net Landed Cost Conversion", value: "NetLandedCostConversion", },
+    // { label: "Net Landed Cost Conversion", value: "NetLandedCostConversion", },
 
 ]
 
