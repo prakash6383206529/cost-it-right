@@ -168,11 +168,10 @@ function AddMoreOperation(props) {
             ZBCTypeId;
         const fromCurrency = state.isImport ? fromCurrencyRef?.current?.label : localCurrencyLabel?.current;
         const toCurrency = reactLocalStorage.getObject("baseCurrency");
-        const hasCurrencyAndDate = localCurrencyLabel?.current && getValues('effectiveDate');
+        const hasCurrencyAndDate = Boolean(localCurrencyLabel?.current && getValues('effectiveDate'));
 
         if (hasCurrencyAndDate) {
-            if (IsFetchExchangeRateVendorWise() && (vendor?.length === 0 || client?.length === 0)) {
-                setState(prevState => ({ ...prevState, showWarning: true }));
+            if (IsFetchExchangeRateVendorWise() && (vendor?.length === 0 && client?.length === 0)) {
                 return;
             }
 
@@ -1063,26 +1062,26 @@ function AddMoreOperation(props) {
     const handleEffectiveDate = (e) => {
         callExchangeRateAPI()
     }
-   const OperationRateTitle = () => {
+    const OperationRateTitle = () => {
         return {
             tooltipTextPlantCurrency: `Rate * Plant Currency Rate (${state?.plantCurrency ?? ''})`,
             toolTipTextNetCostBaseCurrency: `Rate * Currency Rate (${state?.settlementCurrency ?? ''})`,
         };
     };
     const getTooltipTextForCurrency = () => {
-      const {settlementCurrency,plantCurrency,currency}=state
-      const currencyLabel = currency?.label??'Currency';
-      const plantCurrencyLabel = getValues('plantCurrency')??'Plant Currency';
-      const baseCurrency = reactLocalStorage.getObject("baseCurrency");
-      
-      // Check the exchange rates or provide a default placeholder if undefined
-      const plantCurrencyRate = plantCurrency?? '-';
-      const settlementCurrencyRate = settlementCurrency ?? '-';
-    
-      // Generate tooltip text based on the condition
-      return `${!state.hidePlantCurrency 
-          ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrencyLabel}, ` 
-          : ''}Exchange Rate: 1 ${currencyLabel} = ${settlementCurrencyRate} ${baseCurrency}`;
+        const { settlementCurrency, plantCurrency, currency } = state
+        const currencyLabel = currency?.label ?? 'Currency';
+        const plantCurrencyLabel = getValues('plantCurrency') ?? 'Plant Currency';
+        const baseCurrency = reactLocalStorage.getObject("baseCurrency");
+
+        // Check the exchange rates or provide a default placeholder if undefined
+        const plantCurrencyRate = plantCurrency ?? '-';
+        const settlementCurrencyRate = settlementCurrency ?? '-';
+
+        // Generate tooltip text based on the condition
+        return `${!state.hidePlantCurrency
+            ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrencyLabel}, `
+            : ''}Exchange Rate: 1 ${currencyLabel} = ${settlementCurrencyRate} ${baseCurrency}`;
     };
     return (
         <div className="container-fluid">
@@ -1322,7 +1321,7 @@ function AddMoreOperation(props) {
                                         />
                                     </Col>}
                                     <Col className="col-md-15">
-                                    {getValues('plantCurrency')&& !state.hidePlantCurrency&&!state.isImport&& <TooltipCustom id="plantCurrency" tooltipText = {`Exchange Rate: 1 ${getValues('plantCurrency')} = ${state?.plantCurrency??'-'} ${reactLocalStorage.getObject("baseCurrency")}`} />}
+                                        {getValues('plantCurrency') && !state.hidePlantCurrency && !state.isImport && <TooltipCustom id="plantCurrency" tooltipText={`Exchange Rate: 1 ${getValues('plantCurrency')} = ${state?.plantCurrency ?? '-'} ${reactLocalStorage.getObject("baseCurrency")}`} />}
                                         <TextFieldHookForm
                                             name="plantCurrency"
                                             label="Plant Currency"
@@ -1409,7 +1408,7 @@ function AddMoreOperation(props) {
                                         />
                                     </div>
                                     {state.isImport && <Col className="col-md-15">
-                                        <TooltipCustom id="currency" tooltipText = {getTooltipTextForCurrency()}/>
+                                        <TooltipCustom id="currency" tooltipText={getTooltipTextForCurrency()} />
                                         <SearchableSelectHookForm
                                             name="currency"
                                             label="Currency"
@@ -3058,7 +3057,7 @@ function AddMoreOperation(props) {
                                 }
                             </Row>
                             {state.isImport && <Col className="col-md-15">
-                                {<TooltipCustom id={"Rate"} disabledIcon={true}  tooltipText={`Rate = Total Cost of all Section`}  />}
+                                {<TooltipCustom id={"Rate"} disabledIcon={true} tooltipText={`Rate = Total Cost of all Section`} />}
                                 <NumberFieldHookForm
                                     label={`Rate (${state.currency?.label ?? 'Currency'})`}
                                     name={'Rate'}
@@ -3079,8 +3078,8 @@ function AddMoreOperation(props) {
 
 
                             <>
-                            {!state.isImport&&<TooltipCustom id={"RateLocalConversion"} disabledIcon={true}  tooltipText={`Rate = Total Cost of all Section`}  />}
-                            {state.isImport&&<TooltipCustom disabledIcon={true}  id={"RateLocalConversion"} tooltipText={state.hidePlantCurrency?OperationRateTitle()?.toolTipTextNetCostBaseCurrency:OperationRateTitle()?.tooltipTextPlantCurrency} />}
+                                {!state.isImport && <TooltipCustom id={"RateLocalConversion"} disabledIcon={true} tooltipText={`Rate = Total Cost of all Section`} />}
+                                {state.isImport && <TooltipCustom disabledIcon={true} id={"RateLocalConversion"} tooltipText={state.hidePlantCurrency ? OperationRateTitle()?.toolTipTextNetCostBaseCurrency : OperationRateTitle()?.tooltipTextPlantCurrency} />}
                                 <Col className="col-md-15">
                                     <NumberFieldHookForm
                                         label={`Rate (${getValues('plantCurrency') ?? 'Currency'})`}
@@ -3100,25 +3099,25 @@ function AddMoreOperation(props) {
                                 </Col>
                             </>
                             {!state.hidePlantCurrency &&
-                            <> 
-                              <TooltipCustom disabledIcon={true} id="operation-rate" tooltipText={state.isImport?OperationRateTitle()?.toolTipTextNetCostBaseCurrency:OperationRateTitle()?.tooltipTextPlantCurrency} />
-                                <Col className="col-md-15">
-                                    <NumberFieldHookForm
-                                        label={`Rate (${reactLocalStorage.getObject("baseCurrency")})`}
-                                        name={'RateConversion'}
-                                      id="operation-rate"
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        mandatory={false}
-                                        handleChange={() => { }}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.RateConversion}
-                                        disabled={true}
-                                    />
-                                </Col></>}
+                                <>
+                                    <TooltipCustom disabledIcon={true} id="operation-rate" tooltipText={state.isImport ? OperationRateTitle()?.toolTipTextNetCostBaseCurrency : OperationRateTitle()?.tooltipTextPlantCurrency} />
+                                    <Col className="col-md-15">
+                                        <NumberFieldHookForm
+                                            label={`Rate (${reactLocalStorage.getObject("baseCurrency")})`}
+                                            name={'RateConversion'}
+                                            id="operation-rate"
+                                            Controller={Controller}
+                                            control={control}
+                                            register={register}
+                                            mandatory={false}
+                                            handleChange={() => { }}
+                                            defaultValue={''}
+                                            className=""
+                                            customClassName={'withBorder'}
+                                            errors={errors.RateConversion}
+                                            disabled={true}
+                                        />
+                                    </Col></>}
 
                             <Row>
                                 <Col md="12">

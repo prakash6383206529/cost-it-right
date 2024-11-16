@@ -157,12 +157,12 @@ class AddOperation extends Component {
     const costingType = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? VBCTypeId : costingTypeId) : ZBCTypeId
     const fromCurrency = isImport ? currency?.label : fieldsObj?.plantCurrency
     const toCurrency = reactLocalStorage.getObject("baseCurrency")
-    const hasCurrencyAndDate = fieldsObj?.plantCurrency && effectiveDate;
+    const hasCurrencyAndDate = Boolean(fieldsObj?.plantCurrency && effectiveDate);
     if (hasCurrencyAndDate) {
-      if (IsFetchExchangeRateVendorWise() && (vendorName?.length === 0 || client?.length === 0)) {
-        this.setState({ showWarning: true });
-        return;
+      if (IsFetchExchangeRateVendorWise() && (vendorName?.length === 0 && client?.length === 0)) {
+        return false;
       }
+
       const callAPI = (from, to) => {
         console.log(to, this.props.fieldsObj.plantCurrency);
         return new Promise((resolve) => {
@@ -423,7 +423,10 @@ class AddOperation extends Component {
       this.setState({ vendorName: newValue, isVendorNameNotSelected: false }, () => {
         const { vendorName } = this.state;
         this.props.getPlantBySupplier(vendorName.value, () => { })
-        this.callExchangeRateAPI()
+        if (this.props.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
+          this.callExchangeRateAPI()
+        }
+
       });
     } else {
       this.setState({ vendorName: [] })
@@ -902,8 +905,16 @@ class AddOperation extends Component {
   */
   handleClient = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ client: newValue });
-    } else {
+      this.setState({ client: newValue }
+        , () => {
+          if (this.props?.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
+            this.callExchangeRateAPI()
+          }
+        }
+      );
+    }
+
+    else {
       this.setState({ client: [] })
     }
   };
@@ -1209,26 +1220,26 @@ class AddOperation extends Component {
   };
   OperationRateTitle = () => {
     return {
-        tooltipTextPlantCurrency: `Rate * Plant Currency Rate (${this.state?.plantCurrency ?? ''})`,
-        toolTipTextNetCostBaseCurrency: `Rate * Currency Rate (${this.state?.settlementCurrency ?? ''})`,
+      tooltipTextPlantCurrency: `Rate * Plant Currency Rate (${this.state?.plantCurrency ?? ''})`,
+      toolTipTextNetCostBaseCurrency: `Rate * Currency Rate (${this.state?.settlementCurrency ?? ''})`,
     };
-};
-getTooltipTextForCurrency = () => {
-  const {fieldsObj}=this.props
-  const {settlementCurrency,plantCurrency,currency}=this.state
-  const currencyLabel = currency?.label??'Currency';
-  const plantCurrencyLabel = fieldsObj?.plantCurrency??'Plant Currency';
-  const baseCurrency = reactLocalStorage.getObject("baseCurrency");
-  
-  // Check the exchange rates or provide a default placeholder if undefined
-  const plantCurrencyRate = plantCurrency?? '-';
-  const settlementCurrencyRate = settlementCurrency ?? '-';
+  };
+  getTooltipTextForCurrency = () => {
+    const { fieldsObj } = this.props
+    const { settlementCurrency, plantCurrency, currency } = this.state
+    const currencyLabel = currency?.label ?? 'Currency';
+    const plantCurrencyLabel = fieldsObj?.plantCurrency ?? 'Plant Currency';
+    const baseCurrency = reactLocalStorage.getObject("baseCurrency");
 
-  // Generate tooltip text based on the condition
-  return `${!this.state.hidePlantCurrency 
-      ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrencyLabel}, ` 
+    // Check the exchange rates or provide a default placeholder if undefined
+    const plantCurrencyRate = plantCurrency ?? '-';
+    const settlementCurrencyRate = settlementCurrency ?? '-';
+
+    // Generate tooltip text based on the condition
+    return `${!this.state.hidePlantCurrency
+      ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrencyLabel}, `
       : ''}Exchange Rate: 1 ${currencyLabel} = ${settlementCurrencyRate} ${baseCurrency}`;
-};
+  };
   /**
   * @method render
   * @description Renders the component
@@ -1545,7 +1556,7 @@ getTooltipTextForCurrency = () => {
                         </Col>
                       )}
                       {<Col md="3">
-                        {this.props.fieldsObj?.plantCurrency&& !this.state.hidePlantCurrency&&!this.state.isImport&& <TooltipCustom id="plantCurrency" tooltipText = {`Exchange Rate: 1 ${this.props.fieldsObj?.plantCurrency} = ${this.state?.plantCurrency??'-'} ${reactLocalStorage.getObject("baseCurrency")}`} />}
+                        {this.props.fieldsObj?.plantCurrency && !this.state.hidePlantCurrency && !this.state.isImport && <TooltipCustom id="plantCurrency" tooltipText={`Exchange Rate: 1 ${this.props.fieldsObj?.plantCurrency} = ${this.state?.plantCurrency ?? '-'} ${reactLocalStorage.getObject("baseCurrency")}`} />}
                         <Field
                           name="plantCurrency"
                           type="text"
@@ -1561,7 +1572,7 @@ getTooltipTextForCurrency = () => {
                         {this.state.showPlantWarning && <WarningMessage dClass="mt-1" message={`${this.props.fieldsObj.plantCurrency} rate is not present in the Exchange Master`} />}
                       </Col>}
                       {this.state.isImport && <Col md="3">
-                        <TooltipCustom id="currency" tooltipText = {this.getTooltipTextForCurrency()}/>
+                        <TooltipCustom id="currency" tooltipText={this.getTooltipTextForCurrency()} />
                         <Field
                           name="Currency"
                           type="text"
@@ -1694,8 +1705,8 @@ getTooltipTextForCurrency = () => {
                         />
                       </Col>}
                       <Col md="3">
-                        {this?.state?.isWelding &&!this.state.isImport&& <TooltipCustom disabledIcon={true} width={"350px"} id="rate" tooltipText={'Rate = Welding Material Rate/Kg * Consumption'} />}
-                        {!this?.state?.isWelding &&this.state.isImport&&<TooltipCustom disabledIcon={true} id="rate" tooltipText={hidePlantCurrency?this.OperationRateTitle()?.toolTipTextNetCostBaseCurrency:this.OperationRateTitle()?.tooltipTextPlantCurrency} />}
+                        {this?.state?.isWelding && !this.state.isImport && <TooltipCustom disabledIcon={true} width={"350px"} id="rate" tooltipText={'Rate = Welding Material Rate/Kg * Consumption'} />}
+                        {!this?.state?.isWelding && this.state.isImport && <TooltipCustom disabledIcon={true} id="rate" tooltipText={hidePlantCurrency ? this.OperationRateTitle()?.toolTipTextNetCostBaseCurrency : this.OperationRateTitle()?.tooltipTextPlantCurrency} />}
                         <Field
                           label={`Rate (${this.props.fieldsObj?.plantCurrency ?? 'Currency'})`}
                           name={"RateLocalConversion"}
@@ -1712,11 +1723,11 @@ getTooltipTextForCurrency = () => {
                         />
                       </Col>
                       {!hidePlantCurrency && <Col md="3">
-                        <TooltipCustom disabledIcon={true} id="operation-rate" tooltipText={this.state.isImport?this.OperationRateTitle()?.toolTipTextNetCostBaseCurrency:this.OperationRateTitle()?.tooltipTextPlantCurrency} />
+                        <TooltipCustom disabledIcon={true} id="operation-rate" tooltipText={this.state.isImport ? this.OperationRateTitle()?.toolTipTextNetCostBaseCurrency : this.OperationRateTitle()?.tooltipTextPlantCurrency} />
                         <Field
                           name="RateConversion"
                           type="text"
-                           id="operation-rate"
+                          id="operation-rate"
                           label={`Rate (${reactLocalStorage.getObject("baseCurrency")})`}
                           component={renderTextInputField}
                           disabled={true}

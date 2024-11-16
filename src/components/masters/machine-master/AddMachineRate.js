@@ -238,7 +238,8 @@ class AddMachineRate extends Component {
     const costingType = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? VBCTypeId : costingTypeId) : ZBCTypeId;
     const fromCurrency = isImport ? currency?.label : plantCurrency;
     const toCurrency = reactLocalStorage.getObject("baseCurrency");
-    const hasCurrencyAndDate = plantCurrency && effectiveDate;
+    const hasCurrencyAndDate = Boolean(plantCurrency && effectiveDate);
+
 
     return new Promise((resolve) => {
       if (!hasCurrencyAndDate) {
@@ -246,9 +247,8 @@ class AddMachineRate extends Component {
         return;
       }
 
-      if (IsFetchExchangeRateVendorWise() && (vendorName?.length === 0 || client?.length === 0)) {
-        resolve({ showWarning: true });
-        return;
+      if (IsFetchExchangeRateVendorWise() && (vendorName?.length === 0 && client?.length === 0)) {
+        return false;
       }
 
       const callAPI = (from, to) => {
@@ -646,8 +646,15 @@ class AddMachineRate extends Component {
 */
   handleClient = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ client: newValue });
-    } else {
+      this.setState({ client: newValue }
+        , () => {
+          if (this.props.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
+            this.callExchangeRateAPI()
+          }
+        }
+      );
+    }
+    else {
       this.setState({ client: [] })
     }
   };
@@ -779,6 +786,9 @@ class AddMachineRate extends Component {
         const { vendorName } = this.state;
         this.props.getPlantBySupplier(vendorName.value, () => { })
       });
+      if (this.props.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
+        this.callExchangeRateAPI()
+      }
     } else {
       this.setState({ vendorName: [], vendorLocation: [] })
       this.props.getPlantBySupplier('', () => { })
@@ -1769,26 +1779,26 @@ class AddMachineRate extends Component {
   };
   machineRateTitle = () => {
     return {
-        tooltipTextPlantCurrency: `Machine Rate * Plant Currency Rate (${this.state?.plantCurrency ?? ''})`,
-        toolTipTextNetCostBaseCurrency: `Machine Rate * Currency Rate (${this.state?.settlementCurrency ?? ''})`,
+      tooltipTextPlantCurrency: `Machine Rate * Plant Currency Rate (${this.state?.plantCurrency ?? ''})`,
+      toolTipTextNetCostBaseCurrency: `Machine Rate * Currency Rate (${this.state?.settlementCurrency ?? ''})`,
     };
-};
-getTooltipTextForCurrency = () => {
-  const {fieldsObj}=this.props
-  const {settlementCurrency,plantCurrency,currency}=this.state
-  const currencyLabel = currency?.label??'Currency';
-  const plantCurrencyLabel = fieldsObj?.plantCurrency??'Plant Currency';
-  const baseCurrency = reactLocalStorage.getObject("baseCurrency");
-  
-  // Check the exchange rates or provide a default placeholder if undefined
-  const plantCurrencyRate = plantCurrency?? '-';
-  const settlementCurrencyRate = settlementCurrency ?? '-';
+  };
+  getTooltipTextForCurrency = () => {
+    const { fieldsObj } = this.props
+    const { settlementCurrency, plantCurrency, currency } = this.state
+    const currencyLabel = currency?.label ?? 'Currency';
+    const plantCurrencyLabel = fieldsObj?.plantCurrency ?? 'Plant Currency';
+    const baseCurrency = reactLocalStorage.getObject("baseCurrency");
 
-  // Generate tooltip text based on the condition
-  return `${!this.state.hidePlantCurrency 
-      ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrencyLabel}, ` 
+    // Check the exchange rates or provide a default placeholder if undefined
+    const plantCurrencyRate = plantCurrency ?? '-';
+    const settlementCurrencyRate = settlementCurrency ?? '-';
+
+    // Generate tooltip text based on the condition
+    return `${!this.state.hidePlantCurrency
+      ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrencyLabel}, `
       : ''}Exchange Rate: 1 ${currencyLabel} = ${settlementCurrencyRate} ${baseCurrency}`;
-};
+  };
   /**
   * @method render
   * @description Renders the component
@@ -2124,7 +2134,7 @@ getTooltipTextForCurrency = () => {
                           />
                         </Col>
                         <Col Col md="3" className='p-relative'>
-                        {this.props.fieldsObj?.plantCurrency&& !this.state.hidePlantCurrency&&!this.state.isImport&& <TooltipCustom id="plantCurrency" tooltipText = {`Exchange Rate: 1 ${this.props.fieldsObj?.plantCurrency} = ${this.state?.plantCurrency??'-'} ${reactLocalStorage.getObject("baseCurrency")}`} />}
+                          {this.props.fieldsObj?.plantCurrency && !this.state.hidePlantCurrency && !this.state.isImport && <TooltipCustom id="plantCurrency" tooltipText={`Exchange Rate: 1 ${this.props.fieldsObj?.plantCurrency} = ${this.state?.plantCurrency ?? '-'} ${reactLocalStorage.getObject("baseCurrency")}`} />}
                           <Field
                             label="Plant Currency"
                             name="plantCurrency"
@@ -2139,7 +2149,7 @@ getTooltipTextForCurrency = () => {
                         </Col>
 
                         {this.state?.isImport && <Col md="3">
-                          <TooltipCustom id="currency" tooltipText = {this.getTooltipTextForCurrency()}/>
+                          <TooltipCustom id="currency" tooltipText={this.getTooltipTextForCurrency()} />
                           <Field
                             name="Currency"
                             type="text"
@@ -2302,8 +2312,8 @@ getTooltipTextForCurrency = () => {
                           {this.state?.errorObj?.MachineRateLocalConversion && (this.props?.fieldsObj?.MachineRateLocalConversion === undefined || Number(this.props?.fieldsObj?.MachineRateLocalConversion) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
                         </Col>}
 
-                        {(!(!this?.state?.isImport &&this?.state?.hidePlantCurrency)) && <Col md="3" >
-                          <TooltipCustom disabledIcon={true} id="machine-rate" tooltipText={this?.state?.isImport?this.machineRateTitle()?.toolTipTextNetCostBaseCurrency:this.machineRateTitle()?.tooltipTextPlantCurrency} />
+                        {(!(!this?.state?.isImport && this?.state?.hidePlantCurrency)) && <Col md="3" >
+                          <TooltipCustom disabledIcon={true} id="machine-rate" tooltipText={this?.state?.isImport ? this.machineRateTitle()?.toolTipTextNetCostBaseCurrency : this.machineRateTitle()?.tooltipTextPlantCurrency} />
                           <Field
                             label={this.DisplayMachineRateBaseCurrencyLabel()}
                             name={"MachineRateConversion"}

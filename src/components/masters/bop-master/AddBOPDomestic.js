@@ -151,21 +151,21 @@ class AddBOPDomestic extends Component {
     const { initialConfiguration } = this.props;
     const { costingTypeId } = this.state;
     let obj = {
-        toolTipTextBasicPrice: initialConfiguration?.IsBasicRateAndCostingConditionVisible && Number(costingTypeId) === Number(ZBCTypeId)
-            ? getConfigurationKey().IsMinimumOrderQuantityVisible
-                ? `Basic Price  = Basic Rate + Other Cost / Minimum Order Quantity`
-                : `Basic Price  = Basic Rate + Other Cost `
-            : '',
+      toolTipTextBasicPrice: initialConfiguration?.IsBasicRateAndCostingConditionVisible && Number(costingTypeId) === Number(ZBCTypeId)
+        ? getConfigurationKey().IsMinimumOrderQuantityVisible
+          ? `Basic Price  = Basic Rate + Other Cost / Minimum Order Quantity`
+          : `Basic Price  = Basic Rate + Other Cost `
+        : '',
 
-        toolTipTextNetCost: initialConfiguration?.IsBasicRateAndCostingConditionVisible && Number(costingTypeId) === Number(ZBCTypeId)
-            ? `Net Cost  = Basic Price  + Condition Cost `
-            : getConfigurationKey().IsMinimumOrderQuantityVisible
-                ? `Net Cost  = Basic Rate  / Minimum Order Quantity`
-                : `Net Cost  = Basic Rate `
+      toolTipTextNetCost: initialConfiguration?.IsBasicRateAndCostingConditionVisible && Number(costingTypeId) === Number(ZBCTypeId)
+        ? `Net Cost  = Basic Price  + Condition Cost `
+        : getConfigurationKey().IsMinimumOrderQuantityVisible
+          ? `Net Cost  = Basic Rate  / Minimum Order Quantity`
+          : `Net Cost  = Basic Rate `
     };
 
     return obj;
-}
+  }
 
 
   /**
@@ -195,13 +195,11 @@ class AddBOPDomestic extends Component {
 
     const vendorValue = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? vendorName.value : EMPTY_GUID) : EMPTY_GUID
     const costingType = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? VBCTypeId : costingTypeId) : ZBCTypeId
-    const hasCurrencyAndDate = fieldsObj?.plantCurrency && effectiveDate;
+    const hasCurrencyAndDate = Boolean(fieldsObj?.plantCurrency && effectiveDate);
     if (hasCurrencyAndDate) {
-      if (IsFetchExchangeRateVendorWise() && (vendorName?.length === 0 || client?.length === 0)) {
-        this.setState({ showWarning: true });
-        return;
+      if (IsFetchExchangeRateVendorWise() && (vendorName?.length === 0 && client?.length === 0)) {
+        return false;
       }
-
       this.props.getExchangeRateByCurrency(fieldsObj?.plantCurrency, costingType, DayTime(this.state?.effectiveDate).format('YYYY-MM-DD'), vendorValue, client.value, false, reactLocalStorage.getObject("baseCurrency"), ExchangeSource?.label ?? null, res => {
         if (Object.keys(res.data.Data).length === 0) {
           this.setState({ showWarning: true });
@@ -344,7 +342,13 @@ class AddBOPDomestic extends Component {
   */
   handleClient = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ client: newValue });
+      this.setState({ client: newValue }
+        , () => {
+          if (this.props?.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
+            this.callExchangeRateAPI()
+          }
+        }
+      );
     } else {
       this.setState({ client: [] })
     }
@@ -411,7 +415,7 @@ class AddBOPDomestic extends Component {
               IsBreakupBoughtOutPart: Data.IsBreakupBoughtOutPart,
               IsSAPCodeUpdated: Data.IsSAPCodeUpdated,
               SAPPartNumber: Data.SAPPartNumber !== undefined ? { label: Data.SAPPartNumber, value: Data.SAPPartNumber } : [],
-              currencyValue: (Data.CurrencyExchangeRate??1),
+              currencyValue: (Data.CurrencyExchangeRate ?? 1),
               LocalExchangeRateId: Data.ExchangeRateId,
               LocalCurrencyId: Data.CurrencyId,
               ExchangeSource: { label: Data.ExchangeRateSourceName, value: Data.ExchangeRateSourceName },
@@ -625,7 +629,9 @@ class AddBOPDomestic extends Component {
       this.setState({ vendorName: newValue, isVendorNameNotSelected: false, }, () => {
         const { vendorName } = this.state;
         this.props.getPlantBySupplier(vendorName.value, () => { })
-        //this.props.getCityBySupplier(vendorName.value, () => { })
+        if (this.props?.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
+          this.callExchangeRateAPI()
+        }
       });
     } else {
       this.setState({ vendorName: [], })
@@ -1735,7 +1741,7 @@ class AddBOPDomestic extends Component {
                             <div className="left-border">{"Cost:"}</div>
                           </Col>
                           {<Col md="3">
-                            { !this.state.hidePlantCurrency&& <TooltipCustom id="plantCurrency" tooltipText = {`Exchange Rate: 1 ${this.props.fieldsObj?.plantCurrency??''} = ${this.state?.currencyValue??'-'} ${reactLocalStorage.getObject("baseCurrency")}`} />}
+                            {!this.state.hidePlantCurrency && <TooltipCustom id="plantCurrency" tooltipText={`Exchange Rate: 1 ${this.props.fieldsObj?.plantCurrency ?? ''} = ${this.state?.currencyValue ?? '-'} ${reactLocalStorage.getObject("baseCurrency")}`} />}
                             <Field
                               name="plantCurrency"
                               type="text"
@@ -1954,7 +1960,7 @@ class AddBOPDomestic extends Component {
                               onChange={this.handleMessageChange}
                               component={renderTextAreaField}
                               maxLength="5000"
-                            />  
+                            />
                           </Col>
                           <Col md="3">
                             <label>
