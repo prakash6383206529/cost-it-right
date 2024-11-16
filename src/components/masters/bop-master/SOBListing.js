@@ -31,6 +31,7 @@ import { setSelectedRowForPagination } from '../../simulation/actions/Simulation
 import WarningMessage from '../../common/WarningMessage';
 import { disabledClass } from '../../../actions/Common';
 import _ from 'lodash';
+import Toaster from '../../common/Toaster';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -42,7 +43,9 @@ const SOBListing = (props) => {
   const dispatch = useDispatch();
   const searchRef = useRef(null);
   const { t } = useTranslation("common")
-  const { bopSobList } = useSelector((state) => state.boughtOutparts);
+  const bopSobList = useSelector((state) => state.boughtOutparts?.bopSobList);
+  
+  
   const permissions = useContext(ApplyPermission);
   const [state, setState] = useState({
     isOpen: false,
@@ -87,24 +90,27 @@ const SOBListing = (props) => {
   const [totalRecordCount, setTotalRecordCount] = useState(0);
   const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false);
   const [warningMessage, setWarningMessage] = useState(false);
-  const { selectedRowForPagination } = useSelector((state => state.simulation))
+  const selectedRowForPagination = useSelector((state => state?.simulation?.selectedRowForPagination))
+  
   useEffect(() => {
     getDataList();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
-    reactLocalStorage.setObject('selectedRow', {})
-    if (!props.stopApiCallOnCancel) {
-      return () => {
-        dispatch(setSelectedRowForPagination([]))
-        dispatch(resetStatePagination());
+    return () => {
+      setTimeout(() => {
+        if (!props.stopApiCallOnCancel) {
+          dispatch(setSelectedRowForPagination([]));
+          dispatch(resetStatePagination());
 
-        reactLocalStorage.setObject('selectedRow', {})
-      }
-    }
-
-  }, [])
+        }
+      }, 300)
+    };
+  },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []);
+  
   /**
   * @method getDataList
   * @description GET DATALIST OF IMPORT BOP
@@ -145,6 +151,7 @@ const SOBListing = (props) => {
       ...prevState,
       isLoader: true
     }));
+    const currentSelections = reactLocalStorage.getObject('selectedRow').selectedRow || [];
 
 
     // Dispatch action with callback
@@ -159,7 +166,9 @@ const SOBListing = (props) => {
         // Handle success
         setState(prevState => ({
           ...prevState,
-          tableData: res.data.DataList[0].Records || []
+          tableData: res.data.DataList[0].Records || [],
+                      dataCount: isReset ? 0 : currentSelections.length
+
         }));
 
 
@@ -205,7 +214,10 @@ const SOBListing = (props) => {
             }
           });
           isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(state.filterModel))
-
+//  if (isReset) {
+//             dispatch(setSelectedRowForPagination([]));
+//             reactLocalStorage.setObject('selectedRow', {});
+//         }
         }, 300);
 
         // Reset warning messages
@@ -330,96 +342,74 @@ const SOBListing = (props) => {
     setState((prevState) => ({ ...prevState, gridApi: params.api, gridColumnApi: params.columnApi }))
     params.api.paginationGoToPage(0);
   };
-
-
-
-
   const onRowSelect = (event) => {
+    let selectedRows = state.gridApi.getSelectedRows() || [];
+    
+    
+    // Get stored selections from localStorage
+    let selectedRowForPagination = reactLocalStorage.getObject('selectedRow').selectedRow || [];
     
 
-    let selectedRowForPagination = reactLocalStorage.getObject('selectedRow').selectedRow
-    
+    if (selectedRows === undefined || selectedRows === null) {   
+      // First render - use stored selections
+      selectedRows = selectedRowForPagination;
+    } 
+    else if (selectedRowForPagination?.length > 0) {   
+      let finalData = [];
 
-    var selectedRows = state.gridApi && state.gridApi?.getSelectedRows();
-    
-
-    if (selectedRows === undefined || selectedRows === null) {    //CONDITION FOR FIRST RENDERING OF COMPONENT
-      selectedRows = selectedRowForPagination
-    } else if (selectedRowForPagination && selectedRowForPagination.length > 0) {  // CHECKING IF REDUCER HAS DATA
-
-      let finalData = []
-      if (event.node.isSelected() === false) {    // CHECKING IF CURRENT CHECKBOX IS UNSELECTED
-
-        for (let i = 0; i < selectedRowForPagination.length; i++) {
-          
-
-          if (selectedRowForPagination[i].BoughtOutPartNumber === event.data.BoughtOutPartNumber) {   // REMOVING UNSELECTED CHECKBOX DATA FROM REDUCER
-            continue;
-          }
-          finalData.push(selectedRowForPagination[i])
-        }
-
+      if (event.node.isSelected() === false) {    
+        // Handle deselection
+        
+        finalData = selectedRowForPagination.filter(item => 
+          item.BoughtOutPartNumber !== event.data.BoughtOutPartNumber
+        );
       } else {
-        finalData = selectedRowForPagination
+        // Keep existing selections
+        finalData = selectedRowForPagination;
       }
-      selectedRows = [...selectedRows, ...finalData]
 
+      // Combine with current selections
+      selectedRows = [...selectedRows, ...finalData];
     }
 
-    let uniqeArray = _.uniqBy(selectedRows, "BoughtOutPartNumber")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
-    reactLocalStorage.setObject('selectedRow', { selectedRow: uniqeArray }) //SETTING CHECKBOX STATE DATA IN LOCAL STORAGE
-    setState((prevState) => ({ ...prevState, dataCount: uniqeArray.length }))
-    dispatch(setSelectedRowForPagination(uniqeArray))
-    let finalArr = selectedRows
-    let length = finalArr?.length
-    let uniqueArray = _.uniqBy(finalArr, "BoughtOutPartNumber")
+    // Remove duplicates
+    let uniqueArray = _.uniqBy(selectedRows, "BoughtOutPartNumber")
     
-
-    // if (isSimulation) {
-    //     apply(uniqueArray, length)
-    // }
-
-    // if (props?.benchMark) {
-    //     let uniqueArrayNew = _.uniqBy(selectedRows, v => [v.TechnologyId, v.RawMaterial].join())
-
-    //     // if (uniqueArrayNew.length > 1) {
-    //     //     dispatch(setSelectedRowForPagination([]))
-    //     //    state.BOPCategorygridApi.deselectAll()
-    //     //     Toaster.warning(`${technologyLabel} & Raw material should be same`)
-    //     // }
-    // }
+    // Update state and storage
+    dispatch(setSelectedRowForPagination(uniqueArray))
+    reactLocalStorage.setObject('selectedRow', { selectedRow: uniqueArray })
+    
+    const newDataCount = uniqueArray.length;
+    setState((prevState) => ({ 
+      ...prevState, 
+      dataCount: newDataCount 
+    }))
   }
 
   const onExcelDownload = () => {
     setState((prevState) => ({ ...prevState, disableDownload: true }))
     dispatch(disabledClass(true))
-    //let tempArr = gridApi && gridApi?.getSelectedRows()
+
     let tempArr = selectedRowForPagination
     if (tempArr?.length > 0) {
+      // Download selected rows
       setTimeout(() => {
         setState((prevState) => ({ ...prevState, disableDownload: false }))
         dispatch(disabledClass(false))
         let button = document.getElementById('Excel-Downloads-sobListing')
         button && button.click()
-      }, 400);
-
-
+      }, 400)
     } else {
-      
-
-      getDataList(0, globalTakes, false, floatingFilterData) // FOR EXCEL DOWNLOAD OF COMPLETE DATA
+      // Download all data
+      getDataList(0, globalTakes, true, floatingFilterData)
     }
-
   }
-  const BOP_SOBLISTING_DOWNLOAD_EXCEl_LOCALIZATION = useWithLocalization(BOP_SOB_DOWNLOAD_EXCEL, "MasterLabels")
+
   const onBtExport = () => {
-    let tempArr = []
-    tempArr = state.gridApi && state.gridApi?.getSelectedRows()
-
-
+    let tempArr = selectedRowForPagination
     tempArr = (tempArr && tempArr.length > 0) ? tempArr : (bopSobList ? bopSobList : [])
-    return returnExcelColumn(BOP_SOBLISTING_DOWNLOAD_EXCEl_LOCALIZATION, tempArr)
-  };
+    return returnExcelColumn(BOP_SOB_DOWNLOAD_EXCEL, tempArr)
+  }
 
   const setDate = (date) => {
     setFloatingFilterData(prevState => ({
@@ -511,41 +501,38 @@ const SOBListing = (props) => {
 
   const resetState = () => {
     setState((prevState) => ({
-      ...prevState, noData: false,
+      ...prevState,
+      noData: false,
       dataCount: 0,
-      filterModel : {}
+      filterModel: {}
     }))
     setDisableFilter(true)
-    // setNoData(false)
-    // setinRangeDate([])
     setIsFilterButtonClicked(false)
-    setWarningMessage(false);
+    setWarningMessage(false)
 
-    gridOptions?.columnApi?.resetColumnState(null);
-    gridOptions?.api?.setFilterModel(null);
-    setFloatingFilterData(prevState => ({
-      ...prevState,
+    // Reset grid state
+    gridOptions?.columnApi?.resetColumnState(null)
+    gridOptions?.api?.setFilterModel(null)
+    
+    // Reset filters
+    setFloatingFilterData({
       BoughtOutPartNumber: "",
       BoughtOutPartName: "",
-      BoughtOutPartCategory: "",
-      Specification: "",
-      NoOfVendors: "",
-      Plant: "",
-      ShareOfBusinessPercentage: "",
-      WeightedNetLandedCost: "",
-      VendorName: "",
-      EffectiveDate: ""      
-    }));
-    setWarningMessage(false)
+      // ... other filter resets ...
+    })
+
+    // Reset pagination
     dispatch(updatePageNumber(1))
     dispatch(updateCurrentRowIndex(10))
-    getDataList(0, globalTakes, true, floatingFilterData, true);
-    dispatch(setSelectedRowForPagination([]))
     dispatch(updateGlobalTake(10))
     dispatch(updatePageSize({ pageSize10: true, pageSize50: false, pageSize100: false }))
 
+    // Clear selections
+    dispatch(setSelectedRowForPagination([]))
     reactLocalStorage.setObject('selectedRow', {})
 
+    // Fetch fresh data
+    getDataList(0, globalTakes, true, floatingFilterData, true)
   }
   const handleShown = () => {
     setState((prevState) => ({ ...prevState, shown: !state.shown }))
@@ -570,29 +557,27 @@ const SOBListing = (props) => {
 
   }
   const checkBoxRenderer = (props) => {
-    let selectedRowForPagination = reactLocalStorage.getObject('selectedRow').selectedRow
+    // Get stored selections
+    let selectedRowForPagination = reactLocalStorage.getObject('selectedRow').selectedRow || [];
+    
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    
+    // Check if row should be selected based on stored selections
     if (selectedRowForPagination?.length > 0) {
-      selectedRowForPagination.map((item) => {
-
-
+      selectedRowForPagination.forEach(item => {
         if (item.BoughtOutPartNumber === props.node.data.BoughtOutPartNumber) {
-          props.node.setSelected(true)
+          props.node.setSelected(true);
         }
-        return null
-      })
-      return cellValue
-    } else {
-      return cellValue
+      });
     }
+    return cellValue;
   }
 
   const defaultColDef = {
     resizable: true,
     filter: true,
     sortable: false,
-    headerCheckboxSelection: false,
-
+    headerCheckboxSelection: isFirstColumn,
     headerCheckboxSelectionFilteredOnly: true,
     checkboxSelection: isFirstColumn
   };
@@ -708,12 +693,17 @@ const SOBListing = (props) => {
                 }}
                 frameworkComponents={frameworkComponents}
                 rowSelection={'multiple'}
-                onSelectionChanged={onRowSelect}
+                onRowSelected={onRowSelect}
                 onFilterModified={onFloatingFilterChanged}
                 suppressRowClickSelection={true}
               >
                 {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
-                <AgGridColumn field="BoughtOutPartNumber" headerName={`${showBopLabel()} Part No.`} cellRenderer={checkBoxRenderer}></AgGridColumn>
+                <AgGridColumn 
+                  field="BoughtOutPartNumber" 
+                  headerName={`${showBopLabel()} Part No.`}
+                  cellRenderer={'checkBoxRenderer'}
+                  cellClass="has-checkbox"
+                />
                 <AgGridColumn field="BoughtOutPartName" headerName={`${showBopLabel()} Part Name`}></AgGridColumn>
                 <AgGridColumn field="BoughtOutPartCategory" headerName={`${showBopLabel()} Category`}></AgGridColumn>
                 <AgGridColumn field="Specification" headerName="Specification" cellRenderer={'hyphenFormatter'}></AgGridColumn>

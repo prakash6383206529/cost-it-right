@@ -740,13 +740,13 @@ class AddFuel extends Component {
   };
 
   getAllCityData = () => {
-  const { country } = this.state;
-  if (country && country.label !== 'India') {
-    this.props.getCityByCountryAction(country.value, '00000000000000000000000000000000','', (res) =>{ })
-  } else {
-    this.props.fetchStateDataAPI(country.value, () => { })
+    const { country } = this.state;
+    if (country && country.label !== 'India') {
+      this.props.getCityByCountryAction(country.value, '00000000000000000000000000000000', '', (res) => { })
+    } else {
+      this.props.fetchStateDataAPI(country.value, () => { })
+    }
   }
-}
 
 
   cityHandler = (newValue, actionMeta) => {
@@ -1125,7 +1125,7 @@ class AddFuel extends Component {
                                   <button type="button" className={"btn btn-primary pull-left mr5"} onClick={this.updateRateGrid}>Update</button>
                                   <button
                                     type="button"
-                                    className={"mr15 ml-1 add-cancel-btn cancel-btn"}
+                                    className={"mr15 ml-1 add-cancel-btn mt-0 mb-0 cancel-btn"}
                                     disabled={isViewMode}
                                     onClick={this.rateTableReset}
                                   >

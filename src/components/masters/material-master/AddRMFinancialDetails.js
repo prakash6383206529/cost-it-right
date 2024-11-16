@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useState } from "react"
+import React, { Fragment, useEffect, useRef, useState } from "react"
 import { fetchSpecificationDataAPI, getCurrencySelectList, getPlantSelectListByType, getUOMSelectList, getVendorNameByVendorSelectList, getFrequencySettlement, getExchangeRateSource } from "../../../actions/Common"
 import { CBCTypeId, EMPTY_GUID, ENTRY_TYPE_DOMESTIC, SPACEBAR, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, searchCount } from "../../../config/constants"
 import { useDispatch, useSelector } from "react-redux"
@@ -111,7 +111,7 @@ function AddRMFinancialDetails(props) {
     const { indexCommodityData } = useSelector((state) => state.indexation);
     const RMIndex = getConfigurationKey()?.IsShowMaterialIndexation
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
-
+    const rawMaterailDetailsRef = useRef(rawMaterailDetails)
     const fieldValuesImport = useWatch({
         control,
         name: ['cutOffPriceSelectedCurrency', 'ConversionRatio', 'BasicRateSelectedCurrency', 'CircleScrapCostSelectedCurrency', 'MachiningScrapSelectedCurrency', 'ShearingCostSelectedCurrency', 'FreightChargeSelectedCurrency']
@@ -129,6 +129,10 @@ function AddRMFinancialDetails(props) {
         control,
         name: ['JaliScrapCostSelectedCurrency', 'ForgingScrapSelectedCurrency', 'ScrapRateSelectedCurrency', 'cutOffPriceSelectedCurrency', 'CircleScrapCostSelectedCurrency', 'MachiningScrapSelectedCurrency']
     })
+
+    useEffect(() => {
+        rawMaterailDetailsRef.current = rawMaterailDetails
+    }, [rawMaterailDetails])
     useEffect(() => {
         setState(prevState => ({
             ...prevState, totalBasicRate: getValues('BasicRateBaseCurrency')
@@ -140,10 +144,10 @@ function AddRMFinancialDetails(props) {
         }
     }, [domesticFinancialFields])
     useEffect(() => {
-        dispatch(SetRawMaterialDetails({ ShowScrapKeys: showScrapKeys }, () => { }))
+        dispatch(SetRawMaterialDetails({ ...rawMaterailDetailsRef.current, ShowScrapKeys: showScrapKeys }, () => { }))
     }, [showScrapKeys])
     useEffect(() => {
-        dispatch(SetRawMaterialDetails({ CurrencyValue: state.currencyValue }, () => { }))
+        dispatch(SetRawMaterialDetails({ ...rawMaterailDetailsRef.current, CurrencyValue: state.currencyValue }, () => { }))
     }, [state.currencyValue])
     useEffect(() => {
         dispatch(getUOMSelectList(() => { }))
@@ -247,8 +251,8 @@ function AddRMFinancialDetails(props) {
                 totalOtherCost: Data?.OtherNetCostConversion,
                 minDate: DayTime(Data?.EffectiveDate).$d
             }))
-            dispatch(SetRawMaterialDetails({ isShowIndexCheckBox: Data?.IsIndexationDetails }, () => { }))
-            dispatch(SetRawMaterialDetails({ states: state }, () => { }))
+            dispatch(SetRawMaterialDetails({ ...rawMaterailDetailsRef.current, isShowIndexCheckBox: Data?.IsIndexationDetails }, () => { }))
+            dispatch(SetRawMaterialDetails({ ...rawMaterailDetailsRef.current, states: state }, () => { }))
             checkTechnology()
         }
     }, [props?.DataToChange])
@@ -454,9 +458,9 @@ function AddRMFinancialDetails(props) {
         setValue('BasicPriceBaseCurrency', checkForDecimalAndNull(basicPriceBaseCurrency, getConfigurationKey().NoOfDecimalForPrice));
         if (isEditFlag) {
             if (checkForNull(netLandedCostBaseCurrency) === checkForNull(props?.DataToChange?.NetLandedCost)) {
-                dispatch(SetRawMaterialDetails({ netCostChanged: false }, () => { }))
+                dispatch(SetRawMaterialDetails({ ...rawMaterailDetailsRef.current, netCostChanged: false }, () => { }))
             } else {
-                dispatch(SetRawMaterialDetails({ netCostChanged: true }, () => { }))
+                dispatch(SetRawMaterialDetails({ ...rawMaterailDetailsRef.current, netCostChanged: true }, () => { }))
             }
         }
 
@@ -491,7 +495,7 @@ function AddRMFinancialDetails(props) {
             ScrapRatePerScrapUOM: getValues('ScrapRatePerScrapUOM'),
             ...obj,
         }))
-        dispatch(SetRawMaterialDetails({ states: state }, () => { }))
+        dispatch(SetRawMaterialDetails({ ...rawMaterailDetailsRef.current, states: state }, () => { }))
     }
     /**
      * @method calculateNetCostImport
@@ -545,7 +549,7 @@ function AddRMFinancialDetails(props) {
                 } else {
                     netCostChanged = true
                 }
-                dispatch(SetRawMaterialDetails({ netCostChanged: netCostChanged }, () => { }))
+                dispatch(SetRawMaterialDetails({ ...rawMaterailDetailsRef.current, netCostChanged: netCostChanged }, () => { }))
             }
 
             setState(prevState => ({
@@ -566,7 +570,7 @@ function AddRMFinancialDetails(props) {
             }))
 
         }
-        dispatch(SetRawMaterialDetails({ states: state }, () => { }))
+        dispatch(SetRawMaterialDetails({ ...rawMaterailDetailsRef.current, states: state }, () => { }))
     }
     /**
     * @method handleUOM     
@@ -583,8 +587,9 @@ function AddRMFinancialDetails(props) {
     }
 
     const onPressHasDifferentUOM = () => {
-        setState(prevState => ({ ...prevState, IsApplyHasDifferentUOM: state.IsApplyHasDifferentUOM }));
-        dispatch(SetRawMaterialDetails({ states: state }, () => { }))
+        setState(prevState => ({ ...prevState, IsApplyHasDifferentUOM: !state.IsApplyHasDifferentUOM }))
+        dispatch(SetRawMaterialDetails({ ...rawMaterailDetailsRef.current, states: { ...state, IsApplyHasDifferentUOM: !state.IsApplyHasDifferentUOM } }, () => { }))
+
     }
     const checkTechnology = () => {
         let obj = showRMScrapKeys(rawMaterailDetails?.Technology ? rawMaterailDetails?.Technology?.value : props?.DataToChange.TechnologyId)
@@ -779,7 +784,7 @@ function AddRMFinancialDetails(props) {
         } else {
             setState(prevState => ({ ...prevState, ScrapRateUOM: [] }))
         }
-        dispatch(SetRawMaterialDetails({ ScrapRateUOM: newValue }, () => { }))
+        dispatch(SetRawMaterialDetails({ ...rawMaterailDetailsRef.current, states: { ...state, ScrapRateUOM: newValue } }, () => { }))
     }
     const otherCostToggle = () => {
         setState(prevState => ({ ...prevState, isOpenOtherCostDrawer: true }))
@@ -802,7 +807,7 @@ function AddRMFinancialDetails(props) {
     }
     const openAndCloseAddConditionCosting = (type, data = state.conditionTableData) => {
         if (data && data.length > 0 && type === 'save') {
-            dispatch(SetRawMaterialDetails({ netCostChanged: true }, () => { }))
+            dispatch(SetRawMaterialDetails({ ...rawMaterailDetailsRef.current, netCostChanged: true }, () => { }))
         }
         const sumBaseCurrency = data?.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCostConversion), 0);
         const sumSelectedCurrency = data?.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCost), 0);
@@ -824,7 +829,7 @@ function AddRMFinancialDetails(props) {
             FinalNetCostBaseCurrency: netLandedCostINR,
             FinalNetCostSelectedCurrency: netLandedCostSelectedCurrency,
         }))
-        dispatch(SetRawMaterialDetails({ ConditionTableData: data }, () => { }))
+        dispatch(SetRawMaterialDetails({ ...rawMaterailDetailsRef.current, ConditionTableData: data }, () => { }))
     }
     /**
     * @method handleCurrency
@@ -945,9 +950,9 @@ function AddRMFinancialDetails(props) {
             let CircleScrap = getValues('CircleScrapCostBaseCurrency')
             let cutOff = getValues('cutOffPriceBaseCurrency')
             if (checkForNull(scrapRate) === checkForNull(props?.DataToChange?.ScrapRate) && checkForNull(cutOff) === checkForNull(props?.DataToChange?.CutOffPrice) && checkForNull(machiningScrap) === checkForNull(props?.DataToChange?.MachiningScrapRate) && checkForNull(CircleScrap) === checkForNull(props?.DataToChange?.JaliScrapCost)) {
-                dispatch(SetRawMaterialDetails({ financialDataChanged: false }, () => { }))
+                dispatch(SetRawMaterialDetails({ ...rawMaterailDetailsRef.current, financialDataChanged: false }, () => { }))
             } else {
-                dispatch(SetRawMaterialDetails({ financialDataChanged: true }, () => { }))
+                dispatch(SetRawMaterialDetails({ ...rawMaterailDetailsRef.current, financialDataChanged: true }, () => { }))
             }
         }
     }
@@ -971,7 +976,7 @@ function AddRMFinancialDetails(props) {
     }
     const isShowIndexCheckBox = () => {
         setState(prevState => ({ ...prevState, isShowIndexCheckBox: !state.isShowIndexCheckBox }))
-        dispatch(SetRawMaterialDetails({ isShowIndexCheckBox: !state.isShowIndexCheckBox }, () => { }))
+        dispatch(SetRawMaterialDetails({ ...rawMaterailDetailsRef.current, isShowIndexCheckBox: !state.isShowIndexCheckBox }, () => { }))
     }
     const handleIndex = (newValue, actionMeta) => {
         if (newValue && newValue !== '') {

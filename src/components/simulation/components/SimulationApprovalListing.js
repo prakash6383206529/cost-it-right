@@ -8,7 +8,7 @@ import { defaultPageSize, EMPTY_DATA, LINKED } from '../../../config/constants'
 import DayTime from '../../common/DayTimeWrapper'
 import { DRAFT, EMPTY_GUID, APPROVED, PUSHED, ERROR, WAITING_FOR_APPROVAL, REJECTED, POUPDATED } from '../../../config/constants'
 import Toaster from '../../common/Toaster'
-import { getSimulationApprovalList, setMasterForSimulation, deleteDraftSimulation, setSelectedRowForPagination, setTechnologyForSimulation, setIsMasterAssociatedWithCosting } from '../actions/Simulation'
+import { getSimulationApprovalList, setMasterForSimulation, deleteDraftSimulation, setSelectedRowForPagination, setTechnologyForSimulation, setIsMasterAssociatedWithCosting, checkFinalLevelApproverForApproval } from '../actions/Simulation'
 import { Redirect, } from 'react-router-dom';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -79,7 +79,15 @@ function SimulationApprovalListing(props) {
     const statusColumnData = useSelector((state) => state.comman.statusColumnData);
     const [releaseStrategyDetails, setReleaseStrategyDetails] = useState({})
     const [simulationId, setSimulationId] = useState(null);
-
+    const [selectedDataObj, setSelectedDataObj] = useState({
+        DisplayStatus: [],
+        DepartmentId: [],
+        TechnologyName: [],
+        PlantId: [],
+        CostingHead: [],
+        ApprovalTypeId: [],
+        TokenNo: []
+    })
     const { handleSubmit } = useForm({
         mode: 'onBlur',
         reValidateMode: 'onChange',
@@ -553,6 +561,7 @@ function SimulationApprovalListing(props) {
         let costingHeadArray = []
         let approvalTypeArray = []
         let plantIds = []
+        let tokenArr = []
 
         selectedRows && selectedRows.map(item => {
             arr.push(item?.DisplayStatus)
@@ -565,48 +574,12 @@ function SimulationApprovalListing(props) {
             costingHeadArray.push(item?.CostingHead)
             approvalTypeArray.push(item?.ApprovalTypeId)
             plantIds.push(item.PlantId)
+            tokenArr.push(item?.ApprovalNumber)
             return null
         })
+        setSelectedDataObj({ DisplayStatus: arr, DepartmentId: tempArrDepartmentId, TechnologyName: tempArrTechnology, SimulationTechnologyHead: tempArrSimulationTechnologyHead, CostingHead: costingHeadArray, ApprovalTypeId: approvalTypeArray, PlantId: plantIds, TokenNo: tokenArr })
         selectedRows && dispatch(setMasterForSimulation({ label: selectedRows[0]?.SimulationTechnologyHead, value: selectedRows[0]?.SimulationTechnologyId }))
-        if (!allEqual(plantIds) && initialConfiguration.IsMultipleUserAllowForApproval) {
-            Toaster.warning('Plant should be same for sending multiple costing for approval')
-            gridApi.deselectAll()
-        }
-        if (!allEqual(arr)) {
-            Toaster.warning('Status should be same for sending multiple costing for approval')
-            gridApi.deselectAll()
-        } else if (!allEqual(tempArrDepartmentId)) {
-            Toaster.warning(`${handleDepartmentHeader()} should be same for sending multiple costing for approval`)
-            gridApi.deselectAll()
-        } else if (!allEqual(tempArrIsFinalLevelButtonShow)) {
-            Toaster.warning('Level should be same for sending multiple costing for approval')
-            gridApi.deselectAll()
-        }
-        else if (!allEqual(costingHeadArray)) {
-            Toaster.warning('Costing Head should be same for sending multiple costing for approval')
-            gridApi.deselectAll()
-        }
-        else if (!allEqual(approvalTypeArray)) {
-            Toaster.warning('Approval Type should be same for sending multiple costing for approval')
-            gridApi.deselectAll()
-        }
-        // ********** IF WE DO MULTI SELECT FOR PUSH THENUNCOMMENT THIS ONLY ************
-        // else if (!allEqual(tempArrIsPushedButtonShow)) {
-        //     Toaster.warning('Please choose costing for same push')
-        //     gridApi.deselectAll()
-        // }
-        // ********** UNCOMMENT THIS IN MINDA ONLY ********** */
-        // else if (!allEqual(tempArrReason)) {
-        //     Toaster.warning('Please choose costing which have same reason')
-        //     gridApi.deselectAll()
-        // }
-        else if (!allEqual(tempArrSimulationTechnologyHead)) {
-            Toaster.warning('Master should be same for sending multiple costing for approval')
-            gridApi.deselectAll()
-        } else if (!allEqual(tempArrTechnology)) {
-            Toaster.warning('Technology should be same for sending multiple costing for approval')
-            gridApi.deselectAll()
-        }
+
 
         setIsPendingForApproval(arr.includes("Pending For Approval") ? true : false)
 
@@ -635,91 +608,149 @@ function SimulationApprovalListing(props) {
             Toaster.warning('Please select atleast one approval to send for approval.')
             return false
         }
-        //MINDA
-        if (getConfigurationKey().IsReleaseStrategyConfigured && selectedRowData && selectedRowData[0]?.Status === DRAFT) {
-            let data = []
-            selectedRowData && selectedRowData?.map(item => {
-                let obj = {}
-                obj.SimulationId = item?.SimulationId
-                data.push(obj)
-            })
-            let requestObject = {
-                "RequestFor": "SIMULATION",
-                "TechnologyId": selectedRowData[0]?.SimulationTechnologyId,
-                "LoggedInUserId": loggedInUserId(),
-                "ReleaseStrategyApprovalDetails": _.uniqBy(data, 'SimulationId')
-            }
-            dispatch(getReleaseStrategyApprovalDetails(requestObject, (res) => {
-                setReleaseStrategyDetails(res?.data?.Data)
-                if (res?.data?.Data?.IsUserInApprovalFlow && !res?.data?.Data?.IsFinalApprover) {
-                    setApproveDrawer(res.data.Data.IsFinalApprover ? false : true)
-                } else if (res?.data?.Data?.IsPFSOrBudgetingDetailsExist === true && res?.data?.Data?.IsUserInApprovalFlow === false) {
-                    Toaster.warning("This user is not in the approval cycle")
-                    return false
-                } else if (res?.data?.Data?.IsPFSOrBudgetingDetailsExist === false) {
-                    let obj = {
-                        DepartmentId: res?.data?.Data?.DepartmentId ? res?.data?.Data?.DepartmentId : selectedRowData[0].DepartmentId ?? EMPTY_GUID,
-                        UserId: loggedInUserId(),
-                        TechnologyId: approvalData?.SimulationTechnologyId ? approvalData?.SimulationTechnologyId : selectedRowData[0].SimulationTechnologyId,
-                        Mode: 'simulation',
-                        approvalTypeId: costingTypeIdToApprovalTypeIdFunction(res?.data?.Data?.ApprovalTypeId ? res?.data?.Data?.ApprovalTypeId : selectedRowData[0].ApprovalTypeId),
-                        plantId: selectedRowData[0].PlantId ?? EMPTY_GUID,
-                        divisionId: selectedRowData[0].DivisionId ?? EMPTY_GUID
+        if (!allEqual(selectedDataObj.DisplayStatus)) {
+            Toaster.warning('Please select same status for sending multiple costing for approval')
+            return false
+        }
+        let requestObject = {
+            LoggedInUserId: loggedInUserId(),
+            Mode: 'Simulation',
+            ApprovalTokens: selectedDataObj.TokenNo
+        }
+        dispatch(checkFinalLevelApproverForApproval(requestObject, res => {
+            let Data = res?.data?.Data
+            if (Data?.IsFinalApprover && !Data?.IsNotFinalApproverForAllToken) {
+                setShowFinalLevelButton(true)
+                setApproveDrawer(true)
+            } else if (!Data?.IsFinalApprover && Data?.IsNotFinalApproverForAllToken) {
+                Toaster.warning(Data?.Message)
+                return false
+            } else {
+                setShowFinalLevelButton(false)
+                const validationChecks = [
+                    {
+                        condition: !allEqual(selectedDataObj.PlantId) && initialConfiguration.IsMultipleUserAllowForApproval,
+                        field: 'Plant'
+                    },
+                    {
+                        condition: !allEqual(selectedDataObj.DepartmentId),
+                        field: handleDepartmentHeader()
+                    },
+                    {
+                        condition: !allEqual(selectedDataObj.CostingHead),
+                        field: 'Costing Head'
+                    },
+                    {
+                        condition: !allEqual(selectedDataObj.ApprovalTypeId),
+                        field: 'Approval Type'
+                    },
+                    {
+                        condition: !allEqual(selectedDataObj.SimulationTechnologyHead),
+                        field: 'Master'
+                    },
+                    {
+                        condition: !allEqual(selectedDataObj.TechnologyName),
+                        field: 'Technology'
                     }
+                ]
+
+                const failedChecks = validationChecks
+                    .filter(check => check.condition)
+                    .map(check => check.field)
+
+                if (failedChecks.length > 0) {
+                    const fields = failedChecks.join(', ')
+                    Toaster.warning(`${fields} should be same for sending multiple costing for approval`)
+                    return false
+                }
+                if (getConfigurationKey().IsReleaseStrategyConfigured && selectedRowData && selectedRowData[0]?.Status === DRAFT) {
+                    let data = []
+                    selectedRowData && selectedRowData?.map(item => {
+                        let obj = {}
+                        obj.SimulationId = item?.SimulationId
+                        data.push(obj)
+                    })
+                    let requestObject = {
+                        "RequestFor": "SIMULATION",
+                        "TechnologyId": selectedRowData[0]?.SimulationTechnologyId,
+                        "LoggedInUserId": loggedInUserId(),
+                        "ReleaseStrategyApprovalDetails": _.uniqBy(data, 'SimulationId')
+                    }
+                    dispatch(getReleaseStrategyApprovalDetails(requestObject, (res) => {
+                        setReleaseStrategyDetails(res?.data?.Data)
+                        if (res?.data?.Data?.IsUserInApprovalFlow && !res?.data?.Data?.IsFinalApprover) {
+                            setApproveDrawer(res.data.Data.IsFinalApprover ? false : true)
+                        } else if (res?.data?.Data?.IsPFSOrBudgetingDetailsExist === true && res?.data?.Data?.IsUserInApprovalFlow === false) {
+                            Toaster.warning("This user is not in the approval cycle")
+                            return false
+                        } else if (res?.data?.Data?.IsPFSOrBudgetingDetailsExist === false) {
+                            let obj = {
+                                DepartmentId: res?.data?.Data?.DepartmentId ? res?.data?.Data?.DepartmentId : selectedRowData[0].DepartmentId ?? EMPTY_GUID,
+                                UserId: loggedInUserId(),
+                                TechnologyId: approvalData?.SimulationTechnologyId ? approvalData?.SimulationTechnologyId : selectedRowData[0].SimulationTechnologyId,
+                                Mode: 'simulation',
+                                approvalTypeId: costingTypeIdToApprovalTypeIdFunction(res?.data?.Data?.ApprovalTypeId ? res?.data?.Data?.ApprovalTypeId : selectedRowData[0].ApprovalTypeId),
+                                plantId: selectedRowData[0].PlantId ?? EMPTY_GUID,
+                                divisionId: selectedRowData[0].DivisionId ?? EMPTY_GUID
+                            }
+                            dispatch(checkFinalUser(obj, res => {
+                                if (res && res.data && res.data.Result) {
+                                    if (res.data?.Data?.IsUserInApprovalFlow === false) {
+                                        setApproveDrawer(res.data.Data.IsFinalApprover ? false : true)
+                                    } else {
+                                        if (res.data.Data.IsFinalApprover) {
+                                            setApproveDrawer(true)
+                                            setShowFinalLevelButton(res?.data?.Data?.IsFinalApprover)
+                                        }
+                                    }
+                                }
+                            }))
+                        } else if (res?.data?.Data?.IsUserInApprovalFlow && res?.data?.Data?.IsFinalApprover) {
+                            setShowFinalLevelButton(res?.data?.Data?.IsFinalApprover)
+                            setApproveDrawer(true)
+                        } else if (res?.data?.Result === false) {
+                            Toaster.warning(res?.data?.Message ? res?.data?.Message : 'This user is not in approval cycle')
+                            return false
+                        } else {
+                        }
+                    }))
+                } else {
+                    let obj = {
+                        DepartmentId: selectedRowData[0]?.Status === DRAFT ? EMPTY_GUID : selectedRowData[0]?.DepartmentId,
+                        UserId: loggedInUserId(),
+                        TechnologyId: selectedRowData[0]?.SimulationTechnologyId,
+                        Mode: 'simulation',
+                        approvalTypeId: costingTypeIdToApprovalTypeIdFunction(selectedRowData[0]?.SimulationHeadId),
+                        plantId: selectedRowData[0].PlantId,
+                        divisionId: selectedRowData[0].DivisionId ?? null
+                    }
+                    setSimulationDetail({ DepartmentId: selectedRowData[0]?.DepartmentId, TokenNo: selectedRowData[0]?.SimulationTokenNumber, Status: selectedRowData[0]?.SimulationStatus, SimulationId: selectedRowData[0]?.SimulationId, SimulationAppliedOn: selectedRowData[0]?.SimulationAppliedOn, EffectiveDate: selectedRowData[0]?.EffectiveDate, IsExchangeRateSimulation: selectedRowData[0]?.IsExchangeRateSimulation })
+                    dispatch(setMasterForSimulation({ label: selectedRowData[0]?.SimulationTechnologyHead, value: selectedRowData[0]?.SimulationTechnologyId }))
+
                     dispatch(checkFinalUser(obj, res => {
                         if (res && res.data && res.data.Result) {
-                            if (res.data?.Data?.IsUserInApprovalFlow === false) {
-                                setApproveDrawer(res.data.Data.IsFinalApprover ? false : true)
-                            } else {
-                                if (res.data.Data.IsFinalApprover) {
+                            if (selectedRowData[0]?.Status === DRAFT) {
+                                if (res.data.Data.IsUserInApprovalFlow === false) {
+                                    Toaster.warning("User does not have permission to send simulation for approval.")
+                                    gridApi.deselectAll()
+                                } if (res.data.Data.IsFinalApprover) {
+                                    Toaster.warning("Final level approver can not send draft token for approval")
+                                    gridApi.deselectAll()
+                                } if (res.data.Data.IsUserInApprovalFlow && !res.data.Data.IsFinalApprover) {
                                     setApproveDrawer(true)
-                                    setShowFinalLevelButton(res?.data?.Data?.IsFinalApprover)
                                 }
+                            }
+                            else {
+                                setShowFinalLevelButton(res.data.Data.IsFinalApprover)
+                                setApproveDrawer(true)
                             }
                         }
                     }))
-                } else if (res?.data?.Data?.IsUserInApprovalFlow && res?.data?.Data?.IsFinalApprover) {
-                    setShowFinalLevelButton(res?.data?.Data?.IsFinalApprover)
-                    setApproveDrawer(true)
-                } else if (res?.data?.Result === false) {
-                    Toaster.warning(res?.data?.Message ? res?.data?.Message : 'This user is not in approval cycle')
-                    return false
-                } else {
                 }
-            }))
-        } else {
-            let obj = {
-                DepartmentId: selectedRowData[0]?.Status === DRAFT ? EMPTY_GUID : selectedRowData[0]?.DepartmentId,
-                UserId: loggedInUserId(),
-                TechnologyId: selectedRowData[0]?.SimulationTechnologyId,
-                Mode: 'simulation',
-                approvalTypeId: costingTypeIdToApprovalTypeIdFunction(selectedRowData[0]?.SimulationHeadId),
-                plantId: selectedRowData[0].PlantId,
-                divisionId: selectedRowData[0].DivisionId ?? null
-            }
-            setSimulationDetail({ DepartmentId: selectedRowData[0]?.DepartmentId, TokenNo: selectedRowData[0]?.SimulationTokenNumber, Status: selectedRowData[0]?.SimulationStatus, SimulationId: selectedRowData[0]?.SimulationId, SimulationAppliedOn: selectedRowData[0]?.SimulationAppliedOn, EffectiveDate: selectedRowData[0]?.EffectiveDate, IsExchangeRateSimulation: selectedRowData[0]?.IsExchangeRateSimulation })
-            dispatch(setMasterForSimulation({ label: selectedRowData[0]?.SimulationTechnologyHead, value: selectedRowData[0]?.SimulationTechnologyId }))
 
-            dispatch(checkFinalUser(obj, res => {
-                if (res && res.data && res.data.Result) {
-                    if (selectedRowData[0]?.Status === DRAFT) {
-                        if (res.data.Data.IsUserInApprovalFlow === false) {
-                            Toaster.warning("User does not have permission to send simulation for approval.")
-                            gridApi.deselectAll()
-                        } if (res.data.Data.IsFinalApprover) {
-                            Toaster.warning("Final level approver can not send draft token for approval")
-                            gridApi.deselectAll()
-                        } if (res.data.Data.IsUserInApprovalFlow && !res.data.Data.IsFinalApprover) {
-                            setApproveDrawer(true)
-                        }
-                    }
-                    else {
-                        setShowFinalLevelButton(res.data.Data.IsFinalApprover)
-                        setApproveDrawer(true)
-                    }
-                }
-            }))
-        }
+            }
+        }))
+
     }
 
     const closeDrawer = (e = '', type) => {

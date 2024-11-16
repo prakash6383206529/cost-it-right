@@ -116,9 +116,9 @@ const OperationListing = (props) => {
             props.changeSetLoader(true);
             try {
                 await dispatch(getListingForSimulationCombined(props.objectForMultipleSimulation, OPERATIONS, (res) => {
-                                setState(prevState => ({ ...prevState, tableData: res?.data?.DataList, isLoader: false }));
-                props.changeSetLoader(false);
-            }));
+                    setState(prevState => ({ ...prevState, tableData: res?.data?.DataList, isLoader: false }));
+                    props.changeSetLoader(false);
+                }));
             } catch (error) {
                 // Handle error state
                 props.changeSetLoader(false);
@@ -915,11 +915,11 @@ const OperationListing = (props) => {
                                floatingFilterComponentParams={floatingFilterStatus} 
                                floatingFilterComponent="statusFilter"></AgGridColumn>
                             {!isSimulation && <AgGridColumn field="Technology" tooltipField='Technology' filter={true} floatingFilter={true} headerName={technologyLabel}></AgGridColumn>}
-                            <AgGridColumn field="ForType" headerName="Operation Type" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                            {getConfigurationKey().IsShowDetailedOperationBreakup && <AgGridColumn field="ForType" headerName="Operation Type" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                             <AgGridColumn field="OperationName" tooltipField="OperationName" headerName="Operation Name"></AgGridColumn>
                             <AgGridColumn field="OperationCode" headerName="Operation Code" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="Plants" headerName="Plant (Code)" ></AgGridColumn>
-                            <AgGridColumn field="VendorName" headerName={`${vendorLabel} (Code)`}cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                            <AgGridColumn field="VendorName" headerName={`${vendorLabel} (Code)`} cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             {reactLocalStorage.getObject('cbcCostingPermission') && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                             {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
                             <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
