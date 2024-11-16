@@ -2076,7 +2076,7 @@ function UserRegistration(props) {
 
 
   }
-console.log(selectedPlants, 'selectedPlants');
+
 
   /**
    * @name onSubmit
@@ -2228,7 +2228,7 @@ console.log(selectedPlants, 'selectedPlants');
     setOnboardingTableChanged(isForcefulUpdatedForOnboarding);
     let plantArray = []
     selectedPlants && selectedPlants.map(item => {
-      console.log(item, 'item');
+      
       
       let obj = {
         PlantId: item.PlantId,

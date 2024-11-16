@@ -274,25 +274,25 @@ function RfqListing(props) {
             skip: skip,
             take: take,
             // Add all filter parameters
-            quotationNumber: floatingFilterData.QuotationNumber || '',
-            partNumber: floatingFilterData.PartNumber || '',
-            rawMaterial: floatingFilterData.RawMaterial || '',
-            boughtOutPart: floatingFilterData.BoughtOutPart || '',
-            noOfQuotationReceived: floatingFilterData.NoOfQuotationReceived || '',
-            vendorCode: floatingFilterData.VendorName || '',
-            plantCode: floatingFilterData.PlantName || '',
+            quotationNumber: floatingFilterData?.QuotationNumber || '',
+            partNumber: floatingFilterData?.PartNumber || '',
+            rawMaterial: floatingFilterData?.RawMaterial || '',
+            boughtOutPart: floatingFilterData?.BoughtOutPart || '',
+            noOfQuotationReceived: floatingFilterData?.NoOfQuotationReceived || '',
+            vendorCode: floatingFilterData?.VendorName || '',
+            plantCode: floatingFilterData?.PlantName || '',
             technologyName: floatingFilterData.TechnologyName || '',
-            raisedBy: floatingFilterData.RaisedBy || '',
-            raisedOn: floatingFilterData.RaisedOn || '',
-            lastSubmissionDate: floatingFilterData.LastSubmissionDate || '',
-            visibilityMode: floatingFilterData.VisibilityMode || '',
-            visibilityDate: floatingFilterData.VisibilityDate || '',
-            visibilityDuration: floatingFilterData.VisibilityDuration || '',
-            status: floatingFilterData.Status || '',
-            partType: floatingFilterData.PartType || '',
+            raisedBy: floatingFilterData?.RaisedBy || '',
+            raisedOn: floatingFilterData?.RaisedOn || '',
+            lastSubmissionDate: floatingFilterData?.LastSubmissionDate || '',
+            visibilityMode: floatingFilterData?.VisibilityMode || '',
+            visibilityDate: floatingFilterData?.VisibilityDate || '',
+            visibilityDuration: floatingFilterData?.VisibilityDuration || '',
+            status: floatingFilterData?.Status || '',
+            partType: floatingFilterData?.PartType || '',
             partDataSentDate: floatingFilterData.PartDataSentDate || '',
-            notes: floatingFilterData.Remark || '',
-            prNumber: floatingFilterData.PRNumber || ''
+            notes: floatingFilterData?.Remark || '',
+            prNumber: floatingFilterData?.PRNumber || ''
         };
 
         const encodedQueryParams = encodeQueryParamsAndLog(queryParams);
@@ -377,7 +377,7 @@ function RfqListing(props) {
                 // Handle non-date fields
                 setFloatingFilterData(prev => ({
                     ...prev,
-                    [value.column.colId]: value.filterInstance.appliedModel.filter
+                    [value.column.colId]: value?.filterInstance?.appliedModel?.filter
                 }));
             }
         }
@@ -396,7 +396,7 @@ function RfqListing(props) {
         gridOptions?.api?.setQuickFilter(null)
         gridOptions?.api?.deselectAll();
         // setinRangeDate([])
-        console.log(isFilterButtonClicked,warningMessage);
+        
         
         if(!isFilterButtonClicked){
 
@@ -404,7 +404,7 @@ function RfqListing(props) {
         }
         gridOptions?.columnApi?.resetColumnState(null);
         gridOptions?.api?.setFilterModel(null);
-        console.log(isFilterButtonClicked,warningMessage);
+        
 
         for (var prop in floatingFilterData) {
 
@@ -416,7 +416,7 @@ function RfqListing(props) {
                 floatingFilterData[prop] = ""
             }
         }
-        console.log(globalTakes);
+        
         
         dispatch(updateCurrentRowIndex(0))
         dispatch(updatePageNumber(1))
