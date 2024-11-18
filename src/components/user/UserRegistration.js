@@ -554,7 +554,7 @@ function UserRegistration(props) {
         if (item?.PlantId === '0') {
           temp.push({ label: "Select All", value: '0' });
         } else {
-          temp.push({ ...item,label: item.PlantNameCode, value: item.PlantId })
+          temp.push({ ...item,label: item?.PlantNameCode, value: item?.PlantId })
         }
       });
       const isSelectAllOnly = temp.length === 1 && temp[0]?.label === "Select All" && temp[0]?.value === "0";
@@ -753,7 +753,7 @@ function UserRegistration(props) {
           setTimeout(() => {
             let plantArray = []
             Data && Data?.DepartmentsPlantsIdLists?.map((item) => {
-              plantArray.push({ label: `${item.PlantName}`, value: (item?.PlantId)?.toString(), PlantCode: item?.PlantCode, PlantName: item?.PlantName, PlantId: item?.PlantId })
+              plantArray.push({ label: `${item?.PlantName}`, value: (item?.PlantId)?.toString(), PlantCode: item?.PlantCode, PlantName: item?.PlantName, PlantId: item?.PlantId })
               return null;
             })
             let divisionArray = []
@@ -2231,9 +2231,9 @@ function UserRegistration(props) {
       
       
       let obj = {
-        PlantId: item.PlantId,
-        PlantName: item.PlantName,
-        PlantCode : item.PlantCode,
+        PlantId: item?.PlantId,
+        PlantName: item?.PlantName,
+        PlantCode : item?.PlantCode,
       }
       plantArray.push(obj)
     })
@@ -2621,7 +2621,7 @@ function UserRegistration(props) {
     if (newValue && (newValue[0]?.value === '0' || newValue?.some(item => item?.value === '0'))) {
       // Select All option is chosen
       const allPlantsExceptZero = plantSelectListForDepartment
-        .filter(item => item.PlantId !== '0')
+        .filter(item => item?.PlantId !== '0')
         .map(item => ({ ...item ,label: item?.PlantNameCode, value: item?.PlantId }));
         
       setSelectedPlants(allPlantsExceptZero);
@@ -2631,11 +2631,11 @@ function UserRegistration(props) {
     }  else if (newValue && newValue?.length > 0) {
       // Map newValue to include all properties from plantSelectListForDepartment
       const updatedValue = newValue.map(selected => {
-          const originalItem = plantSelectListForDepartment.find(item => item.PlantId === selected.value);
+          const originalItem = plantSelectListForDepartment.find(item => item?.PlantId === selected?.value);
           return {
               ...originalItem,
-              label: selected.label,
-              value: selected.value
+              label: selected?.label,
+              value: selected?.value
           };
       });
       
