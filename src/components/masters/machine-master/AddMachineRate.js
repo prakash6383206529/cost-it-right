@@ -49,6 +49,7 @@ import { subDays } from 'date-fns';
 import { labels, LabelsClass } from '../../../helper/core';
 import { getPlantUnitAPI } from '../actions/Plant';
 import Switch from 'react-switch'
+import TooltipCustom from '../../common/Tooltip';
 
 const selector = formValueSelector('AddMachineRate');
 
@@ -237,19 +238,17 @@ class AddMachineRate extends Component {
     const costingType = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? VBCTypeId : costingTypeId) : ZBCTypeId;
     const fromCurrency = isImport ? currency?.label : plantCurrency;
     const toCurrency = reactLocalStorage.getObject("baseCurrency");
-    const hasCurrencyAndDate = plantCurrency && effectiveDate;
+    const hasCurrencyAndDate = Boolean(plantCurrency && effectiveDate);
+
 
     return new Promise((resolve) => {
       if (!hasCurrencyAndDate) {
         resolve(null);
         return;
       }
-
-      if (IsFetchExchangeRateVendorWise() && (vendorName?.length === 0 || client?.length === 0)) {
-        resolve({ showWarning: true });
-        return;
+      if (IsFetchExchangeRateVendorWise() && (costingTypeId !== ZBCTypeId&&vendorName?.length === 0 && client?.length === 0)) {
+        return false;
       }
-
       const callAPI = (from, to) => {
         return new Promise((resolveAPI) => {
           this.props.getExchangeRateByCurrency(
@@ -262,7 +261,6 @@ class AddMachineRate extends Component {
             to,
             ExchangeSource?.label ?? null,
             res => {
-              console.log("res", res)
               resolveAPI({
                 rate: checkForNull(res.data.Data.CurrencyExchangeRate),
                 exchangeRateId: res?.data?.Data?.ExchangeRateId,
@@ -274,7 +272,7 @@ class AddMachineRate extends Component {
         });
       };
 
-      if (isImport) {
+      if (isImport && fromCurrency !== undefined) {
         callAPI(fromCurrency, plantCurrency)
           .then(result1 => {
             callAPI(fromCurrency, toCurrency)
@@ -290,10 +288,9 @@ class AddMachineRate extends Component {
                 });
               });
           });
-      } else if (plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
+      } else if (!isImport && plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
         callAPI(fromCurrency, toCurrency)
           .then(result => {
-            console.log(result, "result")
             resolve({
               plantCurrency: result.rate,
               plantExchangeRateId: result.exchangeRateId,
@@ -646,9 +643,26 @@ class AddMachineRate extends Component {
 * @description called
 */
   handleClient = (newValue, actionMeta) => {
+    const { costingTypeId, client, effectiveDate, ExchangeSource, currency, isImport, selectedPlants,vendorName } = this.state;
+    const {fieldsObj}=this.props
     if (newValue && newValue !== '') {
-      this.setState({ client: newValue });
-    } else {
+      this.setState({ client: newValue }
+        , () => {
+          if (this.props.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
+            this.callExchangeRateAPI(costingTypeId, fieldsObj?.plantCurrency, currency, isImport, ExchangeSource, effectiveDate, newValue, vendorName, selectedPlants).then(result => {
+              if (result) {
+                this.setState({
+                  ...result,
+                  showWarning: result?.showWarning
+                }, () => {
+                  this.handleCalculation(this.fieldsObj?.MachineRate);
+                });
+              }
+            });      }
+        }
+      );
+    }
+    else {
       this.setState({ client: [] })
     }
   };
@@ -775,17 +789,30 @@ class AddMachineRate extends Component {
   * @description called
   */
   handleVendorName = (newValue, actionMeta) => {
+    const { costingTypeId, client, effectiveDate, ExchangeSource, currency, isImport, selectedPlants } = this.state;
+const {fieldsObj}=this.props
     if (newValue && newValue !== '') {
       this.setState({ vendorName: newValue, isVendorNameNotSelected: false, vendorLocation: [] }, () => {
         const { vendorName } = this.state;
         this.props.getPlantBySupplier(vendorName.value, () => { })
       });
+      if (this.props.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
+        this.callExchangeRateAPI(costingTypeId, fieldsObj?.plantCurrency, currency, isImport, ExchangeSource, effectiveDate, client, newValue, selectedPlants).then(result => {
+          if (result) {
+            this.setState({
+              ...result,
+              showWarning: result?.showWarning
+            }, () => {
+              this.handleCalculation(this.fieldsObj?.MachineRate);
+            });
+          }
+        });      }
     } else {
       this.setState({ vendorName: [], vendorLocation: [] })
       this.props.getPlantBySupplier('', () => { })
     }
   };
-
+  
   /**
   * @method handlePlants
   * @description called
@@ -1768,12 +1795,33 @@ class AddMachineRate extends Component {
       this.setState({ currency: [] })
     }
   };
+  machineRateTitle = () => {
+    return {
+      tooltipTextPlantCurrency: `Machine Rate * Plant Currency Rate (${this.state?.plantCurrency ?? ''})`,
+      toolTipTextNetCostBaseCurrency: `Machine Rate * Currency Rate (${this.state?.settlementCurrency ?? ''})`,
+    };
+  };
+  getTooltipTextForCurrency = () => {
+    const { fieldsObj } = this.props
+    const { settlementCurrency, plantCurrency, currency } = this.state
+    const currencyLabel = currency?.label ?? 'Currency';
+    const plantCurrencyLabel = fieldsObj?.plantCurrency ?? 'Plant Currency';
+    const baseCurrency = reactLocalStorage.getObject("baseCurrency");
+
+    // Check the exchange rates or provide a default placeholder if undefined
+    const plantCurrencyRate = plantCurrency ?? '-';
+    const settlementCurrencyRate = settlementCurrency ?? '-';
+
+    // Generate tooltip text based on the condition
+    return `${!this.state.hidePlantCurrency
+      ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrencyLabel}, `
+      : ''}Exchange Rate: 1 ${currencyLabel} = ${settlementCurrencyRate} ${baseCurrency}`;
+  };
   /**
   * @method render
   * @description Renders the component
   */
   render() {
-    console.log(this.state.showPlantWarning, this.state.showWarning)
     const { handleSubmit, AddAccessibility, EditAccessibility, initialConfiguration, isMachineAssociated, t } = this.props;
     const { isEditFlag, isOpenMachineType, isOpenProcessDrawer, disableMachineType, IsCopied, isViewFlag, isViewMode, setDisable, lockUOMAndRate, UniqueProcessId, costingTypeId, IsDetailedEntry, CostingTypePermission, disableSendForApproval, tourContainer } = this.state;
     const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
@@ -2104,6 +2152,7 @@ class AddMachineRate extends Component {
                           />
                         </Col>
                         <Col Col md="3" className='p-relative'>
+                          {this.props.fieldsObj?.plantCurrency && !this.state.hidePlantCurrency && !this.state.isImport && <TooltipCustom id="plantCurrency" tooltipText={`Exchange Rate: 1 ${this.props.fieldsObj?.plantCurrency} = ${this.state?.plantCurrency ?? '-'} ${reactLocalStorage.getObject("baseCurrency")}`} />}
                           <Field
                             label="Plant Currency"
                             name="plantCurrency"
@@ -2118,10 +2167,12 @@ class AddMachineRate extends Component {
                         </Col>
 
                         {this.state?.isImport && <Col md="3">
+                          <TooltipCustom id="currency" tooltipText={this.getTooltipTextForCurrency()} />
                           <Field
                             name="Currency"
                             type="text"
                             label="Currency"
+                            id="currency"
                             component={searchableSelect}
                             placeholder={isEditFlag ? '-' : "Select"}
                             options={this.renderListing("currency")}
@@ -2261,9 +2312,11 @@ class AddMachineRate extends Component {
                           {this.state.errorObj.machineRate && (this.props.fieldsObj.MachineRate === undefined || Number(this.props.fieldsObj.MachineRate) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
                         </Col>
                         {(this?.state?.isImport && !this?.state?.hidePlantCurrency) && <Col md="3" className='UOM-label-container p-relative'>
+                          <TooltipCustom disabledIcon={true} id="machine-rate-plant" tooltipText={this.machineRateTitle()?.tooltipTextPlantCurrency} />
                           <Field
                             label={this.DisplayMachineRatePlantCurrencyLabel()}
                             name={"MachineRateLocalConversion"}
+                            id="machine-rate-plant"
                             type="text"
                             placeholder={isViewMode || lockUOMAndRate || (isEditFlag && isMachineAssociated) ? '-' : 'Enter'}
                             validate={[number, maxLength10, decimalLengthsix, hashValidation]}
@@ -2277,10 +2330,12 @@ class AddMachineRate extends Component {
                           {this.state?.errorObj?.MachineRateLocalConversion && (this.props?.fieldsObj?.MachineRateLocalConversion === undefined || Number(this.props?.fieldsObj?.MachineRateLocalConversion) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
                         </Col>}
 
-                        {(!(!this?.state?.isImport && reactLocalStorage.getObject("baseCurrency") === this.props.fieldsObj.plantCurrency)) && <Col md="3" className='UOM-label-container p-relative'>
+                        {(!(!this?.state?.isImport && this?.state?.hidePlantCurrency)) && <Col md="3" >
+                          <TooltipCustom disabledIcon={true} id="machine-rate" tooltipText={this?.state?.isImport ? this.machineRateTitle()?.toolTipTextNetCostBaseCurrency : this.machineRateTitle()?.tooltipTextPlantCurrency} />
                           <Field
                             label={this.DisplayMachineRateBaseCurrencyLabel()}
                             name={"MachineRateConversion"}
+                            id="machine-rate"
                             type="text"
                             placeholder={isViewMode || lockUOMAndRate || (isEditFlag && isMachineAssociated) ? '-' : 'Enter'}
                             validate={[number, maxLength10, decimalLengthsix, hashValidation]}
@@ -2590,8 +2645,7 @@ class AddMachineRate extends Component {
 */
 function mapStateToProps(state) {
   const { comman, machine, auth, costing, client, supplier } = state;
-  const fieldsObj = selector(state, 'MachineNumber', 'MachineName', 'TonnageCapacity', 'MachineRate', 'Description', 'EffectiveDate', 'Specification', 'vendorName', "plantCurrency", "currency", "MachineRateConversion", "MachineRateLocalConversion", "ExchangeSource");
-
+  const fieldsObj = selector(state, 'MachineNumber', 'MachineName', 'TonnageCapacity', 'MachineRate', 'Description', 'EffectiveDate', 'Specification', 'vendorName', "plantCurrency", "currency", "MachineRateConversion", "MachineRateLocalConversion", "ExchangeSource", "MachineType");
   const { plantList, plantSelectList, filterPlantList, UOMSelectList, exchangeRateSourceList, currencySelectList } = comman;
   const { machineTypeSelectList, processSelectList, machineData, loading, processGroupApiData } = machine;
   const { initialConfiguration, userMasterLevelAPI } = auth;

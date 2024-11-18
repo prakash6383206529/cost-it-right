@@ -175,7 +175,7 @@ class AddFreight extends Component {
             });
           });
         });
-      } else {
+      } else if (this.props.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
         // Original single API call for non-import case
         callAPI(fromCurrency, toCurrency).then(({ rate, exchangeRateId, showPlantWarning, showWarning }) => {
           this.setState({ plantCurrency: rate, plantExchangeRateId: exchangeRateId, showPlantWarning: showPlantWarning, showWarning: showWarning }, () => {
@@ -261,10 +261,10 @@ class AddFreight extends Component {
         this.setState({ plantCurrencyID: Data?.CurrencyId })
         if (Data?.Currency !== reactLocalStorage?.getObject("baseCurrency")) {
           this.setState({ hidePlantCurrency: false })
-          this.callExchangeRateAPI()
         } else {
           this.setState({ hidePlantCurrency: true })
         }
+        this.callExchangeRateAPI()
       })
     } else {
       this.setState({ Plant: [] })
@@ -335,7 +335,11 @@ class AddFreight extends Component {
               });
             this.props.change('ExchangeSource', { label: Data?.ExchangeRateSourceName, value: Data?.ExchangeRateSourceName })
             this.props.change('plantCurrency', Data?.FreightEntryType === ENTRY_TYPE_IMPORT ? Data?.LocalCurrency : Data?.Currency)
-
+            if (Data?.LocalCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
+              this.setState({ hidePlantCurrency: false })
+            } else {
+              this.setState({ hidePlantCurrency: true })
+            }
             this.setState({
               isEditFlag: true,
               // isLoader: false,
@@ -639,9 +643,9 @@ class AddFreight extends Component {
         FullTruckLoadId: "",
         Capacity: FullTruckCapacity.label,
         RateCriteria: RateCriteria.label,
-        Rate: fieldsObj?.Rate ?? fieldsObj?.RateLocalConversion,
+        Rate: this.state.isImport /* || reactLocalStorage?.getObject("baseCurrency") !== this.props?.fieldsObj?.plantCurrency)  */ ? fieldsObj?.Rate : fieldsObj?.RateLocalConversion,
         RateLocalConversion: fieldsObj?.RateLocalConversion,
-        RateConversion: fieldsObj?.RateConversion,
+        RateConversion: (this.state.isImport || reactLocalStorage?.getObject("baseCurrency") !== this.props?.fieldsObj?.plantCurrency) ? fieldsObj?.RateConversion : fieldsObj?.RateLocalConversion,
         Load: Load,
         EFreightLoadType: Load?.value,
         IsFreightAssociated: false
@@ -708,9 +712,9 @@ class AddFreight extends Component {
       ...tempData,
       Capacity: FullTruckCapacity.label,
       RateCriteria: RateCriteria.label,
-      Rate: fieldsObj?.Rate ?? fieldsObj?.RateLocalConversion,
+      Rate: this.state.isImport /* || reactLocalStorage?.getObject("baseCurrency") !== this.props?.fieldsObj?.plantCurrency)  */ ? fieldsObj?.Rate : fieldsObj?.RateLocalConversion,
       RateLocalConversion: fieldsObj?.RateLocalConversion,
-      RateConversion: fieldsObj?.RateConversion,
+      RateConversion: (this.state.isImport || reactLocalStorage?.getObject("baseCurrency") !== this.props?.fieldsObj?.plantCurrency) ? fieldsObj?.RateConversion : fieldsObj?.RateLocalConversion,
       Load: Load,
       EFreightLoadType: Load?.value,
     };
@@ -1555,7 +1559,7 @@ class AddFreight extends Component {
                                   <th>{`Criteria`}</th>
                                   {this.state.isImport && <th>{`Rate (${this.state.currency?.label ?? 'Currency'})`}</th>}
                                   <th>{`Rate (${this.props.fieldsObj?.plantCurrency ?? 'Currency'})`}</th>
-                                  <th>{`Rate (${reactLocalStorage.getObject("baseCurrency")})`}</th>
+                                  {!this.state?.hidePlantCurrency && <th>{`Rate (${reactLocalStorage.getObject("baseCurrency")})`}</th>}
                                   <th>{`Action`}</th>
                                 </tr>
                               </thead>
@@ -1569,7 +1573,7 @@ class AddFreight extends Component {
                                         <td>{item?.RateCriteria ? item?.RateCriteria : '-'}</td>
                                         {this.state.isImport && <td>{item?.Rate ? checkForDecimalAndNull(item?.Rate, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>}
                                         <td>{item?.RateLocalConversion ? checkForDecimalAndNull(item?.RateLocalConversion, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
-                                        <td>{item?.RateConversion ? checkForDecimalAndNull(item?.RateConversion, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+                                        {!this.state?.hidePlantCurrency && <td>{item?.RateConversion ? checkForDecimalAndNull(item?.RateConversion, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>}
                                         <td>
                                           <button className="Edit mr-2" type={"button"} disabled={isViewMode || item?.IsFreightAssociated} onClick={() => this.editGridItemDetails(index)} />
                                           <button className="Delete" type={"button"} disabled={isViewMode || item?.IsFreightAssociated} onClick={() => this.deleteGridItem(index)} />

@@ -242,13 +242,12 @@ class AddBOPImport extends Component {
       ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? VBCTypeId : costingTypeId) :
       ZBCTypeId;
 
-    const hasCurrencyAndDate = fieldsObj?.plantCurrency && effectiveDate;
-    if (hasCurrencyAndDate) {
-      if (IsFetchExchangeRateVendorWise() && (vendorName?.length === 0 || client?.length === 0)) {
-        this.setState({ showWarning: true });
-        return;
-      }
-
+      const hasCurrencyAndDate = Boolean(fieldsObj?.plantCurrency && effectiveDate);
+      console.log('hasCurrencyAndDate: ', hasCurrencyAndDate);
+      if (hasCurrencyAndDate) {
+        if (IsFetchExchangeRateVendorWise() && (vendorName?.length === 0 && client?.length === 0)) {
+          return false;
+        }
       this.props.getExchangeRateByCurrency(
         currency.label,
         costingType,
@@ -416,7 +415,17 @@ class AddBOPImport extends Component {
   */
   handleClient = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ client: newValue });
+      this.setState({ client: newValue }
+        , () => {
+          if (this.props.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
+             // First call with plant currency
+      this.callExchangeRateAPI(this.props.fieldsObj?.plantCurrency);
+
+      // Second call with base currency
+      this.callExchangeRateAPI(reactLocalStorage.getObject("baseCurrency"));
+          }
+        }
+      );
     } else {
       this.setState({ client: [] })
     }
@@ -549,8 +558,8 @@ class AddBOPImport extends Component {
             conditionTableData: Data?.BoughtOutPartConditionsDetails,
             totalOtherCost: Data?.OtherNetCost,
             otherCostTableData: Data?.BoughtOutPartOtherCostDetailsSchema,
-            plantCurrencyValue: Data?.LocalCurrencyExchangeRate,
-            currencyValue: Data?.CurrencyExchangeRate,
+            plantCurrencyValue: (Data?.LocalCurrencyExchangeRate??1),
+            currencyValue: (Data?.CurrencyExchangeRate??1),
             ExchangeRateId: Data?.ExchangeRateId,
             LocalCurrencyId: Data?.LocalCurrencyId,
             currency: { label: Data?.Currency, value: Data?.CurrencyId },
@@ -780,7 +789,10 @@ class AddBOPImport extends Component {
       let Data = res?.data?.Data
       this.props.change('plantCurrency', Data?.Currency)
       if (Data?.Currency !== reactLocalStorage?.getObject("baseCurrency")) {
-        this.callExchangeRateAPI(this.props.fieldsObj?.plantCurrency)
+          // First call with plant currency
+      this.callExchangeRateAPI(this.props.fieldsObj?.plantCurrency);
+      // Second call with base currency
+      this.callExchangeRateAPI(reactLocalStorage.getObject("baseCurrency"));
         this.setState({ hidePlantCurrency: false, LocalCurrencyId: Data?.CurrencyId })
       } else {
         this.setState({ hidePlantCurrency: true })
@@ -815,14 +827,16 @@ class AddBOPImport extends Component {
     if (newValue && newValue !== '') {
       this.setState({ vendorName: newValue, isVendorNameNotSelected: false, }, () => {
         const { vendorName } = this.state;
+        if (this.props.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
+          this.callExchangeRateAPI(this.props.fieldsObj?.plantCurrency)
+        }
         this.props.getPlantBySupplier(vendorName.value, () => { })
         const { costingTypeId, currency, effectiveDate, client } = this.state;
         const costingType = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? VBCTypeId : costingTypeId) : ZBCTypeId
         const vendorValue = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? newValue.value : EMPTY_GUID) : EMPTY_GUID;
         if (this.state.currency && this.state.currency.length !== 0 && effectiveDate) {
-          if (IsFetchExchangeRateVendorWise() && (!newValue || newValue?.length === 0)) {
-            this.setState({ showWarning: true });
-            return;
+          if (IsFetchExchangeRateVendorWise() && (!newValue && newValue?.length === 0)) {
+            return false;
           }
           this.props.getExchangeRateByCurrency(currency.label, costingType, DayTime(effectiveDate).format('YYYY-MM-DD'), vendorValue, client.value, false, reactLocalStorage.getObject("baseCurrency"), this.state.ExchangeSource?.label ?? null, res => {
             if (Object.keys(res.data.Data).length === 0) {
@@ -913,11 +927,14 @@ class AddBOPImport extends Component {
       const { costingTypeId, vendorName, client } = this.state;
       const vendorValue = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? vendorName.value : EMPTY_GUID) : EMPTY_GUID
       const costingType = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? VBCTypeId : costingTypeId) : ZBCTypeId
-
+      this.setState({ currency: newValue, }, () => {
+        setTimeout(() => {
+          this.handleCalculation()
+        }, 200);
+      })
       if (newValue && newValue.length !== 0 && effectiveDate) {
-        if (IsFetchExchangeRateVendorWise() && (vendorName?.length === 0 || client?.length === 0)) {
-          this.setState({ showWarning: true });
-          return;
+        if (IsFetchExchangeRateVendorWise() && (vendorName?.length === 0 && client?.length === 0)) {
+          return false;
         }
         this.props.getExchangeRateByCurrency(newValue.label, costingType, DayTime(effectiveDate).format('YYYY-MM-DD'), vendorValue, client.value, false, reactLocalStorage.getObject("baseCurrency"), this.state.ExchangeSource?.label ?? null, res => {
           if (Object.keys(res.data.Data).length === 0) {
@@ -929,11 +946,6 @@ class AddBOPImport extends Component {
         });
       }
       this.setState({ showCurrency: true })
-      this.setState({ currency: newValue, }, () => {
-        setTimeout(() => {
-          this.handleCalculation()
-        }, 200);
-      })
     } else {
       this.setState({ currency: [] })
     }
@@ -1046,9 +1058,8 @@ class AddBOPImport extends Component {
       const costingType = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? VBCTypeId : costingTypeId) : ZBCTypeId
 
       if (currency && currency.length !== 0 && date) {
-        if (IsFetchExchangeRateVendorWise() && (vendorName?.length === 0 || client?.length === 0)) {
-          this.setState({ showWarning: true });
-          return;
+        if (IsFetchExchangeRateVendorWise() && (vendorName?.length === 0 && client?.length === 0)) {
+          return false;
         }
         this.props.getExchangeRateByCurrency(currency.label, costingType, DayTime(date).format('YYYY-MM-DD'), vendorValue, client.value, false, reactLocalStorage.getObject("baseCurrency"), this.state.ExchangeSource?.label ?? null, res => {
           if (Object.keys(res.data.Data).length === 0) {
