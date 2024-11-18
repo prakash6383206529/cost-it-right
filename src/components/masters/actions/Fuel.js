@@ -264,9 +264,14 @@ export function getFuelList(obj, callback) {
             if (response.data.Result) {
                 dispatch({
                     type: GET_FUEL_BY_PLANT,
-                    payload: response.data.DataList,
+                    payload: response?.status === 204 ? [] : response?.data?.DataList,
                 });
                 callback(response);
+            } else if (response?.status === 204) {
+                dispatch({
+                    type: GET_FUEL_BY_PLANT,
+                    payload: []
+                });
             }
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
@@ -310,7 +315,7 @@ export function getFuelListByState(ID, callback) {
             if (response.data.Result) {
                 dispatch({
                     type: GET_FULELIST_BY_STATE,
-                    payload: response.data.SelectList,
+                    payload: response.status === 204 ? [] : response.data.SelectList,
                 });
                 callback(response);
             }

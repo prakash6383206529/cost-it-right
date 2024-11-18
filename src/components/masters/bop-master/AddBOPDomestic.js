@@ -147,30 +147,26 @@ class AddBOPDomestic extends Component {
       this.props.getPlantSelectListByType(ZBC, "MASTER", '', () => { })
     }
   }
-
   toolTipNetCost() {
-    const { initialConfiguration } = this.props
-    const { costingTypeId } = this.state
-    let netCostText = ''
-    let basicPriceText = ''
-    if (initialConfiguration.IsBasicRateAndCostingConditionVisible && Number(costingTypeId) === Number(ZBCTypeId)) {
-      if (getConfigurationKey().IsMinimumOrderQuantityVisible) {
-        basicPriceText = `Basic Price (${reactLocalStorage.getObject("baseCurrency")}) = Basic Rate (${reactLocalStorage.getObject("baseCurrency")}) / Minimum Order Quantity`
-      } else {
-        basicPriceText = `Basic Price (${reactLocalStorage.getObject("baseCurrency")}) = Basic Rate (${reactLocalStorage.getObject("baseCurrency")})`
-      }
-      netCostText = `Net Cost (${reactLocalStorage.getObject("baseCurrency")}) = Basic Price (${reactLocalStorage.getObject("baseCurrency")}) + Condition Cost (${reactLocalStorage.getObject("baseCurrency")})`
-      this.setState({ toolTipTextNetCost: netCostText, toolTipTextBasicPrice: basicPriceText })
-    } else if (getConfigurationKey().IsMinimumOrderQuantityVisible) {
-      netCostText = `Net Cost (${reactLocalStorage.getObject("baseCurrency")}) = Basic Rate (${reactLocalStorage.getObject("baseCurrency")}) / Minimum Order Quantity`
-      this.setState({ toolTipTextNetCost: netCostText })
-    } else {
-      netCostText = `Net Cost (${reactLocalStorage.getObject("baseCurrency")}) = Basic Rate (${reactLocalStorage.getObject("baseCurrency")})`
-      this.setState({ toolTipTextNetCost: netCostText })
-    }
-    const obj = { ...this.state.toolTipTextObject, netCostCurrency: netCostText, basicPriceSelectedCurrency: basicPriceText }
-    this.setState({ toolTipTextObject: obj })
+    const { initialConfiguration } = this.props;
+    const { costingTypeId } = this.state;
+    let obj = {
+      toolTipTextBasicPrice: initialConfiguration?.IsBasicRateAndCostingConditionVisible && Number(costingTypeId) === Number(ZBCTypeId)
+        ? getConfigurationKey().IsMinimumOrderQuantityVisible
+          ? `Basic Price  = Basic Rate + Other Cost / Minimum Order Quantity`
+          : `Basic Price  = Basic Rate + Other Cost `
+        : '',
+
+      toolTipTextNetCost: initialConfiguration?.IsBasicRateAndCostingConditionVisible && Number(costingTypeId) === Number(ZBCTypeId)
+        ? `Net Cost  = Basic Price  + Condition Cost `
+        : getConfigurationKey().IsMinimumOrderQuantityVisible
+          ? `Net Cost  = Basic Rate  / Minimum Order Quantity`
+          : `Net Cost  = Basic Rate `
+    };
+
+    return obj;
   }
+
 
   /**
    * @method componentDidMount
@@ -199,13 +195,11 @@ class AddBOPDomestic extends Component {
 
     const vendorValue = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? vendorName.value : EMPTY_GUID) : EMPTY_GUID
     const costingType = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? VBCTypeId : costingTypeId) : ZBCTypeId
-    const hasCurrencyAndDate = fieldsObj?.plantCurrency && effectiveDate;
+    const hasCurrencyAndDate = Boolean(fieldsObj?.plantCurrency && effectiveDate);
     if (hasCurrencyAndDate) {
-      if (IsFetchExchangeRateVendorWise() && (vendorName?.length === 0 || client?.length === 0)) {
-        this.setState({ showWarning: true });
-        return;
+      if (IsFetchExchangeRateVendorWise() && (vendorName?.length === 0 && client?.length === 0)) {
+        return false;
       }
-
       this.props.getExchangeRateByCurrency(fieldsObj?.plantCurrency, costingType, DayTime(this.state?.effectiveDate).format('YYYY-MM-DD'), vendorValue, client.value, false, reactLocalStorage.getObject("baseCurrency"), ExchangeSource?.label ?? null, res => {
         if (Object.keys(res.data.Data).length === 0) {
           this.setState({ showWarning: true });
@@ -348,7 +342,13 @@ class AddBOPDomestic extends Component {
   */
   handleClient = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ client: newValue });
+      this.setState({ client: newValue }
+        , () => {
+          if (this.props?.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
+            this.callExchangeRateAPI()
+          }
+        }
+      );
     } else {
       this.setState({ client: [] })
     }
@@ -415,7 +415,7 @@ class AddBOPDomestic extends Component {
               IsBreakupBoughtOutPart: Data.IsBreakupBoughtOutPart,
               IsSAPCodeUpdated: Data.IsSAPCodeUpdated,
               SAPPartNumber: Data.SAPPartNumber !== undefined ? { label: Data.SAPPartNumber, value: Data.SAPPartNumber } : [],
-              currencyValue: Data.CurrencyExchangeRate,
+              currencyValue: (Data.CurrencyExchangeRate ?? 1),
               LocalExchangeRateId: Data.ExchangeRateId,
               LocalCurrencyId: Data.CurrencyId,
               ExchangeSource: { label: Data.ExchangeRateSourceName, value: Data.ExchangeRateSourceName },
@@ -629,7 +629,9 @@ class AddBOPDomestic extends Component {
       this.setState({ vendorName: newValue, isVendorNameNotSelected: false, }, () => {
         const { vendorName } = this.state;
         this.props.getPlantBySupplier(vendorName.value, () => { })
-        //this.props.getCityBySupplier(vendorName.value, () => { })
+        if (this.props?.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
+          this.callExchangeRateAPI()
+        }
       });
     } else {
       this.setState({ vendorName: [], })
@@ -1248,7 +1250,7 @@ class AddBOPDomestic extends Component {
     }
     const netCost = checkForNull(totalBase) + checkForNull(this.props.fieldsObj?.BasicRate)
     this.setState({ isOpenOtherCostDrawer: true })
-    this.props.change('OtherCost', total)
+    this.props.change('OtherCost', checkForDecimalAndNull(total, getConfigurationKey().NoOfDecimalForPrice))
     this.setState({ isOpenOtherCostDrawer: false, otherCostTableData: data })
     this.setState({ isOpenOtherCostDrawer: false, otherCostTableData: data, BasicPrice: checkForNull(netCost) })
     this.setState(prevState => ({ ...prevState, NetCostPlantCurrency: checkForNull(totalBase) + checkForNull(this.props.fieldsObj?.BasicRate) }))
@@ -1739,6 +1741,7 @@ class AddBOPDomestic extends Component {
                             <div className="left-border">{"Cost:"}</div>
                           </Col>
                           {<Col md="3">
+                            {!this.state.hidePlantCurrency && <TooltipCustom id="plantCurrency" tooltipText={`Exchange Rate: 1 ${this.props.fieldsObj?.plantCurrency ?? ''} = ${this.state?.currencyValue ?? '-'} ${reactLocalStorage.getObject("baseCurrency")}`} />}
                             <Field
                               name="plantCurrency"
                               type="text"
@@ -1838,11 +1841,12 @@ class AddBOPDomestic extends Component {
 
                           {!initialConfiguration?.IsBasicRateAndCostingConditionVisible && costingTypeId === ZBCTypeId && !isTechnologyVisible && <>
                             <Col md="3">
-                              <TooltipCustom id="bop-basic-price" tooltipText={this.state.toolTipTextObject?.basicPriceSelectedCurrency} />
+                              <TooltipCustom id="bop-basic-price" disabledIcon={true} tooltipText={this.toolTipNetCost().toolTipTextBasicPrice} />
                               <Field
                                 label={`Basic Price/${this.state.UOM.label ? this.state.UOM.label : 'UOM'} (${this.props.fieldsObj?.plantCurrency ?? 'Currency'})`}
                                 name={"BasicPrice"}
                                 type="text"
+                                id="bop-basic-price"
                                 placeholder={"-"}
                                 validate={[]}
                                 component={renderTextInputField}
@@ -1887,10 +1891,11 @@ class AddBOPDomestic extends Component {
                             (!isTechnologyVisible || this.state.IsBreakupBoughtOutPart) &&
                             <>
                               <Col md="3">
-                                <TooltipCustom id="bop-net-cost" tooltipText={toolTipTextNetCost} />
+                                <TooltipCustom id="bop-net-cost-plant" disabledIcon={true} tooltipText={this.toolTipNetCost()?.toolTipTextNetCost} />
                                 <Field
                                   label={`Net Cost/${this.state.UOM.label ? this.state.UOM.label : 'UOM'} (${fieldsObj?.plantCurrency ?? 'Currency'})`}
                                   name={`${"NetCostPlantCurrency"}`}
+                                  id="bop-net-cost-plant"
                                   type="text"
                                   placeholder={"-"}
                                   validate={[]}
@@ -1902,11 +1907,12 @@ class AddBOPDomestic extends Component {
                                 />
                               </Col>
                               {!hidePlantCurrency && <Col md="3">
-                                <TooltipCustom id="bop-net-cost" tooltipText={toolTipTextNetCost} />
+                                <TooltipCustom id="bop-net-cost" disabledIcon={true} tooltipText={`Net Cost/${this.state.UOM.label ? this.state.UOM.label : 'UOM'}  = Net Cost * Plant Currency Rate (${this.state?.currencyValue})`} />
                                 <Field
                                   label={`Net Cost/${this.state.UOM.label ? this.state.UOM.label : 'UOM'} (${reactLocalStorage.getObject("baseCurrency")})`}
                                   name={`${"NetCostBaseCurrency"}`}
                                   type="text"
+                                  id="bop-net-cost"
                                   placeholder={"-"}
                                   validate={[]}
                                   component={renderTextInputField}
@@ -2140,8 +2146,8 @@ class AddBOPDomestic extends Component {
               EntryType={checkForNull(ENTRY_TYPE_DOMESTIC)}
               basicRateBase={this.state.BasicPrice}
               isFromImport={false}
-              currencyValue={this.state.currencyValue}
-              PlantCurrency={this.props.fieldsObj.plantCurrency}
+              currencyValue={this.state.currencyValue??''}
+              PlantCurrency={this.props.fieldsObj?.plantCurrency??''}
             />
           }
           {
@@ -2180,8 +2186,8 @@ class AddBOPDomestic extends Component {
               ViewMode={this.props.data.isViewMode}
               uom={this.state.UOM}
               isImport={false}
-              plantCurrency={this.props?.fieldsObj?.plantCurrency}
-              settlementCurrency={this.state?.currency?.label}
+              plantCurrency={this.props?.fieldsObj?.plantCurrency??''}
+              settlementCurrency={this.state?.currency?.label??''}
               isBOP={true}
             />
           }

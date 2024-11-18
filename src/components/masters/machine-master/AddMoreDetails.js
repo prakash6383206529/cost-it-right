@@ -174,7 +174,7 @@ class AddMoreDetails extends Component {
       entryType: editDetails?.entryType || null,
       powerIsImport: false,
       //plantCurrency: editDetails?.fieldsObj?.plantCurrency || "",
-      currency: editDetails?.currency,
+      currency: editDetails?.currency ?? null,
       plantCurrency: editDetails?.plantCurrency || null,
       settlementCurrency: editDetails?.settlementCurrency || null,
       plantExchangeRateId: editDetails?.plantExchangeRateId || '',
@@ -203,6 +203,12 @@ class AddMoreDetails extends Component {
 
     this.props.change('plantCurrency', editDetails?.fieldsObj?.plantCurrency ?? '')
     this.props.change('ExchangeSource', editDetails?.ExchangeSource ?? {})
+    this.props.change('EffectiveDate', editDetails?.fieldsObj?.EffectiveDate ?? "")
+    this.props.change('MachineName', editDetails?.fieldsObj?.MachineName ?? "")
+    this.props.change('MachineNumber', editDetails?.fieldsObj?.MachineNumber ?? "")
+    this.props.change('Specification', editDetails?.fieldsObj?.Specification ?? "")
+    this.props.change('TonnageCapacity', editDetails?.fieldsObj?.TonnageCapacity ?? "")
+    //this.props.change('MachineType', editDetails?.fieldsObj?.MachineType ?? "")
     //this.props.change('currency', editDetails?.currency ?? {})
     if (this.state?.selectedPlants?.value && this.state?.selectedPlants?.value !== null) {
       let obj = {
@@ -2965,6 +2971,28 @@ class AddMoreDetails extends Component {
       // this.callExchangeRateAPI()
     })
   }
+  machineRateTitle = () => {
+    return {
+        tooltipTextPlantCurrency: `Machine Rate * Plant Currency Rate (${this.state?.plantCurrency ?? ''})`,
+        toolTipTextNetCostBaseCurrency: `Machine Rate * Currency Rate (${this.state?.settlementCurrency ?? ''})`,
+    };
+};
+getTooltipTextForCurrency = () => {
+  const {fieldsObj}=this.props
+  const {settlementCurrency,plantCurrency,currency}=this.state
+  const currencyLabel = currency?.label??'Currency';
+  const plantCurrencyLabel = fieldsObj?.plantCurrency??'Plant Currency';
+  const baseCurrency = reactLocalStorage.getObject("baseCurrency");
+  
+  // Check the exchange rates or provide a default placeholder if undefined
+  const plantCurrencyRate = plantCurrency?? '-';
+  const settlementCurrencyRate = settlementCurrency ?? '-';
+
+  // Generate tooltip text based on the condition
+  return `${!this.state.hidePlantCurrency 
+      ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrencyLabel}, ` 
+      : ''}Exchange Rate: 1 ${currencyLabel} = ${settlementCurrencyRate} ${baseCurrency}`;
+};
 
   /**
    * @method render
@@ -3378,6 +3406,7 @@ class AddMoreDetails extends Component {
                           />
                         </Col>
                         <Col Col md="3" className='p-relative'>
+                        {this.props.fieldsObj?.plantCurrency&& !this.state.hidePlantCurrency&&!this.state.entryType&& <TooltipCustom id="plantCurrency" tooltipText = {`Exchange Rate: 1 ${this.props.fieldsObj?.plantCurrency} = ${this.state?.plantCurrency??'-'} ${reactLocalStorage.getObject("baseCurrency")}`} />}
                           <Field
                             label="Plant Currency"
                             name="plantCurrency"
@@ -3392,11 +3421,13 @@ class AddMoreDetails extends Component {
                         </Col>
 
                         {this.state?.entryType && <Col md="3">
+                          <TooltipCustom id="currency" tooltipText = {this.getTooltipTextForCurrency()}/>
                           <Field
                             name="Currency"
                             type="text"
                             label="Currency"
                             component={searchableSelect}
+                            id="currency"
                             placeholder={isEditFlag ? '-' : "Select"}
                             options={this.renderListing("currency")}
                             validate={
@@ -4870,10 +4901,12 @@ class AddMoreDetails extends Component {
                                   </div>
                                 </Col>
                                 {(this?.state?.entryType && !this?.state?.hidePlantCurrency) && <Col md="4" className='UOM-label-container p-relative'>
+                                  <TooltipCustom disabledIcon={true} id="machine-rate-plant" tooltipText={this.machineRateTitle()?.tooltipTextPlantCurrency} />
                                   <Field
                                     label={this.DisplayMachineRatePlantCurrencyLabel()}
                                     name={"MachineRateLocalConversion"}
                                     type="text"
+                                    id="machine-rate-plant"
                                     placeholder={isViewMode || (isEditFlag && isMachineAssociated) ? '-' : 'Enter'}
                                     validate={[number, maxLength10, decimalLengthsix, hashValidation]}
                                     component={renderText}
@@ -4885,10 +4918,12 @@ class AddMoreDetails extends Component {
                                   />
                                   {this.state.errorObj?.MachineRateLocalConversion && (this.props?.fieldsObj?.MachineRateLocalConversion === undefined || Number(this.props?.fieldsObj?.MachineRateLocalConversion) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
                                 </Col>}
-                                {(!(!this?.state?.entryType && reactLocalStorage.getObject("baseCurrency") === this.props.fieldsObj.plantCurrency)) && <Col md="4" className='UOM-label-container p-relative'>
+                                {(!(!this?.state?.entryType && this?.state?.hidePlantCurrency)) && <Col md="4" className='UOM-label-container p-relative'>
+                                  <TooltipCustom disabledIcon={true} id="machine-rate" tooltipText={this?.state?.isImport?this.machineRateTitle()?.toolTipTextNetCostBaseCurrency:this.machineRateTitle()?.tooltipTextPlantCurrency} />
                                   <Field
                                     label={this.DisplayMachineRateBaseCurrencyLabel()}
                                     name={"MachineRateConversion"}
+                                    id="machine-rate"
                                     type="text"
                                     placeholder={isViewMode || (isEditFlag && isMachineAssociated) ? '-' : 'Enter'}
                                     validate={[number, maxLength10, decimalLengthsix, hashValidation]}

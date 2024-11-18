@@ -19,6 +19,11 @@ function AddOtherCostDrawer(props) {
     const { rmBasicRate, isFromImport, RowData, RowIndex, isImport, plantCurrency, settlementCurrency, isBOP } = props
     const Currency = isBOP && isImport ? settlementCurrency : isBOP && !isImport ? plantCurrency : props?.RowData?.IndexCurrency
     const CurrencyLabel = !props.rawMaterial ? reactLocalStorage.getObject('baseCurrency') : isImport && (props.rawMaterial || isBOP) ? settlementCurrency : plantCurrency
+    console.log('plantCurrency: ', plantCurrency);
+    console.log(' isImport && (props.rawMaterial || isBOP) : ',  isImport && (props.rawMaterial || isBOP) );
+    console.log('props.rawMaterial || isBOP: ', props.rawMaterial || isBOP);
+    console.log('isImport: ', isImport);
+    console.log('CurrencyLabel: ', CurrencyLabel);
     const UOM = props?.RowData?.IndexUOM || (Array.isArray(props?.uom) ? '' : props?.uom?.label) || '';
     const [tableData, setTableData] = useState([]);
     const [disableTotalCost, setDisableTotalCost] = useState(true)
@@ -780,7 +785,7 @@ function AddOtherCostDrawer(props) {
                                                         </td>
                                                     }
                                                     <td colSpan={3} className="text-left">
-                                                        {checkForDecimalAndNull((isBOP ? totalCostCurrency : totalCostBase), initialConfiguration?.NoOfDecimalForPrice)}
+                                                        {checkForDecimalAndNull((isBOP ? totalCostCurrency : totalCostBase), initialConfiguration?.NoOfDecimalForPrice)} ({plantCurrency})
                                                     </td>
                                                 </tr>
                                             </tbody>

@@ -148,6 +148,7 @@ const CostingSummaryTable = (props) => {
   const { viewCostingDetailData, viewRejectedCostingDetailData, viewCostingDetailDataForAssembly } = useSelector((state) => state.costing)
   const showCheckbox = viewCostingData && viewCostingData.some(item => item.IsShowCheckBoxForApproval === true);
   const [showConvertedCurrency, setShowConvertedCurrency] = useState(false)
+  const [showConvertedCurrencyCheckbox, setShowConvertedCurrencyCheckbox] = useState(false)
 
   useEffect(() => {
     if (viewCostingDetailData && viewCostingDetailData?.length > 0 && !props?.isRejectedSummaryTable && !props?.isFromAssemblyTechnology) {
@@ -187,6 +188,13 @@ const CostingSummaryTable = (props) => {
   }
 
   useEffect(() => {
+    let isShow = false
+    viewCostingData && viewCostingData?.map(item => {
+      if (item?.CostingCurrency !== initialConfiguration?.BaseCurrency) {
+        isShow = true
+      }
+    })
+    setShowConvertedCurrencyCheckbox(isShow)
     setIsScrapRecoveryPercentageApplied((_.map(viewCostingData, 'IsScrapRecoveryPercentageApplied') || []).some(value => value === true));
     if (showDynamicKeys) {
       setOtherCostDetailsOverhead(commonFunction('OtherCostDetailsOverhead'))
@@ -1888,8 +1896,7 @@ const CostingSummaryTable = (props) => {
       case 'nPOPriceWithCurrency':
         // Display the value with currency symbol and formatted decimal places
         varianceValues = <span title={(data?.currency?.currencyTitle) !== "-" ? (data?.nPOPriceWithCurrency) : data?.nPOPrice}><span className='currency-symbol'>
-          {getCurrencySymbol(data?.currency.currencyTitle !== '-' ?
-            data?.currency.currencyTitle : getConfigurationKey().BaseCurrency)}
+          {getCurrencySymbol(data?.currency.currencyTitle !== '-' ? data?.currency.currencyTitle : getConfigurationKey().BaseCurrency)}
         </span>{data?.nPOPriceWithCurrency !== null ? checkForDecimalAndNull(((data?.currency?.currencyTitle === "-") || ((data?.bestCost === true && data?.currency?.currencyTitle === undefined))) ? Math.abs(data?.nPOPrice) : Math.abs(data?.nPOPriceWithCurrency), initialConfiguration.NoOfDecimalForPrice) : '-'}</span>
         break;
       case 'NetPOPriceLocalConversion':
@@ -2271,7 +2278,7 @@ const CostingSummaryTable = (props) => {
                                     {data?.CostingHeading === VARIANCE && ((!pdfHead)) && <TooltipCustom customClass="mb-0 ml-1" id="variance" tooltipText={`Variance = (${data.costingTypeId === CBCTypeId ? "New Costing - Old Costing" : "Old Costing - New Costing"})`} />}
                                   </div >
                                   <div className="action  text-right">
-                                    {<span className="d-inline-block">
+                                    {showConvertedCurrencyCheckbox && <span className="d-inline-block">
                                       <label
                                         className={`custom-checkbox mb-0`}
                                         onChange={checkboxHandler}
@@ -3292,7 +3299,7 @@ const CostingSummaryTable = (props) => {
                                 viewCostingData?.map((data) => {
                                   return (
                                     <td className={tableDataClass(data)}>
-                                      {displayValueWithSign(data, 'BasicRate')} ({displayValueWithSign(data, 'BasicRateConversion')})
+                                      {displayValueWithSign(data, 'BasicRate')} {showConvertedCurrency ? '(' : ''}{showConvertedCurrency && displayValueWithSign(data, 'BasicRateConversion')}{showConvertedCurrency ? ')' : ''}
                                     </td>
                                   )
                                 })}
@@ -3383,11 +3390,11 @@ const CostingSummaryTable = (props) => {
                         </>}
                       {
                         <tr className={`${highlighter("nPOPrice", "main-row")} netPo-row`}>
-                          <th>Net Cost ({viewCostingData?.[0]?.CostingCurrency}){simulationDrawer && '(Old)'}</th>
+                          <th>Net Cost {showConvertedCurrencyCheckbox && '(Settlement Currency)'} {simulationDrawer && '(Old)'}</th>
                           {viewCostingData &&
                             viewCostingData?.map((data, index) => {
                               return <td className={tableDataClass(data)}>
-                                {displayValueWithSign(data, "nPOPrice")}
+                                {viewCostingData?.[0]?.CostingCurrency}:    {displayValueWithSign(data, "nPOPrice")}
                                 {
                                   (data?.bestCost !== true) && (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&
                                   <button
@@ -3403,13 +3410,13 @@ const CostingSummaryTable = (props) => {
                             })}
                         </tr >
                       }
-                      {
+                      {showConvertedCurrencyCheckbox &&
                         <tr className={`${highlighter("NetPOPriceLocalConversion", "main-row")} netPo-row`}>
-                          <th>Net Cost ({viewCostingData?.[0]?.LocalCurrency}){simulationDrawer && '(Old)'}</th>
+                          <th>Net Cost (Plant Currency) {simulationDrawer && '(Old)'}</th>
                           {viewCostingData &&
                             viewCostingData?.map((data, index) => {
                               return <td className={tableDataClass(data)}>
-                                {displayValueWithSign(data, "NetPOPriceLocalConversion")}
+                                {viewCostingData?.[0]?.LocalCurrency}:    {displayValueWithSign(data, "NetPOPriceLocalConversion")}
                                 {
                                   (data?.bestCost !== true) && (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&
                                   <button
@@ -3425,14 +3432,13 @@ const CostingSummaryTable = (props) => {
                             })}
                         </tr >
                       }
-                      {
-
+                      {showConvertedCurrencyCheckbox &&
                         <tr className={`${highlighter("NetPOPriceConversion", "main-row")} netPo-row`}>
-                          <th>Net Cost ({getConfigurationKey().BaseCurrency}){simulationDrawer && '(Old)'}</th>
+                          <th>Net Cost (Base Currency) {simulationDrawer && '(Old)'}</th>
                           {viewCostingData &&
                             viewCostingData?.map((data, index) => {
                               return <td className={tableDataClass(data)}>
-                                {displayValueWithSign(data, "NetPOPriceConversion")}
+                                {getConfigurationKey().BaseCurrency}:    {displayValueWithSign(data, "NetPOPriceConversion")}
                                 {
                                   (data?.bestCost !== true) && (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&
                                   <button
@@ -3452,7 +3458,7 @@ const CostingSummaryTable = (props) => {
                       }
 
                       {
-                        viewCostingData[0]?.technologyId !== LOGISTICS && <tr>
+                        viewCostingData[0]?.technologyId !== LOGISTICS && viewCostingData?.[0]?.currency?.currencyTitle !== '-' && <tr>
                           <td>
                             <span className="d-block small-grey-text">Currency</span>
                           </td>
@@ -3471,7 +3477,7 @@ const CostingSummaryTable = (props) => {
                       }
 
                       {
-                        viewCostingData[0]?.technologyId !== LOGISTICS &&
+                        viewCostingData[0]?.technologyId !== LOGISTICS && viewCostingData?.[0]?.currency?.currencyTitle !== '-' &&
                         <tr className={`background-light-blue  ${getCurrencyVarianceFormatter()}`}>
                           <th>Net Cost (In Currency){simulationDrawer && '(Old)'}</th>
                           {/* {viewCostingData &&

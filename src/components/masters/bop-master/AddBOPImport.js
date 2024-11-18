@@ -167,52 +167,45 @@ class AddBOPImport extends Component {
     }
   }
 
-  toolTipNetCost = (currency) => {
-    const { costingTypeId } = this.state
-    const { initialConfiguration } = this.props
-    let obj = {}
-    if (initialConfiguration.IsBasicRateAndCostingConditionVisible && Number(costingTypeId) === Number(ZBCTypeId)) {
-      obj = {
-        toolTipTextNetCostSelectedCurrency: `Net Cost (${currency?.label}) = Basic Price (${currency?.label})  + Condition Cost (${currency?.label})`,
-        toolTipTextNetCostBaseCurrency: `Net Cost (${reactLocalStorage.getObject("baseCurrency")}) = Basic Price (${reactLocalStorage.getObject("baseCurrency")})  + Condition Cost (${reactLocalStorage.getObject("baseCurrency")})`
-      }
-    } else if (getConfigurationKey().IsMinimumOrderQuantityVisible) {
-      obj = {
-        toolTipTextNetCostSelectedCurrency: `Net Cost (${currency?.label}) = Basic Rate (${currency?.label}) / Minimum Order Quantity`,
-        toolTipTextNetCostBaseCurrency: `Net Cost (${reactLocalStorage.getObject("baseCurrency")}) = Basic Rate (${reactLocalStorage.getObject("baseCurrency")}) / Minimum Order Quantity`
-      }
-    } else {
-      obj = {
-        toolTipTextNetCostSelectedCurrency: `Net Cost (${currency?.label}) = Basic Rate (${currency?.label})`,
-        toolTipTextNetCostBaseCurrency: `Net Cost (${reactLocalStorage.getObject("baseCurrency")}) = Basic Rate (${reactLocalStorage.getObject("baseCurrency")})`
-      }
-    }
-    this.setState({ toolTipTextNetCost: obj })
+  toolTipNetCost = () => {
+    const { initialConfiguration } = this.props;
+    const { costingTypeId } = this.state;
+    let obj = {
+        toolTipTextBasicPrice: initialConfiguration.IsBasicRateAndCostingConditionVisible && Number(costingTypeId) === Number(ZBCTypeId)
+            ? getConfigurationKey().IsMinimumOrderQuantityVisible
+                ? `Basic Price  = Basic Rate + Other Cost / Minimum Order Quantity`
+                : `Basic Price  = Basic Rate + Other Cost `
+            : '',
+
+        toolTipTextNetCost: initialConfiguration.IsBasicRateAndCostingConditionVisible && Number(costingTypeId) === Number(ZBCTypeId)
+            ? `Net Cost  = Basic Price  + Condition Cost `
+            : getConfigurationKey().IsMinimumOrderQuantityVisible
+                ? `Net Cost  = Basic Rate  / Minimum Order Quantity`
+                : `Net Cost  = Basic Rate `
+    };
     return obj
   }
+   getTooltipTextForCurrency = () => {
+    const {fieldsObj}=this.props
+    const {currencyValue,plantCurrencyValue,currency}=this.state
+    const currencyLabel = currency?.label??'Currency';
+    const plantCurrency = fieldsObj?.plantCurrency??'Plant Currency';
+    const baseCurrency = reactLocalStorage.getObject("baseCurrency");
+    
+    // Check the exchange rates or provide a default placeholder if undefined
+    const plantCurrencyRate = plantCurrencyValue?? '-';
+    const settlementCurrencyRate = currencyValue ?? '-';
 
-  toolTipBasicPrice = (currency) => {
-    const { initialConfiguration } = this.props
-    const { costingTypeId, currencyValue } = this.state
-    let obj = {}
-    if (initialConfiguration?.IsBasicRateAndCostingConditionVisible && Number(costingTypeId) === Number(ZBCTypeId)) {
-      obj = {
-        toolTipTextBasicPriceSelectedCurrency: `Basic Price (${currency.label === undefined ? 'Currency' : currency?.label}) = Basic Rate (${currency.label === undefined ? 'Currency' : currency?.label}) / Minimum Order Quantity`,
-        toolTipTextBasicPriceBaseCurrency: `Basic Price (${reactLocalStorage.getObject("baseCurrency")}) =  Basic Rate (${reactLocalStorage.getObject("baseCurrency")}) / Minimum Order Quantity`
-      }
-    }
-    this.setState({ toolTipTextBasicPrice: obj })
-    return obj
-  }
-
+    // Generate tooltip text based on the condition
+    return `${!this.state.hidePlantCurrency 
+        ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrency}, ` 
+        : ''}Exchange Rate: 1 ${currencyLabel} = ${settlementCurrencyRate} ${baseCurrency}`;
+};
   /**
    * @method componentDidMount
    * @description Called after rendering the component
    */
   componentDidMount() {
-
-
-
     const { initialConfiguration } = this.props
     this.setState({ costingTypeId: getCostingTypeIdByCostingPermission() })
     const { currency } = this.state
@@ -249,13 +242,12 @@ class AddBOPImport extends Component {
       ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? VBCTypeId : costingTypeId) :
       ZBCTypeId;
 
-    const hasCurrencyAndDate = fieldsObj?.plantCurrency && effectiveDate;
-    if (hasCurrencyAndDate) {
-      if (IsFetchExchangeRateVendorWise() && (vendorName?.length === 0 || client?.length === 0)) {
-        this.setState({ showWarning: true });
-        return;
-      }
-
+      const hasCurrencyAndDate = Boolean(fieldsObj?.plantCurrency && effectiveDate);
+      console.log('hasCurrencyAndDate: ', hasCurrencyAndDate);
+      if (hasCurrencyAndDate) {
+        if (IsFetchExchangeRateVendorWise() && (vendorName?.length === 0 && client?.length === 0)) {
+          return false;
+        }
       this.props.getExchangeRateByCurrency(
         currency.label,
         costingType,
@@ -328,22 +320,10 @@ class AddBOPImport extends Component {
 
   }
 
-  setInStateToolTip() {
-    const { currency, currencyValue } = this.state
-    const { initialConfiguration } = this.props
-
-    const obj = {
-      ...this.state.toolTipTextObject, netCostCurrency: this.toolTipNetCost(currency)?.toolTipTextNetCostSelectedCurrency, netCostBaseCurrency: this.toolTipNetCost(currency)?.toolTipTextNetCostBaseCurrency,
-      basicPriceSelectedCurrency: this.toolTipBasicPrice(currency)?.toolTipTextBasicPriceSelectedCurrency, basicPriceBaseCurrency: this.toolTipBasicPrice(currency)?.toolTipTextBasicPriceBaseCurrency
-      , toolTipTextBasicRateSelectedCurrency: `Basic Rate (${reactLocalStorage.getObject("baseCurrency")}) = (Basic Rate (${currency.label === undefined ? 'Currency' : currency?.label}) * Currency Rate (${currency.label === undefined ? '-' : currencyValue})`
-    }
-    this.setState({ toolTipTextObject: obj })
-  }
 
   componentDidUpdate(prevProps, prevState) {
     const { initialConfiguration } = this.props
     if (this.props.fieldsObj !== prevProps.fieldsObj) {
-      this.setInStateToolTip()
       this.handleCalculation()
     }
     if (!this.props.data.isViewMode /* && !this.state.isCallCalculation */) {
@@ -435,7 +415,17 @@ class AddBOPImport extends Component {
   */
   handleClient = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ client: newValue });
+      this.setState({ client: newValue }
+        , () => {
+          if (this.props.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
+             // First call with plant currency
+      this.callExchangeRateAPI(this.props.fieldsObj?.plantCurrency);
+
+      // Second call with base currency
+      this.callExchangeRateAPI(reactLocalStorage.getObject("baseCurrency"));
+          }
+        }
+      );
     } else {
       this.setState({ client: [] })
     }
@@ -568,8 +558,8 @@ class AddBOPImport extends Component {
             conditionTableData: Data?.BoughtOutPartConditionsDetails,
             totalOtherCost: Data?.OtherNetCost,
             otherCostTableData: Data?.BoughtOutPartOtherCostDetailsSchema,
-            plantCurrencyValue: Data?.LocalCurrencyExchangeRate,
-            currencyValue: Data?.CurrencyExchangeRate,
+            plantCurrencyValue: (Data?.LocalCurrencyExchangeRate??1),
+            currencyValue: (Data?.CurrencyExchangeRate??1),
             ExchangeRateId: Data?.ExchangeRateId,
             LocalCurrencyId: Data?.LocalCurrencyId,
             currency: { label: Data?.Currency, value: Data?.CurrencyId },
@@ -623,9 +613,6 @@ class AddBOPImport extends Component {
               SAPPartNumber: Data.SAPPartNumber !== undefined ? { label: Data.SAPPartNumber, value: Data.SAPPartNumber } : []
             }, () => {
               setTimeout(() => {
-                this.setInStateToolTip()
-                this.toolTipNetCost({ label: Data.Currency, value: Data.CurrencyId })
-                this.toolTipBasicPrice({ label: Data.Currency, value: Data.CurrencyId })
                 this.finalUserCheckAndMasterLevelCheckFunction(plantObj.value)
                 this.setState({ isLoader: false, isCallCalculation: false })
               }, 500)
@@ -802,7 +789,10 @@ class AddBOPImport extends Component {
       let Data = res?.data?.Data
       this.props.change('plantCurrency', Data?.Currency)
       if (Data?.Currency !== reactLocalStorage?.getObject("baseCurrency")) {
-        this.callExchangeRateAPI(this.props.fieldsObj?.plantCurrency)
+          // First call with plant currency
+      this.callExchangeRateAPI(this.props.fieldsObj?.plantCurrency);
+      // Second call with base currency
+      this.callExchangeRateAPI(reactLocalStorage.getObject("baseCurrency"));
         this.setState({ hidePlantCurrency: false, LocalCurrencyId: Data?.CurrencyId })
       } else {
         this.setState({ hidePlantCurrency: true })
@@ -837,14 +827,16 @@ class AddBOPImport extends Component {
     if (newValue && newValue !== '') {
       this.setState({ vendorName: newValue, isVendorNameNotSelected: false, }, () => {
         const { vendorName } = this.state;
+        if (this.props.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
+          this.callExchangeRateAPI(this.props.fieldsObj?.plantCurrency)
+        }
         this.props.getPlantBySupplier(vendorName.value, () => { })
         const { costingTypeId, currency, effectiveDate, client } = this.state;
         const costingType = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? VBCTypeId : costingTypeId) : ZBCTypeId
         const vendorValue = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? newValue.value : EMPTY_GUID) : EMPTY_GUID;
         if (this.state.currency && this.state.currency.length !== 0 && effectiveDate) {
-          if (IsFetchExchangeRateVendorWise() && (!newValue || newValue?.length === 0)) {
-            this.setState({ showWarning: true });
-            return;
+          if (IsFetchExchangeRateVendorWise() && (!newValue && newValue?.length === 0)) {
+            return false;
           }
           this.props.getExchangeRateByCurrency(currency.label, costingType, DayTime(effectiveDate).format('YYYY-MM-DD'), vendorValue, client.value, false, reactLocalStorage.getObject("baseCurrency"), this.state.ExchangeSource?.label ?? null, res => {
             if (Object.keys(res.data.Data).length === 0) {
@@ -935,11 +927,14 @@ class AddBOPImport extends Component {
       const { costingTypeId, vendorName, client } = this.state;
       const vendorValue = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? vendorName.value : EMPTY_GUID) : EMPTY_GUID
       const costingType = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? VBCTypeId : costingTypeId) : ZBCTypeId
-
+      this.setState({ currency: newValue, }, () => {
+        setTimeout(() => {
+          this.handleCalculation()
+        }, 200);
+      })
       if (newValue && newValue.length !== 0 && effectiveDate) {
-        if (IsFetchExchangeRateVendorWise() && (vendorName?.length === 0 || client?.length === 0)) {
-          this.setState({ showWarning: true });
-          return;
+        if (IsFetchExchangeRateVendorWise() && (vendorName?.length === 0 && client?.length === 0)) {
+          return false;
         }
         this.props.getExchangeRateByCurrency(newValue.label, costingType, DayTime(effectiveDate).format('YYYY-MM-DD'), vendorValue, client.value, false, reactLocalStorage.getObject("baseCurrency"), this.state.ExchangeSource?.label ?? null, res => {
           if (Object.keys(res.data.Data).length === 0) {
@@ -950,14 +945,7 @@ class AddBOPImport extends Component {
           this.setState({ currencyValue: checkForNull(res.data.Data.CurrencyExchangeRate), ExchangeRateId: res.data.Data.ExchangeRateId }, () => { this.handleCalculation() });
         });
       }
-      this.toolTipNetCost(newValue)
-      this.toolTipBasicPrice(newValue)
       this.setState({ showCurrency: true })
-      this.setState({ currency: newValue, }, () => {
-        setTimeout(() => {
-          this.handleCalculation()
-        }, 200);
-      })
     } else {
       this.setState({ currency: [] })
     }
@@ -1070,9 +1058,8 @@ class AddBOPImport extends Component {
       const costingType = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? VBCTypeId : costingTypeId) : ZBCTypeId
 
       if (currency && currency.length !== 0 && date) {
-        if (IsFetchExchangeRateVendorWise() && (vendorName?.length === 0 || client?.length === 0)) {
-          this.setState({ showWarning: true });
-          return;
+        if (IsFetchExchangeRateVendorWise() && (vendorName?.length === 0 && client?.length === 0)) {
+          return false;
         }
         this.props.getExchangeRateByCurrency(currency.label, costingType, DayTime(date).format('YYYY-MM-DD'), vendorValue, client.value, false, reactLocalStorage.getObject("baseCurrency"), this.state.ExchangeSource?.label ?? null, res => {
           if (Object.keys(res.data.Data).length === 0) {
@@ -2018,6 +2005,7 @@ class AddBOPImport extends Component {
                             <div className="left-border">{"Cost:"}</div>
                           </Col>
                           {<Col md="3">
+                            { !this.state.hidePlantCurrency&& <TooltipCustom id="plantCurrency" tooltipText = {`Exchange Rate: 1 ${this.props.fieldsObj?.plantCurrency??''} = ${this.state?.plantCurrencyValue??'-'} ${reactLocalStorage.getObject("baseCurrency")}`} />}
                             <Field
                               name="plantCurrency"
                               type="text"
@@ -2063,6 +2051,7 @@ class AddBOPImport extends Component {
                             />
                           </Col>}
                           <Col md="3">
+                          <TooltipCustom id="currency" tooltipText = {this.getTooltipTextForCurrency()}/>
                             <Field
                               name="Currency"
                               type="text"
@@ -2172,10 +2161,11 @@ class AddBOPImport extends Component {
                           </Col>
                           {!initialConfiguration?.IsBasicRateAndCostingConditionVisible && costingTypeId === ZBCTypeId && !isTechnologyVisible && <>
                             <Col md="3">
-                              <TooltipCustom id="bop-basic-currency" tooltipText={toolTipTextBasicPrice?.toolTipTextBasicPriceSelectedCurrency} />
+                              <TooltipCustom id="bop-basic-currency" disabledIcon={true} tooltipText={this.toolTipNetCost().toolTipTextBasicPrice} />
                               <Field
                                 label={`Basic Price/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label} (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label})`}
                                 name={"BasicPrice"}
+                                id="bop-basic-currency"
                                 type="text"
                                 placeholder={isEditFlag || (isEditFlag && isBOPAssociated) ? '-' : "Enter"}
                                 validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
@@ -2221,11 +2211,12 @@ class AddBOPImport extends Component {
                           </>}
                           {this.state.showCurrency && (!isTechnologyVisible || this.state.IsBreakupBoughtOutPart) && <>
                             <Col md="3">
-                              <TooltipCustom id="bop-net-cost-currency" tooltipText={toolTipTextNetCost?.toolTipTextNetCostSelectedCurrency} />
+                              <TooltipCustom id="bop-net-cost-currency" tooltipText={this.toolTipNetCost()?.toolTipTextNetCost} />
                               <Field
                                 label={`Net Cost/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label} (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label})`}
                                 name={this.state.netLandedConverionCost === 0 ? '' : "NetLandedCost"}
                                 type="text"
+                                id="bop-net-cost-currency"
                                 placeholder={"-"}
                                 validate={[]}
                                 component={renderTextInputField}
@@ -2236,10 +2227,11 @@ class AddBOPImport extends Component {
                               />
                             </Col>
                             {!this.state.hidePlantCurrency && <Col md="3">
-                              <TooltipCustom id="bop-net-cost-base" tooltipText={toolTipTextNetCost?.toolTipTextNetCostBaseCurrency} />
+                              <TooltipCustom id="bop-net-cost-plant" tooltipText={`Net Cost/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label} (${fieldsObj?.plantCurrency ?? 'Currency'})  = Net Cost * Plant Currency Rate (${this.state?.plantCurrencyValue})`} />
                               <Field
                                 label={`Net Cost/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label} (${fieldsObj?.plantCurrency ?? 'Currency'})`}
                                 name={"NetLandedCostPlantCurrency"}
+                                id="bop-net-cost-plant"
                                 type="text"
                                 placeholder={"-"}
                                 validate={[]}
@@ -2251,11 +2243,12 @@ class AddBOPImport extends Component {
                               />
                             </Col>}
                             <Col md="3">
-                              <TooltipCustom id="bop-net-cost-base" tooltipText={toolTipTextNetCost?.toolTipTextNetCostBaseCurrency} />
+                            <TooltipCustom id="bop-net-cost-Conversion" disabledIcon={true} tooltipText={`Net Cost/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label} (${reactLocalStorage.getObject("baseCurrency")})  = Net Cost * Currency Rate (${this.state?.currencyValue})`} />
                               <Field
                                 label={`Net Cost/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label} (${reactLocalStorage.getObject("baseCurrency")})`}
                                 name={this.state.netLandedConverionCost === 0 ? '' : "NetLandedCostBaseCurrency"}
                                 type="text"
+                                id="bop-net-cost-Conversion"
                                 placeholder={"-"}
                                 validate={[]}
                                 component={renderTextInputField}
@@ -2540,7 +2533,7 @@ class AddBOPImport extends Component {
 */
 function mapStateToProps(state) {
   const { comman, supplier, boughtOutparts, part, auth, costing, client } = state;
-  const fieldsObj = selector(state, 'NumberOfPieces', 'BasicRate', 'BoughtOutPartName', 'SAPPartNumber', 'plantCurrency', 'ExchangeSource');
+  const fieldsObj = selector(state, 'NumberOfPieces', 'BasicRate', 'BoughtOutPartName', 'SAPPartNumber', 'plantCurrency', 'ExchangeSource','Currency');
 
   const { bopCategorySelectList, bopData, IncoTermsSelectList, PaymentTermsSelectList } = boughtOutparts;
   const { plantList, filterPlantList, filterCityListBySupplier, cityList,
