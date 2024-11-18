@@ -246,11 +246,9 @@ class AddMachineRate extends Component {
         resolve(null);
         return;
       }
-
-      if (IsFetchExchangeRateVendorWise() && (vendorName?.length === 0 && client?.length === 0)) {
+      if (IsFetchExchangeRateVendorWise() && (costingTypeId !== ZBCTypeId&&vendorName?.length === 0 && client?.length === 0)) {
         return false;
       }
-
       const callAPI = (from, to) => {
         return new Promise((resolveAPI) => {
           this.props.getExchangeRateByCurrency(
@@ -645,12 +643,22 @@ class AddMachineRate extends Component {
 * @description called
 */
   handleClient = (newValue, actionMeta) => {
+    const { costingTypeId, client, effectiveDate, ExchangeSource, currency, isImport, selectedPlants,vendorName } = this.state;
+    const {fieldsObj}=this.props
     if (newValue && newValue !== '') {
       this.setState({ client: newValue }
         , () => {
           if (this.props.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
-            this.callExchangeRateAPI()
-          }
+            this.callExchangeRateAPI(costingTypeId, fieldsObj?.plantCurrency, currency, isImport, ExchangeSource, effectiveDate, newValue, vendorName, selectedPlants).then(result => {
+              if (result) {
+                this.setState({
+                  ...result,
+                  showWarning: result?.showWarning
+                }, () => {
+                  this.handleCalculation(this.fieldsObj?.MachineRate);
+                });
+              }
+            });      }
         }
       );
     }
@@ -781,20 +789,30 @@ class AddMachineRate extends Component {
   * @description called
   */
   handleVendorName = (newValue, actionMeta) => {
+    const { costingTypeId, client, effectiveDate, ExchangeSource, currency, isImport, selectedPlants } = this.state;
+const {fieldsObj}=this.props
     if (newValue && newValue !== '') {
       this.setState({ vendorName: newValue, isVendorNameNotSelected: false, vendorLocation: [] }, () => {
         const { vendorName } = this.state;
         this.props.getPlantBySupplier(vendorName.value, () => { })
       });
       if (this.props.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
-        this.callExchangeRateAPI()
-      }
+        this.callExchangeRateAPI(costingTypeId, fieldsObj?.plantCurrency, currency, isImport, ExchangeSource, effectiveDate, client, newValue, selectedPlants).then(result => {
+          if (result) {
+            this.setState({
+              ...result,
+              showWarning: result?.showWarning
+            }, () => {
+              this.handleCalculation(this.fieldsObj?.MachineRate);
+            });
+          }
+        });      }
     } else {
       this.setState({ vendorName: [], vendorLocation: [] })
       this.props.getPlantBySupplier('', () => { })
     }
   };
-
+  
   /**
   * @method handlePlants
   * @description called

@@ -159,7 +159,7 @@ class AddOperation extends Component {
     const toCurrency = reactLocalStorage.getObject("baseCurrency")
     const hasCurrencyAndDate = Boolean(fieldsObj?.plantCurrency && effectiveDate);
     if (hasCurrencyAndDate) {
-      if (IsFetchExchangeRateVendorWise() && (vendorName?.length === 0 && client?.length === 0)) {
+      if (IsFetchExchangeRateVendorWise() && (costingTypeId !== ZBCTypeId&&vendorName?.length === 0 && client?.length === 0)) {
         return false;
       }
 

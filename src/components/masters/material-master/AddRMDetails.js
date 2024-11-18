@@ -95,7 +95,7 @@ function AddRMDetails(props) {
 
     useEffect(() => {
         rawMaterailDetailsRef.current = rawMaterailDetails;
-    }, [rawMaterailDetails]);
+    }, [rawMaterailDetails,state.vendor]);
 
     useEffect(() => {
         dispatch(getPlantSelectListByType(ZBC, "MASTER", '', () => { }))

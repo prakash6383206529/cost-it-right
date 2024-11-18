@@ -1240,11 +1240,11 @@ export const displayUOM = (value) => {
   return value
 }
 export const labelWithUOMAndCurrency = (label, UOM, currency) => {
-  return <>{label}({currency ? currency : getConfigurationKey().BaseCurrency}/{UOM ? displayUOM(UOM) : 'UOM'})</>
+  return <>{label} ({currency ? currency : getConfigurationKey().BaseCurrency}/{UOM ? displayUOM(UOM) : 'UOM'})</>
 }
 
 export const labelWithUOMAndUOM = (label, UOM, ScrapUOM) => {
-  return <>{label}({UOM ? displayUOM(UOM) : 'UOM'}/{ScrapUOM ? displayUOM(ScrapUOM) : 'UOM'})</>
+  return <>{label} ({UOM ? displayUOM(UOM) : 'UOM'}/{ScrapUOM ? displayUOM(ScrapUOM) : 'UOM'})</>
 }
 
 // THIS FUNCTION SHOWING TITLE ON HOVER FOR ACTIVE AND INACTIVE STATUS IN GRID

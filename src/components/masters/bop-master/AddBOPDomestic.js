@@ -1250,7 +1250,7 @@ class AddBOPDomestic extends Component {
     }
     const netCost = checkForNull(totalBase) + checkForNull(this.props.fieldsObj?.BasicRate)
     this.setState({ isOpenOtherCostDrawer: true })
-    this.props.change('OtherCost', total)
+    this.props.change('OtherCost', checkForDecimalAndNull(total, getConfigurationKey().NoOfDecimalForPrice))
     this.setState({ isOpenOtherCostDrawer: false, otherCostTableData: data })
     this.setState({ isOpenOtherCostDrawer: false, otherCostTableData: data, BasicPrice: checkForNull(netCost) })
     this.setState(prevState => ({ ...prevState, NetCostPlantCurrency: checkForNull(totalBase) + checkForNull(this.props.fieldsObj?.BasicRate) }))
@@ -2142,8 +2142,8 @@ class AddBOPDomestic extends Component {
               EntryType={checkForNull(ENTRY_TYPE_DOMESTIC)}
               basicRateBase={this.state.BasicPrice}
               isFromImport={false}
-              currencyValue={this.state.currencyValue}
-              PlantCurrency={this.props.fieldsObj.plantCurrency}
+              currencyValue={this.state.currencyValue??''}
+              PlantCurrency={this.props.fieldsObj?.plantCurrency??''}
             />
           }
           {
@@ -2182,8 +2182,8 @@ class AddBOPDomestic extends Component {
               ViewMode={this.props.data.isViewMode}
               uom={this.state.UOM}
               isImport={false}
-              plantCurrency={this.props?.fieldsObj?.plantCurrency}
-              settlementCurrency={this.state?.currency?.label}
+              plantCurrency={this.props?.fieldsObj?.plantCurrency??''}
+              settlementCurrency={this.state?.currency?.label??''}
               isBOP={true}
             />
           }
