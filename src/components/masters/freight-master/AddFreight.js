@@ -122,15 +122,14 @@ class AddFreight extends Component {
     const { fieldsObj } = this.props
     const { costingTypeId, vendorName, client, effectiveDate, ExchangeSource, currency, isImport } = this.state;
 
-    const vendorValue = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? vendorName.value : EMPTY_GUID) : EMPTY_GUID
-    const costingType = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? VBCTypeId : costingTypeId) : ZBCTypeId
+    const vendorValue = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId) ? vendorName.value : EMPTY_GUID) : EMPTY_GUID
+    const costingType = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId) ? VBCTypeId : costingTypeId) : ZBCTypeId
     const fromCurrency = isImport ? currency?.label : fieldsObj?.plantCurrency
     const toCurrency = reactLocalStorage.getObject("baseCurrency")
     const hasCurrencyAndDate = fieldsObj?.plantCurrency && effectiveDate;
 
     if (hasCurrencyAndDate) {
-      if (IsFetchExchangeRateVendorWise() && (vendorName?.length === 0 || client?.length === 0)) {
-        this.setState({ showWarning: true });
+      if (IsFetchExchangeRateVendorWise() && (costingTypeId !== ZBCTypeId && vendorName?.length === 0 && client?.length === 0)) {
         return;
       }
 
@@ -203,26 +202,35 @@ class AddFreight extends Component {
   * @description Used for Vendor checked
   */
   onPressVendor = (costingHeadFlag) => {
-    const fieldsToClear = [
-      'Mode',
-      'vendorName',
-      'SourceLocation',
-      'DestinationLocation',
-      'clientName',
-      'Plant',
-      'DestinationPlant',
-    ];
-    fieldsToClear.forEach(fieldName => {
-      this.props.dispatch(clearFields('AddFreight', false, false, fieldName));
-    });
-    this.setState({
-      vendorName: [],
-      costingTypeId: costingHeadFlag
-    });
+    // Clear all form fields except costingHead
+    this.props.reset();
+    // Reset all state values except essential ones
+    const preservedState = {
+      costingTypeId: costingHeadFlag,
+      isViewMode: this.props?.data?.isViewMode,
+      isEditMode: this.props?.data?.isEditMode,
+      errorObj: {
+        capacity: false,
+        criteria: false,
+        rate: false,
+        load: false
+      }
+    };
     if (costingHeadFlag === CBCTypeId) {
-      this.props.getClientSelectList(() => { })
+      this.props.getClientSelectList(() => { });
     }
-  }
+    // Reset state to initial values
+    this.setState(
+      Object.keys(this.state).reduce((acc, key) => {
+        acc[key] = preservedState[key] ?? (Array.isArray(this.state[key]) ? [] : null);
+        return acc;
+      }, {}),
+      () => {
+
+      }
+    );
+  };
+
   /**
    * @method handleTransportMoodChange
    * @description  used to handle BOP Category Selection
@@ -1455,7 +1463,7 @@ class AddFreight extends Component {
                               valueDescription={this.state.RateCriteria}
                               required={true}
                             />
-                            {this.state.errorObj.criteria && this.state.RateCriteria.length === 0 && <div className='text-help p-absolute'>This field is required.</div>}
+                            {this.state.errorObj?.criteria && this.state?.RateCriteria.length === 0 && <div className='text-help p-absolute'>This field is required.</div>}
                           </Col>
                           {this.state.isImport && <Col md="3">
                             <Field

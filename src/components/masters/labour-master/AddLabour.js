@@ -140,8 +140,8 @@ class AddLabour extends Component {
     const costingType = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? VBCTypeId : costingTypeId) : ZBCTypeId
     const hasCurrencyAndDate = fieldsObj?.plantCurrency && effectiveDate;
     if (hasCurrencyAndDate) {
-      if (IsFetchExchangeRateVendorWise() && (vendorName?.length === 0 || client?.length === 0)) {
-        this.setState({ showWarning: true });
+      if (IsFetchExchangeRateVendorWise() && (vendorName?.length === 0 && client?.length === 0)) {
+
         return;
       }
       if (this.props.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
@@ -363,7 +363,9 @@ class AddLabour extends Component {
   onPressVendor = (costingHeadFlag) => {
     this.setState({
       vendorName: [],
-      costingTypeId: costingHeadFlag
+      costingTypeId: costingHeadFlag,
+      showPlantWarning: false,
+      showWarning: false
     });
   }
 
@@ -373,8 +375,21 @@ class AddLabour extends Component {
    */
   handleVendorName = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ vendorName: newValue, selectedVendorPlants: [], isVendorNameNotSelected: false })
-    } else {
+      this.setState(
+        {
+          vendorName: newValue,
+          selectedVendorPlants: [],
+          isVendorNameNotSelected: false
+        },
+        () => {
+          if (this.props.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
+            this.callExchangeRateAPI()
+          }
+        }
+      );
+    }
+    // ... existing code ...
+    else {
       this.setState({ vendorName: [], selectedVendorPlants: [] })
     }
   }
@@ -397,7 +412,11 @@ class AddLabour extends Component {
 
   handleClient = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ client: newValue });
+      this.setState({ client: newValue }, () => {
+        if (this.props?.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
+          this.callExchangeRateAPI()
+        }
+      });
     } else {
       this.setState({ client: [] })
     }

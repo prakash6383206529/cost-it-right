@@ -130,15 +130,14 @@ class AddFuel extends Component {
     const { fieldsObj } = this.props
     const { costingTypeId, vendorName, client, effectiveDate, ExchangeSource, currency, isImport } = this.state;
 
-    const vendorValue = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? vendorName.value : EMPTY_GUID) : EMPTY_GUID
-    const costingType = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? VBCTypeId : costingTypeId) : ZBCTypeId
+    const vendorValue = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId) ? vendorName?.value : EMPTY_GUID) : EMPTY_GUID
+    const costingType = IsFetchExchangeRateVendorWise() ? (costingTypeId === VBCTypeId ? VBCTypeId : costingTypeId) : ZBCTypeId
     const fromCurrency = isImport ? currency?.label : fieldsObj?.plantCurrency
     const toCurrency = reactLocalStorage.getObject("baseCurrency")
     const hasCurrencyAndDate = fieldsObj?.plantCurrency && effectiveDate;
 
     if (hasCurrencyAndDate) {
-      if (IsFetchExchangeRateVendorWise() && (vendorName?.length === 0 || client?.length === 0)) {
-        this.setState({ showWarning: true });
+      if (IsFetchExchangeRateVendorWise() && (costingTypeId !== ZBCTypeId && vendorName?.length === 0 && client?.length === 0)) {
         return;
       }
 
@@ -568,7 +567,10 @@ class AddFuel extends Component {
     });
     this.setState({
       vendorName: [],
-      costingTypeId: costingHeadFlag
+      costingTypeId: costingHeadFlag,
+      showPlantWarning: false,
+      showWarning: false
+
     });
     if (costingHeadFlag === CBCTypeId) {
       // this.props.getClientSelectList(() => { })
@@ -816,7 +818,11 @@ class AddFuel extends Component {
               ? getCodeBySplitting(vendorName.label)
               : ''
           this.setState({ VendorCode: result })
-          this.callExchangeRateAPI()
+          if (this.props?.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
+            this.callExchangeRateAPI()
+          }
+
+
           //this.props.getPlantBySupplier(vendorName.value, () => { })
         },
       )
@@ -832,7 +838,9 @@ class AddFuel extends Component {
   handleClient = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
       this.setState({ client: newValue }, () => {
-        this.callExchangeRateAPI()
+        if (this.props.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
+          this.callExchangeRateAPI()
+        }
       });
     } else {
       this.setState({ client: [] })
@@ -1091,7 +1099,7 @@ class AddFuel extends Component {
                               className=" "
                               customClassName=" withBorder"
                             />
-                            {this.state?.currency?.label && this.state?.showPlantWarning && <WarningMessage dClass="mb-3" message={`${this.props?.fieldsObj?.plantCurrency} rate is not present in the Exchange Master`} />}
+                            {this.state?.showPlantWarning && <WarningMessage dClass="mb-3" message={`${this.props?.fieldsObj?.plantCurrency} rate is not present in the Exchange Master`} />}
 
                           </Col>
                           {this.state.isImport && <Col md="3">
@@ -1112,7 +1120,7 @@ class AddFuel extends Component {
                               handleChangeDescription={this.handleCurrency}
                               valueDescription={this.state.currency}
                               disabled={isEditFlag ? true : false}
-                            >{this.state.showWarning && <WarningMessage dClass="mt-1" message={`${this.state.currency.label} rate is not present in the Exchange Master`} />}
+                            >{this.state?.currency?.label && this.state.showWarning && <WarningMessage dClass="mt-1" message={`${this.state.currency.label} rate is not present in the Exchange Master`} />}
                             </Field>
                           </Col>}
                           {costingTypeId === CBCTypeId && (
