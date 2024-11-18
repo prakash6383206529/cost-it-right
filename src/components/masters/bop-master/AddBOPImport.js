@@ -94,7 +94,7 @@ class AddBOPImport extends Component {
       DataToChange: [],
       DropdownChange: true,
       showWarning: false,
-      showPlantWarning:false,
+      showPlantWarning: false,
       uploadAttachements: true,
       updatedObj: {},
       setDisable: false,
@@ -2028,9 +2028,9 @@ class AddBOPImport extends Component {
                               required={false}
                               disabled={true}
                               className=" "
-                              customClassName=" withBorder"
+                              customClassName=" withBorder mb-1"
                             />
-                             {this.state.showPlantWarning && <WarningMessage dClass="mt-1" message={`${this.props.fieldsObj.plantCurrency} rate is not present in the Exchange Master`} />}
+                            {this.state.showPlantWarning && <WarningMessage dClass="mt-1" message={`${this.props.fieldsObj.plantCurrency} rate is not present in the Exchange Master`} />}
                           </Col>}
                           <Col md="3">
                             <Field
@@ -2159,12 +2159,18 @@ class AddBOPImport extends Component {
                                 id="addBOPDomestic_otherCost"
                                 onClick={this.otherCostToggle}
                                 className={"right mt-0 mb-2"}
-                                variant={isViewMode ? "view-icon-primary" : "plus-icon-square"}
+                                variant={
+                                  isViewMode
+                                    ? "view-icon-primary"
+                                    : !this.props.fieldsObj?.BasicRate
+                                      ? "blurPlus-icon-square"
+                                      : "plus-icon-square"
+                                }
                                 disabled={!this.props.fieldsObj?.BasicRate}
                               />
                             </div>
                           </Col>
-                          {initialConfiguration?.IsBasicRateAndCostingConditionVisible && costingTypeId === ZBCTypeId && !isTechnologyVisible && <>
+                          {!initialConfiguration?.IsBasicRateAndCostingConditionVisible && costingTypeId === ZBCTypeId && !isTechnologyVisible && <>
                             <Col md="3">
                               <TooltipCustom id="bop-basic-currency" tooltipText={toolTipTextBasicPrice?.toolTipTextBasicPriceSelectedCurrency} />
                               <Field

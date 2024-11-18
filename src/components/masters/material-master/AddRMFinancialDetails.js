@@ -93,7 +93,7 @@ function AddRMFinancialDetails(props) {
         NetConditionCost: 0,
         NetCostWithoutConditionCost: 0,
         hidePlantCurrency: false,
-        showPlantWarning:false
+        showPlantWarning: false
     });
     const [CurrencyExchangeRate, setCurrencyExchangeRate] = useState({
         plantCurrencyRate: 1,
@@ -149,7 +149,7 @@ function AddRMFinancialDetails(props) {
             dispatch(getPlantUnitAPI(plantValue?.value, (res) => {
                 let Data = res?.data?.Data
                 let CurrencyId = Data?.CurrencyId
-                let Currency =Data?.Currency
+                let Currency = Data?.Currency
                 setValue('plantCurrency', Data?.Currency)
                 if (Data?.Currency !== reactLocalStorage?.getObject("baseCurrency")) {
                     setState(prevState => ({ ...prevState, hidePlantCurrency: false }));
@@ -175,7 +175,7 @@ function AddRMFinancialDetails(props) {
                 }
             }));
         }
-    }, [getValues('Plants'), getValues('ExchangeSource'), state.effectiveDate ]);
+    }, [getValues('Plants'), getValues('ExchangeSource'), state.effectiveDate]);
     useEffect(() => {
         dispatch(getFrequencySettlement(() => { }))
         allFieldsInfoIcon(true)
@@ -1563,7 +1563,7 @@ function AddRMFinancialDetails(props) {
                                                 id="addRMDomestic_conditionToggle"
                                                 onClick={conditionToggle}
                                                 className={"right ml-1"}
-                                                variant={isViewFlag ? "view-icon-primary" : "plus-icon-square"}
+                                                variant={isViewFlag ? "view-icon-primary" : "blurPlus-icon-square"}
                                                 title={isViewFlag ? "View" : "Add"}
                                             />
                                         </div>

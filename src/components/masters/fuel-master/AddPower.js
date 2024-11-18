@@ -1961,7 +1961,7 @@ class AddPower extends Component {
                             required={false}
                             disabled={true}
                             className=" "
-                            customClassName=" withBorder"
+                            customClassName=" withBorder mb-1"
                           />
                           {this.state?.currency?.label && this.state?.showPlantWarning && <WarningMessage dClass="mt-0" message={`${this.props?.fieldsObj?.plantCurrency} rate is not present in the Exchange Master`} />}
 
