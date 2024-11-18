@@ -3317,7 +3317,7 @@ const CostingSummaryTable = (props) => {
                             </tr>
                           }
                           {
-                            initialConfiguration?.IsBasicRateAndCostingConditionVisible && <tr>
+                            initialConfiguration?.IsBasicRateAndCostingConditionVisible && <tr className={`${highlighter("nPOPrice", "main-row")} netPo-row`}>
                               <td>
                                 <span className={`d-block small-grey-text`}>Net Condition Cost</span>
                               </td>
