@@ -246,7 +246,7 @@ class AddMachineRate extends Component {
         resolve(null);
         return;
       }
-      if (IsFetchExchangeRateVendorWise() && (costingTypeId !== ZBCTypeId&&vendorName?.length === 0 && client?.length === 0)) {
+      if (IsFetchExchangeRateVendorWise() && (costingTypeId !== ZBCTypeId && vendorName?.length === 0 && client?.length === 0)) {
         return false;
       }
       const callAPI = (from, to) => {
@@ -643,8 +643,8 @@ class AddMachineRate extends Component {
 * @description called
 */
   handleClient = (newValue, actionMeta) => {
-    const { costingTypeId, client, effectiveDate, ExchangeSource, currency, isImport, selectedPlants,vendorName } = this.state;
-    const {fieldsObj}=this.props
+    const { costingTypeId, client, effectiveDate, ExchangeSource, currency, isImport, selectedPlants, vendorName } = this.state;
+    const { fieldsObj } = this.props
     if (newValue && newValue !== '') {
       this.setState({ client: newValue }
         , () => {
@@ -658,7 +658,8 @@ class AddMachineRate extends Component {
                   this.handleCalculation(this.fieldsObj?.MachineRate);
                 });
               }
-            });      }
+            });
+          }
         }
       );
     }
@@ -790,7 +791,7 @@ class AddMachineRate extends Component {
   */
   handleVendorName = (newValue, actionMeta) => {
     const { costingTypeId, client, effectiveDate, ExchangeSource, currency, isImport, selectedPlants } = this.state;
-const {fieldsObj}=this.props
+    const { fieldsObj } = this.props
     if (newValue && newValue !== '') {
       this.setState({ vendorName: newValue, isVendorNameNotSelected: false, vendorLocation: [] }, () => {
         const { vendorName } = this.state;
@@ -806,13 +807,14 @@ const {fieldsObj}=this.props
               this.handleCalculation(this.fieldsObj?.MachineRate);
             });
           }
-        });      }
+        });
+      }
     } else {
       this.setState({ vendorName: [], vendorLocation: [] })
       this.props.getPlantBySupplier('', () => { })
     }
   };
-  
+
   /**
   * @method handlePlants
   * @description called
@@ -1813,9 +1815,11 @@ const {fieldsObj}=this.props
     const settlementCurrencyRate = settlementCurrency ?? '-';
 
     // Generate tooltip text based on the condition
-    return `${!this.state.hidePlantCurrency
-      ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrencyLabel}, `
-      : ''}Exchange Rate: 1 ${currencyLabel} = ${settlementCurrencyRate} ${baseCurrency}`;
+    return <>
+      {!this.state.hidePlantCurrency
+        ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrency}, `
+        : ''}<p>Exchange Rate: 1 {currencyLabel} = {settlementCurrencyRate} {baseCurrency}</p>`
+    </>;
   };
   /**
   * @method render

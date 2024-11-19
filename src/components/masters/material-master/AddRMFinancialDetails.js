@@ -909,9 +909,11 @@ function AddRMFinancialDetails(props) {
         const settlementCurrencyRate = CurrencyExchangeRate?.settlementCurrencyRate ?? '-';
 
         // Generate tooltip text based on the condition
-        return `${!state.hidePlantCurrency
-            ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrency}, `
-            : ''}Exchange Rate: 1 ${currencyLabel} = ${settlementCurrencyRate} ${baseCurrency}`;
+        return <>
+            {!this.state.hidePlantCurrency
+                ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrency}, `
+                : ''}<p>Exchange Rate: 1 {currencyLabel} = {settlementCurrencyRate} {baseCurrency}</p>`
+        </>;
     };
     return (
         <Fragment>

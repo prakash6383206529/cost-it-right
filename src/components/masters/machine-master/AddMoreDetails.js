@@ -2973,26 +2973,28 @@ class AddMoreDetails extends Component {
   }
   machineRateTitle = () => {
     return {
-        tooltipTextPlantCurrency: `Machine Rate * Plant Currency Rate (${this.state?.plantCurrency ?? ''})`,
-        toolTipTextNetCostBaseCurrency: `Machine Rate * Currency Rate (${this.state?.settlementCurrency ?? ''})`,
+      tooltipTextPlantCurrency: `Machine Rate * Plant Currency Rate (${this.state?.plantCurrency ?? ''})`,
+      toolTipTextNetCostBaseCurrency: `Machine Rate * Currency Rate (${this.state?.settlementCurrency ?? ''})`,
     };
-};
-getTooltipTextForCurrency = () => {
-  const {fieldsObj}=this.props
-  const {settlementCurrency,plantCurrency,currency}=this.state
-  const currencyLabel = currency?.label??'Currency';
-  const plantCurrencyLabel = fieldsObj?.plantCurrency??'Plant Currency';
-  const baseCurrency = reactLocalStorage.getObject("baseCurrency");
-  
-  // Check the exchange rates or provide a default placeholder if undefined
-  const plantCurrencyRate = plantCurrency?? '-';
-  const settlementCurrencyRate = settlementCurrency ?? '-';
+  };
+  getTooltipTextForCurrency = () => {
+    const { fieldsObj } = this.props
+    const { settlementCurrency, plantCurrency, currency } = this.state
+    const currencyLabel = currency?.label ?? 'Currency';
+    const plantCurrencyLabel = fieldsObj?.plantCurrency ?? 'Plant Currency';
+    const baseCurrency = reactLocalStorage.getObject("baseCurrency");
 
-  // Generate tooltip text based on the condition
-  return `${!this.state.hidePlantCurrency 
-      ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrencyLabel}, ` 
-      : ''}Exchange Rate: 1 ${currencyLabel} = ${settlementCurrencyRate} ${baseCurrency}`;
-};
+    // Check the exchange rates or provide a default placeholder if undefined
+    const plantCurrencyRate = plantCurrency ?? '-';
+    const settlementCurrencyRate = settlementCurrency ?? '-';
+
+    // Generate tooltip text based on the condition
+    return <>
+      {!this.state.hidePlantCurrency
+        ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrency}, `
+        : ''}<p>Exchange Rate: 1 {currencyLabel} = {settlementCurrencyRate} {baseCurrency}</p>`
+    </>;
+  };
 
   /**
    * @method render
@@ -3406,7 +3408,7 @@ getTooltipTextForCurrency = () => {
                           />
                         </Col>
                         <Col Col md="3" className='p-relative'>
-                        {this.props.fieldsObj?.plantCurrency&& !this.state.hidePlantCurrency&&!this.state.entryType&& <TooltipCustom id="plantCurrency" tooltipText = {`Exchange Rate: 1 ${this.props.fieldsObj?.plantCurrency} = ${this.state?.plantCurrency??'-'} ${reactLocalStorage.getObject("baseCurrency")}`} />}
+                          {this.props.fieldsObj?.plantCurrency && !this.state.hidePlantCurrency && !this.state.entryType && <TooltipCustom id="plantCurrency" tooltipText={`Exchange Rate: 1 ${this.props.fieldsObj?.plantCurrency} = ${this.state?.plantCurrency ?? '-'} ${reactLocalStorage.getObject("baseCurrency")}`} />}
                           <Field
                             label="Plant Currency"
                             name="plantCurrency"
@@ -3421,7 +3423,7 @@ getTooltipTextForCurrency = () => {
                         </Col>
 
                         {this.state?.entryType && <Col md="3">
-                          <TooltipCustom id="currency" tooltipText = {this.getTooltipTextForCurrency()}/>
+                          <TooltipCustom id="currency" tooltipText={this.getTooltipTextForCurrency()} />
                           <Field
                             name="Currency"
                             type="text"
@@ -4919,7 +4921,7 @@ getTooltipTextForCurrency = () => {
                                   {this.state.errorObj?.MachineRateLocalConversion && (this.props?.fieldsObj?.MachineRateLocalConversion === undefined || Number(this.props?.fieldsObj?.MachineRateLocalConversion) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
                                 </Col>}
                                 {(!(!this?.state?.entryType && this?.state?.hidePlantCurrency)) && <Col md="4" className='UOM-label-container p-relative'>
-                                  <TooltipCustom disabledIcon={true} id="machine-rate" tooltipText={this?.state?.isImport?this.machineRateTitle()?.toolTipTextNetCostBaseCurrency:this.machineRateTitle()?.tooltipTextPlantCurrency} />
+                                  <TooltipCustom disabledIcon={true} id="machine-rate" tooltipText={this?.state?.isImport ? this.machineRateTitle()?.toolTipTextNetCostBaseCurrency : this.machineRateTitle()?.tooltipTextPlantCurrency} />
                                   <Field
                                     label={this.DisplayMachineRateBaseCurrencyLabel()}
                                     name={"MachineRateConversion"}

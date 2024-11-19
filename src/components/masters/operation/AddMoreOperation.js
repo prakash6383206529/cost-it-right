@@ -1079,9 +1079,11 @@ function AddMoreOperation(props) {
         const settlementCurrencyRate = settlementCurrency ?? '-';
 
         // Generate tooltip text based on the condition
-        return `${!state.hidePlantCurrency
-            ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrencyLabel}, `
-            : ''}Exchange Rate: 1 ${currencyLabel} = ${settlementCurrencyRate} ${baseCurrency}`;
+        return <>
+            {!this.state.hidePlantCurrency
+                ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrency}, `
+                : ''}<p>Exchange Rate: 1 {currencyLabel} = {settlementCurrencyRate} {baseCurrency}</p>`
+        </>;
     };
     return (
         <div className="container-fluid">

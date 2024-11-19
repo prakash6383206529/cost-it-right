@@ -159,7 +159,7 @@ class AddOperation extends Component {
     const toCurrency = reactLocalStorage.getObject("baseCurrency")
     const hasCurrencyAndDate = Boolean(fieldsObj?.plantCurrency && effectiveDate);
     if (hasCurrencyAndDate) {
-      if (IsFetchExchangeRateVendorWise() && (costingTypeId !== ZBCTypeId&&vendorName?.length === 0 && client?.length === 0)) {
+      if (IsFetchExchangeRateVendorWise() && (costingTypeId !== ZBCTypeId && vendorName?.length === 0 && client?.length === 0)) {
         return false;
       }
 
@@ -1236,9 +1236,11 @@ class AddOperation extends Component {
     const settlementCurrencyRate = settlementCurrency ?? '-';
 
     // Generate tooltip text based on the condition
-    return `${!this.state.hidePlantCurrency
-      ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrencyLabel}, `
-      : ''}Exchange Rate: 1 ${currencyLabel} = ${settlementCurrencyRate} ${baseCurrency}`;
+    return <>
+      {!this.state.hidePlantCurrency
+        ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrency}, `
+        : ''}<p>Exchange Rate: 1 {currencyLabel} = {settlementCurrencyRate} {baseCurrency}</p>`
+    </>;
   };
   /**
   * @method render
