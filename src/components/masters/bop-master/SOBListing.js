@@ -116,7 +116,7 @@ const SOBListing = (props) => {
   * @description GET DATALIST OF IMPORT BOP
   */
 
-  const getDataList = (skip = 0, take = defaultPageSize, isPagination = true, dataObj = {}, isReset = false) => {
+  const getDataList = (skip = 0, take = defaultPageSize,  dataObj = {},isPagination = true, isReset = false) => {
     // Construct filter data with all required parameters
     
 
@@ -193,6 +193,7 @@ const SOBListing = (props) => {
           ...prevState,
           tableData: []
         }));
+        dispatch(updatePageNumber(0))
       } else {
         // Handle error
         setState(prevState => ({
@@ -401,7 +402,7 @@ const SOBListing = (props) => {
       }, 400)
     } else {
       // Download all data
-      getDataList(0, globalTakes, true, floatingFilterData)
+      getDataList(0, globalTakes,floatingFilterData, true )
     }
   }
 
@@ -513,7 +514,7 @@ const SOBListing = (props) => {
     // Reset grid state
     gridOptions?.columnApi?.resetColumnState(null)
     gridOptions?.api?.setFilterModel(null)
-    
+    dispatch(resetStatePagination())
     // Reset filters
     setFloatingFilterData({
       BoughtOutPartNumber: "",
@@ -523,7 +524,7 @@ const SOBListing = (props) => {
 
     // Reset pagination
     dispatch(updatePageNumber(1))
-    dispatch(updateCurrentRowIndex(10))
+    dispatch(updateCurrentRowIndex(0))
     dispatch(updateGlobalTake(10))
     dispatch(updatePageSize({ pageSize10: true, pageSize50: false, pageSize100: false }))
 
@@ -532,7 +533,7 @@ const SOBListing = (props) => {
     reactLocalStorage.setObject('selectedRow', {})
 
     // Fetch fresh data
-    getDataList(0, globalTakes, true, floatingFilterData, true)
+    getDataList(0, globalTakes, floatingFilterData, true,true)
   }
   const handleShown = () => {
     setState((prevState) => ({ ...prevState, shown: !state.shown }))
@@ -598,12 +599,12 @@ const SOBListing = (props) => {
     setIsFilterButtonClicked(true)
     // setPageNo(1)
     dispatch(updatePageNumber(1))
-    dispatch(updateCurrentRowIndex(10))
+    dispatch(updateCurrentRowIndex(0))
     
     
     // setCurrentRowIndex(0)
     gridOptions?.columnApi?.resetColumnState();
-    getDataList(0, globalTakes, true, floatingFilterData)
+    getDataList(0, globalTakes, floatingFilterData,true)
   }
   return (
     <div className={`ag-grid-react ${permissions.Download ? "show-table-btn" : ""} min-height100vh`}>

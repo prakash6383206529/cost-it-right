@@ -68,7 +68,7 @@ const PaginationControls = ({ totalRecordCount, getDataList, floatingFilterData,
                 getDataList(newSkip, pageSizeValue, true)
                 break;
                 case 'SOB' :
-                    getDataList(newSkip , pageSizeValue , true , floatingFilterData)
+                    getDataList(newSkip , pageSizeValue , floatingFilterData, true)
                     break;
     
             // audit             getDataList(skip, pageSize, true, filterDataObj);
@@ -117,7 +117,7 @@ const PaginationControls = ({ totalRecordCount, getDataList, floatingFilterData,
             )}
             {pageSize?.pageSize100 && (
                 <p className="next-page-pg custom-left-arrow">
-                    Page <span className="text-primary">{pageNo}</span> of {totalRecordCount ? (Math.ceil(totalRecordCount / 60)) : 0}
+                    Page <span className="text-primary">{pageNo}</span> of {totalRecordCount ? (Math.ceil(totalRecordCount / 100)) : 0}
                 </p>
             )}
             <p>
