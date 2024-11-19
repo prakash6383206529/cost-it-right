@@ -37,12 +37,10 @@ import { useTranslation } from 'react-i18next';
 import BulkUpload from '../../massUpload/BulkUpload';
 import RfqMasterApprovalDrawer from './RfqMasterApprovalDrawer';
 import { useLabels, useWithLocalization } from '../../../helper/core';
-
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
-const MyLazyComponent = lazy(() => import('../../massUpload/BulkUpload'));
 
 function RMDomesticListing(props) {
     const { AddAccessibility, BulkUploadAccessibility, ViewRMAccessibility, EditAccessibility, DeleteAccessibility, DownloadAccessibility, isSimulation, apply, selectionForListingMasterAPI, objectForMultipleSimulation, ListFor, initialConfiguration } = props;

@@ -735,7 +735,7 @@ input.form-control {
   overflow-y: auto;
 }
 
-.height152-label+div .attachment-wrapper {
+.height152-label + div .attachment-wrapper {
   max-height: 152px;
 }
 
@@ -872,7 +872,7 @@ input::-webkit-input-placeholder {
         }
       }
 
-      >.d-inline-flex {
+      > .d-inline-flex {
         position: relative;
         z-index: 12;
       }
@@ -930,12 +930,16 @@ button.user-btn.pull-right {
 }
 
 .react-bs-table-container .react-bs-table .sort-column .dropup .caret {
-  background: transparent url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAYAAABWdVznAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAK8AAACvABQqw0mAAAACV0RVh0U29mdHdhcmUATWFjcm9tZWRpYSBGaXJld29ya3MgTVggMjAwNId2rM8AAADxSURBVHicY2BAB6H/mZUzL+xVSj+viiHHwMDAiMJLO8OqwsJ6gpGRwej/P4ZHfxj/+T+YZngBuwaoYgaG/0b/YRL/GTE0MaGb/O8/wy6G/wwM//8zHmRg/C/E8p9po0LWeQOEBhTF/xf8//e/h4GBgeE/A+MJhv9MFeiamJRZ2dbAFN+dZpCI7N470/WmwjQxMzAtlku/qsXy6+/PajYGtvt3ZxgUYAuVO9P1pipnXPrzj+n/90czta+xPJ5heoWBgQGrYhi4O0NvJqqnSQAka2DBFGH+yfCfgYH5/1+shmEI3hfVPfKX4a/hB0a2JmwaAFZTZQVmByh5AAAAAElFTkSuQmCC) 11px 11px;
+  background: transparent
+    url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAYAAABWdVznAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAK8AAACvABQqw0mAAAACV0RVh0U29mdHdhcmUATWFjcm9tZWRpYSBGaXJld29ya3MgTVggMjAwNId2rM8AAADxSURBVHicY2BAB6H/mZUzL+xVSj+viiHHwMDAiMJLO8OqwsJ6gpGRwej/P4ZHfxj/+T+YZngBuwaoYgaG/0b/YRL/GTE0MaGb/O8/wy6G/wwM//8zHmRg/C/E8p9po0LWeQOEBhTF/xf8//e/h4GBgeE/A+MJhv9MFeiamJRZ2dbAFN+dZpCI7N470/WmwjQxMzAtlku/qsXy6+/PajYGtvt3ZxgUYAuVO9P1pipnXPrzj+n/90czta+xPJ5heoWBgQGrYhi4O0NvJqqnSQAka2DBFGH+yfCfgYH5/1+shmEI3hfVPfKX4a/hB0a2JmwaAFZTZQVmByh5AAAAAElFTkSuQmCC)
+    11px 11px;
 }
 
 .react-bs-table-container .react-bs-table .sort-column .dropdown .caret,
 .react-bs-table-container .react-bs-table .sort-column .dropup .caret {
-  background: transparent url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAYAAABWdVznAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAK8AAACvABQqw0mAAAACV0RVh0U29mdHdhcmUATWFjcm9tZWRpYSBGaXJld29ya3MgTVggMjAwNId2rM8AAADxSURBVHicY2BAB6H/mZUzL+xVSj+viiHHwMDAiMJLO8OqwsJ6gpGRwej/P4ZHfxj/+T+YZngBuwaoYgaG/0b/YRL/GTE0MaGb/O8/wy6G/wwM//8zHmRg/C/E8p9po0LWeQOEBhTF/xf8//e/h4GBgeE/A+MJhv9MFeiamJRZ2dbAFN+dZpCI7N470/WmwjQxMzAtlku/qsXy6+/PajYGtvt3ZxgUYAuVO9P1pipnXPrzj+n/90czta+xPJ5heoWBgQGrYhi4O0NvJqqnSQAka2DBFGH+yfCfgYH5/1+shmEI3hfVPfKX4a/hB0a2JmwaAFZTZQVmByh5AAAAAElFTkSuQmCC) 0 0;
+  background: transparent
+    url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAYAAABWdVznAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAK8AAACvABQqw0mAAAACV0RVh0U29mdHdhcmUATWFjcm9tZWRpYSBGaXJld29ya3MgTVggMjAwNId2rM8AAADxSURBVHicY2BAB6H/mZUzL+xVSj+viiHHwMDAiMJLO8OqwsJ6gpGRwej/P4ZHfxj/+T+YZngBuwaoYgaG/0b/YRL/GTE0MaGb/O8/wy6G/wwM//8zHmRg/C/E8p9po0LWeQOEBhTF/xf8//e/h4GBgeE/A+MJhv9MFeiamJRZ2dbAFN+dZpCI7N470/WmwjQxMzAtlku/qsXy6+/PajYGtvt3ZxgUYAuVO9P1pipnXPrzj+n/90czta+xPJ5heoWBgQGrYhi4O0NvJqqnSQAka2DBFGH+yfCfgYH5/1+shmEI3hfVPfKX4a/hB0a2JmwaAFZTZQVmByh5AAAAAElFTkSuQmCC)
+    0 0;
   width: 11px;
 }
 
@@ -966,7 +970,6 @@ button.user-btn.pull-right {
 // filter row in drawer or filter row normal start
 .filter-row {
   .filter-block {
-
     .flex-fill,
     .flex-fills {
       padding-right: 10px;
@@ -1010,7 +1013,6 @@ button.user-btn.pull-right {
 .main-section {
   .content-page {
     .filter-block {
-
       .css-yk16xz-control,
       .css-1pahdxg-control {
         min-height: 32px !important;
@@ -1299,7 +1301,7 @@ $roboto: "Roboto", sans-serif;
   }
 }
 
-.date-section+.fa-calendar {
+.date-section + .fa-calendar {
   margin-top: 35px;
 }
 
@@ -1669,10 +1671,9 @@ body {
 // =================approval-summary=========================
 .approval-listing-page {
   .react-bs-table-container {
-
     th,
     td {
-      >input[type="checkbox"] {
+      > input[type="checkbox"] {
         min-width: 12px;
       }
     }
@@ -1680,7 +1681,7 @@ body {
     .react-bs-container-body {
       tr {
         td {
-          >div {
+          > div {
             overflow: hidden;
             white-space: nowrap;
             text-overflow: ellipsis;
@@ -1875,7 +1876,6 @@ html {
 
     .sf-btn-footer,
     .MuiPaper-root {
-
       .save-btn,
       .cancel-btn {
         vertical-align: middle;
@@ -1962,12 +1962,14 @@ html {
 
 .sort-column {
   .order {
-    >.dropup {
+    > .dropup {
       display: none;
     }
 
     .caret {
-      background: transparent url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAYAAABWdVznAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAK8AAACvABQqw0mAAAACV0RVh0U29mdHdhcmUATWFjcm9tZWRpYSBGaXJld29ya3MgTVggMjAwNId2rM8AAAEDSURBVHicjdK9L0NxFMbxz72aiMFiMSIag0Ri+kVCbBaLgZE2LCSN0SpGk1i8DBImFot07H9w46VNMEkk/gCTGIhbg0uuahPPer7POSfnPFGz2ZRXf+VetfzSiyIaIYQ0X4+1qFp+ibCJa0y21v8YMn137f6voaMKxfUbadolTiMPB2MdwSRJooXjuFk4XXqPeC+hZ3bn9nBrqj2M3fPl9KiAUWxgYGvqtQv7beATlDAYr9Yad1jEM7ZRyfF5+BLz0fcfkiQZxwX6fJ10GjXMZPBECOEjHqrUQQihjrls0nQ24RcM8ePeuDamp8zwA0erV187tkZjeK3ubOVtBAeYaY3GJwsKVkX7/KNqAAAAAElFTkSuQmCC) 11px 11px;
+      background: transparent
+        url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAYAAABWdVznAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAK8AAACvABQqw0mAAAACV0RVh0U29mdHdhcmUATWFjcm9tZWRpYSBGaXJld29ya3MgTVggMjAwNId2rM8AAAEDSURBVHicjdK9L0NxFMbxz72aiMFiMSIag0Ri+kVCbBaLgZE2LCSN0SpGk1i8DBImFot07H9w46VNMEkk/gCTGIhbg0uuahPPer7POSfnPFGz2ZRXf+VetfzSiyIaIYQ0X4+1qFp+ibCJa0y21v8YMn137f6voaMKxfUbadolTiMPB2MdwSRJooXjuFk4XXqPeC+hZ3bn9nBrqj2M3fPl9KiAUWxgYGvqtQv7beATlDAYr9Yad1jEM7ZRyfF5+BLz0fcfkiQZxwX6fJ10GjXMZPBECOEjHqrUQQihjrls0nQ24RcM8ePeuDamp8zwA0erV187tkZjeK3ubOVtBAeYaY3GJwsKVkX7/KNqAAAAAElFTkSuQmCC)
+        11px 11px;
       width: 11px;
       height: 11px;
       display: inline-block;
@@ -1978,7 +1980,9 @@ html {
 
   .order.dropup {
     .caret {
-      background: transparent url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAYAAABWdVznAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAK8AAACvABQqw0mAAAACV0RVh0U29mdHdhcmUATWFjcm9tZWRpYSBGaXJld29ya3MgTVggMjAwNId2rM8AAADxSURBVHicY2BAB6H/mZUzL+xVSj+viiHHwMDAiMJLO8OqwsJ6gpGRwej/P4ZHfxj/+T+YZngBuwaoYgaG/0b/YRL/GTE0MaGb/O8/wy6G/wwM//8zHmRg/C/E8p9po0LWeQOEBhTF/xf8//e/h4GBgeE/A+MJhv9MFeiamJRZ2dbAFN+dZpCI7N470/WmwjQxMzAtlku/qsXy6+/PajYGtvt3ZxgUYAuVO9P1pipnXPrzj+n/90czta+xPJ5heoWBgQGrYhi4O0NvJqqnSQAka2DBFGH+yfCfgYH5/1+shmEI3hfVPfKX4a/hB0a2JmwaAFZTZQVmByh5AAAAAElFTkSuQmCC) 0 0 !important;
+      background: transparent
+        url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAYAAABWdVznAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAK8AAACvABQqw0mAAAACV0RVh0U29mdHdhcmUATWFjcm9tZWRpYSBGaXJld29ya3MgTVggMjAwNId2rM8AAADxSURBVHicY2BAB6H/mZUzL+xVSj+viiHHwMDAiMJLO8OqwsJ6gpGRwej/P4ZHfxj/+T+YZngBuwaoYgaG/0b/YRL/GTE0MaGb/O8/wy6G/wwM//8zHmRg/C/E8p9po0LWeQOEBhTF/xf8//e/h4GBgeE/A+MJhv9MFeiamJRZ2dbAFN+dZpCI7N470/WmwjQxMzAtlku/qsXy6+/PajYGtvt3ZxgUYAuVO9P1pipnXPrzj+n/90czta+xPJ5heoWBgQGrYhi4O0NvJqqnSQAka2DBFGH+yfCfgYH5/1+shmEI3hfVPfKX4a/hB0a2JmwaAFZTZQVmByh5AAAAAElFTkSuQmCC)
+        0 0 !important;
     }
   }
 }
@@ -1988,17 +1992,16 @@ html {
   margin: 0 !important;
   width: 100% !important;
 
-  >div {
+  > div {
     width: 100% !important;
 
-    >input {
+    > input {
       width: 100% !important;
     }
   }
 }
 
 .select__value-container--has-value {
-
   .css-1g6gooi,
   .css-b8ldur-Input {
     width: 30px !important;
@@ -2233,7 +2236,6 @@ html {
 
 //fire-fox css
 @-moz-document url-prefix() {
-
   // input range slider 'Net Landed Range (INR)' css
   .input-range {
     .input-range__slider-container {
@@ -2483,7 +2485,6 @@ table {
 }
 
 .add-min-height {
-
   .btn-secondary,
   .btn-primary,
   .user-btn,
@@ -2510,7 +2511,6 @@ button:disabled {
 //fire-fox css
 @-moz-document url-prefix() {
   .add-min-height {
-
     .mt30.reset-btn,
     .mt30.btn-primary,
     .user-btn.mt30 {
@@ -2529,7 +2529,6 @@ button:disabled {
 .costing-details-page {
   .sticky-top-0 {
     .table {
-
       td,
       th {
         padding: 0.71rem 12px;
@@ -2546,10 +2545,8 @@ button:disabled {
   }
 
   .costing-table-next {
-
     &.costing-table-vbc,
     &.costing-table-zbc {
-
       th,
       td {
         padding: 0.71rem 20px;
@@ -2766,10 +2763,9 @@ button:disabled {
 }
 
 .react-bs-table-container {
-
   th,
   td {
-    >input[type="checkbox"] {
+    > input[type="checkbox"] {
       min-width: 24px;
     }
   }
@@ -2829,7 +2825,7 @@ button:disabled {
       }
     }
 
-    input:not(:placeholder-shown)+.input-group-btn {
+    input:not(:placeholder-shown) + .input-group-btn {
       opacity: 1;
     }
   }
@@ -2873,7 +2869,7 @@ button:disabled {
       .btn-success:focus,
       .btn-success:not(:disabled):not(.disabled).active:focus,
       .btn-success:not(:disabled):not(.disabled):active:focus,
-      .show>.btn-success.dropdown-toggle:focus {
+      .show > .btn-success.dropdown-toggle:focus {
         box-shadow: none;
       }
     }
@@ -2944,7 +2940,7 @@ button:disabled,
 
   .plus,
   .check-icon,
-  >img,
+  > img,
   .save-icon,
   .send-for-approval,
   .back-icon,
@@ -3166,7 +3162,6 @@ button:disabled,
 }
 
 .btn-primary {
-
   &:hover,
   &:focus,
   &:active:focus {
@@ -3287,7 +3282,6 @@ button:disabled,
 
 .costing-details-page {
   .table {
-
     td,
     th {
       padding: 0.71rem 15px;
@@ -3316,7 +3310,6 @@ button:disabled,
 
     table {
       td {
-
         label,
         label:empty {
           display: none;
@@ -3366,15 +3359,15 @@ button:disabled,
   .costing-highlight-row {
     background-color: $hightlightRowBackground;
 
-    >div {
-      >td {
+    > div {
+      > td {
         padding: 15px 30px;
       }
     }
   }
 
   .costing-highlight-row.accordian-row {
-    >td {
+    > td {
       padding: 10px 30px;
     }
   }
@@ -3612,7 +3605,7 @@ body {
 
 .costing-details-page {
   .accordian-row {
-    >td {
+    > td {
       padding: 15px;
     }
   }
@@ -3662,7 +3655,7 @@ body {
     width: 870px;
     min-width: unset;
 
-    >.row {
+    > .row {
       margin-left: 0;
       margin-right: 0px;
     }
@@ -3681,10 +3674,8 @@ body {
 
 .shadow-lgg.login-formg,
 .drawer-wrapper {
-
   .form,
   form {
-
     .left-border,
     .flex-fills {
       margin-bottom: 10px;
@@ -3699,7 +3690,6 @@ body {
     }
 
     .form-group {
-
       .form-group-searchable-select,
       .form-group {
         margin-bottom: 0;
@@ -3749,7 +3739,6 @@ body {
 }
 
 .labour-filter-block {
-
   .flex-fill:nth-child(6),
   .flex-fill:nth-child(2) {
     min-width: 126px;
@@ -3768,10 +3757,9 @@ body {
   }
 }
 
-.left-side-menu+.content-page {
+.left-side-menu + .content-page {
   .react-bs-table-container {
     td {
-
       .Edit,
       .Delete,
       .View,
@@ -3805,7 +3793,6 @@ body {
 
   .shadow-lgg.login-formg {
     table {
-
       .form-group,
       .inputwith-icon,
       .form-group-searchable-select {
@@ -3814,7 +3801,6 @@ body {
     }
 
     .form {
-
       .form-group,
       .inputwith-icon,
       .form-group-searchable-select {
@@ -3823,7 +3809,6 @@ body {
 
       .costing-table-next {
         .cr-select-height {
-
           .form-group-searchable-select,
           .form-group {
             margin-bottom: 0px;
@@ -3870,7 +3855,7 @@ body {
 }
 
 .css-4ljt47-MenuList {
-  >div {
+  > div {
     word-break: break-word;
   }
 }
@@ -3915,7 +3900,6 @@ body {
 }
 
 body {
-
   .css-1fhf3k1-control,
   .css-f0arjc-control {
     background-color: #e6e6e6;
@@ -3944,7 +3928,6 @@ body {
 
 .add-bop-drawer {
   table {
-
     td,
     th {
       padding: 0.71rem 0.35rem;
@@ -3959,7 +3942,6 @@ body {
     min-width: 1280px;
 
     table {
-
       td,
       th {
         padding: 0.71rem 0.35rem;
@@ -3968,8 +3950,8 @@ body {
   }
 }
 
-.react-bs-table .react-bs-container-footer>table>thead>tr>th,
-.react-bs-table .react-bs-container-header>table>thead>tr>th {
+.react-bs-table .react-bs-container-footer > table > thead > tr > th,
+.react-bs-table .react-bs-container-header > table > thead > tr > th {
   vertical-align: bottom;
 }
 
@@ -4113,7 +4095,6 @@ body {
 
 //fire-fox css
 @-moz-document url-prefix() {
-
   .accordian-table-with-arrow,
   .accordian-table-with-arrow.table.cr-brdr-main {
     tbody {
@@ -4148,7 +4129,7 @@ body {
     cursor: pointer;
   }
 
-  >span {
+  > span {
     position: relative;
     display: inline-block;
     vertical-align: middle;
@@ -4182,7 +4163,7 @@ body {
     }
   }
 
-  input:checked~span {
+  input:checked ~ span {
     &:before {
       border-color: $colorPrimary;
     }
@@ -4192,14 +4173,14 @@ body {
     }
   }
 
-  input:disabled~span {
+  input:disabled ~ span {
     opacity: 0.5;
   }
 
   input[type="radio"]:disabled {
     cursor: not-allowed;
 
-    &~span {
+    & ~ span {
       cursor: not-allowed;
     }
   }
@@ -4225,21 +4206,20 @@ body {
 }
 
 .switch {
-
   .left-title,
   .right-title {
     vertical-align: middle;
   }
 
-  >.switch-level>div {
+  > .switch-level > div {
     vertical-align: middle;
   }
 }
 
 .approval-summary-page {
   .costing-summary-row {
-    >.row {
-      >.text-right.col-md-8 {
+    > .row {
+      > .text-right.col-md-8 {
         flex: 0 0 100%;
         max-width: 100%;
       }
@@ -4443,7 +4423,6 @@ body {
 
 // simulation page
 .costing-simulation-page {
-
   .red-value,
   .green-value {
     min-width: 94px !important;
@@ -4512,7 +4491,7 @@ body {
 
     tr {
       td {
-        >div {
+        > div {
           overflow: hidden;
           white-space: nowrap;
           text-overflow: ellipsis;
@@ -4523,10 +4502,9 @@ body {
 
   .costing-summary-table {
     .background-light-blue {
-
       th,
       td {
-        >span {
+        > span {
           display: inline-block;
           vertical-align: middle;
         }
@@ -4536,7 +4514,6 @@ body {
 
   .netRm-row {
     td {
-
       &:nth-child(3),
       &:nth-child(4) {
         .View {
@@ -4550,7 +4527,6 @@ body {
 .table.table,
 :not(.table) {
   .green-row {
-
     th,
     td {
       background-color: #dbf4e2 !important;
@@ -4561,7 +4537,6 @@ body {
   }
 
   .red-row {
-
     th,
     td {
       background-color: #fedce2 !important;
@@ -4573,7 +4548,6 @@ body {
 }
 
 @-moz-document url-prefix() {
-
   .table,
   :not(.table) {
     .green-row {
@@ -4736,7 +4710,6 @@ body {
 
 // toastr css start
 .redux-toastr {
-
   .top-left,
   .top-right,
   .top-center,
@@ -4856,7 +4829,6 @@ body {
   .table-responsive {
     .cr-brdr-main {
       tbody {
-
         th,
         td {
           font-size: 14px;
@@ -4868,7 +4840,6 @@ body {
   .costing-details-page {
     .sticky-top-0 {
       .table {
-
         td,
         th {
           &:first-child {
@@ -4883,7 +4854,6 @@ body {
     }
 
     .table {
-
       td,
       th {
         padding: 0.81rem 10px !important;
@@ -4893,7 +4863,6 @@ body {
 
     .shadow-lgg {
       .form {
-
         .tab-tool-cost-footer,
         .costing-overhead-profit-footer {
           margin: 0 -16px -15px;
@@ -4904,21 +4873,21 @@ body {
     .costing-highlight-row {
       background-color: $hightlightRowBackground;
 
-      >div {
-        >td {
+      > div {
+        > td {
           padding: 15px;
         }
       }
     }
 
     .costing-highlight-row.accordian-row {
-      >td {
+      > td {
         padding: 10px 15px;
       }
     }
 
     .accordian-row {
-      >td {
+      > td {
         padding: 15px;
       }
     }
@@ -4929,13 +4898,13 @@ body {
     }
 
     .rmcc-main-headings {
-      >thead {
-        >tr {
-          >th:nth-child(6) {
+      > thead {
+        > tr {
+          > th:nth-child(6) {
             width: 120px !important;
           }
 
-          >th:nth-child(9) {
+          > th:nth-child(9) {
             width: 165px !important;
           }
         }
@@ -4953,13 +4922,13 @@ body {
     }
 
     .surfacetreatment-main-headings {
-      >thead {
-        >tr {
-          >th:nth-child(3) {
+      > thead {
+        > tr {
+          > th:nth-child(3) {
             width: 120px !important;
           }
 
-          >th:nth-child(5) {
+          > th:nth-child(5) {
             width: 130px !important;
           }
         }
@@ -5074,7 +5043,6 @@ body {
 
   .cr-brdr-main {
     tbody {
-
       .cr-tbl-label,
       td {
         font-size: calc(15px * 80 / 100);
@@ -5120,7 +5088,7 @@ body {
     }
   }
 
-  .date-section+.fa-calendar {
+  .date-section + .fa-calendar {
     margin-top: 26.5px;
   }
 
@@ -5135,7 +5103,6 @@ body {
   .table-responsive {
     .cr-brdr-main {
       tbody {
-
         th,
         td {
           font-size: calc(14px * 80 / 100);
@@ -5173,7 +5140,6 @@ body {
   }
 
   .add-min-height {
-
     .btn-secondary,
     .btn-primary,
     .user-btn,
@@ -5328,7 +5294,6 @@ body {
     // drawer css starts
     .drawer-wrapper {
       .drawer-body {
-
         .right-details,
         .left-details {
           font-size: calc(16px * 80 / 100);
@@ -5724,7 +5689,6 @@ body {
 
     .react-bs-table {
       table {
-
         th,
         td {
           font-size: calc(14px * 80 / 100);
@@ -5735,10 +5699,9 @@ body {
 
     .MuiDrawer-paper {
       .react-bs-table-container {
-
         th,
         td {
-          >input[type="checkbox"] {
+          > input[type="checkbox"] {
             min-width: 14px;
           }
         }
@@ -5747,10 +5710,9 @@ body {
 
     .approval-listing-page {
       .react-bs-table-container {
-
         th,
         td {
-          >input[type="checkbox"] {
+          > input[type="checkbox"] {
             min-width: 21px;
           }
         }
@@ -5758,10 +5720,9 @@ body {
     }
 
     .react-bs-table-container {
-
       th,
       td {
-        >input[type="checkbox"] {
+        > input[type="checkbox"] {
           min-width: 21px;
         }
       }
@@ -5801,8 +5762,8 @@ body {
         }
 
         .row {
-          >.col-md-6 {
-            >span {
+          > .col-md-6 {
+            > span {
               font-size: calc(14px * 80 / 100);
             }
           }
@@ -5897,7 +5858,6 @@ body {
     }
 
     .select__value-container--has-value {
-
       .css-1g6gooi,
       .css-b8ldur-Input {
         width: calc(30px * 80 / 100) !important;
@@ -5928,10 +5888,8 @@ body {
 
     .shadow-lgg.login-formg,
     .drawer-wrapper {
-
       .form,
       form {
-
         .left-border,
         .flex-fills {
           margin-bottom: calc(10px * 80 / 100);
@@ -5946,7 +5904,6 @@ body {
         }
 
         .form-group {
-
           .form-group-searchable-select,
           .form-group {
             margin-bottom: 0;
@@ -6064,7 +6021,7 @@ body {
     }
 
     .switch-level {
-      .left-title+div {
+      .left-title + div {
         transform: scale(0.81);
       }
     }
@@ -6161,7 +6118,6 @@ body {
     .react-bs-table-container {
       .react-bs-table {
         .sort-column {
-
           .dropdown,
           .dropup {
             .caret {
@@ -6173,7 +6129,8 @@ body {
 
           .dropup {
             .caret {
-              background: transparent url("../../assests/images/down-sorting-arrow.png") calc(11px * 80 / 100) calc(11px * 80 / 100);
+              background: transparent url("../../assests/images/down-sorting-arrow.png") calc(11px * 80 / 100)
+                calc(11px * 80 / 100);
             }
           }
         }
@@ -6186,7 +6143,6 @@ body {
 
     td,
     .ag-cell {
-
       .Error,
       .Pushed,
       .POUpdated,
@@ -6329,7 +6285,6 @@ body {
 
   html {
     body {
-
       .costing-details-page,
       .costing-summary-page {
         .sepration-box {
@@ -6406,7 +6361,6 @@ body {
   @-moz-document url-prefix() {
     body {
       .add-min-height {
-
         .mt30.reset-btn,
         .mt30.btn-primary,
         .user-btn.mt30 {
@@ -6522,7 +6476,6 @@ body {
   .costing-operation-cost-section {
     thead {
       tr {
-
         th:nth-child(5),
         th:nth-child(7) {
           width: 140px !important;
@@ -6554,17 +6507,17 @@ body {
 
   .costing-details-page {
     .rmcc-main-headings {
-      >thead {
-        >tr {
-          >th:nth-child(3) {
+      > thead {
+        > tr {
+          > th:nth-child(3) {
             width: 115px !important;
           }
 
-          >th:nth-child(6) {
+          > th:nth-child(6) {
             width: 106px !important;
           }
 
-          >th:nth-child(9) {
+          > th:nth-child(9) {
             width: 135px !important;
           }
         }
@@ -6572,9 +6525,9 @@ body {
     }
 
     .surfacetreatment-main-headings {
-      >thead {
-        >tr {
-          >th:nth-child(5) {
+      > thead {
+        > tr {
+          > th:nth-child(5) {
             width: 145px !important;
           }
         }
@@ -6582,7 +6535,6 @@ body {
     }
 
     .table {
-
       td,
       th {
         padding: 0.71rem 15px;
@@ -6591,7 +6543,6 @@ body {
 
     .shadow-lgg {
       .form {
-
         .tab-tool-cost-footer,
         .costing-overhead-profit-footer {
           margin: 0 -16px -15px;
@@ -6602,21 +6553,21 @@ body {
     .costing-highlight-row {
       background-color: $hightlightRowBackground;
 
-      >div {
-        >td {
+      > div {
+        > td {
           padding: 15px;
         }
       }
     }
 
     .costing-highlight-row.accordian-row {
-      >td {
+      > td {
         padding: 10px 15px;
       }
     }
 
     .accordian-row {
-      >td {
+      > td {
         padding: 15px;
       }
     }
@@ -6639,7 +6590,6 @@ body {
       thead {
         tr {
           th {
-
             // &:first-child{width: 30%;}
             &:nth-child(2) {
               width: auto;
@@ -6700,7 +6650,6 @@ body {
 
   .costing-details-page {
     .table {
-
       td,
       th {
         font-size: calc(15px * 80 / 100);
@@ -6718,7 +6667,6 @@ body {
 
   .sticky-top-0 {
     .table {
-
       td,
       th {
         padding: 0.71rem 12px;
@@ -7165,7 +7113,6 @@ body {
   }
 
   @media screen and (max-width: $miniDesktop) {
-
     td,
     th {
       padding: 1.1rem 5px !important;
@@ -7420,7 +7367,6 @@ body {
 }
 
 @media screen and (max-width: $max1367) {
-
   .edit-btn,
   .btn-danger,
   .btn-primary,
@@ -7503,7 +7449,6 @@ body {
 }
 
 .rmcc-main-headings {
-
   th,
   td {
     padding: 13px 15px !important;
@@ -8097,7 +8042,6 @@ body {
 
   .remove-space-border {
     .table-responsive {
-
       .header-name-left,
       .header-name {
         background-color: #ececec !important;
@@ -8137,7 +8081,6 @@ body {
     .table.table,
     :not(.table) {
       .green-row {
-
         th,
         td {
           background-color: #dbf4e2 !important;
@@ -8145,7 +8088,6 @@ body {
       }
 
       .red-row {
-
         th,
         td {
           background-color: #fedce2 !important;
@@ -8351,7 +8293,7 @@ body {
     }
   }
 
-  .input-group>.form-control:focus {
+  .input-group > .form-control:focus {
     z-index: 0;
   }
 }
@@ -8448,7 +8390,6 @@ table.group-process-table {
 }
 
 .machine-group-process-table {
-
   th,
   td {
     &:first-child {
@@ -8573,7 +8514,6 @@ table.group-process-table {
 }
 
 .UOM-label-container {
-
   .form-group.inputbox.withBorder,
   .dropdown-flex {
     label {
@@ -8769,7 +8709,7 @@ table.group-process-table {
 
   .css-yk16xz-control,
   .css-1pahdxg-control {
-    >div {
+    > div {
       max-height: 43px;
       max-width: 178px;
     }
@@ -8813,7 +8753,7 @@ table.group-process-table {
 
   .css-yk16xz-control,
   .css-1pahdxg-control {
-    >div {
+    > div {
       max-height: 43px;
       max-width: 165px !important;
     }
@@ -8878,7 +8818,6 @@ table.group-process-table {
 }
 
 .user-ragistration {
-
   .input-withouticon,
   .withBorderPWD {
     .text-help {
@@ -9144,4 +9083,7 @@ iframe {
 
 .mh-inherit {
   min-height: inherit !important;
+}
+#addRMDomestic_RMToggle.plus-icon-square,#addRMDomestic_vendorToggle.plus-icon-square {
+  margin-top: 15px;
 }

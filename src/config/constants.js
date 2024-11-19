@@ -19,7 +19,6 @@ export const config = () => {
 
 
 const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
-// const BASE_URL = `http://172.16.0.18:81/api/v1`;
 export const FILE_URL = `${process.env.REACT_APP_FILE_URL}`;
 
 /** Export API */
@@ -2892,6 +2891,7 @@ export const RmMaterial = "Raw-material"
 export const BopDomestic = "BOP-domestic"
 export const BopImport = "BOP-import"
 export const Sob = "Manage Specification"
+export const sobManage = "SOB"
 
 export const AssemblyPart = "Assembly-part"
 export const ComponentPart = "Component-part"

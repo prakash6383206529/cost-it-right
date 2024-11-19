@@ -317,7 +317,8 @@ class Main extends Component {
         location.pathname === PRODUCT_ROLLOUT ||
         location.pathname === SUPPLIER_MANAGEMENT ||
         location.pathname === NFR_LISTING ||
-        location.pathname === ADD_AUCTION
+        location.pathname === ADD_AUCTION ||
+        location.pathname === lOGIN_AUDITS
         ? "w-100"
         : "";
 
