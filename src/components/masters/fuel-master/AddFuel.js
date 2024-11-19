@@ -42,7 +42,7 @@ class AddFuel extends Component {
   constructor(props) {
     super(props);
     this.child = React.createRef();
-    this.state = {
+    this.initialState = {
       isEditFlag: false,
       FuelDetailId: '',
       isViewMode: this.props?.data?.isViewMode ? true : false,
@@ -89,6 +89,8 @@ class AddFuel extends Component {
       showPlantWarning: false
 
     }
+    this.state = { ...this.initialState };
+
   }
 
   /**
@@ -364,12 +366,12 @@ class AddFuel extends Component {
       }
       tempArray.push(...rateGrid, {
         Id: '',
-        country: country ? country.label : '',
-        countryId: country ? country.value : '',
-        city: city ? city.label : '',
-        cityId: city ? city.value : '',
-        StateLabel: StateName ? StateName.label : '',
-        StateId: StateName ? StateName.value : '',
+        country: country ? country?.label : '',
+        countryId: country ? country?.value : '',
+        city: city ? city?.label : '',
+        cityId: city ? city?.value : '',
+        StateLabel: StateName ? StateName?.label : '',
+        StateId: StateName ? StateName?.value : '',
         //effectiveDate: moment(effectiveDate).format('DD/MM/YYYY'),
         effectiveDate: effectiveDate,
         Rate: (this.state?.isImport || reactLocalStorage?.getObject("baseCurrency") !== this.props?.fieldsObj?.plantCurrency) ? fieldsObj?.Rate : fieldsObj?.RateLocalConversion,
@@ -435,12 +437,12 @@ class AddFuel extends Component {
     let tempData = rateGrid[rateGridEditIndex];
     tempData = {
       Id: tempData.Id,
-      StateLabel: StateName.label,
-      StateId: StateName.value,
-      countryId: country.value ? country.value : '',
-      cityId: city.value ? city.value : '',
-      country: country.label ? country.label : '',
-      city: city.label ? city.label : "",
+      StateLabel: StateName?.label,
+      StateId: StateName?.value,
+      countryId: country?.value ? country?.value : '',
+      cityId: city?.value ? city?.value : '',
+      country: country?.label ? country?.label : '',
+      city: city?.label ? city?.label : "",
       //effectiveDate: moment(effectiveDate).format('DD/MM/YYYY'),
       effectiveDateRate: (this.state?.isImport || reactLocalStorage?.getObject("baseCurrency") !== this.props?.fieldsObj?.plantCurrency) ? fieldsObj?.Rate : fieldsObj?.RateLocalConversion,
       RateLocalConversion: fieldsObj?.RateLocalConversion,
@@ -547,36 +549,14 @@ class AddFuel extends Component {
       }, 500);
     })
   }
-
   onPressVendor = (costingHeadFlag) => {
-    const fieldsToClear = [
-      'plant',
-      'clientName',
-      'DestinationSupplierId',
-      'Fuel',
-      'CityId',
-      'UnitOfMeasurementId',
-      'CountryId',
-      'StateId',
-      'Rate',
-      'EffectiveDate',
-
-    ];
-    fieldsToClear.forEach(fieldName => {
-      this.props.dispatch(clearFields('AddFuel', false, false, fieldName));
+    this.props.reset();
+    this.setState({ ...this.initialState, costingTypeId: costingHeadFlag }, () => {
+      if (costingHeadFlag === CBCTypeId) {
+        //this.props.getClientSelectList(() => { })
+      }
     });
-    this.setState({
-      vendorName: [],
-      costingTypeId: costingHeadFlag,
-      showPlantWarning: false,
-      showWarning: false
-
-    });
-    if (costingHeadFlag === CBCTypeId) {
-      // this.props.getClientSelectList(() => { })
-    }
-  }
-
+  };
   /**
   * @method handleChange
   * @description Handle Effective Date
@@ -814,8 +794,8 @@ class AddFuel extends Component {
         () => {
           const { vendorName } = this.state
           const result =
-            vendorName && vendorName.label
-              ? getCodeBySplitting(vendorName.label)
+            vendorName && vendorName?.label
+              ? getCodeBySplitting(vendorName?.label)
               : ''
           this.setState({ VendorCode: result })
           if (this.props?.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
@@ -877,10 +857,10 @@ class AddFuel extends Component {
 
   getAllCityData = () => {
     const { country } = this.state;
-    if (country && country.label !== 'India') {
-      this.props.getCityByCountryAction(country.value, '00000000000000000000000000000000', '', (res) => { })
+    if (country && country?.label !== 'India') {
+      this.props.getCityByCountryAction(country?.value, '00000000000000000000000000000000', '', (res) => { })
     } else {
-      this.props.fetchStateDataAPI(country.value, () => { })
+      this.props.fetchStateDataAPI(country?.value, () => { })
     }
   }
 
@@ -1120,7 +1100,7 @@ class AddFuel extends Component {
                               handleChangeDescription={this.handleCurrency}
                               valueDescription={this.state.currency}
                               disabled={isEditFlag ? true : false}
-                            >{this.state?.currency?.label && this.state.showWarning && <WarningMessage dClass="mt-1" message={`${this.state.currency.label} rate is not present in the Exchange Master`} />}
+                            >{this.state?.currency?.label && this.state?.showWarning && <WarningMessage dClass="mt-1" message={`${this.state?.currency?.label} rate is not present in the Exchange Master`} />}
                             </Field>
                           </Col>}
                           {costingTypeId === CBCTypeId && (
@@ -1326,7 +1306,7 @@ class AddFuel extends Component {
                           {this.state.isImport && <Col md="3">
                             <div className='p-relative'>
                               <Field
-                                label={`Rate (${this.state.currency?.label ?? 'Currency'})`}
+                                label={`Rate (${this.state?.currency?.label ?? 'Currency'})`}
                                 name={"Rate"}
                                 type="text"
                                 placeholder={isViewMode ? '-' : 'Enter'}
@@ -1420,7 +1400,7 @@ class AddFuel extends Component {
                                   <th>{`Country`}</th>
                                   <th>{`City`}</th>
                                   <th>{`State`}</th>
-                                  {this.state.isImport && <th>{`Rate (${this.state.currency?.label ?? 'Currency'})`}</th>}
+                                  {this.state?.isImport && <th>{`Rate (${this.state?.currency?.label ?? 'Currency'})`}</th>}
                                   <th>{`Rate (${fieldsObj?.plantCurrency ?? 'Currency'})`}</th>
                                   {!this.state?.hidePlantCurrency && <th>{`Rate (${reactLocalStorage.getObject("baseCurrency")})`}</th>}
                                   <th>{`Effective From`}</th>

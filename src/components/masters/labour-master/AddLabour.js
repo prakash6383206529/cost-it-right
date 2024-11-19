@@ -40,7 +40,7 @@ class AddLabour extends Component {
   constructor(props) {
     super(props)
     this.child = React.createRef()
-    this.state = {
+    this.initialState = {
       isEditFlag: false,
       LabourDetailId: '',
       isViewMode: this.props?.data?.isViewMode ? true : false,
@@ -88,6 +88,8 @@ class AddLabour extends Component {
       showPlantWarning: false,
       showWarning: false
     }
+    this.state = { ...this.initialState };
+
   }
 
   /**
@@ -361,14 +363,10 @@ class AddLabour extends Component {
    * @description Used for Vendor checked
    */
   onPressVendor = (costingHeadFlag) => {
-    this.setState({
-      vendorName: [],
-      costingTypeId: costingHeadFlag,
-      showPlantWarning: false,
-      showWarning: false
+    this.props.reset();
+    this.setState({ ...this.initialState, costingTypeId: costingHeadFlag }, () => {
     });
-  }
-
+  };
   /**
    * @method handleVendorName
    * @description called
@@ -609,9 +607,9 @@ class AddLabour extends Component {
       tempArray.push(...gridTable, {
         LabourDetailId: '',
         MachineTypeId: machineType.value,
-        MachineType: machineType.label,
-        LabourTypeId: labourType.value,
-        LabourType: labourType.label,
+        MachineType: machineType?.label,
+        LabourTypeId: labourType?.value,
+        LabourType: labourType?.label,
         EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm'),
         LabourRate: LabourRate,
         Efficiency: efficiency,
@@ -676,9 +674,9 @@ class AddLabour extends Component {
     let tempData = gridTable[gridEditIndex]
     tempData = {
       MachineTypeId: machineType.value,
-      MachineType: machineType.label,
-      LabourTypeId: labourType.value,
-      LabourType: labourType.label,
+      MachineType: machineType?.label,
+      LabourTypeId: labourType?.value,
+      LabourType: labourType?.label,
       EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm'),
       LabourRate: LabourRate,
       Efficiency: efficiency,
@@ -880,7 +878,7 @@ class AddLabour extends Component {
         LoggedInUserId: loggedInUserId(),
         LabourDetails: gridTable,
         Plants: [
-          { PlantId: selectedPlants.value, PlantName: selectedPlants.label },
+          { PlantId: selectedPlants.value, PlantName: selectedPlants?.label },
         ],
         VendorPlant: [],
         ExchangeRateSourceName: this.state?.ExchangeSource?.label ?? null,
@@ -914,7 +912,7 @@ class AddLabour extends Component {
         StateId: StateName.value,
         LabourDetails: gridTable,
         Plants: [
-          { PlantId: selectedPlants.value, PlantName: selectedPlants.label },
+          { PlantId: selectedPlants.value, PlantName: selectedPlants?.label },
         ],
         LoggedInUserId: loggedInUserId(),
         VendorPlant: [],
@@ -966,7 +964,7 @@ class AddLabour extends Component {
 
   getAllCityData = () => {
     const { country } = this.state;
-    if (country && country.label !== 'India') {
+    if (country && country?.label !== 'India') {
       this.props.getCityByCountryAction(country.value, '00000000000000000000000000000000', '', (res) => { })
     } else {
       this.props.fetchStateDataAPI(country.value, () => { })

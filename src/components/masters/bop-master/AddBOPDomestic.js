@@ -55,7 +55,7 @@ class AddBOPDomestic extends Component {
     this.child = React.createRef();
     // ********* INITIALIZE REF FOR DROPZONE ********
     this.dropzone = React.createRef();
-    this.state = {
+    this.initialState = {
       BOPID: EMPTY_GUID,
       isEditFlag: this.props?.data?.isEditFlag ? true : false,
       IsVendor: false,
@@ -92,7 +92,7 @@ class AddBOPDomestic extends Component {
       remarks: '',
       showErrorOnFocus: false,
       showErrorOnFocusDate: false,
-      finalApprovalLoader: getConfigurationKey().IsDivisionAllowedForDepartment ? false : true,
+      finalApprovalLoader: getConfigurationKey().IsDivisionAllowedForDepartment || !getConfigurationKey().IsMasterApprovalAppliedConfigure ? false : true,
       client: [],
       costingTypeId: ZBCTypeId,
       showPopup: false,
@@ -131,6 +131,7 @@ class AddBOPDomestic extends Component {
       OtherNetCostConversion: 0
 
     }
+    this.state = { ...this.initialState };
 
   }
 
@@ -271,35 +272,19 @@ class AddBOPDomestic extends Component {
    * @method onPressVendor
    * @description Used for Vendor checked
    */
+  /**
+ * @method onPressVendor
+ * @description Used for Vendor checked
+ */
+
   onPressVendor = (costingHeadFlag) => {
-    const fieldsToClear = [
-      'BoughtOutPartNumber',
-      'BoughtOutPartName',
-      'BOPCategory',
-      'Specification',
-      "SAPPartNumber",
-      'Plant',
-      "UOM",
-      "cutOffPrice",
-      "BasicRate",
-      "EffectiveDate",
-      "clientName"];
-    fieldsToClear.forEach(fieldName => {
-      this.props.dispatch(clearFields('AddBOPDomestic', false, false, fieldName));
+    this.props.reset();
+    this.setState({ ...this.initialState, costingTypeId: costingHeadFlag }, () => {
+      if (costingHeadFlag === CBCTypeId) {
+        this.props.getClientSelectList(() => { })
+      }
     });
-    this.setState({
-      vendorName: [],
-      costingTypeId: costingHeadFlag,
-      vendorLocation: [],
-      selectedPlants: [],
-      isTechnologyVisible: false
-    });
-
-    if (costingHeadFlag === CBCTypeId) {
-      this.props.getClientSelectList(() => { })
-    }
-  }
-
+  };
   /**
   * @method handleCategoryChange
   * @description  used to handle BOP Category Selection
@@ -1754,7 +1739,7 @@ class AddBOPDomestic extends Component {
                               className=" "
                               customClassName=" withBorder"
                             />
-                            {this.state.showWarning && <WarningMessage dClass="mt-1" message={`${this.props.fieldsObj.plantCurrency} rate is not present in the Exchange Master`} />}
+                            {this.state.showWarning && <WarningMessage dClass="mt-1" message={`${this.props?.fieldsObj?.plantCurrency} rate is not present in the Exchange Master`} />}
                           </Col>}
                           <Col md="3">
                             <div className="inputbox date-section form-group">
@@ -1796,7 +1781,7 @@ class AddBOPDomestic extends Component {
                           {(!isTechnologyVisible || this.showBasicRate()) && !isTechnologyVisible && <>
                             <Col md="3">
                               <Field
-                                label={this.labelWithUOM(this.state.UOM.label ? this.state.UOM.label : 'UOM')}
+                                label={this.labelWithUOM(this.state?.UOM?.label ? this.state?.UOM?.label : 'UOM')}
                                 name={"BasicRate"}
                                 type="text"
                                 placeholder={isEditFlag || (isEditFlag && isBOPAssociated) ? '-' : "Enter"}
@@ -1812,7 +1797,7 @@ class AddBOPDomestic extends Component {
                             <div className='d-flex align-items-center'>
                               <div className="w-100">
                                 <Field
-                                  label={`Other Cost/${this.state.UOM.label ? this.state.UOM.label : 'UOM'} (${this.props.fieldsObj?.plantCurrency ?? 'Currency'})`}
+                                  label={`Other Cost/${this.state?.UOM?.label ? this.state?.UOM?.label : 'UOM'} (${this.props?.fieldsObj?.plantCurrency ?? 'Currency'})`}
                                   name={"OtherCost"}
                                   type="text"
                                   placeholder={"-"}
@@ -1839,7 +1824,7 @@ class AddBOPDomestic extends Component {
                             <Col md="3">
                               <TooltipCustom id="bop-basic-price" disabledIcon={true} tooltipText={this.toolTipNetCost().toolTipTextBasicPrice} />
                               <Field
-                                label={`Basic Price/${this.state.UOM.label ? this.state.UOM.label : 'UOM'} (${this.props.fieldsObj?.plantCurrency ?? 'Currency'})`}
+                                label={`Basic Price/${this.state?.UOM?.label ? this.state?.UOM?.label : 'UOM'} (${this.props.fieldsObj?.plantCurrency ?? 'Currency'})`}
                                 name={"BasicPrice"}
                                 type="text"
                                 id="bop-basic-price"
@@ -1856,7 +1841,7 @@ class AddBOPDomestic extends Component {
                               <div className='d-flex align-items-center'>
                                 <div className="w-100">
                                   <Field
-                                    label={`Condition Cost/${this.state.UOM.label ? this.state.UOM.label : 'UOM'} (${this.props.fieldsObj?.plantCurrency ?? 'Currency'})`}
+                                    label={`Condition Cost/${this.state?.UOM?.label ? this.state?.UOM?.label : 'UOM'} (${this.props.fieldsObj?.plantCurrency ?? 'Currency'})`}
                                     name={"ConditionCost"}
                                     type="text"
                                     placeholder={"-"}
@@ -1889,7 +1874,7 @@ class AddBOPDomestic extends Component {
                               <Col md="3">
                                 <TooltipCustom id="bop-net-cost-plant" disabledIcon={true} tooltipText={this.toolTipNetCost()?.toolTipTextNetCost} />
                                 <Field
-                                  label={`Net Cost/${this.state.UOM.label ? this.state.UOM.label : 'UOM'} (${fieldsObj?.plantCurrency ?? 'Currency'})`}
+                                  label={`Net Cost/${this.state?.UOM?.label ? this.state?.UOM?.label : 'UOM'} (${fieldsObj?.plantCurrency ?? 'Currency'})`}
                                   name={`${"NetCostPlantCurrency"}`}
                                   id="bop-net-cost-plant"
                                   type="text"
@@ -1903,9 +1888,9 @@ class AddBOPDomestic extends Component {
                                 />
                               </Col>
                               {!hidePlantCurrency && <Col md="3">
-                                <TooltipCustom id="bop-net-cost" disabledIcon={true} tooltipText={`Net Cost/${this.state.UOM.label ? this.state.UOM.label : 'UOM'}  = Net Cost * Plant Currency Rate (${this.state?.currencyValue})`} />
+                                <TooltipCustom id="bop-net-cost" disabledIcon={true} tooltipText={`Net Cost/${this.state?.UOM?.label ? this.state?.UOM?.label : 'UOM'}  = Net Cost * Plant Currency Rate (${this.state?.currencyValue})`} />
                                 <Field
-                                  label={`Net Cost/${this.state.UOM.label ? this.state.UOM.label : 'UOM'} (${reactLocalStorage.getObject("baseCurrency")})`}
+                                  label={`Net Cost/${this.state?.UOM?.label ? this.state?.UOM?.label : 'UOM'} (${reactLocalStorage.getObject("baseCurrency")})`}
                                   name={`${"NetCostBaseCurrency"}`}
                                   type="text"
                                   id="bop-net-cost"
@@ -2142,8 +2127,8 @@ class AddBOPDomestic extends Component {
               EntryType={checkForNull(ENTRY_TYPE_DOMESTIC)}
               basicRateBase={this.state.BasicPrice}
               isFromImport={false}
-              currencyValue={this.state.currencyValue??''}
-              PlantCurrency={this.props.fieldsObj?.plantCurrency??''}
+              currencyValue={this.state?.currencyValue ?? ''}
+              PlantCurrency={this.props?.fieldsObj?.plantCurrency ?? ''}
             />
           }
           {
@@ -2182,8 +2167,8 @@ class AddBOPDomestic extends Component {
               ViewMode={this.props.data.isViewMode}
               uom={this.state.UOM}
               isImport={false}
-              plantCurrency={this.props?.fieldsObj?.plantCurrency??''}
-              settlementCurrency={this.state?.currency?.label??''}
+              plantCurrency={this.props?.fieldsObj?.plantCurrency ?? ''}
+              settlementCurrency={this.state?.currency?.label ?? ''}
               isBOP={true}
             />
           }

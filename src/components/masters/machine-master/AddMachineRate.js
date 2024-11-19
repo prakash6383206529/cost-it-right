@@ -60,7 +60,7 @@ class AddMachineRate extends Component {
     this.child = React.createRef();
     // ********* INITIALIZE REF FOR DROPZONE ********
     this.dropzone = React.createRef();
-    this.state = {
+    this.initialState = {
       MachineID: EMPTY_GUID,
       isEditFlag: false,
       isFormHide: false,
@@ -136,8 +136,12 @@ class AddMachineRate extends Component {
       settlementExchangeRateId: '',
       plantCurrencyID: '',
       plantCurrency: 1,
-      showPlantWarning: false
+      showPlantWarning: false,
+      UOM: [],
+      resetProcessGroup: false
     }
+    this.state = { ...this.initialState };
+
   }
 
   /**
@@ -246,7 +250,7 @@ class AddMachineRate extends Component {
         resolve(null);
         return;
       }
-      if (IsFetchExchangeRateVendorWise() && (costingTypeId !== ZBCTypeId&&vendorName?.length === 0 && client?.length === 0)) {
+      if (IsFetchExchangeRateVendorWise() && (costingTypeId !== ZBCTypeId && vendorName?.length === 0 && client?.length === 0)) {
         return false;
       }
       const callAPI = (from, to) => {
@@ -606,30 +610,15 @@ class AddMachineRate extends Component {
     * @method onPressVendor
     * @description Used for Vendor checked
     */
-  onPressVendor = (costingHeadFlag) => {
-    const fieldsToClear = [
-      'technology',
-      'vendorName',
-      'Plant',
-      'DestinationPlant',
-      'clientName',
-      'EffectiveDate',
-    ];
-    fieldsToClear.forEach(fieldName => {
-      this.props.dispatch(clearFields('AddMachineRate', false, false, fieldName));
-    });
-    this.setState({
-      costingTypeId: costingHeadFlag,
-      vendorName: [],
-      vendorLocation: [],
-      selectedPlants: [],
-    }, () => {
-    });
-    if (costingHeadFlag === CBCTypeId) {
-      this.props.getClientSelectList(() => { })
-    }
-  }
 
+  onPressVendor = (costingHeadFlag) => {
+    this.props.reset();
+    this.setState({ ...this.initialState, costingTypeId: costingHeadFlag }, () => {
+      if (costingHeadFlag === CBCTypeId) {
+        this.props.getClientSelectList(() => { })
+      }
+    });
+  };
   /**
   * @method handleTechnology
   * @description Used handle technology
@@ -643,8 +632,8 @@ class AddMachineRate extends Component {
 * @description called
 */
   handleClient = (newValue, actionMeta) => {
-    const { costingTypeId, client, effectiveDate, ExchangeSource, currency, isImport, selectedPlants,vendorName } = this.state;
-    const {fieldsObj}=this.props
+    const { costingTypeId, client, effectiveDate, ExchangeSource, currency, isImport, selectedPlants, vendorName } = this.state;
+    const { fieldsObj } = this.props
     if (newValue && newValue !== '') {
       this.setState({ client: newValue }
         , () => {
@@ -658,7 +647,8 @@ class AddMachineRate extends Component {
                   this.handleCalculation(this.fieldsObj?.MachineRate);
                 });
               }
-            });      }
+            });
+          }
         }
       );
     }
@@ -790,7 +780,7 @@ class AddMachineRate extends Component {
   */
   handleVendorName = (newValue, actionMeta) => {
     const { costingTypeId, client, effectiveDate, ExchangeSource, currency, isImport, selectedPlants } = this.state;
-const {fieldsObj}=this.props
+    const { fieldsObj } = this.props
     if (newValue && newValue !== '') {
       this.setState({ vendorName: newValue, isVendorNameNotSelected: false, vendorLocation: [] }, () => {
         const { vendorName } = this.state;
@@ -806,13 +796,14 @@ const {fieldsObj}=this.props
               this.handleCalculation(this.fieldsObj?.MachineRate);
             });
           }
-        });      }
+        });
+      }
     } else {
       this.setState({ vendorName: [], vendorLocation: [] })
       this.props.getPlantBySupplier('', () => { })
     }
   };
-  
+
   /**
   * @method handlePlants
   * @description called
@@ -1049,9 +1040,9 @@ const {fieldsObj}=this.props
 
 
       tempArray.push(...processGrid, {
-        processName: processName.label,
-        ProcessId: processName.value,
-        UnitOfMeasurement: UOM.label,
+        processName: processName?.label,
+        ProcessId: processName?.value,
+        UnitOfMeasurement: UOM?.label,
         UnitOfMeasurementId: UOM.value,
         MachineRate: MachineRate,
         MachineRateConversion: MachineRateConversion,
@@ -1113,10 +1104,10 @@ const {fieldsObj}=this.props
       this.setState({ DropdownChange: false })
     }
     tempData = {
-      processName: processName.label,
+      processName: processName?.label,
       ProcessId: processName.value,
-      UnitOfMeasurement: UOM.label,
-      UnitOfMeasurementId: UOM.value,
+      UnitOfMeasurement: UOM?.label,
+      UnitOfMeasurementId: UOM?.value,
       MachineRate: MachineRate,
       MachineRateConversion: MachineRateConversion,
       MachineRateLocalConversion: MachineRateLocalConversion,
@@ -1434,7 +1425,7 @@ const {fieldsObj}=this.props
       return false;
     }
 
-    let technologyArray = [{ Technology: selectedTechnology.label, TechnologyId: selectedTechnology.value }]
+    let technologyArray = [{ Technology: selectedTechnology?.label, TechnologyId: selectedTechnology?.value }]
     let updatedFiles = files.map((file) => ({ ...file, ContextId: MachineID }))
 
     let plantArray = Array?.isArray(selectedPlants) ? selectedPlants?.map(plant => ({ PlantId: plant?.value, PlantName: plant?.label, PlantCode: '' })) :
@@ -1469,7 +1460,7 @@ const {fieldsObj}=this.props
           Specification: values.Specification,
           LoggedInUserId: loggedInUserId(),
           MachineProcessRates: processGrid,
-          Technology: [{ Technology: selectedTechnology.label ? selectedTechnology.label : selectedTechnology[0].label, TechnologyId: selectedTechnology.value ? selectedTechnology.value : selectedTechnology[0].value }],
+          Technology: [{ Technology: selectedTechnology?.label ? selectedTechnology?.label : selectedTechnology[0]?.label, TechnologyId: selectedTechnology.value ? selectedTechnology.value : selectedTechnology[0].value }],
           Plant: plantArray,
           Remark: remarks,
           Attachements: updatedFiles,
@@ -1553,7 +1544,7 @@ const {fieldsObj}=this.props
         Specification: values.Specification,
         LoggedInUserId: loggedInUserId(),
         MachineProcessRates: processGrid,
-        Technology: (technologyArray.length > 0 && technologyArray[0]?.Technology !== undefined) ? technologyArray : [{ Technology: selectedTechnology.label ? selectedTechnology.label : selectedTechnology[0].label, TechnologyId: selectedTechnology.value ? selectedTechnology.value : selectedTechnology[0].value }],
+        Technology: (technologyArray.length > 0 && technologyArray[0]?.Technology !== undefined) ? technologyArray : [{ Technology: selectedTechnology?.label ? selectedTechnology?.label : selectedTechnology[0]?.label, TechnologyId: selectedTechnology.value ? selectedTechnology.value : selectedTechnology[0].value }],
         Plant: plantArray ?? [],
         DestinationPlantId: '',
         Remark: remarks,
@@ -1704,12 +1695,12 @@ const {fieldsObj}=this.props
   */
 
   DisplayMachineRateBaseCurrencyLabel = () => {
-    return <>Machine Rate/{this.state.UOM && this.state.UOM.length !== 0 ? displayUOM(this.state.UOM.label) : "UOM"} ({reactLocalStorage.getObject("baseCurrency")})</>
+    return <>Machine Rate/{this.state?.UOM && this.state?.UOM.length !== 0 ? displayUOM(this.state?.UOM?.label) : "UOM"} ({reactLocalStorage.getObject("baseCurrency")})</>
   }
   DisplayMachineRateDynamicLabel = () => {
     return (
       <>
-        Machine Rate/{this.state.UOM && this.state.UOM.length !== 0 ? displayUOM(this.state.UOM.label) : "UOM"} (
+        Machine Rate/{this.state?.UOM && this.state?.UOM.length !== 0 ? displayUOM(this.state?.UOM?.label) : "UOM"} (
         {this.state.isImport && this.state.currency?.label !== undefined
           ? this.state.currency.label
           : this.state.isImport
@@ -1722,7 +1713,7 @@ const {fieldsObj}=this.props
     );
   }
   DisplayMachineRatePlantCurrencyLabel = () => {
-    return <>Machine Rate/{this.state.UOM && this.state.UOM.length !== 0 ? displayUOM(this.state.UOM.label) : "UOM"} ({this.props.fieldsObj.plantCurrency ? this.props.fieldsObj.plantCurrency : "Currency"})</>
+    return <>Machine Rate/{this.state?.UOM && this.state?.UOM.length !== 0 ? displayUOM(this.state?.UOM?.label) : "UOM"} ({this.props.fieldsObj.plantCurrency ? this.props.fieldsObj.plantCurrency : "Currency"})</>
   }
 
 
@@ -1825,6 +1816,8 @@ const {fieldsObj}=this.props
     const { handleSubmit, AddAccessibility, EditAccessibility, initialConfiguration, isMachineAssociated, t } = this.props;
     const { isEditFlag, isOpenMachineType, isOpenProcessDrawer, disableMachineType, IsCopied, isViewFlag, isViewMode, setDisable, lockUOMAndRate, UniqueProcessId, costingTypeId, IsDetailedEntry, CostingTypePermission, disableSendForApproval, tourContainer } = this.state;
     const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
+    console.log("this.state", this.state)
+    console.log("this.filedobj", this.props.fieldsObj)
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
       if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
@@ -2290,10 +2283,10 @@ const {fieldsObj}=this.props
                             //onKeyUp={(e) => this.changeItemDesc(e)}
                             required={true}
                             handleChangeDescription={this.handleUOM}
-                            valueDescription={this.state.UOM}
+                            valueDescription={this.state?.UOM}
                             disabled={isViewMode || lockUOMAndRate || (isEditFlag && isMachineAssociated)}
                           />
-                          {this.state.errorObj.processUOM && (this.state.UOM === undefined) && <div className='text-help p-absolute'>This field is required.</div>}
+                          {this.state.errorObj.processUOM && (this.state?.UOM === undefined) && <div className='text-help p-absolute'>This field is required.</div>}
                         </Col>
                         <Col md="3" className='UOM-label-container p-relative'>
                           <Field

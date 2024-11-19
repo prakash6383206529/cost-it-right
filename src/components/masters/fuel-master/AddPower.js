@@ -47,7 +47,7 @@ class AddPower extends Component {
   constructor(props) {
     super(props);
     this.child = React.createRef();
-    this.state = {
+    this.initialState = {
       isEditFlag: false,
       isEditFlagForStateElectricity: false,
       PowerDetailID: '',
@@ -124,6 +124,7 @@ class AddPower extends Component {
       showPlantWarning: false
 
     }
+    this.state = { ...this.initialState };
 
   }
 
@@ -571,32 +572,13 @@ class AddPower extends Component {
   * @description Used for Vendor checked
   */
   onPressVendor = (costingHeadFlag) => {
-    const fieldsToClear = [
-      'plant',
-      'clientName',
-      'DestinationSupplierId',
-      'Fuel',
-      'CityId',
-      'UnitOfMeasurementId',
-      'CountryId',
-      'StateId',
-      'Rate',
-      'EffectiveDate',
-
-    ];
-    fieldsToClear.forEach(fieldName => {
-      this.props.dispatch(clearFields('AddFuel', false, false, fieldName));
+    this.props.reset();
+    this.setState({ ...this.initialState, costingTypeId: costingHeadFlag }, () => {
+      if (costingHeadFlag === CBCTypeId) {
+        //this.props.getClientSelectList(() => { })
+      }
     });
-    this.setState({
-      vendorName: [],
-      costingTypeId: costingHeadFlag,
-      showPlantWarning: false,
-      showWarning: false
-    });
-    if (costingHeadFlag === CBCTypeId) {
-      // this.props.getClientSelectList(() => { })
-    }
-  }
+  };
 
   /**
   * @method handleVendorName
@@ -606,7 +588,7 @@ class AddPower extends Component {
     if (newValue && newValue !== '') {
       this.setState({ vendorName: newValue, isVendorNameNotSelected: false }, () => {
         const { vendorName } = this.state;
-        const result = vendorName && vendorName.label ? getCodeBySplitting(vendorName.label) : '';
+        const result = vendorName && vendorName?.label ? getCodeBySplitting(vendorName?.label) : '';
         this.setState({ VendorCode: result })
         this.props.getPlantBySupplier(vendorName.value, () => { })
         if (this.props.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
@@ -665,7 +647,7 @@ class AddPower extends Component {
 
   getAllCityData = () => {
     const { country } = this.state;
-    if (country && country.label !== 'India') {
+    if (country && country?.label !== 'India') {
       this.props.getCityByCountryAction(country.value, '00000000000000000000000000000000', '', (res) => { })
     } else {
       this.props.fetchStateDataAPI(country.value, () => { })
@@ -998,11 +980,11 @@ class AddPower extends Component {
         this.setState({ errorObj: { ...this.state.errorObj, unitGenerated: true } })
         count++;
       }
-      if (fieldsObj.SelfPowerContribution === undefined || Number(fieldsObj.SelfPowerContribution) === 0) {
+      if (fieldsObj?.SelfPowerContribution === undefined || Number(fieldsObj.SelfPowerContribution) === 0) {
         this.setState({ errorObj: { ...this.state.errorObj, selfPowerCont: true } })
         count++;
       }
-      if (source.label === 'Generator Diesel' && (fieldsObj.UnitGeneratedPerUnitOfFuel === undefined || Number(fieldsObj.UnitGeneratedPerUnitOfFuel) === 0)) {
+      if (source?.label === 'Generator Diesel' && (fieldsObj.UnitGeneratedPerUnitOfFuel === undefined || Number(fieldsObj.UnitGeneratedPerUnitOfFuel) === 0)) {
         this.setState({ errorObj: { ...this.state.errorObj, unitGeneratedDiesel: true } })
         count++;
       }
@@ -1033,8 +1015,8 @@ class AddPower extends Component {
         PowerContributionPercentage: SelfPowerContribution,
 
         //DIESEL
-        UnitOfMeasurementId: source && source.value === GENERATOR_DIESEL ? UOM.value : '',
-        UnitOfMeasurementName: source && source.value === GENERATOR_DIESEL ? UOM.label : '',
+        UnitOfMeasurementId: source && source.value === GENERATOR_DIESEL ? UOM?.value : '',
+        UnitOfMeasurementName: source && source.value === GENERATOR_DIESEL ? UOM?.label : '',
         CostPerUnitOfMeasurement: source && source.value === GENERATOR_DIESEL ? CostPerUnitOfMeasurement : 0,
         UnitGeneratedPerUnitOfFuel: source && source.value === GENERATOR_DIESEL ? UnitGeneratedPerUnitOfFuel : 0,
         OtherCharges: 0,
@@ -1096,7 +1078,7 @@ class AddPower extends Component {
         this.setState({ errorObj: { ...this.state.errorObj, selfPowerCont: true } })
         count++;
       }
-      if (source.label === 'Generator Diesel' && (fieldsObj.UnitGeneratedPerUnitOfFuel === undefined || Number(fieldsObj.UnitGeneratedPerUnitOfFuel) === 0)) {
+      if (source?.label === 'Generator Diesel' && (fieldsObj.UnitGeneratedPerUnitOfFuel === undefined || Number(fieldsObj.UnitGeneratedPerUnitOfFuel) === 0)) {
         this.setState({ errorObj: { ...this.state.errorObj, unitGeneratedDiesel: true } })
         count++;
       }
@@ -1130,8 +1112,8 @@ class AddPower extends Component {
         UnitGeneratedPerAnnum: UnitGeneratedPerAnnum,
         CostPerUnit: SelfGeneratedCostPerUnit,
         PowerContributionPercentage: SelfPowerContribution,
-        UnitOfMeasurementId: source && source.value === GENERATOR_DIESEL ? UOM.value : '',
-        UnitOfMeasurementName: source && source.value === GENERATOR_DIESEL ? UOM.label : '',
+        UnitOfMeasurementId: source && source.value === GENERATOR_DIESEL ? UOM?.value : '',
+        UnitOfMeasurementName: source && source.value === GENERATOR_DIESEL ? UOM?.label : '',
         CostPerUnitOfMeasurement: source && source.value === GENERATOR_DIESEL ? CostPerUnitOfMeasurement : 0,
         UnitGeneratedPerUnitOfFuel: source && source.value === GENERATOR_DIESEL ? UnitGeneratedPerUnitOfFuel : 0,
         OtherCharges: 0
@@ -1471,7 +1453,7 @@ class AddPower extends Component {
         let vendorDetailData = {
           PowerDetailId: PowerDetailID,
           VendorId: vendorName.value,
-          VendorName: vendorName.label,
+          VendorName: vendorName?.label,
           VendorCode: VendorCode,
           NetPowerCostPerUnit: values.NetPowerCostPerUnit,
           IsVendor: costingTypeId === VBCTypeId,
@@ -1530,7 +1512,7 @@ class AddPower extends Component {
           VendorId: vendorName.value,
           Plants: plantArray,
           StateId: StateName.value,
-          StateName: StateName.label,
+          StateName: StateName?.label,
           IsActive: true,
           NetPowerCostPerUnit: isDetailEntry ? NetPowerCostPerUnit : (this.state.isImport /* || reactLocalStorage?.getObject("baseCurrency") !== this.props?.fieldsObj?.plantCurrency) */ ? this.props.fieldsObj.NetPowerCostPerUnit : this.props.fieldsObj?.NetPowerCostPerUnitLocalConversion),
           VendorPlant: [],
@@ -2056,7 +2038,7 @@ class AddPower extends Component {
                               <div className="d-flex justify-space-between align-items-center inputwith-icon">
                                 <div className="fullinput-icon">
                                   <Field
-                                    label={`Net Cost/Unit (${this.state.currency?.label ?? 'Currency'})`}
+                                    label={`Net Cost/Unit (${this.state?.currency?.label ?? 'Currency'})`}
                                     name={"NetPowerCostPerUnit"}
                                     type="text"
                                     placeholder={isViewMode ? '-' : 'Enter'}
@@ -2638,7 +2620,7 @@ class AddPower extends Component {
                                         </td>
                                       </>
                                     )}
-                                    <th>{`Net Contribution Value (${this.state.isImport ? this.state.currency?.label ?? 'Currency' : this.props.fieldsObj?.plantCurrency ?? 'Currency'}):`}</th>
+                                    <th>{`Net Contribution Value (${this.state?.isImport ? this.state?.currency?.label ?? 'Currency' : this.props?.fieldsObj?.plantCurrency ?? 'Currency'}):`}</th>
                                     <td>
                                       <label>{checkForDecimalAndNull(this.state.netContributionValue, initialConfiguration.NoOfDecimalForPrice)}</label>
                                     </td>

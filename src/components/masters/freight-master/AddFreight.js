@@ -41,7 +41,7 @@ class AddFreight extends Component {
   constructor(props) {
     super(props);
     this.child = React.createRef();
-    this.state = {
+    this.initialState = {
       FreightID: "",
       isEditFlag: false,
       isViewMode: this.props?.data?.isViewMode ? true : false,
@@ -91,6 +91,8 @@ class AddFreight extends Component {
       plantCurrencyID: '',
       showPlantWarning: false
     };
+    this.state = { ...this.initialState };
+
   }
   /**
    * @method componentDidMount
@@ -202,33 +204,12 @@ class AddFreight extends Component {
   * @description Used for Vendor checked
   */
   onPressVendor = (costingHeadFlag) => {
-    // Clear all form fields except costingHead
     this.props.reset();
-    // Reset all state values except essential ones
-    const preservedState = {
-      costingTypeId: costingHeadFlag,
-      isViewMode: this.props?.data?.isViewMode,
-      isEditMode: this.props?.data?.isEditMode,
-      errorObj: {
-        capacity: false,
-        criteria: false,
-        rate: false,
-        load: false
+    this.setState({ ...this.initialState, costingTypeId: costingHeadFlag }, () => {
+      if (costingHeadFlag === CBCTypeId) {
+        this.props.getClientSelectList(() => { })
       }
-    };
-    if (costingHeadFlag === CBCTypeId) {
-      this.props.getClientSelectList(() => { });
-    }
-    // Reset state to initial values
-    this.setState(
-      Object.keys(this.state).reduce((acc, key) => {
-        acc[key] = preservedState[key] ?? (Array.isArray(this.state[key]) ? [] : null);
-        return acc;
-      }, {}),
-      () => {
-
-      }
-    );
+    });
   };
 
   /**
@@ -649,8 +630,8 @@ class AddFreight extends Component {
       ...gridTable,
       {
         FullTruckLoadId: "",
-        Capacity: FullTruckCapacity.label,
-        RateCriteria: RateCriteria.label,
+        Capacity: FullTruckCapacity?.label,
+        RateCriteria: RateCriteria?.label,
         Rate: this.state.isImport /* || reactLocalStorage?.getObject("baseCurrency") !== this.props?.fieldsObj?.plantCurrency)  */ ? fieldsObj?.Rate : fieldsObj?.RateLocalConversion,
         RateLocalConversion: fieldsObj?.RateLocalConversion,
         RateConversion: (this.state.isImport || reactLocalStorage?.getObject("baseCurrency") !== this.props?.fieldsObj?.plantCurrency) ? fieldsObj?.RateConversion : fieldsObj?.RateLocalConversion,
@@ -718,8 +699,8 @@ class AddFreight extends Component {
 
     tempData = {
       ...tempData,
-      Capacity: FullTruckCapacity.label,
-      RateCriteria: RateCriteria.label,
+      Capacity: FullTruckCapacity?.label,
+      RateCriteria: RateCriteria?.label,
       Rate: this.state.isImport /* || reactLocalStorage?.getObject("baseCurrency") !== this.props?.fieldsObj?.plantCurrency)  */ ? fieldsObj?.Rate : fieldsObj?.RateLocalConversion,
       RateLocalConversion: fieldsObj?.RateLocalConversion,
       RateConversion: (this.state.isImport || reactLocalStorage?.getObject("baseCurrency") !== this.props?.fieldsObj?.plantCurrency) ? fieldsObj?.RateConversion : fieldsObj?.RateLocalConversion,

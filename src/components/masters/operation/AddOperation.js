@@ -49,7 +49,7 @@ class AddOperation extends Component {
     this.child = React.createRef();
     // ********* INITIALIZE REF FOR DROPZONE ********
     this.dropzone = React.createRef();
-    this.state = {
+    this.initialState = {
       selectedTechnology: [],
       selectedPlants: [],
       isVendorNameNotSelected: false,
@@ -117,6 +117,8 @@ class AddOperation extends Component {
       showWarning: false,
       showPlantWarning: false
     }
+    this.state = { ...this.initialState };
+
   }
 
   /**
@@ -159,7 +161,7 @@ class AddOperation extends Component {
     const toCurrency = reactLocalStorage.getObject("baseCurrency")
     const hasCurrencyAndDate = Boolean(fieldsObj?.plantCurrency && effectiveDate);
     if (hasCurrencyAndDate) {
-      if (IsFetchExchangeRateVendorWise() && (costingTypeId !== ZBCTypeId&&vendorName?.length === 0 && client?.length === 0)) {
+      if (IsFetchExchangeRateVendorWise() && (costingTypeId !== ZBCTypeId && vendorName?.length === 0 && client?.length === 0)) {
         return false;
       }
 
@@ -354,30 +356,13 @@ class AddOperation extends Component {
    * @description Used for Vendor checked
    */
   onPressVendor = (costingHeadFlag) => {
-    const fieldsToClear = [
-      'technology',
-      'Plant',
-      'DestinationPlant',
-      'UnitOfMeasurementId',
-      'vendorName',
-      'clientName',
-      'Rate',
-      'EffectiveDate',
-      'operationType',
-      'WeldingRate',
-      'Consumption',
-    ];
-    fieldsToClear.forEach(fieldName => {
-      this.props.dispatch(clearFields('AddOperation', false, false, fieldName));
+    this.props.reset();
+    this.setState({ ...this.initialState, costingTypeId: costingHeadFlag }, () => {
+      if (costingHeadFlag === CBCTypeId) {
+        this.props.getClientSelectList(() => { })
+      }
     });
-    this.setState({
-      vendorName: [],
-      costingTypeId: costingHeadFlag
-    });
-    if (costingHeadFlag === CBCTypeId) {
-      this.props.getClientSelectList(() => { })
-    }
-  }
+  };
 
   /**
   * @method handleTechnology
