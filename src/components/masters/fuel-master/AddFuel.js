@@ -1077,7 +1077,7 @@ class AddFuel extends Component {
                               required={false}
                               disabled={true}
                               className=" "
-                              customClassName=" withBorder"
+                              customClassName=" withBorder mb-1"
                             />
                             {this.state?.showPlantWarning && <WarningMessage dClass="mb-3" message={`${this.props?.fieldsObj?.plantCurrency} rate is not present in the Exchange Master`} />}
 

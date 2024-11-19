@@ -95,7 +95,7 @@ function AddRMDetails(props) {
 
     useEffect(() => {
         rawMaterailDetailsRef.current = rawMaterailDetails;
-    }, [rawMaterailDetails,state.vendor]);
+    }, [rawMaterailDetails, state.vendor]);
 
     useEffect(() => {
         dispatch(getPlantSelectListByType(ZBC, "MASTER", '', () => { }))
@@ -875,7 +875,7 @@ function AddRMDetails(props) {
                 </Col>
                 {<Row className={`align-items-center mb-3 ${state.isVendorAccOpen ? '' : 'd-none'}`}>
                     {states.costingTypeId !== CBCTypeId && (<>
-                        <Col md="3">
+                        <Col className="col-md-15">
                             <label>{(states.costingTypeId === ZBCTypeId ? `${RMVendorLabel} (Code)` : `${vendorLabel} (Code)`)}<span className="asterisk-required">*</span></label>
                             <div className="d-flex justify-space-between align-items-center p-relative async-select">
                                 <div className="fullinput-icon p-relative">
@@ -905,7 +905,7 @@ function AddRMDetails(props) {
                             </div>
                             {((state.showErrorOnFocus && state.vendor?.length === 0)) && <div className='text-help mt-1'>This field is required.</div>}
                         </Col>
-                        <Col md="3" className="mt-4 pt-2">
+                        <Col className="col-md-15 mt-4 pt-2 d-none">
                             <div className=" flex-fills d-flex justify-content-between align-items-center">
                                 {/* <h5>{"Vendor:"}</h5> */}
                                 {!getConfigurationKey().IsShowSourceVendorInRawMaterial && (
@@ -933,7 +933,7 @@ function AddRMDetails(props) {
                     )}
                     {states.costingTypeId === VBCTypeId && (
                         <>
-                            {getConfigurationKey().IsShowSourceVendorInRawMaterial && <Col md="3">
+                            {getConfigurationKey().IsShowSourceVendorInRawMaterial && <Col className="col-md-15">
                                 <label>{`Source ${vendorLabel} (Code)`}</label>
                                 <div className="d-flex justify-space-between align-items-center p-relative async-select">
                                     <div className="fullinput-icon p-relative">

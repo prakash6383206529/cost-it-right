@@ -60,6 +60,9 @@ export function PaginationWrappers(props) {
             case 'RFQ':
                 getDataList(newSkip, numericPageSize, true)
                 break;
+                case 'SOB' :
+                getDataList(newSkip , numericPageSize , true , floatingFilterData)
+                break;
 
             default:
                 break;

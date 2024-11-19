@@ -20,7 +20,7 @@ function AddOtherCostDrawer(props) {
     const Currency = isBOP && isImport ? settlementCurrency : isBOP && !isImport ? plantCurrency : props?.RowData?.IndexCurrency
     const CurrencyLabel = !props.rawMaterial ? reactLocalStorage.getObject('baseCurrency') : isImport && (props.rawMaterial || isBOP) ? settlementCurrency : plantCurrency
     console.log('plantCurrency: ', plantCurrency);
-    console.log(' isImport && (props.rawMaterial || isBOP) : ',  isImport && (props.rawMaterial || isBOP) );
+    console.log(' isImport && (props.rawMaterial || isBOP) : ', isImport && (props.rawMaterial || isBOP));
     console.log('props.rawMaterial || isBOP: ', props.rawMaterial || isBOP);
     console.log('isImport: ', isImport);
     console.log('CurrencyLabel: ', CurrencyLabel);
@@ -204,13 +204,13 @@ function AddOtherCostDrawer(props) {
             } else if (type === "Fixed") {
                 cssClass = 'mb-3';
             } else {
-                cssClass = 'mt-4 pt-1';
+                cssClass = 'mt-4 pt-1 mb-5 pb-3';
             }
             if (props.isFromMaster) {
                 if (type === "Percentage") {
                     cssClass = 'mb-3';
                 } else {
-                    cssClass = 'mt-4 pt-1';
+                    cssClass = 'mt-4 pt-1 mb-5 pb-1';
                 }
             }
         }
