@@ -262,7 +262,8 @@ export function getOperationsDataList(filterData, skip, take, isPagination, obj,
             ListFor: filterData.ListFor ? filterData.ListFor : '',
             StatusId: filterData.StatusId ? filterData.StatusId : '',
             OperationType: obj.ForType,
-            DepartmentCode: obj.DepartmentName !== undefined ? obj.DepartmentName : ""
+            DepartmentCode: obj.DepartmentName !== undefined ? obj.DepartmentName : "",
+            OperationEntryType: filterData.OperationEntryType
         });
         const queryParamsSecond = encodeQueryParamsAndLog({
             CostingHead: obj.CostingHead !== undefined ? obj.CostingHead : "",
@@ -282,7 +283,9 @@ export function getOperationsDataList(filterData, skip, take, isPagination, obj,
             IsVendorDataShow: vbc,
             IsZeroDataShow: zbc,
             FromDate: (obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[0] : "",
-            ToDate: (obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[1] : ""
+            ToDate: (obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[1] : "",
+            Currency: obj.Currency !== undefined ? obj.Currency : "",
+            ExchangeRateSourceName: obj.ExchangeRateSourceName !== undefined ? obj.ExchangeRateSourceName : ""
         });
         axios.get(`${API.getOperationsDataList}?${QueryParams}&${queryParamsSecond}`, config())
 

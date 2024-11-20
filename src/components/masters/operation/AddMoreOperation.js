@@ -146,7 +146,7 @@ function AddMoreOperation(props) {
             setRejectionReworkAndProfitCostPlating(obj)
             setNetCostPlating(obj)
         }
-        callExchangeRateAPI(obj)
+        // callExchangeRateAPI(obj)
 
     }, [fieldValues, includeInterestInRejection, fromCurrencyRef])
     useEffect(() => {
@@ -161,10 +161,10 @@ function AddMoreOperation(props) {
 
     const callExchangeRateAPI = (obj) => {
         const vendorValue = IsFetchExchangeRateVendorWise() ?
-            ((addMoreDetailObj.costingTypeId === VBCTypeId || addMoreDetailObj.costingTypeId === ZBCTypeId) ? vendor.value : EMPTY_GUID) :
+            ((addMoreDetailObj.costingTypeId === VBCTypeId) ? vendor.value : EMPTY_GUID) :
             EMPTY_GUID;
         const costingType = IsFetchExchangeRateVendorWise() ?
-            ((addMoreDetailObj.costingTypeId === VBCTypeId || addMoreDetailObj.costingTypeId === ZBCTypeId) ? VBCTypeId : addMoreDetailObj.costingTypeId) :
+            ((addMoreDetailObj.costingTypeId === VBCTypeId) ? VBCTypeId : addMoreDetailObj.costingTypeId) :
             ZBCTypeId;
         const fromCurrency = state.isImport ? fromCurrencyRef?.current?.label : localCurrencyLabel?.current;
         const toCurrency = reactLocalStorage.getObject("baseCurrency");

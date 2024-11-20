@@ -383,6 +383,8 @@ export const bopQueryParms = (isPagination, skip, take, obj) => {
         VendorId: obj?.VendorId !== undefined ? obj?.VendorId : "",
         CustomerId: obj?.CustomerId !== undefined ? obj?.CustomerId : "",
         SAPCode: obj?.SAPCode !== undefined ? obj?.SAPCode : "",
+        ExchangeRateSourceName: obj.ExchangeRateSourceName !== undefined ? obj?.ExchangeRateSourceName : "",
+        OtherNetCost: obj.OtherNetCost !== undefined ? obj?.OtherNetCost : ""
 
     });
 

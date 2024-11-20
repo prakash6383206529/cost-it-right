@@ -82,7 +82,7 @@ const BOPDomesticListing = (props) => {
     inRangeDate: [],
     analyticsDrawer: false,
     selectedRowData: [],
-    floatingFilterData: { CostingHead: "", BoughtOutPartNumber: "", BoughtOutPartName: "", BoughtOutPartCategory: "", UOM: "", Specification: "", Plants: "", Vendor: "", BasicRate: "", NetLandedCost: "", EffectiveDate: "", DepartmentName: props.isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant ? userDepartmetList() : "", CustomerName: "", NumberOfPieces: "", NetCostWithoutConditionCost: "", NetConditionCost: "", IsBreakupBoughtOutPart: "", TechnologyName: "", SAPCode: "" },
+    floatingFilterData: { CostingHead: "", BoughtOutPartNumber: "", BoughtOutPartName: "", BoughtOutPartCategory: "", UOM: "", Specification: "", Plants: "", Vendor: "", BasicRate: "", NetLandedCost: "", EffectiveDate: "", DepartmentName: props.isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant ? userDepartmetList() : "", CustomerName: "", NumberOfPieces: "", NetCostWithoutConditionCost: "", NetConditionCost: "", IsBreakupBoughtOutPart: "", TechnologyName: "", SAPCode: "", Currency: "", ExchangeRateSourceName: "", OtherNetCost: "" },
     warningMessage: false,
     filterModel: {},
     // pageNo: 1,
@@ -168,7 +168,9 @@ const BOPDomesticListing = (props) => {
           props?.changeTokenCheckBox(false)
         }
         dataObj.EntryType = Number(ENTRY_TYPE_DOMESTIC)
-
+        dataObj.Currency = floatingFilterData?.Currency
+        dataObj.ExchangeRateSourceName = floatingFilterData?.ExchangeRateSourceName
+        dataObj.OtherNetCost = floatingFilterData?.OtherNetCost
         dispatch(getBOPDataList(filterData, skip, take, isPagination, dataObj, false, (res) => {
 
 
@@ -667,6 +669,9 @@ const BOPDomesticListing = (props) => {
       if (column.value === "SAPCode") {
         return getConfigurationKey().IsSAPCodeRequired
       }
+      if (column.value === "ExchangeRateSourceName") {
+        return getConfigurationKey().IsSourceExchangeRateNameVisible
+      }
       return true;
     })
     return returnExcelColumn(filteredLabels, tempArr)
@@ -705,7 +710,13 @@ const BOPDomesticListing = (props) => {
         item.label = bopMasterName;
       }
 
-      return item
+      // Check for empty fields and replace with hyphen
+      for (const key in item) {
+        if (item[key] === null || item[key] === undefined || item[key] === "") {
+          item[key] = "-"; // Set to hyphen if data is not available
+        }
+      }
+      return item;
     })
 
     return (
@@ -932,12 +943,13 @@ const BOPDomesticListing = (props) => {
                 {props?.isMasterSummaryDrawer && <AgGridColumn field="IncoSummary" headerName="Inco Terms"></AgGridColumn>}
                 {props?.isMasterSummaryDrawer && getConfigurationKey().IsShowPaymentTermsFields && <AgGridColumn field="PaymentSummary" headerName="Payment Terms"></AgGridColumn>}
                 {getConfigurationKey().IsMinimumOrderQuantityVisible && <AgGridColumn field="NumberOfPieces" headerName="Minimum Order Quantity"></AgGridColumn>}
+                {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>}
                 <AgGridColumn field="Currency" headerName="Currency"></AgGridColumn>
-                <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>
                 <AgGridColumn field="BasicRate" headerName="Basic Rate" cellRenderer={'commonCostFormatter'} ></AgGridColumn>
 
-                {initialConfiguration?.IsBasicRateAndCostingConditionVisible && ((props.isMasterSummaryDrawer && bopDomesticList[0]?.CostingTypeId === ZBCTypeId) || !props.isMasterSummaryDrawer) && <AgGridColumn field="NetCostWithoutConditionCost" headerName="Basic Price" cellRenderer={'commonCostFormatter'} ></AgGridColumn>}
+                {/* {initialConfiguration?.IsBasicRateAndCostingConditionVisible && ((props.isMasterSummaryDrawer && bopDomesticList[0]?.CostingTypeId === ZBCTypeId) || !props.isMasterSummaryDrawer) && <AgGridColumn field="NetCostWithoutConditionCost" headerName="Basic Price" cellRenderer={'commonCostFormatter'} ></AgGridColumn>} */}
                 {initialConfiguration?.IsBasicRateAndCostingConditionVisible && ((props.isMasterSummaryDrawer && bopDomesticList[0]?.CostingTypeId === ZBCTypeId) || !props.isMasterSummaryDrawer) && <AgGridColumn field="NetConditionCost" headerName="Net Condition Cost" cellRenderer={'commonCostFormatter'} ></AgGridColumn>}
+                <AgGridColumn field="OtherNetCost" headerName='Other Net Cost' cellRenderer='commonCostFormatter'></AgGridColumn>
 
                 <AgGridColumn field="NetLandedCost" headerName="Net Cost" cellRenderer={'commonCostFormatter'} ></AgGridColumn>
                 {initialConfiguration?.IsBoughtOutPartCostingConfigured && <AgGridColumn field="IsBreakupBoughtOutPart" headerName={`Detailed ${showBopLabel()}`}></AgGridColumn>}

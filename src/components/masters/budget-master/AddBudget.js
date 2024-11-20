@@ -115,6 +115,7 @@ function AddBudget(props) {
     const [plantCurrency, setPlantCurrency] = useState(null)
     const [ExchangeSource, setExchangeSource] = useState()
     const [costConverSionInLocalCurrency, setCostConverSionInLocalCurrency] = useState(false)
+    const [showPlantWarning, setShowPlantWarning] = useState(false)
     const { vendorLabel } = useLabels()
     useEffect(() => {
         setCostingTypeId(getCostingTypeIdByCostingPermission())
@@ -141,7 +142,7 @@ function AddBudget(props) {
         if (!isViewMode && !isEditFlag) {
             callExchangeRateAPI()
         }
-    }, [currency, year, ExchangeSource, fromCurrencyRef, costConverSionInLocalCurrency, isViewMode, isEditFlag]);
+    }, [currency, year, ExchangeSource, fromCurrencyRef, costConverSionInLocalCurrency, vendorName, client]);
 
     // ... existing code ...
     useEffect(() => {
@@ -256,7 +257,11 @@ function AddBudget(props) {
     */
     const onPressVendor = (costingHeadFlag) => {
         setVendorName([])
+        setClient([])
         setCostingTypeId(costingHeadFlag)
+        setShowPlantWarning(false)
+        setShowWarning(false)
+
 
         if (costingHeadFlag === VBCTypeId) {
             setIsVendor(!IsVendor)
@@ -321,6 +326,10 @@ function AddBudget(props) {
         if (newValue && newValue !== '') {
             setVendorName(newValue)
             setDisableCurrency(false)
+            setTimeout(() => {
+                callExchangeRateAPI()
+
+            }, 100)
         } else {
             setVendorName([])
         }
@@ -364,6 +373,7 @@ function AddBudget(props) {
         if (newValue && newValue !== '') {
             setClient(newValue)
             setDisableCurrency(false)
+            callExchangeRateAPI()
         } else {
             setClient([])
         }
@@ -681,13 +691,12 @@ function AddBudget(props) {
         const finalYear = year?.label && year?.label?.slice(0, 4);
         let date = (`${finalYear}-04-01`);
         const plantCurrency = getValues('plantCurrency')
-        const vendorValue = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? vendorName.value : EMPTY_GUID) : EMPTY_GUID;
-        const costingType = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? VBCTypeId : costingTypeId) : ZBCTypeId;
+        const vendorValue = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId) ? vendorName.value : EMPTY_GUID) : EMPTY_GUID;
+        const costingType = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId) ? VBCTypeId : costingTypeId) : ZBCTypeId;
         const hasCurrencyAndDate = plantCurrency && date;
         const fromCurrency = getValues("plantCurrency")
         if (hasCurrencyAndDate && finalYear) {
-            if (IsFetchExchangeRateVendorWise() && (vendorName?.length === 0 || client?.length === 0)) {
-                setShowWarning(true)
+            if (IsFetchExchangeRateVendorWise() && (costingTypeId !== ZBCTypeId && vendorName?.length === 0 && client?.length === 0)) {
                 return;
             }
             const callAPI = (from, to) => {
@@ -709,7 +718,9 @@ function AddBudget(props) {
                             }
                             resolve({
                                 rate: checkForNull(res.data.Data.CurrencyExchangeRate),
-                                exchangeRateId: res?.data?.Data?.ExchangeRateId
+                                exchangeRateId: res?.data?.Data?.ExchangeRateId,
+                                showWarning: Object.keys(res.data.Data).length === 0,
+                                showPlantWarning: Object.keys(res.data.Data).length === 0
                             });
                         }
                     ));
@@ -718,18 +729,24 @@ function AddBudget(props) {
 
 
             if (costConverSionInLocalCurrency && Object.keys(currency).length !== 0) {
-                callAPI(currency?.label, plantCurrency).then(({ rate: rate1, exchangeRateId: exchangeRateId1 }) => {
-                    callAPI(currency?.label, reactLocalStorage.getObject("baseCurrency")).then(({ rate: rate2, exchangeRateId: exchangeRateId2 }) => {
+                callAPI(currency?.label, plantCurrency).then(({ rate: rate1, exchangeRateId: exchangeRateId1, showPlantWarning: showPlantWarning1, showWarning: showWarning1, }) => {
+                    callAPI(currency?.label, reactLocalStorage.getObject("baseCurrency")).then(({ rate: rate2, exchangeRateId: exchangeRateId2, showWarning: showWarning2, showPlantWarning: showPlantWarning2 }) => {
                         setPlantCurrency(rate1);
                         setSettlementCurrency(rate2);
                         setPlantExchangeRateId(exchangeRateId1);
                         setSettlementExchangeRateId(exchangeRateId2);
+                        setShowPlantWarning(showPlantWarning1)
+                        setShowWarning(showWarning2)
+
                     });
                 });
             } else if (!costConverSionInLocalCurrency && fromCurrencyRef.current !== reactLocalStorage?.getObject("baseCurrency")) {
-                callAPI(fromCurrency, reactLocalStorage.getObject("baseCurrency")).then(({ rate: rate1, exchangeRateId: exchangeRateId1 }) => {
+                callAPI(fromCurrency, reactLocalStorage.getObject("baseCurrency")).then(({ rate: rate1, exchangeRateId: exchangeRateId1, showPlantWarning, showWarning }) => {
                     setPlantCurrency(rate1);
                     setPlantExchangeRateId(exchangeRateId1);
+                    setShowPlantWarning(showPlantWarning)
+                    setShowWarning(showWarning)
+
                 });
             }
         }
@@ -1251,6 +1268,8 @@ function AddBudget(props) {
                                                                     handleChange={() => { }}
                                                                     errors={errors.plantCurrency}
                                                                 />
+                                                                {showPlantWarning && <WarningMessage dClass="mt-0" message={`${getValues("plantCurrency")} rate is not present in the Exchange Master`} />}
+
                                                             </Col>
                                                             {getConfigurationKey().IsSourceExchangeRateNameVisible && (
                                                                 <Col className="col-md-15">
@@ -1357,6 +1376,8 @@ function AddBudget(props) {
                                                                     handleChange={handleCurrencyChange}
                                                                     disabled={disableCurrency || isViewMode ? true : false}
                                                                 />
+                                                                {currency?.label && showWarning && <WarningMessage dClass="mt-1" message={`${currency?.label} rate is not present in the Exchange Master`} />}
+
                                                                 <button id='AddBudget_checkbox' className='user-btn budget-tick-btn' type='button' onClick={getCostingPrice} disabled={isViewMode ? true : false} >
                                                                     <div className='save-icon' ></div>
                                                                 </button>

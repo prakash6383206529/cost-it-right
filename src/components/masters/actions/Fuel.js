@@ -92,7 +92,7 @@ export function getFuelDetailDataList(isAPICall, data, callback) {
     const { cbc, zbc, vbc } = reactLocalStorage.getObject('CostingTypePermission');
     return (dispatch) => {
         if (isAPICall) {
-            const request = axios.get(`${API.getFuelDetailDataList}?fuelId=${data.fuelName}&stateId=${data.stateName}&IsCustomerDataShow=${cbc}&IsVendorDataShow=${vbc}&IsZeroDataShow=${zbc}`, config());
+            const request = axios.get(`${API.getFuelDetailDataList}?fuelId=${data.fuelName}&stateId=${data.stateName}&IsCustomerDataShow=${cbc}&IsVendorDataShow=${vbc}&IsZeroDataShow=${zbc}&FuelEntryType=${data.FuelEntryType}&Currency=${data.Currency}&ExchangeRateSourceName=${data.ExchangeRateSourceName}`, config());
             request.then((response) => {
                 if (response && (response.data.Result === true || response.status === 204)) {
                     dispatch({
@@ -428,7 +428,7 @@ export function getPowerDetailDataList(data, callback) {
     let stateID = data && data.stateID === undefined ? null : data.stateID;
     const { cbc, zbc, vbc } = reactLocalStorage.getObject('CostingTypePermission');
     return (dispatch) => {
-        const request = axios.get(`${API.getPowerDetailDataList}?plantId=${plantID}&stateId=${stateID}&IsCustomerDataShow=${cbc}&IsVendorDataShow=${vbc}&IsZeroDataShow=${zbc}`, config());
+        const request = axios.get(`${API.getPowerDetailDataList}?plantId=${plantID}&stateId=${stateID}&IsCustomerDataShow=${cbc}&IsVendorDataShow=${vbc}&IsZeroDataShow=${zbc}&PowerEntryType=${data.PowerEntryType}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
                 dispatch({

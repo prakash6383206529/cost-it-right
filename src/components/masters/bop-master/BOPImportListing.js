@@ -90,7 +90,9 @@ const BOPImportListing = (props) => {
       NetConditionCost: "",
       NetConditionCostConversion: "",
       NetLandedCostConversion: "",
-      SAPCode: ""
+      SAPCode: "",
+      ExchangeRateSourceName: "", OtherNetCost: ""
+
     },
     warningMessage: false,
     filterModel: {},
@@ -227,6 +229,8 @@ const BOPImportListing = (props) => {
       dataObj.Currency = filteredRMData?.Currency;
     }
     dataObj.EntryType = Number(ENTRY_TYPE_IMPORT);
+    dataObj.ExchangeRateSourceName = floatingFilterData?.ExchangeRateSourceName
+    dataObj.OtherNetCost = floatingFilterData?.OtherNetCost
     if (!props?.isMasterSummaryDrawer) {
       dispatch(
         getBOPDataList(filterData, skip, take, isPagination, dataObj, true, (res) => {
@@ -744,6 +748,9 @@ const BOPImportListing = (props) => {
 
         return initialConfiguration?.IsBoughtOutPartCostingConfigured
       }
+      if (column.value === "ExchangeRateSourceName") {
+        return getConfigurationKey().IsSourceExchangeRateNameVisible
+      }
       return true;
     })
     return returnExcelColumn(filteredLabels, tempArr)
@@ -781,6 +788,13 @@ const BOPImportListing = (props) => {
         if (item.EffectiveDate?.includes("T")) {
           item.EffectiveDate = DayTime(item.EffectiveDate).format("DD/MM/YYYY");
         }
+        // Check for empty fields and replace with hyphen
+        for (const key in item) {
+          if (item[key] === null || item[key] === undefined || item[key] === "") {
+            item[key] = "-"; // Set to hyphen if data is not available
+          }
+        }
+
         return item;
       });
     return (
@@ -1085,17 +1099,19 @@ const BOPImportListing = (props) => {
                         {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
                         {initialConfiguration?.IsBoughtOutPartCostingConfigured && (<AgGridColumn field="IsBreakupBoughtOutPart" headerName={`Detailed ${showBopLabel()}`}></AgGridColumn>)}
                         {initialConfiguration?.IsBoughtOutPartCostingConfigured && (<AgGridColumn field="TechnologyName" headerName={technologyLabel} cellRenderer={"hyphenFormatter"}></AgGridColumn>)}
+                        {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>}
                         <AgGridColumn field="Currency" headerName="Currency"></AgGridColumn>
-                        <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>
-                        <AgGridColumn field="BasicRate" headerName="Basic Rate (Currency)" cellRenderer={"commonCostFormatter"} ></AgGridColumn>
-                        <AgGridColumn field="BasicRateConversion" headerName={headerNames?.BasicRate} cellRenderer={"commonCostFormatter"}></AgGridColumn>
-                        {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((props.isMasterSummaryDrawer && bopImportList[0]?.CostingTypeId === ZBCTypeId) || !props.isMasterSummaryDrawer) && !props?.isFromVerifyPage && (<AgGridColumn field="NetCostWithoutConditionCost" headerName="Basic Price (Currency)" cellRenderer={"commonCostFormatter"}></AgGridColumn>)}
-                        {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((props.isMasterSummaryDrawer && bopImportList[0]?.CostingTypeId === ZBCTypeId) || !props.isMasterSummaryDrawer) && !props?.isFromVerifyPage && (<AgGridColumn field="NetCostWithoutConditionCostConversion" headerName={headerNames?.BasicPrice} cellRenderer={"commonCostFormatter"}></AgGridColumn>)}
+                        <AgGridColumn field="BasicRate" headerName="Basic Rate" cellRenderer={"commonCostFormatter"} ></AgGridColumn>
+                        {/* <AgGridColumn field="BasicRateConversion" headerName={headerNames?.BasicRate} cellRenderer={"commonCostFormatter"}></AgGridColumn> */}
+                        {/* {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((props.isMasterSummaryDrawer && bopImportList[0]?.CostingTypeId === ZBCTypeId) || !props.isMasterSummaryDrawer) && !props?.isFromVerifyPage && (<AgGridColumn field="NetCostWithoutConditionCost" headerName="Basic Price (Currency)" cellRenderer={"commonCostFormatter"}></AgGridColumn>)}
+                        {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((props.isMasterSummaryDrawer && bopImportList[0]?.CostingTypeId === ZBCTypeId) || !props.isMasterSummaryDrawer) && !props?.isFromVerifyPage && (<AgGridColumn field="NetCostWithoutConditionCostConversion" headerName={headerNames?.BasicPrice} cellRenderer={"commonCostFormatter"}></AgGridColumn>)} */}
 
-                        {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((props.isMasterSummaryDrawer && bopImportList[0]?.CostingTypeId === ZBCTypeId) || !props.isMasterSummaryDrawer) && !props?.isFromVerifyPage && (<AgGridColumn field="NetConditionCost" headerName="Net Condition Cost (Currency)" cellRenderer={"commonCostFormatter"}></AgGridColumn>)}
-                        {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((props.isMasterSummaryDrawer && bopImportList[0]?.CostingTypeId === ZBCTypeId) || !props.isMasterSummaryDrawer) && !props?.isFromVerifyPage && (<AgGridColumn field="NetConditionCostConversion" headerName={headerNames?.NetConditionCost} cellRenderer={"commonCostFormatter"}></AgGridColumn>)}
-                        <AgGridColumn field="NetLandedCost" headerName="Net Cost (Currency)" cellRenderer="costFormatter"></AgGridColumn>
-                        <AgGridColumn field="NetLandedCostConversion" headerName={headerNames?.NetCost} cellRenderer={"commonCostFormatter"}></AgGridColumn>
+                        {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((props.isMasterSummaryDrawer && bopImportList[0]?.CostingTypeId === ZBCTypeId) || !props.isMasterSummaryDrawer) && !props?.isFromVerifyPage && (<AgGridColumn field="NetConditionCost" headerName="Net Condition Cost" cellRenderer={"commonCostFormatter"}></AgGridColumn>)}
+                        {/* {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((props.isMasterSummaryDrawer && bopImportList[0]?.CostingTypeId === ZBCTypeId) || !props.isMasterSummaryDrawer) && !props?.isFromVerifyPage && (<AgGridColumn field="NetConditionCostConversion" headerName={headerNames?.NetConditionCost} cellRenderer={"commonCostFormatter"}></AgGridColumn>)} */}
+                        <AgGridColumn field="OtherNetCost" headerName='Other Net Cost' cellRenderer='commonCostFormatter'></AgGridColumn>
+
+                        <AgGridColumn field="NetLandedCost" headerName="Net Cost" cellRenderer="costFormatter"></AgGridColumn>
+                        {/* <AgGridColumn field="NetLandedCostConversion" headerName={headerNames?.NetCost} cellRenderer={"commonCostFormatter"}></AgGridColumn> */}
                         <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={"effectiveDateFormatter"} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                         {!props.isSimulation && !props.isMasterSummaryDrawer && (<AgGridColumn field="BoughtOutPartId" width={160} pinned="right" cellClass="ag-grid-action-container actions-wrapper" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"} ></AgGridColumn>)}
                         {props.isMasterSummaryDrawer && (<AgGridColumn field="Attachements" headerName="Attachments" cellRenderer={"attachmentFormatter"}></AgGridColumn>)}

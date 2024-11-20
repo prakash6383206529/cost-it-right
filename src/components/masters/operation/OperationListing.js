@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, } from 'reactstrap';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { EMPTY_DATA, OPERATIONS, SURFACETREATMENT, defaultPageSize, FILE_URL } from '../../../config/constants';
+import { EMPTY_DATA, OPERATIONS, SURFACETREATMENT, defaultPageSize, FILE_URL, ENTRY_TYPE_IMPORT, ENTRY_TYPE_DOMESTIC } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { getOperationsDataList, deleteOperationAPI, setOperationList } from '../actions/OtherOperation';
 import AddOperation from './AddOperation';
@@ -36,6 +36,8 @@ import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from '../../common/Tour/TourMessages';
 import { useTranslation } from 'react-i18next';
 import { useLabels, useWithLocalization } from '../../../helper/core';
+import Switch from 'react-switch'
+
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
@@ -81,6 +83,7 @@ const OperationListing = (props) => {
         showExtraData: false,
         render: false,
         permissionData: {},
+        isImport: false
 
     })
     const tourStartData = useSelector(state => state.comman.tourStartData);
@@ -161,7 +164,7 @@ const OperationListing = (props) => {
         }
     }
 
-    const getTableListData = (operation_for = null, operation_Name_id = null, technology_id = null, vendor_id = null, skip = 0, take = 10, isPagination = true, dataObj) => {
+    const getTableListData = (operation_for = null, operation_Name_id = null, technology_id = null, vendor_id = null, skip = 0, take = 10, isPagination = true, dataObj, OperationEntryType = false) => {
         setState(prevState => ({ ...prevState, isLoader: isPagination ? true : false }))
 
         if (state.filterModel?.EffectiveDate) {
@@ -176,7 +179,7 @@ const OperationListing = (props) => {
         // TO HANDLE FUTURE CONDITIONS LIKE [APPROVED_STATUS, DRAFT_STATUS] FOR MULTIPLE STATUS
         let statusString = [props?.approvalStatus].join(",")
 
-        let filterData = { operation_for: operation_for, operation_Name_id: operation_Name_id, technology_id: props.isSimulation ? props.technology : technology_id, vendor_id: vendor_id, ListFor: props.ListFor, StatusId: statusString }        // THIS IS FOR SHOWING LIST IN 1 TAB(OPERATION LISTING) & ALSO FOR SHOWING LIST IN SIMULATION
+        let filterData = { operation_for: operation_for, operation_Name_id: operation_Name_id, technology_id: props.isSimulation ? props.technology : technology_id, vendor_id: vendor_id, ListFor: props.ListFor, StatusId: statusString, OperationEntryType: OperationEntryType ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC }        // THIS IS FOR SHOWING LIST IN 1 TAB(OPERATION LISTING) & ALSO FOR SHOWING LIST IN SIMULATION
         if ((isMasterSummaryDrawer !== undefined && !isMasterSummaryDrawer)) {
             if (props.isSimulation) {
                 props?.changeTokenCheckBox(false)
@@ -189,7 +192,8 @@ const OperationListing = (props) => {
             } else {
                 filterData.OperationType = ''
             }
-
+            dataObj.Currency = state.floatingFilterData?.Currency
+            dataObj.ExchangeRateSourceName = state.floatingFilterData?.ExchangeRateSourceName
             // dataObj.IsCustomerDataShow = reactLocalStorage.getObject('cbcCostingPermission')
             dispatch(getOperationsDataList(filterData, skip, take, isPagination, dataObj, res => {
                 setState(prevState => ({ ...prevState, noData: false }))
@@ -619,7 +623,14 @@ const OperationListing = (props) => {
         //tempArr = state.gridApi && state.gridApi?.getSelectedRows()
         tempArr = selectedRowForPagination
         tempArr = (tempArr && tempArr.length > 0) ? tempArr : (allOperationList ? allOperationList : [])
-        return returnExcelColumn(OPERATION_DOWNLOAD_EXCEl_LOCALIZATION, tempArr)
+        const filteredLabels = OPERATION_DOWNLOAD_EXCEl_LOCALIZATION.filter(column => {
+            if (column.value === "ExchangeRateSourceName") {
+                return getConfigurationKey().IsSourceExchangeRateNameVisible
+            }
+            return true;
+        })
+        return returnExcelColumn(filteredLabels, tempArr)
+
     };
 
     const returnExcelColumn = (data = [], TempData) => {
@@ -775,6 +786,12 @@ const OperationListing = (props) => {
         headerCheckboxSelection: (props.isSimulation || props.benchMark) ? isFirstColumn : false,
     };
 
+    const importToggle = () => {
+        setState((prevState) => ({ ...prevState, isImport: !state.isImport }));
+        getTableListData(null, null, null, null, 0, defaultPageSize, true, state.floatingFilterData, !state.isImport)
+
+    }
+
     const frameworkComponents = {
         totalValueRenderer: buttonFormatter,
         customNoRowsOverlay: NoContentFound,
@@ -790,6 +807,28 @@ const OperationListing = (props) => {
             {(state.isLoader && !props.isMasterSummaryDrawer) && <LoaderCustom customClass="simulation-Loader" />}            {state.disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
             <div className={`ag-grid-react ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${permissionData?.Download ? "show-table-btn no-tab-page" : ""}`}>
                 <form>
+                    <Row>
+                        <Col md="4" className="switch mb15">
+                            <label className="switch-level">
+                                <div className="left-title">Domestic</div>
+                                <Switch
+                                    onChange={importToggle}
+                                    checked={state.isImport}
+                                    id="normal-switch"
+
+                                    background="#4DC771"
+                                    onColor="#4DC771"
+                                    onHandleColor="#ffffff"
+                                    offColor="#4DC771"
+                                    uncheckedIcon={false}
+                                    checkedIcon={false}
+                                    height={20}
+                                    width={46}
+                                />
+                                <div className="right-title">Import</div>
+                            </label>
+                        </Col>
+                    </Row>
                     <Row className={`${props?.isMasterSummaryDrawer ? '' : 'pt-4'} filter-row-large blue-before ${isSimulation || props.benchMark ? "zindex-0" : ""}`}>
                         <Col md="3" lg="3">
                             <input type="text" value={searchText} className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
@@ -898,8 +937,8 @@ const OperationListing = (props) => {
                             {reactLocalStorage.getObject('cbcCostingPermission') && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                             {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
                             <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
+                            {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                             <AgGridColumn field="Currency" headerName="Currency"></AgGridColumn>
-                            <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>
                             <AgGridColumn field="Rate" headerName={`Rate`} cellRenderer={'commonCostFormatter'}></AgGridColumn>
                             <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                             {!isSimulation && !props?.isMasterSummaryDrawer && <AgGridColumn field="OperationId" cellClass={"actions-wrapper ag-grid-action-container"} width={150} pinned="right" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}

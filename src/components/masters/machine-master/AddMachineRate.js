@@ -60,7 +60,7 @@ class AddMachineRate extends Component {
     this.child = React.createRef();
     // ********* INITIALIZE REF FOR DROPZONE ********
     this.dropzone = React.createRef();
-    this.state = {
+    this.initialState = {
       MachineID: EMPTY_GUID,
       isEditFlag: false,
       isFormHide: false,
@@ -136,8 +136,13 @@ class AddMachineRate extends Component {
       settlementExchangeRateId: '',
       plantCurrencyID: '',
       plantCurrency: 1,
-      showPlantWarning: false
+      showPlantWarning: false,
+      UOM: [],
+      resetProcessGroup: false,
+      disableEffectiveDate:false
     }
+    this.state = { ...this.initialState };
+
   }
 
   /**
@@ -234,8 +239,8 @@ class AddMachineRate extends Component {
   callExchangeRateAPI = (costingTypeId, plantCurrency, currency, isImport, ExchangeSource, effectiveDate, client, vendorName, selectedPlants) => {
     const { fieldsObj } = this.props;
 
-    const vendorValue = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? vendorName.value : EMPTY_GUID) : EMPTY_GUID;
-    const costingType = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? VBCTypeId : costingTypeId) : ZBCTypeId;
+    const vendorValue = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId ) ? vendorName.value : EMPTY_GUID) : EMPTY_GUID;
+    const costingType = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId ) ? VBCTypeId : costingTypeId) : ZBCTypeId;
     const fromCurrency = isImport ? currency?.label : plantCurrency;
     const toCurrency = reactLocalStorage.getObject("baseCurrency");
     const hasCurrencyAndDate = Boolean(plantCurrency && effectiveDate);
@@ -400,9 +405,7 @@ class AddMachineRate extends Component {
       settlementExchangeRateId: this.state.settlementExchangeRateId,
       plantCurrencyID: this.state.plantCurrencyID,
       callExchangeRateAPI: this.callExchangeRateAPI,
-      handleCalculation: this.handleCalculation
-
-
+      handleCalculation: this.handleCalculation,
     }
     setTimeout(() => {
       this.setState({ selectedPlants: selectedPlants, effectiveDate: effectiveDate })
@@ -606,30 +609,15 @@ class AddMachineRate extends Component {
     * @method onPressVendor
     * @description Used for Vendor checked
     */
-  onPressVendor = (costingHeadFlag) => {
-    const fieldsToClear = [
-      'technology',
-      'vendorName',
-      'Plant',
-      'DestinationPlant',
-      'clientName',
-      'EffectiveDate',
-    ];
-    fieldsToClear.forEach(fieldName => {
-      this.props.dispatch(clearFields('AddMachineRate', false, false, fieldName));
-    });
-    this.setState({
-      costingTypeId: costingHeadFlag,
-      vendorName: [],
-      vendorLocation: [],
-      selectedPlants: [],
-    }, () => {
-    });
-    if (costingHeadFlag === CBCTypeId) {
-      this.props.getClientSelectList(() => { })
-    }
-  }
 
+  onPressVendor = (costingHeadFlag) => {
+    this.props.reset();
+    this.setState({ ...this.initialState, costingTypeId: costingHeadFlag }, () => {
+      if (costingHeadFlag === CBCTypeId) {
+        this.props.getClientSelectList(() => { })
+      }
+    });
+  };
   /**
   * @method handleTechnology
   * @description Used handle technology
@@ -896,11 +884,6 @@ class AddMachineRate extends Component {
   moreDetailsToggler = (Id, editFlag) => {
     const { selectedTechnology, vendorName, costingTypeId, client, plantCurrency, settlementCurrency, plantExchangeRateId, settlementExchangeRateId, plantCurrencyID, isImport, currency } = this.state;
 
-
-
-
-
-
     if (selectedTechnology == null || selectedTechnology.length === 0 || Object.keys(selectedTechnology).length < 0) {
       Toaster.warning(`${this.props.t('Technology', { ns: 'MasterLabels', defaultValue: 'Technology' })} should not be empty.`)
       return false;
@@ -934,7 +917,8 @@ class AddMachineRate extends Component {
       entryType: isImport,
       currency: currency,
       callExchangeRateAPI: this.callExchangeRateAPI,
-      handleCalculation: this?.handleCalculation
+      handleCalculation: this?.handleCalculation,
+      machineType: this.state.machineType,
     }
     this.props.displayMoreDetailsForm(data)
   }
@@ -1051,9 +1035,9 @@ class AddMachineRate extends Component {
 
 
       tempArray.push(...processGrid, {
-        processName: processName.label,
-        ProcessId: processName.value,
-        UnitOfMeasurement: UOM.label,
+        processName: processName?.label,
+        ProcessId: processName?.value,
+        UnitOfMeasurement: UOM?.label,
         UnitOfMeasurementId: UOM.value,
         MachineRate: MachineRate,
         MachineRateConversion: MachineRateConversion,
@@ -1066,7 +1050,8 @@ class AddMachineRate extends Component {
         processGrid: tempArray,
         processName: [],
         UOM: isProcessGroup ? UOM : [],
-        lockUOMAndRate: isProcessGroup
+        lockUOMAndRate: isProcessGroup,
+        disableEffectiveDate:true
       }, () => this.props.change('MachineRate', isProcessGroup ? MachineRate : ''));
       this.setState({ DropdownChange: false, errorObj: { processName: false, processUOM: false, machineRate: false, machineRatePlantCurrency: false } })
     }, 200);
@@ -1115,10 +1100,10 @@ class AddMachineRate extends Component {
       this.setState({ DropdownChange: false })
     }
     tempData = {
-      processName: processName.label,
+      processName: processName?.label,
       ProcessId: processName.value,
-      UnitOfMeasurement: UOM.label,
-      UnitOfMeasurementId: UOM.value,
+      UnitOfMeasurement: UOM?.label,
+      UnitOfMeasurementId: UOM?.value,
       MachineRate: MachineRate,
       MachineRateConversion: MachineRateConversion,
       MachineRateLocalConversion: MachineRateLocalConversion,
@@ -1200,12 +1185,16 @@ class AddMachineRate extends Component {
     } else {
       this.setState({ lockUOMAndRate: isProcessGroup })
     }
+    if(tempData&&tempData?.length === 0){
+    this.setState({disableEffectiveDate:false})
+  }
     this.setState({
       processGrid: tempData,
       UOM: tempData.length === 0 ? [] : !this.state.lockUOMAndRate ? [] : UOM,
       isEditIndex: false,
       processName: [],
-    }, () => this.props.change('MachineRate', ''))
+    }, () =>
+       this.props.change('MachineRate', ''))
     this.setState({ DropdownChange: false })
   }
 
@@ -1436,7 +1425,7 @@ class AddMachineRate extends Component {
       return false;
     }
 
-    let technologyArray = [{ Technology: selectedTechnology.label, TechnologyId: selectedTechnology.value }]
+    let technologyArray = [{ Technology: selectedTechnology?.label, TechnologyId: selectedTechnology?.value }]
     let updatedFiles = files.map((file) => ({ ...file, ContextId: MachineID }))
 
     let plantArray = Array?.isArray(selectedPlants) ? selectedPlants?.map(plant => ({ PlantId: plant?.value, PlantName: plant?.label, PlantCode: '' })) :
@@ -1471,7 +1460,7 @@ class AddMachineRate extends Component {
           Specification: values.Specification,
           LoggedInUserId: loggedInUserId(),
           MachineProcessRates: processGrid,
-          Technology: [{ Technology: selectedTechnology.label ? selectedTechnology.label : selectedTechnology[0].label, TechnologyId: selectedTechnology.value ? selectedTechnology.value : selectedTechnology[0].value }],
+          Technology: [{ Technology: selectedTechnology?.label ? selectedTechnology?.label : selectedTechnology[0]?.label, TechnologyId: selectedTechnology.value ? selectedTechnology.value : selectedTechnology[0].value }],
           Plant: plantArray,
           Remark: remarks,
           Attachements: updatedFiles,
@@ -1555,7 +1544,7 @@ class AddMachineRate extends Component {
         Specification: values.Specification,
         LoggedInUserId: loggedInUserId(),
         MachineProcessRates: processGrid,
-        Technology: (technologyArray.length > 0 && technologyArray[0]?.Technology !== undefined) ? technologyArray : [{ Technology: selectedTechnology.label ? selectedTechnology.label : selectedTechnology[0].label, TechnologyId: selectedTechnology.value ? selectedTechnology.value : selectedTechnology[0].value }],
+        Technology: (technologyArray.length > 0 && technologyArray[0]?.Technology !== undefined) ? technologyArray : [{ Technology: selectedTechnology?.label ? selectedTechnology?.label : selectedTechnology[0]?.label, TechnologyId: selectedTechnology.value ? selectedTechnology.value : selectedTechnology[0].value }],
         Plant: plantArray ?? [],
         DestinationPlantId: '',
         Remark: remarks,
@@ -1706,12 +1695,12 @@ class AddMachineRate extends Component {
   */
 
   DisplayMachineRateBaseCurrencyLabel = () => {
-    return <>Machine Rate/{this.state.UOM && this.state.UOM.length !== 0 ? displayUOM(this.state.UOM.label) : "UOM"} ({reactLocalStorage.getObject("baseCurrency")})</>
+    return <>Machine Rate/{this.state?.UOM && this.state?.UOM.length !== 0 ? displayUOM(this.state?.UOM?.label) : "UOM"} ({reactLocalStorage.getObject("baseCurrency")})</>
   }
   DisplayMachineRateDynamicLabel = () => {
     return (
       <>
-        Machine Rate/{this.state.UOM && this.state.UOM.length !== 0 ? displayUOM(this.state.UOM.label) : "UOM"} (
+        Machine Rate/{this.state?.UOM && this.state?.UOM.length !== 0 ? displayUOM(this.state?.UOM?.label) : "UOM"} (
         {this.state.isImport && this.state.currency?.label !== undefined
           ? this.state.currency.label
           : this.state.isImport
@@ -1724,7 +1713,7 @@ class AddMachineRate extends Component {
     );
   }
   DisplayMachineRatePlantCurrencyLabel = () => {
-    return <>Machine Rate/{this.state.UOM && this.state.UOM.length !== 0 ? displayUOM(this.state.UOM.label) : "UOM"} ({this.props.fieldsObj.plantCurrency ? this.props.fieldsObj.plantCurrency : "Currency"})</>
+    return <>Machine Rate/{this.state?.UOM && this.state?.UOM.length !== 0 ? displayUOM(this.state?.UOM?.label) : "UOM"} ({this.props.fieldsObj.plantCurrency ? this.props.fieldsObj.plantCurrency : "Currency"})</>
   }
 
 
@@ -1829,6 +1818,8 @@ class AddMachineRate extends Component {
     const { handleSubmit, AddAccessibility, EditAccessibility, initialConfiguration, isMachineAssociated, t } = this.props;
     const { isEditFlag, isOpenMachineType, isOpenProcessDrawer, disableMachineType, IsCopied, isViewFlag, isViewMode, setDisable, lockUOMAndRate, UniqueProcessId, costingTypeId, IsDetailedEntry, CostingTypePermission, disableSendForApproval, tourContainer } = this.state;
     const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
+    console.log("this.state", this.state)
+    console.log("this.filedobj", this.props.fieldsObj)
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
       if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
@@ -2213,7 +2204,7 @@ class AddMachineRate extends Component {
                                 component={renderDatePicker}
                                 placeholder={isViewMode || !this.state.IsFinancialDataChanged ? '-' : "Enter"}
                                 className="form-control"
-                                disabled={isViewMode || !this.state.IsFinancialDataChanged || (isEditFlag && IsDetailedEntry)}
+                                disabled={isViewMode || !this.state.IsFinancialDataChanged || (isEditFlag && IsDetailedEntry)||this.state.disableEffectiveDate}
                               />
                             </div>
                           </div>
@@ -2294,10 +2285,10 @@ class AddMachineRate extends Component {
                             //onKeyUp={(e) => this.changeItemDesc(e)}
                             required={true}
                             handleChangeDescription={this.handleUOM}
-                            valueDescription={this.state.UOM}
+                            valueDescription={this.state?.UOM}
                             disabled={isViewMode || lockUOMAndRate || (isEditFlag && isMachineAssociated)}
                           />
-                          {this.state.errorObj.processUOM && (this.state.UOM === undefined) && <div className='text-help p-absolute'>This field is required.</div>}
+                          {this.state.errorObj.processUOM && (this.state?.UOM === undefined) && <div className='text-help p-absolute'>This field is required.</div>}
                         </Col>
                         <Col md="3" className='UOM-label-container p-relative'>
                           <Field
