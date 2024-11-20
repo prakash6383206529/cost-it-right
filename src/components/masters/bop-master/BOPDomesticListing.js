@@ -716,6 +716,7 @@ const BOPDomesticListing = (props) => {
           item[key] = "-"; // Set to hyphen if data is not available
         }
       }
+      return item;
     })
 
     return (

@@ -39,6 +39,8 @@ import TourWrapper from '../../common/Tour/TourWrapper';
 import { useTranslation } from 'react-i18next';
 import { TourStartAction } from '../../../actions/Common';
 import { useLabels, useWithLocalization } from '../../../helper/core';
+import Switch from 'react-switch'
+
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -67,7 +69,7 @@ const MachineRateListing = (props) => {
     isOpenProcessGroupDrawer: false,
     analyticsDrawer: false,
     selectedRowData: [],
-    floatingFilterData: { CostingHead: "", Technology: "", VendorName: "", Plant: "", MachineNumber: "", MachineName: "", MachineTypeName: "", TonnageCapacity: "", ProcessName: "", MachineRate: "", EffectiveDateNew: "", DepartmentName: props.isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant ? userDepartmetList() : "", CustomerName: "", UOM: "" },
+    floatingFilterData: { CostingHead: "", Technology: "", VendorName: "", Plant: "", MachineNumber: "", MachineName: "", MachineTypeName: "", TonnageCapacity: "", ProcessName: "", MachineRate: "", EffectiveDateNew: "", DepartmentName: props.isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant ? userDepartmetList() : "", CustomerName: "", UOM: "", Currency: "", ExchangeRateSourceName: "", OtherNetCost: "" },
     warningMessage: false,
     filterModel: {},
     totalRecordCount: 0,
@@ -79,6 +81,7 @@ const MachineRateListing = (props) => {
     attachment: false,
     viewAttachment: [],
     render: false,
+    isImport: false
   });
   const [searchText, setSearchText] = useState('');
   const { machineDatalist, allMachineDataList } = useSelector(state => state.machine)
@@ -118,7 +121,7 @@ const MachineRateListing = (props) => {
   }, []);
 
 
-  const getDataList = (costing_head = '', technology_id = 0, vendor_id = '', machine_type_id = 0, process_id = '', plant_id = '', skip = 0, take = 10, isPagination = true, dataObj = {}) => {
+  const getDataList = (costing_head = '', technology_id = 0, vendor_id = '', machine_type_id = 0, process_id = '', plant_id = '', skip = 0, take = 10, isPagination = true, dataObj = {}, MachineEntryType = false) => {
     if (state.filterModel?.EffectiveDateNew) {
       if (state.filterModel.EffectiveDateNew.dateTo) {
         let temp = []
@@ -128,7 +131,7 @@ const MachineRateListing = (props) => {
       }
     }
     let statusString = [props?.approvalStatus].join(",")
-    const filterData = { costing_head: costing_head, technology_id: props.isSimulation ? props.technology.value : technology_id, vendor_id: vendor_id, machine_type_id: machine_type_id, process_id: process_id, plant_id: plant_id, StatusId: statusString }
+    const filterData = { costing_head: costing_head, technology_id: props.isSimulation ? props.technology.value : technology_id, vendor_id: vendor_id, machine_type_id: machine_type_id, process_id: process_id, plant_id: plant_id, StatusId: statusString, MachineEntryType: MachineEntryType ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC }
     const { zbc, vbc, cbc } = reactLocalStorage.getObject('CostingTypePermission')
     dataObj.IsCustomerDataShow = cbc
     dataObj.IsVendorDataShow = vbc
@@ -143,6 +146,8 @@ const MachineRateListing = (props) => {
       setState((prevState) => ({ ...prevState, isLoader: isPagination ? true : false }))
       let FloatingfilterData = state.filterModel
       let obj = { ...state.floatingFilterData }
+      dataObj.Currency = state.floatingFilterData?.Currency
+      dataObj.ExchangeRateSourceName = state.floatingFilterData?.ExchangeRateSourceName
       dispatch(getMachineDataList(filterData, skip, take, isPagination, dataObj, (res) => {
         setState((prevState) => ({ ...prevState, noData: false }))
         if (props.isSimulation) { props?.changeTokenCheckBox(true) }
@@ -542,7 +547,13 @@ const MachineRateListing = (props) => {
     //tempArr = state.gridApi && state.gridApi?.getSelectedRows()
     tempArr = selectedRowForPagination
     tempArr = (tempArr && tempArr.length > 0) ? tempArr : (allMachineDataList ? allMachineDataList : [])
-    return returnExcelColumn(MACHINERATE_DOWNLOAD_EXCEl_LOCALIZATION, tempArr)
+    const filteredLabels = MACHINERATE_DOWNLOAD_EXCEl_LOCALIZATION.filter(column => {
+      if (column.value === "ExchangeRateSourceName") {
+        return getConfigurationKey().IsSourceExchangeRateNameVisible
+      }
+      return true;
+    })
+    return returnExcelColumn(filteredLabels, tempArr)
   };
   /**
                  @method toggleExtraData
@@ -642,7 +653,11 @@ const MachineRateListing = (props) => {
     checkboxSelection: isFirstColumn,
     headerCheckboxSelection: (props.isSimulation || props?.benchMark) ? isFirstColumn : false,
   };
+  const importToggle = () => {
+    setState((prevState) => ({ ...prevState, isImport: !state.isImport }));
+    getDataList("", 0, '', 0, "", "", 0, globalTakes, true, state.floatingFilterData, !state.isImport)
 
+  }
   const frameworkComponents = {
     totalValueRenderer: buttonFormatter,
     effectiveDateRenderer: effectiveDateFormatter,
@@ -703,11 +718,40 @@ const MachineRateListing = (props) => {
     }
     return MachineEntryType === ENTRY_TYPE_IMPORT ? Currency : LocalCurrency;
   }
+  const currencyRateRenderer = (params) => {
+    const { MachineEntryType, LocalCurrency, Currency, MachineRateConversion, MachineRateLocalConversion, MachineRate } = params.data;
+    if (MachineEntryType === null || MachineEntryType === undefined) {
+      return LocalCurrency;
+    }
+    return MachineEntryType === ENTRY_TYPE_IMPORT ? MachineRate : MachineRateLocalConversion;
+  }
   return (
     <div className={`ag-grid-react ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${permissions?.Download ? "show-table-btn" : ""} ${props.isSimulation ? 'simulation-height' : ''}`}>
       {(state.isLoader && !props.isMasterSummaryDrawer) && <LoaderCustom customClass="simulation-Loader" />} {state.disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
       <form noValidate> {(state.isLoader && !props.isMasterSummaryDrawer) && <LoaderCustom customClass="simulation-Loader" />}
         {state.disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
+        <Row>
+          <Col md="4" className="switch mb15">
+            <label className="switch-level">
+              <div className="left-title">Domestic</div>
+              <Switch
+                onChange={importToggle}
+                checked={state.isImport}
+                id="normal-switch"
+
+                background="#4DC771"
+                onColor="#4DC771"
+                onHandleColor="#ffffff"
+                offColor="#4DC771"
+                uncheckedIcon={false}
+                checkedIcon={false}
+                height={20}
+                width={46}
+              />
+              <div className="right-title">Import</div>
+            </label>
+          </Col>
+        </Row>
         <Row className={`${props?.isMasterSummaryDrawer ? '' : 'pt-4'} filter-row-large ${(props.isSimulation || props.benchMark) ? 'simulation-filter zindex-0' : ''}`}>
           <Col md="3" lg="3">
             <input type="text" className="form-control table-search" value={searchText} id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={onFilterTextBoxChanged} />
@@ -779,10 +823,6 @@ const MachineRateListing = (props) => {
                 { }
                 <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
                 {!isSimulation && <AgGridColumn field="Technology" headerName={technologyLabel}></AgGridColumn>}
-                <AgGridColumn field="MachineEntryType" headerName="Entry Type" cellRenderer={'hyphenFormatter'} valueGetter={(params) => showEntryType(params?.data?.MachineEntryType)}></AgGridColumn>
-
-                {/* <AgGridColumn field="LocalCurrencyExchangeRate" headerName="Local Currency Exchange Rate" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                <AgGridColumn field="ExchangeRate" headerName="Exchange Rate" cellRenderer={'hyphenFormatter'}></AgGridColumn> */}
 
                 <AgGridColumn field="MachineName" headerName="Machine Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 <AgGridColumn field="MachineNumber" headerName="Machine Number" cellRenderer={'hyphenFormatter'}></AgGridColumn>
@@ -793,11 +833,9 @@ const MachineRateListing = (props) => {
                 <AgGridColumn field="VendorName" headerName={`${vendorLabel} (Code)`} cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                 <AgGridColumn field="Plant" headerName="Plant (Code)" cellRenderer='hyphenFormatter'></AgGridColumn>
-                <AgGridColumn field="Currency" headerName="Currency" cellRenderer={currencyRenderer}></AgGridColumn>
-                {/* <AgGridColumn field="LocalCurrency" headerName="Local Currency" cellRenderer={'hyphenFormatter'}></AgGridColumn> */}
-
-                <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                <AgGridColumn width={200} field="MachineRate" headerName="Machine Rate" cellRenderer={hyphenFormatter}></AgGridColumn>
+                {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                <AgGridColumn field="Currency" headerName="Currency"></AgGridColumn>
+                <AgGridColumn width={200} field="MachineRate" headerName="Machine Rate" cellRenderer={currencyRateRenderer}></AgGridColumn>
                 {/* <AgGridColumn width={200} field="MachineRate" headerName="Machine Rate (Currency)" cellRenderer={hyphenFormatter}></AgGridColumn> */}
                 <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                 {!isSimulation && !props?.isMasterSummaryDrawer && <AgGridColumn field="MachineId" width={230} cellClass={"actions-wrapper ag-grid-action-container"} pinned="right" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}

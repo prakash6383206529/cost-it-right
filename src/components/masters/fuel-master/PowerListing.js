@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { Row, Col } from "reactstrap";
 import { checkForDecimalAndNull } from "../../../helper/validation";
 import { getPowerDetailDataList, getVendorPowerDetailDataList, deletePowerDetail, deleteVendorPowerDetail, } from "../actions/Fuel";
-import { EMPTY_DATA } from "../../../config/constants";
+import { EMPTY_DATA, ENTRY_TYPE_DOMESTIC, ENTRY_TYPE_IMPORT } from "../../../config/constants";
 import NoContentFound from "../../common/NoContentFound";
 import { MESSAGES } from "../../../config/message";
 import Toaster from "../../common/Toaster";
@@ -24,6 +24,8 @@ import { checkMasterCreateByCostingPermission } from '../../common/CommonFunctio
 import { useRef } from 'react';
 import Button from "../../layout/Button";
 import { useLabels, useWithLocalization } from "../../../helper/core";
+import Switch from 'react-switch'
+
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
@@ -46,6 +48,7 @@ const PowerListing = (props) => {
     selectedRowData: false,
     noData: false,
     dataCount: 0,
+    isImport: false,
   });
   const dispatch = useDispatch();
   const permissions = useContext(ApplyPermission);
@@ -58,10 +61,10 @@ const PowerListing = (props) => {
     }
   }, [permissions]);
 
-  const getDataList = () => {
+  const getDataList = (isImport = false) => {
     setState((prevState) => ({ ...prevState, isLoader: true }));
     if (!state.IsVendor) {
-      const filterData = { plantID: state.plant ? state.plant.value : "", stateID: state.StateName ? state.StateName.value : "", };
+      const filterData = { plantID: state.plant ? state.plant.value : "", stateID: state.StateName ? state.StateName.value : "", PowerEntryType: isImport ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC };
       dispatch(
         getPowerDetailDataList(filterData, (res) => {
           setState((prevState) => ({ ...prevState, isLoader: false }));
@@ -273,7 +276,10 @@ const PowerListing = (props) => {
     browserDatePicker: true,
     minValidYear: 2000,
   };
-
+  const importToggle = () => {
+    setState((prevState) => ({ ...prevState, isImport: !state.isImport }));
+    getDataList(!state.isImport)
+  }
   const isFirstColumn = (params) => {
     var displayedColumns = params.columnApi.getAllDisplayedColumns();
     var thisIsFirstColumn = displayedColumns[0] === params.column;
@@ -332,6 +338,27 @@ const PowerListing = (props) => {
             <div className="ag-grid-header">
               <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={"off"} onChange={(e) => onFilterTextBoxChanged(e)} />
             </div>
+            <Row>
+              <Col md="4" className="switch mb15">
+                <label className="switch-level">
+                  <div className="left-title">Domestic</div>
+                  <Switch
+                    onChange={importToggle}
+                    checked={state.isImport}
+                    id="normal-switch"
+                    background="#4DC771"
+                    onColor="#4DC771"
+                    onHandleColor="#ffffff"
+                    offColor="#4DC771"
+                    uncheckedIcon={false}
+                    checkedIcon={false}
+                    height={20}
+                    width={46}
+                  />
+                  <div className="right-title">Import</div>
+                </label>
+              </Col>
+            </Row>
             <div
               className={`ag-theme-material ${state.isLoader && "max-loader-height"}`}
             >

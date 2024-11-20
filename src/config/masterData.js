@@ -5874,6 +5874,8 @@ export const MACHINERATE_DOWNLOAD_EXCEl = [
     { label: "Vendor (Code)", value: "VendorName", },
     { label: "Plant (Code)", value: "Plant", },
     { label: "Customer (Code)", value: "CustomerName", },
+    { label: "Exchange Rate Source", value: "ExchangeRateSourceName", },
+    { label: "Currency", value: "Currency", },
     { label: "Machine Rate", value: "MachineRate", },
     { label: "Effective Date", value: "EffectiveDateNew", },
 ]
@@ -6045,6 +6047,8 @@ export const OPERATION_DOWNLOAD_EXCEl = [
     // { label: "Company (Code)", value: "DepartmentName", },
     { label: "Customer (Code)", value: "CustomerName", },
     { label: "UOM", value: "UOM", },
+    { label: "Exchange Rate Source", value: "ExchangeRateSourceName", },
+    { label: "Currency", value: "Currency", },
     { label: "Rate", value: "Rate", },
     { label: "Effective Date", value: "EffectiveDate", },
 ]
