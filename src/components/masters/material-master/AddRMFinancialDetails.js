@@ -31,6 +31,7 @@ import { getIndexSelectList, setOtherCostDetails } from "../actions/Indexation"
 import { getPlantUnitAPI } from "../actions/Plant"
 import _ from 'lodash'
 import WarningMessage from "../../common/WarningMessage"
+import { recalculateConditions, updateCostValue } from "../../common/CommonFunctions"
 function AddRMFinancialDetails(props) {
     const { Controller, control, register, setValue, getValues, errors, reset, useWatch, states, data, isRMAssociated, disableAll } = props
     const { isEditFlag, isViewFlag } = data
@@ -161,7 +162,7 @@ function AddRMFinancialDetails(props) {
                 if (Data?.Currency !== reactLocalStorage?.getObject("baseCurrency")) {
                     setState(prevState => ({ ...prevState, hidePlantCurrency: false }));
                 } else {
-                    setState(prevState => ({ ...prevState, hidePlantCurrency: true }));
+                    setState(prevState => ({ ...prevState, hidePlantCurrency: true,showPlantWarning: false }));
                 }
                 const { costingTypeId } = states;
                 let fromCurrency = states.isImport ? state.currency?.label : Data?.Currency
@@ -343,41 +344,99 @@ function AddRMFinancialDetails(props) {
 
     }
 
-    const handleApplicability = (value, basicPriceBaseCurrency, arr) => {
+    const handleApplicability = (value, basicPriceBaseCurrency, arr, costField, headerName) => {
+        if (!value) return 0;
+        
         const selectedApplicabilities = value?.split(' + ');
-
+        
         // Calculate total cost currency for selected applicabilities
-        const total = selectedApplicabilities.reduce((acc, Applicability) => {
-            // Skip checking for "Basic Rate" in tableData
-
-            const item = arr?.find(item => item?.Description.trim() === Applicability.trim());
+        const total = selectedApplicabilities.reduce((acc, applicability) => {
+            const trimmedApplicability = applicability.trim();
+            
+            // If applicability is "Basic Rate", return basic price
+            if (trimmedApplicability === "Basic Rate") {
+                // Convert to number
+                return Number(acc) + Number(basicPriceBaseCurrency);
+            }
+            
+            // Find matching cost item
+            const item = arr?.find(item => item?.[headerName]?.trim() === trimmedApplicability);
             if (item) {
-                let totalConditionCost = acc + item?.ConditionCost
-                return totalConditionCost
-            } else {
-                return basicPriceBaseCurrency
+                // Convert both acc and cost to numbers before adding
+                return Number(acc) + Number(item?.[costField] || 0);
             }
-
+            
+            return Number(acc);
         }, 0);
-
-        return total
+    
+        return total;
     }
-
-    const recalculateConditions = (basicPriceSelectedCurrency, basicPriceBaseCurrency) => {
-        const { conditionTableData } = state;
-        let copiedConditionData = _.cloneDeep(conditionTableData) ?? []
-        let tempArr = copiedConditionData
-        copiedConditionData && copiedConditionData?.map((item, index) => {
-            if (item?.ConditionType === "Percentage") {
-                let ApplicabilityCost = handleApplicability(item.Applicability, basicPriceBaseCurrency, tempArr)
-                let ConditionCost = checkForNull((item?.Percentage) / 100) * checkForNull(ApplicabilityCost)
-                let ConditionCostConversion = checkForNull((item?.Percentage) / 100) * checkForNull(ApplicabilityCost)
-                let obj = { ...item, ApplicabilityCost: ApplicabilityCost, ConditionCost: ConditionCost, ConditionCostConversion: ConditionCostConversion, ConditionCostPerQuantity: ConditionCostConversion }
-                tempArr = Object.assign([...tempArr], { [index]: obj })
-            }
-        })
-        return tempArr
-    }
+    // const recalculateConditions = (basicPriceBaseCurrency) => {
+    //     return recalculateCosts(
+    //         false,
+    //         basicPriceBaseCurrency,
+    //         "ConditionType",
+    //         "Applicability",
+    //         "Percentage",
+    //         {
+    //             mainCost: "ConditionCost",
+    //             conversionCost: "ConditionCostConversion",
+    //             perQuantityCost: "ConditionCostPerQuantity",
+    //         },
+    //         'Description'
+    //     );
+    // };
+    // const recalculateOtherCost = (basicRate) => {
+    //     return recalculateCosts(
+    //         true,
+    //         basicRate,
+    //         "Type",
+    //         "Applicability",
+    //         "Value",
+    //         {
+    //             mainCost: "NetCost",
+    //             conversionCost: "NetCostConversion",
+    //             perQuantityCost: "NetCostConversion",
+    //         },
+    //         'CostHeaderName'
+    //     );
+    // };
+    // const recalculateCosts = (isOtherCost, basicValue, typeField, applicabilityField, percentageField, resultFields,headerName) => {
+    //     // Select the correct data array and make a deep copy
+    //     const dataArray = isOtherCost ? state.otherCostTableData : state.conditionTableData;
+    //     const costField = isOtherCost ? 'NetCost' : 'ConditionCost';
+    //     let copiedData = _.cloneDeep(dataArray) ?? [];
+    //     // Create a temporary array for calculations
+    //     let tempArr = copiedData;
+    //     // Process each item in the array
+    //     copiedData.forEach((item, index) => {
+    //         if (item?.[typeField] === "Percentage") {
+    //             // Calculate costs
+    //             const ApplicabilityCost = handleApplicability(
+    //                 item[applicabilityField], 
+    //                 basicValue,
+    //                 tempArr,
+    //                 costField,
+    //                 headerName
+    //             );
+    //             const Cost = checkForNull((item?.[percentageField]) / 100) * checkForNull(ApplicabilityCost);
+    //             const CostConversion = checkForNull((item?.[percentageField]) / 100) * checkForNull(ApplicabilityCost);
+    //             // Create updated object
+    //             const updatedItem = {
+    //                 ...item,
+    //                 ApplicabilityCost: ApplicabilityCost,
+    //                 [resultFields.mainCost]: Cost,
+    //                 [resultFields.conversionCost]: CostConversion,
+    //                 [resultFields.perQuantityCost]: CostConversion,
+    //                 ApplicabilityCostConversion: ApplicabilityCost,
+    //             };
+    //             // Update the temporary array
+    //             tempArr[index] = updatedItem;
+    //         }
+    //     });
+    //     return tempArr;
+    // };
+   
     const allFieldsInfoIcon = (scrapLabel) => {
         const { currency, currencyValue } = state
         let obj = {
@@ -421,7 +480,7 @@ function AddRMFinancialDetails(props) {
         if (costingTypeId === ZBCTypeId) {
             basicPriceBaseCurrency = basicPriceCurrencyTemp
         }
-        let conditionList = recalculateConditions('', basicPriceBaseCurrency)
+        let conditionList = recalculateConditions( basicPriceBaseCurrency, state)
 
         const sumBaseCurrency = conditionList?.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCostPerQuantity), 0);
         let NetLandedCost = checkForNull(sumBaseCurrency) + checkForNull(basicPriceCurrencyTemp)
@@ -876,20 +935,52 @@ function AddRMFinancialDetails(props) {
         }
         return true;
     };
-
-    const updateConditionCostValue = () => {
-        let conditnCostTable = recalculateConditions('', state.NetCostWithoutConditionCost)
-        let sum = conditnCostTable && conditnCostTable.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCostPerQuantity), 0);
-        let updatedState = {
-            ...state,
-            NetConditionCost: sum,
+    // const updateCostValue = (isConditionCost = false) => {
+    //     // Get table data and settings based on cost type
+    //     const table = isConditionCost 
+    //         ? recalculateConditions(state.NetCostWithoutConditionCost)
+    //         : recalculateOtherCost(getValues('BasicRate'))
+        
+    //     // Calculate sum
+    //     const costField = isConditionCost ? 'ConditionCostPerQuantity' : 'NetCost'
+    //     const sum = table?.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj[costField]), 0)
+    
+    //     // Update state and form
+    //     const stateKey = isConditionCost ? 'conditionTableData' : 'otherCostTableData'
+    //     const formField = isConditionCost ? 'FinalConditionCost' : 'OtherCost'
+    //     const costKey = isConditionCost ? 'NetConditionCost' : 'totalOtherCost'
+    
+    //     setState({
+    //         ...state,
+    //         [costKey]: sum,
+    //         [stateKey]: table
+    //     })
+    //     setValue(formField, checkForDecimalAndNull(sum, getConfigurationKey().NoOfDecimalForPrice))
+    
+    //     // Dispatch appropriate action
+    //     isConditionCost
+    //         ? dispatch(setRawMaterialDetails({ ...rawMaterailDetailsRefFinancial.current, states: { ...state, [costKey]: sum, [stateKey]: table } }, () => {}))
+    //         : dispatch(setOtherCostDetails(table))
+    // }
+    const updateTableCost = (isConditionCost = false) => {
+        const result = updateCostValue(isConditionCost, state, setValue, getValues);
+        
+        // Update state
+        setState(result.updatedState);
+        
+        // Update form value
+        setValue(result.formValue.field, result.formValue.value);
+        
+        // Dispatch appropriate action
+        if (isConditionCost) {
+            dispatch(setRawMaterialDetails({ 
+                ...rawMaterailDetailsRefFinancial.current, 
+                states: result.updatedState 
+            }, () => {}));
+        } else {
+            dispatch(setOtherCostDetails(result.tableData));
         }
-        setValue('FinalConditionCost', checkForDecimalAndNull(sum, getConfigurationKey().NoOfDecimalForPrice))
-        setState(updatedState)
-        setTimeout(() => {
-            dispatch(setRawMaterialDetails({ ...rawMaterailDetailsRefFinancial.current, states: updatedState }, () => { }))
-        }, 50);
-    }
+    };
     const showNetCost = () => {
         let show = false
         if (state.hidePlantCurrency) {
@@ -1467,14 +1558,20 @@ function AddRMFinancialDetails(props) {
                                             customClassName=" withBorder"
                                         />
                                     </div>
-                                    {<Button
-                                        id="addRMDomestic_conditionToggle"
+                                    <div className="d-flex align-items-center mt-1">
+                                            <button type="button" id="other-cost-refresh" className={'refresh-icon mt-1 ml-1'} onClick={() => updateTableCost(false)} disabled={isViewFlag}>
+                                                <TooltipCustom disabledIcon={true} id="other-cost-refresh" tooltipText="Refresh to update other cost" />
+                                            </button>
+                                            {<Button
+                                        id="addRMDomestic_otherToggle"
                                         onClick={otherCostToggle}
-                                        className={"right mt-3 mb-2"}
-                                        variant={isViewFlag ? "view-icon-primary" : "plus-icon-square"}
+                                        className={"right mt-1 ml-1"}
+                                        variant={isViewFlag ? "view-icon-primary" : `${!getValues('BasicRate') ? 'blurPlus-icon-square' : 'plus-icon-square'}`}
                                         title={isViewFlag ? "View" : "Add"}
                                         disabled={!getValues('BasicRate')}
                                     />}
+                                        </div>
+                                   
                                 </div>
                             </Col>
                             {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && states.costingTypeId === ZBCTypeId && <>
@@ -1514,16 +1611,16 @@ function AddRMFinancialDetails(props) {
                                             />
                                         </div>
                                         <div className="d-flex align-items-center mt-1">
-                                            <button type="button" id="condition-cost-refresh" className={'refresh-icon mt-1 ml-1'} onClick={() => updateConditionCostValue()} disabled={isViewFlag}>
+                                            <button type="button" id="condition-cost-refresh" className={'refresh-icon mt-1 ml-1'} onClick={() => updateTableCost(true)} disabled={isViewFlag}>
                                                 <TooltipCustom disabledIcon={true} id="condition-cost-refresh" tooltipText="Refresh to update Condition cost" />
                                             </button>
                                             <Button
-                                                id="addRMDomestic_conditionToggle"
+                                                id="addRMDomestic_conditionToggl"
                                                 onClick={conditionToggle}
-                                                className={"right ml-1"}
-                                                variant={isViewFlag ? "view-icon-primary" : "blurPlus-icon-square"}
+                                                className={"right mt-1 ml-1"}
+                                                variant={isViewFlag ? "view-icon-primary" : `${!getValues('BasicRate') ? 'blurPlus-icon-square' : 'plus-icon-square'}`}
                                                 title={isViewFlag ? "View" : "Add"}
-
+                                                disabled={!getValues('BasicRate')}
                                             />
                                         </div>
 

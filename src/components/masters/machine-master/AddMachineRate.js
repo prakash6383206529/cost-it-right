@@ -138,7 +138,8 @@ class AddMachineRate extends Component {
       plantCurrency: 1,
       showPlantWarning: false,
       UOM: [],
-      resetProcessGroup: false
+      resetProcessGroup: false,
+      disableEffectiveDate:false
     }
     this.state = { ...this.initialState };
 
@@ -238,8 +239,8 @@ class AddMachineRate extends Component {
   callExchangeRateAPI = (costingTypeId, plantCurrency, currency, isImport, ExchangeSource, effectiveDate, client, vendorName, selectedPlants) => {
     const { fieldsObj } = this.props;
 
-    const vendorValue = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? vendorName.value : EMPTY_GUID) : EMPTY_GUID;
-    const costingType = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? VBCTypeId : costingTypeId) : ZBCTypeId;
+    const vendorValue = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId ) ? vendorName.value : EMPTY_GUID) : EMPTY_GUID;
+    const costingType = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId ) ? VBCTypeId : costingTypeId) : ZBCTypeId;
     const fromCurrency = isImport ? currency?.label : plantCurrency;
     const toCurrency = reactLocalStorage.getObject("baseCurrency");
     const hasCurrencyAndDate = Boolean(plantCurrency && effectiveDate);
@@ -404,9 +405,7 @@ class AddMachineRate extends Component {
       settlementExchangeRateId: this.state.settlementExchangeRateId,
       plantCurrencyID: this.state.plantCurrencyID,
       callExchangeRateAPI: this.callExchangeRateAPI,
-      handleCalculation: this.handleCalculation
-
-
+      handleCalculation: this.handleCalculation,
     }
     setTimeout(() => {
       this.setState({ selectedPlants: selectedPlants, effectiveDate: effectiveDate })
@@ -885,11 +884,6 @@ class AddMachineRate extends Component {
   moreDetailsToggler = (Id, editFlag) => {
     const { selectedTechnology, vendorName, costingTypeId, client, plantCurrency, settlementCurrency, plantExchangeRateId, settlementExchangeRateId, plantCurrencyID, isImport, currency } = this.state;
 
-
-
-
-
-
     if (selectedTechnology == null || selectedTechnology.length === 0 || Object.keys(selectedTechnology).length < 0) {
       Toaster.warning(`${this.props.t('Technology', { ns: 'MasterLabels', defaultValue: 'Technology' })} should not be empty.`)
       return false;
@@ -923,7 +917,8 @@ class AddMachineRate extends Component {
       entryType: isImport,
       currency: currency,
       callExchangeRateAPI: this.callExchangeRateAPI,
-      handleCalculation: this?.handleCalculation
+      handleCalculation: this?.handleCalculation,
+      machineType: this.state.machineType,
     }
     this.props.displayMoreDetailsForm(data)
   }
@@ -1055,7 +1050,8 @@ class AddMachineRate extends Component {
         processGrid: tempArray,
         processName: [],
         UOM: isProcessGroup ? UOM : [],
-        lockUOMAndRate: isProcessGroup
+        lockUOMAndRate: isProcessGroup,
+        disableEffectiveDate:true
       }, () => this.props.change('MachineRate', isProcessGroup ? MachineRate : ''));
       this.setState({ DropdownChange: false, errorObj: { processName: false, processUOM: false, machineRate: false, machineRatePlantCurrency: false } })
     }, 200);
@@ -1189,12 +1185,16 @@ class AddMachineRate extends Component {
     } else {
       this.setState({ lockUOMAndRate: isProcessGroup })
     }
+    if(tempData&&tempData?.length === 0){
+    this.setState({disableEffectiveDate:false})
+  }
     this.setState({
       processGrid: tempData,
       UOM: tempData.length === 0 ? [] : !this.state.lockUOMAndRate ? [] : UOM,
       isEditIndex: false,
       processName: [],
-    }, () => this.props.change('MachineRate', ''))
+    }, () =>
+       this.props.change('MachineRate', ''))
     this.setState({ DropdownChange: false })
   }
 
@@ -2202,7 +2202,7 @@ class AddMachineRate extends Component {
                                 component={renderDatePicker}
                                 placeholder={isViewMode || !this.state.IsFinancialDataChanged ? '-' : "Enter"}
                                 className="form-control"
-                                disabled={isViewMode || !this.state.IsFinancialDataChanged || (isEditFlag && IsDetailedEntry)}
+                                disabled={isViewMode || !this.state.IsFinancialDataChanged || (isEditFlag && IsDetailedEntry)||this.state.disableEffectiveDate}
                               />
                             </div>
                           </div>
