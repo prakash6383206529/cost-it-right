@@ -2995,9 +2995,9 @@ class AddMoreDetails extends Component {
 
     // Generate tooltip text based on the condition
     return <>
-      {!this.state.hidePlantCurrency
+      {!this.state?.hidePlantCurrency
         ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrency}, `
-        : ''}<p>Exchange Rate: 1 {currencyLabel} = {settlementCurrencyRate} {baseCurrency}</p>`
+        : ''}<p>Exchange Rate: 1 {currencyLabel} = {settlementCurrencyRate} {baseCurrency}</p>
     </>;
   };
 
@@ -3413,7 +3413,7 @@ class AddMoreDetails extends Component {
                           />
                         </Col>
                         <Col Col md="3" className='p-relative'>
-                          {this.props.fieldsObj?.plantCurrency && !this.state.hidePlantCurrency && !this.state.entryType && <TooltipCustom id="plantCurrency" tooltipText={`Exchange Rate: 1 ${this.props.fieldsObj?.plantCurrency} = ${this.state?.plantCurrency ?? '-'} ${reactLocalStorage.getObject("baseCurrency")}`} />}
+                          {this.props.fieldsObj?.plantCurrency && !this.state.hidePlantCurrency && !this.state.entryType && <TooltipCustom id="plantCurrency" width="350px" tooltipText={`Exchange Rate: 1 ${this.props.fieldsObj?.plantCurrency} = ${this.state?.plantCurrency ?? '-'} ${reactLocalStorage.getObject("baseCurrency")}`} />}
                           <Field
                             label="Plant Currency"
                             name="plantCurrency"

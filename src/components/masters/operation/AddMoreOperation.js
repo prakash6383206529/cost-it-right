@@ -1080,9 +1080,9 @@ function AddMoreOperation(props) {
 
         // Generate tooltip text based on the condition
         return <>
-            {!this.state.hidePlantCurrency
+            {!this.state?.hidePlantCurrency
                 ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrency}, `
-                : ''}<p>Exchange Rate: 1 {currencyLabel} = {settlementCurrencyRate} {baseCurrency}</p>`
+                : ''}<p>Exchange Rate: 1 {currencyLabel} = {settlementCurrencyRate} {baseCurrency}</p>
         </>;
     };
     return (
@@ -1323,7 +1323,7 @@ function AddMoreOperation(props) {
                                         />
                                     </Col>}
                                     <Col className="col-md-15">
-                                        {getValues('plantCurrency') && !state.hidePlantCurrency && !state.isImport && <TooltipCustom id="plantCurrency" tooltipText={`Exchange Rate: 1 ${getValues('plantCurrency')} = ${state?.plantCurrency ?? '-'} ${reactLocalStorage.getObject("baseCurrency")}`} />}
+                                        {getValues('plantCurrency') && !state.hidePlantCurrency && !state.isImport && <TooltipCustom id="plantCurrency" width="350px" tooltipText={`Exchange Rate: 1 ${getValues('plantCurrency')} = ${state?.plantCurrency ?? '-'} ${reactLocalStorage.getObject("baseCurrency")}`} />}
                                         <TextFieldHookForm
                                             name="plantCurrency"
                                             label="Plant Currency"

@@ -1725,7 +1725,7 @@ class AddBOPDomestic extends Component {
                             <div className="left-border">{"Cost:"}</div>
                           </Col>
                           {<Col md="3">
-                            {!this.state.hidePlantCurrency && <TooltipCustom id="plantCurrency" tooltipText={`Exchange Rate: 1 ${this.props.fieldsObj?.plantCurrency ?? ''} = ${this.state?.currencyValue ?? '-'} ${reactLocalStorage.getObject("baseCurrency")}`} />}
+                            {!this.state.hidePlantCurrency && <TooltipCustom width="350px" id="plantCurrency" tooltipText={`Exchange Rate: 1 ${this.props.fieldsObj?.plantCurrency ?? ''} = ${this.state?.currencyValue ?? '-'} ${reactLocalStorage.getObject("baseCurrency")}`} />}
                             <Field
                               name="plantCurrency"
                               type="text"
@@ -1735,10 +1735,10 @@ class AddBOPDomestic extends Component {
                               component={renderTextInputField}
                               required={false}
                               disabled={true}
-                              className=" "
-                              customClassName=" withBorder mb-1"
+                              className=""
+                              customClassName="mb-1"
                             />
-                            {this.state.showWarning && <WarningMessage dClass="mt-1" message={`${this.props?.fieldsObj?.plantCurrency} rate is not present in the Exchange Master`} />}
+                            {this.state.showWarning && <WarningMessage dClass="mt-1 pa-1" message={`${this.props?.fieldsObj?.plantCurrency} rate is not present in the Exchange Master`} />}
                           </Col>}
                           <Col md="3">
                             <div className="inputbox date-section form-group">

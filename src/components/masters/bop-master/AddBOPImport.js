@@ -200,9 +200,9 @@ class AddBOPImport extends Component {
 
     // Generate tooltip text based on the condition
     return <>
-      {!this.state.hidePlantCurrency
+      {!this.state?.hidePlantCurrency
         ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrency}, `
-        : ''}<p>Exchange Rate: 1 {currencyLabel} = {settlementCurrencyRate} {baseCurrency}</p>`
+        : ''}<p>Exchange Rate: 1 {currencyLabel} = {settlementCurrencyRate} {baseCurrency}</p>
     </>;
   };
   /**
@@ -1992,7 +1992,7 @@ class AddBOPImport extends Component {
                             <div className="left-border">{"Cost:"}</div>
                           </Col>
                           {<Col md="3">
-                            {!this.state.hidePlantCurrency && <TooltipCustom id="plantCurrency" tooltipText={`Exchange Rate: 1 ${this.props.fieldsObj?.plantCurrency ?? ''} = ${this.state?.plantCurrencyValue ?? '-'} ${reactLocalStorage.getObject("baseCurrency")}`} />}
+                            {!this.state.hidePlantCurrency && <TooltipCustom id="plantCurrency" width="350px" tooltipText={`Exchange Rate: 1 ${this.props.fieldsObj?.plantCurrency ?? ''} = ${this.state?.plantCurrencyValue ?? '-'} ${reactLocalStorage.getObject("baseCurrency")}`} />}
                             <Field
                               name="plantCurrency"
                               type="text"
