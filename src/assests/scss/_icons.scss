@@ -188,7 +188,7 @@
     cursor: pointer;
 
     &:is(button) {
-        @include icons("../../images/add-icons.png", 22px, 22px, none);
+        @include icons("../../images/add-icons.png", 24px, 22px, none);
         margin-left: 10px;
 
         &:focus {

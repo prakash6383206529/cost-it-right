@@ -35,7 +35,9 @@ import { resetStatePagination, updateCurrentRowIndex, updatePageNumber } from '.
 import SendForApproval from '../../vendorManagement/approval/SendForApproval';
 import { useLabels } from '../../../helper/core';
 
-const gridOptions = {};
+const gridOptions = {
+    headerHeight: 100, // Adjust as needed
+};
 
 function CommonApproval(props) {
     const searchRef = useRef(null);
@@ -898,7 +900,7 @@ function CommonApproval(props) {
             </Row>
             <Row>
                 <Col>
-                    <div className={`ag-grid-react`} >
+                    <div className={`ag-grid-react rmapproval-table`} >
                         <div className={`ag-grid-wrapper height-width-wrapper min-height-auto ${(approvalList && approvalList?.length <= 0) || noData ? "overlay-contain p-relative" : ""}`}>
                             <div className="ag-grid-header">
                                 <input ref={searchRef} type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
