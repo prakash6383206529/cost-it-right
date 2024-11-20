@@ -169,7 +169,7 @@ function AddConditionCosting(props) {
             }
             if (props.isFromMaster) {
                 if (type?.label === "Percentage") {
-                    cssClass = 'mb-3';
+                    cssClass = 'mb-3 mt-4 pt-1';
                 } else {
                     cssClass = 'mt-4 pt-1';
                 }

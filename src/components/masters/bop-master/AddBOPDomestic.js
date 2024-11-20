@@ -1736,7 +1736,7 @@ class AddBOPDomestic extends Component {
                               required={false}
                               disabled={true}
                               className=" "
-                              customClassName=" withBorder"
+                              customClassName=" withBorder mb-1"
                             />
                             {this.state.showWarning && <WarningMessage dClass="mt-1" message={`${this.props?.fieldsObj?.plantCurrency} rate is not present in the Exchange Master`} />}
                           </Col>}
@@ -2211,13 +2211,13 @@ function mapStateToProps(state) {
       Remark: bopData.Remark,
       NumberOfPieces: bopData?.NumberOfPieces,
       SAPPartNumber: bopData?.SAPPartNumber
-      
+
     }
   }
 
   return {
     vendorWithVendorCodeSelectList, plantList, filterPlantList, filterCityListBySupplier, cityList, UOMSelectList,
-    plantSelectList, bopCategorySelectList, bopData, partSelectList, costingHead, fieldsObj, initialValues, initialConfiguration, clientSelectList, userMasterLevelAPI, costingSpecifiTechnology, exchangeRateSourceList,formValues
+    plantSelectList, bopCategorySelectList, bopData, partSelectList, costingHead, fieldsObj, initialValues, initialConfiguration, clientSelectList, userMasterLevelAPI, costingSpecifiTechnology, exchangeRateSourceList, formValues
   }
 
 }

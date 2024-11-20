@@ -70,7 +70,7 @@ class AddMoreDetails extends Component {
       isDateChange: false,
       selectedTechnology: editDetails.selectedTechnology ?? [],
       selectedPlants: Object.keys(editDetails.selectedPlants).length > 0 ? editDetails.selectedPlants : {},
-      machineType:editDetails?.machineType?? [],
+      machineType: editDetails?.machineType ?? [],
       isOpenMachineType: false,
       machineRate: "",
       disableMachineType: false,
@@ -182,7 +182,7 @@ class AddMoreDetails extends Component {
       plantCurrencyID: editDetails?.plantCurrencyID || '',
       hidePlantCurrency: false,
       showPlantWarning: false,
-      disableEffectiveDate:false
+      disableEffectiveDate: false
     }
     this.dropzone = React.createRef();
   }
@@ -1889,7 +1889,7 @@ class AddMoreDetails extends Component {
         processName: [],
         UOM: isProcessGroup ? UOM : [],
         lockUOMAndRate: isProcessGroup,
-        disableEffectiveDate:true
+        disableEffectiveDate: true
       }, () => {
         this.props.change('OutputPerHours', isProcessGroup ? OutputPerHours : 0);
         this.props.change('OutputPerYear', isProcessGroup ? OutputPerYear : 0);
@@ -2079,8 +2079,8 @@ class AddMoreDetails extends Component {
     } else {
       this.setState({ lockUOMAndRate: isProcessGroup })
     }
-    if(tempData&&tempData?.length === 0){
-      this.setState({disableEffectiveDate:false})
+    if (tempData && tempData?.length === 0) {
+      this.setState({ disableEffectiveDate: false })
     }
     this.setState({
       processGrid: tempData,
@@ -3422,7 +3422,7 @@ class AddMoreDetails extends Component {
                             component={renderText}
                             disabled={true}
                             className=" "
-                            customClassName="withBorder"
+                            customClassName="withBorder mb-1"
                           />
                           {this.state.showPlantWarning && <WarningMessage dClass="mt-1" message={`${this.props.fieldsObj.plantCurrency} rate is not present in the Exchange Master`} />}
                         </Col>
@@ -3447,6 +3447,7 @@ class AddMoreDetails extends Component {
                             handleChangeDescription={this.handleCurrency}
                             valueDescription={this.state.currency}
                             disabled={isEditFlag ? true : false || isViewMode || isViewFlag}
+                            customClassName="mb-1"
                           >{this.state?.currency?.label && this.state.showWarning && <WarningMessage dClass="mt-1" message={`${this.state.currency.label} rate is not present in the Exchange Master`} />}
                           </Field>
                         </Col>}
@@ -3468,7 +3469,7 @@ class AddMoreDetails extends Component {
                                 }}
                                 component={renderDatePicker}
                                 className="form-control"
-                                disabled={this.state.isViewFlag || !this.state.IsFinancialDataChanged||this.state.disableEffectiveDate}
+                                disabled={this.state.isViewFlag || !this.state.IsFinancialDataChanged || this.state.disableEffectiveDate}
                               />
                             </div>
                           </div>
