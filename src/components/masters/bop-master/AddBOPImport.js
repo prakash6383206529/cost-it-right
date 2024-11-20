@@ -246,20 +246,11 @@ class AddBOPImport extends Component {
       ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? VBCTypeId : costingTypeId) :
       ZBCTypeId;
 
-<<<<<<< HEAD
     const hasCurrencyAndDate = Boolean(fieldsObj?.plantCurrency && effectiveDate);
-    console.log('hasCurrencyAndDate: ', hasCurrencyAndDate);
     if (hasCurrencyAndDate) {
       if (IsFetchExchangeRateVendorWise() && (vendorName?.length === 0 && client?.length === 0)) {
         return false;
       }
-=======
-      const hasCurrencyAndDate = Boolean(fieldsObj?.plantCurrency && effectiveDate);
-      if (hasCurrencyAndDate) {
-        if (IsFetchExchangeRateVendorWise() && (vendorName?.length === 0 && client?.length === 0)) {
-          return false;
-        }
->>>>>>> 901917fd416845583c273875da9723c2da93b67c
       this.props.getExchangeRateByCurrency(
         currency?.label,
         costingType,
@@ -2047,11 +2038,7 @@ class AddBOPImport extends Component {
                             />
                           </Col>}
                           <Col md="3">
-<<<<<<< HEAD
                             <TooltipCustom id="currency" width="350px" tooltipText={this.getTooltipTextForCurrency()} />
-=======
-                            <TooltipCustom id="currency" tooltipText={this.getTooltipTextForCurrency()} />
->>>>>>> 901917fd416845583c273875da9723c2da93b67c
                             <Field
                               name="Currency"
                               type="text"
@@ -2072,228 +2059,224 @@ class AddBOPImport extends Component {
                             >{this.state.showWarning && <WarningMessage dClass="mt-1" message={`${this.state?.currency?.label} rate is not present in the Exchange Master`} />}
                             </Field>
                           </Col >
-      <Col md="3">
-        <div className="inputbox date-section mb-3 form-group">
-          <Field
-            label="Effective Date"
-            name="EffectiveDate"
-            selected={this.state.effectiveDate}
-            onChange={this.handleEffectiveDateChange}
-            type="text"
-            minDate={isEditFlag ? this.state.minEffectiveDate : getEffectiveDateMinDate()}
-            validate={[required]}
-            autoComplete={'off'}
-            required={true}
-            changeHandler={(e) => {
-            }}
-            component={renderDatePicker}
-            className="form-control"
-            disabled={isViewMode || !this.state.IsFinancialDataChanged}
-            placeholder={isEditFlag ? '-' : "Select Date"}
-          />
-        </div>
-      </Col>
-    {
-      getConfigurationKey().IsMinimumOrderQuantityVisible && (!isTechnologyVisible || this.showBasicRate()) && !isTechnologyVisible && <>
-        < Col md="3">
-          <Field
-            label={`Minimum Order Quantity`}
-            name={"NumberOfPieces"}
-            type="text"
-            placeholder={"Enter"}
-            validate={this.state.uomIsNo ? [postiveNumber, maxLength10] : [positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
-            component={renderText}
-            required={false}
-            className=""
-            customClassName=" withBorder"
-            disabled={isViewMode || (isEditFlag && isBOPAssociated)}
-          />
-        </Col>
-      </>
-    }
-    {
-      (!isTechnologyVisible || this.showBasicRate()) && !isTechnologyVisible && <>
-        <Col md="3">
-          <Field
-            label={`Basic Rate/${this.state?.UOM?.label ? this.state?.UOM?.label : 'UOM'} (${this?.state?.currency?.label === undefined ? 'Currency' : this.state?.currency?.label})`}
-            name={"BasicRate"}
-            type="text"
-            placeholder={isEditFlag || (isEditFlag && isBOPAssociated) ? '-' : "Enter"}
-            validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
-            component={renderTextInputField}
-            required={true}
-            disabled={isViewMode || (isEditFlag && isBOPAssociated)}
-            className=" "
-            customClassName=" withBorder"
-            onChange={this.handleBasicRateChange}
-          />
-        </Col>
-
-      </>
-    }
-    <Col md="3">
-      <div className='d-flex align-items-center'>
-        <div className="w-100">
-          <Field
-            label={`Other Cost/${this?.state?.UOM?.label ? this.state?.UOM?.label : 'UOM'} (${this?.props?.fieldsObj?.plantCurrency ?? 'Currency'})`}
-            name={"OtherCost"}
-            type="text"
-            placeholder={"-"}
-            validate={[]}
-            component={renderText}
-            required={false}
-            disabled={true}
-            isViewFlag={true}
-            className=" "
-            customClassName=" withBorder"
-          />
-        </div>
-        <Button
-          id="addBOPDomestic_otherCost"
-          onClick={this.otherCostToggle}
-          className={"right mt-0 mb-2"}
-          variant={
-            isViewMode
-              ? "view-icon-primary"
-              : !this.props.fieldsObj?.BasicRate
-                ? "blurPlus-icon-square"
-                : "plus-icon-square"
-          }
-          disabled={!this.props.fieldsObj?.BasicRate}
-        />
-      </div>
-    </Col>
-    {
-      initialConfiguration?.IsBasicRateAndCostingConditionVisible && costingTypeId === ZBCTypeId && !isTechnologyVisible && <>
-        <Col md="3">
-          <TooltipCustom id="bop-basic-currency" disabledIcon={true} tooltipText={this.toolTipNetCost().toolTipTextBasicPrice} />
-          <Field
-            label={`Basic Price/${this.state?.UOM?.label === undefined ? 'UOM' : this.state?.UOM?.label} (${this.state?.currency?.label === undefined ? 'Currency' : this.state?.currency?.label})`}
-            name={"BasicPrice"}
-            id="bop-basic-currency"
-            type="text"
-            placeholder={isEditFlag || (isEditFlag && isBOPAssociated) ? '-' : "Enter"}
-            validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
-            component={renderTextInputField}
-            required={true}
-            disabled={true}
-            className=" "
-            customClassName=" withBorder"
-          />
-        </Col>
-
-        <Col md="3">
-          <div className='d-flex align-items-center'>
-            <div className='w-100'>
-              <Field
-                label={`Condition Cost/${this.state?.UOM?.label === undefined ? 'UOM' : this.state?.UOM?.label} (${this.state?.currency?.label === undefined ? 'Currency' : this.state?.currency?.label})`}
-                name={"NetConditionCost"}
-                type="text"
-                placeholder={"-"}
-                validate={[]}
-                component={renderText}
-                required={false}
-                className=""
-                customClassName=" withBorder"
-                disabled={true}
-                isViewFlag={true}
-              />
-            </div>
-            <div className="d-flex align-items-center mb-2">
-              <button type="button" id="condition-cost-refresh" className={'refresh-icon ml-1'} onClick={() => this.updateConditionCostValue()} disabled={this.props.data.isViewMode}>
-                <TooltipCustom disabledIcon={true} id="condition-cost-refresh" tooltipText="Refresh to update Condition cost" />
-              </button>
-              <Button
-                id="addBOPImport_condition"
-                onClick={this.conditionToggle}
-                className={"right ml-1"}
-                variant={isViewMode ? "view-icon-primary" : (this.state.currency?.label && (this.props.fieldsObj?.BasicRate || this.state?.NetCostWithoutConditionCost)) ? `plus-icon-square` : `blurPlus-icon-square`}
-                disabled={!(this.state.currency?.label && (this.props.fieldsObj?.BasicRate || this.state?.NetCostWithoutConditionCost))}
-              />
-            </div>
-          </div>
-        </Col>
-      </>
-    }
-    {
-      this.state.showCurrency && (!isTechnologyVisible || this.state.IsBreakupBoughtOutPart) && <>
-        <Col md="3">
-          <TooltipCustom id="bop-net-cost-currency" tooltipText={this.toolTipNetCost()?.toolTipTextNetCost} />
-          <Field
-            label={`Net Cost/${this.state?.UOM?.label === undefined ? 'UOM' : this.state?.UOM?.label} (${this.state?.currency?.label === undefined ? 'Currency' : this.state?.currency?.label})`}
-            name={this.state.netLandedConverionCost === 0 ? '' : "NetLandedCost"}
-            type="text"
-            id="bop-net-cost-currency"
-            placeholder={"-"}
-            validate={[]}
-            component={renderTextInputField}
-            required={false}
-            disabled={true}
-            className=" "
-            customClassName=" withBorder mb-0"
-          />
-        </Col>
-        {!this.state.hidePlantCurrency && <Col md="3">
-          <TooltipCustom id="bop-net-cost-plant" tooltipText={`Net Cost/${this.state?.UOM?.label === undefined ? 'UOM' : this.state?.UOM?.label} (${fieldsObj?.plantCurrency ?? 'Currency'})  = Net Cost * Plant Currency Rate (${this.state?.plantCurrencyValue})`} />
-          <Field
-            label={`Net Cost/${this.state?.UOM?.label === undefined ? 'UOM' : this.state?.UOM?.label} (${fieldsObj?.plantCurrency ?? 'Currency'})`}
-            name={"NetLandedCostPlantCurrency"}
-            id="bop-net-cost-plant"
-            type="text"
-            placeholder={"-"}
-            validate={[]}
-            component={renderTextInputField}
-            required={false}
-            disabled={true}
-            className=" "
-            customClassName=" withBorder"
-          />
-        </Col>}
-        <Col md="3">
-<<<<<<< HEAD
-                              <TooltipCustom id="bop-net-cost-Conversion" disabledIcon={true} tooltipText={`Net Cost/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label} (${reactLocalStorage.getObject("baseCurrency")})  = Net Cost * Currency Rate (${this.state?.currencyValue})`} />
-=======
-                              <TooltipCustom id="bop-net-cost-Conversion" disabledIcon={true} tooltipText={`Net Cost/${this.state?.UOM?.label === undefined ? 'UOM' : this.state?.UOM?.label} (${reactLocalStorage.getObject("baseCurrency")})  = Net Cost * Currency Rate (${this.state?.currencyValue})`} />
->>>>>>> 901917fd416845583c273875da9723c2da93b67c
+                          <Col md="3">
+                            <div className="inputbox date-section mb-3 form-group">
                               <Field
-                                label={`Net Cost/${this.state?.UOM?.label === undefined ? 'UOM' : this.state?.UOM?.label} (${reactLocalStorage.getObject("baseCurrency")})`}
-                                name={this.state.netLandedConverionCost === 0 ? '' : "NetLandedCostBaseCurrency"}
+                                label="Effective Date"
+                                name="EffectiveDate"
+                                selected={this.state.effectiveDate}
+                                onChange={this.handleEffectiveDateChange}
                                 type="text"
-                                id="bop-net-cost-Conversion"
-                                placeholder={"-"}
-                                validate={[]}
-                                component={renderTextInputField}
-                                required={false}
-                                disabled={true}
-                                className=" "
-                                customClassName=" withBorder"
+                                minDate={isEditFlag ? this.state.minEffectiveDate : getEffectiveDateMinDate()}
+                                validate={[required]}
+                                autoComplete={'off'}
+                                required={true}
+                                changeHandler={(e) => {
+                                }}
+                                component={renderDatePicker}
+                                className="form-control"
+                                disabled={isViewMode || !this.state.IsFinancialDataChanged}
+                                placeholder={isEditFlag ? '-' : "Select Date"}
                               />
-                            </Col >
-                          </>}
+                            </div>
+                          </Col>
+                          {
+                            getConfigurationKey().IsMinimumOrderQuantityVisible && (!isTechnologyVisible || this.showBasicRate()) && !isTechnologyVisible && <>
+                              < Col md="3">
+                                <Field
+                                  label={`Minimum Order Quantity`}
+                                  name={"NumberOfPieces"}
+                                  type="text"
+                                  placeholder={"Enter"}
+                                  validate={this.state.uomIsNo ? [postiveNumber, maxLength10] : [positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
+                                  component={renderText}
+                                  required={false}
+                                  className=""
+                                  customClassName=" withBorder"
+                                  disabled={isViewMode || (isEditFlag && isBOPAssociated)}
+                                />
+                              </Col>
+                            </>
+                          }
+                          {
+                            (!isTechnologyVisible || this.showBasicRate()) && !isTechnologyVisible && <>
+                              <Col md="3">
+                                <Field
+                                  label={`Basic Rate/${this.state?.UOM?.label ? this.state?.UOM?.label : 'UOM'} (${this?.state?.currency?.label === undefined ? 'Currency' : this.state?.currency?.label})`}
+                                  name={"BasicRate"}
+                                  type="text"
+                                  placeholder={isEditFlag || (isEditFlag && isBOPAssociated) ? '-' : "Enter"}
+                                  validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
+                                  component={renderTextInputField}
+                                  required={true}
+                                  disabled={isViewMode || (isEditFlag && isBOPAssociated)}
+                                  className=" "
+                                  customClassName=" withBorder"
+                                  onChange={this.handleBasicRateChange}
+                                />
+                              </Col>
+
+                            </>
+                          }
+                          <Col md="3">
+                            <div className='d-flex align-items-center'>
+                              <div className="w-100">
+                                <Field
+                                  label={`Other Cost/${this?.state?.UOM?.label ? this.state?.UOM?.label : 'UOM'} (${this?.props?.fieldsObj?.plantCurrency ?? 'Currency'})`}
+                                  name={"OtherCost"}
+                                  type="text"
+                                  placeholder={"-"}
+                                  validate={[]}
+                                  component={renderText}
+                                  required={false}
+                                  disabled={true}
+                                  isViewFlag={true}
+                                  className=" "
+                                  customClassName=" withBorder"
+                                />
+                              </div>
+                              <Button
+                                id="addBOPDomestic_otherCost"
+                                onClick={this.otherCostToggle}
+                                className={"right mt-0 mb-2"}
+                                variant={
+                                  isViewMode
+                                    ? "view-icon-primary"
+                                    : !this.props.fieldsObj?.BasicRate
+                                      ? "blurPlus-icon-square"
+                                      : "plus-icon-square"
+                                }
+                                disabled={!this.props.fieldsObj?.BasicRate}
+                              />
+                            </div>
+                          </Col>
+                          {
+                            initialConfiguration?.IsBasicRateAndCostingConditionVisible && costingTypeId === ZBCTypeId && !isTechnologyVisible && <>
+                              <Col md="3">
+                                <TooltipCustom id="bop-basic-currency" disabledIcon={true} tooltipText={this.toolTipNetCost().toolTipTextBasicPrice} />
+                                <Field
+                                  label={`Basic Price/${this.state?.UOM?.label === undefined ? 'UOM' : this.state?.UOM?.label} (${this.state?.currency?.label === undefined ? 'Currency' : this.state?.currency?.label})`}
+                                  name={"BasicPrice"}
+                                  id="bop-basic-currency"
+                                  type="text"
+                                  placeholder={isEditFlag || (isEditFlag && isBOPAssociated) ? '-' : "Enter"}
+                                  validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
+                                  component={renderTextInputField}
+                                  required={true}
+                                  disabled={true}
+                                  className=" "
+                                  customClassName=" withBorder"
+                                />
+                              </Col>
+
+                              <Col md="3">
+                                <div className='d-flex align-items-center'>
+                                  <div className='w-100'>
+                                    <Field
+                                      label={`Condition Cost/${this.state?.UOM?.label === undefined ? 'UOM' : this.state?.UOM?.label} (${this.state?.currency?.label === undefined ? 'Currency' : this.state?.currency?.label})`}
+                                      name={"NetConditionCost"}
+                                      type="text"
+                                      placeholder={"-"}
+                                      validate={[]}
+                                      component={renderText}
+                                      required={false}
+                                      className=""
+                                      customClassName=" withBorder"
+                                      disabled={true}
+                                      isViewFlag={true}
+                                    />
+                                  </div>
+                                  <div className="d-flex align-items-center mb-2">
+                                    <button type="button" id="condition-cost-refresh" className={'refresh-icon ml-1'} onClick={() => this.updateConditionCostValue()} disabled={this.props.data.isViewMode}>
+                                      <TooltipCustom disabledIcon={true} id="condition-cost-refresh" tooltipText="Refresh to update Condition cost" />
+                                    </button>
+                                    <Button
+                                      id="addBOPImport_condition"
+                                      onClick={this.conditionToggle}
+                                      className={"right ml-1"}
+                                      variant={isViewMode ? "view-icon-primary" : (this.state.currency?.label && (this.props.fieldsObj?.BasicRate || this.state?.NetCostWithoutConditionCost)) ? `plus-icon-square` : `blurPlus-icon-square`}
+                                      disabled={!(this.state.currency?.label && (this.props.fieldsObj?.BasicRate || this.state?.NetCostWithoutConditionCost))}
+                                    />
+                                  </div>
+                                </div>
+                              </Col>
+                            </>
+                          }
+                          {
+                            this.state.showCurrency && (!isTechnologyVisible || this.state.IsBreakupBoughtOutPart) && <>
+                              <Col md="3">
+                                <TooltipCustom id="bop-net-cost-currency" tooltipText={this.toolTipNetCost()?.toolTipTextNetCost} />
+                                <Field
+                                  label={`Net Cost/${this.state?.UOM?.label === undefined ? 'UOM' : this.state?.UOM?.label} (${this.state?.currency?.label === undefined ? 'Currency' : this.state?.currency?.label})`}
+                                  name={this.state.netLandedConverionCost === 0 ? '' : "NetLandedCost"}
+                                  type="text"
+                                  id="bop-net-cost-currency"
+                                  placeholder={"-"}
+                                  validate={[]}
+                                  component={renderTextInputField}
+                                  required={false}
+                                  disabled={true}
+                                  className=" "
+                                  customClassName=" withBorder mb-0"
+                                />
+                              </Col>
+                              {!this.state.hidePlantCurrency && <Col md="3">
+                                <TooltipCustom id="bop-net-cost-plant" tooltipText={`Net Cost/${this.state?.UOM?.label === undefined ? 'UOM' : this.state?.UOM?.label} (${fieldsObj?.plantCurrency ?? 'Currency'})  = Net Cost * Plant Currency Rate (${this.state?.plantCurrencyValue})`} />
+                                <Field
+                                  label={`Net Cost/${this.state?.UOM?.label === undefined ? 'UOM' : this.state?.UOM?.label} (${fieldsObj?.plantCurrency ?? 'Currency'})`}
+                                  name={"NetLandedCostPlantCurrency"}
+                                  id="bop-net-cost-plant"
+                                  type="text"
+                                  placeholder={"-"}
+                                  validate={[]}
+                                  component={renderTextInputField}
+                                  required={false}
+                                  disabled={true}
+                                  className=" "
+                                  customClassName=" withBorder"
+                                />
+                              </Col>}
+                              <Col md="3">
+                                <TooltipCustom id="bop-net-cost-Conversion" disabledIcon={true} tooltipText={`Net Cost/${this.state?.UOM?.label === undefined ? 'UOM' : this.state?.UOM?.label} (${reactLocalStorage.getObject("baseCurrency")})  = Net Cost * Currency Rate (${this.state?.currencyValue})`} />
+                                <Field
+                                  label={`Net Cost/${this.state?.UOM?.label === undefined ? 'UOM' : this.state?.UOM?.label} (${reactLocalStorage.getObject("baseCurrency")})`}
+                                  name={this.state.netLandedConverionCost === 0 ? '' : "NetLandedCostBaseCurrency"}
+                                  type="text"
+                                  id="bop-net-cost-Conversion"
+                                  placeholder={"-"}
+                                  validate={[]}
+                                  component={renderTextInputField}
+                                  required={false}
+                                  disabled={true}
+                                  className=" "
+                                  customClassName=" withBorder"
+                                />
+                              </Col >
+                            </>}
 
 
                         </Row >
-    {
-      getConfigurationKey().IsShowClientVendorBOP && costingTypeId === CBCTypeId && <Col md="3" className="d-flex align-items-center mb-3">
-        <label
-          className={`custom-checkbox`}
-          onChange={this.onIsClientVendorBOP}
-        >
-          Client Approved {VendorLabel}
-          <input
-            type="checkbox"
-            checked={isClientVendorBOP}
-            disabled={(isEditFlag && isBOPAssociated) || isViewMode ? true : false}
-          />
-          <span
-            className=" before-box"
-            checked={isClientVendorBOP}
-            onChange={this.onIsClientVendorBOP}
-          />
-        </label>
-      </Col>
-    }
-      < Row >
+                        {
+                          getConfigurationKey().IsShowClientVendorBOP && costingTypeId === CBCTypeId && <Col md="3" className="d-flex align-items-center mb-3">
+                            <label
+                              className={`custom-checkbox`}
+                              onChange={this.onIsClientVendorBOP}
+                            >
+                              Client Approved {VendorLabel}
+                              <input
+                                type="checkbox"
+                                checked={isClientVendorBOP}
+                                disabled={(isEditFlag && isBOPAssociated) || isViewMode ? true : false}
+                              />
+                              <span
+                                className=" before-box"
+                                checked={isClientVendorBOP}
+                                onChange={this.onIsClientVendorBOP}
+                              />
+                            </label>
+                          </Col>
+                        }
+                        < Row >
                           <Col md="12">
                             <div className="left-border">
                               {"Remarks & Attachments:"}
@@ -2394,143 +2377,143 @@ class AddBOPImport extends Component {
                           </Col>
                         </Row >
                       </div >
-      <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
-        <div className="col-sm-12 text-right bluefooter-butn d-flex justify-content-end align-items-center">
-          {disableSendForApproval && <WarningMessage dClass={"mr-2"} message={'This user is not in the approval cycle'} />}
-          {this.state.showWarning && <WarningMessage dClass="mr-2" message={`Net conversion cost is 0, Do you wish to continue.`} />}
-          <Button
-            id="addBOPIMport_cancel"
-            className="mr15"
-            onClick={this.cancelHandler}
-            disabled={setDisable}
-            variant="cancel-btn"
-            icon="cancel-icon"
-            buttonName="Cancel"
-          />
+                      <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
+                        <div className="col-sm-12 text-right bluefooter-butn d-flex justify-content-end align-items-center">
+                          {disableSendForApproval && <WarningMessage dClass={"mr-2"} message={'This user is not in the approval cycle'} />}
+                          {this.state.showWarning && <WarningMessage dClass="mr-2" message={`Net conversion cost is 0, Do you wish to continue.`} />}
+                          <Button
+                            id="addBOPIMport_cancel"
+                            className="mr15"
+                            onClick={this.cancelHandler}
+                            disabled={setDisable}
+                            variant="cancel-btn"
+                            icon="cancel-icon"
+                            buttonName="Cancel"
+                          />
 
-          {!isViewMode && <>
-            {((!isViewMode && (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure) || (initialConfiguration.IsMasterApprovalAppliedConfigure && !CostingTypePermission && !isTechnologyVisible)) && !isTechnologyVisible ?
-              <Button
-                id="addBOPIMport_sendForApproval"
-                type="submit"
-                className="mr5"
-                disabled={isViewMode || setDisable || disableSendForApproval}
-                icon="send-for-approval"
-                buttonName="Send For Approval"
-              />
-              :
-              <Button
-                id="addBOPIMport_save"
-                type="submit"
-                className="mr5"
-                disabled={isViewMode || setDisable}
-                icon="save-icon"
-                buttonName={isEditFlag ? "Update" : "Save"}
-              />
-            }
-          </>}
+                          {!isViewMode && <>
+                            {((!isViewMode && (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure) || (initialConfiguration.IsMasterApprovalAppliedConfigure && !CostingTypePermission && !isTechnologyVisible)) && !isTechnologyVisible ?
+                              <Button
+                                id="addBOPIMport_sendForApproval"
+                                type="submit"
+                                className="mr5"
+                                disabled={isViewMode || setDisable || disableSendForApproval}
+                                icon="send-for-approval"
+                                buttonName="Send For Approval"
+                              />
+                              :
+                              <Button
+                                id="addBOPIMport_save"
+                                type="submit"
+                                className="mr5"
+                                disabled={isViewMode || setDisable}
+                                icon="save-icon"
+                                buttonName={isEditFlag ? "Update" : "Save"}
+                              />
+                            }
+                          </>}
 
-        </div >
-      </Row >
+                        </div >
+                      </Row >
                     </form >
                   </div >
                 </div >
               </div >
             </div >
           </div >
-    {
-      this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
-    }
-    {
-      isCategoryDrawerOpen && (
-        <AddBOPCategory
-          isOpen={isCategoryDrawerOpen}
-          closeDrawer={this.closeCategoryDrawer}
-          isEditFlag={false}
-          anchor={"right"}
-        />
-      )
-    }
-    {
-      isOpenVendor && (
-        <AddVendorDrawer
-          isOpen={isOpenVendor}
-          closeDrawer={this.closeVendorDrawer = this.closeVendorDrawer.bind(this)}
-          isEditFlag={false}
-          ID={""}
-          anchor={"right"}
-        />
-      )
-    }
-    {
-      isOpenUOM && (
-        <AddUOM
-          isOpen={isOpenUOM}
-          closeDrawer={this.closeUOMDrawer}
-          isEditFlag={false}
-          ID={""}
-          anchor={"right"}
-        />
-      )
-    }
-    {
-      initialConfiguration?.IsBasicRateAndCostingConditionVisible && isOpenConditionDrawer &&
-        <AddConditionCosting
-          isOpen={isOpenConditionDrawer}
-          tableData={conditionTableData}
-          closeDrawer={this.openAndCloseAddConditionCosting}
-          anchor={'right'}
-          ViewMode={((isEditFlag && isBOPAssociated) || isViewMode)}
-          isFromMaster={true}
-          currency={this.state.currency}
-          currencyValue={this.state.currencyValue}
-          basicRateCurrency={BasicPrice}
-          basicRateBase={BasicPrice}
-          isFromImport={true}
-          EntryType={checkForNull(ENTRY_TYPE_IMPORT)}
-        />
-    }
-    {
-      this.state.approveDrawer && (
-        <MasterSendForApproval
-          isOpen={this.state.approveDrawer}
-          closeDrawer={this.closeApprovalDrawer}
-          isEditFlag={false}
-          masterId={BOP_MASTER_ID}
-          type={'Sender'}
-          anchor={"right"}
-          approvalObj={this.state.approvalObj}
-          isBulkUpload={false}
-          IsImportEntry={true}
-          currency={this.state.currency}
-          costingTypeId={this.state.costingTypeId}
-          levelDetails={this.state.levelDetails}
-          isFromImport={true}
-          toolTipTextObject={this.state.toolTipTextObject}
-          UOM={this.state.UOM}
-          commonFunction={this.finalUserCheckAndMasterLevelCheckFunction}
-          handleOperation={this.handleBOPOperation}
-          isEdit={this.state.isEditFlag}
-        />
-      )
-    }
-    {
-      this.state.isOpenOtherCostDrawer &&
-        <AddOtherCostDrawer
-          isOpen={this.state.isOpenOtherCostDrawer}
-          rmTableData={this.state.otherCostTableData}
-          closeDrawer={this.closeOtherCostToggle}
-          anchor={'right'}
-          isBOP={true}
-          rawMaterial={true}
-          rmBasicRate={this.state.totalBasicRate}
-          ViewMode={isViewMode}
-          uom={this.state.UOM}
-          isImport={true}
-          plantCurrency={this.props.fieldsObj?.plantCurrency}
-          settlementCurrency={this.state?.currency?.label}
-        />
-    }
+          {
+            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
+          }
+          {
+            isCategoryDrawerOpen && (
+              <AddBOPCategory
+                isOpen={isCategoryDrawerOpen}
+                closeDrawer={this.closeCategoryDrawer}
+                isEditFlag={false}
+                anchor={"right"}
+              />
+            )
+          }
+          {
+            isOpenVendor && (
+              <AddVendorDrawer
+                isOpen={isOpenVendor}
+                closeDrawer={this.closeVendorDrawer = this.closeVendorDrawer.bind(this)}
+                isEditFlag={false}
+                ID={""}
+                anchor={"right"}
+              />
+            )
+          }
+          {
+            isOpenUOM && (
+              <AddUOM
+                isOpen={isOpenUOM}
+                closeDrawer={this.closeUOMDrawer}
+                isEditFlag={false}
+                ID={""}
+                anchor={"right"}
+              />
+            )
+          }
+          {
+            initialConfiguration?.IsBasicRateAndCostingConditionVisible && isOpenConditionDrawer &&
+            <AddConditionCosting
+              isOpen={isOpenConditionDrawer}
+              tableData={conditionTableData}
+              closeDrawer={this.openAndCloseAddConditionCosting}
+              anchor={'right'}
+              ViewMode={((isEditFlag && isBOPAssociated) || isViewMode)}
+              isFromMaster={true}
+              currency={this.state.currency}
+              currencyValue={this.state.currencyValue}
+              basicRateCurrency={BasicPrice}
+              basicRateBase={BasicPrice}
+              isFromImport={true}
+              EntryType={checkForNull(ENTRY_TYPE_IMPORT)}
+            />
+          }
+          {
+            this.state.approveDrawer && (
+              <MasterSendForApproval
+                isOpen={this.state.approveDrawer}
+                closeDrawer={this.closeApprovalDrawer}
+                isEditFlag={false}
+                masterId={BOP_MASTER_ID}
+                type={'Sender'}
+                anchor={"right"}
+                approvalObj={this.state.approvalObj}
+                isBulkUpload={false}
+                IsImportEntry={true}
+                currency={this.state.currency}
+                costingTypeId={this.state.costingTypeId}
+                levelDetails={this.state.levelDetails}
+                isFromImport={true}
+                toolTipTextObject={this.state.toolTipTextObject}
+                UOM={this.state.UOM}
+                commonFunction={this.finalUserCheckAndMasterLevelCheckFunction}
+                handleOperation={this.handleBOPOperation}
+                isEdit={this.state.isEditFlag}
+              />
+            )
+          }
+          {
+            this.state.isOpenOtherCostDrawer &&
+            <AddOtherCostDrawer
+              isOpen={this.state.isOpenOtherCostDrawer}
+              rmTableData={this.state.otherCostTableData}
+              closeDrawer={this.closeOtherCostToggle}
+              anchor={'right'}
+              isBOP={true}
+              rawMaterial={true}
+              rmBasicRate={this.state.totalBasicRate}
+              ViewMode={isViewMode}
+              uom={this.state.UOM}
+              isImport={true}
+              plantCurrency={this.props.fieldsObj?.plantCurrency}
+              settlementCurrency={this.state?.currency?.label}
+            />
+          }
         </div >
       </>
     );
