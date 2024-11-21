@@ -354,7 +354,8 @@ export function renderTextInputField(field) {
     ...others
   } = field;
   const inputbox = `${active ? "active" : ""}`;
-  const className = `form-group inputbox  withBorder ${touched && error ? "has-danger" : ""}`;
+  const className = `form-group inputbox  withBorder ${field.customClassName ?? ""}
+ ${touched && error ? "has-danger" : ""}`;
   const inputStyle = field.inputStyle ? field.inputStyle : "";
   const inputIconStyle = field.inputIconStyle ? field.inputIconStyle : "";
   const InputClassName = `form-control ${field.className ? field.className : ""}`;

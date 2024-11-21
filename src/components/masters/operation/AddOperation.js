@@ -1221,9 +1221,11 @@ class AddOperation extends Component {
     const settlementCurrencyRate = settlementCurrency ?? '-';
 
     // Generate tooltip text based on the condition
-    return `${!this.state.hidePlantCurrency
-      ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrencyLabel}, `
-      : ''}Exchange Rate: 1 ${currencyLabel} = ${settlementCurrencyRate} ${baseCurrency}`;
+    return <>
+      {!this.state?.hidePlantCurrency
+        ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrency}, `
+        : ''}<p>Exchange Rate: 1 {currencyLabel} = {settlementCurrencyRate} {baseCurrency}</p>
+    </>;
   };
   /**
   * @method render
@@ -1541,7 +1543,7 @@ class AddOperation extends Component {
                         </Col>
                       )}
                       {<Col md="3">
-                        {this.props.fieldsObj?.plantCurrency && !this.state.hidePlantCurrency && !this.state.isImport && <TooltipCustom id="plantCurrency" tooltipText={`Exchange Rate: 1 ${this.props.fieldsObj?.plantCurrency} = ${this.state?.plantCurrency ?? '-'} ${reactLocalStorage.getObject("baseCurrency")}`} />}
+                        {this.props.fieldsObj?.plantCurrency && !this.state.hidePlantCurrency && !this.state.isImport && <TooltipCustom id="plantCurrency" width="350px" tooltipText={`Exchange Rate: 1 ${this.props.fieldsObj?.plantCurrency} = ${this.state?.plantCurrency ?? '-'} ${reactLocalStorage.getObject("baseCurrency")}`} />}
                         <Field
                           name="plantCurrency"
                           type="text"
@@ -1552,7 +1554,7 @@ class AddOperation extends Component {
                           required={false}
                           disabled={true}
                           className=" "
-                          customClassName=" withBorder"
+                          customClassName=" withBorder mb-1"
                         />
                         {this.state.showPlantWarning && <WarningMessage dClass="mt-1" message={`${this.props.fieldsObj.plantCurrency} rate is not present in the Exchange Master`} />}
                       </Col>}
@@ -1576,6 +1578,7 @@ class AddOperation extends Component {
                           handleChangeDescription={this.handleCurrency}
                           valueDescription={this.state.currency}
                           disabled={isEditFlag ? true : false || isDetailEntry || isViewMode}
+                          customClassName="mb-1"
                         >{this.state.showWarning && <WarningMessage dClass="mt-1" message={`${this.state?.currency?.label} rate is not present in the Exchange Master`} />}
                         </Field>
                       </Col>}

@@ -2258,6 +2258,7 @@ class AddRMImport extends Component {
                               handleChangeDescription={this.handleCurrency}
                               valueDescription={this.state.currency}
                               disabled={isEditFlag || isViewFlag}
+                              customClassName="mb-1"
                             >
                               {this.state.showWarning && <WarningMessage dClass="mt-1" message={`${this.state.currency.label} rate is not present in the Exchange Master`} />}
                             </Field>

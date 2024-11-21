@@ -70,7 +70,7 @@ class AddMoreDetails extends Component {
       isDateChange: false,
       selectedTechnology: editDetails.selectedTechnology ?? [],
       selectedPlants: Object.keys(editDetails.selectedPlants).length > 0 ? editDetails.selectedPlants : {},
-      machineType:editDetails?.machineType?? [],
+      machineType: editDetails?.machineType ?? [],
       isOpenMachineType: false,
       machineRate: "",
       disableMachineType: false,
@@ -182,7 +182,7 @@ class AddMoreDetails extends Component {
       plantCurrencyID: editDetails?.plantCurrencyID || '',
       hidePlantCurrency: false,
       showPlantWarning: false,
-      disableEffectiveDate:false
+      disableEffectiveDate: false
     }
     this.dropzone = React.createRef();
   }
@@ -1889,7 +1889,7 @@ class AddMoreDetails extends Component {
         processName: [],
         UOM: isProcessGroup ? UOM : [],
         lockUOMAndRate: isProcessGroup,
-        disableEffectiveDate:true
+        disableEffectiveDate: true
       }, () => {
         this.props.change('OutputPerHours', isProcessGroup ? OutputPerHours : 0);
         this.props.change('OutputPerYear', isProcessGroup ? OutputPerYear : 0);
@@ -2079,8 +2079,8 @@ class AddMoreDetails extends Component {
     } else {
       this.setState({ lockUOMAndRate: isProcessGroup })
     }
-    if(tempData&&tempData?.length === 0){
-      this.setState({disableEffectiveDate:false})
+    if (tempData && tempData?.length === 0) {
+      this.setState({ disableEffectiveDate: false })
     }
     this.setState({
       processGrid: tempData,
@@ -2978,26 +2978,28 @@ class AddMoreDetails extends Component {
   }
   machineRateTitle = () => {
     return {
-        tooltipTextPlantCurrency: `Machine Rate * Plant Currency Rate (${this.state?.plantCurrency ?? ''})`,
-        toolTipTextNetCostBaseCurrency: `Machine Rate * Currency Rate (${this.state?.settlementCurrency ?? ''})`,
+      tooltipTextPlantCurrency: `Machine Rate * Plant Currency Rate (${this.state?.plantCurrency ?? ''})`,
+      toolTipTextNetCostBaseCurrency: `Machine Rate * Currency Rate (${this.state?.settlementCurrency ?? ''})`,
     };
-};
-getTooltipTextForCurrency = () => {
-  const {fieldsObj}=this.props
-  const {settlementCurrency,plantCurrency,currency}=this.state
-  const currencyLabel = currency?.label??'Currency';
-  const plantCurrencyLabel = fieldsObj?.plantCurrency??'Plant Currency';
-  const baseCurrency = reactLocalStorage.getObject("baseCurrency");
-  
-  // Check the exchange rates or provide a default placeholder if undefined
-  const plantCurrencyRate = plantCurrency?? '-';
-  const settlementCurrencyRate = settlementCurrency ?? '-';
+  };
+  getTooltipTextForCurrency = () => {
+    const { fieldsObj } = this.props
+    const { settlementCurrency, plantCurrency, currency } = this.state
+    const currencyLabel = currency?.label ?? 'Currency';
+    const plantCurrencyLabel = fieldsObj?.plantCurrency ?? 'Plant Currency';
+    const baseCurrency = reactLocalStorage.getObject("baseCurrency");
 
-  // Generate tooltip text based on the condition
-  return `${!this.state.hidePlantCurrency 
-      ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrencyLabel}, ` 
-      : ''}Exchange Rate: 1 ${currencyLabel} = ${settlementCurrencyRate} ${baseCurrency}`;
-};
+    // Check the exchange rates or provide a default placeholder if undefined
+    const plantCurrencyRate = plantCurrency ?? '-';
+    const settlementCurrencyRate = settlementCurrency ?? '-';
+
+    // Generate tooltip text based on the condition
+    return <>
+      {!this.state?.hidePlantCurrency
+        ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrency}, `
+        : ''}<p>Exchange Rate: 1 {currencyLabel} = {settlementCurrencyRate} {baseCurrency}</p>
+    </>;
+  };
 
   /**
    * @method render
@@ -3411,7 +3413,7 @@ getTooltipTextForCurrency = () => {
                           />
                         </Col>
                         <Col Col md="3" className='p-relative'>
-                        {this.props.fieldsObj?.plantCurrency&& !this.state.hidePlantCurrency&&!this.state.entryType&& <TooltipCustom id="plantCurrency" tooltipText = {`Exchange Rate: 1 ${this.props.fieldsObj?.plantCurrency} = ${this.state?.plantCurrency??'-'} ${reactLocalStorage.getObject("baseCurrency")}`} />}
+                          {this.props.fieldsObj?.plantCurrency && !this.state.hidePlantCurrency && !this.state.entryType && <TooltipCustom id="plantCurrency" width="350px" tooltipText={`Exchange Rate: 1 ${this.props.fieldsObj?.plantCurrency} = ${this.state?.plantCurrency ?? '-'} ${reactLocalStorage.getObject("baseCurrency")}`} />}
                           <Field
                             label="Plant Currency"
                             name="plantCurrency"
@@ -3420,13 +3422,13 @@ getTooltipTextForCurrency = () => {
                             component={renderText}
                             disabled={true}
                             className=" "
-                            customClassName="withBorder"
+                            customClassName="withBorder mb-1"
                           />
                           {this.state.showPlantWarning && <WarningMessage dClass="mt-1" message={`${this.props.fieldsObj.plantCurrency} rate is not present in the Exchange Master`} />}
                         </Col>
 
                         {this.state?.entryType && <Col md="3">
-                          <TooltipCustom id="currency" tooltipText = {this.getTooltipTextForCurrency()}/>
+                          <TooltipCustom id="currency" tooltipText={this.getTooltipTextForCurrency()} />
                           <Field
                             name="Currency"
                             type="text"
@@ -3445,6 +3447,7 @@ getTooltipTextForCurrency = () => {
                             handleChangeDescription={this.handleCurrency}
                             valueDescription={this.state.currency}
                             disabled={isEditFlag ? true : false || isViewMode || isViewFlag}
+                            customClassName="mb-1"
                           >{this.state?.currency?.label && this.state.showWarning && <WarningMessage dClass="mt-1" message={`${this.state.currency.label} rate is not present in the Exchange Master`} />}
                           </Field>
                         </Col>}
@@ -3466,7 +3469,7 @@ getTooltipTextForCurrency = () => {
                                 }}
                                 component={renderDatePicker}
                                 className="form-control"
-                                disabled={this.state.isViewFlag || !this.state.IsFinancialDataChanged||this.state.disableEffectiveDate}
+                                disabled={this.state.isViewFlag || !this.state.IsFinancialDataChanged || this.state.disableEffectiveDate}
                               />
                             </div>
                           </div>
@@ -4924,7 +4927,7 @@ getTooltipTextForCurrency = () => {
                                   {this.state.errorObj?.MachineRateLocalConversion && (this.props?.fieldsObj?.MachineRateLocalConversion === undefined || Number(this.props?.fieldsObj?.MachineRateLocalConversion) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
                                 </Col>}
                                 {(!(!this?.state?.entryType && this?.state?.hidePlantCurrency)) && <Col md="4" className='UOM-label-container p-relative'>
-                                  <TooltipCustom disabledIcon={true} id="machine-rate" tooltipText={this?.state?.isImport?this.machineRateTitle()?.toolTipTextNetCostBaseCurrency:this.machineRateTitle()?.tooltipTextPlantCurrency} />
+                                  <TooltipCustom disabledIcon={true} id="machine-rate" tooltipText={this?.state?.isImport ? this.machineRateTitle()?.toolTipTextNetCostBaseCurrency : this.machineRateTitle()?.tooltipTextPlantCurrency} />
                                   <Field
                                     label={this.DisplayMachineRateBaseCurrencyLabel()}
                                     name={"MachineRateConversion"}
