@@ -44,6 +44,7 @@ import { useHistory, useLocation } from 'react-router-dom/cjs/react-router-dom';
 import { ASSEMBLY } from '../../config/masterData';
 import { customHavellsChanges } from '../.././config/constants';
 import { useLabels } from '../../helper/core';
+import { fetchDivisionId } from '../costing/CostingUtil';
 export const QuotationId = React.createContext();
 
 const gridOptions = {};
@@ -122,7 +123,7 @@ function RfqListing(props) {
     const userMasterLevelAPI = useSelector((state) => state.auth.userMasterLevelAPI)
     const isAssemblyTechnology = rowData && rowData?.length > 0 ? rowData[0]?.TechnologyId === ASSEMBLY : false
     let arr = []
-    const { technologyLabel ,vendorLabel } = useLabels();
+    const { technologyLabel, vendorLabel } = useLabels();
     const history = useHistory();
     const location = useLocation();
     useEffect(() => {
@@ -418,38 +419,51 @@ function RfqListing(props) {
     }
 
     const commonFunction = (type, plantId = EMPTY_GUID) => {
-
-        const { costingTypeId } = state
-        if (type === 'Raw Material' || type === 'Bought Out Part') {
-
-            let levelDetailsTemp = userTechnologyDetailByMasterId(costingTypeId, type === 'Raw Material' ? RM_MASTER_ID : BOP_MASTER_ID, userMasterLevelAPI);
-            setState(prevState => ({ ...prevState, levelDetails: levelDetailsTemp }));
-
+        const finalUserApi = (mode, divisionId, technologyId) => {
             let obj = {
                 DepartmentId: userDetails().DepartmentId,
                 UserId: loggedInUserId(),
-                TechnologyId: type === 'Raw Material' ? RM_MASTER_ID : BOP_MASTER_ID,
-                Mode: 'master',
+                TechnologyId: technologyId,
+                Mode: mode,
                 approvalTypeId: costingTypeIdToApprovalTypeIdFunction(costingTypeId),
-                plantId: plantId
+                plantId: rowData[0]?.PlantId,
+                DivisionId: divisionId
             };
+            dispatch(checkFinalUser(obj, (res) => {
+                if (res?.data?.Result && res?.data?.Data?.IsFinalApprover) {
+                    setState(prevState => ({
+                        ...prevState,
+                        isFinalApprovar: res?.data?.Data?.IsFinalApprover,
+                        CostingTypePermission: true,
+                        finalApprovalLoader: false
+                    }));
+                }
+                if (res?.data?.Data?.IsUserInApprovalFlow === false || res?.data?.Data?.IsNextLevelUserExist === false) {
+                    setState(prevState => ({ ...prevState, disableSendForApproval: true }));
+                } else {
+                    setState(prevState => ({ ...prevState, disableSendForApproval: false }));
+                }
+            }));
+        }
+        let fetchDivisionRequestObj = {
+            "PlantId": rowData[0]?.PlantId,
+            "PartId": rowData[0]?.PartId
+        }
+        const { costingTypeId } = state
+        if (type === 'Raw Material' || type === 'Bought Out Part') {
+            const getMasterType = type === 'Raw Material' ? RM_MASTER_ID : BOP_MASTER_ID
+            let levelDetailsTemp = userTechnologyDetailByMasterId(costingTypeId, getMasterType, userMasterLevelAPI);
+            setState(prevState => ({ ...prevState, levelDetails: levelDetailsTemp }));
 
             if (getConfigurationKey().IsMasterApprovalAppliedConfigure) {
-                dispatch(checkFinalUser(obj, (res) => {
-                    if (res?.data?.Result && res?.data?.Data?.IsFinalApprover) {
-                        setState(prevState => ({
-                            ...prevState,
-                            isFinalApprovar: res?.data?.Data?.IsFinalApprover,
-                            CostingTypePermission: true,
-                            finalApprovalLoader: false
-                        }));
-                    }
-                    if (res?.data?.Data?.IsUserInApprovalFlow === false || res?.data?.Data?.IsNextLevelUserExist === false) {
-                        setState(prevState => ({ ...prevState, disableSendForApproval: true }));
-                    } else {
-                        setState(prevState => ({ ...prevState, disableSendForApproval: false }));
-                    }
-                }));
+                if (getConfigurationKey()?.IsDivisionAllowedForDepartment) {
+                    fetchDivisionId(fetchDivisionRequestObj, dispatch).then((divisionId) => {
+                        selectedRows[0].DivisionId = divisionId
+                        finalUserApi('master', divisionId, getMasterType)
+                    })
+                } else {
+                    finalUserApi('master', null, getMasterType)
+                }
             }
             setState(prevState => ({ ...prevState, CostingTypePermission: false, finalApprovalLoader: false }));
         }
@@ -502,8 +516,18 @@ function RfqListing(props) {
             // setAddRfq(true)
             dispatch(storePartNumber(rowData))
 
-            sendForApprovalData(arr)
-            setSendForApproval(true)
+            if (getConfigurationKey()?.IsDivisionAllowedForDepartment) {
+                fetchDivisionId(fetchDivisionRequestObj, dispatch).then((divisionId) => {
+                    selectedRows[0].DivisionId = divisionId
+                    finalUserApi('costing', divisionId, rowData[0]?.TechnologyId)
+                    sendForApprovalData(arr)
+                    setSendForApproval(true)
+                })
+            } else {
+                sendForApprovalData(arr)
+                setSendForApproval(true)
+            }
+
         }
     }
 
@@ -1612,6 +1636,7 @@ function RfqListing(props) {
                             technologyId={technologyId}
                             cancel={cancel}
                             selectedRows={selectedRows}
+                            dataSelected={selectedRows}
                             mandatoryRemark={mandatoryRemark}
                             callSapCheckAPI={false}
                         />

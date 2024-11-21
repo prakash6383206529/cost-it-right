@@ -36,6 +36,7 @@ import TourWrapper from '../../../common/Tour/TourWrapper'
 import { Steps } from '../TourMessages'
 import { useTranslation } from 'react-i18next';
 import { useLabels } from '../../../../helper/core'
+import { fetchDivisionId } from '../../CostingUtil'
 
 const gridOptions = {};
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
@@ -852,30 +853,37 @@ function ApprovalListing(props) {
       dispatch(setCostingApprovalData(temp))
       return null
     })
-    let obj = {
-      DepartmentId: selectedRowData[0].Status === DRAFT ? EMPTY_GUID : selectedRowData[0]?.DepartmentId,
-      UserId: loggedInUserId(),
-      TechnologyId: selectedRowData[0].TechnologyId,
-      Mode: 'costing',
-      approvalTypeId: costingTypeIdToApprovalTypeIdFunction(selectedRowData[0]?.ApprovalTypeId ?? selectedRowData[0]?.CostingTypeId),
-      plantId: selectedRowData[0].PlantId ?? EMPTY_GUID,
-      divisionId: selectedRowData[0].DivisionId ?? null
+    let divisionReqData = {
+      "PlantId": selectedRowData[0].PlantId,
+      "PartId": selectedRowData[0].PartId
     }
-    dispatch(checkFinalUser(obj, res => {
-      if (res && res.data && res.data.Result) {
-        if (selectedRowData[0].Status === DRAFT) {
-          setOpenDraftDrawer(res.data.Data.IsFinalApprover ? false : true)
-          if (res.data.Data.IsFinalApprover) {
-            Toaster.warning("Final level approver can not send draft costing for approval")
-            gridApi.deselectAll()
+    fetchDivisionId(divisionReqData, dispatch).then((divisionId) => {
+      selectedRowData[0].DivisionId = divisionId
+      let obj = {
+        DepartmentId: selectedRowData[0].Status === DRAFT ? EMPTY_GUID : selectedRowData[0]?.DepartmentId,
+        UserId: loggedInUserId(),
+        TechnologyId: selectedRowData[0].TechnologyId,
+        Mode: 'costing',
+        approvalTypeId: costingTypeIdToApprovalTypeIdFunction(selectedRowData[0]?.ApprovalTypeId ?? selectedRowData[0]?.CostingTypeId),
+        plantId: selectedRowData[0].PlantId ?? EMPTY_GUID,
+        divisionId: divisionId
+      }
+      dispatch(checkFinalUser(obj, res => {
+        if (res && res.data && res.data.Result) {
+          if (selectedRowData[0].Status === DRAFT) {
+            setOpenDraftDrawer(res.data.Data.IsFinalApprover ? false : true)
+            if (res.data.Data.IsFinalApprover) {
+              Toaster.warning("Final level approver can not send draft costing for approval")
+              gridApi.deselectAll()
+            }
+          }
+          else {
+            setShowFinalLevelButton(!res.data.Data.IsFinalApprover)
+            setApproveDrawer(true)
           }
         }
-        else {
-          setShowFinalLevelButton(!res.data.Data.IsFinalApprover)
-          setApproveDrawer(true)
-        }
-      }
-    }))
+      }))
+    })
   }
 
   const closeDrawer = (e = '', type) => {
@@ -1019,7 +1027,7 @@ function ApprovalListing(props) {
     basicRateFormatter: basicRateFormatter
   };
 
-  const isRowSelectable = rowNode => rowNode.data ? (rowNode.data.Status === PENDING || rowNode.data.Status === REJECTED) : false
+  const isRowSelectable = rowNode => rowNode.data ? (rowNode.data.Status === PENDING || rowNode.data.Status === DRAFT || rowNode.data.Status === REJECTED) : false
 
   if (showApprovalSumary === true) {
 
