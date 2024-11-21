@@ -244,12 +244,11 @@ class AddBOPImport extends Component {
       ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? VBCTypeId : costingTypeId) :
       ZBCTypeId;
 
-    const hasCurrencyAndDate = Boolean(fieldsObj?.plantCurrency && effectiveDate);
-    console.log('hasCurrencyAndDate: ', hasCurrencyAndDate);
-    if (hasCurrencyAndDate) {
-      if (IsFetchExchangeRateVendorWise() && (vendorName?.length === 0 && client?.length === 0)) {
-        return false;
-      }
+      const hasCurrencyAndDate = Boolean(fieldsObj?.plantCurrency && effectiveDate);
+      if (hasCurrencyAndDate) {
+        if (IsFetchExchangeRateVendorWise() && (vendorName?.length === 0 && client?.length === 0)) {
+          return false;
+        }
       this.props.getExchangeRateByCurrency(
         currency?.label,
         costingType,
@@ -2145,7 +2144,7 @@ class AddBOPImport extends Component {
                               />
                             </div>
                           </Col>
-                          {!initialConfiguration?.IsBasicRateAndCostingConditionVisible && costingTypeId === ZBCTypeId && !isTechnologyVisible && <>
+                          {initialConfiguration?.IsBasicRateAndCostingConditionVisible && costingTypeId === ZBCTypeId && !isTechnologyVisible && <>
                             <Col md="3">
                               <TooltipCustom id="bop-basic-currency" disabledIcon={true} tooltipText={this.toolTipNetCost().toolTipTextBasicPrice} />
                               <Field

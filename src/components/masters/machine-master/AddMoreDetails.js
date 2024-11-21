@@ -70,7 +70,7 @@ class AddMoreDetails extends Component {
       isDateChange: false,
       selectedTechnology: editDetails.selectedTechnology ?? [],
       selectedPlants: Object.keys(editDetails.selectedPlants).length > 0 ? editDetails.selectedPlants : {},
-      machineType: [],
+      machineType:editDetails?.machineType?? [],
       isOpenMachineType: false,
       machineRate: "",
       disableMachineType: false,
@@ -181,7 +181,8 @@ class AddMoreDetails extends Component {
       settlementExchangeRateId: editDetails?.settlementExchangeRateId || '',
       plantCurrencyID: editDetails?.plantCurrencyID || '',
       hidePlantCurrency: false,
-      showPlantWarning: false
+      showPlantWarning: false,
+      disableEffectiveDate:false
     }
     this.dropzone = React.createRef();
   }
@@ -1887,7 +1888,8 @@ class AddMoreDetails extends Component {
         processGrid: tempArray,
         processName: [],
         UOM: isProcessGroup ? UOM : [],
-        lockUOMAndRate: isProcessGroup
+        lockUOMAndRate: isProcessGroup,
+        disableEffectiveDate:true
       }, () => {
         this.props.change('OutputPerHours', isProcessGroup ? OutputPerHours : 0);
         this.props.change('OutputPerYear', isProcessGroup ? OutputPerYear : 0);
@@ -2076,6 +2078,9 @@ class AddMoreDetails extends Component {
       this.setState({ lockUOMAndRate: tempData.length === 0 ? false : true })
     } else {
       this.setState({ lockUOMAndRate: isProcessGroup })
+    }
+    if(tempData&&tempData?.length === 0){
+      this.setState({disableEffectiveDate:false})
     }
     this.setState({
       processGrid: tempData,
@@ -3461,7 +3466,7 @@ getTooltipTextForCurrency = () => {
                                 }}
                                 component={renderDatePicker}
                                 className="form-control"
-                                disabled={this.state.isViewFlag || !this.state.IsFinancialDataChanged}
+                                disabled={this.state.isViewFlag || !this.state.IsFinancialDataChanged||this.state.disableEffectiveDate}
                               />
                             </div>
                           </div>
