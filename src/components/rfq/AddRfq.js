@@ -1363,13 +1363,19 @@ function AddRfq(props) {
                 break;
 
             case BOUGHTOUTPARTSPACING:
+                let categoryId = null;
                 bopDataList?.forEach(item => {
                     temp.push(item?.BoughtOutPartChildId);
+                    // Get CategoryId from first item since all items should have same category
+                    if (!categoryId && item?.BoughtOutPartCategoryId) {
+                        categoryId = parseInt(item?.BoughtOutPartCategoryId);
+                    }
                 });
                 data = {
                     boughtOutPartChildIdList: temp,
                     PlantId: getValues('plant')?.value,
-                    VendorId: getValues("vendor")?.value
+                    VendorId: getValues("vendor")?.value,
+                    CategoryId: categoryId
                 };
                 handleSpecificPartTypeAPI(data, checkBopExistInRfq);
                 break;
@@ -1537,70 +1543,13 @@ function AddRfq(props) {
 
                 setRMAPIList(list)
                 let Data = {}
+                let temp = []; // Initialize temp array to hold Part IDs
+
                 if (nfrId && nfrId.value !== null) {
                     dispatch(getNfrAnnualForecastQuantity(nfrId.value, getValues('partNumber')?.value, sopdate = "", (res) => {  //CHECK_NFR
                         Data = res.data.Data
                     }));
                 }
-                const handlePartTypeCheck = () => {
-                    switch (selectedOption) {
-                        case RAW_MATERIAL:
-                            const rmData = {
-                                rawMaterialSpecificationIdList: temp,
-                                PlantId: getValues('plant')?.value,
-                                VendorId: null
-                            };
-                            handleSpecificPartTypeAPI(rmData, checkRmExistInRfq);
-                            break;
-
-                        case BOUGHTOUTPARTSPACING:
-                            const bopData = {
-                                boughtOutPartChildIdList: temp,
-                                PlantId: getValues('plant')?.value,
-                                VendorId: null
-                            };
-                            handleSpecificPartTypeAPI(bopData, checkBopExistInRfq);
-                            break;
-
-                        default: // For componentAssembly and Tooling
-
-                            let dataObj = {
-                                "PartIdList": temp,
-                                "PlantId": getValues('plant')?.value,
-                                "VendorId": null
-                            };
-                            handleSpecificPartTypeAPI(dataObj, checkExistCosting);
-                            break;
-                    }
-                };
-                let temp = []; // Initialize temp array to hold Part IDs
-                switch (selectedOption) {
-                    case BOUGHTOUTPARTSPACING:
-                        bopList && bopList.map((item) => {
-                            temp.push(item?.BoughtOutPartChildId);
-                            return null;
-                        });
-                        handlePartTypeCheck()
-
-                        break;
-                    case RAW_MATERIAL:
-                        RawMaterialList && RawMaterialList.map((item) => {
-                            temp.push(item?.RawMaterialSpecificationId);
-                            return null;
-                        });
-                        handlePartTypeCheck()
-
-                        break;
-                    case COMPONENTASSEMBLY:
-                        temp.push(getValues('partNumber')?.value); // Use getValues for componentAssembly
-                        break;
-                    case TOOLINGPART:
-                        temp.push(getValues('partNumber')?.value); // Use getValues for Tooling
-                        handlePartTypeCheck()
-                        break;
-                    default:
-                }
-
                 const handleSpecificPartTypeAPI = (dataObj, apiCallback) => {
                     dispatch(apiCallback(dataObj, (res) => {
                         if (res?.data?.Result) {
@@ -1617,6 +1566,56 @@ function AddRfq(props) {
                     }));
 
                 };
+                switch (selectedOption) {
+                    case RAW_MATERIAL:
+                        RawMaterialList && RawMaterialList.map((item) => {
+                            temp.push(item?.RawMaterialSpecificationId);
+                            return null;
+                        });
+
+                        const rmData = {
+                            rawMaterialSpecificationIdList: temp,
+                            PlantId: getValues('plant')?.value,
+                            VendorId: null
+                        };
+                        handleSpecificPartTypeAPI(rmData, checkRmExistInRfq);
+                        break;
+
+                    case BOUGHTOUTPARTSPACING:
+                        let categoryId = null;
+                        bopList?.forEach(item => {
+                            temp.push(item?.BoughtOutPartChildId);
+                            // Get CategoryId from first item since all items should have same category
+                            if (!categoryId && item?.BoughtOutPartCategoryId) {
+                                categoryId = parseInt(item?.BoughtOutPartCategoryId);
+                            }
+                        });
+
+                        const bopData = {
+                            boughtOutPartChildIdList: temp,
+                            PlantId: getValues('plant')?.value,
+                            VendorId: null,
+                            CategoryId: categoryId
+
+                        };
+                        handleSpecificPartTypeAPI(bopData, checkBopExistInRfq);
+                        break;
+
+                    default: // For componentAssembly and Tooling
+                        temp.push(getValues('partNumber')?.value); // Use getValues for componentAssembly
+
+                        let dataObj = {
+                            "PartIdList": temp,
+                            "PlantId": getValues('plant')?.value,
+                            "VendorId": null
+                        };
+                        handleSpecificPartTypeAPI(dataObj, checkExistCosting);
+                        break;
+                }
+
+
+
+
                 const handlePartResponse = (res, vendorListFinal) => {
                     let partNumber = getValues('partNumber');
 
@@ -1753,6 +1752,7 @@ function AddRfq(props) {
             let objTemp = {};
             let arrTemp = [];
             let Data = {}
+            let temp = [];
             if (selectedOption === "Raw Material") {
 
                 if (RawMaterialList.length === 0) {
@@ -1826,71 +1826,50 @@ function AddRfq(props) {
                 }));
 
             };
-            const handlePartTypeCheck = () => {
-                switch (selectedOption) {
-                    case RAW_MATERIAL:
-                        const rmData = {
-                            rawMaterialSpecificationIdList: temp,
-                            PlantId: getValues('plant')?.value,
-                            VendorId: null
-                        };
-                        handleSpecificPartTypeAPI(rmData, checkRmExistInRfq);
-                        break;
-
-                    case BOUGHTOUTPARTSPACING:
-                        const bopData = {
-                            boughtOutPartChildIdList: temp,
-                            PlantId: getValues('plant')?.value,
-                            VendorId: null
-                        };
-                        handleSpecificPartTypeAPI(bopData, checkBopExistInRfq);
-                        break;
-
-                    default: // For componentAssembly and Tooling
-
-                        let dataObj = {
-                            "PartIdList": temp,
-                            "PlantId": getValues('plant')?.value,
-                            "VendorId": null
-                        };
-                        handleSpecificPartTypeAPI(dataObj, checkExistCosting);
-                        break;
-
-                }
-            };
-            let temp = []; // Initialize temp array to hold Part IDs
             switch (selectedOption) {
-                case BOUGHTOUTPARTSPACING:
-                    bopList && bopList.map((item) => {
-                        temp.push(item?.BoughtOutPartChildId);
-                        return null;
-                    });
-                    handlePartTypeCheck()
-                    break;
                 case RAW_MATERIAL:
                     RawMaterialList && RawMaterialList.map((item) => {
                         temp.push(item?.RawMaterialSpecificationId);
                         return null;
                     });
-                    handlePartTypeCheck()
-
+                    const rmData = {
+                        rawMaterialSpecificationIdList: temp,
+                        PlantId: getValues('plant')?.value,
+                        VendorId: null
+                    };
+                    handleSpecificPartTypeAPI(rmData, checkRmExistInRfq);
                     break;
-                case COMPONENTASSEMBLY:
 
-                    temp.push(getValues('partNumber')?.value); // Use getValues for componentAssembly
-                    handlePartTypeCheck()
+                case BOUGHTOUTPARTSPACING:
+                    let categoryId = null;
+                    bopList?.forEach(item => {
+                        temp.push(item?.BoughtOutPartChildId);
+                        // Get CategoryId from first item since all items should have same category
+                        if (!categoryId && item?.BoughtOutPartCategoryId) {
+                            categoryId = parseInt(item?.BoughtOutPartCategoryId);
+                        }
+                    });
+                    const bopData = {
+                        boughtOutPartChildIdList: temp,
+                        PlantId: getValues('plant')?.value,
+                        VendorId: null,
+                        CategoryId: categoryId
 
+                    };
+                    handleSpecificPartTypeAPI(bopData, checkBopExistInRfq);
                     break;
-                case TOOLINGPART:
-                    temp.push(getValues('partNumber')?.value); // Use getValues for Tooling
-                    handlePartTypeCheck()
 
+                default: // For componentAssembly and Tooling
+                    temp.push(getValues('partNumber')?.value);
+                    let dataObj = {
+                        "PartIdList": temp,
+                        "PlantId": getValues('plant')?.value,
+                        "VendorId": null
+                    };
+                    handleSpecificPartTypeAPI(dataObj, checkExistCosting);
                     break;
-                default:
+
             }
-
-
-
             const handlePartResponse = (res, vendorListFinal) => {
 
                 let partNumber = getValues('partNumber');
