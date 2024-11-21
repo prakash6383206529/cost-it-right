@@ -13,6 +13,7 @@ import VisualAdDrawer from './VisualAdDrawer';
 import _, { debounce } from 'lodash'
 import LoaderCustom from '../../common/LoaderCustom';
 import { withTranslation } from 'react-i18next';
+import { validateForm } from '../../layout/FormInputs';
 
 class BOMViewer extends Component {
   constructor(props) {
@@ -603,6 +604,7 @@ export default connect(mapStateToProps, {
   setActualBOMData,
 })(reduxForm({
   form: 'BOMViewer',
+  validate: validateForm,
   enableReinitialize: true,
   touchOnChange: true
 })(withTranslation(['MasterLabels'])(BOMViewer)));

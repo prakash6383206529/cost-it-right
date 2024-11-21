@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector, propTypes, clearFields } from "redux-form";
 import { Row, Col, Label, } from 'reactstrap';
 import { required, postiveNumber, maxLength10, nonZero, number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation, } from "../../../helper/validation";
-import { renderDatePicker, renderMultiSelectField, renderText, renderTextInputField, searchableSelect, } from "../../layout/FormInputs";
+import { renderDatePicker, renderMultiSelectField, renderText, renderTextInputField, searchableSelect, validateForm, } from "../../layout/FormInputs";
 import { updateInterestRate, createInterestRate, getPaymentTermsAppliSelectList, getICCAppliSelectList, getInterestRateData, } from '../actions/InterestRateMaster';
 import { getPlantSelectListByType, getVendorNameByVendorSelectList } from '../../../actions/Common';
 import { MESSAGES } from '../../../config/message';
@@ -1139,6 +1139,7 @@ export default connect(mapStateToProps, {
   getRMGradeSelectListByRawMaterial
 })(reduxForm({
   form: 'AddInterestRate',
+  validate: validateForm,
   enableReinitialize: true,
   touchOnChange: true
 })(withTranslation(['InterestRate'])(AddInterestRate)));

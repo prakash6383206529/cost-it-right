@@ -6,7 +6,7 @@ import {
   required, checkForNull, checkForDecimalAndNull, acceptAllExceptSingleSpecialCharacter, maxLength20,
   maxLength10, positiveAndDecimalNumber, maxLength512, decimalLengthsix, checkWhiteSpaces, checkSpacesInString, maxLength80, number, postiveNumber, hashValidation
 } from "../../../helper/validation";
-import { renderText, searchableSelect, renderTextAreaField, renderDatePicker, renderTextInputField, focusOnError } from "../../layout/FormInputs";
+import { renderText, searchableSelect, renderTextAreaField, renderDatePicker, renderTextInputField, focusOnError, validateForm } from "../../layout/FormInputs";
 import { getPlantBySupplier, getUOMSelectList, getCurrencySelectList, getPlantSelectListByType, getAllCity, getVendorNameByVendorSelectList, getCityByCountryAction } from '../../../actions/Common';
 import {
   createBOP, updateBOP, getBOPCategorySelectList, getBOPImportById,
@@ -2420,6 +2420,7 @@ export default connect(mapStateToProps, {
   checkAndGetBopPartNo
 })(reduxForm({
   form: 'AddBOPImport',
+  validate: validateForm,
   touchOnChange: true,
   onSubmitFail: (errors) => {
     focusOnError(errors)

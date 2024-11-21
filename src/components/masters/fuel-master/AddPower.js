@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector, clearFields } from "redux-form";
 import { Row, Col, Table, Label } from 'reactstrap';
 import { required, checkForNull, getCodeBySplitting, checkForDecimalAndNull, positiveAndDecimalNumber, maxLength10, decimalLengthFour, decimalLengthThree, number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation } from "../../../helper/validation";
-import { searchableSelect, renderMultiSelectField, focusOnError, renderDatePicker, renderText, renderTextInputField } from "../../layout/FormInputs";
+import { searchableSelect, renderMultiSelectField, focusOnError, renderDatePicker, renderText, renderTextInputField, validateForm } from "../../layout/FormInputs";
 import { getPowerTypeSelectList, getUOMSelectList, getPlantBySupplier, getAllCity, fetchStateDataAPI, getVendorNameByVendorSelectList } from '../../../actions/Common';
 import {
   getFuelByPlant, createPowerDetail, updatePowerDetail, getPlantListByState, createVendorPowerDetail, updateVendorPowerDetail, getDieselRateByStateAndUOM,
@@ -1378,7 +1378,7 @@ class AddPower extends Component {
     const { handleSubmit, initialConfiguration, t } = this.props;
     const { isEditFlag, source, isOpenVendor, isCostPerUnitConfigurable, isEditFlagForStateElectricity,
       checkPowerContribution, netContributionValue, isViewMode, setDisable, costingTypeId, isDetailEntry } = this.state;
-      const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
+    const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
 
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
@@ -2289,6 +2289,7 @@ export default connect(mapStateToProps, {
   getClientSelectList,
 })(reduxForm({
   form: 'AddPower',
+  validate: validateForm,
   enableReinitialize: true,
   touchOnChange: true,
   onSubmitFail: errors => {

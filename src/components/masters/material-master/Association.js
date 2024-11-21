@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
-import { searchableSelect } from '../../layout/FormInputs';
+import { searchableSelect, validateForm } from '../../layout/FormInputs';
 import Drawer from '@material-ui/core/Drawer';
 import { required } from '../../../helper';
 import { getRawMaterialNameChild, getMaterialTypeDataAPI, createAssociation, getRMGradeSelectListByRawMaterial, getMaterialTypeSelectList, getUnassociatedRawMaterail, clearGradeSelectList } from '../actions/Material';
@@ -314,6 +314,7 @@ export default connect(mapStateToProps, {
     clearGradeSelectList
 })(reduxForm({
     form: 'Association',
+    validate: validateForm,
     enableReinitialize: true,
     touchOnChange: true
 

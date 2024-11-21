@@ -18,7 +18,7 @@ const gridOptions = {};
 const CostingSummaryBulkUpload = () => {
     const dispatch = useDispatch();
     const costingBulkUploadList = useSelector(state => state.costing.costingBulkUploadList);
-    
+
 
     const [isLoading, setIsLoading] = useState(false);
     const [state, setState] = useState({
@@ -42,13 +42,13 @@ const CostingSummaryBulkUpload = () => {
     }, [dispatch]);
 
     const bulkToggle = () => {
-        
+
 
         setState(prev => ({ ...prev, showBulkUpload: true }));
     };
 
     const closeDrawer = useCallback(() => {
-        
+
 
         setState(prev => ({ ...prev, showBulkUpload: false }));
         dispatch(getCostingBulkUploadList(() => { }));
@@ -68,7 +68,7 @@ const CostingSummaryBulkUpload = () => {
         state.gridApi?.paginationSetPageSize(Number(newPageSize));
     }, [state.gridApi]);
 
-    const sendForApprovalOrReject =(id, flag) => {
+    const sendForApprovalOrReject = (id, flag) => {
         setIsLoading(true);
 
         const obj = {
@@ -87,7 +87,7 @@ const CostingSummaryBulkUpload = () => {
     }
 
     const buttonFormatter = (props) => {
-        
+
 
         const row = props?.data;
         const status = row.FileUploadStatus;
@@ -112,8 +112,8 @@ const CostingSummaryBulkUpload = () => {
                         onClick={() => sendForApprovalOrReject(props.value, false)}
                         type="button"
                     >
-                        
-                            {'Reject'
+
+                        {'Reject'
                         }
                     </Button>
                 </>
@@ -133,7 +133,7 @@ const CostingSummaryBulkUpload = () => {
     };
     const handleFormSubmit = (values) => {
         // Handle form submission
-        
+
     };
     const frameworkComponents = {
         totalValueRenderer: buttonFormatter

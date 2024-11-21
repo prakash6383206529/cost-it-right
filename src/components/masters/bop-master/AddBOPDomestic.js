@@ -6,7 +6,7 @@ import {
   required, checkForNull, number, checkForDecimalAndNull, acceptAllExceptSingleSpecialCharacter, maxLength20,
   maxLength, maxLength10, positiveAndDecimalNumber, maxLength512, maxLength80, checkWhiteSpaces, decimalLengthsix, checkSpacesInString, postiveNumber, hashValidation
 } from "../../../helper/validation";
-import { renderText, searchableSelect, renderTextAreaField, focusOnError, renderDatePicker, renderTextInputField } from "../../layout/FormInputs";
+import { renderText, searchableSelect, renderTextAreaField, focusOnError, renderDatePicker, renderTextInputField, validateForm } from "../../layout/FormInputs";
 import { getCityBySupplier, getPlantBySupplier, getUOMSelectList, getPlantSelectListByType, getAllCity, getVendorNameByVendorSelectList, getCityByCountryAction } from '../../../actions/Common';
 import { createBOP, updateBOP, getBOPCategorySelectList, getBOPDomesticById, fileUploadBOPDomestic, checkAndGetBopPartNo } from '../actions/BoughtOutParts';
 import Toaster from '../../common/Toaster';
@@ -2014,6 +2014,7 @@ export default connect(mapStateToProps, {
 })(reduxForm({
   form: 'AddBOPDomestic',
   touchOnChange: true,
+  validate: validateForm,
   onSubmitFail: (errors) => {
     focusOnError(errors)
   },

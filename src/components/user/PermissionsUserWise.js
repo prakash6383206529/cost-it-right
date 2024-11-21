@@ -3,7 +3,7 @@ import { Field, reduxForm } from "redux-form";
 import { connect } from "react-redux";
 import { Loader } from "../common/Loader";
 import { required } from "../../helper/validation";
-import { renderText, searchableSelect } from "../layout/FormInputs";
+import { renderText, searchableSelect, validateForm } from "../layout/FormInputs";
 import {
     getAllUserAPI, rolesSelectList, getModuleSelectList, getRolePermissionByUser, getPermissionByUser,
     setUserAdditionalPermission, getActionHeadsSelectList, revertDefaultPermission,
@@ -782,6 +782,7 @@ export default connect(mapStateToProps, {
     revertDefaultPermission,
 })(reduxForm({
     form: 'PermissionsUserWise',
+    validate: validateForm,
     enableReinitialize: true,
     touchOnChange: true
 })(PermissionsUserWise));

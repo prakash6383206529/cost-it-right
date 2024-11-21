@@ -6,7 +6,7 @@ import {
     required, upper, email, minLength7, maxLength70, maxLength80, minLength10, maxLength71, maxLength5, maxLength12, alphaNumeric, acceptAllExceptSingleSpecialCharacter,
     postiveNumber, maxLength6, checkWhiteSpaces, checkSpacesInString, number, hashValidation, getNameBySplitting, getCodeBySplitting
 } from "../../../helper/validation";
-import { renderText, renderEmailInputField, renderMultiSelectField, searchableSelect, focusOnError, renderTextInputField } from "../../layout/FormInputs";
+import { renderText, renderEmailInputField, renderMultiSelectField, searchableSelect, focusOnError, renderTextInputField, validateForm } from "../../layout/FormInputs";
 import { createSupplierAPI, updateSupplierAPI, getSupplierByIdAPI, getRadioButtonSupplierType, getVendorTypesSelectList, } from '../actions/Supplier';
 import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, getVendorPlantSelectList, getAllCities, getPlantSelectListByType, getCityByCountryAction } from '../../../actions/Common';
 import Toaster from '../../common/Toaster';
@@ -127,7 +127,7 @@ class AddVendorDrawer extends Component {
     getAllCityData = () => {
         const { country } = this.state;
         if (country && country.label !== 'India') {
-            this.props.getCityByCountryAction(country.value, '00000000000000000000000000000000','', () => { })
+            this.props.getCityByCountryAction(country.value, '00000000000000000000000000000000', '', () => { })
         } else {
             this.props.fetchStateDataAPI(country.value, () => { })
         }
@@ -1160,6 +1160,7 @@ export default connect(mapStateToProps, {
     getPlantSelectListByType
 })(reduxForm({
     form: 'AddVendorDrawer',
+    validate: validateForm,
     enableReinitialize: true,
     touchOnChange: true,
     onSubmitFail: (errors) => {
