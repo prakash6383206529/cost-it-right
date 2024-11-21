@@ -35,7 +35,8 @@ import { resetStatePagination, updateCurrentRowIndex, updatePageNumber } from '.
 import SendForApproval from '../../vendorManagement/approval/SendForApproval';
 import { useLabels } from '../../../helper/core';
 
-const gridOptions = {};
+const gridOptions = {
+};
 
 function CommonApproval(props) {
     const searchRef = useRef(null);
@@ -898,7 +899,7 @@ function CommonApproval(props) {
             </Row>
             <Row>
                 <Col>
-                    <div className={`ag-grid-react`} >
+                    <div className={`ag-grid-react rmapproval-table`} >
                         <div className={`ag-grid-wrapper height-width-wrapper min-height-auto ${(approvalList && approvalList?.length <= 0) || noData ? "overlay-contain p-relative" : ""}`}>
                             <div className="ag-grid-header">
                                 <input ref={searchRef} type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
@@ -946,11 +947,11 @@ function CommonApproval(props) {
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn field="DestinationPlantName" headerName='Plant (Code)'></AgGridColumn>}
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="140" field="UnitOfMeasurementName" headerName='UOM'></AgGridColumn>}
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="140" field="BasicRatePerUOM" headerName='Basic Rate'></AgGridColumn>}
-                                    {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="140" field="IsScrapUOMApply" headerName="Has different Scrap Rate UOM"></AgGridColumn>}
+                                    {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="200" field="IsScrapUOMApply" headerName="Has different Scrap Rate UOM"></AgGridColumn>}
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="140" field="ScrapUnitOfMeasurement" headerName="Scrap Rate UOM"></AgGridColumn>}
                                     {/* {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="140" field="UOMToScrapUOMRatio" headerName="UOM To Scrap UOM Ratio" cellRenderer={"hyphenFormatter"}></AgGridColumn>} */}
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="140" field="CalculatedFactor" headerName="Calculated Factor" cellRenderer={"hyphenFormatter"}></AgGridColumn>}
-                                    {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="140" field="ScrapRatePerScrapUOM" headerName='Scrap Rate (In Scrap Rate UOM)'></AgGridColumn>}
+                                    {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="200" field="ScrapRatePerScrapUOM" headerName='Scrap Rate (In Scrap Rate UOM)'></AgGridColumn>}
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="140" field="ScrapRate"></AgGridColumn>}
 
                                     {IsShowFreightAndShearingCostFields() && (props?.MasterId === RM_MASTER_ID && (<AgGridColumn width="155" field="RMFreightCost" headerName='FreightCost' cellRenderer='freightCostFormatter'></AgGridColumn>))}

@@ -1264,7 +1264,7 @@ function AddBudget(props) {
                                                                     mandatory={false}
                                                                     disabled={true}
                                                                     className=" "
-                                                                    customClassName=" withBorder"
+                                                                    customClassName=" withBorder mb-1"
                                                                     handleChange={() => { }}
                                                                     errors={errors.plantCurrency}
                                                                 />
@@ -1375,6 +1375,7 @@ function AddBudget(props) {
                                                                     required={budgetedEntryType ? true : false}
                                                                     handleChange={handleCurrencyChange}
                                                                     disabled={disableCurrency || isViewMode ? true : false}
+                                                                    customClassName="mb-1"
                                                                 />
                                                                 {currency?.label && showWarning && <WarningMessage dClass="mt-1" message={`${currency?.label} rate is not present in the Exchange Master`} />}
 

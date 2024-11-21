@@ -139,7 +139,7 @@ class AddMachineRate extends Component {
       showPlantWarning: false,
       UOM: [],
       resetProcessGroup: false,
-      disableEffectiveDate:false
+      disableEffectiveDate: false
     }
     this.state = { ...this.initialState };
 
@@ -239,8 +239,8 @@ class AddMachineRate extends Component {
   callExchangeRateAPI = (costingTypeId, plantCurrency, currency, isImport, ExchangeSource, effectiveDate, client, vendorName, selectedPlants) => {
     const { fieldsObj } = this.props;
 
-    const vendorValue = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId ) ? vendorName.value : EMPTY_GUID) : EMPTY_GUID;
-    const costingType = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId ) ? VBCTypeId : costingTypeId) : ZBCTypeId;
+    const vendorValue = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId) ? vendorName.value : EMPTY_GUID) : EMPTY_GUID;
+    const costingType = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId) ? VBCTypeId : costingTypeId) : ZBCTypeId;
     const fromCurrency = isImport ? currency?.label : plantCurrency;
     const toCurrency = reactLocalStorage.getObject("baseCurrency");
     const hasCurrencyAndDate = Boolean(plantCurrency && effectiveDate);
@@ -1051,7 +1051,7 @@ class AddMachineRate extends Component {
         processName: [],
         UOM: isProcessGroup ? UOM : [],
         lockUOMAndRate: isProcessGroup,
-        disableEffectiveDate:true
+        disableEffectiveDate: true
       }, () => this.props.change('MachineRate', isProcessGroup ? MachineRate : ''));
       this.setState({ DropdownChange: false, errorObj: { processName: false, processUOM: false, machineRate: false, machineRatePlantCurrency: false } })
     }, 200);
@@ -1185,16 +1185,16 @@ class AddMachineRate extends Component {
     } else {
       this.setState({ lockUOMAndRate: isProcessGroup })
     }
-    if(tempData&&tempData?.length === 0){
-    this.setState({disableEffectiveDate:false})
-  }
+    if (tempData && tempData?.length === 0) {
+      this.setState({ disableEffectiveDate: false })
+    }
     this.setState({
       processGrid: tempData,
       UOM: tempData.length === 0 ? [] : !this.state.lockUOMAndRate ? [] : UOM,
       isEditIndex: false,
       processName: [],
     }, () =>
-       this.props.change('MachineRate', ''))
+      this.props.change('MachineRate', ''))
     this.setState({ DropdownChange: false })
   }
 
@@ -1804,9 +1804,11 @@ class AddMachineRate extends Component {
     const settlementCurrencyRate = settlementCurrency ?? '-';
 
     // Generate tooltip text based on the condition
-    return `${!this.state.hidePlantCurrency
-      ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrencyLabel}, `
-      : ''}Exchange Rate: 1 ${currencyLabel} = ${settlementCurrencyRate} ${baseCurrency}`;
+    return <>
+      {!this.state?.hidePlantCurrency
+        ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrency}, `
+        : ''}<p>Exchange Rate: 1 {currencyLabel} = {settlementCurrencyRate} {baseCurrency}</p>
+    </>;
   };
   /**
   * @method render
@@ -2145,7 +2147,7 @@ class AddMachineRate extends Component {
                           />
                         </Col>
                         <Col Col md="3" className='p-relative'>
-                          {this.props.fieldsObj?.plantCurrency && !this.state.hidePlantCurrency && !this.state.isImport && <TooltipCustom id="plantCurrency" tooltipText={`Exchange Rate: 1 ${this.props.fieldsObj?.plantCurrency} = ${this.state?.plantCurrency ?? '-'} ${reactLocalStorage.getObject("baseCurrency")}`} />}
+                          {this.props.fieldsObj?.plantCurrency && !this.state.hidePlantCurrency && !this.state.isImport && <TooltipCustom width="350px" id="plantCurrency" tooltipText={`Exchange Rate: 1 ${this.props.fieldsObj?.plantCurrency} = ${this.state?.plantCurrency ?? '-'} ${reactLocalStorage.getObject("baseCurrency")}`} />}
                           <Field
                             label="Plant Currency"
                             name="plantCurrency"
@@ -2154,7 +2156,7 @@ class AddMachineRate extends Component {
                             component={renderText}
                             disabled={true}
                             className=" "
-                            customClassName="withBorder"
+                            customClassName="withBorder mb-1"
                           />
                           {this.state.showPlantWarning && <WarningMessage dClass="mt-1" message={`${this.props.fieldsObj.plantCurrency} rate is not present in the Exchange Master`} />}
                         </Col>
@@ -2179,6 +2181,7 @@ class AddMachineRate extends Component {
                             handleChangeDescription={this.handleCurrency}
                             valueDescription={this.state.currency}
                             disabled={isEditFlag ? true : false || isViewMode || isViewFlag}
+                            customClassName="mb-1"
                           >
                             {this.state?.currency?.label && this.state?.showWarning && <WarningMessage dClass="mt-1" message={`${this.state?.currency?.label} rate is not present in the Exchange Master`} />}
                           </Field>
@@ -2202,7 +2205,7 @@ class AddMachineRate extends Component {
                                 component={renderDatePicker}
                                 placeholder={isViewMode || !this.state.IsFinancialDataChanged ? '-' : "Enter"}
                                 className="form-control"
-                                disabled={isViewMode || !this.state.IsFinancialDataChanged || (isEditFlag && IsDetailedEntry)||this.state.disableEffectiveDate}
+                                disabled={isViewMode || !this.state.IsFinancialDataChanged || (isEditFlag && IsDetailedEntry) || this.state.disableEffectiveDate}
                               />
                             </div>
                           </div>
