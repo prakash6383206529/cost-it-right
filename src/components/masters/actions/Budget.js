@@ -38,7 +38,9 @@ export function getBudgetDataList(skip, take, isPagination, obj, callback) {
             partType: obj?.PartType,
             IsCustomerDataShow: obj?.IsCustomerDataShow,
             IsVendorDataShow: obj?.IsVendorDataShow,
-            IsZeroDataShow: obj?.IsZeroDataShow
+            IsZeroDataShow: obj?.IsZeroDataShow,
+            ExchangeRateSourceName: obj?.ExchangeRateSourceName,
+            Currency: obj?.Currency
         });
         // const QueryParams = `costingHead=${obj.CostingHead !== undefined ? obj.CostingHead : ""}&financialYear=${obj.FinancialYear !== undefined ? obj.FinancialYear : ""}&netPoPrice=${obj.NetPoPrice !== undefined ? obj.NetPoPrice : ""}&budgetedPoPrice	=${obj.BudgetedPoPrice !== undefined ? obj.BudgetedPoPrice : ""}&partName=${obj.PartName !== undefined ? obj.PartName : ""}&partNumber=${obj.partNoWithRevNo !== undefined ? obj.partNoWithRevNo : ""}&plantName=${obj.plantNameWithCode !== undefined ? obj.plantNameWithCode : ""}&plantCode=${obj.PlantCode !== undefined ? obj.PlantCode : ""}&vendorName=${obj.vendorNameWithCode !== undefined ? obj.vendorNameWithCode : ""}&vendorCode=${obj.VendorCode !== undefined ? obj.VendorCode : ""}&applyPagination=${isPagination !== undefined ? isPagination : ""}&skip=${skip !== undefined ? skip : ""}&take=${take !== undefined ? take : ""}&customerName=${obj.customerNameWithCode !== undefined ? obj.customerNameWithCode : ''}&PartId=${obj.PartId !== undefined ? obj.PartId : ""}&partType=${obj?.PartType !== undefined ? obj?.PartType : ""}&IsCustomerDataShow=${obj?.IsCustomerDataShow}&IsVendorDataShow=${obj?.IsVendorDataShow}&IsZeroDataShow=${obj?.IsZeroDataShow}`
         axios.get(`${API.getBudgetDataList}?${QueryParams}`, config())

@@ -5811,8 +5811,10 @@ export const FREIGHT_DOWNLOAD_EXCEl = [
     { label: "Mode", value: "Mode", },
     { label: "Vendor (Code)", value: "VendorName", },
     { label: "Customer (Code)", value: "CustomerName", },
-    { label: "Source City", value: "SourceCity", },
-    { label: "Destination City", value: "DestinationCity", },
+    // { label: "Source City", value: "SourceCity", },
+    // { label: "Destination City", value: "DestinationCity", },
+    { label: "Exchange Rate Source", value: "ExchangeRateSourceName", },
+    { label: "Currency", value: "Currency", },
 ]
 
 export const FUELLISTING_DOWNLOAD_EXCEl = [
@@ -6178,6 +6180,8 @@ export const BUDGET_DOWNLOAD_EXCEl = [
     { label: "Part Type", value: "PartType", },
     { label: "Part No. (Revision No.)", value: "partNoWithRevNo" },
     { label: "Financial Year", value: "FinancialYear", },
+    { label: "Exchange Rate Source", value: "ExchangeRateSourceName", },
+    { label: "Currency", value: "Currency", },
     { label: "Net Cost", value: "NetPoPrice" },
     { label: "Budgeted Net Cost", value: "BudgetedPoPrice" },
 ]
