@@ -15,7 +15,7 @@ import { POWERLISTING_DOWNLOAD_EXCEl } from "../../../config/masterData";
 import { AgGridColumn, AgGridReact } from "ag-grid-react";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
-import { loggedInUserId, searchNocontentFilter } from "../../../helper";
+import { getConfigurationKey, loggedInUserId, searchNocontentFilter } from "../../../helper";
 import PopupMsgWrapper from "../../common/PopupMsgWrapper";
 import { PaginationWrapper } from "../../common/commonPagination";
 import { reactLocalStorage } from "reactjs-localstorage";
@@ -231,7 +231,13 @@ const PowerListing = (props) => {
     let tempArr = [];
     tempArr = state.gridApi && state.gridApi?.getSelectedRows();
     tempArr = tempArr && tempArr.length > 0 ? tempArr : powerDataList ? powerDataList : [];
-    return returnExcelColumn(POWERLISTING_DOWNLOAD_EXCEl_LOCALIZATION, tempArr);
+    const filteredLabels = POWERLISTING_DOWNLOAD_EXCEl_LOCALIZATION.filter(column => {
+      if (column.value === "ExchangeRateSourceName") {
+        return getConfigurationKey().IsSourceExchangeRateNameVisible
+      }
+      return true;
+    })
+    return returnExcelColumn(filteredLabels, tempArr);
   };
 
   const onFilterTextBoxChanged = (e) => {
@@ -392,6 +398,8 @@ const PowerListing = (props) => {
                 <AgGridColumn field="PlantWithCode" headerName="Plant (Code)" ></AgGridColumn>
                 <AgGridColumn field="VendorWithCode" headerName={`${vendorLabel} (Code)`}></AgGridColumn>
                 {(reactLocalStorage.getObject('CostingTypePermission').cbc) && <AgGridColumn field="CustomerWithCode" headerName="Customer (Code)"></AgGridColumn>}
+                {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                <AgGridColumn field="Currency" headerName="Currency"></AgGridColumn>
                 <AgGridColumn field="NetPowerCostPerUnit" cellRenderer={"costFormatter"}></AgGridColumn>
                 <AgGridColumn field="EffectiveDate" cellRenderer="effectiveDateFormatter" filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                 <AgGridColumn field="PowerId" cellClass="ag-grid-action-container" headerName="Action" pinned="right" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"}></AgGridColumn>

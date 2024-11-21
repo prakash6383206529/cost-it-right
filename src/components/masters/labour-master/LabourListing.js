@@ -21,7 +21,7 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { filterParams } from '../../common/DateFilter'
 import ScrollToTop from '../../common/ScrollToTop';
 import { PaginationWrapper } from '../../common/commonPagination';
-import { loggedInUserId } from '../../../helper';
+import { getConfigurationKey, loggedInUserId } from '../../../helper';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { checkMasterCreateByCostingPermission } from '../../common/CommonFunctions';
 import Button from '../../layout/Button';
@@ -281,7 +281,13 @@ function LabourListing(props) {
     let tempArr = []
     tempArr = state.gridApi && state.gridApi?.getSelectedRows()
     tempArr = (tempArr && tempArr.length > 0) ? tempArr : (labourDataList ? labourDataList : [])
-    return returnExcelColumn(LABOUR_DOWNLOAD_EXCEl, tempArr)
+    const filteredLabels = LABOUR_DOWNLOAD_EXCEl.filter(column => {
+      if (column.value === "ExchangeRateSourceName") {
+        return getConfigurationKey().IsSourceExchangeRateNameVisible
+      }
+      return true;
+    })
+    return returnExcelColumn(filteredLabels, tempArr)
   };
   const handleShown = () => {
     setState((prevState) => ({ ...prevState, shown: !state.shown }))
@@ -433,6 +439,8 @@ function LabourListing(props) {
               <AgGridColumn field="State" headerName="State"></AgGridColumn>
               <AgGridColumn field="MachineType" headerName="Machine Type"></AgGridColumn>
               <AgGridColumn field="LabourType" headerName="Labour Type"></AgGridColumn>
+              {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+
               <AgGridColumn width={205} field="LabourRate" headerName="Rate per Person/Annum" cellRenderer={'commonCostFormatter'}></AgGridColumn>
               <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
               <AgGridColumn field="LabourId" width={150} cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>

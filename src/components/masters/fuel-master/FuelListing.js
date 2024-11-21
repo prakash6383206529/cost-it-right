@@ -203,8 +203,13 @@ const FuelListing = (props) => {
     let tempArr = [];
     tempArr = state.gridApi && state.gridApi?.getSelectedRows();
     tempArr = tempArr && tempArr.length > 0 ? tempArr : fuelDataList ? fuelDataList : [];
-
-    return returnExcelColumn(FUELLISTING_DOWNLOAD_EXCEl_LOCALIZATION, tempArr);
+    const filteredLabels = FUELLISTING_DOWNLOAD_EXCEl_LOCALIZATION.filter(column => {
+      if (column.value === "ExchangeRateSourceName") {
+        return getConfigurationKey().IsSourceExchangeRateNameVisible
+      }
+      return true;
+    })
+    return returnExcelColumn(filteredLabels, tempArr);
   };
 
   const onFilterTextBoxChanged = (e) => {

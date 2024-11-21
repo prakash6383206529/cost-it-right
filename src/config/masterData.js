@@ -5819,6 +5819,8 @@ export const FUELLISTING_DOWNLOAD_EXCEl = [
     { label: "Fuel", value: "FuelName", },
     { label: "UOM", value: "UnitOfMeasurementName", },
     { label: "State", value: "StateName", },
+    { label: "Exchange Rate Source", value: "ExchangeRateSourceName", },
+    { label: "Currency", value: "Currency", },
     { label: `Rate (${reactLocalStorage.getObject("baseCurrency")})`, value: "Rate", },
     { label: "Plant (Code)", value: "PlantWithCode", },
     { label: "Vendor (Code)", value: "VendorWithCode", },
@@ -5832,6 +5834,8 @@ export const POWERLISTING_DOWNLOAD_EXCEl = [
     { label: "Plant (Code)", value: "PlantWithCode", },
     { label: "Vendor (Code)", value: "VendorWithCode" },
     { label: "Customer (Code)", value: "CustomerWithCode", },
+    { label: "Exchange Rate Source", value: "ExchangeRateSourceName", },
+    { label: "Currency", value: "Currency", },
     { label: "Net Power Cost per Unit", value: "NetPowerCostPerUnit", },
     { label: "Effective Date", value: "EffectiveDate" }
 ]
@@ -5858,6 +5862,7 @@ export const LABOUR_DOWNLOAD_EXCEl = [
     { label: "State", value: "State", },
     { label: "Machine Type", value: "MachineType", },
     { label: "Labour Type", value: "LabourType", },
+    { label: "Exchange Rate Source", value: "ExchangeRateSourceName", },
     { label: "Rate per Person/Annum", value: "LabourRate", },
     { label: "Effective Date", value: "EffectiveDate", }
 ]
