@@ -36,7 +36,6 @@ import SendForApproval from '../../vendorManagement/approval/SendForApproval';
 import { useLabels } from '../../../helper/core';
 
 const gridOptions = {
-    headerHeight: 100, // Adjust as needed
 };
 
 function CommonApproval(props) {
@@ -948,11 +947,11 @@ function CommonApproval(props) {
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn field="DestinationPlantName" headerName='Plant (Code)'></AgGridColumn>}
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="140" field="UnitOfMeasurementName" headerName='UOM'></AgGridColumn>}
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="140" field="BasicRatePerUOM" headerName='Basic Rate'></AgGridColumn>}
-                                    {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="140" field="IsScrapUOMApply" headerName="Has different Scrap Rate UOM"></AgGridColumn>}
+                                    {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="200" field="IsScrapUOMApply" headerName="Has different Scrap Rate UOM"></AgGridColumn>}
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="140" field="ScrapUnitOfMeasurement" headerName="Scrap Rate UOM"></AgGridColumn>}
                                     {/* {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="140" field="UOMToScrapUOMRatio" headerName="UOM To Scrap UOM Ratio" cellRenderer={"hyphenFormatter"}></AgGridColumn>} */}
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="140" field="CalculatedFactor" headerName="Calculated Factor" cellRenderer={"hyphenFormatter"}></AgGridColumn>}
-                                    {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="140" field="ScrapRatePerScrapUOM" headerName='Scrap Rate (In Scrap Rate UOM)'></AgGridColumn>}
+                                    {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="200" field="ScrapRatePerScrapUOM" headerName='Scrap Rate (In Scrap Rate UOM)'></AgGridColumn>}
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="140" field="ScrapRate"></AgGridColumn>}
 
                                     {IsShowFreightAndShearingCostFields() && (props?.MasterId === RM_MASTER_ID && (<AgGridColumn width="155" field="RMFreightCost" headerName='FreightCost' cellRenderer='freightCostFormatter'></AgGridColumn>))}
