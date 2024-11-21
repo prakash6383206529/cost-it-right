@@ -9084,6 +9084,12 @@ iframe {
 .mh-inherit {
   min-height: inherit !important;
 }
-#addRMDomestic_RMToggle.plus-icon-square,#addRMDomestic_vendorToggle.plus-icon-square {
+#addRMDomestic_RMToggle.plus-icon-square,
+#addRMDomestic_vendorToggle.plus-icon-square {
   margin-top: 15px;
+}
+
+.pa-1 {
+  position: absolute;
+  top: 115px;
 }

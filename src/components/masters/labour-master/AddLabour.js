@@ -1309,7 +1309,7 @@ class AddLabour extends Component {
                           component={renderTextInputField}
                           disabled={true}
                           className=" "
-                          customClassName="withBorder"
+                          customClassName="withBorder mb-1"
                         />
                         {this.state.showPlantWarning && <WarningMessage dClass="mt-1" message={`${this.props.fieldsObj.plantCurrency} rate is not present in the Exchange Master`} />}
 

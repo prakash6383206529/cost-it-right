@@ -162,7 +162,7 @@ function AddRMFinancialDetails(props) {
                 if (Data?.Currency !== reactLocalStorage?.getObject("baseCurrency")) {
                     setState(prevState => ({ ...prevState, hidePlantCurrency: false }));
                 } else {
-                    setState(prevState => ({ ...prevState, hidePlantCurrency: true,showPlantWarning: false }));
+                    setState(prevState => ({ ...prevState, hidePlantCurrency: true, showPlantWarning: false }));
                 }
                 const { costingTypeId } = states;
                 let fromCurrency = states.isImport ? state.currency?.label : Data?.Currency
@@ -346,29 +346,29 @@ function AddRMFinancialDetails(props) {
 
     const handleApplicability = (value, basicPriceBaseCurrency, arr, costField, headerName) => {
         if (!value) return 0;
-        
+
         const selectedApplicabilities = value?.split(' + ');
-        
+
         // Calculate total cost currency for selected applicabilities
         const total = selectedApplicabilities.reduce((acc, applicability) => {
             const trimmedApplicability = applicability.trim();
-            
+
             // If applicability is "Basic Rate", return basic price
             if (trimmedApplicability === "Basic Rate") {
                 // Convert to number
                 return Number(acc) + Number(basicPriceBaseCurrency);
             }
-            
+
             // Find matching cost item
             const item = arr?.find(item => item?.[headerName]?.trim() === trimmedApplicability);
             if (item) {
                 // Convert both acc and cost to numbers before adding
                 return Number(acc) + Number(item?.[costField] || 0);
             }
-            
+
             return Number(acc);
         }, 0);
-    
+
         return total;
     }
     // const recalculateConditions = (basicPriceBaseCurrency) => {
@@ -436,7 +436,7 @@ function AddRMFinancialDetails(props) {
     //     });
     //     return tempArr;
     // };
-   
+
     const allFieldsInfoIcon = (scrapLabel) => {
         const { currency, currencyValue } = state
         let obj = {
@@ -480,7 +480,7 @@ function AddRMFinancialDetails(props) {
         if (costingTypeId === ZBCTypeId) {
             basicPriceBaseCurrency = basicPriceCurrencyTemp
         }
-        let conditionList = recalculateConditions( basicPriceBaseCurrency, state)
+        let conditionList = recalculateConditions(basicPriceBaseCurrency, state)
 
         const sumBaseCurrency = conditionList?.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCostPerQuantity), 0);
         let NetLandedCost = checkForNull(sumBaseCurrency) + checkForNull(basicPriceCurrencyTemp)
@@ -940,23 +940,23 @@ function AddRMFinancialDetails(props) {
     //     const table = isConditionCost 
     //         ? recalculateConditions(state.NetCostWithoutConditionCost)
     //         : recalculateOtherCost(getValues('BasicRate'))
-        
+
     //     // Calculate sum
     //     const costField = isConditionCost ? 'ConditionCostPerQuantity' : 'NetCost'
     //     const sum = table?.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj[costField]), 0)
-    
+
     //     // Update state and form
     //     const stateKey = isConditionCost ? 'conditionTableData' : 'otherCostTableData'
     //     const formField = isConditionCost ? 'FinalConditionCost' : 'OtherCost'
     //     const costKey = isConditionCost ? 'NetConditionCost' : 'totalOtherCost'
-    
+
     //     setState({
     //         ...state,
     //         [costKey]: sum,
     //         [stateKey]: table
     //     })
     //     setValue(formField, checkForDecimalAndNull(sum, getConfigurationKey().NoOfDecimalForPrice))
-    
+
     //     // Dispatch appropriate action
     //     isConditionCost
     //         ? dispatch(setRawMaterialDetails({ ...rawMaterailDetailsRefFinancial.current, states: { ...state, [costKey]: sum, [stateKey]: table } }, () => {}))
@@ -964,19 +964,19 @@ function AddRMFinancialDetails(props) {
     // }
     const updateTableCost = (isConditionCost = false) => {
         const result = updateCostValue(isConditionCost, state, setValue, getValues);
-        
+
         // Update state
         setState(result.updatedState);
-        
+
         // Update form value
         setValue(result.formValue.field, result.formValue.value);
-        
+
         // Dispatch appropriate action
         if (isConditionCost) {
-            dispatch(setRawMaterialDetails({ 
-                ...rawMaterailDetailsRefFinancial.current, 
-                states: result.updatedState 
-            }, () => {}));
+            dispatch(setRawMaterialDetails({
+                ...rawMaterailDetailsRefFinancial.current,
+                states: result.updatedState
+            }, () => { }));
         } else {
             dispatch(setOtherCostDetails(result.tableData));
         }
@@ -1000,9 +1000,11 @@ function AddRMFinancialDetails(props) {
         const settlementCurrencyRate = CurrencyExchangeRate?.settlementCurrencyRate ?? '-';
 
         // Generate tooltip text based on the condition
-        return `${!state.hidePlantCurrency
-            ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrency}, `
-            : ''}Exchange Rate: 1 ${currencyLabel} = ${settlementCurrencyRate} ${baseCurrency}`;
+        return <>
+            {!this?.state?.hidePlantCurrency
+                ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrency},`
+                : ''}<p>Exchange Rate: 1 {currencyLabel} = {settlementCurrencyRate} {baseCurrency}</p>
+        </>;
     };
     return (
         <Fragment>
@@ -1194,7 +1196,7 @@ function AddRMFinancialDetails(props) {
                         </Col>
 
                         {states.isImport && <Col className="col-md-15">
-                            <TooltipCustom id="currency" tooltipText={getTooltipTextForCurrency()} />
+                            <TooltipCustom id="currency" width="350px" tooltipText={getTooltipTextForCurrency()} />
                             <SearchableSelectHookForm
                                 name="currency"
                                 label="Currency"
@@ -1211,11 +1213,12 @@ function AddRMFinancialDetails(props) {
                                 options={renderListing("currency")}
                                 handleChange={handleCurrency}
                                 disabled={disableAll || isEditFlag || isViewFlag}
+                                customClassName="mb-1"
                             />
                             {state.showWarning && <WarningMessage dClass="mt-1" message={`${state.currency?.label} rate is not present in the Exchange Master`} />}
                         </Col>}
                         <Col className="col-md-15">
-                            {getValues('plantCurrency') && !state.hidePlantCurrency && !states.isImport && <TooltipCustom id="plantCurrency" tooltipText={`Exchange Rate: 1 ${getValues('plantCurrency')} = ${CurrencyExchangeRate?.plantCurrencyRate ?? '-'} ${reactLocalStorage.getObject("baseCurrency")}`} />}
+                            {getValues('plantCurrency') && !state.hidePlantCurrency && !states.isImport && <TooltipCustom id="plantCurrency" width="350px" tooltipText={`Exchange Rate: 1 ${getValues('plantCurrency')} = ${CurrencyExchangeRate?.plantCurrencyRate ?? '-'} ${reactLocalStorage.getObject("baseCurrency")}`} />}
                             <TextFieldHookForm
                                 name="plantCurrency"
                                 label="Plant Currency"
@@ -1231,7 +1234,7 @@ function AddRMFinancialDetails(props) {
                                 mandatory={false}
                                 disabled={true}
                                 className=" "
-                                customClassName=" withBorder"
+                                customClassName=" withBorder mb-1"
                                 handleChange={() => { }}
                                 errors={errors.plantCurrency}
                             />
@@ -1559,19 +1562,19 @@ function AddRMFinancialDetails(props) {
                                         />
                                     </div>
                                     <div className="d-flex align-items-center mt-1">
-                                            <button type="button" id="other-cost-refresh" className={'refresh-icon mt-1 ml-1'} onClick={() => updateTableCost(false)} disabled={isViewFlag}>
-                                                <TooltipCustom disabledIcon={true} id="other-cost-refresh" tooltipText="Refresh to update other cost" />
-                                            </button>
-                                            {<Button
-                                        id="addRMDomestic_otherToggle"
-                                        onClick={otherCostToggle}
-                                        className={"right mt-1 ml-1"}
-                                        variant={isViewFlag ? "view-icon-primary" : `${!getValues('BasicRate') ? 'blurPlus-icon-square' : 'plus-icon-square'}`}
-                                        title={isViewFlag ? "View" : "Add"}
-                                        disabled={!getValues('BasicRate')}
-                                    />}
-                                        </div>
-                                   
+                                        <button type="button" id="other-cost-refresh" className={'refresh-icon mt-1 ml-1'} onClick={() => updateTableCost(false)} disabled={isViewFlag}>
+                                            <TooltipCustom disabledIcon={true} id="other-cost-refresh" tooltipText="Refresh to update other cost" />
+                                        </button>
+                                        {<Button
+                                            id="addRMDomestic_otherToggle"
+                                            onClick={otherCostToggle}
+                                            className={"right mt-1 ml-1"}
+                                            variant={isViewFlag ? "view-icon-primary" : `${!getValues('BasicRate') ? 'blurPlus-icon-square' : 'plus-icon-square'}`}
+                                            title={isViewFlag ? "View" : "Add"}
+                                            disabled={!getValues('BasicRate')}
+                                        />}
+                                    </div>
+
                                 </div>
                             </Col>
                             {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && states.costingTypeId === ZBCTypeId && <>

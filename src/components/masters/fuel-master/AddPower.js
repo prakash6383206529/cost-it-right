@@ -2000,6 +2000,7 @@ class AddPower extends Component {
                             handleChangeDescription={this.handleCurrency}
                             valueDescription={this.state.currency}
                             disabled={isEditFlag ? true : false || isViewMode}
+                            customClassName="mb-1"
                           >
                             {this.state?.currency?.label && this.state?.showWarning && <WarningMessage dClass="mt-1" message={`${this.state?.currency?.label} rate is not present in the Exchange Master`} />}
                           </Field>
