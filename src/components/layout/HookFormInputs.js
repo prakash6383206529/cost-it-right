@@ -6,6 +6,7 @@ import LoaderCustom from "../common/LoaderCustom";
 import { SPACEBAR } from "../../config/constants";
 import DatePicker, { ReactDatePicker } from 'react-datepicker'
 import Popup from "reactjs-popup";
+import { validateSpecialChars } from "../../helper";
 
 export const TextFieldHooks = (input) => {
 
@@ -13,6 +14,13 @@ export const TextFieldHooks = (input) => {
   const isDisabled = disabled === true ? true : false;
   const className = `form-group inputbox ${input.customClassName ? input.customClassName : ""}`;
   const InputClassName = `form-control ${input.className ? input.className : ""}`;
+  const combinedRules = {
+    ...rules,
+    validate: {
+      ...rules?.validate,
+      specialCharCheck: (value) => validateSpecialChars(value),
+    },
+  };
   return (
     <>
       <div className={className}>
@@ -27,7 +35,7 @@ export const TextFieldHooks = (input) => {
           className={InputClassName}
           disabled={isDisabled}
           value={value}
-          rules={rules}
+          rules={combinedRules}
           {...inputProps}
           autoComplete={'off'}
         />
@@ -60,6 +68,15 @@ export const TextFieldHookForm = (field) => {
   let isLoader = (isLoading && isLoading?.isLoader === true) ? true : false;
   let loaderClass = isLoading && isLoading?.isLoader ? isLoading?.loaderClass !== undefined ? isLoading?.loaderClass : '' : '';
   let containerId = `${name}_container`;
+
+  const combinedRules = {
+    ...rules,
+    validate: {
+      ...rules?.validate,
+      specialCharCheck: (value) => validateSpecialChars(value),
+    },
+  };
+
   return (
     <>
       <div className={className}>
@@ -74,7 +91,7 @@ export const TextFieldHookForm = (field) => {
           <Controller
             name={name}
             control={control}
-            rules={rules}
+            rules={combinedRules}
             // ref={reg}
             {...register}
             defaultValue={defaultValue}
@@ -433,6 +450,13 @@ export const TextAreaHookForm = (field) => {
   const isDisabled = field.disabled === true ? true : false;
   let minHeight = rowHeight ? rowHeight : 4
   let containerId = `${name}_container`;
+  const combinedRules = {
+    ...rules,
+    validate: {
+      ...rules?.validate,
+      specialCharCheck: (value) => validateSpecialChars(value),
+    },
+  };
   return (
     <>
       <div className={className} id={containerId}>
@@ -443,7 +467,7 @@ export const TextAreaHookForm = (field) => {
         <Controller
           name={name}
           control={control}
-          rules={rules}
+          rules={combinedRules}
           {...register}
           defaultValue={defaultValue}
           render={({ field: { onChange, onBlur, value, name } }) => {

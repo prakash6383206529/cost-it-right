@@ -17,6 +17,7 @@ import { MESSAGES } from "../../config/message";
 import TourWrapper from "../common/Tour/TourWrapper";
 import { Steps } from "./TourMessages";
 import { useTranslation } from "react-i18next";
+import { validateForm } from "../layout/FormInputs";
 
 
 function Dashboard(props) {
@@ -274,6 +275,7 @@ export default connect(mapStateToProps, {
   getMenuByUser,
 })(reduxForm({
   form: 'Dashboard',
+  validate: validateForm,
   enableReinitialize: true,
   touchOnChange: true
 })(Dashboard));

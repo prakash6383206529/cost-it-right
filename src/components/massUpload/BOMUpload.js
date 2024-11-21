@@ -19,6 +19,7 @@ import PopupMsgWrapper from '../common/PopupMsgWrapper';
 import { MESSAGES } from '../../config/message';
 import { localizeHeadersWithLabels } from '../../helper/core';
 import { withTranslation } from 'react-i18next';
+import { validateForm } from '../layout/FormInputs';
 
 class BOMUploadDrawer extends Component {
   constructor(props) {
@@ -37,7 +38,7 @@ class BOMUploadDrawer extends Component {
     this.localizeHeaders = this.localizeHeaders.bind(this);
 
   }
-  
+
 
   localizeHeaders(headers) {
     return localizeHeadersWithLabels(headers, this.props.t);
@@ -70,7 +71,7 @@ class BOMUploadDrawer extends Component {
   getValueFromMasterData(keyName, masterDataArray) {
     const matchingItem = masterDataArray.find(item => item.label === keyName);
     return matchingItem ? matchingItem.value : keyName;
-}
+  }
   /**
    * @method fileChangedHandler
    * @description called for profile pic change
@@ -208,10 +209,10 @@ class BOMUploadDrawer extends Component {
   closePopUp = () => {
     this.setState({ showPopup: false })
   }
-     getValueFromMasterData(keyName, masterDataArray) {
-        const matchingItem = masterDataArray.find(item => item.label === keyName);
-        return matchingItem ? matchingItem.value : keyName;
-    }
+  getValueFromMasterData(keyName, masterDataArray) {
+    const matchingItem = masterDataArray.find(item => item.label === keyName);
+    return matchingItem ? matchingItem.value : keyName;
+  }
   /**
   * @method render
   * @description Renders the component
@@ -323,6 +324,7 @@ export default connect(mapStateToProps, {
   BOMUploadPart,
 })(reduxForm({
   form: 'BOMUpload',
+  validate: validateForm,
   enableReinitialize: true,
   touchOnChange: true
 })(withTranslation('MasterLabels')(BOMUploadDrawer)));
