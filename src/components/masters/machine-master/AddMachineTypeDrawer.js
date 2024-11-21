@@ -4,7 +4,7 @@ import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
 import { getLabourTypeByMachineTypeSelectList, getLabourTypeDetailsForMachineType, updateLabourTypeForMachineType } from '../actions/Labour'
 import { required, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, hashValidation } from "../../../helper/validation";
-import { renderText, renderMultiSelectField, } from "../../layout/FormInputs";
+import { renderText, renderMultiSelectField, validateForm, } from "../../layout/FormInputs";
 import { createMachineType } from '../actions/MachineMaster';
 import { getLabourTypeSelectList } from '../../../actions/Common';
 import Toaster from '../../common/Toaster';
@@ -307,6 +307,7 @@ export default connect(mapStateToProps, {
   updateLabourTypeForMachineType
 })(reduxForm({
   form: 'AddMachineTypeDrawer',
+  validate: validateForm,
   enableReinitialize: true,
   touchOnChange: true
 })(AddMachineTypeDrawer));

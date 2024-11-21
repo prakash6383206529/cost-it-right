@@ -4,7 +4,7 @@ import { Field, reduxForm } from "redux-form";
 import { Row, Col } from 'reactstrap';
 import { required, checkWhiteSpaces, alphaNumeric, acceptAllExceptSingleSpecialCharacter, maxLength20, maxLength80, maxLength512 } from "../../../helper/validation";
 import { getConfigurationKey, loggedInUserId } from "../../../helper/auth";
-import { renderDatePicker, renderText, renderTextAreaField, } from "../../layout/FormInputs";
+import { renderDatePicker, renderText, renderTextAreaField, validateForm, } from "../../layout/FormInputs";
 import { createPart, updatePart, getPartData, fileUploadPart, fileDeletePart, } from '../actions/Part';
 import { getPlantSelectList, } from '../../../actions/Common';
 import Toaster from '../../common/Toaster';
@@ -701,5 +701,6 @@ export default connect(mapStateToProps, {
   fileDeletePart,
 })(reduxForm({
   form: 'AddIndivisualProduct',
+  validate: validateForm,
   enableReinitialize: true,
 })(AddIndivisualProduct));

@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import { Field, clearFields, reduxForm } from 'redux-form'
 import { Row, Col, Label, Tooltip } from 'reactstrap'
 import { required } from '../../../helper/validation'
-import { searchableSelect } from '../../layout/FormInputs'
+import { searchableSelect, validateForm } from '../../layout/FormInputs'
 import { createVolume, updateVolume, getVolumeData, getFinancialYearSelectList, getPartSelectListWtihRevNo, } from '../actions/Volume'
 import { getPlantSelectListByType, getPlantBySupplier, getVendorNameByVendorSelectList } from '../../../actions/Common'
 import { getPartSelectList } from '../actions/Part'
@@ -1255,6 +1255,7 @@ export default connect(mapStateToProps, {
 })(
   reduxForm({
     form: 'AddVolume',
+    validate: validateForm,
     enableReinitialize: true,
     touchOnChange: true
   })(withTranslation(['VolumeMaster', 'MasterLabels'])(AddVolume)),

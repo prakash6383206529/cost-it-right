@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector, clearFields } from "redux-form";
 import { Row, Col, Label } from 'reactstrap';
 import { required, getCodeBySplitting, number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation, maxLength512, acceptAllExceptSingleSpecialCharacter } from "../../../helper/validation";
-import { searchableSelect, renderTextAreaField, renderDatePicker, renderMultiSelectField, renderText } from "../../layout/FormInputs";
+import { searchableSelect, renderTextAreaField, renderDatePicker, renderMultiSelectField, renderText, validateForm } from "../../layout/FormInputs";
 import { fetchCostingHeadsAPI, getPlantSelectListByType, getVendorNameByVendorSelectList } from '../../../actions/Common';
 import {
   createOverhead, updateOverhead, getOverheadData, fileUploadOverHead,
@@ -1506,6 +1506,7 @@ export default connect(mapStateToProps, {
   getRMGradeSelectListByRawMaterial
 })(reduxForm({
   form: 'AddOverhead',
+  validate: validateForm,
   enableReinitialize: true,
 })(withTranslation(['OverheadsProfits', 'MasterLabels'])(AddOverhead)),
 )
