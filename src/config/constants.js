@@ -1219,6 +1219,8 @@ export const API = {
   rfqSaveBestCosting: `${BASE_URL}/rfq-costing/rfq-save-best-costing`,
   getAssemblyChildpart: `${BASE_URL}/rfq-quotation/get-assembly-child-part`,
   getRfqPartDetails: `${BASE_URL}/rfq-quotation/get-quotation-part-detail`,
+  checkRmExistInRfq: `${BASE_URL}/rfq-quotation/rfq-check-exist-raw-matarial`,
+  checkBopExistInRfq: `${BASE_URL}/rfq-quotation/rfq-check-exist-bought-out-part`,
 
   //vendor management
   getVendorClassificationList: `${BASE_URL}/vendor/get-classifications-status`,
@@ -2327,6 +2329,7 @@ export const BoughtOutPart = '3'
 export const Component = '2'
 export const Product = '4'
 export const ToolingId = '5'
+export const COMPONENTASSEMBLY = "componentAssembly"
 
 
 export const COSTING_PATH = '/costing'
