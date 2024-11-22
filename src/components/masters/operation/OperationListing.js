@@ -808,7 +808,7 @@ const OperationListing = (props) => {
             <div className={`ag-grid-react ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${permissionData?.Download ? "show-table-btn no-tab-page" : ""}`}>
                 <form>
                     <Row>
-                        <Col md="4" className="switch mt-4 mb15">
+                        <Col md="4" className="switch mt-3 mb-1">
                             <label className="switch-level">
                                 <div className="left-title">Domestic</div>
                                 <Switch
@@ -829,7 +829,7 @@ const OperationListing = (props) => {
                             </label>
                         </Col>
                     </Row>
-                    <Row className={`${props?.isMasterSummaryDrawer ? '' : 'pt-4'} filter-row-large blue-before ${isSimulation || props.benchMark ? "zindex-0" : ""}`}>
+                    <Row className={`${props?.isMasterSummaryDrawer ? '' : 'pt-2'} filter-row-large blue-before ${isSimulation || props.benchMark ? "zindex-0" : ""}`}>
                         <Col md="3" lg="3">
                             <input type="text" value={searchText} className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
                             {(!props.isSimulation && !props.benchMark && !props?.isMasterSummaryDrawer) && (<TourWrapper

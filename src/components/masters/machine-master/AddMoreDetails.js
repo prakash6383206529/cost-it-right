@@ -3039,7 +3039,7 @@ class AddMoreDetails extends Component {
                           }
                         </h2>
                         <Row>
-                          <Col md="4" className="switch mt-4 mb15">
+                          <Col md="4" className="switch mt-3 mb15">
                             <label className="switch-level">
                               <div className="left-title">Domestic</div>
                               <Switch
@@ -3632,7 +3632,7 @@ class AddMoreDetails extends Component {
 
 
                             <Col md="4">
-                              <TooltipCustom disabledIcon={true} width="350px" tooltipClass={'machine-tooltip'} id="RateOfInterestValue" width={'250px'} tooltipText={"Interest Value = (Loan %) / 100 * Total Cost * (Rate of Interest %) / 100"} />
+                              <TooltipCustom disabledIcon={true} tooltipClass={'machine-tooltip'} id="RateOfInterestValue" width={'350px'} tooltipText={"Interest Value = (Loan %) / 100 * Total Cost * (Rate of Interest %) / 100"} />
                               <Field
                                 label={`Interest Value`}
                                 name={this.props.fieldsObj.RateOfInterestValue === 0 ? '-' : "RateOfInterestValue"}
@@ -3764,7 +3764,7 @@ class AddMoreDetails extends Component {
                               </div>
                             </Col>
                             <Col md="3">
-                              <TooltipCustom disabledIcon={true} width="350px" id="NumberOfWorkingHoursPerYear" width={'340px'} tooltipText={'No. of Working Hrs/Annum = No. of Shifts * Working Hrs/Shift * No. of Working days/Annum * (Availability %) / 100'} />
+                              <TooltipCustom disabledIcon={true} id="NumberOfWorkingHoursPerYear" width={'350px'} tooltipText={'No. of Working Hrs/Annum = No. of Shifts * Working Hrs/Shift * No. of Working days/Annum * (Availability %) / 100'} />
                               <Field
                                 label={`No. of Working Hrs/Annum`}
                                 name={this.props.fieldsObj.NumberOfWorkingHoursPerYear === 0 ? '-' : "NumberOfWorkingHoursPerYear"}
@@ -3920,7 +3920,7 @@ class AddMoreDetails extends Component {
                               </div>
                             </Col>
                             <Col md="3">
-                              <TooltipCustom disabledIcon={true} width="350px" id="DepreciationAmount" width={'340px'} tooltipText={`Depreciation Amount = Total Cost - Cost of Scrap / ${this.state.depreciationType && this.state.depreciationType.value === SLM ? 'Life of Asset(Years)' : '(Depreciation Rate %) * Day of Purchase / 365'}`} />
+                              <TooltipCustom disabledIcon={true} id="DepreciationAmount" width={'350px'} tooltipText={`Depreciation Amount = Total Cost - Cost of Scrap / ${this.state.depreciationType && this.state.depreciationType.value === SLM ? 'Life of Asset(Years)' : '(Depreciation Rate %) * Day of Purchase / 365'}`} />
                               <Field
                                 label={`Depreciation Amount  (${!entryType ? (this?.props?.fieldsObj?.plantCurrency || 'Currency') :
                                   (this?.state?.currency?.label || 'Currency')})`}

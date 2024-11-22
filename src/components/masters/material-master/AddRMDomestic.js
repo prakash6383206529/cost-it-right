@@ -2103,7 +2103,7 @@ class AddRMDomestic extends Component {
                                 />
                               </Col>
                               <Col md="3">
-                                <TooltipCustom disabledIcon={true} width="350px" id="conversion-factor-base-currency" width={'380px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextCalculatedFactor} />
+                                <TooltipCustom disabledIcon={true} id="conversion-factor-base-currency" width={'350px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextCalculatedFactor} />
                                 <Field
                                   label={labelWithUOMAndUOM("Calculated Factor", this.state.UOM?.label ? this.state.UOM?.label : 'UOM', this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM')}
                                   name={"CalculatedFactor"}

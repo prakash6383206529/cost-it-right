@@ -731,7 +731,7 @@ const MachineRateListing = (props) => {
       <form noValidate> {(state.isLoader && !props.isMasterSummaryDrawer) && <LoaderCustom customClass="simulation-Loader" />}
         {state.disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
         <Row>
-          <Col md="4" className="switch mt-4 mb15">
+          <Col md="4" className="switch mt-3 mb-1">
             <label className="switch-level">
               <div className="left-title">Domestic</div>
               <Switch
@@ -752,7 +752,7 @@ const MachineRateListing = (props) => {
             </label>
           </Col>
         </Row>
-        <Row className={`${props?.isMasterSummaryDrawer ? '' : 'pt-4'} filter-row-large ${(props.isSimulation || props.benchMark) ? 'simulation-filter zindex-0' : ''}`}>
+        <Row className={`${props?.isMasterSummaryDrawer ? '' : 'pt-2'} filter-row-large ${(props.isSimulation || props.benchMark) ? 'simulation-filter zindex-0' : ''}`}>
           <Col md="3" lg="3">
             <input type="text" className="form-control table-search" value={searchText} id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={onFilterTextBoxChanged} />
             {(!props.isSimulation && !props.benchMark && !props?.isMasterSummaryDrawer) && (<TourWrapper
