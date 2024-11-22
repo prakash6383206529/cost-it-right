@@ -1665,9 +1665,9 @@ export const removeSpaces = (str = '') => {
 export const getChangeHighlightClass = (originalValue, updatedValue) => {
   return updatedValue && updatedValue !== originalValue ? 'red-value' : '';
 };
-export const frameBreaker = () => {
-  // Ensure window runs in top-level
-  if (window.self !== window.top) {
-    window.top.location = window.self.location;
-  }
-};
+// export const frameBreaker = () => {
+//   // Ensure window runs in top-level
+//   if (window.self !== window.top) {
+//     window.top.location = window.self.location;
+//   }
+// };

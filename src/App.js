@@ -15,10 +15,10 @@ class App extends Component {
     };
   }
 
-  componentDidMount() {
-    // Add frame breaker protection
-    frameBreaker();
-  }
+  // componentDidMount() {
+  //   // Add frame breaker protection
+  //   frameBreaker();
+  // }
 
   UNSAFE_componentWillMount() {
     if (window.performance.getEntriesByType("navigation")[0].type === 'back_forward' || window.performance.getEntriesByType("navigation")[0].type === 'navigate') { //TO CHECK IF DUPLICATE TAB IS OPENED
