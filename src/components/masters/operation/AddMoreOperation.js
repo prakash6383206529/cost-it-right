@@ -1101,7 +1101,7 @@ function AddMoreOperation(props) {
                         </div>
                         <form>
                             <Row>
-                                <Col md="4" className="switch mb15">
+                                <Col md="4" className="switch mt-4 mb15">
                                     <label className="switch-level">
                                         <div className={"left-title"}>Domestic</div>
                                         <Switch
@@ -1599,7 +1599,7 @@ function AddMoreOperation(props) {
 
 
                                             <Col md="3">
-                                                <TooltipCustom id={"wireRate"} disabledIcon={true} width={"230px"} tooltipText={`${getLabel('wireCost')} = ${getLabel('wireRate')} * Consumption`} />
+                                                <TooltipCustom id={"wireRate"} disabledIcon={true} width={"350px"} tooltipText={`${getLabel('wireCost')} = ${getLabel('wireRate')} * Consumption`} />
 
                                                 <NumberFieldHookForm
                                                     label={getLabel('wireCost')}
@@ -1699,7 +1699,7 @@ function AddMoreOperation(props) {
                                             </Col>
 
                                             <Col md="3">
-                                                <TooltipCustom id={"gasCostWelding"} width={"230px"} disabledIcon={true} tooltipText={`Cost = ${getLabel('gasRate')} * Consumption`} />
+                                                <TooltipCustom id={"gasCostWelding"} width={"350px"} disabledIcon={true} tooltipText={`Cost = ${getLabel('gasRate')} * Consumption`} />
 
                                                 <NumberFieldHookForm
                                                     label={`Cost (${state.isImport ? state.currency?.label : getValues('plantCurrency')})`}
@@ -1869,7 +1869,7 @@ function AddMoreOperation(props) {
                                             </Col>
 
                                             <Col md="3">
-                                                <TooltipCustom id={"electricityCostWelding"} width={"230px"} disabledIcon={true} tooltipText={`Electricity Cost = Electricity Rate * Consumption`} />
+                                                <TooltipCustom id={"electricityCostWelding"} width={"350px"} disabledIcon={true} tooltipText={`Electricity Cost = Electricity Rate * Consumption`} />
                                                 <NumberFieldHookForm
                                                     label={`Electricity Cost (${state.isImport ? state.currency?.label : getValues('plantCurrency')})`}
                                                     name={'electricityCostWelding'}
@@ -2086,7 +2086,7 @@ function AddMoreOperation(props) {
                                                 </Col>
 
                                                 <Col md="3">
-                                                    <TooltipCustom id={"labourCost"} width={"230px"} disabledIcon={true} tooltipText={`Labour Cost = Labour Rate / Welding/Shift`} />
+                                                    <TooltipCustom id={"labourCost"} width={"350px"} disabledIcon={true} tooltipText={`Labour Cost = Labour Rate / Welding/Shift`} />
                                                     <NumberFieldHookForm
                                                         label={`Labour Cost (${state.isImport ? state.currency?.label : getValues('plantCurrency')})`}
                                                         name={'labourCost'}
@@ -2806,7 +2806,7 @@ function AddMoreOperation(props) {
 
 
                                                 <Col md="3">
-                                                    <TooltipCustom id={"rejoinReworkCost"} disabledIcon={true} width={"270px"} tooltipText={`Rejection & Rework Cost = Statuatory & License * Rejection & Rework / 100`} />
+                                                    <TooltipCustom id={"rejoinReworkCost"} disabledIcon={true} width={"350px"} tooltipText={`Rejection & Rework Cost = Statuatory & License * Rejection & Rework / 100`} />
                                                     <NumberFieldHookForm
                                                         label={`Rejection & Rework Cost (${state.isImport ? state.currency?.label : getValues('plantCurrency')})`}
                                                         name={'rejoinReworkCost'}
@@ -2884,7 +2884,7 @@ function AddMoreOperation(props) {
 
 
                                                 <Col md="3">
-                                                    <TooltipCustom id={"profitCost"} disabledIcon={true} width={"270px"} tooltipText={`Profit Cost = Statuatory & License * Profit  / 100`} />
+                                                    <TooltipCustom id={"profitCost"} disabledIcon={true} width={"350px"} tooltipText={`Profit Cost = Statuatory & License * Profit  / 100`} />
                                                     <NumberFieldHookForm
                                                         label={`Profit Cost (${state.isImport ? state.currency?.label : getValues('plantCurrency')})`}
                                                         id={"profitCost"}
@@ -3059,7 +3059,7 @@ function AddMoreOperation(props) {
                                 }
                             </Row>
                             {state.isImport && <Col className="col-md-15">
-                                {<TooltipCustom id={"Rate"} disabledIcon={true} tooltipText={`Rate = Total Cost of all Section`} />}
+                                {<TooltipCustom id={"Rate"} width="350px" disabledIcon={true} tooltipText={`Rate = Total Cost of all Section`} />}
                                 <NumberFieldHookForm
                                     label={`Rate (${state.currency?.label ?? 'Currency'})`}
                                     name={'Rate'}
@@ -3080,8 +3080,8 @@ function AddMoreOperation(props) {
 
 
                             <>
-                                {!state.isImport && <TooltipCustom id={"RateLocalConversion"} disabledIcon={true} tooltipText={`Rate = Total Cost of all Section`} />}
-                                {state.isImport && <TooltipCustom disabledIcon={true} id={"RateLocalConversion"} tooltipText={state.hidePlantCurrency ? OperationRateTitle()?.toolTipTextNetCostBaseCurrency : OperationRateTitle()?.tooltipTextPlantCurrency} />}
+                                {!state.isImport && <TooltipCustom id={"RateLocalConversion"} width="350px" disabledIcon={true} tooltipText={`Rate = Total Cost of all Section`} />}
+                                {state.isImport && <TooltipCustom disabledIcon={true} width="350px" id={"RateLocalConversion"} tooltipText={state.hidePlantCurrency ? OperationRateTitle()?.toolTipTextNetCostBaseCurrency : OperationRateTitle()?.tooltipTextPlantCurrency} />}
                                 <Col className="col-md-15">
                                     <NumberFieldHookForm
                                         label={`Rate (${getValues('plantCurrency') ?? 'Currency'})`}
@@ -3102,7 +3102,7 @@ function AddMoreOperation(props) {
                             </>
                             {!state.hidePlantCurrency &&
                                 <>
-                                    <TooltipCustom disabledIcon={true} id="operation-rate" tooltipText={state.isImport ? OperationRateTitle()?.toolTipTextNetCostBaseCurrency : OperationRateTitle()?.tooltipTextPlantCurrency} />
+                                    <TooltipCustom disabledIcon={true} id="operation-rate" width="350px" tooltipText={state.isImport ? OperationRateTitle()?.toolTipTextNetCostBaseCurrency : OperationRateTitle()?.tooltipTextPlantCurrency} />
                                     <Col className="col-md-15">
                                         <NumberFieldHookForm
                                             label={`Rate (${reactLocalStorage.getObject("baseCurrency")})`}

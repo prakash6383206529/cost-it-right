@@ -1795,7 +1795,7 @@ class AddRMDomestic extends Component {
                             </div>
                           </Col>
                           <Col md="3">
-                            <TooltipCustom id="category" tooltipText="Category will come here like CutToFit, CutToLength." />
+                            <TooltipCustom id="category" width="350px" tooltipText="Category will come here like CutToFit, CutToLength." />
                             <Field
                               name="CategoryId"
                               type="text"
@@ -2103,7 +2103,7 @@ class AddRMDomestic extends Component {
                                 />
                               </Col>
                               <Col md="3">
-                                <TooltipCustom disabledIcon={true} id="conversion-factor-base-currency" width={'380px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextCalculatedFactor} />
+                                <TooltipCustom disabledIcon={true} width="350px" id="conversion-factor-base-currency" width={'380px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextCalculatedFactor} />
                                 <Field
                                   label={labelWithUOMAndUOM("Calculated Factor", this.state.UOM?.label ? this.state.UOM?.label : 'UOM', this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM')}
                                   name={"CalculatedFactor"}
@@ -2308,7 +2308,7 @@ class AddRMDomestic extends Component {
 
                             </>}
                             <Col md="3">
-                              <TooltipCustom disabledIcon={true} id="bop-net-cost-currency" tooltipText={this.netCostTitle()} />
+                              <TooltipCustom disabledIcon={true} width="350px" id="bop-net-cost-currency" tooltipText={this.netCostTitle()} />
                               <Field
                                 label={labelWithUOMAndCurrency("Net Cost ", this.state.UOM?.label === undefined ? 'UOM' : this.state.UOM?.label, (reactLocalStorage.getObject("baseCurrency") ? reactLocalStorage.getObject("baseCurrency") : 'Currency'))}
                                 name={this.state.netLandedConverionCost === 0 ? '' : "NetLandedCostBaseCurrency"}

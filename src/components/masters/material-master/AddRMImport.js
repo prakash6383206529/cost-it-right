@@ -2030,7 +2030,7 @@ class AddRMImport extends Component {
                           <Col md="3">
                             <div className="d-flex justify-space-between align-items-center inputwith-icon">
                               <div className="fullinput-icon">
-                                <TooltipCustom id={'category'} tooltipText="Category will come here like CutToFit, CutToLength." />
+                                <TooltipCustom id={'category'} width="350px" tooltipText="Category will come here like CutToFit, CutToLength." />
                                 <Field
                                   name="CategoryId"
                                   type="text"
@@ -2408,7 +2408,7 @@ class AddRMImport extends Component {
                                 />
                               </Col>
                               <Col md="3">
-                                <TooltipCustom disabledIcon={true} id="conversion-factor-base-currency" width={'400px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextCalculatedFactor} />
+                                <TooltipCustom disabledIcon={true} id="conversion-factor-base-currency" width={'350px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextCalculatedFactor} />
                                 <Field
                                   label={labelWithUOMAndUOM("Calculated Factor", this.state.UOM?.label ? this.state.UOM?.label : 'UOM', this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM')}
                                   name={"CalculatedFactor"}
@@ -2805,7 +2805,7 @@ class AddRMImport extends Component {
                             {
                               this.state.showCurrency && <>
                                 <Col md="3">
-                                  <TooltipCustom disabledIcon={true} id="rm-net-cost-currency" tooltipText={this.netCostTitle()?.toolTipTextNetCostSelectedCurrency} />
+                                  <TooltipCustom disabledIcon={true} width="350px" id="rm-net-cost-currency" tooltipText={this.netCostTitle()?.toolTipTextNetCostSelectedCurrency} />
                                   <Field
                                     label={`Net Cost (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label})`}
                                     name={this.state.netLandedConverionCost === 0 ? '' : "NetLandedCostSelectedCurrency"}
@@ -2821,7 +2821,7 @@ class AddRMImport extends Component {
                                   />
                                 </Col>
                                 <Col md="3">
-                                  <TooltipCustom disabledIcon={true} id="rm-net-cost-base" tooltipText={this.netCostTitle()?.toolTipTextNetCostBaseCurrency} />
+                                  <TooltipCustom disabledIcon={true} width="350px" id="rm-net-cost-base" tooltipText={this.netCostTitle()?.toolTipTextNetCostBaseCurrency} />
                                   <Field
                                     label={`Net Cost (${reactLocalStorage.getObject("baseCurrency")})`}
                                     name={this.state.netLandedConverionCost === 0 ? '' : "NetLandedCostBaseCurrency"}

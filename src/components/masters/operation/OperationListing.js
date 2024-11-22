@@ -808,7 +808,7 @@ const OperationListing = (props) => {
             <div className={`ag-grid-react ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${permissionData?.Download ? "show-table-btn no-tab-page" : ""}`}>
                 <form>
                     <Row>
-                        <Col md="4" className="switch mb15">
+                        <Col md="4" className="switch mt-4 mb15">
                             <label className="switch-level">
                                 <div className="left-title">Domestic</div>
                                 <Switch

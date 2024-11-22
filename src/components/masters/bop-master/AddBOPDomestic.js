@@ -1825,7 +1825,7 @@ class AddBOPDomestic extends Component {
 
                           {initialConfiguration?.IsBasicRateAndCostingConditionVisible && costingTypeId === ZBCTypeId && !isTechnologyVisible && <>
                             <Col md="3">
-                              <TooltipCustom id="bop-basic-price" disabledIcon={true} tooltipText={this.toolTipNetCost().toolTipTextBasicPrice} />
+                              <TooltipCustom width="350px" id="bop-basic-price" disabledIcon={true} tooltipText={this.toolTipNetCost().toolTipTextBasicPrice} />
                               <Field
                                 label={`Basic Price/${this.state?.UOM?.label ? this.state?.UOM?.label : 'UOM'} (${this.props.fieldsObj?.plantCurrency ?? 'Currency'})`}
                                 name={"BasicPrice"}
@@ -1859,7 +1859,7 @@ class AddBOPDomestic extends Component {
                                 </div>
                                 <div className="d-flex align-items-center mb-2">
                                   <button type="button" id="condition-cost-refresh" className={'refresh-icon mt-1 ml-1'} onClick={() => this.updateConditionCostValue()} disabled={this.props.data.isViewMode}>
-                                    <TooltipCustom disabledIcon={true} id="condition-cost-refresh" tooltipText="Refresh to update Condition cost" />
+                                    <TooltipCustom width="350px" disabledIcon={true} id="condition-cost-refresh" tooltipText="Refresh to update Condition cost" />
                                   </button>
                                   <Button
                                     id="addBOPDomestic_condition"
@@ -1875,7 +1875,7 @@ class AddBOPDomestic extends Component {
                             (!isTechnologyVisible || this.state.IsBreakupBoughtOutPart) &&
                             <>
                               <Col md="3">
-                                <TooltipCustom id="bop-net-cost-plant" disabledIcon={true} tooltipText={this.toolTipNetCost()?.toolTipTextNetCost} />
+                                <TooltipCustom width="350px" id="bop-net-cost-plant" disabledIcon={true} tooltipText={this.toolTipNetCost()?.toolTipTextNetCost} />
                                 <Field
                                   label={`Net Cost/${this.state?.UOM?.label ? this.state?.UOM?.label : 'UOM'} (${fieldsObj?.plantCurrency ?? 'Currency'})`}
                                   name={`${"NetCostPlantCurrency"}`}
@@ -1891,7 +1891,7 @@ class AddBOPDomestic extends Component {
                                 />
                               </Col>
                               {!hidePlantCurrency && <Col md="3">
-                                <TooltipCustom id="bop-net-cost" disabledIcon={true} tooltipText={`Net Cost/${this.state?.UOM?.label ? this.state?.UOM?.label : 'UOM'}  = Net Cost * Plant Currency Rate (${this.state?.currencyValue})`} />
+                                <TooltipCustom width="350px" id="bop-net-cost" disabledIcon={true} tooltipText={`Net Cost/${this.state?.UOM?.label ? this.state?.UOM?.label : 'UOM'}  = Net Cost * Plant Currency Rate (${this.state?.currencyValue})`} />
                                 <Field
                                   label={`Net Cost/${this.state?.UOM?.label ? this.state?.UOM?.label : 'UOM'} (${reactLocalStorage.getObject("baseCurrency")})`}
                                   name={`${"NetCostBaseCurrency"}`}

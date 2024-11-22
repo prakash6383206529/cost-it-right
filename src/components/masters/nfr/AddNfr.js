@@ -923,7 +923,7 @@ function AddNfr(props) {
                         />
                     </Col>
                     <Col md="3">
-                        <TooltipCustom customClass="ml-1 add-nfr-tooltip" id="variance" tooltipText="Vendors should not exceed a selection limit of 4" />
+                        <TooltipCustom customClass="ml-1 add-nfr-tooltip" width="350px" id="variance" tooltipText="Vendors should not exceed a selection limit of 4" />
                         <AsyncSearchableSelectHookForm
                             label={`${vendorLabel} (Code)`}
                             name={"VendorName"}

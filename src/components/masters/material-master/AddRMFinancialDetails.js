@@ -1384,7 +1384,7 @@ function AddRMFinancialDetails(props) {
                                     />
                                 </Col>
                                 <Col className="col-md-15">
-                                    <TooltipCustom disabledIcon={true} id="conversion-factor-base-currency" tooltipText={allFieldsInfoIcon()?.toolTipTextCalculatedFactor} />
+                                    <TooltipCustom disabledIcon={true} width="350px" id="conversion-factor-base-currency" tooltipText={allFieldsInfoIcon()?.toolTipTextCalculatedFactor} />
                                     <TextFieldHookForm
                                         label={labelWithUOMAndUOM("Calculated Factor", state.UOM?.label ? state.UOM?.label : 'UOM', state.ScrapRateUOM?.label ? state.ScrapRateUOM?.label : 'UOM')}
                                         name={"CalculatedFactor"}
@@ -1563,7 +1563,7 @@ function AddRMFinancialDetails(props) {
                                     </div>
                                     <div className="d-flex align-items-center mt-1">
                                         <button type="button" id="other-cost-refresh" className={'refresh-icon mt-1 ml-1'} onClick={() => updateTableCost(false)} disabled={isViewFlag}>
-                                            <TooltipCustom disabledIcon={true} id="other-cost-refresh" tooltipText="Refresh to update other cost" />
+                                            <TooltipCustom disabledIcon={true} width="350px" id="other-cost-refresh" tooltipText="Refresh to update other cost" />
                                         </button>
                                         {<Button
                                             id="addRMDomestic_otherToggle"
@@ -1580,7 +1580,7 @@ function AddRMFinancialDetails(props) {
                             {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && states.costingTypeId === ZBCTypeId && <>
 
                                 <Col className="col-md-15">
-                                    <TooltipCustom disabledIcon={true} id="rm-basic-price" tooltipText={allFieldsInfoIcon()?.toolTipBasicPrice} />
+                                    <TooltipCustom disabledIcon={true} width="350px" id="rm-basic-price" tooltipText={allFieldsInfoIcon()?.toolTipBasicPrice} />
                                     <TextFieldHookForm
                                         label={labelWithUOMAndCurrency("Basic Price ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, states.isImport ? state.currency?.label : !getValues('plantCurrency') ? 'Currency' : getValues('plantCurrency'))}
                                         name={"NetCostWithoutConditionCost"}
@@ -1615,7 +1615,7 @@ function AddRMFinancialDetails(props) {
                                         </div>
                                         <div className="d-flex align-items-center mt-1">
                                             <button type="button" id="condition-cost-refresh" className={'refresh-icon mt-1 ml-1'} onClick={() => updateTableCost(true)} disabled={isViewFlag}>
-                                                <TooltipCustom disabledIcon={true} id="condition-cost-refresh" tooltipText="Refresh to update Condition cost" />
+                                                <TooltipCustom disabledIcon={true} width="350px" id="condition-cost-refresh" tooltipText="Refresh to update Condition cost" />
                                             </button>
                                             <Button
                                                 id="addRMDomestic_conditionToggl"
@@ -1633,7 +1633,7 @@ function AddRMFinancialDetails(props) {
                             </>}
 
                             {states.isImport && <Col className="col-md-15">
-                                <TooltipCustom disabledIcon={true} id="bop-net-cost" tooltipText={netCostTitle()?.toolTipTextNetCostSelectedCurrency} />
+                                <TooltipCustom disabledIcon={true} width="350px" id="bop-net-cost" tooltipText={netCostTitle()?.toolTipTextNetCostSelectedCurrency} />
                                 <TextFieldHookForm
                                     label={labelWithUOMAndCurrency("Net Cost ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, states.isImport ? state.currency?.label : !getValues('plantCurrency') ? 'Currency' : getValues('plantCurrency'))}
                                     name={'NetLandedCost'}
@@ -1649,7 +1649,7 @@ function AddRMFinancialDetails(props) {
                                 />
                             </Col>}
                             {showNetCost() && <Col className="col-md-15">
-                                <TooltipCustom disabledIcon={true} id="rm-net-cost-currency" tooltipText={states.isImport ? netCostTitle()?.tooltipTextPlantCurrency : netCostTitle()?.toolTipTextNetCostSelectedCurrency} />
+                                <TooltipCustom disabledIcon={true} width="350px" id="rm-net-cost-currency" tooltipText={states.isImport ? netCostTitle()?.tooltipTextPlantCurrency : netCostTitle()?.toolTipTextNetCostSelectedCurrency} />
                                 <TextFieldHookForm
                                     label={`Net Cost (${!getValues('plantCurrency') ? 'Plant Currency' : getValues('plantCurrency')})`}
                                     name={'NetLandedCostLocalConversion'}
@@ -1665,7 +1665,7 @@ function AddRMFinancialDetails(props) {
                                 />
                             </Col>}
                             {<Col className="col-md-15">
-                                <TooltipCustom disabledIcon={true} id="bop-net-cost-currency" tooltipText={states.isImport ? netCostTitle()?.toolTipTextNetCostBaseCurrency : netCostTitle()?.tooltipTextPlantCurrency} />
+                                <TooltipCustom disabledIcon={true} width="350px" id="bop-net-cost-currency" tooltipText={states.isImport ? netCostTitle()?.toolTipTextNetCostBaseCurrency : netCostTitle()?.tooltipTextPlantCurrency} />
                                 <TextFieldHookForm
                                     label={labelWithUOMAndCurrency("Net Cost", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, (reactLocalStorage.getObject("baseCurrency")))}
                                     name={'NetLandedCostConversion'}

@@ -731,7 +731,7 @@ const MachineRateListing = (props) => {
       <form noValidate> {(state.isLoader && !props.isMasterSummaryDrawer) && <LoaderCustom customClass="simulation-Loader" />}
         {state.disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
         <Row>
-          <Col md="4" className="switch mb15">
+          <Col md="4" className="switch mt-4 mb15">
             <label className="switch-level">
               <div className="left-title">Domestic</div>
               <Switch

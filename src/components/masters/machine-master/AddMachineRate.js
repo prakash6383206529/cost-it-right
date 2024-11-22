@@ -1882,7 +1882,7 @@ class AddMachineRate extends Component {
 
                         </h2>
                         <Row>
-                          <Col md="4" className="switch mb15">
+                          <Col md="4" className="switch mt-3 mb15">
                             <label className="switch-level">
                               <div className="left-title">Domestic</div>
                               <Switch
@@ -2162,7 +2162,7 @@ class AddMachineRate extends Component {
                         </Col>
 
                         {this.state?.isImport && <Col md="3">
-                          <TooltipCustom id="currency" tooltipText={this.getTooltipTextForCurrency()} />
+                          <TooltipCustom id="currency" width="350px" tooltipText={this.getTooltipTextForCurrency()} />
                           <Field
                             name="Currency"
                             type="text"
@@ -2308,7 +2308,7 @@ class AddMachineRate extends Component {
                           {this.state.errorObj.machineRate && (this.props.fieldsObj.MachineRate === undefined || Number(this.props.fieldsObj.MachineRate) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
                         </Col>
                         {(this?.state?.isImport && !this?.state?.hidePlantCurrency) && <Col md="3" className='UOM-label-container p-relative'>
-                          <TooltipCustom disabledIcon={true} id="machine-rate-plant" tooltipText={this.machineRateTitle()?.tooltipTextPlantCurrency} />
+                          <TooltipCustom disabledIcon={true} width="350px" id="machine-rate-plant" tooltipText={this.machineRateTitle()?.tooltipTextPlantCurrency} />
                           <Field
                             label={this.DisplayMachineRatePlantCurrencyLabel()}
                             name={"MachineRateLocalConversion"}
@@ -2327,7 +2327,7 @@ class AddMachineRate extends Component {
                         </Col>}
 
                         {(!(!this?.state?.isImport && this?.state?.hidePlantCurrency)) && <Col md="3" >
-                          <TooltipCustom disabledIcon={true} id="machine-rate" tooltipText={this?.state?.isImport ? this.machineRateTitle()?.toolTipTextNetCostBaseCurrency : this.machineRateTitle()?.tooltipTextPlantCurrency} />
+                          <TooltipCustom disabledIcon={true} width="350px" id="machine-rate" tooltipText={this?.state?.isImport ? this.machineRateTitle()?.toolTipTextNetCostBaseCurrency : this.machineRateTitle()?.tooltipTextPlantCurrency} />
                           <Field
                             label={this.DisplayMachineRateBaseCurrencyLabel()}
                             name={"MachineRateConversion"}
