@@ -1231,7 +1231,7 @@ class AddMachineRate extends Component {
         Specification: values.Specification,
         LoggedInUserId: loggedInUserId(),
         MachineProcessRates: processGrid,
-        Technology: (technologyArray.length > 0 && technologyArray[0]?.Technology !== undefined) ? technologyArray : [{ Technology: selectedTechnology.label ? selectedTechnology.label : selectedTechnology[0].label, TechnologyId: selectedTechnology.value ? selectedTechnology.value : selectedTechnology[0].value }],
+        Technology: (technologyArray.length > 0 && technologyArray[0]?.Technology !== undefined) ? technologyArray : [{ Technology: selectedTechnology?.label ? selectedTechnology?.label : selectedTechnology[0]?.label, TechnologyId: selectedTechnology?.value ? selectedTechnology?.value : selectedTechnology[0]?.value }],
         Plant: [{ PlantId: selectedPlants.value, PlantName: selectedPlants.label }],
         DestinationPlantId: '',
         Remark: remarks,
