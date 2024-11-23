@@ -161,7 +161,7 @@ class AddProfit extends Component {
   */
   handleMessageChange = (e) => {
     this.setState({
-      remarks: e.target.value
+      remarks: e?.target?.value
     })
   }
 
