@@ -5,7 +5,7 @@ import { getAllUserDataAPI, getAllRoleAPI, activeInactiveUser } from '../../acti
 import $ from 'jquery';
 import Toaster from '../common/Toaster';
 import { MESSAGES } from '../../config/message';
-import { defaultPageSize, EMPTY_DATA, RFQUSER } from '../../config/constants';
+import { EMPTY_DATA, RFQUSER } from '../../config/constants';
 import { USER } from '../../config/constants';
 import NoContentFound from '../common/NoContentFound';
 import Switch from "react-switch";
@@ -18,9 +18,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../common/PopupMsgWrapper';
 import ReactExport from 'react-export-excel';
-import { CBCOperationSmallForm, USER_LISTING_DOWNLOAD_EXCEl } from '../../config/masterData';
-import { UserListing } from '../../config/constants';
-import { PaginationWrapper } from '../common/commonPagination';
+import { USER_LISTING_DOWNLOAD_EXCEl } from '../../config/masterData';
 import ScrollToTop from '../common/ScrollToTop';
 import Button from '../layout/Button';
 import DayTime from '../common/DayTimeWrapper';
@@ -46,8 +44,8 @@ const UsersListing = (props) => {
 	const searchRef = useRef(null);
 	const { t } = useTranslation("common")
 	const { vendorLabel } = useLabels()
-	const { selectedRowForPagination } = useSelector((state => state.simulation))
-	const { userDataList, rfqUserList, initialConfiguration, topAndLeftMenuData } = useSelector((state) => state.auth);
+	const { selectedRowForPagination } = useSelector((state => state?.simulation))
+	const { userDataList, rfqUserList, initialConfiguration, topAndLeftMenuData } = useSelector((state) => state?.auth);
 	const [state, setState] = useState({
 		isEditFlag: false,
 		shown: false,
@@ -81,7 +79,7 @@ const UsersListing = (props) => {
 	const [take, setTake] = useState(10); // Number of records per page
 	const [totalRecordCount, setTotalRecordCount] = useState(0);
 	const [floatingFilterData, setFloatingFilterData] = useState({ UserName: "", CreatedDate: "", ModifiedDate: "", RoleName: "", EmailAddress: "", FullName: "", Mobile: "", DepartmentName: "", CreatedBy: "", PhoneNumber: "", ModifiedBy: "" });
-	const { globalTakes } = useSelector((state) => state.pagination);
+	const { globalTakes } = useSelector((state) => state?.pagination);
 	const [disableFilter, setDisableFilter] = useState(true)
 	const [filterModel, setFilterModel] = useState({});
 	const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false)
@@ -112,7 +110,6 @@ const UsersListing = (props) => {
 			}
 		}
 
-		// Get roles listing
 		dispatch(getAllRoleAPI((res) => {
 			if (res && res.data && res.data.DataList) {
 				let Data = res.data.DataList;
@@ -124,7 +121,6 @@ const UsersListing = (props) => {
 				setState((prevState) => ({ ...prevState, roleType: obj, }))
 			}
 		}))
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 
 	}, [isReset]);
 
@@ -134,37 +130,27 @@ const UsersListing = (props) => {
 		filterOptions: ['equals', 'inRange'],
 		comparator: function (filterLocalDateAtMidnight, cellValue) {
 
-			// Ensure `cellValue` exists
 			if (!cellValue || typeof cellValue !== 'string') {
 				console.error("Cell value is invalid or null. Returning -1.");
 				return -1;
 			}
 
-			// Extract only the date part from the `cellValue` (assumes format: DD/MM/YYYY HH:mm:ss)
-			var dateAsString = cellValue.split(' ')[0]; // Extract the `DD/MM/YYYY` part
+			var dateAsString = cellValue.split(' ')[0]; 
 			var newDate = filterLocalDateAtMidnight
 				? DayTime(filterLocalDateAtMidnight).format('DD/MM/YYYY')
 				: '';
-
-
-
-			// Update floating filter state
 			setDate(newDate, fieldName);
-
-			// Parse `dateAsString` into a JavaScript Date object
-			var dateParts = dateAsString.split('/');
+			var dateParts = dateAsString?.split('/');
 			if (dateParts.length !== 3) {
 				console.error("Date format is incorrect. Returning -1.");
 				return -1;
 			}
 
 			var cellDate = new Date(
-				Number(dateParts[2]), // Year
-				Number(dateParts[1]) - 1, // Month (zero-indexed)
-				Number(dateParts[0]) // Day
+				Number(dateParts[2]), 
+				Number(dateParts[1]) - 1, 
+				Number(dateParts[0]) 
 			);
-
-			// Date comparison logic (ignoring time)
 			if (filterLocalDateAtMidnight.getTime() === cellDate.getTime()) {
 				return 0;
 			}
@@ -181,7 +167,7 @@ const UsersListing = (props) => {
 
 
 
-	// Updated setDate function with additional debug logs
+	// Updated setDate function 
 	var setDate = (date, fieldName) => {
 		setFloatingFilterData((prevState) => ({
 			...prevState,
@@ -225,7 +211,7 @@ const UsersListing = (props) => {
 			logged_in_user: loggedInUserId(),
 			DepartmentId: departmentId,
 			RoleId: roleId,
-			userType: props.RFQUser ? 'RFQ' : 'CIR',
+			userType: props?.RFQUser ? 'RFQ' : 'CIR',
 			skip: skip,
 			take: take,
 			userName: dataObj?.UserName,
@@ -258,7 +244,6 @@ const UsersListing = (props) => {
 				setIsFilterButtonClicked(false);
 				setState((prevState) => ({ ...prevState, userData: Data }));
 				let isReset = true
-				// Set the filter model based on isReset
 				setTimeout(() => {
 					for (var prop in floatingFilterData) {
 						if (floatingFilterData[prop] !== "") {
@@ -304,10 +289,10 @@ const UsersListing = (props) => {
 
 	const onFloatingFilterChanged = (value) => {
 		setTimeout(() => {
-			if (state.userData?.length !== 0) {
+			if (state?.userData?.length !== 0) {
 				setState((prevState) => ({
 					...prevState,
-					noData: searchNocontentFilter(value, state.noData),
+					noData: searchNocontentFilter(value, state?.noData),
 				}));
 			}
 		}, 500);
@@ -349,7 +334,6 @@ const UsersListing = (props) => {
 				}
 			}
 		} else {
-			// Handle valid filters being applied
 			if (value.column.colId === "ModifiedDate" || value.column.colId === "CreatedDate") {
 				return false;
 			}
@@ -367,22 +351,21 @@ const UsersListing = (props) => {
 
 
 	const onRowSelect = () => {
-		const selectedRows = state.gridApi?.getSelectedRows();
+		const selectedRows = state?.gridApi?.getSelectedRows();
 		dispatch(setSelectedRowForPagination(selectedRows))
 		setState((prevState) => ({ ...prevState, selectedRowData: selectedRows, dataCount: selectedRows.length }))
 	}
 
 	const onBtExport = () => {
-		let tempArr = state.gridApi?.getSelectedRows() || [];
+		let tempArr = state?.gridApi?.getSelectedRows() || [];
 		if (tempArr.length === 0) {
-			tempArr = props.RFQUser ? rfqUserList : userDataList;
+			tempArr = props?.RFQUser ? rfqUserList : userDataList;
 		}
 
-		// Ensure the data passed is not empty or undefined
 		if (tempArr && tempArr.length > 0) {
 			return returnExcelColumn(USER_LISTING_DOWNLOAD_EXCEl, tempArr);
 		} else {
-			return null; // Ensure nothing undefined is passed
+			return null; 
 		}
 	};
 
@@ -422,13 +405,13 @@ const UsersListing = (props) => {
 	const returnExcelColumn = (data = [], TempData) => {
 		if (!TempData || TempData.length === 0) {
 			console.error("No data to export");
-			return null; // Return null if data is empty or undefined
+			return null; 
 		}
 
 		let filteredData = [...data];
 
 		if (TempData != null && (TempData === userDataList || TempData.length > 0)) {
-			if (!props.RFQUser) {
+			if (!props?.RFQUser) {
 				filteredData = hideMultipleColumnFromExcel(data, ["PointOfContact", "VendorName", "CreatedDate", "ModifiedDate"]);
 			} else {
 				filteredData = hideMultipleColumnFromExcel(data, ["CreatedDateExcel", "ModifiedDateExcel"]);
@@ -451,16 +434,16 @@ const UsersListing = (props) => {
 		* @description confirm edit item
 		*/
 	const editItemDetails = (Id, passwordFlag = false) => {
-		let data = { isEditFlag: true, UserId: Id, passwordFlag: passwordFlag, RFQUser: props.RFQUser }
+		let data = { isEditFlag: true, UserId: Id, passwordFlag: passwordFlag, RFQUser: props?.RFQUser }
 		closeUserDetails()
 		props.getUserDetail(data)
 	}
 
 	const onPopupConfirm = () => {
-		let data = { Id: state.row.UserId, ModifiedBy: loggedInUserId(), IsActive: !state.cell, }
+		let data = { Id: state?.row.UserId, ModifiedBy: loggedInUserId(), IsActive: !state?.cell, }
 		dispatch(activeInactiveUser(data, (res) => {
 			if (res && res.data && res.data.Result) {
-				if (Boolean(state.cell) === true) {
+				if (Boolean(state?.cell) === true) {
 					Toaster.success(MESSAGES.USER_INACTIVE_SUCCESSFULLY)
 				} else {
 					Toaster.success(MESSAGES.USER_ACTIVE_SUCCESSFULLY)
@@ -489,7 +472,7 @@ const UsersListing = (props) => {
 		if (rowData?.UserId === loggedInUserId()) return null;
 		return (
 			<div className="">
-				{EditAccessibility && <Button id={`userListing_edit${props.rowIndex}`} className={"Edit Tour_List_Edit"} variant="Edit" onClick={() => editItemDetails(rowData?.UserId, false)} title={"Edit"} />}
+				{EditAccessibility && <Button id={`userListing_edit${props?.rowIndex}`} className={"Edit Tour_List_Edit"} variant="Edit" onClick={() => editItemDetails(rowData?.UserId, false)} title={"Edit"} />}
 			</div>
 		)
 	}
@@ -557,8 +540,8 @@ const UsersListing = (props) => {
 
 
 	const onFilterTextBoxChanged = (e) => {
-		const filterValue = e.target.value || ""; // Ensure it defaults to an empty string
-		state.gridApi.setQuickFilter(filterValue);
+		const filterValue = e.target.value || ""; 
+		state?.gridApi.setQuickFilter(filterValue);
 	}
 
 
@@ -586,14 +569,11 @@ const UsersListing = (props) => {
 		setWarningMessage(false);
 		dispatch(updatePageNumber(1))
 		setDisableFilter(true);
-		getDataList(null, null, 0, 10, floatingFilterData, true); // Fetch data again
+		getDataList(null, null, 0, 10, floatingFilterData, true); 
 		dispatch(updateCurrentRowIndex(10))
 		dispatch(setSelectedRowForPagination([]))
 		dispatch(updateGlobalTake(10))
 		dispatch(updatePageSize({ pageSize10: true, pageSize50: false, pageSize100: false }))
-
-
-		// Dispatch reset actions
 		dispatch(resetStatePagination());
 		if (isSimulation) {
 			props.isReset()
@@ -603,9 +583,9 @@ const UsersListing = (props) => {
 
 	const renderRowData = () => {
 		if (props?.RFQUser) {
-			return state.showExtraData ? [...setLoremIpsum(rfqUserList[0]), ...rfqUserList] : rfqUserList;
+			return state?.showExtraData ? [...setLoremIpsum(rfqUserList[0]), ...rfqUserList] : rfqUserList;
 		} else {
-			if (state.showExtraData && userDataList && userDataList.length > 0) {
+			if (state?.showExtraData && userDataList && userDataList.length > 0) {
 				return [...setLoremIpsum(userDataList[0]), ...userDataList];
 			} else {
 				return userDataList;
@@ -617,12 +597,9 @@ const UsersListing = (props) => {
 	const onGridReady = (params) => {
 		setState((prevState) => ({ ...prevState, gridApi: params.api, gridColumnApi: params.columnApi }))
 		params.api.paginationGoToPage(0);
-		//if resolution greater than 1920 table listing fit to 100%
 		window.screen.width >= 1920 && params.api.sizeColumnsToFit()
-		//if resolution greater than 1920 table listing fit to 100%
 	};
 
-	// rest of the component logic
 	const { EditAccessibility, AddAccessibility, noData } = state;
 	const isFirstColumn = (params) => {
 		var displayedColumns = params.columnApi.getAllDisplayedColumns();
@@ -656,7 +633,7 @@ const UsersListing = (props) => {
 					<Row className="pt-4">
 						<Col md="6" className="search-user-block mb-3">
 							<div className="d-flex justify-content-end bd-highlight w100">
-								{warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
+								{warningMessage && !disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
 
 								<div>
 									<Button
@@ -671,9 +648,9 @@ const UsersListing = (props) => {
 										className="mr5 Tour_List_Download"
 										id={"rmDomesticListing_excel_download"}
 										onClick={onExcelDownload}
-										title={`Download ${state.dataCount === 0 ? "All" : `(${state.dataCount})`}`}
+										title={`Download ${state?.dataCount === 0 ? "All" : `(${state?.dataCount})`}`}
 										icon={"download mr-1"}
-										buttonName={`${state.dataCount === 0 ? "All" : `(${state.dataCount})`}`}
+										buttonName={`${state?.dataCount === 0 ? "All" : `(${state?.dataCount})`}`}
 									/>
 
 									<ExcelFile
@@ -691,7 +668,7 @@ const UsersListing = (props) => {
 						</Col>
 					</Row>
 				</form>
-				{state.isLoader ? <LoaderCustom customClass="loader-center" /> : <div className={`ag-grid-wrapper height-width-wrapper ${(userDataList && userDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
+				{state?.isLoader ? <LoaderCustom customClass="loader-center" /> : <div className={`ag-grid-wrapper height-width-wrapper ${(userDataList && userDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
 					<div className="ag-grid-header">
 
 						<input ref={searchRef} type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
@@ -701,7 +678,7 @@ const UsersListing = (props) => {
 								steps: Steps(t, { viewUserDetails: true, filterButton: false, bulkUpload: false, addLimit: false, viewButton: false, DeleteButton: false, costMovementButton: false, copyButton: false, viewBOM: false, updateAssociatedTechnology: false, addAssociation: false, addMaterial: false, generateReport: false, approve: false, reject: false, }).COMMON_LISTING
 							}} />
 					</div>
-					<div className={`ag-theme-material ${state.isLoader && "max-loader-height"}`}>
+					<div className={`ag-theme-material ${state?.isLoader && "max-loader-height"}`}>
 						{noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
 						<AgGridReact
 							defaultColDef={defaultColDef}
@@ -747,17 +724,17 @@ const UsersListing = (props) => {
 							<AgGridColumn field="RoleName" width={120} cellClass="ag-grid-action-container" pinned="right" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
 						</AgGridReact>
 						<div className='button-wrapper'>
-							{<PaginationWrappers gridApi={state.gridApi} totalRecordCount={totalRecordCount} getDataList={getDataList} floatingFilterData={floatingFilterData} module="User" />}
+							{<PaginationWrappers gridApi={state?.gridApi} totalRecordCount={totalRecordCount} getDataList={getDataList} floatingFilterData={floatingFilterData} module="User" />}
 							<PaginationControls totalRecordCount={totalRecordCount} getDataList={getDataList} floatingFilterData={floatingFilterData} module="User" />
 						</div>
 
 					</div>
 				</div>}
 
-				{state.isOpen && (<ViewUserDetails UserId={state.UserId} isOpen={state.isOpen} editItemDetails={editItemDetails} closeUserDetails={closeUserDetails} EditAccessibility={EditAccessibility} anchor={"right"} IsLoginEmailConfigure={initialConfiguration.IsLoginEmailConfigure} RFQUser={props.RFQUser} />)}
+				{state?.isOpen && (<ViewUserDetails UserId={state?.UserId} isOpen={state?.isOpen} editItemDetails={editItemDetails} closeUserDetails={closeUserDetails} EditAccessibility={EditAccessibility} anchor={"right"} IsLoginEmailConfigure={initialConfiguration.IsLoginEmailConfigure} RFQUser={props.RFQUser} />)}
 
 			</>
-			{state.showPopup && <PopupMsgWrapper isOpen={state.showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${state.cell ? MESSAGES.USER_DEACTIVE_ALERT : MESSAGES.USER_ACTIVE_ALERT}`} />}
+			{state?.showPopup && <PopupMsgWrapper isOpen={state?.showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${state?.cell ? MESSAGES.USER_DEACTIVE_ALERT : MESSAGES.USER_ACTIVE_ALERT}`} />}
 
 		</div >
 	);
