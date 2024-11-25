@@ -232,13 +232,13 @@ function AddConditionCosting(props) {
         errors.CostBase = {}
         if (e?.target?.value) {
             const costBase = checkForNull(e.target.value)
-            setValue("CostBase", checkForDecimalAndNull(costBase, initialConfiguration.NoOfDecimalForPrice))
+            setValue("CostBase", checkForDecimalAndNull(costBase, initialConfiguration?.NoOfDecimalForPrice))
             const ConditionCostPerQuantity = checkForNull(e.target.value) / checkForNull(getValues('Quantity'))
-            setValue("ConditionCostPerQuantity", checkForDecimalAndNull(ConditionCostPerQuantity, initialConfiguration.NoOfDecimalForPrice))
+            setValue("ConditionCostPerQuantity", checkForDecimalAndNull(ConditionCostPerQuantity, initialConfiguration?.NoOfDecimalForPrice))
             setDisableBase(true)
             setTotalCostCurrency(e.target.value)
             setTotalCostBase(costBase)
-            setValue("ConditionCostPerQuantity", checkForDecimalAndNull(ConditionCostPerQuantity, initialConfiguration.NoOfDecimalForPrice))
+            setValue("ConditionCostPerQuantity", checkForDecimalAndNull(ConditionCostPerQuantity, initialConfiguration?.NoOfDecimalForPrice))
             setDisableBase(true)
             setTotalCostCurrency(e.target.value)
             setTotalCostBase(costBase)
@@ -253,7 +253,7 @@ function AddConditionCosting(props) {
     const onPercentChange = (e) => {
         if (e?.target?.value) {
             let costBase = checkForNull((e.target.value) / 100) * checkForNull(state.ApplicabilityCost)
-            setValue('CostCurrency', checkForDecimalAndNull(costBase, initialConfiguration.NoOfDecimalForPrice))
+            setValue('CostCurrency', checkForDecimalAndNull(costBase, initialConfiguration?.NoOfDecimalForPrice))
             setTotalCostCurrency(costBase)
             setTotalCostBase(costBase)
         } else {
@@ -394,9 +394,9 @@ function AddConditionCosting(props) {
                 CostingConditionMasterId: Data.CostingConditionMasterId, ConditionNumber: Data.ConditionNumber, ConditionType: Data.ConditionType
             })
             setValue('Type', { label: Data.ConditionType, value: Data.ConditionType })
-            setValue('Percentage', checkForDecimalAndNull(Data.Percentage, initialConfiguration.NoOfDecimalForPrice))
-            setValue('CostCurrency', checkForDecimalAndNull(Data.ConditionCost, initialConfiguration.NoOfDecimalForPrice))
-            setValue('CostBase', checkForDecimalAndNull(Data.ConditionCostConversion, initialConfiguration.NoOfDecimalForPrice))
+            setValue('Percentage', checkForDecimalAndNull(Data.Percentage, initialConfiguration?.NoOfDecimalForPrice))
+            setValue('CostCurrency', checkForDecimalAndNull(Data.ConditionCost, initialConfiguration?.NoOfDecimalForPrice))
+            setValue('CostBase', checkForDecimalAndNull(Data.ConditionCostConversion, initialConfiguration?.NoOfDecimalForPrice))
             setValue('Quantity', Data.ConditionQuantity)
             setValue('Applicability', { label: Data.Applicability, value: Data.Applicability })
             setValue('ApplicabilityCost', Data?.ApplicabilityCost)
@@ -433,8 +433,8 @@ function AddConditionCosting(props) {
             ConditionCostPerQuantityConversion = costBase
         }
 
-        setValue('ConditionCostPerQuantity', checkForDecimalAndNull(ConditionCostPerQuantity, initialConfiguration.NoOfDecimalForPrice))
-        setValue('CostPerQuantityConversion', checkForDecimalAndNull(ConditionCostPerQuantityConversion, initialConfiguration.NoOfDecimalForPrice))
+        setValue('ConditionCostPerQuantity', checkForDecimalAndNull(ConditionCostPerQuantity, initialConfiguration?.NoOfDecimalForPrice))
+        setValue('CostPerQuantityConversion', checkForDecimalAndNull(ConditionCostPerQuantityConversion, initialConfiguration?.NoOfDecimalForPrice))
     }
     const handleType = (e) => {
         setType(e)

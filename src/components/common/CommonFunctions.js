@@ -403,17 +403,16 @@ export const generateCombinations = (arr, rate) => {
 /**
  * Handles applicability calculations for costs
  */
-export const handleApplicability = (value, basicPriceBaseCurrency, arr, costField, headerName) => {
+export const handleApplicability = (value, basicPriceBaseCurrency, arr, costField, headerName, applicabilityName) => {
     if (!value) return 0;
     
     const selectedApplicabilities = value?.split(' + ');
-    
     // Calculate total cost currency for selected applicabilities
     const total = selectedApplicabilities.reduce((acc, applicability) => {
         const trimmedApplicability = applicability.trim();
         
         // If applicability is "Basic Rate", return basic price
-        if (trimmedApplicability === "Basic Rate") {
+        if (trimmedApplicability === applicabilityName) {
             return Number(acc) + Number(basicPriceBaseCurrency);
         }
         
@@ -445,7 +444,8 @@ export const recalculateConditions = (basicPriceBaseCurrency, state) => {
             perQuantityCost: "ConditionCostPerQuantity",
         },
         'Description',
-        state
+        state,
+        "Basic Price"
     );
 };
 
@@ -465,19 +465,20 @@ export const recalculateOtherCost = (basicRate, state) => {
             perQuantityCost: "NetCostConversion",
         },
         'CostHeaderName',
-        state
+        state,
+        "Basic Rate"
     );
 };
 
 /**
  * Core cost recalculation logic
  */
-export const recalculateCosts = (isOtherCost, basicValue, typeField, applicabilityField, percentageField, resultFields, headerName, state) => {
+export const recalculateCosts = (isOtherCost, basicValue, typeField, applicabilityField, percentageField, resultFields, headerName, state, applicabilityName) => {
     // Select the correct data array and make a deep copy
     const dataArray = isOtherCost ? state.otherCostTableData : state.conditionTableData;
     const costField = isOtherCost ? 'NetCost' : 'ConditionCost';
     let copiedData = _.cloneDeep(dataArray) ?? [];
-    
+
     // Create a temporary array for calculations
     let tempArr = copiedData;
     
@@ -490,7 +491,8 @@ export const recalculateCosts = (isOtherCost, basicValue, typeField, applicabili
                 basicValue,
                 tempArr,
                 costField,
-                headerName
+                headerName,
+                applicabilityName
             );
             const Cost = checkForNull((item?.[percentageField]) / 100) * checkForNull(ApplicabilityCost);
             const CostConversion = checkForNull((item?.[percentageField]) / 100) * checkForNull(ApplicabilityCost);
@@ -504,23 +506,21 @@ export const recalculateCosts = (isOtherCost, basicValue, typeField, applicabili
                 [resultFields.perQuantityCost]: CostConversion,
                 ApplicabilityCostConversion: ApplicabilityCost,
             };
-            
             // Update the temporary array
             tempArr[index] = updatedItem;
         }
     });
-    
     return tempArr;
 };
 
 /**
  * Updates cost values and handles state updates
  */
-export const updateCostValue = (isConditionCost, state, setValue, getValues) => {
+export const updateCostValue = (isConditionCost, state, basicRate) => {
     // Get table data and settings based on cost type
     const table = isConditionCost 
         ? recalculateConditions(state.NetCostWithoutConditionCost, state)
-        : recalculateOtherCost(getValues('BasicRate'), state);
+        : recalculateOtherCost(basicRate, state);
     
     // Calculate sum
     const costField = isConditionCost ? 'ConditionCostPerQuantity' : 'NetCost';
