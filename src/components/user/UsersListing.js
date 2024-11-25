@@ -91,11 +91,11 @@ const UsersListing = (props) => {
 		getDataList(null, null, skip, take, floatingFilterData, true);
 		if (props?.tabId === '1' || props?.tabId === '6') {
 			const moduleName = 'Users';
-			const pageType = props.tabId === '1' ? USER : RFQUSER;
+			const pageType = props?.tabId === '1' ? USER : RFQUSER;
 
 			if (topAndLeftMenuData) {
-				const userMenu = topAndLeftMenuData.find(el => el.ModuleName === moduleName);
-				const userPermissions = userMenu && userMenu?.Pages.find(el => el?.PageName === pageType);
+				const userMenu = topAndLeftMenuData?.find(el => el?.ModuleName === moduleName);
+				const userPermissions = userMenu && userMenu?.Pages?.find(el => el?.PageName === pageType);
 				const permissionData = userPermissions && userPermissions?.Actions && checkPermission(userPermissions?.Actions);
 
 				if (permissionData) {
@@ -111,11 +111,11 @@ const UsersListing = (props) => {
 		}
 
 		dispatch(getAllRoleAPI((res) => {
-			if (res && res.data && res.data.DataList) {
+			if (res && res?.data && res?.data?.DataList) {
 				let Data = res?.data?.DataList;
 				let obj = {}
-				Data && Data.map((el, i) => {
-					obj[el.RoleId] = el?.RoleName
+				Data && Data?.map((el, i) => {
+					obj[el?.RoleId] = el?.RoleName
 					return null
 				})
 				setState((prevState) => ({ ...prevState, roleType: obj, }))
@@ -131,18 +131,16 @@ const UsersListing = (props) => {
 		comparator: function (filterLocalDateAtMidnight, cellValue) {
 
 			if (!cellValue || typeof cellValue !== 'string') {
-				console.error("Cell value is invalid or null. Returning -1.");
 				return -1;
 			}
 
-			var dateAsString = cellValue.split(' ')[0]; 
+			var dateAsString = cellValue?.split(' ')[0]; 
 			var newDate = filterLocalDateAtMidnight
 				? DayTime(filterLocalDateAtMidnight).format('DD/MM/YYYY')
 				: '';
 			setDate(newDate, fieldName);
 			var dateParts = dateAsString?.split('/');
-			if (dateParts.length !== 3) {
-				console.error("Date format is incorrect. Returning -1.");
+			if (dateParts?.length !== 3) {
 				return -1;
 			}
 
@@ -176,7 +174,7 @@ const UsersListing = (props) => {
 
 		setTimeout(() => {
 			let dateInputs = document.getElementsByClassName('ag-input-field-input');
-			for (let i = 0; i < dateInputs.length; i++) {
+			for (let i = 0; i < dateInputs?.length; i++) {
 				if (dateInputs[i].type === 'radio') {
 					dateInputs[i].click();
 				}
@@ -234,11 +232,11 @@ const UsersListing = (props) => {
 		dispatch(getAllUserDataAPI(data, res => {
 			setState((prevState) => ({ ...prevState, isLoader: false }));
 
-			if (res.status === 204 && res.data === '') {
+			if (res.status === 204 && res?.data === '') {
 				dispatch(updatePageNumber(0));
 				setState((prevState) => ({ ...prevState, userData: [], dataCount: 0 }));
-			} else if (res && res.data && res.data.DataList) {
-				let Data = res.data.DataList;
+			} else if (res && res?.data && res?.data?.DataList) {
+				let Data = res?.data.DataList;
 				setTotalRecordCount(Data[0]?.TotalRecordCount);
 				setWarningMessage(false);
 				setIsFilterButtonClicked(false);
@@ -267,10 +265,7 @@ const UsersListing = (props) => {
 						button && button.click()
 					}, 500);
 				}
-
-			} else {
-				console.log("error");
-			}
+			} 
 		}));
 	};
 
@@ -312,7 +307,7 @@ const UsersListing = (props) => {
 
 					// Reset specific floating filter data
 					for (var property in floatingFilterData) {
-						if (property === value.column.colId) {
+						if (property === value?.column?.colId) {
 							floatingFilterData[property] = "";
 						}
 					}
@@ -334,13 +329,13 @@ const UsersListing = (props) => {
 				}
 			}
 		} else {
-			if (value.column.colId === "ModifiedDate" || value.column.colId === "CreatedDate") {
+			if (value?.column?.colId === "ModifiedDate" || value?.column?.colId === "CreatedDate") {
 				return false;
 			}
 
 			setFloatingFilterData({
 				...floatingFilterData,
-				[value.column.colId]: value.filterInstance.appliedModel.filter
+				[value?.column?.colId]: value?.filterInstance?.appliedModel?.filter
 			});
 		}
 	};
@@ -353,16 +348,16 @@ const UsersListing = (props) => {
 	const onRowSelect = () => {
 		const selectedRows = state?.gridApi?.getSelectedRows();
 		dispatch(setSelectedRowForPagination(selectedRows))
-		setState((prevState) => ({ ...prevState, selectedRowData: selectedRows, dataCount: selectedRows.length }))
+		setState((prevState) => ({ ...prevState, selectedRowData: selectedRows, dataCount: selectedRows?.length }))
 	}
 
 	const onBtExport = () => {
 		let tempArr = state?.gridApi?.getSelectedRows() || [];
-		if (tempArr.length === 0) {
+		if (tempArr?.length === 0) {
 			tempArr = props?.RFQUser ? rfqUserList : userDataList;
 		}
 
-		if (tempArr && tempArr.length > 0) {
+		if (tempArr && tempArr?.length > 0) {
 			return returnExcelColumn(USER_LISTING_DOWNLOAD_EXCEl, tempArr);
 		} else {
 			return null; 
@@ -391,26 +386,25 @@ const UsersListing = (props) => {
 	}
 
 	const modifyDate = (TempData) => {
-		TempData = TempData.map(item => {
-			if (item.CreatedDate?.includes('T')) {
-				item.CreatedDate = DayTime(item.CreatedDate).format('DD/MM/YYYY HH:mm:ss');
+		TempData = TempData?.map(item => {
+			if (item?.CreatedDate?.includes('T')) {
+				item.CreatedDate = DayTime(item?.CreatedDate).format('DD/MM/YYYY HH:mm:ss');
 			}
-			if (item.ModifiedDate?.includes('T')) {
-				item.ModifiedDate = DayTime(item.ModifiedDate).format('DD/MM/YYYY HH:mm:ss');
+			if (item?.ModifiedDate?.includes('T')) {
+				item.ModifiedDate = DayTime(item?.ModifiedDate).format('DD/MM/YYYY HH:mm:ss');
 			}
 			return item;
 		});
 	}
 
 	const returnExcelColumn = (data = [], TempData) => {
-		if (!TempData || TempData.length === 0) {
-			console.error("No data to export");
+		if (!TempData || TempData?.length === 0) {
 			return null; 
 		}
 
 		let filteredData = [...data];
 
-		if (TempData != null && (TempData === userDataList || TempData.length > 0)) {
+		if (TempData != null && (TempData === userDataList || TempData?.length > 0)) {
 			if (!props?.RFQUser) {
 				filteredData = hideMultipleColumnFromExcel(data, ["PointOfContact", "VendorName", "CreatedDate", "ModifiedDate"]);
 			} else {
@@ -421,8 +415,8 @@ const UsersListing = (props) => {
 
 		return (
 			<ExcelSheet data={TempData} name="UserListing">
-				{filteredData && filteredData.map((ele, index) => (
-					<ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />
+				{filteredData && filteredData?.map((ele, index) => (
+					<ExcelColumn key={index} label={ele?.label} value={ele?.value} style={ele?.style} />
 				))}
 			</ExcelSheet>
 		);
@@ -440,13 +434,13 @@ const UsersListing = (props) => {
 	}
 
 	const onPopupConfirm = () => {
-		let data = { Id: state?.row.UserId, ModifiedBy: loggedInUserId(), IsActive: !state?.cell, }
+		let data = { Id: state?.row?.UserId, ModifiedBy: loggedInUserId(), IsActive: !state?.cell, }
 		dispatch(activeInactiveUser(data, (res) => {
-			if (res && res.data && res.data.Result) {
+			if (res && res?.data && res?.data?.Result) {
 				if (Boolean(state?.cell) === true) {
-					Toaster.success(MESSAGES.USER_INACTIVE_SUCCESSFULLY)
+					Toaster.success(MESSAGES?.USER_INACTIVE_SUCCESSFULLY)
 				} else {
-					Toaster.success(MESSAGES.USER_ACTIVE_SUCCESSFULLY)
+					Toaster.success(MESSAGES?.USER_ACTIVE_SUCCESSFULLY)
 				}
 				getDataList(null, null, skip, take, floatingFilterData, true);
 				setState((prevState) => ({ ...prevState, dataCount: 0 }))
@@ -466,8 +460,8 @@ const UsersListing = (props) => {
 		* @description Renders buttons
 		*/
 	const buttonFormatter = (props) => {
-		const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-		const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+		const cellValue = props?.valueFormatted ? props?.valueFormatted : props?.value;
+		const rowData = props?.valueFormatted ? props?.valueFormatted : props?.data;
 		const { EditAccessibility } = state;
 		if (rowData?.UserId === loggedInUserId()) return null;
 		return (
@@ -540,7 +534,7 @@ const UsersListing = (props) => {
 
 
 	const onFilterTextBoxChanged = (e) => {
-		const filterValue = e.target.value || ""; 
+		const filterValue = e?.target?.value || ""; 
 		state?.gridApi.setQuickFilter(filterValue);
 	}
 
@@ -585,7 +579,7 @@ const UsersListing = (props) => {
 		if (props?.RFQUser) {
 			return state?.showExtraData ? [...setLoremIpsum(rfqUserList[0]), ...rfqUserList] : rfqUserList;
 		} else {
-			if (state?.showExtraData && userDataList && userDataList.length > 0) {
+			if (state?.showExtraData && userDataList && userDataList?.length > 0) {
 				return [...setLoremIpsum(userDataList[0]), ...userDataList];
 			} else {
 				return userDataList;
@@ -595,15 +589,15 @@ const UsersListing = (props) => {
 
 
 	const onGridReady = (params) => {
-		setState((prevState) => ({ ...prevState, gridApi: params.api, gridColumnApi: params.columnApi }))
+		setState((prevState) => ({ ...prevState, gridApi: params?.api, gridColumnApi: params?.columnApi }))
 		params.api.paginationGoToPage(0);
 		window.screen.width >= 1920 && params.api.sizeColumnsToFit()
 	};
 
 	const { EditAccessibility, AddAccessibility, noData } = state;
 	const isFirstColumn = (params) => {
-		var displayedColumns = params.columnApi.getAllDisplayedColumns();
-		var thisIsFirstColumn = displayedColumns[0] === params.column;
+		var displayedColumns = params?.columnApi.getAllDisplayedColumns();
+		var thisIsFirstColumn = displayedColumns[0] === params?.column;
 		return thisIsFirstColumn;
 	}
 
@@ -637,7 +631,7 @@ const UsersListing = (props) => {
 
 								<div>
 									<Button
-										id="rmDomesticListing_filter"
+										id="userListing_filter"
 										className={"mr5 Tour_List_Filter"}
 										onClick={() => onSearch()}
 										title={"Filtered data"}
@@ -646,7 +640,7 @@ const UsersListing = (props) => {
 									/>
 									<Button
 										className="mr5 Tour_List_Download"
-										id={"rmDomesticListing_excel_download"}
+										id={"userListing_excel_download"}
 										onClick={onExcelDownload}
 										title={`Download ${state?.dataCount === 0 ? "All" : `(${state?.dataCount})`}`}
 										icon={"download mr-1"}
@@ -701,7 +695,7 @@ const UsersListing = (props) => {
 						>
 							{/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
 							<AgGridColumn field="FullName" headerName="Name" cellRenderer={'linkableFormatter'}></AgGridColumn>
-							{initialConfiguration && !initialConfiguration.IsLoginEmailConfigure ? (
+							{initialConfiguration && !initialConfiguration?.IsLoginEmailConfigure ? (
 								<AgGridColumn field="UserName" headerName="User Name"></AgGridColumn>
 							) : null}
 							{props?.RFQUser && <AgGridColumn field="VendorName" headerName={`${vendorLabel} (Code)`}></AgGridColumn>}
@@ -734,7 +728,7 @@ const UsersListing = (props) => {
 				{state?.isOpen && (<ViewUserDetails UserId={state?.UserId} isOpen={state?.isOpen} editItemDetails={editItemDetails} closeUserDetails={closeUserDetails} EditAccessibility={EditAccessibility} anchor={"right"} IsLoginEmailConfigure={initialConfiguration.IsLoginEmailConfigure} RFQUser={props?.RFQUser} />)}
 
 			</>
-			{state?.showPopup && <PopupMsgWrapper isOpen={state?.showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${state?.cell ? MESSAGES.USER_DEACTIVE_ALERT : MESSAGES.USER_ACTIVE_ALERT}`} />}
+			{state?.showPopup && <PopupMsgWrapper isOpen={state?.showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${state?.cell ? MESSAGES?.USER_DEACTIVE_ALERT : MESSAGES?.USER_ACTIVE_ALERT}`} />}
 
 		</div >
 	);
