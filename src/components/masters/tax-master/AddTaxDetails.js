@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
 import { required, checkWhiteSpaces, maxLength80, positiveAndDecimalNumber, acceptAllExceptSingleSpecialCharacter, checkPercentageValue, decimalLengthThree } from "../../../helper/validation";
-import { renderDatePicker, renderText, searchableSelect } from "../../layout/FormInputs";
+import { renderDatePicker, renderText, searchableSelect, validateForm } from "../../layout/FormInputs";
 import { createTaxDetails, getTaxDetailsData, updateTaxDetails, } from '../actions/TaxMaster';
 import { fetchCountryDataAPI, } from '../../../actions/Common';
 import Toaster from '../../common/Toaster';
@@ -396,6 +396,7 @@ export default connect(mapStateToProps, {
   fetchCountryDataAPI,
 })(reduxForm({
   form: 'AddTaxDetails',
+  validate: validateForm,
   enableReinitialize: true,
   touchOnChange: true
 })(AddTaxDetails));

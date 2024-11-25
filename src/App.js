@@ -5,6 +5,7 @@ import { BrowserRouter, Route, } from "react-router-dom";
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { getLoginPageInit, } from "./actions/auth/AuthActions";
 import { MsalProvider } from '@azure/msal-react';
+import { frameBreaker } from './helper/util.js';
 require('dotenv').config();
 class App extends Component {
   constructor(props) {
@@ -13,6 +14,11 @@ class App extends Component {
       isUserLoggedIn: false,
     };
   }
+
+  // componentDidMount() {
+  //   // Add frame breaker protection
+  //   frameBreaker();
+  // }
 
   UNSAFE_componentWillMount() {
     if (window.performance.getEntriesByType("navigation")[0].type === 'back_forward' || window.performance.getEntriesByType("navigation")[0].type === 'navigate') { //TO CHECK IF DUPLICATE TAB IS OPENED

@@ -60,7 +60,7 @@ class PermissionsTabIndex extends Component {
         this.props.getActionHeadsSelectList(() => {
             setTimeout(() => {
                 const { isEditFlag, isNewRole } = this.props;
-                if (isEditFlag === false && isNewRole) {
+                if (isEditFlag === false && isNewRole && this.props.isCallNewApi === true) {
                     this.getRolePermission()
                 }
             }, 500)
@@ -367,7 +367,7 @@ class PermissionsTabIndex extends Component {
                                         this.state.auction?.length > 0 &&
                                         <NavItem>
                                             <NavLink className={classnames({ active: this.state.activeTab === '12' })} onClick={() => { this.toggle('12'); }}>
-                                            Reverse Auction
+                                                Reverse Auction
                                             </NavLink>
                                         </NavItem>
                                     }

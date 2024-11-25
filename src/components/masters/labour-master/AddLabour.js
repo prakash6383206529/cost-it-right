@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import { Field, reduxForm, formValueSelector, clearFields } from 'redux-form'
 import { Row, Col, Table, Label } from 'reactstrap'
 import { required, checkForNull, positiveAndDecimalNumber, maxLength10, checkForDecimalAndNull, decimalLengthsix, number, maxPercentValue, percentageLimitValidation } from '../../../helper/validation'
-import { focusOnError, renderTextInputField, searchableSelect } from '../../layout/FormInputs'
+import { focusOnError, renderTextInputField, searchableSelect, validateForm } from '../../layout/FormInputs'
 import { getPlantListByState } from '../actions/Fuel'
 import { getProductGroupSelectList } from '../actions/Part'
 import { createLabour, getLabourData, updateLabour, getLabourTypeByMachineTypeSelectList, } from '../actions/Labour'
@@ -1367,6 +1367,7 @@ export default connect(mapStateToProps, {
 })(
   reduxForm({
     form: 'AddLabour',
+    validate: validateForm,
     enableReinitialize: true,
     touchOnChange: true,
     onSubmitFail: errors => {

@@ -5,6 +5,7 @@ import { Row, Col, Table, Label } from 'reactstrap';
 import { required, checkForDecimalAndNull, positiveAndDecimalNumber, maxLength10, decimalLengthsix, number, getCodeBySplitting } from "../../../helper/validation";
 import {
   searchableSelect, focusOnError, renderTextInputField,
+  validateForm,
 } from "../../layout/FormInputs";
 import { getUOMSelectList, fetchStateDataAPI, getAllCity, getPlantSelectListByType, fetchCountryDataAPI, fetchCityDataAPI, getVendorNameByVendorSelectList, getCityByCountryAction, } from '../../../actions/Common';
 import { getFuelByPlant, createFuelDetail, updateFuelDetail, getFuelDetailData, getUOMByFuelId, getAllFuelAPI } from '../actions/Fuel';
@@ -1307,6 +1308,7 @@ export default connect(mapStateToProps, {
 
 })(reduxForm({
   form: 'AddFuel',
+  validate: validateForm,
   enableReinitialize: true,
   touchOnChange: true,
   onSubmitFail: errors => {

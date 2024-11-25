@@ -6,7 +6,7 @@ import {
   required, checkForNull, postiveNumber, checkForDecimalAndNull, acceptAllExceptSingleSpecialCharacter,
   checkWhiteSpaces, maxLength80, maxLength10, maxLength512, checkSpacesInString, decimalLengthsix, hashValidation, getNameBySplitting, number
 } from "../../../helper/validation";
-import { renderText, searchableSelect, renderTextAreaField, focusOnError, renderDatePicker } from "../../layout/FormInputs";
+import { renderText, searchableSelect, renderTextAreaField, focusOnError, renderDatePicker, validateForm } from "../../layout/FormInputs";
 import { getPlantSelectListByType, getPlantBySupplier, getUOMSelectList, getVendorNameByVendorSelectList } from '../../../actions/Common';
 import {
   createMachine, updateMachine, updateMachineDetails, getMachineTypeSelectList, getProcessesSelectList, fileUploadMachine,
@@ -509,7 +509,7 @@ class AddMachineRate extends Component {
   */
   handleMessageChange = (e) => {
     this.setState({
-      remarks: e.target.value,
+      remarks: e?.target?.value,
       DropdownChange: false
     })
   }
@@ -1231,7 +1231,7 @@ class AddMachineRate extends Component {
         Specification: values.Specification,
         LoggedInUserId: loggedInUserId(),
         MachineProcessRates: processGrid,
-        Technology: (technologyArray.length > 0 && technologyArray[0]?.Technology !== undefined) ? technologyArray : [{ Technology: selectedTechnology.label ? selectedTechnology.label : selectedTechnology[0].label, TechnologyId: selectedTechnology.value ? selectedTechnology.value : selectedTechnology[0].value }],
+        Technology: (technologyArray.length > 0 && technologyArray[0]?.Technology !== undefined) ? technologyArray : [{ Technology: selectedTechnology?.label ? selectedTechnology?.label : selectedTechnology[0]?.label, TechnologyId: selectedTechnology?.value ? selectedTechnology?.value : selectedTechnology[0]?.value }],
         Plant: [{ PlantId: selectedPlants.value, PlantName: selectedPlants.label }],
         DestinationPlantId: '',
         Remark: remarks,
@@ -2154,6 +2154,7 @@ export default connect(mapStateToProps, {
   getVendorNameByVendorSelectList
 })(reduxForm({
   form: 'AddMachineRate',
+  validate: validateForm,
   enableReinitialize: true,
   touchOnChange: true,
   onSubmitFail: errors => {

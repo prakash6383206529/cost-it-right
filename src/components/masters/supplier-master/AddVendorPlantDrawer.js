@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
 import { required, number, minLength10, maxLength12, maxLength6 } from "../../../helper/validation";
-import { renderText, renderTextInputField, searchableSelect } from "../../layout/FormInputs";
+import { renderText, renderTextInputField, searchableSelect, validateForm } from "../../layout/FormInputs";
 import { createPlantAPI, } from '../actions/Plant';
 import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, fetchSupplierCityDataAPI, getCityByCountryAction, } from '../../../actions/Common';
 import Toaster from '../../common/Toaster';
@@ -70,7 +70,7 @@ class AddVendorPlantDrawer extends Component {
   getAllCityData = () => {
     const { country } = this.state;
     if (country && country.label !== 'India') {
-      this.props.getCityByCountryAction(country.value, '00000000000000000000000000000000','', () => { })
+      this.props.getCityByCountryAction(country.value, '00000000000000000000000000000000', '', () => { })
     } else {
       this.props.fetchStateDataAPI(country.value, () => { })
     }
@@ -230,7 +230,7 @@ class AddVendorPlantDrawer extends Component {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, isEditFlag, t} = this.props;
+    const { handleSubmit, isEditFlag, t } = this.props;
     const { country } = this.state;
     const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
 
@@ -495,6 +495,7 @@ export default connect(mapStateToProps, {
   getCityByCountryAction,
 })(reduxForm({
   form: 'AddVendorPlantDrawer',
+  validate: validateForm,
   enableReinitialize: true,
   touchOnChange: true
 })(AddVendorPlantDrawer));

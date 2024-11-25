@@ -2,6 +2,7 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { reduxForm } from "redux-form";
 import "react-datepicker/dist/react-datepicker.css";
+import { validateForm } from '../../layout/FormInputs';
 
 class AddPackaging extends Component {
     constructor(props) {
@@ -77,6 +78,7 @@ export default connect(mapStateToProps, {
 
 })(reduxForm({
     form: 'AddPackaging',
+    validate: validateForm,
     enableReinitialize: true,
     touchOnChange: true
 })(AddPackaging));

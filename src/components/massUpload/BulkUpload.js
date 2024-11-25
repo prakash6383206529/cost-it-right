@@ -70,7 +70,7 @@ import DayTime from '../common/DayTimeWrapper';
 import { checkSAPCodeinExcel } from './DownloadUploadBOMxls';
 import WarningMessage from '../common/WarningMessage';
 import Switch from 'react-switch'
-import { searchableSelect } from '../layout/FormInputs';
+import { searchableSelect, validateForm } from '../layout/FormInputs';
 import { LabelsClass, localizeHeadersWithLabels } from '../../helper/core';
 import { withTranslation } from 'react-i18next';
 import { sapPushBulkUpload } from '../masters/actions/SAPDetail';
@@ -1618,6 +1618,7 @@ export default connect(mapStateToProps, {
     sapPushBulkUpload
 })(reduxForm({
     form: 'BulkUpload',
+    validate: validateForm,
     enableReinitialize: true,
     touchOnChange: true
 })(withTranslation('MasterLabels')(BulkUpload)));
