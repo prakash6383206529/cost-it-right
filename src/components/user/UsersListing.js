@@ -89,22 +89,22 @@ const UsersListing = (props) => {
 	const { isSimulation } = props;
 	useEffect(() => {
 		getDataList(null, null, skip, take, floatingFilterData, true);
-		if (props.tabId === '1' || props.tabId === '6') {
+		if (props?.tabId === '1' || props?.tabId === '6') {
 			const moduleName = 'Users';
 			const pageType = props.tabId === '1' ? USER : RFQUSER;
 
 			if (topAndLeftMenuData) {
 				const userMenu = topAndLeftMenuData.find(el => el.ModuleName === moduleName);
-				const userPermissions = userMenu && userMenu.Pages.find(el => el.PageName === pageType);
-				const permissionData = userPermissions && userPermissions.Actions && checkPermission(userPermissions.Actions);
+				const userPermissions = userMenu && userMenu?.Pages.find(el => el?.PageName === pageType);
+				const permissionData = userPermissions && userPermissions?.Actions && checkPermission(userPermissions?.Actions);
 
 				if (permissionData) {
 					setState(prevState => ({
 						...prevState,
-						AddAccessibility: permissionData.Add || false,
-						EditAccessibility: permissionData.Edit || false,
-						DeleteAccessibility: permissionData.Delete || false,
-						ActivateAccessibility: permissionData.Activate || false,
+						AddAccessibility: permissionData?.Add || false,
+						EditAccessibility: permissionData?.Edit || false,
+						DeleteAccessibility: permissionData?.Delete || false,
+						ActivateAccessibility: permissionData?.Activate || false,
 					}));
 				}
 			}
@@ -112,10 +112,10 @@ const UsersListing = (props) => {
 
 		dispatch(getAllRoleAPI((res) => {
 			if (res && res.data && res.data.DataList) {
-				let Data = res.data.DataList;
+				let Data = res?.data?.DataList;
 				let obj = {}
 				Data && Data.map((el, i) => {
-					obj[el.RoleId] = el.RoleName
+					obj[el.RoleId] = el?.RoleName
 					return null
 				})
 				setState((prevState) => ({ ...prevState, roleType: obj, }))
@@ -654,7 +654,7 @@ const UsersListing = (props) => {
 									/>
 
 									<ExcelFile
-										filename={`${props.RFQUser ? 'RFQ User Listing' : 'User Listing'}`}
+										filename={`${props?.RFQUser ? 'RFQ User Listing' : 'User Listing'}`}
 										fileExtension={'.xls'}
 										element={<Button id={"Excel-Downloads-userListing"} className="p-absolute" onClick={onBtExport} />}
 									>
@@ -731,7 +731,7 @@ const UsersListing = (props) => {
 					</div>
 				</div>}
 
-				{state?.isOpen && (<ViewUserDetails UserId={state?.UserId} isOpen={state?.isOpen} editItemDetails={editItemDetails} closeUserDetails={closeUserDetails} EditAccessibility={EditAccessibility} anchor={"right"} IsLoginEmailConfigure={initialConfiguration.IsLoginEmailConfigure} RFQUser={props.RFQUser} />)}
+				{state?.isOpen && (<ViewUserDetails UserId={state?.UserId} isOpen={state?.isOpen} editItemDetails={editItemDetails} closeUserDetails={closeUserDetails} EditAccessibility={EditAccessibility} anchor={"right"} IsLoginEmailConfigure={initialConfiguration.IsLoginEmailConfigure} RFQUser={props?.RFQUser} />)}
 
 			</>
 			{state?.showPopup && <PopupMsgWrapper isOpen={state?.showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${state?.cell ? MESSAGES.USER_DEACTIVE_ALERT : MESSAGES.USER_ACTIVE_ALERT}`} />}
