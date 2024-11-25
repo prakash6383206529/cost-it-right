@@ -2551,12 +2551,12 @@ const CostingSummaryTable = (props) => {
                                 /></th></tr>}
 
                             <tr className={highlighter("netRM", "main-row")}>
-                              <th>Cost/Assembly {simulationDrawer && (Number(master) === Number(RMDOMESTIC) || Number(master) === Number(RMIMPORT)) && '(Old)'}</th>
+                              <th>Cost/Assembly {showConvertedCurrency ? '(' + initialConfiguration?.BaseCurrency + ')' : ''} {simulationDrawer && (Number(master) === Number(RMDOMESTIC) || Number(master) === Number(RMIMPORT)) && '(Old)'}</th>
                               {viewCostingData &&
                                 viewCostingData?.map((data, index) => {
                                   return (
                                     <td className={tableDataClass(data)}>
-                                      {displayValueWithSign(data, "nTotalRMBOPCC")}
+                                      {displayValueWithSign(data, "nTotalRMBOPCC")} {showConvertedCurrency ? '(' : ''}{showConvertedCurrency && displayValueWithSign(data, 'nTotalRMBOPCCLocalConversion')}{showConvertedCurrency ? ')' : ''}
                                       {
                                         (data?.bestCost !== true) && (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&
                                         <button
@@ -3743,6 +3743,7 @@ const CostingSummaryTable = (props) => {
             costingTypeId={viewCostingData[index]?.costingTypeId}
             simulationMode={simulationMode}
             SimulationId={props?.simulationId}
+            viewCostingData={viewCostingData}
           />
         )
       }

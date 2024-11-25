@@ -16,8 +16,9 @@ import { COSTINGCONDITIONCOST } from '../../../../../config/constants'
 import { reactLocalStorage } from 'reactjs-localstorage'
 
 function AddConditionCosting(props) {
-    const { currency, basicRateBase, isFromImport, isFromMaster, EntryType, PlantCurrency } = props
+    const { currency, basicRateBase, isFromImport, isFromMaster, EntryType, PlantCurrency, isImpactedMaster = false } = props
     const [tableData, setTableData] = useState(props?.tableData)
+
     // const [tableData, setTableData] = useState([])
     const [disableTotalCost, setDisableTotalCost] = useState(true)
     const [disableAllFields, setDisableAllFields] = useState(true)
@@ -32,6 +33,7 @@ function AddConditionCosting(props) {
     const [disableEntryType, setDisableEntryType] = useState(false)
     const [costingConditionEntryType, setCostingConditionEntryType] = useState(props?.costingConditionEntryType)
     const [availableApplicabilities, setAvailableApplicabilities] = useState(["Basic Price"]);
+    const [conditionCost, setConditionCost] = useState('');
     const [state, setState] = useState({
         Applicability: '',
         disableApplicability: true,
@@ -193,12 +195,14 @@ function AddConditionCosting(props) {
             setValue('Percentage', '')
             setState(prevState => ({ ...prevState, disableType: isType ? false : true }));
         } else if (e?.ConditionType === 'Percentage') {
+
             setState(prevState => ({ ...prevState, disableApplicability: false, disableType: isType ? false : true }));
             setDisableAllFields(false)
             setDisableTotalCost(true)
             setTotalCostCurrency('')
             setTotalCostBase('')
         } else {
+
             setState(prevState => ({ ...prevState, disableType: false }));
             setDisableAllFields(false)
             setDisableTotalCost(true)
@@ -237,12 +241,14 @@ function AddConditionCosting(props) {
             setValue("ConditionCostPerQuantity", checkForDecimalAndNull(ConditionCostPerQuantity, initialConfiguration?.NoOfDecimalForPrice))
             setDisableBase(true)
             setTotalCostCurrency(e.target.value)
+
             setTotalCostBase(costBase)
             setValue("ConditionCostPerQuantity", checkForDecimalAndNull(ConditionCostPerQuantity, initialConfiguration?.NoOfDecimalForPrice))
             setDisableBase(true)
             setTotalCostCurrency(e.target.value)
             setTotalCostBase(costBase)
         } else {
+
             setValue("CostBase", '')
             setDisableBase(false)
             setTotalCostCurrency('')
@@ -255,8 +261,10 @@ function AddConditionCosting(props) {
             let costBase = checkForNull((e.target.value) / 100) * checkForNull(state.ApplicabilityCost)
             setValue('CostCurrency', checkForDecimalAndNull(costBase, initialConfiguration?.NoOfDecimalForPrice))
             setTotalCostCurrency(costBase)
+
             setTotalCostBase(costBase)
         } else {
+
             setValue('CostBase', '')
             setValue('CostCurrency', '')
             setTotalCostCurrency('')
@@ -337,6 +345,7 @@ function AddConditionCosting(props) {
             setDisableAllFields(true);
             setDisableTotalCost(true);
             setTotalCostCurrency('');
+
             setTotalCostBase('');
             setType('');
             setEditIndex('');
@@ -367,7 +376,8 @@ function AddConditionCosting(props) {
     };
 
     // This function takes in two parameters - the index of the data being edited or deleted, and the operation to perform (either 'delete' or 'edit').
-    const editData = (indexValue, operation) => {
+    const editData = (indexValue, operation, totalCostCurrency) => {
+
 
         // If the operation is 'delete', remove the data at the specified index from the tableData array.
         if (operation === 'delete') {
@@ -380,7 +390,7 @@ function AddConditionCosting(props) {
             setTableData(temp) // Update the tableData state with the updated array
             resetData()
         }
-
+        setConditionCost(totalCostCurrency)
         // If the operation is 'edit', set the editIndex state to the index of the data being edited, and set the isEditMode state to true.
         if (operation === 'edit') {
             setEditIndex(indexValue)
@@ -401,6 +411,7 @@ function AddConditionCosting(props) {
             setValue('Applicability', { label: Data.Applicability, value: Data.Applicability })
             setValue('ApplicabilityCost', Data?.ApplicabilityCost)
             setTotalCostCurrency(Data?.ConditionCost)
+
             setTotalCostBase(Data?.ConditionCostConversion)
             setCostingConditionEntryType(Data.CostingConditionEntryTypeId)
             setState(prevState => ({ ...prevState, ApplicabilityCost: Data?.ApplicabilityCost }));
@@ -743,7 +754,7 @@ function AddConditionCosting(props) {
                                     <button
                                         type={'button'}
                                         className="submit-button save-btn"
-                                        onClick={() => { props.closeDrawer('save', tableData, costingConditionEntryType) }}
+                                        onClick={() => { props.closeDrawer('save', tableData, costingConditionEntryType, conditionCost) }}
                                         disabled={props.ViewMode}
                                     >
                                         <div className={"save-icon"}></div>

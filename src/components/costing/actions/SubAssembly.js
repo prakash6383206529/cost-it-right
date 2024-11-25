@@ -97,7 +97,7 @@ export function saveEditPartCostDetails(data, callback) {
 export function getCostingForMultiTechnology(data, callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST });
-    const queryParams = `partId=${data?.partId}&plantId=${data?.plantId}&costingTypeId=${data?.costingTypeId}&isRequestForWAC=${data?.isRequestForWAC}&effectiveDate=${data?.effectiveDate}`
+    const queryParams = `partId=${data?.partId}&plantId=${data?.plantId}&costingTypeId=${data?.costingTypeId}&isRequestForWAC=${data?.isRequestForWAC}&effectiveDate=${data?.effectiveDate}&baseCostingId=${data?.baseCostingId}`
     const request = axios.get(`${API.getCostingForMultiTechnology}?${queryParams}`, config());
     request.then((response) => {
       dispatch({

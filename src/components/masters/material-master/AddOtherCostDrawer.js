@@ -21,6 +21,7 @@ function AddOtherCostDrawer(props) {
     const CurrencyLabel = !props.rawMaterial ? reactLocalStorage.getObject('baseCurrency') : isImport && (props.rawMaterial || isBOP) ? settlementCurrency : plantCurrency
     const UOM = props?.RowData?.IndexUOM || (Array.isArray(props?.uom) ? '' : props?.uom?.label) || '';
     const [tableData, setTableData] = useState([]);
+
     const [disableTotalCost, setDisableTotalCost] = useState(true)
     const [disableAllFields, setDisableAllFields] = useState(true)
     const [editIndex, setEditIndex] = useState('')
@@ -110,7 +111,7 @@ function AddOtherCostDrawer(props) {
     }, [tableData, state.costDropdown]);
     const updateAvailableApplicabilities = () => {
         const newApplicabilities = ["Basic Rate"];
-        tableData.forEach(item => {
+        tableData?.forEach(item => {
             if (item.CostHeaderName !== "Basic Rate" && !newApplicabilities.includes(item.CostHeaderName)) {
                 newApplicabilities.push(item.CostHeaderName);
             }

@@ -8746,3 +8746,111 @@ export const indexationDropdown = [
     { label: 'Indexed', value: 'Indexed' },
     { label: 'Non Indexed', value: 'Non Indexed' },
 ]
+
+export const DUMMYOTHERCOSTDATA = [
+    {
+        "CostHeaderName": "Other Cost",
+        "RawMaterialCommodityIndexRateAndOtherCostDetailsId": "b10bf2f4-4df2-482d-aff2-821c46a1ac9e",
+        "CostingConditionMasterId": 127,
+        "Type": "Fixed",
+        "Applicability": "-",
+        "ApplicabilityCost": null,
+        "ApplicabilityCostConversion": null,
+        "Value": null,
+        "NetCost": 10,
+        "NetCostConversion": 10,
+        "Description": "test",
+        "Remark": "testt"
+    },
+    {
+        "CostHeaderName": "Yield Loss",
+        "RawMaterialCommodityIndexRateAndOtherCostDetailsId": "87feb5eb-16bb-4ff2-bd1d-7bfef431d768",
+        "CostingConditionMasterId": 131,
+        "Type": "Percentage",
+        "Applicability": "Basic Rate",
+        "ApplicabilityCost": 24,
+        "ApplicabilityCostConversion": 24,
+        "Value": 100,
+        "NetCost": 24,
+        "NetCostConversion": 24,
+        "Description": "testtt",
+        "Remark": "test"
+    },
+    {
+        "CostHeaderName": "Freight Cost",
+        "RawMaterialCommodityIndexRateAndOtherCostDetailsId": "011db0e9-dfed-4485-9366-6a165e8a069f",
+        "CostingConditionMasterId": 136,
+        "Type": "Percentage",
+        "Applicability": "Basic Rate + Other Cost",
+        "ApplicabilityCost": 34,
+        "ApplicabilityCostConversion": 34,
+        "Value": 100,
+        "NetCost": 34,
+        "NetCostConversion": 34,
+        "Description": "testttt",
+        "Remark": "testtttt"
+    }
+]
+
+export const DUMMYCONDITIONCOSTDATA = [
+    {
+        "CostingConditionMasterId": 112,
+        "ConditionNumber": "ZECE",
+        "ConditionType": "Percentage",
+        "Percentage": 10,
+        "ConditionCost": 9.2,
+        "ConditionCostConversion": 9.2,
+        "Description": "ECESS (ZECE)",
+        "Remark": "",
+        "Applicability": "Basic Price",
+        "ApplicabilityCost": 92,
+        "ConditionQuantity": null,
+        "ConditionCostPerQuantity": 9.2,
+        "ConditionCostPerQuantityConversion": 92
+    },
+    {
+        "CostingConditionMasterId": 113,
+        "ConditionNumber": "ZSEC",
+        "ConditionType": "Percentage",
+        "Percentage": 10,
+        "ConditionCost": 10.12,
+        "ConditionCostConversion": 10.12,
+        "Description": "SECESS (ZSEC)",
+        "Remark": "",
+        "Applicability": "Basic Price +  ECESS (ZECE)",
+        "ApplicabilityCost": 101.2,
+        "ConditionQuantity": null,
+        "ConditionCostPerQuantity": 10.12,
+        "ConditionCostPerQuantityConversion": 18.4
+    },
+    {
+        "CostingConditionMasterId": 110,
+        "ConditionNumber": "ZFE%",
+        "ConditionType": "Percentage",
+        "Percentage": 10,
+        "ConditionCost": 11.132,
+        "ConditionCostConversion": 11.132,
+        "Description": "Freight BT % (ZFE%)",
+        "Remark": "",
+        "Applicability": "Basic Price +  ECESS (ZECE) +  SECESS (ZSEC)",
+        "ApplicabilityCost": 111.32,
+        "ConditionQuantity": null,
+        "ConditionCostPerQuantity": 11.132,
+        "ConditionCostPerQuantityConversion": null
+    },
+    {
+        "CostingConditionMasterId": 2,
+        "ConditionNumber": "CUAC",
+        "ConditionType": "Quantity",
+        "Percentage": null,
+        "ConditionCost": 10,
+        "ConditionCostConversion": 10,
+        "Description": "Antidumping cus.qty (CUAC)",
+        "Remark": "",
+        "Applicability": null,
+        "ApplicabilityCost": null,
+        "ConditionQuantity": 2,
+        "ConditionCostPerQuantity": 5,
+        "ConditionCostPerQuantityConversion": 5
+    }
+]

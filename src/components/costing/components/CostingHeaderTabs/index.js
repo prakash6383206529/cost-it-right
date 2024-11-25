@@ -28,7 +28,7 @@ import DayTime from '../../../common/DayTimeWrapper'
 import TabAssemblyTechnology from './TabAssemblyTechnology';
 import { createToprowObjAndSave, errorCheck, errorCheckObject, findSurfaceTreatmentData } from '../../CostingUtil';
 import _ from 'lodash'
-import { IdForMultiTechnology, TOOLING_ID } from '../../../../config/masterData';
+import { ASSEMBLY, IdForMultiTechnology, TOOLING_ID } from '../../../../config/masterData';
 import WarningMessage from '../../../common/WarningMessage';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { LOGISTICS } from '../../../../config/masterData';
@@ -114,7 +114,7 @@ function CostingHeaderTabs(props) {
   }
 
   useEffect(() => {
-    if (currency && effectiveDate && exchangeRateSource && !costData?.ExchangeRateId && !costData?.CostingCurrencyId) {
+    if (currency && effectiveDate && exchangeRateSource && !costData?.ExchangeRateId && (costData?.TechnologyId === ASSEMBLY ? true : !costData?.CostingCurrencyId)) {
       let arr = []
       callExchangeRateAPI(costData?.LocalCurrency).then(res => { //plant
         arr.push(res?.data?.Data)
