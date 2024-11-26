@@ -82,7 +82,7 @@ const BOPDomesticListing = (props) => {
     inRangeDate: [],
     analyticsDrawer: false,
     selectedRowData: [],
-    floatingFilterData: { CostingHead: "", BoughtOutPartNumber: "", BoughtOutPartName: "", BoughtOutPartCategory: "", UOM: "", Specification: "", Plants: "", Vendor: "", BasicRate: "", NetLandedCost: "", EffectiveDate: "", DepartmentName: props.isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant ? userDepartmetList() : "", CustomerName: "", NumberOfPieces: "", NetCostWithoutConditionCost: "", NetConditionCost: "", IsBreakupBoughtOutPart: "", TechnologyName: "", SAPCode: "" },
+    floatingFilterData: { CostingHead: "", BoughtOutPartNumber: "", BoughtOutPartName: "", BoughtOutPartCategory: "", UOM: "", Specification: "", Plants: "", Vendor: "", BasicRate: "", NetLandedCost: "", EffectiveDate: "", DepartmentName: props.isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant ? userDepartmetList() : "", CustomerName: "", NumberOfPieces: "", NetCostWithoutConditionCost: "", NetConditionCost: "", IsBreakupBoughtOutPart: "", TechnologyName: "", SAPPartNumber: "" },
     warningMessage: false,
     filterModel: {},
     // pageNo: 1,
@@ -664,7 +664,7 @@ const BOPDomesticListing = (props) => {
       if (column.value === "NumberOfPieces") {
         return getConfigurationKey().IsMinimumOrderQuantityVisible
       }
-      if (column.value === "SAPCode") {
+      if (column.value === "SAPPartNumber") {
         return getConfigurationKey().IsSAPCodeRequired
       }
       return true;
@@ -690,7 +690,7 @@ const BOPDomesticListing = (props) => {
       tempData = data
     }
     if (!getConfigurationKey().IsSAPCodeRequired) {
-      tempData = hideColumnFromExcel(tempData, "SAPCode")
+      tempData = hideColumnFromExcel(tempData, "SAPPartNumber")
     }
     temp = TempData && TempData.map((item) => {
       if (item.Plants === '-') {

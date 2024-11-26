@@ -9,7 +9,7 @@ import { MESSAGES } from '../../../config/message';
 import { loggedInUserId, } from "../../../helper/auth";
 import "react-datepicker/dist/react-datepicker.css";
 import DayTime from '../../common/DayTimeWrapper'
-import { renderDatePicker, renderText, renderTextInputField, searchableSelect, } from "../../layout/FormInputs";
+import { renderDatePicker, renderText, renderTextInputField, searchableSelect, validateForm, } from "../../layout/FormInputs";
 import LoaderCustom from '../../common/LoaderCustom';
 import { debounce } from 'lodash';
 import { onFocus } from '../../../helper';
@@ -415,7 +415,7 @@ class AddExchangeRate extends Component {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit,t } = this.props;
+    const { handleSubmit, t } = this.props;
     const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
 
     const { isEditFlag, isViewMode, setDisable, costingTypeId } = this.state;
@@ -805,6 +805,7 @@ export default connect(mapStateToProps, {
   getExchangeRateSource
 })(reduxForm({
   form: 'AddExchangeRate',
+  validate: validateForm,
   enableReinitialize: true,
 
 })(withTranslation(['ExchangeRateMaster', 'MasterLabels'])(AddExchangeRate)),

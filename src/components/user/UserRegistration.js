@@ -550,10 +550,11 @@ function UserRegistration(props) {
     }
     if (label === 'plant') {
       plantSelectListForDepartment?.forEach((item) => {
+        
         if (item?.PlantId === '0') {
           temp.push({ label: "Select All", value: '0' });
         } else {
-          temp.push({ label: item.PlantNameCode, value: item.PlantId })
+          temp.push({ ...item,label: item?.PlantNameCode, value: item?.PlantId })
         }
       });
       const isSelectAllOnly = temp.length === 1 && temp[0]?.label === "Select All" && temp[0]?.value === "0";
@@ -752,7 +753,7 @@ function UserRegistration(props) {
           setTimeout(() => {
             let plantArray = []
             Data && Data?.DepartmentsPlantsIdLists?.map((item) => {
-              plantArray.push({ label: `${item.PlantName}`, value: (item?.PlantId)?.toString() })
+              plantArray.push({ label: `${item?.PlantName}`, value: (item?.PlantId)?.toString(), PlantCode: item?.PlantCode, PlantName: item?.PlantName, PlantId: item?.PlantId })
               return null;
             })
             let divisionArray = []
@@ -890,25 +891,25 @@ function UserRegistration(props) {
    * @description Used for User's additional permission
    */
   const onPressUserPermission = (e) => {
-    console.log(e, "E.")
+    
 
       ; // Set loading to true when starting
 
     if (role && role.value) {
-      console.log(IsShowAdditionalPermission);
+      
 
       setIsShowAdditionalPermission(!IsShowAdditionalPermission)
       setModules([])
 
       if (isEditFlag && grantUserWisePermission) {
-        console.log(isEditFlag);
-        console.log(grantUserWisePermission);
+        
+        
         if (!e) {
           setIsPermissionLoading(true)
         }
         getUserPermission(UserId)
       } else {
-        console.log(role.value);
+        
         if (!e) {
           setIsPermissionLoading(true)
         }
@@ -2076,6 +2077,7 @@ function UserRegistration(props) {
 
   }
 
+
   /**
    * @name onSubmit
    * @param values
@@ -2226,10 +2228,12 @@ function UserRegistration(props) {
     setOnboardingTableChanged(isForcefulUpdatedForOnboarding);
     let plantArray = []
     selectedPlants && selectedPlants.map(item => {
+      
+      
       let obj = {
-        PlantId: item.value,
-        PlantName: getNameBySplitting(item.label),
-        PlantCode: getCodeBySplitting(item.label),
+        PlantId: item?.PlantId,
+        PlantName: item?.PlantName,
+        PlantCode : item?.PlantCode,
       }
       plantArray.push(obj)
     })
@@ -2613,18 +2617,30 @@ function UserRegistration(props) {
 
   };
   const handlePlant = (newValue) => {
+    
     if (newValue && (newValue[0]?.value === '0' || newValue?.some(item => item?.value === '0'))) {
       // Select All option is chosen
       const allPlantsExceptZero = plantSelectListForDepartment
-        .filter(item => item.PlantId !== '0')
-        .map(item => ({ label: item?.PlantNameCode, value: item?.PlantId }));
+        .filter(item => item?.PlantId !== '0')
+        .map(item => ({ ...item ,label: item?.PlantNameCode, value: item?.PlantId }));
+        
       setSelectedPlants(allPlantsExceptZero);
       setTimeout(() => {
         setValue('plant', allPlantsExceptZero);
       }, 50);
-    } else if (newValue && newValue?.length > 0) {
-      // Other options are chosen
-      setSelectedPlants(newValue);
+    }  else if (newValue && newValue?.length > 0) {
+      // Map newValue to include all properties from plantSelectListForDepartment
+      const updatedValue = newValue.map(selected => {
+          const originalItem = plantSelectListForDepartment.find(item => item?.PlantId === selected?.value);
+          return {
+              ...originalItem,
+              label: selected?.label,
+              value: selected?.value
+          };
+      });
+      
+      setSelectedPlants(updatedValue);
+      setValue('plant', updatedValue);
     } else {
       // No option is chosen
       setSelectedPlants([]);
@@ -3049,7 +3065,7 @@ function UserRegistration(props) {
                       {/* <label>{`City`}<span className="asterisk-required">*</span></label>
                       <div className="d-flex justify-space-between align-items-center p-relative async-select">
                         <div className="fullinput-icon p-relative">
-                          {console.log(state.inputLoader, "state.inputLoader")}
+                          {}
                           {state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
                           <Controller
                             name="CityId"

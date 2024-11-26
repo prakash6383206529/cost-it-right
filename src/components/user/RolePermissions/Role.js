@@ -44,6 +44,7 @@ const Role = (props) => {
 	const [showPopup, setShowPopup] = useState(false);
 	const [accessibility, setAccessibility] = useState(false);
 	const [updatedObj, setUpdatedObj] = useState({});
+	const [isCallNewApi, setIsCallNewApi] = useState(false)
 	const childRef = useRef();
 
 	const getRoleDetail = useCallback(() => {
@@ -57,6 +58,7 @@ const Role = (props) => {
 					setModules(Data.Modules);
 					setIsEditFlag(true);
 					setIsNewRole(false);
+					setIsCallNewApi(true)
 					setRoleId(data.RoleId);
 					setAccessibility(Data.IsDataAccessibleToAllRole);
 					childRef.current.getUpdatedData(Data.Modules);
@@ -296,6 +298,7 @@ const Role = (props) => {
 												setInitialModuleData={setInitialModuleData}
 												moduleData={moduleDataHandler}
 												isNewRole={isNewRole}
+												isCallNewApi={isCallNewApi}
 												refVariable={true}
 											/>
 										</div>

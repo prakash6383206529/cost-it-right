@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector, clearFields } from "redux-form";
 import { Row, Col, Label } from 'reactstrap';
 import { required, getCodeBySplitting, maxLength512, number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation, acceptAllExceptSingleSpecialCharacter } from "../../../helper/validation";
-import { searchableSelect, renderTextAreaField, renderDatePicker, renderMultiSelectField, renderText } from "../../layout/FormInputs";
+import { searchableSelect, renderTextAreaField, renderDatePicker, renderMultiSelectField, renderText, validateForm } from "../../layout/FormInputs";
 import { fetchCostingHeadsAPI, getPlantSelectListByType, getVendorNameByVendorSelectList } from '../../../actions/Common';
 import {
   createProfit, updateProfit, getProfitData, fileUploadProfit,
@@ -161,7 +161,7 @@ class AddProfit extends Component {
   */
   handleMessageChange = (e) => {
     this.setState({
-      remarks: e.target.value
+      remarks: e?.target?.value
     })
   }
 
@@ -929,7 +929,7 @@ class AddProfit extends Component {
     const { handleSubmit, t } = this.props;
     const { isRM, isCC, isBOP, isProfitPercent, costingTypeId, isEditFlag,
       isHideProfit, isHideBOP, isHideRM, isHideCC, isViewMode, setDisable, IsFinancialDataChanged } = this.state;
-      const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
+    const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
 
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
@@ -1527,6 +1527,7 @@ export default connect(mapStateToProps, {
   getRMGradeSelectListByRawMaterial
 })(reduxForm({
   form: 'AddProfit',
+  validate: validateForm,
   enableReinitialize: true,
 })(withTranslation(['OverheadsProfits', 'MasterLabels'])(AddProfit)),
 )

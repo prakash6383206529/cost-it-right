@@ -518,3 +518,21 @@ export const integerOnly = value =>
     value && !/^\d*$/.test(value)
         ? 'Only integer values are allowed'
         : undefined;
+
+
+export const validateSpecialChars = (value) => {
+    if (!value) return undefined;
+
+    // Check for < and > anywhere in the text
+    if (/[<>]/.test(value)) {
+        return "Input cannot contain < or > characters";
+    }
+
+    // Check for special characters at start or end
+    const specialCharPattern = /^[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+|[!@#$%^&*()_+\-=\[\]{};':"\\|,<>\/?]+$/;
+    if (specialCharPattern.test(value)) {
+        return 'Input cannot start or end with special characters.';
+    }
+
+    return undefined;
+};

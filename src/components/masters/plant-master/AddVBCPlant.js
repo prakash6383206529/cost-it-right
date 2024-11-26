@@ -4,7 +4,7 @@ import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
 import { required, number, maxLength6, maxLength80, minLength10, maxLength12, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, maxLength15, postiveNumber, maxLength3, checkSpacesInString } from "../../../helper/validation";
 import { loggedInUserId } from "../../../helper/auth";
-import { renderText, renderTextInputField, searchableSelect } from "../../layout/FormInputs";
+import { renderText, renderTextInputField, searchableSelect, validateForm } from "../../layout/FormInputs";
 import { createPlantAPI, getPlantUnitAPI, updatePlantAPI } from '../actions/Plant';
 import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, fetchSupplierCityDataAPI, getSupplierList, getCityByCountryAction, } from '../../../actions/Common';
 import Toaster from '../../common/Toaster';
@@ -143,7 +143,7 @@ class AddVBCPlant extends Component {
   getAllCityData = () => {
     const { country } = this.state;
     if (country && country.label !== 'India') {
-      this.props.getCityByCountryAction(country.value, '00000000000000000000000000000000','', () => { })
+      this.props.getCityByCountryAction(country.value, '00000000000000000000000000000000', '', () => { })
     } else {
       this.props.fetchStateDataAPI(country.value, () => { })
     }
@@ -296,7 +296,7 @@ class AddVBCPlant extends Component {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, isEditFlag, isViewMode,t } = this.props;
+    const { handleSubmit, isEditFlag, isViewMode, t } = this.props;
     const { country } = this.state;
     const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
 
@@ -607,6 +607,7 @@ export default connect(mapStateToProps, {
   getCityByCountryAction,
 })(reduxForm({
   form: 'AddVBCPlant',
+  validate: validateForm,
   enableReinitialize: true,
   touchOnChange: true
 })(withTranslation(['MasterLabels'])(AddVBCPlant)));

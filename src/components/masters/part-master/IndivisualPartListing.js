@@ -578,25 +578,28 @@ const IndivisualPartListing = (props) => {
 
     let temp = [];
     temp = TempData && TempData.map((item) => {
+      let newItem = { ...item };
+      const defaultValues = {
+        ECNNumber: " ",
+        RevisionNumber: " ",
+        DrawingNumber: " ",
+        Technology: " ",
+      };
 
-      if (item.ECNNumber === null) {
-        item.ECNNumber = " ";
-      } else if (item.RevisionNumber === null) {
-        item.RevisionNumber = " ";
-      } else if (item.DrawingNumber === null) {
-        item.DrawingNumber = " ";
-      } else if (item.Technology === "-") {
-        item.Technology = " ";
-      } else if (item.EffectiveDate !== "") {
+      // Assign default values if necessary
+      Object.keys(defaultValues).forEach(key => {
+        if (item[key] === null || item[key] === "-") {
+          newItem[key] = defaultValues[key];
+        }
+      });
 
-        item.EffectiveDate = DayTime(item.EffectiveDate).format("DD/MM/YYYY");
-      }
-
-      else if (item.EffectiveDateNew !== "") {
-
-        item.EffectiveDateNew = DayTime(item.EffectiveDateNew).format("DD/MM/YYYY");
-      }
-      return item;
+      ["EffectiveDate", "EffectiveDateNew"].forEach(dateKey => {
+        if (item[dateKey]) {
+          newItem[dateKey] = DayTime(item[dateKey]).format("DD/MM/YYYY");
+        }
+      });
+      newItem.IsActive = item.IsActive ? 'Active' : 'Inactive';
+      return newItem;
     });
 
     return (

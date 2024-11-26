@@ -5,6 +5,7 @@ import { Row, Col, Table, Label } from 'reactstrap';
 import { required, checkForDecimalAndNull, positiveAndDecimalNumber, maxLength10, decimalLengthsix, number, getCodeBySplitting } from "../../../helper/validation";
 import {
   searchableSelect, focusOnError, renderTextInputField,
+  validateForm,
 } from "../../layout/FormInputs";
 import { getUOMSelectList, fetchStateDataAPI, getAllCity, getPlantSelectListByType, fetchCountryDataAPI, fetchCityDataAPI, getVendorNameByVendorSelectList, getCityByCountryAction, } from '../../../actions/Common';
 import { getFuelByPlant, createFuelDetail, updateFuelDetail, getFuelDetailData, getUOMByFuelId, getAllFuelAPI } from '../actions/Fuel';
@@ -740,13 +741,13 @@ class AddFuel extends Component {
   };
 
   getAllCityData = () => {
-  const { country } = this.state;
-  if (country && country.label !== 'India') {
-    this.props.getCityByCountryAction(country.value, '00000000000000000000000000000000','', (res) =>{ })
-  } else {
-    this.props.fetchStateDataAPI(country.value, () => { })
+    const { country } = this.state;
+    if (country && country.label !== 'India') {
+      this.props.getCityByCountryAction(country.value, '00000000000000000000000000000000', '', (res) => { })
+    } else {
+      this.props.fetchStateDataAPI(country.value, () => { })
+    }
   }
-}
 
 
   cityHandler = (newValue, actionMeta) => {
@@ -1123,7 +1124,7 @@ class AddFuel extends Component {
                                   <button type="button" className={"btn btn-primary pull-left mr5"} onClick={this.updateRateGrid}>Update</button>
                                   <button
                                     type="button"
-                                    className={"mr15 ml-1 add-cancel-btn cancel-btn"}
+                                    className={"mr15 ml-1 add-cancel-btn mt-0 mb-0 cancel-btn"}
                                     disabled={isViewMode}
                                     onClick={this.rateTableReset}
                                   >
@@ -1307,6 +1308,7 @@ export default connect(mapStateToProps, {
 
 })(reduxForm({
   form: 'AddFuel',
+  validate: validateForm,
   enableReinitialize: true,
   touchOnChange: true,
   onSubmitFail: errors => {

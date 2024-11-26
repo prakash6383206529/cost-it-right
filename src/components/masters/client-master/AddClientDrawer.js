@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Container, Row, Col, Table, } from 'reactstrap';
 import { required, email, minLength7, maxLength70, acceptAllExceptSingleSpecialCharacter, maxLength12, minLength10, maxLength80, checkWhiteSpaces, maxLength20, postiveNumber, maxLength5, maxLength6, number, checkForNull, positiveAndDecimalNumber, maxLength10, hashValidation } from "../../../helper/validation";
-import { renderText, renderEmailInputField, searchableSelect, renderTextInputField } from "../../layout/FormInputs";
+import { renderText, renderEmailInputField, searchableSelect, renderTextInputField, validateForm } from "../../layout/FormInputs";
 import { createClient, updateClient, getClientData, checkAndGetCustomerCode, getPoamStatusSelectList } from '../actions/Client';
 import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, getCityByCountryAction, } from '../../../actions/Common';
 import Toaster from '../../common/Toaster';
@@ -1047,6 +1047,7 @@ export default connect(mapStateToProps, {
     getPoamStatusSelectList
 })(reduxForm({
     form: 'AddClientDrawer',
+    validate: validateForm,
     enableReinitialize: true,
     touchOnChange: true
 })(withTranslation(['Client'])(AddClientDrawer)))

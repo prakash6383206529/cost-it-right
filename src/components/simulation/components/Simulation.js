@@ -53,7 +53,7 @@ const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 export const ApplyPermission = React.createContext();
 function Simulation(props) {
-    const {vendorLabel} = useLabels()
+    const { vendorLabel } = useLabels()
     const { handleEditMasterPage, showTour } = useContext(simulationContext) || {};
 
     const { register, control, setValue, formState: { errors }, getValues } = useForm({
@@ -654,12 +654,9 @@ function Simulation(props) {
     const getSelectedRows = (list) => {
 
         let costingHeadArray = _.map(list, "CostingHeadId")
-        let vendorCodeArray = _.map(list, "VendorId")
         let customerCodeArray = _.map(list, "CustomerId")
 
         if (!allEqual(costingHeadArray)) {
-            setEditWarning(true)
-        } else if (!allEqual(vendorCodeArray)) {
             setEditWarning(true)
         } else if (!allEqual(customerCodeArray)) {
             setEditWarning(true)
@@ -1013,12 +1010,13 @@ function Simulation(props) {
                             flag = false
                         }
                         // if (userDetails().Role !== 'Group Category Head') { //MINDA
-                        if (element.VendorName !== Data[index - 1].VendorName) {
-                            (Data.length !== 0) && setFilterStatus(`Please filter out the ${vendorLabel}`)
-                            setEditWarning(true);
-                            vendorFlag = false
-                        }
-                        if (element.PlantId !== Data[index - 1].PlantId || element.DestinationPlantId !== Data[index - 1].DestinationPlantId) {
+                        // THIS CODE IS COMMENTED FOR MULTIPLE VENDOR
+                        // if (element.VendorName !== Data[index - 1].VendorName) {
+                        //     (Data.length !== 0) && setFilterStatus(`Please filter out the ${vendorLabel}`)
+                        //     setEditWarning(true);
+                        //     vendorFlag = false
+                        // }
+                        if ((element.PlantId && element.PlantId !== Data[index - 1].PlantId) || (element.DestinationPlantId && element.DestinationPlantId !== Data[index - 1].DestinationPlantId)) {
                             (Data.length !== 0) && setFilterStatus('Please filter out the Plant')
                             setEditWarning(true);
                             plantFlag = false
@@ -1059,12 +1057,13 @@ function Simulation(props) {
                             flag = false
                         }
                         // if (userDetails().Role !== 'Group Category Head') { //MINDA
-                        if (element.VendorName !== Data[index - 1].VendorName) {
-                            (Data.length !== 0) && setFilterStatus(`Please filter out the ${vendorLabel}`)
-                            setEditWarning(true);
-                            vendorFlag = false
-                        }
-                        if (element.PlantId !== Data[index - 1].PlantId || element.DestinationPlantId !== Data[index - 1].DestinationPlantId) {
+                        // THIS CODE IS COMMENTED FOR MULTIPLE VENDOR
+                        // if (element.VendorName !== Data[index - 1].VendorName) {
+                        //     (Data.length !== 0) && setFilterStatus(`Please filter out the ${vendorLabel}`)
+                        //     setEditWarning(true);
+                        //     vendorFlag = false
+                        // }
+                        if ((element.PlantId && element.PlantId !== Data[index - 1].PlantId) || (element.DestinationPlantId && element.DestinationPlantId !== Data[index - 1].DestinationPlantId)) {
                             (Data.length !== 0) && setFilterStatus('Please filter out the Plant')
                             setEditWarning(true);
                             plantFlag = false
@@ -1170,12 +1169,13 @@ function Simulation(props) {
                             setEditWarning(true);
                             flag = false
                         }
-                        if (element.VendorName !== Data[index - 1].VendorName) {
-                            (Data.length !== 0) && setFilterStatus(`Please filter out the ${vendorLabel}`)
-                            setEditWarning(true);
-                            vendorFlag = false
-                        }
-                        if (element.DestinationPlant !== Data[index - 1].DestinationPlant) {
+                        // THIS CODE IS COMMENTED FOR MULTIPLE VENDOR       
+                        // if (element.VendorName !== Data[index - 1].VendorName) {
+                        //     (Data.length !== 0) && setFilterStatus(`Please filter out the ${vendorLabel}`)
+                        //     setEditWarning(true);
+                        //     vendorFlag = false
+                        // }
+                        if ((element.PlantId && element.PlantId !== Data[index - 1].PlantId) || (element.DestinationPlantId && element.DestinationPlantId !== Data[index - 1].DestinationPlantId)) {
                             (Data.length !== 0) && setFilterStatus('Please filter out the Plant')
                             setEditWarning(true);
                             plantFlag = false
@@ -1206,12 +1206,13 @@ function Simulation(props) {
                             setEditWarning(true);
                             flag = false
                         }
-                        if (element.VendorName !== Data[index - 1].VendorName) {
-                            (Data.length !== 0) && setFilterStatus(`Please filter out the ${vendorLabel}`)
-                            setEditWarning(true);
-                            vendorFlag = false
-                        }
-                        if (element.DestinationPlant !== Data[index - 1].DestinationPlant) {
+                        // THIS CODE IS COMMENTED FOR MULTIPLE VENDOR       
+                        // if (element.VendorName !== Data[index - 1].VendorName) {
+                        //     (Data.length !== 0) && setFilterStatus(`Please filter out the ${vendorLabel}`)
+                        //     setEditWarning(true);
+                        //     vendorFlag = false
+                        // }
+                        if ((element.PlantId && element.PlantId !== Data[index - 1].PlantId) || (element.DestinationPlantId && element.DestinationPlantId !== Data[index - 1].DestinationPlantId)) {
                             (Data.length !== 0) && setFilterStatus('Please filter out the Plant')
                             setEditWarning(true);
                             plantFlag = false
@@ -1251,12 +1252,13 @@ function Simulation(props) {
                             setEditWarning(true);
                             flag = false
                         }
-                        if (element.VendorName !== Data[index - 1].VendorName) {
-                            (Data.length !== 0) && setFilterStatus(`Please filter out the ${vendorLabel}`)
-                            setEditWarning(true);
-                            vendorFlag = false
-                        }
-                        if (element.DestinationPlant !== Data[index - 1].DestinationPlant) {
+                        // THIS CODE IS COMMENTED FOR MULTIPLE VENDOR       
+                        // if (element.VendorName !== Data[index - 1].VendorName) {
+                        //     (Data.length !== 0) && setFilterStatus(`Please filter out the ${vendorLabel}`)
+                        //     setEditWarning(true);
+                        //     vendorFlag = false
+                        // }
+                        if ((element.Plant && element.Plant !== Data[index - 1].Plant) || (element.DestinationPlantId && element.DestinationPlantId !== Data[index - 1].DestinationPlantId)) {
                             (Data.length !== 0) && setFilterStatus('Please filter out the Plant')
                             setEditWarning(true);
                             plantFlag = false
@@ -1287,12 +1289,13 @@ function Simulation(props) {
                             setEditWarning(true);
                             flag = false
                         }
-                        if (element.Vendor !== Data[index - 1].Vendor) {
-                            (Data.length !== 0) && setFilterStatus(`Please filter out the ${vendorLabel}`)
-                            setEditWarning(true);
-                            vendorFlag = false
-                        }
-                        if (element.DestinationPlant !== Data[index - 1].DestinationPlant) {
+                        // THIS CODE IS COMMENTED FOR MULTIPLE VENDOR       
+                        // if (element.Vendor !== Data[index - 1].Vendor) {
+                        //     (Data.length !== 0) && setFilterStatus(`Please filter out the ${vendorLabel}`)
+                        //     setEditWarning(true);
+                        //     vendorFlag = false
+                        // }
+                        if (element.PlantId !== Data[index - 1].PlantId || element.DestinationPlant !== Data[index - 1].DestinationPlant) {
                             (Data.length !== 0) && setFilterStatus('Please filter out the Plant')
                             setEditWarning(true);
                             plantFlag = false
@@ -1323,12 +1326,13 @@ function Simulation(props) {
                             setEditWarning(true);
                             flag = false
                         }
-                        if (element.Vendor !== Data[index - 1].Vendor) {
-                            (Data.length !== 0) && setFilterStatus(`Please filter out the ${vendorLabel}`)
-                            setEditWarning(true);
-                            vendorFlag = false
-                        }
-                        if (element.DestinationPlant !== Data[index - 1].DestinationPlant) {
+                        // THIS CODE IS COMMENTED FOR MULTIPLE VENDOR       
+                        // if (element.Vendor !== Data[index - 1].Vendor) {
+                        //     (Data.length !== 0) && setFilterStatus(`Please filter out the ${vendorLabel}`)
+                        //     setEditWarning(true);
+                        //     vendorFlag = false
+                        // }
+                        if (element.PlantId !== Data[index - 1].PlantId || element.DestinationPlant !== Data[index - 1].DestinationPlant) {
                             (Data.length !== 0) && setFilterStatus('Please filter out the Plant')
                             setEditWarning(true);
                             plantFlag = false
@@ -1360,11 +1364,12 @@ function Simulation(props) {
                             setEditWarning(true);
                             flag = false
                         }
-                        if (element.VendorId !== Data[index - 1].VendorId) {
-                            (Data.length !== 0) && setFilterStatus(`Please filter out the ${vendorLabel}`)
-                            setEditWarning(true);
-                            vendorFlag = false
-                        }
+                        // THIS CODE IS COMMENTED FOR MULTIPLE VENDOR       
+                        // if (element.VendorId !== Data[index - 1].VendorId) {
+                        //     (Data.length !== 0) && setFilterStatus(`Please filter out the ${vendorLabel}`)
+                        //     setEditWarning(true);
+                        //     vendorFlag = false
+                        // }
                         if (element.CustomerId !== Data[index - 1].CustomerId) {
                             (Data.length !== 0) && setFilterStatus('Please filter out the Customer')
                             setEditWarning(true);

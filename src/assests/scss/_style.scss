@@ -1691,6 +1691,17 @@ body {
   }
 }
 
+%workflowCss {
+  p {
+    font-size: 14px;
+    font-weight: 300;
+    max-width: 100%;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+}
+
 .card-border {
   border: 1px solid $borderColor;
   position: relative;
@@ -1732,14 +1743,8 @@ body {
     font-weight: 400;
   }
 
-  p {
-    font-size: 14px;
-    font-weight: 300;
-    max-width: 100%;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    overflow: hidden;
-  }
+  @extend %workflowCss;
+
 
   .bottom {
     padding: 10px;

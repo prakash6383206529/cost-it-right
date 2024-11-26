@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { required, positiveAndDecimalNumber, postiveNumber, decimalNumberLimit } from "../../../helper/validation";
-import { renderText } from "../../layout/FormInputs";
+import { renderText, validateForm } from "../../layout/FormInputs";
 import { getBoughtOutPartSelectList, getDrawerBOPData } from '../actions/Part';
 import { BOUGHTOUTPARTSPACING, DIMENSIONLESS, SPACEBAR } from '../../../config/constants';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -360,6 +360,7 @@ export default connect(mapStateToProps, {
   getDrawerBOPData,
 })(reduxForm({
   form: 'AddBOPForm',
+  validate: validateForm,
   enableReinitialize: true,
   touchOnChange: true
 })(AddBOPForm));

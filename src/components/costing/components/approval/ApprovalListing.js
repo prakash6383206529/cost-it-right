@@ -25,7 +25,7 @@ import SendForApproval from './SendForApproval'
 import CostingDetailSimulationDrawer from '../../../simulation/components/CostingDetailSimulationDrawer'
 import { PaginationWrapper } from '../../../common/commonPagination'
 import _ from 'lodash';
-import { setSelectedRowForPagination } from '../../../simulation/actions/Simulation'
+import { checkFinalLevelApproverForApproval, setSelectedRowForPagination } from '../../../simulation/actions/Simulation'
 import SingleDropdownFloationFilter from '../../../masters/material-master/SingleDropdownFloationFilter'
 import { agGridStatus, isResetClick, getGridHeight, dashboardTabLock } from '../../../../actions/Common'
 import PopupMsgWrapper from '../../../common/PopupMsgWrapper'
@@ -91,6 +91,17 @@ function ApprovalListing(props) {
     component: 'costingApproval',
     location: "costing"
   }
+  const [selectedDataObj, setSelectedDataObj] = useState({
+    DisplayStatus: [],
+    DepartmentId: [],
+    TechnologyName: [],
+    PlantId: [],
+    VendorId: [],
+    ReasonId: [],
+    EffectiveDate: [],
+    PartNumber: [],
+    TokenNo: []
+  })
   const { vendorLabel } = useLabels()
   useEffect(() => {
     setIsSuperAdmin(userDetails()?.Role === "SuperAdmin")
@@ -642,53 +653,65 @@ function ApprovalListing(props) {
     let effectiveDateArray = []
     let plantArray = []
     let partArray = []
-
+    let tokenArr = []
     uniqeArray && uniqeArray.map((item) => {
       reasonArray.push(item.ReasonId)
       technologyArray.push(item.TechnologyId)
       departmentArray.push(item.DepartmentId)
       vendorArray.push(item.VendorId)
-      statusArray.push(item.SimulationTechnologyHead)
+      statusArray.push(item.Status)
       effectiveDateArray.push(item.EffectiveDate)
       plantArray.push(item.PlantCode)
       partArray.push(item.PartNumber)
+      tokenArr.push(item?.ApprovalNumber)
       return null
     })
+    setSelectedDataObj({
+      DisplayStatus: statusArray,
+      DepartmentId: departmentArray,
+      TechnologyName: technologyArray,
+      PlantId: plantArray,
+      VendorId: vendorArray,
+      ReasonId: reasonArray,
+      EffectiveDate: effectiveDateArray,
+      PartNumber: partArray,
+      TokenNo: tokenArr
+    })
 
-    if (!allEqual(departmentArray)) {
-      gridApi.deselectAll()
-      Toaster.warning(`${handleDepartmentHeader()} should be same for sending costings for approval`)
-      // return Toaster.warning("Purchase Group should be same for sending multiple costing for approval")   //RE
-    } else if (!allEqual(technologyArray)) {
-      gridApi.deselectAll()
-      Toaster.warning(`${technologyLabel} should be same for sending costings for approval`)
-    } else if (!allEqual(vendorArray)) {
-      gridApi.deselectAll()
-      Toaster.warning(`${vendorLabel} should be same for sending costings for approval`)
-    } else if (!allEqual(reasonArray)) {
-      gridApi.deselectAll()
-      Toaster.warning("Reason should be same for sending costings for approval")
-      //REASON CHECK IS NOT APPLICABLE IN RE   //RE
-      // else if (!allEqual(reasonArray)) {
-      //   gridApi.deselectAll()
-      //   Toaster.warning("Reason should be same for sending multiple costing for approval")
-      // }
-    } else if (!allEqual(statusArray)) {
-      gridApi.deselectAll()
-      Toaster.warning('Status should be same for sending costings for approval')
-    } else if (!allEqual(effectiveDateArray)) {
-      gridApi.deselectAll()
-      Toaster.warning('Effective Date should be same for sending costings for approval')
-    } else if (!allEqual(plantArray)) {
-      gridApi.deselectAll()
-      Toaster.warning('Plant should be same for sending costings for approval')
-    } else {
-      setReasonId(uniqeArray && uniqeArray[0]?.ReasonId)
-    }
-    if (uniqeArray.length > 1 && allEqual(vendorArray) && allEqual(plantArray) && allEqual(partArray)) {
-      gridApi.deselectAll()
-      Toaster.warning(`${vendorLabel} and Plant should be different against a Part number`)
-    }
+    // if (!allEqual(departmentArray)) {
+    //   gridApi.deselectAll()
+    //   Toaster.warning(`${handleDepartmentHeader()} should be same for sending costings for approval`)
+    //   // return Toaster.warning("Purchase Group should be same for sending multiple costing for approval")   //RE
+    // } else if (!allEqual(technologyArray)) {
+    //   gridApi.deselectAll()
+    //   Toaster.warning(`${technologyLabel} should be same for sending costings for approval`)
+    // } else if (!allEqual(vendorArray)) {
+    //   gridApi.deselectAll()
+    //   Toaster.warning(`${vendorLabel} should be same for sending costings for approval`)
+    // } else if (!allEqual(reasonArray)) {
+    //   gridApi.deselectAll()
+    //   Toaster.warning("Reason should be same for sending costings for approval")
+    //   //REASON CHECK IS NOT APPLICABLE IN RE   //RE
+    //   // else if (!allEqual(reasonArray)) {
+    //   //   gridApi.deselectAll()
+    //   //   Toaster.warning("Reason should be same for sending multiple costing for approval")
+    //   // }
+    // } else if (!allEqual(statusArray)) {
+    //   gridApi.deselectAll()
+    //   Toaster.warning('Status should be same for sending costings for approval')
+    // } else if (!allEqual(effectiveDateArray)) {
+    //   gridApi.deselectAll()
+    //   Toaster.warning('Effective Date should be same for sending costings for approval')
+    // } else if (!allEqual(plantArray)) {
+    //   gridApi.deselectAll()
+    //   Toaster.warning('Plant should be same for sending costings for approval')
+    // } else {
+    //   setReasonId(uniqeArray && uniqeArray[0]?.ReasonId)
+    // }
+    // if (uniqeArray.length > 1 && allEqual(vendorArray) && allEqual(plantArray) && allEqual(partArray)) {
+    //   gridApi.deselectAll()
+    //   Toaster.warning(`${vendorLabel} and Plant should be different against a Part number`)
+    // }
 
     setSelectedRowData(uniqeArray)
   }
@@ -708,61 +731,122 @@ function ApprovalListing(props) {
       Toaster.warning("Please select at least one costing to send for approval.")
       return false
     }
-    // MINDA
-    if (initialConfiguration.IsReleaseStrategyConfigured && selectedRowData && selectedRowData[0]?.Status === DRAFT) {
-      let dataList = costingIdObj(selectedRowData)
-      let requestObject = {
-        "RequestFor": "COSTING",
-        "TechnologyId": selectedRowData[0].TechnologyId,
-        "LoggedInUserId": loggedInUserId(),
-        "ReleaseStrategyApprovalDetails": dataList
-      }
-      dispatch(getReleaseStrategyApprovalDetails(requestObject, (res) => {
-        setReleaseStrategyDetails(res?.data?.Data)
-        if (res?.data?.Data?.IsUserInApprovalFlow) {
-          if (selectedRowData.length === 0) {
-            Toaster.warning('Please select atleast one approval to send for approval.')
-            return false
-          }
-          if (selectedRowData && selectedRowData[0]?.IsRegularizationLimitCrossed !== 'No') {
-            setShowPopup(true)
-          } else {
-            sendForApprovalDrawer()
-          }
-        } else if (res?.data?.Data?.IsPFSOrBudgetingDetailsExist === false) {
-
-          if (selectedRowData.length === 0) {
-            Toaster.warning('Please select atleast one approval to send for approval.')
-            return false
-          }
-          if (selectedRowData && selectedRowData[0]?.IsRegularizationLimitCrossed !== 'No') {
-            setShowPopup(true)
-          } else {
-            sendForApprovalDrawer()
-          }
-
-        } else if (res?.data?.Data?.IsFinalApprover === true) {
-          Toaster.warning('This is final level user')
-        } else if (res?.data?.Result === false) {
-          Toaster.warning(res?.data?.Message)
-        } else {
-          Toaster.warning('This user is not in approval cycle')
-        }
-      }))
-    } else {
-
-      if (selectedRowData.length === 0) {
-        Toaster.warning('Please select atleast one approval to send for approval.')
-        return false
-      }
-      if (selectedRowData && selectedRowData[0]?.IsRegularizationLimitCrossed !== 'No') {
-        setShowPopup(true)
-      } else {
-        sendForApprovalDrawer()
-      }
-
+    if (!allEqual(selectedDataObj.DisplayStatus)) {
+      Toaster.warning('Please select same status for sending multiple costing for approval')
+      return false
     }
+    let requestObject = {
+      LoggedInUserId: loggedInUserId(),
+      Mode: 'Costing',
+      ApprovalTokens: selectedDataObj.TokenNo
+    }
+    dispatch(checkFinalLevelApproverForApproval(requestObject, res => {
+      let Data = res?.data?.Data
+      if (Data?.IsFinalApprover && !Data?.IsNotFinalApproverForAllToken) {
+        setShowFinalLevelButton(false)
+        setApproveDrawer(true)
+      } else if (!Data?.IsFinalApprover && Data?.IsNotFinalApproverForAllToken) {
+        Toaster.warning(Data?.Message)
+        return false
+      } else {
+        setShowFinalLevelButton(true)
+        const validationChecks = [
+          {
+            condition: !allEqual(selectedDataObj.PlantId),
+            field: 'Plant'
+          },
+          {
+            condition: !allEqual(selectedDataObj.DepartmentId),
+            field: handleDepartmentHeader()
+          },
+          {
+            condition: !allEqual(selectedDataObj.ReasonId),
+            field: 'Reason'
+          },
+          {
+            condition: !allEqual(selectedDataObj.PartNumber),
+            field: 'Part Number'
+          },
+          {
+            condition: !allEqual(selectedDataObj.VendorId),
+            field: 'Vendor'
+          },
+          {
+            condition: !allEqual(selectedDataObj.TechnologyName),
+            field: 'Technology'
+          },
+          {
+            condition: !allEqual(selectedDataObj.EffectiveDate),
+            field: 'Effective Date'
+          }
+        ]
+        const failedChecks = validationChecks
+          .filter(check => check.condition)
+          .map(check => check.field)
+
+        if (failedChecks.length > 0) {
+          const fields = failedChecks.join(', ')
+          Toaster.warning(`${fields} should be same for sending multiple costing for approval`)
+          return false
+        }
+        // MINDA
+        if (initialConfiguration.IsReleaseStrategyConfigured && selectedRowData && selectedRowData[0]?.Status === DRAFT) {
+          let dataList = costingIdObj(selectedRowData)
+          let requestObject = {
+            "RequestFor": "COSTING",
+            "TechnologyId": selectedRowData[0].TechnologyId,
+            "LoggedInUserId": loggedInUserId(),
+            "ReleaseStrategyApprovalDetails": dataList
+          }
+          dispatch(getReleaseStrategyApprovalDetails(requestObject, (res) => {
+            setReleaseStrategyDetails(res?.data?.Data)
+            if (res?.data?.Data?.IsUserInApprovalFlow) {
+              if (selectedRowData.length === 0) {
+                Toaster.warning('Please select atleast one approval to send for approval.')
+                return false
+              }
+              if (selectedRowData && selectedRowData[0]?.IsRegularizationLimitCrossed !== 'No') {
+                setShowPopup(true)
+              } else {
+                sendForApprovalDrawer()
+              }
+            } else if (res?.data?.Data?.IsPFSOrBudgetingDetailsExist === false) {
+
+              if (selectedRowData.length === 0) {
+                Toaster.warning('Please select atleast one approval to send for approval.')
+                return false
+              }
+              if (selectedRowData && selectedRowData[0]?.IsRegularizationLimitCrossed !== 'No') {
+                setShowPopup(true)
+              } else {
+                sendForApprovalDrawer()
+              }
+
+            } else if (res?.data?.Data?.IsFinalApprover === true) {
+              Toaster.warning('This is final level user')
+            } else if (res?.data?.Result === false) {
+              Toaster.warning(res?.data?.Message)
+            } else {
+              Toaster.warning('This user is not in approval cycle')
+            }
+          }))
+        } else {
+
+          if (selectedRowData.length === 0) {
+            Toaster.warning('Please select atleast one approval to send for approval.')
+            return false
+          }
+          if (selectedRowData && selectedRowData[0]?.IsRegularizationLimitCrossed !== 'No') {
+            setShowPopup(true)
+          } else {
+            sendForApprovalDrawer()
+          }
+
+        }
+      }
+    }))
   }
+
 
   const sendForApprovalDrawer = () => {
 

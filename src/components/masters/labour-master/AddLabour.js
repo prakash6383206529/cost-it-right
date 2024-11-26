@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import { Field, reduxForm, formValueSelector, clearFields } from 'redux-form'
 import { Row, Col, Table, Label } from 'reactstrap'
 import { required, checkForNull, positiveAndDecimalNumber, maxLength10, checkForDecimalAndNull, decimalLengthsix, number, maxPercentValue, percentageLimitValidation } from '../../../helper/validation'
-import { focusOnError, renderTextInputField, searchableSelect } from '../../layout/FormInputs'
+import { focusOnError, renderTextInputField, searchableSelect, validateForm } from '../../layout/FormInputs'
 import { getPlantListByState } from '../actions/Fuel'
 import { getProductGroupSelectList } from '../actions/Part'
 import { createLabour, getLabourData, updateLabour, getLabourTypeByMachineTypeSelectList, } from '../actions/Labour'
@@ -210,7 +210,7 @@ class AddLabour extends Component {
           if (item.Value === '0') return false
           if (this.findLabourtype(item.Value, this.state.gridTable)) return false;
 
-          if (costingTypeId === CBCTypeId) {
+          if (costingTypeId === CBCTypeId && this.props.initialConfiguration?.IsShowProductInLabour) {
             if (item.Text === 'Skilled') {
               temp.push({ label: item.Text, value: item.Value })
             }
@@ -792,7 +792,6 @@ class AddLabour extends Component {
     const { handleSubmit, initialConfiguration, t } = this.props;
     const { isEditFlag, isOpenMachineType, isViewMode, setDisable, gridTable, isEditMode, costingTypeId } = this.state;
     const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
-
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
       if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
@@ -920,7 +919,7 @@ class AddLabour extends Component {
                     <Row>
                       <Col md="12" className="filter-block">
                         <div className=" flex-fills mb-2 w-100 pl-0">
-                          <h5>{costingTypeId === CBCTypeId ? "Product:" : `${VendorLabel}:`}</h5>
+                          <h5>{costingTypeId === CBCTypeId ? "Customer:" : `${VendorLabel}:`}</h5>
                         </div>
                       </Col>
                       {this.state.IsEmployeContractual && costingTypeId !== CBCTypeId && (
@@ -974,7 +973,7 @@ class AddLabour extends Component {
                         </Col>
                       )}
 
-                      {costingTypeId === CBCTypeId &&
+                      {(costingTypeId === CBCTypeId && initialConfiguration?.IsShowProductInLabour) &&
                         < Col md="3">
                           <div className="form-group">
                             <Field
@@ -1368,6 +1367,7 @@ export default connect(mapStateToProps, {
 })(
   reduxForm({
     form: 'AddLabour',
+    validate: validateForm,
     enableReinitialize: true,
     touchOnChange: true,
     onSubmitFail: errors => {

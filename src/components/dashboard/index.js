@@ -17,6 +17,7 @@ import { MESSAGES } from "../../config/message";
 import TourWrapper from "../common/Tour/TourWrapper";
 import { Steps } from "./TourMessages";
 import { useTranslation } from "react-i18next";
+import { validateForm } from "../layout/FormInputs";
 
 
 function Dashboard(props) {
@@ -66,7 +67,7 @@ function Dashboard(props) {
       }
 
       const accessRMData = masterData && masterData.Pages.find(el => el.PageName === RAW_MATERIAL)
-      const accessBOPData = masterData && masterData.Pages.find(el => el.PageName === BOP)
+      const accessBOPData = masterData && masterData.Pages.find(el => el.PageName === showBopLabel())
       const accessMachineData = masterData && masterData.Pages.find(el => el.PageName === MACHINE)
       const accessOperationData = additionalMasterData && additionalMasterData.Pages.find(el => el.PageName === OPERATION)
 
@@ -274,6 +275,7 @@ export default connect(mapStateToProps, {
   getMenuByUser,
 })(reduxForm({
   form: 'Dashboard',
+  validate: validateForm,
   enableReinitialize: true,
   touchOnChange: true
 })(Dashboard));

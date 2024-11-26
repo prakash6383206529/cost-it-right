@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
 import { required, acceptAllExceptSingleSpecialCharacter, maxLength80, checkWhiteSpaces, hashValidation } from "../../../helper/validation";
-import { renderText, } from "../../layout/FormInputs";
+import { renderText, validateForm, } from "../../layout/FormInputs";
 import { createRawMaterialNameChild, getRawMaterialChildById, updateRawMaterialChildName } from '../actions/Material';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
@@ -204,6 +204,7 @@ export default connect(mapStateToProps,
     updateRawMaterialChildName,
   })(reduxForm({
     form: 'AddRawMaterial',
+    validate: validateForm,
     enableReinitialize: true,
     touchOnChange: true
   })(AddRawMaterial));

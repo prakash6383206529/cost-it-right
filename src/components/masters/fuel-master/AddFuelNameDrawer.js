@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
 import { alphaNumeric, checkWhiteSpaces, required, requiredDropDown } from "../../../helper/validation";
-import { renderText, searchableSelect, } from "../../layout/FormInputs";
+import { renderText, searchableSelect, validateForm, } from "../../layout/FormInputs";
 import { createFuel } from '../actions/Fuel';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
@@ -246,6 +246,7 @@ export default connect(mapStateToProps, {
   createFuel,
 })(reduxForm({
   form: 'AddFuelNameDrawer',
+  validate: validateForm,
   enableReinitialize: true,
   touchOnChange: true
 })(withTranslation(['FuelPowerMaster'])(AddFuelNameDrawer)),

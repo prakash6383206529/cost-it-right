@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { renderText } from '../layout/FormInputs';
+import { renderText, validateForm } from '../layout/FormInputs';
 import { connect } from "react-redux";
 import Drawer from '@material-ui/core/Drawer';
 import { Container, Row, Col, } from 'reactstrap';
@@ -145,6 +145,7 @@ export default connect(mapStateToProps, {
 
 })(reduxForm({
     form: 'ImpactDrawer',
+    validate: validateForm,
     enableReinitialize: true,
     touchOnChange: true
 })(ImpactDrawer));

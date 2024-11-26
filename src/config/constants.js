@@ -842,6 +842,7 @@ export const API = {
   // ApproveReject Drawer final approver
   checkFinalUser: `${BASE_URL}/app-approval-system/final-user-check`,
   getReleaseStrategyApprovalDetails: `${BASE_URL}/app-approval-system/get-release-strategy-approval-details`,
+  checkFinalLevelApproverForApproval: `${BASE_URL}/app-approval-system/check-is-user-final-level-approver-for-approvals`,
 
   //PRIVILEGE
   createPrivilegePage: `${BASE_URL}/app-privilege-permission/create-privilege-page`,
@@ -2882,6 +2883,7 @@ export const RmMaterial = "Raw-material"
 export const BopDomestic = "BOP-domestic"
 export const BopImport = "BOP-import"
 export const Sob = "Manage Specification"
+export const sobManage = "SOB"
 
 export const AssemblyPart = "Assembly-part"
 export const ComponentPart = "Component-part"
@@ -3267,7 +3269,7 @@ export const RAWMATERIALCOST = 'Raw Material Other Cost'
 export const COSTINGCONDITIONCOST = 'Costing Condition Cost'
 
 //VERSION 
-export const VERSION = "V3.1.18";
+export const VERSION = "V3.1.22";
 
 
 

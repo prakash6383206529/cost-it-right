@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Field, clearFields, reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { required, postiveNumber, maxLength5, minValue1, acceptAllExceptSingleSpecialCharacter } from "../../../helper/validation";
-import { renderText } from "../../layout/FormInputs";
+import { renderText, validateForm } from "../../layout/FormInputs";
 import { getAssemblyPartSelectList, getDrawerAssemblyPartDetail, } from '../actions/Part';
 import { searchCount, SPACEBAR, ASSEMBLYNAME } from '../../../config/constants';
 import { getRandomSixDigit, onFocus } from '../../../helper/util';
@@ -428,6 +428,7 @@ export default connect(mapStateToProps, {
     getDrawerAssemblyPartDetail,
 })(reduxForm({
     form: 'AddAssemblyForm',
+    validate: validateForm,
     enableReinitialize: true,
     touchOnChange: true
 })(AddAssemblyForm));
