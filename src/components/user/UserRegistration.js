@@ -908,10 +908,6 @@ function UserRegistration(props) {
         }
         getUserPermission(UserId)
       } else {
-        if (!e) {
-          setIsPermissionLoading(true)
-        }
-        getRoleDetail(role.value, !IsShowAdditionalPermission)
       }
     } else {
       Toaster.warning('Please select role.')
