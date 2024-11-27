@@ -159,7 +159,7 @@ const User = () => {
       ...prevState,
       isRolePermissionForm: true,
       isUserForm: false,
-      data: {}
+      data: { isEditFlag: false, isNewRole: true }
     }));
   };
 
