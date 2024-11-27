@@ -252,7 +252,7 @@ function UserRegistration(props) {
     dispatch(getAllRoleAPI(() => { }))
     dispatch(getAllDepartmentAPI(() => { }))
     // this.props.getAllCities(() => { })
-    dispatch(getAllTechnologyAPI(() => { }))
+    dispatch(getAllTechnologyAPI(() => { }, '', true))
     dispatch(getLevelByTechnology(false, '', '', () => { }))
     getUserDetail(data);
     dispatch(getSimulationTechnologySelectList(() => { }))
@@ -550,10 +550,11 @@ function UserRegistration(props) {
     }
     if (label === 'plant') {
       plantSelectListForDepartment?.forEach((item) => {
+
         if (item?.PlantId === '0') {
           temp.push({ label: "Select All", value: '0' });
         } else {
-          temp.push({ label: item.PlantNameCode, value: item.PlantId })
+          temp.push({ ...item, label: item?.PlantNameCode, value: item?.PlantId })
         }
       });
       const isSelectAllOnly = temp.length === 1 && temp[0]?.label === "Select All" && temp[0]?.value === "0";
@@ -882,25 +883,23 @@ function UserRegistration(props) {
    * @description Used for User's additional permission
    */
   const onPressUserPermission = (e) => {
-    console.log(e, "E.")
 
-      ; // Set loading to true when starting
+
+    ; // Set loading to true when starting
 
     if (role && role.value) {
-      console.log(IsShowAdditionalPermission);
 
       setIsShowAdditionalPermission(!IsShowAdditionalPermission)
       setModules([])
 
       if (isEditFlag && grantUserWisePermission) {
-        console.log(isEditFlag);
-        console.log(grantUserWisePermission);
+
+
         if (!e) {
           setIsPermissionLoading(true)
         }
         getUserPermission(UserId)
       } else {
-        console.log(role.value);
         if (!e) {
           setIsPermissionLoading(true)
         }
@@ -2605,11 +2604,13 @@ function UserRegistration(props) {
 
   };
   const handlePlant = (newValue) => {
+
     if (newValue && (newValue[0]?.value === '0' || newValue?.some(item => item?.value === '0'))) {
       // Select All option is chosen
       const allPlantsExceptZero = plantSelectListForDepartment
-        .filter(item => item.PlantId !== '0')
-        .map(item => ({ label: item?.PlantNameCode, value: item?.PlantId }));
+        .filter(item => item?.PlantId !== '0')
+        .map(item => ({ ...item, label: item?.PlantNameCode, value: item?.PlantId }));
+
       setSelectedPlants(allPlantsExceptZero);
       setTimeout(() => {
         setValue('plant', allPlantsExceptZero);
