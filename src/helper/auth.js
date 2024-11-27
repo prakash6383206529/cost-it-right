@@ -101,3 +101,7 @@ export function corrugatedBoxPermission() {
   }
   return boxTypeObject
 }
+export function showApprovalDropdown() {
+  const configurationKey = reactLocalStorage.getObject('InitialConfiguration')
+  return configurationKey?.IsSelectApproverFromList
+}

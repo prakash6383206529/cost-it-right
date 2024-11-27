@@ -6,7 +6,7 @@ import Toaster from '../../../common/Toaster'
 import Drawer from '@material-ui/core/Drawer'
 import { SearchableSelectHookForm, TextAreaHookForm, DatePickerHookForm, NumberFieldHookForm, AllApprovalField, } from '../../../layout/HookFormInputs'
 import { getReasonSelectList, getAllApprovalDepartment, getAllApprovalUserFilterByDepartment, sendForApprovalBySender, approvalRequestByApprove } from '../../actions/Approval'
-import { getConfigurationKey, handleDepartmentHeader, loggedInUserId, userDetails } from '../../../../helper/auth'
+import { getConfigurationKey, handleDepartmentHeader, loggedInUserId, showApprovalDropdown, userDetails } from '../../../../helper/auth'
 import { setCostingApprovalData, setCostingViewData, fileUploadCosting, checkFinalUser, getReleaseStrategyApprovalDetails } from '../../actions/Costing'
 import { getVolumeDataByPartAndYear, checkRegularizationLimit } from '../../../masters/actions/Volume'
 
@@ -1307,7 +1307,7 @@ const SendForApproval = (props) => {
                           register={register}
                           defaultValue={""}
                           options={renderDropdownListing("Dept")}
-                          disabled={disableRS || ((initialConfiguration.IsReleaseStrategyConfigured && Object.keys(approvalType)?.length === 0)) || disableDept}
+                          disabled={disableRS || (((initialConfiguration.IsReleaseStrategyConfigured && Object.keys(approvalType)?.length === 0)|| disableDept)&&!showApprovalDropdown())}
                           mandatory={true}
                           handleChange={handleDepartmentChange}
                           errors={errors.dept}
@@ -1349,7 +1349,7 @@ const SendForApproval = (props) => {
                             defaultValue={""}
                             options={approvalDropDown}
                             mandatory={true}
-                            disabled={disableRS || !(userData.Department.length > 1)}
+                            disabled={disableRS ||(!(userData.Department.length > 1)&&!showApprovalDropdown())}
                             customClassName={"mb-0 approver-wrapper"}
                             handleChange={handleApproverChange}
                             errors={errors.approver}
