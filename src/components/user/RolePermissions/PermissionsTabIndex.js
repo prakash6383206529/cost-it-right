@@ -58,12 +58,11 @@ class PermissionsTabIndex extends Component {
 
         this.setState({ isLoader: true, counter: this.state.counter + 1 });
         this.props.getActionHeadsSelectList(() => {
-            setTimeout(() => {
-                const { isEditFlag, isNewRole } = this.props;
-                if (isEditFlag === false && isNewRole && this.props.isCallNewApi === true) {
-                    this.getRolePermission()
-                }
-            }, 500)
+            const { isEditFlag, isNewRole } = this.props;
+            if (isEditFlag === false && isNewRole) {
+                this.getRolePermission()
+            }
+
         })
 
         if (this.props.refVariable) {
