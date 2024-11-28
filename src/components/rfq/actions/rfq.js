@@ -137,7 +137,8 @@ export function fileUploadQuotation(data, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE })
             apiErrors(error)
-            callback(error)
+            callback(error.toString())
+
         })
     }
 }
@@ -869,5 +870,34 @@ export function getRfqReviewHistory(data, callback) {
                 dispatch({ type: API_FAILURE });
                 apiErrors(error);
             });
+    };
+}
+export function checkRmExistInRfq(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.checkRmExistInRfq, data, config());
+        request.then((response) => {
+            if (response?.data?.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+            callback(error);
+        });
+    };
+}
+
+export function checkBopExistInRfq(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.checkBopExistInRfq, data, config());
+        request.then((response) => {
+            if (response?.data?.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+            callback(error);
+        });
     };
 }

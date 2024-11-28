@@ -132,6 +132,11 @@ class AddIndivisualProduct extends Component {
       let data = new FormData()
       data.append('file', file)
       this.props.fileUploadPart(data, (res) => {
+        if (res.includes("Error")) {
+          this.dropzone.current.files.pop()
+          this.setState(prevState => ({ ...prevState, attachmentLoader: false }))
+          return false
+        }
         let Data = res.data[0]
         const { files } = this.state;
         files.push(Data)
