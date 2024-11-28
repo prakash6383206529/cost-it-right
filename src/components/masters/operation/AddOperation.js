@@ -1298,7 +1298,7 @@ class AddOperation extends Component {
                 >
                   <div className="add-min-height">
                     <Row>
-                      <Col md="4" className="switch mb15">
+                      <Col md="4" className="switch mt-2 mb15">
                         <label className="switch-level">
                           <div className={"left-title"}>Domestic</div>
                           <Switch
@@ -1558,7 +1558,7 @@ class AddOperation extends Component {
                         {this.state.showPlantWarning && <WarningMessage dClass="mt-1" message={`${this.props.fieldsObj.plantCurrency} rate is not present in the Exchange Master`} />}
                       </Col>}
                       {this.state.isImport && <Col md="3">
-                        <TooltipCustom id="currency" tooltipText={this.getTooltipTextForCurrency()} />
+                        <TooltipCustom id="currency" width="350px" tooltipText={this.getTooltipTextForCurrency()} />
                         <Field
                           name="Currency"
                           type="text"
@@ -1710,7 +1710,7 @@ class AddOperation extends Component {
                         />
                       </Col>
                       {!hidePlantCurrency && <Col md="3">
-                        <TooltipCustom disabledIcon={true} id="operation-rate" tooltipText={this.state.isImport ? this.OperationRateTitle()?.toolTipTextNetCostBaseCurrency : this.OperationRateTitle()?.tooltipTextPlantCurrency} />
+                        <TooltipCustom disabledIcon={true} width="350px" id="operation-rate" tooltipText={this.state.isImport ? this.OperationRateTitle()?.toolTipTextNetCostBaseCurrency : this.OperationRateTitle()?.tooltipTextPlantCurrency} />
                         <Field
                           name="RateConversion"
                           type="text"

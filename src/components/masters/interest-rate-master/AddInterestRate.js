@@ -1007,7 +1007,7 @@ class AddInterestRate extends Component {
                             />
                           </Col>
                           <Col md="3">
-                            <TooltipCustom id="PaymentTermPercent" tooltipText="Manage payment term percentages here or in costing as needed." />
+                            <TooltipCustom id="PaymentTermPercent" width="350px" tooltipText="Manage payment term percentages here or in costing as needed." />
                             <Field
                               id="AddInterestRate_PaymentTermPercent"
                               label={`Payment Term (%)`}

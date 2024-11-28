@@ -2167,7 +2167,7 @@ class AddPower extends Component {
                             <Col md="3">
                               <div className="d-flex justify-space-between align-items-center inputwith-icon">
                                 <div className="fullinput-icon">
-                                  <TooltipCustom id={"MinMonthlyCharge"} disabledIcon={true} tooltipText={`Min Monthly Charge = Min Demand kW per Month * Demand Charges per kW`} />
+                                  <TooltipCustom id={"MinMonthlyCharge"} width="350px" disabledIcon={true} tooltipText={`Min Monthly Charge = Min Demand kW per Month * Demand Charges per kW`} />
                                   <Field
                                     label={`Min Monthly Charge`}
                                     name={"MinMonthlyCharge"}
@@ -2204,7 +2204,7 @@ class AddPower extends Component {
                             <Col md="3">
                               <div className="d-flex justify-space-between align-items-center inputwith-icon">
                                 <div className="fullinput-icon">
-                                  <TooltipCustom id={"UnitConsumptionPerAnnum"} disabledIcon={true} tooltipText={`Unit Consumption per Annum = Avg. Unit Consumption per Month * 12`} />
+                                  <TooltipCustom id={"UnitConsumptionPerAnnum"} width="350px" disabledIcon={true} tooltipText={`Unit Consumption per Annum = Avg. Unit Consumption per Month * 12`} />
                                   <Field
                                     label={`Unit Consumption/Annum`}
                                     name={"UnitConsumptionPerAnnum"}
@@ -2243,7 +2243,7 @@ class AddPower extends Component {
                             <Col md="3">
                               <div className="d-flex justify-space-between align-items-center inputwith-icon">
                                 <div className="fullinput-icon">
-                                  <TooltipCustom id={"SEBCostPerUnit"} width="260px" disabledIcon={true} tooltipText={this.state.costPerUnitTooltipText} />
+                                  <TooltipCustom id={"SEBCostPerUnit"} width="350px" disabledIcon={true} tooltipText={this.state.costPerUnitTooltipText} />
                                   <Field
                                     label={`Cost/Unit`}
                                     name={"SEBCostPerUnit"}
@@ -2505,7 +2505,7 @@ class AddPower extends Component {
                             <Col md="3">
                               <div className="d-flex justify-space-between align-items-center inputwith-icon">
                                 <div className="fullinput-icon">
-                                  <TooltipCustom id={"SelfGeneratedCostPerUnit"} width="260px" disabledIcon={true} tooltipText={this.state.segCostUnittooltipText} />
+                                  <TooltipCustom id={"SelfGeneratedCostPerUnit"} width="350px" disabledIcon={true} tooltipText={this.state.segCostUnittooltipText} />
                                   <Field
                                     label={`Cost/Unit`}
                                     name={this.state.power.SelfGeneratedCostPerUnit === 0 ? '' : "SelfGeneratedCostPerUnit"}
