@@ -643,8 +643,12 @@ class AddOverhead extends Component {
       let data = new FormData()
       data.append('file', file)
       this.props.fileUploadOverHead(data, (res) => {
+        if (res.includes("Error")) {
+          this.dropzone.current.files.pop()
+          this.setDisableFalseFunction()
+          return false
+      }
         this.setDisableFalseFunction()
-
         let Data = res.data[0]
         const { files } = this.state;
         files.push(Data)
