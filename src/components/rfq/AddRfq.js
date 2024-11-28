@@ -688,6 +688,11 @@ function AddRfq(props) {
             setAttachmentLoader(true);
             setIsDisable(true)
             dispatch(fileUploadQuotation(data, (res) => {
+                if (res.includes("Error")) {
+                    this.dropzone.current.files.pop()
+                    this.setDisableFalseFunction()
+                    return false
+                }
                 setDisableFalseFunction()
                 if ('response' in res) {
                     status = res && res?.response?.status
