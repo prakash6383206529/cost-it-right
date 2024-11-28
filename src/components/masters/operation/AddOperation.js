@@ -166,7 +166,6 @@ class AddOperation extends Component {
       }
 
       const callAPI = (from, to) => {
-        console.log(to, this.props.fieldsObj.plantCurrency);
         return new Promise((resolve) => {
           this.props.getExchangeRateByCurrency(
             from,

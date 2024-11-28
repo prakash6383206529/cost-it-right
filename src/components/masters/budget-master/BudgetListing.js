@@ -34,6 +34,7 @@ import TourWrapper from '../../common/Tour/TourWrapper'
 import { Steps } from '../../common/Tour/TourMessages'
 import { useTranslation } from 'react-i18next'
 import { useLabels, useWithLocalization } from '../../../helper/core'
+import { getConfigurationKey } from '../../../helper'
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -139,6 +140,8 @@ function BudgetListing(props) {
     const getTableListData = (skip = 0, take = 10, isPagination = true) => {
         if (isPagination === true || isPagination === null) setIsLoader(true)
         let dataObj = { ...floatingFilterData }
+        //dataObj.ExchangeRateSourceName = floatingFilterData?.ExchangeRateSourceName
+
         const { zbc, vbc, cbc } = reactLocalStorage.getObject('CostingTypePermission')
         dataObj.IsCustomerDataShow = cbc
         dataObj.IsVendorDataShow = vbc
@@ -272,8 +275,19 @@ function BudgetListing(props) {
     }
 
     const returnExcelColumn = (data = [], TempData) => {
+        let temp = []
+        temp = TempData && TempData.map((item) => {
+            for (const key in item) {
+                if (item[key] === null || item[key] === undefined || item[key] === "") {
+                    item[key] = "-"; // Set to hyphen if data is not available
+                }
+            }
+
+            return item;
+
+        })
         return (
-            <ExcelSheet data={TempData} name={'Budget'}>
+            <ExcelSheet data={temp} name={'Budget'}>
                 {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }
@@ -327,7 +341,13 @@ function BudgetListing(props) {
         //tempArr = gridApi && gridApi?.getSelectedRows()
         tempArr = selectedRowForPagination
         tempArr = (tempArr && tempArr.length > 0) ? tempArr : (volumeDataListForDownload ? volumeDataListForDownload : [])
-        return returnExcelColumn(BUDGET_DOWNLOAD_EXCEl_LOCALIZATION, tempArr)
+        const filteredLabels = BUDGET_DOWNLOAD_EXCEl_LOCALIZATION.filter(column => {
+            if (column.value === "ExchangeRateSourceName") {
+                return getConfigurationKey().IsSourceExchangeRateNameVisible
+            }
+            return true;
+        })
+        return returnExcelColumn(filteredLabels, tempArr)
     };
 
     /**
@@ -598,6 +618,8 @@ function BudgetListing(props) {
                                     <AgGridColumn field="PartType" headerName="Part Type" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="partNoWithRevNo" headerName="Part No. (Revision No.)" width={200}></AgGridColumn>
                                     <AgGridColumn field="FinancialYear" headerName="Financial Year"></AgGridColumn>
+                                    {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                                    <AgGridColumn field="Currency" headerName="Currency" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="NetPoPrice" headerName="Net Cost"></AgGridColumn>
                                     <AgGridColumn field="BudgetedPoPrice" headerName="Budgeted Cost" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     {/*  <AgGridColumn field="BudgetedPrice" headerName="Budgeted Price"></AgGridColumn>   ONCE CODE DEPLOY FROM BACKEND THEN UNCOMENT THE LINE */}

@@ -12,6 +12,7 @@ import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper';
 
 export function Impactedmasterdata(props) {
     const { data, masterId, viewCostingAndPartNo, customClass, lastRevision } = props;
+
     const renderMaster = () => {
 
         let rmListing = false

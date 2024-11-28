@@ -9,17 +9,21 @@ import { reactLocalStorage } from 'reactjs-localstorage'
 function ConditionCosting(props) {
     const { isFromImport, currency, isFromMaster, PlantCurrency } = props
     const [totalCostBase, setTotalCostBase] = useState(0)
+
     const [totalCostCurrency, setTotalCostCurrency] = useState(0)
+
     const editDeleteData = (indexValue, operation) => {
-        props.editData(indexValue, operation)
+        props.editData(indexValue, operation, totalCostCurrency)
     }
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
 
     useEffect(() => {
         const sum = props?.tableData?.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj?.ConditionCostPerQuantityConversion), 0);
+
         setTotalCostBase(checkForDecimalAndNull(sum, initialConfiguration.NoOfDecimalForPrice))
 
         const sumCurrency = props?.tableData?.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj?.ConditionCostPerQuantity), 0);
+
         setTotalCostCurrency(checkForDecimalAndNull(sumCurrency, initialConfiguration.NoOfDecimalForPrice))
     }, [props?.tableData])
 

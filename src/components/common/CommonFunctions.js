@@ -403,26 +403,24 @@ export const generateCombinations = (arr, rate) => {
 /**
  * Handles applicability calculations for costs
  */
-export const handleApplicability = (value, basicPriceBaseCurrency, arr, costField, headerName) => {
+export const handleApplicability = (value, basicPriceBaseCurrency, arr, costField, headerName, applicabilityName) => {
     if (!value) return 0;
-    
     const selectedApplicabilities = value?.split(' + ');
-    
     // Calculate total cost currency for selected applicabilities
     const total = selectedApplicabilities.reduce((acc, applicability) => {
         const trimmedApplicability = applicability.trim();
-        
+
         // If applicability is "Basic Rate", return basic price
-        if (trimmedApplicability === "Basic Rate") {
+        if (trimmedApplicability === applicabilityName) {
             return Number(acc) + Number(basicPriceBaseCurrency);
         }
-        
+
         // Find matching cost item
         const item = arr?.find(item => item?.[headerName]?.trim() === trimmedApplicability);
         if (item) {
             return Number(acc) + Number(item?.[costField] || 0);
         }
-        
+
         return Number(acc);
     }, 0);
 
@@ -445,14 +443,15 @@ export const recalculateConditions = (basicPriceBaseCurrency, state) => {
             perQuantityCost: "ConditionCostPerQuantity",
         },
         'Description',
-        state
+        state,
+        "Basic Price"
     );
 };
 
 /**
  * Recalculates other costs
  */
-export const recalculateOtherCost = (basicRate, state) => {
+export const recalculateOtherCost = (basicRate, state, isSimulation) => {
     return recalculateCosts(
         true,
         basicRate,
@@ -465,36 +464,38 @@ export const recalculateOtherCost = (basicRate, state) => {
             perQuantityCost: "NetCostConversion",
         },
         'CostHeaderName',
-        state
+        state,
+        "Basic Rate",
+        isSimulation
     );
 };
 
 /**
  * Core cost recalculation logic
  */
-export const recalculateCosts = (isOtherCost, basicValue, typeField, applicabilityField, percentageField, resultFields, headerName, state) => {
+export const recalculateCosts = (isOtherCost, basicValue, typeField, applicabilityField, percentageField, resultFields, headerName, state, applicabilityName, isSimulation, basicRateValue) => {
     // Select the correct data array and make a deep copy
     const dataArray = isOtherCost ? state.otherCostTableData : state.conditionTableData;
     const costField = isOtherCost ? 'NetCost' : 'ConditionCost';
     let copiedData = _.cloneDeep(dataArray) ?? [];
-    
+
     // Create a temporary array for calculations
     let tempArr = copiedData;
-    
     // Process each item in the array
     copiedData.forEach((item, index) => {
         if (item?.[typeField] === "Percentage") {
             // Calculate costs
             const ApplicabilityCost = handleApplicability(
-                item[applicabilityField], 
+                item[applicabilityField],
                 basicValue,
                 tempArr,
                 costField,
-                headerName
+                headerName,
+                applicabilityName
             );
             const Cost = checkForNull((item?.[percentageField]) / 100) * checkForNull(ApplicabilityCost);
             const CostConversion = checkForNull((item?.[percentageField]) / 100) * checkForNull(ApplicabilityCost);
-            
+
             // Create updated object
             const updatedItem = {
                 ...item,
@@ -504,24 +505,22 @@ export const recalculateCosts = (isOtherCost, basicValue, typeField, applicabili
                 [resultFields.perQuantityCost]: CostConversion,
                 ApplicabilityCostConversion: ApplicabilityCost,
             };
-            
             // Update the temporary array
             tempArr[index] = updatedItem;
         }
     });
-    
     return tempArr;
 };
 
 /**
  * Updates cost values and handles state updates
  */
-export const updateCostValue = (isConditionCost, state, setValue, getValues) => {
+export const updateCostValue = (isConditionCost, state, price, isSimulation = false) => {
     // Get table data and settings based on cost type
-    const table = isConditionCost 
-        ? recalculateConditions(state.NetCostWithoutConditionCost, state)
-        : recalculateOtherCost(getValues('BasicRate'), state);
-    
+    const table = isConditionCost
+        ? recalculateConditions(isSimulation ? price : state.NetCostWithoutConditionCost, state, isSimulation)
+        : recalculateOtherCost(price, state, isSimulation);
+
     // Calculate sum
     const costField = isConditionCost ? 'ConditionCostPerQuantity' : 'NetCost';
     const sum = table?.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj[costField]), 0);

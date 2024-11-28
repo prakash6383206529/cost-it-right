@@ -1552,8 +1552,6 @@ class AddBOPImport extends Component {
     const { isCategoryDrawerOpen, isOpenVendor, isOpenUOM, isEditFlag, isViewMode, setDisable, costingTypeId, isClientVendorBOP, CostingTypePermission,
       isTechnologyVisible, disableSendForApproval, isOpenConditionDrawer, conditionTableData, BasicPrice, toolTipTextNetCost, toolTipTextBasicPrice, toolTipTextObject, IsSAPCodeUpdated, IsSapCodeEditView, IsSAPCodeHandle } = this.state;
     const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
-    console.log("this.props.fileobj", this.props.fieldsObj)
-    console.log("this.state.", this.state)
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
       if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {

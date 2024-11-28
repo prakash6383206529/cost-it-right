@@ -15,7 +15,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { PaginationWrapper } from '../../common/commonPagination';
-import { loggedInUserId, searchNocontentFilter } from '../../../helper';
+import { getConfigurationKey, loggedInUserId, searchNocontentFilter } from '../../../helper';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { checkMasterCreateByCostingPermission } from '../../common/CommonFunctions';
 import { ApplyPermission } from '.';
@@ -179,7 +179,14 @@ const FreightListing = (props) => {
       if (item.VendorName === '-') {
         item.VendorName = ' '
       }
-      return item
+      for (const key in item) {
+        if (item[key] === null || item[key] === undefined || item[key] === "") {
+          item[key] = "-"; // Set to hyphen if data is not available
+        }
+      }
+
+      return item;
+
     })
 
     return (<ExcelSheet data={temp} name={`${FreightMaster}`}>
@@ -206,7 +213,13 @@ const FreightListing = (props) => {
     let tempArr = []
     tempArr = state.gridApi && state.gridApi?.getSelectedRows()
     tempArr = (tempArr && tempArr.length > 0) ? tempArr : (freightDetail ? freightDetail : [])
-    return returnExcelColumn(FREIGHT_DOWNLOAD_EXCEl_LOCALIZATION, tempArr)
+    const filteredLabels = FREIGHT_DOWNLOAD_EXCEl_LOCALIZATION.filter(column => {
+      if (column.value === "ExchangeRateSourceName") {
+        return getConfigurationKey().IsSourceExchangeRateNameVisible
+      }
+      return true;
+    })
+    return returnExcelColumn(filteredLabels, tempArr)
   };
 
   const onFilterTextBoxChanged = (e) => {
@@ -302,9 +315,11 @@ const FreightListing = (props) => {
                 <AgGridColumn field="VendorName" headerName={`${vendorLabel} (Code)`} cellRenderer={'hyphenFormatter'} ></AgGridColumn>
                 <AgGridColumn field="Plant" headerName="Plant (Code)" cellRenderer={'hyphenFormatter'} ></AgGridColumn>
                 {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
-                <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'}></AgGridColumn>
                 {/* <AgGridColumn field="SourceCity" headerName="Source City"></AgGridColumn>
                 <AgGridColumn field="DestinationCity" headerName="Destination City"></AgGridColumn> */}
+                {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                <AgGridColumn field="Currency" headerName="Currency" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'}></AgGridColumn>
                 <AgGridColumn width='200px' field="FreightId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'} ></AgGridColumn>
               </AgGridReact>
               {<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} />}

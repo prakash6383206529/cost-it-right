@@ -19,6 +19,7 @@ import { AWAITING_APPROVAL_ID, CBCTypeId, EMPTY_DATA, PENDING_FOR_APPROVAL_ID, R
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { number, checkWhiteSpaces, decimalNumberLimit6 } from "../../../../../helper/validation";
 import { useLabels } from '../../../../../helper/core';
+import TooltipCustom from '../../../../common/Tooltip';
 function EditPartCost(props) {
 
     const [gridData, setGridData] = useState([])
@@ -42,6 +43,7 @@ function EditPartCost(props) {
         mode: 'onChange',
         reValidateMode: 'onChange',
     })
+    const { currencySource } = useSelector(state => state.costing)
 
     useEffect(() => {
         gridData && gridData.map((item, index) => {
@@ -66,6 +68,8 @@ function EditPartCost(props) {
                 tempObject.DeltaSign = { label: item?.DeltaSign, value: item?.DeltaSign }
                 tempObject.NetCost = item?.NetCost
                 tempObject.SOBPercentage = item?.SOBPercentage
+                tempObject.SettledPriceLocalConversion = item?.SettledPriceLocalConversion
+                tempObject.SettledPriceConversion = item?.SettledPriceConversion
                 tempObject.SettledPrice = item?.SettledPrice
                 tempObject.VendorCode = item?.VendorCode
                 tempObject.VendorName = item?.VendorName
@@ -84,7 +88,7 @@ function EditPartCost(props) {
     useEffect(() => {
         let temp = []
         if (!(CostingViewMode || props?.costingSummary)) {
-            temp = settledCostingDetails
+            temp = _.cloneDeep(settledCostingDetails)
 
             let tempArray = []
             temp?.CostingWeightedAverageSettledDetails && temp?.CostingWeightedAverageSettledDetails.map((item, index) => {
@@ -93,6 +97,8 @@ function EditPartCost(props) {
                 tempObject.DeltaSign = { label: item?.DeltaSign, value: item?.DeltaSign }
                 tempObject.NetCost = item?.NetCost
                 tempObject.SOBPercentage = item?.SOBPercentage
+                tempObject.SettledPriceLocalConversion = item?.SettledPriceLocalConversion
+                tempObject.SettledPriceConversion = item?.SettledPriceConversion
                 tempObject.SettledPrice = item?.SettledPrice
                 tempObject.VendorCode = item?.VendorCode
                 tempObject.VendorName = item?.VendorName
@@ -115,7 +121,8 @@ function EditPartCost(props) {
             plantId: costData?.DestinationPlantId,
             isRequestForWAC: (costData?.CostingTypeId === WACTypeId || props?.costingTypeId === WACTypeId) ? true : false,
             costingTypeId: (costData?.CostingTypeId === WACTypeId || props?.costingTypeId === WACTypeId) ? null : costData?.CostingTypeId,
-            effectiveDate: CostingEffectiveDate
+            effectiveDate: CostingEffectiveDate,
+            baseCostingId: costData?.CostingId
         }
 
         !props?.costingSummary && dispatch(getCostingForMultiTechnology(obj, res => { }))
@@ -161,7 +168,7 @@ function EditPartCost(props) {
         // TAKING OBJECT FROM WHOLE ARRAY LIST USING INDEX ON WHICH USER IS EDITING
         let editedObject = gridData[gridIndex]
         let weightedCostCalc = 0
-        let netCost = 0
+        let netCostLocalCurrency = 0
 
         // GET RUN TIME EDITED VALUES FROM INPUT FIELD
         if (costData?.CostingTypeId === WACTypeId) {
@@ -181,16 +188,35 @@ function EditPartCost(props) {
 
             // RESPECTIVE CALCULATION FOR + and - DELTA SIGN
             if (editedObject.DeltaSign?.label === '+') {
-                netCost = percentageOfNumber(checkForNull(editedObject.SettledPrice) + checkForNull(editedObject.DeltaValue), checkForNull(editedObject.SOBPercentage))
-                editedObject.NetCost = netCost
-                setValue(`${PartCostFields}.${gridIndex}.NetCost`, checkForDecimalAndNull(netCost, initialConfiguration.NoOfDecimalForPrice))
+                netCostLocalCurrency = percentageOfNumber(checkForNull(editedObject.SettledPrice) + checkForNull(editedObject.DeltaValue), checkForNull(editedObject.SOBPercentage))
+                editedObject.NetCost = netCostLocalCurrency
+
+                netCostLocalCurrency = percentageOfNumber(checkForNull(editedObject.SettledPriceConversion) + checkForNull(editedObject.DeltaValue), checkForNull(editedObject.SOBPercentage))
+                editedObject.NetCost = netCostLocalCurrency
+
+                netCostLocalCurrency = percentageOfNumber(checkForNull(editedObject.SettledPriceLocalConversion) + checkForNull(editedObject.DeltaValue), checkForNull(editedObject.SOBPercentage))
+                editedObject.NetCost = netCostLocalCurrency
+
+                setValue(`${PartCostFields}.${gridIndex}.NetCost`, checkForDecimalAndNull(netCostLocalCurrency, initialConfiguration.NoOfDecimalForPrice))
             } if (editedObject.DeltaSign?.label === '-') {
-                netCost = percentageOfNumber(checkForNull(editedObject.SettledPrice) - checkForNull(editedObject.DeltaValue), checkForNull(editedObject.SOBPercentage))
-                editedObject.NetCost = netCost
-                setValue(`${PartCostFields}.${gridIndex}.NetCost`, checkForDecimalAndNull(netCost, initialConfiguration.NoOfDecimalForPrice))
+                netCostLocalCurrency = percentageOfNumber(checkForNull(editedObject.SettledPrice) - checkForNull(editedObject.DeltaValue), checkForNull(editedObject.SOBPercentage))
+                editedObject.NetCost = netCostLocalCurrency
+
+                netCostLocalCurrency = percentageOfNumber(checkForNull(editedObject.SettledPriceConversion) - checkForNull(editedObject.DeltaValue), checkForNull(editedObject.SOBPercentage))
+                editedObject.NetCost = netCostLocalCurrency
+
+                netCostLocalCurrency = percentageOfNumber(checkForNull(editedObject.SettledPriceLocalConversion) - checkForNull(editedObject.DeltaValue), checkForNull(editedObject.SOBPercentage))
+                editedObject.NetCost = netCostLocalCurrency
+                setValue(`${PartCostFields}.${gridIndex}.NetCost`, checkForDecimalAndNull(netCostLocalCurrency, initialConfiguration.NoOfDecimalForPrice))
             } if (editedObject.DeltaSign === undefined) {
-                netCost = percentageOfNumber(checkForNull(editedObject.SettledPrice), checkForNull(editedObject.SOBPercentage))
-                editedObject.NetCost = netCost
+                netCostLocalCurrency = percentageOfNumber(checkForNull(editedObject.SettledPrice), checkForNull(editedObject.SOBPercentage))
+                editedObject.NetCost = netCostLocalCurrency
+
+                netCostLocalCurrency = percentageOfNumber(checkForNull(editedObject.SettledPriceConversion), checkForNull(editedObject.SOBPercentage))
+                editedObject.NetCost = netCostLocalCurrency
+
+                netCostLocalCurrency = percentageOfNumber(checkForNull(editedObject.SettledPriceLocalConversion), checkForNull(editedObject.SOBPercentage))
+                editedObject.NetCost = netCostLocalCurrency
             }
 
         }
@@ -217,7 +243,7 @@ function EditPartCost(props) {
 
     const handleDeltaSignChange = (value, index) => {
         if (value?.label === '-') {
-            if (gridData && (checkForNull(gridData[index]?.SettledPrice) < checkForNull(gridData[index]?.DeltaValue))) {
+            if (gridData && (checkForNull(gridData[index]?.SettledPriceLocalConversion) < checkForNull(gridData[index]?.DeltaValue))) {
                 Toaster.warning('Delta value should be less than settled price')
 
                 let tempGrid = gridData[index]
@@ -248,7 +274,7 @@ function EditPartCost(props) {
     }
 
     const handleDeltaValue = (value, index) => {
-        if (gridData && (gridData[index]?.DeltaSign?.label === '-') && gridData[index]?.SettledPrice < value) {
+        if (gridData && (gridData[index]?.DeltaSign?.label === '-') && gridData[index]?.SettledPriceLocalConversion < value) {
 
             Toaster.warning('Delta value should be less than settled price')
             setTimeout(() => {
@@ -329,11 +355,11 @@ function EditPartCost(props) {
             setValue(`${PartCostFields}.${indexForUpdate}.NetCost`, 0)
 
             if (costData?.CostingTypeId === WACTypeId) {
-                currentGrid[indexForUpdate].NetCost = checkForNull(currentGrid[indexForUpdate].SettledPrice) * checkForNull(currentGrid[indexForUpdate].SOBPercentage / 100)
+                currentGrid[indexForUpdate].NetCost = checkForNull(currentGrid[indexForUpdate].SettledPriceLocalConversion) * checkForNull(currentGrid[indexForUpdate].SOBPercentage / 100)
                 setGridData(currentGrid)
                 setTimeout(() => {
                     setValue(`${PartCostFields}.${indexForUpdate}.SOBPercentage`, currentGrid[indexForUpdate].SOBPercentage)
-                    setValue(`${PartCostFields}.${indexForUpdate}.NetCost`, checkForDecimalAndNull(checkForNull(currentGrid[indexForUpdate].SettledPrice) * checkForNull(currentGrid[indexForUpdate].SOBPercentage / 100), initialConfiguration.NoOfDecimalForPrice))
+                    setValue(`${PartCostFields}.${indexForUpdate}.NetCost`, checkForDecimalAndNull(checkForNull(currentGrid[indexForUpdate].SettledPriceLocalConversion) * checkForNull(currentGrid[indexForUpdate].SOBPercentage / 100), initialConfiguration.NoOfDecimalForPrice))
                     setTimeout(() => {
                         netCostCalculator(indexForUpdate, currentGrid)
                     }, 300);
@@ -353,7 +379,8 @@ function EditPartCost(props) {
                 if (item?.Value === '0' || final.includes(item?.CostingNumber)) return false;
                 temp.push({
                     label: item?.CostingNumber, value: item?.BaseCostingIdRef,
-                    SettledPrice: item?.SettledPrice, VendorCode: item?.VendorCode, VendorName: item?.VendorName, SOBPercentage: (item?.SOBPercentage) ? item.SOBPercentage : 0, CustomerCode: item?.CustomerCode, CustomerName: item?.CustomerName
+                    SettledPrice: item?.SettledPrice, SettledPriceConversion: item?.SettledPriceConversion,
+                    SettledPriceLocalConversion: item?.SettledPriceLocalConversion, VendorCode: item?.VendorCode, VendorName: item?.VendorName, SOBPercentage: (item?.SOBPercentage) ? item.SOBPercentage : 0, CustomerCode: item?.CustomerCode, CustomerName: item?.CustomerName
                 })
                 return null;
             });
@@ -411,6 +438,8 @@ function EditPartCost(props) {
                 tempObject.DeltaSign = item?.DeltaSign?.label
                 tempObject.NetCost = item?.NetCost
                 tempObject.BasicRate = item?.NetCost
+                tempObject.SettledPriceConversion = item?.SettledPriceConversion
+                tempObject.SettledPriceLocalConversion = item?.SettledPriceLocalConversion
                 tempArray.push(tempObject)
             })
 
@@ -441,6 +470,15 @@ function EditPartCost(props) {
 
         // SAVE API FOR PART COST
         // dispatch(saveEditPartCostDetails((res) => { }))
+    }
+
+    const tooltipText = (item) => {
+        return (
+            <div>
+                <div>{`Settled Price (${initialConfiguration?.BaseCurrency}) : ${item?.SettledPriceConversion ? checkForDecimalAndNull(item?.SettledPriceConversion, initialConfiguration?.NoOfDecimalForPrice) : '-'}`}</div>
+                <div>{`Settled Price (${currencySource?.label ? currencySource?.label : props?.viewCostingData?.[props?.index]?.CostingCurrency}) : ${item?.SettledPrice ? checkForDecimalAndNull(item?.SettledPrice, initialConfiguration?.NoOfDecimalForPrice) : '-'}`}</div>
+            </div>
+        )
     }
 
     return (
@@ -508,10 +546,10 @@ function EditPartCost(props) {
                                                 <th>Customer (Code)</th>
                                             }
                                             <th>Costing Number</th>
-                                            <th>Settled Price</th>
+                                            <th>Settled Price ({costData?.LocalCurrency ? costData?.LocalCurrency : (props?.viewCostingData?.[props?.index]?.LocalCurrency ? props?.viewCostingData?.[props?.index]?.LocalCurrency : '-')})</th>
                                             {(costData?.CostingTypeId !== WACTypeId && props?.costingTypeId !== WACTypeId) && <th>Delta</th>}
                                             <th>SOB%</th>
-                                            <th>Net Cost</th>
+                                            <th>Net Cost ({currencySource?.label ? currencySource?.label : '-'})</th>
                                             <th>Action</th>
                                         </tr >
                                     </thead >
@@ -527,7 +565,7 @@ function EditPartCost(props) {
                                                             <td>{`${item.CustomerName} (${item.CustomerCode})`}</td>
                                                         }
                                                         <td>{item?.label}</td>
-                                                        <td>{checkForDecimalAndNull(item?.SettledPrice, initialConfiguration.NoOfDecimalForPrice)}</td>
+                                                        <td>{item?.SettledPriceLocalConversion ? checkForDecimalAndNull(item?.SettledPriceLocalConversion, initialConfiguration.NoOfDecimalForPrice) : '-'}{item?.SettledPriceLocalConversion && <span><TooltipCustom customClass="float-unset" tooltipClass="process-quatity-tooltip" id={`settled-price`} tooltipText={() => tooltipText(item)} /></span>}</td>
 
                                                         {
                                                             (costData?.CostingTypeId !== WACTypeId && props?.costingTypeId !== WACTypeId) && <td >

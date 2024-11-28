@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import SimulationUploadDrawer from './SimulationUploadDrawer';
 import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, RM_MASTER_ID, searchCount, VBC_VENDOR_TYPE, APPROVED_STATUS, EMPTY_GUID, MACHINE, MASTERS, VBCTypeId, ZBCTypeId, CBCTypeId, ZBC, RAWMATERIALINDEX } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
-import { getTechnologyForSimulation, OperationSimulation, RMDomesticSimulation, RMImportSimulation, SurfaceTreatmentSimulation, MachineRateSimulation, BOPDomesticSimulation, BOPImportSimulation, IdForMultiTechnology, ASSEMBLY_TECHNOLOGY_MASTER, ASSEMBLY, associationDropdownList, NON_ASSOCIATED, ASSOCIATED, applicabilityList, APPLICABILITY_RM_SIMULATION, APPLICABILITY_BOP_SIMULATION, indexationDropdown } from '../../../config/masterData';
+import { getTechnologyForSimulation, OperationSimulation, RMDomesticSimulation, RMImportSimulation, SurfaceTreatmentSimulation, MachineRateSimulation, BOPDomesticSimulation, BOPImportSimulation, IdForMultiTechnology, ASSEMBLY_TECHNOLOGY_MASTER, ASSEMBLY, associationDropdownList, NON_ASSOCIATED, ASSOCIATED, applicabilityList, APPLICABILITY_RM_SIMULATION, APPLICABILITY_BOP_SIMULATION, indexationDropdown, DUMMYOTHERCOSTDATA, DUMMYCONDITIONCOSTDATA } from '../../../config/masterData';
 import { COMBINED_PROCESS } from '../../../config/constants';
 import { CombinedProcessSimulation } from '../../../config/masterData';
 import RMSimulation from './SimulationPages/RMSimulation';
@@ -53,7 +53,7 @@ const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 export const ApplyPermission = React.createContext();
 function Simulation(props) {
-    const {vendorLabel} = useLabels()
+    const { vendorLabel } = useLabels()
     const { handleEditMasterPage, showTour } = useContext(simulationContext) || {};
 
     const { register, control, setValue, formState: { errors }, getValues } = useForm({
@@ -989,6 +989,16 @@ function Simulation(props) {
         let uniqeArray = _.uniq(Data)
         const rawMaterialIds = uniqeArray.map(item => item.RawMaterialId)
         setRawMaterialIds(rawMaterialIds)
+        // let list = uniqeArray && uniqeArray?.map(item => {
+        //     item.OldRawMaterialOtherCostDetails = uniqeArray.length > 0 ? uniqeArray[0].OldRawMaterialOtherCostDetails : []
+
+        //     item.NewRawMaterialOtherCostDetails = uniqeArray.length > 0 ? uniqeArray[0].NewRawMaterialConditionCostDetails
+        //         : []
+
+        //     item.OldRawMaterialConditionCostDetails = uniqeArray.length > 0 ? uniqeArray[0].OldRawMaterialConditionCostDetails : []
+        //     item.NewRawMaterialConditionCostDetails = uniqeArray.length > 0 ? uniqeArray[0].NewRawMaterialConditionCostDetails : []
+        //     return item
+        // })
         dispatch(setSelectedRowForPagination(uniqeArray))
         setTableData(uniqeArray)
         // alert('Hello')
@@ -1528,7 +1538,7 @@ function Simulation(props) {
                     </ApplyPermission.Provider> //IF WE ARE USING BULK UPLOAD THEN ONLY TABLE DATA WILL BE USED OTHERWISE DIRECT LISTING
                 }
             case RMIMPORT:
-                return <RMSimulation isDomestic={false} backToSimulation={backToSimulation} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData.length > 0 ? tableData : getFilteredData(rmImportListing, RM_MASTER_ID)} technology={technology.label} technologyId={technology.value} master={master.label} tokenForMultiSimulation={tempObject} />   //IF WE ARE USING BULK UPLOAD THEN ONLY TABLE DATA WILL BE USED OTHERWISE DIRECT LISTING
+                return <RMSimulation isCostingSimulation={true} isDomestic={false} backToSimulation={backToSimulation} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData.length > 0 ? tableData : getFilteredData(rmImportListing, RM_MASTER_ID)} technology={technology.label} technologyId={technology.value} master={master.label} tokenForMultiSimulation={tempObject} />   //IF WE ARE USING BULK UPLOAD THEN ONLY TABLE DATA WILL BE USED OTHERWISE DIRECT LISTING
             case EXCHNAGERATE:
                 return <ERSimulation backToSimulation={backToSimulation} list={tableData.length > 0 ? tableData : getFilteredData(exchangeRateDataList, RM_MASTER_ID)} technology={technology.label} master={master.label} tokenForMultiSimulation={tempObject} technologyId={technology.value} />
             case COMBINED_PROCESS:

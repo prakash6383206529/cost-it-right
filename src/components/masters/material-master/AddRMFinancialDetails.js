@@ -39,7 +39,7 @@ function AddRMFinancialDetails(props) {
     const rawMaterailDetails = useSelector((state) => state.material.rawMaterailDetails)
     const exchangeRateDetails = useSelector((state) => state.material.exchangeRateDetails)
 
-    const [state, setState] = useState({
+    const initialState = {
         inputLoader: false,
         showErrorOnFocus: false,
         isDropDownChanged: false,
@@ -95,7 +95,8 @@ function AddRMFinancialDetails(props) {
         NetCostWithoutConditionCost: 0,
         hidePlantCurrency: false,
         showPlantWarning: false
-    });
+    }
+    const [state, setState] = useState(initialState);
     const [CurrencyExchangeRate, setCurrencyExchangeRate] = useState({
         plantCurrencyRate: 1,
         settlementCurrencyRate: 1,
@@ -935,36 +936,9 @@ function AddRMFinancialDetails(props) {
         }
         return true;
     };
-    // const updateCostValue = (isConditionCost = false) => {
-    //     // Get table data and settings based on cost type
-    //     const table = isConditionCost 
-    //         ? recalculateConditions(state.NetCostWithoutConditionCost)
-    //         : recalculateOtherCost(getValues('BasicRate'))
-
-    //     // Calculate sum
-    //     const costField = isConditionCost ? 'ConditionCostPerQuantity' : 'NetCost'
-    //     const sum = table?.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj[costField]), 0)
-
-    //     // Update state and form
-    //     const stateKey = isConditionCost ? 'conditionTableData' : 'otherCostTableData'
-    //     const formField = isConditionCost ? 'FinalConditionCost' : 'OtherCost'
-    //     const costKey = isConditionCost ? 'NetConditionCost' : 'totalOtherCost'
-
-    //     setState({
-    //         ...state,
-    //         [costKey]: sum,
-    //         [stateKey]: table
-    //     })
-    //     setValue(formField, checkForDecimalAndNull(sum, getConfigurationKey().NoOfDecimalForPrice))
-
-    //     // Dispatch appropriate action
-    //     isConditionCost
-    //         ? dispatch(setRawMaterialDetails({ ...rawMaterailDetailsRefFinancial.current, states: { ...state, [costKey]: sum, [stateKey]: table } }, () => {}))
-    //         : dispatch(setOtherCostDetails(table))
-    // }
+ 
     const updateTableCost = (isConditionCost = false) => {
-        const result = updateCostValue(isConditionCost, state, setValue, getValues);
-
+        const result = updateCostValue(isConditionCost, state, getValues('BasicRate'));
         // Update state
         setState(result.updatedState);
 

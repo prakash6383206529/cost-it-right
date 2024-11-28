@@ -24,6 +24,7 @@ function VerifyImpactDrawer(props) {
 
   const [impactedMasterDataListForLastRevisionData, setImpactedMasterDataListForLastRevisionData] = useState([])
   const [impactedMasterDataListForImpactedMaster, setImpactedMasterDataListForImpactedMaster] = useState([])
+
   const [showAssemblyWise, setShowAssemblyWise] = useState(false)
   const [shown, setshown] = useState(impactedMasterDataListForImpactedMaster.length <= 0 ? true : false)
   const [fgWiseAcc, setFgWiseAcc] = useState(false)

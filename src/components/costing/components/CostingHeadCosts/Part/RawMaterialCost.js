@@ -623,7 +623,7 @@ function RawMaterialCost(props) {
           let scrapWeight = checkForNull(GrossWeight - FinishWeight);
           // Recovered scrap weight calculate
           let recoveredScrapWeight;
-          if (isScrapRecoveryPercentageApplied && tempData?.ScrapRecoveryPercentage !== undefined && tempData?.ScrapRecoveryPercentage !== 0) {
+          if (isScrapRecoveryPercentageApplied) {
             const ScrapRecoveryPercentage = checkForNull(tempData?.ScrapRecoveryPercentage);
             recoveredScrapWeight = scrapWeight * calculatePercentage(ScrapRecoveryPercentage);
             scrapWeight = recoveredScrapWeight

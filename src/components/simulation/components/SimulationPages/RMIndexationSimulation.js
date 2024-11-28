@@ -92,7 +92,7 @@ function RMIndexationSimulation(props) {
         reValidateMode: 'onChange',
     })
 
-    const { technologyLabel,vendorLabel } = useLabels();
+    const { technologyLabel, vendorLabel } = useLabels();
     const dispatch = useDispatch()
 
     const currencySelectList = useSelector(state => state.comman.currencySelectList)
@@ -145,7 +145,9 @@ function RMIndexationSimulation(props) {
                 "IsSimulationWithOutCosting": true
 
             }
+
             dispatch(draftSimulationForRMMaster(obj, (res) => {
+
 
                 let obj1 = {
                     SimulationId: res?.data?.Identity

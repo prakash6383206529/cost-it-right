@@ -896,7 +896,7 @@ function VerifySimulation(props) {
                                             {isBOPDomesticOrImport === true && <AgGridColumn width={130} field="BoughtOutPartName" tooltipField="BoughtOutPartName" cellRenderer='BoughtOutPartName' headerName={`${showBopLabel()} Name`}></AgGridColumn>}
                                             {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="OperationName" tooltipField="OperationName" headerName="Operation Name"></AgGridColumn>}
                                             {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="OperationCode" tooltipField="OperationCode" headerName="Operation Code"></AgGridColumn>}
-                                            {!isMultiTechnology && verifyList && verifyList[0]?.CostingHeadId !== CBCTypeId && <AgGridColumn width={140} field="VendorName" tooltipField="VendorName" cellRenderer='renderVendor'headerName={`${vendorLabel} (Code)`}></AgGridColumn>}
+                                            {!isMultiTechnology && verifyList && verifyList[0]?.CostingHeadId !== CBCTypeId && <AgGridColumn width={140} field="VendorName" tooltipField="VendorName" cellRenderer='renderVendor' headerName={`${vendorLabel} (Code)`}></AgGridColumn>}
                                             {!isMultiTechnology && verifyList && verifyList[0]?.CostingHeadId === CBCTypeId && <AgGridColumn width={140} field="CustomerName" tooltipField="CustomerName" cellRenderer='renderCustomer' headerName="Customer (Code)"></AgGridColumn>}
                                             <AgGridColumn width={120} field="PlantName" tooltipField="PlantName" cellRenderer='renderPlant' headerName="Plant (Code)"></AgGridColumn>
                                             {isMasterAssociatedWithCosting && !isMultiTechnology && <AgGridColumn width={130} field="POPrice" tooltipField="POPrice" headerName={`Existing Net Cost (${reactLocalStorage.getObject("baseCurrency")})`} cellRenderer='priceFormatter'></AgGridColumn>}
@@ -922,7 +922,7 @@ function VerifySimulation(props) {
                                             {isRMDomesticOrRMImport === true && <AgGridColumn width={145} field="OldScrapRate" tooltipField="OldScrapRate" headerName="Existing Scrap Rate (Currency)"></AgGridColumn>}
                                             {isRMDomesticOrRMImport === true && <AgGridColumn width={150} field="NewScrapRate" tooltipField="NewScrapRate" cellRenderer='newSRFormatter' headerName="Revised Scrap Rate (Currency)" ></AgGridColumn>}
                                             {isRMDomesticOrRMImport === true && <AgGridColumn field="RawMaterialId" hide ></AgGridColumn>}
-
+                                            {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>}
                                             {isExchangeRate && <AgGridColumn width={130} field="Currency" tooltipField="Currency" headerName="Currency"></AgGridColumn>}
                                             {/* {isExchangeRate && <AgGridColumn width={130} field="POPrice" tooltipField="POPrice" headerName="Existing Net Cost (INR)"></AgGridColumn>} */}
                                             {isExchangeRate && <AgGridColumn width={145} field="OldExchangeRate" tooltipField="OldExchangeRate" headerName="Existing Exchange Rate"></AgGridColumn>}

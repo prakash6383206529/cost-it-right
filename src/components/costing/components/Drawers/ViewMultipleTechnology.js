@@ -168,6 +168,7 @@ function ViewMultipleTechnology(props) {
                 index={props?.index}
                 simulationMode={props?.simulationMode}
                 SimulationId={props?.SimulationId}
+                viewCostingData={props?.viewCostingData}
             />}
 
         </Fragment>

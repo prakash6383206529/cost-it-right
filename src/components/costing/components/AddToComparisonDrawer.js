@@ -775,6 +775,7 @@ function AddToComparisonDrawer(props) {
           obj.NetOverheadAndProfitConversion = dataFromAPI?.NetOverheadAndProfitConversion
           obj.NetSurfaceTreatmentConversion = dataFromAPI?.NetSurfaceTreatmentConversion
           obj.NetFreightPackagingConversion = dataFromAPI?.NetFreightPackagingConversion
+          obj.nTotalRMBOPCCLocalConversion = dataFromAPI?.CostingPartDetails && dataFromAPI.NetTotalRMBOPCCLocalConversion ? dataFromAPI.NetTotalRMBOPCCLocalConversion : 0
 
           // temp.push(VIEW_COSTING_DATA)
           if (index >= 0) {
