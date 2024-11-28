@@ -596,6 +596,9 @@ const AssemblyPartListing = React.memo((props) => {
         if (column?.value === "UnitOfMeasurement") {
           return initialConfiguration?.IsShowUnitOfMeasurementInPartMaster;
         }
+        if (column?.value === "SAPCode") {
+          return initialConfiguration?.IsSAPCodeRequired;
+        }
         return true;
       });
       return returnExcelColumn(filteredLabels, tempArr);

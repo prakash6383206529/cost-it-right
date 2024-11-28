@@ -7,7 +7,7 @@ import { getReporterList, getVendorNameByVendorSelectList, getPlantSelectListByT
 import { getCostingSpecificTechnology, getExistingCosting, getPartInfo, } from '../costing/actions/Costing'
 import { IsSendQuotationToPointOfContact, addDays, checkPermission, getConfigurationKey, getTimeZone, loggedInUserId, parseLinks } from '../.././helper';
 import { checkForNull, checkForDecimalAndNull } from '../.././helper/validation'
-import { ASSEMBLYNAME, ASSEMBLYORCOMPONENTSRFQ, BOUGHTOUTPARTSPACING, BOUGHTOUTPARTSRFQ, BoughtOutPart, COMPONENT_PART, DRAFT, EMPTY_DATA, FILE_URL, HAVELLS_DESIGN_PARTS, PREDRAFT, PRODUCT_ID, RAWMATERIALSRFQ, RFQ, RFQVendor, TOOLING, TOOLINGPART, ToolingId, VBC_VENDOR_TYPE, ZBC, searchCount } from '../.././config/constants';
+import { ASSEMBLYNAME, ASSEMBLYORCOMPONENTSRFQ, BOUGHTOUTPARTSPACING, BOUGHTOUTPARTSRFQ, BoughtOutPart, COMPONENTASSEMBLY, COMPONENT_PART, DRAFT, EMPTY_DATA, FILE_URL, HAVELLS_DESIGN_PARTS, PREDRAFT, PRODUCT_ID, RAWMATERIALSRFQ, RAW_MATERIAL, RFQ, RFQVendor, TOOLING, TOOLINGPART, ToolingId, VBC_VENDOR_TYPE, ZBC, searchCount } from '../.././config/constants';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
@@ -15,7 +15,7 @@ import Dropzone from 'react-dropzone-uploader'
 import 'react-dropzone-uploader/dist/styles.css'
 import Toaster from '../common/Toaster';
 import { MESSAGES } from '../../config/message';
-import { createRfqQuotation, fileUploadQuotation, getQuotationById, updateRfqQuotation, getContactPerson, checkExistCosting, setRFQBulkUpload, getNfrSelectList, getNfrAnnualForecastQuantity, getNFRRMList, getPartNFRRMList, checkLPSAndSCN, getrRqVendorDetails, getTargetPrice, setVendorDetails, getAssemblyChildpart, getRfqRaiseNumber, saveRfqPartDetails, getRfqPartDetails, deleteQuotationPartDetail, setRfqPartDetails, setQuotationIdForRfq, setTargetPriceDetail, checkRegisteredVendor, setRmSpecificRowData, getPurchaseRequisitionSelectList, setBopSpecificRowData, createQuotationPrParts, getRfqToolingDetails, setToolingSpecificRowData, sendQuotationForReview, getQuotationDetailsList } from './actions/rfq';
+import { createRfqQuotation, fileUploadQuotation, getQuotationById, updateRfqQuotation, getContactPerson, checkExistCosting, setRFQBulkUpload, getNfrSelectList, getNfrAnnualForecastQuantity, getNFRRMList, getPartNFRRMList, checkLPSAndSCN, getrRqVendorDetails, getTargetPrice, setVendorDetails, getAssemblyChildpart, getRfqRaiseNumber, saveRfqPartDetails, getRfqPartDetails, deleteQuotationPartDetail, setRfqPartDetails, setQuotationIdForRfq, setTargetPriceDetail, checkRegisteredVendor, setRmSpecificRowData, getPurchaseRequisitionSelectList, setBopSpecificRowData, createQuotationPrParts, getRfqToolingDetails, setToolingSpecificRowData, sendQuotationForReview, getQuotationDetailsList, checkRmExistInRfq, checkBopExistInRfq } from './actions/rfq';
 import PopupMsgWrapper from '../common/PopupMsgWrapper';
 import LoaderCustom from '../common/LoaderCustom';
 import redcrossImg from '../../assests/images/red-cross.png'
@@ -260,20 +260,20 @@ function AddRfq(props) {
 
             partTypes && partTypes?.forEach(partType => {
                 switch (partType.trim()) {
-                    case 'Raw Material':
+                    case RAW_MATERIAL:
                         setSelectedOption('Raw Material');
                         setQuotationType("Raw Material");
                         break;
-                    case 'Assembly':
-                    case 'Component':
+                    case ASSEMBLYNAME:
+                    case COMPONENT_PART:
                         setSelectedOption('componentAssembly');
                         setQuotationType("Component/Assembly");
                         break;
-                    case 'Bought Out Part':
+                    case BOUGHTOUTPARTSPACING:
                         setSelectedOption("Bought Out Part");
                         setQuotationType("Bought Out Part");
                         break;
-                    case 'Tooling':
+                    case TOOLINGPART:
                         setSelectedOption("Tooling");
                         setQuotationType("Tooling");
                         break;
@@ -411,7 +411,7 @@ function AddRfq(props) {
                     obj.YearName = ele?.YearName
                     if (ind === 2) {
                         obj.PartNumber = item?.PartNumber
-                        obj.VendorListExisting = item?.VendorList
+                        obj.ExistingVendor = item?.VendorList
                         obj.TargetPrice = item?.TargetPrice
                         obj.UOM = item?.UOMSymbol
                         obj.UOMSymbol = item?.UOMSymbol
@@ -1039,19 +1039,19 @@ function AddRfq(props) {
         let title = ""
 
         switch (selectedOption) {
-            case "Bought Out Part":
+            case BOUGHTOUTPARTSPACING:
                 warningMessgae = 'Select a BOP, then add specification and attachment documents'
                 title = 'BOP'
                 break
-            case "Raw Material":
+            case RAW_MATERIAL:
                 warningMessgae = 'Select a RM, then add attachment doucments'
                 title = 'RM'
                 break
-            case "componentAssembly":
+            case COMPONENTASSEMBLY:
                 warningMessgae = "Select a part, then click on + button to start inputing Specification, RM details and mandatory attachments."
                 title = 'Part'
                 break
-            case "Tooling":
+            case TOOLINGPART:
                 warningMessgae = "Select a PR Number, then edit the Tool No, add the specification and attachment documents"
                 title = 'Tooling'
                 break
@@ -1063,7 +1063,7 @@ function AddRfq(props) {
     const onSubmit = (data, e, isPartDetailsSent) => {
 
         switch (selectedOption) {
-            case "Bought Out Part":
+            case BOUGHTOUTPARTSPACING:
                 if (bopDataList?.length === 0) {
                     Toaster.warning("Please add at least one BOP.");
                     return false;
@@ -1075,7 +1075,7 @@ function AddRfq(props) {
                 }
                 break;
 
-            case "Raw Material":
+            case RAW_MATERIAL:
                 if (rmDataList?.length === 0) {
                     Toaster.warning("Please add at least one RM.");
                     return false;
@@ -1087,7 +1087,7 @@ function AddRfq(props) {
                 }
                 break;
 
-            case "componentAssembly":
+            case COMPONENTASSEMBLY:
                 if (partList?.length === 0) {
                     Toaster.warning("Please add at least one part.");
                     return false;
@@ -1098,7 +1098,7 @@ function AddRfq(props) {
                     }
                 }
                 break;
-            case "Tooling":
+            case TOOLINGPART:
                 if (toolingList?.length === 0) {
                     Toaster.warning("Please add at least one part.");
                     return false;
@@ -1325,47 +1325,91 @@ function AddRfq(props) {
     };
     const addRowVendorTable = () => {
         let isDuplicateEntry = false
-        let data = {}
-        let temp = []
-
+        let temp = [];
+        let data = {};
+        const handleSpecificPartTypeAPI = (dataObj, apiCallback) => {
+            let existingMessage = "";
+            switch (selectedOption) {
+                case RAW_MATERIAL:
+                    existingMessage = "Raw Material";
+                    break;
+                case BOUGHTOUTPARTSPACING:
+                    existingMessage = "Bought Out Part";
+                    break;
+                case COMPONENTASSEMBLY:
+                    existingMessage = "Costing";
+                    break;
+                case TOOLINGPART:
+                    existingMessage = "Tooling";
+                    break;
+                default:
+                    existingMessage = "Costing";
+            }
+            dispatch(apiCallback(dataObj, (res) => {
+                if (res?.data?.DynamicData?.IsExist) {
+                    Toaster.warning(`${existingMessage} already exists for this vendor.`);
+                    return false;
+                } else {
+                    handleVendorSuccess();
+                }
+            }));
+        };
         switch (selectedOption) {
-            case "Bought Out Part":
+            case RAW_MATERIAL:
+                rmDataList?.forEach(item => {
+                    temp.push(item?.RawMaterialSpecificationId);
+                });
+                data = {
+                    rawMaterialSpecificationIdList: temp,
+                    PlantId: getValues('plant')?.value,
+                    VendorId: getValues("vendor")?.value
+                };
+                handleSpecificPartTypeAPI(data, checkRmExistInRfq);
+                break;
 
-                bopDataList && bopDataList.map((item) => {
-                    temp.push(item?.BoughtOutPartChildId)
-                    return null
-                })
-                break
-            case "Raw Material":
-                rmDataList && rmDataList.map((item) => {
-                    temp.push(item?.RawMaterialChildId)
-                    return null
-                })
-                break
-            case "componentAssembly":
-                partList && partList.map((item) => {
-                    temp.push(item?.PartId)
-                    return null
-                })
-                break
-            case "Tooling":
+            case BOUGHTOUTPARTSPACING:
+                let categoryId = null;
+                bopDataList?.forEach(item => {
+                    temp.push(item?.BoughtOutPartChildId);
+                    // Get CategoryId from first item since all items should have same category
+                    if (!categoryId && item?.BoughtOutPartCategoryId) {
+                        categoryId = parseInt(item?.BoughtOutPartCategoryId);
+                    }
+                });
+                data = {
+                    boughtOutPartChildIdList: temp,
+                    PlantId: getValues('plant')?.value,
+                    VendorId: getValues("vendor")?.value,
+                    CategoryId: categoryId
+                };
+                handleSpecificPartTypeAPI(data, checkBopExistInRfq);
+                break;
 
-                toolingList && toolingList.map((item) => {
-                    temp.push(item?.PartId)
-                    return null
-                })
-                break
-            default:
+            default: // For componentAssembly and Tooling
+                if (selectedOption === COMPONENTASSEMBLY) {
+                    partList?.forEach(item => {
+                        if (item?.PartId) {
+                            temp.push(item.PartId);
+                        }
+                    });
+                } else { // Tooling
+                    toolingList?.forEach(item => {
+                        if (item?.PartId) {
+                            temp.push(item.PartId);
+                        }
+                    });
+                }
+                data = {
+                    PartIdList: temp,
+                    PlantId: getValues('plant')?.value,
+                    VendorId: getValues("vendor")?.value
+                };
+                handleSpecificPartTypeAPI(data, checkExistCosting);
+                break;
         }
-
-
-        data.PartIdList = _.uniq(temp)
-        data.PlantId = getValues('plant')?.value
-        data.VendorId = getValues('vendor')?.value
         dispatch(checkLPSAndSCN(data, (res, err) => {
             if (err) {
                 Toaster.error('An error occurred while checking LPS and SCN.');
-
                 return;
             }
             let Data = res?.data?.Data;
@@ -1373,112 +1417,104 @@ function AddRfq(props) {
                 const additionalMessage = " Do you want to initiate an unblocking deviation for this vendor at the specified plant? If yes, please click \"OK\"";
 
                 if (Data?.ClassificationDeviationIsInApprovalProcess || Data?.LPSRatingDeviationIsInApprovalProcess) {
-                    // setShowPopup(true)
-                    setBlocked(true)
-                    Toaster.warning(res?.data?.Message)
-                    setAlreadyInDeviation(true)
-                    setValue('vendor', '')
-                    setShowPopup(false)
-                    return false
+                    setBlocked(true);
+                    Toaster.warning(res?.data?.Message);
+                    setAlreadyInDeviation(true);
+                    setValue('vendor', '');
+                    setShowPopup(false);
+                    return false;
                 } else {
                     setPopupMessage(res?.data?.Message + additionalMessage);
-                    setShowPopup(true)
+                    setShowPopup(true);
                     setVendorId(getValues('vendor'));
                     setPlantId(getValues('plant'));
-                    setBlocked(true)
-                    return false
+                    setBlocked(true);
+                    return false;
                 }
-
             }
-            dispatch(checkExistCosting(data, (res) => {
-                if (res?.data?.DynamicData?.IsExist) {
-                    Toaster.warning("Costing already exists for this vendor.")
-                    return false
-                } else {
+        }))
 
-                    let obj = {}
-                    obj.VendorId = getValues('vendor')?.value
-                    obj.ContactPersonId = getValues('contactPerson')?.value
-                    obj.Vendor = getValues('vendor')?.label
-                    obj.ContactPerson = getValues('contactPerson')?.label
-                    obj.IncoTermsIdRef = getRfqVendorDetail?.IncoTermIdRef
-                    obj.IncoTerms = getRfqVendorDetail?.IncoTerms
-                    obj.PaymentTermsIdRef = getRfqVendorDetail?.PaymentTermIdRef
-                    obj.PaymentTerms = getRfqVendorDetail?.PaymentTerms
-                    obj.WarrantyTerms = getValues('WarrantyTerms')?.label
-                    obj.LDClause = getValues('LDClause')
-                    if (obj.VendorId === null || obj.VendorId === undefined) {
-                        Toaster.warning("Please fill all the mandatory fields first.");
-                        return false;
+        const handleVendorSuccess = () => {
+            let obj = {}
+            obj.VendorId = getValues('vendor')?.value
+            obj.ContactPersonId = getValues('contactPerson')?.value
+            obj.Vendor = getValues('vendor')?.label
+            obj.ContactPerson = getValues('contactPerson')?.label
+            obj.IncoTermsIdRef = getRfqVendorDetail?.IncoTermIdRef
+            obj.IncoTerms = getRfqVendorDetail?.IncoTerms
+            obj.PaymentTermsIdRef = getRfqVendorDetail?.PaymentTermIdRef
+            obj.PaymentTerms = getRfqVendorDetail?.PaymentTerms
+            obj.WarrantyTerms = getValues('WarrantyTerms')?.label
+            obj.LDClause = getValues('LDClause')
+            if (obj.VendorId === null || obj.VendorId === undefined) {
+                Toaster.warning("Please fill all the mandatory fields first.");
+                return false;
+            }
+
+            // Check IsSendQuotationToPointOfContact() result and ContactPersonId
+            if (IsSendQuotationToPointOfContact() && (obj.ContactPersonId === null || obj.ContactPersonId === undefined)) {
+                Toaster.warning("Please fill all the mandatory fields first.");
+                return false;
+            }
+
+
+            if (!updateButtonVendorTable) {
+                vendorList && vendorList.map((item) => {
+                    if (item?.VendorId === obj.VendorId) {
+                        isDuplicateEntry = true
                     }
+                    return null
+                })
+            }
 
-                    // Check IsSendQuotationToPointOfContact() result and ContactPersonId
-                    if (IsSendQuotationToPointOfContact() && (obj.ContactPersonId === null || obj.ContactPersonId === undefined)) {
-                        Toaster.warning("Please fill all the mandatory fields first.");
-                        return false;
-                    }
+            if (isDuplicateEntry) {
+                Toaster.warning("This vendor is already added.")
+                return false;
+            }
+            else if (selectedOption === TOOLING && !showVendorSection && !getValues('LDClause')) {
+                Toaster.warning("Please enter LD Clause.");
+                return false
+            }
+            let arr = [...vendorList, obj]
 
-
-                    if (!updateButtonVendorTable) {
-                        vendorList && vendorList.map((item) => {
-                            if (item?.VendorId === obj.VendorId) {
-                                isDuplicateEntry = true
-                            }
-                            return null
-                        })
-                    }
-
-                    if (isDuplicateEntry) {
-                        Toaster.warning("This vendor is already added.")
-                        return false;
-                    }
-                    else if (selectedOption === TOOLING && !showVendorSection && !getValues('LDClause')) {
-                        Toaster.warning("Please enter LD Clause.");
+            if (updateButtonVendorTable) {       //EDIT CASE
+                arr = []
+                vendorList && vendorList.map((item) => {
+                    if (JSON.stringify(selectedRowVendorTable) === JSON.stringify(item)) {
                         return false
+                    } else {
+                        arr.push(item)
                     }
-                    let arr = [...vendorList, obj]
+                    return null
+                })
 
-                    if (updateButtonVendorTable) {       //EDIT CASE
-                        arr = []
-                        vendorList && vendorList.map((item) => {
-                            if (JSON.stringify(selectedRowVendorTable) === JSON.stringify(item)) {
-                                return false
-                            } else {
-                                arr.push(item)
-                            }
-                            return null
-                        })
-
-                        arr.map((item) => {
-                            if (item?.VendorId === obj.VendorId) {
-                                isDuplicateEntry = true
-                            }
-                            return null
-                        })
-
-                        if (isDuplicateEntry) {
-                            Toaster.warning("This vendor is already added.")
-                            return false;
-                        }
-
-                        arr.push(obj)
+                arr.map((item) => {
+                    if (item?.VendorId === obj.VendorId) {
+                        isDuplicateEntry = true
                     }
+                    return null
+                })
 
-                    setVendorList(arr)
-                    setValue('vendor', "")
-                    setValue('contactPerson', "")
-                    setValue('LDClause', "")
-                    setValue('WarrantyTerms', "")
-                    setValue('PaymentTerms', "")
-                    setValue('IncoTerms', "")
-                    setUpdateButtonVendorTable(false)
-                    setGetReporterListDropDown([])
-                    dispatch(setVendorDetails({}))
+                if (isDuplicateEntry) {
+                    Toaster.warning("This vendor is already added.")
+                    return false;
                 }
 
-            }))
+                arr.push(obj)
+            }
 
-        }))
+            setVendorList(arr)
+            setValue('vendor', "")
+            setValue('contactPerson', "")
+            setValue('LDClause', "")
+            setValue('WarrantyTerms', "")
+            setValue('PaymentTerms', "")
+            setValue('IncoTerms', "")
+            setUpdateButtonVendorTable(false)
+            setGetReporterListDropDown([])
+            dispatch(setVendorDetails({}))
+
+        }
     }
 
     const updateRawMaterialList = (obj) => {
@@ -1511,61 +1547,83 @@ function AddRfq(props) {
                 list.push(obj)
 
                 setRMAPIList(list)
-
-                let objTemp = {};
-                let arrTemp = [];
                 let Data = {}
+                let temp = []; // Initialize temp array to hold Part IDs
+
                 if (nfrId && nfrId.value !== null) {
                     dispatch(getNfrAnnualForecastQuantity(nfrId.value, getValues('partNumber')?.value, sopdate = "", (res) => {  //CHECK_NFR
                         Data = res.data.Data
                     }));
                 }
-                let temp = []; // Initialize temp array to hold Part IDs
+                const handleSpecificPartTypeAPI = (dataObj, apiCallback) => {
+                    dispatch(apiCallback(dataObj, (res) => {
+                        if (res?.data?.Result) {
+                            let vendorList = [...res?.data?.DataList];
+                            let vendorListFinal = [];
+                            vendorList?.map((item) => {
+                                vendorListFinal.push(`${item?.VendorName} (${item?.VendorCode})`);
+                            });
+
+                            let tempArrayparts = [...selectedparts, getValues('partNumber')];
+                            setSelectedParts(tempArrayparts);
+                            handlePartResponse(res, vendorListFinal);
+                        }
+                    }));
+
+                };
                 switch (selectedOption) {
-                    case "Bought Out Part":
-                        bopList && bopList.map((item) => {
-                            temp.push(item?.BoughtOutPartChildId);
-                            return null;
-                        });
-                        break;
-                    case "Raw Material":
+                    case RAW_MATERIAL:
                         RawMaterialList && RawMaterialList.map((item) => {
-                            temp.push(item?.RawMaterialChildId);
+                            temp.push(item?.RawMaterialSpecificationId);
                             return null;
                         });
+
+                        const rmData = {
+                            rawMaterialSpecificationIdList: temp,
+                            PlantId: getValues('plant')?.value,
+                            VendorId: null
+                        };
+                        handleSpecificPartTypeAPI(rmData, checkRmExistInRfq);
                         break;
-                    case "componentAssembly":
+
+                    case BOUGHTOUTPARTSPACING:
+                        let categoryId = null;
+                        bopList?.forEach(item => {
+                            temp.push(item?.BoughtOutPartChildId);
+                            // Get CategoryId from first item since all items should have same category
+                            if (!categoryId && item?.BoughtOutPartCategoryId) {
+                                categoryId = parseInt(item?.BoughtOutPartCategoryId);
+                            }
+                        });
+
+                        const bopData = {
+                            boughtOutPartChildIdList: temp,
+                            PlantId: getValues('plant')?.value,
+                            VendorId: null,
+                            CategoryId: categoryId
+
+                        };
+                        handleSpecificPartTypeAPI(bopData, checkBopExistInRfq);
+                        break;
+
+                    default: // For componentAssembly and Tooling
                         temp.push(getValues('partNumber')?.value); // Use getValues for componentAssembly
+
+                        let dataObj = {
+                            "PartIdList": temp,
+                            "PlantId": getValues('plant')?.value,
+                            "VendorId": null
+                        };
+                        handleSpecificPartTypeAPI(dataObj, checkExistCosting);
                         break;
-                    case "Tooling":
-                        temp.push(getValues('partNumber')?.value); // Use getValues for Tooling
-                        break;
-                    default:
                 }
 
 
 
-                let dataObj = {
-                    "PartIdList": temp,
-                    "PlantId": getValues('plant')?.value,
-                    "VendorId": null
-                };
 
-                let vendorList = [];
-                let vendorListFinal = [];
-
-                dispatch(checkExistCosting(dataObj, (res) => {
-                    if (res?.data?.Result) {
-                        vendorList = [...res?.data?.DataList];
-                        vendorList && vendorList?.map((item) => {
-                            vendorListFinal.push(`${item?.VendorName} (${item?.VendorCode})`);
-                        });
-                    }
-
-                    let tempArrayparts = [...selectedparts, getValues('partNumber')];
-                    setSelectedParts(tempArrayparts);
-
+                const handlePartResponse = (res, vendorListFinal) => {
                     let partNumber = getValues('partNumber');
+
 
                     // sopObjectTemp && sopObjectTemp.map((item, index) => {
                     //     let newObjTemp = { ...objTemp }; // Create a new object in each iteration
@@ -1584,7 +1642,7 @@ function AddRfq(props) {
 
                     //     if (index === 2) {
                     //         newObjTemp.PartNumber = partNumber?.label;
-                    //         newObjTemp.VendorListExisting = vendorListFinal.join(',') ?? '-';
+                    //         newObjTemp.ExistingVendor = vendorListFinal.join(',') ?? '-';
 
                     //     }
                     //     if (nfrId && nfrId.value !== null) {
@@ -1615,10 +1673,7 @@ function AddRfq(props) {
                     //     return null;
                     // });
                     let arrTemp = [];
-
-
                     let newObjTemp = {};  // Initialize the new object
-
                     newObjTemp.PartNo = partNumber?.label;
                     newObjTemp.PartId = getValues('partNumber')?.value;
                     newObjTemp.UOM = getValues('UOM')?.label;
@@ -1632,11 +1687,10 @@ function AddRfq(props) {
                     newObjTemp.HavellsDesignPartId = getValues('HavellsDesignPart')?.value;
                     newObjTemp.Description = getValues('Description') || "";
                     newObjTemp.PartName = getValues('Description') || "";
-
+                    newObjTemp.ExistingVendor = vendorListFinal?.length ? vendorListFinal.join(',') : '';
 
 
                     arrTemp.push(newObjTemp);  // Push the new object to the array
-
                     let dataList = [...arrTemp]
                     list[list.length - 1].RmList && list[list.length - 1].RmList?.map((item, index) => {
 
@@ -1675,14 +1729,17 @@ function AddRfq(props) {
                     setRMSpecification('');
                     dispatch(clearGradeSelectList([]));
                     dispatch(clearSpecificationSelectList([]));
-                }));
-
-
-
+                }
             }));
 
 
-        } else {
+
+
+
+
+        }
+        else {
+
 
             if (!updateButtonPartNoTable && rmDataList?.map(item => item?.RawMaterialCode)?.includes(RawMaterialList[0]?.RawMaterialCode)) {
                 Toaster.warning('This Raw Material is already added.');
@@ -1700,6 +1757,7 @@ function AddRfq(props) {
             let objTemp = {};
             let arrTemp = [];
             let Data = {}
+            let temp = [];
             if (selectedOption === "Raw Material") {
 
                 if (RawMaterialList.length === 0) {
@@ -1711,23 +1769,7 @@ function AddRfq(props) {
                     Toaster.warning('Please fill the remark and attachment documents!');
                     return false;
                 }
-                // const label = RawMaterialList[0]?.RawMaterialName;
-                // const isRMGradeMissing = !RawMaterialList[0]?.RawMaterialGrade;
-                // const isRMSpecificationMissing = !RawMaterialList[0]?.RawMaterialSpecification;
-                // if (label !== undefined && (isRMGradeMissing || isRMSpecificationMissing)) {
-                //     const missingRequirements = [];
-                //     if (isRMGradeMissing) {
-                //         missingRequirements.push('RM Grade');
-                //     }
-                //     if (isRMSpecificationMissing) {
-                //         missingRequirements.push('RM Specification');
-                //     } if (requirementDate === "") {
-                //         Toaster.warning("Please select Requirement Date");
-                //         return false;
-                //     }
-                //     const message = `Please select ${missingRequirements.join(' and ')}`;
-                //     Toaster.warning(message);
-                // }
+
             } else if (selectedOption === "componentAssembly") {
 
                 if (getValues("partNumber") === "") {
@@ -1773,78 +1815,70 @@ function AddRfq(props) {
                     Data = res.data.Data
                 }));
             }
-            let temp = []; // Initialize temp array to hold Part IDs
-            switch (selectedOption) {
-                case "Bought Out Part":
-                    bopList && bopList.map((item) => {
-                        temp.push(item?.BoughtOutPartChildId);
-                        return null;
-                    });
-                    break;
-                case "Raw Material":
-                    RawMaterialList && RawMaterialList.map((item) => {
-                        temp.push(item?.RawMaterialChildId);
-                        return null;
-                    });
-                    break;
-                case "componentAssembly":
-                    temp.push(getValues('partNumber')?.value); // Use getValues for componentAssembly
-                    break;
-                case "Tooling":
-                    temp.push(getValues('partNumber')?.value); // Use getValues for Tooling
-                    break;
-                default:
-            }
-            let dataObj = {
-                "PartIdList": temp,
-                "PlantId": getValues('plant')?.value,
-                "VendorId": null
+            const handleSpecificPartTypeAPI = (dataObj, apiCallback) => {
+                dispatch(apiCallback(dataObj, (res) => {
+                    if (res?.data?.Result) {
+                        let vendorList = [...res?.data?.DataList];
+                        let vendorListFinal = [];
+                        vendorList?.map((item) => {
+                            vendorListFinal.push(`${item?.VendorName} (${item?.VendorCode})`);
+                        });
+
+                        let tempArrayparts = [...selectedparts, getValues('partNumber')];
+                        setSelectedParts(tempArrayparts);
+                        handlePartResponse(res, vendorListFinal);
+                    }
+                }));
+
             };
-
-            let vendorList = [];
-            let vendorListFinal = [];
-
-            dispatch(checkExistCosting(dataObj, (res) => {                 // Part Handle change
-                if (res?.data?.Result) {
-                    vendorList = [...res?.data?.DataList];
-                    vendorList && vendorList?.map((item) => {
-                        vendorListFinal.push(`${item?.VendorName} (${item?.VendorCode})`);
+            switch (selectedOption) {
+                case RAW_MATERIAL:
+                    RawMaterialList && RawMaterialList.map((item) => {
+                        temp.push(item?.RawMaterialSpecificationId);
+                        return null;
                     });
-                }
+                    const rmData = {
+                        rawMaterialSpecificationIdList: temp,
+                        PlantId: getValues('plant')?.value,
+                        VendorId: null
+                    };
+                    handleSpecificPartTypeAPI(rmData, checkRmExistInRfq);
+                    break;
 
-                let tempArrayparts = [...selectedparts, getValues('partNumber')];
-                setSelectedParts(tempArrayparts);
+                case BOUGHTOUTPARTSPACING:
+                    let categoryId = null;
+                    bopList?.forEach(item => {
+                        temp.push(item?.BoughtOutPartChildId);
+                        // Get CategoryId from first item since all items should have same category
+                        if (!categoryId && item?.BoughtOutPartCategoryId) {
+                            categoryId = parseInt(item?.BoughtOutPartCategoryId);
+                        }
+                    });
+                    const bopData = {
+                        boughtOutPartChildIdList: temp,
+                        PlantId: getValues('plant')?.value,
+                        VendorId: null,
+                        CategoryId: categoryId
+
+                    };
+                    handleSpecificPartTypeAPI(bopData, checkBopExistInRfq);
+                    break;
+
+                default: // For componentAssembly and Tooling
+                    temp.push(getValues('partNumber')?.value);
+                    let dataObj = {
+                        "PartIdList": temp,
+                        "PlantId": getValues('plant')?.value,
+                        "VendorId": null
+                    };
+                    handleSpecificPartTypeAPI(dataObj, checkExistCosting);
+                    break;
+
+            }
+            const handlePartResponse = (res, vendorListFinal) => {
 
                 let partNumber = getValues('partNumber');
 
-                // sopObjectTemp && sopObjectTemp.map((item, index) => {
-                //     let newObjTemp = { ...objTemp }; // Create a new object in each iteration
-
-                //     newObjTemp.PartNo = partNumber?.label;
-                //     newObjTemp.PartId = getValues('partNumber')?.value;
-                //     newObjTemp.UOM = getValues('UOM')?.label
-                //     newObjTemp.UOMId = getValues('UOM')?.value
-                //     newObjTemp.TargetPrice = getTargetprice?.TargetPrice || 0
-                //     newObjTemp.TimeLine = requirementDate || ''
-                //     newObjTemp.PartType = getValues('PartType')?.label
-                //     newObjTemp.PartTypeId = getValues('PartType')?.value
-
-                //     newObjTemp.HavellsDesignPart = getValues('HavellsDesignPart')?.label
-                //     newObjTemp.HavellsDesignPartId = getValues('HavellsDesignPart')?.value
-                //     newObjTemp.Description = getValues('Description')
-
-
-
-                //     if (index === 2) {
-                //         newObjTemp.PartNumber = partNumber?.label;
-                //         newObjTemp.VendorListExisting = vendorListFinal.join(',') ?? '-';
-                //         newObjTemp.RMName = rmName?.label ?? '-';
-                //         newObjTemp.RawMaterialChildId = rmName?.value ?? '-';
-                //         newObjTemp.RMGrade = rmgrade?.label ?? '-';
-                //         newObjTemp.RawMaterialGradeId = rmgrade?.value ?? '-';
-                //         newObjTemp.RMSpecification = rmspecification?.label ?? '-';
-                //         newObjTemp.RawMaterialSpecificationId = rmspecification?.value ?? '-';
-                //     }
                 //     if (nfrId) {
                 //         if (index === 0) {
                 //             newObjTemp.Quantity = checkForDecimalAndNull(Data.FirstYearQuantity, initialConfiguration.NoOfDecimalForInputOutput);
@@ -1871,9 +1905,7 @@ function AddRfq(props) {
                 //     return null;
                 // });
                 let arrTemp = [];
-
                 let newObjTemp = {};  // Initialize the new object
-
                 // Common properties
                 newObjTemp.UOM = getValues('UOM')?.label;
                 newObjTemp.UOMSymbol = getValues('UOM')?.label
@@ -1887,6 +1919,7 @@ function AddRfq(props) {
                 newObjTemp.Description = getValues('Description') || "";
                 newObjTemp.SOPQuantityDetails = sopQuantityList;
                 newObjTemp.PartName = getValues('Description') || "";
+                newObjTemp.ExistingVendor = vendorListFinal?.length ? vendorListFinal.join(',') : '';
 
 
                 if (selectedOption === "Raw Material") {
@@ -1921,7 +1954,6 @@ function AddRfq(props) {
                 let arr
                 let QuotationPartId = ''
                 if (updateButtonPartNoTable) {
-
                     if (selectedOption === "Raw Material") {
                         arr = rmDataList.map(item => {
                             if (item?.RawMaterialChildId === editRawMaterialId) {
@@ -1967,11 +1999,7 @@ function AddRfq(props) {
 
                     }
                 }
-
-
-
                 let obj = {}
-
                 let temppartArr = []
                 let tempArr = [...arr]
                 let list = []
@@ -1981,7 +2009,6 @@ function AddRfq(props) {
                     }
                     return item
                 })
-
 
                 obj.QuotationId = getQuotationIdForRFQ ? getQuotationIdForRFQ : ""
                 obj.TechnologyId = getValues('technology').value || null
@@ -2027,7 +2054,7 @@ function AddRfq(props) {
                     temppartObj.Attachments = childPartFiles || []
                     temppartObj.HavellsDesignPart = getValues('HavellsDesignPart')?.label || ''
                     temppartObj.UnitOfMeasurementId = getValues('UOM')?.value || ''
-                    temppartObj.ExistingVendor = vendorList.join(',') || '';
+                    temppartObj.ExistingVendor = vendorListFinal.join(',') || '';
                     temppartObj.Description = getValues('Description') || ""
                     temppartObj.SopDate = sopdate || null
                     //temppartObj.SOPQuantityDetails = obj[0]?.SOPQuantityDetails
@@ -2127,14 +2154,14 @@ function AddRfq(props) {
 
 
                 switch (selectedOption) {
-                    case 'componentAssembly':
+                    case COMPONENTASSEMBLY:
 
                         obj.PartList = updatedPartList;
                         obj.RawMaterialList = []
                         obj.BoughtOutPartList = []
                         obj.ToolDataList = []
                         break;
-                    case 'Raw Material':
+                    case RAW_MATERIAL:
 
                         let tempRmArr = [];
                         let rmIdList = _.uniq(_.map(RawMaterialList, 'RawMaterialChildId'));
@@ -2157,8 +2184,8 @@ function AddRfq(props) {
                                         Attachments: item2?.RawMaterialAttachments || [],
                                         HavellsDesignPart: getValues('HavellsDesignPart')?.label || '',
                                         UnitOfMeasurementId: getValues('UOM')?.value || '',
-                                        ExistingVendor: vendorList.join(',') || '',
                                         QuotationPartId: updateButtonPartNoTable ? QuotationPartId : "",
+                                        ExistingVendor: vendorListFinal?.length ? vendorListFinal.join(',') : '',
                                     };
                                     tempRmArr.push(tempRmObj);
                                 }
@@ -2170,7 +2197,7 @@ function AddRfq(props) {
                         obj.ToolDataList = []
 
                         break;
-                    case "Bought Out Part":
+                    case BOUGHTOUTPARTSPACING:
                         let tempBopArr = [];
                         let bopIdList = _.uniq(_.map(bopList, 'BoughtOutPartChildId'));
                         bopIdList && bopIdList.forEach((bopId) => {
@@ -2187,7 +2214,7 @@ function AddRfq(props) {
                                         Attachments: item2?.BopAttachments || [],
                                         HavellsDesignPart: getValues('HavellsDesignPart')?.label || '',
                                         UnitOfMeasurementId: getValues('UOM')?.value || '',
-                                        ExistingVendor: vendorList.join(',') || '',
+                                        ExistingVendor: vendorListFinal?.length ? vendorListFinal.join(',') : '',
                                         QuotationPartId: updateButtonPartNoTable ? QuotationPartId : "",
                                     };
                                     let PartSpecificationList = {};
@@ -2223,7 +2250,7 @@ function AddRfq(props) {
                         obj.ToolDataList = []
 
                         break;
-                    case 'Tooling':
+                    case TOOLINGPART:
                         let tempToolingArr = [];
                         let toolingIdList = _.uniq(_.map(toolingList, 'PartId'))
                         let toolPartData = toolingSpecificRowData[0]?.ToolPartData
@@ -2256,7 +2283,7 @@ function AddRfq(props) {
                             temppartObj.Attachments = childPartFiles || []
                             temppartObj.HavellsDesignPart = null
                             temppartObj.UnitOfMeasurementId = getValues('UOM')?.value
-                            temppartObj.ExistingVendor = vendorList.join(',') || '';
+                            temppartObj.ExistingVendor = vendorListFinal?.length ? vendorListFinal.join(',') : '';
                             temppartObj.Description = getValues('Description') || ""
                             temppartObj.SopDate = sopdate || null
                             temppartObj.SOPQuantity = sopQuantityList || [];
@@ -2325,9 +2352,9 @@ function AddRfq(props) {
                         obj.PartList = updatedPartList;
                         break;
                 }
-
                 let updatedArr = []
                 setIsLoader(true)
+
                 dispatch(saveRfqPartDetails(obj, (res) => {
                     if (res?.data?.Result) {
                         setIsLoader(false)
@@ -2434,8 +2461,8 @@ function AddRfq(props) {
                     //dispatch(setQuotationIdForRfq(""))
                 }, 200)
 
-            }));
-            // }
+            }
+
         }
 
     };
@@ -2692,28 +2719,28 @@ function AddRfq(props) {
                     let QuotationPartId = null;
 
                     switch (selectedOption) {
-                        case "Bought Out Part":
+                        case BOUGHTOUTPARTSPACING:
                             bopDataList?.forEach(item => {
                                 if (item?.BoughtOutPartChildId === editBopId) {
                                     QuotationPartId = item?.QuotationPartId
                                 }
                             })
                             break
-                        case "Raw Material":
+                        case RAW_MATERIAL:
                             rmDataList?.forEach(item => {
                                 if (item?.RawMaterialChildId === editRawMaterialId) {
                                     QuotationPartId = item?.QuotationPartId
                                 }
                             })
                             break
-                        case "componentAssembly":
+                        case COMPONENTASSEMBLY:
                             partList?.forEach((part) => {
                                 if (part?.PartId === getValues('partNumber')?.value) {
                                     QuotationPartId = part?.QuotationPartId;
                                 }
                             })
                             break
-                        case "Tooling":
+                        case TOOLINGPART:
                             toolingList?.forEach(item => {
                                 if (item?.PartId === editToolingId) {
                                     QuotationPartId = item?.QuotationPartId
@@ -2900,28 +2927,28 @@ function AddRfq(props) {
                     let QuotationPartId = null;
 
                     switch (selectedOption) {
-                        case "Bought Out Part":
+                        case BOUGHTOUTPARTSPACING:
                             bopDataList?.forEach(bopItem => {
                                 if (bopItem?.BoughtOutPartChildId === editBopId) {
                                     QuotationPartId = bopItem?.QuotationPartId;
                                 }
                             });
                             break;
-                        case "Raw Material":
+                        case RAW_MATERIAL:
                             rmDataList?.forEach(rmItem => {
                                 if (rmItem?.RawMaterialChildId === editRawMaterialId) {
                                     QuotationPartId = rmItem?.QuotationPartId;
                                 }
                             });
                             break;
-                        case "componentAssembly":
+                        case COMPONENTASSEMBLY:
                             partList?.forEach(part => {
                                 if (part?.PartId === getValues('partNumber')?.value) {
                                     QuotationPartId = part?.QuotationPartId;
                                 }
                             });
                             break;
-                        case "Tooling":
+                        case TOOLINGPART:
                             toolingList?.forEach(toolItem => {
                                 if (toolItem?.PartId === editToolingId) {
                                     QuotationPartId = toolItem?.QuotationPartId;
@@ -3027,28 +3054,28 @@ function AddRfq(props) {
 
 
                     switch (selectedOption) {
-                        case "Bought Out Part":
+                        case BOUGHTOUTPARTSPACING:
                             bopDataList?.forEach(bopItem => {
                                 if (bopItem?.BoughtOutPartChildId === editBopId) {
                                     QuotationPartId = bopItem?.QuotationPartId;
                                 }
                             });
                             break;
-                        case "Raw Material":
+                        case RAW_MATERIAL:
                             rmDataList?.forEach(rmItem => {
                                 if (rmItem?.RawMaterialChildId === editRawMaterialId) {
                                     QuotationPartId = rmItem?.QuotationPartId;
                                 }
                             });
                             break;
-                        case "componentAssembly":
+                        case COMPONENTASSEMBLY:
                             partList?.forEach(part => {
                                 if (part?.PartId === getValues('partNumber')?.value) {
                                     QuotationPartId = part?.QuotationPartId;
                                 }
                             });
                             break;
-                        case "Tooling":
+                        case TOOLINGPART:
                             toolingList?.forEach(toolingItem => {
                                 if (toolingItem?.PartId === editToolingId) {
                                     QuotationPartId = toolingItem?.QuotationPartId;
@@ -3187,11 +3214,11 @@ function AddRfq(props) {
     */
     const BulkUploadFileName = () => {
         switch (selectedOption) {
-            case "Bought Out Part":
+            case BOUGHTOUTPARTSPACING:
                 return BOUGHTOUTPARTSRFQ
-            case "Raw Material":
+            case RAW_MATERIAL:
                 return RAWMATERIALSRFQ
-            case "componentAssembly":
+            case COMPONENTASSEMBLY:
                 return ASSEMBLYORCOMPONENTSRFQ
 
             default:
@@ -3764,7 +3791,7 @@ function AddRfq(props) {
                                                                     {<AgGridColumn width={"230px"} field="UOMSymbol" headerName="UOM" ></AgGridColumn>}
 
                                                                     <AgGridColumn width={"230px"} field="TimeLine" headerName={selectedOption === TOOLING ? 'Delivery Date' : "N-100 Timeline"} cellRenderer={'effectiveDateFormatter'} ></AgGridColumn>
-                                                                    {(selectedOption === 'componentAssembly' || selectedOption === 'Raw Material' || selectedOption === "Bought Out Part") && <AgGridColumn width={"230px"} field="VendorListExisting" headerName={`Existing ${vendorLabel}`} cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                                                                    {(selectedOption === 'componentAssembly' || selectedOption === 'Raw Material' || selectedOption === "Bought Out Part") && <AgGridColumn width={"230px"} field="ExistingVendor" headerName={`Existing ${vendorLabel}`} cellRenderer={'hyphenFormatter'}></AgGridColumn>}
 
                                                                     {(selectedOption === "componentAssembly" || selectedOption === 'Tooling') && (<AgGridColumn width={"230px"} field="PartId" cellClass="ag-grid-action-container text-right" headerName="Action" floatingFilter={false} type="rightAligned" cellRenderer={'buttonFormatterFirst'} />)}
                                                                     {selectedOption === "Raw Material" && (<AgGridColumn width={"230px"} field="RawMaterialChildId" cellClass="ag-grid-action-container text-right" headerName="Action" floatingFilter={false} type="rightAligned" cellRenderer={'buttonFormatterFirst'} />)}
