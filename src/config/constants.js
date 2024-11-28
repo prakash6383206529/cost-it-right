@@ -3027,9 +3027,9 @@ export const BUDGETBULKUPLOAD = 'Budget'
 //added for OverheadProfit
 export const OVERHEADBULKUPLOAD = 'Overhead'
 export const PROFITBULKUPLOAD = 'Profit'
-export const ASSEMBLYORCOMPONENTSRFQ = "Assembly Or Components RFQ"
-export const BOUGHTOUTPARTSRFQ = "Bought Out Parts RFQ"
-export const RAWMATERIALSRFQ = "Raw Materials RFQ"
+export const ASSEMBLYORCOMPONENTSRFQ = "AssemblyOrComponentsRFQ"
+export const BOUGHTOUTPARTSRFQ = "BoughtOutPartsRFQ"
+export const RAWMATERIALSRFQ = "RawMaterialsRFQ"
 export const SAP_PUSH = "SAP Push"
 
 
