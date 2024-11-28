@@ -303,7 +303,6 @@ function mapStateToProps(state) {
 export default reduxForm({
   validate,
   form: "Login",
-  validate: validateForm,
   onSubmitFail: errors => {
     focusOnError(errors);
   }

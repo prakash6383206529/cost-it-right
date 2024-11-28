@@ -2,6 +2,7 @@ import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import Button from '../../layout/Button';
 import { decrementPage, incrementPage, skipUpdate, updateCurrentRowIndex } from './paginationAction';
+import { checkPartNoExistInBop } from '../../costing/actions/Costing';
 
 const PaginationControls = ({ totalRecordCount, getDataList, floatingFilterData, module }) => {
     const { pageNo, pageSize, currentRowIndex } = useSelector((state) => state.pagination);
@@ -64,13 +65,17 @@ const PaginationControls = ({ totalRecordCount, getDataList, floatingFilterData,
                 getDataList(newSkip, pageSizeValue, true)
                 break;
             case 'RFQ':
-                
                 getDataList(newSkip, pageSizeValue, true)
                 break;
-                case 'SOB' :
-                    getDataList(newSkip , pageSizeValue , floatingFilterData, true)
-                    break;
-    
+            case 'SOB':
+                getDataList(newSkip, pageSizeValue, floatingFilterData, true)
+                break;
+            case 'User':
+                getDataList(null, null, newSkip, pageSizeValue, floatingFilterData, true)
+                break;
+            case 'AssemblyPart':
+                getDataList(newSkip, pageSizeValue, floatingFilterData, true)
+                break;
             // audit             getDataList(skip, pageSize, true, filterDataObj);
             // case 'IndexCommodity':
             //     getDataList(newSkip, pageSizeValue, true)

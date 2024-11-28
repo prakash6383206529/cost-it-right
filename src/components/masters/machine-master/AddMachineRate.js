@@ -509,7 +509,7 @@ class AddMachineRate extends Component {
   */
   handleMessageChange = (e) => {
     this.setState({
-      remarks: e.target.value,
+      remarks: e?.target?.value,
       DropdownChange: false
     })
   }
@@ -1014,6 +1014,11 @@ class AddMachineRate extends Component {
       let data = new FormData()
       data.append('file', file)
       this.props.fileUploadMachine(data, (res) => {
+        if (res.includes("Error")) {
+          this.dropzone.current.files.pop()
+          this.setDisableFalseFunction()
+          return false
+        }
         this.setDisableFalseFunction()
         let Data = res.data[0]
         const { files } = this.state;
@@ -1231,7 +1236,7 @@ class AddMachineRate extends Component {
         Specification: values.Specification,
         LoggedInUserId: loggedInUserId(),
         MachineProcessRates: processGrid,
-        Technology: (technologyArray.length > 0 && technologyArray[0]?.Technology !== undefined) ? technologyArray : [{ Technology: selectedTechnology.label ? selectedTechnology.label : selectedTechnology[0].label, TechnologyId: selectedTechnology.value ? selectedTechnology.value : selectedTechnology[0].value }],
+        Technology: (technologyArray.length > 0 && technologyArray[0]?.Technology !== undefined) ? technologyArray : [{ Technology: selectedTechnology?.label ? selectedTechnology?.label : selectedTechnology[0]?.label, TechnologyId: selectedTechnology?.value ? selectedTechnology?.value : selectedTechnology[0]?.value }],
         Plant: [{ PlantId: selectedPlants.value, PlantName: selectedPlants.label }],
         DestinationPlantId: '',
         Remark: remarks,

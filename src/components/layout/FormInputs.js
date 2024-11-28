@@ -35,10 +35,13 @@ const handleInputChange = (input, field, e) => {
 export const validateForm = values => {
   const errors = {};
   Object.keys(values).forEach(fieldName => {
-    const value = values[fieldName];
-    const validationError = validateSpecialChars(value);
-    if (validationError) {
-      errors[fieldName] = validationError;
+    const convertLowerCase = fieldName ? fieldName.toLowerCase() : '';
+    if (!convertLowerCase.includes('date')) {
+      const value = values[fieldName];
+      const validationError = validateSpecialChars(value);
+      if (validationError) {
+        errors[fieldName] = validationError;
+      }
     }
   });
   return errors;

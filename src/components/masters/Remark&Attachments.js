@@ -109,6 +109,12 @@ function RemarksAndAttachments(props) {
             let data = new FormData()
             data.append('file', file)
             dispatch(fileUploadRMDomestic(data, (res) => {
+                if (res.includes("Error")) {
+                    setDisableFalseFunction()
+                    dropzone.current.files.pop()
+                    setState(prevState => ({ ...prevState, attachmentLoader: false }))
+                    return false
+                }
                 setDisableFalseFunction()
                 if ('response' in res) {
                     status = res && res?.response?.status

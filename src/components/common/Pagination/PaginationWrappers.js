@@ -60,10 +60,15 @@ export function PaginationWrappers(props) {
             case 'RFQ':
                 getDataList(newSkip, numericPageSize, true)
                 break;
-                case 'SOB' :
-                getDataList(newSkip , numericPageSize ,floatingFilterData, true )
+            case 'SOB':
+                getDataList(newSkip, numericPageSize, floatingFilterData, true)
                 break;
-
+            case 'User':
+                getDataList(null, null, newSkip, numericPageSize, floatingFilterData, true)
+                break;
+            case 'AssemblyPart':
+                getDataList(newSkip, numericPageSize, floatingFilterData, true)
+                break;
             default:
                 break;
         }
