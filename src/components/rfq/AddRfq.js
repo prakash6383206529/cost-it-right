@@ -1679,7 +1679,7 @@ function AddRfq(props) {
                     newObjTemp.UOM = getValues('UOM')?.label;
                     newObjTemp.UOMSymbol = getValues('UOM')?.label
                     newObjTemp.UnitOfMeasurementId = getValues('UOM')?.value;
-                    newObjTemp.TargetPrice = getTargetprice?.TargetPrice || "-";
+                    newObjTemp.TargetPrice = getTargetprice?.TargetPrice || "";
                     newObjTemp.TimeLine = requirementDate.split(' ')[0] || '';
                     newObjTemp.PartType = getValues('PartType')?.label;
                     newObjTemp.PartTypeId = getValues('PartType')?.value;
@@ -1910,7 +1910,7 @@ function AddRfq(props) {
                 newObjTemp.UOM = getValues('UOM')?.label;
                 newObjTemp.UOMSymbol = getValues('UOM')?.label
                 newObjTemp.UnitOfMeasurementId = getValues('UOM')?.value;
-                newObjTemp.TargetPrice = getTargetprice?.TargetPrice || "-";
+                newObjTemp.TargetPrice = getTargetprice?.TargetPrice || "";
                 newObjTemp.TimeLine = requirementDate.split(' ')[0] || '';
                 newObjTemp.PartType = getValues('PartType')?.label;
                 newObjTemp.PartTypeId = getValues('PartType')?.value;
@@ -2048,7 +2048,7 @@ function AddRfq(props) {
                     temppartObj.IsChildPart = false
                     temppartObj.QuotationPartId = updateButtonPartNoTable ? QuotationPartId : ""
                     temppartObj.PartType = partType?.label || ''
-                    temppartObj.TargetPrice = getTargetprice?.TargetPrice || "-"
+                    temppartObj.TargetPrice = getTargetprice?.TargetPrice || ""
                     temppartObj.TimeLine = requirementDate || "";
                     temppartObj.Remarks = remark || null
                     temppartObj.Attachments = childPartFiles || []
@@ -2178,7 +2178,7 @@ function AddRfq(props) {
                                         RawMaterialGrade: item2?.RawMaterialGrade,
                                         RawMaterialName: item2?.RawMaterialName,
                                         PartType: selectedOption || "",
-                                        TargetPrice: getTargetprice?.TargetPrice || "-",
+                                        TargetPrice: getTargetprice?.TargetPrice || "",
                                         TimeLine: requirementDate || "",
                                         Remarks: item2?.RawMaterialReamrk || null,
                                         Attachments: item2?.RawMaterialAttachments || [],
@@ -2208,7 +2208,7 @@ function AddRfq(props) {
                                         BoughtOutPartChildId: item2.BoughtOutPartChildId,
                                         BoughtOutPartCategoryId: item2.BoughtOutPartCategoryId,
                                         PartType: selectedOption || "",
-                                        TargetPrice: getTargetprice?.TargetPrice || "-",
+                                        TargetPrice: getTargetprice?.TargetPrice || "",
                                         TimeLine: requirementDate || "",
                                         Remarks: item2?.BopReamrk || null,
                                         Attachments: item2?.BopAttachments || [],
@@ -2277,7 +2277,7 @@ function AddRfq(props) {
                             temppartObj.IsChildPart = false
                             temppartObj.QuotationPartId = updateButtonPartNoTable ? QuotationPartId : null
                             temppartObj.PartType = partType?.label || ''
-                            temppartObj.TargetPrice = getTargetprice?.TargetPrice || "-"
+                            temppartObj.TargetPrice = getTargetprice?.TargetPrice || ""
                             temppartObj.TimeLine = requirementDate || "";
                             temppartObj.Remarks = remark || null
                             temppartObj.Attachments = childPartFiles || []
