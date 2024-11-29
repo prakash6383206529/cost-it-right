@@ -8,7 +8,7 @@ import { renderDatePicker, renderText, renderTextAreaField, validateForm, } from
 import { createPart, updatePart, getPartData, fileUploadPart, fileDeletePart, } from '../actions/Part';
 import { getPlantSelectList, } from '../../../actions/Common';
 import Toaster from '../../common/Toaster';
-import { MESSAGES } from '../../../config/message';
+import { AttachmentValidationInfo, MESSAGES } from '../../../config/message';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
 import DayTime from '../../common/DayTimeWrapper'
@@ -544,7 +544,7 @@ class AddIndivisualProduct extends Component {
                           </Col>
                           <Col md="3">
                             <label>
-                              Upload Files (upload up to 3 files)
+                              Upload Files (upload up to 3 files) <AttachmentValidationInfo />
                             </label>
                             {this.state.files &&
                               this.state.files.length >= 3 ? (

@@ -32,6 +32,7 @@ import { transformApprovalItem } from '../../../common/CommonFunctions'
 import { checkSAPPoPrice } from '../../../simulation/actions/Simulation'
 import SAPApproval from '../../../SAPApproval'
 import { useLabels } from '../../../../helper/core'
+import { AttachmentValidationInfo } from '../../../../config/message'
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 const SendForApproval = (props) => {
@@ -1490,7 +1491,7 @@ const SendForApproval = (props) => {
                   isRegularize ? (
                     <Row className="mb-4 mx-0">
                       <Col md="6" className="height152-label">
-                        <label>Upload Attachment (upload up to 4 files)</label>
+                        <label>Upload Attachment (upload up to 4 files)<AttachmentValidationInfo /></label>
                         {files && files.length >= 4 ? (
                           <div class="alert alert-danger" role="alert">
                             Maximum file upload limit reached.

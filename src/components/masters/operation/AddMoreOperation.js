@@ -9,7 +9,7 @@ import {
     checkWhiteSpaces, maxLength25, hashValidation, checkForNull, checkForDecimalAndNull, acceptAllExceptSingleSpecialCharacter, maxLength80,
 } from "../../../helper/validation";
 
-import { MESSAGES } from "../../../config/message";
+import { AttachmentValidationInfo, MESSAGES } from "../../../config/message";
 import { loggedInUserId } from "../../../helper/auth";
 import { Row, Col } from 'reactstrap';
 import { CBCTypeId, CRMHeads, FILE_URL, VBCTypeId, VBC_VENDOR_TYPE, ZBCTypeId, searchCount } from "../../../config/constants";
@@ -2709,7 +2709,7 @@ function AddMoreOperation(props) {
                                     />
                                 </Col>
                                 <Col md="4">
-                                    <label>Upload Files (upload up to {initialConfiguration.MaxMasterFilesToUpload} files)</label>
+                                    <label>Upload Files (upload up to {initialConfiguration.MaxMasterFilesToUpload} files)<AttachmentValidationInfo /></label>
                                     <div className={`alert alert-danger mt-2 ${files.length === initialConfiguration.MaxMasterFilesToUpload ? '' : 'd-none'}`} role="alert">
                                         Maximum file upload limit reached.
                                     </div>

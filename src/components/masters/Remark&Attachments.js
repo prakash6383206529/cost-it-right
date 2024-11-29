@@ -9,7 +9,7 @@ import imgRedcross from '../../assests/images/red-cross.png';
 import LoaderCustom from '../common/LoaderCustom';
 import { FILE_URL } from '../../config/constants';
 import { TextAreaHookForm } from '../layout/HookFormInputs';
-import HeaderTitle from '../common/HeaderTitle';
+import { AttachmentValidationInfo } from '../../config/message';
 
 // Helper component for attachment previews
 const Preview = ({ meta }) => (
@@ -207,8 +207,9 @@ function RemarksAndAttachments(props) {
                     disabled={isViewFlag}
                 />
             </Col>
-            <Col md="3">
+            <Col md="3" className='pr-1'>
                 <label>Upload Files <small>(upload up to {getConfigurationKey().MaxMasterFilesToUpload} files, each with a size limit of 2MB)</small></label>
+                <AttachmentValidationInfo customClass="mt-1 mr-n3" />
                 <div className={`alert alert-danger mt-2 ${files?.length === getConfigurationKey().MaxMasterFilesToUpload ? '' : 'd-none'}`} role="alert">
                     Maximum file upload limit reached.
                 </div>

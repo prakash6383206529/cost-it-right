@@ -20,7 +20,7 @@ import { Redirect, useHistory } from "react-router-dom";
 import redcrossImg from '../../../../assests/images/red-cross.png';
 import { ATTACHMENT, CAPACITY, EMPTY_GUID, FEASIBILITY, FILE_URL, NFRTypeId, TIMELINE, VBCTypeId, WACTypeId, ZBCTypeId } from '../../../../config/constants';
 import { IdForMultiTechnology } from '../../../../config/masterData';
-import { MESSAGES } from '../../../../config/message';
+import { AttachmentValidationInfo, MESSAGES } from '../../../../config/message';
 import DayTime from '../../../common/DayTimeWrapper';
 import Toaster from '../../../common/Toaster';
 import { SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '../../../layout/HookFormInputs';
@@ -2341,7 +2341,7 @@ function TabDiscountOther(props) {
 
                     {!isRfqAttachment ? <>
                       <Col md="3" className="height152-label">
-                        <label>Upload Attachment (upload up to 4 files)</label>
+                        <label>Upload Attachment (upload up to 4 files)<AttachmentValidationInfo /></label>
                         <div className={`alert alert-danger mt-2 ${files.length === 4 ? '' : 'd-none'}`} role="alert">
                           Maximum file upload limit reached.
                         </div>
@@ -2644,7 +2644,7 @@ function TabDiscountOther(props) {
                             <h6 className="mt-3">Others</h6>
                             <Row className='pb-2'>
                               <Col md="6">
-                                <label>Upload Attachment (upload up to 4 files)</label>
+                                <label>Upload Attachment (upload up to 4 files) <AttachmentValidationInfo /></label>
                                 <div className={`alert alert-danger mt-2 ${files.length === 4 ? '' : 'd-none'}`} role="alert">
                                   Maximum file upload limit reached.
                                 </div>
