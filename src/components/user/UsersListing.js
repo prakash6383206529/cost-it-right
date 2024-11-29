@@ -33,6 +33,8 @@ import { resetStatePagination, updateCurrentRowIndex, updateGlobalTake, updatePa
 import WarningMessage from '../common/WarningMessage';
 import { setSelectedRowForPagination } from '../simulation/actions/Simulation';
 import { disabledClass } from '../../actions/Common';
+import { reactLocalStorage } from 'reactjs-localstorage';
+import _ from 'lodash';
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -124,6 +126,18 @@ const UsersListing = (props) => {
 
 	}, [isReset]);
 
+	useEffect(() => {
+		reactLocalStorage.setObject('selectedRow', {})
+		if (!props.stopApiCallOnCancel) {
+			return () => {
+				dispatch(setSelectedRowForPagination([]))
+				dispatch(resetStatePagination());
+
+				reactLocalStorage.setObject('selectedRow', {})
+			}
+		}
+	}, [])
+
 	var filterParams = (fieldName) => ({
 		date: "",
 		inRangeInclusive: true,
@@ -134,7 +148,7 @@ const UsersListing = (props) => {
 				return -1;
 			}
 
-			var dateAsString = cellValue?.split(' ')[0]; 
+			var dateAsString = cellValue?.split(' ')[0];
 			var newDate = filterLocalDateAtMidnight
 				? DayTime(filterLocalDateAtMidnight).format('DD/MM/YYYY')
 				: '';
@@ -145,9 +159,9 @@ const UsersListing = (props) => {
 			}
 
 			var cellDate = new Date(
-				Number(dateParts[2]), 
-				Number(dateParts[1]) - 1, 
-				Number(dateParts[0]) 
+				Number(dateParts[2]),
+				Number(dateParts[1]) - 1,
+				Number(dateParts[0])
 			);
 			if (filterLocalDateAtMidnight.getTime() === cellDate.getTime()) {
 				return 0;
@@ -189,9 +203,6 @@ const UsersListing = (props) => {
 		  * @description Handle specific module tour state to display lorem data
 		  */
 	const toggleExtraData = (showTour) => {
-		// dispatch(TourStartAction({
-		//   showExtraData: showTour,
-		// }));
 		setState((prevState) => ({ ...prevState, render: true }));
 		setTimeout(() => {
 			setState((prevState) => ({ ...prevState, showExtraData: showTour, render: false }));
@@ -233,10 +244,11 @@ const UsersListing = (props) => {
 			setState((prevState) => ({ ...prevState, isLoader: false }));
 
 			if (res.status === 204 && res?.data === '') {
-				dispatch(updatePageNumber(0));
-				setState((prevState) => ({ ...prevState, userData: [], dataCount: 0 }));
+				setTotalRecordCount(0)
+				dispatch(updatePageNumber(0))
+				setState((prevState) => ({ ...prevState,noData:true, userData: [], dataCount: 0 }));
 			} else if (res && res?.data && res?.data?.DataList) {
-				let Data = res?.data.DataList;
+				let Data = res?.data?.DataList;
 				setTotalRecordCount(Data[0]?.TotalRecordCount);
 				setWarningMessage(false);
 				setIsFilterButtonClicked(false);
@@ -248,7 +260,6 @@ const UsersListing = (props) => {
 							isReset = false
 						}
 					}
-					// Sets the filter model via the grid API
 					isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(filterModel))
 				}, 300);
 				setTimeout(() => {
@@ -265,7 +276,7 @@ const UsersListing = (props) => {
 						button && button.click()
 					}, 500);
 				}
-			} 
+			}
 		}));
 	};
 
@@ -304,8 +315,6 @@ const UsersListing = (props) => {
 			if (model !== undefined && model !== null) {
 				if (Object.keys(model).length > 0) {
 					isFilterEmpty = false;
-
-					// Reset specific floating filter data
 					for (var property in floatingFilterData) {
 						if (property === value?.column?.colId) {
 							floatingFilterData[property] = "";
@@ -340,19 +349,41 @@ const UsersListing = (props) => {
 		}
 	};
 
-
-
-
-
-
 	const onRowSelect = () => {
-		const selectedRows = state?.gridApi?.getSelectedRows();
-		dispatch(setSelectedRowForPagination(selectedRows))
-		setState((prevState) => ({ ...prevState, selectedRowData: selectedRows, dataCount: selectedRows?.length }))
-	}
+		const selectedRows = state.gridApi?.getSelectedRows();
+		let selectedRowForPagination = reactLocalStorage.getObject('selectedRow')?.selectedRow || [];
+
+		const allNodes = [];
+		state.gridApi?.forEachNode(node => allNodes?.push(node));
+
+		allNodes.forEach(node => {
+			const rowData = node.data;
+
+			if (node.isSelected()) {
+				if (!selectedRowForPagination?.some(existingRow => existingRow.UserId === rowData.UserId)) {
+					selectedRowForPagination?.push(rowData);
+				}
+			} else {
+				const indexToRemove = selectedRowForPagination?.findIndex(existingRow => existingRow?.UserId === rowData?.UserId);
+				if (indexToRemove !== -1) {
+					selectedRowForPagination?.splice(indexToRemove, 1);
+				}
+			}
+		});
+
+		const uniqueSelectedRows = _.uniqBy(selectedRowForPagination, "UserId");
+		reactLocalStorage.setObject('selectedRow', { selectedRow: uniqueSelectedRows });
+
+		setState((prevState) => ({
+			...prevState,
+			dataCount: uniqueSelectedRows?.length,
+		}));
+		dispatch(setSelectedRowForPagination(uniqueSelectedRows));
+	};
 
 	const onBtExport = () => {
-		let tempArr = state?.gridApi?.getSelectedRows() || [];
+		let tempArr = [];
+		tempArr = selectedRowForPagination
 		if (tempArr?.length === 0) {
 			tempArr = props?.RFQUser ? rfqUserList : userDataList;
 		}
@@ -360,15 +391,13 @@ const UsersListing = (props) => {
 		if (tempArr && tempArr?.length > 0) {
 			return returnExcelColumn(USER_LISTING_DOWNLOAD_EXCEl, tempArr);
 		} else {
-			return null; 
+			return null;
 		}
 	};
-
 
 	const onExcelDownload = () => {
 		setDisableDownload(true)
 		dispatch(disabledClass(true))
-		//let tempArr = gridApi && gridApi?.getSelectedRows()
 		let tempArr = selectedRowForPagination
 		if (tempArr?.length > 0) {
 			setTimeout(() => {
@@ -380,7 +409,7 @@ const UsersListing = (props) => {
 
 
 		} else {
-			getDataList(null, null, skip, globalTakes, floatingFilterData, false); // FOR EXCEL DOWNLOAD OF COMPLETE DATA
+			getDataList(null, null, skip, globalTakes, floatingFilterData, false);
 		}
 
 	}
@@ -399,7 +428,7 @@ const UsersListing = (props) => {
 
 	const returnExcelColumn = (data = [], TempData) => {
 		if (!TempData || TempData?.length === 0) {
-			return null; 
+			return null;
 		}
 
 		let filteredData = [...data];
@@ -489,7 +518,7 @@ const UsersListing = (props) => {
 		const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
 		const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 		const { ActivateAccessibility } = state;
-		if (rowData.UserId === loggedInUserId()) return null;
+		if (rowData?.UserId === loggedInUserId()) return null;
 		showTitleForActiveToggle(props?.rowIndex, 'Active', 'Inactive');
 		return (
 			<>
@@ -534,7 +563,7 @@ const UsersListing = (props) => {
 
 
 	const onFilterTextBoxChanged = (e) => {
-		const filterValue = e?.target?.value || ""; 
+		const filterValue = e?.target?.value || "";
 		state?.gridApi.setQuickFilter(filterValue);
 	}
 
@@ -550,23 +579,19 @@ const UsersListing = (props) => {
 		gridOptions?.columnApi?.resetColumnState(null);
 		gridOptions?.api?.setFilterModel(null);
 
-		for (var prop in floatingFilterData) {
-			if (prop !== "DepartmentName") {
-				floatingFilterData[prop] = ""
-			}
-			else {
-				floatingFilterData[prop] = ""
-			}
+		for (let prop in floatingFilterData) {
+			floatingFilterData[prop] = "";
 		}
 
 		setFloatingFilterData(floatingFilterData)
 		setWarningMessage(false);
 		dispatch(updatePageNumber(1))
 		setDisableFilter(true);
-		getDataList(null, null, 0, 10, floatingFilterData, true); 
+		getDataList(null, null, 0, 10, floatingFilterData, true);
 		dispatch(updateCurrentRowIndex(10))
 		dispatch(setSelectedRowForPagination([]))
 		dispatch(updateGlobalTake(10))
+		reactLocalStorage.remove('selectedRow');
 		dispatch(updatePageSize({ pageSize10: true, pageSize50: false, pageSize100: false }))
 		dispatch(resetStatePagination());
 		if (isSimulation) {
@@ -587,6 +612,21 @@ const UsersListing = (props) => {
 		}
 	}
 
+	const checkBoxRenderer = (props) => {
+		let selectedRowForPagination = reactLocalStorage.getObject('selectedRow').selectedRow
+		const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+		if (selectedRowForPagination?.length > 0) {
+			selectedRowForPagination.map((item) => {
+				if (item.UserId === props?.node?.data?.UserId) {
+					props.node.setSelected(true)
+				}
+				return null
+			})
+			return cellValue
+		} else {
+			return cellValue
+		}
+	}
 
 	const onGridReady = (params) => {
 		setState((prevState) => ({ ...prevState, gridApi: params?.api, gridColumnApi: params?.columnApi }))
@@ -616,7 +656,8 @@ const UsersListing = (props) => {
 		statusButtonFormatter: statusButtonFormatter,
 		hyphenFormatter: hyphenFormatter,
 		linkableFormatter: linkableFormatter,
-		dateRenderer: dateRenderer
+		dateRenderer: dateRenderer,
+		checkBoxRenderer: checkBoxRenderer,
 	};
 
 	return (
@@ -696,7 +737,7 @@ const UsersListing = (props) => {
 							{/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
 							<AgGridColumn field="FullName" headerName="Name" cellRenderer={'linkableFormatter'}></AgGridColumn>
 							{initialConfiguration && !initialConfiguration?.IsLoginEmailConfigure ? (
-								<AgGridColumn field="UserName" headerName="User Name"></AgGridColumn>
+								<AgGridColumn field="UserName" headerName="User Name" cellRenderer={checkBoxRenderer}  ></AgGridColumn>
 							) : null}
 							{props?.RFQUser && <AgGridColumn field="VendorName" headerName={`${vendorLabel} (Code)`}></AgGridColumn>}
 							<AgGridColumn field="EmailAddress" headerName="Email Id"></AgGridColumn>
