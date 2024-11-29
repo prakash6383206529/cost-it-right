@@ -954,7 +954,7 @@ const SendForApproval = (props) => {
       let data = new FormData();
       data.append("file", file);
       dispatch(fileUploadCosting(data, (res) => {
-        if (res.includes("Error")) {
+        if (res && res?.status !== 200) {
           this.dropzone.current.files.pop()
           setAttachmentLoader(false)
           return false

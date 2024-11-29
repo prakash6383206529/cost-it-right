@@ -704,7 +704,7 @@ function AddMoreOperation(props) {
             let data = new FormData()
             data.append('file', file)
             dispatch(fileUploadOperation(data, (res) => {
-                if (res.includes("Error")) {
+                if (res && res?.status !== 200) {
                     this.dropzone.current.files.pop()
                     this.setDisableFalseFunction()
                     return false

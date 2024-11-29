@@ -1095,7 +1095,7 @@ function TabDiscountOther(props) {
       data.append('file', file)
       dispatch(fileUploadCosting(data, (res) => {
         setDisableFalseFunction()
-        if (res.includes("Error")) {
+        if (res && res?.status !== 200) {
           dropzone.current.files.pop()
           setAttachmentLoader(false)
           return false

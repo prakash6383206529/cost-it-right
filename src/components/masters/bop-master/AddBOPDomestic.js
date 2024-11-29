@@ -777,7 +777,7 @@ class AddBOPDomestic extends Component {
       let data = new FormData()
       data.append('file', file)
       this.props.fileUploadBOPDomestic(data, (res) => {
-        if (res.includes("Error")) {
+        if (res && res?.status !== 200) {
           this.dropzone.current.files.pop()
           this.setDisableFalseFunction()
           return false
