@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo, useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Row, Col, Button } from "reactstrap";
+import { Row, Col } from "reactstrap";
 import { getAssemblyPartDataList, deleteAssemblyPart, activeInactivePartUser } from "../actions/Part";
 import Toaster from "../../common/Toaster";
 import { MESSAGES } from "../../../config/message";
@@ -30,6 +30,9 @@ import PaginationControls from "../../common/Pagination/PaginationControls";
 import { resetStatePagination, updateCurrentRowIndex, updateGlobalTake, updatePageNumber, updatePageSize } from "../../common/Pagination/paginationAction";
 import { setSelectedRowForPagination } from "../../simulation/actions/Simulation";
 import WarningMessage from "../../common/WarningMessage";
+import Button from "../../layout/Button";
+import { reactLocalStorage } from "reactjs-localstorage";
+import _ from "lodash";
 const ExcelFile = ReactExport?.ExcelFile;
 const ExcelSheet = ReactExport?.ExcelFile?.ExcelSheet;
 const ExcelColumn = ReactExport?.ExcelFile?.ExcelColumn;
@@ -42,7 +45,7 @@ const AssemblyPartListing = React.memo((props) => {
   const initialConfiguration = useSelector(
     (state) => state?.auth?.initialConfiguration
   );
-  const { getDetails } = props;
+  const { getDetails, apply } = props;
 
   const [tableData, setTableData] = useState([]);
   const [searchText, setSearchText] = useState("");
@@ -122,7 +125,6 @@ const AssemblyPartListing = React.memo((props) => {
       getAssemblyPartDataList(params, (res) => {
         setState((prevState) => ({
           ...prevState,
-          dataCount: 0,
           isLoader: false,
         }));
 
@@ -136,23 +138,16 @@ const AssemblyPartListing = React.memo((props) => {
         setTimeout(() => {
           if (isReset) {
             gridOptions?.api?.setFilterModel({});
-            setDisableFilter(true);
-            setWarningMessage(true); 
           } else {
             gridOptions?.api?.setFilterModel(filterModel);
-            setWarningMessage(false); 
           }
         }, 300);
 
         if (res?.status === 204 && res?.data === "") {
-          dispatch(updatePageNumber(0));
-          setTableData([]);
-          setState((prevState) => ({
-            ...prevState,
-            noData: true,
-          }));
           setTotalRecordCount(0);
-          setWarningMessage(false); 
+          setState((prevState)=>({...prevState, noData:true}))
+          dispatch(updatePageNumber(0))
+          setSelectedRowForPagination([]);
         } else if (res?.data?.DataList) {
           const data = res?.data?.DataList;
           setTotalRecordCount(data[0]?.TotalRecordCount || 0);
@@ -160,10 +155,6 @@ const AssemblyPartListing = React.memo((props) => {
           setTimeout(() => {
             setWarningMessage(false);
           }, 300);
-
-          setTimeout(() => {
-            setIsFilterButtonClicked(false);
-          }, 600);
 
           if (!isPagination) {
             setTimeout(() => {
@@ -179,10 +170,23 @@ const AssemblyPartListing = React.memo((props) => {
 
 
 
+
   useEffect(() => {
     getTableListData(0, 10, floatingFilterData, true);
     // eslint-disable-next-line
   }, []);
+
+  useEffect(() => {
+    reactLocalStorage.setObject('selectedRow', {})
+    if (!props.stopApiCallOnCancel) {
+      return () => {
+        dispatch(setSelectedRowForPagination([]))
+        dispatch(resetStatePagination());
+
+        reactLocalStorage.setObject('selectedRow', {})
+      }
+    }
+  }, [])
 
   const viewOrEditItemDetails = (Id, isViewMode) => {
     let requestData = {
@@ -328,13 +332,25 @@ const AssemblyPartListing = React.memo((props) => {
       ...prevState,
       noData: false,
     }));
-    setWarningMessage(false); 
+    setWarningMessage(false);
     setIsFilterButtonClicked(true);
     dispatch(updatePageNumber(1));
     dispatch(updateCurrentRowIndex(10));
     gridOptions?.columnApi?.resetColumnState();
     getTableListData(0, 10, floatingFilterData, true);
   };
+
+  useEffect(() => {
+    reactLocalStorage.setObject('selectedRow', {})
+    if (!props.stopApiCallOnCancel) {
+      return () => {
+        dispatch(setSelectedRowForPagination([]))
+        dispatch(resetStatePagination());
+
+        reactLocalStorage.setObject('selectedRow', {})
+      }
+    }
+  }, [])
 
   const onFloatingFilterChanged = (value) => {
     setTimeout(() => {
@@ -345,18 +361,12 @@ const AssemblyPartListing = React.memo((props) => {
         }));
       }
     }, 500);
-
+    setDisableFilter(false);
     const model = gridOptions?.api?.getFilterModel();
     setFilterModel(model);
 
     if (!isFilterButtonClicked) {
-      setWarningMessage(true); // Show warning if filter button isn't clicked
-    }
-
-    if (model && Object.keys(model)?.length > 0) {
-      setDisableFilter(false);
-    } else {
-      setDisableFilter(true);
+      setWarningMessage(true);
     }
 
     if (
@@ -373,7 +383,7 @@ const AssemblyPartListing = React.memo((props) => {
       }
 
       if (isFilterEmpty) {
-        setWarningMessage(false); // Clear warning when filters are empty
+        setWarningMessage(false);
         setFloatingFilterData((prevData) =>
           Object.keys(prevData).reduce((acc, key) => {
             acc[key] = "";
@@ -535,37 +545,71 @@ const AssemblyPartListing = React.memo((props) => {
     }
   };
 
+  const checkBoxRenderer = (props) => {
+    let selectedRowForPagination = reactLocalStorage.getObject('selectedRow').selectedRow
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    if (selectedRowForPagination?.length > 0) {
+      selectedRowForPagination.map((item) => {
+        if (item.PartId === props?.node?.data?.PartId) {
+          props.node.setSelected(true)
+        }
+        return null
+      })
+      return cellValue
+    } else {
+      return cellValue
+    }
+  }
+
   const frameworkComponents = {
     buttonFormatter: buttonFormatter,
     indexFormatter: indexFormatter,
     hyphenFormatter: hyphenFormatter,
     effectiveDateFormatter: effectiveDateFormatter,
     statusButtonFormatter: statusButtonFormatter,
+    checkBoxRenderer: checkBoxRenderer,
   };
 
   const onGridReady = (params) => {
+    setState((prevState) => ({ ...prevState, gridApi: params?.api, gridColumnApi: params?.columnApi }))
+    params.api.paginationGoToPage(0);
+    window.screen.width >= 1920 && params.api.sizeColumnsToFit()
+  };
+
+
+  const onRowSelect = () => {
+    const selectedRows = state.gridApi.getSelectedRows();
+    let selectedRowForPagination = reactLocalStorage.getObject('selectedRow')?.selectedRow || [];
+
+    const allNodes = [];
+    state.gridApi.forEachNode(node => allNodes?.push(node));
+
+    allNodes?.forEach(node => {
+      const rowData = node.data;
+
+      if (node?.isSelected()) {
+        if (!selectedRowForPagination?.some(existingRow => existingRow?.PartId === rowData?.PartId)) {
+          selectedRowForPagination?.push(rowData);
+        }
+      } else {
+        const indexToRemove = selectedRowForPagination?.findIndex(existingRow => existingRow?.PartId === rowData?.PartId);
+        if (indexToRemove !== -1) {
+          selectedRowForPagination?.splice(indexToRemove, 1);
+        }
+      }
+    });
+
+    const uniqueSelectedRows = _.uniqBy(selectedRowForPagination, "PartId");
+    reactLocalStorage.setObject('selectedRow', { selectedRow: uniqueSelectedRows });
+
     setState((prevState) => ({
       ...prevState,
-      gridApi: params?.api,
-      columnApi: params?.columnApi,
+      dataCount: uniqueSelectedRows.length,
     }));
-    params?.api.paginationGoToPage(0);
+    dispatch(setSelectedRowForPagination(uniqueSelectedRows));
   };
 
-  const onPageSizeChanged = (newPageSize) => {
-    state?.gridApi.paginationSetPageSize(Number(newPageSize));
-  };
 
-  const onRowSelect = useCallback(() => {
-    if (state?.gridApi) {
-      const selectedRows = state?.gridApi.getSelectedRows();
-      setState((prevState) => ({
-        ...prevState,
-        dataCount: selectedRows.length,
-      }));
-      dispatch(setSelectedRowForPagination(selectedRows))
-    }
-  }, [state?.gridApi]);
   const ASSEMBLYPART_DOWNLOAD_EXCEL_LOCALIZATION = useWithLocalization(ASSEMBLYPART_DOWNLOAD_EXCEl, "MasterLabels")
 
   const onExcelDownload = () => {
@@ -586,7 +630,8 @@ const AssemblyPartListing = React.memo((props) => {
   };
 
   const onBtExport = () => {
-    let tempArr = state?.gridApi?.getSelectedRows() || [];
+    let tempArr = [];
+    tempArr = selectedRowForPagination
     if (tempArr?.length === 0) {
       tempArr = tableData;
     }
@@ -607,8 +652,6 @@ const AssemblyPartListing = React.memo((props) => {
     }
   };
 
-
-
   const returnExcelColumn = (data = [], TempData) => {
     const temp =
       TempData &&
@@ -624,7 +667,7 @@ const AssemblyPartListing = React.memo((props) => {
         };
 
         // Replace null or "-" with defaults
-        Object.keys(defaultValues)?.forEach((key) => {
+        Object.keys(defaultValues).forEach((key) => {
           if (item[key] === null || item[key] === "-") {
             newItem[key] = defaultValues[key];
           }
@@ -657,10 +700,11 @@ const AssemblyPartListing = React.memo((props) => {
   };
 
 
+
   const onFilterTextBoxChanged = (e) => {
     setSearchText(state?.gridApi.setQuickFilter(e.target.value))
   };
- 
+
   const resetState = () => {
     setState(prevState => ({
       ...prevState,
@@ -673,12 +717,7 @@ const AssemblyPartListing = React.memo((props) => {
     gridOptions?.columnApi?.resetColumnState(null);
     gridOptions?.api?.setFilterModel(null);
 
-    // Deselect all rows
-    if (state?.gridApi) {
-      state.gridApi.deselectAll();
-    }
-
-    for (var prop in floatingFilterData) {
+    for (let prop in floatingFilterData) {
       floatingFilterData[prop] = "";
     }
 
@@ -692,7 +731,7 @@ const AssemblyPartListing = React.memo((props) => {
     dispatch(updateGlobalTake(10));
     dispatch(updatePageSize({ pageSize10: true, pageSize50: false, pageSize100: false }));
     dispatch(resetStatePagination());
-
+    reactLocalStorage.remove('selectedRow');
     if (isSimulation) {
       props?.isReset();
     }
@@ -708,9 +747,12 @@ const AssemblyPartListing = React.memo((props) => {
     resizable: true,
     filter: true,
     sortable: false,
+    headerCheckboxSelection: (isSimulation || props?.benchMark) ? isFirstColumn : false,
     headerCheckboxSelectionFilteredOnly: true,
     checkboxSelection: isFirstColumn,
   };
+
+
   return (
     <div
       className={`ag-grid-react custom-pagination p-relative ${permissions?.Download ? "show-table-btn" : ""
@@ -721,15 +763,7 @@ const AssemblyPartListing = React.memo((props) => {
         <Col md="8" className="filter-block"></Col>
         <Col md="6" className="search-user-block pr-0">
           <div className="d-flex justify-content-end bd-highlight w100">
-            {warningMessage && !disableDownload && (
-              <>
-                <WarningMessage
-                  dClass="mr-3"
-                  message={'Please click on the filter button to filter all data'}
-                />
-                <div className='right-hand-arrow mr-2'></div>
-              </>
-            )}
+            {warningMessage && !disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
             <div>
 
               <button
@@ -846,7 +880,7 @@ const AssemblyPartListing = React.memo((props) => {
                 suppressRowClickSelection={true}
                 enableBrowserTooltips={true}
               >
-                <AgGridColumn cellClass="has-checkbox" field="Technology" headerName={technologyLabel} cellRenderer={"checkBoxRenderer"}              ></AgGridColumn>
+                <AgGridColumn cellClass="has-checkbox" field="Technology" headerName={technologyLabel} cellRenderer={checkBoxRenderer}              ></AgGridColumn>
                 <AgGridColumn field="BOMNumber" headerName="BOM No."              ></AgGridColumn>
                 <AgGridColumn field="PartNumber" headerName="Part No."              ></AgGridColumn>
                 <AgGridColumn field="PartName" headerName="Name"></AgGridColumn>
@@ -864,13 +898,6 @@ const AssemblyPartListing = React.memo((props) => {
                 <AgGridColumn pinned="right" field="IsActive" headerName="Status" floatingFilter={false} cellRenderer={"statusButtonFormatter"} ></AgGridColumn>
                 <AgGridColumn field="PartId" width={250} cellClass="ag-grid-action-container actions-wrapper" headerName="Action" pinned={window.screen.width < 1920 ? "right" : ""} type="rightAligned" floatingFilter={false} cellRenderer={"buttonFormatter"}              ></AgGridColumn>
               </AgGridReact>}
-
-            {/* {
-              <PaginationWrapper
-                gridApi={state?.gridApi}
-                setPage={onPageSizeChanged}
-              />
-            } */}
             <div className='button-wrapper'>
               {<PaginationWrappers gridApi={state?.gridApi} totalRecordCount={totalRecordCount} getDataList={getTableListData} floatingFilterData={floatingFilterData} module="AssemblyPart" />}
               <PaginationControls totalRecordCount={totalRecordCount} getDataList={getTableListData} floatingFilterData={floatingFilterData} module="AssemblyPart" />
