@@ -241,14 +241,13 @@ function AddOtherCostDrawer(props) {
             }
             const item = tableData.find(item => item?.CostHeaderName === Applicability);
             if (item) {
-                totalCostCurrency += props.rawMaterial ? item?.NetCostConversion : item?.NetCost;
-
+                totalCostCurrency += props.rawMaterial ? Number(item?.NetCostConversion) : Number(item?.NetCost);
                 if (selectedApplicabilities.includes('Basic Rate')) {
                     // totalCostCurrency += BasicRateIndexCurrency;
                     totalBasicRate = props.rawMaterial ? rmBasicRate : BasicRateIndexCurrency
                     total = checkForNull(totalCostCurrency) + checkForNull(totalBasicRate)
                 } else {
-                    total = totalCostCurrency
+                    total = checkForNull(totalCostCurrency)
                 }
             } else {
                 // Add missing Applicability to the array
