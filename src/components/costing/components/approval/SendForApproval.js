@@ -1620,6 +1620,7 @@ const SendForApproval = (props) => {
                 CostingTypeId={viewApprovalData[0]?.costingTypeId}
                 approvalSummaryTrue={true}
                 costingIdArray={costingIdArray}
+                isCosting={true}
               />
             }
           </div >

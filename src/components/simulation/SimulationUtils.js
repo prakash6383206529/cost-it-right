@@ -261,7 +261,7 @@ export const ErrorMessage = (props) => {
     const [showbutton, setShowButton] = useState(false)
     const [amendentStatus, setAmendentstatus] = useState('')
     const [toggleSeeData, setToggleSeeData] = useState(true)
-    const [isGreen, setIsGreen] = useState(false)
+    const [isGreen, setIsGreen] = useState(props?.isGreen ? true : false)
     const [toggleAmmendmentData, setToggleAmmendmentStatus] = useState(true)
     const dispatch = useDispatch()
     const [sobButton, setSobButton] = useState(false)            //RE
@@ -437,7 +437,7 @@ export const ErrorMessage = (props) => {
         } */}
         {showSobMessageList &&
             <div className="error-box-container">
-                <Errorbox customClass={"error"} errorText={sobButton ? funcForSobMessage() : sobMessage} />
+                <Errorbox customClass={props?.isGreen ? 'success' : 'error'} errorText={sobButton ? funcForSobMessage() : sobMessage} />
                 <img
                     className="float-right"
                     alt={""}
