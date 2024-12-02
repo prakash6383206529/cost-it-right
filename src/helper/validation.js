@@ -529,7 +529,7 @@ export const validateSpecialChars = (value) => {
     }
 
     // Check for special characters at start or end
-    const specialCharPattern = /^[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+|[!@#$%^&*()_+\-=\[\]{};':"\\|,<>\/?]+$/;
+    const specialCharPattern = /^[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+|[!@#$%^&*(_+\-=\[\]{};':"\\|,<>\/?]+$/;
     if (specialCharPattern.test(value)) {
         return 'Input cannot start or end with special characters.';
     }
