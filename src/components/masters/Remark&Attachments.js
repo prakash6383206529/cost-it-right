@@ -2,14 +2,14 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Row, Col } from 'reactstrap';
 import Dropzone from 'react-dropzone-uploader';
 import { useDispatch } from 'react-redux';
-import { maxLength512, acceptAllExceptSingleSpecialCharacter, checkForNull, getConfigurationKey } from '../../helper';
+import { maxLength512, acceptAllExceptSingleSpecialCharacter, checkForNull, getConfigurationKey, validateFileName, } from '../../helper';
 import Toaster from '../common/Toaster';
 import { SetRawMaterialDetails, fileUploadRMDomestic } from './actions/Material';
 import imgRedcross from '../../assests/images/red-cross.png';
 import LoaderCustom from '../common/LoaderCustom';
 import { FILE_URL } from '../../config/constants';
 import { TextAreaHookForm } from '../layout/HookFormInputs';
-import HeaderTitle from '../common/HeaderTitle';
+import { AttachmentValidationInfo } from '../../config/message';
 
 // Helper component for attachment previews
 const Preview = ({ meta }) => (
@@ -94,9 +94,12 @@ function RemarksAndAttachments(props) {
 
     // called every time a file's `status` changes
     const handleChangeStatus = ({ meta, file }, status) => {
+        const fileName = file.name;
+
         setState(prevState => ({ ...prevState, attachmentLoader: true }))
 
         if (status === 'removed') {
+
             const removedFileName = file.name
             let tempArr = files.filter(
                 (item) => item.OriginalFileName !== removedFileName,
@@ -108,8 +111,13 @@ function RemarksAndAttachments(props) {
         if (status === 'done') {
             let data = new FormData()
             data.append('file', file)
+            if (!validateFileName(fileName)) {
+                dropzone.current.files.pop()
+                setDisableFalseFunction()
+                return false;
+            }
             dispatch(fileUploadRMDomestic(data, (res) => {
-                if (res.includes("Error")) {
+                if (res && res?.status !== 200) {
                     setDisableFalseFunction()
                     dropzone.current.files.pop()
                     setState(prevState => ({ ...prevState, attachmentLoader: false }))
@@ -207,8 +215,9 @@ function RemarksAndAttachments(props) {
                     disabled={isViewFlag}
                 />
             </Col>
-            <Col md="3">
+            <Col md="3" className='pr-1'>
                 <label>Upload Files <small>(upload up to {getConfigurationKey().MaxMasterFilesToUpload} files, each with a size limit of 2MB)</small></label>
+                <AttachmentValidationInfo customClass="mt-1 mr-n3" />
                 <div className={`alert alert-danger mt-2 ${files?.length === getConfigurationKey().MaxMasterFilesToUpload ? '' : 'd-none'}`} role="alert">
                     Maximum file upload limit reached.
                 </div>

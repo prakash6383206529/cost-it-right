@@ -2278,7 +2278,7 @@ export const WIREFORMING = 'Wire Forming'
 export const ELECTRIC = 'Electric'
 export const ELECTRONICSNAME = 'Electronics'
 export const TOOLING = 'Tooling'
-
+export const COSTING_BULKUPLOAD = 'Costing Bulk Upload'
 export const COMBINED_PROCESS_NAME = 'Combined Process';          						//RE
 export const ZBC_COSTING = 'Costing - ZBC';
 export const VBC_COSTING = 'Costing - VBC';
@@ -3271,7 +3271,7 @@ export const RAWMATERIALCOST = 'Raw Material Other Cost'
 export const COSTINGCONDITIONCOST = 'Costing Condition Cost'
 
 //VERSION 
-export const VERSION = "V3.1.23";
+export const VERSION = "V3.1.24";
 
 
 

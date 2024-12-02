@@ -2,12 +2,12 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector, clearFields } from "redux-form";
 import { Row, Col, Label, } from 'reactstrap';
-import { required, getCodeBySplitting, maxLength80, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, maxLength10, maxLength15, positiveAndDecimalNumber, maxLength512, decimalLengthsix, checkSpacesInString, number, hashValidation, checkForNull, checkForDecimalAndNull } from "../../../helper/validation";
+import { required, getCodeBySplitting, maxLength80, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, maxLength10, maxLength15, positiveAndDecimalNumber, maxLength512, decimalLengthsix, checkSpacesInString, number, hashValidation, checkForNull, checkForDecimalAndNull, validateFileName } from "../../../helper/validation";
 import { renderText, renderMultiSelectField, searchableSelect, renderTextAreaField, renderDatePicker, focusOnError, renderTextInputField, validateForm } from "../../layout/FormInputs";
 import { createOperationsAPI, getOperationDataAPI, updateOperationAPI, fileUploadOperation, checkAndGetOperationCode } from '../actions/OtherOperation';
 import { getPlantSelectListByType, getPlantBySupplier, getUOMSelectList, getVendorNameByVendorSelectList, } from '../../../actions/Common';
 import Toaster from '../../common/Toaster';
-import { MESSAGES } from '../../../config/message';
+import { AttachmentValidationInfo, MESSAGES } from '../../../config/message';
 import { getConfigurationKey, loggedInUserId, userDetails } from "../../../helper/auth";
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import AddUOM from '../uom-master/AddUOM';
@@ -637,12 +637,17 @@ class AddOperation extends Component {
     if (status === 'done') {
       let data = new FormData()
       data.append('file', file)
+      if (!validateFileName(file.name)) {
+        this.dropzone.current.files.pop()
+        this.setDisableFalseFunction()
+        return false;
+      }
       this.props.fileUploadOperation(data, (res) => {
-        if (res.includes("Error")) {
+        if (res && res?.status !== 200) {
           this.dropzone.current.files.pop()
           this.setDisableFalseFunction()
           return false
-      }
+        }
         this.setDisableFalseFunction()
         let Data = res.data[0]
         const { files } = this.state;
@@ -1452,7 +1457,7 @@ class AddOperation extends Component {
                         />
                       </Col>
                       <Col md="3">
-                        <label>Upload Files (upload up to {getConfigurationKey().MaxMasterFilesToUpload} files)</label>
+                        <label>Upload Files (upload up to {getConfigurationKey().MaxMasterFilesToUpload} files) <AttachmentValidationInfo /></label>
                         <div className={`alert alert-danger mt-2 ${this.state.files.length === getConfigurationKey().MaxMasterFilesToUpload ? '' : 'd-none'}`} role="alert">
                           Maximum file upload limit reached.
                         </div>

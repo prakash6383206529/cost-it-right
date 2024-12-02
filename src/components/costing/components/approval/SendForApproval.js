@@ -10,7 +10,7 @@ import { getConfigurationKey, handleDepartmentHeader, loggedInUserId, showApprov
 import { setCostingApprovalData, setCostingViewData, fileUploadCosting, checkFinalUser, getReleaseStrategyApprovalDetails } from '../../actions/Costing'
 import { getVolumeDataByPartAndYear, checkRegularizationLimit } from '../../../masters/actions/Volume'
 
-import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, userTechnologyLevelDetails } from '../../../../helper'
+import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, userTechnologyLevelDetails, validateFileName } from '../../../../helper'
 import DayTime from '../../../common/DayTimeWrapper'
 import WarningMessage from '../../../common/WarningMessage'
 import DatePicker from "react-datepicker";
@@ -32,6 +32,7 @@ import { transformApprovalItem } from '../../../common/CommonFunctions'
 import { checkSAPPoPrice } from '../../../simulation/actions/Simulation'
 import SAPApproval from '../../../SAPApproval'
 import { useLabels } from '../../../../helper/core'
+import { AttachmentValidationInfo } from '../../../../config/message'
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 const SendForApproval = (props) => {
@@ -953,8 +954,13 @@ const SendForApproval = (props) => {
     if (status === "done") {
       let data = new FormData();
       data.append("file", file);
+      if (!validateFileName(file.name)) {
+        dropzone.current.files.pop()
+        setDisableFalseFunction()
+        return false;
+      }
       dispatch(fileUploadCosting(data, (res) => {
-        if (res.includes("Error")) {
+        if (res && res?.status !== 200) {
           this.dropzone.current.files.pop()
           setAttachmentLoader(false)
           return false
@@ -1490,7 +1496,7 @@ const SendForApproval = (props) => {
                   isRegularize ? (
                     <Row className="mb-4 mx-0">
                       <Col md="6" className="height152-label">
-                        <label>Upload Attachment (upload up to 4 files)</label>
+                        <label>Upload Attachment (upload up to 4 files)<AttachmentValidationInfo /></label>
                         {files && files.length >= 4 ? (
                           <div class="alert alert-danger" role="alert">
                             Maximum file upload limit reached.
@@ -1614,6 +1620,7 @@ const SendForApproval = (props) => {
                 CostingTypeId={viewApprovalData[0]?.costingTypeId}
                 approvalSummaryTrue={true}
                 costingIdArray={costingIdArray}
+                isCosting={true}
               />
             }
           </div >

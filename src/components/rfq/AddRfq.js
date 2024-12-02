@@ -6,7 +6,7 @@ import { AsyncSearchableSelectHookForm, RadioHookForm, SearchableSelectHookForm,
 import { getReporterList, getVendorNameByVendorSelectList, getPlantSelectListByType, fetchSpecificationDataAPI, getUOMSelectList } from '../.././actions/Common';
 import { getCostingSpecificTechnology, getExistingCosting, getPartInfo, } from '../costing/actions/Costing'
 import { IsSendQuotationToPointOfContact, addDays, checkPermission, getConfigurationKey, getTimeZone, loggedInUserId, parseLinks } from '../.././helper';
-import { checkForNull, checkForDecimalAndNull } from '../.././helper/validation'
+import { checkForNull, checkForDecimalAndNull, validateFileName } from '../.././helper/validation'
 import { ASSEMBLYNAME, ASSEMBLYORCOMPONENTSRFQ, BOUGHTOUTPARTSPACING, BOUGHTOUTPARTSRFQ, BoughtOutPart, COMPONENTASSEMBLY, COMPONENT_PART, DRAFT, EMPTY_DATA, FILE_URL, HAVELLS_DESIGN_PARTS, PREDRAFT, PRODUCT_ID, RAWMATERIALSRFQ, RAW_MATERIAL, RFQ, RFQVendor, TOOLING, TOOLINGPART, ToolingId, VBC_VENDOR_TYPE, ZBC, searchCount } from '../.././config/constants';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -684,11 +684,16 @@ function AddRfq(props) {
         if (status === 'done') {
             let data = new FormData()
             data.append('file', file)
+            if (!validateFileName(file.name)) {
+                dropzone.current.files.pop()
+                setDisableFalseFunction()
+                return false;
+            }
             setApiCallCounter(prevCounter => prevCounter + 1);  // Increment the API call counter for loader showing
             setAttachmentLoader(true);
             setIsDisable(true)
             dispatch(fileUploadQuotation(data, (res) => {
-                if (res.includes("Error")) {
+                if (res && res?.status !== 200) {
                     this.dropzone.current.files.pop()
                     this.setDisableFalseFunction()
                     return false
@@ -1679,7 +1684,7 @@ function AddRfq(props) {
                     newObjTemp.UOM = getValues('UOM')?.label;
                     newObjTemp.UOMSymbol = getValues('UOM')?.label
                     newObjTemp.UnitOfMeasurementId = getValues('UOM')?.value;
-                    newObjTemp.TargetPrice = getTargetprice?.TargetPrice || "-";
+                    newObjTemp.TargetPrice = getTargetprice?.TargetPrice || "";
                     newObjTemp.TimeLine = requirementDate.split(' ')[0] || '';
                     newObjTemp.PartType = getValues('PartType')?.label;
                     newObjTemp.PartTypeId = getValues('PartType')?.value;
@@ -1910,7 +1915,7 @@ function AddRfq(props) {
                 newObjTemp.UOM = getValues('UOM')?.label;
                 newObjTemp.UOMSymbol = getValues('UOM')?.label
                 newObjTemp.UnitOfMeasurementId = getValues('UOM')?.value;
-                newObjTemp.TargetPrice = getTargetprice?.TargetPrice || "-";
+                newObjTemp.TargetPrice = getTargetprice?.TargetPrice || "";
                 newObjTemp.TimeLine = requirementDate.split(' ')[0] || '';
                 newObjTemp.PartType = getValues('PartType')?.label;
                 newObjTemp.PartTypeId = getValues('PartType')?.value;
@@ -2048,7 +2053,7 @@ function AddRfq(props) {
                     temppartObj.IsChildPart = false
                     temppartObj.QuotationPartId = updateButtonPartNoTable ? QuotationPartId : ""
                     temppartObj.PartType = partType?.label || ''
-                    temppartObj.TargetPrice = getTargetprice?.TargetPrice || "-"
+                    temppartObj.TargetPrice = getTargetprice?.TargetPrice || ""
                     temppartObj.TimeLine = requirementDate || "";
                     temppartObj.Remarks = remark || null
                     temppartObj.Attachments = childPartFiles || []
@@ -2178,7 +2183,7 @@ function AddRfq(props) {
                                         RawMaterialGrade: item2?.RawMaterialGrade,
                                         RawMaterialName: item2?.RawMaterialName,
                                         PartType: selectedOption || "",
-                                        TargetPrice: getTargetprice?.TargetPrice || "-",
+                                        TargetPrice: getTargetprice?.TargetPrice || "",
                                         TimeLine: requirementDate || "",
                                         Remarks: item2?.RawMaterialReamrk || null,
                                         Attachments: item2?.RawMaterialAttachments || [],
@@ -2208,7 +2213,7 @@ function AddRfq(props) {
                                         BoughtOutPartChildId: item2.BoughtOutPartChildId,
                                         BoughtOutPartCategoryId: item2.BoughtOutPartCategoryId,
                                         PartType: selectedOption || "",
-                                        TargetPrice: getTargetprice?.TargetPrice || "-",
+                                        TargetPrice: getTargetprice?.TargetPrice || "",
                                         TimeLine: requirementDate || "",
                                         Remarks: item2?.BopReamrk || null,
                                         Attachments: item2?.BopAttachments || [],
@@ -2277,7 +2282,7 @@ function AddRfq(props) {
                             temppartObj.IsChildPart = false
                             temppartObj.QuotationPartId = updateButtonPartNoTable ? QuotationPartId : null
                             temppartObj.PartType = partType?.label || ''
-                            temppartObj.TargetPrice = getTargetprice?.TargetPrice || "-"
+                            temppartObj.TargetPrice = getTargetprice?.TargetPrice || ""
                             temppartObj.TimeLine = requirementDate || "";
                             temppartObj.Remarks = remark || null
                             temppartObj.Attachments = childPartFiles || []
