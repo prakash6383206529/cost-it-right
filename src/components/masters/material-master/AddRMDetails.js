@@ -513,8 +513,9 @@ function AddRMDetails(props) {
     // };
 
 
-    const vendorFilterList = (inputValue) => DropDownFilterList(inputValue, VBC_VENDOR_TYPE, 'vendorFilter', getVendorNameByVendorSelectList, setState, state);
-    const sourceVendorFilterList = (inputValue) => DropDownFilterList(inputValue, VBC_VENDOR_TYPE, 'sourceVendorFilter', getVendorNameByVendorSelectList, setState, state);
+
+    const vendorFilterList = (inputValue) => DropDownFilterList(inputValue, RAW_MATERIAL_VENDOR_TYPE, 'vendorFilter', getVendorNameByVendorSelectList, setState, state);
+    const sourceVendorFilterList = (inputValue) => DropDownFilterList(inputValue, RAW_MATERIAL_VENDOR_TYPE, 'sourceVendorFilter', getVendorNameByVendorSelectList, setState, state);
     const sourceLocationFilterList = (inputValue) => DropDownFilterList(inputValue, '', 'sourceLocationFilter', (filterType, resultInput) => getCityByCountry(0, 0, resultInput), setState, state);
 
 
