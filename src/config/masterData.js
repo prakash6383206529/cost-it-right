@@ -5743,13 +5743,20 @@ export const EXCHANGERATE_DOWNLOAD_EXCEl = [
 ]
 
 export const FREIGHT_DOWNLOAD_EXCEl = [
-    { label: "Costing Head", value: "CostingHead", },
-    { label: "Mode", value: "Mode", },
-    { label: "Vendor (Code)", value: "VendorName", },
-    { label: "Customer (Code)", value: "CustomerName", },
-    { label: "Source City", value: "SourceCity", },
-    { label: "Destination City", value: "DestinationCity", },
-]
+    { label: "Costing Head", value: "CostingHead" },
+    { label: "Mode", value: "Mode"},
+    { label: "Vendor (Code)", value: "VendorName"},
+    { label: "Plant (Code)", value: "Plant"},
+    { label: "Customer (Code)", value: "CustomerName"},
+    // { label: "Source City", value: "SourceCity" },
+    // { label: "Destination City", value: "DestinationCity" },
+    { label: "Load", value: "FreightLoadType" }, 
+    { label: "Capacity", value: "Capacity" }, 
+    { label: "Criteria", value: "RateCriteria"}, 
+    { label: "Rate", value: "Rate" }, 
+    { label: "Effective Date", value: "EffectiveDate" }
+];
+
 
 export const FUELLISTING_DOWNLOAD_EXCEl = [
     { label: "Fuel", value: "FuelName", },
@@ -5990,7 +5997,7 @@ export const OVERHEAD_DOWNLOAD_EXCEl = [
     { label: "Model Type", value: "ModelType", },
     { label: "Overhead Applicability", value: "OverheadApplicabilityType", },
     { label: "Overhead Applicability (%)", value: "OverheadPercentage", },
-    { label: "Overhead on RM (%)", value: "OverheadRMPercentage", },
+    { label: "Overhead on RM/ Part Cost (%)", value: "OverheadRMPercentage", },
     { label: "Overhead on BOP (%)", value: "OverheadBOPPercentage", },
     { label: "Overhead on CC (%)", value: "OverheadMachiningCCPercentage", },
     { label: "Effective Date", value: "EffectiveDate", },
@@ -6116,7 +6123,7 @@ export const PROFIT_DOWNLOAD_EXCEl = [
     { label: "Model Type", value: "ModelType", },
     { label: "Profit Applicability", value: "ProfitApplicabilityType", },
     { label: "Profit Applicability (%)", value: "ProfitPercentage", },
-    { label: "Profit on RM (%)", value: "ProfitRMPercentage", },
+    { label: "Profit on RM/ Part Cost (%)", value: "ProfitRMPercentage", },
     { label: "Profit on BOP (%)", value: "ProfitBOPPercentage", },
     { label: "Profit on CC (%)", value: "ProfitMachiningCCPercentage", },
     { label: "Effective Date", value: "EffectiveDate", },

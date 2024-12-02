@@ -180,6 +180,7 @@ export function fileUploadPart(data, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
+            callback(error.toString())
         });
     };
 }
@@ -285,34 +286,34 @@ export function createAssemblyPart(data, callback) {
 
 export function getAssemblyPartDataList(params, callback) {
     return async (dispatch) => {
-      try {
-        // Make the API request
-        const response = await axios.get(API.getAssemblyPartDataList, {
-          ...config(),
-          params,
-        });
-  
-        // Check if the response is valid
-        if (response?.data?.Result || response?.status === 204) {
-          dispatch({
-            type: GET_ALL_PARTS_SUCCESS,
-            payload: response.status === 204 ? [] : response.data?.DataList,
-          });
+        try {
+            // Make the API request
+            const response = await axios.get(API.getAssemblyPartDataList, {
+                ...config(),
+                params,
+            });
+
+            // Check if the response is valid
+            if (response?.data?.Result || response?.status === 204) {
+                dispatch({
+                    type: GET_ALL_PARTS_SUCCESS,
+                    payload: response.status === 204 ? [] : response.data?.DataList,
+                });
+            }
+
+            // Invoke the callback with the response
+            callback(response);
+        } catch (error) {
+            // Handle the error case
+            dispatch({ type: API_FAILURE });
+            callback(error);
+
+            // Log the error (assuming `apiErrors` is a function for logging API errors)
+            apiErrors(error);
         }
-  
-        // Invoke the callback with the response
-        callback(response);
-      } catch (error) {
-        // Handle the error case
-        dispatch({ type: API_FAILURE });
-        callback(error);
-  
-        // Log the error (assuming `apiErrors` is a function for logging API errors)
-        apiErrors(error);
-      }
     };
-  }
-  
+}
+
 
 /**
 * @method getAssemblyPartDetail
