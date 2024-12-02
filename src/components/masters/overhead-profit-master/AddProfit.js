@@ -2,7 +2,7 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector, clearFields } from "redux-form";
 import { Row, Col, Label } from 'reactstrap';
-import { required, getCodeBySplitting, maxLength512, number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation, acceptAllExceptSingleSpecialCharacter } from "../../../helper/validation";
+import { required, getCodeBySplitting, maxLength512, number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation, acceptAllExceptSingleSpecialCharacter, validateFileName } from "../../../helper/validation";
 import { searchableSelect, renderTextAreaField, renderDatePicker, renderMultiSelectField, renderText, validateForm } from "../../layout/FormInputs";
 import { fetchCostingHeadsAPI, getPlantSelectListByType, getVendorNameByVendorSelectList } from '../../../actions/Common';
 import {
@@ -661,6 +661,11 @@ class AddProfit extends Component {
     if (status === 'done') {
       let data = new FormData()
       data.append('file', file)
+      if (!validateFileName(file.name)) {
+        this.dropzone.current.files.pop()
+        this.setDisableFalseFunction()
+        return false;
+      }
       this.props.fileUploadProfit(data, (res) => {
         if (res && res?.status !== 200) {
           this.dropzone.current.files.pop()

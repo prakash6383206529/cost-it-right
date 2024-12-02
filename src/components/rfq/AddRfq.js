@@ -6,7 +6,7 @@ import { AsyncSearchableSelectHookForm, RadioHookForm, SearchableSelectHookForm,
 import { getReporterList, getVendorNameByVendorSelectList, getPlantSelectListByType, fetchSpecificationDataAPI, getUOMSelectList } from '../.././actions/Common';
 import { getCostingSpecificTechnology, getExistingCosting, getPartInfo, } from '../costing/actions/Costing'
 import { IsSendQuotationToPointOfContact, addDays, checkPermission, getConfigurationKey, getTimeZone, loggedInUserId, parseLinks } from '../.././helper';
-import { checkForNull, checkForDecimalAndNull } from '../.././helper/validation'
+import { checkForNull, checkForDecimalAndNull, validateFileName } from '../.././helper/validation'
 import { ASSEMBLYNAME, ASSEMBLYORCOMPONENTSRFQ, BOUGHTOUTPARTSPACING, BOUGHTOUTPARTSRFQ, BoughtOutPart, COMPONENTASSEMBLY, COMPONENT_PART, DRAFT, EMPTY_DATA, FILE_URL, HAVELLS_DESIGN_PARTS, PREDRAFT, PRODUCT_ID, RAWMATERIALSRFQ, RAW_MATERIAL, RFQ, RFQVendor, TOOLING, TOOLINGPART, ToolingId, VBC_VENDOR_TYPE, ZBC, searchCount } from '../.././config/constants';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -684,6 +684,11 @@ function AddRfq(props) {
         if (status === 'done') {
             let data = new FormData()
             data.append('file', file)
+            if (!validateFileName(file.name)) {
+                dropzone.current.files.pop()
+                setDisableFalseFunction()
+                return false;
+            }
             setApiCallCounter(prevCounter => prevCounter + 1);  // Increment the API call counter for loader showing
             setAttachmentLoader(true);
             setIsDisable(true)

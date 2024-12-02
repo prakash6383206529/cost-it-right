@@ -4,7 +4,8 @@ import { Field, reduxForm, formValueSelector, isDirty, clearFields } from "redux
 import { Row, Col, Table, Label } from 'reactstrap';
 import {
   required, checkForNull, postiveNumber, checkForDecimalAndNull, acceptAllExceptSingleSpecialCharacter,
-  checkWhiteSpaces, maxLength80, maxLength10, maxLength512, checkSpacesInString, decimalLengthsix, hashValidation, getNameBySplitting, number
+  checkWhiteSpaces, maxLength80, maxLength10, maxLength512, checkSpacesInString, decimalLengthsix, hashValidation, getNameBySplitting, number,
+  validateFileName
 } from "../../../helper/validation";
 import { renderText, searchableSelect, renderTextAreaField, focusOnError, renderDatePicker, validateForm } from "../../layout/FormInputs";
 import { getPlantSelectListByType, getPlantBySupplier, getUOMSelectList, getVendorNameByVendorSelectList } from '../../../actions/Common';
@@ -1013,6 +1014,11 @@ class AddMachineRate extends Component {
     if (status === 'done') {
       let data = new FormData()
       data.append('file', file)
+      if (!validateFileName(file.name)) {
+        this.dropzone.current.files.pop()
+        this.setDisableFalseFunction()
+        return false;
+      }
       this.props.fileUploadMachine(data, (res) => {
         if (res && res?.status !== 200) {
           this.dropzone.current.files.pop()

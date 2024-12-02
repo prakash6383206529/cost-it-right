@@ -7,6 +7,7 @@ import { Loader } from "../../common/Loader";
 import {
     maxLength12, required,
     checkWhiteSpaces, maxLength25, hashValidation, checkForNull, checkForDecimalAndNull, acceptAllExceptSingleSpecialCharacter, maxLength80,
+    validateFileName,
 } from "../../../helper/validation";
 
 import { AttachmentValidationInfo, MESSAGES } from "../../../config/message";
@@ -703,6 +704,11 @@ function AddMoreOperation(props) {
         if (status === 'done') {
             let data = new FormData()
             data.append('file', file)
+            if (!validateFileName(file.name)) {
+                this.dropzone.current.files.pop()
+                this.setDisableFalseFunction()
+                return false;
+            }
             dispatch(fileUploadOperation(data, (res) => {
                 if (res && res?.status !== 200) {
                     this.dropzone.current.files.pop()

@@ -29,7 +29,7 @@ import { IsNFR, IsPartType, ViewCostingContext } from '../CostingDetails';
 
 import { useMemo } from 'react';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { checkWhiteSpaces, decimalNumberLimit6, hashValidation, maxLength80, number, percentageLimitValidation, required } from "../../../../helper/validation";
+import { checkWhiteSpaces, decimalNumberLimit6, hashValidation, maxLength80, number, percentageLimitValidation, required, validateFileName } from "../../../../helper/validation";
 import LoaderCustom from '../../../common/LoaderCustom';
 import TooltipCustom from '../../../common/Tooltip';
 import WarningMessage from '../../../common/WarningMessage';
@@ -1093,6 +1093,11 @@ function TabDiscountOther(props) {
     if (status === 'done') {
       let data = new FormData()
       data.append('file', file)
+      if (!validateFileName(file.name)) {
+        dropzone.current.files.pop()
+        setDisableFalseFunction()
+        return false;
+      }
       dispatch(fileUploadCosting(data, (res) => {
         setDisableFalseFunction()
         if (res && res?.status !== 200) {

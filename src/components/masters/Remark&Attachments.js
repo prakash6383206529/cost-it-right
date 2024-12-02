@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Row, Col } from 'reactstrap';
 import Dropzone from 'react-dropzone-uploader';
 import { useDispatch } from 'react-redux';
-import { maxLength512, acceptAllExceptSingleSpecialCharacter, checkForNull, getConfigurationKey } from '../../helper';
+import { maxLength512, acceptAllExceptSingleSpecialCharacter, checkForNull, getConfigurationKey, validateFileName, } from '../../helper';
 import Toaster from '../common/Toaster';
 import { SetRawMaterialDetails, fileUploadRMDomestic } from './actions/Material';
 import imgRedcross from '../../assests/images/red-cross.png';
@@ -94,9 +94,12 @@ function RemarksAndAttachments(props) {
 
     // called every time a file's `status` changes
     const handleChangeStatus = ({ meta, file }, status) => {
+        const fileName = file.name;
+
         setState(prevState => ({ ...prevState, attachmentLoader: true }))
 
         if (status === 'removed') {
+
             const removedFileName = file.name
             let tempArr = files.filter(
                 (item) => item.OriginalFileName !== removedFileName,
@@ -108,6 +111,11 @@ function RemarksAndAttachments(props) {
         if (status === 'done') {
             let data = new FormData()
             data.append('file', file)
+            if (!validateFileName(fileName)) {
+                dropzone.current.files.pop()
+                setDisableFalseFunction()
+                return false;
+            }
             dispatch(fileUploadRMDomestic(data, (res) => {
                 if (res && res?.status !== 200) {
                     setDisableFalseFunction()

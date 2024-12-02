@@ -10,7 +10,7 @@ import { getConfigurationKey, handleDepartmentHeader, loggedInUserId, showApprov
 import { setCostingApprovalData, setCostingViewData, fileUploadCosting, checkFinalUser, getReleaseStrategyApprovalDetails } from '../../actions/Costing'
 import { getVolumeDataByPartAndYear, checkRegularizationLimit } from '../../../masters/actions/Volume'
 
-import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, userTechnologyLevelDetails } from '../../../../helper'
+import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, userTechnologyLevelDetails, validateFileName } from '../../../../helper'
 import DayTime from '../../../common/DayTimeWrapper'
 import WarningMessage from '../../../common/WarningMessage'
 import DatePicker from "react-datepicker";
@@ -954,6 +954,11 @@ const SendForApproval = (props) => {
     if (status === "done") {
       let data = new FormData();
       data.append("file", file);
+      if (!validateFileName(file.name)) {
+        dropzone.current.files.pop()
+        setDisableFalseFunction()
+        return false;
+      }
       dispatch(fileUploadCosting(data, (res) => {
         if (res && res?.status !== 200) {
           this.dropzone.current.files.pop()

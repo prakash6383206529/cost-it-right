@@ -5,7 +5,8 @@ import { Row, Col, Table } from 'reactstrap';
 import {
   required, checkForNull, number, acceptAllExceptSingleSpecialCharacter, maxLength10,
   maxLength80, checkWhiteSpaces, checkForDecimalAndNull, postiveNumber, positiveAndDecimalNumber, maxLength20, maxLength3, decimalNumberLimit,
-  maxLength512, decimalLengthFour, decimalLengthThree, decimalLength2, decimalLengthsix, checkSpacesInString, maxValue366, percentageLimitValidation, maxPercentValue, hashValidation, maxValue24, getNameBySplitting
+  maxLength512, decimalLengthFour, decimalLengthThree, decimalLength2, decimalLengthsix, checkSpacesInString, maxValue366, percentageLimitValidation, maxPercentValue, hashValidation, maxValue24, getNameBySplitting,
+  validateFileName
 } from "../../../helper/validation";
 import { renderText, searchableSelect, renderTextAreaField, focusOnError, renderDatePicker, renderTextInputField, renderNumberInputField, validateForm } from "../../layout/FormInputs";
 import { getPlantSelectListByType, getPlantBySupplier, getUOMSelectList, getShiftTypeSelectList, getDepreciationTypeSelectList, } from '../../../actions/Common';
@@ -1902,6 +1903,11 @@ class AddMoreDetails extends Component {
     if (status === 'done') {
       let data = new FormData()
       data.append('file', file)
+      if (!validateFileName(file.name)) {
+        this.dropzone.current.files.pop()
+        this.setDisableFalseFunction()
+        return false;
+      }
       this.props.fileUploadMachine(data, (res) => {
         if (res && res?.status !== 200) {
           this.dropzone.current.files.pop()
