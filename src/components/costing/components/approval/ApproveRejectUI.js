@@ -246,6 +246,12 @@ function ApproveRejectUI(props) {
       data.append('file', file)
       setIsDisable(true)
       dispatch(uploadSimulationAttachment(data, (res) => {
+        if (res?.includes("Error")) {
+          dropzone.current.files.pop()
+          setAttachmentLoader(false)
+          setDisableFalseFunction()
+          return false
+      }
         setDisableFalseFunction()
         let Data = res?.data[0]
         files.push(Data)
@@ -321,7 +327,7 @@ function ApproveRejectUI(props) {
       >
         <Container>
           <div className={'drawer-wrapper'}>
-            {props?.isDisable && <LoaderCustom customClass="approve-reject-drawer-loader" />}
+            {props?.isDisable&& <LoaderCustom customClass="approve-reject-drawer-loader" />}
             <form
             >
               <Row className="drawer-heading">

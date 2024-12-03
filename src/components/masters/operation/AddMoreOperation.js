@@ -7,9 +7,10 @@ import { Loader } from "../../common/Loader";
 import {
     maxLength12, required,
     checkWhiteSpaces, maxLength25, hashValidation, checkForNull, checkForDecimalAndNull, acceptAllExceptSingleSpecialCharacter, maxLength80,
+    validateFileName,
 } from "../../../helper/validation";
 
-import { MESSAGES } from "../../../config/message";
+import { AttachmentValidationInfo, MESSAGES } from "../../../config/message";
 import { loggedInUserId } from "../../../helper/auth";
 import { Row, Col } from 'reactstrap';
 import { CBCTypeId, CRMHeads, FILE_URL, VBCTypeId, VBC_VENDOR_TYPE, ZBCTypeId, searchCount } from "../../../config/constants";
@@ -703,7 +704,17 @@ function AddMoreOperation(props) {
         if (status === 'done') {
             let data = new FormData()
             data.append('file', file)
+            if (!validateFileName(file.name)) {
+                this.dropzone.current.files.pop()
+                this.setDisableFalseFunction()
+                return false;
+            }
             dispatch(fileUploadOperation(data, (res) => {
+                if (res && res?.status !== 200) {
+                    this.dropzone.current.files.pop()
+                    this.setDisableFalseFunction()
+                    return false
+                }
                 setDisableFalseFunction()
                 if ('response' in res) {
                     status = res && res?.response?.status
@@ -2704,7 +2715,7 @@ function AddMoreOperation(props) {
                                     />
                                 </Col>
                                 <Col md="4">
-                                    <label>Upload Files (upload up to {initialConfiguration.MaxMasterFilesToUpload} files)</label>
+                                    <label>Upload Files (upload up to {initialConfiguration.MaxMasterFilesToUpload} files)<AttachmentValidationInfo /></label>
                                     <div className={`alert alert-danger mt-2 ${files.length === initialConfiguration.MaxMasterFilesToUpload ? '' : 'd-none'}`} role="alert">
                                         Maximum file upload limit reached.
                                     </div>
