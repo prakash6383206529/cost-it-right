@@ -97,7 +97,7 @@ export function TokenAPI(requestData, callback) {
             Audiance: requestData.audiance
         };
 
-        
+
         // Fetch the public IP from a service (if necessary).
         // axios.get('https://api.ipify.org?format=json')
         //     .then(response => {
@@ -120,102 +120,33 @@ export function TokenAPI(requestData, callback) {
         // });
     };
 }
-// const getLocalIPAddress = async () => {
-//     try {
-//         const rtcConfig = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
-//         const pc = new RTCPeerConnection(rtcConfig);
-//         pc.createDataChannel('');
-//         const offer = await pc.createOffer();
-//         await pc.setLocalDescription(offer);
-//         let resolved = false;
-//         return new Promise((resolve) => {
-//             pc.onicecandidate = async (event) => {
-//                 if (!resolved && event.candidate && event.candidate.candidate) {
-//                     const ipRegex = /\b(?:[0-9]{1,3}\.){3}[0-9]{1,3}\b/;
-//                     const match = event.candidate.candidate.match(ipRegex);
-//                     if (match) {
-//                         const localIP = match[0];
-//                         resolve(localIP);
-//                         resolved = true;
-//                         pc.onicecandidate = null; // Unsubscribe from further ICE candidate events
-//                     }
-//                 }
-//             };
-//         });
-//     } catch (error) {
-
-//         return null;
-//     }
-// };
-
-
-
-
-async function getLocalIPAddress() {
+const getLocalIPAddress = async () => {
     try {
-        const peerConnection = new RTCPeerConnection({ iceServers: [] });
-
-        return new Promise((resolve, reject) => {
-            const foundIPs = new Set();
-
-            peerConnection.createDataChannel('offline-check');
-
-            peerConnection.createOffer()
-                .then((offer) => peerConnection.setLocalDescription(offer))
-                .catch((err) => {
-                    console.error('Failed to create offer:', err);
-                    reject(new Error('Failed to create connection'));
-                });
-
-            const timeoutId = setTimeout(() => {
-                if (foundIPs.size > 0) {
-                    resolve([...foundIPs][0]); // Return the first found IP
-                } else {
-                    reject(new Error('No IP address detected within timeout.'));
-                }
-                peerConnection.close();
-            }, 3000); // Timeout after 3 seconds
-
-            peerConnection.addEventListener('icecandidate', (event) => {
-                if (event.candidate && event.candidate.candidate.includes('typ host')) {
-                    const candidateStr = event.candidate.candidate;
-                    const ipRegex = /(?:[0-9]{1,3}\.){3}[0-9]{1,3}/; // Match IPv4
-                    const ipMatch = candidateStr.match(ipRegex);
-                    if (ipMatch && ipMatch[0]) {
-                        foundIPs.add(ipMatch[0]);
+        const rtcConfig = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
+        const pc = new RTCPeerConnection(rtcConfig);
+        pc.createDataChannel('');
+        const offer = await pc.createOffer();
+        await pc.setLocalDescription(offer);
+        let resolved = false;
+        return new Promise((resolve) => {
+            pc.onicecandidate = async (event) => {
+                if (!resolved && event.candidate && event.candidate.candidate) {
+                    const ipRegex = /\b(?:[0-9]{1,3}\.){3}[0-9]{1,3}\b/;
+                    const match = event.candidate.candidate.match(ipRegex);
+                    if (match) {
+                        const localIP = match[0];
+                        resolve(localIP);
+                        resolved = true;
+                        pc.onicecandidate = null; // Unsubscribe from further ICE candidate events
                     }
                 }
-            });
+            };
         });
     } catch (error) {
-        console.error('Error detecting IP:', error);
-        throw new Error('IP detection failed');
+
+        return null;
     }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+};
 
 export function AutoSignin(requestData, callback) {
     return (dispatch) => {
