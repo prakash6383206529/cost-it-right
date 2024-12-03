@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Row, Col, } from 'reactstrap';
 import {
-  deleteRawMaterialAPI, getAllRMDataList
+  deleteRawMaterialAPI, getAllRMDataList,
+  setReducerRMListing
 } from '../actions/Material';
-import { defaultPageSize, EMPTY_DATA, ENTRY_TYPE_IMPORT, FILE_URL, RMIMPORT, ZBCTypeId } from '../../../config/constants';
+import { API, defaultPageSize, EMPTY_DATA, ENTRY_TYPE_IMPORT, FILE_URL, RMIMPORT, ZBCTypeId } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
@@ -26,7 +27,7 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { getListingForSimulationCombined, setSelectedRowForPagination } from '../../simulation/actions/Simulation';
 import WarningMessage from '../../common/WarningMessage';
 import _ from 'lodash';
-import { disabledClass } from '../../../actions/Common';
+import { disabledClass, useFetchAPICall } from '../../../actions/Common';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import AnalyticsDrawer from './AnalyticsDrawer';
 import { checkMasterCreateByCostingPermission, hideCustomerFromExcel, hideMultipleColumnFromExcel } from '../../common/CommonFunctions';
@@ -90,7 +91,7 @@ function RMImportListing(props) {
   const [editSelectedList, setEditSelectedList] = useState(false)
   const [tempList, setTempList] = useState([])
   const [showExtraData, setShowExtraData] = useState(false)
-  const [render, setRender] = useState(false)
+  const [render, setRender] = useState(true)
   const [disableEdit, setDisableEdit] = useState(true)
   const { t } = useTranslation("common")
   const netCostHeader = `Net Cost (${reactLocalStorage.getObject("baseCurrency")})`
@@ -143,10 +144,43 @@ function RMImportListing(props) {
 
   };
 
+  const params = useMemo(() => {
+    let obj = { ...floatingFilterData }
+
+    if (obj?.EffectiveDate) {
+      if (obj.EffectiveDate.dateTo) {
+        let temp = []
+        temp.push(DayTime(obj.EffectiveDate.dateFrom).format('DD/MM/YYYY'))
+        temp.push(DayTime(obj.EffectiveDate.dateTo).format('DD/MM/YYYY'))
+        obj.dateArray = temp
+      }
+    }
+
+    obj.RawMaterialEntryType = Number(ENTRY_TYPE_IMPORT)
+    obj.Currency = floatingFilterData?.Currency
+    obj.ExchangeRateSourceName = floatingFilterData?.ExchangeRateSourceName
+    obj.OtherNetCost = floatingFilterData?.OtherNetCost
+
+    return {
+      data: {},
+      skip: 0,
+      take: globalTakes,
+      isPagination: true,
+      obj: obj,
+      isImport: true,
+      dataObj: obj,
+      master: 'RawMaterial',
+      tabs: 'Import'
+    }
+  }, []);
+
+  const { isLoading, isError, error, data } = useFetchAPICall('MastersRawMaterial_GetAllRawMaterialList_Import', params);
 
   useEffect(() => {
     if (rmImportDataList?.length > 0) {
+      setloader(false);
       setTotalRecordCount(rmImportDataList[0].TotalRecordCount)
+      setRender(false)
     }
     else {
       setNoData(false)
@@ -183,7 +217,6 @@ function RMImportListing(props) {
           if (isSimulation && !isFromVerifyPage) {
             props?.changeTokenCheckBox(false)
           }
-          getDataList(null, null, null, null, null, 0, 0, defaultPageSize, true, floatingFilterData)
         }
 
         setvalue({ min: 0, max: 0 });

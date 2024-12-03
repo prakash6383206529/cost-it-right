@@ -1,10 +1,10 @@
-import React, { lazy, Suspense } from 'react';
+import React, { lazy, Suspense, useMemo } from 'react';
 import { useState, useEffect, } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, } from 'reactstrap';
-import { deleteRawMaterialAPI, getAllRMDataList } from '../actions/Material';
+import { deleteRawMaterialAPI, getAllRMDataList, setReducerRMListing } from '../actions/Material';
 import { IsShowFreightAndShearingCostFields, loggedInUserId, userDepartmetList } from "../../../helper/auth"
-import { defaultPageSize, EMPTY_DATA, ENTRY_TYPE_DOMESTIC, FILE_URL, RMDOMESTIC, ZBCTypeId } from '../../../config/constants';
+import { API, defaultPageSize, EMPTY_DATA, ENTRY_TYPE_DOMESTIC, FILE_URL, RMDOMESTIC, ZBCTypeId } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
@@ -20,7 +20,7 @@ import ReactExport from 'react-export-excel';
 import { CheckApprovalApplicableMaster, getConfigurationKey, searchNocontentFilter, setLoremIpsum } from '../../../helper';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { getListingForSimulationCombined, setSelectedRowForPagination } from '../../simulation/actions/Simulation';
-import { disabledClass } from '../../../actions/Common';
+import { disabledClass, useFetchAPICall } from '../../../actions/Common';
 import WarningMessage from '../../common/WarningMessage';
 import AnalyticsDrawer from './AnalyticsDrawer'
 import _ from 'lodash';
@@ -80,7 +80,7 @@ function RMDomesticListing(props) {
     const [attachment, setAttachment] = useState(false);
     const [viewAttachment, setViewAttachment] = useState([])
     const [showExtraData, setShowExtraData] = useState(false)
-    const [render, setRender] = useState(false)
+    const [render, setRender] = useState(true)
     const { t } = useTranslation("common")
     const { technologyLabel, RMCategoryLabel, vendorLabel } = useLabels();
     const [compareDrawer, setCompareDrawer] = useState(false)
@@ -122,9 +122,49 @@ function RMDomesticListing(props) {
         minValidYear: 2000,
 
     };
+
+    const params = useMemo(() => {
+        let obj = { ...floatingFilterData }
+
+        if (obj?.EffectiveDate) {
+            if (obj.EffectiveDate.dateTo) {
+                let temp = []
+                temp.push(DayTime(obj.EffectiveDate.dateFrom).format('DD/MM/YYYY'))
+                temp.push(DayTime(obj.EffectiveDate.dateTo).format('DD/MM/YYYY'))
+                obj.dateArray = temp
+            }
+        }
+
+        obj.RawMaterialEntryType = Number(ENTRY_TYPE_DOMESTIC)
+        obj.Currency = floatingFilterData?.Currency
+        obj.ExchangeRateSourceName = floatingFilterData?.ExchangeRateSourceName
+        obj.OtherNetCost = floatingFilterData?.OtherNetCost
+        let data = {
+            StatusId: [props?.approvalStatus].join(","),
+            net_landed_min_range: value.min,
+            net_landed_max_range: value.max,
+            ListFor: ListFor,
+        }
+
+        return {
+            data: data,
+            skip: 0,
+            take: globalTakes,
+            isPagination: true,
+            obj: obj,
+            isImport: false,
+            dataObj: obj,
+            master: 'RawMaterial',
+            tabs: 'Domestic'
+        }
+    }, []);
+
+    const { isLoading, isError, error, data } = useFetchAPICall('MastersRawMaterial_GetAllRawMaterialList', params);
+
     useEffect(() => {
         if (rmDataList?.length > 0) {
             setTotalRecordCount(rmDataList[0].TotalRecordCount)
+            setRender(false)
         }
         else {
             setNoData(false)
@@ -144,7 +184,6 @@ function RMDomesticListing(props) {
                 if (isSimulation) {
                     props?.changeTokenCheckBox(false)
                 }
-                getDataList(null, null, null, null, null, 0, 0, defaultPageSize, true, floatingFilterData)
             }
             setvalue({ min: 0, max: 0 });
         }

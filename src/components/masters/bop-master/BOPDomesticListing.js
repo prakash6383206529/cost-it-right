@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, } from 'reactstrap';
 import { EMPTY_DATA, BOP_MASTER_ID, BOPDOMESTIC, defaultPageSize, ENTRY_TYPE_DOMESTIC, FILE_URL, DRAFTID, ZBCTypeId } from '../../../config/constants';
@@ -20,7 +20,7 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { getListingForSimulationCombined, setSelectedRowForPagination } from '../../simulation/actions/Simulation';
 import WarningMessage from '../../common/WarningMessage';
 import { hyphenFormatter } from '../masterUtil';
-import { TourStartAction, disabledClass } from '../../../actions/Common';
+import { TourStartAction, disabledClass, useFetchAPICall } from '../../../actions/Common';
 import _ from 'lodash';
 import AnalyticsDrawer from '../material-master/AnalyticsDrawer';
 import { reactLocalStorage } from 'reactjs-localstorage';
@@ -95,20 +95,33 @@ const BOPDomesticListing = (props) => {
     dataCount: 0,
     attachment: false,
     viewAttachment: [],
-    render: false,
+    render: true,
     compareDrawer: false,
     rowDataForCompare: [],
 
   });
-  useEffect(() => {
-    setTimeout(() => {
-      if (!props.stopApiCallOnCancel) {
-        getDataList("", 0, "", "", 0, defaultPageSize, true, state.floatingFilterData);
-      }
-    }, 300);
-  },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []);
+
+  const params = useMemo(() => {
+    let obj = { ...state.floatingFilterData }
+    obj.bopFor = ''
+    obj.CategoryId = 0
+    obj.vendorId = ''
+    obj.plantId = ''
+    obj.skip = 0
+    obj.take = 10
+    obj.isPagination = true
+    obj.dataObj = {}
+    obj.isReset = false
+    obj.StatusId = [props?.approvalStatus].join(",")
+    obj.EntryType = Number(ENTRY_TYPE_DOMESTIC)
+    obj.isImport = false
+    obj.bop_for = ""
+    obj.master = 'BoughtOutPart'
+    obj.tabs = 'Domestic'
+    return obj;
+  }, []);
+
+  const { isLoading, isError, error, data } = useFetchAPICall('MastersBoughtOutPart_GetAllBoughtOutPartByFilter', params);
 
   useEffect(() => {
     return () => {
@@ -125,17 +138,14 @@ const BOPDomesticListing = (props) => {
     []);
   useEffect(() => {
     if (bopDomesticList?.length > 0) {
-      setState((prevState) => ({ ...prevState, totalRecordCount: bopDomesticList[0].TotalRecordCount, }));
+      setState((prevState) => ({ ...prevState, totalRecordCount: bopDomesticList[0].TotalRecordCount, isLoader: false, render: false }));
     }
 
     if (props.isSimulation) {
       props.callBackLoader(state.isLoader);
     }
-    else {
-      setState((prevState) => ({ ...prevState, isLoader: false }))
-    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [bopDomesticList]);
 
   const getDataList = (bopFor = '', CategoryId = 0, vendorId = '', plantId = '', skip = 0, take = 10, isPagination = true, dataObj, isReset = false) => {
     const { floatingFilterData } = state

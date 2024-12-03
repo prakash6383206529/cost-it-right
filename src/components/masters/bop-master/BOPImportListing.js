@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import { Row, Col } from "reactstrap";
 import { BOPIMPORT, EMPTY_DATA, defaultPageSize, ENTRY_TYPE_IMPORT, FILE_URL, DRAFTID, ZBCTypeId, } from "../../../config/constants";
 import { getBOPDataList, deleteBOP } from "../actions/BoughtOutParts";
@@ -18,7 +18,7 @@ import "ag-grid-community/dist/styles/ag-theme-material.css";
 import PopupMsgWrapper from "../../common/PopupMsgWrapper";
 import { getListingForSimulationCombined, setSelectedRowForPagination, } from "../../simulation/actions/Simulation";
 import WarningMessage from "../../common/WarningMessage";
-import { TourStartAction, disabledClass } from "../../../actions/Common";
+import { TourStartAction, disabledClass, useFetchAPICall } from "../../../actions/Common";
 import _ from "lodash";
 import AnalyticsDrawer from "../material-master/AnalyticsDrawer";
 import { reactLocalStorage } from "reactjs-localstorage";
@@ -125,12 +125,34 @@ const BOPImportListing = (props) => {
   );
   useEffect(() => {
     if (bopImportList?.length > 0) {
-      setState((prevState) => ({ ...prevState, totalRecordCount: bopImportList[0].TotalRecordCount }));
+      setState((prevState) => ({ ...prevState, totalRecordCount: bopImportList[0].TotalRecordCount, isLoader: false, render: false }));
     }
     else {
       setState((prevState) => ({ ...prevState, noData: false }));
     }
   }, [bopImportList])
+
+  const params = useMemo(() => {
+    let obj = { ...state.floatingFilterData }
+    obj.bopFor = ''
+    obj.CategoryId = 0
+    obj.vendorId = ''
+    obj.plantId = ''
+    obj.skip = 0
+    obj.take = 10
+    obj.isPagination = true
+    obj.dataObj = {}
+    obj.isReset = false
+    obj.StatusId = [props?.approvalStatus].join(",")
+    obj.EntryType = Number(ENTRY_TYPE_IMPORT)
+    obj.isImport = true
+    obj.bop_for = ""
+    obj.master = 'BoughtOutPart'
+    obj.tabs = 'Import'
+    return obj;
+  }, []);
+
+  const { isLoading, isError, error, data } = useFetchAPICall('MastersBoughtOutPart_GetAllBoughtOutPartByFilter_Import', params);
 
   useEffect(() => {
     setTimeout(() => {
@@ -161,7 +183,7 @@ const BOPImportListing = (props) => {
             getDataList("", 0, "", "", 0, defaultPageSize, true, state.floatingFilterData);
           }
         } else {
-          getDataList("", 0, "", "", 0, defaultPageSize, true, state.floatingFilterData);
+          // getDataList("", 0, "", "", 0, defaultPageSize, true, state.floatingFilterData);
         }
       } else {
         setState((prevState) => ({ ...prevState, isLoader: false }));

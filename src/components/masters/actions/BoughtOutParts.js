@@ -52,12 +52,6 @@ export function createBOP(data, callback) {
 export function getBOPDataList(data, skip, take, isPagination, obj, isImport, callback) {
   return (dispatch) => {
     // dispatch({ type: API_REQUEST});
-    if (isPagination === true) {
-      dispatch({
-        type: GET_BOP_DOMESTIC_DATA_LIST,
-        payload: undefined,
-      });
-    }
     const queryParams = encodeQueryParamsAndLog({
       bop_for: data.bop_for,
       NetCost: obj.NetLandedCost !== undefined ? obj.NetLandedCost : "",
@@ -348,8 +342,8 @@ export function getInitialFilterData(boughtOutPartNumber, callback) {
  * @description get all BOP SOB Data list.
  */
 export function getManageBOPSOBDataList(data, callback) {
-  
-    return (dispatch) => {
+
+  return (dispatch) => {
     dispatch({ type: API_REQUEST });
     // const queryParams = `bought_out_part_id=${data.bought_out_part_id}&plant_id=${data.plant_id}`;
     const queryParams = new URLSearchParams({

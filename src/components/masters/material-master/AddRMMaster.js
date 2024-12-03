@@ -30,6 +30,7 @@ import AddIndexationMaterialListing from "./AddIndexationMaterialListing"
 import HeaderTitle from "../../common/HeaderTitle";
 import { getRawMaterialDataBySourceVendor, setCommodityDetails, setOtherCostDetails } from "../actions/Indexation";
 import { useLabels } from "../../../helper/core";
+import { useQueryClient } from "react-query";
 
 function AddRMMaster(props) {
     const { data, EditAccessibilityRMANDGRADE, AddAccessibilityRMANDGRADE } = props
@@ -72,6 +73,7 @@ function AddRMMaster(props) {
     const isViewFlag = data?.isViewFlag === true ? true : false
     const rawMaterailDetails = useSelector((state) => state.material.rawMaterailDetails)
     const exchangeRateDetails = useSelector((state) => state.material.exchangeRateDetails)
+    const queryClient = useQueryClient();
 
     const { commodityDetailsArray } = useSelector((state) => state.indexation)
     const { otherCostDetailsArray } = useSelector((state) => state.indexation)
@@ -326,6 +328,7 @@ function AddRMMaster(props) {
             if (res?.data?.Result) {
                 Toaster.success(successMessage);
                 cancel('submit');
+                queryClient.invalidateQueries('MastersRawMaterial_GetAllRawMaterialList');
             }
         }));
     };

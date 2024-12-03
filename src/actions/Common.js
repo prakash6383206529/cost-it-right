@@ -77,6 +77,10 @@ import {
 import { apiErrors, encodeQueryParamsAndLog } from '../helper/util';
 import { MESSAGES } from '../config/message';
 import Toaster from '../components/common/Toaster';
+import { useDispatch } from 'react-redux';
+import { useQuery } from 'react-query';
+import { getAllRMDataList, getMaterialTypeDataListAPI, getRMSpecificationDataList } from '../components/masters/actions/Material';
+import { getBOPDataList } from '../components/masters/actions/BoughtOutParts';
 
 // const config() = config;
 
@@ -1937,4 +1941,63 @@ export function getTaxCodeSelectList(callback) {
       apiErrors(error);
     });
   };
+}
+
+const rmAPICalling = (params, dispatch) => {
+  const { tabs } = params;
+  switch (tabs?.trim()) {
+    case "Domestic":
+    case "Import":
+      dispatch(getAllRMDataList(params?.data, params?.skip, params?.take, params?.isPagination, params?.obj, params?.isImport, () => { }))
+      break;
+    case "Specification":
+      dispatch(getRMSpecificationDataList(params?.data, () => { }))
+      break;
+    case "Material":
+      dispatch(getMaterialTypeDataListAPI(() => { }))
+      break;
+    default:
+      break;
+  }
+}
+
+const bopAPICalling = (params, dispatch) => {
+  const { tabs } = params;
+  switch (tabs?.trim()) {
+    case "Domestic":
+    case "Import":
+      dispatch(getBOPDataList(params, params?.skip, params?.take, params?.isPagination, params, params?.isImport, (res) => { }))
+      break;
+    case "Specification":
+      dispatch(getRMSpecificationDataList(params?.data, () => { }))
+      break;
+    case "Material":
+      dispatch(getMaterialTypeDataListAPI(() => { }))
+      break;
+    default:
+      break;
+  }
+}
+
+export const apiCallingFunction = (params, dispatch) => {
+  const { master } = params;
+  switch (master?.trim()) {
+    case "RawMaterial":
+      rmAPICalling(params, dispatch)
+      break;
+    case "BoughtOutPart":
+      bopAPICalling(params, dispatch)
+      break;
+    default:
+      break;
+  }
+}
+
+export function useFetchAPICall(keyName, params = {}) {
+  const dispatch = useDispatch();
+  return useQuery([[keyName], params], () => apiCallingFunction(params, dispatch), {
+    staleTime: Infinity,
+    onSuccess: (data) => {
+    }
+  });
 }

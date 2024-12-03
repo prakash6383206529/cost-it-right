@@ -24,6 +24,7 @@ import Button from '../../layout/Button';
 import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from './TourMessages';
 import { withTranslation } from 'react-i18next'
+import { QueryClient, QueryClientProvider } from 'react-query';
 
 class AddSpecification extends Component {
   constructor(props) {
@@ -123,6 +124,7 @@ class AddSpecification extends Component {
       // }
     }
   }
+
 
   /**
   * @method handleRawMaterial
@@ -380,6 +382,7 @@ class AddSpecification extends Component {
   onSubmit = debounce((values) => {
     const { RawMaterial, material, RMGrade, DataToChange, DropdownChanged } = this.state;
     const { ID, isEditFlag } = this.props;
+    const queryClient = new QueryClient();
 
     if (isEditFlag) {
       if (DataToChange.Specification === values.Specification && DropdownChanged) {
@@ -404,6 +407,7 @@ class AddSpecification extends Component {
       this.props.updateRMSpecificationAPI(formData, (res) => {
         this.setState({ setDisable: false })
         if (res?.data?.Result) {
+          queryClient.invalidateQueries('MastersRawMaterial_GetAllRawMaterialSpecifications');
           Toaster.success(MESSAGES.SPECIFICATION_UPDATE_SUCCESS);
           this.toggleDrawer('', '', 'submit')
         }
@@ -422,6 +426,7 @@ class AddSpecification extends Component {
       this.props.createRMSpecificationAPI(formData, (res) => {
         this.setState({ setDisable: false })
         if (res?.data?.Result) {
+          queryClient.invalidateQueries('MastersRawMaterial_GetAllRawMaterialSpecifications');
           Toaster.success(MESSAGES.SPECIFICATION_ADD_SUCCESS);
           this.toggleDrawer('', formData, 'submit')
         }

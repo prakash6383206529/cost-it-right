@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Row, Col } from "reactstrap";
 import AddMaterialType from "./AddMaterialType";
@@ -27,6 +27,7 @@ import { useRef } from "react";
 import TourWrapper from "../../common/Tour/TourWrapper";
 import { Steps } from "../../common/Tour/TourMessages";
 import { useTranslation } from "react-i18next";
+import { useFetchAPICall } from "../../../actions/Common";
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -52,14 +53,26 @@ const RMListing = (props) => {
     selectedRowData: false,
     noData: false,
     dataCount: 0,
-    render: false,
+    render: true,
     showExtraData: false,
     isViewFlag: false
   });
-  useEffect(() => {
-    getListData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
+  const params = useMemo(() => {
+    return {
+      data: {},
+      master: 'RawMaterial',
+      tabs: 'Material'
+    }
   }, []);
+
+  const { isLoading, isError, error, data } = useFetchAPICall('MastersRawMaterial_GetAllMaterialType', params);
+
+  useEffect(() => {
+    if (rawMaterialTypeDataList?.length > 0) {
+      setState((prev) => ({ ...prev, render: false }));
+    }
+  }, [rawMaterialTypeDataList]);
 
   /**+-
    * @method getListData
@@ -294,6 +307,7 @@ const RMListing = (props) => {
    * @description Resets the state
    */
   const resetState = () => {
+    getListData();
     state.gridApi.setQuickFilter(null)
     state.gridApi.deselectAll();
     gridOptions.columnApi.resetColumnState();

@@ -26,7 +26,7 @@ import Button from "../../layout/Button";
 import TourWrapper from "../../common/Tour/TourWrapper";
 import { Steps } from "../../common/Tour/TourMessages";
 import { useTranslation } from "react-i18next";
-import { TourStartAction } from "../../../actions/Common";
+import { TourStartAction, useFetchAPICall } from "../../../actions/Common";
 
 const gridOptions = {};
 const ExcelFile = ReactExport.ExcelFile;
@@ -55,7 +55,7 @@ const SpecificationListing = (props) => {
     showPopup: false,
     showPopup2: false,
     deletedId: "",
-    isLoader: false,
+    isLoader: true,
     selectedRowData: false,
     noData: false,
     dataCount: 0,
@@ -63,10 +63,15 @@ const SpecificationListing = (props) => {
     isAssociate: false
   });
 
-  useEffect(() => {
-    getSpecificationListData("", "");
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  const params = useMemo(() => {
+    return {
+      data: { MaterialId: '', GradeId: '', },
+      master: 'RawMaterial',
+      tabs: 'Specification'
+    }
   }, []);
+
+  const { isLoading, isError, error, data } = useFetchAPICall('MastersRawMaterial_GetAllRawMaterialSpecifications', params);
 
   const getSpecificationListData = useCallback(
     (materialId = "", gradeId = "") => {
@@ -95,6 +100,12 @@ const SpecificationListing = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
+
+  useEffect(() => {
+    if (rmSpecificationList?.length > 0) {
+      setState((prev) => ({ ...prev, isLoader: false }));
+    }
+  }, [rmSpecificationList]);
 
   const closeDrawer = useCallback(
     (e = "", data, type) => {
@@ -320,6 +331,7 @@ const SpecificationListing = (props) => {
   };
 
   const resetState = () => {
+    getSpecificationListData("", "");
     state.gridApi.setQuickFilter(null)
     state.gridApi.deselectAll();
     gridOptions.columnApi.resetColumnState(null);

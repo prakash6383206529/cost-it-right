@@ -49,6 +49,7 @@ import { debounce } from 'lodash';
 import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from './TourMessages';
 import { withTranslation } from 'react-i18next'
+import { useQueryClient } from 'react-query';
 
 const selector = formValueSelector('AddRMDomestic')
 
@@ -1327,6 +1328,7 @@ class AddRMDomestic extends Component {
       FinalBasicRateBaseCurrency, showScrapKeys, IsApplyHasDifferentUOM, ScrapRateUOM, ConversionRatio, CalculatedFactor, ScrapRatePerScrapUOM } = this.state
 
     const { isRMAssociated, fieldsObj } = this.props
+    const queryClient = useQueryClient();
 
     let scrapRateBaseCurrency = ''
     let jaliRateBaseCurrency = ''
@@ -1492,6 +1494,7 @@ class AddRMDomestic extends Component {
         this.props.updateRMAPI(formData, (res) => {
           this.setState({ setDisable: false })
           if (res?.data?.Result) {
+            queryClient.invalidateQueries('MastersRawMaterial_GetAllRawMaterialList');
             Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
             this.clearForm('submit')
           }
@@ -1501,6 +1504,7 @@ class AddRMDomestic extends Component {
         this.props.createRM(formData, (res) => {
           this.setState({ setDisable: false })
           if (res?.data?.Result) {
+            queryClient.invalidateQueries('MastersRawMaterial_GetAllRawMaterialList');
             Toaster.success(MESSAGES.MATERIAL_ADD_SUCCESS)
             this.clearForm('submit')
             this.cancel('submit')
