@@ -97,7 +97,7 @@ export function TokenAPI(requestData, callback) {
             Audiance: requestData.audiance
         };
 
-        
+
         // Fetch the public IP from a service (if necessary).
         // axios.get('https://api.ipify.org?format=json')
         //     .then(response => {
