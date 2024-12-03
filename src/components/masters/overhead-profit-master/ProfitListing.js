@@ -782,7 +782,7 @@ function ProfitListing(props) {
                                             <AgGridColumn field="ModelType" headerName="Model Type"></AgGridColumn>
                                             <AgGridColumn field="ProfitApplicabilityType" headerName="Profit Applicability" floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterProfit}></AgGridColumn>
                                             <AgGridColumn field="ProfitPercentage" headerName="Profit Applicability (%)" cellRenderer={'hyphenFormatter'} ></AgGridColumn>
-                                            <AgGridColumn field="ProfitRMPercentage" headerName="Profit on RM (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                            <AgGridColumn field="ProfitRMPercentage" headerName="Profit on RM/ Part Cost (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                             <AgGridColumn field="ProfitBOPPercentage" headerName={`Profit on ${showBopLabel()} (%)`} cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                             <AgGridColumn field="ProfitMachiningCCPercentage" headerName="Profit on CC (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                             <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>

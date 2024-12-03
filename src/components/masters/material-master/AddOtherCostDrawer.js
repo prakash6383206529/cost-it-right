@@ -350,8 +350,7 @@ function AddOtherCostDrawer(props) {
         const remark = getValues('Remark');
         const costDescription = getValues('CostDescription');
 
-        // If 'Type' is not provided, return false
-        if (!type || !cost || !remark || !costDescription) { Toaster.warning('Please enter all mandatory details to add a row.'); return false };
+
         if (type.label === "Percentage") {
             // If 'Type' is 'percentage', check for 'Applicability' and 'Percentage'
             if (!applicability || !applicabilityBaseCost || !percentage || percentage === 0) {
@@ -490,7 +489,7 @@ function AddOtherCostDrawer(props) {
                                     </div>
                                 </Col>
                             </Row>
-                            <form onSubmit={handleSubmit(onSubmit)}>
+                            <form noValidate onSubmit={handleSubmit(onSubmit)}>
                                 <div className='hidepage-size'>
 
                                     <Row>
@@ -503,6 +502,7 @@ function AddOtherCostDrawer(props) {
                                                 control={control}
                                                 register={register}
                                                 mandatory={true}
+                                                rules={{ required: true }}
                                                 // options={conditionDropdown}
                                                 options={state.costDropdown}
 
@@ -510,7 +510,7 @@ function AddOtherCostDrawer(props) {
                                                 defaultValue={''}
                                                 className=""
                                                 customClassName={'withBorder'}
-                                                errors={errors.Condition}
+                                                errors={errors.Cost}
                                                 disabled={props.ViewMode || isEditMode}
                                             />
                                         </Col>
@@ -524,14 +524,12 @@ function AddOtherCostDrawer(props) {
                                                 mandatory={true}
                                                 rules={{
                                                     required: true,
-                                                    validate: { checkWhiteSpaces, hashValidation },
-                                                    maxLength: 80
                                                 }}
                                                 handleChange={() => { }}
                                                 defaultValue={""}
                                                 className=""
                                                 customClassName={"withBorder"}
-                                                errors={errors.OtherCostDescription}
+                                                errors={errors.CostDescription}
                                                 disabled={props.ViewMode}
                                             />
                                         </Col>
@@ -540,7 +538,7 @@ function AddOtherCostDrawer(props) {
                                                 label={`Type`}
                                                 name={'Type'}
                                                 placeholder={'Select'}
-
+                                                rules={{ required: true, }}
                                                 Controller={Controller}
                                                 control={control}
                                                 register={register}
@@ -568,6 +566,7 @@ function AddOtherCostDrawer(props) {
                                                         control={control}
                                                         register={register}
                                                         mandatory={true}
+                                                        rules={{ required: true, }}
                                                         // options={conditionDropdown}
                                                         options={combinations}
                                                         handleChange={applicabilityChange}
@@ -712,15 +711,15 @@ function AddOtherCostDrawer(props) {
                                                 defaultValue={""}
                                                 className=""
                                                 customClassName={"withBorder"}
-                                                errors={errors.OtherCostDescription}
+                                                errors={errors.Remark}
                                                 disabled={props.ViewMode}
                                             />
                                         </Col>
                                         <Col md="3" className={toggleCondition()}>
                                             <button
-                                                type="button"
+                                                type="submit"
                                                 className={"user-btn  pull-left mt-1"}
-                                                onClick={addData}
+                                                // onClick={addData}
                                                 disabled={props.ViewMode}
                                             >
                                                 {isEditMode ? "" : <div className={"plus"}></div>} {isEditMode ? "UPDATE" : 'ADD'}

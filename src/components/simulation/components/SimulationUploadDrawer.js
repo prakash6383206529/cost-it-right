@@ -15,6 +15,7 @@ import { COMBINED_PROCESS, BOPDOMESTIC, BOPIMPORT, MACHINERATE, OPERATIONS, RMDO
 import { BoughtOutPartDomesticFileHeads, BoughtOutPartImportFileHeads, CombinedProcessFileHeads, MachineRateFileHeads, OperationFileHeads, RawMaterialDomesticFileHeads, RawMaterialImportFileHeads } from '../../../config/masterData';
 import TooltipCustom from '../../common/Tooltip';
 import LoaderCustom from '../../common/LoaderCustom';
+import { validateForm } from '../../layout/FormInputs';
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -577,6 +578,7 @@ export default connect(mapStateToProps,
         bulkUploadCosting
     })(reduxForm({
         form: 'SimulationUploadDrawer',
+        validate: validateForm,
         enableReinitialize: true,
         touchOnChange: true
     })(SimulationUploadDrawer));

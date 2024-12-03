@@ -1678,3 +1678,9 @@ export const getLocalizedCostingHeadValue = (cellValue, vendorBasedLabel, zeroBa
   }
   return cellValue;
 };
+// export const frameBreaker = () => {
+//   // Ensure window runs in top-level
+//   if (window.self !== window.top) {
+//     window.top.location = window.self.location;
+//   }
+// };

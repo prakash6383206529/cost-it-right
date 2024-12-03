@@ -1,4 +1,4 @@
-import React, { Fragment, useState, useEffect } from 'react'
+import React, { Fragment, useState, useEffect, useRef } from 'react'
 import { Row, Col } from 'reactstrap'
 import { useForm, Controller, } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
@@ -6,11 +6,11 @@ import Toaster from '../../../common/Toaster'
 import Drawer from '@material-ui/core/Drawer'
 import { SearchableSelectHookForm, TextAreaHookForm, DatePickerHookForm, NumberFieldHookForm, AllApprovalField, } from '../../../layout/HookFormInputs'
 import { getReasonSelectList, getAllApprovalDepartment, getAllApprovalUserFilterByDepartment, sendForApprovalBySender, approvalRequestByApprove } from '../../actions/Approval'
-import { getConfigurationKey, handleDepartmentHeader, loggedInUserId, userDetails } from '../../../../helper/auth'
+import { getConfigurationKey, handleDepartmentHeader, loggedInUserId, showApprovalDropdown, userDetails } from '../../../../helper/auth'
 import { setCostingApprovalData, setCostingViewData, fileUploadCosting, checkFinalUser, getReleaseStrategyApprovalDetails } from '../../actions/Costing'
 import { getVolumeDataByPartAndYear, checkRegularizationLimit } from '../../../masters/actions/Volume'
 
-import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, userTechnologyLevelDetails } from '../../../../helper'
+import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, userTechnologyLevelDetails, validateFileName } from '../../../../helper'
 import DayTime from '../../../common/DayTimeWrapper'
 import WarningMessage from '../../../common/WarningMessage'
 import DatePicker from "react-datepicker";
@@ -32,9 +32,11 @@ import { getEffectiveDateMaxDate, transformApprovalItem } from '../../../common/
 import { checkSAPPoPrice } from '../../../simulation/actions/Simulation'
 import SAPApproval from '../../../SAPApproval'
 import { useLabels } from '../../../../helper/core'
+import { AttachmentValidationInfo } from '../../../../config/message'
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 const SendForApproval = (props) => {
+  const dropzone = useRef(null);
   const { isApprovalisting, selectedRows, mandatoryRemark, dataSelected, callSapCheckAPI } = props
   const dispatch = useDispatch()
   const { register, handleSubmit, control, setValue, getValues, formState: { errors } } = useForm({
@@ -904,6 +906,17 @@ const SendForApproval = (props) => {
     }
   }
 
+  /**
+  * @method setDisableFalseFunction
+  * @description setDisableFalseFunction
+  */
+  const setDisableFalseFunction = () => {
+    const loop = checkForNull(dropzone.current.files.length) - checkForNull(files.length)
+    if (checkForNull(loop) === 1 || checkForNull(dropzone.current.files.length) === checkForNull(files.length)) {
+      setIsDisable(false)
+    }
+  }
+
   const handleChangeQuantity = (e) => {
     checkQuantityLimitValue(e?.target?.value, isRegularize)
   };
@@ -941,7 +954,17 @@ const SendForApproval = (props) => {
     if (status === "done") {
       let data = new FormData();
       data.append("file", file);
+      if (!validateFileName(file.name)) {
+        dropzone.current.files.pop()
+        setDisableFalseFunction()
+        return false;
+      }
       dispatch(fileUploadCosting(data, (res) => {
+        if (res && res?.status !== 200) {
+          this.dropzone.current.files.pop()
+          setAttachmentLoader(false)
+          return false
+        }
         let Data = res.data[0];
         files.push(Data);
         setFiles(files);
@@ -950,8 +973,20 @@ const SendForApproval = (props) => {
       }));
     }
 
-    if (status === "rejected_file_type") {
-      Toaster.warning("Allowed only xls, doc, jpeg, pdf files.");
+    if (status === 'rejected_file_type') {
+      Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
+    } else if (status === 'error_file_size') {
+      setDisableFalseFunction()
+      setAttachmentLoader(false)
+      dropzone.current.files.pop()
+      Toaster.warning("File size greater than 20 mb not allowed")
+    } else if (status === 'error_validation'
+      || status === 'error_upload_params' || status === 'exception_upload'
+      || status === 'aborted' || status === 'error_upload') {
+      setDisableFalseFunction()
+      setAttachmentLoader(false)
+      dropzone.current.files.pop()
+      Toaster.warning("Something went wrong")
     }
   };
   const viewImpactDrawer = () => {
@@ -975,6 +1010,9 @@ const SendForApproval = (props) => {
       setFiles(tempArr);
       setAttachmentLoader(false)
       setIsOpen(!IsOpen);
+    }
+    if (dropzone?.current !== null) {
+      dropzone.current.files.pop()
     }
   };
 
@@ -1307,7 +1345,7 @@ const SendForApproval = (props) => {
                           register={register}
                           defaultValue={""}
                           options={renderDropdownListing("Dept")}
-                          disabled={disableRS || ((initialConfiguration.IsReleaseStrategyConfigured && Object.keys(approvalType)?.length === 0)) || disableDept}
+                          disabled={disableRS || (((initialConfiguration.IsReleaseStrategyConfigured && Object.keys(approvalType)?.length === 0) || disableDept) && !showApprovalDropdown())}
                           mandatory={true}
                           handleChange={handleDepartmentChange}
                           errors={errors.dept}
@@ -1349,7 +1387,7 @@ const SendForApproval = (props) => {
                             defaultValue={""}
                             options={approvalDropDown}
                             mandatory={true}
-                            disabled={disableRS || !(userData.Department.length > 1)}
+                            disabled={disableRS || (!(userData.Department.length > 1) && !showApprovalDropdown())}
                             customClassName={"mb-0 approver-wrapper"}
                             handleChange={handleApproverChange}
                             errors={errors.approver}
@@ -1458,13 +1496,14 @@ const SendForApproval = (props) => {
                   isRegularize ? (
                     <Row className="mb-4 mx-0">
                       <Col md="6" className="height152-label">
-                        <label>Upload Attachment (upload up to 4 files)</label>
+                        <label>Upload Attachment (upload up to 4 files)<AttachmentValidationInfo /></label>
                         {files && files.length >= 4 ? (
                           <div class="alert alert-danger" role="alert">
                             Maximum file upload limit reached.
                           </div>
                         ) : (
                           <Dropzone
+                            ref={dropzone}
                             onChangeStatus={handleChangeStatus}
                             PreviewComponent={Preview}
                             mandatory={true}
@@ -1581,6 +1620,7 @@ const SendForApproval = (props) => {
                 CostingTypeId={viewApprovalData[0]?.costingTypeId}
                 approvalSummaryTrue={true}
                 costingIdArray={costingIdArray}
+                isCosting={true}
               />
             }
           </div >

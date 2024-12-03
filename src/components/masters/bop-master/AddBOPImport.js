@@ -4,16 +4,17 @@ import { Field, reduxForm, formValueSelector, clearFields } from "redux-form";
 import { Row, Col, Label, } from 'reactstrap';
 import {
   required, checkForNull, checkForDecimalAndNull, acceptAllExceptSingleSpecialCharacter, maxLength20,
-  maxLength10, positiveAndDecimalNumber, maxLength512, decimalLengthsix, checkWhiteSpaces, checkSpacesInString, maxLength80, number, postiveNumber, hashValidation
+  maxLength10, positiveAndDecimalNumber, maxLength512, decimalLengthsix, checkWhiteSpaces, checkSpacesInString, maxLength80, number, postiveNumber, hashValidation,
+  validateFileName
 } from "../../../helper/validation";
-import { renderText, searchableSelect, renderTextAreaField, renderDatePicker, renderTextInputField, focusOnError } from "../../layout/FormInputs";
+import { renderText, searchableSelect, renderTextAreaField, renderDatePicker, renderTextInputField, focusOnError, validateForm } from "../../layout/FormInputs";
 import { getPlantBySupplier, getUOMSelectList, getCurrencySelectList, getPlantSelectListByType, getAllCity, getVendorNameByVendorSelectList, getCityByCountryAction } from '../../../actions/Common';
 import {
   createBOP, updateBOP, getBOPCategorySelectList, getBOPImportById,
   fileUploadBOPDomestic, getIncoTermSelectList, getPaymentTermSelectList, checkAndGetBopPartNo
 } from '../actions/BoughtOutParts';
 import Toaster from '../../common/Toaster';
-import { MESSAGES } from '../../../config/message';
+import { AttachmentValidationInfo, MESSAGES } from '../../../config/message';
 import { getConfigurationKey, IsFetchExchangeRateVendorWise, loggedInUserId, showBopLabel, userDetails } from "../../../helper/auth";
 import "react-datepicker/dist/react-datepicker.css";
 import Dropzone from 'react-dropzone-uploader';
@@ -840,7 +841,7 @@ class AddBOPImport extends Component {
    */
   handleMessageChange = (e) => {
     this.setState({
-      remarks: e.target.value,
+      remarks: e?.target?.value,
       isSourceChange: true
     })
   }
@@ -1075,7 +1076,17 @@ class AddBOPImport extends Component {
     if (status === 'done') {
       let data = new FormData()
       data.append('file', file)
+      if (!validateFileName(file.name)) {
+        this.dropzone.current.files.pop()
+        this.setDisableFalseFunction()
+        return false;
+      }
       this.props.fileUploadBOPDomestic(data, (res) => {
+        if (res && res?.status !== 200) {
+          this.dropzone.current.files.pop()
+          this.setDisableFalseFunction()
+          return false
+        }
         this.setDisableFalseFunction()
         let Data = res.data[0]
         const { files } = this.state;
@@ -2148,7 +2159,7 @@ class AddBOPImport extends Component {
                           </Col>
                           <Col md="3">
                             <label>
-                              Upload Files (upload up to {getConfigurationKey().MaxMasterFilesToUpload} files)
+                              Upload Files (upload up to {getConfigurationKey().MaxMasterFilesToUpload} files)<AttachmentValidationInfo />
                             </label>
                             <div className={`alert alert-danger mt-2 ${this.state.files.length === getConfigurationKey().MaxMasterFilesToUpload ? '' : 'd-none'}`} role="alert">
                               Maximum file upload limit reached.
@@ -2421,6 +2432,7 @@ export default connect(mapStateToProps, {
   checkAndGetBopPartNo
 })(reduxForm({
   form: 'AddBOPImport',
+  validate: validateForm,
   touchOnChange: true,
   onSubmitFail: (errors) => {
     focusOnError(errors)

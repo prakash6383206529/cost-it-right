@@ -4,7 +4,7 @@ import Toaster from "../common/Toaster";
 import { connect } from "react-redux";
 import { Loader } from "../common/Loader";
 import { required, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, checkSpacesInString, excludeOnlySpecialCharacter, maxLength50, hashValidation, maxLength75, getNameBySplitting, getCodeBySplitting } from "../../helper/validation";
-import { focusOnError, renderText, renderMultiSelectField } from "../layout/FormInputs";
+import { focusOnError, renderText, renderMultiSelectField, validateForm } from "../layout/FormInputs";
 
 import { addDepartmentAPI, getDepartmentAPI, setEmptyDepartmentAPI, updateDepartmentAPI, addCompanyAPI, updateCompanyAPI, addDivisionAPI, updateDivisionAPI, getDivisionAPI, getDivisionListAPI } from "../../actions/auth/AuthActions";
 import { MESSAGES } from "../../config/message";
@@ -544,6 +544,7 @@ export default connect(mapStateToProps, {
 	getDivisionListAPI
 })(reduxForm({
 	form: 'Department',
+	validate: validateForm,
 	enableReinitialize: true,
 	touchOnChange: true,
 	onSubmitFail: errors => {

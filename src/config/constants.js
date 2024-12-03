@@ -1219,6 +1219,8 @@ export const API = {
   rfqSaveBestCosting: `${BASE_URL}/rfq-costing/rfq-save-best-costing`,
   getAssemblyChildpart: `${BASE_URL}/rfq-quotation/get-assembly-child-part`,
   getRfqPartDetails: `${BASE_URL}/rfq-quotation/get-quotation-part-detail`,
+  checkRmExistInRfq: `${BASE_URL}/rfq-quotation/rfq-check-exist-raw-matarial`,
+  checkBopExistInRfq: `${BASE_URL}/rfq-quotation/rfq-check-exist-bought-out-part`,
 
   //vendor management
   getVendorClassificationList: `${BASE_URL}/vendor/get-classifications-status`,
@@ -2278,7 +2280,7 @@ export const WIREFORMING = 'Wire Forming'
 export const ELECTRIC = 'Electric'
 export const ELECTRONICSNAME = 'Electronics'
 export const TOOLING = 'Tooling'
-
+export const COSTING_BULKUPLOAD = 'Costing Bulk Upload'
 export const COMBINED_PROCESS_NAME = 'Combined Process';          						//RE
 export const ZBC_COSTING = 'Costing - ZBC';
 export const VBC_COSTING = 'Costing - VBC';
@@ -2329,6 +2331,7 @@ export const BoughtOutPart = '3'
 export const Component = '2'
 export const Product = '4'
 export const ToolingId = '5'
+export const COMPONENTASSEMBLY = "componentAssembly"
 
 
 export const COSTING_PATH = '/costing'
@@ -3026,9 +3029,9 @@ export const BUDGETBULKUPLOAD = 'Budget'
 //added for OverheadProfit
 export const OVERHEADBULKUPLOAD = 'Overhead'
 export const PROFITBULKUPLOAD = 'Profit'
-export const ASSEMBLYORCOMPONENTSRFQ = "Assembly Or Components RFQ"
-export const BOUGHTOUTPARTSRFQ = "Bought Out Parts RFQ"
-export const RAWMATERIALSRFQ = "Raw Materials RFQ"
+export const ASSEMBLYORCOMPONENTSRFQ = "AssemblyOrComponentsRFQ"
+export const BOUGHTOUTPARTSRFQ = "BoughtOutPartsRFQ"
+export const RAWMATERIALSRFQ = "RawMaterialsRFQ"
 export const SAP_PUSH = "SAP Push"
 
 
@@ -3271,7 +3274,7 @@ export const RAWMATERIALCOST = 'Raw Material Other Cost'
 export const COSTINGCONDITIONCOST = 'Costing Condition Cost'
 
 //VERSION 
-export const VERSION = "V3.1.21";
+export const VERSION = "V3.1.24";
 
 
 

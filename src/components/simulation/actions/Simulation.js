@@ -642,9 +642,8 @@ export function uploadSimulationAttachment(data, callback) {
             .then((response) => {
                 callback(response)
             }).catch(error => {
-                callback(error.response)
                 dispatch({ type: API_FAILURE })
-                callback(error)
+                callback(error.toString())
             })
     }
 }

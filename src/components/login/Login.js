@@ -1,7 +1,7 @@
 
 import React, { Component } from "react";
 import { Field, formValueSelector, reduxForm } from "redux-form";
-import { renderPasswordInputField, renderEmailInputField, focusOnError, renderText } from "../layout/FormInputs";
+import { renderPasswordInputField, renderEmailInputField, focusOnError, renderText, validateForm } from "../layout/FormInputs";
 import { connect } from "react-redux";
 import { loginUserAPI, getMenuByUser, TokenAPI, forgetPassword } from "../../actions/auth/AuthActions";
 import { maxLength70, maxLength25, required, email } from "../../helper/validation";

@@ -4,13 +4,14 @@ import { Field, reduxForm, formValueSelector, clearFields } from "redux-form";
 import { Row, Col, Label, } from 'reactstrap';
 import {
   required, checkForNull, number, checkForDecimalAndNull, acceptAllExceptSingleSpecialCharacter, maxLength20,
-  maxLength, maxLength10, positiveAndDecimalNumber, maxLength512, maxLength80, checkWhiteSpaces, decimalLengthsix, checkSpacesInString, postiveNumber, hashValidation
+  maxLength, maxLength10, positiveAndDecimalNumber, maxLength512, maxLength80, checkWhiteSpaces, decimalLengthsix, checkSpacesInString, postiveNumber, hashValidation,
+  validateFileName,
 } from "../../../helper/validation";
-import { renderText, searchableSelect, renderTextAreaField, focusOnError, renderDatePicker, renderTextInputField } from "../../layout/FormInputs";
+import { renderText, searchableSelect, renderTextAreaField, focusOnError, renderDatePicker, renderTextInputField, validateForm } from "../../layout/FormInputs";
 import { getCityBySupplier, getPlantBySupplier, getUOMSelectList, getPlantSelectListByType, getAllCity, getVendorNameByVendorSelectList, getCityByCountryAction } from '../../../actions/Common';
 import { createBOP, updateBOP, getBOPCategorySelectList, getBOPDomesticById, fileUploadBOPDomestic, checkAndGetBopPartNo } from '../actions/BoughtOutParts';
 import Toaster from '../../common/Toaster';
-import { MESSAGES } from '../../../config/message';
+import { AttachmentValidationInfo, MESSAGES } from '../../../config/message';
 import { getConfigurationKey, loggedInUserId, showBopLabel, userDetails } from "../../../helper/auth";
 import "react-datepicker/dist/react-datepicker.css";
 import Dropzone from 'react-dropzone-uploader';
@@ -635,7 +636,7 @@ class AddBOPDomestic extends Component {
    */
   handleMessageChange = (e) => {
     this.setState({
-      remarks: e.target.value,
+      remarks: e?.target?.value,
       isSourceChange: true
     })
   }
@@ -765,6 +766,7 @@ class AddBOPDomestic extends Component {
   // called every time a file's `status` changes
   handleChangeStatus = ({ meta, file }, status) => {
     const { files, } = this.state;
+    const fileName = file.name
     this.setState({ uploadAttachements: false, setDisable: true, attachmentLoader: true })
 
     if (status === 'removed') {
@@ -776,7 +778,18 @@ class AddBOPDomestic extends Component {
     if (status === 'done') {
       let data = new FormData()
       data.append('file', file)
+      if (!validateFileName(fileName)) {
+        this.dropzone.current.files.pop()
+        this.setDisableFalseFunction()
+        return false;
+      }
+
       this.props.fileUploadBOPDomestic(data, (res) => {
+        if (res && res?.status !== 200) {
+          this.dropzone.current.files.pop()
+          this.setDisableFalseFunction()
+          return false
+        }
         this.setDisableFalseFunction()
         let Data = res.data[0]
         const { files } = this.state;
@@ -1742,7 +1755,7 @@ class AddBOPDomestic extends Component {
                           </Col>
                           <Col md="3">
                             <label>
-                              Upload Files (upload up to {getConfigurationKey().MaxMasterFilesToUpload} files)
+                              Upload Files (upload up to {getConfigurationKey().MaxMasterFilesToUpload} files) <AttachmentValidationInfo />
                             </label>
                             <div className={`alert alert-danger mt-2 ${this.state.files.length === getConfigurationKey().MaxMasterFilesToUpload ? '' : 'd-none'}`} role="alert">
                               Maximum file upload limit reached.
@@ -2016,6 +2029,7 @@ export default connect(mapStateToProps, {
 })(reduxForm({
   form: 'AddBOPDomestic',
   touchOnChange: true,
+  validate: validateForm,
   onSubmitFail: (errors) => {
     focusOnError(errors)
   },

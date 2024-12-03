@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import { Field, reduxForm, formValueSelector } from 'redux-form'
 import { Container, Row, Col } from 'reactstrap'
 import { acceptAllExceptSingleSpecialCharacter, checkSpacesInString, checkWhiteSpaces, hashValidation, maxLength80, required } from '../../../helper/validation'
-import { renderText } from '../../layout/FormInputs'
+import { renderText, validateForm } from '../../layout/FormInputs'
 import { getMachineSelectList } from '../actions/MachineMaster'
 import { getProcessCode, createProcess, updateProcess, getProcessData, } from '../actions/Process'
 import Toaster from '../../common/Toaster'
@@ -396,6 +396,7 @@ export default connect(mapStateToProps, {
 })(
   reduxForm({
     form: 'AddProcessDrawer',
+    validate: validateForm,
     enableReinitialize: true,
     touchOnChange: true,
   })(withTranslation(['MachineMaster'])(AddProcessDrawer)),

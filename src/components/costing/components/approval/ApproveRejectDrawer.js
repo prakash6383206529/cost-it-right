@@ -903,6 +903,12 @@ function ApproveRejectDrawer(props) {
       data.append('file', file)
       setIsDisable(true)
       dispatch(uploadSimulationAttachment(data, (res) => {
+        if (res?.includes("Error")) {
+          dropzone.current.files.pop()
+          setDisableFalseFunction()
+          setAttachmentLoader(false)
+          return false
+      }
         setDisableFalseFunction()
         let Data = res?.data[0]
         files.push(Data)

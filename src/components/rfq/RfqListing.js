@@ -71,9 +71,8 @@ function RfqListing(props) {
     const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false)
     const { globalTakes } = useSelector((state) => state.pagination);
     const [warningMessage, setWarningMessage] = useState(false)
-    const [disableDownload, setDisableDownload] = useState(false)
 
-    const [disableFilter, setDisableFilter] = useState(false)
+    const [disableFilter, setDisableFilter] = useState(true)
     const [remarkHistoryDrawer, setRemarkHistoryDrawer] = useState(false)
     const [remarkRowData, setRemarkRowData] = useState([])
     const [floatingFilterData, setFloatingFilterData] = useState({
@@ -275,24 +274,25 @@ function RfqListing(props) {
             skip: skip,
             take: take,
             // Add all filter parameters
-            quotationNumber: floatingFilterData.QuotationNumber || '',
-            partNumber: floatingFilterData.PartNumber || '',
-            rawMaterial: floatingFilterData.RawMaterial || '',
-            boughtOutPart: floatingFilterData.BoughtOutPart || '',
-            noOfQuotationReceived: floatingFilterData.NoOfQuotationReceived || '',
-            vendorCode: floatingFilterData.VendorName || '',
-            plantCode: floatingFilterData.PlantName || '',
+            quotationNumber: floatingFilterData?.QuotationNumber || '',
+            partNumber: floatingFilterData?.PartNumber || '',
+            rawMaterial: floatingFilterData?.RawMaterial || '',
+            boughtOutPart: floatingFilterData?.BoughtOutPart || '',
+            noOfQuotationReceived: floatingFilterData?.NoOfQuotationReceived || '',
+            vendorCode: floatingFilterData?.VendorName || '',
+            plantCode: floatingFilterData?.PlantName || '',
             technologyName: floatingFilterData.TechnologyName || '',
-            raisedBy: floatingFilterData.RaisedBy || '',
-            raisedOn: floatingFilterData.RaisedOn || '',
-            lastSubmissionDate: floatingFilterData.LastSubmissionDate || '',
-            visibilityMode: floatingFilterData.VisibilityMode || '',
-            visibilityDate: floatingFilterData.VisibilityDate || '',
-            visibilityDuration: floatingFilterData.VisibilityDuration || '',
-            status: floatingFilterData.Status || '',
-            partType: floatingFilterData.PartType || '',
+            raisedBy: floatingFilterData?.RaisedBy || '',
+            raisedOn: floatingFilterData?.RaisedOn || '',
+            lastSubmissionDate: floatingFilterData?.LastSubmissionDate || '',
+            visibilityMode: floatingFilterData?.VisibilityMode || '',
+            visibilityDate: floatingFilterData?.VisibilityDate || '',
+            visibilityDuration: floatingFilterData?.VisibilityDuration || '',
+            status: floatingFilterData?.Status || '',
+            partType: floatingFilterData?.PartType || '',
             partDataSentDate: floatingFilterData.PartDataSentDate || '',
-            notes: floatingFilterData.Remark || ''
+            notes: floatingFilterData?.Remark || '',
+            prNumber: floatingFilterData?.PRNumber || ''
         };
 
         const encodedQueryParams = encodeQueryParamsAndLog(queryParams);
@@ -351,12 +351,11 @@ function RfqListing(props) {
         const model = gridOptions?.api?.getFilterModel();
         setFilterModel(model);
 
-        // Show warning if filter changed but not applied
-        if (!isFilterButtonClicked) {
-            setWarningMessage(true);
-        }
 
-        // Handle filter changes
+    // Show warning when filter is being used but not yet applied
+    if (!isFilterButtonClicked) {
+        setWarningMessage(true);
+    }        // Handle filter changes
         if (value?.filterInstance?.appliedModel === null || 
             value?.filterInstance?.appliedModel?.filter === "") {
             // Clear the filter value
@@ -378,7 +377,7 @@ function RfqListing(props) {
                 // Handle non-date fields
                 setFloatingFilterData(prev => ({
                     ...prev,
-                    [value.column.colId]: value.filterInstance.appliedModel.filter
+                    [value.column.colId]: value?.filterInstance?.appliedModel?.filter
                 }));
             }
         }
@@ -394,11 +393,18 @@ function RfqListing(props) {
     const resetState = () => {
         setNoData(false)
         dispatch(agGridStatus("", ""))
-
+        gridOptions?.api?.setQuickFilter(null)
+        gridOptions?.api?.deselectAll();
         // setinRangeDate([])
-        setIsFilterButtonClicked(false)
+        
+        
+        if(!isFilterButtonClicked){
+
+            setWarningMessage(true)
+        }
         gridOptions?.columnApi?.resetColumnState(null);
         gridOptions?.api?.setFilterModel(null);
+        
 
         for (var prop in floatingFilterData) {
 
@@ -410,30 +416,24 @@ function RfqListing(props) {
                 floatingFilterData[prop] = ""
             }
         }
-
-        setFloatingFilterData(floatingFilterData)
-        setWarningMessage(false)
+        
+        
+        dispatch(updateCurrentRowIndex(0))
         dispatch(updatePageNumber(1))
-        // setPageNoNew(1)
-        dispatch(updateCurrentRowIndex(10))
-        getDataList(0, globalTakes, true)
-        dispatch(setSelectedRowForPagination([]))
+        getDataList(0, 10, true)
+        dispatch(resetStatePagination())
+        setFloatingFilterData(floatingFilterData)
+      
         dispatch(updateGlobalTake(10))
         dispatch(updatePageSize({ pageSize10: true, pageSize50: false, pageSize100: false }))
-        // setDataCount(0)
-        reactLocalStorage.setObject('selectedRow', {})
-        // if (isSimulation) {
-        //     props.isReset()
-        // }
+       
     }
 
     const onSearch = useCallback(() => {
         setNoData(false)
-        setWarningMessage(false)
         setIsFilterButtonClicked(true)
         dispatch(updatePageNumber(1))
         dispatch(updateCurrentRowIndex(10))
-        gridOptions?.columnApi?.resetColumnState();
         getDataList(0, globalTakes, true)
     }, [globalTakes, getDataList])
   
@@ -767,7 +767,7 @@ function RfqListing(props) {
                                                 <>
                                                     {(props?.isMasterSummaryDrawer === undefined || this.props?.isMasterSummaryDrawer === false) &&
                                                         <div className="warning-message d-flex align-items-center">
-                                                            {warningMessage && !disableDownload && (<><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>)}
+                                                            {warningMessage&& (<><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>)}
                                                         </div>
                                                     }
                                                     {

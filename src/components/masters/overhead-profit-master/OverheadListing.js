@@ -770,7 +770,7 @@ function OverheadListing(props) {
                                             <AgGridColumn field="ModelType" headerName="Model Type"></AgGridColumn>
                                             <AgGridColumn field="OverheadApplicabilityType" headerName="Overhead Applicability" floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterOverhead}></AgGridColumn>
                                             <AgGridColumn width={215} field="OverheadPercentage" headerName="Overhead Applicability (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                            <AgGridColumn field="OverheadRMPercentage" headerName="Overhead on RM (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                            <AgGridColumn field="OverheadRMPercentage" headerName="Overhead on RM/ Part Cost (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                             <AgGridColumn field="OverheadBOPPercentage" headerName={`Overhead on ${showBopLabel()} (%)`} cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                             <AgGridColumn field="OverheadMachiningCCPercentage" headerName="Overhead on CC (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                             <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>

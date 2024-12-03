@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
 import { required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, hashValidation, maxLength80 } from "../../../helper/validation";
-import { renderText, } from "../../layout/FormInputs";
+import { renderText, validateForm, } from "../../layout/FormInputs";
 import { createRMGradeAPI, getRMGradeDataAPI, updateRMGradeAPI, getMaterialTypeSelectList } from '../actions/Material';
 import { getRawMaterialSelectList } from '../../../actions/Common';
 import { createCommodityCustomName, createIndex, getCommodityInIndexDataListAPI, getCommodityIndexDataListAPI, updateIndex } from '../actions/Indexation';
@@ -293,6 +293,7 @@ export default connect(mapStateToProps,
     getCommodityIndexDataListAPI
   })(reduxForm({
     form: 'AddGrade',
+    validate: validateForm,
     enableReinitialize: true,
     touchOnChange: true
   })(AddGrade));

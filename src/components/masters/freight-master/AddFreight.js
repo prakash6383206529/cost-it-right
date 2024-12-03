@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import { Field, reduxForm, formValueSelector, clearFields } from "redux-form";
 import { Row, Col, Table, Label } from "reactstrap";
 import { required, checkForNull, maxLength10, checkForDecimalAndNull, number, decimalNumberLimit6, checkWhiteSpaces } from "../../../helper/validation";
-import { renderTextInputField, searchableSelect } from "../../layout/FormInputs";
+import { renderTextInputField, searchableSelect, validateForm } from "../../layout/FormInputs";
 import { fetchSupplierCityDataAPI, getAllCity, getVendorNameByVendorSelectList, getPlantSelectListByType, getCityByCountryAction } from "../../../actions/Common";
 import {
   createFreight, updateFright, getFreightData, getFreightModeSelectList, getFreigtFullTruckCapacitySelectList, getFreigtRateCriteriaSelectList,
@@ -90,8 +90,8 @@ class AddFreight extends Component {
     }
     if (!(this.props.data.isEditFlag || this.state.isViewMode)) {
       // this.props.getAllCity(cityId => {
-        // this.props.getCityByCountry(0, 0,'', () => { })
-        this.props.getClientSelectList(() => { })
+      // this.props.getCityByCountry(0, 0,'', () => { })
+      this.props.getClientSelectList(() => { })
       // })
     }
     this.props.getPlantSelectListByType(ZBC, "MASTER", '', () => { })
@@ -1384,6 +1384,7 @@ export default connect(mapStateToProps, {
 })(
   reduxForm({
     form: "AddFreight",
+    validate: validateForm,
     enableReinitialize: true,
     touchOnChange: true
   })(withTranslation(['FreightMaster', 'MasterLabels'])(AddFreight)),

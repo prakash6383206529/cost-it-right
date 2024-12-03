@@ -57,6 +57,7 @@ const Role = (props) => {
 					setModules(Data.Modules);
 					setIsEditFlag(true);
 					setIsNewRole(false);
+
 					setRoleId(data.RoleId);
 					setAccessibility(Data.IsDataAccessibleToAllRole);
 					childRef.current.getUpdatedData(Data.Modules);
@@ -292,10 +293,10 @@ const Role = (props) => {
 											{isLoader && <Loader />}
 											<PermissionsTabIndex
 												onRef={(ref) => (childRef.current = ref)}
-												isEditFlag={isEditFlag}
+												isEditFlag={props?.data?.isEditFlag}
 												setInitialModuleData={setInitialModuleData}
 												moduleData={moduleDataHandler}
-												isNewRole={isNewRole}
+												isNewRole={props?.data?.isNewRole}
 												refVariable={true}
 											/>
 										</div>
