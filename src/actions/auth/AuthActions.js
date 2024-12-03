@@ -151,48 +151,38 @@ export function TokenAPI(requestData, callback) {
 
 
 
-async function getLocalIPAddress() {
-    try {
-        const peerConnection = new RTCPeerConnection({ iceServers: [] });
-
-        return new Promise((resolve, reject) => {
-            const foundIPs = new Set();
-
-            peerConnection.createDataChannel('offline-check');
-
-            peerConnection.createOffer()
-                .then((offer) => peerConnection.setLocalDescription(offer))
-                .catch((err) => {
-                    console.error('Failed to create offer:', err);
-                    reject(new Error('Failed to create connection'));
-                });
-
-            const timeoutId = setTimeout(() => {
-                if (foundIPs.size > 0) {
-                    resolve([...foundIPs][0]); // Return the first found IP
-                } else {
-                    reject(new Error('No IP address detected within timeout.'));
-                }
-                peerConnection.close();
-            }, 3000); // Timeout after 3 seconds
-
-            peerConnection.addEventListener('icecandidate', (event) => {
-                if (event.candidate && event.candidate.candidate.includes('typ host')) {
-                    const candidateStr = event.candidate.candidate;
-                    const ipRegex = /(?:[0-9]{1,3}\.){3}[0-9]{1,3}/; // Match IPv4
-                    const ipMatch = candidateStr.match(ipRegex);
-                    if (ipMatch && ipMatch[0]) {
-                        foundIPs.add(ipMatch[0]);
-                    }
-                }
-            });
-        });
-    } catch (error) {
-        console.error('Error detecting IP:', error);
-        throw new Error('IP detection failed');
-    }
-}
-
+const getLocalIPAddress = () => {
+    return new Promise((resolve, reject) => {
+      try {
+        const pc = new RTCPeerConnection();
+        pc.createDataChannel('');
+  
+        // Set timeout for 5 seconds
+        const timeout = setTimeout(() => {
+          pc.close();
+          reject('IP detection timeout');
+        }, 5000);
+  
+        pc.onicecandidate = (e) => {
+          if (e.candidate) {
+            const ipMatch = e.candidate.candidate.match(/([0-9]{1,3}(\.[0-9]{1,3}){3})/);
+            if (ipMatch) {
+              clearTimeout(timeout);
+              pc.close();
+              resolve(ipMatch[0]);
+            }
+          }
+        };
+  
+        pc.createOffer()
+          .then(offer => pc.setLocalDescription(offer))
+          .catch(err => reject('Offer creation failed: ' + err));
+  
+      } catch (error) {
+        reject('IP detection failed: ' + error);
+      }
+    });
+  };
 
 
 
