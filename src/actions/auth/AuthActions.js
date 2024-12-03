@@ -120,33 +120,92 @@ export function TokenAPI(requestData, callback) {
         // });
     };
 }
-const getLocalIPAddress = async () => {
-    try {
-        const rtcConfig = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
-        const pc = new RTCPeerConnection(rtcConfig);
-        pc.createDataChannel('');
-        const offer = await pc.createOffer();
-        await pc.setLocalDescription(offer);
-        let resolved = false;
-        return new Promise((resolve) => {
-            pc.onicecandidate = async (event) => {
-                if (!resolved && event.candidate && event.candidate.candidate) {
-                    const ipRegex = /\b(?:[0-9]{1,3}\.){3}[0-9]{1,3}\b/;
-                    const match = event.candidate.candidate.match(ipRegex);
-                    if (match) {
-                        const localIP = match[0];
-                        resolve(localIP);
-                        resolved = true;
-                        pc.onicecandidate = null; // Unsubscribe from further ICE candidate events
-                    }
-                }
-            };
-        });
-    } catch (error) {
+// const getLocalIPAddress = async () => {
+//     try {
+//         const rtcConfig = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
+//         const pc = new RTCPeerConnection(rtcConfig);
+//         pc.createDataChannel('');
+//         const offer = await pc.createOffer();
+//         await pc.setLocalDescription(offer);
+//         let resolved = false;
+//         return new Promise((resolve) => {
+//             pc.onicecandidate = async (event) => {
+//                 if (!resolved && event.candidate && event.candidate.candidate) {
+//                     const ipRegex = /\b(?:[0-9]{1,3}\.){3}[0-9]{1,3}\b/;
+//                     const match = event.candidate.candidate.match(ipRegex);
+//                     if (match) {
+//                         const localIP = match[0];
+//                         resolve(localIP);
+//                         resolved = true;
+//                         pc.onicecandidate = null; // Unsubscribe from further ICE candidate events
+//                     }
+//                 }
+//             };
+//         });
+//     } catch (error) {
 
-        return null;
-    }
-};
+//         return null;
+//     }
+// };
+
+
+
+
+const getLocalIPAddress = () => {
+    return new Promise((resolve, reject) => {
+      try {
+        const pc = new RTCPeerConnection();
+        pc.createDataChannel('');
+  
+        // Set timeout for 5 seconds
+        const timeout = setTimeout(() => {
+          pc.close();
+          reject('IP detection timeout');
+        }, 5000);
+  
+        pc.onicecandidate = (e) => {
+          if (e.candidate) {
+            const ipMatch = e.candidate.candidate.match(/([0-9]{1,3}(\.[0-9]{1,3}){3})/);
+            if (ipMatch) {
+              clearTimeout(timeout);
+              pc.close();
+              resolve(ipMatch[0]);
+            }
+          }
+        };
+  
+        pc.createOffer()
+          .then(offer => pc.setLocalDescription(offer))
+          .catch(err => reject('Offer creation failed: ' + err));
+  
+      } catch (error) {
+        reject('IP detection failed: ' + error);
+      }
+    });
+  };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 export function AutoSignin(requestData, callback) {
     return (dispatch) => {
