@@ -1328,7 +1328,7 @@ class AddBOPImport extends Component {
         ((DataToChange?.Remark ? DataToChange?.Remark : '') === (values?.Remark ? values?.Remark : '')) &&
         ((DataToChange?.SAPPartNumber ? DataToChange?.SAPPartNumber : '') === (values?.SAPPartNumber ? values?.SAPPartNumber : ''))
         &&
-        ((DataToChange?.Source ? String(DataToChange?.Source) : '-') === (values?.Source ? String(values?.Source) : '-')) &&
+        ((DataToChange?.Source ? String(DataToChange?.Source) : ' ') === (values?.Source ? String(values?.Source) : '')) &&
         ((DataToChange?.SourceLocation ? String(DataToChange?.SourceLocation) : '') === (sourceLocation?.value ? String(sourceLocation?.value) : '')) &&
         checkForNull(basicPriceSelectedCurrency).toFixed(initialConfiguration?.NoOfDecimalForPrice) === checkForNull(DataToChange?.NetCostWithoutConditionCost).toFixed(initialConfiguration?.NoOfDecimalForPrice) &&
 
@@ -1360,7 +1360,7 @@ class AddBOPImport extends Component {
       if (((files ? JSON.stringify(files) : []) === (DataToChange?.Attachements ? JSON.stringify(DataToChange?.Attachements) : [])) &&
         ((DataToChange?.Remark ? DataToChange?.Remark : '') === (values?.Remark ? values?.Remark : '')) &&
         ((DataToChange?.SAPPartNumber ? DataToChange?.SAPPartNumber : '') !== (values?.SAPPartNumber ? values?.SAPPartNumber : '')) &&
-        ((DataToChange?.Source ? String(DataToChange?.Source) : '-') === (values?.Source ? String(values?.Source) : '-')) &&
+        ((DataToChange?.Source ? String(DataToChange?.Source) : '') === (values?.Source ? String(values?.Source) : '')) &&
         ((DataToChange?.SourceLocation ? String(DataToChange?.SourceLocation) : '') === (sourceLocation?.value ? String(sourceLocation?.value) : '')) &&
         checkForNull(basicPriceSelectedCurrency).toFixed(initialConfiguration?.NoOfDecimalForPrice) === checkForNull(DataToChange?.NetCostWithoutConditionCost).toFixed(initialConfiguration?.NoOfDecimalForPrice) &&
         checkForNull(fieldsObj?.NumberOfPieces).toFixed(initialConfiguration?.NoOfDecimalForPrice) === checkForNull(DataToChange?.NumberOfPieces).toFixed(initialConfiguration?.NoOfDecimalForPrice) &&
