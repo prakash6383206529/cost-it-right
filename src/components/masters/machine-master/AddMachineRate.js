@@ -1197,10 +1197,10 @@ class AddMachineRate extends Component {
         if (isEditFlag) {
 
           if (DropdownChange && (JSON.stringify(files) === JSON.stringify(DataToChange.Attachements)) &&
-            (DataToChange.Specification ? DataToChange.Specification : '-') === (values.Specification ? values.Specification : '-') &&
-            (DataToChange.MachineName ? DataToChange.MachineName : '-') === (values.MachineName ? values.MachineName : '-') &&
-            (DataToChange?.MachineTypeId ? String(DataToChange?.MachineTypeId) : '-') === (machineType?.value ? String(machineType?.value) : '-') &&
-            (DataToChange?.TonnageCapacity ? String(DataToChange?.TonnageCapacity) : '-') === (values?.TonnageCapacity ? String(values?.TonnageCapacity) : '-') &&
+            (DataToChange.Specification ? DataToChange.Specification : '') === (values.Specification ? values.Specification : '') &&
+            (DataToChange.MachineName ? DataToChange.MachineName : '') === (values.MachineName ? values.MachineName : '') &&
+            (DataToChange?.MachineTypeId ? String(DataToChange?.MachineTypeId) : '') === (machineType?.value ? String(machineType?.value) : '') &&
+            (DataToChange?.TonnageCapacity ? String(DataToChange?.TonnageCapacity) : '') === (values?.TonnageCapacity ? String(values?.TonnageCapacity) : '') &&
             DataToChange?.Remark === values?.Remark) {
             this.cancel('submit')
             return false
@@ -1277,10 +1277,10 @@ class AddMachineRate extends Component {
 
         if (isEditFlag) {
           if (DropdownChange && (JSON.stringify(files) === JSON.stringify(DataToChange.Attachements)) &&
-            (DataToChange.Specification ? DataToChange.Specification : '-') === (values.Specification ? values.Specification : '-') &&
-            (DataToChange.MachineName ? DataToChange.MachineName : '-') === (values.MachineName ? values.MachineName : '-') &&
-            (DataToChange?.MachineTypeId ? String(DataToChange?.MachineTypeId) : '-') === (machineType?.value ? String(machineType?.value) : '-') &&
-            (DataToChange?.TonnageCapacity ? String(DataToChange?.TonnageCapacity) : '-') === (values?.TonnageCapacity ? String(values?.TonnageCapacity) : '-') &&
+            (DataToChange.Specification ? DataToChange.Specification : '') === (values.Specification ? values.Specification : '') &&
+            (DataToChange.MachineName ? DataToChange.MachineName : '') === (values.MachineName ? values.MachineName : '') &&
+            (DataToChange?.MachineTypeId ? String(DataToChange?.MachineTypeId) : '') === (machineType?.value ? String(machineType?.value) : '') &&
+            (DataToChange?.TonnageCapacity ? String(DataToChange?.TonnageCapacity) : '') === (values?.TonnageCapacity ? String(values?.TonnageCapacity) : '') &&
             DataToChange?.Remark === values?.Remark) {
             Toaster.warning('Please change data to send machine for approval')
             return false
