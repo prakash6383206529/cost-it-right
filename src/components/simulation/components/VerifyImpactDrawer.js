@@ -171,7 +171,7 @@ function VerifyImpactDrawer(props) {
               }
               <Row className="mb-3 pr-0 mx-0">
                 <Col md="12">
-                  {fgWiseAcc && <ErrorMessage />}
+                  {fgWiseAcc && <ErrorMessage isGreen={true} />}
                 </Col>
 
                 <Col md="6"> <HeaderTitle title={'FG wise Impact:'} /></Col>
@@ -198,6 +198,8 @@ function VerifyImpactDrawer(props) {
                       isVerifyImpactDrawer={true}
                       fgWiseAccDisable={fgWiseAccDisable}
                       tooltipEffectiveDate={DayTime(amendmentDetails.EffectiveDate).format('DD-MM-YYYY')}
+                      isSimulation={props?.isSimulation}
+                      isCosting={props?.isCosting}
                     />
                   </Col>
                 </Row>

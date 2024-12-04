@@ -228,7 +228,7 @@ const BOPMaster = () => {
                   </NavLink>
                 </NavItem>
 
-             
+
                 <NavItem>
                   <NavLink
                     className={classnames({ active: state.activeTab === "3" })}
@@ -293,15 +293,6 @@ const BOPMaster = () => {
 
                   {Number(state.activeTab) === 3 && (
                     <TabPane tabId="3">
-                      <BOPManage
-                        displayForm={displayImportForm}
-                        getDetails={getImportDetails}
-
-                      />
-                    </TabPane>
-                  )}
-                  {Number(state.activeTab) === 4 && (
-                    <TabPane tabId="4">
                       <SOBListing
                         displayForm={displayImportForm}
                         getDetails={getImportDetails}
@@ -309,6 +300,17 @@ const BOPMaster = () => {
                       />
                     </TabPane>
                   )}
+
+                  {Number(state.activeTab) === 4 && (
+                    <TabPane tabId="4">
+                      <BOPManage
+                        displayForm={displayImportForm}
+                        getDetails={getImportDetails}
+
+                      />
+                    </TabPane>
+                  )}
+
 
                   {Number(state.activeTab) === 5 && (
                     <TabPane tabId="5">

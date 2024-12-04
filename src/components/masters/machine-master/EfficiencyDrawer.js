@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
 import { required, number, checkForNull } from "../../../helper/validation";
-import { renderText, } from "../../layout/FormInputs";
+import { renderText, validateForm, } from "../../layout/FormInputs";
 import Drawer from '@material-ui/core/Drawer';
 const selector = formValueSelector('EfficiencyDrawer');
 
@@ -180,6 +180,7 @@ export default connect(mapStateToProps, {
 
 })(reduxForm({
     form: 'EfficiencyDrawer',
+    validate: validateForm,
     enableReinitialize: true,
     touchOnChange: true
 })(EfficiencyDrawer));

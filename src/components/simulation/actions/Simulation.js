@@ -642,9 +642,8 @@ export function uploadSimulationAttachment(data, callback) {
             .then((response) => {
                 callback(response)
             }).catch(error => {
-                callback(error.response)
                 dispatch({ type: API_FAILURE })
-                callback(error)
+                callback(error.toString())
             })
     }
 }
@@ -1428,7 +1427,7 @@ export function setTokenForSimulation(value) {
 // START----> FOR SHOWING ERROR AND SUCCESS MESSAGE WITH BOX IN SIMULATION APPROVAL SUMMARY AND COSTING APPROVAL SUMMARY ****THIS IS THE DUMMY API CALL FOR CONSISTANCY IT WILL USE IN FUTURE
 export function getAmmendentStatus(params, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.getAmmendentStatus}?TokenNumber=${params?.TokenNumber}&CostingId=${params?.CostingId}`, config())
+        const request = axios.get(`${API.getAmmendentStatus}?simulationId=${params?.simulationId}&costingId=${params?.costingId}&rawMaterialId=${params?.rawMaterialId}&boughtOutPartId=${params?.boughtOutPartId}`, config())
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
                 dispatch({
@@ -1992,6 +1991,21 @@ export function getRMIndexationCostingSimulationListing(data, skip, take, isPagi
         }).catch((error) => {
             dispatch({ type: API_FAILURE, });
             callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+export function checkFinalLevelApproverForApproval(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.checkFinalLevelApproverForApproval, data, config());
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            callback(error);
+            dispatch({ type: API_FAILURE });
             apiErrors(error);
         });
     };

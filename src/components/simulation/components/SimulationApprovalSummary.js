@@ -1181,7 +1181,7 @@ function SimulationApprovalSummary(props) {
                 return vendorArray[0];
             default:
                 return <>
-                    <div className='view-all-wrapper word-nowrap'>{vendorArray[0]},<Popup trigger={<button id={`popUpTriggerProfit`} className="view-btn pl-1" type={'button'}><span>+{vendorArray?.length - 1}</span></button>}
+                    <div className='view-all-wrapper word-nowrap'>{vendorArray[0]}<Popup trigger={<button id={`popUpTriggerProfit`} className="view-btn" type={'button'}><span className="ml-1">+{vendorArray?.length - 1}</span></button>}
                         position="bottom center">
                         <ul className="px-1 view-all-list">
                             {vendorArray && vendorArray.map((item, index) => {
@@ -1201,7 +1201,7 @@ function SimulationApprovalSummary(props) {
                     <CalculatorWrapper />
                     {/* {!loader && <LoaderCustom />} */}
                     <div className={`container-fluid  smh-approval-summary-page ${!loader === true ? '' : ''}`} id="go-to-top">
-                        {getConfigurationKey()?.IsSAPConfigured && costingList[0]?.CostingId && <ErrorMessage isCosting={false} approvalNumber={approvalNumber} />}
+                        {getConfigurationKey()?.IsSAPConfigured && costingList[0]?.CostingId && <ErrorMessage module="Simulation" id={simulationDetail?.SimulationId} approvalNumber={approvalNumber} />}
                         <h2 className="heading-main">Approval Summary</h2>
                         <ScrollToTop pointProp={"go-to-top"} />
                         <Row>

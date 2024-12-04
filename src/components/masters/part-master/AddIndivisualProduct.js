@@ -4,7 +4,7 @@ import { Field, reduxForm } from "redux-form";
 import { Row, Col } from 'reactstrap';
 import { required, checkWhiteSpaces, alphaNumeric, acceptAllExceptSingleSpecialCharacter, maxLength20, maxLength80, maxLength512, checkSpacesInString, hashValidation } from "../../../helper/validation";
 import { loggedInUserId } from "../../../helper/auth";
-import { renderDatePicker, renderText, renderTextAreaField, } from "../../layout/FormInputs";
+import { renderDatePicker, renderText, renderTextAreaField, validateForm, } from "../../layout/FormInputs";
 import { createProduct, updateProduct, getProductData, fileUploadProduct, getPreFilledProductLevelValues, storeHierarchyData, getAllProductLevels, } from '../actions/Part';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
@@ -87,7 +87,7 @@ class AddIndivisualProduct extends Component {
 
                     this.props.change("EffectiveDate", DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
                     this.props.change("ProductGroupCode", Data.ProductGroupCode ?? '')
-                    Data?.LevelValueIdRef ? this.props.getPreFilledProductLevelValues(Data?.LevelValueIdRef, res => { }) : this.props.storeHierarchyData([])
+                    Data?.ProductHierarchyValueDetailsIdRef ? this.props.getPreFilledProductLevelValues(Data?.ProductHierarchyValueDetailsIdRef, res => { }) : this.props.storeHierarchyData([])
                     setTimeout(() => {
                         this.setState({
                             isEditFlag: true,
@@ -95,7 +95,7 @@ class AddIndivisualProduct extends Component {
                             effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
                             files: Data.Attachements,
                             isImpactCalculation: Data.IsConsideredForMBOM,
-                            ProductHierarachyValueId: Data.LevelValueIdRef,
+                            ProductHierarachyValueId: Data.ProductHierarchyValueDetailsIdRef,
                             ProductHierarachyLabel: Data.ProductGroupCode
                         }, () => this.setState({ isLoader: false }))
                         // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
@@ -283,7 +283,7 @@ class AddIndivisualProduct extends Component {
         const { ProductId, effectiveDate, isEditFlag, files, DropdownChanged, isImpactCalculation, DataToCheck, uploadAttachements, ProductHierarachyValueId } = this.state;
 
         if (isEditFlag) {
-            if (DropdownChanged && ((files ? JSON.stringify(files) : []) === (DataToCheck.Attachements ? JSON.stringify(DataToCheck.Attachements) : [])) && (DataToCheck.Remark) === (values.Remark) && uploadAttachements && DataToCheck.LevelValueIdRef === ProductHierarachyValueId) {
+            if (DropdownChanged && ((files ? JSON.stringify(files) : []) === (DataToCheck.Attachements ? JSON.stringify(DataToCheck.Attachements) : [])) && (DataToCheck.Remark) === (values.Remark) && uploadAttachements && DataToCheck.ProductHierarchyValueDetailsIdRef === ProductHierarachyValueId) {
                 this.cancel('cancel')
                 return false;
             }
@@ -302,7 +302,7 @@ class AddIndivisualProduct extends Component {
                 DrawingNumber: values.DrawingNumber,
                 ProductGroupCode: values.ProductGroupCode,
                 Remark: values.Remark,
-                LevelValueIdRef: this.state.ProductHierarachyValueId,
+                ProductHierarchyValueDetailsIdRef: this.state.ProductHierarachyValueId,
                 EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
                 // Plants: [],
                 Attachements: updatedFiles,
@@ -334,7 +334,7 @@ class AddIndivisualProduct extends Component {
                 RevisionNumber: values.RevisionNumber,
                 DrawingNumber: values.DrawingNumber,
                 ProductGroupCode: values.ProductGroupCode,
-                LevelValueIdRef: this.state.ProductHierarachyValueId,
+                ProductHierarchyValueDetailsIdRef: this.state.ProductHierarachyValueId,
                 // Plants: [],
                 Attachements: files,
                 IsConsideredForMBOM: isImpactCalculation,
@@ -529,7 +529,7 @@ class AddIndivisualProduct extends Component {
                                                                     name="EffectiveDate"
                                                                     placeholder={isViewMode ? '-' : "Select Date"}
                                                                     selected={this.state.effectiveDate}
-                                                                    minDate={isEditFlag ? this.state.minEffectiveDate :getEffectiveDateMinDate()}
+                                                                    minDate={isEditFlag ? this.state.minEffectiveDate : getEffectiveDateMinDate()}
                                                                     onChange={this.handleEffectiveDateChange}
                                                                     type="text"
                                                                     validate={[required]}
@@ -763,6 +763,7 @@ export default connect(mapStateToProps, {
     getAllProductLevels
 })(reduxForm({
     form: 'AddIndivisualPart',
+    validate: validateForm,
     enableReinitialize: true,
     touchOnChange: true
 })(withTranslation(['PartMaster'])(AddIndivisualProduct)),

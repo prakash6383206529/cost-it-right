@@ -2,15 +2,15 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector, clearFields } from "redux-form";
 import { Row, Col, Label } from 'reactstrap';
-import { required, getCodeBySplitting, maxLength512, number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation, acceptAllExceptSingleSpecialCharacter } from "../../../helper/validation";
-import { searchableSelect, renderTextAreaField, renderDatePicker, renderMultiSelectField, renderText } from "../../layout/FormInputs";
+import { required, getCodeBySplitting, maxLength512, number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation, acceptAllExceptSingleSpecialCharacter, validateFileName } from "../../../helper/validation";
+import { searchableSelect, renderTextAreaField, renderDatePicker, renderMultiSelectField, renderText, validateForm } from "../../layout/FormInputs";
 import { fetchCostingHeadsAPI, getPlantSelectListByType, getVendorNameByVendorSelectList } from '../../../actions/Common';
 import {
   createProfit, updateProfit, getProfitData, fileUploadProfit,
 } from '../actions/OverheadProfit';
 import { getClientSelectList, } from '../actions/Client';
 import Toaster from '../../common/Toaster';
-import { MESSAGES } from '../../../config/message';
+import { AttachmentValidationInfo, MESSAGES } from '../../../config/message';
 import { getConfigurationKey, loggedInUserId, showBopLabel } from "../../../helper/auth";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
@@ -161,7 +161,7 @@ class AddProfit extends Component {
   */
   handleMessageChange = (e) => {
     this.setState({
-      remarks: e.target.value
+      remarks: e?.target?.value
     })
   }
 
@@ -661,7 +661,17 @@ class AddProfit extends Component {
     if (status === 'done') {
       let data = new FormData()
       data.append('file', file)
+      if (!validateFileName(file.name)) {
+        this.dropzone.current.files.pop()
+        this.setDisableFalseFunction()
+        return false;
+      }
       this.props.fileUploadProfit(data, (res) => {
+        if (res && res?.status !== 200) {
+          this.dropzone.current.files.pop()
+          this.setDisableFalseFunction()
+          return false
+        }
         this.setDisableFalseFunction()
         let Data = res.data[0]
         const { files } = this.state;
@@ -929,7 +939,7 @@ class AddProfit extends Component {
     const { handleSubmit, t } = this.props;
     const { isRM, isCC, isBOP, isProfitPercent, costingTypeId, isEditFlag,
       isHideProfit, isHideBOP, isHideRM, isHideCC, isViewMode, setDisable, IsFinancialDataChanged } = this.state;
-      const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
+    const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
 
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
@@ -1356,7 +1366,7 @@ class AddProfit extends Component {
                           />
                         </Col>
                         <Col md="3">
-                          <label>Upload Files (upload up to {getConfigurationKey().MaxMasterFilesToUpload} files)</label>
+                          <label>Upload Files (upload up to {getConfigurationKey().MaxMasterFilesToUpload} files) <AttachmentValidationInfo /></label>
                           <div className={`alert alert-danger mt-2 ${this.state.files.length === getConfigurationKey().MaxMasterFilesToUpload ? '' : 'd-none'}`} role="alert">
                             Maximum file upload limit reached.
                           </div>
@@ -1527,6 +1537,7 @@ export default connect(mapStateToProps, {
   getRMGradeSelectListByRawMaterial
 })(reduxForm({
   form: 'AddProfit',
+  validate: validateForm,
   enableReinitialize: true,
 })(withTranslation(['OverheadsProfits', 'MasterLabels'])(AddProfit)),
 )

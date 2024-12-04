@@ -3,7 +3,7 @@ import { Field, reduxForm } from "redux-form";
 import Toaster from "../common/Toaster";
 import { connect } from "react-redux";
 import { Loader } from "../common/Loader";
-import { searchableSelect, focusOnError } from "../layout/FormInputs";
+import { searchableSelect, focusOnError, validateForm } from "../layout/FormInputs";
 import "./UserRegistration.scss";
 import {
     addUserLevelAPI, getAllTechnologyAPI, getAllLevelAPI, getAllUserAPI,
@@ -246,6 +246,7 @@ export default connect(mapStateToProps, {
     assignUserLevelAPI,
 })(reduxForm({
     form: 'LevelUser',
+    validate: validateForm,
     onSubmitFail: errors => {
         focusOnError(errors);
     },

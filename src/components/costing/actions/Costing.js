@@ -1293,7 +1293,7 @@ export function fileUploadCosting(data, callback) {
     }).catch((error) => {
       dispatch({ type: API_FAILURE })
       apiErrors(error)
-      callback(error)
+      callback(error.toString())
     })
   }
 }
@@ -3081,8 +3081,10 @@ export function getExternalIntegrationEvaluationType(data, callback) {
         callback(response)
       }
     }).catch((error) => {
-      dispatch({ type: API_FAILURE })
+      dispatch({ type: GET_SAP_EVALUATIONTYPE, payload: [] })
+      callback(error)
       apiErrors(error)
     })
+
   }
 }

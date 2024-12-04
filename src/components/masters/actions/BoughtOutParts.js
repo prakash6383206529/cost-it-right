@@ -295,6 +295,7 @@ export function fileUploadBOPDomestic(data, callback) {
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
       apiErrors(error);
+      callback(error.toString())
     });
   };
 }
@@ -348,9 +349,28 @@ export function getInitialFilterData(boughtOutPartNumber, callback) {
  * @description get all BOP SOB Data list.
  */
 export function getManageBOPSOBDataList(data, callback) {
+
   return (dispatch) => {
     dispatch({ type: API_REQUEST });
-    const queryParams = `bought_out_part_id=${data.bought_out_part_id}&plant_id=${data.plant_id}`;
+    // const queryParams = `bought_out_part_id=${data.bought_out_part_id}&plant_id=${data.plant_id}`;
+    const queryParams = new URLSearchParams({
+      boughtOutPartNumber: data.boughtOutPartNumber || '',
+      boughtOutPartName: data.boughtOutPartName || '',
+      category: data.category || '',
+      specification: data.specification || '',
+      noOfVendor: data.noOfVendor || 1,
+      plantCode: data.plantCode || '',
+      totalSOB: data.totalSOB || '',
+      weightedNetLandedCost: data.weightedNetLandedCost || '',
+      vendor: data.vendor || '',
+      applyPagination: data.applyPagination || false,
+      skip: data.skip || 0,
+      take: data.take || 10,
+      effectiveDate: data.effectiveDate || '',
+      // Keep existing params if needed
+      bought_out_part_id: data.bought_out_part_id || '',
+      plant_id: data.plant_id || ''
+    })
     const request = axios.get(`${API.getManageBOPSOBDataList}?${queryParams}`, config());
     request.then((response) => {
       if (response.data.Result || response.status === 204) {

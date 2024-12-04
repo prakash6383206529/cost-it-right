@@ -12,7 +12,7 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 export const checkSAPCodeinExcel = (excelData) => {
   return excelData.filter((el) => {
     if (getConfigurationKey().IsSAPCodeRequired === false) {
-      if (el.value === 'SAPCode') return false;
+      if (el.value === 'SAPPartNumber') return false;
     }
     return true;
   })
@@ -26,7 +26,7 @@ class DownloadUploadBOMxls extends React.Component {
   }
 
 
- 
+
   localizeHeaders(headers) {
     return localizeHeadersWithLabels(headers, this.props.t);
   }

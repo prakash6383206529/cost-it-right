@@ -87,7 +87,7 @@ const RolesListing = (props) => {
    * @description confirm edit item
    */
   const editItemDetails = (Id) => {
-    let requestData = { isEditFlag: true, RoleId: Id, }
+    let requestData = { isEditFlag: true, RoleId: Id, isNewRole: false }
     props.getDetail(requestData)
   }
 

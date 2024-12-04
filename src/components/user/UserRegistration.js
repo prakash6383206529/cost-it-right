@@ -595,7 +595,11 @@ function UserRegistration(props) {
     copiedArr && copiedArr?.map(item => {
       departmentIds.push(item?.value)
     })
-    dispatch(getAllDivisionListAssociatedWithDepartment(departmentIds, res => {
+    let obj = {
+      DepartmentIdList: departmentIds,
+      IsApproval: true
+    }
+    dispatch(getAllDivisionListAssociatedWithDepartment(obj, res => {
       if (res && res?.data && res?.data?.Identity === true) {
         setIsShowDivision(true)
       } else {
@@ -734,7 +738,11 @@ function UserRegistration(props) {
             idArr.push(item.DepartmentId)
           })
           dispatch(getPlantSelectListForDepartment(idArr, res => { }))
-          dispatch(getAllDivisionListAssociatedWithDepartment(idArr, res => {
+          let obj = {
+            DepartmentIdList: idArr,
+            IsApproval: true
+          }
+          dispatch(getAllDivisionListAssociatedWithDepartment(obj, res => {
             if (res && res?.data && res?.data?.Identity === true) {
               setIsShowDivision(true)
             } else {
@@ -745,7 +753,7 @@ function UserRegistration(props) {
           setTimeout(() => {
             let plantArray = []
             Data && Data?.DepartmentsPlantsIdLists?.map((item) => {
-              plantArray.push({ label: `${item.PlantName}`, value: (item?.PlantId)?.toString() })
+              plantArray.push({ label: `${item?.PlantName}`, value: (item?.PlantId)?.toString(), PlantCode: item?.PlantCode, PlantName: item?.PlantName, PlantId: item?.PlantId })
               return null;
             })
             let divisionArray = []
@@ -2067,6 +2075,7 @@ function UserRegistration(props) {
 
   }
 
+
   /**
    * @name onSubmit
    * @param values
@@ -2217,10 +2226,12 @@ function UserRegistration(props) {
     setOnboardingTableChanged(isForcefulUpdatedForOnboarding);
     let plantArray = []
     selectedPlants && selectedPlants.map(item => {
+
+
       let obj = {
-        PlantId: item.value,
-        PlantName: getNameBySplitting(item.label),
-        PlantCode: getCodeBySplitting(item.label),
+        PlantId: item?.PlantId,
+        PlantName: item?.PlantName,
+        PlantCode: item?.PlantCode,
       }
       plantArray.push(obj)
     })
@@ -2616,8 +2627,18 @@ function UserRegistration(props) {
         setValue('plant', allPlantsExceptZero);
       }, 50);
     } else if (newValue && newValue?.length > 0) {
-      // Other options are chosen
-      setSelectedPlants(newValue);
+      // Map newValue to include all properties from plantSelectListForDepartment
+      const updatedValue = newValue.map(selected => {
+        const originalItem = plantSelectListForDepartment.find(item => item?.PlantId === selected?.value);
+        return {
+          ...originalItem,
+          label: selected?.label,
+          value: selected?.value
+        };
+      });
+
+      setSelectedPlants(updatedValue);
+      setValue('plant', updatedValue);
     } else {
       // No option is chosen
       setSelectedPlants([]);
@@ -3042,7 +3063,7 @@ function UserRegistration(props) {
                       {/* <label>{`City`}<span className="asterisk-required">*</span></label>
                       <div className="d-flex justify-space-between align-items-center p-relative async-select">
                         <div className="fullinput-icon p-relative">
-                          {console.log(state.inputLoader, "state.inputLoader")}
+                          {}
                           {state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
                           <Controller
                             name="CityId"

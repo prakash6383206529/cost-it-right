@@ -5,7 +5,7 @@ import Drawer from '@material-ui/core/Drawer'
 import { useDispatch, useSelector } from 'react-redux'
 import { getReasonSelectList, setSAPData } from '../../../costing/actions/Approval'
 import { TextAreaHookForm, SearchableSelectHookForm, AllApprovalField } from '../../../layout/HookFormInputs'
-import { getConfigurationKey, handleDepartmentHeader, loggedInUserId, userDetails } from '../../../../helper'
+import { getConfigurationKey, handleDepartmentHeader, loggedInUserId, showApprovalDropdown, userDetails } from '../../../../helper'
 import PushButtonDrawer from './PushButtonDrawer'
 import { FILE_URL, RAWMATERIALINDEX, REASON_ID, RELEASESTRATEGYTYPEID1, RELEASESTRATEGYTYPEID2, RELEASESTRATEGYTYPEID3, RELEASESTRATEGYTYPEID4, RELEASESTRATEGYTYPEID6 } from '../../../../config/constants'
 import { uploadSimulationAttachment } from '../../../simulation/actions/Simulation'
@@ -73,6 +73,7 @@ function ApproveRejectUI(props) {
   }, [props?.showWarningMessage])
 
   useEffect(() => {
+
     if (getConfigurationKey().IsReleaseStrategyConfigured && (!setDataFromSummary || disableReleaseStrategy)) {
 
       let appTypeId = approvalTypeSelectList && approvalTypeSelectList?.filter(element => Number(element?.Value) === Number(dataInFields?.ApprovalType?.value))[0]
@@ -81,6 +82,10 @@ function ApproveRejectUI(props) {
       setValue('approver', dataInFields?.Approver ? dataInFields?.Approver : '')
 
     } else if (!getConfigurationKey().IsDivisionAllowedForDepartment || type === 'Approve') {
+
+      setValue('dept', dataInFields?.Department ? dataInFields?.Department : '')
+      setValue('approver', dataInFields?.Approver ? dataInFields?.Approver : '')
+    } else if (getConfigurationKey().IsDivisionAllowedForDepartment && type === 'Sender') {
       setValue('dept', dataInFields?.Department ? dataInFields?.Department : '')
       setValue('approver', dataInFields?.Approver ? dataInFields?.Approver : '')
     }
@@ -241,6 +246,12 @@ function ApproveRejectUI(props) {
       data.append('file', file)
       setIsDisable(true)
       dispatch(uploadSimulationAttachment(data, (res) => {
+        if (res?.includes("Error")) {
+          dropzone.current.files.pop()
+          setAttachmentLoader(false)
+          setDisableFalseFunction()
+          return false
+      }
         setDisableFalseFunction()
         let Data = res?.data[0]
         files.push(Data)
@@ -316,7 +327,7 @@ function ApproveRejectUI(props) {
       >
         <Container>
           <div className={'drawer-wrapper'}>
-            {props?.isDisable && <LoaderCustom customClass="approve-reject-drawer-loader" />}
+            {props?.isDisable&& <LoaderCustom customClass="approve-reject-drawer-loader" />}
             <form
             >
               <Row className="drawer-heading">
@@ -374,7 +385,7 @@ function ApproveRejectUI(props) {
                 </Col>}
                 {type === 'Approve' && IsNotFinalLevel && !isSimulation && (
                   <>
-                    <div className="input-group form-group col-md-12 input-withouticon">
+                    {!getConfigurationKey().IsDivisionAllowedForDepartment && <div className="input-group form-group col-md-12 input-withouticon">
                       <SearchableSelectHookForm
                         label={`${handleDepartmentHeader()}`}
                         name={"dept"}
@@ -388,9 +399,9 @@ function ApproveRejectUI(props) {
                         mandatory={true}
                         handleChange={handleDepartmentChange}
                         errors={errors.dept}
-                        disabled={(disableReleaseStrategy || !(userData.Department.length > 1 && reasonId !== REASON_ID) || (props.isApprovalListing && approvalData[0]?.DivisionId) ? true : false)}
+                        disabled={(disableReleaseStrategy || (!(userData.Department.length > 1 && reasonId !== REASON_ID)&&!showApprovalDropdown()) || (props.isApprovalListing && approvalData[0]?.DivisionId) ? true : false)}
                       />
-                    </div>
+                    </div>}
                     <div className="input-group form-group col-md-12 input-withouticon">
                       {initialConfiguration.IsMultipleUserAllowForApproval ? <>
                         <AllApprovalField
@@ -411,7 +422,7 @@ function ApproveRejectUI(props) {
                           options={approvalDropDown}
                           mandatory={true}
                           handleChange={handleApproverChange}
-                          disabled={(disableReleaseStrategy || !(userData.Department.length > 1 && reasonId !== REASON_ID))}
+                          disabled={(disableReleaseStrategy || (!(userData.Department.length > 1 && reasonId !== REASON_ID)&&!showApprovalDropdown()))}
                           errors={errors.approver}
                         />}
                       {showWarningMessage && <WarningMessage dClass={"mr-2"} message={showMessage ? showMessage : initialConfiguration.IsMultipleUserAllowForApproval ? "There are no further highest level users associated with this company. Kindly contact the admin team for support." : `This user is not in the approval cycle for the ${getValues('ApprovalType')} approval type. Please contact the admin to add an approver for the ${getValues('ApprovalType')} approval type and ${getConfigurationKey().IsCompanyConfigureOnPlant ? 'company' : 'department'}.`} />}
@@ -422,7 +433,7 @@ function ApproveRejectUI(props) {
                   // REMOVE IT AFTER FUNCTIONING IS DONE FOR SIMUALTION, NEED TO MAKE CHANGES FROM BACKEND FOR SIMULATION TODO
                   isSimulation && (type === 'Approve' || type === 'Sender') && !IsNotFinalLevel &&
                   <>
-                    <div className="input-group form-group col-md-12 input-withouticon">
+                    {!getConfigurationKey().IsDivisionAllowedForDepartment && <div className="input-group form-group col-md-12 input-withouticon">
                       <SearchableSelectHookForm
                         label={`${handleDepartmentHeader()}`}
                         name={"dept"}
@@ -436,10 +447,10 @@ function ApproveRejectUI(props) {
                         mandatory={true}
                         handleChange={handleDepartmentChange}
                         errors={errors.dept}
-                        disabled={(disableReleaseStrategy || (getConfigurationKey().IsDivisionAllowedForDepartment ? false : !(userData.Department.length > 1 && reasonId !== REASON_ID)) || (isSimulationApprovalListing && selectedRowData[0]?.DivisionId) ? true : false)}
+                        disabled={(disableReleaseStrategy || (getConfigurationKey().IsDivisionAllowedForDepartment ? true : (!(userData.Department.length > 1 && reasonId !== REASON_ID)&&!showApprovalDropdown())) || (isSimulationApprovalListing && selectedRowData[0]?.DivisionId) ? true : false)}
 
                       />
-                    </div>
+                    </div>}
                     {getConfigurationKey().IsDivisionAllowedForDepartment && isShowDivision && <div className="input-group form-group col-md-12 input-withouticon">
                       <SearchableSelectHookForm
                         label={"Division"}
@@ -478,7 +489,7 @@ function ApproveRejectUI(props) {
                           mandatory={true}
                           handleChange={handleApproverChange}
                           errors={errors.approver}
-                          disabled={(disableReleaseStrategy || !(userData.Department.length > 1 && reasonId !== REASON_ID))}
+                          disabled={(disableReleaseStrategy || (!(userData.Department.length > 1 && reasonId !== REASON_ID)&&!showApprovalDropdown()))}
                         />}
                       {showWarningMessage && <WarningMessage dClass={"mr-2"} message={showMessage ? showMessage : `This user is not in approval cycle for ${getConfigurationKey().IsCompanyConfigureOnPlant ? 'company' : 'department'} approval type, Please contact admin to add approver for ${getConfigurationKey().IsCompanyConfigureOnPlant ? 'company' : 'department'} approval type and ${getConfigurationKey().IsCompanyConfigureOnPlant ? 'company' : 'department'}`} />}
                     </div>

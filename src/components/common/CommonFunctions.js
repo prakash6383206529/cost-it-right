@@ -2,7 +2,7 @@ import { reactLocalStorage } from "reactjs-localstorage";
 import _ from 'lodash';
 import { CBCAPPROVALTYPEID, CBCTypeId, dropdownLimit, NCCAPPROVALTYPEID, NCCTypeId, NFRAPPROVALTYPEID, NFRTypeId, RELEASESTRATEGYTYPEID1, RELEASESTRATEGYTYPEID2, RELEASESTRATEGYTYPEID3, RELEASESTRATEGYTYPEID4, VBCAPPROVALTYPEID, VBCTypeId, WACAPPROVALTYPEID, WACTypeId, ZBCAPPROVALTYPEID, ZBCTypeId, PFS2APPROVALTYPEID, PFS2TypeId, RELEASE_STRATEGY_B1, RELEASE_STRATEGY_B1_NEW, RELEASE_STRATEGY_B2, RELEASE_STRATEGY_B2_NEW, RELEASE_STRATEGY_B3, RELEASE_STRATEGY_B3_NEW, RELEASE_STRATEGY_B4, RELEASE_STRATEGY_B6, RELEASE_STRATEGY_B6_NEW, RELEASE_STRATEGY_B4_NEW, RELEASESTRATEGYTYPEID6, LPSAPPROVALTYPEID, CLASSIFICATIONAPPROVALTYPEID, RAWMATERIALAPPROVALTYPEID, effectiveDateRangeDays, searchCount } from "../../config/constants";
 import Toaster from "./Toaster";
-import {  subDays } from "date-fns";
+import { subDays } from "date-fns";
 
 // COMMON FILTER FUNCTION FOR AUTOCOMPLETE DROPDOWN
 const commonFilterFunction = (inputValue, dropdownArray, filterByName, selectedParts = false) => {
@@ -21,12 +21,16 @@ const commonFilterFunction = (inputValue, dropdownArray, filterByName, selectedP
         return tempArr
     }
 }
-const commonDropdownFunction = (array, tempBoolean = false, selectedParts = [], finalArray, partWithRev = false) => {
+const commonDropdownFunction = (array, tempBoolean = false, selectedParts = [], finalArray, partWithRev = false, isRMBOPPartCombine = false) => {
     array && array.map(item => {
-        if (item.Value === '0' || item.PartId === '0') return array
-        if ((tempBoolean && (item?.PartId) && selectedParts.includes(item.PartId)) || (tempBoolean && (item?.Value) && selectedParts.includes(item.Value))) return false        //FOR REMOVING DUPLICATE PART ENTRY         
+        if (item.Value === '0' || item.PartId === '0' || item.Id === '0') return array
+        if ((tempBoolean && (item?.PartId || item?.Id) && selectedParts.includes(item.PartId || item.Id)) || (tempBoolean && (item?.Value) && selectedParts.includes(item.Value))) return false        //FOR REMOVING DUPLICATE PART ENTRY         
         if (partWithRev) {
-            finalArray.push({ label: `${item.PartNumber}${item.RevisionNumber ? ` (${item.RevisionNumber})` : ''}`, value: item.PartId, RevisionNumber: item.RevisionNumber })
+            if (isRMBOPPartCombine) {
+                finalArray.push({ label: `${item?.Number}`, value: item?.Id })
+            } else {
+                finalArray.push({ label: `${item?.PartNumber}${item?.RevisionNumber ? ` (${item?.RevisionNumber})` : ''}`, value: item?.PartId, RevisionNumber: item?.RevisionNumber })
+            }
         } else {
             finalArray.push({ label: item.Text, value: item.Value })
         }
@@ -40,19 +44,19 @@ export const DropDownFilterList = async (inputValue, filterType, stateKey, apiFu
         inputValue = inputValue.trim();
     }
     const resultInput = inputValue.slice(0, searchCount);
-    
-    const isNewSearch = !state[stateKey] || 
-    (typeof state[stateKey] === 'string' && state[stateKey] !== resultInput) ||
-    (typeof state[stateKey] === 'object' && state[stateKey].value !== resultInput);
+
+    const isNewSearch = !state[stateKey] ||
+        (typeof state[stateKey] === 'string' && state[stateKey] !== resultInput) ||
+        (typeof state[stateKey] === 'object' && state[stateKey].value !== resultInput);
 
     if (inputValue?.length >= searchCount && isNewSearch) {
         setState(prevState => ({ ...prevState, inputLoader: true }));
         let res;
         try {
             res = await apiFunction(filterType, resultInput);
-            setState(prevState => ({ 
-                ...prevState, 
-                inputLoader: false, 
+            setState(prevState => ({
+                ...prevState,
+                inputLoader: false,
                 [stateKey]: { value: resultInput, label: resultInput }  // Store as an object
             }));
             let dataAPI = res?.data?.SelectList;
@@ -110,15 +114,15 @@ export const autoCompleteDropdown = (inputValue, dropdownArray, tempBoolean = fa
 }
 
 // VOLUME MASTER AUTOCOMPLETE PART 
-export const autoCompleteDropdownPart = (inputValue, dropdownArray, tempBoolean = false, selectedParts = [], isApiCall) => {
+export const autoCompleteDropdownPart = (inputValue, dropdownArray, tempBoolean = false, selectedParts = [], isApiCall, isRMBOPPartCombine = false) => {
     let tempArr = []
     let finalArr1 = []
     let finalArr = []
 
     if (isApiCall) {
-        tempArr = commonFilterFunction(inputValue, dropdownArray, "PartNumber")
-        commonDropdownFunction(tempArr, tempBoolean, selectedParts, finalArr1, true)              //TO SHOW THE FILTERED PART
-        commonDropdownFunction(dropdownArray, tempBoolean, selectedParts, finalArr, true)        // TO STORE ALL PART DATA IN LOCAL STORAGE
+        tempArr = commonFilterFunction(inputValue, dropdownArray, isRMBOPPartCombine ? "Number" : "PartNumber")
+        commonDropdownFunction(tempArr, tempBoolean, selectedParts, finalArr1, true, isRMBOPPartCombine)              //TO SHOW THE FILTERED PART
+        commonDropdownFunction(dropdownArray, tempBoolean, selectedParts, finalArr, true, isRMBOPPartCombine)        // TO STORE ALL PART DATA IN LOCAL STORAGE
         reactLocalStorage?.setObject('PartData', finalArr)
         if (finalArr1?.length <= 100) {
             return finalArr1
@@ -352,13 +356,13 @@ export const getCostingConditionTypes = (conditionName) => {
 }
 
 
-export const getEffectiveDateMinDate = ( minDate) => {
-   
-  if (effectiveDateRangeDays === null) {
-    return new Date(new Date().getFullYear() - 100, 0, 1); // Allow dates up to 100 years in the past
-  }
-  if (effectiveDateRangeDays === 0) {
-    return new Date(); // No past dates
-  }
-  return subDays(new Date(), effectiveDateRangeDays);
+export const getEffectiveDateMinDate = (minDate) => {
+
+    if (effectiveDateRangeDays === null) {
+        return new Date(new Date().getFullYear() - 100, 0, 1); // Allow dates up to 100 years in the past
+    }
+    if (effectiveDateRangeDays === 0) {
+        return new Date(); // No past dates
+    }
+    return subDays(new Date(), effectiveDateRangeDays);
 };

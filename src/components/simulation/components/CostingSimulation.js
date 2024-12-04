@@ -1288,7 +1288,6 @@ function CostingSimulation(props) {
             } else if (Number(amendmentDetails?.SimulationHeadId) === Number(ZBCTypeId)) {
 
                 tempData = hideMultipleColumnFromExcel(tempData, ['CustomerName', 'VendorName'])
-                console.log("🚀 ~ returnExcelColumn ~ temp:", tempData)
             }
         }
         let temp = []
@@ -1706,6 +1705,9 @@ function CostingSimulation(props) {
 
                                                     {isSimulationWithCosting && <AgGridColumn width={150} field="CostingNumber" tooltipField='CostingNumber' headerName='Costing Id'></AgGridColumn>}
                                                     <AgGridColumn width={140} field="CostingHead" tooltipField='CostingHead' headerName='Costing Head'></AgGridColumn>
+                                                    {!isSimulationWithCosting && isBOPDomesticOrImport && <AgGridColumn width={130} field="BoughtOutPartNumber" tooltipField='BoughtOutPartNumber' headerName='BOP Number'></AgGridColumn>}
+                                                    {!isSimulationWithCosting && isBOPDomesticOrImport && <AgGridColumn width={130} field="BoughtOutPartName" tooltipField='BoughtOutPartName' headerName='BOP Name'></AgGridColumn>}
+
                                                     {isSimulationWithCosting && <AgGridColumn width={130} field="PartNo" tooltipField='PartNo' headerName='Part No.'></AgGridColumn>}
                                                     {!isSimulationWithCosting && isBOPDomesticOrImport && <AgGridColumn width={130} field="BoughtOutPartNumber" tooltipField='BoughtOutPartNumber' headerName='BOP Number'></AgGridColumn>}
                                                     {!isSimulationWithCosting && isBOPDomesticOrImport && <AgGridColumn width={130} field="BoughtOutPartName" tooltipField='BoughtOutPartName' headerName='BOP Name'></AgGridColumn>}

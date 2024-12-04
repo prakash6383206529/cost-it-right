@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { required, maxLength5, postiveNumber, minValue1, acceptAllExceptSingleSpecialCharacter, } from "../../../helper/validation";
-import { renderText } from "../../layout/FormInputs";
+import { renderText, validateForm } from "../../layout/FormInputs";
 import { getComponentPartSelectList, getDrawerComponentPartData, } from '../actions/Part';
 import { COMPONENT_PART, LEVEL1, searchCount, SPACEBAR } from '../../../config/constants';
 import AsyncSelect from 'react-select/async';
@@ -444,6 +444,7 @@ export default connect(mapStateToProps, {
   getDrawerComponentPartData,
 })(reduxForm({
   form: 'AddComponentForm',
+  validate: validateForm,
   enableReinitialize: true,
   touchOnChange: true
 })(AddComponentForm));

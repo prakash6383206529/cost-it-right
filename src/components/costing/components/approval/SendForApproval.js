@@ -1,4 +1,4 @@
-import React, { Fragment, useState, useEffect } from 'react'
+import React, { Fragment, useState, useEffect, useRef } from 'react'
 import { Row, Col } from 'reactstrap'
 import { useForm, Controller, } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
@@ -6,11 +6,11 @@ import Toaster from '../../../common/Toaster'
 import Drawer from '@material-ui/core/Drawer'
 import { SearchableSelectHookForm, TextAreaHookForm, DatePickerHookForm, NumberFieldHookForm, AllApprovalField, } from '../../../layout/HookFormInputs'
 import { getReasonSelectList, getAllApprovalDepartment, getAllApprovalUserFilterByDepartment, sendForApprovalBySender, approvalRequestByApprove } from '../../actions/Approval'
-import { getConfigurationKey, handleDepartmentHeader, loggedInUserId, userDetails } from '../../../../helper/auth'
+import { getConfigurationKey, handleDepartmentHeader, loggedInUserId, showApprovalDropdown, userDetails } from '../../../../helper/auth'
 import { setCostingApprovalData, setCostingViewData, fileUploadCosting, checkFinalUser, getReleaseStrategyApprovalDetails } from '../../actions/Costing'
 import { getVolumeDataByPartAndYear, checkRegularizationLimit } from '../../../masters/actions/Volume'
 
-import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, userTechnologyLevelDetails } from '../../../../helper'
+import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, userTechnologyLevelDetails, validateFileName } from '../../../../helper'
 import DayTime from '../../../common/DayTimeWrapper'
 import WarningMessage from '../../../common/WarningMessage'
 import DatePicker from "react-datepicker";
@@ -32,9 +32,11 @@ import { transformApprovalItem } from '../../../common/CommonFunctions'
 import { checkSAPPoPrice } from '../../../simulation/actions/Simulation'
 import SAPApproval from '../../../SAPApproval'
 import { useLabels } from '../../../../helper/core'
+import { AttachmentValidationInfo } from '../../../../config/message'
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 const SendForApproval = (props) => {
+  const dropzone = useRef(null);
   const { isApprovalisting, selectedRows, mandatoryRemark, dataSelected, callSapCheckAPI } = props
   const dispatch = useDispatch()
   const { register, handleSubmit, control, setValue, getValues, formState: { errors } } = useForm({
@@ -92,6 +94,7 @@ const SendForApproval = (props) => {
   const [isShowDivision, setIsShowDivision] = useState(false)
   const [divisionList, setDivisionList] = useState([])
   const [division, setDivision] = useState('')
+  const [checkMultiDept, setCheckMultiDept] = useState(false)
 
   const apicall = (technologyId, depart, ApprovalTypeId, isdisable, levelsList, divisionId = '') => {
 
@@ -227,7 +230,8 @@ const SendForApproval = (props) => {
       const Data = res?.data?.SelectList
       const Departments = userDetails().Department && userDetails().Department.map(item => item.DepartmentName)
       const updateList = Data && Data.filter(item => Departments.includes(item.Text))
-      if (updateList && updateList?.length === 1) {
+      if ((updateList && updateList?.length === 1) || !checkMultiDept) {
+
         setDisableDept(true)
         setValue('dept', { label: updateList[0]?.Text, value: updateList[0]?.Value })
         setSelectedDepartment({ label: updateList[0]?.Text, value: updateList[0]?.Value })
@@ -396,7 +400,7 @@ const SendForApproval = (props) => {
       Mode: 'costing',
       approvalTypeId: approvaltypeTest,
       plantId: (IsApprovalLevelFilterByPlant && viewApprovalData[0]?.destinationPlantId) ? viewApprovalData[0]?.destinationPlantId : null,
-      divisionId: divisionId ?? null
+      divisionId: (divisionId || divisionId !== '') ? divisionId : null
     }
     dispatch(checkFinalUser(obj, (res) => {
       const data = res?.data?.Data
@@ -434,7 +438,7 @@ const SendForApproval = (props) => {
         Toaster.warning('This user is not in approval flow.')
         setNoApprovalExistMessage('')
         return false
-      } else if (data?.IsNextLevelUserExist === false && data?.IsUserInApprovalFlow === true) {
+      } else if (data?.IsNextLevelUserExist === false && data?.IsUserInApprovalFlow === true && data?.IsFinalApprover === false) {
         setValue('approver', { label: '', value: '', levelId: '', levelName: '' })
         setApprover('')
         setSelectedApprover('')
@@ -442,13 +446,14 @@ const SendForApproval = (props) => {
         setApproverIdList([])
         setNoApprovalExistMessage('There is no higher approver available for this user in this department.')
         return false
-      } else if (data?.IsUserInApprovalFlow === false) {
+      } else if (data?.IsUserInApprovalFlow === true && data?.IsFinalApprover === true && data?.IsNextLevelUserExist === false) {
         setValue('approver', { label: '', value: '', levelId: '', levelName: '' })
         setApprover('')
         setSelectedApprover('')
         setApprovalDropDown([])
         setApproverIdList([])
-        Toaster.warning('This user is not in approval flow.')
+        setNoApprovalExistMessage('This user is final approver.')
+        Toaster.warning('This user is final approver.')
         setNoApprovalExistMessage('')
         return false
       }
@@ -456,7 +461,11 @@ const SendForApproval = (props) => {
     }))
   }
   const fetchDivisionList = (departmentIds) => {
-    dispatch(getAllDivisionListAssociatedWithDepartment(departmentIds, res => {
+    let obj = {
+      DepartmentIdList: departmentIds,
+      IsApproval: false
+    }
+    dispatch(getAllDivisionListAssociatedWithDepartment(obj, res => {
       if (res && res?.data && res?.data?.Identity === true) {
         setIsShowDivision(true)
         const divisionArray = res?.data?.DataList
@@ -897,6 +906,17 @@ const SendForApproval = (props) => {
     }
   }
 
+  /**
+  * @method setDisableFalseFunction
+  * @description setDisableFalseFunction
+  */
+  const setDisableFalseFunction = () => {
+    const loop = checkForNull(dropzone.current.files.length) - checkForNull(files.length)
+    if (checkForNull(loop) === 1 || checkForNull(dropzone.current.files.length) === checkForNull(files.length)) {
+      setIsDisable(false)
+    }
+  }
+
   const handleChangeQuantity = (e) => {
     checkQuantityLimitValue(e?.target?.value, isRegularize)
   };
@@ -934,7 +954,17 @@ const SendForApproval = (props) => {
     if (status === "done") {
       let data = new FormData();
       data.append("file", file);
+      if (!validateFileName(file.name)) {
+        dropzone.current.files.pop()
+        setDisableFalseFunction()
+        return false;
+      }
       dispatch(fileUploadCosting(data, (res) => {
+        if (res && res?.status !== 200) {
+          this.dropzone.current.files.pop()
+          setAttachmentLoader(false)
+          return false
+        }
         let Data = res.data[0];
         files.push(Data);
         setFiles(files);
@@ -943,8 +973,20 @@ const SendForApproval = (props) => {
       }));
     }
 
-    if (status === "rejected_file_type") {
-      Toaster.warning("Allowed only xls, doc, jpeg, pdf files.");
+    if (status === 'rejected_file_type') {
+      Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
+    } else if (status === 'error_file_size') {
+      setDisableFalseFunction()
+      setAttachmentLoader(false)
+      dropzone.current.files.pop()
+      Toaster.warning("File size greater than 20 mb not allowed")
+    } else if (status === 'error_validation'
+      || status === 'error_upload_params' || status === 'exception_upload'
+      || status === 'aborted' || status === 'error_upload') {
+      setDisableFalseFunction()
+      setAttachmentLoader(false)
+      dropzone.current.files.pop()
+      Toaster.warning("Something went wrong")
     }
   };
   const viewImpactDrawer = () => {
@@ -968,6 +1010,9 @@ const SendForApproval = (props) => {
       setFiles(tempArr);
       setAttachmentLoader(false)
       setIsOpen(!IsOpen);
+    }
+    if (dropzone?.current !== null) {
+      dropzone.current.files.pop()
     }
   };
 
@@ -1289,7 +1334,7 @@ const SendForApproval = (props) => {
                           errors={errors.ApprovalType}
                         />
                       </Col>}
-                      <Col md="6">
+                      {!getConfigurationKey().IsDivisionAllowedForDepartment && <Col md="6">
                         <SearchableSelectHookForm
                           label={`${handleDepartmentHeader()}`}
                           name={"dept"}
@@ -1300,12 +1345,12 @@ const SendForApproval = (props) => {
                           register={register}
                           defaultValue={""}
                           options={renderDropdownListing("Dept")}
-                          disabled={disableRS || ((initialConfiguration.IsReleaseStrategyConfigured && Object.keys(approvalType)?.length === 0)) || disableDept}
+                          disabled={disableRS || (((initialConfiguration.IsReleaseStrategyConfigured && Object.keys(approvalType)?.length === 0) || disableDept) && !showApprovalDropdown())}
                           mandatory={true}
                           handleChange={handleDepartmentChange}
                           errors={errors.dept}
                         />
-                      </Col >
+                      </Col >}
                       {getConfigurationKey().IsDivisionAllowedForDepartment && isShowDivision && <Col md="6">
                         <SearchableSelectHookForm
                           label={"Division"}
@@ -1342,7 +1387,7 @@ const SendForApproval = (props) => {
                             defaultValue={""}
                             options={approvalDropDown}
                             mandatory={true}
-                            disabled={disableRS || !(userData.Department.length > 1)}
+                            disabled={disableRS || (!(userData.Department.length > 1) && !showApprovalDropdown())}
                             customClassName={"mb-0 approver-wrapper"}
                             handleChange={handleApproverChange}
                             errors={errors.approver}
@@ -1451,13 +1496,14 @@ const SendForApproval = (props) => {
                   isRegularize ? (
                     <Row className="mb-4 mx-0">
                       <Col md="6" className="height152-label">
-                        <label>Upload Attachment (upload up to 4 files)</label>
+                        <label>Upload Attachment (upload up to 4 files)<AttachmentValidationInfo /></label>
                         {files && files.length >= 4 ? (
                           <div class="alert alert-danger" role="alert">
                             Maximum file upload limit reached.
                           </div>
                         ) : (
                           <Dropzone
+                            ref={dropzone}
                             onChangeStatus={handleChangeStatus}
                             PreviewComponent={Preview}
                             mandatory={true}
@@ -1574,6 +1620,7 @@ const SendForApproval = (props) => {
                 CostingTypeId={viewApprovalData[0]?.costingTypeId}
                 approvalSummaryTrue={true}
                 costingIdArray={costingIdArray}
+                isCosting={true}
               />
             }
           </div >

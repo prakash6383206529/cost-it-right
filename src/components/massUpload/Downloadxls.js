@@ -1,6 +1,6 @@
 import React from "react";
 import ReactExport from 'react-export-excel';
-import { ASSEMBLYORCOMPONENTSRFQ, BOUGHTOUTPARTSRFQ, CBCADDMORE, CBCADDMOREOPERATION, CBCTypeId, RAWMATERIALSRFQ, VBCADDMORE, VBCADDMOREOPERATION, VBCTypeId, ZBCADDMORE, ZBCADDMOREOPERATION, ZBCTypeId } from "../../config/constants";
+import { ASSEMBLYORCOMPONENTSRFQ, BOUGHTOUTPARTSRFQ, CBCADDMORE, CBCADDMOREOPERATION, CBCTypeId, RAWMATERIALSRFQ, SAP_PUSH, VBCADDMORE, VBCADDMOREOPERATION, VBCTypeId, ZBCADDMORE, ZBCADDMOREOPERATION, ZBCTypeId } from "../../config/constants";
 import {
     Fuel, FuelTempData,
     RMDomesticZBC, RMDomesticZBCTempData, RMDomesticVBC, RMDomesticVBCTempData,
@@ -30,7 +30,9 @@ import {
     AddRawMaterialTempData,
     AddAssemblyOrComponentTempData,
     AddAssemblyOrComponentAdditionalInfoTempData,
-    AddAssemblyOrComponentAdditionalInfoHeaderData
+    AddAssemblyOrComponentAdditionalInfoHeaderData,
+    SAP_PUSH_HEADER_DATA,
+    SAP_PUSH_TEMP_DATA
 } from '../../config/masterData';
 import { checkVendorPlantConfigurable, getConfigurationKey, showBopLabel, updateBOPValues } from "../../helper";
 import { checkSAPCodeinExcel } from "./DownloadUploadBOMxls";
@@ -160,7 +162,7 @@ export const checkVendorPlantConfig = (excelData, type = '', isBop = false, isVe
             if (el.value === 'PaymentTerm') return false;
         }
         if (getConfigurationKey().IsSAPCodeRequired === false) {
-            if (el.value === 'SAPCode') return false;
+            if (el.value === 'SAPPartNumber') return false;
         }
         return true;
     })
@@ -228,6 +230,9 @@ class Downloadxls extends React.Component {
             case 'Part Component':
                 const localizedPartComponentHeaders = this.localizeHeaders(PartComponent);
                 return this.returnExcelColumn(checkSAPCodeinExcel(localizedPartComponentHeaders), checkSAPCodeinExcel(PartComponentTempData));
+            case SAP_PUSH:
+                const localizedSAPPushHeaders = this.localizeHeaders(SAP_PUSH_HEADER_DATA);
+                return this.returnExcelColumn(localizedSAPPushHeaders, SAP_PUSH_TEMP_DATA);
             case 'Product Component':
                 const localizedProductComponentHeaders = this.localizeHeaders(ProductComponent);
                 return this.returnExcelColumn(localizedProductComponentHeaders, ProductComponentTempData);
@@ -569,7 +574,7 @@ class Downloadxls extends React.Component {
             );
         }
         // DOWNLOAD FILE:- CALLED WHEN FILE FAILED APART FROM ZBC AND VBC
-        if (isFailedFlag && (fileName === 'RM Specification' || fileName === 'Vendor' || fileName === 'Overhead' || fileName === 'Profit' || fileName === 'Fuel' || fileName === 'Labour' || fileName === 'Part Component' || fileName === 'Product Component' || fileName === ASSEMBLYORCOMPONENTSRFQ || fileName === BOUGHTOUTPARTSRFQ || fileName === RAWMATERIALSRFQ || fileName === 'Index' || fileName === 'Index Data' || fileName === 'Commodity (In Index)' || fileName === 'Commodity Standard' || fileName === 'Commodity Standardization')) {
+        if (isFailedFlag && (fileName === 'RM Specification' || fileName === 'Vendor' || fileName === 'Overhead' || fileName === 'Profit' || fileName === 'Fuel' || fileName === 'Labour' || fileName === 'Part Component' || fileName === 'Product Component' || fileName === ASSEMBLYORCOMPONENTSRFQ || fileName === BOUGHTOUTPARTSRFQ || fileName === RAWMATERIALSRFQ || fileName === 'Index' || fileName === 'Index Data' || fileName === 'Commodity (In Index)' || fileName === 'Commodity Standard' || fileName === 'Commodity Standardization' || fileName === SAP_PUSH)) {
 
             return (
                 <ExcelFile hideElement={true} filename={fileName} fileExtension={'.xls'} >

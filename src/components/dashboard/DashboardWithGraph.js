@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import { getMenuByUser } from "../../actions/auth/AuthActions";
 import { Col, Container, Row } from "reactstrap";
 import { Field, reduxForm } from "redux-form";
-import { searchableSelect } from '../layout/FormInputs'
+import { searchableSelect, validateForm } from '../layout/FormInputs'
 import { Costmovementgraph } from "./CostMovementGraph";
 import { Costcomparisonplantgraph } from "./CostComparisonPlantGraph";
 import { Suppliercontributiongraph } from './SupplierContributionGraph';
@@ -14,7 +14,7 @@ import SimulationApprovalListing from '../simulation/components/SimulationApprov
 import { useLabels } from '../../helper/core';
 export function Dashboardwithgraph(props) {
     const { handleSubmit } = props
-    const vendorLabel = useLabels()
+    const { vendorLabel } = useLabels()
     const [acc1, setAcc1] = useState(true)
     const [acc2, setAcc2] = useState(false)
 
@@ -144,6 +144,7 @@ export default connect(mapStateToProps, {
     getMenuByUser,
 })(reduxForm({
     form: 'Dashboardwithgraph',
+    validate: validateForm,
     enableReinitialize: true,
     touchOnChange: true
 })(Dashboardwithgraph));
