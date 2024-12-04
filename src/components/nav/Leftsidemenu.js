@@ -7,6 +7,8 @@ import CalculatorWrapper from "../common/Calculator/CalculatorWrapper";
 import { reactLocalStorage } from "reactjs-localstorage";
 import { disabledClass } from '../../actions/Common'
 import { MESSAGES } from "../../config/message";
+import { LabelsClass } from "../../helper/core";
+import { withTranslation } from "react-i18next";
 
 class Leftmenu extends Component {
 	constructor(props) {
@@ -22,8 +24,17 @@ class Leftmenu extends Component {
 	setModuleId = (ModuleId) => {
 		reactLocalStorage.set('ModuleId', ModuleId)
 	}
-
+	getLocalizedPageName = (pageName) => {
+		const { t } = this.props;
+		const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
+	
+		if (pageName.includes('Vendor')) {
+			return pageName.replace(/Vendor/g, VendorLabel);
+		}
+		return pageName;
+	}
 	render() {
+
 		const { location, topAndLeftMenuData } = this.props;
 		const activeURL = location && location.pathname ? location.pathname : null;
 		const ModuleId = reactLocalStorage.get('ModuleId')
@@ -58,6 +69,8 @@ class Leftmenu extends Component {
 
 										(item.NavigationURL !== "/exchange-master" && SIMULATION_LEFT_MENU_NOT_INCLUDED.includes(item.PageName))
 									) return false;
+									const localizedPageName = this.getLocalizedPageName(item.PageName);
+
 									return (
 
 										<li key={i} className={`${activeURL === item.NavigationURL ? 'active' : null} mb5`}>
@@ -67,7 +80,7 @@ class Leftmenu extends Component {
 													pathname: item.NavigationURL,
 													state: { ModuleId: ModuleId, PageName: item.PageName, PageURL: item.NavigationURL }
 												}}
-											>{item.PageName}</Link>
+											>{localizedPageName}</Link>
 										</li>
 									)
 								})
@@ -101,5 +114,5 @@ function mapStateToProps({ auth, comman }) {
 */
 export default connect(mapStateToProps,
 	{
-		getTopAndLeftMenuData,
-	})(Leftmenu);
+		getTopAndLeftMenuData},
+	)(withTranslation(['NavBar', 'MasterLabels'])(Leftmenu));

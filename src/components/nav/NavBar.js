@@ -129,11 +129,11 @@ class SideBar extends Component {
     this.props.getApprovalTypeSelectList(3, (response) => {
       if (response && response.data && response.data.Result) {
         const options = response.data.SelectList
-        .filter(item => item.Value !== '0') // Filter out the item with Value '0'
-        .map(item => ({
-          value: item.Value,
-          label: item.Text
-        }));
+          .filter(item => item.Value !== '0') // Filter out the item with Value '0'
+          .map(item => ({
+            value: item.Value,
+            label: item.Text
+          }));
         reactLocalStorage.setObject('CostingHeadOptions', options);
       }
     });
@@ -329,20 +329,21 @@ class SideBar extends Component {
    * @description Render master menu.
    */
   renderMaster = (module, LandingPageURL) => {
-    const { topAndLeftMenuData } = this.props
+    const { topAndLeftMenuData, t } = this.props
+    const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
 
-    topAndLeftMenuData &&
-      topAndLeftMenuData.map((el, i) => {
-        if (el.ModuleName === module) {
-          el.Pages.map((item, index) => {
-            if (window.location.href.includes(item.NavigationURL)) {
-              this.setLeftMenu(el.ModuleId)
-            }
-            return null
-          })
-        }
-        return null
-      })
+    // topAndLeftMenuData &&
+    //   topAndLeftMenuData.map((el, i) => {
+    //     if (el.ModuleName === module) {
+    //       el.Pages.map((item, index) => {
+    //         if (window.location.href.includes(item.NavigationURL)) {
+    //           this.setLeftMenu(el.ModuleId)
+    //         }
+    //         return null
+    //       })
+    //     }
+    //     return null
+    //   })
 
     return (
       topAndLeftMenuData &&
@@ -350,12 +351,7 @@ class SideBar extends Component {
         if (el.ModuleName === module) {
           return (
             <>
-              <li className="nav-item dropdown"
-              // onMouseOver={(e) => {
-              //   //e.stopPropagation()
-              //   this.SetMenu(el.ModuleId)
-              // }}
-              >
+              <li className="nav-item dropdown">
                 <Link
                   id="Master_NavBar"
                   className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
@@ -365,7 +361,7 @@ class SideBar extends Component {
                     pathname: el.LandingPageURL,
                     state: {
                       ModuleId: el.ModuleId,
-                      PageName: "Masters",
+                      // PageName: "Masters",
                       PageURL: el.LandingPageURL,
                     },
                   }}
@@ -382,9 +378,12 @@ class SideBar extends Component {
                   <ul>
                     {
                       el && el.Pages && el.Pages.map((item, i) => {
-                        // if (item.Sequence === 22) return false;
                         if (item.Sequence === 0) return false
 
+                        // Replace "Vendor" with VendorLabel in PageName
+                        const modifiedPageName = item.PageName.includes('Vendor') 
+                          ? item.PageName.replace(/Vendor/g, VendorLabel) 
+                          : item.PageName;
                         return (
                           <li key={i} className={`mb5`}>
                             <Link
@@ -392,29 +391,15 @@ class SideBar extends Component {
                               onClick={() => this.setLeftMenu(el.ModuleId)}
                               to={{
                                 pathname: item.NavigationURL,
-                                state: { ModuleId: reactLocalStorage.get("MenuModuleId"), PageName: item.PageName, PageURL: item.NavigationURL }
+                                state: { 
+                                  ModuleId: reactLocalStorage.get("MenuModuleId"), 
+                                  PageName: modifiedPageName, // Use modified name here
+                                  PageURL: item.NavigationURL 
+                                }
                               }}
-                            >{item.PageName}</Link>
+                            >{modifiedPageName}</Link> {/* And here */}
                           </li>
                         )
-                        // return (
-                        //   <li key={i}>
-                        //     <Link
-                        //       className="dropdown-item"
-                        //       // onClick={this.setLeftMenuAccToMenu(menu.NavigationURL)}
-                        //       to={{
-                        //         pathname: menu.NavigationURL,
-                        //         state: {
-                        //           ModuleId: menu.PageId,
-                        //           PageName: menu.PageName,
-                        //           PageURL: menu.NavigationURL,
-                        //         },
-                        //       }}
-                        //     >
-                        //       - {menu.PageName}
-                        //     </Link>
-                        //   </li>
-                        // )
                       })
                     }
                   </ul>
@@ -426,8 +411,7 @@ class SideBar extends Component {
         return null
       })
     );
-  };
-
+};
   /**
    * @method renderAdditionalMaster
    * @description Render Addtional master menu.
@@ -919,7 +903,7 @@ class SideBar extends Component {
 
 
   renderVendorManagement = (module) => {
-    const { menusData, topAndLeftMenuData ,t} = this.props
+    const { menusData, topAndLeftMenuData, t } = this.props
     const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
 
     return (
@@ -938,7 +922,7 @@ class SideBar extends Component {
                   pathname: el.LandingPageURL,
                   state: {
                     ModuleId: el.ModuleId,
-                    PageName: "Vendor Management",
+                    PageName: "{} Management",
                     PageURL: el.LandingPageURL,
                   },
                 }}
@@ -1047,6 +1031,7 @@ class SideBar extends Component {
 
 
   render() {
+    
     const { userData, moduleSelectList, leftMenuData, topAndLeftMenuData, t } = this.props;
     const { isLoader, startIndex, showAllCategory } = this.state;
     const isLoggedIn = isUserLoggedIn();
