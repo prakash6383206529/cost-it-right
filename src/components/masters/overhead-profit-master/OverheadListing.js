@@ -82,11 +82,40 @@ function OverheadListing(props) {
     const [modelText, setModelText] = useState('')
 
 
-
+// In CostingHeadDropdownFilter.js
+const onFilterChange = (event) => {
+    // Clean and encode the filter value
+    const filterValue = event.target.value;
+    const cleanedValue = encodeFilterValue(filterValue);
+    
+    // Call the parent's filter change handler
+    if (props.onFilterChange) {
+      props.onFilterChange(filterValue, cleanedValue);
+    }
+  };
+  
+  // Helper function to clean and encode filter value
+  const encodeFilterValue = (value) => {
+    if (!value) return '';
+    
+    // Replace special combinations with encoded versions
+    const encodedValue = value
+      .replace(/\s\+\s/g, '%2B') // Replace ' + ' with encoded plus
+      .replace(/\s/g, '%20');    // Replace spaces with encoded spaces
+      
+    return encodedValue;
+  };
     var floatingFilterOverhead = {
         maxValue: 1,
         suppressFilterButton: true,
-        component: 'overhead'
+        component: 'overhead',
+        onFilterChange: (originalValue, encodedValue) => {
+            setDisableFilter(false);
+            setFloatingFilterData(prevState => ({
+              ...prevState,
+              OverheadApplicabilityType: encodedValue
+            }));
+          }
     }
 
     const { isBulkUpload } = state;
@@ -156,10 +185,17 @@ function OverheadListing(props) {
             overhead_applicability_type_id: overhead,
             model_type_id: modelType,
         }
+          // Clean up the dataObj filters before sending to API
+  const cleanedDataObj = {
+    ...dataObj,
+    OverheadApplicabilityType: dataObj.OverheadApplicabilityType 
+      ? decodeURIComponent(dataObj.OverheadApplicabilityType)
+      : ''
+  };
         if (isPagination === true) {
             setIsLoader(true)
         }
-        dispatch(getOverheadDataList(filterData, skip, take, isPagination, dataObj, (res) => {
+        dispatch(getOverheadDataList(filterData, skip, take, isPagination, cleanedDataObj, (res) => {
             setIsLoader(false)
             if (res && res.status === 204) {
                 setTotalRecordCount(0)
