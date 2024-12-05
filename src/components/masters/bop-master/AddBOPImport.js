@@ -142,6 +142,7 @@ class AddBOPImport extends Component {
       IsEditBtnClicked: false,
       SapCode: '',
       isSAPCodeDisabled: false,
+      sourceLocationInputLoader: false,
     }
   }
 
@@ -1015,9 +1016,9 @@ class AddBOPImport extends Component {
       inputValue = inputValue.trim();
     }
     if (inputValue?.length >= searchCount) {
-      this.setState({ inputLoader: true });
+      this.setState({ sourceLocationInputLoader: true });
       let res = await this.props.getCityByCountryAction(0, 0, inputValue);
-      this.setState({ inputLoader: false });
+      this.setState({ sourceLocationInputLoader: false });
       let cityDataAPI = res?.data?.SelectList;
       if (inputValue) {
         return autoCompleteDropdown(inputValue, cityDataAPI, false, [], true);
