@@ -1,11 +1,10 @@
 
 import React, { useEffect, useState } from 'react';
-import { useMsal } from '@azure/msal-react';
+import { useAccount, useMsal } from '@azure/msal-react';
 import { loginRequest } from '../../authConfig';
 import { InteractionRequiredAuthError } from "@azure/msal-browser";
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { jwtDecode } from "jwt-decode";
-import logo from '../../assests/images/logo/ms-symbollockup_signin_light.png';
 import Toaster from '../common/Toaster';
 
 export const MsalAuthLogin = ({ setToken, setIsLoginWithMsal, setAudience }) => {
@@ -96,10 +95,23 @@ export const MsalAuthLogin = ({ setToken, setIsLoginWithMsal, setAudience }) => 
         }
     };
 
+    const login = () => {
+        instance.loginPopup(loginRequest).catch((error) => {
+            console.error(error);
+        });
+    };
+    const logout = () => {
+        instance.logoutPopup().catch((error) => {
+            console.error(error);
+        });
+    };
     return (
         <div>
-            <button type="button" onClick={handleLogin} style={{ boxShadow: 'none', border: 'none', background: 'none', }}>
-                <img src={logo} alt="Login with Microsoft" style={{ marginBottom: '0' }} />
+            <button type="button" onClick={login} className='microsot-login-button'>
+                <div className='microsot-logo mr-2'>
+                </div>
+
+                Continue with Microsoft
             </button>
         </div>
     );

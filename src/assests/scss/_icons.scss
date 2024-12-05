@@ -936,3 +936,7 @@
 
     }
 }
+
+.microsot-logo {
+    @include icons("../../images/microshot-logo.svg", 21px, 21px);
+}

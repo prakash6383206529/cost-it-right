@@ -41,5 +41,6 @@ export const msalConfig = {
 };
 
 export const loginRequest = {
-  scopes: ["https://graph.windows.net/User.Read"],
+  scopes: ["https://graph.microsoft.com/User.Read"],
+  redirectUri: getConfigurationKey()?.RedirectURL
 };

@@ -293,10 +293,10 @@ const Role = (props) => {
 											{isLoader && <Loader />}
 											<PermissionsTabIndex
 												onRef={(ref) => (childRef.current = ref)}
-												isEditFlag={props.data.isEditFlag}
+												isEditFlag={props?.data?.isEditFlag}
 												setInitialModuleData={setInitialModuleData}
 												moduleData={moduleDataHandler}
-												isNewRole={props.data.isNewRole}
+												isNewRole={props?.data?.isNewRole}
 												refVariable={true}
 											/>
 										</div>
