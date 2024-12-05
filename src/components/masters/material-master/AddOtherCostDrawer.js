@@ -16,10 +16,13 @@ function AddOtherCostDrawer(props) {
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
     const dispatch = useDispatch();
 
-    const { rmBasicRate, isFromImport, RowData, RowIndex, isImport, plantCurrency, settlementCurrency, isBOP } = props
-    const Currency = isBOP && isImport ? settlementCurrency : isBOP && !isImport ? plantCurrency : props?.RowData?.IndexCurrency
-    const CurrencyLabel = !props.rawMaterial ? reactLocalStorage.getObject('baseCurrency') : isImport && (props.rawMaterial || isBOP) ? settlementCurrency : plantCurrency
-    const UOM = props?.RowData?.IndexUOM || (Array.isArray(props?.uom) ? '' : props?.uom?.label) || '';
+
+
+    const { rmBasicRate, isFromImport, RowData, RowIndex, isImport, plantCurrency, settlementCurrency, isBOP,RawMaterialNonIndexed=false } = props
+    const Currency = RawMaterialNonIndexed ? settlementCurrency : ((isBOP && isImport) ? settlementCurrency : isBOP && !isImport ? plantCurrency : props?.RowData?.IndexCurrency) || 'Currency'
+    const CurrencyLabel = RawMaterialNonIndexed ? settlementCurrency : (!props.rawMaterial ? reactLocalStorage.getObject('baseCurrency') : isImport && (props.rawMaterial || isBOP) ? settlementCurrency : plantCurrency) || 'Currency'
+
+const UOM = props?.RowData?.IndexUOM || (Array.isArray(props?.uom) ? '' : props?.uom?.label) || '';
     const [tableData, setTableData] = useState([]);
 
     const [disableTotalCost, setDisableTotalCost] = useState(true)
@@ -748,7 +751,7 @@ function AddOtherCostDrawer(props) {
                                                             {!isBOP && <td>{item.ApplicabilityCostConversion}</td>}
                                                             <td>{item.Value !== '-' ? checkForDecimalAndNull(item.Value, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
                                                             {(!props.rawMaterial || isBOP) && <td>{item.NetCost !== '-' ? item.NetCost : '-'}</td>}
-                                                            {!isBOP && <td>{item.NetCostConversion !== '-' ? item.NetCostConversion : '-'}</td>}
+                                                            {!isBOP && <td>{item.NetCostConversion !== '-' ?RawMaterialNonIndexed?item?.NetCost: item?.NetCostConversion : '-'}</td>}
                                                             <td>{item.Remark}</td>
                                                             {!props.hideAction && (
                                                                 <td>
@@ -780,7 +783,7 @@ function AddOtherCostDrawer(props) {
                                                         </td>
                                                     }
                                                     <td colSpan={3} className="text-left">
-                                                        {checkForDecimalAndNull((isBOP ? totalCostCurrency : totalCostBase), initialConfiguration?.NoOfDecimalForPrice)} ({isImport?settlementCurrency:plantCurrency})
+                                                        {checkForDecimalAndNull((isBOP||RawMaterialNonIndexed ? totalCostCurrency : totalCostBase), initialConfiguration?.NoOfDecimalForPrice)} ({isImport?settlementCurrency:plantCurrency})
                                                     </td>
                                                 </tr>
                                             </tbody>

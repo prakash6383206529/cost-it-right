@@ -538,7 +538,7 @@ function RMIndexationSimulationListing(props) {
 
     const costFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        let value = cell != null ? cell : '';
+        let value = cell != null ? cell : '-';
         return value
     }
 
@@ -1010,7 +1010,8 @@ function RMIndexationSimulationListing(props) {
                                         {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
                                         {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field={props.isCostingSimulation ? 'CustomerCode' : "CustomerName"} headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                                         <AgGridColumn field={props.isCostingSimulation ? 'UOM' : "UnitOfMeasurementName"} headerName='UOM'></AgGridColumn>
-
+                                        {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>}
+                                        <AgGridColumn field="Currency" cellRenderer={"currencyFormatter"}></AgGridColumn>
                                         {!props.isCostingSimulation && <><AgGridColumn field="BasicRatePerUOM" headerName='Basic Rate' cellRenderer='commonCostFormatter'></AgGridColumn>
                                             <AgGridColumn field="IsScrapUOMApply" headerName="Has different Scrap Rate UOM" cellRenderer='commonCostFormatter'></AgGridColumn>
                                             <AgGridColumn field="ScrapUnitOfMeasurement" headerName='Scrap Rate UOM' cellRenderer='commonCostFormatter'></AgGridColumn>
@@ -1019,7 +1020,10 @@ function RMIndexationSimulationListing(props) {
                                             <AgGridColumn field="ScrapRate" cellRenderer='commonCostFormatter'></AgGridColumn>
                                             {props.isMasterSummaryDrawer && rmIndexationSimulationList[0]?.TechnologyId === FORGING && <AgGridColumn width="140" field="MachiningScrapRate" headerName='Machining Scrap Rate'></AgGridColumn>}
                                             {/* ON RE FREIGHT COST AND SHEARING COST COLUMN IS COMMENTED //RE */}
-                                            <AgGridColumn field="NetLandedCost" headerName="Net Cost" cellRenderer='costFormatter'></AgGridColumn>
+                                            <AgGridColumn cellRenderer='costFormatter' field="NetCostWithoutConditionCost"  headerName="Basic Price" ></AgGridColumn>
+                                            <AgGridColumn cellRenderer='costFormatter' field="OtherNetCost"  headerName="Other Net Cost" ></AgGridColumn>
+<AgGridColumn cellRenderer='costFormatter' field="NetConditionCost"  headerName="Net Condition Cost" ></AgGridColumn>
+<AgGridColumn field="NetLandedCost" headerName="Net Cost" cellRenderer='costFormatter'></AgGridColumn>
 
                                             <AgGridColumn field="EffectiveDate" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn></>}
                                         {(!isSimulation && !props.isMasterSummaryDrawer) && <AgGridColumn width={160} field="RawMaterialId" cellClass="ag-grid-action-container" pinned="right" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}

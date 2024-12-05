@@ -430,22 +430,29 @@ export const handleApplicability = (value, basicPriceBaseCurrency, arr, costFiel
 /**
  * Recalculates condition costs
  */
-export const recalculateConditions = (basicPriceBaseCurrency, state) => {
+export const recalculateConditions = (basicPriceBaseCurrency, state,isSimulation,nonIndexationSimulation) => {      
+    
+    
     return recalculateCosts(
         false,
         basicPriceBaseCurrency,
         "ConditionType",
         "Applicability",
         "Percentage",
-        {
+        { 
             mainCost: "ConditionCost",
             conversionCost: "ConditionCostConversion",
             perQuantityCost: "ConditionCostPerQuantity",
+            // mainCost: !nonIndexationSimulation?"ConditionCost":"NewConditionCost",
+            // conversionCost: !nonIndexationSimulation?"ConditionCostConversion":"NewConditionNetCostConversion",
+            // perQuantityCost: !nonIndexationSimulation?"ConditionCostPerQuantity":"NewConditionNetCostLocalConversion",
         },
         'Description',
         state,
-        "Basic Price"
-    );
+        "Basic Price",
+        isSimulation,
+        nonIndexationSimulation,
+    );  
 };
 
 /**
@@ -466,23 +473,25 @@ export const recalculateOtherCost = (basicRate, state, isSimulation) => {
         'CostHeaderName',
         state,
         "Basic Rate",
-        isSimulation
+        isSimulation,
+        
     );
 };
 
 /**
  * Core cost recalculation logic
  */
-export const recalculateCosts = (isOtherCost, basicValue, typeField, applicabilityField, percentageField, resultFields, headerName, state, applicabilityName, isSimulation, basicRateValue) => {
+export const recalculateCosts = (isOtherCost, basicValue, typeField, applicabilityField, percentageField, resultFields, headerName, state, applicabilityName, isSimulation, basicRateValue,nonIndexationSimulation = false) => {
     // Select the correct data array and make a deep copy
     const dataArray = isOtherCost ? state.otherCostTableData : state.conditionTableData;
-    const costField = isOtherCost ? 'NetCost' : 'ConditionCost';
+    
+    const costField = isOtherCost ? 'NetCost' : !nonIndexationSimulation?'ConditionCost':'NewConditionCost';
     let copiedData = _.cloneDeep(dataArray) ?? [];
-
+    
     // Create a temporary array for calculations
     let tempArr = copiedData;
     // Process each item in the array
-    copiedData.forEach((item, index) => {
+    copiedData?.forEach((item, index) => {
         if (item?.[typeField] === "Percentage") {
             // Calculate costs
             const ApplicabilityCost = handleApplicability(
@@ -495,7 +504,6 @@ export const recalculateCosts = (isOtherCost, basicValue, typeField, applicabili
             );
             const Cost = checkForNull((item?.[percentageField]) / 100) * checkForNull(ApplicabilityCost);
             const CostConversion = checkForNull((item?.[percentageField]) / 100) * checkForNull(ApplicabilityCost);
-
             // Create updated object
             const updatedItem = {
                 ...item,
@@ -515,11 +523,13 @@ export const recalculateCosts = (isOtherCost, basicValue, typeField, applicabili
 /**
  * Updates cost values and handles state updates
  */
-export const updateCostValue = (isConditionCost, state, price, isSimulation = false) => {
+export const updateCostValue = (isConditionCost, state, price, isSimulation = false,nonIndexationSimulation = false) => {
     // Get table data and settings based on cost type
-    const table = isConditionCost
-        ? recalculateConditions(isSimulation ? price : state.NetCostWithoutConditionCost, state, isSimulation)
-        : recalculateOtherCost(price, state, isSimulation);
+  const table = isConditionCost
+        ? recalculateConditions(isSimulation ? price : (nonIndexationSimulation ?state.OldNetCostWithoutConditionCost
+
+            :state.NetCostWithoutConditionCost), state, isSimulation,nonIndexationSimulation)
+        : recalculateOtherCost(price, state, isSimulation,nonIndexationSimulation);
 
     // Calculate sum
     const costField = isConditionCost ? 'ConditionCostPerQuantity' : 'NetCost';

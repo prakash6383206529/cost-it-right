@@ -711,8 +711,9 @@ const {vendorLabel} = useLabels()
                                                     {showSaLineNumber() && <AgGridColumn width={130} field="LineNumber" headerName='Line Number' editable={true}></AgGridColumn>}
                                                     {(String(master) === EXCHNAGERATE || showExchangeRateColumn) &&
                                                         <>
-                                                            <AgGridColumn width={130} field="Currency" headerName='Currency' cellRenderer='revisionFormatter'></AgGridColumn>
-                                                            <AgGridColumn width={140} field="OldPOPrice" headerName='Net Cost' cellRenderer='oldPOFormatter'></AgGridColumn>
+                                                         {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn width={100}field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>}
+                                                         <AgGridColumn field="Currency" width={100}cellRenderer={"currencyFormatter"}></AgGridColumn> 
+                                                           <AgGridColumn width={140} field="OldPOPrice" headerName='Net Cost' cellRenderer='oldPOFormatter'></AgGridColumn>
                                                         </>
                                                     }
 
@@ -741,6 +742,8 @@ const {vendorLabel} = useLabels()
                                                         {/* <AgGridColumn width={140} field="OldRMCSum" headerName='Existing RM Cost/Pc' cellRenderer='oldRMCFormatter'></AgGridColumn>
                                                         <AgGridColumn width={140} field="NewRMCSum" headerName='New RM Cost/Pc' cellRenderer='newRMCFormatter' ></AgGridColumn>
                                                         <AgGridColumn width={140} field="RMVarianceSum" headerName='RM Variance' cellRenderer='varianceRMCFormatter' ></AgGridColumn> */}
+                                                        {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn width={100}field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>}
+                                                        <AgGridColumn field="Currency" width={100}cellRenderer={"currencyFormatter"}></AgGridColumn>
                                                         <AgGridColumn width={140} field="OldNetRawMaterialsCost" headerName='Existing RM Cost/Pc' cellRenderer='oldRMCFormatter'></AgGridColumn>
                                                         <AgGridColumn width={140} field="NewNetRawMaterialsCost" headerName='Revised RM Cost/Pc' cellRenderer='newRMCFormatter'></AgGridColumn>
                                                         <AgGridColumn width={140} field="RMVariance" headerName='Variance (RM Cost)' cellRenderer='varianceRMCFormatter' ></AgGridColumn>
@@ -761,17 +764,23 @@ const {vendorLabel} = useLabels()
                                                     </>}
 
                                                     {(showOperationColumn) && <>
+                                                        {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn width={100}field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>}
+                                                        <AgGridColumn field="Currency" width={100}cellRenderer={"currencyFormatter"}></AgGridColumn>
                                                         <AgGridColumn width={140} field="OldOperationCost" headerName='Existing Oper Cost' cellRenderer="oldOPERFormatter"></AgGridColumn>
                                                         <AgGridColumn width={140} field="NewOperationCost" headerName='Revised Oper Cost' cellRenderer="newOPERFormatter"></AgGridColumn>
                                                         <AgGridColumn width={140} field="OperationCostVariance" headerName='Variance (Oper. Cost)' ></AgGridColumn>
                                                     </>}
 
                                                     {(showBOPColumn) && <>
+                                                        {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn width={100}field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>}
+                                                        <AgGridColumn field="Currency" width={100}cellRenderer={"currencyFormatter"}></AgGridColumn>
                                                         <AgGridColumn width={140} field="OldBasicRate" headerName='Existing Basic Rate' ></AgGridColumn>
                                                         <AgGridColumn width={140} field="NewBasicRate" headerName='Revised Basic Rate' ></AgGridColumn>
                                                     </>}
 
                                                     {showMachineRateColumn && <>
+                                                        {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn width={100}field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>}
+                                                        <AgGridColumn field="Currency" width={100}cellRenderer={"currencyFormatter"}></AgGridColumn>
                                                         <AgGridColumn width={140} field="OldMachineRate" headerName='Existing Machine Rate' ></AgGridColumn>
                                                         <AgGridColumn width={140} field="NewMachineRate" headerName='Revised Machine Rate' ></AgGridColumn>
                                                     </>}

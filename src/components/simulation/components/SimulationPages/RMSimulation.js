@@ -149,62 +149,6 @@ function RMSimulation(props) {
         }
     }, [])
 
-    const handleApplicability = (value, basicPriceBaseCurrency, arr, isCondition) => {
-        const selectedApplicabilities = value?.split(' + ');
-
-        // Calculate total cost currency for selected applicabilities
-        const total = selectedApplicabilities.reduce((acc, Applicability) => {
-            // Skip checking for "Basic Rate" in tableData
-
-            const item = arr?.find(item => item?.CostHeaderName?.trim() === Applicability?.trim());
-            if (item) {
-                let totalCost = checkForNull(acc) + (isCondition ? checkForNull(item?.ConditionCost) : checkForNull(item?.NetCost))
-                return totalCost
-            } else {
-                return basicPriceBaseCurrency
-            }
-
-        }, 0);
-
-        return total
-    }
-
-    const recalculateOtherCost = (arr) => {
-        let copiedOtherCostData = _.cloneDeep(arr) ?? []
-        let tempArr = copiedOtherCostData
-        copiedOtherCostData && copiedOtherCostData?.map((item, index) => {
-            if (item?.Type === "Percentage") {
-                // let ApplicabilityCost = handleApplicability(item.Applicability, basicRate, tempArr, false)
-                // let OtherCost = checkForNull((item?.Value) / 100) * checkForNull(ApplicabilityCost)
-                // let OtherCostConversion = checkForNull((item?.Value) / 100) * checkForNull(ApplicabilityCost)
-                // let obj = {
-                //     ...item, ApplicabilityCost: ApplicabilityCost, NetCost: OtherCost, NetCostConversion: OtherCostConversion
-                //     , ApplicabilityCostConversion: ApplicabilityCost
-                // }
-                // tempArr = Object.assign([...tempArr], { [index]: obj })
-            }
-        })
-        return tempArr
-    }
-
-    const recalculateConditionCost = (arr) => {
-        let copiedConditionCostData = _.cloneDeep(arr) ?? []
-        let tempArr = copiedConditionCostData
-        copiedConditionCostData && copiedConditionCostData?.map((item, index) => {
-            if (item?.Type === "Percentage") {
-                let ApplicabilityCost = handleApplicability(item.Applicability, basicRate, tempArr, true)
-                let ConditionCost = checkForNull((item?.Value) / 100) * checkForNull(ApplicabilityCost)
-                let ConditionCostConversion = checkForNull((item?.Value) / 100) * checkForNull(ApplicabilityCost)
-                let obj = {
-                    ...item, ApplicabilityCost: ApplicabilityCost, NetCost: ConditionCost, NetCostConversion: ConditionCostConversion
-                    , ApplicabilityCostConversion: ApplicabilityCost
-                }
-                tempArr = Object.assign([...tempArr], { [index]: obj })
-            }
-        })
-        return tempArr
-    }
-
     useEffect(() => {
         if (list && list?.[rowIndex] && !isImpactedMaster) {
             let obj = list?.[rowIndex]
@@ -572,7 +516,7 @@ function RMSimulation(props) {
                 {
                     isImpactedMaster ?
                         row?.OldScrapRate :
-                        <span title={cell && value ? Number(cell) : Number(row?.ScrapRate)}>{cell && value ? Number(cell) : Number(row?.ScrapRate)}</span>
+                        <span title={cell && value ? checkForNull(Number(cell)) : checkForNull(Number(row?.ScrapRate))}>{cell && value ? checkForNull(Number(cell)) : checkForNull(Number(row?.ScrapRate))}</span>
                 }
             </>
         )
@@ -586,8 +530,8 @@ function RMSimulation(props) {
             <>
                 {
                     isImpactedMaster ?
-                        row?.OldScrapRatePerScrapUOM :
-                        <span title={cell && value ? Number(cell) : Number(row?.ScrapRate)}>{cell && value ? Number(cell) : Number(row?.ScrapRate)}</span>
+                        checkForNull(row?.OldScrapRatePerScrapUOM) :
+                        <span title={cell && value ? checkForNull(Number(cell)) : Number(row?.ScrapRate)}>{cell && value ? checkForNull(Number(cell)) :checkForNull( Number(row?.ScrapRate))}</span>
                 }
             </>
         )
@@ -972,7 +916,7 @@ function RMSimulation(props) {
         const value = beforeSaveCell(cell, props, 'otherCost')
         const showValue = cell && value ? checkForDecimalAndNull(Number(cell), getConfigurationKey().NoOfDecimalForPrice) : checkForDecimalAndNull(Number(row?.OtherNetCost), getConfigurationKey().NoOfDecimalForPrice)
 
-        const classGreen = (row?.NewOtherNetCost > row?.OldOtherNetCost) ? 'red-value form-control' : (row?.NewOtherNetCost < row?.OldOtherNetCost) ? 'green-value form-control' : 'form-class'
+        const classGreen = (row?.NewOtherNetCost > row?.OtherNetCost) ? 'red-value form-control' : (row?.NewOtherNetCost < row?.OtherNetCost) ? 'green-value form-control' : 'form-class'
         return (
             <>
                 {
@@ -1002,7 +946,7 @@ function RMSimulation(props) {
 
         const value = beforeSaveCell(cell, props, 'otherCost')
         const showValue = cell && value ? checkForDecimalAndNull(Number(cell), getConfigurationKey().NoOfDecimalForPrice) : checkForDecimalAndNull(Number(row?.NetConditionCost), getConfigurationKey().NoOfDecimalForPrice)
-        const classGreen = (row?.NewNetConditionCost > row?.OldConditionNetCost) ? 'red-value form-control' : (row?.NewNetConditionCost < row?.OldConditionNetCost) ? 'green-value form-control' : 'form-class'
+        const classGreen = (row?.NewNetConditionCost > row?.NetConditionCost) ? 'red-value form-control' : (row?.NetConditionCost < row?.OldConditionNetCost) ? 'green-value form-control' : 'form-class'
         return (
             <>
                 {
@@ -1281,16 +1225,13 @@ function RMSimulation(props) {
                                                 {costingAndPartNo && <AgGridColumn field="CostingNumber" tooltipField='CostingNumber' editable='false' headerName="Costing No" width={columnWidths.CostingNumber}></AgGridColumn>}
                                                 {costingAndPartNo && <AgGridColumn field="PartNumber" tooltipField='PartNumber' editable='false' headerName="Part No" width={columnWidths.PartNumber}></AgGridColumn>}
 
-                                                {String(props?.masterId) === String(RMIMPORT) && <AgGridColumn field="Currency" tooltipField='Currency' editable='false' headerName="Currency" minWidth={140} ></AgGridColumn>}
+                                                {/* {String(props?.masterId) === String(RMIMPORT) && <AgGridColumn field="Currency" tooltipField='Currency' editable='false' headerName="Currency" minWidth={140} ></AgGridColumn>} */}
                                                 {(isImpactedMaster && String(props?.masterId) === String(RMIMPORT)) && <AgGridColumn field="ExchangeRate" tooltipField='ExchangeRate' editable='false' headerName="Existing Exchange Rate" minWidth={140} ></AgGridColumn>}
                                                 {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>}
                                                 <AgGridColumn field="Currency" cellRenderer={"currencyFormatter"}></AgGridColumn>
                                                 <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={
-                                                    (Number(selectedMasterForSimulation?.value) === Number(RMIMPORT) ||
-                                                        Number(selectedMasterForSimulation?.value) === Number(EXCHNAGERATE) ||
-                                                        String(props?.masterId) === String(RMIMPORT))
-                                                        ? "Basic Rate (Currency)"
-                                                        : `Basic Rate (${reactLocalStorage.getObject("baseCurrency")})`
+                                                   "Basic Rate (Currency)"
+                                                     
                                                 } marryChildren={true} >
                                                     <AgGridColumn width={120} cellRenderer='oldBasicRateFormatter' field={isImpactedMaster ? "OldBasicRate" : "BasicRatePerUOM"} editable='false' headerName="Existing" colId={isImpactedMaster ? "OldBasicRate" : "BasicRatePerUOM"}></AgGridColumn>
                                                     <AgGridColumn width={120} cellRenderer='newBasicRateFormatter' editable={isImpactedMaster ? false : EditableCallbackForNewBasicRate} onCellValueChanged='cellChange' field="NewBasicRate" headerName="Revised" colId='NewBasicRate' headerComponent={'revisedBasicRateHeader'}></AgGridColumn>
@@ -1300,12 +1241,8 @@ function RMSimulation(props) {
                                                     <AgGridColumn width={120} editable={EditableCallbackForPercentage} onCellValueChanged='cellChange' field="Percentage" colId='Percentage' valueGetter={ageValueGetterPer} cellRenderer='percentageFormatter' headerComponent={'percentageHeader'}></AgGridColumn>
                                                 </AgGridColumn>}
                                                 <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} marryChildren={true} headerName={
-                                                    (Number(selectedMasterForSimulation?.value) === Number(RMIMPORT) ||
-                                                        Number(selectedMasterForSimulation?.value) === Number(EXCHNAGERATE) ||
-                                                        String(props?.masterId) === String(RMIMPORT)
-                                                    )
-                                                        ? "Scrap Rate (Currency)"
-                                                        : `Scrap Rate (${reactLocalStorage.getObject("baseCurrency")})`
+                                                    "Scrap Rate (Currency)"
+                                                     
                                                 }>
                                                     {isScrapUOMApplyTemp && <AgGridColumn width={columnWidths.ScrapRatePerScrapUOM} field={isImpactedMaster ? "OldScrapRatePerScrapUOM" : "ScrapRatePerScrapUOM"} editable='false' cellRenderer='oldScrapRateFormatterPerScrapUOM' headerName="Existing (In Scrap UOM)" colId={isImpactedMaster ? "ScrapRatePerScrapUOM" : "ScrapRatePerScrapUOM"} ></AgGridColumn>}
                                                     {isScrapUOMApplyTemp && <AgGridColumn width={columnWidths.NewScrapRatePerScrapUOM} cellRenderer='newScrapRateUOMFormatter' field='NewScrapRatePerScrapUOM' headerName="Revised (In Scrap UOM)" colId={"NewScrapRatePerScrapUOM"} editable={isImpactedMaster ? false : EditableCallbackForNewScrapRate}></AgGridColumn>}
@@ -1313,11 +1250,8 @@ function RMSimulation(props) {
                                                     <AgGridColumn width={120} cellRenderer={'newScrapRateFormatter'} field="NewScrapRate" headerName="Revised" colId="NewScrapRate" valueGetter={ageValueGetterScrapRate} headerComponent={'revisedScrapRateHeader'} editable={isImpactedMaster ? false : EditableCallbackForNewScrapRateSecond} ></AgGridColumn>
                                                 </AgGridColumn>
                                                 <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={300} headerName={
-                                                    (Number(selectedMasterForSimulation?.value) === Number(RMIMPORT) ||
-                                                        Number(selectedMasterForSimulation?.value) === Number(EXCHNAGERATE) ||
-                                                        String(props?.masterId) === String(RMIMPORT))
-                                                        ? "Other Cost (Currency)"
-                                                        : `Other Cost (${reactLocalStorage.getObject("baseCurrency")})`
+                                                   "Other Cost (Currency)"
+                                                   
                                                 } marryChildren={true} >
                                                     {/* <AgGridColumn width={150} cellRenderer='existingOtherCostFormatter' field={isImpactedMaster ? "OtherNetCost" : 'isCostingSimulation' ? 'OldRawMaterialIndexationDetails.OtherNetCost' : "OtherNetCost"} editable='false' headerName="Existing" colId={isImpactedMaster ? "OtherNetCost" : "OtherNetCost"} ></AgGridColumn>
                                                     <AgGridColumn width={150} cellRenderer='revisedOtherCostFormatter' editable={false} onCellValueChanged='cellChange' field={'isCostingSimulation' ? 'NewRawMaterialIndexationDetails.OtherNetCost' : "NewOtherNetCost"} headerName="Revised" colId='NewOtherNetCost' headerComponent={'revisedBasicRateHeader'}></AgGridColumn> */}
@@ -1325,23 +1259,16 @@ function RMSimulation(props) {
                                                     <AgGridColumn width={150} cellRenderer='revisedOtherCostFormatter' editable={false} onCellValueChanged='cellChange' field={isImpactedMaster ? "NewOtherCost" : "NewOtherNetCost"} headerName="Revised" colId='NewOtherNetCost' headerComponent={'revisedBasicRateHeader'}></AgGridColumn>
                                                 </AgGridColumn>
                                                 {<AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={
-                                                    (Number(selectedMasterForSimulation?.value) === Number(RMIMPORT) ||
-                                                        Number(selectedMasterForSimulation?.value) === Number(EXCHNAGERATE) ||
-                                                        String(props?.masterId) === String(RMIMPORT)
-                                                    )
-                                                        ? "Basic Price (Currency)"
-                                                        : `Basic Price (${reactLocalStorage.getObject("baseCurrency")})`
+                                                    "Basic Price (Currency)"
+                                                      
                                                 }>
-                                                    <AgGridColumn width={columnWidths.NetCostWithoutConditionCost} field={isImpactedMaster ? 'OldNetCostWithoutConditionCost' : 'NetCostWithoutConditionCost'} editable='false' cellRenderer={'costFormatter'} headerName="Existing" colId='NetCostWithoutConditionCost'></AgGridColumn>
-                                                    <AgGridColumn width={columnWidths.NewNetCostWithoutConditionCost} field={isImpactedMaster ? "NewNetCostWithoutConditionCost" : "NewNetCostWithoutConditionCost"} editable='false' cellRenderer={'costFormatter'} headerName="Revised" colId='NewNetCostWithoutConditionCost'></AgGridColumn>
+                                                    <AgGridColumn width={columnWidths.NetCostWithoutConditionCost} field={isImpactedMaster ? 'OldNetCostWithoutConditionCost' : 'NetCostWithoutConditionCost'} editable='false'  headerName="Existing" colId='NetCostWithoutConditionCost'></AgGridColumn>
+                                                    <AgGridColumn width={columnWidths.NewNetCostWithoutConditionCost} field={isImpactedMaster ? "NewNetCostWithoutConditionCost" : "NewNetCostWithoutConditionCost"} editable='false' headerName="Revised" colId='NewNetCostWithoutConditionCost'></AgGridColumn>
                                                 </AgGridColumn>}
-
+                                                {}
                                                 <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={300} headerName={
-                                                    (Number(selectedMasterForSimulation?.value) === Number(RMIMPORT) ||
-                                                        Number(selectedMasterForSimulation?.value) === Number(EXCHNAGERATE) ||
-                                                        String(props?.masterId) === String(RMIMPORT))
-                                                        ? "Condition Cost (Currency)"
-                                                        : `Condition Cost (${reactLocalStorage.getObject("baseCurrency")})`
+                                                    "Condition Cost (Currency)"
+                                                      
                                                 } marryChildren={true} >
                                                     {/* <AgGridColumn width={150} cellRenderer='existingConditionCostFormatter' field={isImpactedMaster ? "NetConditionCost" : 'isCostingSimulation' ? 'OldRawMaterialIndexationDetails.NetConditionCost' : "NetConditionCost"} editable='false' headerName="Existing" colId={isImpactedMaster ? "NetConditionCost" : "NetConditionCost"} ></AgGridColumn>
                                                     <AgGridColumn width={150} cellRenderer='revisedConditionCostFormatter' editable={false} onCellValueChanged='cellChange' field={'isCostingSimulation' ? 'NewRawMaterialIndexationDetails.NetConditionCost' : "NewNetConditionCost"} headerName="Revised" colId='NewNetConditionCost' headerComponent={'revisedBasicRateHeader'}></AgGridColumn> */}
@@ -1357,12 +1284,8 @@ function RMSimulation(props) {
                                                 <AgGridColumn width={columnWidths.RMShearingCost} field="RMShearingCost" tooltipField='RMShearingCost' editable='false' cellRenderer={'CostFormatter'} headerName="Shearing Cost" ></AgGridColumn>
                                                 {technologyId === String(FORGING) && <AgGridColumn width={170} field="MachiningScrapRate" tooltipField='MachiningScrapRate' editable='false' headerName="Machining Scrap Rate" cellRenderer={'CostFormatter'}></AgGridColumn>}
                                                 {<AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={
-                                                    (Number(selectedMasterForSimulation?.value) === Number(RMIMPORT) ||
-                                                        Number(selectedMasterForSimulation?.value) === Number(EXCHNAGERATE) ||
-                                                        String(props?.masterId) === String(RMIMPORT)
-                                                    )
-                                                        ? "Net Cost (Currency)"
-                                                        : `Net Cost (${reactLocalStorage.getObject("baseCurrency")})`
+                                                    "Net Cost (Currency)"
+                                                       
                                                 }>
                                                     <AgGridColumn width={columnWidths.NetLandedCost} field="NetLandedCost" tooltipField='NetLandedCost' editable='false' cellRenderer={'costFormatter'} headerName="Existing" colId='NetLandedCost'></AgGridColumn>
                                                     <AgGridColumn width={columnWidths.NewNetLandedCost} field="NewNetLandedCost" editable='false' valueGetter={ageValueGetterLanded} cellRenderer={'NewcostFormatter'} headerName="Revised" colId='NewNetLandedCost'></AgGridColumn>
@@ -1431,7 +1354,7 @@ function RMSimulation(props) {
                         ViewMode={isImpactedMaster || isViewFlag}
                         rmTableData={otherCostDetailForRow}
                         RowData={rowData}
-                        plantCurrency={rowData?.LocalCurrency}
+                        plantCurrency={rowData?.Currency}
                         settlementCurrency={rowData?.Currency}
                         isImpactedMaster={isImpactedMaster}
                     />
@@ -1449,7 +1372,7 @@ function RMSimulation(props) {
                         // isFromImport={states.isImport}
                         // EntryType={checkForNull(ENTRY_TYPE_DOMESTIC)}
                         currency={rowData?.Currency}
-                        PlantCurrency={rowData?.LocalCurrency}
+                        PlantCurrency={rowData?.Currency}
                         isImpactedMaster={isImpactedMaster}
                     />
                 }

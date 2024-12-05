@@ -11,7 +11,6 @@ import { msalConfig } from "./authConfig";
 import { PublicClientApplication, EventType } from "@azure/msal-browser";
 import Toaster from './components/common/Toaster';
 import { QueryClient, QueryClientProvider } from 'react-query';
-import { ReactQueryDevtools } from 'react-query/devtools';
 
 const msalInstance = new PublicClientApplication(msalConfig);
 
@@ -74,7 +73,6 @@ ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
       <QueryClientProvider client={queryClient}>
-        <ReactQueryDevtools initialIsOpen={false} />
         <App instance={msalInstance} />
       </QueryClientProvider>
     </Provider>

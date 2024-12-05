@@ -741,7 +741,7 @@ function AddConditionCosting(props) {
                                     </Col >
                                 </Row >
                                 {/* <NpvCost showAddButton={false} tableData={tableData} hideAction={false} editData={editData} /> */}
-                                {<ConditionCosting tableData={tableData} hideAction={false} editData={editData} ViewMode={props.ViewMode} isFromImport={isFromImport} currency={currency} isFromMaster={isFromMaster} PlantCurrency={PlantCurrency} />}
+                                {<ConditionCosting tableData={tableData} hideAction={false} editData={editData} ViewMode={props.ViewMode} isFromImport={isFromImport} currency={currency} isFromMaster={isFromMaster} PlantCurrency={PlantCurrency} isSimulation={props?.isSimulation} />}
                             </div >
                             <Row className="sf-btn-footer no-gutters drawer-sticky-btn justify-content-between mx-0">
                                 <div className="col-sm-12 text-left bluefooter-butn d-flex justify-content-end">

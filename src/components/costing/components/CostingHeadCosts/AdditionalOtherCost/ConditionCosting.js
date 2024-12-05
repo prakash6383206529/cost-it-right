@@ -7,7 +7,7 @@ import { useSelector } from 'react-redux'
 import { reactLocalStorage } from 'reactjs-localstorage'
 
 function ConditionCosting(props) {
-    const { isFromImport, currency, isFromMaster, PlantCurrency } = props
+    const { isFromImport, currency, isFromMaster, PlantCurrency ,isSimulation=false} = props
     const [totalCostBase, setTotalCostBase] = useState(0)
 
     const [totalCostCurrency, setTotalCostCurrency] = useState(0)
@@ -56,7 +56,7 @@ function ConditionCosting(props) {
                                                 {<td>{item.Applicability}</td>}
                                                 {<td>{item.ApplicabilityCost ? checkForDecimalAndNull(item?.ApplicabilityCost, getConfigurationKey().NoOfDecimalForPrice) : '-'}</td>}
                                                 {<td>{item.ConditionQuantity ? checkForDecimalAndNull(item?.ConditionQuantity, getConfigurationKey().NoOfDecimalForPrice) : '-'}</td>}
-                                                {<td>{checkForDecimalAndNull(item?.ConditionCostConversion, getConfigurationKey().NoOfDecimalForPrice)}</td>}
+                                                {<td>{checkForDecimalAndNull(isSimulation?item?.ConditionCost:item?.ConditionCostConversion, getConfigurationKey().NoOfDecimalForPrice)}</td>}
                                                 {<td>{item?.ConditionCostPerQuantity ? checkForDecimalAndNull(item?.ConditionCostPerQuantity, getConfigurationKey().NoOfDecimalForPrice) : '-'}</td>}
                                                 {!props.hideAction && <td><div className='text-right'>
                                                     <button title='Edit' className="Edit mr-1" type={'button'} onClick={() => editDeleteData(index, 'edit')} disabled={props.ViewMode} />
