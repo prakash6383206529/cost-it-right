@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, Container } from 'reactstrap'
 import { MESSAGES } from '../../../config/message'
-import { BUDGETING, defaultPageSize, EMPTY_DATA, FILE_URL } from '../../../config/constants'
+import { BUDGETING, defaultPageSize, EMPTY_DATA, ENTRY_TYPE_DOMESTIC, ENTRY_TYPE_IMPORT, FILE_URL } from '../../../config/constants'
 import NoContentFound from '../../common/NoContentFound'
 import { deleteBudget, getBudgetDataList, getPartCostingHead, } from '../actions/Budget'
 import { BUDGET_DOWNLOAD_EXCEl, Vendor } from '../../../config/masterData'
@@ -35,7 +35,7 @@ import { Steps } from '../../common/Tour/TourMessages'
 import { useTranslation } from 'react-i18next'
 import { useLabels, useWithLocalization } from '../../../helper/core'
 import { getConfigurationKey } from '../../../helper'
-
+import Switch from 'react-switch'
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
@@ -79,6 +79,7 @@ function BudgetListing(props) {
     const { volumeDataList, volumeDataListForDownload } = useSelector(state => state.volume);
     const { globalTakes } = useSelector(state => state.pagination)
     const { selectedRowForPagination } = useSelector((state => state.simulation))
+    const [isImport, setIsImport] = useState(false)
     const dispatch = useDispatch();
     const { t } = useTranslation("common")
     const { vendorLabel } = useLabels()
@@ -137,7 +138,7 @@ function BudgetListing(props) {
      * @method getTableListData
      * @description Get user list data
      */
-    const getTableListData = (skip = 0, take = 10, isPagination = true) => {
+    const getTableListData = (skip = 0, take = 10, isPagination = true, BudgetedEntryType = false) => {
         if (isPagination === true || isPagination === null) setIsLoader(true)
         let dataObj = { ...floatingFilterData }
         //dataObj.ExchangeRateSourceName = floatingFilterData?.ExchangeRateSourceName
@@ -146,6 +147,7 @@ function BudgetListing(props) {
         dataObj.IsCustomerDataShow = cbc
         dataObj.IsVendorDataShow = vbc
         dataObj.IsZeroDataShow = zbc
+        dataObj.BudgetedEntryType = BudgetedEntryType ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC
         dispatch(getBudgetDataList(skip, take, isPagination, dataObj, (res) => {
             if (isPagination === true || isPagination === null) setIsLoader(false)
             if (res && isPagination === false) {
@@ -519,6 +521,11 @@ function BudgetListing(props) {
     const toggleDrawer = () => {
         setBulkUploadBtn(false)
     }
+    const importToggle = () => {
+        setIsImport(!isImport)
+        getTableListData(0, defaultPageSize, true, !isImport)
+    
+    }
     /**
      * @method render
      * @description Renders the component
@@ -532,6 +539,7 @@ function BudgetListing(props) {
                         {disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} customClass="mt-5" />}
                         <form noValidate>
                             <Row className={`${props?.isMasterSummaryDrawer ? '' : 'pt-4'} blue-before`}>
+
                                 <Col md="9" className="search-user-block mb-3">
                                     <div className="d-flex justify-content-end bd-highlight">
                                         {(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) &&
@@ -576,6 +584,25 @@ function BudgetListing(props) {
 
                                     </div>
                                 </Col>
+                                <Col md="4" className="switch mb15">
+                <label className="switch-level">
+                  <div className="left-title">Domestic</div>
+                  <Switch
+                    onChange={importToggle}
+                    checked={isImport}
+                    id="normal-switch"
+                    background="#4DC771"
+                    onColor="#4DC771"
+                    onHandleColor="#ffffff"
+                    offColor="#4DC771"
+                    uncheckedIcon={false}
+                    checkedIcon={false}
+                    height={20}
+                    width={46}
+                  />
+                  <div className="right-title">Import</div>
+                </label>
+              </Col>
                             </Row>
                         </form>
 

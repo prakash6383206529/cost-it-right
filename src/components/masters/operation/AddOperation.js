@@ -356,7 +356,11 @@ class AddOperation extends Component {
    */
   onPressVendor = (costingHeadFlag) => {
     this.props.reset();
-    this.setState({ ...this.initialState, costingTypeId: costingHeadFlag }, () => {
+      // Store current isImport value
+      const currentIsImport = this.state.isImport;
+    this.setState({ ...this.initialState, costingTypeId: costingHeadFlag ,
+      isImport: currentIsImport // Preserve isImport value
+    }, () => {
       if (costingHeadFlag === CBCTypeId) {
         this.props.getClientSelectList(() => { })
       }
@@ -1203,9 +1207,10 @@ class AddOperation extends Component {
     }
   };
   OperationRateTitle = () => {
+    const rateLabel = this.state.isImport ? `Rate (${this.state.currency?.label ?? 'Currency'})` :`Rate (${this.props.fieldsObj?.plantCurrency ?? 'Plant Currency'})`
     return {
-      tooltipTextPlantCurrency: `Rate * Plant Currency Rate (${this.state?.plantCurrency ?? ''})`,
-      toolTipTextNetCostBaseCurrency: `Rate * Currency Rate (${this.state?.settlementCurrency ?? ''})`,
+      tooltipTextPlantCurrency: `${rateLabel} * Plant Currency Rate (${this.state?.plantCurrency ?? ''})`,
+      toolTipTextNetCostBaseCurrency: `${rateLabel} * Currency Rate (${this.state?.settlementCurrency ?? ''})`,
     };
   };
   getTooltipTextForCurrency = () => {
@@ -1221,8 +1226,8 @@ class AddOperation extends Component {
 
     // Generate tooltip text based on the condition
     return <>
-      {!this.state?.hidePlantCurrency
-        ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrency}, `
+      {!this.state?.hidePlantCurrency               
+        ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrencyLabel}, `
         : ''}<p>Exchange Rate: 1 {currencyLabel} = {settlementCurrencyRate} {baseCurrency}</p>
     </>;
   };
@@ -1675,7 +1680,7 @@ class AddOperation extends Component {
                           </Col>
                         </>}
                       {this.state.isImport && <Col md="3">
-                        {this?.state?.isWelding && <TooltipCustom disabledIcon={true} width={"350px"} id="rate" tooltipText={'Rate = Welding Material Rate/Kg * Consumption'} />}
+                        {this?.state?.isWelding && <TooltipCustom disabledIcon={true} width={"350px"} id="rate" tooltipText={'Welding Material Rate/Kg * Consumption'} />}
                         <Field
                           label={`Rate (${this.state.currency?.label ?? 'Currency'})`}
                           name={"Rate"}
@@ -1692,13 +1697,13 @@ class AddOperation extends Component {
                         />
                       </Col>}
                       <Col md="3">
-                        {this?.state?.isWelding && !this.state.isImport && <TooltipCustom disabledIcon={true} width={"350px"} id="rate" tooltipText={'Rate = Welding Material Rate/Kg * Consumption'} />}
-                        {!this?.state?.isWelding && this.state.isImport && <TooltipCustom disabledIcon={true} id="rate" tooltipText={hidePlantCurrency ? this.OperationRateTitle()?.toolTipTextNetCostBaseCurrency : this.OperationRateTitle()?.tooltipTextPlantCurrency} />}
+                        {this?.state?.isWelding && !this.state.isImport && <TooltipCustom disabledIcon={true} width={"350px"} id="rate" tooltipText={'Welding Material Rate/Kg * Consumption'} />}
+                        {!this?.state?.isWelding && this.state.isImport && <TooltipCustom disabledIcon={true} id="rate-local" tooltipText={hidePlantCurrency ? this.OperationRateTitle()?.toolTipTextNetCostBaseCurrency : this.OperationRateTitle()?.tooltipTextPlantCurrency} />}
                         <Field
-                          label={`Rate (${this.props.fieldsObj?.plantCurrency ?? 'Currency'})`}
+                          label={`Rate (${this.props.fieldsObj?.plantCurrency ?? 'Plant Currency'})`}
                           name={"RateLocalConversion"}
                           type="text"
-                          id="rate"
+                          id="rate-local"
                           placeholder={this.state.isImport ? '' : 'Enter'}
                           validate={this.state.isWelding ? [] : [required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
                           component={renderTextInputField}

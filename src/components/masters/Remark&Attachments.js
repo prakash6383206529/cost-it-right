@@ -22,12 +22,13 @@ function RemarksAndAttachments(props) {
     const { Controller, control, register, setValue, getValues, errors, useWatch, states, data } = props
     const { isEditFlag, isViewFlag } = data
     const rawMaterailDetails = useSelector((state) => state.material.rawMaterailDetails)
-    const [state, setState] = useState({
+    const initialState = {
         remarks: '',
         attachmentLoader: false,
         isOpen: false,
         isAttachmentOpen: false,
-    });
+    };
+    const [state, setState] = useState(initialState);
     const [files, setFiles] = useState([]);
     const dropzone = useRef(null);
     const dispatch = useDispatch();

@@ -33,6 +33,7 @@ import { withTranslation } from 'react-i18next';
 import { getExchangeRateByCurrency } from '../../costing/actions/Costing'
 import { getPlantUnitAPI } from '../actions/Plant'
 import WarningMessage from '../../common/WarningMessage'
+import TooltipCustom from '../../common/Tooltip'
 
 const selector = formValueSelector('AddLabour')
 
@@ -78,7 +79,7 @@ class AddLabour extends Component {
       showPopup: false,
       vendorFilterList: [],
       hidePlantCurrency: false,
-      currencyValue: null,
+      currencyValue: 1,
       ExchangeSource: "",
       country: [],
       city: [],
@@ -136,14 +137,13 @@ class AddLabour extends Component {
   }
   callExchangeRateAPI = () => {
     const { fieldsObj } = this.props
-    const { costingTypeId, vendorName, selectedPlants, client, effectiveDate, ExchangeSource } = this.state;
+    const { costingTypeId, vendorName, client, effectiveDate, ExchangeSource,IsEmployeContractual} = this.state;
 
-    const vendorValue = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? vendorName.value : EMPTY_GUID) : EMPTY_GUID
-    const costingType = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? VBCTypeId : costingTypeId) : ZBCTypeId
+    const vendorValue = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || (IsEmployeContractual&&costingTypeId === ZBCTypeId)) ? vendorName.value : EMPTY_GUID) : EMPTY_GUID
+    const costingType = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId ||  (IsEmployeContractual&&costingTypeId === ZBCTypeId)) ? VBCTypeId : costingTypeId) : ZBCTypeId
     const hasCurrencyAndDate = fieldsObj?.plantCurrency && effectiveDate;
     if (hasCurrencyAndDate) {
-      if (IsFetchExchangeRateVendorWise() && (vendorName?.length === 0 && client?.length === 0)) {
-
+      if (IsFetchExchangeRateVendorWise() && ((IsEmployeContractual&&costingTypeId === ZBCTypeId)&&vendorName?.length === 0 && client?.length === 0)) {
         return;
       }
       if (this.props.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
@@ -942,7 +942,7 @@ class AddLabour extends Component {
   };
 
   DisplayLabourRatePlantCurrencyLabel = () => {
-    return <>Rate per Person/Annum/ ({this.props.fieldsObj.plantCurrency ? this.props.fieldsObj.plantCurrency : "Currency"})</>
+    return <>Rate per Person/Annum ({this.props.fieldsObj.plantCurrency ??  "Plant Currency"})</>
   }
   handleCalculation = (rate) => {
 
@@ -1301,6 +1301,7 @@ class AddLabour extends Component {
                         </Col>
                       )}
                       <Col Col md="3" className='p-relative'>
+                        {!this.state.hidePlantCurrency &&this.props.fieldsObj?.plantCurrency&& <TooltipCustom width="350px" id="plantCurrency" tooltipText={`Exchange Rate: 1 ${this.props.fieldsObj?.plantCurrency } = ${this.state?.currencyValue ?? '-'} ${reactLocalStorage.getObject("baseCurrency")}`} />}
                         <Field
                           label="Plant Currency"
                           name="plantCurrency"
@@ -1384,9 +1385,11 @@ class AddLabour extends Component {
                           </div>
                         </Col>
                         {!this?.state?.hidePlantCurrency && <Col md="3" className='UOM-label-container p-relative'>
+                          { <TooltipCustom disabledIcon={true} width={"350px"} id="rate" tooltipText={`Rate per Person/Annum (${this.props.fieldsObj.plantCurrency ??  "Plant Currency"}) * Plant Currency Rate (${this.state?.currencyValue ?? ''})`} />}
                           <Field
                             label={`Rate per Person/Annum (${reactLocalStorage.getObject("baseCurrency")})`}
                             name={"LabourRateConversion"}
+                            id="rate"
                             type="text"
                             placeholder={"-"}
                             validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
