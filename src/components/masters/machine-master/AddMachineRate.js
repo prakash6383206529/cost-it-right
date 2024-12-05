@@ -345,14 +345,14 @@ class AddMachineRate extends Component {
         if (res && res.data && res.data.Result) {
 
           const Data = res.data.Data;
-          const vendorData = Data.VendorId && Data.VendorName ? {
-            value: Data.VendorId,
-            label: Data.VendorName
+          const vendorData = Data?.VendorId && Data?.VendorName ? {
+            value: Data?.VendorId,
+            label: Data?.VendorName
           } : [];
     
-          const clientData = Data.CustomerId && Data.CustomerName ? {
-            value: Data.CustomerId,
-            label: Data.CustomerName
+          const clientData = Data?.CustomerId && Data?.CustomerName ? {
+            value: Data?.CustomerId,
+            label: Data?.CustomerName
           } : [];
           if (Data?.MachineLabourRates && Data?.MachineLabourRates?.length !== 0) {
             this.setState({ disableMachineType: true })
