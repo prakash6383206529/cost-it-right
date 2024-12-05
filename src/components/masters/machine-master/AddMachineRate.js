@@ -611,8 +611,15 @@ class AddMachineRate extends Component {
     */
 
   onPressVendor = (costingHeadFlag) => {
+    // Store current isImport value
+    const currentIsImport = this.state.isImport;
+    
     this.props.reset();
-    this.setState({ ...this.initialState, costingTypeId: costingHeadFlag }, () => {
+    this.setState({ 
+      ...this.initialState,
+      costingTypeId: costingHeadFlag,
+      isImport: currentIsImport // Preserve isImport value
+    }, () => {
       if (costingHeadFlag === CBCTypeId) {
         this.props.getClientSelectList(() => { })
       }
@@ -1806,7 +1813,7 @@ class AddMachineRate extends Component {
     // Generate tooltip text based on the condition
     return <>
       {!this.state?.hidePlantCurrency
-        ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrency}, `
+        ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrencyLabel}, `
         : ''}<p>Exchange Rate: 1 {currencyLabel} = {settlementCurrencyRate} {baseCurrency}</p>
     </>;
   };

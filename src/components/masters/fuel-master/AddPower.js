@@ -573,7 +573,11 @@ class AddPower extends Component {
   */
   onPressVendor = (costingHeadFlag) => {
     this.props.reset();
-    this.setState({ ...this.initialState, costingTypeId: costingHeadFlag }, () => {
+    // Store current isImport value
+    const currentIsImport = this.state.isImport;
+    this.setState({ ...this.initialState, costingTypeId: costingHeadFlag,
+      isImport: currentIsImport // Preserve isImport value
+     }, () => {
       if (costingHeadFlag === CBCTypeId) {
         //this.props.getClientSelectList(() => { })
       }
@@ -1666,6 +1670,31 @@ class AddPower extends Component {
     this.setState({ isImport: !this.state.isImport })
   }
 
+  getTooltipTextForCurrency = () => {
+    const { fieldsObj } = this.props
+    const { settlementCurrency, plantCurrency, currency } = this.state
+    const currencyLabel = currency?.label ?? 'Currency';
+    const plantCurrencyLabel = fieldsObj?.plantCurrency ?? 'Plant Currency';
+    const baseCurrency = reactLocalStorage.getObject("baseCurrency");
+
+    // Check the exchange rates or provide a default placeholder if undefined
+    const plantCurrencyRate = plantCurrency ?? '-';
+    const settlementCurrencyRate = settlementCurrency ?? '-';
+
+    // Generate tooltip text based on the condition
+    return <>
+      {!this.state?.hidePlantCurrency               
+        ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrencyLabel}, `
+        : ''}<p>Exchange Rate: 1 {currencyLabel} = {settlementCurrencyRate} {baseCurrency}</p>
+    </>;
+  };
+  powerRateTitle = () => {
+    const rateLabel = this.state.isImport ? `Net Cost/Unit (${this.state?.currency?.label ?? 'Currency'})` :`Net Cost/Unit (${this.props.fieldsObj?.plantCurrency ?? 'Plant Currency'})`
+    return {
+      tooltipTextPlantCurrency: `${rateLabel} * Plant Currency Rate (${this.state?.plantCurrency ?? ''})`,
+      toolTipTextNetCostBaseCurrency: `${rateLabel} * Currency Rate (${this.state?.settlementCurrency ?? ''})`,
+    };
+  };
   /**
   * @method render
   * @description Renders the component
@@ -1967,6 +1996,7 @@ class AddPower extends Component {
                           </Col>
                         )}
                         <Col md="3">
+                        {!this.state.hidePlantCurrency &&this.props.fieldsObj?.plantCurrency&&!this.state.isImport && <TooltipCustom width="350px" id="plantCurrency" tooltipText={`Exchange Rate: 1 ${this.props.fieldsObj?.plantCurrency } = ${this.state?.plantCurrency ?? '-'} ${reactLocalStorage.getObject("baseCurrency")}`} />}
                           <Field
                             name="plantCurrency"
                             type="text"
@@ -1983,6 +2013,7 @@ class AddPower extends Component {
 
                         </Col>
                         {this.state?.isImport && <Col md="3">
+                          <TooltipCustom id="currency" width="350px" tooltipText={this.getTooltipTextForCurrency()} />
                           <Field
                             name="Currency"
                             type="text"
@@ -2055,12 +2086,14 @@ class AddPower extends Component {
                               </div>
                             </Col>}
                             < Col md="3">
+                            {this.state.isImport && <TooltipCustom disabledIcon={true} id="cost-local" tooltipText={hidePlantCurrency ? this.powerRateTitle()?.toolTipTextNetCostBaseCurrency : this.powerRateTitle()?.tooltipTextPlantCurrency} />}
                               <div className="d-flex justify-space-between align-items-center inputwith-icon">
                                 <div className="fullinput-icon">
                                   <Field
-                                    label={`Net Cost/Unit (${this.props.fieldsObj?.plantCurrency ?? 'Currency'})`}
+                                    label={`Net Cost/Unit (${this.props.fieldsObj?.plantCurrency ?? 'Plant Currency'})`}
                                     name={"NetPowerCostPerUnitLocalConversion"}
                                     type="text"
+                                    id="cost-local"
                                     placeholder={isViewMode || this.state.isImport ? '-' : 'Enter'}
                                     validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthFour, number]}
                                     component={renderTextInputField}
@@ -2075,11 +2108,13 @@ class AddPower extends Component {
                             </Col>
 
                             {!this.state.hidePlantCurrency && < Col md="3">
+                              <TooltipCustom disabledIcon={true} id="fuel-rate" tooltipText={this.state.isImport ? this.powerRateTitle()?.toolTipTextNetCostBaseCurrency : this.powerRateTitle()?.tooltipTextPlantCurrency} />
                               <div className="d-flex justify-space-between align-items-center inputwith-icon">
                                 <div className="fullinput-icon">
                                   <Field
                                     label={`Net Cost/Unit (${reactLocalStorage.getObject("baseCurrency")})`}
                                     name={"NetPowerCostPerUnitConversion"}
+                                    id="fuel-rate"
                                     type="text"
                                     placeholder={'-'}
                                     validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthFour, number]}

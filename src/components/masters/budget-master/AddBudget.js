@@ -261,8 +261,9 @@ function AddBudget(props) {
         setCostingTypeId(costingHeadFlag)
         setShowPlantWarning(false)
         setShowWarning(false)
-
-
+        let arr = ['PartType', 'plantCurrency', 'ExchangeSource', 'totalSumCurrency', 'totalSumPlantCurrency', 'totalSum', 'currentPrice', 'currency', 'FinancialYear','PartNumber','clientName','DestinationPlant','vendorName','Plant','']
+        arr.map(label => setValue(label, null || ''))
+        setPart([])
         if (costingHeadFlag === VBCTypeId) {
             setIsVendor(!IsVendor)
         }
@@ -910,7 +911,7 @@ function AddBudget(props) {
                     setValue('totalSum', checkForDecimalAndNull(((totalSum + currentPrice) * plantCurrency), getConfigurationKey().NoOfDecimalForPrice))
 
                 }
-                // setValue('totalSum', checkForNull(TotalSum * plantCurrency))
+                // setValue('totalSum', checkForNull(TotalSum * plantCurrency))on
                 // setValue('totalSumCurrency', TotalSum)
                 // setValue("totalSumPlantCurrency", checkForNull(TotalSum * settlementCurrency))
             }))

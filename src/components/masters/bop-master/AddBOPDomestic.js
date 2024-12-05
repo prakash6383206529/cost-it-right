@@ -154,14 +154,14 @@ class AddBOPDomestic extends Component {
     let obj = {
       toolTipTextBasicPrice: initialConfiguration?.IsBasicRateAndCostingConditionVisible && Number(costingTypeId) === Number(ZBCTypeId)
         ? getConfigurationKey().IsMinimumOrderQuantityVisible
-          ? `Basic Price  = Basic Rate + Other Cost  / Minimum Order Quantity`
-          : `Basic Price  = Basic Rate + Other Cost `
+          ? `Basic Rate + Other Cost  / Minimum Order Quantity`
+          : `Basic Rate + Other Cost `
         : '',
       toolTipTextNetCost: initialConfiguration?.IsBasicRateAndCostingConditionVisible && Number(costingTypeId) === Number(ZBCTypeId)
-        ? `Net Cost  = Basic Price + Condition Cost `
+        ? `Basic Price + Condition Cost `
         : getConfigurationKey().IsMinimumOrderQuantityVisible
-          ? `Net Cost  = Basic Rate + Other Cost  / Minimum Order Quantity`
-          : `Net Cost  = Basic Rate + Other Cost `
+          ? `Basic Rate + Other Cost  / Minimum Order Quantity`
+          : `Basic Rate + Other Cost `
     };
 
     return obj;
@@ -1889,7 +1889,7 @@ class AddBOPDomestic extends Component {
                               <Col md="3">
                                 <TooltipCustom width="350px" id="bop-net-cost-plant" disabledIcon={true} tooltipText={this.toolTipNetCost()?.toolTipTextNetCost} />
                                 <Field
-                                  label={`Net Cost/${this.state?.UOM?.label ? this.state?.UOM?.label : 'UOM'} (${fieldsObj?.plantCurrency ?? 'Currency'})`}
+                                  label={`Net Cost/${this.state?.UOM?.label ? this.state?.UOM?.label : 'UOM'} (${fieldsObj?.plantCurrency ?? 'Plant Currency'})`}
                                   name={`${"NetCostPlantCurrency"}`}
                                   id="bop-net-cost-plant"
                                   type="text"

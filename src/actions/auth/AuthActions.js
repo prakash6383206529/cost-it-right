@@ -90,8 +90,8 @@ export function TokenAPI(requestData, callback) {
             UserName: requestData.username,
             Password: requestData.password,
             RememberMe: requestData.rememberMe || false,
-            // IPAddress: await getLocalIPAddress(), // Fetch local IP using WebRTC
-            IPAddress: '', // Fetch local IP using WebRTC
+            IPAddress: await getLocalIPAddress(), // Fetch local IP using WebRTC
+            // IPAddress: '', // Fetch local IP using WebRTC
             MacAddress: '', // Populate this field if you have the MAC address, otherwise remove it.
             UserAgent: `${browserName} ${browserVersion}`,
             Token: requestData.Token,

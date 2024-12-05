@@ -175,15 +175,15 @@ class AddBOPImport extends Component {
     let obj = {
       toolTipTextBasicPrice: initialConfiguration.IsBasicRateAndCostingConditionVisible && Number(costingTypeId) === Number(ZBCTypeId)
         ? getConfigurationKey().IsMinimumOrderQuantityVisible
-          ? `Basic Price  = Basic Rate + Other Cost / Minimum Order Quantity`
-          : `Basic Price  = Basic Rate + Other Cost `
+          ? ` Basic Rate + Other Cost / Minimum Order Quantity`
+          : ` Basic Rate + Other Cost `
         : '',
 
       toolTipTextNetCost: initialConfiguration.IsBasicRateAndCostingConditionVisible && Number(costingTypeId) === Number(ZBCTypeId)
-        ? `Net Cost  = Basic Price  + Condition Cost `
+        ? `Basic Price  + Condition Cost `
         : getConfigurationKey().IsMinimumOrderQuantityVisible
-          ? `Net Cost  = Basic Rate  / Minimum Order Quantity`
-          : `Net Cost  = Basic Rate `
+          ? `Basic Rate  / Minimum Order Quantity`
+          : `Basic Rate `
     };
     return obj
   }
@@ -1990,7 +1990,6 @@ class AddBOPImport extends Component {
                             <div className="left-border">{"Cost:"}</div>
                           </Col>
                           {<Col md="3">
-                            {!this.state.hidePlantCurrency && <TooltipCustom id="plantCurrency" width="350px" tooltipText={`Exchange Rate: 1 ${this.props.fieldsObj?.plantCurrency ?? ''} = ${this.state?.plantCurrencyValue ?? '-'} ${reactLocalStorage.getObject("baseCurrency")}`} />}
                             <Field
                               name="plantCurrency"
                               type="text"

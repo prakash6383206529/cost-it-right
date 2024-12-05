@@ -290,12 +290,13 @@ function AddRMFinancialDetails(props) {
         const isBasicRateVisible = getConfigurationKey().IsBasicRateAndCostingConditionVisible &&
             Number(states.costingTypeId) === Number(ZBCTypeId);
         const netCostText = isBasicRateVisible ? `Basic Price + Condition Cost` : `Basic Rate + Other Cost`;
+        const netCostlabel = states.isImport ? `Net Cost (${state?.currency?.label??'Currency'}/${state.UOM?.label === undefined ? 'UOM' : state.UOM?.label})` : `Net Cost (${!getValues('plantCurrency') ? 'Plant Currency' : getValues('plantCurrency')})`
         return {
             toolTipTextNetCostSelectedCurrency: netCostText,
             tooltipTextPlantCurrency: state.hidePlantCurrency
                 ? netCostText
-                : `Net Cost * Plant Currency Rate (${CurrencyExchangeRate?.plantCurrencyRate ?? ''})`,
-            toolTipTextNetCostBaseCurrency: `Net Cost * Currency Rate (${CurrencyExchangeRate?.settlementCurrencyRate ?? ''})`,
+                : `${netCostlabel} * Plant Currency Rate (${CurrencyExchangeRate?.plantCurrencyRate ?? ''})`,
+            toolTipTextNetCostBaseCurrency: `${netCostlabel} * Currency Rate (${CurrencyExchangeRate?.settlementCurrencyRate ?? ''})`,
         };
     };
 
@@ -439,10 +440,8 @@ function AddRMFinancialDetails(props) {
     // };
 
     const allFieldsInfoIcon = (scrapLabel) => {
-        const { currency, currencyValue } = state
         let obj = {
             toolTipBasicPrice: `Basic Rate + Other Cost`,
-            toolTipTextBasicRateBaseCurrency: `Basic Rate (${reactLocalStorage.getObject("baseCurrency")}) = Basic Rate (${currency?.label === undefined ? 'Currency' : currency?.label}) * Currency Rate (${currency?.label === undefined ? 'Currency' : currencyValue})`,
             toolTipTextCalculatedFactor: <>{labelWithUOMAndUOM("Calculated Factor", state.UOM?.label, state.ScrapRateUOM?.label)} = 1 / {labelWithUOMAndUOM("Calculated Ratio", state.ScrapRateUOM?.label, state.UOM?.label)}</>,
             toolTipTextScrapCostPerOldUOM: <>{labelWithUOMAndCurrency(scrapLabel, state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, states.isImport ? state.currency?.label : !getValues('plantCurrency') ? 'Currency' : getValues('plantCurrency'))} = {labelForScrapRate()?.labelBaseCurrency} * Calculated Factor</>
         }
@@ -1271,7 +1270,6 @@ function AddRMFinancialDetails(props) {
                             <>
 
                                 <Col className="col-md-15">
-                                    {states.isImport && <TooltipCustom disabledIcon={true} id="rm-basic-rate-base-currency" width={'350px'} tooltipText={allFieldsInfoIcon()?.toolTipTextBasicRateBaseCurrency} />}
                                     <TextFieldHookForm
                                         label={labelWithUOMAndCurrency("Basic Rate ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, states.isImport ? state.currency?.label : !getValues('plantCurrency') ? 'Currency' : getValues('plantCurrency'))}
                                         name={"BasicRate"}

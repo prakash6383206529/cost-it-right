@@ -41,7 +41,7 @@ function AddRMDetails(props) {
     const { vendorLabel, RMVendorLabel } = useLabels()
     const rawMaterailDetails = useSelector((state) => state.material.rawMaterailDetails)
     const dropzone = useRef(null);
-    const [state, setState] = useState({
+    const initialState = {
         vendor: [],
         sourceVendor: [],
         technology: [],
@@ -77,8 +77,10 @@ function AddRMDetails(props) {
         isVendorAccOpen: true,
         commodityDetails: [],
         isShowIndexCheckBox: false
-    });
+    };
 
+    const [state, setState] = useState(initialState);
+    console.log(state,'state')
     const dispatch = useDispatch()
     const { technologyLabel } = useLabels();
     const plantSelectList = useSelector(state => state.comman.plantSelectList);
@@ -489,36 +491,6 @@ function AddRMDetails(props) {
     const openRMdrawer = () => {
         setState(prevState => ({ ...prevState, isRMDrawerOpen: true }));
     }
-    const openAssociationDrawer = () => {
-        setState(prevState => ({ ...prevState, isOpenAssociation: true }));
-    }
-    // const vendorFilterList = async (inputValue) => {
-    //     const resultInput = inputValue.slice(0, searchCount)
-    //     if (inputValue?.length >= searchCount && state.vendorFilter !== resultInput) {
-    //         setState(prevState => ({ ...prevState, inputLoader: true }))
-    //         let res
-    //         res = await getVendorNameByVendorSelectList(VBC_VENDOR_TYPE, resultInput)
-    //         setState(prevState => ({ ...prevState, inputLoader: false, vendorFilter: resultInput }))
-    //         let vendorDataAPI = res?.data?.SelectList
-    //         if (inputValue) {
-    //             return autoCompleteDropdown(inputValue, vendorDataAPI, false, [], true)
-    //         } else {
-    //             return vendorDataAPI
-    //         }
-    //     }
-    //     else {
-    //         if (inputValue?.length < searchCount) return false
-    //         else {
-    //             let VendorData = reactLocalStorage?.getObject('Data')
-    //             if (inputValue) {
-    //                 return autoCompleteDropdown(inputValue, VendorData, false, [], false)
-    //             } else {
-    //                 return VendorData
-    //             }
-    //         }
-    //     }
-    // };
-
 
     const vendorFilterList = (inputValue) => DropDownFilterList(inputValue, VBC_VENDOR_TYPE, 'vendorFilter', getVendorNameByVendorSelectList, setState, state);
     const sourceVendorFilterList = (inputValue) => DropDownFilterList(inputValue, VBC_VENDOR_TYPE, 'sourceVendorFilter', getVendorNameByVendorSelectList, setState, state);

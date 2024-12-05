@@ -34,14 +34,14 @@ import { useQueryClient } from "react-query";
 
 function AddRMMaster(props) {
     const { data, EditAccessibilityRMANDGRADE, AddAccessibilityRMANDGRADE } = props
-    const { register, handleSubmit, formState: { errors }, control, setValue, getValues, reset, isRMAssociated } = useForm({
+    const { register, handleSubmit, formState: { errors }, control, setValue, getValues, reset, isRMAssociated ,clearErrors} = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
     });
     const { vendorLabel } = useLabels();
 
     const dispatch = useDispatch()
-    const [state, setState] = useState({
+    const initialState = {
         costingTypeId: ZBCTypeId,
         isImport: false,
         callSubmit: false,
@@ -69,7 +69,8 @@ function AddRMMaster(props) {
         sourceVendorRawMaterialId: null,
         isSourceVendor: false,
         masterLevels: []
-    })
+    }
+    const [state, setState] = useState(initialState);
     const isViewFlag = data?.isViewFlag === true ? true : false
     const rawMaterailDetails = useSelector((state) => state.material.rawMaterailDetails)
     const exchangeRateDetails = useSelector((state) => state.material.exchangeRateDetails)
@@ -221,12 +222,17 @@ function AddRMMaster(props) {
      * @method onPressVendor
      * @description Used for Vendor checked
      */
-    const onPressVendor = (costingHeadFlag) => {
+    const onPressVendor = (costingHeadFlag, setStateData) => {
         reset()
-        setState(prevState => ({
-            ...prevState,
-            costingTypeId: costingHeadFlag,
+        setState((prevState) => ({
+            ...initialState, // Reset all states to the initial state
+            isImport: prevState.isImport, // Preserve the current value of isImport
+            costingTypeId: costingHeadFlag, // Update costingTypeId as needed
         }));
+        dispatch(setRawMaterialDetails({}, () => { }))
+        dispatch(setExchangeRateDetails({}, () => { }))
+        dispatch(setCommodityDetails([]))
+        dispatch(setOtherCostDetails([]))
     }
     /**
       * @method cancel
@@ -622,6 +628,8 @@ function AddRMMaster(props) {
                             isSourceVendorApiCalled={state?.isSourceVendorApiCalled}
                             commonFunction={commonFunction}
                             masterLevels={state.masterLevels}
+                            reset={reset}
+                            clearErrors={clearErrors}
                         />
                         <AddRMFinancialDetails states={state}
                             Controller={Controller}
@@ -636,8 +644,10 @@ function AddRMMaster(props) {
                             totalBasicRate={state.totalBasicRate}
                             commodityDetails={state.commodityDetails}
                             disableAll={state.disableAll}
+                            reset={reset}
                         />
-                        <RemarksAndAttachments Controller={Controller}
+                        <RemarksAndAttachments states={state}
+                        Controller={Controller}
                             control={control}
                             register={register}
                             setValue={setValue}
@@ -646,7 +656,9 @@ function AddRMMaster(props) {
                             useWatch={useWatch}
                             DataToChange={state.DataToChange}
                             data={data}
-                            disableAll={state.disableAll} />
+                            disableAll={state.disableAll}
+                            reset={reset}
+                        />
                     </div>
                     <Row className="sf-btn-footer no-gutters justify-content-between sticky-btn-footer">
                         <div className="col-sm-12 text-right bluefooter-butn d-flex align-items-center justify-content-end">
