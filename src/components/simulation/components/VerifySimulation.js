@@ -1,5 +1,5 @@
 import React, { useState, useRef, useContext } from 'react';
-import { Row, Col, } from 'reactstrap';
+import { Row, Col, Tooltip, } from 'reactstrap';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import NoContentFound from '../../common/NoContentFound';
@@ -44,8 +44,11 @@ function VerifySimulation(props) {
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [noData, setNoData] = useState(false);
     const [minimumPoPrice, setMinimumPoPrice] = useState('');
+    const [currencyViewTooltip, setCurrencyViewTooltip] = useState(false)
     // const [showAssemblyPage, setShowAssemblyPage] = useState(false);   // REJECTED ASSEMBLY
     const { filteredRMData } = useSelector(state => state.material)
+    const [showTooltip, setShowTooltip] = useState(false)
+
     const simulationApplicability = useSelector(state => state.simulation.simulationApplicability)
     const { selectedMasterForSimulation } = useSelector(state => state.simulation)
     const isSurfaceTreatmentOrOperation = ((Number(selectedMasterForSimulation.value) === Number(SURFACETREATMENT)) || (Number(selectedMasterForSimulation.value) === Number(OPERATIONS)));
@@ -752,6 +755,9 @@ function VerifySimulation(props) {
         setGridApi(params.api)
         setGridColumnApi(params.columnApi)
         setTimeout(() => {
+            setShowTooltip(true)
+        }, 100);
+        setTimeout(() => {
             const checkBoxInstance = document.querySelectorAll('.ag-input-field-input.ag-checkbox-input');
             checkBoxInstance.forEach((checkBox, index) => {
                 const specificId = `verify_simulation_Checkbox${index}`;
@@ -790,7 +796,16 @@ function VerifySimulation(props) {
             // window.screen.width >= 1600 && gridRef.current.api.sizeColumnsToFit();
         }
     }
-
+    const currencytooltipToggle = () => {
+        setCurrencyViewTooltip(!currencyViewTooltip)
+    }
+    const currencyHeader = (props) => {
+        return (
+            <div className='ag-header-cell-label'>
+                <span className='ag-header-cell-text '>Currency { <i className={`fa fa-info-circle tooltip_custom_right tooltip-icon mb-n3 ml-4 mt2 `} id={"currency-tooltip"}></i>} </span>
+            </div>
+        );
+    };
     const frameworkComponents = {
         descriptionFormatter: descriptionFormatter,
         ecnFormatter: ecnFormatter,
@@ -813,7 +828,8 @@ function VerifySimulation(props) {
         newRMBasicRateFormatter: newRMBasicRateFormatter,
         partTypeFormatter: partTypeFormatter,
         combinedProcessCostFormatter: combinedProcessCostFormatter,
-        hyphenFormatter: hyphenFormatter
+        hyphenFormatter: hyphenFormatter,
+        currencyHeader: currencyHeader
     };
     function getOperationTypes(list) {
         return list && list?.map(item => item.ForType);
@@ -841,6 +857,10 @@ function VerifySimulation(props) {
                             </div>
                         </Col>
                     </Row>
+                  
+{showTooltip && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={currencyViewTooltip} toggle={currencytooltipToggle} target={"currency-tooltip"}>
+  {"This is the currency selected during the costing"}
+                    </Tooltip>}
                     <Row>
                         <Col>
                             <div className={`ag-grid-react`}>
@@ -905,7 +925,7 @@ function VerifySimulation(props) {
                                             {isSurfaceTreatmentOrOperation === true && operationTypes.includes('Welding') && <AgGridColumn width={220} field="OldOperationBasicRate" tooltipField="OldOperationRate" headerName="Existing Welding Material Rate/kg"></AgGridColumn>}
                                             {isSurfaceTreatmentOrOperation === true && operationTypes.includes('Welding') && <AgGridColumn width={220} field="NewOperationBasicRate" tooltipField="NewOperationRate" headerName="Revised Welding Material Rate/kg"></AgGridColumn>}
                                             {!isMultiTechnology && !isOverHeadProfit && !isCombinedProcess && getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>}
-                                            {!isMultiTechnology && !isOverHeadProfit && !isCombinedProcess && <AgGridColumn field={isMasterAssociatedWithCosting?"CostingCurrency":"Currency"} tooltipField='Currency' editable='false' headerName="Currency" minWidth={140} ></AgGridColumn>}
+                                            {!isMultiTechnology && !isOverHeadProfit && !isCombinedProcess && <AgGridColumn field={isMasterAssociatedWithCosting?"CostingCurrency":"Currency"} tooltipField='Currency' editable='false' headerName="Currency" headerComponent={'currencyHeader'} minWidth={140} ></AgGridColumn>}
                                             {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="OldOperationRate" tooltipField="OldOperationRate" headerName="Existing Rate"></AgGridColumn>}
                                             {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="NewOperationRate" tooltipField="NewOperationRate" headerName="Revised Rate"></AgGridColumn>}
 

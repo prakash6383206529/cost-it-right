@@ -94,7 +94,7 @@ function RMIndexationSimulation(props) {
     const [openConditionCostDrawer, setOpenConditionCostDrawer] = useState(false)
     const [conditionCostDetailForRow, setConditionCostDetailForRow] = useState([])
     const [rowIndex, setRowIndex] = useState('')
-const { register, control, setValue, formState: { errors }, } = useForm({
+    const { register, control, setValue, formState: { errors }, } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
     })
@@ -517,7 +517,7 @@ obj.NewNetConditionCost = updatedObjConditionCost?.formValue?.value
                 {
                     isImpactedMaster ?
                         checkForDecimalAndNull(row.NewBasicRatePerUOM, getConfigurationKey().NoOfDecimalForPrice) :
-                        <span id={`NewBasicRatePerUOM-${props.rowIndex}`} className={`${!isbulkUpload ? 'form-control' : ''} ${row?.Percentage && Number(row?.Percentage) !== 0 && !row?.NewBasicRatePerUOM ? 'disabled' : ''} basicRate_revised`} title={cell && value ? Number(cell) : Number(row.OldBasicRatePerUOM)}>{cell && value ? Number(cell) : row.Percentage ? PercentageCalc : isbulkUpload ? checkForNull(cell) : checkForNull(row.OldBasicRatePerUOM)} </span>
+                        <span id={`NewBasicRatePerUOM-${props.rowIndex}`} className={`${(!isbulkUpload&&!isImpactedMaster && !isRunSimulationClicked && !isApprovalSummary) ? 'form-control' : ''} ${row?.Percentage && Number(row?.Percentage) !== 0 && !row?.NewBasicRatePerUOM ? 'disabled' : ''} basicRate_revised`} title={cell && value ? Number(cell) : Number(row.OldBasicRatePerUOM)}>{cell && value ? Number(cell) : row.Percentage ? PercentageCalc : isbulkUpload ? checkForNull(cell) : checkForNull(row.OldBasicRatePerUOM)} </span>
                 }
 
             </>
@@ -873,9 +873,9 @@ const calculateAndSave = (basicRate = 0, data = [], totalBase = 0, type = '', cu
         setGridApi(params.api)
         setGridColumnApi(params.columnApi)
         params.api.paginationGoToPage(0);
-        // setTimeout(() => {
-        //     setShowTooltip(true)
-        // }, 200);
+        setTimeout(() => {
+            setShowTooltip(true)
+        }, 100);
     };
 
     const onPageSizeChanged = (newPageSize) => {
@@ -1086,7 +1086,7 @@ const calculateAndSave = (basicRate = 0, data = [], totalBase = 0, type = '', cu
                     type="button"
                     // className={`${(isRunSimulationClicked || isApprovalSummary) ? 'View small ml-1' : ' add-out-sourcing ml-1'} `}
                     // onClick={() => ConditionCostDrawer(cell, row, props.rowIndex, 'New')}
-                    className={`${isImpactedMaster ? 'View small ml-1' : ' add-out-sourcing ml-1'} `}
+                    className={`${(isImpactedMaster||isRunSimulationClicked || isApprovalSummary) ? 'View small ml-1' : ' add-out-sourcing ml-1'} `}
                     onClick={() => conditionCostDrawer(cell, row, props.rowIndex, 'New')}
                     title="Add"
                 >
@@ -1113,8 +1113,10 @@ const calculateAndSave = (basicRate = 0, data = [], totalBase = 0, type = '', cu
     }
 
     const actionCellRenderer = (props) => {
+        const isDisabled = isRunSimulationClicked || isApprovalSummary || isImpactedMaster;
+
         return <div >
-            <button title='Save' className="SaveIcon" type={'button'} onClick={() => saveBasicRate(props)} />
+            <button title='Save' className="SaveIcon" type={'button'} onClick={() => saveBasicRate(props)}disabled={isDisabled} />
             {/* <button title='Discard' className="CancelIcon" type={'button'} onClick={() => discardBasicRate(props)} /> */}
         </div>
     }
@@ -1187,6 +1189,7 @@ const calculateAndSave = (basicRate = 0, data = [], totalBase = 0, type = '', cu
         setBasicRateViewTooltip(!basicRateviewTooltip)
     }
     const scrapRatetooltipToggle = () => {
+        
         setScrapRateViewTooltip(!scrapRateviewTooltip)
     }
 
@@ -1222,7 +1225,7 @@ const calculateAndSave = (basicRate = 0, data = [], totalBase = 0, type = '', cu
     }
 
     const EditableCallbackForNewBasicRate = (props) => {
-        const rowData = props?.data;
+      const rowData = props?.data;
         
         let value = false
         if (!rowData?.OldBasicRatePerUOM) {
@@ -1274,6 +1277,7 @@ const calculateAndSave = (basicRate = 0, data = [], totalBase = 0, type = '', cu
                                             }
                                         </div>
                                     </div>
+
                                     <div className="ag-theme-material p-relative" style={{ width: '100%' }}>
                                        {/*  {isLoader && <LoaderCustom />} */}
                                         {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found simulation-lisitng" />}
@@ -1323,7 +1327,7 @@ const calculateAndSave = (basicRate = 0, data = [], totalBase = 0, type = '', cu
                                                 {costingAndPartNo && <AgGridColumn field="CostingNumber" tooltipField='CostingNumber' editable='false' headerName="Costing No" width={columnWidths.CostingNumber}></AgGridColumn>}
                                                 {costingAndPartNo && <AgGridColumn field="PartNumber" tooltipField='PartNumber' editable='false' headerName="Part No" width={columnWidths.PartNumber}></AgGridColumn>}
 
-                                                {String(props?.masterId) === String(RMIMPORT) && <AgGridColumn field="Currency" tooltipField='Currency' editable='false' headerName="Currency" minWidth={140} ></AgGridColumn>}
+                                                {String(props?.masterId) === String(RMIMPORT) &&!isIndexedRM&& <AgGridColumn field="Currency" tooltipField='Currency' editable='false' headerName="Currency" minWidth={140} ></AgGridColumn>}
                                                 {(isImpactedMaster && String(props?.masterId) === String(RMIMPORT)) && <AgGridColumn field="ExchangeRate" tooltipField='ExchangeRate' editable='false' headerName="Existing Exchange Rate" minWidth={140} ></AgGridColumn>}
                                                 {isIndexedRM && <>
                                                     <AgGridColumn field='IndexExchangeName' tooltipField='IndexExchangeName' editable='false' headerName="Index" minWidth={140} ></AgGridColumn>
@@ -1334,12 +1338,12 @@ const calculateAndSave = (basicRate = 0, data = [], totalBase = 0, type = '', cu
                                                     <AgGridColumn width={columnWidths.NewFromDate} field={isCostingSimulation ? 'NewRawMaterialIndexationDetails.FromDate' : "NewFromDate"} editable='false' cellRenderer={'effectiveDateFormatter'} headerName={props.isImpactedMaster && !props.lastRevision ? "New Effective date" : "New From Date"} ></AgGridColumn>
                                                     <AgGridColumn width={columnWidths.OldToDate} field={isCostingSimulation ? 'OldRawMaterialIndexationDetails.ToDate' : "OldToDate"} editable='false' cellRenderer={'effectiveDateFormatter'} headerName={props.isImpactedMaster && !props.lastRevision ? "Old Effective date" : "Old To Date"} ></AgGridColumn>
                                                     <AgGridColumn width={columnWidths.NewToDate} field={isCostingSimulation ? 'NewRawMaterialIndexationDetails.ToDate' : "NewToDate"} editable='false' cellRenderer={'effectiveDateFormatter'} headerName={props.isImpactedMaster && !props.lastRevision ? "New Effective date" : "New To Date"} ></AgGridColumn></>}
-                                                    {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>}
-                                                    <AgGridColumn field="Currency" cellRenderer={"currencyFormatter"}></AgGridColumn>
-                                                <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={300} headerName={                                                   "Basic Rate (Currency)"                                                } marryChildren={true} >
+                                                    {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn width={120}field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>}
+                                                    <AgGridColumn field="Currency" width={120}cellRenderer={"currencyFormatter"}></AgGridColumn>
+                                                <AgGridColumn headerClass="justify-content-center"cellClass="text-center" width={300} headerName={                                                   "Basic Rate (Currency)"                                                } marryChildren={true} >
                                                     {!isIndexedRM && <AgGridColumn width={120} field={isImpactedMaster ? "OldBasicRate" : isCostingSimulation ? 'OldRawMaterialIndexationDetails.BasicRate' : "OldBasicRatePerUOM"} editable='false' headerName="Existing" colId={isImpactedMaster ? "OldBasicRate" : "OldBasicRatePerUOM"}></AgGridColumn>}
                                                     {isIndexedRM && <AgGridColumn width={150} cellRenderer='oldBasicRateFormatter' field={isImpactedMaster ? "OldBasicRate" : isCostingSimulation ? 'OldRawMaterialIndexationDetails.BasicRate' : "OldBasicRatePerUOM"} editable='false' headerName="Existing" colId={isImpactedMaster ? "OldBasicRate" : "OldBasicRatePerUOM"}></AgGridColumn>}
-                                                    {!isIndexedRM && <AgGridColumn width={120} cellRenderer='newBasicRateFormatterForNonIndexedRM' editable={isImpactedMaster ? false : EditableCallbackForNewBasicRate} onCellValueChanged='cellChange' field={isCostingSimulation ? 'NewRawMaterialIndexationDetails.BasicRate' : "NewBasicRatePerUOM"} headerName="Revised" colId='NewBasicRatePerUOM' headerComponent={'revisedBasicRateHeader'}></AgGridColumn>}
+                                                    {!isIndexedRM && <AgGridColumn width={120} cellRenderer='newBasicRateFormatterForNonIndexedRM' editable={(isImpactedMaster || isRunSimulationClicked || isApprovalSummary) ? false : EditableCallbackForNewBasicRate} onCellValueChanged='cellChange' field={isCostingSimulation ? 'NewRawMaterialIndexationDetails.BasicRate' : "NewBasicRatePerUOM"} headerName="Revised" colId='NewBasicRatePerUOM' headerComponent={'revisedBasicRateHeader'}></AgGridColumn>}
                                                     {isIndexedRM && <AgGridColumn width={150} cellRenderer='newBasicRateFormatter' editable='false' field={isCostingSimulation ? 'NewRawMaterialIndexationDetails.BasicRate' : "NewBasicRatePerUOM"} headerName="Revised" colId='NewBasicRatePerUOM' ></AgGridColumn>}
                                                 </AgGridColumn>
 
@@ -1355,7 +1359,7 @@ const calculateAndSave = (basicRate = 0, data = [], totalBase = 0, type = '', cu
                                                   "Other Cost (Currency)"
                                                 } marryChildren={true} >
                                                     <AgGridColumn width={150} cellRenderer='existingOtherCostFormatter' field={isImpactedMaster ? "OldOtherNetCost" : isCostingSimulation ? 'OldRawMaterialIndexationDetails.OtherNetCost' : "OldOtherNetCost"} editable='false' headerName="Existing" colId={isImpactedMaster ? "OldOtherNetCost" : "OldOtherNetCost"} ></AgGridColumn>
-                                                    <AgGridColumn width={150} cellRenderer='revisedOtherCostFormatter' editable={false} onCellValueChanged='cellChange' field={isCostingSimulation ? 'NewRawMaterialIndexationDetails.OtherNetCost' : "NewOtherNetCost"} headerName="Revised" colId='NewOtherNetCost' headerComponent={'revisedBasicRateHeader'}></AgGridColumn>
+                                                    <AgGridColumn width={150} cellRenderer='revisedOtherCostFormatter' editable={false} onCellValueChanged='cellChange' field={isCostingSimulation ? 'NewRawMaterialIndexationDetails.OtherNetCost' : "NewOtherNetCost"} headerName="Revised" colId='NewOtherNetCost'></AgGridColumn>
                                                 </AgGridColumn>
                                                 {<AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={
                                                    "Basic Price (Currency)"
@@ -1369,7 +1373,7 @@ const calculateAndSave = (basicRate = 0, data = [], totalBase = 0, type = '', cu
                                                 } marryChildren={true} >
                                                   
                                                     <AgGridColumn width={150} cellRenderer='existingConditionCostFormatter' field={isImpactedMaster ? "OldNetConditionCost" : "OldNetConditionCost"} editable='false' headerName="Existing" colId={isImpactedMaster ? "NetConditionCost" : "NetConditionCost"} ></AgGridColumn>
-                                                    <AgGridColumn width={150} cellRenderer='revisedConditionCostFormatter' editable={false} onCellValueChanged='cellChange' field={isImpactedMaster ? "NewNetConditionCost" : "NewNetConditionCost"} headerName="Revised" colId='NewNetConditionCost' headerComponent={'revisedBasicRateHeader'}></AgGridColumn>
+                                                    <AgGridColumn width={150} cellRenderer='revisedConditionCostFormatter' editable={false} onCellValueChanged='cellChange' field={isImpactedMaster ? "NewNetConditionCost" : "NewNetConditionCost"} headerName="Revised" colId='NewNetConditionCost' ></AgGridColumn>
                                                 </AgGridColumn>
                                                 {<AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={
                                                   "Net Cost (Currency)"
@@ -1387,7 +1391,7 @@ const calculateAndSave = (basicRate = 0, data = [], totalBase = 0, type = '', cu
                                                 {props.children}
                                                 <AgGridColumn width={columnWidths.OldEffectiveDate} field={isCostingSimulation ? 'OldRawMaterialIndexationDetails.EffectiveDate' : "OldEffectiveDate"} editable='false' cellRenderer={'effectiveDateFormatter'} headerName={isIndexedRM ? props.isImpactedMaster && !props.lastRevision ? "Old Effective date" : "Old Effective Date" : "Effective Date"} ></AgGridColumn>
                                                 {isIndexedRM && <AgGridColumn width={columnWidths.NewEffectiveDate} field={isCostingSimulation ? 'NewRawMaterialIndexationDetails.EffectiveDate' : "NewEffectiveDate"} editable='false' cellRenderer={'effectiveDateFormatter'} headerName={props.isImpactedMaster && !props.lastRevision ? "New Effective date" : "New Effective Date"} ></AgGridColumn>}
-                                                <AgGridColumn headerName='Action' pinned='right' cellRenderer='actionCellRenderer'></AgGridColumn>
+                                              { (!isIndexedRM && !isImpactedMaster && !isApprovalSummary&& !isRunSimulationClicked)&&<AgGridColumn headerName='Action' pinned='right'  cellRenderer='actionCellRenderer'></AgGridColumn>}
                                                 <AgGridColumn field="RawMaterialId" hide></AgGridColumn>
 
                                             </AgGridReact>))}
@@ -1421,7 +1425,7 @@ const calculateAndSave = (basicRate = 0, data = [], totalBase = 0, type = '', cu
                                         />}
                                         {isWarningMessageShow && <WarningMessage dClass={"error-message"} textClass={"pt-1"} message={"Please select effective date"} />}
                                     </div>}
-
+{(!isIndexedRM && !isImpactedMaster && !isApprovalSummary&& !isRunSimulationClicked) && <WarningMessage dClass={"mr-5"}  textClass={"pt-1"} message={"Please click on the right icon in the action column to save changes."}/>}
                                     {!isRunSimulationClicked && !isCostingSimulation && <button onClick={(e) => verifySimulation(e, 'run')} type="submit" id="verify-btn" className="user-btn mr5 save-btn verifySimulation" disabled={isDisable}>
                                         <div className={"Run-icon"}>
                                         </div>{" "}
@@ -1497,7 +1501,8 @@ const calculateAndSave = (basicRate = 0, data = [], totalBase = 0, type = '', cu
                         plantCurrency={rowData?.LocalCurrency}
                         settlementCurrency={rowData?.Currency}
                         RawMaterialNonIndexed={true}
-                       
+                        disabled={isImpactedMaster || isRunSimulationClicked || isApprovalSummary}
+
                     />
                 }
                 {isApprovalDrawer &&
@@ -1542,6 +1547,7 @@ const calculateAndSave = (basicRate = 0, data = [], totalBase = 0, type = '', cu
                         PlantCurrency={rowData?.LocalCurrency}
                         isImpactedMaster={isImpactedMaster}
                         isSimulation={true}
+                        disabled={isImpactedMaster || isRunSimulationClicked || isApprovalSummary}
                     />
                 }
             </div>
