@@ -3281,7 +3281,7 @@ export const COSTINGCONDITIONCOST = 'Costing Condition Cost'
 export const IsSelectSinglePlant = true
 
 //VERSION 
-export const VERSION = "V3.1.46";
+export const VERSION = "V3.1.47";
 
 
 
