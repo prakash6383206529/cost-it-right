@@ -2451,6 +2451,8 @@ const CostingSummaryTable = (props) => {
                           <tr>
                             {/* // NOT */}
                             <td>
+                            {getConfigurationKey().IsSourceExchangeRateNameVisible && <span className="d-block">Exchange Rate Source</span>}
+                            <span className="d-block">Currency</span>
                               <span className="d-block">Part Number</span>
                               <span className="d-block">Part Name</span>
                               {/* <span className="d-block">Revision Number</span> */}
@@ -2460,6 +2462,8 @@ const CostingSummaryTable = (props) => {
                                 return (
                                   <td>
                                     {/* USE PART NUMBER KEY HERE */}
+                                    {getConfigurationKey().IsSourceExchangeRateNameVisible && <span className="d-block">{(data?.bestCost === true||data?.CostingHeading === VARIANCE) ? ' ' : (data?.ExchangeRateSourceName ? data?.ExchangeRateSourceName : '-')}</span>}
+                                    <span className="d-block">{(data?.bestCost === true ||data?.CostingHeading === VARIANCE) ? ' ' : (data?.CostingCurrency ? data?.CostingCurrency : '-')}</span>
                                     <span className="d-block">{data?.CostingHeading !== VARIANCE ? data?.partNumber : ''}</span>
                                     <span className="d-block">{data?.CostingHeading !== VARIANCE ? data?.partName : ''}</span>
 

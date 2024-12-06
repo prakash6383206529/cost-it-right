@@ -1,5 +1,5 @@
 import React, { useState, useRef, Fragment, useContext } from 'react';
-import { Row, Col, } from 'reactstrap';
+import { Row, Col, Tooltip, } from 'reactstrap';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import NoContentFound from '../../common/NoContentFound';
@@ -133,6 +133,9 @@ function CostingSimulation(props) {
     const [releaseStrategyDetails, setReleaseStrategyDetails] = useState({})
     const [isPFSOrBudgetingDetailsExistWarning, showIsPFSOrBudgetingDetailsExistWarning] = useState(false);
     const [warningMessage, setWarningMessage] = useState('');
+    const [showTooltip, setShowTooltip] = useState(false)
+    const [currencyViewTooltip, setCurrencyViewTooltip] = useState(false)
+
     const [showRM, setShowRM] = useState(simulationApplicability?.value === 'RM');
     const [showBOP, setShowBOP] = useState(simulationApplicability?.value === 'BOP');
     const [showComponent, setShowComponent] = useState(simulationApplicability?.value === 'Component');
@@ -1455,6 +1458,9 @@ function CostingSimulation(props) {
         setGridApi(params.api)
         setGridColumnApi(params.columnApi)
         params.api.paginationGoToPage(0);
+        setTimeout(() => {
+            setShowTooltip(true)
+        }, 100);
         const checkBoxInstance = document.querySelectorAll('.ag-input-field-input.ag-checkbox-input');
         checkBoxInstance.forEach((checkBox, index) => {
             const specificId = `other_simulation_Checkbox${index}`;
@@ -1542,7 +1548,16 @@ function CostingSimulation(props) {
             setIsApprovalDrawer(true)
         }
     }
-
+    const currencytooltipToggle = () => {
+        setCurrencyViewTooltip(!currencyViewTooltip)
+    }
+    const currencyHeader = (props) => {
+        return (
+            <div className='ag-header-cell-label'>
+                <span className='ag-header-cell-text '>Currency { <i className={`fa fa-info-circle tooltip_custom_right tooltip-icon mb-n3 ml-4 mt2 `} id={"currency-tooltip"}></i>} </span>
+            </div>
+        );
+    };
 
     const frameworkComponents = {
 
@@ -1601,7 +1616,9 @@ function CostingSimulation(props) {
         processFormatter: processFormatter,
         // processVarianceFormatter: processVarianceFormatter,          //RE
         varianceFormatter: varianceFormatter,
-        partTypeFormatter: partTypeFormatter
+        partTypeFormatter: partTypeFormatter,
+        currencyHeader: currencyHeader
+
     };
 
     const isRowSelectable = rowNode => statusForLinkedToken === true ? false : true;
@@ -1657,6 +1674,9 @@ function CostingSimulation(props) {
                                         </div>
                                     </Col >
                                 </Row >
+                                {showTooltip && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={currencyViewTooltip} toggle={currencytooltipToggle} target={"currency-tooltip"}>
+                                {"This is the currency selected during the costing"}
+                    </Tooltip>}
                                 <Row>
                                     <Col>
                                         <div className={`ag-grid-wrapper ${(tableData && tableData?.length <= 0) || noData ? "overlay-contain" : ""}`}>
@@ -1727,7 +1747,7 @@ function CostingSimulation(props) {
                                                     {(isRMDomesticOrRMImport || showRMColumn) && <AgGridColumn field="RawMaterialFinishWeight" hide headerName='Finish Weight'></AgGridColumn>}
                                                     {(isRMDomesticOrRMImport || showRMColumn) && <AgGridColumn field="RawMaterialGrossWeight" hide headerName='Gross Weight'></AgGridColumn>}
                                                     {(isRMDomesticOrRMImport || isBOPDomesticOrImport || showRMColumn || showBOPColumn||isExchangeRate||isOperation || showOperationColumn||isMachineRate || showMachineRateColumn) && getConfigurationKey().IsSourceExchangeRateNameVisible &&isSimulationWithCosting && <AgGridColumn width={100}field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>}
-                                                    {(isRMDomesticOrRMImport || isBOPDomesticOrImport || showRMColumn || showBOPColumn||isExchangeRate||isOperation || showOperationColumn||isMachineRate || showMachineRateColumn) && <AgGridColumn field={isSimulationWithCosting?"CostingCurrency":"Currency"} headerName='Currency' />}
+                                                    {(isRMDomesticOrRMImport || isBOPDomesticOrImport || showRMColumn || showBOPColumn||isExchangeRate||isOperation || showOperationColumn||isMachineRate || showMachineRateColumn) && <AgGridColumn field={isSimulationWithCosting?"CostingCurrency":"Currency"} headerName='Currency'headerComponent={'currencyHeader'} />}
 
                                                     {(isCombinedProcess || showCombinedProcessColumn) && <AgGridColumn width={140} field="OldNetCC" headerName='Old Net CC' cellRenderer='netCCFormatter'></AgGridColumn>}
                                                     {(isCombinedProcess || showCombinedProcessColumn) && <AgGridColumn width={140} field="NewNetCC" headerName='New Net CC' cellRenderer='netCCFormatter'></AgGridColumn>}

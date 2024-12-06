@@ -244,6 +244,9 @@ function Simulation(props) {
                 setShowApplicabilityDropdown(true)
             } else if (checkForNull(value.value) === Number(RAWMATERIALINDEX)) {
                 setShowMasterList(false)
+                if(!getConfigurationKey()?.IsShowMaterialIndexation){
+                  handleType(indexationDropdown[1]?.value)  
+                }
             } else {
                 setShowTokenDropdown(true)
                 setShowMasterList(true)
@@ -1753,7 +1756,7 @@ function Simulation(props) {
                                     </div>
                                 }
                                 {
-                                    ((String(master?.value) === RAWMATERIALINDEX) || ((String(master?.value) === RMDOMESTIC || String(master?.value) === RMIMPORT) && getConfigurationKey()?.IsShowMaterialIndexation)) &&
+                                    ((String(master?.value) === RAWMATERIALINDEX &&getConfigurationKey()?.IsShowMaterialIndexation) || ((String(master?.value) === RMDOMESTIC || String(master?.value) === RMIMPORT) && getConfigurationKey()?.IsShowMaterialIndexation)) &&
                                     <div className="d-inline-flex justify-content-start align-items-center mr-2 mb-3 zindex-unset">
                                         <div className="flex-fills label">Type:</div>
                                         <div className="flex-fills hide-label pl-0 d-flex mr-3">

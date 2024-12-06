@@ -726,7 +726,7 @@ function AddConditionCosting(props) {
                                             type="button"
                                             className={"user-btn  pull-left mt-1"}
                                             onClick={addData}
-                                            disabled={props.ViewMode}
+                                            disabled={props.ViewMode || props?.disabled}
                                         >
                                             {isEditMode ? "" : <div className={"plus"}></div>} {isEditMode ? "UPDATE" : 'ADD'}
                                         </button>
@@ -734,7 +734,7 @@ function AddConditionCosting(props) {
                                             type="button"
                                             className={"reset-btn pull-left mt-1 ml5"}
                                             onClick={() => resetData("reset")}
-                                            disabled={props.ViewMode}
+                                            disabled={props.ViewMode || props?.disabled}
                                         >
                                             {isEditMode ? "CANCEL" : 'RESET'}
                                         </button>
@@ -748,14 +748,14 @@ function AddConditionCosting(props) {
                                     <button
                                         type={'button'}
                                         className="reset cancel-btn mr5"
-                                        onClick={cancel} >
+                                        onClick={cancel || props?.disabled} >
                                         <div className={'cancel-icon'}></div> {'Cancel'}
                                     </button>
                                     <button
                                         type={'button'}
                                         className="submit-button save-btn"
                                         onClick={() => { props.closeDrawer('save', tableData, costingConditionEntryType, conditionCost) }}
-                                        disabled={props.ViewMode}
+                                        disabled={props.ViewMode || props?.disabled}
                                     >
                                         <div className={"save-icon"}></div>
                                         {'Save'}
