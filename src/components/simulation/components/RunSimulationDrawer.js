@@ -145,13 +145,20 @@ function RunSimulationDrawer(props) {
     }, [topAndLeftMenuData])
     useEffect(() => {
         if (applicabilityHeadListSimulation && applicabilityHeadListSimulation.length > 0) {
-            const result = applicabilityHeadListSimulation.slice(1, 11).map(item => item.Text);
-            setSelectedData(result);
-            setDisableAdditionalDiscount(true);
-            setDisableAdditionalOtherCost(true);
-            setDisableAdditionalPackaging(true);
-            setDisableAdditionalFreight(true);
-            setDisableAdditionalTool(true)
+            // Filter out items that are Selected:true from the API response
+                const selectedItems = applicabilityHeadListSimulation
+                .filter(item => item.Selected === true)
+                .map(item => item.Text);
+
+            setSelectedData(selectedItems);
+            
+            // const result = applicabilityHeadListSimulation.slice(1, 11).map(item => item.Text);
+            // setSelectedData(result);
+            // setDisableAdditionalDiscount(false);
+            // setDisableAdditionalOtherCost(false);
+            // setDisableAdditionalPackaging(false);
+            // setDisableAdditionalFreight(false);
+            // setDisableAdditionalTool(false)
         }
     }, [applicabilityHeadListSimulation]);
     // const costingHead = useSelector(state => state.comman.costingHead)
@@ -171,15 +178,15 @@ function RunSimulationDrawer(props) {
     }
 
     const handleApplicabilityChange = (elementObj) => {
+        
         let tempData = [];
 
         if (selectedData.includes(elementObj.Text)) {
-            const test = selectedData.filter((el) => el !== elementObj.Text);
-            tempData = test;
+            tempData = selectedData.filter((el) => el !== elementObj.Text);
         } else {
-            const test = [...selectedData, elementObj.Text];
-            tempData = test;
+            tempData = [...selectedData, elementObj.Text];
         }
+        
         setSelectedData(tempData);
         setIsOpposite(!opposite);
         if (elementObj.Text === "Discount And Other Cost") {
@@ -290,6 +297,11 @@ function RunSimulationDrawer(props) {
         if (id === "Latest Exchange Rate" && selectedMasterForSimulation?.value === EXCHNAGERATE) {
             return true
         }
+        // return selectedData.includes(id);
+
+        // const item = applicabilityHeadListSimulation.find(head => head.Text === id);
+        // return item?.Selected || selectedData.includes(id);
+
         if (selectedData.includes(id)) {
             return true
         }
@@ -565,6 +577,20 @@ function RunSimulationDrawer(props) {
     const closePopUp = () => {
         setShowPopup(false)
     }
+    // Add this console log to monitor state changes
+// useEffect(() => {
+//     console.log('Selected Data:', selectedData);
+//     console.log('Backend Selections:', 
+//         applicabilityHeadListSimulation
+//             .filter(item => item.Selected)
+//             .map(item => item.Text)
+//     );
+// }, [selectedData, applicabilityHeadListSimulation]);
+//     // Add a helper function to determine if an item is backend-selected
+// const isBackendSelected = (text) => {
+//     const item = applicabilityHeadListSimulation.find(head => head.Text === text);
+//     return item?.Selected || false;
+// }
     const disabledFields = (el) => (el.Text === "Discount And Other Cost" && disableDiscountAndOtherCost) || (el.Text === "Discount And Other Cost" && disableDiscountAndOtherCostSecond) || (el.Text === "Additional Discount" && disableAdditionalDiscount) || (el.Text === "Additional Other Cost" && disableAdditionalOtherCost) || (el.Text === "Packaging" && disablePackaging) || (el.Text === "Additional Packaging" && disableAdditionalPackaging) || (el.Text === "Freight" && disableFreight) || (el.Text === "Tool" && disableTool) || (el.Text === "Latest Exchange Rate" && selectedMasterForSimulation?.value === EXCHNAGERATE) ? true : false
     return (
         <>
@@ -624,6 +650,8 @@ function RunSimulationDrawer(props) {
                                                                             type="checkbox"
                                                                             value={"All"}
                                                                             disabled={disabledFields(el)}
+                                                                            // disabled={isDisabled}
+
                                                                             checked={IsAvailable(el.Text)}
                                                                         />
 
