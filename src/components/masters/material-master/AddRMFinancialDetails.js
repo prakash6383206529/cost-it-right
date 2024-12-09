@@ -232,8 +232,8 @@ function AddRMFinancialDetails(props) {
             setValue('JaliScrapCostBaseCurrency', Data?.ScrapRate)
             setValue('ForgingScrapBaseCurrency', Data?.ScrapRate)
             setValue('frequencyOfSettlement', { label: Data?.FrequencyOfSettlement, value: Data?.FrequencyOfSettlementId })
-            setValue('fromDate', DayTime(Data?.FromDate).$d)
-            setValue('toDate', DayTime(Data?.ToDate).$d)
+            setValue('fromDate', Data?.FromDate ? DayTime(Data?.FromDate).$d : '')
+            setValue('toDate', Data?.ToDate ? DayTime(Data?.ToDate).$d : '')
             setValue('OtherCostBaseCurrency', Data?.OtherNetCostConversion)
             setValue('Index', { label: Data?.IndexExchangeName, value: Data?.IndexExchangeId })
             setValue('ExchangeSource', { label: Data?.ExchangeRateSourceName, value: Data?.ExchangeRateSourceName })
@@ -254,7 +254,9 @@ function AddRMFinancialDetails(props) {
                 otherCostTableData: Data?.RawMaterialOtherCostDetails,
                 isShowIndexCheckBox: Data?.IsIndexationDetails,
                 totalOtherCost: Data?.OtherNetCostConversion,
-                minDate: DayTime(Data?.EffectiveDate).$d
+                minDate: DayTime(Data?.FromDate).$d,
+                fromDate: Data?.FromDate ? DayTime(Data?.FromDate).$d : '',
+                toDate: Data?.ToDate ? DayTime(Data?.ToDate).$d : ''
             }))
             dispatch(SetRawMaterialDetails({ ...rawMaterailDetailsRef.current, isShowIndexCheckBox: Data?.IsIndexationDetails }, () => { }))
             dispatch(SetRawMaterialDetails({ ...rawMaterailDetailsRef.current, states: state }, () => { }))
