@@ -218,7 +218,6 @@ function AddRMMaster(props) {
      * @description Used for Vendor checked
      */
     const onPressVendor = (costingHeadFlag) => {
-        reset()
         setState(prevState => ({
             ...prevState,
             costingTypeId: costingHeadFlag,
