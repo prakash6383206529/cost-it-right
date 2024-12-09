@@ -685,6 +685,7 @@ const CostingSummaryTable = (props) => {
       setIsComparing(false)
       temp.push(varianceData)
     }
+    handleScroll()
     dispatch(setCostingViewData(temp))
   }
 
@@ -2071,12 +2072,19 @@ const CostingSummaryTable = (props) => {
   const handleScroll = () => {
     if (tableContainerRef.current) {
       const { scrollLeft, scrollWidth, clientWidth } = tableContainerRef.current;
-
+      console.log("scrollLeft", scrollLeft, "scrollWidth", scrollWidth, "clientWidth", clientWidth);
       // Toggle visibility of left button
+
       setShowLeftButton(scrollLeft > 0);
+      if (viewCostingData?.length > (window.screen.width >= 1600 ? 3 : 2)) {
+        // setShowRightButton(true)
+        setShowRightButton(true)
+
+      } else {
+        setShowRightButton(false)
+      }
 
       // Toggle visibility of right button
-      setShowRightButton(scrollLeft + clientWidth < scrollWidth);
     }
   };
   useEffect(() => {
@@ -2090,16 +2098,19 @@ const CostingSummaryTable = (props) => {
         container.removeEventListener("scroll", handleScroll);
       }
     };
-  }, []);
+  }, [viewCostingData]);
   const scrollLeft = () => {
     if (tableContainerRef.current) {
       tableContainerRef.current.scrollBy({ left: -100, behavior: "smooth" });
+      handleScroll()
     }
   };
 
   const scrollRight = () => {
     if (tableContainerRef.current) {
       tableContainerRef.current.scrollBy({ left: 100, behavior: "smooth" });
+      const { scrollLeft, scrollWidth, clientWidth } = tableContainerRef.current;
+      setShowRightButton(scrollLeft + clientWidth < scrollWidth);
     }
   };
   return (
