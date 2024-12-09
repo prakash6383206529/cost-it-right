@@ -191,7 +191,12 @@ function AddRMFinancialDetails(props) {
         if (!states.isImport) {
             calculateNetCostDomestic()
         }
-    }, [fieldValuesDomestic, state.totalOtherCost])
+    }, [fieldValuesDomestic, state.totalOtherCost]);
+
+    useEffect(() => {
+        calculateNetCostDomestic();
+    }, [states?.costingTypeId])
+
     useEffect(() => {
         if (props?.DataToChange && Object.keys(props?.DataToChange).length > 0) {
             let Data = props?.DataToChange
@@ -280,8 +285,8 @@ function AddRMFinancialDetails(props) {
     const basicPriceTitle = () => {
         if (getConfigurationKey().IsBasicRateAndCostingConditionVisible && Number(states.costingTypeId) === Number(ZBCTypeId)) {
             let obj = {
-                toolTipTextBasicPriceSelectedCurrency: `Basic Price (${state.currency?.label === undefined ? 'Currency' : state.currency?.label}) = Basic Rate (${state.currency?.label === undefined ? 'Currency' : state.currency?.label})`,
-                toolTipTextBasicPriceBaseCurrency: `Basic Price (${reactLocalStorage.getObject("baseCurrency")}) = Basic Rate (${reactLocalStorage.getObject("baseCurrency")})`
+                toolTipTextBasicPriceSelectedCurrency: `Basic Price (${state.currency?.label === undefined ? 'Currency' : state.currency?.label}) = Basic Rate (${state.currency?.label === undefined ? 'Currency' : state.currency?.label}) + Other Cost`,
+                toolTipTextBasicPriceBaseCurrency: `Basic Price (${reactLocalStorage.getObject("baseCurrency")}) = Basic Rate (${reactLocalStorage.getObject("baseCurrency")}) + Other Cost`
             }
             return obj
         }
@@ -440,18 +445,15 @@ function AddRMFinancialDetails(props) {
         }
 
         const basicPriceCurrencyTemp = checkForNull(getValues('BasicRateBaseCurrency')) + checkForNull(getValues('FreightChargeBaseCurrency')) + checkForNull(getValues('ShearingCostBaseCurrency')) + checkForNull(getValues('OtherCostBaseCurrency'))
-        let basicPriceBaseCurrency
-        if (costingTypeId === ZBCTypeId) {
-            basicPriceBaseCurrency = basicPriceCurrencyTemp
-        }
 
-        let conditionList = recalculateConditions('', basicPriceBaseCurrency)
+        let basicPriceBaseCurrency = costingTypeId === ZBCTypeId ? basicPriceCurrencyTemp : 0;
 
+        let conditionList = recalculateConditions('', basicPriceBaseCurrency);
         const sumBaseCurrency = conditionList?.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCost), 0);
-        let netLandedCostBaseCurrency = RMIndex ? checkForNull(sumBaseCurrency) + checkForNull(basicPriceCurrencyTemp) + state.totalOtherCost : checkForNull(sumBaseCurrency) + checkForNull(basicPriceCurrencyTemp)
 
-
-
+        const netLandedCostBaseCurrency = costingTypeId === ZBCTypeId
+            ? checkForNull(sumBaseCurrency) + checkForNull(getValues('BasicRateBaseCurrency')) + state?.totalOtherCost
+            : checkForNull(getValues('BasicRateBaseCurrency')) + state?.totalOtherCost;
 
         setValue('FinalConditionCostBaseCurrency', checkForDecimalAndNull(sumBaseCurrency, getConfigurationKey().NoOfDecimalForPrice))
         setValue('NetLandedCostBaseCurrency', checkForDecimalAndNull(netLandedCostBaseCurrency, getConfigurationKey().NoOfDecimalForPrice))
