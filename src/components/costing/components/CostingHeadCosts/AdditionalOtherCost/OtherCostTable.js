@@ -30,13 +30,13 @@ const OtherCostTable = (props) => {
                     {gridData && gridData.map((item, index) => {
                         return (
                             <tr key={index} >
-                                {initialConfiguration.IsShowCRMHead && <td>{item.CRMHead}</td>}
-                                <td>{item.OtherCostDescription}</td>
+                                {initialConfiguration.IsShowCRMHead && <td>{item.CRMHead??'-'}</td>}
+                                <td>{item.OtherCostDescription??'-'}</td>
                                 {/* <td>{item.OtherCostType}</td> */}
-                                <td>{item?.OtherCostApplicability}</td>
-                                <td>{checkForDecimalAndNull(item?.ApplicabilityCost, initialConfiguration.NoOfDecimalForPrice)}</td>
-                                <td>{item?.PercentageOtherCost}</td>
-                                <td>{checkForDecimalAndNull(item.AnyOtherCost, initialConfiguration.NoOfDecimalForPrice)}</td>
+                                <td>{item?.OtherCostApplicability??'-'}</td>
+                                <td>{checkForDecimalAndNull(item?.ApplicabilityCost??'-', initialConfiguration.NoOfDecimalForPrice)}</td>
+                                <td>{item?.PercentageOtherCost??'-'}</td>
+                                <td>{checkForDecimalAndNull(item.AnyOtherCost??'-', initialConfiguration.NoOfDecimalForPrice)}</td>
                                 {!CostingViewMode && <td className='text-right'>
                                     <button
                                         className="Edit"

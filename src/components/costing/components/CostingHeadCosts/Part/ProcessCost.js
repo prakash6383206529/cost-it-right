@@ -500,7 +500,7 @@ function ProcessCost(props) {
 
     const productionPerHrs = (rowArray, UOMType, processQuantityMain) => {
       // IF GROUP NAME IS THERE ,THEN QUAMTITY WILL BE SUM OF THE QUANTITY OF PROCESSESS OF THAT GROUP,OTHERWISE MAIN QUANTITY
-      return rowArray.length > 0 ? (UOMType !== TIME ? '-' : (3600 / calculateRowQuantity(rowArray))) : (UOMType !== TIME ? '-' : (3600 / processQuantityMain))
+      return rowArray.length > 0 ? (UOMType !== TIME ? '' : (3600 / calculateRowQuantity(rowArray))) : (UOMType !== TIME ? '' : (3600 / processQuantityMain))
     }
 
 
@@ -804,6 +804,7 @@ function ProcessCost(props) {
     setGridData(tempArr2)
     dispatch(setProcessGroupGrid(formatReducerArray(tempArr2)))
     setTabData(tempArr3)
+
     tempArrAfterDelete && tempArrAfterDelete.map((el, i) => {
       setValue(`${SingleProcessGridField}.${i}.${parentIndex}.ProcessCost`, checkForDecimalAndNull(el.ProcessCost, initialConfiguration.NoOfDecimalForPrice))
       setValue(`${SingleProcessGridField}.${i}${parentIndex}${el.ProcessName}.Quantity`, checkForDecimalAndNull(el.Quantity, getConfigurationKey().NoOfDecimalForInputOutput))
@@ -975,7 +976,6 @@ function ProcessCost(props) {
         ProcessList: gridTempArr
       }
       let processTemparr = Object.assign([...processGroupGrid], { [parentIndex]: processTempData })
-
       let apiArr = formatMainArr(processTemparr)
 
 
