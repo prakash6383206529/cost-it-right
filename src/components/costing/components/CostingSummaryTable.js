@@ -207,6 +207,8 @@ const CostingSummaryTable = (props) => {
   const [openNpvDrawer, setNpvDrawer] = useState(false);
   const [isOpenRejectedCosting, setIsOpenRejectedCosting] = useState(false);
   const [isFinalCommonApproval, setIsFinalCommonApproval] = useState(false);
+  const [showLeftButton, setShowLeftButton] = useState(false);
+  const [showRightButton, setShowRightButton] = useState(true);
   const [tcoAndNpvDrawer, setTcoAndNpvDrawer] = useState(false);
   const [costingId, setCostingId] = useState("");
   const { discountLabel, toolMaintenanceCostLabel } = useLabels();
@@ -224,6 +226,7 @@ const CostingSummaryTable = (props) => {
   const componentRef = useRef();
   const onBeforeContentResolve = useRef(null)
   const onBeforeContentResolveDetail = useRef(null)
+  const tableContainerRef = useRef(null);
 
   useEffect(() => {
     if (viewCostingDetailData && viewCostingDetailData.length > 0 && !props?.isRejectedSummaryTable) {
@@ -2065,8 +2068,40 @@ const CostingSummaryTable = (props) => {
     })
     return arr
   }
+  const handleScroll = () => {
+    if (tableContainerRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = tableContainerRef.current;
 
+      // Toggle visibility of left button
+      setShowLeftButton(scrollLeft > 0);
 
+      // Toggle visibility of right button
+      setShowRightButton(scrollLeft + clientWidth < scrollWidth);
+    }
+  };
+  useEffect(() => {
+    const container = tableContainerRef.current;
+    if (container) {
+      container.addEventListener("scroll", handleScroll);
+    }
+    handleScroll(); // Check initial scroll state
+    return () => {
+      if (container) {
+        container.removeEventListener("scroll", handleScroll);
+      }
+    };
+  }, []);
+  const scrollLeft = () => {
+    if (tableContainerRef.current) {
+      tableContainerRef.current.scrollBy({ left: -100, behavior: "smooth" });
+    }
+  };
+
+  const scrollRight = () => {
+    if (tableContainerRef.current) {
+      tableContainerRef.current.scrollBy({ left: 100, behavior: "smooth" });
+    }
+  };
   return (
     <Fragment>
       {
@@ -2190,8 +2225,24 @@ const CostingSummaryTable = (props) => {
                   </Col> */}
                 </>}
 
-              <Col md="12">
-                <div className={`${viewCostingData[0]?.technologyId !== LOGISTICS ? '' : `overflow-y-hidden ${props?.isRfqCosting ? 'layout-min-height-440px' : ''}`} table-responsive `}>
+              <Col md="12" >
+
+                {showRightButton && (
+                  <button className="scroll-btn right" onClick={scrollRight}>
+                    <svg viewBox="0 0 24 24">
+                      <path d="M8.59 16.59L13.17 12l-4.58-4.59L10 6l6 6-6 6z" />
+                    </svg>
+                  </button>
+                )}
+                {showLeftButton && (
+                  <button className="scroll-btn left" onClick={scrollLeft}>
+                    <svg viewBox="0 0 24 24">
+                      <path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6z" />
+                    </svg>
+                  </button>
+                )}
+                <div ref={tableContainerRef} className={`${viewCostingData[0]?.technologyId !== LOGISTICS ? '' : `overflow-y-hidden ${props?.isRfqCosting ? 'layout-min-height-440px' : ''}`} table-responsive`}>
+
                   <table style={{ minWidth: cssObj.tableWidth }} className={`table table-bordered costing-summary-table mb-0 ${approvalMode ? 'costing-approval-summary' : ''}`}>
                     {props.isRfqCosting && <thead>
                       <tr>
