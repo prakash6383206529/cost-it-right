@@ -337,12 +337,12 @@ function LossStandardTable(props) {
     }
 
     const obj = {
-      LossPercentage: LossPercentage ? LossPercentage : "-",
-      FlashLength: FlashLength ? FlashLength : "-",
-      FlashWidth: FlashWidth ? FlashWidth : "-",
-      FlashThickness: FlashThickness ? FlashThickness : "-",
-      BarDiameter: BarDiameter ? BarDiameter : "-",
-      BladeThickness: BladeThickness ? BladeThickness : "-",
+      LossPercentage: LossPercentage ? LossPercentage : "",
+      FlashLength: FlashLength ? FlashLength : "",
+      FlashWidth: FlashWidth ? FlashWidth : "",
+      FlashThickness: FlashThickness ? FlashThickness : "",
+      BarDiameter: BarDiameter ? BarDiameter : "",
+      BladeThickness: BladeThickness ? BladeThickness : "",
       LossOfType: LossOfType,
       LossWeight: LossWeight,
       FlashLoss: getValues('FlashLoss')?.label,
