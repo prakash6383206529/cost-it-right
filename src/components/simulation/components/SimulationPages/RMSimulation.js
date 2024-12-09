@@ -229,9 +229,9 @@ function RMSimulation(props) {
         let tempArr = []
         if (String(selectedMasterForSimulation.value) === String(RMDOMESTIC) || String(selectedMasterForSimulation.value) === String(RMIMPORT)) {
 
-            list && list.map(item => {
-                if ((item.NewBasicRate !== undefined || item.NewScrapRate !== undefined || item.NewBasicrateFromPercentage) && (((item.NewBasicRate !== undefined || item.NewBasicrateFromPercentage) ? Number(item.NewBasicRate) : Number(item.BasicRate)) !== Number(item.BasicRatePerUOM) || ((item.NewScrapRate !== undefined || item.NewBasicrateFromPercentage) ? Number(item.NewScrapRate) : Number(item.ScrapRate)) !== Number(item.ScrapRate))) {
-                    let tempObj = {
+list && list.map(item => {
+  if ((item.NewBasicRate !== undefined || item.NewScrapRate !== undefined || item.NewBasicrateFromPercentage) && ((item.NewBasicRate !== undefined || item.NewBasicrateFromPercentage) ? Number(item.NewBasicRate) : (Number(item.BasicRate)) !== Number(item.BasicRatePerUOM) || ((item.NewScrapRate !== undefined || item.NewBasicrateFromPercentage) ? Number(item.NewScrapRate) : Number(item.ScrapRate)) !== Number(item.ScrapRate))) {
+                    let tempObj = { 
                         IsAppliedChanges: true,
                         CostingHead: item.CostingHead === 'Vendor Based' ? VBC : ZBC,
                         RawMaterialId: item.RawMaterialId,
@@ -323,24 +323,35 @@ function RMSimulation(props) {
             setIsWarningMessageShow(true)
             return false
         }
-        let basicRateCount = 0
+        let netLandedCostChangeCount = 0
         let isScrapRateGreaterThanBasiRate = false
         let scrapRateChangeArr = [];
         let basicRateZeroCount = 0
-        list && list.map((li) => {
-            if (Number(li.BasicRatePerUOM) === Number(li.NewBasicRate) || (li?.NewBasicRate === undefined && li?.NewBasicrateFromPercentage === undefined)) {
-                basicRateCount = basicRateCount + 1
+    list && list.map((li) => {
+            const oldNetLandedCost = Number(li.NetLandedCost)
+            const newNetLandedCost = Number(checkForNull(li?.NewBasicRate || li?.BasicRatePerUOM) + 
+                                          checkForNull(li?.NewOtherNetCost) + 
+                                          checkForNull(li?.RMFreightCost) + 
+                                          checkForNull(li?.RMShearingCost) +
+                                          checkForNull(li?.NewNetConditionCost))
+    
+            if (oldNetLandedCost === newNetLandedCost) {
+                netLandedCostChangeCount = netLandedCostChangeCount + 1
             }
-
-            if ((li.NewBasicRate && Number(li.BasicRatePerUOM) !== Number(li.NewBasicRate)) && (Number(li.ScrapRate) === Number(li.NewScrapRate) || li?.NewScrapRate === undefined)) {
+           if (oldNetLandedCost !== newNetLandedCost && 
+                (Number(li.ScrapRate) === Number(li?.NewScrapRate || li.ScrapRate))) {
                 scrapRateChangeArr.push(li)
-
             }
-            if (li.NewBasicrateFromPercentage === undefined || li?.NewBasicrateFromPercentage < (li?.NewScrapRate === undefined || li?.NewScrapRate === '' ? Number(li?.ScrapRate) : Number(li?.NewScrapRate))) {
-                if ((li?.NewBasicRate === undefined || li?.NewBasicRate === '' ? Number(li?.BasicRatePerUOM) : Number(li?.NewBasicRate)) < (li?.NewScrapRate === undefined || li?.NewScrapRate === '' ? Number(li?.ScrapRate) : Number(li?.NewScrapRate))) {
+            if (li.NewBasicrateFromPercentage === undefined || 
+                li?.NewBasicrateFromPercentage < (li?.NewScrapRate === undefined || li?.NewScrapRate === '' ? 
+                Number(li?.ScrapRate) : Number(li?.NewScrapRate))) {
+                if ((li?.NewBasicRate === undefined || li?.NewBasicRate === '' ? 
+                    Number(li?.BasicRatePerUOM) : Number(li?.NewBasicRate)) < 
+                    (li?.NewScrapRate === undefined || li?.NewScrapRate === '' ? 
+                    Number(li?.ScrapRate) : Number(li?.NewScrapRate))) {
                     isScrapRateGreaterThanBasiRate = true
                 }
-                if (isScrapRateGreaterThanBasiRate && !(Number(basicRateCount) === Number(list.length))) {
+                if (isScrapRateGreaterThanBasiRate && !(Number(netLandedCostChangeCount) === Number(list.length))) {
                     li.NewBasicRate = li?.BasicRatePerUOM
                     li.NewScrapRate = li?.ScrapRate
                     Toaster.warning('Scrap Rate should be less than Basic Rate')
@@ -352,12 +363,13 @@ function RMSimulation(props) {
             }
             return null;
         })
-
-        if ((selectedMasterForSimulation?.value === RMDOMESTIC || selectedMasterForSimulation?.value === RMIMPORT) && basicRateCount === list.length) {
-            Toaster.warning('There is no changes in net cost. Please change the basic rate, then run simulation')
+    
+                if ((selectedMasterForSimulation?.value === RMDOMESTIC || selectedMasterForSimulation?.value === RMIMPORT) && 
+            netLandedCostChangeCount === list.length) {
+            Toaster.warning('There is no changes in net cost. Please make changes to run simulation')
             return false
         }
-        if (basicRateZeroCount > 0) {
+    if (basicRateZeroCount > 0) {
             Toaster.warning('Basic Rate should not be zero')
             return false
         }
@@ -371,8 +383,7 @@ function RMSimulation(props) {
             return false
         }
         setIsDisable(true)
-
-        basicRateCount = 0
+    
         if (selectedMasterForSimulation?.value === EXCHNAGERATE) {
             dispatch(createMultipleExchangeRate(exchangeRateListBeforeDraft, currencySelectList, effectiveDate, res => {
                 setValueFunction(true, res);
@@ -382,7 +393,6 @@ function RMSimulation(props) {
         }
         setShowTooltip(false)
     }, 600)
-
 
     const cancelVerifyPage = () => {
 
@@ -604,7 +614,7 @@ function RMSimulation(props) {
             row.NewBasicrateFromPercentage = percentageCalc
             NewBasicRate = percentageCalc + row?.RMFreightCost + row?.RMShearingCost
         }
-        const classGreen = ((checkForNull(NewBasicRate) + checkForNull(checkForNull(row?.NewOtherNetCost))) > row?.NetLandedCost) ? 'red-value form-control' : (checkForNull(NewBasicRate) + checkForNull(checkForNull(row?.NewOtherNetCost)) < row?.NetLandedCost) ? 'green-value form-control' : 'form-class'
+        const classGreen = ((checkForNull(NewBasicRate) + checkForNull(checkForNull(row?.NewOtherNetCost)+checkForNull(row?.NewNetConditionCost))) > row?.NetLandedCost) ? 'red-value form-control' : (checkForNull(NewBasicRate) + checkForNull(checkForNull(row?.NewOtherNetCost)+checkForNull(row?.NewNetConditionCost)) < row?.NetLandedCost) ? 'green-value form-control' : 'form-class'
         return showValue(row, classGreen, NewBasicRate)
         // checkForDecimalAndNull(NewBasicRate, getConfigurationKey().NoOfDecimalForPrice)
     }
@@ -918,6 +928,8 @@ function RMSimulation(props) {
         const showValue = cell && value ? checkForDecimalAndNull(Number(cell), getConfigurationKey().NoOfDecimalForPrice) : checkForDecimalAndNull(Number(row?.OtherNetCost), getConfigurationKey().NoOfDecimalForPrice)
 
         const classGreen = (row?.NewOtherNetCost > row?.OtherNetCost) ? 'red-value form-control' : (row?.NewOtherNetCost < row?.OtherNetCost) ? 'green-value form-control' : 'form-class'
+        setRowIndex(props?.node?.rowIndex)
+
         return (
             <>
                 {
@@ -948,6 +960,8 @@ function RMSimulation(props) {
         const value = beforeSaveCell(cell, props, 'otherCost')
         const showValue = cell && value ? checkForDecimalAndNull(Number(cell), getConfigurationKey().NoOfDecimalForPrice) : checkForDecimalAndNull(Number(row?.NetConditionCost), getConfigurationKey().NoOfDecimalForPrice)
         const classGreen = (row?.NewNetConditionCost > row?.NetConditionCost) ? 'red-value form-control' : (row?.NetConditionCost < row?.OldConditionNetCost) ? 'green-value form-control' : 'form-class'
+        setRowIndex(props?.node?.rowIndex)
+
         return (
             <>
                 {

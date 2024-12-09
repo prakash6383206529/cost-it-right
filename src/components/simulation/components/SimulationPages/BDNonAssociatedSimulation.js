@@ -139,7 +139,7 @@ const {vendorLabel}= useLabels()
     useEffect(() => {
         
         if (list && list?.[rowIndex]) {
-            
+        
             let obj = list?.[rowIndex]
             obj.otherCostTableData = obj.NewBoughtOutPartOtherCostDetailsSchema
             obj.conditionTableData = obj.NewBoughtOutPartConditionsDetails
@@ -407,7 +407,7 @@ const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
             returnValue = checkForDecimalAndNull(NewNetLandedCost, getConfigurationKey().NoOfDecimalForPrice)
             }
         }
-        
+
         return (
             <div id="netCost_revised" className='ag-header-cell-label'>
                 <span title={returnValue}>{returnValue}</span>
@@ -588,7 +588,7 @@ const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         list[editIndex].NewOtherNetCostConversion = totalCostBase
         list[editIndex].NewOtherNetCostLocalConversion = totalCostBase
         list[editIndex].NewBoughtOutPartOtherCostDetailsSchema = tableData
-        list[editIndex].NewBoughtOutPartConditionsDetails = Number(list[editIndex].NewBasicRate) + checkForNull(totalCostBase); // Update this line
+        list[editIndex].NewNetCostWithoutConditionCost = Number(list[editIndex].NewBasicRate) + checkForNull(totalCostBase); // Update this line
         setNetCostWithoutConditionCost(Number(list[editIndex].NewBasicRate) + checkForNull(totalCostBase)); // Update the state
         setIsLoader(true)
         setTimeout(() => {
@@ -709,8 +709,8 @@ const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const showValue = cell && value ? checkForDecimalAndNull(Number(cell), getConfigurationKey().NoOfDecimalForPrice) : checkForDecimalAndNull(Number(row?.OtherNetCost), getConfigurationKey().NoOfDecimalForPrice)
 
         const classGreen = (row?.NewOtherNetCost > row?.OtherNetCost) ? 'red-value form-control' : (row?.NewOtherNetCost < row?.OtherNetCost) ? 'green-value form-control' : 'form-class'
-        
-        return (
+        setRowIndex(props?.node?.rowIndex)
+return (
             <>
                 {
                     props?.isImpactedMaster ?
@@ -740,7 +740,7 @@ const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const value = beforeSaveCell(cell, props, 'otherCost')
         const showValue = cell && value ? checkForDecimalAndNull(Number(cell), getConfigurationKey().NoOfDecimalForPrice) : checkForDecimalAndNull(Number(row?.NetConditionCost), getConfigurationKey().NoOfDecimalForPrice)
         const classGreen = (row?.NewNetConditionCost > row?.NetConditionCost) ? 'red-value form-control' : (row?.NewNetConditionCost < row?.NetConditionCost) ? 'green-value form-control' : 'form-class'
-        
+        setRowIndex(props?.node?.rowIndex)
         return (
             <>
                  {

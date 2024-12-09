@@ -828,8 +828,8 @@ const calculateAndSave = (basicRate = 0, data = [], totalBase = 0, type = '', cu
     const NewcostFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : isCostingSimulation ? props.data.NewRawMaterialIndexationDetails : props?.data;
         const rowValue = isCostingSimulation ? row.NetLandedCost : row?.NewNetLandedCost
-
-        const classGreen = (row?.NewNetLandedCost > row?.OldNetLandedCost) ? 'red-value form-control' : (row?.NewNetLandedCost < row?.OldNetLandedCost) ? 'green-value form-control' : 'form-class'
+const classGreen = /* (row?.NewNetLandedCost > row?.OldNetLandedCost) ? 'red-value form-control' : (row?.NewNetLandedCost < row?.OldNetLandedCost) ? 'green-value form-control' : */ 'form-class'
+        
         return rowValue ? <span title={checkForDecimalAndNull(rowValue, getConfigurationKey().NoOfDecimalForPrice)} className={`${classGreen} with-button`}>{checkForDecimalAndNull(rowValue, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
     const revisedBasicRateHeader = (props) => {
@@ -1021,6 +1021,8 @@ const calculateAndSave = (basicRate = 0, data = [], totalBase = 0, type = '', cu
         const value = beforeSaveCell(cell, props, 'otherCost')
         const showValue = cell && value ? checkForDecimalAndNull(Number(cell), getConfigurationKey().NoOfDecimalForPrice) : checkForDecimalAndNull(Number(row.BasicRatePerUOM), getConfigurationKey().NoOfDecimalForPrice)
         const classGreen = (row?.NewOtherNetCost > row?.OldOtherNetCost) ? 'red-value form-control' : (row?.NewOtherNetCost < row?.OldOtherNetCost) ? 'green-value form-control' : 'form-class'
+        setRowIndex(props?.node?.rowIndex)
+
         return (
             <>
                 {
@@ -1072,7 +1074,8 @@ const calculateAndSave = (basicRate = 0, data = [], totalBase = 0, type = '', cu
         const value = beforeSaveCell(cell, props, 'otherCost')
         const showValue = cell && value ? checkForDecimalAndNull(Number(cell), getConfigurationKey().NoOfDecimalForPrice) : checkForDecimalAndNull(Number(row?.NetConditionCost), getConfigurationKey().NoOfDecimalForPrice)
         const classGreen = (row?.NewNetConditionCost > row?.OldNetConditionCost) ? 'red-value form-control' : (row?.NewNetConditionCost < row?.OldNetConditionCost) ? 'green-value form-control' : 'form-class'
-       
+        setRowIndex(props?.node?.rowIndex)
+
         return (
             <>
                 {
