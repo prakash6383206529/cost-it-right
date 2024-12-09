@@ -1796,7 +1796,7 @@ function AddRMFinancialDetails(props) {
                                         {states.isImport && <Button
                                             id="addRMDomestic_conditionToggle"
                                             onClick={conditionToggle}
-                                            className={"right mt-0 mb-2"}
+                                            className={"right mt-3 mb-2"}
                                             variant={isViewFlag ? "view-icon-primary" : true ? "plus-icon-square" : "blurPlus-icon-square"}
                                             title={isViewFlag ? "View" : "Add"}
                                             disabled={disableAll || isViewFlag}
@@ -1823,7 +1823,7 @@ function AddRMFinancialDetails(props) {
                                         {!states.isImport && <Button
                                             id="addRMDomestic_conditionToggle"
                                             onClick={conditionToggle}
-                                            className={"right mt-0 mb-2"}
+                                            className={"right mt-3 mb-2"}
                                             variant={isViewFlag ? "view-icon-primary" : "plus-icon-square"}
                                             title={isViewFlag ? "View" : "Add"}
                                         />}
