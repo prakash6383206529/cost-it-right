@@ -245,9 +245,18 @@ function BDSimulation(props) {
         }
 
         let basicRateCount = 0
-
-        list && list.map((li) => {
-
+        let netLandedCostChangeCount = 0
+list && list.map((li) => {
+            const oldNetLandedCost = Number(li.NetLandedCost)
+            const newNetLandedCost = Number(checkForNull(li?.NewBasicRate || li?.BasicRatePerUOM) + 
+                                          checkForNull(li?.NewOtherNetCost) + 
+                                          checkForNull(li?.RMFreightCost) + 
+                                          checkForNull(li?.RMShearingCost) +
+                                          checkForNull(li?.NewNetConditionCost))
+    
+            if (oldNetLandedCost === newNetLandedCost) {
+                netLandedCostChangeCount = netLandedCostChangeCount + 1
+            }
             if (Number(li.BasicRate) === Number(li.NewBasicRate) || li?.NewBasicRate === undefined) {
 
                 basicRateCount = basicRateCount + 1
@@ -256,7 +265,7 @@ function BDSimulation(props) {
             return null;
         })
 
-        if (String(selectedMasterForSimulation?.value) !== String(EXCHNAGERATE) && basicRateCount === list.length) {
+        if (String(selectedMasterForSimulation?.value) !== String(EXCHNAGERATE) && netLandedCostChangeCount === list.length) {
             Toaster.warning('There is no changes in net cost. Please change the basic rate, then run simulation')
             return false
         }
@@ -396,6 +405,7 @@ function BDSimulation(props) {
         const newNetLandedCost = newBasicPrice + checkForNull(row?.NewNetConditionCost);
         
         
+        
     const displayCost = row.NewBasicRate != null ? newNetLandedCost : existingNetLandedCost;
     
         // const classGreen = (newNetLandedCost > existingNetLandedCost) ? 'red-value form-control' 
@@ -410,7 +420,8 @@ function BDSimulation(props) {
             const NewBasicRate = checkForNull((row.NewBasicRate) / NumberOfPieces)
             const NewNetLandedCost = (checkForNull((row.NewBasicRate)+checkForNull(row?.NewOtherNetCost)/NumberOfPieces)+checkForNull(row?.NewNetConditionCost))
             
-            const classGreen = (BasicRate < NewBasicRate) ? 'red-value form-control' : (BasicRate > NewBasicRate) ? 'green-value form-control' : 'form-class'
+            const classGreen = (existingNetLandedCost < newNetLandedCost) ? 'red-value form-control' : (existingNetLandedCost > newNetLandedCost) ? 'green-value form-control' : 'form-class'
+            
             return (
                 <span 
                     className={row.NewBasicRate != null ? classGreen : ''} 
@@ -570,6 +581,8 @@ function BDSimulation(props) {
         // setOtherCostDetailForRow([])
     }
     const calculateAndSave = (tableData, totalCostBase) => {
+        
+        
         setIsLoader(true)
         list[editIndex].NewOtherNetCost = totalCostBase
         list[editIndex].NewOtherNetCostConversion = totalCostBase
@@ -680,13 +693,15 @@ function BDSimulation(props) {
 
     const revisedOtherCostFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        
 
         const value = beforeSaveCell(cell, props, 'otherCost')
         const showValue = cell && value ? checkForDecimalAndNull(Number(cell), getConfigurationKey().NoOfDecimalForPrice) : checkForDecimalAndNull(Number(row?.OtherNetCost), getConfigurationKey().NoOfDecimalForPrice)
 
         const classGreen = (row?.NewOtherNetCost > row?.OtherNetCost) ? 'red-value form-control' : (row?.NewOtherNetCost < row?.OtherNetCost) ? 'green-value form-control' : 'form-class'
-
+        setRowIndex(props?.node?.rowIndex)
         return (
             <>
                 {
@@ -719,7 +734,7 @@ function BDSimulation(props) {
         const showValue = cell && value ? checkForDecimalAndNull(Number(cell), getConfigurationKey().NoOfDecimalForPrice) : checkForDecimalAndNull(Number(row?.NetConditionCost), getConfigurationKey().NoOfDecimalForPrice)
         const classGreen = (row?.NewNetConditionCost > row?.NetConditionCost) ? 'red-value form-control' : (row?.NewNetConditionCost < row?.NetConditionCost) ? 'green-value form-control' : 'form-class'
         
-
+        setRowIndex(props?.node?.rowIndex)
         return (
             <>
                 {
@@ -955,7 +970,7 @@ function BDSimulation(props) {
                                                    
                                                 } marryChildren={true} >
                                                   
-                                                    <AgGridColumn width={150} cellRenderer='existingOtherCostFormatter' field={"isImpactedMaster ? OldOtherCost : OtherNetCost"} editable='false' headerName="Existing" colId={isImpactedMaster ? "OtherNetCost" : "OtherNetCost"} ></AgGridColumn>
+                                                    <AgGridColumn width={150} cellRenderer='existingOtherCostFormatter' field={isImpactedMaster ? "OldOtherCost" : "OtherNetCost"} editable='false' headerName="Existing" colId={isImpactedMaster ? "OtherNetCost" : "OtherNetCost"} ></AgGridColumn>
                                                     <AgGridColumn width={150} cellRenderer='revisedOtherCostFormatter' editable={false} onCellValueChanged='cellChange' field={isImpactedMaster ? "NewOtherCost" : "NewOtherNetCost"} headerName="Revised" colId='NewOtherNetCost' ></AgGridColumn>
                                                 </AgGridColumn>
                                                 {<AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={

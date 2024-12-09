@@ -489,7 +489,7 @@ export const recalculateCosts = (isOtherCost, basicValue, typeField, applicabili
     let copiedData = _.cloneDeep(dataArray) ?? [];
     
     // Create a temporary array for calculations
-    let tempArr = copiedData;
+    let tempArr = copiedData||[];
     // Process each item in the array
     copiedData?.forEach((item, index) => {
         if (item?.[typeField] === "Percentage") {
