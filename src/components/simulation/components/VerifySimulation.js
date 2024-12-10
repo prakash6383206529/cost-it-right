@@ -858,7 +858,7 @@ function VerifySimulation(props) {
                         </Col>
                     </Row>
                   
-{showTooltip && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={currencyViewTooltip} toggle={currencytooltipToggle} target={"currency-tooltip"}>
+{showTooltip && <Tooltip className="simulation-tooltip-left" placement={"top"} isOpen={currencyViewTooltip} toggle={currencytooltipToggle} target={"currency-tooltip"}>
   {"This is the currency selected during the costing"}
                     </Tooltip>}
                     <Row>
@@ -877,30 +877,30 @@ function VerifySimulation(props) {
                                     <div className="ag-theme-material p-relative">
                                         {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found simulation-lisitng" />}
                                         {verifyList && <AgGridReact
-                                            defaultColDef={defaultColDef}
-                                            floatingFilter={true}
-                                            domLayout='autoHeight'
-                                            rowData={verifyList}
-                                            ref={gridRef}
-                                            pagination={true}
-                                            paginationPageSize={defaultPageSize}
-                                            onGridReady={onGridReady}
-                                            gridOptions={gridOptions}
-                                            loadingOverlayComponent={'customLoadingOverlay'}
-                                            noRowsOverlayComponent={'customNoRowsOverlay'}
-                                            noRowsOverlayComponentParams={{
-                                                title: EMPTY_DATA,
-                                                imagClass: "verify-simulation-overlay"
-                                            }}
-                                            frameworkComponents={frameworkComponents}
-                                            rowSelection={'multiple'}
-                                            onRowSelected={onRowSelected}
-                                            onSelectionChanged={onRowSelect}
-                                            onFilterModified={onFloatingFilterChanged}
-                                            suppressRowClickSelection={true}
-                                            enableBrowserTooltips={true}
-
-                                        >
+                                defaultColDef={defaultColDef}
+                                floatingFilter={true}
+                                domLayout='autoHeight'
+                                rowData={verifyList}
+                                ref={gridRef}
+                                pagination={true}
+                                paginationPageSize={defaultPageSize}
+                                onGridReady={onGridReady}
+                                gridOptions={gridOptions}
+                                suppressColumnVirtualisation={true} // Add this line
+                                loadingOverlayComponent={'customLoadingOverlay'}
+                                noRowsOverlayComponent={'customNoRowsOverlay'}
+                                noRowsOverlayComponentParams={{
+                                    title: EMPTY_DATA,
+                                    imagClass: "verify-simulation-overlay"
+                                }}
+                                frameworkComponents={frameworkComponents}
+                                rowSelection={'multiple'}
+                                onRowSelected={onRowSelected}
+                                onSelectionChanged={onRowSelect}
+                                onFilterModified={onFloatingFilterChanged}
+                                suppressRowClickSelection={true}
+                                enableBrowserTooltips={true}
+                            >
                                             <AgGridColumn field="CostingId" hide ></AgGridColumn>
                                             {isMasterAssociatedWithCosting && <AgGridColumn width={185} field="CostingNumber" tooltipField='CostingNumber' headerName="Costing Number"></AgGridColumn>}
                                             {isMasterAssociatedWithCosting && <AgGridColumn width={110} field="PartNo" tooltipField="PartNo" headerName="Part No." cellRenderer='renderPart'></AgGridColumn>}

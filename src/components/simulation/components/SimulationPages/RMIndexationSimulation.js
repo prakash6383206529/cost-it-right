@@ -724,7 +724,7 @@ const calculateAndSave = (basicRate = 0, data = [], totalBase = 0, type = '', cu
                 {
                     (isImpactedMaster || isRunSimulationClicked || isApprovalSummary || isCostingSimulation) ?
                         checkForDecimalAndNull(isCostingSimulation ? row.ScrapRate : row.NewScrapRate, getConfigurationKey().NoOfDecimalForPrice) :
-                        <span id={`newScrapRate-${props.rowIndex}`} className={`${!isbulkUpload ? 'form-control' : ''} ${row.IsScrapUOMApply === 'Yes' ? 'disabled' : ''}`} title={cell && value ? Number(cell) : Number(row.NewScrapRate)} >{cell && value ? Number(cell) : Number(row.NewScrapRate)}</span>
+                        <span id={`newScrapRate-${props.rowIndex}`} className={`${!isbulkUpload ? 'form-control' : ''} ${row.IsScrapUOMApply === 'Yes' ? 'disabled' : ''}`} title={cell && value ? Number(checkForNull(cell)) : Number(checkForNull(row.NewScrapRate))}>{cell && value ? Number(checkForNull(cell)) : Number(checkForNull(row.NewScrapRate))}</span>
                 }
             </>
         )
@@ -743,7 +743,7 @@ const calculateAndSave = (basicRate = 0, data = [], totalBase = 0, type = '', cu
                 {
                     isImpactedMaster ?
                         checkForDecimalAndNull(row.NewScrapRatePerScrapUOM, getConfigurationKey().NoOfDecimalForPrice) :
-                        <span id={`newScrapRate-${props.rowIndex}`} className={`${!isbulkUpload ? 'form-control' : ''} ${row.IsScrapUOMApply === 'No' ? 'disabled' : ''}`} title={cell && value ? Number(cell) : Number(row.ScrapRatePerScrapUOM)} >{cell && value ? Number(cell) : Number(row.ScrapRatePerScrapUOM)}</span>
+                        <span id={`newScrapRate-${props.rowIndex}`} className={`${!isbulkUpload ? 'form-control' : ''} ${row.IsScrapUOMApply === 'No' ? 'disabled' : ''}`} title={cell && value ? Number(checkForNull(cell)) : Number(checkForNull(row.ScrapRatePerScrapUOM))} >{cell && value ? Number(cell) : Number(checkForNull(row.ScrapRatePerScrapUOM))}</span>
                 }
             </>
         )
@@ -758,7 +758,7 @@ const calculateAndSave = (basicRate = 0, data = [], totalBase = 0, type = '', cu
                 {
                     isImpactedMaster ?
                         row.OldScrapRate :
-                        <span title={cell && value ? Number(cell) : Number(row.OldScrapRate)}>{cell && value ? Number(cell) : Number(row.OldScrapRateScrapRate)}</span>
+                        <span title={cell && value ? Number(checkForNull(cell)) : Number(checkForNull(row.OldScrapRate))}>{cell && value ? Number(checkForNull(cell)) : Number(checkForNull(row.OldScrapRate))}</span>
                 }
             </>
         )
@@ -773,7 +773,7 @@ const calculateAndSave = (basicRate = 0, data = [], totalBase = 0, type = '', cu
                 {
                     isImpactedMaster ?
                         row.OldScrapRatePerScrapUOM :
-                        <span title={cell && value ? Number(cell) : Number(row.ScrapRate)}>{cell && value ? Number(cell) : Number(row.ScrapRate)}</span>
+                        <span title={cell && value ? Number(checkForNull(cell)) : Number(checkForNull(row.ScrapRate))}>{cell && value ? Number(checkForNull(cell)) : Number(checkForNull(row.ScrapRate))}</span>
                 }
             </>
         )

@@ -494,7 +494,7 @@ list && list.map(item => {
                 {
                     isImpactedMaster ?
                         checkForDecimalAndNull(row?.NewScrapRate, getConfigurationKey().NoOfDecimalForPrice) :
-                        <span id={`newScrapRate-${props.rowIndex}`} className={`${!isbulkUpload ? 'form-control' : ''} ${row?.IsScrapUOMApply === 'Yes' ? 'disabled' : ''}`} title={cell && value ? Number(cell) : Number(row?.ScrapRate)} >{cell && value ? Number(cell) : Number(row?.ScrapRate)}</span>
+                        <span id={`newScrapRate-${props.rowIndex}`} className={`${!isbulkUpload ? 'form-control' : ''} ${row?.IsScrapUOMApply === 'Yes' ? 'disabled' : ''}`} title={cell && value ? Number(checkForNull(cell)) : Number(checkForNull(row?.ScrapRate))}>{cell && value ? Number(checkForNull(cell)) : Number(checkForNull(row?.ScrapRate))}</span>
                 }
             </>
         )
@@ -513,7 +513,7 @@ list && list.map(item => {
                 {
                     isImpactedMaster ?
                         checkForDecimalAndNull(row?.NewScrapRatePerScrapUOM, getConfigurationKey().NoOfDecimalForPrice) :
-                        <span id={`newScrapRate-${props.rowIndex}`} className={`${!isbulkUpload ? 'form-control' : ''} ${row?.IsScrapUOMApply === 'No' ? 'disabled' : ''}`} title={cell && value ? Number(cell) : Number(row?.ScrapRatePerScrapUOM)} >{cell && value ? Number(cell) : Number(row?.ScrapRatePerScrapUOM)}</span>
+                        <span id={`newScrapRate-${props.rowIndex}`} className={`${!isbulkUpload ? 'form-control' : ''} ${row?.IsScrapUOMApply === 'No' ? 'disabled' : ''}`} title={cell && value ? Number(checkForNull(cell)) : Number(checkForNull(row?.ScrapRatePerScrapUOM))}>{cell && value ? Number(checkForNull(cell)) : Number(checkForNull(row?.ScrapRatePerScrapUOM))}</span>
                 }
             </>
         )
@@ -543,7 +543,7 @@ list && list.map(item => {
                 {
                     isImpactedMaster ?
                         checkForNull(row?.OldScrapRatePerScrapUOM) :
-                        <span title={cell && value ? checkForNull(Number(cell)) : Number(row?.ScrapRate)}>{cell && value ? checkForNull(Number(cell)) :checkForNull( Number(row?.ScrapRate))}</span>
+                        <span title={cell && value ? checkForNull(Number(cell)) : Number(checkForNull(row?.ScrapRate))}>{cell && value ? checkForNull(Number(cell)) :checkForNull( Number(checkForNull(row?.ScrapRate)))}</span>
                 }
             </>
         )

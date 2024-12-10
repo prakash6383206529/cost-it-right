@@ -1710,6 +1710,8 @@ function CostingSimulation(props) {
                                                     onRowSelected={onRowSelected}
                                                     onFilterModified={onFloatingFilterChanged}
                                                     enableBrowserTooltips={true}
+                                                    suppressColumnVirtualisation={true}
+
                                                 >
                                                     {/* <AgGridColumn width={150} field="CostingNumber" headerName='Costing ID'></AgGridColumn>
                                                     <AgGridColumn width={110} field="PartNo" headerName='Part No.'></AgGridColumn>
