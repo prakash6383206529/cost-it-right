@@ -835,11 +835,16 @@
 //   /* Ensure table is wider than container */
 // }
 
-
-.scroll-btn {
+.sticky-scroll-btn {
   position: sticky;
   top: 50%;
   transform: translateY(-50%);
+  z-index: 10;
+  height: 0;
+}
+
+.scroll-btn {
+
   background-color: #d3d3d38f;
   /* Grey background */
   width: 30px;
@@ -851,18 +856,18 @@
   /* Round shape for button */
   cursor: pointer;
   z-index: 10;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  // display: flex;
+  // justify-content: center;
+  // align-items: center;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   /* Shadow */
   outline: none;
 }
 
 .scroll-btn svg {
-  width: 32px;
+  width: 20px;
   /* Resize icon */
-  height: 32px;
+  height: 24px;
   /* Resize icon */
   fill: #555;
   /* Dark grey color for the arrow */
