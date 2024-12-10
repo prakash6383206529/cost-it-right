@@ -553,8 +553,8 @@ function TabDiscountOther(props) {
         "ApplicabilityIdRef": item?.ApplicabilityIdRef,
         "Description": item?.Description,
         "NetCost": item?.NetCost,
-        "Value": item?.PercentageDiscountCost ? item?.PercentageDiscountCost : item?.PercentageDiscountCost,
-        "ApplicabilityCost": item?.ApplicabilityCost ? item?.ApplicabilityCost : item?.ApplicabilityCost,
+        "Value": item?.PercentageDiscountCost ?? '',
+        "ApplicabilityCost": item?.ApplicabilityCost ?? '',
         "CRMHead": item?.CRMHead,
       }
       discountArray.push(obj)
@@ -691,7 +691,7 @@ function TabDiscountOther(props) {
               let obj = {}
               obj.OtherCostDescription = item.Description
               obj.OtherCostApplicability = item.ApplicabilityType
-              obj.PercentageOtherCost = item.Value ? item.Value : '-'
+              obj.PercentageOtherCost = item.Value ? item.Value : ''
               obj.AnyOtherCost = item.NetCost
               obj.ApplicabilityCost = item?.ApplicabilityCost
               obj.CRMHead = item?.CRMHead
@@ -707,7 +707,7 @@ function TabDiscountOther(props) {
               obj.ApplicabilityIdRef = item.ApplicabilityIdRef
               obj.ApplicabilityType = item.ApplicabilityType
               obj.ApplicabilityCost = item?.ApplicabilityCost
-              obj.PercentageDiscountCost = item.Value ? item.Value : '-'
+              obj.PercentageDiscountCost = item.Value ? item.Value : ''
               obj.NetCost = item.NetCost
               obj.CRMHead = item?.CRMHead
               discountTemp.push(obj)

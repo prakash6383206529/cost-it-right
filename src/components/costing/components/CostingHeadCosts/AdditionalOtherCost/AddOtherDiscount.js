@@ -111,12 +111,12 @@ function AddOtherDiscount(props) {
         }
         let gridData = [...state.tableData]
         let obj = {
-            CRMHead: getValues('crmHeadOtherCost') ? getValues('crmHeadOtherCost').label : '-',
+            CRMHead: getValues('crmHeadOtherCost') ? getValues('crmHeadOtherCost').label : '',
             Description: getValues("OtherCostDescription"),
             ApplicabilityIdRef: state.otherDiscountApplicabilityType?.value,
             ApplicabilityType: state.otherDiscountApplicabilityType?.label,
             ApplicabilityCost: applicabilityCost,
-            PercentageDiscountCost: getValues("PercentageOtherCost") ?? '-',
+            PercentageDiscountCost: getValues("PercentageOtherCost") ?? '',
             NetCost: state.otherDiscountApplicabilityType?.label === 'Fixed' ? getValues('AnyOtherCost') : otherCost,
         }
 
@@ -186,12 +186,12 @@ function AddOtherDiscount(props) {
             return false
         }
         const obj = {
-            CRMHead: getValues('crmHeadOtherCost') ? getValues('crmHeadOtherCost').label : '-',
+            CRMHead: getValues('crmHeadOtherCost') ? getValues('crmHeadOtherCost').label : '',
             Description: getValues("OtherCostDescription"),
             ApplicabilityIdRef: state.otherDiscountApplicabilityType?.value,
             ApplicabilityType: state.otherDiscountApplicabilityType?.label,
             ApplicabilityCost: applicabilityCost,
-            PercentageDiscountCost: getValues("PercentageOtherCost") ?? '-',
+            PercentageDiscountCost: getValues("PercentageOtherCost") ?? '',
             NetCost: otherCostApplicability?.label === 'Fixed' ? getValues('AnyOtherCost') : otherCost,
         }
 
@@ -207,7 +207,7 @@ function AddOtherDiscount(props) {
     const editItemDetails = (index) => {
         const editObj = state.tableData[index]
         setValue('OtherCostApplicability', { label: editObj.ApplicabilityType, value: editObj.ApplicabilityIdRef })
-        setValue('PercentageOtherCost', editObj.PercentageDiscountCost === '-' ? 0 : editObj.PercentageDiscountCost)
+        setValue('PercentageOtherCost', editObj.PercentageDiscountCost === '' ? 0 : editObj.PercentageDiscountCost)
         setValue('OtherCostDescription', editObj.Description)
         setValue('AnyOtherCost', editObj.NetCost)
         setValue('crmHeadOtherCost', { label: editObj.CRMHead, value: index })

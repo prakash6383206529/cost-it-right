@@ -600,9 +600,9 @@ function AddToComparisonDrawer(props) {
           obj.vendorName = dataFromAPI.VendorName ? dataFromAPI.VendorName : '-'
           obj.vendorCode = dataFromAPI.VendorCode ? dataFromAPI.VendorCode : '-'
           obj.vendor = dataFromAPI.VendorName && dataFromAPI.VendorCode ? `${dataFromAPI.VendorName} (${dataFromAPI.VendorCode})` : '-'
-          obj.vendorPlantId = dataFromAPI.VendorPlantId ? dataFromAPI.VendorPlantId : '-'
-          obj.vendorPlantName = dataFromAPI.VendorPlantName ? dataFromAPI.VendorPlantName : '-'
-          obj.vendorPlantCode = dataFromAPI.VendorPlantCode ? dataFromAPI.VendorPlantCode : '-'
+          obj.vendorPlantId = dataFromAPI.VendorPlantId ? dataFromAPI.VendorPlantId : ''
+          obj.vendorPlantName = dataFromAPI.VendorPlantName ? dataFromAPI.VendorPlantName : ''
+          obj.vendorPlantCode = dataFromAPI.VendorPlantCode ? dataFromAPI.VendorPlantCode : ''
           obj.costingId = dataFromAPI.CostingId ? dataFromAPI.CostingId : '-'
           obj.oldPoPrice = dataFromAPI.OldPOPrice ? dataFromAPI.OldPOPrice : 0
           obj.technology = dataFromAPI.Technology ? dataFromAPI.Technology : '-'
@@ -661,7 +661,7 @@ function AddToComparisonDrawer(props) {
           obj.BurningLossWeight = obj?.netRMCostView && (obj?.netRMCostView.length > 1 || obj?.IsAssemblyCosting === true) ? 'Multiple RM' : (obj?.netRMCostView && obj?.netRMCostView[0] && obj?.netRMCostView[0].BurningLossWeight)
           obj.ScrapWeight = obj?.netRMCostView && (obj?.netRMCostView.length > 1 || obj?.IsAssemblyCosting === true) ? 'Multiple RM' : (obj?.netRMCostView && obj?.netRMCostView[0] && obj?.netRMCostView[0].ScrapWeight)
           obj.nPoPriceCurrency = obj?.nPOPriceWithCurrency !== null ? (obj?.currency?.currencyTitle) !== "-" ? (obj?.nPOPriceWithCurrency) : obj?.nPOPrice : '-'
-          obj.currencyRate = obj?.CostingHeading !== VARIANCE ? obj?.currency.currencyValue === '-' ? '-' : obj?.currency.currencyValue : ''
+          obj.currencyRate = obj?.CostingHeading !== VARIANCE ? obj?.currency.currencyValue === '-' ? '' : obj?.currency.currencyValue : ''
           obj.costingTypeId = dataFromAPI?.CostingTypeId ? dataFromAPI?.CostingTypeId : ''
           obj.customerId = dataFromAPI?.CustomerId ? dataFromAPI?.CustomerId : EMPTY_GUID
           obj.customerName = dataFromAPI?.CustomerName ? dataFromAPI?.CustomerName : ''
