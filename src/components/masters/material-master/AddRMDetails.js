@@ -807,7 +807,7 @@ function AddRMDetails(props) {
                                         <input
                                             type="checkbox"
                                             checked={state.isShowIndexCheckBox}
-                                            disabled={isViewFlag}
+                                            disabled={isViewFlag || isEditFlag}
                                         />
                                         <span
                                             className=" before-box p-0"
