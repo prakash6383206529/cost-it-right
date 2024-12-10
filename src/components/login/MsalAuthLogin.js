@@ -85,7 +85,18 @@ export const MsalAuthLogin = ({ setToken, setIsLoginWithMsal, setAudience }) => 
             setIsLoginWithMsal(false);
         }
     }, [isAuthenticated, setIsLoginWithMsal, setToken]);
+    useEffect(() => {
+        const handleRedirect = async () => {
+            try {
+                const response = await instance.handleRedirectPromise();
 
+            } catch (error) {
+                console.error("Error handling redirect response:", error);
+            }
+        };
+
+        handleRedirect();
+    }, [instance]);
     const handleLogin = async () => {
         try {
             await instance.loginRedirect(loginRequest);
@@ -95,10 +106,22 @@ export const MsalAuthLogin = ({ setToken, setIsLoginWithMsal, setAudience }) => 
         }
     };
 
-    const login = () => {
-        instance.loginPopup(loginRequest).catch((error) => {
+    let isInteractionInProgress = false;
+    const login = async () => {
+        if (isInteractionInProgress) {
+            Toaster.error("A login popup is already open. Please complete the current login process before trying again.");
+            return;
+        }
+        isInteractionInProgress = true;
+        try {
+            await instance.loginPopup(loginRequest);
+        } catch (error) {
             console.error(error);
-        });
+            Toaster.error("A login popup is already open. Please complete the current login process before trying again.");
+        } finally {
+            isInteractionInProgress = false;
+        }
+
     };
     const logout = () => {
         instance.logoutPopup().catch((error) => {

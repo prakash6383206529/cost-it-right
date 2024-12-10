@@ -1,12 +1,9 @@
 import { LogLevel } from "@azure/msal-browser";
-import { getConfigurationKey } from './helper/auth'
-
 export const msalConfig = {
-
   auth: {
-    clientId: getConfigurationKey()?.ClientId,
-    authority: getConfigurationKey()?.Authority,
-    redirectUri: getConfigurationKey()?.RedirectURL
+    clientId: process.env.REACT_APP_CLIENT_ID,
+    authority: process.env.REACT_APP_TENANT_ID,
+    redirectUri: process.env.REACT_APP_REDIRECT_URI
   },
 
 
@@ -42,5 +39,4 @@ export const msalConfig = {
 
 export const loginRequest = {
   scopes: ["https://graph.microsoft.com/User.Read"],
-  redirectUri: getConfigurationKey()?.RedirectURL
 };
