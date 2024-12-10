@@ -35,7 +35,7 @@ const OtherCostTable = (props) => {
                                 {/* <td>{item.OtherCostType}</td> */}
                                 <td>{item?.OtherCostApplicability??'-'}</td>
                                 <td>{checkForDecimalAndNull(item?.ApplicabilityCost??'-', initialConfiguration.NoOfDecimalForPrice)}</td>
-                                <td>{item?.PercentageOtherCost??'-'}</td>
+                                <td>{item?.PercentageOtherCost===''?'-':item?.PercentageOtherCost}</td>
                                 <td>{checkForDecimalAndNull(item.AnyOtherCost??'-', initialConfiguration.NoOfDecimalForPrice)}</td>
                                 {!CostingViewMode && <td className='text-right'>
                                     <button
