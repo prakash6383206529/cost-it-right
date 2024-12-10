@@ -2072,8 +2072,6 @@ const CostingSummaryTable = (props) => {
   const handleScroll = () => {
     if (tableContainerRef.current) {
       const { scrollLeft, scrollWidth, clientWidth } = tableContainerRef.current;
-      console.log("scrollLeft", scrollLeft, "scrollWidth", scrollWidth, "clientWidth", clientWidth);
-      // Toggle visibility of left button
 
       setShowLeftButton(scrollLeft > 0);
       if (viewCostingData?.length > (window.screen.width >= 1600 ? 3 : 2)) {
@@ -2237,21 +2235,22 @@ const CostingSummaryTable = (props) => {
                 </>}
 
               <Col md="12" >
-
-                {showRightButton && (
-                  <button className="scroll-btn right" onClick={scrollRight}>
-                    <svg viewBox="0 0 24 24">
-                      <path d="M8.59 16.59L13.17 12l-4.58-4.59L10 6l6 6-6 6z" />
-                    </svg>
-                  </button>
-                )}
-                {showLeftButton && (
-                  <button className="scroll-btn left" onClick={scrollLeft}>
-                    <svg viewBox="0 0 24 24">
-                      <path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6z" />
-                    </svg>
-                  </button>
-                )}
+                <div className='sticky-scroll-btn'>
+                  <div>
+                    <button type='button' className={`scroll-btn left ${showLeftButton ? '' : 'd-none'}`} onClick={scrollLeft}>
+                      <svg viewBox="0 0 24 24">
+                        <path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6z" />
+                      </svg>
+                    </button>
+                  </div>
+                  <div>
+                    <button type='button' className={`scroll-btn right ${showRightButton ? '' : 'd-none'}`} onClick={scrollRight}>
+                      <svg viewBox="0 0 24 24">
+                        <path d="M8.59 16.59L13.17 12l-4.58-4.59L10 6l6 6-6 6z" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
                 <div ref={tableContainerRef} className={`${viewCostingData[0]?.technologyId !== LOGISTICS ? '' : `overflow-y-hidden ${props?.isRfqCosting ? 'layout-min-height-440px' : ''}`} table-responsive`}>
 
                   <table style={{ minWidth: cssObj.tableWidth }} className={`table table-bordered costing-summary-table mb-0 ${approvalMode ? 'costing-approval-summary' : ''}`}>

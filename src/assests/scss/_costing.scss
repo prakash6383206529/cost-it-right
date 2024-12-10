@@ -835,53 +835,50 @@
 //   /* Ensure table is wider than container */
 // }
 
-
-.scroll-btn {
+.sticky-scroll-btn {
   position: sticky;
   top: 50%;
   transform: translateY(-50%);
+  z-index: 10;
+  height: 0;
+  width: calc(100% + 27px);
+  display: flex;
+  justify-content: space-between;
+}
+
+.scroll-btn {
   background-color: #d3d3d38f;
-  /* Grey background */
-  width: 30px;
-  /* Adjust width */
-  height: 30px;
-  /* Adjust height */
+  width: 19px;
+  height: 86px;
   border: none;
-  border-radius: 50%;
-  /* Round shape for button */
+  border-radius: 2px;
+  /* border-top-left-radius: 30px; */
+  /* border-bottom-left-radius: 30px; */
   cursor: pointer;
   z-index: 10;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  /* Shadow */
+  /* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); */
   outline: none;
+  margin-left: -23px;
 }
 
 .scroll-btn svg {
-  width: 32px;
-  /* Resize icon */
-  height: 32px;
-  /* Resize icon */
+  width: 25px;
+  height: 42px;
   fill: #555;
-  /* Dark grey color for the arrow */
+  margin-left: -9px;
 }
 
 .scroll-btn.left {
-  right: 100%;
-  /* Stick to the left edge */
+  margin-left: -23px;
 }
 
-.scroll-btn.right {
-  left: 100%;
-  /* Stick to the right edge */
-}
+.scroll-btn.right {}
 
 
 .scroll-btn:focus {
   outline: none;
   border: unset !important;
+  box-shadow: unset !important;
 }
 
 .scroll-btn:hover {
