@@ -231,7 +231,7 @@ class BOMViewer extends Component {
         selectedPartType: childData.selectedPartType,
         PartId: childData.PartId,
         Input: childData.Input,
-        Technology: childData && childData.Technology !== undefined ? childData.Technology.label : '',
+        Technology: childData && childData?.Technology !== undefined ? childData?.Technology?.label : '',
         RevisionNo: childData?.RevisionNo || null,
         IsBreakupBoughtOutPart: childData?.IsBreakupBoughtOutPart
 
