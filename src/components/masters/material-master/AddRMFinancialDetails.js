@@ -287,8 +287,8 @@ function AddRMFinancialDetails(props) {
     const basicPriceTitle = () => {
         if (getConfigurationKey().IsBasicRateAndCostingConditionVisible && Number(states.costingTypeId) === Number(ZBCTypeId)) {
             let obj = {
-                toolTipTextBasicPriceSelectedCurrency: `Basic Price (${state.currency?.label === undefined ? 'Currency' : state.currency?.label}) = Basic Rate (${state.currency?.label === undefined ? 'Currency' : state.currency?.label}) + Other Cost`,
-                toolTipTextBasicPriceBaseCurrency: `Basic Price (${reactLocalStorage.getObject("baseCurrency")}) = Basic Rate (${reactLocalStorage.getObject("baseCurrency")}) + Other Cost`
+                toolTipTextBasicPriceSelectedCurrency: `Basic Price (${state.currency?.label === undefined ? 'Currency' : state.currency?.label}) = Basic Rate (${state.currency?.label === undefined ? 'Currency' : state.currency?.label}) + Other Cost (${reactLocalStorage.getObject("baseCurrency")})`,
+                toolTipTextBasicPriceBaseCurrency: `Basic Price (${reactLocalStorage.getObject("baseCurrency")}) = Basic Rate (${reactLocalStorage.getObject("baseCurrency")}) + Other Cost (${reactLocalStorage.getObject("baseCurrency")})`
             }
             return obj
         }
