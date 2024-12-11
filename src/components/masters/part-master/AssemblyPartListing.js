@@ -138,6 +138,7 @@ const AssemblyPartListing = React.memo((props) => {
         setTimeout(() => {
           if (isReset) {
             gridOptions?.api?.setFilterModel({});
+            setDisableFilter(true)
           } else {
             gridOptions?.api?.setFilterModel(filterModel);
           }
@@ -145,7 +146,7 @@ const AssemblyPartListing = React.memo((props) => {
 
         if (res?.status === 204 && res?.data === "") {
           setTotalRecordCount(0);
-          setState((prevState)=>({...prevState, noData:true}))
+          setState((prevState) => ({ ...prevState, noData: true }))
           dispatch(updatePageNumber(0))
           setSelectedRowForPagination([]);
         } else if (res?.data?.DataList) {
@@ -725,7 +726,6 @@ const AssemblyPartListing = React.memo((props) => {
     setFloatingFilterData(floatingFilterData);
     dispatch(updatePageNumber(1));
     getTableListData(0, 10, floatingFilterData, true);
-    setDisableFilter(true);
     dispatch(updateCurrentRowIndex(10));
     dispatch(setSelectedRowForPagination([]));
     dispatch(updateGlobalTake(10));
