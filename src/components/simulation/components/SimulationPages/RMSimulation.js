@@ -614,7 +614,7 @@ list && list.map(item => {
             row.NewBasicrateFromPercentage = percentageCalc
             NewBasicRate = percentageCalc + row?.RMFreightCost + row?.RMShearingCost
         }
-        const classGreen = ((checkForNull(NewBasicRate) + checkForNull(checkForNull(row?.NewOtherNetCost)+checkForNull(row?.NewNetConditionCost))) > row?.NetLandedCost) ? 'red-value form-control' : (checkForNull(NewBasicRate) + checkForNull(checkForNull(row?.NewOtherNetCost)+checkForNull(row?.NewNetConditionCost)) < row?.NetLandedCost) ? 'green-value form-control' : 'form-class'
+        const classGreen = ((checkForDecimalAndNull(NewBasicRate) + checkForNull(checkForNull(row?.NewOtherNetCost)+checkForNull(row?.NewNetConditionCost))) > checkForDecimalAndNull(row?.NetLandedCost)) ? 'red-value form-control' : (checkForDecimalAndNull(NewBasicRate) + checkForNull(checkForNull(row?.NewOtherNetCost)+checkForNull(row?.NewNetConditionCost)) < checkForDecimalAndNull(row?.NetLandedCost)) ? 'green-value form-control' : 'form-class'
         return showValue(row, classGreen, NewBasicRate)
         // checkForDecimalAndNull(NewBasicRate, getConfigurationKey().NoOfDecimalForPrice)
     }
@@ -927,7 +927,7 @@ list && list.map(item => {
         const value = beforeSaveCell(cell, props, 'otherCost')
         const showValue = cell && value ? checkForDecimalAndNull(Number(cell), getConfigurationKey().NoOfDecimalForPrice) : checkForDecimalAndNull(Number(row?.OtherNetCost), getConfigurationKey().NoOfDecimalForPrice)
 
-        const classGreen = (row?.NewOtherNetCost > row?.OtherNetCost) ? 'red-value form-control' : (row?.NewOtherNetCost < row?.OtherNetCost) ? 'green-value form-control' : 'form-class'
+        const classGreen = (checkForDecimalAndNull(row?.NewOtherNetCost) > checkForDecimalAndNull(row?.OtherNetCost)) ? 'red-value form-control' : (checkForDecimalAndNull(row?.NewOtherNetCost) < checkForDecimalAndNull(row?.OtherNetCost)) ? 'green-value form-control' : 'form-class'
         setRowIndex(props?.node?.rowIndex)
 
         return (
@@ -959,7 +959,7 @@ list && list.map(item => {
 
         const value = beforeSaveCell(cell, props, 'otherCost')
         const showValue = cell && value ? checkForDecimalAndNull(Number(cell), getConfigurationKey().NoOfDecimalForPrice) : checkForDecimalAndNull(Number(row?.NetConditionCost), getConfigurationKey().NoOfDecimalForPrice)
-        const classGreen = (row?.NewNetConditionCost > row?.NetConditionCost) ? 'red-value form-control' : (row?.NetConditionCost < row?.OldConditionNetCost) ? 'green-value form-control' : 'form-class'
+        const classGreen = (checkForDecimalAndNull(row?.NewNetConditionCost )> checkForDecimalAndNull(row?.NetConditionCost)) ? 'red-value form-control' : (checkForDecimalAndNull(row?.NetConditionCost) < checkForDecimalAndNull(row?.OldConditionNetCost)) ? 'green-value form-control' : 'form-class'
         setRowIndex(props?.node?.rowIndex)
 
         return (

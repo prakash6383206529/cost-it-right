@@ -1,11 +1,11 @@
-import React, { useEffect, useState, useRef, useContext } from 'react';
+import React, { useEffect, useState, useRef, useContext, useCallback } from 'react';
 import { Row, Col, Tooltip, } from 'reactstrap';
 import DayTime from '../../../common/DayTimeWrapper'
 import { CBCTypeId, defaultPageSize, EMPTY_DATA, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, BOPIMPORT, RAWMATERIALAPPROVALTYPEID, RAWMATERIALINDEX } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter, userDetails } from '../../../../helper';
 import Toaster from '../../../common/Toaster';
-import { editRMIndexedSimulationData, getCommodityDetailForSimulation, draftSimulationForRMMaster, runVerifySimulation, updateSimulationRawMaterial, runSimulationOnRawMaterial } from '../../actions/Simulation';
+import { editRMIndexedSimulationData, getCommodityDetailForSimulation, draftSimulationForRMMaster, runVerifySimulation, updateSimulationRawMaterial, runSimulationOnRawMaterial, setEffectiveDateRMNonIndexation } from '../../actions/Simulation';
 import { Fragment } from 'react';
 import { TextFieldHookForm } from '../../../layout/HookFormInputs';
 import DatePicker from "react-datepicker";
@@ -101,14 +101,15 @@ function RMIndexationSimulation(props) {
 
     const { technologyLabel, vendorLabel } = useLabels();
     const dispatch = useDispatch()
-
+   
     const currencySelectList = useSelector(state => state.comman.currencySelectList)
     const { selectedMasterForSimulation, exchangeRateListBeforeDraft, indexedRMForSimulation } = useSelector(state => state.simulation)
-    const simulationApplicability = useSelector(state => state.simulation.simulationApplicability)
+   const simulationApplicability = useSelector(state => state.simulation.simulationApplicability)
     const rmIndexedSimulationSummaryData = useSelector(state => state.simulation.simulatedRawMaterialSummary?.SimulationRawMaterialDetailsResponse)
 
     const { commodityDetailsArray } = useSelector((state) => state.indexation)
     const { filteredRMData } = useSelector(state => state.material)
+    const selectedEffectiveDate = useSelector((state) => state.simulation.selectedEffectiveDate);
     const columnWidths = {
         CostingHead: showCompressedColumns ? 50 : 140,
         VendorCode: showCompressedColumns ? 50 : 160,
@@ -288,6 +289,7 @@ obj.NewNetConditionCost = updatedObjConditionCost?.formValue?.value
     }, [])
 
     const verifySimulation = debounce((e, type) => {
+        dispatch(setEffectiveDateRMNonIndexation(null));
         if (type !== 'verify') {
             setIsLoader(true)
             setIsDisable(true)
@@ -636,10 +638,22 @@ obj.NewNetConditionCost = updatedObjConditionCost?.formValue?.value
  
 const calculateAndSave = (basicRate = 0, data = [], totalBase = 0, type = '', currentIndex = null) => {
     const selectedRow = indexedRMForSimulation[currentIndex];
-    
-    setIsLoader(true);
-
-    // Create base object with only required fields
+  setIsLoader(true);
+  if(props?.isRMNonIndexSimulation&&selectedEffectiveDate===null){
+      Toaster.warning("Please select effective date")
+      setIsLoader(false);
+      return false
+  }
+ // Check if NetLandedCost has changed
+ const oldNetLandedCost = selectedRow?.OldNetLandedCost;
+ const newNetLandedCost = selectedRow?.NewNetLandedCost;
+ if (props?.isRMNonIndexSimulation && (checkForNull(oldNetLandedCost) === checkForNull(newNetLandedCost))) {
+     // Show toaster message if costs are the same
+     Toaster.warning('Net Landed Cost has not changed.');
+     setIsLoader(false);
+     return;
+ }
+// Create base object with only required fields
     const obj = {
         SimulationRawMaterialId: selectedRow?.NewRawMaterialId,
         RawMaterialId: selectedRow?.OldRawMaterialId,
@@ -648,7 +662,7 @@ const calculateAndSave = (basicRate = 0, data = [], totalBase = 0, type = '', cu
         ScrapRate: selectedRow?.NewScrapRate || selectedRow?.OldScrapRate,
         ScrapRateInINR: selectedRow?.ScrapRateInINR || '',
         CutOffPriceInINR: selectedRow?.CutOffPriceInINR || '',
-        EffectiveDate: rowData?.NewEffectiveDate,
+        EffectiveDate: selectedEffectiveDate||"",
         LoggedInUserId: loggedInUserId(),
         FromDate: selectedRow?.NewFromDate,
         ToDate: selectedRow?.NewToDate,
@@ -683,7 +697,7 @@ const calculateAndSave = (basicRate = 0, data = [], totalBase = 0, type = '', cu
     };
 
     // Dispatch updates
-    dispatch(updateSimulationRawMaterial(obj, (response) => {
+  dispatch(updateSimulationRawMaterial(obj, (response) => {
         if (response?.data?.Result) {
             dispatch(editRMIndexedSimulationData({ SimulationId: simulationId }, (res) => {
                 setIsLoader(!res?.data?.Result);
@@ -828,7 +842,7 @@ const calculateAndSave = (basicRate = 0, data = [], totalBase = 0, type = '', cu
     const NewcostFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : isCostingSimulation ? props.data.NewRawMaterialIndexationDetails : props?.data;
         const rowValue = isCostingSimulation ? row.NetLandedCost : row?.NewNetLandedCost
-const classGreen = /* (row?.NewNetLandedCost > row?.OldNetLandedCost) ? 'red-value form-control' : (row?.NewNetLandedCost < row?.OldNetLandedCost) ? 'green-value form-control' : */ 'form-class'
+const classGreen = /* (checkForDecimalAndNull(row?.NewNetLandedCost) >checkForDecimalAndNull( row?.OldNetLandedCost)) ? 'red-value form-control' : (checkForDecimalAndNull(row?.NewNetLandedCost) < checkForDecimalAndNull(row?.OldNetLandedCost)) ? 'green-value form-control' : */ 'form-class'
         
         return rowValue ? <span title={checkForDecimalAndNull(rowValue, getConfigurationKey().NoOfDecimalForPrice)} className={`${classGreen} with-button`}>{checkForDecimalAndNull(rowValue, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
@@ -899,10 +913,16 @@ const classGreen = /* (row?.NewNetLandedCost > row?.OldNetLandedCost) ? 'red-val
     }
 
     const handleEffectiveDateChange = (date) => {
+        setIsLoader(true)
+        dispatch(setEffectiveDateRMNonIndexation(date));
+
         setEffectiveDate(date)
         setIsEffectiveDateSelected(true)
         setIsWarningMessageShow(false)
         setIsDisable(false)
+        setTimeout(() => {
+            setIsLoader(false)
+        }, 100);
     }
 
     const EditableCallbackForNewScrapRate = (props) => {
@@ -1020,7 +1040,7 @@ const classGreen = /* (row?.NewNetLandedCost > row?.OldNetLandedCost) ? 'red-val
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const value = beforeSaveCell(cell, props, 'otherCost')
         const showValue = cell && value ? checkForDecimalAndNull(Number(cell), getConfigurationKey().NoOfDecimalForPrice) : checkForDecimalAndNull(Number(row.BasicRatePerUOM), getConfigurationKey().NoOfDecimalForPrice)
-        const classGreen = (row?.NewOtherNetCost > row?.OldOtherNetCost) ? 'red-value form-control' : (row?.NewOtherNetCost < row?.OldOtherNetCost) ? 'green-value form-control' : 'form-class'
+        const classGreen = (checkForDecimalAndNull(row?.NewOtherNetCost )> checkForDecimalAndNull(row?.OldOtherNetCost)) ? 'red-value form-control' : (checkForDecimalAndNull(row?.NewOtherNetCost) < checkForDecimalAndNull(row?.OldOtherNetCost)) ? 'green-value form-control' : 'form-class'
         setRowIndex(props?.node?.rowIndex)
 
         return (
@@ -1073,7 +1093,7 @@ const classGreen = /* (row?.NewNetLandedCost > row?.OldNetLandedCost) ? 'red-val
 
         const value = beforeSaveCell(cell, props, 'otherCost')
         const showValue = cell && value ? checkForDecimalAndNull(Number(cell), getConfigurationKey().NoOfDecimalForPrice) : checkForDecimalAndNull(Number(row?.NetConditionCost), getConfigurationKey().NoOfDecimalForPrice)
-        const classGreen = (row?.NewNetConditionCost > row?.OldNetConditionCost) ? 'red-value form-control' : (row?.NewNetConditionCost < row?.OldNetConditionCost) ? 'green-value form-control' : 'form-class'
+        const classGreen = (checkForDecimalAndNull(row?.NewNetConditionCost )> checkForDecimalAndNull(row?.OldNetConditionCost)) ? 'red-value form-control' : (checkForDecimalAndNull(row?.NewNetConditionCost) < checkForDecimalAndNull(row?.OldNetConditionCost)) ? 'green-value form-control' : 'form-class'
         setRowIndex(props?.node?.rowIndex)
 
         return (
@@ -1117,11 +1137,11 @@ const classGreen = /* (row?.NewNetLandedCost > row?.OldNetLandedCost) ? 'red-val
 
     const actionCellRenderer = (props) => {
         const isDisabled = isRunSimulationClicked || isApprovalSummary || isImpactedMaster;
-
+        
         return <div >
             <button title='Save' className="SaveIcon" type={'button'} onClick={() => saveBasicRate(props)}disabled={isDisabled} />
             {/* <button title='Discard' className="CancelIcon" type={'button'} onClick={() => discardBasicRate(props)} /> */}
-        </div>
+            </div>
     }
 
     const saveBasicRate = (props) => {
@@ -1240,7 +1260,7 @@ const classGreen = /* (row?.NewNetLandedCost > row?.OldNetLandedCost) ? 'red-val
         return value
     }
     
-    
+   
     
     return (
 
@@ -1276,7 +1296,10 @@ const classGreen = /* (row?.NewNetLandedCost > row?.OldNetLandedCost) ? 'red-val
                                             </div>}
                                             {
                                                 !props?.isFromApprovalListing && !isApprovalSummary &&
-                                                <button type="button" className={"apply ml-2 back_simulationPage"} id="simulation-back" onClick={props?.backToSimulation} disabled={isDisable}> <div className={'back-icon'}></div>Back</button>
+                                                <button type="button" className={"apply ml-2 back_simulationPage"} id="simulation-back" onClick={() => {
+                                                    dispatch(setEffectiveDateRMNonIndexation(null));
+                                                    props?.backToSimulation();
+                                                }} disabled={isDisable}> <div className={'back-icon'}></div>Back</button>
                                             }
                                         </div>
                                     </div>
@@ -1405,11 +1428,13 @@ const classGreen = /* (row?.NewNetLandedCost > row?.OldNetLandedCost) ? 'red-val
 
                             </Col>
                         </Row>
+                        {(!isIndexedRM && !isImpactedMaster && !isApprovalSummary&& !isRunSimulationClicked) && <WarningMessage dClass={"mr-5"}  textClass={"pt-1"} message={"Please click on the right icon in the action column to save changes."}/>}
+
                         {
-                            !isImpactedMaster && !isApprovalSummary &&
+                             !isImpactedMaster && !isApprovalSummary && 
                             <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                                 <div className="col-sm-12 text-right bluefooter-butn d-flex justify-content-end align-items-center">
-                                    {props.isCostingSimulation && <div className="inputbox date-section mr-3 verfiy-page simulation_effectiveDate">
+                                    {(props.isCostingSimulation||props?.isRMNonIndexSimulation) &&  <div className="inputbox date-section mr-3 verfiy-page simulation_effectiveDate">
                                         {<DatePicker
                                             name="EffectiveDate"
                                             id="EffectiveDate"
@@ -1428,7 +1453,6 @@ const classGreen = /* (row?.NewNetLandedCost > row?.OldNetLandedCost) ? 'red-val
                                         />}
                                         {isWarningMessageShow && <WarningMessage dClass={"error-message"} textClass={"pt-1"} message={"Please select effective date"} />}
                                     </div>}
-{(!isIndexedRM && !isImpactedMaster && !isApprovalSummary&& !isRunSimulationClicked) && <WarningMessage dClass={"mr-5"}  textClass={"pt-1"} message={"Please click on the right icon in the action column to save changes."}/>}
                                     {!isRunSimulationClicked && !isCostingSimulation && <button onClick={(e) => verifySimulation(e, 'run')} type="submit" id="verify-btn" className="user-btn mr5 save-btn verifySimulation" disabled={isDisable}>
                                         <div className={"Run-icon"}>
                                         </div>{" "}

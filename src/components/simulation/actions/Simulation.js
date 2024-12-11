@@ -61,7 +61,8 @@ import {
     GET_RM_INDEXATION_SIMULATION_LIST,
     GET_INDEXED_RM_FOR_SIMULATION,
     GET_SIMULATED_RAW_MATERIAL_SUMMARY,
-    GET_RM_INDEXATION_COSTING_SIMULATION_LIST
+    GET_RM_INDEXATION_COSTING_SIMULATION_LIST,
+    SET_EFFECTIVE_DATE
 } from '../../../config/constants';
 import { apiErrors, encodeQueryParamsAndLog } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
@@ -1995,4 +1996,12 @@ export function getRMIndexationCostingSimulationListing(data, skip, take, isPagi
             apiErrors(error);
         });
     };
+}
+export function setEffectiveDateRMNonIndexation(value) {
+    return (dispatch) => {
+        dispatch({
+            type: SET_EFFECTIVE_DATE,
+            payload: value,
+        });
+    }
 }

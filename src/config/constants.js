@@ -2033,6 +2033,8 @@ export const SET_SIMULATION_APPLICABILITY = 'SET_SIMULATION_APPLICABILITY'
 export const SET_EXCHANGE_RATE_LIST_BEFORE_DRAFT = 'SET_EXCHANGE_RATE_LIST_BEFORE_DRAFT'
 export const SET_SELECTED_CUSTOMER_SIMULATION = 'SET_SELECTED_CUSTOMER_SIMULATION'
 export const GET_SELECTLIST_COSTING_HEADS = 'GET_SELECTLIST_COSTING_HEADS'
+export const SET_EFFECTIVE_DATE = 'SET_EFFECTIVE_DATE';
+
 
 // ASSEMBLY TECHNOLOGY
 export const SET_SELECTED_VENDOR_SIMULATION = 'SET_SELECTED_VENDOR_SIMULATION'
@@ -2934,6 +2936,8 @@ export const VendorManagement = "Vendor-Management"
 export const simulationMaster = "Simulation"
 export const DashboardMaster = "Analytics and Reports"
 export const IMPORT = "Import"
+export const INDEXED = "Indexed"
+export const NONINDEXED = "Non Indexed"
 
 // SPACE KEY CODE
 export const SPACEBAR = 32

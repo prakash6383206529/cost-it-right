@@ -35,7 +35,8 @@ import {
     GET_RM_INDEXATION_SIMULATION_LIST,
     GET_INDEXED_RM_FOR_SIMULATION,
     GET_SIMULATED_RAW_MATERIAL_SUMMARY,
-    GET_RM_INDEXATION_COSTING_SIMULATION_LIST
+    GET_RM_INDEXATION_COSTING_SIMULATION_LIST,
+    SET_EFFECTIVE_DATE
 } from '../../../config/constants';
 import { tokenStatus, tokenStatusName } from '../../../config/masterData';
 import { showBopLabel, updateBOPValues } from '../../../helper';
@@ -44,7 +45,9 @@ const initialState = {
     selectedRowForPagination: [],
     costingSimulationList: [],
     keysForDownloadSummary: {},
-    indexedRMForSimulation: []
+    indexedRMForSimulation: [],
+selectedEffectiveDate: null
+    
 };
 
 export default function SimulationReducer(state = initialState, action) {
@@ -340,6 +343,15 @@ export default function SimulationReducer(state = initialState, action) {
                 ...state,
                 loading: false,
                 rmIndexationCostingSimulationList: action.payload
+            }
+         
+        case SET_EFFECTIVE_DATE:
+            console.log("action.payload",action.payload)
+            return {
+            
+          ...state,
+          selectedEffectiveDate: action.payload
+               
             }
         default:
             return state;
