@@ -664,7 +664,7 @@ function MasterSendForApproval(props) {
                 // obj.IsRFQCostingSendForApproval = props.isRFQ ? true : false
                 const approvalObjects = Array.isArray(approvalDetails) ? approvalDetails : [approvalDetails];
                 const processedApprovalObjects = approvalObjects.map(item => ({
-                    ApprovalProcessSummaryId: item?.ApprovalProcessSummaryId !== null ? item?.ApprovalProcessSummaryId : 0,
+                    ApprovalProcessSummaryId: item?.MasterApprovalProcessSummaryId !== null ? item?.MasterApprovalProcessSummaryId : 0,
                     ApprovalProcessId: item?.ApprovalProcessId !== null ? item?.ApprovalProcessId : 0,
                     ApprovalToken: item?.Token !== null ? item?.Token : 0,
                     LoggedInUserId: loggedInUserId(),

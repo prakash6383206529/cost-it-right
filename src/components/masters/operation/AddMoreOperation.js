@@ -1197,12 +1197,16 @@ function AddMoreOperation(props) {
 
 
                                             <Col md="3">
-                                                <TooltipCustom id={"wireRate"} disabledIcon={true} width={"230px"} tooltipText={`${getLabel('wireCost')} = ${getLabel('wireRate')} * Consumption`} />
-
+                                                <TooltipCustom
+                                                    id={"wireCostTooltip"}
+                                                    disabledIcon={true}
+                                                    width={"230px"}
+                                                    tooltipText={`${getLabel('wireCost')} = ${getLabel('wireRate')} * Consumption`}
+                                                />
                                                 <NumberFieldHookForm
                                                     label={getLabel('wireCost')}
                                                     name={'wireCost'}
-                                                    id={"wireRate"}
+                                                    id={"wireCostTooltip"}
                                                     Controller={Controller}
                                                     control={control}
                                                     register={register}

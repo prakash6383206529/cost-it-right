@@ -503,6 +503,7 @@ const VendorListing = (props) => {
    * @description close bulk upload drawer
    */
   const closeBulkUploadDrawer = (event, type) => {
+
     setState(
       (prevState) => ({ ...prevState, isBulkUpload: false, }))
 

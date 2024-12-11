@@ -191,7 +191,12 @@ function AddRMFinancialDetails(props) {
         if (!states.isImport) {
             calculateNetCostDomestic()
         }
-    }, [fieldValuesDomestic, state.totalOtherCost])
+    }, [fieldValuesDomestic, state.totalOtherCost]);
+
+    useEffect(() => {
+        calculateNetCostDomestic();
+    }, [states?.costingTypeId])
+
     useEffect(() => {
         if (props?.DataToChange && Object.keys(props?.DataToChange).length > 0) {
             let Data = props?.DataToChange
@@ -227,8 +232,8 @@ function AddRMFinancialDetails(props) {
             setValue('JaliScrapCostBaseCurrency', Data?.ScrapRate)
             setValue('ForgingScrapBaseCurrency', Data?.ScrapRate)
             setValue('frequencyOfSettlement', { label: Data?.FrequencyOfSettlement, value: Data?.FrequencyOfSettlementId })
-            setValue('fromDate', DayTime(Data?.FromDate).$d)
-            setValue('toDate', DayTime(Data?.ToDate).$d)
+            setValue('fromDate', Data?.FromDate ? DayTime(Data?.FromDate).$d : '')
+            setValue('toDate', Data?.ToDate ? DayTime(Data?.ToDate).$d : '')
             setValue('OtherCostBaseCurrency', Data?.OtherNetCostConversion)
             setValue('Index', { label: Data?.IndexExchangeName, value: Data?.IndexExchangeId })
             setValue('ExchangeSource', { label: Data?.ExchangeRateSourceName, value: Data?.ExchangeRateSourceName })
@@ -249,7 +254,9 @@ function AddRMFinancialDetails(props) {
                 otherCostTableData: Data?.RawMaterialOtherCostDetails,
                 isShowIndexCheckBox: Data?.IsIndexationDetails,
                 totalOtherCost: Data?.OtherNetCostConversion,
-                minDate: DayTime(Data?.EffectiveDate).$d
+                minDate: DayTime(Data?.EffectiveDate).$d,
+                fromDate: Data?.FromDate ? DayTime(Data?.FromDate).$d : '',
+                toDate: Data?.ToDate ? DayTime(Data?.ToDate).$d : ''
             }))
             dispatch(SetRawMaterialDetails({ ...rawMaterailDetailsRef.current, isShowIndexCheckBox: Data?.IsIndexationDetails }, () => { }))
             dispatch(SetRawMaterialDetails({ ...rawMaterailDetailsRef.current, states: state }, () => { }))
@@ -280,8 +287,8 @@ function AddRMFinancialDetails(props) {
     const basicPriceTitle = () => {
         if (getConfigurationKey().IsBasicRateAndCostingConditionVisible && Number(states.costingTypeId) === Number(ZBCTypeId)) {
             let obj = {
-                toolTipTextBasicPriceSelectedCurrency: `Basic Price (${state.currency?.label === undefined ? 'Currency' : state.currency?.label}) = Basic Rate (${state.currency?.label === undefined ? 'Currency' : state.currency?.label})`,
-                toolTipTextBasicPriceBaseCurrency: `Basic Price (${reactLocalStorage.getObject("baseCurrency")}) = Basic Rate (${reactLocalStorage.getObject("baseCurrency")})`
+                toolTipTextBasicPriceSelectedCurrency: `Basic Price (${state.currency?.label === undefined ? 'Currency' : state.currency?.label}) = Basic Rate (${state.currency?.label === undefined ? 'Currency' : state.currency?.label}) + Other Cost (${reactLocalStorage.getObject("baseCurrency")})`,
+                toolTipTextBasicPriceBaseCurrency: `Basic Price (${reactLocalStorage.getObject("baseCurrency")}) = Basic Rate (${reactLocalStorage.getObject("baseCurrency")}) + Other Cost (${reactLocalStorage.getObject("baseCurrency")})`
             }
             return obj
         }
@@ -440,18 +447,15 @@ function AddRMFinancialDetails(props) {
         }
 
         const basicPriceCurrencyTemp = checkForNull(getValues('BasicRateBaseCurrency')) + checkForNull(getValues('FreightChargeBaseCurrency')) + checkForNull(getValues('ShearingCostBaseCurrency')) + checkForNull(getValues('OtherCostBaseCurrency'))
-        let basicPriceBaseCurrency
-        if (costingTypeId === ZBCTypeId) {
-            basicPriceBaseCurrency = basicPriceCurrencyTemp
-        }
 
-        let conditionList = recalculateConditions('', basicPriceBaseCurrency)
+        let basicPriceBaseCurrency = costingTypeId === ZBCTypeId ? basicPriceCurrencyTemp : 0;
 
+        let conditionList = recalculateConditions('', basicPriceBaseCurrency);
         const sumBaseCurrency = conditionList?.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCost), 0);
-        let netLandedCostBaseCurrency = RMIndex ? checkForNull(sumBaseCurrency) + checkForNull(basicPriceCurrencyTemp) + state.totalOtherCost : checkForNull(sumBaseCurrency) + checkForNull(basicPriceCurrencyTemp)
 
-
-
+        const netLandedCostBaseCurrency = costingTypeId === ZBCTypeId
+            ? checkForNull(sumBaseCurrency) + checkForNull(getValues('BasicRateBaseCurrency')) + state?.totalOtherCost
+            : checkForNull(getValues('BasicRateBaseCurrency')) + state?.totalOtherCost;
 
         setValue('FinalConditionCostBaseCurrency', checkForDecimalAndNull(sumBaseCurrency, getConfigurationKey().NoOfDecimalForPrice))
         setValue('NetLandedCostBaseCurrency', checkForDecimalAndNull(netLandedCostBaseCurrency, getConfigurationKey().NoOfDecimalForPrice))
@@ -1796,7 +1800,7 @@ function AddRMFinancialDetails(props) {
                                         {states.isImport && <Button
                                             id="addRMDomestic_conditionToggle"
                                             onClick={conditionToggle}
-                                            className={"right mt-0 mb-2"}
+                                            className={"right mt-3 mb-2"}
                                             variant={isViewFlag ? "view-icon-primary" : true ? "plus-icon-square" : "blurPlus-icon-square"}
                                             title={isViewFlag ? "View" : "Add"}
                                             disabled={disableAll || isViewFlag}
@@ -1823,7 +1827,7 @@ function AddRMFinancialDetails(props) {
                                         {!states.isImport && <Button
                                             id="addRMDomestic_conditionToggle"
                                             onClick={conditionToggle}
-                                            className={"right mt-0 mb-2"}
+                                            className={"right mt-3 mb-2"}
                                             variant={isViewFlag ? "view-icon-primary" : "plus-icon-square"}
                                             title={isViewFlag ? "View" : "Add"}
                                         />}

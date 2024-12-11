@@ -1416,20 +1416,18 @@ export function updateBOPValues(bopLabels = [], bopData = [], bopReplacement = '
   const updatedLabels = bopLabels.map(label => ({
     ...label,
     [labelName]: label[labelName]?.replace(bopRegex, bopReplacement),
-    // value: label.value?.replace(bopRegex, bopReplacement),
 
+    // const updatedTempData = bopData.map(dataItem => {
+    //   const newDataItem = {};
+    //   for (let key in dataItem) {
+    //     if (dataItem.hasOwnProperty(key)) {
+    //       const newKey = key?.replace(bopRegex, bopReplacement);
+    //       newDataItem[newKey] = dataItem[key];
+    //     }
+    //   }
+    //   return newDataItem;
+    // });
   }));
-
-  // const updatedTempData = bopData.map(dataItem => {
-  //   const newDataItem = {};
-  //   for (let key in dataItem) {
-  //     if (dataItem.hasOwnProperty(key)) {
-  //       const newKey = key?.replace(bopRegex, bopReplacement);
-  //       newDataItem[newKey] = dataItem[key];
-  //     }
-  //   }
-  //   return newDataItem;
-  // });
   return { updatedLabels };
 }
 /**

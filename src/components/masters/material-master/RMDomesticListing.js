@@ -873,7 +873,7 @@ function RMDomesticListing(props) {
                 <>
                     {disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
                     <Row className={`filter-row-large ${props?.isSimulation ? 'zindex-0 ' : ''} ${props?.isMasterSummaryDrawer ? '' : 'pt-2'}`}>
-                        <Col md="3" lg="3" className='mb-2'>
+                        <Col md="6" lg="6" className='mb-2'>
                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
                             {(!props.isSimulation && !props.benchMark && !props?.isMasterSummaryDrawer) && (<TourWrapper
                                 buttonSpecificProp={{
@@ -883,7 +883,7 @@ function RMDomesticListing(props) {
                                     steps: Steps(t, { addLimit: false, copyButton: false, viewBOM: false, status: false, updateAssociatedTechnology: false, addMaterial: false, addAssociation: false, generateReport: false, approve: false, reject: false }).COMMON_LISTING
                                 }} />)}
                         </Col>
-                        <Col md="9" lg="9" className="mb-3 d-flex justify-content-end">
+                        <Col md="6" lg="6" className="mb-3 d-flex justify-content-end">
                             {
                                 // SHOW FILTER BUTTON ONLY FOR RM MASTER NOT FOR SIMULATION AMD MASTER APPROVAL SUMMARY
                                 (!props.isMasterSummaryDrawer) &&
