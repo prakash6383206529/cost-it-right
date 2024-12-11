@@ -1413,31 +1413,23 @@ export function getValueFromLabel(currency, currencySelectList) {
 export function updateBOPValues(bopLabels = [], bopData = [], bopReplacement = '', labelName) {
 
   const bopRegex = /BOP|BoughtOutPart/gi;
+  const updatedLabels = bopLabels.map(label => ({
+    ...label,
+    [labelName]: label[labelName]?.replace(bopRegex, bopReplacement),
 
-  const updatedLabels = bopLabels.map(label => {
-    if (label[labelName] === "IsBreakupBoughtOutPart") {
-      return label;
-    }
-
-    return {
-      ...label,
-      [labelName]: label[labelName]?.replace(bopRegex, bopReplacement),
-      // const updatedTempData = bopData.map(dataItem => {
-      //   const newDataItem = {};
-      //   for (let key in dataItem) {
-      //     if (dataItem.hasOwnProperty(key)) {
-      //       const newKey = key?.replace(bopRegex, bopReplacement);
-      //       newDataItem[newKey] = dataItem[key];
-      //     }
-      //   }
-      //   return newDataItem;
-      // });
-    };
-  });
-
+    // const updatedTempData = bopData.map(dataItem => {
+    //   const newDataItem = {};
+    //   for (let key in dataItem) {
+    //     if (dataItem.hasOwnProperty(key)) {
+    //       const newKey = key?.replace(bopRegex, bopReplacement);
+    //       newDataItem[newKey] = dataItem[key];
+    //     }
+    //   }
+    //   return newDataItem;
+    // });
+  }));
   return { updatedLabels };
 }
-
 /**
   * @method setLoremIpsum
   * @description show lorem ipsum data when stared application tour
