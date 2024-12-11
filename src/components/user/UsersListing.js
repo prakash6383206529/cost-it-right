@@ -242,26 +242,32 @@ const UsersListing = (props) => {
 
 		dispatch(getAllUserDataAPI(data, res => {
 			setState((prevState) => ({ ...prevState, isLoader: false }));
+			let isReset = true;
+			Object.keys(floatingFilterData).forEach((prop) => {
+				if (floatingFilterData[prop] !== "") {
+					isReset = false;
+				}
+			});
+
+			setTimeout(() => {
+				if (isReset) {
+					gridOptions?.api?.setFilterModel({});
+				} else {
+					gridOptions?.api?.setFilterModel(filterModel);
+				}
+			}, 300);
 
 			if (res.status === 204 && res?.data === '') {
 				setTotalRecordCount(0)
 				dispatch(updatePageNumber(0))
-				setState((prevState) => ({ ...prevState,noData:true, userData: [], dataCount: 0 }));
+				setState((prevState) => ({ ...prevState, noData: true, userData: [], dataCount: 0 }));
 			} else if (res && res?.data && res?.data?.DataList) {
 				let Data = res?.data?.DataList;
 				setTotalRecordCount(Data[0]?.TotalRecordCount);
 				setWarningMessage(false);
 				setIsFilterButtonClicked(false);
 				setState((prevState) => ({ ...prevState, userData: Data }));
-				let isReset = true
-				setTimeout(() => {
-					for (var prop in floatingFilterData) {
-						if (floatingFilterData[prop] !== "") {
-							isReset = false
-						}
-					}
-					isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(filterModel))
-				}, 300);
+
 				setTimeout(() => {
 					setWarningMessage(false)
 				}, 330);
@@ -311,31 +317,22 @@ const UsersListing = (props) => {
 
 		if (value?.filterInstance?.appliedModel === null || value?.filterInstance?.appliedModel?.filter === "") {
 			let isFilterEmpty = true;
+			if (model && Object.keys(model)?.length > 0) {
+				isFilterEmpty = false;
+				setFloatingFilterData((prevData) => ({
+					...prevData,
+					[value.column.colId]: "",
+				}));
+			}
 
-			if (model !== undefined && model !== null) {
-				if (Object.keys(model).length > 0) {
-					isFilterEmpty = false;
-					for (var property in floatingFilterData) {
-						if (property === value?.column?.colId) {
-							floatingFilterData[property] = "";
-						}
-					}
-					setFloatingFilterData(floatingFilterData);
-				}
-				if (isFilterEmpty) {
-					setWarningMessage(false)
-					for (var prop in floatingFilterData) {
-
-						if (isSimulation) {
-							if (prop !== "DepartmentName") {
-								floatingFilterData[prop] = ""
-							}
-						} else {
-							floatingFilterData[prop] = ""
-						}
-					}
-					setFloatingFilterData(floatingFilterData)
-				}
+			if (isFilterEmpty) {
+				setWarningMessage(false);
+				setFloatingFilterData((prevData) =>
+					Object.keys(prevData).reduce((acc, key) => {
+						acc[key] = "";
+						return acc;
+					}, {})
+				);
 			}
 		} else {
 			if (value?.column?.colId === "ModifiedDate" || value?.column?.colId === "CreatedDate") {
