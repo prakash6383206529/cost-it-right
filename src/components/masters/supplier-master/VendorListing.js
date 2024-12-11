@@ -103,10 +103,6 @@ const VendorListing = (props) => {
   });
 
   useEffect(() => {
-    updateTableData();
-  }, [topAndLeftMenuData]);
-
-  const updateTableData = () => {
     if (!topAndLeftMenuData) {
       setState(prevState => ({ ...prevState, isLoader: true }));
       return;
@@ -121,7 +117,7 @@ const VendorListing = (props) => {
       dispatch(resetStatePagination());
 
     };
-  }
+  }, [topAndLeftMenuData]);
 
   useEffect(() => {
     dispatch(setSelectedRowForPagination([]));
@@ -521,7 +517,6 @@ const VendorListing = (props) => {
         );
       }, 200);
     }
-    updateTableData();
   }
 
   /**
