@@ -824,6 +824,9 @@ class BulkUpload extends Component {
                                 if (fileHeads[i] === 'To Currency') {
                                     fileHeads[i] = 'ToCurrency'
                                 }
+                                if (fileHeads[i] === `IsBreakupInsert`) {
+                                    fileHeads[i] = `IsBreakupBoughtOutPart`
+                                }
                                 const key = this.getValueFromMasterData(fileHeads[i], masterDataArray)
 
                                 obj[key] = el;
