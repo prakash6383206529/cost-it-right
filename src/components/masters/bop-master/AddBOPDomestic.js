@@ -119,6 +119,8 @@ class AddBOPDomestic extends Component {
       IsEditBtnClicked: false,
       SapCode: '',
       isSAPCodeDisabled: false,
+      sourceLocationInputLoader: false // Add new state for source location loader
+
     }
   }
 
@@ -426,9 +428,9 @@ class AddBOPDomestic extends Component {
       inputValue = inputValue.trim();
     }
     if (inputValue?.length >= searchCount) {
-      this.setState({ inputLoader: true });
+      this.setState({ sourceLocationInputLoader: true });
       let res = await this.props.getCityByCountryAction(0, 0, inputValue);
-      this.setState({ inputLoader: false });
+      this.setState({ sourceLocationInputLoader: false });
       let cityDataAPI = res?.data?.SelectList;
       if (inputValue) {
         return autoCompleteDropdown(inputValue, cityDataAPI, false, [], true);
@@ -1021,7 +1023,7 @@ class AddBOPDomestic extends Component {
 
       if (((files ? JSON.stringify(files) : []) === (DataToCheck.Attachements ? JSON.stringify(DataToCheck.Attachements) : [])) && ((DataToCheck.Remark ? DataToCheck.Remark : '') === (values?.Remark ? values?.Remark : '')) &&
         ((DataToCheck.SAPPartNumber ? DataToCheck.SAPPartNumber : '') === (values?.SAPPartNumber ? values?.SAPPartNumber : '')) &&
-        ((DataToCheck.Source ? String(DataToCheck.Source) : '-') === (values?.Source ? String(values?.Source) : '-')) &&
+        ((DataToCheck.Source ? String(DataToCheck.Source) : '') === (values?.Source ? String(values?.Source) : '')) &&
         ((DataToCheck.SourceLocation ? String(DataToCheck.SourceLocation) : '') === (sourceLocation?.value ? String(sourceLocation?.value) : '')) &&
         checkForNull(fieldsObj?.BasicRateBase) === checkForNull(DataToCheck?.BasicRate) && checkForNull(basicPriceBaseCurrency) === checkForNull(DataToCheck?.NetCostWithoutConditionCost) &&
         checkForNull(netLandedCostBaseCurrency) === checkForNull(DataToCheck?.NetLandedCost) && checkForNull(FinalConditionCostBaseCurrency) === checkForNull(DataToCheck?.NetConditionCost) && DropdownChanged && ((DataToCheck.TechnologyId ? String(DataToCheck.TechnologyId) : '') === (Technology?.value ? String(Technology?.value) : ''))) {
@@ -1049,7 +1051,7 @@ class AddBOPDomestic extends Component {
         (((files ? JSON.stringify(files) : []) === (DataToCheck.Attachements ? JSON.stringify(DataToCheck.Attachements) : [])) &&
           ((DataToCheck.Remark ? DataToCheck.Remark : '') === (values?.Remark ? values?.Remark : '')) &&
           ((DataToCheck.SAPPartNumber ? DataToCheck.SAPPartNumber : '') !== (values?.SAPPartNumber ? values?.SAPPartNumber : '')) && // SAP code not equal
-          ((DataToCheck.Source ? String(DataToCheck.Source) : '-') === (values?.Source ? String(values?.Source) : '-')) &&
+          ((DataToCheck.Source ? String(DataToCheck.Source) : '') === (values?.Source ? String(values?.Source) : '')) &&
           ((DataToCheck.SourceLocation ? String(DataToCheck.SourceLocation) : '') === (sourceLocation?.value ? String(sourceLocation?.value) : '')) &&
           checkForNull(fieldsObj?.BasicRateBase).toFixed(initialConfiguration?.NoOfDecimalForPrice) === checkForNull(DataToCheck?.BasicRate).toFixed(initialConfiguration?.NoOfDecimalForPrice) &&
           checkForNull(basicPriceBaseCurrency).toFixed(initialConfiguration?.NoOfDecimalForPrice) === checkForNull(DataToCheck?.NetCostWithoutConditionCost).toFixed(initialConfiguration?.NoOfDecimalForPrice) &&
@@ -1589,6 +1591,8 @@ class AddBOPDomestic extends Component {
                                         if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
                                       }}
                                     />
+                                    {this.state.sourceLocationInputLoader && <LoaderCustom customClass={`input-loader`} />}
+
                                   </div>
                                 </div>
                               </Col>

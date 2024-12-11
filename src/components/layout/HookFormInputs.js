@@ -18,7 +18,9 @@ export const TextFieldHooks = (input) => {
     ...rules,
     validate: {
       ...rules?.validate,
-      specialCharCheck: (value) => validateSpecialChars(value),
+      ...(isDisabled ? {} : { // Only apply specialCharCheck if not disabled
+        specialCharCheck: (value) => validateSpecialChars(value),
+      }),
     },
   };
   return (
@@ -73,10 +75,11 @@ export const TextFieldHookForm = (field) => {
     ...rules,
     validate: {
       ...rules?.validate,
-      specialCharCheck: (value) => validateSpecialChars(value),
+      ...(isDisabled ? {} : { // Only apply specialCharCheck if not disabled
+        specialCharCheck: (value) => validateSpecialChars(value),
+      }),
     },
   };
-
   return (
     <>
       <div className={className}>
@@ -454,7 +457,9 @@ export const TextAreaHookForm = (field) => {
     ...rules,
     validate: {
       ...rules?.validate,
-      specialCharCheck: (value) => validateSpecialChars(value),
+      ...(isDisabled ? {} : { // Only apply specialCharCheck if not disabled
+        specialCharCheck: (value) => validateSpecialChars(value),
+      }),
     },
   };
   return (
