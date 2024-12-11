@@ -255,7 +255,7 @@ function AddRMFinancialDetails(props) {
                 calculatedFactor: Data?.CalculatedFactor,
                 otherCostTableData: Data?.RawMaterialOtherCostDetails,
                 isShowIndexCheckBox: Data?.IsIndexationDetails,
-                minDate: DayTime(Data?.FromDate).$d,
+                minDate: DayTime(Data?.EffectiveDate).$d,
                 fromDate: Data?.FromDate ? DayTime(Data?.FromDate).$d : '',
                 toDate: Data?.ToDate ? DayTime(Data?.ToDate).$d : '',
                 totalBasicRate: Data?.CommodityNetCost,
