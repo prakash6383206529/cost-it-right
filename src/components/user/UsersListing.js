@@ -218,32 +218,32 @@ const UsersListing = (props) => {
 	const getDataList = (departmentId, roleId, skip, take, dataObj, isPagination) => {
 		let data = {
 			logged_in_user: loggedInUserId(),
-			DepartmentId: departmentId,
-			RoleId: roleId,
+			DepartmentId: departmentId ?? null,
+			RoleId: roleId ?? null,
 			userType: props?.RFQUser ? 'RFQ' : 'CIR',
-			skip: skip,
-			take: take,
-			userName: dataObj?.UserName,
-			name: dataObj.FullName,
-			email: dataObj?.EmailAddress,
-			mobileNo: dataObj?.Mobile,
-			phone: dataObj?.PhoneNumber,
-			company: dataObj?.DepartmentName,
-			createdDate: dataObj?.CreatedDate,
-			modifiedDate: dataObj?.ModifiedDate,
-			createdBy: dataObj?.CreatedBy,
-			role: dataObj?.RoleName,
-			modifiedBy: dataObj?.ModifiedBy,
-			isPagination: isPagination
+			skip: skip ?? 0,
+			take: take ?? 10,
+			userName: dataObj?.UserName ?? null,
+			name: dataObj?.FullName ?? null,
+			email: dataObj?.EmailAddress ?? null,
+			mobileNo: dataObj?.Mobile ?? null,
+			phone: dataObj?.PhoneNumber ?? null,
+			company: dataObj?.DepartmentName ?? null,
+			createdDate: dataObj?.CreatedDate ?? null,
+			modifiedDate: dataObj?.ModifiedDate ?? null,
+			createdBy: dataObj?.CreatedBy ?? null,
+			role: dataObj?.RoleName ?? null,
+			modifiedBy: dataObj?.ModifiedBy ?? null,
+			isPagination: isPagination ?? true
 		};
-
 
 		setState((prevState) => ({ ...prevState, isLoader: true }));
 
-		dispatch(getAllUserDataAPI(data, res => {
+		dispatch(getAllUserDataAPI(data, (res) => {
 			setState((prevState) => ({ ...prevState, isLoader: false }));
+
 			let isReset = true;
-			Object.keys(floatingFilterData).forEach((prop) => {
+			Object.keys(floatingFilterData || {}).forEach((prop) => {
 				if (floatingFilterData[prop] !== "") {
 					isReset = false;
 				}
@@ -253,17 +253,22 @@ const UsersListing = (props) => {
 				if (isReset) {
 					gridOptions?.api?.setFilterModel({});
 				} else {
-					gridOptions?.api?.setFilterModel(filterModel);
+					gridOptions?.api?.setFilterModel(filterModel ?? {});
 				}
 			}, 300);
 
-			if (res.status === 204 && res?.data === '') {
-				setTotalRecordCount(0)
-				dispatch(updatePageNumber(0))
-				setState((prevState) => ({ ...prevState, noData: true, userData: [], dataCount: 0 }));
-			} else if (res && res?.data && res?.data?.DataList) {
+			if (res?.status === 204 && !res?.data) {
+				setTotalRecordCount(0);
+				dispatch(updatePageNumber(0));
+				setState((prevState) => ({
+					...prevState,
+					noData: true,
+					userData: [],
+					dataCount: 0
+				}));
+			} else if (res?.data?.DataList) {
 				let Data = res?.data?.DataList;
-				setTotalRecordCount(Data[0]?.TotalRecordCount);
+				setTotalRecordCount(Data[0]?.TotalRecordCount ?? 0);
 				setWarningMessage(false);
 				setIsFilterButtonClicked(false);
 				setState((prevState) => ({ ...prevState, userData: Data }));
@@ -274,17 +279,19 @@ const UsersListing = (props) => {
 				setTimeout(() => {
 					setIsFilterButtonClicked(false)
 				}, 600);
-				if (res && isPagination === false) {
-					setDisableDownload(false)
+
+				if (res && !isPagination) {
+					setDisableDownload(false);
 					setTimeout(() => {
-						dispatch(disabledClass(false))
-						let button = document.getElementById('Excel-Downloads-userListing')
-						button && button.click()
+						dispatch(disabledClass(false));
+						let button = document.getElementById('Excel-Downloads-userListing');
+						button && button.click();
 					}, 500);
 				}
 			}
 		}));
 	};
+
 
 	const onSearch = () => {
 		setState(prevState => ({
