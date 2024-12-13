@@ -105,20 +105,20 @@ const AssemblyPartListing = React.memo((props) => {
     }));
 
     const params = {
-      bomNumber: floatingFilterData?.BOMNumber,
-      partNumber: floatingFilterData?.PartNumber,
-      name: floatingFilterData?.PartName,
-      noOfChildParts: floatingFilterData?.NumberOfParts,
-      bomLevelCount: floatingFilterData?.BOMLevelCount,
-      technology: floatingFilterData?.Technology,
-      ecnNumber: floatingFilterData?.ECNNumber,
-      revisionNumber: floatingFilterData?.RevisionNumber,
-      drawingNumber: floatingFilterData?.DrawingNumber,
-      unitOfMeasurement: floatingFilterData?.UnitOfMeasurementSymbol,
-      effectiveDate: floatingFilterData?.EffectiveDateNew,
+      bomNumber: floatingFilterData?.BOMNumber ?? null,
+      partNumber: floatingFilterData?.PartNumber ?? null,
+      name: floatingFilterData?.PartName ?? null,
+      noOfChildParts: floatingFilterData?.NumberOfParts ?? null,
+      bomLevelCount: floatingFilterData?.BOMLevelCount ?? null,
+      technology: floatingFilterData?.Technology ?? null,
+      ecnNumber: floatingFilterData?.ECNNumber ?? null,
+      revisionNumber: floatingFilterData?.RevisionNumber ?? null,
+      drawingNumber: floatingFilterData?.DrawingNumber ?? null,
+      unitOfMeasurement: floatingFilterData?.UnitOfMeasurementSymbol ?? null,
+      effectiveDate: floatingFilterData?.EffectiveDateNew ?? null,
       isApplyPagination: isPagination,
-      skip: newSkip,
-      take: numericPageSize,
+      skip: newSkip ?? 0,
+      take: numericPageSize ?? 10,
     };
 
     dispatch(
@@ -129,7 +129,7 @@ const AssemblyPartListing = React.memo((props) => {
         }));
 
         let isReset = true;
-        Object.keys(floatingFilterData).forEach((prop) => {
+        Object.keys(floatingFilterData || {}).forEach((prop) => {
           if (floatingFilterData[prop] !== "") {
             isReset = false;
           }
@@ -138,8 +138,9 @@ const AssemblyPartListing = React.memo((props) => {
         setTimeout(() => {
           if (isReset) {
             gridOptions?.api?.setFilterModel({});
+            setDisableFilter(true)
           } else {
-            gridOptions?.api?.setFilterModel(filterModel);
+            gridOptions?.api?.setFilterModel(filterModel ?? {});
           }
         }, 300);
 
@@ -150,7 +151,7 @@ const AssemblyPartListing = React.memo((props) => {
           setSelectedRowForPagination([]);
         } else if (res?.data?.DataList) {
           const data = res?.data?.DataList;
-          setTotalRecordCount(data[0]?.TotalRecordCount || 0);
+          setTotalRecordCount(data[0]?.TotalRecordCount ?? 0);
           setTableData(data);
           setTimeout(() => {
             setWarningMessage(false);
@@ -725,7 +726,6 @@ const AssemblyPartListing = React.memo((props) => {
     setFloatingFilterData(floatingFilterData);
     dispatch(updatePageNumber(1));
     getTableListData(0, 10, floatingFilterData, true);
-    setDisableFilter(true);
     dispatch(updateCurrentRowIndex(10));
     dispatch(setSelectedRowForPagination([]));
     dispatch(updateGlobalTake(10));

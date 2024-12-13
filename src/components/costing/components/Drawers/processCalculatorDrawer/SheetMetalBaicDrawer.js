@@ -173,7 +173,7 @@ function SheetMetalBaicDrawer(props) {
     obj.LoggedInUserId = loggedInUserId()
     obj.UnitTypeId = props.calculatorData.UOMTypeId
     obj.UnitType = props.calculatorData.UOMType
-    obj.PartPerHour = props.calculatorData.UOMType === TIME ? checkForNull(quantityState) : '-'
+    obj.PartPerHour = props.calculatorData.UOMType === TIME ? checkForNull(quantityState) : ''
     obj.ExtrusionSpeed = getValues('ExtrusionSpeed')
     obj.PartLength = getValues('PartLength')
     dispatch(saveDefaultProcessCostCalculationData(obj, res => {
