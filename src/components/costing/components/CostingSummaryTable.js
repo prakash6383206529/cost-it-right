@@ -2451,8 +2451,8 @@ const CostingSummaryTable = (props) => {
                           <tr>
                             {/* // NOT */}
                             <td>
-                            {getConfigurationKey().IsSourceExchangeRateNameVisible && <span className="d-block">Exchange Rate Source</span>}
-                            <span className="d-block">Currency</span>
+                              {getConfigurationKey().IsSourceExchangeRateNameVisible && <span className="d-block">Exchange Rate Source</span>}
+                              <span className="d-block">Currency</span>
                               <span className="d-block">Part Number</span>
                               <span className="d-block">Part Name</span>
                               {/* <span className="d-block">Revision Number</span> */}
@@ -2462,8 +2462,8 @@ const CostingSummaryTable = (props) => {
                                 return (
                                   <td>
                                     {/* USE PART NUMBER KEY HERE */}
-                                    {getConfigurationKey().IsSourceExchangeRateNameVisible && <span className="d-block">{(data?.bestCost === true||data?.CostingHeading === VARIANCE) ? ' ' : (data?.ExchangeRateSourceName ? data?.ExchangeRateSourceName : '-')}</span>}
-                                    <span className="d-block">{(data?.bestCost === true ||data?.CostingHeading === VARIANCE) ? ' ' : (data?.CostingCurrency ? data?.CostingCurrency : '-')}</span>
+                                    {getConfigurationKey().IsSourceExchangeRateNameVisible && <span className="d-block">{(data?.bestCost === true || data?.CostingHeading === VARIANCE) ? ' ' : (data?.ExchangeRateSourceName ? data?.ExchangeRateSourceName : '-')}</span>}
+                                    <span className="d-block">{(data?.bestCost === true || data?.CostingHeading === VARIANCE) ? ' ' : (data?.CostingCurrency ? data?.CostingCurrency : '-')}</span>
                                     <span className="d-block">{data?.CostingHeading !== VARIANCE ? data?.partNumber : ''}</span>
                                     <span className="d-block">{data?.CostingHeading !== VARIANCE ? data?.partName : ''}</span>
 
@@ -3471,7 +3471,7 @@ const CostingSummaryTable = (props) => {
                               return (
                                 <td className={tableDataClass(data)}>
                                   <div>
-                                    <span className={`small-grey-text mr-1 ${data?.CostingHeading !== VARIANCE ? data?.currency.currencyValue === '-' ? 'd-none' : '' : ''}  `}>{(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? `${data?.currency.currencyTitle}/${getConfigurationKey().BaseCurrency}` : '')}</span> {' '}
+                                    <span className={`small-grey-text mr-1 ${data?.CostingHeading !== VARIANCE ? data?.currency.currencyValue === '-' ? 'd-none' : '' : ''}  `}>{(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? `${data?.currency.currencyTitle}/${data?.CostingCurrency}` : '')}</span> {' '}
                                     <span className="">{(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.currency.currencyValue === '-' ? '-' : checkForDecimalAndNull(data?.currency.currencyValue, initialConfiguration.NoOfDecimalForPrice) : '')}</span>
                                   </div>
                                 </td>

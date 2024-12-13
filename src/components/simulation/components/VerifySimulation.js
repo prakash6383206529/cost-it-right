@@ -393,6 +393,15 @@ function VerifySimulation(props) {
         return data != null ? <span className={classGreen}>{checkForDecimalAndNull(data, getConfigurationKey().NoOfDecimalForPrice)}</span> : '-'
     }
 
+    const newNetLandedCostFormatter = (props) => {
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        let data = ''
+        let classGreen = ''
+        data = row?.NewNetLandedCost ? row?.NewNetLandedCost : '-'
+        classGreen = (row?.NewNetLandedCost > row?.OldNetLandedCost) ? 'red-value form-control' : (row?.NewNetLandedCost < row?.OldNetLandedCost) ? 'green-value form-control' : 'form-class'
+        return data != null ? <span className={classGreen}>{checkForDecimalAndNull(data, getConfigurationKey().NoOfDecimalForPrice)}</span> : '-'
+    }
+
     const newRMBasicRateFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
@@ -802,7 +811,7 @@ function VerifySimulation(props) {
     const currencyHeader = (props) => {
         return (
             <div className='ag-header-cell-label'>
-                <span className='ag-header-cell-text '>Currency { <i className={`fa fa-info-circle tooltip_custom_right tooltip-icon mb-n3 ml-4 mt2 `} id={"currency-tooltip"}></i>} </span>
+                <span className='ag-header-cell-text '>Currency {<i className={`fa fa-info-circle tooltip_custom_right tooltip-icon mb-n3 ml-4 mt2 `} id={"currency-tooltip"}></i>} </span>
             </div>
         );
     };
@@ -829,7 +838,8 @@ function VerifySimulation(props) {
         partTypeFormatter: partTypeFormatter,
         combinedProcessCostFormatter: combinedProcessCostFormatter,
         hyphenFormatter: hyphenFormatter,
-        currencyHeader: currencyHeader
+        currencyHeader: currencyHeader,
+        newNetLandedCostFormatter: newNetLandedCostFormatter
     };
     function getOperationTypes(list) {
         return list && list?.map(item => item.ForType);
@@ -857,9 +867,9 @@ function VerifySimulation(props) {
                             </div>
                         </Col>
                     </Row>
-                  
-{showTooltip && <Tooltip className="simulation-tooltip-left" placement={"top"} isOpen={currencyViewTooltip} toggle={currencytooltipToggle} target={"currency-tooltip"}>
-  {"This is the currency selected during the costing"}
+
+                    {showTooltip && <Tooltip className="simulation-tooltip-left" placement={"top"} isOpen={currencyViewTooltip} toggle={currencytooltipToggle} target={"currency-tooltip"}>
+                        {"This is the currency selected during the costing"}
                     </Tooltip>}
                     <Row>
                         <Col>
@@ -877,30 +887,30 @@ function VerifySimulation(props) {
                                     <div className="ag-theme-material p-relative">
                                         {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found simulation-lisitng" />}
                                         {verifyList && <AgGridReact
-                                defaultColDef={defaultColDef}
-                                floatingFilter={true}
-                                domLayout='autoHeight'
-                                rowData={verifyList}
-                                ref={gridRef}
-                                pagination={true}
-                                paginationPageSize={defaultPageSize}
-                                onGridReady={onGridReady}
-                                gridOptions={gridOptions}
-                                suppressColumnVirtualisation={true} // Add this line
-                                loadingOverlayComponent={'customLoadingOverlay'}
-                                noRowsOverlayComponent={'customNoRowsOverlay'}
-                                noRowsOverlayComponentParams={{
-                                    title: EMPTY_DATA,
-                                    imagClass: "verify-simulation-overlay"
-                                }}
-                                frameworkComponents={frameworkComponents}
-                                rowSelection={'multiple'}
-                                onRowSelected={onRowSelected}
-                                onSelectionChanged={onRowSelect}
-                                onFilterModified={onFloatingFilterChanged}
-                                suppressRowClickSelection={true}
-                                enableBrowserTooltips={true}
-                            >
+                                            defaultColDef={defaultColDef}
+                                            floatingFilter={true}
+                                            domLayout='autoHeight'
+                                            rowData={verifyList}
+                                            ref={gridRef}
+                                            pagination={true}
+                                            paginationPageSize={defaultPageSize}
+                                            onGridReady={onGridReady}
+                                            gridOptions={gridOptions}
+                                            suppressColumnVirtualisation={true} // Add this line
+                                            loadingOverlayComponent={'customLoadingOverlay'}
+                                            noRowsOverlayComponent={'customNoRowsOverlay'}
+                                            noRowsOverlayComponentParams={{
+                                                title: EMPTY_DATA,
+                                                imagClass: "verify-simulation-overlay"
+                                            }}
+                                            frameworkComponents={frameworkComponents}
+                                            rowSelection={'multiple'}
+                                            onRowSelected={onRowSelected}
+                                            onSelectionChanged={onRowSelect}
+                                            onFilterModified={onFloatingFilterChanged}
+                                            suppressRowClickSelection={true}
+                                            enableBrowserTooltips={true}
+                                        >
                                             <AgGridColumn field="CostingId" hide ></AgGridColumn>
                                             {isMasterAssociatedWithCosting && <AgGridColumn width={185} field="CostingNumber" tooltipField='CostingNumber' headerName="Costing Number"></AgGridColumn>}
                                             {isMasterAssociatedWithCosting && <AgGridColumn width={110} field="PartNo" tooltipField="PartNo" headerName="Part No." cellRenderer='renderPart'></AgGridColumn>}
@@ -925,7 +935,7 @@ function VerifySimulation(props) {
                                             {isSurfaceTreatmentOrOperation === true && operationTypes.includes('Welding') && <AgGridColumn width={220} field="OldOperationBasicRate" tooltipField="OldOperationRate" headerName="Existing Welding Material Rate/kg"></AgGridColumn>}
                                             {isSurfaceTreatmentOrOperation === true && operationTypes.includes('Welding') && <AgGridColumn width={220} field="NewOperationBasicRate" tooltipField="NewOperationRate" headerName="Revised Welding Material Rate/kg"></AgGridColumn>}
                                             {!isMultiTechnology && !isOverHeadProfit && !isCombinedProcess && getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>}
-                                            {!isMultiTechnology && !isOverHeadProfit && !isCombinedProcess && <AgGridColumn field={isMasterAssociatedWithCosting?"CostingCurrency":"Currency"} tooltipField='Currency' editable='false' headerName="Currency" headerComponent={'currencyHeader'} minWidth={140} ></AgGridColumn>}
+                                            {!isMultiTechnology && !isOverHeadProfit && !isCombinedProcess && <AgGridColumn field={isMasterAssociatedWithCosting ? "CostingCurrency" : "Currency"} tooltipField='Currency' editable='false' headerName="Currency" headerComponent={'currencyHeader'} minWidth={140} ></AgGridColumn>}
                                             {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="OldOperationRate" tooltipField="OldOperationRate" headerName="Existing Rate"></AgGridColumn>}
                                             {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="NewOperationRate" tooltipField="NewOperationRate" headerName="Revised Rate"></AgGridColumn>}
 
@@ -944,6 +954,10 @@ function VerifySimulation(props) {
                                             {isRMDomesticOrRMImport === true && <AgGridColumn width={145} field="OldScrapRate" tooltipField="OldScrapRate" headerName="Existing Scrap Rate (Currency)"></AgGridColumn>}
                                             {isRMDomesticOrRMImport === true && <AgGridColumn width={150} field="NewScrapRate" tooltipField="NewScrapRate" cellRenderer='newSRFormatter' headerName="Revised Scrap Rate (Currency)" ></AgGridColumn>}
                                             {isRMDomesticOrRMImport === true && <AgGridColumn field="RawMaterialId" hide ></AgGridColumn>}
+
+                                            {(isRMDomesticOrRMImport || isBOPDomesticOrImport) && <AgGridColumn width={150} field="OldNetLandedCost" tooltipField="OldNetLandedCost" headerName="Old Net Landed Cost" cellRenderer='hyphenFormatter'></AgGridColumn>}
+                                            {(isRMDomesticOrRMImport || isBOPDomesticOrImport) && <AgGridColumn width={150} field="NewNetLandedCost" tooltipField="NewNetLandedCost" headerName="New Net Landed Cost" cellRenderer='newNetLandedCostFormatter'></AgGridColumn>}
+
                                             {/* {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>}
                                             {isExchangeRate && <AgGridColumn width={130} field="Currency" tooltipField="Currency" headerName="Currency"></AgGridColumn>} */}
                                             {/* {isExchangeRate && <AgGridColumn width={130} field="POPrice" tooltipField="POPrice" headerName="Existing Net Cost (INR)"></AgGridColumn>} */}
