@@ -3274,7 +3274,7 @@ export const RAWMATERIALCOST = 'Raw Material Other Cost'
 export const COSTINGCONDITIONCOST = 'Costing Condition Cost'
 
 //VERSION 
-export const VERSION = "V3.1.24";
+export const VERSION = "V3.1.27";
 
 
 
