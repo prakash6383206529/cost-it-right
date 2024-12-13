@@ -510,7 +510,7 @@ const VendorListing = (props) => {
     if (type !== "cancel") {
       setTimeout(() => {
         getTableListData(
-          currentRowIndex,
+          0,
           state.floatingFilterData,
           100,
           true
@@ -524,7 +524,7 @@ const VendorListing = (props) => {
    * @description Filter user listing on the basis of role and department
    */
   const filterList = () => {
-    getTableListData(currentRowIndex, state.floatingFilterData, 100, true);
+    getTableListData(0, state.floatingFilterData, 100, true);
   };
 
   const formToggle = () => {
