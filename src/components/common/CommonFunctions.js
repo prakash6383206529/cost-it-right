@@ -356,22 +356,27 @@ export const getCostingConditionTypes = (conditionName) => {
 }
 
 
-export const getEffectiveDateMinDate = (minDate) => {
+export const getEffectiveDateMinDate = () => {
+    // Get the value from initialConfiguration in Redux store
+    const effectiveDateRangeDayPrevious = reactLocalStorage.getObject('InitialConfiguration')?.EffectiveDateRangeDayPrevious;
+    console.log(effectiveDateRangeDayPrevious);
 
-    if (effectiveDateRangeDayPrevious === null) {
-        return new Date(new Date().getFullYear() - 100, 0, 1); // Allow dates up to 100 years in the past
-    }
-    if (effectiveDateRangeDayPrevious === 0) {
-        return new Date(); // No past dates
-    }
-    return subDays(new Date(), effectiveDateRangeDayPrevious);
-};
+        if (effectiveDateRangeDayPrevious === null) {
+            return new Date(new Date().getFullYear() - 100, 0, 1); // Allow dates up to 100 years in the past
+        }
+        if (effectiveDateRangeDayPrevious === 0) {
+            return new Date(); // No past dates
+        }
+        return subDays(new Date(), effectiveDateRangeDayPrevious);
+    };
 
-export const getEffectiveDateMaxDate = () => {
-    if (effectiveDateRangeDayFuture === null) {
-        return new Date(new Date().getFullYear() + 100, 11, 31); // Allow dates up to 100 years in the future
-    }
-    if (effectiveDateRangeDayFuture === 0) {
+    export const getEffectiveDateMaxDate = () => {
+        const effectiveDateRangeDayFuture = reactLocalStorage.getObject('InitialConfiguration')?.EffectiveDateRangeDayFuture;
+
+        if (effectiveDateRangeDayFuture === null) {
+            return new Date(new Date().getFullYear() + 100, 11, 31); // Allow dates up to 100 years in the future
+        }
+        if (effectiveDateRangeDayFuture === 0) {
         return new Date(); // No future dates
     }
     return addDays(new Date(), effectiveDateRangeDayFuture);
