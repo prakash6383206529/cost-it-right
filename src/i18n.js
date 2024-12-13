@@ -9,6 +9,8 @@ i18n
     .use(initReactI18next)
     .init({
         fallbackLng: 'en',
+        supportedLngs: ['en', 'hi', 'mr'],
+        lng: localStorage.getItem('language') || 'en',
         ns: ['common', 'RawMaterialMaster', 'BOPMaster', 'MachineMaster', 'OverheadsProfits', 'OperationMaster', 'FuelPowerMaster', 'PartMaster', 'VendorMaster', "Costing", "Dashboard", "MasterLabels", "CostingLabels","CommonLabels"],
         defaultNS: 'common',
         Backend: {
