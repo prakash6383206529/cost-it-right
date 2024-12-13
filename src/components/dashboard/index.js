@@ -29,6 +29,8 @@ function Dashboard(props) {
 
   const [acc3, setAcc3] = useState(false)
 
+  const [acc4, setAcc4] = useState(false)
+
   const [hideDash, setShowHideDash] = useState(false)
   const [activeTab, setactiveTab] = useState('1');
   const [viewSimulation, setViewSimulation] = useState(true)
@@ -244,6 +246,76 @@ function Dashboard(props) {
                   </div>
                 </Row>
               }
+              <Row className="m-0" id={`${pageDropDownRef === 'delegation' ? 'refresh-to-top' : ''}`}>
+                  <div className="graph-box w-100">
+                    <Row>
+                      <Col md="8"><h3 className="mb-0">Delegation Status{acc4 && <TourWrapper
+                        buttonSpecificProp={{ id: "Dashboard_Master_Form" }}
+                        stepsSpecificProp={{
+                          steps: Steps(t).DASHBOARD_MASTER_TAB
+                        }} />}</h3></Col>
+                      <Col md="4" className="text-right">
+                        <button id="Dashboard_Master_Accordian" className="btn btn-small-primary-circle ml-1" type="button" disabled={dashboardTabLock} onClick={() => { setAcc4(!acc4) }}>
+                          {acc4 ? (
+                            <i className="fa fa-minus" ></i>
+                          ) : (
+                            <i className="fa fa-plus"></i>
+                          )}
+                        </button>
+                      </Col>
+                    </Row>
+                    {acc4 && <Row className="master-tabs-row mt-3">
+                      <Col md="1" className="master-tabs px-0 p-relative"> <Nav tabs className="subtabs">
+                        {dashboardTabLock && <div title={MESSAGES.LOADING_MESSAGE} className="disabled-overflow min-width"></div>}
+                        {(CheckApprovalApplicableMaster(RM_MASTER_ID) && viewMastersObj.RM) && <NavItem>
+                          <NavLink id={`dashboard_RM_Masters_Approval`} className={classnames({ active: activeTab === '1' })} onClick={() => { toggle('1'); }}>
+                            Costing
+                          </NavLink>
+                        </NavItem>}
+                        {(CheckApprovalApplicableMaster(BOP_MASTER_ID) && viewMastersObj.BOP) && <NavItem>
+                          <NavLink id={`dashboard_BOP_Masters_Approval`} className={classnames({ active: activeTab === '2' })} onClick={() => { toggle('2'); }}>
+                            Simulation
+                          </NavLink>
+                        </NavItem>}
+                        {(CheckApprovalApplicableMaster(OPERATIONS_ID) && viewMastersObj.operation) && <NavItem>
+                          <NavLink id={`dashboard_Operation_Masters_Approval`} className={classnames({ active: activeTab === '3' })} onClick={() => { toggle('3'); }}>
+                            Master
+                            <div>
+                              
+                            </div>
+                          </NavLink>
+                        </NavItem>}
+                        {(CheckApprovalApplicableMaster(MACHINE_MASTER_ID) && viewMastersObj.machine) && <NavItem>
+                          <NavLink id={`dashboard_Machine_Masters_Approval`} className={classnames({ active: activeTab === '4' })} onClick={() => { toggle('4'); }}>
+                          Onboarding & Management
+                          </NavLink>
+                        </NavItem>}
+                      </Nav></Col>
+                      <Col md="11"><TabContent activeTab={activeTab}>
+                        {(Number(activeTab) === 1) &&
+                          <TabPane tabId="1">
+                            {acc4 && <Row>
+                              <Col md="12" className="mt-3">{acc4 && <Tabs isPageNoChange={isPageNoChange} closeDashboard={closeDashboard} costing={true} module={'costing'} accordion={true} />}</Col>
+                            </Row>}
+                          </TabPane>}
+                        {(Number(activeTab) === 2 ) &&
+                          <TabPane tabId="2">
+                           {acc4 && <Row>
+                    <Col md="12" className="mt-3">{acc4 && <><Tabs isPageNoChange={isPageNoChange} costing={false} accordion={false} module={'simulation'} /></>}</Col>
+                  </Row>}
+                          </TabPane>}
+                        {(Number(activeTab) === 3 ) &&
+                          <TabPane tabId="3">
+                            <MasterApprovalTabs isApproval={true} MasterId={OPERATIONS_ID} isPageNoChange={isPageNoChange} />
+                          </TabPane>}
+                        {(Number(activeTab) === 4 ) &&
+                          <TabPane tabId="4">
+                            <MasterApprovalTabs isApproval={true} MasterId={MACHINE_MASTER_ID} isPageNoChange={isPageNoChange} />
+                          </TabPane>}
+                      </TabContent></Col>
+                    </Row>}
+                  </div>
+                </Row>
             </form>
           </div >
           <Row className="m-0">
