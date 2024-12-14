@@ -1,6 +1,6 @@
 import React, { Fragment, useEffect, useRef, useState } from "react"
 import { fetchSpecificationDataAPI, getCityByCountry, getPlantSelectListByType, getRawMaterialCategory, getVendorNameByVendorSelectList, getExchangeRateSource } from "../../../actions/Common"
-import { CBCTypeId, FILE_URL, RAW_MATERIAL_VENDOR_TYPE, RM_MASTER_ID, SPACEBAR, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, searchCount } from "../../../config/constants"
+import { CBCTypeId, EMPTY_GUID, FILE_URL, RAW_MATERIAL_VENDOR_TYPE, RM_MASTER_ID, SPACEBAR, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, searchCount } from "../../../config/constants"
 import { useDispatch, useSelector } from "react-redux"
 import { getCostingSpecificTechnology } from "../../costing/actions/Costing"
 import { CheckApprovalApplicableMaster, getConfigurationKey, loggedInUserId } from "../../../helper"
@@ -90,6 +90,7 @@ function AddRMDetails(props) {
     const cityList = useSelector((state) => state.comman.cityList)
     const RMIndex = getConfigurationKey()?.IsShowMaterialIndexation
     const { t } = useTranslation('MasterLabels');
+    const { isMultipleUserAllowForApproval } = useSelector((state) => state.auth.initialConfiguration)
 
 
     useEffect(() => {
@@ -279,8 +280,12 @@ function AddRMDetails(props) {
             setState(prevState => ({ ...prevState, plants: [] }));
         }
         dispatch(SetRawMaterialDetails({ Plants: newValue }, () => { }))
-        if (getConfigurationKey()?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !getConfigurationKey()?.IsDivisionAllowedForDepartment) {
-            props?.commonFunction(newValue ? newValue.value : '', false, props?.masterLevels)
+        handleCommonFunction(isMultipleUserAllowForApproval ? newValue?.value : EMPTY_GUID, state?.rmSpec?.value)
+    }
+    const handleCommonFunction = (plantId, partId) => {
+        console.log(plantId, partId, 'plantId, partId')
+        if (getConfigurationKey()?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true && plantId && partId) {
+            props?.commonFunction({ PlantId: plantId, PartId: partId }, props?.masterLevels)
         }
     }
     /**
@@ -386,6 +391,7 @@ function AddRMDetails(props) {
         if (newValue && newValue !== '') {
             setState(prevState => ({ ...prevState, rmSpec: newValue, rmCode: { label: newValue.RawMaterialCode, value: newValue.value }, rmCategory: [], isCodeDisabled: true }));
             setValue('RawMaterialCode', { label: newValue.RawMaterialCode, value: newValue.value })
+            handleCommonFunction(isMultipleUserAllowForApproval ? state.plants?.value : EMPTY_GUID, newValue.value)
         } else {
             setState(prevState => ({ ...prevState, rmSpec: [], rmCode: [], rmCategory: [], isCodeDisabled: false }));
         }
@@ -422,12 +428,14 @@ function AddRMDetails(props) {
                     return false
                 }
                 let Data = res?.data?.Data
+                handleCommonFunction(isMultipleUserAllowForApproval ? state.plants?.value : EMPTY_GUID, Data.SpecificationId)
                 setState(prevState => ({
                     ...prevState,
                     rmName: { label: Data.RawMaterialName, value: Data.RawMaterialId, },
                     rmGrade: { label: Data.GradeName, value: Data.GradeId },
                     rmSpec: { label: Data.Specification, value: Data.SpecificationId }
                 }))
+
                 setValue('RawMaterialName', { label: Data.RawMaterialName, value: Data.RawMaterialId, })
                 setValue('RawMaterialGrade', { label: Data.GradeName, value: Data.GradeId })
                 setValue('RawMaterialSpecification', { label: Data.Specification, value: Data.SpecificationId })
