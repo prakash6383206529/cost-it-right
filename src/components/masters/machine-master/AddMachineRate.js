@@ -4,7 +4,8 @@ import { Field, reduxForm, formValueSelector, isDirty, clearFields } from "redux
 import { Row, Col, Table, Label } from 'reactstrap';
 import {
   required, checkForNull, postiveNumber, checkForDecimalAndNull, acceptAllExceptSingleSpecialCharacter,
-  checkWhiteSpaces, maxLength80, maxLength10, maxLength512, checkSpacesInString, decimalLengthsix, hashValidation, getNameBySplitting, number
+  checkWhiteSpaces, maxLength80, maxLength10, maxLength512, checkSpacesInString, decimalLengthsix, hashValidation, getNameBySplitting, number,
+  validateFileName
 } from "../../../helper/validation";
 import { renderText, searchableSelect, renderTextAreaField, focusOnError, renderDatePicker, validateForm } from "../../layout/FormInputs";
 import { getPlantSelectListByType, getPlantBySupplier, getUOMSelectList, getVendorNameByVendorSelectList } from '../../../actions/Common';
@@ -13,7 +14,7 @@ import {
   checkAndGetMachineNumber, getMachineData, getProcessGroupByMachineId, setGroupProcessList, setProcessList
 } from '../actions/MachineMaster';
 import Toaster from '../../common/Toaster';
-import { MESSAGES } from '../../../config/message';
+import { AttachmentValidationInfo, MESSAGES } from '../../../config/message';
 import { CBCTypeId, EMPTY_DATA, EMPTY_GUID, GUIDE_BUTTON_SHOW, SPACEBAR, VBCTypeId, VBC_COSTING, VBC_VENDOR_TYPE, ZBCTypeId, searchCount } from '../../../config/constants'
 import { getConfigurationKey, loggedInUserId, userDetails } from "../../../helper/auth";
 import Dropzone from 'react-dropzone-uploader';
@@ -344,6 +345,15 @@ class AddMachineRate extends Component {
         if (res && res.data && res.data.Result) {
 
           const Data = res.data.Data;
+          const vendorData = Data?.VendorId && Data?.VendorName ? {
+            value: Data?.VendorId,
+            label: Data?.VendorName
+          } : [];
+    
+          const clientData = Data?.CustomerId && Data?.CustomerName ? {
+            value: Data?.CustomerId,
+            label: Data?.CustomerName
+          } : [];
           if (Data?.MachineLabourRates && Data?.MachineLabourRates?.length !== 0) {
             this.setState({ disableMachineType: true })
           }
@@ -412,12 +422,14 @@ class AddMachineRate extends Component {
               isEditFlag: true,
               IsFinancialDataChanged: false,
               costingTypeId: (Data.CostingTypeId),
-              client: Data.CustomerName !== undefined ? { label: Data.CustomerName, value: Data.CustomerId } : [],
+              client: clientData,  // Updated
+          vendorName: vendorData,  // Updated
+              // client: Data.CustomerName !== undefined ? { label: Data?.CustomerName ?? '', value: Data?.CustomerId ?? '' } : [],
               IsCopied: Data.IsCopied,
               IsDetailedEntry: Data.IsDetailedEntry,
               selectedTechnology: Data.Technology[0].Technology !== undefined ? { label: Data.Technology[0].Technology, value: Data.Technology[0].TechnologyId } : [],
               selectedPlants: Data && Data.Plant.length > 0 ? { label: Data.Plant[0].PlantName, value: Data.Plant[0].PlantId } : [],
-              vendorName: Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.VendorId } : [],
+              // vendorName: Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.VendorId } : [],
               machineType: Data.MachineType !== undefined ? { label: Data.MachineType, value: Data.MachineTypeId } : [],
               processGrid: MachineProcessArray ?? [],
               remarks: Data.Remark,
@@ -493,6 +505,7 @@ class AddMachineRate extends Component {
 * @description called
 */
   handleClient = (newValue, actionMeta) => {
+    
     if (newValue && newValue !== '') {
       this.setState({ client: newValue });
     } else {
@@ -1013,7 +1026,17 @@ class AddMachineRate extends Component {
     if (status === 'done') {
       let data = new FormData()
       data.append('file', file)
+      if (!validateFileName(file.name)) {
+        this.dropzone.current.files.pop()
+        this.setDisableFalseFunction()
+        return false;
+      }
       this.props.fileUploadMachine(data, (res) => {
+        if (res && res?.status !== 200) {
+          this.dropzone.current.files.pop()
+          this.setDisableFalseFunction()
+          return false
+        }
         this.setDisableFalseFunction()
         let Data = res.data[0]
         const { files } = this.state;
@@ -1160,7 +1183,9 @@ class AddMachineRate extends Component {
           EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
           MachineProcessGroup: this.props.processGroupApiData,
           VendorPlant: [],
-          CustomerId: client.value,
+          CustomerId: costingTypeId === CBCTypeId && client ? 
+          (client.value || null) : 
+          null,
           DestinationPlantId: '',
         }
 
@@ -1186,10 +1211,10 @@ class AddMachineRate extends Component {
         if (isEditFlag) {
 
           if (DropdownChange && (JSON.stringify(files) === JSON.stringify(DataToChange.Attachements)) &&
-            (DataToChange.Specification ? DataToChange.Specification : '-') === (values.Specification ? values.Specification : '-') &&
-            (DataToChange.MachineName ? DataToChange.MachineName : '-') === (values.MachineName ? values.MachineName : '-') &&
-            (DataToChange?.MachineTypeId ? String(DataToChange?.MachineTypeId) : '-') === (machineType?.value ? String(machineType?.value) : '-') &&
-            (DataToChange?.TonnageCapacity ? String(DataToChange?.TonnageCapacity) : '-') === (values?.TonnageCapacity ? String(values?.TonnageCapacity) : '-') &&
+            (DataToChange.Specification ? DataToChange.Specification : '') === (values.Specification ? values.Specification : '') &&
+            (DataToChange.MachineName ? DataToChange.MachineName : '') === (values.MachineName ? values.MachineName : '') &&
+            (DataToChange?.MachineTypeId ? String(DataToChange?.MachineTypeId) : '') === (machineType?.value ? String(machineType?.value) : '') &&
+            (DataToChange?.TonnageCapacity ? String(DataToChange?.TonnageCapacity) : '') === (values?.TonnageCapacity ? String(values?.TonnageCapacity) : '') &&
             DataToChange?.Remark === values?.Remark) {
             this.cancel('submit')
             return false
@@ -1266,10 +1291,10 @@ class AddMachineRate extends Component {
 
         if (isEditFlag) {
           if (DropdownChange && (JSON.stringify(files) === JSON.stringify(DataToChange.Attachements)) &&
-            (DataToChange.Specification ? DataToChange.Specification : '-') === (values.Specification ? values.Specification : '-') &&
-            (DataToChange.MachineName ? DataToChange.MachineName : '-') === (values.MachineName ? values.MachineName : '-') &&
-            (DataToChange?.MachineTypeId ? String(DataToChange?.MachineTypeId) : '-') === (machineType?.value ? String(machineType?.value) : '-') &&
-            (DataToChange?.TonnageCapacity ? String(DataToChange?.TonnageCapacity) : '-') === (values?.TonnageCapacity ? String(values?.TonnageCapacity) : '-') &&
+            (DataToChange.Specification ? DataToChange.Specification : '') === (values.Specification ? values.Specification : '') &&
+            (DataToChange.MachineName ? DataToChange.MachineName : '') === (values.MachineName ? values.MachineName : '') &&
+            (DataToChange?.MachineTypeId ? String(DataToChange?.MachineTypeId) : '') === (machineType?.value ? String(machineType?.value) : '') &&
+            (DataToChange?.TonnageCapacity ? String(DataToChange?.TonnageCapacity) : '') === (values?.TonnageCapacity ? String(values?.TonnageCapacity) : '') &&
             DataToChange?.Remark === values?.Remark) {
             Toaster.warning('Please change data to send machine for approval')
             return false
@@ -1923,7 +1948,7 @@ class AddMachineRate extends Component {
                           />
                         </Col>
                         <Col md="3">
-                          <label>Upload Files (upload up to {getConfigurationKey().MaxMasterFilesToUpload} files)</label>
+                          <label>Upload Files (upload up to {getConfigurationKey().MaxMasterFilesToUpload} files) <AttachmentValidationInfo /></label>
                           <div className={`alert alert-danger mt-2 ${this.state.files?.length === getConfigurationKey().MaxMasterFilesToUpload ? '' : 'd-none'}`} role="alert">
                             Maximum file upload limit reached.
                           </div>

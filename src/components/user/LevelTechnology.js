@@ -25,7 +25,7 @@ class LevelTechnology extends Component {
     * @description used to called after mounting component
     */
     componentDidMount() {
-        this.props.getAllTechnologyAPI(() => { })
+        this.props.getAllTechnologyAPI(() => { }, '', true)
         this.props.getAllLevelAPI(() => { })
     }
 

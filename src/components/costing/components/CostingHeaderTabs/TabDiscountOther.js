@@ -20,7 +20,7 @@ import { Redirect, useHistory } from "react-router-dom";
 import redcrossImg from '../../../../assests/images/red-cross.png';
 import { ATTACHMENT, CAPACITY, EMPTY_GUID, FEASIBILITY, FILE_URL, NFRTypeId, TIMELINE, VBCTypeId, WACTypeId, ZBCTypeId } from '../../../../config/constants';
 import { IdForMultiTechnology } from '../../../../config/masterData';
-import { MESSAGES } from '../../../../config/message';
+import { AttachmentValidationInfo, MESSAGES } from '../../../../config/message';
 import DayTime from '../../../common/DayTimeWrapper';
 import Toaster from '../../../common/Toaster';
 import { SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '../../../layout/HookFormInputs';
@@ -29,7 +29,7 @@ import { IsNFR, IsPartType, ViewCostingContext } from '../CostingDetails';
 
 import { useMemo } from 'react';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { checkWhiteSpaces, decimalNumberLimit6, hashValidation, maxLength80, number, percentageLimitValidation, required } from "../../../../helper/validation";
+import { checkWhiteSpaces, decimalNumberLimit6, hashValidation, maxLength80, number, percentageLimitValidation, required, validateFileName } from "../../../../helper/validation";
 import LoaderCustom from '../../../common/LoaderCustom';
 import TooltipCustom from '../../../common/Tooltip';
 import WarningMessage from '../../../common/WarningMessage';
@@ -553,8 +553,8 @@ function TabDiscountOther(props) {
         "ApplicabilityIdRef": item?.ApplicabilityIdRef,
         "Description": item?.Description,
         "NetCost": item?.NetCost,
-        "Value": item?.PercentageDiscountCost ? item?.PercentageDiscountCost : item?.PercentageDiscountCost,
-        "ApplicabilityCost": item?.ApplicabilityCost ? item?.ApplicabilityCost : item?.ApplicabilityCost,
+        "Value": item?.PercentageDiscountCost ?? '',
+        "ApplicabilityCost": item?.ApplicabilityCost ?? '',
         "CRMHead": item?.CRMHead,
       }
       discountArray.push(obj)
@@ -691,7 +691,7 @@ function TabDiscountOther(props) {
               let obj = {}
               obj.OtherCostDescription = item.Description
               obj.OtherCostApplicability = item.ApplicabilityType
-              obj.PercentageOtherCost = item.Value ? item.Value : '-'
+              obj.PercentageOtherCost = item.Value ? item.Value : ''
               obj.AnyOtherCost = item.NetCost
               obj.ApplicabilityCost = item?.ApplicabilityCost
               obj.CRMHead = item?.CRMHead
@@ -707,7 +707,7 @@ function TabDiscountOther(props) {
               obj.ApplicabilityIdRef = item.ApplicabilityIdRef
               obj.ApplicabilityType = item.ApplicabilityType
               obj.ApplicabilityCost = item?.ApplicabilityCost
-              obj.PercentageDiscountCost = item.Value ? item.Value : '-'
+              obj.PercentageDiscountCost = item.Value ? item.Value : ''
               obj.NetCost = item.NetCost
               obj.CRMHead = item?.CRMHead
               discountTemp.push(obj)
@@ -1093,8 +1093,18 @@ function TabDiscountOther(props) {
     if (status === 'done') {
       let data = new FormData()
       data.append('file', file)
+      if (!validateFileName(file.name)) {
+        dropzone.current.files.pop()
+        setDisableFalseFunction()
+        return false;
+      }
       dispatch(fileUploadCosting(data, (res) => {
         setDisableFalseFunction()
+        if (res && res?.status !== 200) {
+          dropzone.current.files.pop()
+          setAttachmentLoader(false)
+          return false
+        }
         if ('response' in res) {
           status = res && res?.response?.status
           dropzone.current.files.pop()
@@ -2336,7 +2346,7 @@ function TabDiscountOther(props) {
 
                     {!isRfqAttachment ? <>
                       <Col md="3" className="height152-label">
-                        <label>Upload Attachment (upload up to 4 files)</label>
+                        <label>Upload Attachment (upload up to 4 files)<AttachmentValidationInfo /></label>
                         <div className={`alert alert-danger mt-2 ${files.length === 4 ? '' : 'd-none'}`} role="alert">
                           Maximum file upload limit reached.
                         </div>
@@ -2639,7 +2649,7 @@ function TabDiscountOther(props) {
                             <h6 className="mt-3">Others</h6>
                             <Row className='pb-2'>
                               <Col md="6">
-                                <label>Upload Attachment (upload up to 4 files)</label>
+                                <label>Upload Attachment (upload up to 4 files) <AttachmentValidationInfo /></label>
                                 <div className={`alert alert-danger mt-2 ${files.length === 4 ? '' : 'd-none'}`} role="alert">
                                   Maximum file upload limit reached.
                                 </div>

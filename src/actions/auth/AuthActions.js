@@ -96,6 +96,8 @@ export function TokenAPI(requestData, callback) {
             Token: requestData.Token,
             Audiance: requestData.audiance
         };
+
+
         // Fetch the public IP from a service (if necessary).
         // axios.get('https://api.ipify.org?format=json')
         //     .then(response => {
@@ -145,6 +147,8 @@ const getLocalIPAddress = async () => {
         return null;
     }
 };
+
+
 
 export function AutoSignin(requestData, callback) {
     return (dispatch) => {

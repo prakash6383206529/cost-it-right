@@ -295,6 +295,7 @@ export function fileUploadBOPDomestic(data, callback) {
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
       apiErrors(error);
+      callback(error.toString())
     });
   };
 }
@@ -348,8 +349,8 @@ export function getInitialFilterData(boughtOutPartNumber, callback) {
  * @description get all BOP SOB Data list.
  */
 export function getManageBOPSOBDataList(data, callback) {
-  
-    return (dispatch) => {
+
+  return (dispatch) => {
     dispatch({ type: API_REQUEST });
     // const queryParams = `bought_out_part_id=${data.bought_out_part_id}&plant_id=${data.plant_id}`;
     const queryParams = new URLSearchParams({

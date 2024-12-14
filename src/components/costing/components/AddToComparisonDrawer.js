@@ -531,7 +531,7 @@ function AddToComparisonDrawer(props) {
 
           obj.toolApplicability = { applicability: 'Applicability', value: 'Value', }
           obj.toolApplicabilityValue = {
-            toolTitle: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse.length > 0 && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolCostType !== null ? dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolCostType : "-",
+            toolTitle: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse.length > 0 && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolCostType !== null ? dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolCostType :"-",
             toolValue: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse.length > 0 && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolApplicabilityCost !== null ? dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolApplicabilityCost : 0,
           }
 
@@ -556,7 +556,7 @@ function AddToComparisonDrawer(props) {
           obj.remark = dataFromAPI && dataFromAPI.OtherRemark ? dataFromAPI.OtherRemark : '-'
           obj.nPOPriceWithCurrency = dataFromAPI && dataFromAPI.NetPOPriceInOtherCurrency ? dataFromAPI.NetPOPriceInOtherCurrency : 0
           obj.currency = {
-            currencyTitle: dataFromAPI && dataFromAPI.Currency ? dataFromAPI?.Currency : '-',
+            currencyTitle: dataFromAPI && dataFromAPI.Currency ? dataFromAPI?.Currency : '',
             currencyValue: dataFromAPI && dataFromAPI.CurrencyExchangeRate ? dataFromAPI?.CurrencyExchangeRate : '-',
           }
 
@@ -600,9 +600,9 @@ function AddToComparisonDrawer(props) {
           obj.vendorName = dataFromAPI.VendorName ? dataFromAPI.VendorName : '-'
           obj.vendorCode = dataFromAPI.VendorCode ? dataFromAPI.VendorCode : '-'
           obj.vendor = dataFromAPI.VendorName && dataFromAPI.VendorCode ? `${dataFromAPI.VendorName} (${dataFromAPI.VendorCode})` : '-'
-          obj.vendorPlantId = dataFromAPI.VendorPlantId ? dataFromAPI.VendorPlantId : '-'
-          obj.vendorPlantName = dataFromAPI.VendorPlantName ? dataFromAPI.VendorPlantName : '-'
-          obj.vendorPlantCode = dataFromAPI.VendorPlantCode ? dataFromAPI.VendorPlantCode : '-'
+          obj.vendorPlantId = dataFromAPI.VendorPlantId ? dataFromAPI.VendorPlantId : ''
+          obj.vendorPlantName = dataFromAPI.VendorPlantName ? dataFromAPI.VendorPlantName : ''
+          obj.vendorPlantCode = dataFromAPI.VendorPlantCode ? dataFromAPI.VendorPlantCode : ''
           obj.costingId = dataFromAPI.CostingId ? dataFromAPI.CostingId : '-'
           obj.oldPoPrice = dataFromAPI.OldPOPrice ? dataFromAPI.OldPOPrice : 0
           obj.technology = dataFromAPI.Technology ? dataFromAPI.Technology : '-'
@@ -661,7 +661,7 @@ function AddToComparisonDrawer(props) {
           obj.BurningLossWeight = obj?.netRMCostView && (obj?.netRMCostView.length > 1 || obj?.IsAssemblyCosting === true) ? 'Multiple RM' : (obj?.netRMCostView && obj?.netRMCostView[0] && obj?.netRMCostView[0].BurningLossWeight)
           obj.ScrapWeight = obj?.netRMCostView && (obj?.netRMCostView.length > 1 || obj?.IsAssemblyCosting === true) ? 'Multiple RM' : (obj?.netRMCostView && obj?.netRMCostView[0] && obj?.netRMCostView[0].ScrapWeight)
           obj.nPoPriceCurrency = obj?.nPOPriceWithCurrency !== null ? (obj?.currency?.currencyTitle) !== "-" ? (obj?.nPOPriceWithCurrency) : obj?.nPOPrice : '-'
-          obj.currencyRate = obj?.CostingHeading !== VARIANCE ? obj?.currency.currencyValue === '-' ? '-' : obj?.currency.currencyValue : ''
+          obj.currencyRate = obj?.CostingHeading !== VARIANCE ? obj?.currency.currencyValue === '-' ? '' : obj?.currency.currencyValue : ''
           obj.costingTypeId = dataFromAPI?.CostingTypeId ? dataFromAPI?.CostingTypeId : ''
           obj.customerId = dataFromAPI?.CustomerId ? dataFromAPI?.CustomerId : EMPTY_GUID
           obj.customerName = dataFromAPI?.CustomerName ? dataFromAPI?.CustomerName : ''

@@ -1,11 +1,10 @@
 
 import React, { useEffect, useState } from 'react';
-import { useMsal } from '@azure/msal-react';
+import { useAccount, useMsal } from '@azure/msal-react';
 import { loginRequest } from '../../authConfig';
 import { InteractionRequiredAuthError } from "@azure/msal-browser";
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { jwtDecode } from "jwt-decode";
-import logo from '../../assests/images/logo/ms-symbollockup_signin_light.png';
 import Toaster from '../common/Toaster';
 
 export const MsalAuthLogin = ({ setToken, setIsLoginWithMsal, setAudience }) => {
@@ -86,7 +85,18 @@ export const MsalAuthLogin = ({ setToken, setIsLoginWithMsal, setAudience }) => 
             setIsLoginWithMsal(false);
         }
     }, [isAuthenticated, setIsLoginWithMsal, setToken]);
+    useEffect(() => {
+        const handleRedirect = async () => {
+            try {
+                const response = await instance.handleRedirectPromise();
 
+            } catch (error) {
+                console.error("Error handling redirect response:", error);
+            }
+        };
+
+        handleRedirect();
+    }, [instance]);
     const handleLogin = async () => {
         try {
             await instance.loginRedirect(loginRequest);
@@ -96,10 +106,35 @@ export const MsalAuthLogin = ({ setToken, setIsLoginWithMsal, setAudience }) => 
         }
     };
 
+    let isInteractionInProgress = false;
+    const login = async () => {
+        if (isInteractionInProgress) {
+            Toaster.error("A login popup is already open. Please complete the current login process before trying again.");
+            return;
+        }
+        isInteractionInProgress = true;
+        try {
+            await instance.loginPopup(loginRequest);
+        } catch (error) {
+            console.error(error);
+            Toaster.error("A login popup is already open. Please complete the current login process before trying again.");
+        } finally {
+            isInteractionInProgress = false;
+        }
+
+    };
+    const logout = () => {
+        instance.logoutPopup().catch((error) => {
+            console.error(error);
+        });
+    };
     return (
         <div>
-            <button type="button" onClick={handleLogin} style={{ boxShadow: 'none', border: 'none', background: 'none', }}>
-                <img src={logo} alt="Login with Microsoft" style={{ marginBottom: '0' }} />
+            <button type="button" onClick={login} className='microsot-login-button'>
+                <div className='microsot-logo mr-2'>
+                </div>
+
+                Continue with Microsoft
             </button>
         </div>
     );
