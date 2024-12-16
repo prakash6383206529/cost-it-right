@@ -343,19 +343,6 @@ const {isNetPoPrice , setIsNetPoPrice} = useState(false)
       setCssObj(prevState => ({ ...prevState, particularWidth: 50 / viewCostingData.length, tableWidth: "auto" }))
     }
   }, [viewCostingData])
-  useEffect(() => {
-    
-    if(viewCostingData && viewCostingData.length > 0){
-      const netCosting = viewCostingData.some(data => 
-        data.poPrice
-        === 0
-      );
-      if(netCosting){
-        setIsNetPoPrice(true)
-      }
-    }
-    
-  }, [viewCostingData]);
   
   
   useEffect(() => {
