@@ -225,7 +225,7 @@ export function deleteBudget(ID, callback) {
                 callback(response)
             })
             .catch((error) => {
-                apiErrors(error)
+                callback(error?.response)
                 dispatch({ type: API_FAILURE })
             })
     }

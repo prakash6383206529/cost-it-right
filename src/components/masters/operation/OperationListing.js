@@ -83,6 +83,7 @@ const OperationListing = (props) => {
         permissionData: {},
 
     })
+    const [pageRecord, setPageRecord] = useState(0)
     const tourStartData = useSelector(state => state.comman.tourStartData);
     const { t } = useTranslation("common")
     const { technologyLabel, vendorLabel } = useLabels();
@@ -161,7 +162,8 @@ const OperationListing = (props) => {
         }
     }
 
-    const getTableListData = (operation_for = null, operation_Name_id = null, technology_id = null, vendor_id = null, skip = 0, take = 10, isPagination = true, dataObj) => {
+    const getTableListData = (operation_for = null, operation_Name_id = null, technology_id = null, vendor_id = null, skip, take, isPagination = true, dataObj) => {
+        setPageRecord(skip)
         setState(prevState => ({ ...prevState, isLoader: isPagination ? true : false }))
 
         if (state.filterModel?.EffectiveDate) {
@@ -389,9 +391,16 @@ const OperationListing = (props) => {
     const confirmDeleteItem = (ID) => {
         const loggedInUser = loggedInUserId()
         dispatch(deleteOperationAPI(ID, loggedInUser, (res) => {
-            if (res.data.Result === true) {
+            if (res !== undefined && res?.status === 417 && res?.data?.Result === false) {
+                setState((prevState) => ({ ...prevState, isLoader: false }))
+                Toaster.error(res?.data?.Message)
+            } else if (res && res?.data && res?.data?.Result === true) {
                 Toaster.success(MESSAGES.DELETE_OPERATION_SUCCESS);
-                resetState()
+                dispatch(setSelectedRowForPagination([]));
+                if (state.gridApi) {
+                    state.gridApi.deselectAll();
+                }
+                getTableListData(null, null, null, null, pageRecord, globalTakes, true, state.floatingFilterData)
                 setState(prevState => ({ ...prevState, dataCount: 0 }))
             }
         }));

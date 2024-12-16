@@ -78,7 +78,7 @@ function OverheadListing(props) {
     const { globalTakes } = useSelector((state) => state.pagination)
     const modelTypes = useSelector(state => state.comman?.modelTypes)
     const [modelText, setModelText] = useState('')
-
+    const [pageRecord, setPageRecord] = useState(0)
 
 
     var floatingFilterOverhead = {
@@ -147,7 +147,8 @@ function OverheadListing(props) {
         setModelText(modelText)
     }, [modelTypes])
 
-    const getDataList = (costingHead = null, vendorName = null, overhead = null, modelType = null, skip = 0, take = 10, isPagination = true, dataObj) => {
+    const getDataList = (costingHead = null, vendorName = null, overhead = null, modelType = null, skip, take, isPagination = true, dataObj) => {
+        setPageRecord(skip)
         const filterData = {
             costing_head: costingHead,
             vendor_id: vendorName,
@@ -352,12 +353,19 @@ function OverheadListing(props) {
     */
     const confirmDelete = (ID) => {
         const loggedInUser = loggedInUserId()
+        setState((prevState) => ({ ...prevState, isLoader: true }))
         dispatch(deleteOverhead(ID, loggedInUser, (res) => {
-            if (res.data.Result === true) {
+            if (res !== undefined && res?.status === 417 && res?.data?.Result === false) {
+                setState((prevState) => ({ ...prevState, isLoader: false }))
+                Toaster.error(res?.data?.Message)
+            } else if (res && res?.data && res?.data?.Result === true) {
                 Toaster.success(MESSAGES.DELETE_OVERHEAD_SUCCESS);
-                dispatch(setSelectedRowForPagination([]))
-                setDataCount(0)
-                getDataList(null, null, null, null, 0, 10, true, floatingFilterData)
+                dispatch(setSelectedRowForPagination([]));
+                if (gridApi) {
+                    gridApi.deselectAll();
+                }
+                getDataList(null, null, null, null, pageRecord, globalTakes, true, floatingFilterData)
+                setDataCount(0);
             }
         }))
         setShowPopup(false)
@@ -560,7 +568,7 @@ function OverheadListing(props) {
         temp = TempData && TempData?.map(item => {
             Object.keys(item).forEach(field => {
                 if (item[field] === null || item[field] === ' ') {
-                    item[field] = '-'; 
+                    item[field] = '-';
                 }
             });
             if (item?.EffectiveDate?.includes('T')) {
@@ -568,7 +576,7 @@ function OverheadListing(props) {
             }
             return item;
         });
-        
+
         const isShowRawMaterial = getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC
         const excelColumns = excelData && excelData.map((ele, index) => {
             if ((ele.label === 'Raw Material Name' || ele.label === 'Raw Material Grade') && !isShowRawMaterial) {

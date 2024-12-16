@@ -85,6 +85,7 @@ function RMDomesticListing(props) {
     const { technologyLabel, RMCategoryLabel, vendorLabel } = useLabels();
     const [compareDrawer, setCompareDrawer] = useState(false)
     const [rowDataForCompare, setRowDataForCompare] = useState([])
+    const [pageRecord, setPageRecord] = useState(0);
     const isRfq = props?.quotationId !== null || props?.quotationId !== '' || props?.quotationId !== undefined ? true : false
     var filterParams = {
         date: "", inRangeInclusive: true, filterOptions: ['equals', 'inRange'],
@@ -168,9 +169,9 @@ function RMDomesticListing(props) {
     * @method hideForm
     * @description HIDE DOMESTIC, IMPORT FORMS
     */
-    const getDataList = (costingHead = null, plantId = null, materialId = null, gradeId = null, vendorId = null, technologyId = 0, skip = 0, take = 10, isPagination = true, dataObj, isReset = false) => {
+    const getDataList = (costingHead = null, plantId = null, materialId = null, gradeId = null, vendorId = null, technologyId = 0, skip, take, isPagination = true, dataObj, isReset = false) => {
         const { isSimulation } = props
-
+        setPageRecord(skip)
         if (filterModel?.EffectiveDate && !isReset) {
 
             if (filterModel.EffectiveDate.dateTo) {
@@ -427,13 +428,20 @@ function RMDomesticListing(props) {
     */
     const confirmDelete = (ID) => {
         const loggedInUser = loggedInUserId()
+        setloader(true)
         dispatch(deleteRawMaterialAPI(ID, loggedInUser, (res) => {
-            if (res !== undefined && res.status === 417 && res.data.Result === false) {
-                Toaster.error(res.data.Message)
-            } else if (res && res.data && res.data.Result === true) {
+            if (res !== undefined && res?.status === 417 && res?.data?.Result === false) {
+                setloader(false)
+                Toaster.error(res?.data?.Message)
+            } else if (res && res?.data && res?.data?.Result === true) {
                 Toaster.success(MESSAGES.DELETE_RAW_MATERIAL_SUCCESS);
-                setDataCount(0)
-                resetState()
+                dispatch(setSelectedRowForPagination([]));
+                if (gridApi) {
+                    gridApi.deselectAll();
+                }
+                reactLocalStorage.remove('selectedRow');
+                getDataList(null, null, null, null, null, 0, pageRecord, globalTakes, true, floatingFilterData, false);
+                setDataCount(0);
             }
         }));
         setShowPopup(false)

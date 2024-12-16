@@ -58,6 +58,7 @@ const BOPDomesticListing = (props) => {
 
   const { t } = useTranslation("common")
   const { technologyLabel, vendorLabel } = useLabels();
+  const [skipRecord, setSkipRecord] = useState(0)
   const [state, setState] = useState({
     isOpen: false,
     isEditFlag: false,
@@ -137,8 +138,9 @@ const BOPDomesticListing = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const getDataList = (bopFor = '', CategoryId = 0, vendorId = '', plantId = '', skip = 0, take = 10, isPagination = true, dataObj, isReset = false) => {
+  const getDataList = (bopFor = '', CategoryId = 0, vendorId = '', plantId = '', skip, take, isPagination = true, dataObj, isReset = false) => {
     const { floatingFilterData } = state
+    setSkipRecord(skip)
     if (state.filterModel?.EffectiveDate && !isReset) {
       if (state.filterModel.EffectiveDate.dateTo) {
         let temp = []
@@ -415,16 +417,28 @@ const BOPDomesticListing = (props) => {
   * @method confirmDelete
   * @description confirm delete Raw Material details
   */
+
   const confirmDelete = (ID) => {
     const loggedInUser = loggedInUserId()
+    setState((prevState) => ({ ...prevState, isLoader: true }));
     dispatch(deleteBOP(ID, loggedInUser, (res) => {
-      if (res.data.Result === true) {
+      if (res !== undefined && res?.status === 417 && res?.data?.Result === false) {
+        setState((prevState) => ({ ...prevState, isLoader: false }));
+        Toaster.error(res?.data?.Message);
+      } else if (res && res?.data && res?.data?.Result === true) {
         Toaster.success(MESSAGES.BOP_DELETE_SUCCESS);
-        resetState()
+        dispatch(setSelectedRowForPagination([]));
+        if (state.gridApi) {
+          state.gridApi.deselectAll();
+        }
+        getDataList("", 0, "", "", skipRecord, globalTakes, true, state.floatingFilterData);
       }
+      reactLocalStorage.remove('selectedRow');
+      setState((prevState) => ({ ...prevState, isLoader: false, dataCount: 0 }))
     }));
     setState((prevState) => ({ ...prevState, showPopup: false }))
   }
+
   const onPopupConfirm = () => {
     confirmDelete(state.deletedId);
   }

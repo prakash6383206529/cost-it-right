@@ -151,7 +151,7 @@ export function deletePart(partId, loggedInUserId, callback) {
             .then((response) => {
                 callback(response);
             }).catch((error) => {
-                apiErrors(error);
+                callback(error?.response)
                 dispatch({ type: API_FAILURE });
             });
     };
@@ -377,8 +377,8 @@ export function deleteAssemblyPart(assyPartId, loggedInUserId, callback) {
             .then((response) => {
                 callback(response);
             }).catch((error) => {
-                apiErrors(error);
                 dispatch({ type: API_FAILURE });
+                callback(error?.response);
             });
     };
 }

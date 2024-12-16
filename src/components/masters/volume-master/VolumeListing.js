@@ -163,6 +163,7 @@ function VolumeListing(props) {
   });
   const [disableDownload, setDisableDownload] = useState(false);
   const [noData, setNoData] = useState(false);
+  const [pageRecord, setPageRecord] = useState(0);
   const { topAndLeftMenuData } = useSelector((state) => state.auth);
   const { volumeDataList, volumeDataListForDownload } = useSelector((state) => state.volume);
   const { globalTakes } = useSelector((state) => state.pagination);
@@ -220,7 +221,8 @@ function VolumeListing(props) {
    * @method getTableListData
    * @description Get user list data
    */
-  const getTableListData = (skip = 0, take = 10, isPagination = true) => {
+  const getTableListData = (skip, take, isPagination = true) => {
+    setPageRecord(skip)
     if (isPagination === true || isPagination === null) setIsLoader(true);
     let dataObj = { ...floatingFilterData };
     const { zbc, vbc, cbc } = reactLocalStorage.getObject('CostingTypePermission')
@@ -294,12 +296,18 @@ function VolumeListing(props) {
    * @description confirm delete item
    */
   const confirmDeleteItem = (ID) => {
+    setIsLoader(true);
     dispatch(deleteVolume(ID, (res) => {
-      if (res.data.Result === true) {
+      if (res !== undefined && res?.status === 417 && res?.data?.Result === false) {
+        setIsLoader(false);
+        Toaster.error(res?.data?.Message)
+      } else if (res && res?.data && res?.data?.Result === true) {
         Toaster.success(MESSAGES.DELETE_VOLUME_SUCCESS);
-        getTableListData(0, globalTakes, true);
-        gridApi.deselectAll();
         dispatch(setSelectedRowForPagination([]));
+        if (gridApi) {
+          gridApi.deselectAll();
+        }
+        getTableListData(pageRecord, globalTakes, true);
         setDataCount(0);
       }
     })

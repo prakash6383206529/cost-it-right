@@ -102,7 +102,7 @@ const VendorListing = (props) => {
     showExtraData: false,
   });
 
-  const [isSkip, setIsSkip] = useState(0)
+  const [pageRecord, setPageRecord] = useState(0)
   useEffect(() => {
     if (!topAndLeftMenuData) {
       setState(prevState => ({ ...prevState, isLoader: true }));
@@ -171,7 +171,7 @@ const VendorListing = (props) => {
     skip, obj, take, isPagination
   ) => {
     setState((prevState) => ({ ...prevState, isLoader: isPagination ? true : false, }));
-    setIsSkip(skip)
+    setPageRecord(skip)
     let constantFilterData = state.filterModel;
     let object = { ...state.floatingFilterData };
     dispatch(
@@ -525,7 +525,7 @@ const VendorListing = (props) => {
    * @description Filter user listing on the basis of role and departments
    */
   const filterList = () => {
-    getTableListData(isSkip, state.floatingFilterData, 10, true);
+    getTableListData(pageRecord, state.floatingFilterData, globalTakes, true);
   };
 
   const formToggle = () => {
