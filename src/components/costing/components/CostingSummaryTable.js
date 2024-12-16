@@ -3436,7 +3436,7 @@ const {isNetPoPrice , setIsNetPoPrice} = useState(false)
                       {
 
                         <tr className={`${highlighter("nPOPrice", "main-row")} netPo-row`}>
-                          <th>Ne1t Cost ({getConfigurationKey().BaseCurrency}){simulationDrawer && '(Old)'}</th>
+                          <th>Net Cost ({getConfigurationKey().BaseCurrency}){simulationDrawer && '(Old)'}</th>
                           {viewCostingData &&
                             viewCostingData?.map((data, index) => {
                               return <td className={tableDataClass(data)}>
