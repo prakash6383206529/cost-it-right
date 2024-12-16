@@ -1123,13 +1123,13 @@ const {isNetPoPrice , setIsNetPoPrice} = useState(false)
     list && list?.map((item) => {
       
       
-      vendorArray.push(item.vendorId)
-      effectiveDateArray.push(item.effectiveDate)
-      plantArray.push(item.plantCode)
+      vendorArray?.push(item?.vendorId)
+      effectiveDateArray?.push(item?.effectiveDate)
+      plantArray?.push(item?.plantCode)
       return null
     })
     const hasZeroPrice = viewCostingData?.some(data => 
-      data?.poPrice === "0")
+      Number(data?.poPrice) === Number(0))
       
       if(hasZeroPrice){
         Toaster.warning('Net price is 0, cannot proceed with approval.')
