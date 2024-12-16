@@ -188,8 +188,8 @@ const onFilterChange = (event) => {
           // Clean up the dataObj filters before sending to API
   const cleanedDataObj = {
     ...dataObj,
-    OverheadApplicabilityType: dataObj.OverheadApplicabilityType 
-      ? decodeURIComponent(dataObj.OverheadApplicabilityType)
+    OverheadApplicabilityType: dataObj?.OverheadApplicabilityType 
+      ? decodeURIComponent(dataObj?.OverheadApplicabilityType)
       : ''
   };
         if (isPagination === true) {
