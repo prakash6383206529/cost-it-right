@@ -402,7 +402,7 @@ export function deleteOperationAPI(OperationId, loggedInUserId, callback) {
             .then((response) => {
                 callback(response);
             }).catch((error) => {
-                apiErrors(error);
+                callback(error?.response);
                 dispatch({ type: API_FAILURE });
             });
     };

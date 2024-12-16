@@ -86,6 +86,7 @@ const MachineRateListing = (props) => {
     isImport: false
   });
   const [searchText, setSearchText] = useState('');
+  const [pageRecord, setPageRecord] = useState(0)
   const { machineDatalist, allMachineDataList } = useSelector(state => state.machine)
   const { selectedRowForPagination, simulationCostingStatus } = useSelector(state => state.simulation);
   const { globalTakes } = useSelector(state => state.pagination);
@@ -133,6 +134,7 @@ const MachineRateListing = (props) => {
   };
 
   const getDataList = (costing_head = '', technology_id = 0, vendor_id = '', machine_type_id = 0, process_id = '', plant_id = '', skip = 0, take = 10, isPagination = true, dataObj = {}, MachineEntryType = false) => {
+    setPageRecord(skip)
     if (state.filterModel?.EffectiveDateNew) {
       if (state.filterModel.EffectiveDateNew.dateTo) {
         let temp = []
@@ -352,12 +354,19 @@ const MachineRateListing = (props) => {
   */
   const confirmDelete = (ID) => {
     const loggedInUser = loggedInUserId()
+    setState((prevState) => ({ ...prevState, isLoader: true }))
     dispatch(deleteMachine(ID, loggedInUser, (res) => {
       if (res.data.Result === true) {
         Toaster.success(MESSAGES.DELETE_MACHINE_SUCCESS);
-        resetState()
+
+        dispatch(setSelectedRowForPagination([]));
+        if (state.gridApi) {
+          state.gridApi.deselectAll();
+        }
+        getDataList("", 0, "", 0, "", "", pageRecord, globalTakes, true, state.floatingFilterData);
         setState((prevState) => ({ ...prevState, dataCount: 0 }))
       }
+      setState((prevState) => ({ ...prevState, isLoader: false }))
     }));
   }
   const onPopupConfirm = () => {

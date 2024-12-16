@@ -82,6 +82,7 @@ const AssemblyPartListing = React.memo((props) => {
     showPopupToggle2: false,
   });
   const { isSimulation } = props;
+  const [pageRecord, setPageRecord] = useState(0)
   const { selectedRowForPagination } = useSelector((state => state?.simulation))
   const [filterModel, setFilterModel] = useState({});
   const { globalTakes } = useSelector((state) => state?.pagination);
@@ -103,7 +104,7 @@ const AssemblyPartListing = React.memo((props) => {
       ...prevState,
       isLoader: true,
     }));
-
+    setPageRecord(newSkip);
     const params = {
       bomNumber: floatingFilterData?.BOMNumber ?? null,
       partNumber: floatingFilterData?.PartNumber ?? null,
@@ -213,13 +214,26 @@ const AssemblyPartListing = React.memo((props) => {
       ...prevState,
       showPopup: false,
       deletedId: "",
+      isLoader: true,
+      dataCount: 0
     }));
     dispatch(
       deleteAssemblyPart(ID, loggedInUserId(), (res) => {
         if (res?.data?.Result) {
           Toaster.success(MESSAGES.PART_DELETE_SUCCESSFULLY);
-          getTableListData(0, 10, floatingFilterData, true)
+          getTableListData(pageRecord, globalTakes, floatingFilterData, true);
+        } else if (res !== undefined && res?.status === 417 && res?.data?.Result === false) {
+          Toaster.error(res?.data?.Message)
+          setState((prevState) => ({
+            ...prevState,
+            isLoader: false
+          }));
         }
+        dispatch(setSelectedRowForPagination([]));
+        if (state.gridApi) {
+          state.gridApi.deselectAll();
+        }
+        reactLocalStorage.remove('selectedRow');
       })
     );
   };
@@ -713,11 +727,13 @@ const AssemblyPartListing = React.memo((props) => {
       noData: false
     }));
     setSearchText("")
-    state?.gridApi?.setQuickFilter(null)
     setIsFilterButtonClicked(false);
     gridOptions?.columnApi?.resetColumnState(null);
     gridOptions?.api?.setFilterModel(null);
-
+    if (state?.gridApi) {
+      state?.gridApi?.setQuickFilter(null);
+      state?.gridApi?.deselectAll();
+    }
     for (let prop in floatingFilterData) {
       floatingFilterData[prop] = "";
     }

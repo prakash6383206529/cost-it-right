@@ -77,6 +77,7 @@ const IndivisualPartListing = (props) => {
   const { newPartsListing, allNewPartsListing } = useSelector((state) => state.part);
   const { initialConfiguration } = useSelector((state) => state.auth);
   const { currentRowIndex, globalTakes } = useSelector((state) => state.pagination);
+  const [skipRecord, setSkipRecord] = useState(0)
   const { selectedRowForPagination } = useSelector((state) => state.simulation);
   const permissions = useContext(ApplyPermission);
   useEffect(() => {
@@ -104,7 +105,7 @@ const IndivisualPartListing = (props) => {
 
   const getTableListData = (skip, take, obj, isPagination) => {
     setState((prevState) => ({ ...prevState, isLoader: true }));
-
+    setSkipRecord(skip);
     let constantFilterData = state.filterModel;
     dispatch(
       getPartDataList(skip, take, obj, isPagination, (res) => {
@@ -324,14 +325,22 @@ const IndivisualPartListing = (props) => {
 
     const loggedInUser = loggedInUserId()
     dispatch(deletePart(ID, loggedInUser, (res) => {
-      if (res.data.Result === true) {
+      if (res?.data?.Result) {
         Toaster.success(MESSAGES.PART_DELETE_SUCCESS);
-        //getTableListData();
-        getTableListData(currentRowIndex, defaultPageSize, state.floatingFilterData, true)
-        setState((prevState) => ({ ...prevState, dataCount: 0 }))
+        getTableListData(skipRecord, globalTakes, state.floatingFilterData, true)
+      } else if (res !== undefined && res?.status === 417 && res?.data?.Result === false) {
+        Toaster.error(res?.data?.Message)
+        setState((prevState) => ({
+          ...prevState,
+          isLoader: false
+        }));
+      }
+      dispatch(setSelectedRowForPagination([]));
+      if (state.gridApi) {
+        state.gridApi.deselectAll();
       }
     }));
-    setState((prevState) => ({ ...prevState, showPopup: false }))
+    setState((prevState) => ({ ...prevState, showPopup: false, dataCount: 0 }))
   }
 
 
