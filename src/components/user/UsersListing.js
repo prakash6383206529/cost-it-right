@@ -219,67 +219,80 @@ const UsersListing = (props) => {
 	const getDataList = (departmentId, roleId, skip, take, dataObj, isPagination) => {
 		let data = {
 			logged_in_user: loggedInUserId(),
-			DepartmentId: departmentId,
-			RoleId: roleId,
+			DepartmentId: departmentId ?? null,
+			RoleId: roleId ?? null,
 			userType: props?.RFQUser ? 'RFQ' : 'CIR',
-			skip: skip,
-			take: take,
-			userName: dataObj?.UserName,
-			name: dataObj.FullName,
-			email: dataObj?.EmailAddress,
-			mobileNo: dataObj?.Mobile,
-			phone: dataObj?.PhoneNumber,
-			company: dataObj?.DepartmentName,
-			createdDate: dataObj?.CreatedDate,
-			modifiedDate: dataObj?.ModifiedDate,
-			createdBy: dataObj?.CreatedBy,
-			role: dataObj?.RoleName,
-			modifiedBy: dataObj?.ModifiedBy,
-			isPagination: isPagination
+			skip: skip ?? 0,
+			take: take ?? 10,
+			userName: dataObj?.UserName ?? null,
+			name: dataObj?.FullName ?? null,
+			email: dataObj?.EmailAddress ?? null,
+			mobileNo: dataObj?.Mobile ?? null,
+			phone: dataObj?.PhoneNumber ?? null,
+			company: dataObj?.DepartmentName ?? null,
+			createdDate: dataObj?.CreatedDate ?? null,
+			modifiedDate: dataObj?.ModifiedDate ?? null,
+			createdBy: dataObj?.CreatedBy ?? null,
+			role: dataObj?.RoleName ?? null,
+			modifiedBy: dataObj?.ModifiedBy ?? null,
+			isPagination: isPagination ?? true
 		};
-
 
 		setState((prevState) => ({ ...prevState, isLoader: true }));
 
-		dispatch(getAllUserDataAPI(data, res => {
+		dispatch(getAllUserDataAPI(data, (res) => {
 			setState((prevState) => ({ ...prevState, isLoader: false }));
 
-			if (res.status === 204 && res?.data === '') {
-				setTotalRecordCount(0)
-				dispatch(updatePageNumber(0))
-				setState((prevState) => ({ ...prevState,noData:true, userData: [], dataCount: 0 }));
-			} else if (res && res?.data && res?.data?.DataList) {
+			let isReset = true;
+			Object.keys(floatingFilterData || {}).forEach((prop) => {
+				if (floatingFilterData[prop] !== "") {
+					isReset = false;
+				}
+			});
+
+			setTimeout(() => {
+				if (isReset) {
+					gridOptions?.api?.setFilterModel({});
+				} else {
+					gridOptions?.api?.setFilterModel(filterModel ?? {});
+				}
+			}, 300);
+
+			if (res?.status === 204 && !res?.data) {
+				setTotalRecordCount(0);
+				dispatch(updatePageNumber(0));
+				setState((prevState) => ({
+					...prevState,
+					noData: true,
+					userData: [],
+					dataCount: 0
+				}));
+			} else if (res?.data?.DataList) {
 				let Data = res?.data?.DataList;
-				setTotalRecordCount(Data[0]?.TotalRecordCount);
+				setTotalRecordCount(Data[0]?.TotalRecordCount ?? 0);
 				setWarningMessage(false);
 				setIsFilterButtonClicked(false);
 				setState((prevState) => ({ ...prevState, userData: Data }));
-				let isReset = true
-				setTimeout(() => {
-					for (var prop in floatingFilterData) {
-						if (floatingFilterData[prop] !== "") {
-							isReset = false
-						}
-					}
-					isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(filterModel))
-				}, 300);
+
 				setTimeout(() => {
 					setWarningMessage(false)
 				}, 330);
 				setTimeout(() => {
 					setIsFilterButtonClicked(false)
 				}, 600);
-				if (res && isPagination === false) {
-					setDisableDownload(false)
+
+				if (res && !isPagination) {
+					setDisableDownload(false);
 					setTimeout(() => {
-						dispatch(disabledClass(false))
-						let button = document.getElementById('Excel-Downloads-userListing')
-						button && button.click()
+						dispatch(disabledClass(false));
+						let button = document.getElementById('Excel-Downloads-userListing');
+						button && button.click();
 					}, 500);
 				}
 			}
 		}));
 	};
+
 
 	const onSearch = () => {
 		setState(prevState => ({
@@ -312,31 +325,22 @@ const UsersListing = (props) => {
 
 		if (value?.filterInstance?.appliedModel === null || value?.filterInstance?.appliedModel?.filter === "") {
 			let isFilterEmpty = true;
+			if (model && Object.keys(model)?.length > 0) {
+				isFilterEmpty = false;
+				setFloatingFilterData((prevData) => ({
+					...prevData,
+					[value.column.colId]: "",
+				}));
+			}
 
-			if (model !== undefined && model !== null) {
-				if (Object.keys(model).length > 0) {
-					isFilterEmpty = false;
-					for (var property in floatingFilterData) {
-						if (property === value?.column?.colId) {
-							floatingFilterData[property] = "";
-						}
-					}
-					setFloatingFilterData(floatingFilterData);
-				}
-				if (isFilterEmpty) {
-					setWarningMessage(false)
-					for (var prop in floatingFilterData) {
-
-						if (isSimulation) {
-							if (prop !== "DepartmentName") {
-								floatingFilterData[prop] = ""
-							}
-						} else {
-							floatingFilterData[prop] = ""
-						}
-					}
-					setFloatingFilterData(floatingFilterData)
-				}
+			if (isFilterEmpty) {
+				setWarningMessage(false);
+				setFloatingFilterData((prevData) =>
+					Object.keys(prevData).reduce((acc, key) => {
+						acc[key] = "";
+						return acc;
+					}, {})
+				);
 			}
 		} else {
 			if (value?.column?.colId === "ModifiedDate" || value?.column?.colId === "CreatedDate") {
