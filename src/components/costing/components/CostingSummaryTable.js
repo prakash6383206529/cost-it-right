@@ -212,7 +212,7 @@ const CostingSummaryTable = (props) => {
   const [tcoAndNpvDrawer, setTcoAndNpvDrawer] = useState(false);
   const [costingId, setCostingId] = useState("");
   const { discountLabel, toolMaintenanceCostLabel } = useLabels();
-
+const {isNetPoPrice , setIsNetPoPrice} = useState(false)
   const [drawerOpen, setDrawerOpen] = useState({
     BOP: false,
     process: false,
@@ -343,7 +343,21 @@ const CostingSummaryTable = (props) => {
       setCssObj(prevState => ({ ...prevState, particularWidth: 50 / viewCostingData.length, tableWidth: "auto" }))
     }
   }, [viewCostingData])
-
+  useEffect(() => {
+    
+    if(viewCostingData && viewCostingData.length > 0){
+      const netCosting = viewCostingData.some(data => 
+        data.poPrice
+        === 0
+      );
+      if(netCosting){
+        setIsNetPoPrice(true)
+      }
+    }
+    
+  }, [viewCostingData]);
+  
+  
   useEffect(() => {
     viewCostingData && viewCostingData.map((item) => {
       if (item.costingHeadCheck === NCC) {
@@ -1104,7 +1118,7 @@ const CostingSummaryTable = (props) => {
       })
   }
 
-  const checkCostings = () => {
+  const checkCostings = debounce(() => {
     if (dataSelected?.length === 0) {
       Toaster.warning("Please select at least one costing to send for approval")
       return false
@@ -1120,12 +1134,21 @@ const CostingSummaryTable = (props) => {
     let plantArray = []
 
     list && list?.map((item) => {
+      
+      
       vendorArray.push(item.vendorId)
       effectiveDateArray.push(item.effectiveDate)
       plantArray.push(item.PlantCode)
       return null
     })
-    if (effectiveDateArray?.includes('')) {
+    const hasZeroPrice = viewCostingData?.some(data => 
+      data?.poPrice === "0")
+      
+      if(hasZeroPrice){
+        Toaster.warning('Net price is 0, cannot proceed with approval.')
+        return false
+      }
+    if (effectiveDateArray?.includes('') ) {
       Toaster.warning('Please select the effective date.')
       return false
     }
@@ -1249,7 +1272,7 @@ const CostingSummaryTable = (props) => {
       }
     }
 
-  }
+  }, 300)
 
   useEffect(() => {
     if (viewCostingData?.length === 1) {
@@ -2362,6 +2385,7 @@ const CostingSummaryTable = (props) => {
                             </td >
                             {viewCostingData &&
                               viewCostingData?.map((data, index) => {
+                                
                                 const isPieChartVisible = viewPieChart[index];
                                 const dateVersionAndStatus = (data?.bestCost === true) ? ' ' : `${DayTime(data?.costingDate).format('DD-MM-YYYY')}-${data?.CostingNumber}${props.isRfqCosting ? (notSelectedCostingId?.includes(data?.costingId) ? "-Not Selected" : `-${data?.status}`) : props.costingSummaryMainPage ? `-${data?.status}` : ''}`
                                 return (
@@ -2390,7 +2414,7 @@ const CostingSummaryTable = (props) => {
                                     {(!data?.bestCost === true) && (
                                       <span className="d-flex justify-content-between align-items-center pie-chart-container">
                                         <span>
-                                          {(data?.bestCost === true) ? ' ' : checkForDecimalAndNull(data?.poPrice, initialConfiguration.NoOfDecimalForPrice)}
+                                          {(data?.bestCost === true) ? ' ' : checkForDecimalAndNull(data?.poPrice, initialConfiguration?.NoOfDecimalForPrice)}
                                           {(data?.bestCost === true) ? ' ' : ` (${(data?.effectiveDate && data?.effectiveDate !== '') ? DayTime(data?.effectiveDate).format('DD-MM-YYYY') : "-"})`}
                                           { }
                                         </span>
@@ -3425,7 +3449,7 @@ const CostingSummaryTable = (props) => {
                       {
 
                         <tr className={`${highlighter("nPOPrice", "main-row")} netPo-row`}>
-                          <th>Net Cost ({getConfigurationKey().BaseCurrency}){simulationDrawer && '(Old)'}</th>
+                          <th>Ne1t Cost ({getConfigurationKey().BaseCurrency}){simulationDrawer && '(Old)'}</th>
                           {viewCostingData &&
                             viewCostingData?.map((data, index) => {
                               return <td className={tableDataClass(data)}>
