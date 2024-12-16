@@ -208,6 +208,8 @@ const SendForApproval = (props) => {
       } else {
         if (!getConfigurationKey().IsDivisionAllowedForDepartment) {
           apicall(props.technologyId, userData.DepartmentId, viewApprovalData[0]?.costingTypeId, false, res?.data?.Data)
+        } else {
+          userTechnology(viewApprovalData[0]?.costingTypeId, res?.data?.Data)
         }
         setApprovalType(viewApprovalData[0]?.costingTypeId)
       }
