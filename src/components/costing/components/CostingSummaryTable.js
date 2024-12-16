@@ -1125,7 +1125,7 @@ const {isNetPoPrice , setIsNetPoPrice} = useState(false)
       
       vendorArray.push(item.vendorId)
       effectiveDateArray.push(item.effectiveDate)
-      plantArray.push(item.PlantCode)
+      plantArray.push(item.plantCode)
       return null
     })
     const hasZeroPrice = viewCostingData?.some(data => 
