@@ -510,7 +510,7 @@ function CostingSummary(props) {
                           mandatory={true}
                           handleChange={handlePartTypeChange}
                           errors={errors.Part}
-                          disabled={(technology.length === 0) ? true : false}
+                          disabled={(technology.length === 0) ? true : false || disabled}
                         />
                       </Col>
                       <Col className="col-md-15">
@@ -529,8 +529,8 @@ function CostingSummary(props) {
                           isLoading={loaderObj}
                           handleChange={handlePartChange}
                           errors={errors.Part}
-                          disabled={(partType.length === 0) ? true : false}
-                          NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
+                          disabled={(partType.length === 0) ? true : false || disabled}
+                          NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN }
                         />
 
                         {/* <SearchableSelectHookForm
