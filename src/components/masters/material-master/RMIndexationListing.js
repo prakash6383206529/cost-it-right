@@ -369,7 +369,7 @@ const RMIndexationListing = (props) => {
     };
     return (
         <div
-            className={`ag-grid-react min-height100vh ${permissions.Download ? "show-table-btn" : ""
+            className={`ag-grid-react grid-parent-wrapper min-height100vh ${permissions.Download ? "show-table-btn" : ""
                 }`}
         >
             {state.isLoader && <LoaderCustom />}

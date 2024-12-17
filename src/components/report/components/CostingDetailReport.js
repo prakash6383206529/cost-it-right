@@ -1056,7 +1056,7 @@ function ReportListing(props) {
             <div className={`ag-grid-wrapper height-width-wrapper  ${(reportListingDataStateArray && reportListingDataStateArray?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                 {isLoader ? <LoaderCustom customClass={"loader-center mt-n2"} /> :
 
-                    <div className={`ag-theme-material report-grid mt-2 ${isLoader && "max-loader-height"}`}>
+                    <div className={`ag-theme-material grid-parent-wrapper mt-2 ${isLoader && "max-loader-height"}`}>
                         {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                         {render ? <LoaderCustom customClass="loader-center" /> : <AgGridReact
                             style={{ height: '100%', width: '100%' }}

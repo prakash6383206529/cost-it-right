@@ -933,7 +933,7 @@ function CommonApproval(props) {
                             <div className="ag-grid-header">
                                 <input ref={searchRef} type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
                             </div>
-                            <div className={`ag-theme-material ${props?.isApproval ? "report-grid" : ""} ${loader && "max-loader-height"}`}>
+                            <div className={`ag-theme-material ${props?.isApproval ? "grid-parent-wrapper" : ""} ${loader && "max-loader-height"}`}>
                                 {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found approval-listing" />}
                                 <AgGridReact
                                     floatingFilter={true}

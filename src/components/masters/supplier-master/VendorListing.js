@@ -704,7 +704,7 @@ const VendorListing = (props) => {
 
   return (
     <div
-      className={`ag-grid-react container-fluid blue-before-inside report-grid custom-pagination ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""
+      className={`ag-grid-react container-fluid blue-before-inside grid-parent-wrapper custom-pagination ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""
         }`}
       id="go-to-top"
     >

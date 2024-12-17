@@ -931,7 +931,7 @@ function OverheadSimulation(props) {
     return (
 
         <div>
-            <div className={`ag-grid-react`}>
+            <div className={`ag-grid-react grid-parent-wrapper`}>
 
                 {
 

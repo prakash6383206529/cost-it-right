@@ -537,7 +537,7 @@ function BudgetListing(props) {
      */
     return (
         <>
-            <div className={`ag-grid-react ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${downloadAccessibility ? "show-table-btn no-tab-page" : ""}`}>
+            <div className={`ag-grid-react grid-parent-wrapper ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${downloadAccessibility ? "show-table-btn no-tab-page" : ""}`}>
                 <ScrollToTop pointProp="go-to-top" />
                 {isLoader ? <LoaderCustom customClass={"loader-center"} /> :
                     <>

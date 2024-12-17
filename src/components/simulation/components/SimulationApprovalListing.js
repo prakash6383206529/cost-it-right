@@ -896,7 +896,7 @@ function SimulationApprovalListing(props) {
                 !showApprovalSumary &&
                 <div className={`${!isSmApprovalListing && 'container-fluid'} approval-listing-page`} id='history-go-to-top'>
                     {(isLoader) ? <LoaderCustom customClass={isDashboard ? "dashboard-loader" : "loader-center"} /> : <div>
-                        < div className={`ag-grid-react custom-pagination`}>
+                        < div className={`ag-grid-react grid-parent-wrapper custom-pagination`}>
                             <form onSubmit={handleSubmit(() => { })} noValidate>
                                 {!isDashboard && <ScrollToTop pointProp={"history-go-to-top"} />}
                                 <Row className="pt-4">
@@ -928,7 +928,7 @@ function SimulationApprovalListing(props) {
                                 </Row >
                             </form >
 
-                            <div className={`ag-grid-wrapper p-relative ${isDashboard ? (simualtionApprovalList && simualtionApprovalList?.length <= 0) || noData ? "overlay-contain" : "" : (simualtionApprovalListDraft && simualtionApprovalListDraft?.length <= 0) || noData ? "overlay-contain" : ""} ${isDashboard ? "report-grid" : ""}`}>
+                            <div className={`ag-grid-wrapper p-relative ${isDashboard ? (simualtionApprovalList && simualtionApprovalList?.length <= 0) || noData ? "overlay-contain" : "" : (simualtionApprovalListDraft && simualtionApprovalListDraft?.length <= 0) || noData ? "overlay-contain" : ""} ${isDashboard ? "grid-parent-wrapper" : ""}`}>
                                 <div className="ag-grid-header">
                                     <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
                                     {!isDashboard && <TourWrapper

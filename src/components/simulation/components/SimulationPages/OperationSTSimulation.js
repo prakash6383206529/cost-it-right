@@ -513,7 +513,7 @@ function OperationSTSimulation(props) {
     const operationTypes = getOperationTypes(list);
     return (
         <div>
-            <div className={`ag-grid-react`}>
+            <div className={`ag-grid-react grid-parent-wrapper`}>
                 {!showverifyPage &&
                     <Fragment>
                         {!isImpactedMaster && showTooltip && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={basicRateviewTooltip} toggle={basicRatetooltipToggle} target={"basicRate-tooltip"} >{"To edit revised net rate please double click on the field."}</Tooltip>}

@@ -453,7 +453,7 @@ function SimulationInsights(props) {
 
   return (
     // <div>{`hello`}</div>
-    <div className="container-fluid report-listing-page ag-grid-react custom-pagination">
+    <div className="container-fluid report-listing-page ag-grid-react grid-parent-wrapper custom-pagination">
       {loader && <LoaderCustom />}
       <Row className=" blue-before ">
         <Col md="10" lg="10" className="search-user-block mb-3">

@@ -1197,7 +1197,7 @@ function ProfitSimulation(props) {
     return (
 
         <div>
-            <div className={`ag-grid-react`}>
+            <div className={`ag-grid-react grid-parent-wrapper`}>
 
                 {
 

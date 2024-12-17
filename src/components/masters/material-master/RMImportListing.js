@@ -916,7 +916,7 @@ function RMImportListing(props) {
   };
 
   return (
-    <div>{!editSelectedList && <div className={`ag-grid-react custom-pagination ${isSimulation ? 'simulation-height' : props?.isMasterSummaryDrawer ? "" : 'min-height100vh'}  ${DownloadAccessibility ? "show-table-btn" : ""}`}>
+    <div>{!editSelectedList && <div className={`ag-grid-react grid-parent-wrapper custom-pagination ${isSimulation ? 'simulation-height' : props?.isMasterSummaryDrawer ? "" : 'min-height100vh'}  ${DownloadAccessibility ? "show-table-btn" : ""}`}>
       {(loader && !props?.isMasterSummaryDrawer) ? <LoaderCustom customClass="simulation-Loader" /> :
         <>
           {disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}

@@ -293,7 +293,7 @@ const FreightListing = (props) => {
   };
 
   return (
-    <div className={`ag-grid-react ${permissions.Download ? "show-table-btn" : ""}`}>
+    <div className={`ag-grid-react grid-parent-wrapper ${permissions.Download ? "show-table-btn" : ""}`}>
       {state.isLoader && <LoaderCustom />}
       <form noValidate>
         <Row className="pt-4">

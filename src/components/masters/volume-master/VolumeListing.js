@@ -659,7 +659,7 @@ function VolumeListing(props) {
   return (
     <>
       <div
-        className={`ag-grid-react container-fluid blue-before-inside ${downloadAccessibility ? "show-table-btn no-tab-page" : ""
+        className={`ag-grid-react grid-parent-wrapper container-fluid blue-before-inside ${downloadAccessibility ? "show-table-btn no-tab-page" : ""
           }`}
         id="go-to-top"
       >

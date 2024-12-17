@@ -820,7 +820,7 @@ const returnExcelColumn = (data = [], TempData) => {
 return (
 
     <div>
-        <div className={`ag-grid-react ${props.customClass}`}>
+        <div className={`ag-grid-react grid-parent-wrapper${props.customClass}`}>
             {!showverifyPage &&
                 // {(!showverifyPage && !showMainSimulation) &&                    //RE
                 <Fragment>

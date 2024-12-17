@@ -982,7 +982,7 @@ const BOPImportListing = (props) => {
     <div>
       {!editSelectedList && (
         <div
-          className={`ag-grid-react custom-pagination ${permissions?.Download ? "show-table-btn" : ""
+          className={`ag-grid-react grid-parent-wrapper custom-pagination ${permissions?.Download ? "show-table-btn" : ""
             } ${props.isSimulation ? "simulation-height" : props.isMasterSummaryDrawer ? "" : "min-height100vh"}`}
         >
           {state.isLoader && !props.isMasterSummaryDrawer ? (

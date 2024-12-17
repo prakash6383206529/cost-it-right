@@ -405,7 +405,7 @@ const InterestRateListing = (props) => {
 
   return (
     <>
-      <div className={`ag-grid-react report-grid p-relative ${DownloadAccessibility ? "show-table-btn" : ""}`} id='go-to-top'>
+      <div className={`ag-grid-react grid-parent-wrapper p-relative ${DownloadAccessibility ? "show-table-btn" : ""}`} id='go-to-top'>
         <div className="container-fluid">
           <ScrollToTop pointProp='go-to-top' />
           <form noValidate  >
