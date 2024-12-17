@@ -221,7 +221,7 @@ function VolumeListing(props) {
    * @method getTableListData
    * @description Get user list data
    */
-  const getTableListData = (skip, take, isPagination = true) => {
+  const getTableListData = (skip = 0, take = 10, isPagination = true) => {
     setPageRecord(skip)
     if (isPagination === true || isPagination === null) setIsLoader(true);
     let dataObj = { ...floatingFilterData };

@@ -168,7 +168,7 @@ const VendorListing = (props) => {
    * @description Get Table data
    */
   const getTableListData = (
-    skip, obj, take, isPagination
+    skip = 0, obj, take = 10, isPagination = true
   ) => {
     setState((prevState) => ({ ...prevState, isLoader: isPagination ? true : false, }));
     setPageRecord(skip)
@@ -510,12 +510,7 @@ const VendorListing = (props) => {
 
     if (type !== "cancel") {
       setTimeout(() => {
-        getTableListData(
-          0,
-          state.floatingFilterData,
-          10,
-          true
-        );
+        getTableListData(pageRecord, state.floatingFilterData, globalTakes, true);
       }, 200);
     }
   }
