@@ -18,6 +18,7 @@ import { VBC, ZBC } from '../../../../config/constants';
 import { runVerifyProfitSimulation } from '../../actions/Simulation';
 import { checkForChangeInOverheadProfit1Values, checkForChangeInOverheadProfit2Values, checkForChangeInOverheadProfit3Values } from '../../SimulationUtils';
 import { PaginationWrapper } from '../../../common/commonPagination';
+import { isResetClick } from '../../../../actions/Common';
 const gridOptions = {
 
 };
@@ -59,6 +60,9 @@ function ProfitSimulation(props) {
     const { filteredRMData } = useSelector(state => state.material)
     useEffect(() => {
         setTableData(list)
+        return () => {
+            dispatch(isResetClick(true, "costingHead"))
+          }
     }, [])
 
     const verifySimulation = debounce(() => {
@@ -1197,7 +1201,7 @@ function ProfitSimulation(props) {
     return (
 
         <div>
-            <div className={`ag-grid-react`}>
+            <div className={`ag-grid-react grid-parent-wrapper`}>
 
                 {
 

@@ -8810,7 +8810,7 @@ table.group-process-table {
   }
 }
 
-.report-grid {
+.grid-parent-wrapper {
   .ag-grid-multi {
     @include ag-grid-multi();
     margin: 0;
@@ -8825,22 +8825,22 @@ table.group-process-table {
   }
 }
 
-.report-grid .ag-header-viewport {
+.grid-parent-wrapper .ag-header-viewport {
   z-index: 1;
 }
 
-.report-grid .ag-pinned-left-header {
+.grid-parent-wrapper .ag-pinned-left-header {
   z-index: 2;
   background-color: #fff;
 }
 
-.report-grid .ag-focus-managed,
-.report-grid .ag-header-viewport,
-.report-grid .ag-header-row.ag-header-row-floating-filter {
+.grid-parent-wrapper .ag-focus-managed,
+.grid-parent-wrapper .ag-header-viewport,
+.grid-parent-wrapper .ag-header-row.ag-header-row-floating-filter {
   overflow: visible !important;
 }
 
-.report-grid {
+.grid-parent-wrapper {
   .css-2b097c-container {
     position: static !important;
   }
@@ -8853,7 +8853,7 @@ table.group-process-table {
   }
 }
 
-.report-grid .ag-pinned-right-header {
+.grid-parent-wrapper .ag-pinned-right-header {
   overflow: hidden !important;
   background: #fff;
   z-index: 1;

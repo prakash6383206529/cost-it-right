@@ -27,6 +27,7 @@ import { loggedInUserId } from '../../../helper';
 import Button from '../../layout/Button';
 import { useLabels, useWithLocalization } from '../../../helper/core';
 import CostingHeadDropdownFilter from '../material-master/CostingHeadDropdownFilter';
+import { isResetClick } from '../../../actions/Common';
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -64,7 +65,7 @@ const ExchangeRateListing = (props) => {
     const { topAndLeftMenuData } = useSelector((state) => state.auth);
     const { filteredRMData } = useSelector((state) => state.material);
     const { vendorLabel,vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels();
-    const { costingHeadFilter } = useSelector((state) => state.comman);
+    const { costingHeadFilter } = useSelector((state) => state?.comman);
     useEffect(() => {
         applyPermission(topAndLeftMenuData);
         setState((prevState) => ({ ...prevState, isLoader: true }));
@@ -95,14 +96,15 @@ const ExchangeRateListing = (props) => {
         }, 500);
 
         return () => clearTimeout(timer);
+
     }, []);
   //for static dropdown
   useEffect(() => {
    
-    if (costingHeadFilter && costingHeadFilter.data) {
-      const matchedOption = costingHeadFilter.CostingHeadOptions.find(option => option.value === costingHeadFilter.data.value);
+    if (costingHeadFilter && costingHeadFilter?.data) {
+      const matchedOption = costingHeadFilter?.CostingHeadOptions?.find(option => option?.value === costingHeadFilter?.data?.value);
       if (matchedOption) {
-        state.gridApi?.setQuickFilter(matchedOption.label);
+        state.gridApi?.setQuickFilter(matchedOption?.label);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -112,7 +114,11 @@ const ExchangeRateListing = (props) => {
             applyPermission(topAndLeftMenuData);
         }
     }, [topAndLeftMenuData]);
-
+    useEffect(() => {
+        return () => {
+            dispatch(isResetClick(true, "costingHead"))
+          }
+    }, [])
     const applyPermission = (topAndLeftMenuData) => {
         if (topAndLeftMenuData !== undefined) {
             const Data = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === ADDITIONAL_MASTERS);
@@ -388,7 +394,7 @@ const ExchangeRateListing = (props) => {
 
     return (
         <>
-            <div className={`ag-grid-react exchange-rate ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`} id='go-to-top'>
+            <div className={`ag-grid-react grid-parent-wrapper exchange-rate ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`} id='go-to-top'>
                 <div className="container-fluid">
                     <ScrollToTop pointProp="go-to-top" />
                     {state.isLoader && <LoaderCustom />}

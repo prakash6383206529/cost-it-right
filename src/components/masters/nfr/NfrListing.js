@@ -369,7 +369,7 @@ function NfrListing(props) {
     return (
         <>
             {!addRfq && !showAddNFRDrawer &&
-                <div className={`ag-grid-react report-grid p-relative${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "" : ""} ${true ? "show-table-btn" : ""} ${false ? 'simulation-height' : props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
+                <div className={`ag-grid-react grid-parent-wrapper p-relative${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "" : ""} ${true ? "show-table-btn" : ""} ${false ? 'simulation-height' : props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
                     {(loader ? <LoaderCustom customClass="simulation-Loader" /> : !viewRfq && (
                         <>
                             {sapLoader && <LoaderCustom message="Fetching data from SAP" />}

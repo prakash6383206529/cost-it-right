@@ -488,7 +488,7 @@ export default function commanReducer(state = initialState, action) {
     case SET_COSTING_HEAD_FILTER:
       return {
         ...state,
-        costingHeadFilter: action.payload
+        costingHeadFilter: action?.payload
       };
     case IS_RESET:
       return {

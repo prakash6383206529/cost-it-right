@@ -148,15 +148,15 @@ function CostingSimulation(props) {
 
     const dispatch = useDispatch()
     const { technologyLabel } = useLabels();
-    const { costingHeadFilter } = useSelector((state) => state.comman);
+    const { costingHeadFilter } = useSelector((state) => state?.comman);
     useEffect(() => {
 
-        if (costingHeadFilter && costingHeadFilter.data) {
+        if (costingHeadFilter && costingHeadFilter?.data) {
 
-            const matchedOption = costingHeadFilter.CostingHeadOptions.find(option => option.value === costingHeadFilter.data.value);
+            const matchedOption = costingHeadFilter?.CostingHeadOptions?.find(option => option?.value === costingHeadFilter?.data?.value);
             if (matchedOption) {
 
-                gridApi?.setQuickFilter(matchedOption.label);
+                gridApi?.setQuickFilter(matchedOption?.label);
             }
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
