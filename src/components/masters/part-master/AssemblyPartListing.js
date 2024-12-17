@@ -213,26 +213,19 @@ const AssemblyPartListing = React.memo((props) => {
       ...prevState,
       showPopup: false,
       deletedId: "",
-      isLoader: true,
       dataCount: 0
     }));
     dispatch(
       deleteAssemblyPart(ID, loggedInUserId(), (res) => {
         if (res?.data?.Result) {
+          dispatch(setSelectedRowForPagination([]));
+          if (state?.gridApi) {
+            state?.gridApi?.deselectAll();
+          }
+          reactLocalStorage.remove('selectedRow');
           Toaster.success(MESSAGES.PART_DELETE_SUCCESSFULLY);
           getTableListData(pageRecord, globalTakes, floatingFilterData, true);
-        } else if (res !== undefined && res?.status === 417 && res?.data?.Result === false) {
-          Toaster.error(res?.data?.Message)
-          setState((prevState) => ({
-            ...prevState,
-            isLoader: false
-          }));
         }
-        dispatch(setSelectedRowForPagination([]));
-        if (state.gridApi) {
-          state.gridApi.deselectAll();
-        }
-        reactLocalStorage.remove('selectedRow');
       })
     );
   };

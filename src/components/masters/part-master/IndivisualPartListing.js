@@ -321,26 +321,19 @@ const IndivisualPartListing = (props) => {
   };
 
   const confirmDeleteItem = (ID) => {
-
-
     const loggedInUser = loggedInUserId()
     dispatch(deletePart(ID, loggedInUser, (res) => {
       if (res?.data?.Result) {
+        dispatch(setSelectedRowForPagination([]));
+        if (state?.gridApi) {
+          state?.gridApi?.deselectAll();
+        }
         Toaster.success(MESSAGES.PART_DELETE_SUCCESS);
-        getTableListData(skipRecord, globalTakes, state.floatingFilterData, true)
-      } else if (res !== undefined && res?.status === 417 && res?.data?.Result === false) {
-        Toaster.error(res?.data?.Message)
-        setState((prevState) => ({
-          ...prevState,
-          isLoader: false
-        }));
-      }
-      dispatch(setSelectedRowForPagination([]));
-      if (state.gridApi) {
-        state.gridApi.deselectAll();
+        getTableListData(skipRecord, globalTakes, state?.floatingFilterData, true)
+        setState((prevState) => ({ ...prevState, dataCount: 0 }))
       }
     }));
-    setState((prevState) => ({ ...prevState, showPopup: false, dataCount: 0 }))
+    setState((prevState) => ({ ...prevState, showPopup: false, }))
   }
 
 

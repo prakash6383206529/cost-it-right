@@ -158,7 +158,7 @@ export function deleteVolume(ID, callback) {
         callback(response)
       })
       .catch((error) => {
-        callback(error?.response)
+        apiErrors(error)
         dispatch({ type: API_FAILURE })
       })
   }

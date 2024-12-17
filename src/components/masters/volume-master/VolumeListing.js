@@ -296,24 +296,20 @@ function VolumeListing(props) {
    * @description confirm delete item
    */
   const confirmDeleteItem = (ID) => {
-    setIsLoader(true);
     dispatch(deleteVolume(ID, (res) => {
-      if (res !== undefined && res?.status === 417 && res?.data?.Result === false) {
-        setIsLoader(false);
-        Toaster.error(res?.data?.Message)
-      } else if (res && res?.data && res?.data?.Result === true) {
-        Toaster.success(MESSAGES.DELETE_VOLUME_SUCCESS);
+      if (res?.data?.Result === true) {
         dispatch(setSelectedRowForPagination([]));
         if (gridApi) {
           gridApi.deselectAll();
         }
+        Toaster.success(MESSAGES.DELETE_VOLUME_SUCCESS);
         getTableListData(pageRecord, globalTakes, true);
         setDataCount(0);
       }
-    })
-    );
+    }));
     setShowPopup(false);
   };
+
 
   const onPopupConfirm = () => {
     confirmDeleteItem(deletedId);
