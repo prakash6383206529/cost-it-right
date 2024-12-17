@@ -35,6 +35,7 @@ import { getRMFromNFR, setOpenAllTabs } from '../../../masters/nfr/actions/nfr';
 import Toaster from '../../../common/Toaster';
 import TabToolCost from './TabToolCost';
 import { getTaxCodeSelectList } from '../../../../actions/Common';
+import { getEffectiveDateMaxDate, getEffectiveDateMinDate } from '../../../common/CommonFunctions';
 export const PreviousTabData = React.createContext();
 
 function CostingHeaderTabs(props) {
@@ -406,7 +407,9 @@ function CostingHeaderTabs(props) {
    * @description date Function
    */
   const dateFunction = () => {
-    let arr = [costData.LastApproveEffectiveDate, costData.PartEffectiveDate]
+       let arr = [costData.LastApproveEffectiveDate, costData.PartEffectiveDate, new Date(getEffectiveDateMinDate()).toISOString().split('.')[0]  // Converted format
+    ]
+
     const largestDate = new Date(Math.max(...arr.filter(Boolean).map(date => Date.parse(date))));
     return new Date(largestDate)
   }
@@ -579,6 +582,7 @@ function CostingHeaderTabs(props) {
                   //maxDate={new Date()}
                   // USER SHOULD NOT BE ABLE TO SELECT EFFECTIVE DATE, OF BEFORE THE PART WAS CREATED
                   minDate={(customHavellsChanges && costingData.CostingTypeId === ZBCTypeId) ? new Date() : dateFunction()}
+                  maxDate={(customHavellsChanges ? getEffectiveDateMaxDate() : '')}
 
                   placeholderText="Select date"
                   className="withBorder"

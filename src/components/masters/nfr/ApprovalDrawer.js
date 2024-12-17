@@ -26,7 +26,7 @@ const ApprovalDrawer = (props) => {
         mode: 'onChange',
         reValidateMode: 'onChange',
     });
-    const { vendorLabel } = useLabels()
+    const {vendorLabel} = useLabels()
     const deptList = useSelector((state) => state.approval.approvalDepartmentList)
     const reasonsList = useSelector((state) => state.approval.reasonsList)
     const [approvalDropDown, setApprovalDropDown] = useState([])

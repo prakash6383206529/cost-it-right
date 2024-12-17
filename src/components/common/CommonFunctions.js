@@ -1,8 +1,8 @@
 import { reactLocalStorage } from "reactjs-localstorage";
 import _ from 'lodash';
-import { CBCAPPROVALTYPEID, CBCTypeId, dropdownLimit, NCCAPPROVALTYPEID, NCCTypeId, NFRAPPROVALTYPEID, NFRTypeId, RELEASESTRATEGYTYPEID1, RELEASESTRATEGYTYPEID2, RELEASESTRATEGYTYPEID3, RELEASESTRATEGYTYPEID4, VBCAPPROVALTYPEID, VBCTypeId, WACAPPROVALTYPEID, WACTypeId, ZBCAPPROVALTYPEID, ZBCTypeId, PFS2APPROVALTYPEID, PFS2TypeId, RELEASE_STRATEGY_B1, RELEASE_STRATEGY_B1_NEW, RELEASE_STRATEGY_B2, RELEASE_STRATEGY_B2_NEW, RELEASE_STRATEGY_B3, RELEASE_STRATEGY_B3_NEW, RELEASE_STRATEGY_B4, RELEASE_STRATEGY_B6, RELEASE_STRATEGY_B6_NEW, RELEASE_STRATEGY_B4_NEW, RELEASESTRATEGYTYPEID6, LPSAPPROVALTYPEID, CLASSIFICATIONAPPROVALTYPEID, RAWMATERIALAPPROVALTYPEID, effectiveDateRangeDays, searchCount } from "../../config/constants";
+import { CBCAPPROVALTYPEID, CBCTypeId, dropdownLimit, NCCAPPROVALTYPEID, NCCTypeId, NFRAPPROVALTYPEID, NFRTypeId, RELEASESTRATEGYTYPEID1, RELEASESTRATEGYTYPEID2, RELEASESTRATEGYTYPEID3, RELEASESTRATEGYTYPEID4, VBCAPPROVALTYPEID, VBCTypeId, WACAPPROVALTYPEID, WACTypeId, ZBCAPPROVALTYPEID, ZBCTypeId, PFS2APPROVALTYPEID, PFS2TypeId, RELEASE_STRATEGY_B1, RELEASE_STRATEGY_B1_NEW, RELEASE_STRATEGY_B2, RELEASE_STRATEGY_B2_NEW, RELEASE_STRATEGY_B3, RELEASE_STRATEGY_B3_NEW, RELEASE_STRATEGY_B4, RELEASE_STRATEGY_B6, RELEASE_STRATEGY_B6_NEW, RELEASE_STRATEGY_B4_NEW, RELEASESTRATEGYTYPEID6, LPSAPPROVALTYPEID, CLASSIFICATIONAPPROVALTYPEID, RAWMATERIALAPPROVALTYPEID, searchCount, effectiveDateRangeDayPrevious, effectiveDateRangeDayFuture } from "../../config/constants";
 import Toaster from "./Toaster";
-import { subDays } from "date-fns";
+import { addDays, subDays } from "date-fns";
 
 // COMMON FILTER FUNCTION FOR AUTOCOMPLETE DROPDOWN
 const commonFilterFunction = (inputValue, dropdownArray, filterByName, selectedParts = false) => {
@@ -356,13 +356,28 @@ export const getCostingConditionTypes = (conditionName) => {
 }
 
 
-export const getEffectiveDateMinDate = (minDate) => {
+export const getEffectiveDateMinDate = () => {
+    // Get the value from initialConfiguration in Redux store
+    const effectiveDateRangeDayPrevious = reactLocalStorage.getObject('InitialConfiguration')?.EffectiveDateRangeDayPrevious;
+    console.log(effectiveDateRangeDayPrevious);
 
-    if (effectiveDateRangeDays === null) {
-        return new Date(new Date().getFullYear() - 100, 0, 1); // Allow dates up to 100 years in the past
+        if (effectiveDateRangeDayPrevious === null) {
+            return new Date(new Date().getFullYear() - 100, 0, 1); // Allow dates up to 100 years in the past
+        }
+        if (effectiveDateRangeDayPrevious === 0) {
+            return new Date(); // No past dates
+        }
+        return subDays(new Date(), effectiveDateRangeDayPrevious);
+    };
+
+    export const getEffectiveDateMaxDate = () => {
+        const effectiveDateRangeDayFuture = reactLocalStorage.getObject('InitialConfiguration')?.EffectiveDateRangeDayFuture;
+
+        if (effectiveDateRangeDayFuture === null) {
+            return new Date(new Date().getFullYear() + 100, 11, 31); // Allow dates up to 100 years in the future
+        }
+        if (effectiveDateRangeDayFuture === 0) {
+        return new Date(); // No future dates
     }
-    if (effectiveDateRangeDays === 0) {
-        return new Date(); // No past dates
-    }
-    return subDays(new Date(), effectiveDateRangeDays);
+    return addDays(new Date(), effectiveDateRangeDayFuture);
 };

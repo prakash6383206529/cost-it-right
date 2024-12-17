@@ -10,15 +10,30 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import LoaderCustom from '../../common/LoaderCustom'
 import { PaginationWrapper } from '../../common/commonPagination'
+import { getLocalizedCostingHeadValue } from '../../../helper'
+import { useLabels } from '../../../helper/core'
+import CostingHeadDropdownFilter from '../../masters/material-master/CostingHeadDropdownFilter'
+import { reactLocalStorage } from 'reactjs-localstorage'
 
 function SimulationHistory(props) {
 
+  const { vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels()
   const simulationHistory = useSelector(state => state.history.simulationHistory)
   const [gridApi, setGridApi] = useState(null);
   const [gridColumnApi, setGridColumnApi] = useState(null);
-
+const {costingHeadFilter} =useSelector(state => state.common )
   const dispatch = useDispatch()
 
+  useEffect(() => {
+   
+    if (costingHeadFilter && costingHeadFilter.data) {
+      const matchedOption = costingHeadFilter.CostingHeadOptions.find(option => option.value === costingHeadFilter.data.value);
+      if (matchedOption) {
+        gridApi?.setQuickFilter(matchedOption.label);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ costingHeadFilter]);
   const onGridReady = (params) => {
     setGridApi(params.api)
     setGridColumnApi(params.columnApi)
@@ -30,6 +45,16 @@ function SimulationHistory(props) {
     noDataText: (simulationHistory === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
 
   };
+  const combinedCostingHeadRenderer = (props) => {
+    // Call the existing checkBoxRenderer
+
+    // Get and localize the cell value
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    const localizedValue = getLocalizedCostingHeadValue(cellValue, vendorBasedLabel, zeroBasedLabel, customerBasedLabel);
+
+    // Return the localized value (the checkbox will be handled by AgGrid's default renderer)
+    return localizedValue;
+  };
   const defaultColDef = {
 
     resizable: true,
@@ -38,9 +63,19 @@ function SimulationHistory(props) {
     // headerCheckboxSelection: isFirstColumn,
     // checkboxSelection: isFirstColumn
   };
+  const floatingFilterStatus = {
+    maxValue: 1,
+    suppressFilterButton: true,
+    component: CostingHeadDropdownFilter,
+  
+};
+  
   const frameworkComponents = {
+    combinedCostingHeadRenderer: combinedCostingHeadRenderer,
     customLoadingOverlay: LoaderCustom,
     customNoRowsOverlay: NoContentFound,
+    statusFilter: CostingHeadDropdownFilter,
+
   };
   const onPageSizeChanged = (newPageSize) => {
     gridApi.paginationSetPageSize(Number(newPageSize));
@@ -86,7 +121,8 @@ function SimulationHistory(props) {
             >
               {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
               <AgGridColumn field="TokenNumber" headerName="Token No"></AgGridColumn>
-              <AgGridColumn field="CostingHead" headerName="Costing Head"></AgGridColumn>
+              <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'combinedCostingHeadRenderer'} floatingFilterComponentParams={floatingFilterStatus}
+                floatingFilterComponent="statusFilter"></AgGridColumn>
               <AgGridColumn field="Technology" headerName="Technology"></AgGridColumn>
               <AgGridColumn field="VendorName" headerName="Simulated By"></AgGridColumn>
               <AgGridColumn field="ImpactCosting" headerName="Impacted Costing" ></AgGridColumn>

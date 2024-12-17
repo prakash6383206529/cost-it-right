@@ -15,6 +15,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import LoaderCustom from '../../../common/LoaderCustom';
 import TooltipCustom from '../../../common/Tooltip';
 import { useLabels } from '../../../../helper/core';
+import { getEffectiveDateMaxDate, getEffectiveDateMinDate } from '../../../common/CommonFunctions';
 function CopyCosting(props) {
   const { copyCostingData, partNo, type, zbcPlantGrid, vbcVendorGrid, nccGrid, cbcGrid } = props
 
@@ -533,8 +534,8 @@ function CopyCosting(props) {
                     showMonthDropdown
                     showYearDropdown
                     dateFormat="DD/MM/YYYY"
-                    minDate={new Date(minDate)}
-                    //maxDate={new Date()}
+                    minDate={getEffectiveDateMinDate()}
+                    maxDate={getEffectiveDateMaxDate()}
                     placeholder="Select date"
                     customClassName="withBorder"
                     className="withBorder"

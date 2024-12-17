@@ -15,13 +15,14 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { PaginationWrapper } from '../../common/commonPagination';
-import { loggedInUserId, searchNocontentFilter } from '../../../helper';
+import { getLocalizedCostingHeadValue, loggedInUserId, searchNocontentFilter } from '../../../helper';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { checkMasterCreateByCostingPermission } from '../../common/CommonFunctions';
 import { ApplyPermission } from '.';
 import Button from '../../layout/Button';
 import DayTime from '../../common/DayTimeWrapper';
 import { useLabels, useWithLocalization } from '../../../helper/core';
+import CostingHeadDropdownFilter from '../material-master/CostingHeadDropdownFilter';
 const gridOptions = {};
 const FreightListing = (props) => {
   const dispatch = useDispatch();
@@ -44,7 +45,8 @@ const FreightListing = (props) => {
   })
   const permissions = useContext(ApplyPermission);
   const { freightDetail } = useSelector((state) => state.freight);
-  const { vendorLabel } = useLabels();
+  const { vendorLabel,vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels();
+  const { costingHeadFilter } = useSelector((state) => state.comman);
 
   useEffect(() => {
     !props.stopApiCallOnCancel && setState((prevState) => ({ ...prevState, isLoader: true }))
@@ -56,8 +58,17 @@ const FreightListing = (props) => {
       }
     }, 300);
   }, [props.stopApiCallOnCancel])
-
-
+  //for static dropdown
+  useEffect(() => {
+   
+    if (costingHeadFilter && costingHeadFilter.data) {
+      const matchedOption = costingHeadFilter.CostingHeadOptions.find(option => option.value === costingHeadFilter.data.value);
+      if (matchedOption) {
+        state.gridApi?.setQuickFilter(matchedOption.label);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ costingHeadFilter]);
   /**
   * @method getDataList
   * @description GET DETAILS OF BOP DOMESTIC
@@ -141,7 +152,27 @@ const FreightListing = (props) => {
       </>
     )
   };
-
+  const floatingFilterStatus = {
+    maxValue: 1,
+    suppressFilterButton: true,
+    component: CostingHeadDropdownFilter,
+    onFilterChange: (originalValue, value) => {
+      setState((prevState) => ({ ...prevState, floatingFilterData: { ...prevState.floatingFilterData, CostingHead: value } }));   
+      setState((prevState) => ({ ...prevState, disableFilter: false }));
+    }
+};
+  
+  const combinedCostingHeadRenderer = (props) => {
+    // Call the existing checkBoxRenderer
+    costingHeadFormatter(props);
+  
+    // Get and localize the cell value
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    const localizedValue = getLocalizedCostingHeadValue(cellValue, vendorBasedLabel, zeroBasedLabel, customerBasedLabel);
+  
+    // Return the localized value (the checkbox will be handled by AgGrid's default renderer)
+    return localizedValue;
+  };
   /**
   * @method costingHeadFormatter
   * @description Renders Costing head
@@ -253,11 +284,12 @@ const FreightListing = (props) => {
 
   const frameworkComponents = {
     totalValueRenderer: buttonFormatter,
-    costingHeadRenderer: costingHeadFormatter,
+    combinedCostingHeadRenderer: combinedCostingHeadRenderer,
     customLoadingOverlay: LoaderCustom,
     customNoRowsOverlay: NoContentFound,
     hyphenFormatter: hyphenFormatter,
-    effectiveDateFormatter: effectiveDateFormatter
+    effectiveDateFormatter: effectiveDateFormatter,
+    statusFilter: CostingHeadDropdownFilter,
   };
 
   return (
@@ -359,12 +391,8 @@ const FreightListing = (props) => {
                 frameworkComponents={frameworkComponents}
                 suppressRowClickSelection={true}
               >
-                <AgGridColumn
-                  width="240px"
-                  field="CostingHead"
-                  headerName="Costing Head"
-                  cellRenderer={"costingHeadRenderer"}
-                ></AgGridColumn>
+                <AgGridColumn width='240px' field="CostingHead" headerName="Costing Head" cellRenderer={'combinedCostingHeadRenderer'}   floatingFilterComponentParams={floatingFilterStatus} 
+                                            floatingFilterComponent="statusFilter"></AgGridColumn>
                 <AgGridColumn field="Mode" headerName="Mode"></AgGridColumn>
                 <AgGridColumn
                   field="VendorName"

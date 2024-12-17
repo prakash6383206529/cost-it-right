@@ -1,9 +1,11 @@
-import React from 'react';
-import { useTranslation } from 'react-i18next';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
+import { I18nContext, useTranslation } from 'react-i18next';
 import { showLogoFromDataBase } from '../config/constants';
 import { getConfigurationKey } from './auth';
 import PrimaryLogo from '../assests/images/logo/company-logo.svg';
 import SecondaryLogo from '../assests/images/logo/CIRlogo.svg';
+import i18next from 'i18next';
+import { DefaultLocalizationLabel } from './DefualtLocalizationLabel';
 
 // Company Logo 
 export const CompanyLogo = (props) => {
@@ -17,12 +19,12 @@ export const CirLogo = (props) => {
 //
 export const useLabels = () => {
   // const { t } = useTranslation('MasterLabels');
-  const labels = ['MasterLabels', 'CostingLabels'];
+  const labels = ['MasterLabels', 'CostingLabels','CommonLabels'];
   const { i18n } = useTranslation(labels);
   // Create separate translation functions for each namespace
   const tMasterLabels = i18n.getFixedT(null, 'MasterLabels');
   const tCosting = i18n.getFixedT(null, 'CostingLabels');
-
+  const tCommon = i18n.getFixedT(null, 'CommonLabels');
   return {
     technologyLabel: tMasterLabels('TechnologyLabel', { defaultValue: 'Technology' }),
     partTypeLabel: tMasterLabels('commonFields.partType', { defaultValue: 'Part Type' }),
@@ -30,14 +32,17 @@ export const useLabels = () => {
     discountLabel: tCosting('discount', { defaultValue: 'Hundi/Discount' }),
     toolMaintenanceCostLabel: tCosting('toolMaintenanceCost', { defaultValue: 'Tool Maintenance Cost (per pcs)' }),
     vendorLabel: tMasterLabels('VendorLabel', { defaultValue: 'Vendor' }),
-    RMVendorLabel: tMasterLabels('RMVendorLabel', { defaultValue: 'RM Vendor' })
+    RMVendorLabel: tMasterLabels('RMVendorLabel', { defaultValue: 'RM Vendor' }),
+    vendorBasedLabel: tCommon('VendorBasedLabel', { defaultValue: 'Vendor Based' }),
+    zeroBasedLabel: tCommon('ZeroBasedLabel', { defaultValue: 'Zero Based' }),
+    customerBasedLabel: tCommon('CustomerBasedLabel', { defaultValue: 'Customer Based' })
   };
 };
 
 export const LabelsClass = (t, ns) => {
   return {
-    vendorLabel: t('VendorLabel', { ns }),
-    BOPVendorLabel: t('BOPVendorLabel', { ns }),
+    vendorLabel: t('VendorLabel', { ns, defaultValue: 'Vendor' }),
+    BOPVendorLabel: t('BOPVendorLabel', { ns, defaultValue: 'BOP Vendor' }),
   }
 }
 
@@ -48,7 +53,7 @@ export const useWithLocalization = (dataArray, ns) => {
   return dataArray.map(item => ({
     ...item,
     label: t(item.label, { defaultValue: item.defaultValue })
-      // .replace(/Technology/g, labels.technologyLabel) //       THIS CODE FOR THE TECHNOLOGY LABEL WILL USE FURTHER IN FUTURE .
+      .replace(/Technology/g, labels.technologyLabel) //       THIS CODE FOR THE TECHNOLOGY LABEL WILL USE FURTHER IN FUTURE .
       .replace(/Vendor/g, labels.vendorLabel)
     // .replace(/Category/g, labels.RMCategoryLabel)
     // Add more .replace() calls for other labels as needed
@@ -74,22 +79,61 @@ export const withLocalization = (dataArray, t, ns) => {
 //     return { ...header, label: newLabel };
 //   });
 // };
-export const localizeHeadersWithLabels = (headers, t) => {
-  const labelMap = {
-    'Vendor': t('VendorLabel', { defaultValue: 'Vendor' }),
-    'Technology': t('TechnologyLabel', { defaultValue: 'Technology' }),
-    // 'Category': t('RMCategoryLabel', { defaultValue: 'Category' }),
-    // Add more labels as needed
+
+const getLocalizedLabelMap = (t) => {
+  const getAllLabels = () => {
+    const namespaces = i18next.options.ns;
+    const languages = i18next.languages;
+    const selectedLanguage = languages[0];
+    let allLabels = {};
+
+    languages.forEach(lang => {
+      allLabels[lang] = {};
+      namespaces.forEach(ns => {
+        const resources = i18next.getResourceBundle(lang, ns);
+        allLabels[lang][ns] = resources;
+      });
+    });
+    return allLabels[selectedLanguage];
   };
 
+  const allLabels = getAllLabels();
+  console.log("allLabels:", allLabels);
+
+  const labelMap = {};
+  Object.entries(allLabels.MasterLabels ? allLabels.MasterLabels : DefaultLocalizationLabel).forEach(([key, value]) => {
+    if (key.includes('Label')) {
+      const simplifiedKey = key.replace('Label', '');
+      labelMap[simplifiedKey] = t(key);
+    }
+  });
+
+  return labelMap;
+};
+
+const applyLabelMap = (headers, labelMap) => {
   return headers.map(header => {
     let newLabel = header.label;
-
     Object.entries(labelMap).forEach(([originalTerm, localizedTerm]) => {
       const regex = new RegExp(originalTerm, 'g');
       newLabel = newLabel.replace(regex, localizedTerm);
     });
-
     return { ...header, label: newLabel };
   });
+};
+
+export const localizeHeadersWithLabels = (headers, t) => {
+  const labelMap = getLocalizedLabelMap(t);
+  return applyLabelMap(headers, labelMap);
+};
+
+export const useLocalizedHeaders = (headers) => {
+  const { t } = useTranslation(["MasterLabels"]);
+
+  const localizedHeaders = useMemo(() => {
+    const labelMap = getLocalizedLabelMap(t);
+    return applyLabelMap(headers, labelMap);
+  }, [headers, t]);
+
+  return localizedHeaders;
 };
