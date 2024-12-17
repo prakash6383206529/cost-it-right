@@ -280,7 +280,7 @@ export function deleteOverhead(overheadId, loggedInUserId, callback) {
             .then((response) => {
                 callback(response);
             }).catch((error) => {
-                apiErrors(error);
+                apiErrors(error)
                 dispatch({ type: API_FAILURE });
             });
     };
@@ -298,7 +298,7 @@ export function deleteProfit(profitId, loggedInUserId, callback) {
             .then((response) => {
                 callback(response);
             }).catch((error) => {
-                apiErrors(error);
+                apiErrors(error)
                 dispatch({ type: API_FAILURE });
             });
     };
