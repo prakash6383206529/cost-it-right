@@ -270,7 +270,7 @@ function ProcessCost(props) {
       tempData = {
         ...tempData,
         Quantity: tempData.UOMType === TIME ? checkForNull(weightData.CycleTime) : weightData.Quantity,
-        ProductionPerHour: tempData.UOMType === TIME ? checkForNull(weightData.PartPerHour) :'',
+        ProductionPerHour: tempData.UOMType === TIME ? checkForNull(weightData.PartPerHour) : '',
         ProcessCost: weightData.ProcessCost,
         IsCalculatedEntry: true,
         ProcessCalculationId: EMPTY_GUID,
@@ -1122,7 +1122,7 @@ function ProcessCost(props) {
             <td>{item.Tonnage}</td>
             <td>{item.MHR}</td>
             <td>{item.UOM}</td>
-            <td><div className='w-fit' id={`part-hour${index}`}><TooltipCustom disabledIcon={true} id={`part-hour${index}`} tooltipText={"Parts/Hour = (3600 / Quantity)"} />{(item?.ProductionPerHour === '' || item?.ProductionPerHour === 0 || item?.ProductionPerHour === null || item?.ProductionPerHour === undefined) ? '-' : Math.round(item.ProductionPerHour)}</div></td>
+            <td><div className='w-fit' id={`part-hour${index}`}><TooltipCustom disabledIcon={true} id={`part-hour${index}`} tooltipText={"Parts/Hour = (3600 / Quantity)"} />{(item?.ProductionPerHour === '' || item?.ProductionPerHour === 0 || item?.ProductionPerHour === null || item?.ProductionPerHour === undefined || item.ProductionPerHour === '-') ? '-' : Math.round(checkForNull(item.ProductionPerHour))}</div></td>
             <td>
               <div className='d-flex align-items-center'>
                 <span className="d-inline-block  mr-2">
