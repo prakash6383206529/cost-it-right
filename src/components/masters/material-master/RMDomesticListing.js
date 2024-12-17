@@ -1,10 +1,10 @@
-import React, { lazy, Suspense } from 'react';
+import React, { lazy, Suspense, useRef } from 'react';
 import { useState, useEffect, } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, } from 'reactstrap';
 import { deleteRawMaterialAPI, getAllRMDataList } from '../actions/Material';
 import { IsShowFreightAndShearingCostFields, loggedInUserId, userDepartmetList } from "../../../helper/auth"
-import { defaultPageSize, EMPTY_DATA, ENTRY_TYPE_DOMESTIC, FILE_URL, RMDOMESTIC, ZBCTypeId } from '../../../config/constants';
+import { defaultPageSize, EMPTY_DATA, ENTRY_TYPE_DOMESTIC, FILE_URL, MASTERS, RMDOMESTIC, ZBCTypeId } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
@@ -17,10 +17,10 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import ReactExport from 'react-export-excel';
-import { CheckApprovalApplicableMaster, getConfigurationKey, searchNocontentFilter, setLoremIpsum } from '../../../helper';
+import { CheckApprovalApplicableMaster, getConfigurationKey, getLocalizedCostingHeadValue, searchNocontentFilter, setLoremIpsum } from '../../../helper';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { getListingForSimulationCombined, setSelectedRowForPagination } from '../../simulation/actions/Simulation';
-import { disabledClass } from '../../../actions/Common';
+import { disabledClass, getApprovalTypeSelectList, getGridHeight, isResetClick } from '../../../actions/Common';
 import WarningMessage from '../../common/WarningMessage';
 import AnalyticsDrawer from './AnalyticsDrawer'
 import _ from 'lodash';
@@ -36,13 +36,16 @@ import { Steps } from '../../common/Tour/TourMessages';
 import { useTranslation } from 'react-i18next';
 import BulkUpload from '../../massUpload/BulkUpload';
 import RfqMasterApprovalDrawer from './RfqMasterApprovalDrawer';
-import { useLabels, useWithLocalization } from '../../../helper/core';
+import { localizeHeadersWithLabels, useLabels, useLocalizedHeaders, useWithLocalization } from '../../../helper/core';
+import CostingHeadDropdownFilter from './CostingHeadDropdownFilter';
+
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
 
 function RMDomesticListing(props) {
+
     const { AddAccessibility, BulkUploadAccessibility, ViewRMAccessibility, EditAccessibility, DeleteAccessibility, DownloadAccessibility, isSimulation, apply, selectionForListingMasterAPI, objectForMultipleSimulation, ListFor, initialConfiguration } = props;
     const [value, setvalue] = useState({ min: 0, max: 0 });
     const [isBulkUpload, setisBulkUpload] = useState(false);
@@ -55,6 +58,7 @@ function RMDomesticListing(props) {
     const filteredRMData = useSelector((state) => state.material.filteredRMData);
     const { selectedRowForPagination } = useSelector((state => state.simulation))
     const { globalTakes } = useSelector((state) => state.pagination);
+  const [selectedCostingHead, setSelectedCostingHead] = useState(null);
 
     const [showPopup, setShowPopup] = useState(false)
     const [deletedId, setDeletedId] = useState('')
@@ -71,18 +75,18 @@ function RMDomesticListing(props) {
     const [pageNoNew, setPageNoNew] = useState(1)
     const [totalRecordCount, setTotalRecordCount] = useState(0)
     const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false)
-    // const [currentRowIndex, setCurrentRowIndex] = useState(defaultPageSize)
     const [noData, setNoData] = useState(false)
     const [dataCount, setDataCount] = useState(0)
     const [inRangeDate, setinRangeDate] = useState([])
-    // const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
     const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: "", TechnologyName: "", RawMaterialName: "", RawMaterialGradeName: "", RawMaterialSpecificationName: "", RawMaterialCode: "", Category: "", MaterialType: "", DestinationPlantName: "", UnitOfMeasurementName: "", VendorName: "", BasicRatePerUOM: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", EffectiveDate: "", DepartmentName: isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant ? userDepartmetList() : "", NetConditionCost: "", NetCostWithoutConditionCost: "", MachiningScrapRate: "", IsScrapUOMApply: "", ScrapUnitOfMeasurement: "", CalculatedFactor: "", ScrapRatePerScrapUOM: "" })
     const [attachment, setAttachment] = useState(false);
     const [viewAttachment, setViewAttachment] = useState([])
     const [showExtraData, setShowExtraData] = useState(false)
     const [render, setRender] = useState(false)
-    const { t } = useTranslation("common")
-    const { technologyLabel, RMCategoryLabel, vendorLabel } = useLabels();
+
+    const { t } = useTranslation("MasterLabel")
+    const { technologyLabel, RMCategoryLabel, vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels();
+   
     const [compareDrawer, setCompareDrawer] = useState(false)
     const [rowDataForCompare, setRowDataForCompare] = useState([])
     const isRfq = props?.quotationId !== null || props?.quotationId !== '' || props?.quotationId !== undefined ? true : false
@@ -122,6 +126,8 @@ function RMDomesticListing(props) {
         minValidYear: 2000,
 
     };
+
+    
     useEffect(() => {
         if (rmDataList?.length > 0) {
             setTotalRecordCount(rmDataList[0].TotalRecordCount)
@@ -129,8 +135,9 @@ function RMDomesticListing(props) {
         else {
             setNoData(false)
         }
+      
+    }, [rmDataList, dispatch])
 
-    }, [rmDataList])
 
     useEffect(() => {
         if (!props.stopApiCallOnCancel) {
@@ -145,6 +152,8 @@ function RMDomesticListing(props) {
                     props?.changeTokenCheckBox(false)
                 }
                 getDataList(null, null, null, null, null, 0, 0, defaultPageSize, true, floatingFilterData)
+                dispatch(isResetClick(false, "costingHead"))
+
             }
             setvalue({ min: 0, max: 0 });
         }
@@ -250,6 +259,8 @@ function RMDomesticListing(props) {
 
                     setTimeout(() => {
                         setWarningMessage(false)
+                        dispatch(isResetClick(false, "costingHead"))
+
                     }, 330);
 
                     setTimeout(() => {
@@ -279,6 +290,7 @@ function RMDomesticListing(props) {
     }
 
     const onFloatingFilterChanged = (value) => {
+        
         setTimeout(() => {
             if (rmDataList.length !== 0) {
                 setNoData(searchNocontentFilter(value, noData))
@@ -286,6 +298,7 @@ function RMDomesticListing(props) {
         }, 500);
         setDisableFilter(false)
         const model = gridOptions?.api?.getFilterModel();
+        
         setFilterModel(model)
         if (!isFilterButtonClicked) {
             setWarningMessage(true)
@@ -351,6 +364,8 @@ function RMDomesticListing(props) {
         setNoData(false)
         setWarningMessage(false)
         setIsFilterButtonClicked(true)
+        gridApi.setQuickFilter(null)
+
         // setPageNo(1)
         dispatch(updatePageNumber(1))
         setPageNoNew(1)
@@ -365,6 +380,8 @@ function RMDomesticListing(props) {
     const resetState = () => {
         setNoData(false)
         setinRangeDate([])
+        dispatch(isResetClick(true, "costingHead"))
+
         setIsFilterButtonClicked(false)
         gridOptions?.columnApi?.resetColumnState(null);
         gridOptions?.api?.setFilterModel(null);
@@ -700,7 +717,7 @@ function RMDomesticListing(props) {
         }
 
     }
-    const RMDOMESTIC_DOWNLOAD_EXCEl_LOCALIZATION = useWithLocalization(RMDOMESTIC_DOWNLOAD_EXCEl, "MasterLabels")
+    const RMDOMESTIC_DOWNLOAD_EXCEl_LOCALIZATION = useLocalizedHeaders(RMDOMESTIC_DOWNLOAD_EXCEl)
     const onBtExport = () => {
         let tempArr = []
         //tempArr = gridApi && gridApi?.getSelectedRows()
@@ -785,6 +802,18 @@ function RMDomesticListing(props) {
         checkboxSelection: isFirstColumn
     };
 
+  
+const combinedCostingHeadRenderer = (props) => {
+    // Call the existing checkBoxRenderer
+    checkBoxRenderer(props);
+  
+    // Get and localize the cell value
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    const localizedValue = getLocalizedCostingHeadValue(cellValue, vendorBasedLabel, zeroBasedLabel, customerBasedLabel);
+  
+    // Return the localized value (the checkbox will be handled by AgGrid's default renderer)
+    return localizedValue;
+  };
     const checkBoxRenderer = (props) => {
         let selectedRowForPagination = reactLocalStorage.getObject('selectedRow').selectedRow
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -805,6 +834,22 @@ function RMDomesticListing(props) {
         setAnalyticsDrawer(false)
     }
 
+   
+      const floatingFilterStatus = {
+        maxValue: 1,
+        suppressFilterButton: true,
+        component: CostingHeadDropdownFilter,
+        onFilterChange: (originalValue, value) => {
+            
+            setSelectedCostingHead(originalValue);
+            setDisableFilter(false);
+            setFloatingFilterData(prevState => ({
+                ...prevState,
+                CostingHead: value
+            }));
+        }
+    };
+      
     const showAnalytics = (cell, rowData) => {
         setSelectedRowData(rowData)
         setAnalyticsDrawer(true)
@@ -865,6 +910,10 @@ function RMDomesticListing(props) {
         hyphenFormatter: hyphenFormatter,
         checkBoxRenderer: checkBoxRenderer,
         attachmentFormatter: attachmentFormatter,
+        combinedCostingHeadRenderer: combinedCostingHeadRenderer,
+        statusFilter: CostingHeadDropdownFilter,
+
+
 
     }
     return (
@@ -1009,7 +1058,14 @@ function RMDomesticListing(props) {
                                         suppressRowClickSelection={true}
                                         enableBrowserTooltips={true}
                                     >
-                                        <AgGridColumn cellClass="has-checkbox" field="CostingHead" headerName='Costing Head' cellRenderer={checkBoxRenderer}></AgGridColumn>
+                                        <AgGridColumn 
+                                            cellClass="has-checkbox" 
+                                            field="CostingHead" 
+                                            headerName='Costing Head' 
+                                            floatingFilterComponentParams={floatingFilterStatus} 
+                                            floatingFilterComponent="statusFilter"
+                                            cellRenderer={combinedCostingHeadRenderer} 
+                                        />
                                         <AgGridColumn field="TechnologyName" headerName={technologyLabel}></AgGridColumn>
                                         <AgGridColumn field="RawMaterialName" headerName='Raw Material'></AgGridColumn>
                                         <AgGridColumn field="RawMaterialGradeName" headerName="Grade"></AgGridColumn>

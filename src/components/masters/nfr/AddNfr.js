@@ -80,7 +80,7 @@ function AddNfr(props) {
     const { t } = useTranslation("Nfr")
     const [showExtraData, setShowExtraData] = useState(false)
     const [render, setRender] = useState(false)
-    const { vendorLabel } = useLabels()
+    const {vendorLabel} = useLabels()
     const [costingObj, setCostingObj] = useState({
         item: {},
         index: []

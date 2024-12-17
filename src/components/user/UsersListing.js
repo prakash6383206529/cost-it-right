@@ -45,9 +45,9 @@ const UsersListing = (props) => {
 	const dispatch = useDispatch();
 	const searchRef = useRef(null);
 	const { t } = useTranslation("common")
-	const { vendorLabel } = useLabels()
+	const {vendorLabel} = useLabels()
 	const { selectedRowForPagination } = useSelector((state => state?.simulation))
-	const { userDataList, rfqUserList, initialConfiguration, topAndLeftMenuData } = useSelector((state) => state?.auth);
+	const { userDataList, rfqUserList, initialConfiguration, topAndLeftMenuData } = useSelector((state) => state.auth);
 	const [state, setState] = useState({
 		isEditFlag: false,
 		shown: false,

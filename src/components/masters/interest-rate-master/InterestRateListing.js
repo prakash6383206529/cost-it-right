@@ -10,7 +10,7 @@ import DayTime from '../../common/DayTimeWrapper'
 import AddInterestRate from './AddInterestRate';
 import BulkUpload from '../../massUpload/BulkUpload';
 import { ADDITIONAL_MASTERS, InterestMaster, INTEREST_RATE } from '../../../config/constants';
-import { checkPermission, searchNocontentFilter, setLoremIpsum } from '../../../helper/util';
+import { checkPermission, getLocalizedCostingHeadValue, searchNocontentFilter, setLoremIpsum } from '../../../helper/util';
 import LoaderCustom from '../../common/LoaderCustom';
 import ReactExport from 'react-export-excel';
 import { INTERESTRATE_DOWNLOAD_EXCEl } from '../../../config/masterData';
@@ -31,6 +31,7 @@ import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from '../../common/Tour/TourMessages';
 import { useTranslation } from 'react-i18next';
 import { useLabels, useWithLocalization } from '../../../helper/core';
+import CostingHeadDropdownFilter from '../material-master/CostingHeadDropdownFilter';
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
@@ -64,9 +65,11 @@ const InterestRateListing = (props) => {
     dataCount: 0,
     showExtraData: false
   })
-  const { vendorLabel } = useLabels()
+  const { vendorLabel ,vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels()
   const [gridApi, setGridApi] = useState(null);
   const { statusColumnData } = useSelector((state) => state.comman);
+  const { costingHeadFilter } = useSelector((state) => state.comman);
+
   const { t } = useTranslation("common")
   const { topAndLeftMenuData } = useSelector((state) => state.auth);
   const { interestRateDataList } = useSelector((state) => state.interestRate);
@@ -81,13 +84,17 @@ const InterestRateListing = (props) => {
 
   }, []);
   useEffect(() => {
-
     if (statusColumnData) {
       state.gridApi?.setQuickFilter(statusColumnData.data);
     }
+    if (costingHeadFilter && costingHeadFilter.data) {
+      const matchedOption = costingHeadFilter.CostingHeadOptions.find(option => option.value === costingHeadFilter.data.value);
+      if (matchedOption) {
+        state.gridApi?.setQuickFilter(matchedOption.label);
+      }
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-
-  }, [statusColumnData])
+  }, [statusColumnData, costingHeadFilter]);
 
   useEffect(() => {
     if (topAndLeftMenuData) {
@@ -215,6 +222,19 @@ const InterestRateListing = (props) => {
         {/* DeleteAccessibility && */ !IsAssociatedData && <Button id={`interesetRateListing_delete${props.rowIndex}`} className={"Delete Tour_List_Delete"} variant="Delete" onClick={() => deleteItem(cellValue)} title={"Delete"} />}
       </>
     )
+  };
+
+  
+  const combinedCostingHeadRenderer = (props) => {
+    // Call the existing checkBoxRenderer
+    costingHeadFormatter(props);
+  
+    // Get and localize the cell value
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    const localizedValue = getLocalizedCostingHeadValue(cellValue, vendorBasedLabel, zeroBasedLabel, customerBasedLabel);
+  
+    // Return the localized value (the checkbox will be handled by AgGrid's default renderer)
+    return localizedValue;
   };
 
   /**
@@ -362,14 +382,24 @@ const InterestRateListing = (props) => {
     checkboxSelection: isFirstColumn
   };
 
+  const floatingFilterStatus = {
+    maxValue: 1,
+    suppressFilterButton: true,
+    component: CostingHeadDropdownFilter,
+    onFilterChange: (originalValue, value) => {
+      setState((prevState) => ({ ...prevState, floatingFilterData: { ...prevState.floatingFilterData, CostingHead: value } }));   
+      setState((prevState) => ({ ...prevState, disableFilter: false }));
+    }
+};
   const frameworkComponents = {
     totalValueRenderer: buttonFormatter,
     effectiveDateRenderer: effectiveDateFormatter,
     customLoadingOverlay: LoaderCustom,
     customNoRowsOverlay: NoContentFound,
-    costingHeadFormatter: costingHeadFormatter,
+    combinedCostingHeadRenderer: combinedCostingHeadRenderer,
     hyphenFormatter: hyphenFormatter,
     valuesFloatingFilter: SingleDropdownFloationFilter,
+    statusFilter: CostingHeadDropdownFilter,
   };
 
 
@@ -433,7 +463,8 @@ const InterestRateListing = (props) => {
                 frameworkComponents={frameworkComponents}
                 suppressRowClickSelection={true}
               >
-                <AgGridColumn width={180} field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
+                <AgGridColumn width={180} field="CostingHead" headerName="Costing Head" cellRenderer={'combinedCostingHeadRenderer'}   floatingFilterComponentParams={floatingFilterStatus} 
+                                            floatingFilterComponent="statusFilter"></AgGridColumn>
                 {getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC && <AgGridColumn field="RawMaterialName" headerName='Raw Material Name'></AgGridColumn>}
                 {getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC && <AgGridColumn field="RawMaterialGrade" headerName="Raw Material Grade"></AgGridColumn>}
                 {(getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate || getConfigurationKey().IsDestinationPlantConfigure) && <AgGridColumn field="PlantName" headerName="Plant (Code)"></AgGridColumn>}

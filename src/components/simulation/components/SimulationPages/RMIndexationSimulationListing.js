@@ -16,7 +16,7 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import ReactExport from 'react-export-excel';
-import { CheckApprovalApplicableMaster, getConfigurationKey, searchNocontentFilter, setLoremIpsum } from '../../../../helper';
+import { CheckApprovalApplicableMaster, getConfigurationKey, getLocalizedCostingHeadValue, searchNocontentFilter, setLoremIpsum } from '../../../../helper';
 import PopupMsgWrapper from '../../../common/PopupMsgWrapper';
 import { editRMIndexedSimulationData, getListingForSimulationCombined, getRMIndexationCostingSimulationListing, getRMIndexationSimulationListing, setSelectedRowForPagination } from '../../../simulation/actions/Simulation';
 import WarningMessage from '../../../common/WarningMessage';
@@ -37,6 +37,7 @@ import { deleteRawMaterialAPI, getAllrmIndexationSimulationList } from '../../..
 import AnalyticsDrawer from '../../../masters/material-master/AnalyticsDrawer';
 import CustomCellRenderer from '../../../rfq/CommonDropdown';
 import { useLabels, useWithLocalization } from '../../../../helper/core';
+import CostingHeadDropdownFilter from '../../../masters/material-master/CostingHeadDropdownFilter';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -83,7 +84,7 @@ function RMIndexationSimulationListing(props) {
     const [showExtraData, setShowExtraData] = useState(false)
     const [render, setRender] = useState(false)
     const { t } = useTranslation("common")
-    const { technologyLabel,vendorLabel } = useLabels();
+    const { technologyLabel,vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels();
 
     var filterParams = {
         date: "", inRangeInclusive: true, filterOptions: ['equals', 'inRange'],
@@ -772,7 +773,17 @@ function RMIndexationSimulationListing(props) {
         headerCheckboxSelectionFilteredOnly: true,
         checkboxSelection: isFirstColumn
     };
-
+    const combinedCostingHeadRenderer = (props) => {
+        // Call the existing checkBoxRenderer
+        checkBoxRenderer(props);
+      
+        // Get and localize the cell value
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const localizedValue = getLocalizedCostingHeadValue(cellValue, vendorBasedLabel, zeroBasedLabel, customerBasedLabel);
+      
+        // Return the localized value (the checkbox will be handled by AgGrid's default renderer)
+        return localizedValue;
+      };
     const checkBoxRenderer = (props) => {
         let selectedRowForPagination = reactLocalStorage.getObject('selectedRow').selectedRow
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -839,6 +850,16 @@ function RMIndexationSimulationListing(props) {
         )
 
     }
+    const floatingFilterStatus = {
+        maxValue: 1,
+        suppressFilterButton: true,
+        component: CostingHeadDropdownFilter,
+        onFilterChange: (originalValue, value) => {
+            setFloatingFilterData({...floatingFilterData, CostingHead: value})
+            setDisableFilter(false)
+     
+        }
+    };
     const frameworkComponents = {
         totalValueRenderer: buttonFormatter,
         effectiveDateRenderer: effectiveDateFormatter,
@@ -848,9 +869,9 @@ function RMIndexationSimulationListing(props) {
         commonCostFormatter: commonCostFormatter,
         statusFormatter: statusFormatter,
         hyphenFormatter: hyphenFormatter,
-        checkBoxRenderer: checkBoxRenderer,
         attachmentFormatter: attachmentFormatter,
-
+        combinedCostingHeadRenderer: combinedCostingHeadRenderer,
+        statusFilter : CostingHeadDropdownFilter
     }
     return (
         <div className={`ag-grid-react ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${DownloadAccessibility ? "show-table-btn" : ""} ${isSimulation ? 'simulation-height' : props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
@@ -995,7 +1016,9 @@ function RMIndexationSimulationListing(props) {
                                         suppressRowClickSelection={true}
                                         enableBrowserTooltips={true}
                                     >
-                                        <AgGridColumn cellClass="has-checkbox" field="CostingHead" headerName='Costing Head' cellRenderer={checkBoxRenderer}></AgGridColumn>
+                                        <AgGridColumn cellClass="has-checkbox" field="CostingHead" headerName='Costing Head' cellRenderer={combinedCostingHeadRenderer}
+                                         floatingFilterComponentParams={floatingFilterStatus} 
+                                         floatingFilterComponent="statusFilter"></AgGridColumn>
                                         <AgGridColumn field={props.isCostingSimulation ? 'Technology' : 'TechnologyName'} headerName={technologyLabel}></AgGridColumn>
                                         <AgGridColumn field="RawMaterialName" headerName='Raw Material'></AgGridColumn>
                                         <AgGridColumn field={props.isCostingSimulation ? 'RawMaterialGrade' : "RawMaterialGradeName"} headerName="Grade"></AgGridColumn>

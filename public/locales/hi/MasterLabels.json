@@ -1,10 +1,9 @@
 {
     "RMMaster": "Manage Raw Material",
-    "RMZeroBasedVendorLabel": "RM Vendor (Code)",
-    "RMVendorBasedVendorLabel": "Vendor (Code)",
-    "BOPZeroBasedVendorLabel": "BOP Vendor (Code)",
-    "BOPVendorBasedVendorLabel": "Vendor (Code)",
-    "commonFields": {
-        "technology": "वर्ग"
-    }
+    "RMCategoryLabel": "RM Category",
+    "BOPCategoryLabel": "BOP Category",
+    "TechnologyLabel": "तकनीकी",
+    "VendorLabel": "विक्रेता",
+    "RMVendorLabel": "Vendor",
+    "BOPVendorLabel": "Vendor"
 }

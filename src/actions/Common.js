@@ -72,7 +72,8 @@ import {
   SIMULATION_LEVEL,
   MASTER_LEVEL,
   ONBOARDING_MANAGEMENT_LEVEL,
-  GET_TAX_CODE_SELECTLIST
+  GET_TAX_CODE_SELECTLIST,
+  SET_COSTING_HEAD_FILTER,
 } from '../config/constants';
 import { apiErrors, encodeQueryParamsAndLog } from '../helper/util';
 import { MESSAGES } from '../config/message';
@@ -1550,6 +1551,19 @@ export function getPartSelectList(partNumber, callback) {
   });
 }
 
+// costing head filter
+export function setCostingHeadFilter(data,CostingHeadOptions) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_COSTING_HEAD_FILTER,
+      payload: {
+        data: data,
+        CostingHeadOptions: CostingHeadOptions
+
+      }
+    });
+  };
+}
 
 export function agGridStatus(data, id, arr = [], arrReports = []) {
   return (dispatch) => {

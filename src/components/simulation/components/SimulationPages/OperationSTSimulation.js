@@ -3,7 +3,7 @@ import { Row, Col, Tooltip, } from 'reactstrap';
 import DayTime from '../../../common/DayTimeWrapper'
 import { CBCTypeId, defaultPageSize, EMPTY_DATA, OPERATIONS, SURFACETREATMENT } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
-import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter } from '../../../../helper';
+import { checkForDecimalAndNull, checkForNull, getConfigurationKey, getLocalizedCostingHeadValue, loggedInUserId, searchNocontentFilter } from '../../../../helper';
 import Toaster from '../../../common/Toaster';
 import { Fragment } from 'react';
 import { Controller, useForm } from 'react-hook-form'
@@ -25,6 +25,7 @@ import ReactExport from 'react-export-excel';
 import { OPERATION_IMPACT_DOWNLOAD_EXCEl } from '../../../../config/masterData';
 import { simulationContext } from '..';
 import { useLabels } from '../../../../helper/core';
+import CostingHeadDropdownFilter from '../../../masters/material-master/CostingHeadDropdownFilter';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -59,12 +60,23 @@ function OperationSTSimulation(props) {
         mode: 'onChange',
         reValidateMode: 'onChange',
     })
-    const {vendorLabel} = useLabels()
+    const {vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel} = useLabels()
 
 
     const dispatch = useDispatch()
 
     const { selectedMasterForSimulation, selectedTechnologyForSimulation } = useSelector(state => state.simulation)
+    const {costingHeadFilter} =useSelector(state => state.common )
+    useEffect(() => {
+   
+        if (costingHeadFilter && costingHeadFilter.data) {
+          const matchedOption = costingHeadFilter.CostingHeadOptions.find(option => option.value === costingHeadFilter.data.value);
+          if (matchedOption) {
+            gridApi?.setQuickFilter(matchedOption.label);
+          }
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+      }, [ costingHeadFilter]);
     const columnWidths = {
         CostingHead: showCompressedColumns ? 50 : 190,
         OperationName: showCompressedColumns ? 100 : 190,
@@ -346,6 +358,18 @@ function OperationSTSimulation(props) {
         setIsEffectiveDateSelected(true)
         setIsWarningMessageShow(false)
     }
+    
+    const combinedCostingHeadRenderer = (props) => {
+        // Call the existing checkBoxRenderer
+        costingHeadFormatter(props);
+      
+        // Get and localize the cell value
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const localizedValue = getLocalizedCostingHeadValue(cellValue, vendorBasedLabel, zeroBasedLabel, customerBasedLabel);
+      
+        // Return the localized value (the checkbox will be handled by AgGrid's default renderer)
+        return localizedValue;
+      };
 
     const costingHeadFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -375,7 +399,7 @@ function OperationSTSimulation(props) {
         oldRateFormatter: oldRateFormatter,
         vendorFormatter: vendorFormatter,
         plantFormatter: plantFormatter,
-        costingHeadFormatter: costingHeadFormatter,
+        combinedCostingHeadRenderer: combinedCostingHeadRenderer,
         customerFormatter: customerFormatter,
         revisedRateHeader: revisedRateHeader,
         nullHandler: props.nullHandler && props.nullHandler,
@@ -447,6 +471,12 @@ function OperationSTSimulation(props) {
         }))
         setShowTooltip(false)
     }, 500);
+    const floatingFilterStatus = {
+        maxValue: 1,
+        suppressFilterButton: true,
+        component: CostingHeadDropdownFilter,
+       
+    };
     const resetState = () => {
         gridApi?.setQuickFilter('');
         gridOptions?.columnApi?.resetColumnState();
@@ -587,7 +617,9 @@ function OperationSTSimulation(props) {
                                                 enableBrowserTooltips={true}
                                             // frameworkComponents={frameworkComponents}
                                             >
-                                                {!isImpactedMaster && <AgGridColumn field="CostingHead" tooltipField='CostingHead' headerName="Costing Head" editable='false' minWidth={190} cellRenderer={'costingHeadFormatter'}></AgGridColumn>}
+                                                {!isImpactedMaster && <AgGridColumn field="CostingHead" tooltipField='CostingHead' headerName="Costing Head" editable='false' minWidth={190} cellRenderer={'combinedCostingHeadRenderer'}
+                                                 floatingFilterComponentParams={floatingFilterStatus} 
+                                                 floatingFilterComponent="statusFilter"></AgGridColumn>}
                                                 <AgGridColumn field="ForType" headerName="Operation Type" cellRenderer={'hyphenFormatter'} minWidth={190}></AgGridColumn>
                                                 <AgGridColumn field="OperationName" tooltipField='OperationName' editable='false' headerName="Operation Name" minWidth={190}></AgGridColumn>
                                                 <AgGridColumn field="OperationCode" tooltipField='OperationCode' editable='false' headerName="Operation Code" minWidth={190}></AgGridColumn>

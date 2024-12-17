@@ -25,7 +25,7 @@ import _, { debounce } from 'lodash'
 import AsyncSelect from 'react-select/async';
 import { onFocus } from '../../../helper'
 import { reactLocalStorage } from 'reactjs-localstorage'
-import { autoCompleteDropdown, getEffectiveDateMinDate } from '../../common/CommonFunctions'
+import { autoCompleteDropdown, getEffectiveDateMaxDate, getEffectiveDateMinDate } from '../../common/CommonFunctions'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper'
 import { subDays } from 'date-fns'
 import { LabelsClass } from '../../../helper/core'
@@ -1156,6 +1156,8 @@ class AddLabour extends Component {
                               disabled={isViewMode}
                               valueDescription={this.state.effectiveDate}
                               minDate={getEffectiveDateMinDate()}
+                              maxDate={getEffectiveDateMaxDate()}
+
 
                             />
                             {this.state.errorObj.effectiveDate && this.state.effectiveDate === "" && <div className='text-help'>This field is required.</div>}

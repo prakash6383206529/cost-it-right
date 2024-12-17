@@ -1665,6 +1665,19 @@ export const removeSpaces = (str = '') => {
 export const getChangeHighlightClass = (originalValue, updatedValue) => {
   return updatedValue && updatedValue !== originalValue ? 'red-value' : '';
 };
+
+
+//localized listing
+export const getLocalizedCostingHeadValue = (cellValue, vendorBasedLabel, zeroBasedLabel, customerBasedLabel) => {
+  if (cellValue === true || cellValue === 'Vendor Based' || cellValue === 'VBC') {
+    return vendorBasedLabel;
+  } else if (cellValue === false || cellValue === 'Zero Based' || cellValue === 'ZBC') {
+    return zeroBasedLabel;
+  } else if (cellValue === 'Customer Based' || cellValue === 'CBC') {
+    return customerBasedLabel;
+  }
+  return cellValue;
+};
 // export const frameBreaker = () => {
 //   // Ensure window runs in top-level
 //   if (window.self !== window.top) {

@@ -16,7 +16,7 @@ import { useLabels } from "../../../../helper/core";
 
 const DisplayCharts = ({ productId }) => {
     const dispatch = useDispatch()
-    const { vendorLabel } = useLabels()
+    const {vendorLabel} = useLabels()
     const [pieChartObj, setPieChartObj] = useState({});
     const [doughnutObj, setDoughnutObj] = useState({})
     const [chartStates, setChartStates] = useState({

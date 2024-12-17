@@ -28,7 +28,7 @@ import { getUsersTechnologyLevelAPI, getAllDivisionListAssociatedWithDepartment 
 import { rfqSaveBestCosting } from '../../../rfq/actions/rfq'
 import { checkDivisionByPlantAndGetDivisionIdByPart, getApprovalTypeSelectList } from '../../../../actions/Common'
 import { reactLocalStorage } from 'reactjs-localstorage'
-import { transformApprovalItem } from '../../../common/CommonFunctions'
+import { getEffectiveDateMaxDate, transformApprovalItem } from '../../../common/CommonFunctions'
 import { checkSAPPoPrice } from '../../../simulation/actions/Simulation'
 import SAPApproval from '../../../SAPApproval'
 import { useLabels } from '../../../../helper/core'
@@ -1182,7 +1182,7 @@ const SendForApproval = (props) => {
                                     showMonthDropdown
                                     showYearDropdown
                                     dateFormat="DD/MM/YYYY"
-                                    //maxDate={new Date()}
+                                    maxDate={getEffectiveDateMaxDate()}
                                     placeholderText="Select date"
                                     customClassName="withBorder"
                                     className="withBorder"

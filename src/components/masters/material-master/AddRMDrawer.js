@@ -7,6 +7,7 @@ import Toaster from '../../common/Toaster';
 import { Drawer } from "@material-ui/core";
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { MESSAGES } from '../../../config/message';
+import { getEffectiveDateMaxDate } from "../../common/CommonFunctions";
 const AddRMDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) => {
 
     const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
@@ -223,6 +224,7 @@ const AddRMDrawer = ({ isEditFlag, isOpen, closeDrawer, anchor }) => {
                                                 showMonthDropdown
                                                 showYearDropdown
                                                 dateFormat="DD/MM/YYYY"
+                                                maxDate={getEffectiveDateMaxDate()}
                                                 dropdownMode="select"
                                                 placeholder="Select date"
                                                 customClassName="withBorder"

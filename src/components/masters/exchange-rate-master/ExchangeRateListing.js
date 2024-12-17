@@ -8,7 +8,7 @@ import NoContentFound from '../../common/NoContentFound';
 import { getExchangeRateDataList, deleteExchangeRate } from '../actions/ExchangeRateMaster';
 import AddExchangeRate from './AddExchangeRate';
 import { ADDITIONAL_MASTERS, ExchangeMaster, EXCHANGE_RATE } from '../../../config/constants';
-import { checkPermission, searchNocontentFilter } from '../../../helper/util';
+import { checkPermission, getLocalizedCostingHeadValue, searchNocontentFilter } from '../../../helper/util';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import DayTime from '../../common/DayTimeWrapper'
 import LoaderCustom from '../../common/LoaderCustom';
@@ -26,6 +26,7 @@ import { checkMasterCreateByCostingPermission, hideCustomerFromExcel } from '../
 import { loggedInUserId } from '../../../helper';
 import Button from '../../layout/Button';
 import { useLabels, useWithLocalization } from '../../../helper/core';
+import CostingHeadDropdownFilter from '../material-master/CostingHeadDropdownFilter';
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -33,6 +34,7 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
 
 const ExchangeRateListing = (props) => {
+
     const dispatch = useDispatch();
     const myRef = useRef(null);
     const [state, setState] = useState({
@@ -61,7 +63,8 @@ const ExchangeRateListing = (props) => {
     const { exchangeRateDataList } = useSelector((state) => state.exchangeRate);
     const { topAndLeftMenuData } = useSelector((state) => state.auth);
     const { filteredRMData } = useSelector((state) => state.material);
-    const { vendorLabel } = useLabels();
+    const { vendorLabel,vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels();
+    const { costingHeadFilter } = useSelector((state) => state.comman);
     useEffect(() => {
         applyPermission(topAndLeftMenuData);
         setState((prevState) => ({ ...prevState, isLoader: true }));
@@ -93,7 +96,17 @@ const ExchangeRateListing = (props) => {
 
         return () => clearTimeout(timer);
     }, []);
-
+  //for static dropdown
+  useEffect(() => {
+   
+    if (costingHeadFilter && costingHeadFilter.data) {
+      const matchedOption = costingHeadFilter.CostingHeadOptions.find(option => option.value === costingHeadFilter.data.value);
+      if (matchedOption) {
+        state.gridApi?.setQuickFilter(matchedOption.label);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ costingHeadFilter]);
     useEffect(() => {
         if (topAndLeftMenuData !== undefined) {
             applyPermission(topAndLeftMenuData);
@@ -205,7 +218,15 @@ const ExchangeRateListing = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         return cell != null ? cell : '-';
     }
-
+    const floatingFilterStatus = {
+        maxValue: 1,
+        suppressFilterButton: true,
+        component: CostingHeadDropdownFilter,
+        onFilterChange: (originalValue, value) => {
+          setState((prevState) => ({ ...prevState, floatingFilterData: { ...prevState.floatingFilterData, CostingHead: value } }));   
+          setState((prevState) => ({ ...prevState, disableFilter: false }));
+        }
+    };
     /**
     * @method buttonFormatter
     * @description Renders buttons
@@ -319,13 +340,26 @@ const ExchangeRateListing = (props) => {
         gridOptions.columnApi.resetColumnState();
         gridOptions.api.setFilterModel(null);
     }
+    
+    const combinedCostingHeadRenderer = (props) => {
+        // Call the existing checkBoxRenderer
+      
+        // Get and localize the cell value
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const localizedValue = getLocalizedCostingHeadValue(cellValue, vendorBasedLabel, zeroBasedLabel, customerBasedLabel);
+      
+        // Return the localized value (the checkbox will be handled by AgGrid's default renderer)
+        return localizedValue;
+      };
 
     const frameworkComponents = {
+        combinedCostingHeadRenderer: combinedCostingHeadRenderer,
         totalValueRenderer: buttonFormatter,
         effectiveDateRenderer: effectiveDateFormatter,
         customNoRowsOverlay: NoContentFound,
         hyphenFormatter: hyphenFormatter,
-        commonCostFormatter: commonCostFormatter
+        commonCostFormatter: commonCostFormatter,
+        statusFilter: CostingHeadDropdownFilter,
     };
 
     /**
@@ -407,7 +441,8 @@ const ExchangeRateListing = (props) => {
                                 frameworkComponents={frameworkComponents}
                                 suppressRowClickSelection={true}
                             >
-                                <AgGridColumn field="CostingHead" headerName="Costing Head" ></AgGridColumn>
+                                <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'combinedCostingHeadRenderer'}   floatingFilterComponentParams={floatingFilterStatus} 
+                                            floatingFilterComponent="statusFilter" ></AgGridColumn>
                                 <AgGridColumn field="vendorWithCode" headerName={`${vendorLabel} (Code)`}></AgGridColumn>
                                 {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="customerWithCode" headerName="Customer (Code)" ></AgGridColumn>}
                                 <AgGridColumn field="FromCurrency" headerName="From Currency" minWidth={135}></AgGridColumn>

@@ -15,7 +15,7 @@ import { ReportMaster, ReportSAPMaster, EMPTY_DATA, defaultPageSize } from '../.
 import LoaderCustom from '../../common/LoaderCustom';
 import WarningMessage from '../../common/WarningMessage'
 import CostingDetailSimulationDrawer from '../../simulation/components/CostingDetailSimulationDrawer'
-import { formViewData, checkForDecimalAndNull, userDetails, searchNocontentFilter, showSaLineNumber, handleDepartmentHeader, showBopLabel, getConfigurationKey, setLoremIpsum } from '../../../helper'
+import { formViewData, checkForDecimalAndNull, userDetails, searchNocontentFilter, showSaLineNumber, handleDepartmentHeader, showBopLabel, getConfigurationKey, setLoremIpsum, getLocalizedCostingHeadValue } from '../../../helper'
 import ViewRM from '../../costing/components/Drawers/ViewRM'
 import { PaginationWrapper } from '../../common/commonPagination'
 import { agGridStatus, getGridHeight, isResetClick, disabledClass, fetchCostingHeadsAPI } from '../../../actions/Common'
@@ -29,6 +29,7 @@ import TourWrapper from '../../common/Tour/TourWrapper'
 import { Steps } from '../../common/Tour/TourMessages'
 import { useTranslation } from 'react-i18next'
 import { useLabels, useWithLocalization } from '../../../helper/core'
+import CostingHeadDropdownFilter from '../../masters/material-master/CostingHeadDropdownFilter'
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -74,7 +75,7 @@ function ReportListing(props) {
     const statusColumnData = useSelector((state) => state.comman.statusColumnData);
     const [dataCount, setDataCount] = useState(0)
     const [applicabilityDropdown, setApplicabilityDropdown] = useState([])
-    const { technologyLabel, discountLabel, toolMaintenanceCostLabel, vendorLabel } = useLabels();
+    const { technologyLabel, discountLabel, toolMaintenanceCostLabel, vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels();
     const { selectedRowForPagination } = useSelector((state => state.simulation))
     var filterParams = {
         comparator: function (filterLocalDateAtMidnight, cellValue) {
@@ -207,7 +208,17 @@ function ReportListing(props) {
         let temp = `${DayTime(tempDate).format('DD/MM/YYYY')}-${cellValue}`
         return temp
     }
-
+    const combinedCostingHeadRenderer = (props) => {
+        // Call the existing checkBoxRenderer
+        hyphenFormatter(props);
+      
+        // Get and localize the cell value
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const localizedValue = getLocalizedCostingHeadValue(cellValue, vendorBasedLabel, zeroBasedLabel, customerBasedLabel);
+      
+        // Return the localized value (the checkbox will be handled by AgGrid's default renderer)
+        return localizedValue;
+      };
     // @method hyperLinkFormatter( This function will make the first column details into hyperlink )
 
     const hyperLinkableFormatter = (props) => {
@@ -739,7 +750,8 @@ function ReportListing(props) {
         rmHyperLinkFormatter: rmHyperLinkFormatter,
         remarkFormatter: remarkFormatter,
         valuesFloatingFilter: MultiDropdownFloatingFilter,
-        partCostFormatter: partCostFormatter
+        partCostFormatter: partCostFormatter,
+        combinedCostingHeadRenderer :combinedCostingHeadRenderer
     };
 
     const resetState = () => {
@@ -919,6 +931,19 @@ function ReportListing(props) {
         })
         return temp
     }
+    const floatingFilterCostingHead = {
+        maxValue: 1,
+        suppressFilterButton: true,
+        component: CostingHeadDropdownFilter,
+        onFilterChange: (originalValue, value) => {
+            
+            setIsFilterButtonClicked(false);
+            setFloatingFilterData(prevState => ({
+                ...prevState,
+                CostingHead: value
+            }));
+        }
+    };
 
     //MINDA
     /**
@@ -1056,7 +1081,8 @@ function ReportListing(props) {
                         >
 
                             <AgGridColumn field="CostingNumber" headerName="Costing Version" cellRenderer={'hyperLinkableFormatter'}></AgGridColumn>
-                            <AgGridColumn field='CostingHead' headerName='Costing head' cellRenderer='hyphenFormatter'></AgGridColumn>
+                            <AgGridColumn field='CostingHead' headerName='Costing head' cellRenderer='combinedCostingHeadRenderer'  floatingFilterComponentParams={floatingFilterCostingHead} 
+                              floatingFilterComponent="statusFilter"></AgGridColumn>
                             <AgGridColumn field="TechnologyName" headerName={technologyLabel} cellRenderer='hyphenFormatter'></AgGridColumn>
                             <AgGridColumn field='Plant' headerName='Plant (Code)' cellRenderer='hyphenFormatter'></AgGridColumn>
                             <AgGridColumn field='Vendor' headerName={vendorLabel + " (Code)"} cellRenderer='hyphenFormatter'></AgGridColumn>
