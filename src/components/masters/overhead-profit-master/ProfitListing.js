@@ -158,7 +158,7 @@ function ProfitListing(props) {
         }
     }, [statusColumnData])
 
-    const getDataList = (costingHead = null, vendorName = null, overhead = null, modelType = null, skip, take, isPagination = true, dataObj) => {
+    const getDataList = (costingHead = null, vendorName = null, overhead = null, modelType = null, skip = 0, take = 10, isPagination = true, dataObj) => {
         setPageRecord(skip)
         const filterData = {
             costing_head: costingHead,

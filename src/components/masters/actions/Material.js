@@ -140,6 +140,7 @@ export function deleteRawMaterialAPI(rawMaterialId, loggedInUserId, callback) {
             .then((response) => {
                 callback(response);
             }).catch((error) => {
+                callback(error.response);
                 apiErrors(error);
                 dispatch({ type: API_FAILURE });
             });

@@ -229,12 +229,8 @@ function BudgetListing(props) {
     * @description confirm delete Raw Material details
     */
     const confirmDelete = (ID) => {
-        setIsLoader(true);
         dispatch(deleteBudget(ID, (res) => {
-            if (res !== undefined && res?.status === 417 && res?.data?.Result === false) {
-                setIsLoader(false)
-                Toaster.error(res?.data?.Message)
-            } else if (res && res?.data && res?.data?.Result === true) {
+            if (res && res?.data && res?.data?.Result === true) {
                 Toaster.success(MESSAGES.DELETE_BUDGET_SUCCESS);
                 dispatch(setSelectedRowForPagination([]));
                 if (gridApi) {
