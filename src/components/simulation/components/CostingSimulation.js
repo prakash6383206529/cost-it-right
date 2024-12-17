@@ -6,7 +6,7 @@ import NoContentFound from '../../common/NoContentFound';
 import { BOPDOMESTIC, BOPIMPORT, TOFIXEDVALUE, EMPTY_DATA, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, ImpactMaster, EXCHNAGERATE, COMBINED_PROCESS, defaultPageSize, CBCTypeId, FORGINGNAME, VBCTypeId, ZBCTypeId } from '../../../config/constants';
 import { getComparisionSimulationData, getCostingBoughtOutPartSimulationList, getCostingSimulationList, getCostingSurfaceTreatmentSimulationList, setShowSimulationPage, getSimulatedAssemblyWiseImpactDate, getImpactedMasterData, getExchangeCostingSimulationList, getMachineRateCostingSimulationList, getCombinedProcessCostingSimulationList, getAllMultiTechnologyCostings, getAllSimulatedMultiTechnologyCosting, getAllSimulatedBoughtOutPart, setTechnologyForSimulation } from '../actions/Simulation';
 import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer'
-import { checkForDecimalAndNull, checkForNull, formViewData, getConfigurationKey, loggedInUserId, searchNocontentFilter, showBopLabel, showSaLineNumber, userDetails } from '../../../helper';
+import { checkForDecimalAndNull, checkForNull, formViewData, getConfigurationKey, getLocalizedCostingHeadValue, loggedInUserId, searchNocontentFilter, showBopLabel, showSaLineNumber, userDetails } from '../../../helper';
 import VerifyImpactDrawer from './VerifyImpactDrawer';
 import { AssemblyWiseImpactt } from '../../../config/constants';
 import Toaster from '../../common/Toaster';
@@ -40,6 +40,7 @@ import { costingTypeIdToApprovalTypeIdFunction } from '../../common/CommonFuncti
 import SimulationApproveReject from '../../costing/components/approval/SimulationApproveReject';
 import { simulationContext } from '.';
 import { useLabels } from '../../../helper/core';
+import CostingHeadDropdownFilter from '../../masters/material-master/CostingHeadDropdownFilter';
 
 const gridOptions = {};
 
@@ -49,7 +50,7 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 function CostingSimulation(props) {
     const { simulationId, isFromApprovalListing, master, statusForLinkedToken } = props
-    const { vendorLabel } = useLabels()
+    const { vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels()
     const getShowSimulationPage = useSelector((state) => state.simulation.getShowSimulationPage)
     const { isMasterAssociatedWithCosting } = useSelector(state => state.simulation)
 
@@ -147,199 +148,213 @@ function CostingSimulation(props) {
 
     const dispatch = useDispatch()
     const { technologyLabel } = useLabels();
+    const { costingHeadFilter } = useSelector((state) => state.comman);
     useEffect(() => {
-        getCostingList()
-        dispatch(getImpactedMasterData(simulationId, () => { }))
-        return () => {
-            setHideDataColumn({
-                hideOverhead: true,
-                hideProfit: true,
-                hideRejection: true,
-                hideICC: true,
-                hidePayment: true,
-                hideOtherCost: true,
-                hideDiscount: true,
-                hideOveheadAndProfit: true,
-                hideToolCost: true,
-                hideFrieghtCost: true,
-                hidePackagingCost: true,
-                hideFreightPackagingCost: true,
-                showChildParts: false,
-                showBoughtOutPartCost: false
-            })
-        }
-    }, [])
 
-    useEffect(() => {
-        if (SimulationTechnologyIdState && count === 0 && amendmentDetails?.SimulationHeadId) {
-            if (getConfigurationKey().IsReleaseStrategyConfigured) {
-                let data = []
-                selectedRowData && selectedRowData?.map(item => {
-                    let obj = {}
-                    obj.SimulationId = simulationId
-                    data.push(obj)
-                })
-                let requestObject = {
-                    "RequestFor": "SIMULATION",
-                    "TechnologyId": props.technologyId,
-                    "LoggedInUserId": loggedInUserId(),
-                    "ReleaseStrategyApprovalDetails": _.uniqBy(data, 'SimulationId')
-                }
-                dispatch(getReleaseStrategyApprovalDetails(requestObject, (res) => {
-                    setReleaseStrategyDetails(res?.data?.Data)
-                    if (res?.data?.Data?.IsUserInApprovalFlow && !res?.data?.Data?.IsFinalApprover) {
-                        showIsPFSOrBudgetingDetailsExistWarning(false)
-                        setWarningMessage("")
-                        setDisableSendForApproval(false)
-                        setIsFinalLevelApprover(false)
+        if (costingHeadFilter && costingHeadFilter.data) {
 
-                    } else if (res?.data?.Data?.IsPFSOrBudgetingDetailsExist === false) {
-                        setWarningMessage("Budgeting cost does not exist, common approval flow will run for this part")
-                        showIsPFSOrBudgetingDetailsExistWarning(true)
-                        let obj = {
-                            DepartmentId: userData.DepartmentId,
-                            UserId: loggedInUserId(),
-                            TechnologyId: SimulationTechnologyIdState,
-                            Mode: 'simulation',
-                            approvalTypeId: costingTypeIdToApprovalTypeIdFunction(amendmentDetails?.SimulationHeadId)
-                        }
-                        dispatch(checkFinalUser(obj, res => {
-                            if (res && res.data && res.data.Result) {
-                                setIsFinalLevelApprover(res.data.Data?.IsFinalApprover)
-                                if (res.data?.Data?.IsUserInApprovalFlow === false) {
-                                    setDisableSendForApproval(true)
-                                }
-                                let countTemp = count + 1
-                                setCount(countTemp)
-                            }
-                        }))
-                    } else if (res?.data?.Result === false) {
-                        showIsPFSOrBudgetingDetailsExistWarning(true)
-                        setWarningMessage("This user is not in the approval cycle")
-                    } else {
-                        // showIsPFSOrBudgetingDetailsExistWarning(true)
-                        // setWarningMessage("This user is not in the approval cycle")
-                    }
-                }))
-            } else {
-                let technologyId = SimulationTechnologyIdState
-                if (amendmentDetails?.IsExchangeRateSimulation) {
-                    if (String(SimulationTechnologyIdState) === String(RMIMPORT) || String(SimulationTechnologyIdState) === String(BOPIMPORT)) {
-                        technologyId = EXCHNAGERATE
-                    }
-                } else {
-                    technologyId = SimulationTechnologyIdState
-                }
-                let obj = {
-                    DepartmentId: userData.DepartmentId,
-                    UserId: loggedInUserId(),
-                    TechnologyId: technologyId,
-                    Mode: 'simulation',
-                    approvalTypeId: costingTypeIdToApprovalTypeIdFunction(amendmentDetails?.SimulationHeadId),
-                    plantId: plantId
-                }
-                if (initialConfiguration.IsMultipleUserAllowForApproval ? plantId : true) {
-                    if (!getConfigurationKey().IsDivisionAllowedForDepartment) {
-                        dispatch(checkFinalUser(obj, res => {
-                            if (res && res.data && res.data.Result) {
-                                setIsFinalLevelApprover(res.data.Data?.IsFinalApprover)
-                                if (res?.data?.Data?.IsUserInApprovalFlow === false) {
-                                    setMessage("This user is not in the approval cycle")
-                                    setDisableSendForApproval(true)
-                                } if (res.data.Data.IsFinalApprover) {
-                                    setDisableSendForApproval(true)
-                                    setMessage("Final level approver can not send draft token for approval")
-                                } if (res.data.Data.IsUserInApprovalFlow && !res.data.Data.IsFinalApprover) {
-                                    setDisableSendForApproval(false)
-                                }
-                                let countTemp = count + 1
-                                setCount(countTemp)
-                            }
-                        }))
-                    }
-                }
+            const matchedOption = costingHeadFilter.CostingHeadOptions.find(option => option.value === costingHeadFilter.data.value);
+            if (matchedOption) {
+
+                gridApi?.setQuickFilter(matchedOption.label);
             }
-            // let obj = {
-            //     DepartmentId: userData.DepartmentId,
-            //     UserId: loggedInUserId(),
-            //     TechnologyId: SimulationTechnologyIdState,
-            //     Mode: 'simulation',
-            //     approvalTypeId: costingTypeIdToApprovalTypeIdFunction(amendmentDetails?.SimulationHeadId)
-            // }
-            // dispatch(checkFinalUser(obj, res => {
-            //     if (res && res.data && res.data.Result) {
-            //         setIsFinalLevelApprover(res.data.Data?.IsFinalApprover)
-            //         if (res.data?.Data?.IsUserInApprovalFlow === false) {
-            //             setDisableSendForApproval(true)
-            //         }
-            //         let countTemp = count + 1
-            //         setCount(countTemp)
-            //     }
-            // }))
         }
-    }, [SimulationTechnologyIdState, amendmentDetails?.SimulationHeadId, plantId])
-    useEffect(() => {
-
-        if (props?.isFromApprovalListing === true) {
-
-            handleEditMasterPage(true, true, true);
-        } else {
-            handleEditMasterPage(showEditMaster, showverifyPage, props.costingPage);
-        }
-    }, [handleEditMasterPage, props?.isFromApprovalListing]);
-
-
-    useEffect(() => {
-        // TO CHECK IF ANY OF THE RECORD HAS ASSEMBLY ROW
-        let count = 0
-        tableData && tableData.map((item) => {
-            setStoreTechnology(item.Technology)
-            if (item.IsAssemblyExist === true) {
-                count++
-            }
-            return null
-        })
-        // IF COUNT NOT EQUAL TO ZERO -> ASSEMBLY EXIST 
-        if (count !== 0) {
-            setAssemblyImpactButtonTrue(true)
-        } else {
-            setAssemblyImpactButtonTrue(false)
-        }
-
-        // CREATE REQUEST OBJECT FOR ASSEMBLY WISE IMPACT DATA
-        if (tableData !== undefined && tableData.length > 0) {
-            let requestData = []
-            let isAssemblyInDraft = false
-
-            let uniqueArr = _.uniqBy(tableData, function (o) {
-                return o.CostingId;
-            });
-
-            uniqueArr && uniqueArr.map(item => {
-                requestData.push({ CostingId: item.CostingId, delta: item.Variance, IsSinglePartImpact: false, SimulationId: simulationId })
-                return null
-            })
-
-            dispatch(getSimulatedAssemblyWiseImpactDate(requestData, isAssemblyInDraft, (res) => { }))
-        }
-
-    }, [tableData])
-
-    useEffect(() => {
-        if (userDetails().Role === 'SuperAdmin') {
-            setDisableApprovalButton(true)
-        }
-    }, [])
-
-    // ********* WHEN PAGE IS RELOADED THIS WILL GET EXECUTED TO SHOW MAIN SIMULATION PAGE *********
-    window.onbeforeunload = (e) => {
-        dispatch(setShowSimulationPage(true))
-    };
-
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [costingHeadFilter]);
     /**
-    * @method getListMultipleAndAssembly
-    * @description COMMON FUNCTION FOR LIST AND DOWNLOAD | SAME TYPE OF DIFFERENT DATA INPUT
-    */
+  useEffect(() => {
+      getCostingList()
+      dispatch(getImpactedMasterData(simulationId, () => { }))
+      return () => {
+          setHideDataColumn({
+              hideOverhead: true,
+              hideProfit: true,
+              hideRejection: true,
+              hideICC: true,
+              hidePayment: true,
+              hideOtherCost: true,
+              hideDiscount: true,
+              hideOveheadAndProfit: true,
+              hideToolCost: true,
+              hideFrieghtCost: true,
+              hidePackagingCost: true,
+              hideFreightPackagingCost: true,
+              showChildParts: false,
+              showBoughtOutPartCost: false
+          })
+      }
+  }, [])
+
+  useEffect(() => {
+      if (SimulationTechnologyIdState && count === 0 && amendmentDetails?.SimulationHeadId) {
+          if (getConfigurationKey().IsReleaseStrategyConfigured) {
+              let data = []
+              selectedRowData && selectedRowData?.map(item => {
+                  let obj = {}
+                  obj.SimulationId = simulationId
+                  data.push(obj)
+              })
+              let requestObject = {
+                  "RequestFor": "SIMULATION",
+                  "TechnologyId": props.technologyId,
+                  "LoggedInUserId": loggedInUserId(),
+                  "ReleaseStrategyApprovalDetails": _.uniqBy(data, 'SimulationId')
+              }
+              dispatch(getReleaseStrategyApprovalDetails(requestObject, (res) => {
+                  setReleaseStrategyDetails(res?.data?.Data)
+                  if (res?.data?.Data?.IsUserInApprovalFlow && !res?.data?.Data?.IsFinalApprover) {
+                      showIsPFSOrBudgetingDetailsExistWarning(false)
+                      setWarningMessage("")
+                      setDisableSendForApproval(false)
+                      setIsFinalLevelApprover(false)
+
+                  } else if (res?.data?.Data?.IsPFSOrBudgetingDetailsExist === false) {
+                      setWarningMessage("Budgeting cost does not exist, common approval flow will run for this part")
+                      showIsPFSOrBudgetingDetailsExistWarning(true)
+                      let obj = {
+                          DepartmentId: userData.DepartmentId,
+                          UserId: loggedInUserId(),
+                          TechnologyId: SimulationTechnologyIdState,
+                          Mode: 'simulation',
+                          approvalTypeId: costingTypeIdToApprovalTypeIdFunction(amendmentDetails?.SimulationHeadId)
+                      }
+                      dispatch(checkFinalUser(obj, res => {
+                          if (res && res.data && res.data.Result) {
+                              setIsFinalLevelApprover(res.data.Data?.IsFinalApprover)
+                              if (res.data?.Data?.IsUserInApprovalFlow === false) {
+                                  setDisableSendForApproval(true)
+                              }
+                              let countTemp = count + 1
+                              setCount(countTemp)
+                          }
+                      }))
+                  } else if (res?.data?.Result === false) {
+                      showIsPFSOrBudgetingDetailsExistWarning(true)
+                      setWarningMessage("This user is not in the approval cycle")
+                  } else {
+                      // showIsPFSOrBudgetingDetailsExistWarning(true)
+                      // setWarningMessage("This user is not in the approval cycle")
+                  }
+              }))
+          } else {
+              let technologyId = SimulationTechnologyIdState
+              if (amendmentDetails?.IsExchangeRateSimulation) {
+                  if (String(SimulationTechnologyIdState) === String(RMIMPORT) || String(SimulationTechnologyIdState) === String(BOPIMPORT)) {
+                      technologyId = EXCHNAGERATE
+                  }
+              } else {
+                  technologyId = SimulationTechnologyIdState
+              }
+              let obj = {
+                  DepartmentId: userData.DepartmentId,
+                  UserId: loggedInUserId(),
+                  TechnologyId: technologyId,
+                  Mode: 'simulation',
+                  approvalTypeId: costingTypeIdToApprovalTypeIdFunction(amendmentDetails?.SimulationHeadId),
+                  plantId: plantId
+              }
+              if (initialConfiguration.IsMultipleUserAllowForApproval ? plantId : true) {
+                  if (!getConfigurationKey().IsDivisionAllowedForDepartment) {
+                      dispatch(checkFinalUser(obj, res => {
+                          if (res && res.data && res.data.Result) {
+                              setIsFinalLevelApprover(res.data.Data?.IsFinalApprover)
+                              if (res?.data?.Data?.IsUserInApprovalFlow === false) {
+                                  setMessage("This user is not in the approval cycle")
+                                  setDisableSendForApproval(true)
+                              } if (res.data.Data.IsFinalApprover) {
+                                  setDisableSendForApproval(true)
+                                  setMessage("Final level approver can not send draft token for approval")
+                              } if (res.data.Data.IsUserInApprovalFlow && !res.data.Data.IsFinalApprover) {
+                                  setDisableSendForApproval(false)
+                              }
+                              let countTemp = count + 1
+                              setCount(countTemp)
+                          }
+                      }))
+                  }
+              }
+          }
+          // let obj = {
+          //     DepartmentId: userData.DepartmentId,
+          //     UserId: loggedInUserId(),
+          //     TechnologyId: SimulationTechnologyIdState,
+          //     Mode: 'simulation',
+          //     approvalTypeId: costingTypeIdToApprovalTypeIdFunction(amendmentDetails?.SimulationHeadId)
+          // }
+          // dispatch(checkFinalUser(obj, res => {
+          //     if (res && res.data && res.data.Result) {
+          //         setIsFinalLevelApprover(res.data.Data?.IsFinalApprover)
+          //         if (res.data?.Data?.IsUserInApprovalFlow === false) {
+          //             setDisableSendForApproval(true)
+          //         }
+          //         let countTemp = count + 1
+          //         setCount(countTemp)
+          //     }
+          // }))
+      }
+  }, [SimulationTechnologyIdState, amendmentDetails?.SimulationHeadId, plantId])
+  useEffect(() => {
+
+      if (props?.isFromApprovalListing === true) {
+
+          handleEditMasterPage(true, true, true);
+      } else {
+          handleEditMasterPage(showEditMaster, showverifyPage, props.costingPage);
+      }
+  }, [handleEditMasterPage, props?.isFromApprovalListing]);
+
+
+  useEffect(() => {
+      // TO CHECK IF ANY OF THE RECORD HAS ASSEMBLY ROW
+      let count = 0
+      tableData && tableData.map((item) => {
+          setStoreTechnology(item.Technology)
+          if (item.IsAssemblyExist === true) {
+              count++
+          }
+          return null
+      })
+      // IF COUNT NOT EQUAL TO ZERO -> ASSEMBLY EXIST 
+      if (count !== 0) {
+          setAssemblyImpactButtonTrue(true)
+      } else {
+          setAssemblyImpactButtonTrue(false)
+      }
+
+      // CREATE REQUEST OBJECT FOR ASSEMBLY WISE IMPACT DATA
+      if (tableData !== undefined && tableData.length > 0) {
+          let requestData = []
+          let isAssemblyInDraft = false
+
+          let uniqueArr = _.uniqBy(tableData, function (o) {
+              return o.CostingId;
+          });
+
+          uniqueArr && uniqueArr.map(item => {
+              requestData.push({ CostingId: item.CostingId, delta: item.Variance, IsSinglePartImpact: false, SimulationId: simulationId })
+              return null
+          })
+
+          dispatch(getSimulatedAssemblyWiseImpactDate(requestData, isAssemblyInDraft, (res) => { }))
+      }
+
+  }, [tableData])
+
+  useEffect(() => {
+      if (userDetails().Role === 'SuperAdmin') {
+          setDisableApprovalButton(true)
+      }
+  }, [])
+
+  // ********* WHEN PAGE IS RELOADED THIS WILL GET EXECUTED TO SHOW MAIN SIMULATION PAGE *********
+  window.onbeforeunload = (e) => {
+      dispatch(setShowSimulationPage(true))
+  };
+
+  /**
+  * @method getListMultipleAndAssembly
+  * @description COMMON FUNCTION FOR LIST AND DOWNLOAD | SAME TYPE OF DIFFERENT DATA INPUT
+  */
     const getListMultipleAndAssembly = (SimulationCostingList, storeInRemovedObjects) => {               //getListForUIAndDownload
         let tempRemoveObject1 = []
         if (SimulationCostingList && SimulationCostingList) {
@@ -1481,6 +1496,12 @@ function CostingSimulation(props) {
         }
 
     };
+    const floatingFilterStatus = {
+        maxValue: 1,
+        suppressFilterButton: true,
+        component: CostingHeadDropdownFilter,
+
+    };
 
     const onPageSizeChanged = (newPageSize) => {
         gridApi.paginationSetPageSize(Number(newPageSize));
@@ -1548,9 +1569,18 @@ function CostingSimulation(props) {
         }
     }
 
+    const combinedCostingHeadRenderer = (props) => {
+        // Call the existing checkBoxRenderer
 
+        // Get and localize the cell value
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const localizedValue = getLocalizedCostingHeadValue(cellValue, vendorBasedLabel, zeroBasedLabel, customerBasedLabel);
+
+        // Return the localized value (the checkbox will be handled by AgGrid's default renderer)
+        return localizedValue;
+    };
     const frameworkComponents = {
-
+        combinedCostingHeadRenderer: combinedCostingHeadRenderer,
         descriptionFormatter: descriptionFormatter,
         ecnFormatter: ecnFormatter,
         revisionFormatter: revisionFormatter,
@@ -1606,7 +1636,9 @@ function CostingSimulation(props) {
         processFormatter: processFormatter,
         // processVarianceFormatter: processVarianceFormatter,          //RE
         varianceFormatter: varianceFormatter,
-        partTypeFormatter: partTypeFormatter
+        partTypeFormatter: partTypeFormatter,
+        statusFilter: CostingHeadDropdownFilter,
+
     };
 
     const isRowSelectable = rowNode => statusForLinkedToken === true ? false : true;
@@ -1704,7 +1736,9 @@ function CostingSimulation(props) {
                                                 <AgGridColumn width={140} field="VendorName" cellRenderer='vendorFormatter' headerName='Vendor'></AgGridColumn> */}
 
                                                     {isSimulationWithCosting && <AgGridColumn width={150} field="CostingNumber" tooltipField='CostingNumber' headerName='Costing Id'></AgGridColumn>}
-                                                    <AgGridColumn width={140} field="CostingHead" tooltipField='CostingHead' headerName='Costing Head'></AgGridColumn>
+                                                    <AgGridColumn width={140} field="CostingHead" tooltipField='CostingHead' headerName='Costing Head' cellRenderer={'combinedCostingHeadRenderer'} floatingFilterComponentParams={floatingFilterStatus}
+                                                        floatingFilterComponent="statusFilter"
+                                                    ></AgGridColumn>
                                                     {!isSimulationWithCosting && isBOPDomesticOrImport && <AgGridColumn width={130} field="BoughtOutPartNumber" tooltipField='BoughtOutPartNumber' headerName='BOP Number'></AgGridColumn>}
                                                     {!isSimulationWithCosting && isBOPDomesticOrImport && <AgGridColumn width={130} field="BoughtOutPartName" tooltipField='BoughtOutPartName' headerName='BOP Name'></AgGridColumn>}
 

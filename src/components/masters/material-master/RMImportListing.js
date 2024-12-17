@@ -17,7 +17,7 @@ import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import { CheckApprovalApplicableMaster, IsShowFreightAndShearingCostFields, getConfigurationKey, loggedInUserId, searchNocontentFilter, setLoremIpsum, userDepartmetList } from '../../../helper';
+import { CheckApprovalApplicableMaster, IsShowFreightAndShearingCostFields, getConfigurationKey, getLocalizedCostingHeadValue, loggedInUserId, searchNocontentFilter, setLoremIpsum, userDepartmetList } from '../../../helper';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
@@ -26,7 +26,7 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { getListingForSimulationCombined, setSelectedRowForPagination } from '../../simulation/actions/Simulation';
 import WarningMessage from '../../common/WarningMessage';
 import _ from 'lodash';
-import { disabledClass } from '../../../actions/Common';
+import { disabledClass, isResetClick } from '../../../actions/Common';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import AnalyticsDrawer from './AnalyticsDrawer';
 import { checkMasterCreateByCostingPermission, hideCustomerFromExcel, hideMultipleColumnFromExcel } from '../../common/CommonFunctions';
@@ -40,6 +40,7 @@ import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from '../../common/Tour/TourMessages';
 import { useTranslation } from 'react-i18next';
 import { useLabels, useWithLocalization } from '../../../helper/core';
+import CostingHeadDropdownFilter from './CostingHeadDropdownFilter';
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -95,7 +96,7 @@ function RMImportListing(props) {
   const { t } = useTranslation("common")
   const netCostHeader = `Net Cost (${reactLocalStorage.getObject("baseCurrency")})`
   const { tokenForSimulation, selectedMasterForSimulation } = useSelector(state => state.simulation)
-  const { technologyLabel, RMCategoryLabel,vendorLabel } = useLabels();
+  const { technologyLabel, RMCategoryLabel,vendorLabel ,vendorBasedLabel, zeroBasedLabel, customerBasedLabel} = useLabels();
   const headerNames = {
     BasicRate: `Basic Rate (${reactLocalStorage.getObject("baseCurrency")})`,
     ScrapRate: `Scrap Rate (${reactLocalStorage.getObject("baseCurrency")})`,
@@ -161,6 +162,7 @@ function RMImportListing(props) {
         return () => {
           dispatch(setSelectedRowForPagination([]))
           dispatch(resetStatePagination());
+          dispatch(isResetClick(false, "costingHead"))
 
           reactLocalStorage.setObject('selectedRow', {})
         }
@@ -191,7 +193,18 @@ function RMImportListing(props) {
     }, 300);
 
   }, [])
-
+  const floatingFilterStatus = {
+    maxValue: 1,
+    suppressFilterButton: true,
+    component: CostingHeadDropdownFilter,
+    onFilterChange: (originalValue, value) => {
+        setDisableFilter(false);
+        setFloatingFilterData(prevState => ({
+            ...prevState,
+            CostingHead: value
+        }));
+    }
+};
 
   /**
   * @method hideForm
@@ -284,6 +297,8 @@ function RMImportListing(props) {
 
           setTimeout(() => {
             setWarningMessage(false)
+            dispatch(isResetClick(false, "costingHead"))
+
           }, 330);
 
           setTimeout(() => {
@@ -593,7 +608,17 @@ function RMImportListing(props) {
     const cell = props?.valueFormatted ? props?.valueFormatted : props?.value;
     return cell != null ? cell : '-';
   }
-
+  const combinedCostingHeadRenderer = (props) => {
+    // Call the existing checkBoxRenderer
+    checkBoxRenderer(props);
+  
+    // Get and localize the cell value
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    const localizedValue = getLocalizedCostingHeadValue(cellValue, vendorBasedLabel, zeroBasedLabel, customerBasedLabel);
+  
+    // Return the localized value (the checkbox will be handled by AgGrid's default renderer)
+    return localizedValue;
+  };
 
   const checkBoxRenderer = (props) => {
     const cellValue = props?.valueFormatted ? props?.valueFormatted : props?.value;
@@ -716,6 +741,7 @@ function RMImportListing(props) {
     setNoData(false)
     setFilterModel({})
     setinRangeDate([])
+    dispatch(isResetClick(true, "costingHead"))
     setIsFilterButtonClicked(false)
     gridOptions?.columnApi?.resetColumnState(null);
     gridOptions?.api?.setFilterModel(null);
@@ -882,9 +908,10 @@ function RMImportListing(props) {
     shearingCostFormatter: shearingCostFormatter,
     statusFormatter: statusFormatter,
     hyphenFormatter: hyphenFormatter,
-    checkBoxRenderer: checkBoxRenderer,
+    combinedCostingHeadRenderer: combinedCostingHeadRenderer,
     currencyFormatter: currencyFormatter,
     attachmentFormatter: attachmentFormatter,
+    statusFilter : CostingHeadDropdownFilter
 
   };
 
@@ -1018,7 +1045,9 @@ function RMImportListing(props) {
                     onRowSelected={onRowSelect}
                     suppressRowClickSelection={true}
                   >
-                    <AgGridColumn cellClass="has-checkbox" field="CostingHead" headerName='Costing Head' cellRenderer={checkBoxRenderer}></AgGridColumn>
+                    <AgGridColumn cellClass="has-checkbox" field="CostingHead" headerName='Costing Head' cellRenderer={combinedCostingHeadRenderer}
+                      floatingFilterComponentParams={floatingFilterStatus} 
+                      floatingFilterComponent="statusFilter"></AgGridColumn>
                     <AgGridColumn field="TechnologyName" headerName={technologyLabel}></AgGridColumn>
                     <AgGridColumn field="RawMaterialName" headerName='Raw Material' ></AgGridColumn>
                     <AgGridColumn field="RawMaterialGradeName" headerName='Grade'></AgGridColumn>

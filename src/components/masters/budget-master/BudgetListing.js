@@ -8,7 +8,7 @@ import { deleteBudget, getBudgetDataList, getPartCostingHead, } from '../actions
 import { BUDGET_DOWNLOAD_EXCEl, Vendor } from '../../../config/masterData'
 import BulkUpload from '../../massUpload/BulkUpload'
 import { ADDITIONAL_MASTERS } from '../../../config/constants'
-import { checkPermission, searchNocontentFilter, setLoremIpsum } from '../../../helper/util'
+import { checkPermission, getLocalizedCostingHeadValue, searchNocontentFilter, setLoremIpsum } from '../../../helper/util'
 import LoaderCustom from '../../common/LoaderCustom'
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -19,7 +19,7 @@ import { PaginationWrapper } from '../../common/commonPagination'
 import WarningMessage from '../../common/WarningMessage'
 import { setSelectedRowForPagination } from '../../simulation/actions/Simulation'
 import _ from 'lodash'
-import { TourStartAction, disabledClass } from '../../../actions/Common'
+import { TourStartAction, disabledClass, isResetClick } from '../../../actions/Common'
 import { reactLocalStorage } from 'reactjs-localstorage'
 import { Drawer } from '@material-ui/core'
 import Attachament from '../../costing/components/Drawers/Attachament'
@@ -34,12 +34,14 @@ import TourWrapper from '../../common/Tour/TourWrapper'
 import { Steps } from '../../common/Tour/TourMessages'
 import { useTranslation } from 'react-i18next'
 import { useLabels, useWithLocalization } from '../../../helper/core'
+import CostingHeadDropdownFilter from '../material-master/CostingHeadDropdownFilter'
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {};
 function BudgetListing(props) {
+
     const [shown, setShown] = useState(false);
     const [showBudgetForm, setShowBudgetForm] = useState(false);
     const [data, setData] = useState({ isEditFlag: false, ID: '' });
@@ -80,11 +82,12 @@ function BudgetListing(props) {
     const { selectedRowForPagination } = useSelector((state => state.simulation))
     const dispatch = useDispatch();
     const { t } = useTranslation("common")
-    const { vendorLabel } = useLabels()
+    const { vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels()
     useEffect(() => {
         applyPermission(topAndLeftMenuData)
         if (!props?.isMasterSummaryDrawer) {
             getTableListData(0, defaultPageSize, true)
+
             dispatch(getPartCostingHead((res) => {
                 reactLocalStorage.setObject("budgetCostingHeads", res?.data?.SelectList); //FOR SHOWING DYNAMIC HEADERS IN BUDGET BULK UPLOAD EXCEL DOWNLOAD
             }))
@@ -99,6 +102,7 @@ function BudgetListing(props) {
     useEffect(() => {
         setIsLoader(true)
         applyPermission(topAndLeftMenuData)
+        dispatch(isResetClick(false, "costingHead"))
         setTimeout(() => {
             setIsLoader(false)
         }, 200);
@@ -172,6 +176,7 @@ function BudgetListing(props) {
 
                 setTimeout(() => {
                     setWarningMessage(false)
+                    dispatch(isResetClick(false, "costingHead"))
                 }, 330);
 
                 setTimeout(() => {
@@ -413,6 +418,7 @@ function BudgetListing(props) {
     }
 
     const resetState = () => {
+        dispatch(isResetClick(true, "costingHead"))
         setNoData(false)
         gridOptions.columnApi.resetColumnState();
         gridOptions.api.setFilterModel(null);
@@ -464,6 +470,30 @@ function BudgetListing(props) {
         checkboxSelection: isFirstColumn
     };
 
+    const combinedCostingHeadRenderer = (props) => {
+        // Call the existing checkBoxRenderer
+        checkBoxRenderer(props);
+
+        // Get and localize the cell value
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const localizedValue = getLocalizedCostingHeadValue(cellValue, vendorBasedLabel, zeroBasedLabel, customerBasedLabel);
+
+        // Return the localized value (the checkbox will be handled by AgGrid's default renderer)
+        return localizedValue;
+    };
+    const floatingFilterStatus = {
+        maxValue: 1,
+        suppressFilterButton: true,
+        component: CostingHeadDropdownFilter,
+        onFilterChange: (originalValue, value) => {
+            // setSelectedCostingHead(originalValue);
+            setDisableFilter(false);
+            setFloatingFilterData(prevState => ({
+                ...prevState,
+                CostingHead: value
+            }));
+        }
+    };
     const checkBoxRenderer = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         if (selectedRowForPagination?.length > 0) {
@@ -485,9 +515,11 @@ function BudgetListing(props) {
     }
 
     const frameworkComponents = {
+        combinedCostingHeadRenderer: combinedCostingHeadRenderer,
         totalValueRenderer: buttonFormatter,
         customNoRowsOverlay: NoContentFound,
         hyphenFormatter: hyphenFormatter,
+        statusFilter: CostingHeadDropdownFilter,
 
     };
 
@@ -591,7 +623,8 @@ function BudgetListing(props) {
                                     suppressRowClickSelection={true}
                                     enableBrowserTooltips={true}
                                 >
-                                    <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={checkBoxRenderer}></AgGridColumn>
+                                    <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={combinedCostingHeadRenderer}   floatingFilterComponentParams={floatingFilterStatus} 
+                                            floatingFilterComponent="statusFilter"></AgGridColumn>
                                     <AgGridColumn field="vendorNameWithCode" headerName={`${vendorLabel} (Code)`} cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="customerNameWithCode" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                                     <AgGridColumn field="plantNameWithCode" headerName="Plant (Code)"></AgGridColumn>

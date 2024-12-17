@@ -1429,6 +1429,8 @@ export const GET_UNASSOCIATED_RM_NAME_SELECTLIST = 'GET_UNASSOCIATED_RM_NAME_SEL
 export const SET_FILTERED_RM_DATA = 'SET_FILTERED_RM_DATA'
 export const STATUS_COLUMN_DATA = 'STATUS_COLUMN_DATA'
 export const IS_RESET = 'IS_RESET'
+export const SET_COSTING_HEAD_FILTER = 'SET_COSTING_HEAD_FILTER'
+
 
 //RM EXCHANGE RATE SOURCE
 export const GET_RM_EXCHANGE_RATE_SOURCE = 'GET_RM_EXCHANGE_RATE_SOURCE'
@@ -3133,7 +3135,7 @@ export const typeData = [
 ];
 
 export const LANGUAGES = [
-  { value: 'en-US', label: 'English - EN', },
+  { value: 'en', label: 'English - EN', },
   { value: 'hi', label: 'हिन्दी - HI', },
   { value: 'mr', label: 'मराठी - MR', },
 ]
@@ -3265,7 +3267,8 @@ export const customHavellsChanges = true
 export const countDownBlinkingTime = 2
 export const clientName = 'Havells'
 export const isShowTaxCode = true
-export const effectiveDateRangeDays = null
+export const effectiveDateRangeDayPrevious = 7
+export const effectiveDateRangeDayFuture = 7
 // CONSTANT FOR COSTING ENTRY TYPE ID
 export const COMMODITYCOST = 'Commodity Cost'
 export const RAWMATERIALCOST = 'Raw Material Other Cost'

@@ -34,7 +34,7 @@ function Insights(props) {
     const [minimumGrpahData, setMinimumGrpahData] = useState()
     const [maximumGrpahData, setMaximumGrpahData] = useState()
     const [tableHeaderColumnDefs, setTableHeaderColumnDefs] = useState([])
-
+const {vendorLabel} = useLabels()
     const [rowDataNew, setRowDataNew] = useState([])
     const [isLoader, setIsLoader] = useState(true)
     const [vendor, setVendor] = useState([])
@@ -654,7 +654,7 @@ function Insights(props) {
 
             }
             let VendorBased = {
-                headerName: "Vendor Based",
+                headerName: `${vendorLabel}`,
                 width: "115",
                 marryChildren: true,
                 children: childPlantsVbc

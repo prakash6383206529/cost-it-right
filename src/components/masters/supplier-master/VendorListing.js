@@ -576,7 +576,7 @@ const VendorListing = (props) => {
       //  pageNo: 1, pageNoNew: 1, currentRowIndex: 0,
     }));
     dispatch(updatePageNumber(1));
-    dispatch(updateCurrentRowIndex(0));
+    dispatch(updateCurrentRowIndex(10));
     getTableListData(0, state.floatingFilterData, 10, true);
     dispatch(setSelectedRowForPagination([]));
     dispatch(updateGlobalTake(10));

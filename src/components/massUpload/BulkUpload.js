@@ -353,6 +353,7 @@ class BulkUpload extends Component {
                                 }
                                 else if (this.state.costingTypeId === VBCTypeId) {
                                     const localizedRMDomesticVBC = this.localizeHeaders(RMDomesticVBC);
+                                    console.log(localizedRMDomesticVBC, "localizedRMDomesticVBC")
                                     masterDataArray = localizedRMDomesticVBC
                                     checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(localizedRMDomesticVBC, VBCTypeId), fileHeads, true)
                                 }
@@ -943,7 +944,7 @@ class BulkUpload extends Component {
             CostingTypeId: costingTypeId,
             TypeOfEntry: this.props.masterId === RM_MASTER_ID && this.state.isImport ? ENTRY_TYPE_IMPORT : typeOfEntryId ? typeOfEntryId : 0,
             DivisionId: this.state.division?.value,
-            DepartmentId: this.state.disableDept ? this.state.department[0].value : this.state.department?.value
+            DepartmentId: this.state.disableDept ? this.state.department[0]?.value : this.state.department?.value
         }
         if (costingTypeId === ZBCADDMORE || costingTypeId === ZBCADDMOREOPERATION) {
             masterUploadData.CostingTypeId = ZBCTypeId

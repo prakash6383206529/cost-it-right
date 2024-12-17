@@ -17,7 +17,7 @@ import { CBCTypeId, CRMHeads, FILE_URL, VBCTypeId, VBC_VENDOR_TYPE, ZBCTypeId, s
 import HeaderTitle from "../../common/HeaderTitle";
 import { useDispatch, useSelector } from 'react-redux'
 import { reactLocalStorage } from "reactjs-localstorage";
-import { autoCompleteDropdown } from "../../common/CommonFunctions";
+import { autoCompleteDropdown, getEffectiveDateMaxDate, getEffectiveDateMinDate } from "../../common/CommonFunctions";
 import { getClientSelectList } from "../actions/Client";
 import { AcceptableOperationUOM, LOGISTICS } from "../../../config/masterData";
 import { getUOMSelectList, getVendorNameByVendorSelectList } from "../../../actions/Common";
@@ -1047,6 +1047,8 @@ function AddMoreOperation(props) {
                                                 customClassName="withBorder"
                                                 className="withBorder"
                                                 autoComplete={"off"}
+                                                maxDate={getEffectiveDateMaxDate()}
+                                                minDate={getEffectiveDateMinDate()}
                                                 disabledKeyboardNavigation
                                                 onChangeRaw={(e) => e.preventDefault()}
                                                 disabled={isViewMode}

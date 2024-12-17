@@ -3,7 +3,7 @@ import { Row, Col, Tooltip, } from 'reactstrap';
 import DayTime from '../../../common/DayTimeWrapper'
 import { CBCTypeId, defaultPageSize, EMPTY_DATA, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, BOPIMPORT, RAWMATERIALAPPROVALTYPEID } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
-import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter, userDetails } from '../../../../helper';
+import { checkForDecimalAndNull, checkForNull, getConfigurationKey, getLocalizedCostingHeadValue, loggedInUserId, searchNocontentFilter, userDetails } from '../../../../helper';
 import Toaster from '../../../common/Toaster';
 import { editRMIndexedSimulationData, getCommodityDetailForSimulation, draftSimulationForRMMaster, runVerifySimulation, updateSimulationRawMaterial, runSimulationOnRawMaterial } from '../../actions/Simulation';
 import { Fragment } from 'react';
@@ -35,6 +35,7 @@ import SimulationApproveReject from '../../../costing/components/approval/Simula
 import { Redirect } from 'react-router-dom/cjs/react-router-dom';
 import CustomCellRenderer from '../../../rfq/CommonDropdown';
 import { useLabels } from '../../../../helper/core';
+import CostingHeadDropdownFilter from '../../../masters/material-master/CostingHeadDropdownFilter';
 
 const gridOptions = {
 
@@ -92,7 +93,7 @@ function RMIndexationSimulation(props) {
         reValidateMode: 'onChange',
     })
 
-    const { technologyLabel,vendorLabel } = useLabels();
+    const { technologyLabel, vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels();
     const dispatch = useDispatch()
 
     const currencySelectList = useSelector(state => state.comman.currencySelectList)
@@ -102,6 +103,17 @@ function RMIndexationSimulation(props) {
 
     const { commodityDetailsArray } = useSelector((state) => state.indexation)
     const { filteredRMData } = useSelector(state => state.material)
+    const {costingHeadFilter} =useSelector(state=> state.common)
+    useEffect(() => {
+   
+        if (costingHeadFilter && costingHeadFilter.data) {
+          const matchedOption = costingHeadFilter.CostingHeadOptions.find(option => option.value === costingHeadFilter.data.value);
+          if (matchedOption) {
+            gridApi?.setQuickFilter(matchedOption.label);
+          }
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+      }, [ costingHeadFilter]);
     const columnWidths = {
         CostingHead: showCompressedColumns ? 50 : 140,
         VendorCode: showCompressedColumns ? 50 : 160,
@@ -378,6 +390,17 @@ function RMIndexationSimulation(props) {
         return cell != null ? <span title={DayTime(cell).format('DD/MM/YYYY')}>{DayTime(cell).format('DD/MM/YYYY')}</span> : '';
     }
 
+    const combinedCostingHeadRenderer = (props) => {
+        // Call the existing checkBoxRenderer
+        costingHeadFormatter(props);
+      
+        // Get and localize the cell value
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const localizedValue = getLocalizedCostingHeadValue(cellValue, vendorBasedLabel, zeroBasedLabel, customerBasedLabel);
+      
+        // Return the localized value (the checkbox will be handled by AgGrid's default renderer)
+        return localizedValue;
+      };
 
     const costingHeadFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -951,7 +974,7 @@ function RMIndexationSimulation(props) {
 
     const frameworkComponents = {
         effectiveDateFormatter: effectiveDateFormatter,
-        costingHeadFormatter: costingHeadFormatter,
+        combinedCostingHeadRenderer: combinedCostingHeadRenderer,
         CostFormatter: CostFormatter,
         newScrapRateFormatter: newScrapRateFormatter,
         newScrapRateUOMFormatter: newScrapRateUOMFormatter,
@@ -975,7 +998,8 @@ function RMIndexationSimulation(props) {
         hyphenFormatter: hyphenFormatter,
         existingOtherCostFormatter: existingOtherCostFormatter,
         revisedOtherCostFormatter: revisedOtherCostFormatter,
-        scrapEditableCallback: scrapEditableCallback
+        scrapEditableCallback: scrapEditableCallback,
+        statusFilter : CostingHeadDropdownFilter
     };
 
 
@@ -989,8 +1013,12 @@ function RMIndexationSimulation(props) {
         }
         return valueReturn
     }
-
-
+    const floatingFilterStatus = {
+        maxValue: 1,
+        suppressFilterButton: true,
+        component: CostingHeadDropdownFilter,
+       
+    };
     const basicRatetooltipToggle = () => {
         setBasicRateViewTooltip(!basicRateviewTooltip)
     }
@@ -1098,7 +1126,9 @@ function RMIndexationSimulation(props) {
                                             >
                                                 {
                                                     !isImpactedMaster &&
-                                                    <AgGridColumn width={columnWidths.CostingHead} field="CostingHead" tooltipField='CostingHead' headerName="Costing Head" editable='false' cellRenderer={'costingHeadFormatter'}></AgGridColumn>
+                                                    <AgGridColumn width={columnWidths.CostingHead} field="CostingHead" tooltipField='CostingHead' headerName="Costing Head" editable='false' cellRenderer={'combinedCostingHeadRenderer'}
+                                                    floatingFilterComponentParams={floatingFilterStatus} 
+                                                    floatingFilterComponent="statusFilter"></AgGridColumn>
                                                 }
                                                 <AgGridColumn width={columnWidths.RawMaterialName} field="RawMaterialName" tooltipField='RawMaterialName' editable='false' headerName="Raw Material"></AgGridColumn>
                                                 <AgGridColumn width={columnWidths.RawMaterialGradeName} field={props.isCostingSimulation ? 'RawMaterialGrade' : "RawMaterialGradeName"} tooltipField='RawMaterialGradeName' editable='false' headerName="Grade" ></AgGridColumn>
