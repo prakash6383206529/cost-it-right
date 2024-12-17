@@ -300,7 +300,7 @@ function VolumeListing(props) {
       if (res?.data?.Result === true) {
         dispatch(setSelectedRowForPagination([]));
         if (gridApi) {
-          gridApi.deselectAll();
+          gridApi?.deselectAll();
         }
         Toaster.success(MESSAGES.DELETE_VOLUME_SUCCESS);
         getTableListData(pageRecord, globalTakes, true);

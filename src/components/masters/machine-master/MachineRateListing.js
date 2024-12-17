@@ -336,19 +336,16 @@ const MachineRateListing = (props) => {
   */
   const confirmDelete = (ID) => {
     const loggedInUser = loggedInUserId()
-    setState((prevState) => ({ ...prevState, isLoader: true }))
     dispatch(deleteMachine(ID, loggedInUser, (res) => {
-      if (res.data.Result === true) {
+      if (res?.data?.Result === true) {
         Toaster.success(MESSAGES.DELETE_MACHINE_SUCCESS);
-
         dispatch(setSelectedRowForPagination([]));
-        if (state.gridApi) {
-          state.gridApi.deselectAll();
+        if (state?.gridApi) {
+          state?.gridApi?.deselectAll();
         }
         getDataList("", 0, "", 0, "", "", pageRecord, globalTakes, true, state.floatingFilterData);
         setState((prevState) => ({ ...prevState, dataCount: 0 }))
       }
-      setState((prevState) => ({ ...prevState, isLoader: false }))
     }));
   }
   const onPopupConfirm = () => {

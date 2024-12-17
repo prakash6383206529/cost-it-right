@@ -427,7 +427,7 @@ const BOPDomesticListing = (props) => {
           state?.gridApi?.deselectAll();
         }
         Toaster.success(MESSAGES.BOP_DELETE_SUCCESS);
-        getDataList("", 0, "", "", skipRecord, globalTakes, true, state.floatingFilterData);
+        getDataList("", 0, "", "", skipRecord, globalTakes, true, state?.floatingFilterData);
       }
       reactLocalStorage.remove('selectedRow');
       setState((prevState) => ({ ...prevState, dataCount: 0 }))
