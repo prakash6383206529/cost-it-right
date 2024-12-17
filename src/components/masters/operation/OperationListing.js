@@ -403,23 +403,22 @@ const OperationListing = (props) => {
     * @description confirm delete item
     */
     const confirmDeleteItem = (ID) => {
-        const loggedInUser = loggedInUserId()
+        const loggedInUser = loggedInUserId();
         dispatch(deleteOperationAPI(ID, loggedInUser, (res) => {
-            if (res !== undefined && res?.status === 417 && res?.data?.Result === false) {
-                setState((prevState) => ({ ...prevState, isLoader: false }))
-                Toaster.error(res?.data?.Message)
-            } else if (res && res?.data && res?.data?.Result === true) {
+            if (res?.data?.Result === true) {
                 Toaster.success(MESSAGES.DELETE_OPERATION_SUCCESS);
                 dispatch(setSelectedRowForPagination([]));
-                if (state.gridApi) {
-                    state.gridApi.deselectAll();
+                if (state?.gridApi) {
+                    state?.gridApi?.deselectAll();
                 }
-                getTableListData(null, null, null, null, pageRecord, globalTakes, true, state.floatingFilterData)
-                setState(prevState => ({ ...prevState, dataCount: 0 }))
+                getTableListData(null, null, null, null, pageRecord, globalTakes, true, state.floatingFilterData);
+                setState((prevState) => ({ ...prevState, dataCount: 0 }));
             }
         }));
-        setState(prevState => ({ ...prevState, showPopup: false }))
-    }
+        setState((prevState) => ({ ...prevState, showPopup: false }));
+    };
+
+
     const onPopupConfirm = () => {
         confirmDeleteItem(state.deletedId);
     }

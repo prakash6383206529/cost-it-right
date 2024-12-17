@@ -218,7 +218,7 @@ function RMDomesticListing(props) {
     * @method hideForm
     * @description HIDE DOMESTIC, IMPORT FORMS
     */
-    const getDataList = (costingHead = null, plantId = null, materialId = null, gradeId = null, vendorId = null, technologyId = 0, skip, take, isPagination = true, dataObj, isReset = false) => {
+    const getDataList = (costingHead = null, plantId = null, materialId = null, gradeId = null, vendorId = null, technologyId = 0, skip = 0, take = 10, isPagination = true, dataObj, isReset = false) => {
         const { isSimulation } = props
         setPageRecord(skip)
         if (filterModel?.EffectiveDate && !isReset) {
@@ -493,18 +493,14 @@ function RMDomesticListing(props) {
     */
     const confirmDelete = (ID) => {
         const loggedInUser = loggedInUserId()
-        setloader(true)
         dispatch(deleteRawMaterialAPI(ID, loggedInUser, (res) => {
-            if (res !== undefined && res?.status === 417 && res?.data?.Result === false) {
-                setloader(false)
-                Toaster.error(res?.data?.Message)
-            } else if (res && res?.data && res?.data?.Result === true) {
-                Toaster.success(MESSAGES.DELETE_RAW_MATERIAL_SUCCESS);
+            if (res && res?.data && res?.data?.Result === true) {
                 dispatch(setSelectedRowForPagination([]));
                 if (gridApi) {
                     gridApi.deselectAll();
                 }
                 reactLocalStorage.remove('selectedRow');
+                Toaster.success(MESSAGES.DELETE_RAW_MATERIAL_SUCCESS);
                 getDataList(null, null, null, null, null, 0, pageRecord, globalTakes, true, floatingFilterData, false);
                 setDataCount(0);
             }

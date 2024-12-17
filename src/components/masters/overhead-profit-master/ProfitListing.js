@@ -355,24 +355,21 @@ function ProfitListing(props) {
     * @description confirm delete
     */
     const confirmDelete = (ID) => {
-        const loggedInUser = loggedInUserId()
-        setState((prevState) => ({ ...prevState, isLoader: true }))
+        const loggedInUser = loggedInUserId();
         dispatch(deleteProfit(ID, loggedInUser, (res) => {
-            if (res !== undefined && res?.status === 417 && res?.data?.Result === false) {
-                setState((prevState) => ({ ...prevState, isLoader: false }))
-                Toaster.error(res?.data?.Message)
-            } else if (res && res?.data && res?.data?.Result === true) {
+            if (res?.data?.Result === true) {
                 Toaster.success(MESSAGES.DELETE_PROFIT_SUCCESS);
                 dispatch(setSelectedRowForPagination([]));
                 if (gridApi) {
                     gridApi.deselectAll();
                 }
-                getDataList(null, null, null, null, pageRecord, globalTakes, true, floatingFilterData)
+                getDataList(null, null, null, null, pageRecord, globalTakes, true, floatingFilterData);
                 setDataCount(0);
             }
-        }))
-        setShowPopup(false)
-    }
+        }));
+        setShowPopup(false);
+    };
+
 
 
     const onPopupConfirm = () => {
