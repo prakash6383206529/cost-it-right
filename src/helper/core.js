@@ -98,7 +98,6 @@ const getLocalizedLabelMap = (t) => {
   };
 
   const allLabels = getAllLabels();
-  console.log("allLabels:", allLabels);
 
   const labelMap = {};
   Object.entries(allLabels.MasterLabels ? allLabels.MasterLabels : DefaultLocalizationLabel).forEach(([key, value]) => {
