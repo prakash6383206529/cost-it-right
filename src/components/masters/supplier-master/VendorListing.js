@@ -102,6 +102,7 @@ const VendorListing = (props) => {
     showExtraData: false,
   });
 
+  const [pageRecord, setPageRecord] = useState(0)
   useEffect(() => {
     if (!topAndLeftMenuData) {
       setState(prevState => ({ ...prevState, isLoader: true }));
@@ -167,10 +168,10 @@ const VendorListing = (props) => {
    * @description Get Table data
    */
   const getTableListData = (
-    skip, obj, take, isPagination
+    skip = 0, obj, take = 10, isPagination = true
   ) => {
     setState((prevState) => ({ ...prevState, isLoader: isPagination ? true : false, }));
-
+    setPageRecord(skip)
     let constantFilterData = state.filterModel;
     let object = { ...state.floatingFilterData };
     dispatch(
@@ -509,22 +510,17 @@ const VendorListing = (props) => {
 
     if (type !== "cancel") {
       setTimeout(() => {
-        getTableListData(
-          currentRowIndex,
-          state.floatingFilterData,
-          100,
-          true
-        );
+        getTableListData(pageRecord, state.floatingFilterData, globalTakes, true);
       }, 200);
     }
   }
 
   /**
    * @method filterList
-   * @description Filter user listing on the basis of role and department
+   * @description Filter user listing on the basis of role and departments
    */
   const filterList = () => {
-    getTableListData(currentRowIndex, state.floatingFilterData, 100, true);
+    getTableListData(pageRecord, state.floatingFilterData, globalTakes, true);
   };
 
   const formToggle = () => {

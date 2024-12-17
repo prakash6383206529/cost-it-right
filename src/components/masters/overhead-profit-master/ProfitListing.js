@@ -78,7 +78,7 @@ function ProfitListing(props) {
     const globalTakes = useSelector((state) => state.pagination.globalTakes);
     const modelTypes = useSelector(state => state.comman?.modelTypes)
     const [modelText, setModelText] = useState('')
-
+    const [pageRecord, setPageRecord] = useState(0)
     const { isBulkUpload } = state;
     var filterParams = {
         comparator: function (filterLocalDateAtMidnight, cellValue) {
@@ -155,6 +155,7 @@ function ProfitListing(props) {
     }, [statusColumnData])
 
     const getDataList = (costingHead = null, vendorName = null, overhead = null, modelType = null, skip = 0, take = 10, isPagination = true, dataObj) => {
+        setPageRecord(skip)
         const filterData = {
             costing_head: costingHead,
             vendor_id: vendorName,
@@ -348,17 +349,21 @@ function ProfitListing(props) {
     * @description confirm delete
     */
     const confirmDelete = (ID) => {
-        const loggedInUser = loggedInUserId()
+        const loggedInUser = loggedInUserId();
         dispatch(deleteProfit(ID, loggedInUser, (res) => {
-            if (res.data.Result === true) {
+            if (res?.data?.Result === true) {
                 Toaster.success(MESSAGES.DELETE_PROFIT_SUCCESS);
-                getDataList(null, null, null, null, 0, 10, true, floatingFilterData)
-                dispatch(setSelectedRowForPagination([]))
-                setDataCount(0)
+                dispatch(setSelectedRowForPagination([]));
+                if (gridApi) {
+                    gridApi.deselectAll();
+                }
+                getDataList(null, null, null, null, pageRecord, globalTakes, true, floatingFilterData);
+                setDataCount(0);
             }
-        }))
-        setShowPopup(false)
-    }
+        }));
+        setShowPopup(false);
+    };
+
 
 
     const onPopupConfirm = () => {

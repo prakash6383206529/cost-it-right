@@ -163,6 +163,7 @@ function VolumeListing(props) {
   });
   const [disableDownload, setDisableDownload] = useState(false);
   const [noData, setNoData] = useState(false);
+  const [pageRecord, setPageRecord] = useState(0);
   const { topAndLeftMenuData } = useSelector((state) => state.auth);
   const { volumeDataList, volumeDataListForDownload } = useSelector((state) => state.volume);
   const { globalTakes } = useSelector((state) => state.pagination);
@@ -221,6 +222,7 @@ function VolumeListing(props) {
    * @description Get user list data
    */
   const getTableListData = (skip = 0, take = 10, isPagination = true) => {
+    setPageRecord(skip)
     if (isPagination === true || isPagination === null) setIsLoader(true);
     let dataObj = { ...floatingFilterData };
     const { zbc, vbc, cbc } = reactLocalStorage.getObject('CostingTypePermission')
@@ -295,17 +297,19 @@ function VolumeListing(props) {
    */
   const confirmDeleteItem = (ID) => {
     dispatch(deleteVolume(ID, (res) => {
-      if (res.data.Result === true) {
-        Toaster.success(MESSAGES.DELETE_VOLUME_SUCCESS);
-        getTableListData(0, globalTakes, true);
-        gridApi.deselectAll();
+      if (res?.data?.Result === true) {
         dispatch(setSelectedRowForPagination([]));
+        if (gridApi) {
+          gridApi?.deselectAll();
+        }
+        Toaster.success(MESSAGES.DELETE_VOLUME_SUCCESS);
+        getTableListData(pageRecord, globalTakes, true);
         setDataCount(0);
       }
-    })
-    );
+    }));
     setShowPopup(false);
   };
+
 
   const onPopupConfirm = () => {
     confirmDeleteItem(deletedId);
