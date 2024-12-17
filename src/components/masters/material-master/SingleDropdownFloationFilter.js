@@ -8,6 +8,7 @@ import { statusDropdownforNfr, statusDropdownforRfq } from "../../../config/mast
 
 
 function SingleDropdownFloationFilter(props) {
+console.log(props);
 
 
     const [maxValue, setMaxValue] = useState(props.maxValue)
@@ -30,7 +31,7 @@ function SingleDropdownFloationFilter(props) {
     })
 
     useEffect(() => {
-
+        console.log(isReset);
         if (isReset && isReset?.data) {
             setValue("singleDropDown", [])
             setShowInputData([])

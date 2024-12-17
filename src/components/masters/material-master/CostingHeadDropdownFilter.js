@@ -12,7 +12,7 @@ function CostingHeadDropdownFilter(props) {
     const CostingHeadOptions = reactLocalStorage.getObject('CostingHeadOptions');
     const getGridHeight = useSelector(state => state.comman.getGridHeight)
     const isReset = useSelector((state) => state.comman.isReset);
-    const { costingHeadFilter } = useSelector((state) => state.comman);
+    const { costingHeadFilter } = useSelector((state) => state?.comman);
 
     const { register, control, setValue } = useForm({
         mode: 'onBlur',
@@ -44,6 +44,7 @@ function CostingHeadDropdownFilter(props) {
         return localizedOptions;
     };
     useEffect(() => {
+console.log();
 
         if (isReset && isReset?.data) {
             setValue("costingHeadDropDown", [])
@@ -56,31 +57,6 @@ function CostingHeadDropdownFilter(props) {
 
     }, [isReset])
 
-    // useEffect(() => {
-    //     
-    //     if (isReset && isReset?.data) {
-    //         
-    //         setValue("costingHeadDropDown", null);
-    //         setCurrentValue(null);
-    //                     dispatch(setCostingHeadFilter(null)); // Reset the filter in Redux
-
-    //     } else if (props.api && props.column) {
-    //         const filterModel = props.api.getFilterModel();
-    //         const fieldFilter = filterModel[props.column.colId];
-    //         
-    //         if (fieldFilter) {
-    //             const localizedOptions = getLocalizedOptions();
-    //             const selectedOption = localizedOptions.find(option => option.value === fieldFilter.filter);
-    //             
-    //             if (selectedOption) {
-    //                 setValue("costingHeadDropDown", selectedOption);
-    //                 setCurrentValue(selectedOption);
-    //                 dispatch(setCostingHeadFilter(selectedOption,CostingHeadOptions));
-
-    //             }
-    //         }
-    //     }
-    // }, [isReset, props.api, props.column, setValue]);
 
     const valueChanged = (event) => {
         

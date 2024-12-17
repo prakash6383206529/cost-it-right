@@ -177,13 +177,13 @@ function VolumeListing(props) {
     getTableListData(0, defaultPageSize, true);
     return () => {
       dispatch(setSelectedRowForPagination([]));
+      dispatch(isResetClick(true, "costingHead"))
     };
   }, []);
 
   useEffect(() => {
     setIsLoader(true);
     applyPermission(topAndLeftMenuData);
-    dispatch(isResetClick(false, "costingHead"))
     setTimeout(() => {
       setIsLoader(false);
     }, 200);

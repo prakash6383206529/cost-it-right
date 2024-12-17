@@ -138,13 +138,15 @@ const BOPImportListing = (props) => {
         return () => {
           dispatch(setSelectedRowForPagination([]))
           dispatch(resetStatePagination());
-          dispatch(isResetClick(false, "costingHead"))
 
 
           // reactLocalStorage.setObject('selectedRow', {})
         }
       }
     }, 300);
+    return () => {
+      dispatch(isResetClick(true, "costingHead"))
+    }
 
   }, [])
   useEffect(() => {

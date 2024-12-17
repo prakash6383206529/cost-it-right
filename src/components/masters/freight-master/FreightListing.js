@@ -23,6 +23,7 @@ import Button from '../../layout/Button';
 import DayTime from '../../common/DayTimeWrapper';
 import { useLabels, useWithLocalization } from '../../../helper/core';
 import CostingHeadDropdownFilter from '../material-master/CostingHeadDropdownFilter';
+import { isResetClick } from '../../../actions/Common';
 const gridOptions = {};
 const FreightListing = (props) => {
   const dispatch = useDispatch();
@@ -46,7 +47,7 @@ const FreightListing = (props) => {
   const permissions = useContext(ApplyPermission);
   const { freightDetail } = useSelector((state) => state.freight);
   const { vendorLabel,vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels();
-  const { costingHeadFilter } = useSelector((state) => state.comman);
+  const { costingHeadFilter } = useSelector((state) => state?.comman);
 
   useEffect(() => {
     !props.stopApiCallOnCancel && setState((prevState) => ({ ...prevState, isLoader: true }))
@@ -61,14 +62,19 @@ const FreightListing = (props) => {
   //for static dropdown
   useEffect(() => {
    
-    if (costingHeadFilter && costingHeadFilter.data) {
-      const matchedOption = costingHeadFilter.CostingHeadOptions.find(option => option.value === costingHeadFilter.data.value);
+    if (costingHeadFilter && costingHeadFilter?.data) {
+      const matchedOption = costingHeadFilter?.CostingHeadOptions?.find(option => option?.value === costingHeadFilter?.data?.value);
       if (matchedOption) {
-        state.gridApi?.setQuickFilter(matchedOption.label);
+        state.gridApi?.setQuickFilter(matchedOption?.label);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ costingHeadFilter]);
+  useEffect(() => {
+    return () => {
+      dispatch(isResetClick(true, "costingHead"))
+    }
+  }, [])
   /**
   * @method getDataList
   * @description GET DETAILS OF BOP DOMESTIC

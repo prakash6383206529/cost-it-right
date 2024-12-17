@@ -14,6 +14,7 @@ import { getLocalizedCostingHeadValue } from '../../../helper'
 import { useLabels } from '../../../helper/core'
 import CostingHeadDropdownFilter from '../../masters/material-master/CostingHeadDropdownFilter'
 import { reactLocalStorage } from 'reactjs-localstorage'
+import { isResetClick } from '../../../actions/Common'
 
 function SimulationHistory(props) {
 
@@ -21,15 +22,19 @@ function SimulationHistory(props) {
   const simulationHistory = useSelector(state => state.history.simulationHistory)
   const [gridApi, setGridApi] = useState(null);
   const [gridColumnApi, setGridColumnApi] = useState(null);
-const {costingHeadFilter} =useSelector(state => state.common )
+const {costingHeadFilter} =useSelector(state => state?.comman )
   const dispatch = useDispatch()
-
+useEffect(() => {
+  return () => {
+    dispatch(isResetClick(true, "costingHead"))
+  }
+}, [])
   useEffect(() => {
    
-    if (costingHeadFilter && costingHeadFilter.data) {
-      const matchedOption = costingHeadFilter.CostingHeadOptions.find(option => option.value === costingHeadFilter.data.value);
+      if (costingHeadFilter && costingHeadFilter?.data) {
+      const matchedOption = costingHeadFilter?.CostingHeadOptions?.find(option => option?.value === costingHeadFilter?.data?.value);
       if (matchedOption) {
-        gridApi?.setQuickFilter(matchedOption.label);
+        gridApi?.setQuickFilter(matchedOption?.label);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -152,7 +152,6 @@ function RMDomesticListing(props) {
                     props?.changeTokenCheckBox(false)
                 }
                 getDataList(null, null, null, null, null, 0, 0, defaultPageSize, true, floatingFilterData)
-                dispatch(isResetClick(false, "costingHead"))
 
             }
             setvalue({ min: 0, max: 0 });

@@ -105,9 +105,11 @@ const BOPDomesticListing = (props) => {
     setTimeout(() => {
       if (!props.stopApiCallOnCancel) {
         getDataList("", 0, "", "", 0, defaultPageSize, true, state.floatingFilterData);
-        dispatch(isResetClick(false, "costingHead"))
       }
     }, 300);
+    return () => {
+      dispatch(isResetClick(true, "costingHead"))
+    }
   },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     []);

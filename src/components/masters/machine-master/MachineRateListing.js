@@ -114,6 +114,7 @@ const MachineRateListing = (props) => {
     return () => {
       dispatch(setSelectedRowForPagination([]));
       dispatch(resetStatePagination());
+      dispatch(isResetClick(true, "costingHead"));
 
     };
     // eslint-disable-next-line
@@ -267,7 +268,7 @@ const MachineRateListing = (props) => {
 
   const resetState = () => {
     setState((prevState) => ({ ...prevState, noData: false, warningMessage: false, }));
-    dispatch(isResetClick(true, "Operation"));
+    dispatch(isResetClick(true, "costingHead"));
     setState((prevState) => ({ ...prevState, isFilterButtonClicked: false, }));
     setSearchText(''); // Clear the search text state
     if (state.gridApi) { state.gridApi.setQuickFilter(''); }

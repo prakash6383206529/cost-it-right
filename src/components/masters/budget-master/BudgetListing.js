@@ -94,6 +94,7 @@ function BudgetListing(props) {
         } return () => {
             dispatch(setSelectedRowForPagination([]))
             dispatch(resetStatePagination());
+            dispatch(isResetClick(true, "costingHead"))
 
         }
 
@@ -102,7 +103,6 @@ function BudgetListing(props) {
     useEffect(() => {
         setIsLoader(true)
         applyPermission(topAndLeftMenuData)
-        dispatch(isResetClick(false, "costingHead"))
         setTimeout(() => {
             setIsLoader(false)
         }, 200);

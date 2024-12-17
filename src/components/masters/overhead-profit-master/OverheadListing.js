@@ -157,7 +157,7 @@ const onFilterChange = (event) => {
         dispatch(agGridStatus("", ""))
         setSelectedRowForPagination([])
         dispatch(resetStatePagination());
-
+       
     }, [])
 
     useEffect(() => {
@@ -707,7 +707,7 @@ const onFilterChange = (event) => {
         <>
             {
                 isLoader ? <LoaderCustom customClass={"loader-center"} /> :
-                    <div className={`ag-grid-react custom-pagination ${DownloadAccessibility ? "show-table-btn" : ""}`}>
+                    <div className={`ag-grid-react grid-parent-wrapper custom-pagination ${DownloadAccessibility ? "show-table-btn" : ""}`}>
                         {disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
                         <form onSubmit={(onSubmit)} noValidate>
                             <Row className="pt-4 ">
@@ -763,7 +763,7 @@ const onFilterChange = (event) => {
                         </form>
                         <Row>
                             <Col>
-                                <div className={`ag-grid-wrapper height-width-wrapper grid-parent-wrapper ${(overheadProfitList && overheadProfitList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
+                                <div className={`ag-grid-wrapper height-width-wrapper report-grid ${(overheadProfitList && overheadProfitList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                                     <div className="ag-grid-header">
                                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
                                         <TourWrapper

@@ -68,7 +68,7 @@ const InterestRateListing = (props) => {
   const { vendorLabel ,vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels()
   const [gridApi, setGridApi] = useState(null);
   const { statusColumnData } = useSelector((state) => state.comman);
-  const { costingHeadFilter } = useSelector((state) => state.comman);
+  const { costingHeadFilter } = useSelector((state) => state?.comman);
 
   const { t } = useTranslation("common")
   const { topAndLeftMenuData } = useSelector((state) => state.auth);
@@ -80,6 +80,7 @@ const InterestRateListing = (props) => {
     setTimeout(() => {
       getTableListData()
     }, 500);
+    
     // eslint-disable-next-line react-hooks/exhaustive-deps
 
   }, []);
@@ -87,10 +88,10 @@ const InterestRateListing = (props) => {
     if (statusColumnData) {
       state.gridApi?.setQuickFilter(statusColumnData.data);
     }
-    if (costingHeadFilter && costingHeadFilter.data) {
-      const matchedOption = costingHeadFilter.CostingHeadOptions.find(option => option.value === costingHeadFilter.data.value);
+    if (costingHeadFilter && costingHeadFilter?.data) {
+      const matchedOption = costingHeadFilter?.CostingHeadOptions?.find(option => option?.value === costingHeadFilter?.data?.value);
       if (matchedOption) {
-        state.gridApi?.setQuickFilter(matchedOption.label);
+        state.gridApi?.setQuickFilter(matchedOption?.label);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -357,7 +358,7 @@ const InterestRateListing = (props) => {
     gridOptions.columnApi.resetColumnState();
     gridOptions.api.setFilterModel(null);
     dispatch(agGridStatus("", ""))
-    dispatch(isResetClick(true, "ICCApplicability"))
+    dispatch(isResetClick(true, 'applicability'))
 
   }
 

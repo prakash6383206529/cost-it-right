@@ -138,7 +138,9 @@ const OperationListing = (props) => {
     useEffect(() => {
         dispatch(setSelectedRowForPagination([]));
         dispatch(resetStatePagination());
-
+        return () => {
+            dispatch(isResetClick(true, "costingHead"))
+          }
         // eslint-disable-next-line
     }, []);
 
@@ -324,7 +326,7 @@ const OperationListing = (props) => {
 
     const resetState = () => {
         setState((prevState) => ({ ...prevState, noData: false, warningMessage: false, }));
-        dispatch(isResetClick(true, "Operation"));
+        dispatch(isResetClick(true, "costingHead"));
         setState((prevState) => ({ ...prevState, isFilterButtonClicked: false, }));
         setSearchText(''); // Clear the search text state
         if (state.gridApi) {
