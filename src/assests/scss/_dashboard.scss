@@ -35,3 +35,115 @@
     }
   }
 }
+
+.delegation .master-tabs-row .master-tabs .subtabs {
+  height: auto !important;
+  min-height: calc(100% - 85px) !important;
+}
+
+.delegation .master-tabs-row .master-tabs .subtabs {
+
+  .delegation-master-tab.nav-item {
+    a.nav-link {
+      padding: 10px 0 !important;
+
+      &.active {
+        background-color: $tabsBackgroundColor !important;
+        color: $lightBack !important;
+        border-right: none !important;
+      }
+
+      &:hover {
+        background-color: $tabsBackgroundColor !important;
+        color: $lightBack !important;
+        border-right: none !important;
+      }
+
+      .master-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 12px !important;
+        // padding: 8px;
+
+        .chevron-button {
+          background: none;
+          border: none;
+          padding: 0;
+          margin-left: 8px;
+          cursor: pointer;
+          color: inherit;
+
+          &:hover {
+            opacity: 0.8;
+          }
+
+          &:focus {
+            outline: none;
+            border: none !important;
+            box-shadow: none !important;
+          }
+
+          i {
+            font-size: 12px;
+          }
+        }
+      }
+
+      .master-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        padding: 8px 0;
+
+        button {
+          width: 100%;
+          text-align: left;
+          padding: 4px 12px;
+          padding-left: 16px;
+          border: none;
+          background: transparent;
+          cursor: pointer;
+          color: inherit;
+          transition: all 0.2s ease;
+          position: relative;
+
+          &:before {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: transparent;
+            transition: all 0.2s ease;
+          }
+
+          &.active {
+            background-color: white;
+            color: $highlightcolor;
+            pointer-events: none;
+
+            &:before {
+              background: $highlightcolor;
+            }
+          }
+
+          &:hover:not(.active) {
+            background-color: white;
+            color: $highlightcolor;
+
+            &:before {
+              background: $highlightcolor;
+            }
+          }
+
+          &:focus {
+            border: none !important;
+            box-shadow: none !important;
+          }
+        }
+      }
+    }
+  }
+}
