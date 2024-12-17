@@ -226,8 +226,8 @@ function ColdForging(props) {
     const forgingScrapRecoveryPercent = checkForNull(getValues('forgingScrapRecoveryPercent'))
     const machiningScrapRecoveryPercent = checkForNull(getValues('machiningScrapRecoveryPercent'))
 
-    const forgingScrapCost = ((forgingScrapWeight * forgingScrapRecoveryPercent) / 100) * rmRowData?.ScrapRate
-    const machiningScrapCost = ((machiningScrapWeight * machiningScrapRecoveryPercent) / 100) * rmRowData?.MachiningScrapRate
+    const forgingScrapCost = checkForNull(forgingScrapWeight) * checkForNull(rmRowData?.ScrapRate)
+    const machiningScrapCost = checkForNull(machiningScrapWeight) * checkForNull(rmRowData?.MachiningScrapRate)
     const ScrapCost = forgingScrapCost + machiningScrapCost
     let obj = dataSend
     obj.ScrapCost = ScrapCost
@@ -688,7 +688,7 @@ function ColdForging(props) {
                 />
               </Col>
               <Col md="3">
-                <TooltipCustom disabledIcon={true} id={'forging-scrapCost'} tooltipClass={'weight-of-sheet'} tooltipText={' Forging Scrap Cost = ((Forging Scrap Weight * Forging Scrap Recovery (%)) / 100) * Forging Scrap Rate'} />
+                <TooltipCustom disabledIcon={true} id={'forging-scrapCost'} tooltipClass={'weight-of-sheet'} tooltipText={' Forging Scrap Cost = Forging Scrap Weight * Forging Scrap Rate'} />
                 <TextFieldHookForm
                   label={`Forging Scrap Cost (${sourceCurrencyFormatter(currencySource?.label)})`}
                   name={'forgingScrapCost'}
@@ -753,7 +753,7 @@ function ColdForging(props) {
               </Col>
 
               <Col md="3">
-                <TooltipCustom disabledIcon={true} id={'machining-scrapCost'} tooltipClass={'weight-of-sheet'} tooltipText={' Machining Scrap Cost = ((Machining Scrap Weight * Forging Scrap Recovery (%)) / 100) * Machining Scrap Rate'} />
+                <TooltipCustom disabledIcon={true} id={'machining-scrapCost'} tooltipClass={'weight-of-sheet'} tooltipText={' Machining Scrap Cost = Machining Scrap Weight * Machining Scrap Rate'} />
                 <TextFieldHookForm
                   label={`Machining Scrap Cost (${sourceCurrencyFormatter(currencySource?.label)})`}
                   name={'machiningScrapCost'}
