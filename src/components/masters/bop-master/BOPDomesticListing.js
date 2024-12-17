@@ -58,6 +58,7 @@ const BOPDomesticListing = (props) => {
 
   const { t } = useTranslation("common")
   const { technologyLabel, vendorLabel } = useLabels();
+  const [skipRecord, setSkipRecord] = useState(0)
   const [state, setState] = useState({
     isOpen: false,
     isEditFlag: false,
@@ -139,6 +140,7 @@ const BOPDomesticListing = (props) => {
 
   const getDataList = (bopFor = '', CategoryId = 0, vendorId = '', plantId = '', skip = 0, take = 10, isPagination = true, dataObj, isReset = false) => {
     const { floatingFilterData } = state
+    setSkipRecord(skip)
     if (state.filterModel?.EffectiveDate && !isReset) {
       if (state.filterModel.EffectiveDate.dateTo) {
         let temp = []
@@ -415,16 +417,24 @@ const BOPDomesticListing = (props) => {
   * @method confirmDelete
   * @description confirm delete Raw Material details
   */
+
   const confirmDelete = (ID) => {
     const loggedInUser = loggedInUserId()
     dispatch(deleteBOP(ID, loggedInUser, (res) => {
-      if (res.data.Result === true) {
+      if (res && res?.data && res?.data?.Result === true) {
+        dispatch(setSelectedRowForPagination([]));
+        if (state?.gridApi) {
+          state?.gridApi?.deselectAll();
+        }
         Toaster.success(MESSAGES.BOP_DELETE_SUCCESS);
-        resetState()
+        getDataList("", 0, "", "", skipRecord, globalTakes, true, state?.floatingFilterData);
       }
+      reactLocalStorage.remove('selectedRow');
+      setState((prevState) => ({ ...prevState, dataCount: 0 }))
     }));
     setState((prevState) => ({ ...prevState, showPopup: false }))
   }
+
   const onPopupConfirm = () => {
     confirmDelete(state.deletedId);
   }

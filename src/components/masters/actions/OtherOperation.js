@@ -398,7 +398,7 @@ export function deleteOperationAPI(OperationId, loggedInUserId, callback) {
             .then((response) => {
                 callback(response);
             }).catch((error) => {
-                apiErrors(error);
+                apiErrors(error)
                 dispatch({ type: API_FAILURE });
             });
     };
