@@ -928,7 +928,7 @@ function CommonApproval(props) {
             </Row>
             <Row>
                 <Col>
-                    <div className={`ag-grid-react`} >
+                    <div className={`ag-grid-react grid-parent-wrapper`} >
                         <div className={`ag-grid-wrapper height-width-wrapper min-height-auto ${(approvalList && approvalList?.length <= 0) || noData ? "overlay-contain p-relative" : ""}`}>
                             <div className="ag-grid-header">
                                 <input ref={searchRef} type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
