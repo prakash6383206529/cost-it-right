@@ -321,7 +321,6 @@ const FreightListing = (props) => {
                 : ""
               }`}
           >
-            {console.log("freightDetail: ", freightDetail)}
             <div className="ag-grid-header">
               <input
                 type="text"

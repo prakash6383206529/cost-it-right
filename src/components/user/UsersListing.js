@@ -504,7 +504,6 @@ const UsersListing = (props) => {
 		*/
 	const hyphenFormatter = (props) => {
 		const cellValue = props?.value;
-		console.log("Cell value", cellValue)
 		return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
 	}
 
