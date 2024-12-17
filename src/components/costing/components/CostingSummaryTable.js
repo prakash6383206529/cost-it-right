@@ -732,7 +732,6 @@ const CostingSummaryTable = (props) => {
     const userDetail = userDetails()
     let tempData = viewCostingData[index]
     const type = viewCostingData[index]?.costingTypeId
-
     const Data = {
       PartId: partNumber.partId,
       PartTypeId: partInfo.PartTypeId,
@@ -1020,7 +1019,7 @@ const CostingSummaryTable = (props) => {
           obj.oldPrice = viewCostingData[index]?.oldPoPrice
           obj.revisedPrice = viewCostingData[index]?.poPrice
           obj.nPOPriceWithCurrency = viewCostingData[index]?.nPOPriceWithCurrency
-          obj.currencyRate = viewCostingData[index]?.currency.currencyValue
+          obj.currencyRate = viewCostingData[index]?.currencyRate
           obj.variance = Number(viewCostingData[index]?.poPrice && viewCostingData[index]?.poPrice !== '-' ? viewCostingData[index]?.oldPoPrice : 0) - Number(viewCostingData[index]?.poPrice && viewCostingData[index]?.poPrice !== '-' ? viewCostingData[index]?.poPrice : 0)
           let date = viewCostingData[index]?.effectiveDate
           if (viewCostingData[index]?.effectiveDate) {

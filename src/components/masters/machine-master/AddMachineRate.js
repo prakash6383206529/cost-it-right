@@ -345,6 +345,15 @@ class AddMachineRate extends Component {
         if (res && res.data && res.data.Result) {
 
           const Data = res.data.Data;
+          const vendorData = Data?.VendorId && Data?.VendorName ? {
+            value: Data?.VendorId,
+            label: Data?.VendorName
+          } : [];
+    
+          const clientData = Data?.CustomerId && Data?.CustomerName ? {
+            value: Data?.CustomerId,
+            label: Data?.CustomerName
+          } : [];
           if (Data?.MachineLabourRates && Data?.MachineLabourRates?.length !== 0) {
             this.setState({ disableMachineType: true })
           }
@@ -413,12 +422,14 @@ class AddMachineRate extends Component {
               isEditFlag: true,
               IsFinancialDataChanged: false,
               costingTypeId: (Data.CostingTypeId),
-              client: Data.CustomerName !== undefined ? { label: Data.CustomerName, value: Data.CustomerId } : [],
+              client: clientData,  // Updated
+          vendorName: vendorData,  // Updated
+              // client: Data.CustomerName !== undefined ? { label: Data?.CustomerName ?? '', value: Data?.CustomerId ?? '' } : [],
               IsCopied: Data.IsCopied,
               IsDetailedEntry: Data.IsDetailedEntry,
               selectedTechnology: Data.Technology[0].Technology !== undefined ? { label: Data.Technology[0].Technology, value: Data.Technology[0].TechnologyId } : [],
               selectedPlants: Data && Data.Plant.length > 0 ? { label: Data.Plant[0].PlantName, value: Data.Plant[0].PlantId } : [],
-              vendorName: Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.VendorId } : [],
+              // vendorName: Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.VendorId } : [],
               machineType: Data.MachineType !== undefined ? { label: Data.MachineType, value: Data.MachineTypeId } : [],
               processGrid: MachineProcessArray ?? [],
               remarks: Data.Remark,
@@ -494,6 +505,7 @@ class AddMachineRate extends Component {
 * @description called
 */
   handleClient = (newValue, actionMeta) => {
+    
     if (newValue && newValue !== '') {
       this.setState({ client: newValue });
     } else {
@@ -1171,7 +1183,9 @@ class AddMachineRate extends Component {
           EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
           MachineProcessGroup: this.props.processGroupApiData,
           VendorPlant: [],
-          CustomerId: client.value,
+          CustomerId: costingTypeId === CBCTypeId && client ? 
+          (client.value || null) : 
+          null,
           DestinationPlantId: '',
         }
 
@@ -1197,10 +1211,10 @@ class AddMachineRate extends Component {
         if (isEditFlag) {
 
           if (DropdownChange && (JSON.stringify(files) === JSON.stringify(DataToChange.Attachements)) &&
-            (DataToChange.Specification ? DataToChange.Specification : '-') === (values.Specification ? values.Specification : '-') &&
-            (DataToChange.MachineName ? DataToChange.MachineName : '-') === (values.MachineName ? values.MachineName : '-') &&
-            (DataToChange?.MachineTypeId ? String(DataToChange?.MachineTypeId) : '-') === (machineType?.value ? String(machineType?.value) : '-') &&
-            (DataToChange?.TonnageCapacity ? String(DataToChange?.TonnageCapacity) : '-') === (values?.TonnageCapacity ? String(values?.TonnageCapacity) : '-') &&
+            (DataToChange.Specification ? DataToChange.Specification : '') === (values.Specification ? values.Specification : '') &&
+            (DataToChange.MachineName ? DataToChange.MachineName : '') === (values.MachineName ? values.MachineName : '') &&
+            (DataToChange?.MachineTypeId ? String(DataToChange?.MachineTypeId) : '') === (machineType?.value ? String(machineType?.value) : '') &&
+            (DataToChange?.TonnageCapacity ? String(DataToChange?.TonnageCapacity) : '') === (values?.TonnageCapacity ? String(values?.TonnageCapacity) : '') &&
             DataToChange?.Remark === values?.Remark) {
             this.cancel('submit')
             return false
@@ -1277,10 +1291,10 @@ class AddMachineRate extends Component {
 
         if (isEditFlag) {
           if (DropdownChange && (JSON.stringify(files) === JSON.stringify(DataToChange.Attachements)) &&
-            (DataToChange.Specification ? DataToChange.Specification : '-') === (values.Specification ? values.Specification : '-') &&
-            (DataToChange.MachineName ? DataToChange.MachineName : '-') === (values.MachineName ? values.MachineName : '-') &&
-            (DataToChange?.MachineTypeId ? String(DataToChange?.MachineTypeId) : '-') === (machineType?.value ? String(machineType?.value) : '-') &&
-            (DataToChange?.TonnageCapacity ? String(DataToChange?.TonnageCapacity) : '-') === (values?.TonnageCapacity ? String(values?.TonnageCapacity) : '-') &&
+            (DataToChange.Specification ? DataToChange.Specification : '') === (values.Specification ? values.Specification : '') &&
+            (DataToChange.MachineName ? DataToChange.MachineName : '') === (values.MachineName ? values.MachineName : '') &&
+            (DataToChange?.MachineTypeId ? String(DataToChange?.MachineTypeId) : '') === (machineType?.value ? String(machineType?.value) : '') &&
+            (DataToChange?.TonnageCapacity ? String(DataToChange?.TonnageCapacity) : '') === (values?.TonnageCapacity ? String(values?.TonnageCapacity) : '') &&
             DataToChange?.Remark === values?.Remark) {
             Toaster.warning('Please change data to send machine for approval')
             return false

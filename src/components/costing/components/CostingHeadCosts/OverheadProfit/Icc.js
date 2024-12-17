@@ -258,11 +258,11 @@ function Icc(props) {
                     break;
 
                 case 'Fixed':
-                    setValue('CostApplicability', '-')
+                    setValue('CostApplicability', '')
                     setValue('NetICCTotal', checkForDecimalAndNull(checkForNull(InterestRatePercentage) + checkForNull(includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0), initialConfiguration.NoOfDecimalForPrice))
                     setTempInventoryObj({
                         ...tempInventoryObj,
-                        CostApplicability: '-',
+                        CostApplicability: '',
                         NetICCTotal: checkForNull(InterestRatePercentage) + (includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0)
                     })
                     break;
