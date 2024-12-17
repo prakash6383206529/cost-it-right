@@ -524,6 +524,7 @@ function MachiningStockTable(props) {
             </Col >
 
             <Col md="3">
+              <TooltipCustom id={"minor-diameter-info"} width={"230px"} tooltipText={`For circular solid bars, Minor Diameter should be '0'`} />
               <TextFieldHookForm
                 label={`Minor Diameter(mm)`}
                 name={'minorDiameter'}
