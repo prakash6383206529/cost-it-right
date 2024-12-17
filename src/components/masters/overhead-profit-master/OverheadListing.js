@@ -402,7 +402,7 @@ function OverheadListing(props) {
                 Toaster.success(MESSAGES.DELETE_OVERHEAD_SUCCESS);
                 dispatch(setSelectedRowForPagination([]));
                 if (gridApi) {
-                    gridApi.deselectAll();
+                    gridApi?.deselectAll();
                 }
                 getDataList(null, null, null, null, pageRecord, globalTakes, true, floatingFilterData);
                 setDataCount(0);
