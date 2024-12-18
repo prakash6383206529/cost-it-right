@@ -929,7 +929,7 @@ function CommonApproval(props) {
                     </div>
                 </Col>
             </Row>
-            <Row>
+            <Row> 
                 <Col>
                     <div className={`ag-grid-react grid-parent-wrapper`} >
                         <div className={`ag-grid-wrapper height-width-wrapper min-height-auto ${(approvalList && approvalList?.length <= 0) || noData ? "overlay-contain p-relative" : ""}`}>
@@ -993,7 +993,7 @@ function CommonApproval(props) {
 
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="165" field="NetLandedCost" cellRenderer='costFormatter'></AgGridColumn>}
 
-                                    {!props?.isApproval && <AgGridColumn headerClass="justify-content-center" pinned="right" tooltipField="TooltipText" cellClass="text-center" field="DisplayStatus" cellRenderer='statusFormatter' headerName="Status" floatingFilterComponent="statusFilter" floatingFilterComponentParams={floatingFilterStatus} ></AgGridColumn>}
+                                    {!props?.isApproval && <AgGridColumn headerClass="justify-content-center"  tooltipField="TooltipText" cellClass="text-center" field="DisplayStatus" cellRenderer='statusFormatter' headerName="Status" floatingFilterComponent="statusFilter" floatingFilterComponentParams={floatingFilterStatus} ></AgGridColumn>}
 
 
 
