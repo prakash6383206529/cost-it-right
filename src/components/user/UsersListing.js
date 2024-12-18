@@ -5,7 +5,7 @@ import { getAllUserDataAPI, getAllRoleAPI, activeInactiveUser } from '../../acti
 import $ from 'jquery';
 import Toaster from '../common/Toaster';
 import { MESSAGES } from '../../config/message';
-import { EMPTY_DATA, RFQUSER } from '../../config/constants';
+import { DELEGATION, EMPTY_DATA, RFQUSER } from '../../config/constants';
 import { USER } from '../../config/constants';
 import NoContentFound from '../common/NoContentFound';
 import Switch from "react-switch";
@@ -42,6 +42,7 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
 
 const UsersListing = (props) => {
+	console.log(props, 'props')
 	const dispatch = useDispatch();
 	const searchRef = useRef(null);
 	const { t } = useTranslation("common")
@@ -91,9 +92,9 @@ const UsersListing = (props) => {
 	const { isSimulation } = props;
 	useEffect(() => {
 		getDataList(null, null, skip, take, floatingFilterData, true);
-		if (props?.tabId === '1' || props?.tabId === '6') {
+		if (props?.tabId === '1' || props?.tabId === '6'||props?.tabId === '7') {
 			const moduleName = 'Users';
-			const pageType = props?.tabId === '1' ? USER : RFQUSER;
+			const pageType = props?.tabId === '1' ? USER :props?.tabId === '7' ? DELEGATION : RFQUSER;
 
 			if (topAndLeftMenuData) {
 				const userMenu = topAndLeftMenuData?.find(el => el?.ModuleName === moduleName);
@@ -465,6 +466,16 @@ const UsersListing = (props) => {
 		closeUserDetails()
 		props.getUserDetail(data)
 	}
+		/**
+		* @method editDelegationItemDetails
+		* @description confirm edit item
+		*/
+		const editDelegationItemDetails = (Id, passwordFlag = false) => {
+			let data = { isEditFlag: true, UserId: Id, passwordFlag: passwordFlag, RFQUser: props?.RFQUser }
+			closeUserDetails()
+			props.getDelegationDetail(data)
+		}
+	
 
 	const onPopupConfirm = () => {
 		let data = { Id: state?.row?.UserId, ModifiedBy: loggedInUserId(), IsActive: !state?.cell, }
@@ -499,8 +510,25 @@ const UsersListing = (props) => {
 		if (rowData?.UserId === loggedInUserId()) return null;
 		return (
 			<div className="">
+				
 				{EditAccessibility && <Button id={`userListing_edit${props?.rowIndex}`} className={"Edit Tour_List_Edit"} variant="Edit" onClick={() => editItemDetails(rowData?.UserId, false)} title={"Edit"} />}
 			</div>
+		)
+	}
+
+	/**
+		* @method actionButtonFormatter
+		* @description Renders buttons
+		*/
+	const actionButtonFormatter = (props) => {
+		const cellValue = props?.valueFormatted ? props?.valueFormatted : props?.value;
+		const rowData = props?.valueFormatted ? props?.valueFormatted : props?.data;
+		return (
+			<div className="">
+				{true && <Button id={`userListing_add${props?.rowIndex}`} className={"Add Tour_List_Edit"} variant="Add" onClick={() => editDelegationItemDetails(rowData?.UserId, false)} title={"Add"} />}
+			{true && <Button id={`userListi	ng_edit${props?.rowIndex}`} className={"Edit Tour_List_Edit"} variant="Edit" onClick={() => editDelegationItemDetails(rowData?.UserId, false)} title={"Edit"} />}
+			{true && <Button id={`userListing_view${props?.rowIndex}`} className={"View Tour_List_Edit"} variant="View" onClick={() => editDelegationItemDetails(rowData?.UserId, false)} title={"View"} />}
+		</div>
 		)
 	}
 	/**
@@ -662,6 +690,7 @@ const UsersListing = (props) => {
 		linkableFormatter: linkableFormatter,
 		dateRenderer: dateRenderer,
 		checkBoxRenderer: checkBoxRenderer,
+		actionButtonFormatter: actionButtonFormatter,
 	};
 
 	return (
@@ -745,22 +774,38 @@ const UsersListing = (props) => {
 							) : null}
 							{props?.RFQUser && <AgGridColumn field="VendorName" headerName={`${vendorLabel} (Code)`}></AgGridColumn>}
 							<AgGridColumn field="EmailAddress" headerName="Email Id"></AgGridColumn>
-							<AgGridColumn field="Mobile" headerName="Mobile No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
-							<AgGridColumn field="PhoneNumber" headerName="Phone No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
+							{!props?.isDelegation &&
+								<>
+									<AgGridColumn field="Mobile" headerName="Mobile No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
+									<AgGridColumn field="PhoneNumber" headerName="Phone No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
+									<AgGridColumn field="DepartmentName" tooltipField="DepartmentName" headerName={`${handleDepartmentHeader()}`}></AgGridColumn>
+									<AgGridColumn field="CreatedBy" headerName="Created By" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+									<AgGridColumn field="CreatedDate" width={props?.RFQUser ? 220 : ''} headerName="Created Date (Created Time)" cellRenderer={'dateRenderer'} filter="agDateColumnFilter" filterParams={filterParams("CreatedDate")}></AgGridColumn>
+							        <AgGridColumn field="ModifiedDate" width={props?.RFQUser ? 220 : ''} headerName="Modified Date (Modified Time)" cellRenderer={'dateRenderer'} filter="agDateColumnFilter" filterParams={filterParams("ModifiedDate")}></AgGridColumn>
+							        <AgGridColumn field="ModifiedBy" headerName="Modified By" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+									<AgGridColumn field="RoleName" headerName="Role"></AgGridColumn>
+									<AgGridColumn pinned="right" field="IsActive" width={120} headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
+									<AgGridColumn field="RoleName" width={120} cellClass="ag-grid-action-container" pinned="right" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
+								</>
+							}
+							{props?.isDelegation &&
+								<>
+									<AgGridColumn field="RoleName" headerName="Role"></AgGridColumn>
+									<AgGridColumn field="SubstituteUser" headerName="Delegated To (Substitute User)"></AgGridColumn>
+									<AgGridColumn field="StartDate" headerName="Start Date"></AgGridColumn>
+									<AgGridColumn field="EndDate" headerName="End Date"></AgGridColumn>
+									<AgGridColumn pinned="right" field="IsActive" width={120} headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
+									<AgGridColumn field="SubstituteUser" width={120} cellClass="ag-grid-action-container" pinned="right" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'actionButtonFormatter'}></AgGridColumn>
+								</>
+							}
 							{/* {getConfigurationKey().IsMultipleDepartmentAllowed && <AgGridColumn field="Departments" filter={true} cellRenderer='departmentFormatter' headerName="Company"></AgGridColumn>}
 								{!getConfigurationKey().IsMultipleDepartmentAllowed && <AgGridColumn sort={true} field="DepartmentName" headerName="Company"></AgGridColumn>} */}
-							<AgGridColumn field="DepartmentName" tooltipField="DepartmentName" headerName={`${handleDepartmentHeader()}`}></AgGridColumn>
+						
 							{/* //RE    */}
 
 							{IsSendQuotationToPointOfContact() && props?.RFQUser && (<AgGridColumn field="PointOfContact" tooltipField="PointOfContact" headerName="Point of Contact" />
 							)}
-							<AgGridColumn field="CreatedBy" headerName="Created By" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-							<AgGridColumn field="CreatedDate" width={props?.RFQUser ? 220 : ''} headerName="Created Date (Created Time)" cellRenderer={'dateRenderer'} filter="agDateColumnFilter" filterParams={filterParams("CreatedDate")}></AgGridColumn>
-							<AgGridColumn field="ModifiedDate" width={props?.RFQUser ? 220 : ''} headerName="Modified Date (Modified Time)" cellRenderer={'dateRenderer'} filter="agDateColumnFilter" filterParams={filterParams("ModifiedDate")}></AgGridColumn>
-							<AgGridColumn field="ModifiedBy" headerName="Modified By" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-							<AgGridColumn field="RoleName" headerName="Role"></AgGridColumn>
-							<AgGridColumn pinned="right" field="IsActive" width={120} headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
-							<AgGridColumn field="RoleName" width={120} cellClass="ag-grid-action-container" pinned="right" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
+						
 						</AgGridReact>
 						<div className='button-wrapper'>
 							{<PaginationWrappers gridApi={state?.gridApi} totalRecordCount={totalRecordCount} getDataList={getDataList} floatingFilterData={floatingFilterData} module="User" />}
