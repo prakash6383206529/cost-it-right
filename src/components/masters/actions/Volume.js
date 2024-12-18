@@ -98,13 +98,14 @@ export function getVolumeData(VolumeId, callback) {
  * @description get all operation list
  */
 export function getVolumeDataList(skip, take, isPagination, obj, callback) {
+  console.log("obj", obj)
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });    
     const queryParams = encodeQueryParamsAndLog({
       CostingHead: obj.CostingHead,
       Year: obj.Year,
       Month: obj.Month,
-      Vendor: obj.Vendor,
+      Vendor: obj.VendorName,
       Plant: obj.Plant,
       PartNumber: obj.PartNumber,
       PartName: obj.PartName,
@@ -117,7 +118,7 @@ export function getVolumeDataList(skip, take, isPagination, obj, callback) {
       IsCustomerDataShow: obj.IsCustomerDataShow,
       IsVendorDataShow: obj.IsVendorDataShow,
       IsZeroDataShow: obj.IsZeroDataShow,
-      partType: obj.PartType
+      PartType: obj.PartType
     });
     axios.get(`${API.getVolumeDataList}?${queryParams}`, config())
       .then((response) => {
