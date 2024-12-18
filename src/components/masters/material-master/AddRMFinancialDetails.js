@@ -187,7 +187,7 @@ function AddRMFinancialDetails(props) {
                 }
             }));
         }
-    }, [getValues('Plants'), getValues('ExchangeSource'), state.effectiveDate, getValues('effectiveDate'), rawMaterailDetails?.Vendor, getValues('clientName')]);
+    }, [getValues('Plants'), getValues('ExchangeSource'), state.effectiveDate, getValues('effectiveDate'), rawMaterailDetails?.Vendor, getValues('clientName'),state.currency]);
     useEffect(() => {
         dispatch(getFrequencySettlement(() => { }))
         dispatch(getCurrencySelectList(() => { }))
