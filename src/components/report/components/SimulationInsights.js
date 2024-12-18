@@ -18,6 +18,7 @@ import { useTranslation } from "react-i18next"
 import { useLabels } from '../../../helper/core';
 import { getLocalizedCostingHeadValue } from '../../../helper';
 import CostingHeadDropdownFilter from '../../masters/material-master/CostingHeadDropdownFilter';
+import { isResetClick } from '../../../actions/Common';
 
 
 
@@ -50,18 +51,23 @@ function SimulationInsights(props) {
   const [warningMessage, setWarningMessage] = useState(false)
   const [globalTake, setGlobalTake] = useState(defaultPageSize)
   const [dataCount, setDataCount] = useState(0)
-  const { costingHeadFilter } = useSelector((state) => state.comman);
+  const { costingHeadFilter } = useSelector((state) => state?.comman);
   const { technologyLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels();
   useEffect(() => {
    
-    if (costingHeadFilter && costingHeadFilter.data) {
-      const matchedOption = costingHeadFilter.CostingHeadOptions.find(option => option.value === costingHeadFilter.data.value);
+    if (costingHeadFilter && costingHeadFilter?.data) {
+      const matchedOption = costingHeadFilter?.CostingHeadOptions?.find(option => option?.value === costingHeadFilter?.data?.value);
       if (matchedOption) {
-        gridApi?.setQuickFilter(matchedOption.label);
+        gridApi?.setQuickFilter(matchedOption?.label);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ costingHeadFilter]);
+  useEffect(() => {
+    return () => {
+      dispatch(isResetClick(true, "costingHead"))
+    }
+  }, [])
   var filterParams = {
     comparator: function (filterLocalDateAtMidnight, cellValue) {
       // var dateAsString = cellValue != null ? DayTime(cellValue).format('MM/DD/YYYY') : '';
@@ -453,7 +459,7 @@ function SimulationInsights(props) {
 
   return (
     // <div>{`hello`}</div>
-    <div className="container-fluid report-listing-page ag-grid-react custom-pagination">
+    <div className="container-fluid report-listing-page ag-grid-react grid-parent-wrapper custom-pagination">
       {loader && <LoaderCustom />}
       <Row className=" blue-before ">
         <Col md="10" lg="10" className="search-user-block mb-3">

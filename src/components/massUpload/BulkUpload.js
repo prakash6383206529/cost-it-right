@@ -353,7 +353,6 @@ class BulkUpload extends Component {
                                 }
                                 else if (this.state.costingTypeId === VBCTypeId) {
                                     const localizedRMDomesticVBC = this.localizeHeaders(RMDomesticVBC);
-                                    console.log(localizedRMDomesticVBC, "localizedRMDomesticVBC")
                                     masterDataArray = localizedRMDomesticVBC
                                     checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(localizedRMDomesticVBC, VBCTypeId), fileHeads, true)
                                 }

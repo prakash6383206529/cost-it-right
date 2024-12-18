@@ -157,7 +157,7 @@ const onFilterChange = (event) => {
         dispatch(agGridStatus("", ""))
         setSelectedRowForPagination([])
         dispatch(resetStatePagination());
-
+       
     }, [])
 
     useEffect(() => {
@@ -707,7 +707,7 @@ const onFilterChange = (event) => {
         <>
             {
                 isLoader ? <LoaderCustom customClass={"loader-center"} /> :
-                    <div className={`ag-grid-react custom-pagination ${DownloadAccessibility ? "show-table-btn" : ""}`}>
+                    <div className={`ag-grid-react grid-parent-wrapper custom-pagination ${DownloadAccessibility ? "show-table-btn" : ""}`}>
                         {disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
                         <form onSubmit={(onSubmit)} noValidate>
                             <Row className="pt-4 ">

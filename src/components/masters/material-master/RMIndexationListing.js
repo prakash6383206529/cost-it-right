@@ -26,7 +26,7 @@ import Button from "../../layout/Button";
 import TourWrapper from "../../common/Tour/TourWrapper";
 import { Steps } from "../../common/Tour/TourMessages";
 import { useTranslation } from "react-i18next";
-import { TourStartAction } from "../../../actions/Common";
+import { isResetClick, TourStartAction } from "../../../actions/Common";
 import AddRMIndexation from "./AddRMIndexation";
 import { useLabels } from "../../../helper/core";
 
@@ -68,6 +68,9 @@ const RMIndexationListing = (props) => {
 
     useEffect(() => {
         getSpecificationListData("", "");
+        return () => {
+            dispatch(isResetClick(true, "costingHead"))
+          }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -369,7 +372,7 @@ const RMIndexationListing = (props) => {
     };
     return (
         <div
-            className={`ag-grid-react min-height100vh ${permissions.Download ? "show-table-btn" : ""
+            className={`ag-grid-react grid-parent-wrapper min-height100vh ${permissions.Download ? "show-table-btn" : ""
                 }`}
         >
             {state.isLoader && <LoaderCustom />}

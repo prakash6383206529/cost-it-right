@@ -66,7 +66,7 @@ export const DropDownFilterList = async (inputValue, filterType, stateKey, apiFu
                 return dataAPI;
             }
         } catch (error) {
-            console.error("Error fetching data:", error);
+            
             setState(prevState => ({ ...prevState, inputLoader: false }));
             return [];
         }
@@ -359,8 +359,7 @@ export const getCostingConditionTypes = (conditionName) => {
 export const getEffectiveDateMinDate = () => {
     // Get the value from initialConfiguration in Redux store
     const effectiveDateRangeDayPrevious = reactLocalStorage.getObject('InitialConfiguration')?.EffectiveDateRangeDayPrevious;
-    console.log(effectiveDateRangeDayPrevious);
-
+    
         if (effectiveDateRangeDayPrevious === null) {
             return new Date(new Date().getFullYear() - 100, 0, 1); // Allow dates up to 100 years in the past
         }

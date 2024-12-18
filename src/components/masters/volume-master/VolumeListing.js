@@ -177,13 +177,13 @@ function VolumeListing(props) {
     getTableListData(0, defaultPageSize, true);
     return () => {
       dispatch(setSelectedRowForPagination([]));
+      dispatch(isResetClick(true, "costingHead"))
     };
   }, []);
 
   useEffect(() => {
     setIsLoader(true);
     applyPermission(topAndLeftMenuData);
-    dispatch(isResetClick(false, "costingHead"))
     setTimeout(() => {
       setIsLoader(false);
     }, 200);
@@ -659,7 +659,7 @@ function VolumeListing(props) {
   return (
     <>
       <div
-        className={`ag-grid-react container-fluid blue-before-inside ${downloadAccessibility ? "show-table-btn no-tab-page" : ""
+        className={`ag-grid-react grid-parent-wrapper container-fluid blue-before-inside ${downloadAccessibility ? "show-table-btn no-tab-page" : ""
           }`}
         id="go-to-top"
       >

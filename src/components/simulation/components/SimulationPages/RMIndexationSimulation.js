@@ -36,6 +36,7 @@ import { Redirect } from 'react-router-dom/cjs/react-router-dom';
 import CustomCellRenderer from '../../../rfq/CommonDropdown';
 import { useLabels } from '../../../../helper/core';
 import CostingHeadDropdownFilter from '../../../masters/material-master/CostingHeadDropdownFilter';
+import { isResetClick } from '../../../../actions/Common';
 
 const gridOptions = {
 
@@ -101,15 +102,15 @@ function RMIndexationSimulation(props) {
     const simulationApplicability = useSelector(state => state.simulation.simulationApplicability)
     const rmIndexedSimulationSummaryData = useSelector(state => state.simulation.simulatedRawMaterialSummary?.SimulationRawMaterialDetailsResponse)
 
-    const { commodityDetailsArray } = useSelector((state) => state.indexation)
-    const { filteredRMData } = useSelector(state => state.material)
-    const {costingHeadFilter} =useSelector(state=> state.common)
+    const { commodityDetailsArray } = useSelector((state) => state?.indexation)
+    const { filteredRMData } = useSelector(state => state?.material)
+    const {costingHeadFilter} =useSelector(state=> state?.common)
     useEffect(() => {
    
-        if (costingHeadFilter && costingHeadFilter.data) {
-          const matchedOption = costingHeadFilter.CostingHeadOptions.find(option => option.value === costingHeadFilter.data.value);
+        if (costingHeadFilter && costingHeadFilter?.data) {
+          const matchedOption = costingHeadFilter?.CostingHeadOptions?.find(option => option?.value === costingHeadFilter?.data?.value);
           if (matchedOption) {
-            gridApi?.setQuickFilter(matchedOption.label);
+            gridApi?.setQuickFilter(matchedOption?.label);
           }
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -181,6 +182,9 @@ function RMIndexationSimulation(props) {
 
             }))
         }
+        return () => {
+            dispatch(isResetClick(true, "costingHead"))
+          }
     }, [])
 
     useEffect(() => {
@@ -1060,7 +1064,7 @@ function RMIndexationSimulation(props) {
     return (
 
         <div>
-            <div className={`ag-grid-react ${props.customClass}`}>
+            <div className={`ag-grid-react grid-parent-wrapper ${props.customClass}`}>
                 {!showverifyPage &&
                     // {(!showverifyPage && !showMainSimulation) &&                    //RE
                     <Fragment>

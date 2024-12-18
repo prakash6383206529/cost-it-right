@@ -162,12 +162,12 @@ function RMImportListing(props) {
         return () => {
           dispatch(setSelectedRowForPagination([]))
           dispatch(resetStatePagination());
-          dispatch(isResetClick(false, "costingHead"))
 
           reactLocalStorage.setObject('selectedRow', {})
         }
       }
     }, 300);
+   
 
   }, [])
 
@@ -191,6 +191,9 @@ function RMImportListing(props) {
         setvalue({ min: 0, max: 0 });
       }
     }, 300);
+    return () => {
+      dispatch(isResetClick(true, "costingHead"))
+    }
 
   }, [])
   const floatingFilterStatus = {
@@ -916,7 +919,7 @@ function RMImportListing(props) {
   };
 
   return (
-    <div>{!editSelectedList && <div className={`ag-grid-react custom-pagination ${isSimulation ? 'simulation-height' : props?.isMasterSummaryDrawer ? "" : 'min-height100vh'}  ${DownloadAccessibility ? "show-table-btn" : ""}`}>
+    <div>{!editSelectedList && <div className={`ag-grid-react grid-parent-wrapper custom-pagination ${isSimulation ? 'simulation-height' : props?.isMasterSummaryDrawer ? "" : 'min-height100vh'}  ${DownloadAccessibility ? "show-table-btn" : ""}`}>
       {(loader && !props?.isMasterSummaryDrawer) ? <LoaderCustom customClass="simulation-Loader" /> :
         <>
           {disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}

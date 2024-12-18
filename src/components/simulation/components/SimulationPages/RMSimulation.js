@@ -71,7 +71,7 @@ function RMSimulation(props) {
 
     const { technologyLabel, vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels();
     const dispatch = useDispatch()
-    const { costingHeadFilter } = useSelector(state => state.common)
+    const costingHeadFilter = useSelector(state => state?.common)
     const currencySelectList = useSelector(state => state.comman.currencySelectList)
     const { selectedMasterForSimulation, exchangeRateListBeforeDraft } = useSelector(state => state.simulation)
     const simulationApplicability = useSelector(state => state.simulation.simulationApplicability)
@@ -103,10 +103,10 @@ function RMSimulation(props) {
 
     useEffect(() => {
 
-        if (costingHeadFilter && costingHeadFilter.data) {
-            const matchedOption = costingHeadFilter.CostingHeadOptions.find(option => option.value === costingHeadFilter.data.value);
+        if (costingHeadFilter && costingHeadFilter?.data) {
+            const matchedOption = costingHeadFilter?.CostingHeadOptions?.find(option => option?.value === costingHeadFilter?.data?.value);
             if (matchedOption) {
-                gridApi?.setQuickFilter(matchedOption.label);
+                gridApi?.setQuickFilter(matchedOption?.label);
             }
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -136,6 +136,7 @@ function RMSimulation(props) {
                 return null
             })
         }
+        
     }, [])
     useEffect(() => {
 
@@ -820,7 +821,7 @@ const returnExcelColumn = (data = [], TempData) => {
 return (
 
     <div>
-        <div className={`ag-grid-react ${props.customClass}`}>
+        <div className={`ag-grid-react grid-parent-wrapper${props.customClass}`}>
             {!showverifyPage &&
                 // {(!showverifyPage && !showMainSimulation) &&                    //RE
                 <Fragment>

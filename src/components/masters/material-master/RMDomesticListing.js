@@ -152,10 +152,12 @@ function RMDomesticListing(props) {
                     props?.changeTokenCheckBox(false)
                 }
                 getDataList(null, null, null, null, null, 0, 0, defaultPageSize, true, floatingFilterData)
-                dispatch(isResetClick(false, "costingHead"))
 
             }
             setvalue({ min: 0, max: 0 });
+        }
+        return () => {
+            dispatch(isResetClick(true, "costingHead"))
         }
     }, [])
 
@@ -917,7 +919,7 @@ const combinedCostingHeadRenderer = (props) => {
 
     }
     return (
-        <div className={`ag-grid-react ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${DownloadAccessibility ? "show-table-btn" : ""} ${isSimulation ? 'simulation-height' : props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
+        <div className={`ag-grid-react grid-parent-wrapper ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${DownloadAccessibility ? "show-table-btn" : ""} ${isSimulation ? 'simulation-height' : props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
             {(loader && !props.isMasterSummaryDrawer) ? <LoaderCustom customClass="simulation-Loader" /> :
                 <>
                     {disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
