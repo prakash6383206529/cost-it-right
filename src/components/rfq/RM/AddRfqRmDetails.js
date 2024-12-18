@@ -47,7 +47,7 @@ const AddRfqRmDetails = (props) => {
     }, [])
     useEffect(() => {
         setRmData()
-    }, [rmName, rmGrade, rmSpec, rmCode, rmAttchment, rmRemark])
+   }, [rmName, rmGrade, rmSpec, rmCode, rmAttchment, rmRemark,rmSpecificRowData])
 
     useEffect(() => {
         if (resetRmFields) {

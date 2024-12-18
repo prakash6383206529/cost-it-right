@@ -15,7 +15,7 @@ import { MESSAGES } from '../../config/message'
 import classnames from 'classnames';
 import redcrossImg from '../../assests/images/red-cross.png'
 
-import { alphaNumeric, checkWhiteSpaces, getFilteredDropdownOptions, required } from '../../helper'
+import { alphaNumeric, checkWhiteSpaces, getFilteredDropdownOptions, required, RFQ_KEYS } from '../../helper'
 import Button from '../layout/Button'
 import HeaderTitle from '../common/HeaderTitle'
 import { HAVELLSREMARKMAXLENGTH, REMARKMAXLENGTH } from '../../config/masterData'
@@ -62,7 +62,7 @@ function ViewDrawer(props) {
     const [rmspecification, setRMSpecification] = useState([])
     const [rmName, setRMName] = useState([])
     const [rmgrade, setRMGrade] = useState([])
-
+    
     const [rmNameSelected, setRmNameSelected] = useState(false)
     const [selectedparts, setSelectedParts] = useState([])
     const [partName, setPartName] = useState('')
@@ -623,28 +623,29 @@ function ViewDrawer(props) {
                 const dropdownTexts = _.map(getChildParts, 'Text');
                 const tableTexts = _.map(tableData, 'PartNumber');
                 const allPresent = _.every(dropdownTexts, text => _.includes(tableTexts, text));
-                if (type !== Component && partType !== "Tooling") {
+                if (RFQ_KEYS?.RM_MANDATORY && (type !== Component && partType !== "Tooling")) {
+                    
                     if (!allPresent) {
                         Toaster.warning('RM Name, RM Grade, and RM Specification are required for each part.');
                         return false;
                     }
-                } else if (type === Component && (tableData.length === 0)) {
+                } else if (RFQ_KEYS?.RM_MANDATORY && (type === Component && (tableData.length === 0))) {
                     Toaster.warning('RM Name, RM Grade, and RM Specification are required.');
                     return false;
                 }
-                if (_.isEmpty(sopQuantityList) || !hasNonZeroQuantity) {
+                if (RFQ_KEYS?.ANNUAL_FORECAST_MANDATORY && (_.isEmpty(sopQuantityList) || !hasNonZeroQuantity)) {
                     Toaster.warning("Select SOP date and fill the first year's quantity.");
                     return false;
                 }
             }
-            if (specificationList && specificationList?.length === 0) {
+            if (RFQ_KEYS?.SPECIFICATION_MANDATORY && (specificationList && specificationList?.length === 0)) {
                 Toaster.warning("Please fill the Specification Details.");
                 return false;
             }
 
         }
 
-        if (getValues('remark') === '' || files.length === 0) {
+        if (RFQ_KEYS?.REMARKS_ATTACHMENT_MANDATORY && (getValues('remark') === '' || files.length === 0)) {
             Toaster.warning('Please fill the remarks and attachments documents.');
             return;
         }
@@ -1157,11 +1158,11 @@ function ViewDrawer(props) {
                                                         Controller={Controller}
                                                         control={control}
                                                         selected={rmName ? rmName : ''}
-                                                        rules={{ required: false }}
+                                                        rules={{ required: RFQ_KEYS?.RM_MANDATORY ? true : false }}
                                                         register={register}
                                                         customClassName="costing-version"
                                                         options={renderListingRM('rmname')}
-                                                        mandatory={true}
+                                                        mandatory={RFQ_KEYS?.RM_MANDATORY ? true : false}
                                                         handleChange={(newValue) => handleRMName(newValue)}
                                                         disabled={disabled || (isViewFlag || (isEditFlag && type === Component && tableData.length > 0 && !isEdit)) ? true : false}
                                                     />
@@ -1175,11 +1176,11 @@ function ViewDrawer(props) {
                                                         Controller={Controller}
                                                         control={control}
                                                         selected={rmgrade ? rmgrade : ''}
-                                                        rules={{ required: false }}
+                                                        rules={{ required: getValues('RMName') ? true : false }}
                                                         register={register}
                                                         customClassName="costing-version"
                                                         options={renderListingRM('rmgrade')}
-                                                        mandatory={true}
+                                                        mandatory={getValues('RMName') ? true : false}
                                                         handleChange={(newValue) => handleRMGrade(newValue)}
                                                         disabled={disabled || (isViewFlag || (isEditFlag && type === Component && tableData.length > 0 && !isEdit)) ? true : false}
                                                     />
@@ -1193,11 +1194,11 @@ function ViewDrawer(props) {
                                                         Controller={Controller}
                                                         control={control}
                                                         selected={rmspecification ? rmspecification : ''}
-                                                        rules={{ required: false }}
+                                                        rules={{ required:getValues('RMName') ? true : false}}
                                                         register={register}
                                                         customClassName="costing-version"
                                                         options={renderListingRM('rmspecification')}
-                                                        mandatory={true}
+                                                        mandatory={getValues('RMName') ? true : false}
                                                         handleChange={(newValue) => handleRMSpecification(newValue)}
                                                         disabled={disabled || (isViewFlag || (isEditFlag && type === Component && tableData.length > 0 && !isEdit)) ? true : false}
                                                     />
@@ -1212,8 +1213,8 @@ function ViewDrawer(props) {
                                                         Controller={Controller}
                                                         control={control}
                                                         register={register}
-                                                        rules={{ required: true }}
-                                                        mandatory={true}
+                                                        rules={{ required: getValues('RMName') ? true : false}}
+                                                        mandatory={getValues('RMName') ? true : false}
                                                         handleChange={handleCode}
                                                         isClearable={true}
                                                         errors={errors.Code}
@@ -1262,9 +1263,9 @@ function ViewDrawer(props) {
                                                     control={control}
                                                     selected={specification ? specification : ''}
                                                     register={register}
-                                                    mandatory={true}
+                                                    mandatory={RFQ_KEYS?.SPECIFICATION_MANDATORY ? true : false}
                                                     rules={{
-                                                        required: true,
+                                                        required: RFQ_KEYS?.SPECIFICATION_MANDATORY ? true : false,
                                                         validate: { alphaNumeric, checkWhiteSpaces },
                                                     }}
                                                     handleChange={(e) => handleSpecification(e.target.value)}
@@ -1284,9 +1285,9 @@ function ViewDrawer(props) {
                                                     control={control}
                                                     selected={valueState ? valueState : ''}
                                                     register={register}
-                                                    mandatory={true}
+                                                    mandatory={RFQ_KEYS?.SPECIFICATION_MANDATORY ? true : false}
                                                     rules={{
-                                                        required: true,
+                                                        required: RFQ_KEYS?.SPECIFICATION_MANDATORY ? true : false,
                                                         validate: { alphaNumeric, checkWhiteSpaces },
                                                     }}
                                                     handleChange={(e) => handleValue(e.target.value)}
@@ -1322,10 +1323,10 @@ function ViewDrawer(props) {
                                             Controller={Controller}
                                             control={control}
                                             rules={{
-                                                required: true,
+                                                required: RFQ_KEYS?.REMARKS_ATTACHMENT_MANDATORY ? true : false,
                                                 maxLength: HAVELLSREMARKMAXLENGTH,
                                             }}
-                                            mandatory={true}
+                                            mandatory={RFQ_KEYS?.REMARKS_ATTACHMENT_MANDATORY ? true : false}
                                             register={register}
                                             //defaultValue={DestinationPlant.length !== 0 ? DestinationPlant : ""}
                                             // options={renderListing("DestinationPlant")}
@@ -1340,9 +1341,7 @@ function ViewDrawer(props) {
                                     </Col>
                                 </Row>
                                 <Col md="6" className="height152-label">
-                                    <TooltipCustom id="uploadFile" tooltipText="Upload upto 4 file, size of each file upto 20MB" />
-
-                                    <label>Upload Attachment (upload up to 4 files, size of each file upto 20MB)<span className="asterisk-required">*</span></label>
+                                    <label>Upload Attachment (upload up to 4 files, size of each file upto 20MB)<span className="asterisk-required">{RFQ_KEYS?.REMARKS_ATTACHMENT_MANDATORY ? "*" : ""}</span> </label>
                                     <div className={`alert alert-danger mt-2 ${files?.length === 4 ? '' : 'd-none'}`} role="alert">
                                         Maximum file upload limit has been reached.
                                     </div>
@@ -1548,7 +1547,7 @@ function ViewDrawer(props) {
                                         <Row className='mt-3 mb-1'>
                                             <Col md="3">
                                                 <div className="form-group">
-                                                    <label>SOP Date<span className="asterisk-required">*</span></label>
+                                                    <label>SOP Date<span className="asterisk-required">{RFQ_KEYS?.ANNUAL_FORECAST_MANDATORY ? "*" : ""}</span></label>
                                                     <div id="addRFQDate_container" className="inputbox date-section">
                                                         <DatePicker
                                                             name={'SOPDate'}

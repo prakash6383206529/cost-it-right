@@ -33,7 +33,7 @@ const RaiseRfqBopDetails = (props) => {
     const [bopAttchment, setBopAttchment] = useState([])
     const [bopRemark, setBopRemark] = useState("");
     const [bopSpecificationList, setBopSpecificationList] = useState([])
-    const { bopSpecificRowData } = useSelector(state => state?.rfq);
+   const { bopSpecificRowData } = useSelector(state => state?.rfq);
     const showStatus = dataProps?.rowData?.Status || ""
     const showAddButton = !disabledPartUid || dataProps?.isAddFlag || (dataProps?.isEditFlag && showStatus === PREDRAFT) || (dataProps?.isViewFlag || dataProps?.isEditFlag ? false : true)
 
@@ -44,7 +44,7 @@ const RaiseRfqBopDetails = (props) => {
     }, [])
     useEffect(() => {
         setBopData()
-    }, [bopNumber, bopName, bopCategory, bopAttchment, bopRemark])
+    }, [bopNumber, bopName, bopCategory, bopAttchment, bopRemark,bopSpecificationList])
     useEffect(() => {
         setValue('BOPName', bopName)
     }, [bopName])
