@@ -1743,7 +1743,20 @@ export const removeSpaces = (str = '') => {
 export const getChangeHighlightClass = (originalValue, updatedValue) => {
   return updatedValue && updatedValue !== originalValue ? 'red-value' : '';
 };
-
-export const showEntryType = (entryTypeValue) => {
-  return entryTypeValue === ENTRY_TYPE_IMPORT ? "Import" : "Domestic";
-}
+// export const frameBreaker = () => {
+//   // Ensure window runs in top-level
+//   if (window.self !== window.top) {
+//     window.top.location = window.self.location;
+//   }
+// };
+export const RFQ_KEYS = {
+  RM_MANDATORY: getConfigurationKey()?.RFQManditFields?.IsRMMandatoryForParts,
+  SPECIFICATION_MANDATORY: getConfigurationKey()?.RFQManditFields?.IsSpecificationMandatory,
+  ANNUAL_FORECAST_MANDATORY: getConfigurationKey()?.RFQManditFields?.IsAnnualForecastMandatory,
+  REMARKS_ATTACHMENT_MANDATORY: getConfigurationKey()?.RFQManditFields?.IsRemarksAndAttachmentMandatory,
+  SHOW_N100_HAVELLS: getConfigurationKey()?.RFQManditFields?.IsShowN100andHavellsAndProprietaryType, 
+  VISIBILITY_CONDITION: getConfigurationKey()?.RFQManditFields?.IsVisibilityConditionMandatory,
+  SHOW_RM: getConfigurationKey()?.RFQManditFields?.IsShowRMForRFQ, 
+  SHOW_BOP: getConfigurationKey()?.RFQManditFields?.IsShowBOPForRFQ, 
+  SHOW_TOOLING: getConfigurationKey()?.RFQManditFields?.IsShowToolingForRFQ 
+};

@@ -939,8 +939,8 @@ function VerifySimulation(props) {
                                             {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="OldOperationRate" tooltipField="OldOperationRate" headerName="Existing Rate"></AgGridColumn>}
                                             {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="NewOperationRate" tooltipField="NewOperationRate" headerName="Revised Rate"></AgGridColumn>}
 
-                                            {isBOPDomesticOrImport === true && <AgGridColumn width={145} field="OldBoughtOutPartRate" tooltipField="OldBoughtOutPartRate" headerName="Existing Basic Rate (Currency)" cellRenderer={existingBasicFormatter}></AgGridColumn>}
-                                            {isBOPDomesticOrImport === true && <AgGridColumn width={150} field="NewBoughtOutPartRate" tooltipField="NewBoughtOutPartRate" cellRenderer='newBRFormatter' headerName="Revised Basic Rate (Currency)"></AgGridColumn>}
+                                            {/* {isBOPDomesticOrImport === true && <AgGridColumn width={145} field="OldBoughtOutPartRate" tooltipField="OldBoughtOutPartRate" headerName="Existing Basic Rate (Currency)" cellRenderer={existingBasicFormatter}></AgGridColumn>}
+                                            {isBOPDomesticOrImport === true && <AgGridColumn width={150} field="NewBoughtOutPartRate" tooltipField="NewBoughtOutPartRate" cellRenderer='newBRFormatter' headerName="Revised Basic Rate (Currency)"></AgGridColumn>} */}
 
                                             {/* {isBOPDomesticOrImport === true && <AgGridColumn width={140} field="OldNetLandedCost" tooltipField='OldNetLandedCost' headerName='Existing Net Landed Cost (Currency)' cellRenderer={priceFormatter} ></AgGridColumn>}
                                             {isBOPDomesticOrImport === true && <AgGridColumn width={140} field="NewNetLandedCost" tooltipField='NewNetLandedCost' headerName='Revised Net Landed Cost (Currency)' cellRenderer={priceFormatter} ></AgGridColumn>} */}
@@ -949,8 +949,8 @@ function VerifySimulation(props) {
                                             {isMachineRate && <AgGridColumn width={150} field="NewMachineRate" tooltipField="NewMachineRate" headerName="Revised Machine Rate"></AgGridColumn>}
 
 
-                                            {isRMDomesticOrRMImport === true && <AgGridColumn width={145} field="OldBasicRate" tooltipField="OldBasicRate" headerName="Existing Basic Rate (Currency)"></AgGridColumn>}
-                                            {isRMDomesticOrRMImport === true && <AgGridColumn width={150} field="NewBasicRate" tooltipField="NewBasicRate" cellRenderer='newRMBasicRateFormatter' headerName="Revised Basic Rate (Currency)"></AgGridColumn>}
+                                            {/* {isRMDomesticOrRMImport === true && <AgGridColumn width={145} field="OldBasicRate" tooltipField="OldBasicRate" headerName="Existing Basic Rate (Currency)"></AgGridColumn>}
+                                            {isRMDomesticOrRMImport === true && <AgGridColumn width={150} field="NewBasicRate" tooltipField="NewBasicRate" cellRenderer='newRMBasicRateFormatter' headerName="Revised Basic Rate (Currency)"></AgGridColumn>} */}
                                             {isRMDomesticOrRMImport === true && <AgGridColumn width={145} field="OldScrapRate" tooltipField="OldScrapRate" headerName="Existing Scrap Rate (Currency)"></AgGridColumn>}
                                             {isRMDomesticOrRMImport === true && <AgGridColumn width={150} field="NewScrapRate" tooltipField="NewScrapRate" cellRenderer='newSRFormatter' headerName="Revised Scrap Rate (Currency)" ></AgGridColumn>}
                                             {isRMDomesticOrRMImport === true && <AgGridColumn field="RawMaterialId" hide ></AgGridColumn>}
