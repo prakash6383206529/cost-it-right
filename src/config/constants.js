@@ -2297,6 +2297,7 @@ export const DEPARTMENT = 'Department'
 export const LEVELS = 'Levels'
 export const COMPANY = 'Company'//MINDA
 export const RFQUSER = 'RFQUser'
+export const DELEGATION = 'Delegation'
 export const DIVISION = 'Division'
 
 //DEPRECIATION TYPE ENUMS
