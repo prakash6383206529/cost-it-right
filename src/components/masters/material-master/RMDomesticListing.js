@@ -20,7 +20,7 @@ import ReactExport from 'react-export-excel';
 import { CheckApprovalApplicableMaster, getConfigurationKey, getLocalizedCostingHeadValue, searchNocontentFilter, setLoremIpsum } from '../../../helper';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { getListingForSimulationCombined, setSelectedRowForPagination } from '../../simulation/actions/Simulation';
-import { disabledClass, getApprovalTypeSelectList, getGridHeight, isResetClick } from '../../../actions/Common';
+import { disabledClass, getApprovalTypeSelectList, getGridHeight, setResetCostingHead } from '../../../actions/Common';
 import WarningMessage from '../../common/WarningMessage';
 import AnalyticsDrawer from './AnalyticsDrawer'
 import _ from 'lodash';
@@ -158,7 +158,7 @@ function RMDomesticListing(props) {
             setvalue({ min: 0, max: 0 });
         }
         return () => {
-            dispatch(isResetClick(true, "costingHead"))
+            dispatch(setResetCostingHead(true, "costingHead"))
         }
     }, [])
 
@@ -262,7 +262,7 @@ function RMDomesticListing(props) {
 
                     setTimeout(() => {
                         setWarningMessage(false)
-                        dispatch(isResetClick(false, "costingHead"))
+                        dispatch(setResetCostingHead(false, "costingHead"))
 
                     }, 330);
 
@@ -383,7 +383,7 @@ function RMDomesticListing(props) {
     const resetState = () => {
         setNoData(false)
         setinRangeDate([])
-        dispatch(isResetClick(true, "costingHead"))
+        dispatch(setResetCostingHead(true, "costingHead"))
 
         setIsFilterButtonClicked(false)
         gridOptions?.columnApi?.resetColumnState(null);

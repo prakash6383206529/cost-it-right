@@ -11,7 +11,7 @@ function CostingHeadDropdownFilter(props) {
     const [currentValue, setCurrentValue] = useState(null);
     const CostingHeadOptions = reactLocalStorage.getObject('CostingHeadOptions');
     const getGridHeight = useSelector(state => state.comman.getGridHeight)
-    const isReset = useSelector((state) => state.comman.isReset);
+    const isResetCostingHead = useSelector((state) => state?.comman?.isResetCostingHead);
     const { costingHeadFilter } = useSelector((state) => state?.comman);
 
     const { register, control, setValue } = useForm({
@@ -44,8 +44,8 @@ function CostingHeadDropdownFilter(props) {
         return localizedOptions;
     };
     useEffect(() => {
-
-        if (isReset && isReset?.data) {
+        console.log("isResetCustomHook", isResetCostingHead)
+        if (isResetCostingHead && isResetCostingHead?.data) {
             setValue("costingHeadDropDown", [])
             setCurrentValue(null);
             dispatch(setCostingHeadFilter(  [],CostingHeadOptions)); // Reset the filter in Redux
@@ -54,7 +54,7 @@ function CostingHeadDropdownFilter(props) {
         }
         
 
-    }, [isReset])
+    }, [isResetCostingHead])
 
 
     const valueChanged = (event) => {

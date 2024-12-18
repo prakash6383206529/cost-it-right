@@ -17,7 +17,7 @@ import WarningMessage from '../../common/WarningMessage';
 import Toaster from '../../common/Toaster'
 import { setSelectedRowForPagination } from '../../simulation/actions/Simulation';
 import { hyphenFormatter } from '../masterUtil';
-import { agGridStatus, dashboardTabLock, getGridHeight, isResetClick } from '../../../actions/Common'
+import { agGridStatus, dashboardTabLock, getGridHeight, isResetClick, setResetCostingHead } from '../../../actions/Common'
 import _ from 'lodash';
 import SingleDropdownFloationFilter from './SingleDropdownFloationFilter';
 import { reactLocalStorage } from 'reactjs-localstorage';
@@ -91,6 +91,7 @@ function CommonApproval(props) {
             dispatch(setSelectedRowForPagination([]))
             setSelectedRowData([])
             dispatch(resetStatePagination())
+            dispatch(setResetCostingHead(true, "costingHead"))
         }
 
     }, [])
@@ -187,6 +188,7 @@ function CommonApproval(props) {
                     setTimeout(() => {
 
                         dispatch(isResetClick(false, "status"))
+                        dispatch(setResetCostingHead(false, "costingHead"))
                         setWarningMessage(false)
                         setFloatingFilterData(obj)
                     }, 23);
@@ -267,6 +269,7 @@ function CommonApproval(props) {
     const resetState = () => {
         dispatch(agGridStatus("", ""))
         dispatch(isResetClick(true, "status"))
+        dispatch(setResetCostingHead(true, "costingHead"))
         setIsFilterButtonClicked(false)
         gridApi.setQuickFilter(null)
 

@@ -26,7 +26,7 @@ import { OPERATION_IMPACT_DOWNLOAD_EXCEl } from '../../../../config/masterData';
 import { simulationContext } from '..';
 import { useLabels } from '../../../../helper/core';
 import CostingHeadDropdownFilter from '../../../masters/material-master/CostingHeadDropdownFilter';
-import { isResetClick } from '../../../../actions/Common';
+import { setResetCostingHead } from '../../../../actions/Common';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -126,7 +126,7 @@ function OperationSTSimulation(props) {
     }, [showverifyPage])
     useEffect(() => {
         return () => {
-            dispatch(isResetClick(true, "costingHead"))
+            dispatch(setResetCostingHead(true, "costingHead"))
           }
     }, [])
 

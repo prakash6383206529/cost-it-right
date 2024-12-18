@@ -22,7 +22,7 @@ import AddLimit from "./AddLimit";
 import WarningMessage from "../../common/WarningMessage";
 import { setSelectedRowForPagination } from "../../simulation/actions/Simulation";
 import _ from "lodash";
-import { disabledClass, isResetClick } from "../../../actions/Common";
+import { disabledClass, setResetCostingHead } from "../../../actions/Common";
 import { reactLocalStorage } from "reactjs-localstorage";
 import VolumeBulkUploadDrawer from "../../massUpload/VolumeBulkUploadDrawer";
 import { Drawer } from "@material-ui/core";
@@ -177,7 +177,7 @@ function VolumeListing(props) {
     getTableListData(0, defaultPageSize, true);
     return () => {
       dispatch(setSelectedRowForPagination([]));
-      dispatch(isResetClick(true, "costingHead"))
+      dispatch(setResetCostingHead(true, "costingHead"))
     };
   }, []);
 
@@ -259,7 +259,7 @@ function VolumeListing(props) {
 
         setTimeout(() => {
           setWarningMessage(false);
-          dispatch(isResetClick(false, "costingHead"))
+          dispatch(setResetCostingHead(false, "costingHead"))
         }, 330);
 
         setTimeout(() => {
@@ -530,7 +530,7 @@ function VolumeListing(props) {
   const resetState = () => {
     setNoData(false);
     gridApi.deselectAll();
-    dispatch(isResetClick(true, "costingHead"))
+    dispatch(setResetCostingHead(true, "costingHead"))
     gridOptions.columnApi.resetColumnState();
     gridOptions.api.setFilterModel(null);
 

@@ -18,7 +18,7 @@ import "ag-grid-community/dist/styles/ag-theme-material.css";
 import PopupMsgWrapper from "../../common/PopupMsgWrapper";
 import { getListingForSimulationCombined, setSelectedRowForPagination, } from "../../simulation/actions/Simulation";
 import WarningMessage from "../../common/WarningMessage";
-import { TourStartAction, disabledClass, isResetClick } from "../../../actions/Common";
+import { TourStartAction, disabledClass, setResetCostingHead } from "../../../actions/Common";
 import _ from "lodash";
 import AnalyticsDrawer from "../material-master/AnalyticsDrawer";
 import { reactLocalStorage } from "reactjs-localstorage";
@@ -145,7 +145,7 @@ const BOPImportListing = (props) => {
       }
     }, 300);
     return () => {
-      dispatch(isResetClick(true, "costingHead"))
+      dispatch(setResetCostingHead(true, "costingHead"))
     }
 
   }, [])
@@ -302,7 +302,7 @@ const BOPImportListing = (props) => {
               setState((prevState) => ({
                 ...prevState, warningMessage: false,
               }));
-              dispatch(isResetClick(false, "costingHead"))
+              dispatch(setResetCostingHead(false, "costingHead"))
 
             }, 335);
 
@@ -412,7 +412,7 @@ const BOPImportListing = (props) => {
       ...prevState, noData: false, inRangeDate: [], isFilterButtonClicked: false
     }));
     state.gridApi.deselectAll();
-    dispatch(isResetClick(true, "costingHead"))
+    dispatch(setResetCostingHead(true, "costingHead"))
 
     gridOptions?.columnApi?.resetColumnState(null);
     gridOptions?.api?.setFilterModel(null);
