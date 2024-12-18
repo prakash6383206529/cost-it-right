@@ -39,21 +39,10 @@ const AddDelegation = (props) => {
         reValidateMode: 'onChange',
     });
     const dispatch = useDispatch()
-    const { indexCommodityData } = useSelector((state) => state.indexation);
-    const { commodityInIndex } = useSelector((state) => state.indexation);
-    const { customNameCommodityData } = useSelector((state) => state.indexation);
-    //const { standardizedCommodityDataList } = useSelector((state) => state.indexation);
     useEffect(() => {
     }, [])
 
     const [gridData, setGridData] = useState([]);
-    const [formData, setFormData] = useState({
-        CommodityExchangeName: '',
-        CommodityName: '',
-        CustomMaterialName: ''
-
-    });
-
     const renderListing = (label) => {
         const temp = [  { label: 'Select All', value: '0' },
             { label: 'Costing', value: '1' },
@@ -75,29 +64,6 @@ const AddDelegation = (props) => {
 				return temp;
 			}
         }
-        if (label === 'ApprovalType') {
-            commodityInIndex && commodityInIndex.map((item) => {
-                if (item.Value === '--0--') return false
-                temp.push({ label: item.Text, value: item.Value })
-                return null
-            })
-            return temp
-        }
-        if (label === 'ApprovalType') {
-            customNameCommodityData && customNameCommodityData.map((item) => {
-                if (item.Value === '--0--') return false
-                temp.push({ label: item.Text, value: item.Value })
-                return null
-            })
-            return temp
-        }
-        // if (label === 'Applicability') {
-        //     return [
-        //         { label: 'Option 1', value: 'Option1' },
-        //         { label: 'Option 2', value: 'Option2' },
-        //         { label: 'Option 3', value: 'Option3' },
-        //     ];
-        // }
     };
 
     const handleApprovalType = (newValue) => {
@@ -109,16 +75,8 @@ const AddDelegation = (props) => {
 		}
 	}
     const resetData = () => {
-        setValue('CommodityExchangeName', '');
-        setValue('CommodityName', '');
-        setValue('CustomMaterialName', '');
         setIsEdit(false)
         setEditIndex('')
-        setFormData({
-            CommodityExchangeName: '',
-            CommodityName: '',
-            CustomMaterialName: ''
-        });
     }
 
     const deleteItem = (index) => {
@@ -131,35 +89,15 @@ const AddDelegation = (props) => {
     const onSubmit = debounce(values => {
         if (isEdit) {
             setState(prevState => ({ ...prevState, setDisable: true }));
-
-            const updateData = {
-                CommodityExchangeName: values.CommodityExchangeName,
-                ModifiedBy: loggedInUserId(),
-                CommodityName: values.CommodityName,
-                CustomMaterialName: values.CustomMaterialName,
-                IsActive: true,
-            };
         
         } else {
             setState(prevState => ({ ...prevState, setDisable: true }));
 
-            const formDataToSubmit = {
-
-                CommodityExchangeName: values.CommodityExchangeName,
-                CommodityName: values.CommodityName,
-                CustomMaterialName: values.CustomMaterialName,
-                CreatedBy: loggedInUserId(),
-                IsActive: true,
-            };
-         
         }
     }, 500);
 
     const updateRow = () => {
         const obj = {
-            CommodityExchangeName: formData.CommodityExchangeName,
-            CommodityName: formData.CommodityName,
-            CustomMaterialName: formData.CustomMaterialName
         }
 
         const updatedGridData = gridData.map((item, index) =>
@@ -176,9 +114,6 @@ const AddDelegation = (props) => {
 
         const obj = {
 
-            CommodityExchangeName: formData.CommodityExchangeName,
-            CommodityName: formData.CommodityName,
-            CustomMaterialName: formData.CustomMaterialName
         };
         const newGridData = [...gridData, obj];
 
@@ -189,22 +124,11 @@ const AddDelegation = (props) => {
 
     const editItemDetails = (index) => {
         const editObj = gridData[index]
-        setFormData({
-            CommodityExchangeName: editObj.CommodityExchangeName,
-            CommodityName: editObj.CommodityName,
-            CustomMaterialName: editObj.CustomMaterialName
-        });
-        setValue('CommodityExchangeName', { label: editObj.CommodityExchangeName, value: editObj.CommodityExchangeName })
-        setValue('CommodityName', { label: editObj.CommodityName, value: editObj.CommodityName })
-        setValue('CustomMaterialName', { label: editObj.CustomMaterialName, value: editObj.CustomMaterialName })
         setEditIndex(index)
         setIsEdit(true)
     }
 
     const handleAddUpdateButtonClick = () => {
-        if (!formData.CommodityExchangeName || !formData.CommodityName || !formData.CustomMaterialName) {
-            return;
-        }
         if (isEdit) {
             updateRow();
         } else {
