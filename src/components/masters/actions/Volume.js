@@ -101,39 +101,39 @@ export function getVolumeDataList(skip, take, isPagination, obj, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });    
     const queryParams = encodeQueryParamsAndLog({
-      CostingHead: obj.CostingHead,
-      Year: obj.Year,
-      Month: obj.Month,
-      Vendor: obj.VendorName,
-      Plant: obj.Plant,
-      PartNumber: obj.PartNumber,
-      PartName: obj.PartName,
-      BudgetedQuantity: obj.BudgetedQuantity,
-      ApprovedQuantity: obj.ApprovedQuantity,
+      CostingHead: obj?.CostingHead,
+      Year: obj?.Year,
+      Month: obj?.Month,
+      Vendor: obj?.VendorName,
+      Plant: obj?.Plant,
+      PartNumber: obj?.PartNumber,
+      PartName: obj?.PartName,
+      BudgetedQuantity: obj?.BudgetedQuantity,
+      ApprovedQuantity: obj?.ApprovedQuantity,
       applyPagination: isPagination,
       skip: skip,
       take: take,
-      CustomerName: obj.CustomerName,
-      IsCustomerDataShow: obj.IsCustomerDataShow,
-      IsVendorDataShow: obj.IsVendorDataShow,
-      IsZeroDataShow: obj.IsZeroDataShow,
-      PartType: obj.PartType
+      CustomerName: obj?.CustomerName,
+      IsCustomerDataShow: obj?.IsCustomerDataShow,
+      IsVendorDataShow: obj?.IsVendorDataShow,
+      IsZeroDataShow: obj?.IsZeroDataShow,
+      PartType: obj?.PartType
     });
     axios.get(`${API.getVolumeDataList}?${queryParams}`, config())
       .then((response) => {
-        if (response.data.Result || response.status === 204) {
+        if (response?.data?.Result || response?.status === 204) {
           if (isPagination) {
             dispatch({
               type: GET_VOLUME_DATA_LIST,
-              payload: response.status === 204 ? [] : response.data.DataList
+              payload: response?.status === 204 ? [] : response?.data?.DataList
             })
           } else {
             dispatch({
               type: GET_VOLUME_DATA_LIST_FOR_DOWNLOAD,
-              payload: response.status === 204 ? [] : response.data.DataList
+              payload: response?.status === 204 ? [] : response?.data?.DataList
             })
           }
-          callback(response.status === 204 ? [] : response)
+          callback(response?.status === 204 ? [] : response)
         }
       })
       .catch((error) => {
