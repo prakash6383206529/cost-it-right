@@ -235,7 +235,7 @@ list && list.map(item => {
                         IsAppliedChanges: true,
                         CostingHead: item.CostingHead === 'Vendor Based' ? VBC : ZBC,
                         RawMaterialId: item.RawMaterialId,
-                        NewRawMaterialId: item.NewRawMaterialId || item.RawMaterialId, // Assuming you have a way to get this
+                        NewRawMaterialId: item.NewRawMaterialId ?item.NewRawMaterialId:null,
                         PlantId: item.PlantId,
                         RawMaterialName: item.RawMaterialName,
                         RawMaterialGrade: item.RawMaterialGradeName,
