@@ -261,7 +261,7 @@ function AddBudget(props) {
         setCostingTypeId(costingHeadFlag)
         setShowPlantWarning(false)
         setShowWarning(false)
-        let arr = ['PartType', 'plantCurrency', 'ExchangeSource', 'totalSumCurrency', 'totalSumPlantCurrency', 'totalSum', 'currentPrice', 'currency', 'FinancialYear','PartNumber','clientName','DestinationPlant','vendorName','Plant','']
+        let arr = ['PartType', 'plantCurrency', 'ExchangeSource', 'totalSumCurrency', 'totalSumPlantCurrency', 'totalSum', 'currentPrice', 'currency', 'FinancialYear', 'PartNumber', 'clientName', 'DestinationPlant', 'vendorName', 'Plant', '']
         arr.map(label => setValue(label, null || ''))
         setPart([])
         if (costingHeadFlag === VBCTypeId) {
@@ -799,66 +799,49 @@ function AddBudget(props) {
             temp.push(obj)
         })
 
+        let formData = {
+            LoggedInUserId: loggedInUserId(), FinancialYear: values.FinancialYear.label,
+            NetPoPrice: values?.currentPrice,
+            //  BudgetedPoPrice: totalSum,
+            BudgetedPoPrice: totalSum,
+            BudgetedEntryType: budgetedEntryType ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC,
+            BudgetedPoPriceInCurrency: (costConverSionInLocalCurrency || reactLocalStorage?.getObject("baseCurrency") !== getValues("plantCurrency")) ? getValues("totalSum") : checkForNull(totalSum),
+            CostingHeadId: costingTypeId,
+            PartId: part.value,
+            PartName: part.label, RevisionNumber: part.RevisionNumber, PlantId: selectedPlants.value,
+            PlantName: selectedPlants.label, VendorId: vendorName.value, VendorName: vendorName.label, CustomerId: client.value, BudgetingPartCostingDetails: temp,
+            ConditionsData: conditionTableData,
+            ExchangeRateSourceName: ExchangeSource?.label,
+            CurrencyId: costConverSionInLocalCurrency ? currency?.value : null,
+            Currency: costConverSionInLocalCurrency ? currency?.label : getValues("plantCurrency"),
+            LocalCurrencyExchangeRate: costConverSionInLocalCurrency ? plantCurrency : null,
+            LocalCurrency: costConverSionInLocalCurrency ? getValues("plantCurrency") : null,
+            LocalExchangeRateId: costConverSionInLocalCurrency ? plantExchangeRateId : null,
+            ExchangeRate: costConverSionInLocalCurrency ? settlementCurrency : plantCurrency,
+            ExchangeRateId: costConverSionInLocalCurrency ? settlementExchangeRateId : plantExchangeRateId,
+            NetPoPriceConversion: (costConverSionInLocalCurrency || reactLocalStorage?.getObject("baseCurrency") !== getValues("plantCurrency")) ? getValues("totalSum") : checkForNull(totalSum),
+            NetPoPriceLocalConversion: costConverSionInLocalCurrency ? getValues("totalSumPlantCurrency") : checkForNull(totalSum),
+            BudgetedPoPriceLocalConversion: costConverSionInLocalCurrency ? getValues("totalSumPlantCurrency") : checkForNull(totalSum),
 
+        }
         if (isEditFlag) {
-            let formData = {
-                BudgetingId: BudgetId, LoggedInUserId: loggedInUserId(), FinancialYear: DataChanged.FinancialYear,
-                NetPoPrice: values?.currentPrice,
-                BudgetedPoPrice: totalSum,
-                BudgetedPoPriceInCurrency: (costConverSionInLocalCurrency || reactLocalStorage?.getObject("baseCurrency") !== getValues("plantCurrency")) ? getValues("totalSum") : checkForNull(totalSum),
-                CostingHeadId: costingTypeId, PartId: DataChanged.PartId, RevisionNumber: DataChanged.RevisionNumber, PlantId: DataChanged.PlantId, VendorId: DataChanged.VendorId, CustomerId: DataChanged.CustomerId, BudgetingPartCostingDetails: temp, BudgetedEntryType: budgetedEntryType ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC,
-                ExchangeRateSourceName: ExchangeSource?.label,
-                CurrencyId: costConverSionInLocalCurrency ? currency?.value : null,
-                Currency: costConverSionInLocalCurrency ? currency?.label : getValues("plantCurrency"),
-                LocalCurrencyId: costConverSionInLocalCurrency ? plantCurrencyID : null,
-                LocalCurrency: costConverSionInLocalCurrency ? getValues("plantCurrency") : null,
-                LocalCurrencyExchangeRate: costConverSionInLocalCurrency ? plantCurrency : null,
-                LocalExchangeRateId: costConverSionInLocalCurrency ? plantExchangeRateId : null,
-                ExchangeRate: costConverSionInLocalCurrency ? settlementCurrency : plantCurrency,
-                ExchangeRateId: costConverSionInLocalCurrency ? settlementExchangeRateId : plantExchangeRateId,
-                NetPoPriceConversion: (costConverSionInLocalCurrency || reactLocalStorage?.getObject("baseCurrency") !== getValues("plantCurrency")) ? getValues("totalSum") : checkForNull(totalSum),
-                NetPoPriceLocalConversion: costConverSionInLocalCurrency ? getValues("totalSumPlantCurrency") : checkForNull(totalSum),
-                BudgetedPoPriceLocalConversion: costConverSionInLocalCurrency ? getValues("totalSumPlantCurrency") : checkForNull(totalSum),
-
+            if (isFinalApprover) {
+                dispatch(updateBudget(formData, (res) => {
+                    setSetDisable(false)
+                    if (res?.data?.Result) {
+                        Toaster.success(MESSAGES.BUDGET_UPDATE_SUCCESS)
+                        cancel('submit')
+                    }
+                }))
+            } else {
+                setApprovalObj(formData)
+                setTimeout(() => {
+                    setApproveDrawer(true)
+                }, 300);
             }
-
-            dispatch(updateBudget(formData, (res) => {
-                setSetDisable(false)
-                if (res?.data?.Result) {
-                    Toaster.success(MESSAGES.BUDGET_UPDATE_SUCCESS)
-                    cancel('submit')
-                }
-            }))
 
         } else {
-
-            let formData = {
-                LoggedInUserId: loggedInUserId(), FinancialYear: values.FinancialYear.label,
-                NetPoPrice: values?.currentPrice,
-                //  BudgetedPoPrice: totalSum,
-                BudgetedPoPrice: totalSum,
-                BudgetedEntryType: budgetedEntryType ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC,
-                BudgetedPoPriceInCurrency: (costConverSionInLocalCurrency || reactLocalStorage?.getObject("baseCurrency") !== getValues("plantCurrency")) ? getValues("totalSum") : checkForNull(totalSum),
-                CostingHeadId: costingTypeId,
-                PartId: part.value,
-                PartName: part.label, RevisionNumber: part.RevisionNumber, PlantId: selectedPlants.value,
-                PlantName: selectedPlants.label, VendorId: vendorName.value, VendorName: vendorName.label, CustomerId: client.value, BudgetingPartCostingDetails: temp,
-                ConditionsData: conditionTableData,
-                ExchangeRateSourceName: ExchangeSource?.label,
-                CurrencyId: costConverSionInLocalCurrency ? currency?.value : null,
-                Currency: costConverSionInLocalCurrency ? currency?.label : getValues("plantCurrency"),
-                LocalCurrencyExchangeRate: costConverSionInLocalCurrency ? plantCurrency : null,
-                LocalCurrency: costConverSionInLocalCurrency ? getValues("plantCurrency") : null,
-                LocalExchangeRateId: costConverSionInLocalCurrency ? plantExchangeRateId : null,
-                ExchangeRate: costConverSionInLocalCurrency ? settlementCurrency : plantCurrency,
-                ExchangeRateId: costConverSionInLocalCurrency ? settlementExchangeRateId : plantExchangeRateId,
-                NetPoPriceConversion: (costConverSionInLocalCurrency || reactLocalStorage?.getObject("baseCurrency") !== getValues("plantCurrency")) ? getValues("totalSum") : checkForNull(totalSum),
-                NetPoPriceLocalConversion: costConverSionInLocalCurrency ? getValues("totalSumPlantCurrency") : checkForNull(totalSum),
-                BudgetedPoPriceLocalConversion: costConverSionInLocalCurrency ? getValues("totalSumPlantCurrency") : checkForNull(totalSum),
-
-            }
-
-            if (isFinalApprover || (userDetails().Role === 'SuperAdmin') || (!initialConfiguration.IsMasterApprovalAppliedConfigure)) {
+            if (isFinalApprover) {
                 dispatch(createBudget(formData, (res) => {
                     setSetDisable(false)
                     if (res?.data?.Result) {
@@ -867,16 +850,12 @@ function AddBudget(props) {
                     }
                 }))
             } else {
-
                 setApprovalObj(formData)
-
                 setTimeout(() => {
                     setApproveDrawer(true)
                 }, 300);
-
             }
         }
-
     }, 500)
 
     const handleKeyDown = function (e) {
