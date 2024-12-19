@@ -42,7 +42,6 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
 
 const UsersListing = (props) => {
-	console.log(props, 'props')
 	const dispatch = useDispatch();
 	const searchRef = useRef(null);
 	const { t } = useTranslation("common")

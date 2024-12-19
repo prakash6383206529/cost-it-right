@@ -67,7 +67,7 @@ function OperationSTSimulation(props) {
     const dispatch = useDispatch()
 
     const { selectedMasterForSimulation, selectedTechnologyForSimulation } = useSelector(state => state.simulation)
-    const {costingHeadFilter} =useSelector(state => state?.common )
+    const costingHeadFilter =useSelector(state => state?.common?.costingHeadFilter )
     useEffect(() => {
    
         if (costingHeadFilter && costingHeadFilter?.data) {
@@ -411,7 +411,9 @@ function OperationSTSimulation(props) {
         nullHandler: props.nullHandler && props.nullHandler,
         rateFormatter: rateFormatter,
         oldBasicRateFormatter: oldBasicRateFormatter,
-        consumptionFormatter: consumptionFormatter
+        consumptionFormatter: consumptionFormatter,
+        statusFilter: CostingHeadDropdownFilter,
+
     };
 
 
@@ -623,7 +625,7 @@ function OperationSTSimulation(props) {
                                                 enableBrowserTooltips={true}
                                             // frameworkComponents={frameworkComponents}
                                             >
-                                                {!isImpactedMaster && <AgGridColumn field="CostingHead" tooltipField='CostingHead' headerName="Costing Head" editable='false' minWidth={190} cellRenderer={'combinedCostingHeadRenderer'}
+                                                {!isImpactedMaster && <AgGridColumn field="CostingHead" tooltipField='CostingHead' headerName="Costing Head" editable='false' minWidth={190}  cellRenderer={'combinedCostingHeadRenderer'}
                                                  floatingFilterComponentParams={floatingFilterStatus} 
                                                  floatingFilterComponent="statusFilter"></AgGridColumn>}
                                                 <AgGridColumn field="ForType" headerName="Operation Type" cellRenderer={'hyphenFormatter'} minWidth={190}></AgGridColumn>

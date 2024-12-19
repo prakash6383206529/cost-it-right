@@ -104,7 +104,7 @@ function RMIndexationSimulation(props) {
 
     const { commodityDetailsArray } = useSelector((state) => state?.indexation)
     const { filteredRMData } = useSelector(state => state?.material)
-    const {costingHeadFilter} =useSelector(state=> state?.common)
+    const costingHeadFilter =useSelector(state=> state?.common?.costingHeadFilter)
     useEffect(() => {
    
         if (costingHeadFilter && costingHeadFilter?.data) {

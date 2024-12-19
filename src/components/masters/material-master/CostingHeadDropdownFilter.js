@@ -44,7 +44,6 @@ function CostingHeadDropdownFilter(props) {
         return localizedOptions;
     };
     useEffect(() => {
-        console.log("isResetCustomHook", isResetCostingHead)
         if (isResetCostingHead && isResetCostingHead?.data) {
             setValue("costingHeadDropDown", [])
             setCurrentValue(null);

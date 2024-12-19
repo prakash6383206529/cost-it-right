@@ -98,7 +98,6 @@ export function getVolumeData(VolumeId, callback) {
  * @description get all operation list
  */
 export function getVolumeDataList(skip, take, isPagination, obj, callback) {
-  console.log("obj", obj)
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });    
     const queryParams = encodeQueryParamsAndLog({
