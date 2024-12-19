@@ -255,7 +255,7 @@ div[class$="MenuList"] {
 
         .multi-select-container__value-container {
           height: 30px !important;
-          overflow: auto !important;
+          overflow-y: auto !important;
           max-width: 100% !important;
         }
       }
