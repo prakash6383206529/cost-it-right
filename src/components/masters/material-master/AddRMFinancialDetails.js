@@ -260,7 +260,9 @@ function AddRMFinancialDetails(props) {
             }))
             dispatch(SetRawMaterialDetails({ ...rawMaterailDetailsRef.current, isShowIndexCheckBox: Data?.IsIndexationDetails }, () => { }))
             dispatch(SetRawMaterialDetails({ ...rawMaterailDetailsRef.current, states: state }, () => { }))
-            checkTechnology()
+            setTimeout(() => {
+                checkTechnology()
+            }, 200);
         }
     }, [props?.DataToChange])
     useEffect(() => {
@@ -596,7 +598,7 @@ function AddRMFinancialDetails(props) {
 
     }
     const checkTechnology = () => {
-        let obj = showRMScrapKeys(rawMaterailDetails?.Technology ? rawMaterailDetails?.Technology?.value : props?.DataToChange.TechnologyId)
+        let obj = showRMScrapKeys(Object.keys(rawMaterailDetails?.Technology)?.length > 0 ? rawMaterailDetails?.Technology?.value : props?.DataToChange?.TechnologyId)
         setShowScrapKeys(obj)
         setState(prevState => ({ ...prevState, showScrapKeys: obj }))
     }
