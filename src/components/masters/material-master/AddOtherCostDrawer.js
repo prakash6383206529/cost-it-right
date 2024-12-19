@@ -365,16 +365,16 @@ function AddOtherCostDrawer(props) {
         const newData = {
             MaterialCommodityStandardDetailsId: RowData?.MaterialCommodityStandardDetailsId, // Add MaterialCommodityStandardDetailsId
             RawMaterialCommodityIndexRateAndOtherCostDetailsId: RawMaterialCommodityIndexRateAndOtherCostDetailsId ?? null,
-            Type: getValues('Type') ? getValues('Type').label : '-',
-            CostHeaderName: getValues('Cost') ? getValues('Cost').label : '-',
-            Applicability: getValues('Applicability') ? getValues('Applicability').label : '-',
-            ApplicabilityCost: props.rawMaterial ? getValues('ApplicabilityBaseCost') : getValues('ApplicabilityCostCurrency') ? getValues('ApplicabilityCostCurrency') : '-',
-            ApplicabilityCostConversion: getValues('ApplicabilityBaseCost') ? getValues('ApplicabilityBaseCost') : '-',
-            Value: getValues('Percentage') ? getValues('Percentage') : '-',
-            NetCost: props.rawMaterial ? getValues('CostBaseCurrency') : getValues('CostCurrency') ? getValues('CostCurrency') : '-',
+            Type: getValues('Type') ? getValues('Type').label : '',
+            CostHeaderName: getValues('Cost') ? getValues('Cost').label : '',
+            Applicability: getValues('Applicability') ? getValues('Applicability').label : '',
+            ApplicabilityCost: props.rawMaterial ? getValues('ApplicabilityBaseCost') : getValues('ApplicabilityCostCurrency') ? getValues('ApplicabilityCostCurrency') : '',
+            ApplicabilityCostConversion: getValues('ApplicabilityBaseCost') ? getValues('ApplicabilityBaseCost') : '',
+            Value: getValues('Percentage') ? getValues('Percentage') : '',
+            NetCost: props.rawMaterial ? getValues('CostBaseCurrency') : getValues('CostCurrency') ? getValues('CostCurrency') : '',
             NetCostConversion: getValues('CostBaseCurrency'),
-            Description: getValues('CostDescription') ? getValues('CostDescription') : '-',
-            CostingConditionMasterId: getValues('Cost') ? getValues('Cost').value : '-',
+            Description: getValues('CostDescription') ? getValues('CostDescription') : '',
+            CostingConditionMasterId: getValues('Cost') ? getValues('Cost').value : '',
             Remark: getValues('Remark')
         };
 

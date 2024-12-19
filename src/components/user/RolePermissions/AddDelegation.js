@@ -67,7 +67,6 @@ const AddDelegation = (props) => {
     };
 
     const handleApprovalType = (newValue) => {
-        console.log(newValue)
 		if (newValue?.filter(element => element?.Value === '0')?.length > 0) {
             setState(prevState => ({ ...prevState, selectedApprovalType: state.allApprovalType }))
 		} else {

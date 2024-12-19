@@ -23,7 +23,7 @@ import ScrollToTop from '../../common/ScrollToTop'
 import { PaginationWrapper } from '../../common/commonPagination'
 import { checkFinalUser, getReleaseStrategyApprovalDetails } from '../../costing/actions/Costing'
 import SingleDropdownFloationFilter from '../../masters/material-master/SingleDropdownFloationFilter'
-import { agGridStatus, isResetClick, getGridHeight, dashboardTabLock } from '../../../actions/Common'
+import { agGridStatus, isResetClick, getGridHeight, dashboardTabLock, setResetCostingHead } from '../../../actions/Common'
 import { costingTypeIdToApprovalTypeIdFunction } from '../../common/CommonFunctions'
 import { Steps } from './TourMessages'
 import TourWrapper from '../../common/Tour/TourWrapper'
@@ -154,6 +154,9 @@ function SimulationApprovalListing(props) {
 
     useEffect(() => {
         setIsSuperAdmin(userDetails()?.Role === "SuperAdmin")
+        return () => {
+            dispatch(setResetCostingHead(true, "costingHead"))
+        }
     }, [])
 
     useEffect(() => {
@@ -250,6 +253,7 @@ function SimulationApprovalListing(props) {
 
                         setTimeout(() => {
                             dispatch(isResetClick(false))
+                            dispatch(setResetCostingHead(false, "costingHead"))
                             setWarningMessage(false)
                             setFloatingFilterData(obj)
                         }, 23);
@@ -335,6 +339,7 @@ function SimulationApprovalListing(props) {
     const resetState = () => {
         dispatch(agGridStatus("", ""))
         dispatch(isResetClick(true))
+        dispatch(setResetCostingHead(true, "costingHead"))
         setIsFilterButtonClicked(false)
         setIsLoader(true)
         gridOptions?.columnApi?.resetColumnState(null);
