@@ -122,7 +122,7 @@ function MasterSendForApproval(props) {
                 const departmentIds = Array.isArray(DepartmentId) ? DepartmentId : [DepartmentId];
                 const updateList = Data && Data.filter(item => departmentIds.includes(item.Value));
                 setDepartmentDropdown(updateList)
-                setValue('dept', { label: updateList[0]?.Text, value: updateList[0]?.Value })
+                setValue('dept', { label: updateList?.[0]?.Text, value: updateList?.[0]?.Value })
                 setDisableDept(true)
                 fetchAndSetApprovalUsers(updateList[0]?.Value, reasonId, approvalData[0]?.DivisionId);
                 setIsShowDivision(false)
@@ -140,14 +140,11 @@ function MasterSendForApproval(props) {
             OnboardingMasterId: OnboardingId,
             ApprovalTypeId: masterId !== 0 ? costingTypeIdToApprovalTypeIdFunction(props?.costingTypeId) : approvalDetails?.ApprovalTypeId,
             ReasonId: reasonId,
-            // PlantId: props?.isRFQ ? RFQPlantId : (approvalObj ? approvalObj.Plant[0].PlantId ?? EMPTY_GUID : props.masterPlantId ?? EMPTY_GUID),
-            // DivisionId: divisionId ?? null
-
             PlantId: props?.isRFQ ? RFQPlantId : (approvalObj ? (Array.isArray(approvalObj?.Plant) ? approvalObj?.Plant[0]?.PlantId : approvalObj?.PlantId) ?? EMPTY_GUID : props?.masterPlantId ?? EMPTY_GUID),
             DivisionId: divisionId ?? null
-
-            // ... existing code ...
         };
+
+
         dispatch(getAllMasterApprovalUserByDepartment(obj, (res) => {
             const Data = res.data.DataList[1] ? res.data.DataList[1] : [];
             if (Data?.length !== 0) {
