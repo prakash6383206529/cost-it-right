@@ -20,7 +20,7 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { getListingForSimulationCombined, setSelectedRowForPagination } from '../../simulation/actions/Simulation';
 import WarningMessage from '../../common/WarningMessage';
 import { hyphenFormatter } from '../masterUtil';
-import { TourStartAction, disabledClass, isResetClick } from '../../../actions/Common';
+import { TourStartAction, disabledClass, isResetClick, setResetCostingHead } from '../../../actions/Common';
 import _ from 'lodash';
 import AnalyticsDrawer from '../material-master/AnalyticsDrawer';
 import { reactLocalStorage } from 'reactjs-localstorage';
@@ -108,7 +108,7 @@ const BOPDomesticListing = (props) => {
       }
     }, 300);
     return () => {
-      dispatch(isResetClick(true, "costingHead"))
+      dispatch(setResetCostingHead(true, "costingHead"))
     }
   },
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -224,7 +224,7 @@ const BOPDomesticListing = (props) => {
             }, 300);
             setTimeout(() => {
               setState((prevState) => ({ ...prevState, warningMessage: false }))
-              dispatch(isResetClick(false, "costingHead"))
+              dispatch(setResetCostingHead(false, "costingHead"))
 
             }, 335);
 
@@ -375,7 +375,7 @@ const BOPDomesticListing = (props) => {
     setState((prevState) => ({ ...prevState, noData: false, inRangeDate: [], isFilterButtonClicked: false }));
     state.gridApi.setQuickFilter(null)
     state.gridApi.deselectAll();
-    dispatch(isResetClick(true, "costingHead"))
+    dispatch(setResetCostingHead(true, "costingHead"))
     gridOptions?.columnApi?.resetColumnState(null);
     gridOptions?.api?.setFilterModel(null);
     for (var prop in state.floatingFilterData) {

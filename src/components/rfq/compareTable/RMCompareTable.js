@@ -25,8 +25,8 @@ const RMCompareTable = (props) => {
         setIsLoader(true)
         let temp = []
         const uniqueShouldCostingIdArr = props?.uniqueShouldCostingId || [];
-        const idArr = props?.selectedRows.map(item => item.RawMaterialId);
-        const combinedArr = Array.from(new Set([...uniqueShouldCostingIdArr, ...idArr]));
+        const idArr = props?.selectedRows?.map(item => item?.RawMaterialId);
+        const combinedArr = Array?.from(new Set([...uniqueShouldCostingIdArr, ...idArr]));
         dispatch(getViewRawMaterialDetails(combinedArr, res => {
 
             setIsLoader(false)

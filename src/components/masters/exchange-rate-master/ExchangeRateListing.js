@@ -27,7 +27,7 @@ import { loggedInUserId } from '../../../helper';
 import Button from '../../layout/Button';
 import { screenWidth, useLabels, useWithLocalization } from '../../../helper/core';
 import CostingHeadDropdownFilter from '../material-master/CostingHeadDropdownFilter';
-import { isResetClick } from '../../../actions/Common';
+import { setResetCostingHead } from '../../../actions/Common';
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -116,7 +116,7 @@ const ExchangeRateListing = (props) => {
     }, [topAndLeftMenuData]);
     useEffect(() => {
         return () => {
-            dispatch(isResetClick(true, "costingHead"))
+            dispatch(setResetCostingHead(true, "costingHead"))
         }
     }, [])
     const applyPermission = (topAndLeftMenuData) => {

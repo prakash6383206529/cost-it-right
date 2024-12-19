@@ -23,7 +23,7 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { getListingForSimulationCombined, setSelectedRowForPagination, } from '../../simulation/actions/Simulation'
 import WarningMessage from '../../common/WarningMessage';
 import _ from 'lodash';
-import { TourStartAction, disabledClass, isResetClick } from '../../../actions/Common';
+import { TourStartAction, disabledClass, setResetCostingHead } from '../../../actions/Common';
 import AnalyticsDrawer from '../material-master/AnalyticsDrawer';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { checkMasterCreateByCostingPermission, hideCustomerFromExcel } from '../../common/CommonFunctions';
@@ -139,7 +139,7 @@ const OperationListing = (props) => {
         dispatch(setSelectedRowForPagination([]));
         dispatch(resetStatePagination());
         return () => {
-            dispatch(isResetClick(true, "costingHead"))
+            dispatch(setResetCostingHead(true, "costingHead"))
           }
         // eslint-disable-next-line
     }, []);
@@ -246,6 +246,7 @@ const OperationListing = (props) => {
                 }, 600);
 
                 setTimeout(() => {
+                    dispatch(setResetCostingHead(false, "costingHead"))
                     setState(prevState => ({ ...prevState, warningMessage: false }))
                 }, 335);
                 setTimeout(() => {
@@ -326,7 +327,7 @@ const OperationListing = (props) => {
 
     const resetState = () => {
         setState((prevState) => ({ ...prevState, noData: false, warningMessage: false, }));
-        dispatch(isResetClick(true, "costingHead"));
+        dispatch(setResetCostingHead(true, "costingHead"));
         setState((prevState) => ({ ...prevState, isFilterButtonClicked: false, }));
         setSearchText(''); // Clear the search text state
         if (state.gridApi) {

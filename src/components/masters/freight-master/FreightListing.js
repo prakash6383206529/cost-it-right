@@ -23,7 +23,7 @@ import Button from '../../layout/Button';
 import DayTime from '../../common/DayTimeWrapper';
 import { useLabels, useWithLocalization } from '../../../helper/core';
 import CostingHeadDropdownFilter from '../material-master/CostingHeadDropdownFilter';
-import { isResetClick } from '../../../actions/Common';
+import { setResetCostingHead } from '../../../actions/Common';
 const gridOptions = {};
 const FreightListing = (props) => {
   const dispatch = useDispatch();
@@ -72,7 +72,7 @@ const FreightListing = (props) => {
   }, [ costingHeadFilter]);
   useEffect(() => {
     return () => {
-      dispatch(isResetClick(true, "costingHead"))
+      dispatch(setResetCostingHead(true, "costingHead"))
     }
   }, [])
   /**

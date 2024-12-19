@@ -19,7 +19,7 @@ import { PaginationWrapper } from '../../common/commonPagination'
 import WarningMessage from '../../common/WarningMessage'
 import { setSelectedRowForPagination } from '../../simulation/actions/Simulation'
 import _ from 'lodash'
-import { TourStartAction, disabledClass, isResetClick } from '../../../actions/Common'
+import { TourStartAction, disabledClass, setResetCostingHead } from '../../../actions/Common'
 import { reactLocalStorage } from 'reactjs-localstorage'
 import { Drawer } from '@material-ui/core'
 import Attachament from '../../costing/components/Drawers/Attachament'
@@ -94,7 +94,7 @@ function BudgetListing(props) {
         } return () => {
             dispatch(setSelectedRowForPagination([]))
             dispatch(resetStatePagination());
-            dispatch(isResetClick(true, "costingHead"))
+            dispatch(setResetCostingHead(true, "costingHead"))
 
         }
 
@@ -176,7 +176,7 @@ function BudgetListing(props) {
 
                 setTimeout(() => {
                     setWarningMessage(false)
-                    dispatch(isResetClick(false, "costingHead"))
+                    dispatch(setResetCostingHead(false, "costingHead"))
                 }, 330);
 
                 setTimeout(() => {
@@ -418,7 +418,7 @@ function BudgetListing(props) {
     }
 
     const resetState = () => {
-        dispatch(isResetClick(true, "costingHead"))
+        dispatch(setResetCostingHead(true, "costingHead"))
         setNoData(false)
         gridOptions.columnApi.resetColumnState();
         gridOptions.api.setFilterModel(null);

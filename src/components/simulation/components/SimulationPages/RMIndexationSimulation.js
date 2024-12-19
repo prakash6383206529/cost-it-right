@@ -36,7 +36,7 @@ import { Redirect } from 'react-router-dom/cjs/react-router-dom';
 import CustomCellRenderer from '../../../rfq/CommonDropdown';
 import { useLabels } from '../../../../helper/core';
 import CostingHeadDropdownFilter from '../../../masters/material-master/CostingHeadDropdownFilter';
-import { isResetClick } from '../../../../actions/Common';
+import { setResetCostingHead } from '../../../../actions/Common';
 
 const gridOptions = {
 
@@ -104,7 +104,7 @@ function RMIndexationSimulation(props) {
 
     const { commodityDetailsArray } = useSelector((state) => state?.indexation)
     const { filteredRMData } = useSelector(state => state?.material)
-    const {costingHeadFilter} =useSelector(state=> state?.common)
+    const costingHeadFilter =useSelector(state=> state?.common?.costingHeadFilter)
     useEffect(() => {
    
         if (costingHeadFilter && costingHeadFilter?.data) {
@@ -183,7 +183,7 @@ function RMIndexationSimulation(props) {
             }))
         }
         return () => {
-            dispatch(isResetClick(true, "costingHead"))
+            dispatch(setResetCostingHead(true, "costingHead"))
           }
     }, [])
 

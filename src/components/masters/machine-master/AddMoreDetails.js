@@ -45,7 +45,7 @@ import TooltipCustom from '../../common/Tooltip';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { checkFinalUser } from '../../../components/costing/actions/Costing'
 import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions';
-import { costingTypeIdToApprovalTypeIdFunction, getEffectiveDateMaxDate } from '../../common/CommonFunctions';
+import { costingTypeIdToApprovalTypeIdFunction, getEffectiveDateMaxDate, getEffectiveDateMinDate } from '../../common/CommonFunctions';
 import WarningMessage from '../../common/WarningMessage';
 import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from './TourMessages';
@@ -2969,11 +2969,11 @@ class AddMoreDetails extends Component {
                               <Field
                                 label="Effective Date"
                                 name="EffectiveDate"
-                                minDate={this.state.minDate || null}
+                                minDate={this.state.minDate || getEffectiveDateMinDate()}
                                 selected={this.state.effectiveDate || null}
                                 placeholder={this.state.isViewFlag || !this.state.IsFinancialDataChanged ? '-' : "Select Date"}
                                 onChange={this.handleEffectiveDateChange}
-                                maxDate={this.getEffectiveDateMaxDate()}
+                                maxDate={getEffectiveDateMaxDate()}
                                 type="text"
                                 validate={[required]}
                                 autoComplete={'off'}
