@@ -916,6 +916,7 @@ class AddBOPImport extends Component {
       this.setState({ currency: newValue, }, () => {
         setTimeout(() => {
           this.handleCalculation()
+          this.callExchangeRateAPI(this.props.fieldsObj?.plantCurrency)
         }, 200);
       })
       if (newValue && newValue.length !== 0 && effectiveDate) {
