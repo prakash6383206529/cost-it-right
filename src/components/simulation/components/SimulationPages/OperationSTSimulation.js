@@ -665,7 +665,7 @@ function OperationSTSimulation(props) {
                                         <div className="inputbox date-section mr-3 verfiy-page simulation_effectiveDate">
                                             <DatePicker
                                                 name="EffectiveDate"
-                                                id='EffectiveDate'
+                                                id="EffectiveDate"
                                                 selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
                                                 onChange={handleEffectiveDateChange}
                                                 showMonthDropdown
