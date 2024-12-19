@@ -795,7 +795,7 @@ const VendorListing = (props) => {
               enablePivot={true}
               enableBrowserTooltips={true}
             >
-              <AgGridColumn field="VendorType" tooltipField="VendorType" width={"240px"} headerName={vendorLabel + " Type"} cellRenderer={"checkBoxRenderer"} floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterVendorType}              ></AgGridColumn>
+              <AgGridColumn field="VendorType" tooltipField="VendorType" width={"280px"} headerName={vendorLabel + " Type"} cellRenderer={"checkBoxRenderer"} floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterVendorType}              ></AgGridColumn>
               <AgGridColumn field="VendorName" headerName={vendorLabel + " Name"}             ></AgGridColumn>
               <AgGridColumn field="VendorCode" headerName={vendorLabel + " Code"}              ></AgGridColumn>
               <AgGridColumn field="Country" headerName="Country" cellRenderer={"hyphenFormatter"}              ></AgGridColumn>
