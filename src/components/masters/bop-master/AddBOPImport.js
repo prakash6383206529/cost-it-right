@@ -142,6 +142,7 @@ class AddBOPImport extends Component {
       IsEditBtnClicked: false,
       SapCode: '',
       isSAPCodeDisabled: false,
+      sourceLocationInputLoader: false,
     }
   }
 
@@ -1015,9 +1016,9 @@ class AddBOPImport extends Component {
       inputValue = inputValue.trim();
     }
     if (inputValue?.length >= searchCount) {
-      this.setState({ inputLoader: true });
+      this.setState({ sourceLocationInputLoader: true });
       let res = await this.props.getCityByCountryAction(0, 0, inputValue);
-      this.setState({ inputLoader: false });
+      this.setState({ sourceLocationInputLoader: false });
       let cityDataAPI = res?.data?.SelectList;
       if (inputValue) {
         return autoCompleteDropdown(inputValue, cityDataAPI, false, [], true);
@@ -1328,7 +1329,7 @@ class AddBOPImport extends Component {
         ((DataToChange?.Remark ? DataToChange?.Remark : '') === (values?.Remark ? values?.Remark : '')) &&
         ((DataToChange?.SAPPartNumber ? DataToChange?.SAPPartNumber : '') === (values?.SAPPartNumber ? values?.SAPPartNumber : ''))
         &&
-        ((DataToChange?.Source ? String(DataToChange?.Source) : '-') === (values?.Source ? String(values?.Source) : '-')) &&
+        ((DataToChange?.Source ? String(DataToChange?.Source) : ' ') === (values?.Source ? String(values?.Source) : '')) &&
         ((DataToChange?.SourceLocation ? String(DataToChange?.SourceLocation) : '') === (sourceLocation?.value ? String(sourceLocation?.value) : '')) &&
         checkForNull(basicPriceSelectedCurrency).toFixed(initialConfiguration?.NoOfDecimalForPrice) === checkForNull(DataToChange?.NetCostWithoutConditionCost).toFixed(initialConfiguration?.NoOfDecimalForPrice) &&
 
@@ -1360,7 +1361,7 @@ class AddBOPImport extends Component {
       if (((files ? JSON.stringify(files) : []) === (DataToChange?.Attachements ? JSON.stringify(DataToChange?.Attachements) : [])) &&
         ((DataToChange?.Remark ? DataToChange?.Remark : '') === (values?.Remark ? values?.Remark : '')) &&
         ((DataToChange?.SAPPartNumber ? DataToChange?.SAPPartNumber : '') !== (values?.SAPPartNumber ? values?.SAPPartNumber : '')) &&
-        ((DataToChange?.Source ? String(DataToChange?.Source) : '-') === (values?.Source ? String(values?.Source) : '-')) &&
+        ((DataToChange?.Source ? String(DataToChange?.Source) : '') === (values?.Source ? String(values?.Source) : '')) &&
         ((DataToChange?.SourceLocation ? String(DataToChange?.SourceLocation) : '') === (sourceLocation?.value ? String(sourceLocation?.value) : '')) &&
         checkForNull(basicPriceSelectedCurrency).toFixed(initialConfiguration?.NoOfDecimalForPrice) === checkForNull(DataToChange?.NetCostWithoutConditionCost).toFixed(initialConfiguration?.NoOfDecimalForPrice) &&
         checkForNull(fieldsObj?.NumberOfPieces).toFixed(initialConfiguration?.NoOfDecimalForPrice) === checkForNull(DataToChange?.NumberOfPieces).toFixed(initialConfiguration?.NoOfDecimalForPrice) &&

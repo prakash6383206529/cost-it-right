@@ -258,13 +258,13 @@ function MachiningStockTable(props) {
     }
 
     const obj = {
-      MajorDiameter: MajorDiameter ? MajorDiameter : "-",
-      MinorDiameter: MinorDiameter ? MinorDiameter : "-",
+      MajorDiameter: MajorDiameter ? MajorDiameter : "",
+      MinorDiameter: MinorDiameter ? MinorDiameter : "",
       Description: Description,
-      Length: Length ? Length : "-",
-      Height: Height ? Height : "-",
-      Breadth: Breadth ? Breadth : "-",
-      No: No ? No : "-",
+      Length: Length ? Length : "",
+      Height: Height ? Height : "",
+      Breadth: Breadth ? Breadth : "",
+      No: No ? No : "",
       TypesOfMachiningStock: MachiningStock?.label,
       TypesOfMachiningStockId: MachiningStock?.value,
       GrossWeight: GrossWeight,
@@ -524,6 +524,7 @@ function MachiningStockTable(props) {
             </Col >
 
             <Col md="3">
+              <TooltipCustom id={"minor-diameter-info"} width={"230px"} tooltipText={`For circular solid bars, Minor Diameter should be '0'`} />
               <TextFieldHookForm
                 label={`Minor Diameter(mm)`}
                 name={'minorDiameter'}

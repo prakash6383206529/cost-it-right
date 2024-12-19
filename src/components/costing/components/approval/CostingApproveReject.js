@@ -274,7 +274,7 @@ function CostingApproveReject(props) {
         ApproverDepartmentId: dept && dept.value ? dept.value : '',
         ApproverDepartmentName: dept && dept.label ? dept.label : '',
         // Approver: approver && approver.value ? approver.value : '',
-        ApproverIdList: initialConfiguration.IsMultipleUserAllowForApproval ? approverIdList : [approver && approver.value ? approver.value : ''],
+        ApproverIdList: initialConfiguration.IsMultipleUserAllowForApproval ? approverIdList : approver && approver.value ? [approver.value]:[],
         ApproverLevelId: approver && approver.levelId ? approver.levelId : '',
         ApproverLevel: approver && approver.levelName ? approver.levelName : '',
         Remark: remark,
