@@ -485,7 +485,7 @@ const PaymentTerms = React.memo((props) => {
                                 </Col>
                                 {paymentTermsApplicability.label !== 'Fixed' && <Col md="3">
                                     <span className="head-text">
-                                        Repayment Period(No. of Days)
+                                        Repayment Period (No. of Days)
                                     </span>
                                 </Col>}
                                 <Col md="3">

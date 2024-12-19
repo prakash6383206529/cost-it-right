@@ -684,7 +684,7 @@ function CostingHeaderTabs(props) {
                 options={renderListing("Currency")}
                 handleChange={handleChangeCurrency}
                 defaultValue={currency?.length !== 0 ? currency : ""}
-                disabled={(costData?.CostingCurrencyId ? true : false) || CostingViewMode}
+                disabled={(costData?.CostingCurrencyId ? true : false) || CostingViewMode||IsCostingDateDisabled}
               />
             </Col>
             <Col md="3">

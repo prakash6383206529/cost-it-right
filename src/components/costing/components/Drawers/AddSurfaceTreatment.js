@@ -114,11 +114,12 @@ function AddSurfaceTreatment(props) {
     props.closeDrawer()
   }
 
-  const isFirstColumn = (params) => {
+const isFirstColumn = (params) => {
+    const rowData = params?.valueFormatted ? params.valueFormatted : params?.data;
     var displayedColumns = params.columnApi.getAllDisplayedColumns();
     var thisIsFirstColumn = displayedColumns[0] === params.column;
 
-    return thisIsFirstColumn;
+    return rowData?.IsValidExchangeRate === true ? thisIsFirstColumn : false;
   }
 
   const defaultColDef = {
