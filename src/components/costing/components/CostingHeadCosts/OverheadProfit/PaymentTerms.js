@@ -209,7 +209,7 @@ const PaymentTerms = React.memo((props) => {
             const RMBOP = headerCosts.NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost;
             const RMCC = headerCosts.NetRawMaterialsCost + ConversionCostForCalculation;
             const BOPCC = headerCosts.NetBoughtOutPartCost + ConversionCostForCalculation;
-            const TotalCost = checkForNull(data?.totalCost - data?.NetDiscountsCost) + checkForNull(data?.AnyOtherCost)
+            const TotalCost = checkForNull(data?.totalCost) - checkForNull(data?.NetDiscountsCost ? data?.NetDiscountsCost : data?.HundiOrDiscountValue) + checkForNull(data?.AnyOtherCost)
             const RepaymentPeriodDays = getValues('RepaymentPeriodDays')
             const RepaymentPeriodPercentage = getValues('RepaymentPeriodPercentage')
             const RepaymentCost = (calculatePercentage(RepaymentPeriodPercentage) / 90) * RepaymentPeriodDays;
