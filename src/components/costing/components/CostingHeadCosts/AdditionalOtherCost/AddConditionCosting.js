@@ -42,6 +42,8 @@ function AddConditionCosting(props) {
         ApplicabilityCost: 0
     })
     const conditionTypeId = getCostingConditionTypes(COSTINGCONDITIONCOST)
+    const CostingViewMode = useContext(ViewCostingContext);
+
     const conditionEntryTypeDropdown = [
         {
             label: 'Domestic',
