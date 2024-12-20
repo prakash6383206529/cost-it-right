@@ -121,7 +121,7 @@ function Stamping(props) {
     const scrapCost = scrapWeight * Number(rmRowData.ScrapRate)
 
     setValue('scrapCost', checkForDecimalAndNull(scrapCost, getConfigurationKey().NoOfDecimalForPrice))
-    const netRMCost = (Number(rmRowData.RMRate) * inputWeight) - scrapCost
+    const netRMCost = (Number(rmRowData.RMRate) * inputWeight) - scrapWeight * scrapCost
     setValue('materialCost', checkForDecimalAndNull(netRMCost, getConfigurationKey().NoOfDecimalForPrice))
     const updatedValue = dataToSend
     updatedValue.ScrapCost = scrapCost
