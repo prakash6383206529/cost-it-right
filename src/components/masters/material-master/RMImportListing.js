@@ -26,7 +26,7 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { getListingForSimulationCombined, setSelectedRowForPagination } from '../../simulation/actions/Simulation';
 import WarningMessage from '../../common/WarningMessage';
 import _ from 'lodash';
-import { disabledClass, isResetClick } from '../../../actions/Common';
+import { disabledClass, setResetCostingHead } from '../../../actions/Common';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import AnalyticsDrawer from './AnalyticsDrawer';
 import { checkMasterCreateByCostingPermission, hideCustomerFromExcel, hideMultipleColumnFromExcel } from '../../common/CommonFunctions';
@@ -192,7 +192,7 @@ function RMImportListing(props) {
       }
     }, 300);
     return () => {
-      dispatch(isResetClick(true, "costingHead"))
+      dispatch(setResetCostingHead(true, "costingHead"))
     }
 
   }, [])
@@ -300,7 +300,7 @@ function RMImportListing(props) {
 
           setTimeout(() => {
             setWarningMessage(false)
-            dispatch(isResetClick(false, "costingHead"))
+            dispatch(setResetCostingHead(false, "costingHead"))
 
           }, 330);
 
@@ -744,7 +744,7 @@ function RMImportListing(props) {
     setNoData(false)
     setFilterModel({})
     setinRangeDate([])
-    dispatch(isResetClick(true, "costingHead"))
+    dispatch(setResetCostingHead(true, "costingHead"))
     setIsFilterButtonClicked(false)
     gridOptions?.columnApi?.resetColumnState(null);
     gridOptions?.api?.setFilterModel(null);

@@ -39,6 +39,7 @@ import CostingHeadDropdownFilter from '../../../masters/material-master/CostingH
 import { isResetClick } from '../../../../actions/Common';
 import AddConditionCosting from '../../../costing/components/CostingHeadCosts/AdditionalOtherCost/AddConditionCosting';
 import { updateCostValue } from '../../../common/CommonFunctions';
+import { setResetCostingHead } from '../../../../actions/Common';
 
 const gridOptions = {
 
@@ -113,6 +114,17 @@ function RMIndexationSimulation(props) {
     const { commodityDetailsArray } = useSelector((state) => state.indexation)
     const { filteredRMData } = useSelector(state => state.material)
     const selectedEffectiveDate = useSelector((state) => state.simulation.selectedEffectiveDate);
+   const costingHeadFilter =useSelector(state=> state?.common?.costingHeadFilter)
+    useEffect(() => {
+   
+        if (costingHeadFilter && costingHeadFilter?.data) {
+          const matchedOption = costingHeadFilter?.CostingHeadOptions?.find(option => option?.value === costingHeadFilter?.data?.value);
+          if (matchedOption) {
+            gridApi?.setQuickFilter(matchedOption?.label);
+          }
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+      }, [ costingHeadFilter]);
     const columnWidths = {
         CostingHead: showCompressedColumns ? 50 : 140,
         VendorCode: showCompressedColumns ? 50 : 160,

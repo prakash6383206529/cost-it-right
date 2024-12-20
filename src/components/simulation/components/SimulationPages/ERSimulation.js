@@ -461,7 +461,7 @@ function ERSimulation(props) {
                                                 <DatePicker
                                                     name="EffectiveDate"
                                                     selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
-                                                    id='EffectiveDate'
+                                                    id="EffectiveDate"
                                                     onChange={handleEffectiveDateChange}
                                                     showMonthDropdown
                                                     showYearDropdown

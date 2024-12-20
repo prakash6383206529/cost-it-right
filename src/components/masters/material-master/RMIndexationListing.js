@@ -26,7 +26,7 @@ import Button from "../../layout/Button";
 import TourWrapper from "../../common/Tour/TourWrapper";
 import { Steps } from "../../common/Tour/TourMessages";
 import { useTranslation } from "react-i18next";
-import { isResetClick, TourStartAction } from "../../../actions/Common";
+import { setResetCostingHead, TourStartAction } from "../../../actions/Common";
 import AddRMIndexation from "./AddRMIndexation";
 import { useLabels } from "../../../helper/core";
 
@@ -69,7 +69,7 @@ const RMIndexationListing = (props) => {
     useEffect(() => {
         getSpecificationListData("", "");
         return () => {
-            dispatch(isResetClick(true, "costingHead"))
+            dispatch(setResetCostingHead(true, "costingHead"))
           }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);

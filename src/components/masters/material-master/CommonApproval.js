@@ -17,7 +17,7 @@ import WarningMessage from '../../common/WarningMessage';
 import Toaster from '../../common/Toaster'
 import { setSelectedRowForPagination } from '../../simulation/actions/Simulation';
 import { hyphenFormatter } from '../masterUtil';
-import { agGridStatus, dashboardTabLock, getGridHeight, isResetClick } from '../../../actions/Common'
+import { agGridStatus, dashboardTabLock, getGridHeight, isResetClick, setResetCostingHead } from '../../../actions/Common'
 import _ from 'lodash';
 import SingleDropdownFloationFilter from './SingleDropdownFloationFilter';
 import { reactLocalStorage } from 'reactjs-localstorage';
@@ -91,6 +91,7 @@ function CommonApproval(props) {
             dispatch(setSelectedRowForPagination([]))
             setSelectedRowData([])
             dispatch(resetStatePagination())
+            dispatch(setResetCostingHead(true, "costingHead"))
         }
 
     }, [])
@@ -187,6 +188,7 @@ function CommonApproval(props) {
                     setTimeout(() => {
 
                         dispatch(isResetClick(false, "status"))
+                        dispatch(setResetCostingHead(false, "costingHead"))
                         setWarningMessage(false)
                         setFloatingFilterData(obj)
                     }, 23);
@@ -267,6 +269,7 @@ function CommonApproval(props) {
     const resetState = () => {
         dispatch(agGridStatus("", ""))
         dispatch(isResetClick(true, "status"))
+        dispatch(setResetCostingHead(true, "costingHead"))
         setIsFilterButtonClicked(false)
         gridApi.setQuickFilter(null)
 
@@ -926,9 +929,9 @@ function CommonApproval(props) {
                     </div>
                 </Col>
             </Row>
-            <Row>
+            <Row> 
                 <Col>
-                    <div className={`ag-grid-react`} >
+                    <div className={`ag-grid-react grid-parent-wrapper`} >
                         <div className={`ag-grid-wrapper height-width-wrapper min-height-auto ${(approvalList && approvalList?.length <= 0) || noData ? "overlay-contain p-relative" : ""}`}>
                             <div className="ag-grid-header">
                                 <input ref={searchRef} type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
@@ -990,7 +993,7 @@ function CommonApproval(props) {
 
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="165" field="NetLandedCost" cellRenderer='costFormatter'></AgGridColumn>}
 
-                                    {!props?.isApproval && <AgGridColumn headerClass="justify-content-center" pinned="right" tooltipField="TooltipText" cellClass="text-center" field="DisplayStatus" cellRenderer='statusFormatter' headerName="Status" floatingFilterComponent="statusFilter" floatingFilterComponentParams={floatingFilterStatus} ></AgGridColumn>}
+                                    {!props?.isApproval && <AgGridColumn headerClass="justify-content-center"  tooltipField="TooltipText" cellClass="text-center" field="DisplayStatus" cellRenderer='statusFormatter' headerName="Status" floatingFilterComponent="statusFilter" floatingFilterComponentParams={floatingFilterStatus} ></AgGridColumn>}
 
 
 

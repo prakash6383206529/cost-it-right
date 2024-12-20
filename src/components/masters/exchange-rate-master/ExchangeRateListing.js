@@ -25,9 +25,9 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import { checkMasterCreateByCostingPermission, hideCustomerFromExcel } from '../../common/CommonFunctions';
 import { loggedInUserId } from '../../../helper';
 import Button from '../../layout/Button';
-import { useLabels, useWithLocalization } from '../../../helper/core';
+import { screenWidth, useLabels, useWithLocalization } from '../../../helper/core';
 import CostingHeadDropdownFilter from '../material-master/CostingHeadDropdownFilter';
-import { isResetClick } from '../../../actions/Common';
+import { setResetCostingHead } from '../../../actions/Common';
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -64,7 +64,7 @@ const ExchangeRateListing = (props) => {
     const { exchangeRateDataList } = useSelector((state) => state.exchangeRate);
     const { topAndLeftMenuData } = useSelector((state) => state.auth);
     const { filteredRMData } = useSelector((state) => state.material);
-    const { vendorLabel,vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels();
+    const { vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels();
     const { costingHeadFilter } = useSelector((state) => state?.comman);
     useEffect(() => {
         applyPermission(topAndLeftMenuData);
@@ -98,17 +98,17 @@ const ExchangeRateListing = (props) => {
         return () => clearTimeout(timer);
 
     }, []);
-  //for static dropdown
-  useEffect(() => {
-   
-    if (costingHeadFilter && costingHeadFilter?.data) {
-      const matchedOption = costingHeadFilter?.CostingHeadOptions?.find(option => option?.value === costingHeadFilter?.data?.value);
-      if (matchedOption) {
-        state.gridApi?.setQuickFilter(matchedOption?.label);
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ costingHeadFilter]);
+    //for static dropdown
+    useEffect(() => {
+
+        if (costingHeadFilter && costingHeadFilter?.data) {
+            const matchedOption = costingHeadFilter?.CostingHeadOptions?.find(option => option?.value === costingHeadFilter?.data?.value);
+            if (matchedOption) {
+                state.gridApi?.setQuickFilter(matchedOption?.label);
+            }
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [costingHeadFilter]);
     useEffect(() => {
         if (topAndLeftMenuData !== undefined) {
             applyPermission(topAndLeftMenuData);
@@ -116,8 +116,8 @@ const ExchangeRateListing = (props) => {
     }, [topAndLeftMenuData]);
     useEffect(() => {
         return () => {
-            dispatch(isResetClick(true, "costingHead"))
-          }
+            dispatch(setResetCostingHead(true, "costingHead"))
+        }
     }, [])
     const applyPermission = (topAndLeftMenuData) => {
         if (topAndLeftMenuData !== undefined) {
@@ -229,8 +229,8 @@ const ExchangeRateListing = (props) => {
         suppressFilterButton: true,
         component: CostingHeadDropdownFilter,
         onFilterChange: (originalValue, value) => {
-          setState((prevState) => ({ ...prevState, floatingFilterData: { ...prevState.floatingFilterData, CostingHead: value } }));   
-          setState((prevState) => ({ ...prevState, disableFilter: false }));
+            setState((prevState) => ({ ...prevState, floatingFilterData: { ...prevState.floatingFilterData, CostingHead: value } }));
+            setState((prevState) => ({ ...prevState, disableFilter: false }));
         }
     };
     /**
@@ -346,17 +346,17 @@ const ExchangeRateListing = (props) => {
         gridOptions.columnApi.resetColumnState();
         gridOptions.api.setFilterModel(null);
     }
-    
+
     const combinedCostingHeadRenderer = (props) => {
         // Call the existing checkBoxRenderer
-      
+
         // Get and localize the cell value
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const localizedValue = getLocalizedCostingHeadValue(cellValue, vendorBasedLabel, zeroBasedLabel, customerBasedLabel);
-      
+
         // Return the localized value (the checkbox will be handled by AgGrid's default renderer)
         return localizedValue;
-      };
+    };
 
     const frameworkComponents = {
         combinedCostingHeadRenderer: combinedCostingHeadRenderer,
@@ -399,7 +399,7 @@ const ExchangeRateListing = (props) => {
                     <ScrollToTop pointProp="go-to-top" />
                     {state.isLoader && <LoaderCustom />}
                     <form noValidate>
-                        <Row className=" blue-before zindex-0">
+                        <Row className={`blue-before zindex-0 ${(props.isSimulation && screenWidth < 1600) ? 'mt-5' : ''}`}>
                             <Col md="6">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
                             </Col>
@@ -447,8 +447,8 @@ const ExchangeRateListing = (props) => {
                                 frameworkComponents={frameworkComponents}
                                 suppressRowClickSelection={true}
                             >
-                                <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'combinedCostingHeadRenderer'}   floatingFilterComponentParams={floatingFilterStatus} 
-                                            floatingFilterComponent="statusFilter" ></AgGridColumn>
+                                <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'combinedCostingHeadRenderer'} floatingFilterComponentParams={floatingFilterStatus}
+                                    floatingFilterComponent="statusFilter" ></AgGridColumn>
                                 <AgGridColumn field="vendorWithCode" headerName={`${vendorLabel} (Code)`}></AgGridColumn>
                                 {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="customerWithCode" headerName="Customer (Code)" ></AgGridColumn>}
                                 <AgGridColumn field="FromCurrency" headerName="From Currency" minWidth={135}></AgGridColumn>

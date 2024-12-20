@@ -74,6 +74,7 @@ import {
   ONBOARDING_MANAGEMENT_LEVEL,
   GET_TAX_CODE_SELECTLIST,
   SET_COSTING_HEAD_FILTER,
+  IS_RESET_COSTING_HEAD,
 } from '../config/constants';
 import { apiErrors, encodeQueryParamsAndLog } from '../helper/util';
 import { MESSAGES } from '../config/message';
@@ -1586,6 +1587,17 @@ export function isResetClick(data, component) {
   return (dispatch) => {
     dispatch({
       type: IS_RESET,
+      payload: { data: data, component: component },
+    })
+
+  }
+}
+
+// FUNCTION TO CHECK IF RESET BUTTON IS CLICKED IN PAGINATION COMPONENT.
+export function setResetCostingHead(data, component) {
+  return (dispatch) => {
+    dispatch({
+      type: IS_RESET_COSTING_HEAD,
       payload: { data: data, component: component },
     })
 

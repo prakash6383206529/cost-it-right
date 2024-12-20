@@ -26,7 +26,7 @@ import { OPERATION_IMPACT_DOWNLOAD_EXCEl } from '../../../../config/masterData';
 import { simulationContext } from '..';
 import { useLabels } from '../../../../helper/core';
 import CostingHeadDropdownFilter from '../../../masters/material-master/CostingHeadDropdownFilter';
-import { isResetClick } from '../../../../actions/Common';
+import { setResetCostingHead } from '../../../../actions/Common';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -67,7 +67,7 @@ function OperationSTSimulation(props) {
     const dispatch = useDispatch()
 
     const { selectedMasterForSimulation, selectedTechnologyForSimulation } = useSelector(state => state.simulation)
-    const {costingHeadFilter} =useSelector(state => state?.common )
+    const costingHeadFilter =useSelector(state => state?.common?.costingHeadFilter )
     useEffect(() => {
    
         if (costingHeadFilter && costingHeadFilter?.data) {
@@ -126,7 +126,7 @@ function OperationSTSimulation(props) {
     }, [showverifyPage])
     useEffect(() => {
         return () => {
-            dispatch(isResetClick(true, "costingHead"))
+            dispatch(setResetCostingHead(true, "costingHead"))
           }
     }, [])
 
@@ -411,7 +411,9 @@ function OperationSTSimulation(props) {
         nullHandler: props.nullHandler && props.nullHandler,
         rateFormatter: rateFormatter,
         oldBasicRateFormatter: oldBasicRateFormatter,
-        consumptionFormatter: consumptionFormatter
+        consumptionFormatter: consumptionFormatter,
+        statusFilter: CostingHeadDropdownFilter,
+
     };
 
 
@@ -623,7 +625,7 @@ function OperationSTSimulation(props) {
                                                 enableBrowserTooltips={true}
                                             // frameworkComponents={frameworkComponents}
                                             >
-                                                {!isImpactedMaster && <AgGridColumn field="CostingHead" tooltipField='CostingHead' headerName="Costing Head" editable='false' minWidth={190} cellRenderer={'combinedCostingHeadRenderer'}
+                                                {!isImpactedMaster && <AgGridColumn field="CostingHead" tooltipField='CostingHead' headerName="Costing Head" editable='false' minWidth={190}  cellRenderer={'combinedCostingHeadRenderer'}
                                                  floatingFilterComponentParams={floatingFilterStatus} 
                                                  floatingFilterComponent="statusFilter"></AgGridColumn>}
                                                 <AgGridColumn field="ForType" headerName="Operation Type" cellRenderer={'hyphenFormatter'} minWidth={190}></AgGridColumn>
@@ -663,7 +665,7 @@ function OperationSTSimulation(props) {
                                         <div className="inputbox date-section mr-3 verfiy-page simulation_effectiveDate">
                                             <DatePicker
                                                 name="EffectiveDate"
-                                                id='EffectiveDate'
+                                                id="EffectiveDate"
                                                 selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
                                                 onChange={handleEffectiveDateChange}
                                                 showMonthDropdown

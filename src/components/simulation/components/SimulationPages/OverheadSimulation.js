@@ -20,7 +20,7 @@ import { checkForChangeInOverheadProfit1Values, checkForChangeInOverheadProfit2V
 import { PaginationWrapper } from '../../../common/commonPagination';
 import { useLabels } from '../../../../helper/core';
 import CostingHeadDropdownFilter from '../../../masters/material-master/CostingHeadDropdownFilter';
-import { isResetClick } from '../../../../actions/Common';
+import { setResetCostingHead } from '../../../../actions/Common';
 
 const gridOptions = {};
 
@@ -68,7 +68,7 @@ function OverheadSimulation(props) {
     }, [list])
     useEffect(() => {
         return () => {
-            dispatch(isResetClick(true, "costingHead"))
+            dispatch(setResetCostingHead(true, "costingHead"))
           }
     }, [])
 

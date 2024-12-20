@@ -18,7 +18,7 @@ import CostingDetailSimulationDrawer from '../../simulation/components/CostingDe
 import { formViewData, checkForDecimalAndNull, userDetails, searchNocontentFilter, showSaLineNumber, handleDepartmentHeader, showBopLabel, getConfigurationKey, setLoremIpsum, getLocalizedCostingHeadValue } from '../../../helper'
 import ViewRM from '../../costing/components/Drawers/ViewRM'
 import { PaginationWrapper } from '../../common/commonPagination'
-import { agGridStatus, getGridHeight, isResetClick, disabledClass, fetchCostingHeadsAPI } from '../../../actions/Common'
+import { agGridStatus, getGridHeight, isResetClick, disabledClass, fetchCostingHeadsAPI, setResetCostingHead } from '../../../actions/Common'
 import MultiDropdownFloatingFilter from '../../masters/material-master/MultiDropdownFloatingFilter'
 import { MESSAGES } from '../../../config/message'
 import { setSelectedRowForPagination } from '../../simulation/actions/Simulation'
@@ -74,6 +74,8 @@ function ReportListing(props) {
     const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
     const statusColumnData = useSelector((state) => state.comman.statusColumnData);
     const [dataCount, setDataCount] = useState(0)
+    const [selectedCostingHead, setSelectedCostingHead] = useState(null);
+
     const [applicabilityDropdown, setApplicabilityDropdown] = useState([])
     const { technologyLabel, discountLabel, toolMaintenanceCostLabel, vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels();
     const { selectedRowForPagination } = useSelector((state => state.simulation))
@@ -461,6 +463,7 @@ function ReportListing(props) {
 
                 setTimeout(() => {
                     dispatch(isResetClick(false, "applicablity"))
+                    dispatch(setResetCostingHead(false, "costingHead"))
                     setWarningMessage(false)
                 }, 330);
 
@@ -495,6 +498,7 @@ function ReportListing(props) {
 
         return () => {
             reactLocalStorage.setObject('selectedRow', {})
+            dispatch(setResetCostingHead(true, "costingHead"))
         }
     }, [])
 
@@ -751,7 +755,9 @@ function ReportListing(props) {
         remarkFormatter: remarkFormatter,
         valuesFloatingFilter: MultiDropdownFloatingFilter,
         partCostFormatter: partCostFormatter,
-        combinedCostingHeadRenderer :combinedCostingHeadRenderer
+        combinedCostingHeadRenderer :combinedCostingHeadRenderer,
+        statusFilter: CostingHeadDropdownFilter,
+
     };
 
     const resetState = () => {
@@ -759,6 +765,7 @@ function ReportListing(props) {
         gridApi?.deselectAll()
         dispatch(agGridStatus("", ""))
         dispatch(isResetClick(true, "applicablity"))
+        dispatch(setResetCostingHead(true, "costingHead"))
         setIsFilterButtonClicked(false)
         gridOptions?.columnApi?.resetColumnState();
         setSearchButtonClicked(false)
@@ -937,7 +944,7 @@ function ReportListing(props) {
         component: CostingHeadDropdownFilter,
         onFilterChange: (originalValue, value) => {
             
-            setIsFilterButtonClicked(false);
+            setEnableSearchFilterButton(false);
             setFloatingFilterData(prevState => ({
                 ...prevState,
                 CostingHead: value
@@ -1081,8 +1088,12 @@ function ReportListing(props) {
                         >
 
                             <AgGridColumn field="CostingNumber" headerName="Costing Version" cellRenderer={'hyperLinkableFormatter'}></AgGridColumn>
-                            <AgGridColumn field='CostingHead' headerName='Costing head' cellRenderer='combinedCostingHeadRenderer'  floatingFilterComponentParams={floatingFilterCostingHead} 
-                              floatingFilterComponent="statusFilter"></AgGridColumn>
+                            <AgGridColumn field="CostingHead" 
+                                            headerName='Costing Head' 
+                                            floatingFilterComponentParams={floatingFilterCostingHead} 
+                                            floatingFilterComponent="statusFilter"
+                                            cellRenderer={combinedCostingHeadRenderer} 
+                                        />
                             <AgGridColumn field="TechnologyName" headerName={technologyLabel} cellRenderer='hyphenFormatter'></AgGridColumn>
                             <AgGridColumn field='Plant' headerName='Plant (Code)' cellRenderer='hyphenFormatter'></AgGridColumn>
                             <AgGridColumn field='Vendor' headerName={vendorLabel + " (Code)"} cellRenderer='hyphenFormatter'></AgGridColumn>

@@ -889,3 +889,15 @@
 // .scroll-btn:hover {
 //   background-color: #0056b3;
 // }
+.packaging-cost-warpper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.packaging-cost-calculator-warpper {
+  label {
+    min-height: 44px;
+    place-content: end;
+  }
+}

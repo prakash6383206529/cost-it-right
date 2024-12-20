@@ -18,7 +18,7 @@ import { useTranslation } from "react-i18next"
 import { useLabels } from '../../../helper/core';
 import { getLocalizedCostingHeadValue } from '../../../helper';
 import CostingHeadDropdownFilter from '../../masters/material-master/CostingHeadDropdownFilter';
-import { isResetClick } from '../../../actions/Common';
+import { setResetCostingHead } from '../../../actions/Common';
 
 
 
@@ -65,7 +65,7 @@ function SimulationInsights(props) {
   }, [ costingHeadFilter]);
   useEffect(() => {
     return () => {
-      dispatch(isResetClick(true, "costingHead"))
+      dispatch(setResetCostingHead(true, "costingHead"))
     }
   }, [])
   var filterParams = {
