@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { Row, Col, Container } from 'reactstrap'
 import { Drawer } from '@material-ui/core'
 import { TextFieldHookForm, SearchableSelectHookForm } from '../../../../layout/HookFormInputs'
@@ -14,6 +14,7 @@ import { trim } from 'lodash'
 import { getCostingConditionTypes } from '../../../../common/CommonFunctions'
 import { COSTINGCONDITIONCOST } from '../../../../../config/constants'
 import { reactLocalStorage } from 'reactjs-localstorage'
+import { ViewCostingContext } from '../../CostingDetails'
 
 function AddConditionCosting(props) {
     const { currency, currencyValue, basicRateCurrency, basicRateBase, isFromImport, isFromMaster, EntryType, ViewMode } = props
@@ -32,6 +33,7 @@ function AddConditionCosting(props) {
     const [disableEntryType, setDisableEntryType] = useState(false)
     const [costingConditionEntryType, setCostingConditionEntryType] = useState(props?.costingConditionEntryType)
     const conditionTypeId = getCostingConditionTypes(COSTINGCONDITIONCOST)
+    const CostingViewMode = useContext(ViewCostingContext);
 
     const conditionEntryTypeDropdown = [
         {
@@ -443,7 +445,7 @@ function AddConditionCosting(props) {
                                             className=""
                                             customClassName={'withBorder'}
                                             errors={errors.ConditionEntryType}
-                                            disabled={disableEntryType}
+                                            disabled={disableEntryType || CostingViewMode}
                                         />
                                     </Col>}
                                     <Col md="3" className='px-2'>
