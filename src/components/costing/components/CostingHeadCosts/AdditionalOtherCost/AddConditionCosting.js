@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { Row, Col, Container } from 'reactstrap'
 import { Drawer } from '@material-ui/core'
 import { TextFieldHookForm, SearchableSelectHookForm } from '../../../../layout/HookFormInputs'
@@ -14,6 +14,7 @@ import { trim } from 'lodash'
 import { generateCombinations, getCostingConditionTypes } from '../../../../common/CommonFunctions'
 import { COSTINGCONDITIONCOST } from '../../../../../config/constants'
 import { reactLocalStorage } from 'reactjs-localstorage'
+import { ViewCostingContext } from '../../CostingDetails'
 
 function AddConditionCosting(props) {
     const { currency, basicRateBase, isFromImport, isFromMaster, EntryType, PlantCurrency, isImpactedMaster = false } = props
@@ -547,7 +548,7 @@ function AddConditionCosting(props) {
                                             className=""
                                             customClassName={'withBorder'}
                                             errors={errors.ConditionEntryType}
-                                            disabled={disableEntryType}
+                                            disabled={disableEntryType || CostingViewMode}
                                         />
                                     </Col>}
                                     <Col md="3" className='px-2'>
