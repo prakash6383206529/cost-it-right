@@ -1042,6 +1042,8 @@ function RMIndexationSimulationListing(props) {
                                             <AgGridColumn field="ScrapRate" cellRenderer='commonCostFormatter'></AgGridColumn>
                                             {props.isMasterSummaryDrawer && rmIndexationSimulationList[0]?.TechnologyId === FORGING && <AgGridColumn width="140" field="MachiningScrapRate" headerName='Machining Scrap Rate'></AgGridColumn>}
                                             {/* ON RE FREIGHT COST AND SHEARING COST COLUMN IS COMMENTED //RE */}
+                                            <AgGridColumn cellRenderer='costFormatter' field="OtherNetCost"  headerName="Other Net Cost" ></AgGridColumn>
+                                            {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && <AgGridColumn cellRenderer='costFormatter' field="NetConditionCost"  headerName="Net Condition Cost" ></AgGridColumn>} 
                                             <AgGridColumn field="NetLandedCost" headerName="Net Cost" cellRenderer='costFormatter'></AgGridColumn>
 
                                             <AgGridColumn field="EffectiveDate" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn></>}

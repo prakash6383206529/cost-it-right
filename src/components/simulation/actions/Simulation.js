@@ -61,13 +61,15 @@ import {
     GET_RM_INDEXATION_SIMULATION_LIST,
     GET_INDEXED_RM_FOR_SIMULATION,
     GET_SIMULATED_RAW_MATERIAL_SUMMARY,
-    GET_RM_INDEXATION_COSTING_SIMULATION_LIST
+    GET_RM_INDEXATION_COSTING_SIMULATION_LIST,
+    SET_EFFECTIVE_DATE
 } from '../../../config/constants';
 import { apiErrors, encodeQueryParamsAndLog } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { loggedInUserId } from '../../../helper';
+import _ from 'lodash';
 
 // const config() = config
 
@@ -1881,7 +1883,8 @@ export function editRMIndexedSimulationData(data, callback) {
         const request = axios.get(`${API.editRMIndexedSimulationData}?${queryParams}`, config());
         request.then((response) => {
             if (response.data.Result) {
-                dispatch({ type: GET_INDEXED_RM_FOR_SIMULATION, payload: response?.data?.Data?.SimulationRawMaterialDetailsResponse });
+                const clonedData = _.cloneDeep(response?.data?.Data?.SimulationRawMaterialDetailsResponse);
+                dispatch({ type: GET_INDEXED_RM_FOR_SIMULATION, payload: clonedData });
                 callback(response);
             }
         }).catch((error) => {
@@ -2009,4 +2012,12 @@ export function checkFinalLevelApproverForApproval(data, callback) {
             apiErrors(error);
         });
     };
+}
+export function setEffectiveDateRMNonIndexation(value) {
+    return (dispatch) => {
+        dispatch({
+            type: SET_EFFECTIVE_DATE,
+            payload: value,
+        });
+    }
 }

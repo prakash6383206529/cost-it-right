@@ -3,6 +3,7 @@ import _ from 'lodash';
 import { CBCAPPROVALTYPEID, CBCTypeId, dropdownLimit, NCCAPPROVALTYPEID, NCCTypeId, NFRAPPROVALTYPEID, NFRTypeId, RELEASESTRATEGYTYPEID1, RELEASESTRATEGYTYPEID2, RELEASESTRATEGYTYPEID3, RELEASESTRATEGYTYPEID4, VBCAPPROVALTYPEID, VBCTypeId, WACAPPROVALTYPEID, WACTypeId, ZBCAPPROVALTYPEID, ZBCTypeId, PFS2APPROVALTYPEID, PFS2TypeId, RELEASE_STRATEGY_B1, RELEASE_STRATEGY_B1_NEW, RELEASE_STRATEGY_B2, RELEASE_STRATEGY_B2_NEW, RELEASE_STRATEGY_B3, RELEASE_STRATEGY_B3_NEW, RELEASE_STRATEGY_B4, RELEASE_STRATEGY_B6, RELEASE_STRATEGY_B6_NEW, RELEASE_STRATEGY_B4_NEW, RELEASESTRATEGYTYPEID6, LPSAPPROVALTYPEID, CLASSIFICATIONAPPROVALTYPEID, RAWMATERIALAPPROVALTYPEID, searchCount, effectiveDateRangeDayPrevious, effectiveDateRangeDayFuture } from "../../config/constants";
 import Toaster from "./Toaster";
 import { addDays, subDays } from "date-fns";
+import { checkForDecimalAndNull, checkForNull, getConfigurationKey } from "../../helper";
 
 // COMMON FILTER FUNCTION FOR AUTOCOMPLETE DROPDOWN
 const commonFilterFunction = (inputValue, dropdownArray, filterByName, selectedParts = false) => {
@@ -379,4 +380,153 @@ export const getEffectiveDateMinDate = () => {
         return new Date(); // No future dates
     }
     return addDays(new Date(), effectiveDateRangeDayFuture);
+};
+/**
+ * Handles applicability calculations for costs
+ */
+export const handleApplicability = (value, basicPriceBaseCurrency, arr, costField, headerName, applicabilityName) => {
+    if (!value) return 0;
+    const selectedApplicabilities = value?.split(' + ');
+    // Calculate total cost currency for selected applicabilities
+    const total = selectedApplicabilities.reduce((acc, applicability) => {
+        const trimmedApplicability = applicability.trim();
+
+        // If applicability is "Basic Rate", return basic price
+        if (trimmedApplicability === applicabilityName) {
+            return Number(acc) + Number(basicPriceBaseCurrency);
+        }
+
+        // Find matching cost item
+        const item = arr?.find(item => item?.[headerName]?.trim() === trimmedApplicability);
+        if (item) {
+            return Number(acc) + Number(item?.[costField] || 0);
+        }
+
+        return Number(acc);
+    }, 0);
+
+    return total;
+};
+
+/**
+ * Recalculates condition costs
+ */
+export const recalculateConditions = (basicPriceBaseCurrency, state,isSimulation,nonIndexationSimulation) => {      
+    
+    
+    return recalculateCosts(
+        false,
+        basicPriceBaseCurrency,
+        "ConditionType",
+        "Applicability",
+        "Percentage",
+        { 
+            mainCost: "ConditionCost",
+            conversionCost: "ConditionCostConversion",
+            perQuantityCost: "ConditionCostPerQuantity",
+            // mainCost: !nonIndexationSimulation?"ConditionCost":"NewConditionCost",
+            // conversionCost: !nonIndexationSimulation?"ConditionCostConversion":"NewConditionNetCostConversion",
+            // perQuantityCost: !nonIndexationSimulation?"ConditionCostPerQuantity":"NewConditionNetCostLocalConversion",
+        },
+        'Description',
+        state,
+        "Basic Price",
+        isSimulation,
+        nonIndexationSimulation,
+    );  
+};
+
+/**
+ * Recalculates other costs
+ */
+export const recalculateOtherCost = (basicRate, state, isSimulation) => {
+    return recalculateCosts(
+        true,
+        basicRate,
+        "Type",
+        "Applicability",
+        "Value",
+        {
+            mainCost: "NetCost",
+            conversionCost: "NetCostConversion",
+            perQuantityCost: "NetCostConversion",
+        },
+        'CostHeaderName',
+        state,
+        "Basic Rate",
+        isSimulation,
+        
+    );
+};
+
+/**
+ * Core cost recalculation logic
+ */
+export const recalculateCosts = (isOtherCost, basicValue, typeField, applicabilityField, percentageField, resultFields, headerName, state, applicabilityName, isSimulation, basicRateValue,nonIndexationSimulation = false) => {
+    // Select the correct data array and make a deep copy
+    const dataArray = isOtherCost ? state.otherCostTableData : state.conditionTableData;
+    
+    const costField = isOtherCost ? 'NetCost' : !nonIndexationSimulation?'ConditionCost':'NewConditionCost';
+    let copiedData = _.cloneDeep(dataArray) ?? [];
+    
+    // Create a temporary array for calculations
+    let tempArr = copiedData||[];
+    // Process each item in the array
+    copiedData?.forEach((item, index) => {
+        if (item?.[typeField] === "Percentage") {
+            // Calculate costs
+            const ApplicabilityCost = handleApplicability(
+                item[applicabilityField],
+                basicValue,
+                tempArr,
+                costField,
+                headerName,
+                applicabilityName
+            );
+            const Cost = checkForNull((item?.[percentageField]) / 100) * checkForNull(ApplicabilityCost);
+            const CostConversion = checkForNull((item?.[percentageField]) / 100) * checkForNull(ApplicabilityCost);
+            // Create updated object
+            const updatedItem = {
+                ...item,
+                ApplicabilityCost: ApplicabilityCost,
+                [resultFields.mainCost]: Cost,
+                [resultFields.conversionCost]: CostConversion,
+                [resultFields.perQuantityCost]: CostConversion,
+                ApplicabilityCostConversion: ApplicabilityCost,
+            };
+            // Update the temporary array
+            tempArr[index] = updatedItem;
+        }
+    });
+    return tempArr;
+};
+
+/**
+ * Updates cost values and handles state updates
+ */
+export const updateCostValue = (isConditionCost, state, price, isSimulation = false,nonIndexationSimulation = false) => {
+    // Get table data and settings based on cost type
+  const table = isConditionCost
+        ? recalculateConditions(isSimulation ? price : (nonIndexationSimulation ?state.OldNetCostWithoutConditionCost
+
+            :state.NetCostWithoutConditionCost), state, isSimulation,nonIndexationSimulation)
+        : recalculateOtherCost(price, state, isSimulation,nonIndexationSimulation);
+
+    // Calculate sum
+    const costField = isConditionCost ? 'ConditionCostPerQuantity' : 'NetCost';
+    const sum = table?.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj[costField]), 0);
+
+    // Return updated state and form values
+    return {
+        updatedState: {
+            ...state,
+            [isConditionCost ? 'NetConditionCost' : 'totalOtherCost']: sum,
+            [isConditionCost ? 'conditionTableData' : 'otherCostTableData']: table
+        },
+        formValue: {
+            field: isConditionCost ? 'FinalConditionCost' : 'OtherCost',
+            value: checkForDecimalAndNull(sum, getConfigurationKey().NoOfDecimalForPrice)
+        },
+        tableData: table
+    };
 };

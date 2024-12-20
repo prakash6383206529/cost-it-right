@@ -448,11 +448,7 @@ function AddRMFinancialDetails(props) {
         let conditionList = recalculateConditions('', basicPriceBaseCurrency)
 
         const sumBaseCurrency = conditionList?.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCost), 0);
-        let netLandedCostBaseCurrency = RMIndex ? checkForNull(sumBaseCurrency) + checkForNull(basicPriceCurrencyTemp) + state.totalOtherCost : checkForNull(sumBaseCurrency) + checkForNull(basicPriceCurrencyTemp)
-
-
-
-
+        let netLandedCostBaseCurrency = RMIndex ? (checkForNull(sumBaseCurrency) + checkForNull(basicPriceCurrencyTemp) /* + state.totalOtherCost */) : (checkForNull(sumBaseCurrency) + checkForNull(basicPriceCurrencyTemp))
         setValue('FinalConditionCostBaseCurrency', checkForDecimalAndNull(sumBaseCurrency, getConfigurationKey().NoOfDecimalForPrice))
         setValue('NetLandedCostBaseCurrency', checkForDecimalAndNull(netLandedCostBaseCurrency, getConfigurationKey().NoOfDecimalForPrice))
         setValue('BasicPriceBaseCurrency', checkForDecimalAndNull(basicPriceBaseCurrency, getConfigurationKey().NoOfDecimalForPrice));
@@ -790,17 +786,17 @@ function AddRMFinancialDetails(props) {
         setState(prevState => ({ ...prevState, isOpenOtherCostDrawer: true }))
     }
 
-    const closeOtherCostToggle = (type, data, total, totalBase) => {
-        if (type === 'Save') {
+const closeOtherCostToggle = (type, data, total, totalBase) => {
+    if (type === 'Save') {
             setState(prevState => ({ ...prevState, isOpenOtherCostDrawer: false, otherCostTableData: data, totalOtherCost: totalBase }))
-            setValue('OtherCostBaseCurrency', totalBase)
+        setValue('OtherCostBaseCurrency', totalBase)
             setValue('NetLandedCostBaseCurrency', checkForNull(totalBase) + checkForNull(getValues('BasicRateBaseCurrency')))
-            dispatch(setOtherCostDetails(data))
+        dispatch(setOtherCostDetails(data))
             setState(prevState => ({ ...prevState, NetLandedCostBaseCurrency: checkForNull(totalBase) + checkForNull(getValues('BasicRateBaseCurrency')) }))
-        } else {
+    } else {
             setState(prevState => ({ ...prevState, isOpenOtherCostDrawer: false }))
-        }
     }
+}
 
     const conditionToggle = () => {
         setState(prevState => ({ ...prevState, isOpenConditionDrawer: true }))

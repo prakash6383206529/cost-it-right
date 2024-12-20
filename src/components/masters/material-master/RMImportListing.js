@@ -1084,7 +1084,7 @@ function RMImportListing(props) {
                     {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((props?.isMasterSummaryDrawer && rmImportDataList[0]?.CostingTypeId === ZBCTypeId) || !props?.isMasterSummaryDrawer) && !isFromVerifyPage && <AgGridColumn field="NetCostWithoutConditionCostConversion" headerName={headerNames?.BasicPrice} cellRenderer='commonCostFormatter'></AgGridColumn>}
                     {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((props?.isMasterSummaryDrawer && rmImportDataList[0]?.CostingTypeId === ZBCTypeId) || !props?.isMasterSummaryDrawer) && !isFromVerifyPage && <AgGridColumn field="NetConditionCost" headerName="Net Condition Cost (Currency)" cellRenderer='commonCostFormatter'></AgGridColumn>}
                     {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((props?.isMasterSummaryDrawer && rmImportDataList[0]?.CostingTypeId === ZBCTypeId) || !props?.isMasterSummaryDrawer) && !isFromVerifyPage && <AgGridColumn field="NetConditionCostConversion" headerName={headerNames?.NetConditionCost} cellRenderer='commonCostFormatter'></AgGridColumn>}
-
+                    <AgGridColumn field="OtherNetCost" headerName='Other Net Cost' cellRenderer='commonCostFormatter'></AgGridColumn>
                     <AgGridColumn field="NetLandedCost" headerName="Net Cost (Currency)" cellRenderer='costFormatter'></AgGridColumn>
                     <AgGridColumn field="NetLandedCostConversion" headerName={headerNames?.NetCost} cellRenderer='costFormatter'></AgGridColumn>
 
