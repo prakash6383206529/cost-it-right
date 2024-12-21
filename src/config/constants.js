@@ -2933,6 +2933,8 @@ export const DashboardMaster = "Analytics and Reports"
 export const IMPORT = "Import"
 export const INDEXED = "Indexed"
 export const NONINDEXED = "Non Indexed"
+export const DOMESTIC = "Domestic"
+export const IMPORTED = "Imported"
 
 
 // SPACE KEY CODE
@@ -3282,6 +3284,4 @@ export const COSTINGCONDITIONCOST = 'Costing Condition Cost'
 
 //VERSION 
 export const VERSION = "V3.1.29";
-
-
 

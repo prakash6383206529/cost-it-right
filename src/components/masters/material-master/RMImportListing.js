@@ -3,7 +3,7 @@ import { Row, Col, } from 'reactstrap';
 import {
   deleteRawMaterialAPI, getAllRMDataList
 } from '../actions/Material';
-import { defaultPageSize, EMPTY_DATA, ENTRY_TYPE_IMPORT, FILE_URL, RMIMPORT, ZBCTypeId } from '../../../config/constants';
+import { defaultPageSize, DOMESTIC, EMPTY_DATA, ENTRY_TYPE_IMPORT, FILE_URL, RMIMPORT, ZBCTypeId } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
@@ -900,6 +900,17 @@ function RMImportListing(props) {
   const backToSimulation = (value) => {
     setEditSelectedList(false)
   }
+  const netLanedCostFormatter = (props) => {
+    const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+    const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+    
+  if (row?.EntryType === DOMESTIC) {
+        return (row?.NetLandedCost ?? '-');
+    }else{
+        
+        return (row?.NetLandedCostConversion ?? '-');
+    }
+}
 
   const frameworkComponents = {
     totalValueRenderer: buttonFormatter,
@@ -914,7 +925,8 @@ function RMImportListing(props) {
     combinedCostingHeadRenderer: combinedCostingHeadRenderer,
     currencyFormatter: currencyFormatter,
     attachmentFormatter: attachmentFormatter,
-    statusFilter : CostingHeadDropdownFilter
+    statusFilter : CostingHeadDropdownFilter,
+    netLanedCostFormatter: netLanedCostFormatter
 
   };
 
@@ -1085,8 +1097,8 @@ function RMImportListing(props) {
                     {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((props?.isMasterSummaryDrawer && rmImportDataList[0]?.CostingTypeId === ZBCTypeId) || !props?.isMasterSummaryDrawer) && !isFromVerifyPage && <AgGridColumn field="NetConditionCost" headerName="Net Condition Cost (Currency)" cellRenderer='commonCostFormatter'></AgGridColumn>}
                     {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((props?.isMasterSummaryDrawer && rmImportDataList[0]?.CostingTypeId === ZBCTypeId) || !props?.isMasterSummaryDrawer) && !isFromVerifyPage && <AgGridColumn field="NetConditionCostConversion" headerName={headerNames?.NetConditionCost} cellRenderer='commonCostFormatter'></AgGridColumn>}
                     <AgGridColumn field="OtherNetCost" headerName='Other Net Cost' cellRenderer='commonCostFormatter'></AgGridColumn>
-                    <AgGridColumn field="NetLandedCost" headerName="Net Cost (Currency)" cellRenderer='costFormatter'></AgGridColumn>
-                    <AgGridColumn field="NetLandedCostConversion" headerName={headerNames?.NetCost} cellRenderer='costFormatter'></AgGridColumn>
+                    <AgGridColumn field="NetLandedCost" headerName="Net Cost (Currency)" cellRenderer='netLanedCostFormatter'></AgGridColumn>
+                    {/* <AgGridColumn field="NetLandedCostConversion" headerName={headerNames?.NetCost} cellRenderer='costFormatter'></AgGridColumn> */}
 
                     <AgGridColumn field="EffectiveDate" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                     {(!isSimulation && !props?.isMasterSummaryDrawer) && <AgGridColumn width={160} field="RawMaterialId" cellClass="ag-grid-action-container actions-wrapper" pinned="right" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}

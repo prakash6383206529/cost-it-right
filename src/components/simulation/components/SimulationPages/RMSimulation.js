@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef, useContext } from 'react';
 import { Row, Col, Tooltip, } from 'reactstrap';
 import DayTime from '../../../common/DayTimeWrapper'
-import { CBCTypeId, defaultPageSize, EMPTY_DATA, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, BOPIMPORT } from '../../../../config/constants';
+import { CBCTypeId, defaultPageSize, EMPTY_DATA, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, BOPIMPORT, DOMESTIC } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey,getLocalizedCostingHeadValue, loggedInUserId, searchNocontentFilter } from '../../../../helper';
 import Toaster from '../../../common/Toaster';
@@ -153,6 +153,7 @@ function RMSimulation(props) {
                 item.NewScrapRatePerScrapUOM = item.ScrapRatePerScrapUOM
                 item.NewOtherNetCost = item.OtherNetCost
                 item.NewNetConditionCost = item.NetConditionCost  // ADD KEY FROM API
+                //item.NewNetLandedCost = item.EntryType === DOMESTIC ? item?.NetLandedCost : item?.NetLandedCostConversion
                 item.NewNetCostWithoutConditionCost = item.NetCostWithoutConditionCost
                 item.NewRawMaterialOtherCostDetails = item.RawMaterialOtherCostDetails || []; // Set to existing data or empty array
                 item.NewRawMaterialConditionCostDetails = item.RawMaterialConditionsDetails || []; // Set to existing data or empty array
@@ -637,8 +638,14 @@ const combinedCostingHeadRenderer = (props) => {
             row.NewBasicrateFromPercentage = percentageCalc
             NewBasicRate = percentageCalc + row?.RMFreightCost + row?.RMShearingCost
         }
-        const classGreen = ((checkForDecimalAndNull(NewBasicRate) + checkForNull(checkForNull(row?.NewOtherNetCost)+checkForNull(row?.NewNetConditionCost))) > checkForDecimalAndNull(row?.NetLandedCost)) ? 'red-value form-control' : (checkForDecimalAndNull(NewBasicRate) + checkForNull(checkForNull(row?.NewOtherNetCost)+checkForNull(row?.NewNetConditionCost)) < checkForDecimalAndNull(row?.NetLandedCost)) ? 'green-value form-control' : 'form-class'
-        return showValue(row, classGreen, NewBasicRate)
+        
+        const newValue = Number(checkForDecimalAndNull(NewBasicRate) + checkForNull(row?.NewOtherNetCost) + checkForNull(row?.NewNetConditionCost));
+       const oldValue = Number(checkForDecimalAndNull(row?.EntryType === DOMESTIC ? row?.NetLandedCost : row?.NetLandedCostConversion));
+         const classGreen = newValue === oldValue ? 'form-class' : 
+                          newValue > oldValue ? 'red-value form-control' : 
+                          'green-value form-control';
+    
+        return showValue(row, classGreen, NewBasicRate);
         // checkForDecimalAndNull(NewBasicRate, getConfigurationKey().NoOfDecimalForPrice)
     }
     const NewBasicPriceFormmater = (props) => {
@@ -1040,7 +1047,17 @@ const combinedCostingHeadRenderer = (props) => {
         component: CostingHeadDropdownFilter,
     
     };
-
+    const netLanedCostFormatter = (props) => {
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        
+      if (row?.EntryType === DOMESTIC) {
+            return (row?.NetLandedCost ?? '-');
+        }else{
+            
+            return (row?.NetLandedCostConversion ?? '-');
+        }
+    }
 const frameworkComponents = {
         effectiveDateFormatter: effectiveDateFormatter,
         combinedCostingHeadRenderer: combinedCostingHeadRenderer,
@@ -1070,7 +1087,8 @@ const frameworkComponents = {
         existingOtherCostFormatter: existingOtherCostFormatter,
         revisedOtherCostFormatter: revisedOtherCostFormatter,
         existingConditionCostFormatter: existingConditionCostFormatter,
-        revisedConditionCostFormatter: revisedConditionCostFormatter
+        revisedConditionCostFormatter: revisedConditionCostFormatter,
+        netLanedCostFormatter: netLanedCostFormatter
 
     };
 
@@ -1334,16 +1352,16 @@ const frameworkComponents = {
                                                     "Net Cost (Currency)"
                                                        
                                                 }>
-                                                    <AgGridColumn width={columnWidths.NetLandedCost} field="NetLandedCost" tooltipField='NetLandedCost' editable='false' cellRenderer={'costFormatter'} headerName="Existing" colId='NetLandedCost'></AgGridColumn>
+                                                    <AgGridColumn width={columnWidths.NetLandedCost} field="NetLandedCost" tooltipField='NetLandedCost' editable='false' cellRenderer={'netLanedCostFormatter'} headerName="Existing" colId='NetLandedCost'></AgGridColumn>
                                                     <AgGridColumn width={columnWidths.NewNetLandedCost} field="NewNetLandedCost" editable='false' valueGetter={ageValueGetterLanded} cellRenderer={'NewcostFormatter'} headerName="Revised" colId='NewNetLandedCost'></AgGridColumn>
                                                 </AgGridColumn>
                                                 }
                                                 {/* THIS COLUMN WILL BE VISIBLE IF WE ARE LOOKING IMPACTED MASTER DATA FOR RMIMPORT */}
-                                                {String(props?.masterId) === String(RMIMPORT) && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={`Net Cost (${reactLocalStorage.getObject("baseCurrency")})`}>
+                                                {/* {String(props?.masterId) === String(RMIMPORT) && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={`Net Cost (${reactLocalStorage.getObject("baseCurrency")})`}>
                                                     <AgGridColumn width={120} field="OldRMNetLandedCostConversion" tooltipField='OldRMNetLandedCostConversion' editable='false' headerName="Existing" colId='OldRMNetLandedCostConversion'></AgGridColumn>
                                                     <AgGridColumn width={120} field="NewRMNetLandedCostConversion" editable='false' headerName="Revised" colId='NewRMNetLandedCostConversion'></AgGridColumn>
                                                 </AgGridColumn>
-                                                }
+                                                } */}
                                                 {props.children}
                                                 <AgGridColumn width={columnWidths.EffectiveDate} field="EffectiveDate" editable='false' cellRenderer={'effectiveDateFormatter'} headerName={props.isImpactedMaster && !props.lastRevision ? "Current Effective date" : "Effective Date"} ></AgGridColumn>
                                                 <AgGridColumn field="RawMaterialId" hide></AgGridColumn>
