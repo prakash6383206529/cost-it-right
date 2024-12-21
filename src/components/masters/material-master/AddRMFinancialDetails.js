@@ -179,6 +179,7 @@ function AddRMFinancialDetails(props) {
     }, [rawMaterailDetails?.customer])
     useEffect(() => {
         if (states.isImport) {
+            
             calculateNetCostImport()
         }
     }, [fieldValuesImport, state.currencyValue])
@@ -502,6 +503,7 @@ function AddRMFinancialDetails(props) {
         const cutOffPriceBaseCurrency = convertIntoBase(getValues('cutOffPriceSelectedCurrency'))
         setValue('cutOffPriceBaseCurrency', checkForDecimalAndNull(cutOffPriceBaseCurrency, getConfigurationKey().NoOfDecimalForPrice));
         const basicRateBaseCurrency = convertIntoBase(getValues('BasicRateSelectedCurrency'))
+        
         setValue('BasicRateBaseCurrency', checkForDecimalAndNull(basicRateBaseCurrency, getConfigurationKey().NoOfDecimalForPrice));
         if (state.IsApplyHasDifferentUOM) {
             const conversionFactorTemp = 1 / getValues('ConversionRatio')
@@ -513,12 +515,15 @@ function AddRMFinancialDetails(props) {
             setValue('MachiningScrapBaseCurrency', checkForDecimalAndNull(machiningScrapBaseCurrency, getConfigurationKey().NoOfDecimalForPrice));
             const circleScrapCostBaseCurrency = convertIntoBase(getValues('CircleScrapCostSelectedCurrency'))
             setValue('CircleScrapCostBaseCurrency', checkForDecimalAndNull(circleScrapCostBaseCurrency, getConfigurationKey().NoOfDecimalForPrice));
-            const freightChargeBaseCurrency = convertIntoBase(getValues('FreightChargeSelectedCurrency'))
-            setValue('FreightChargeBaseCurrency', checkForDecimalAndNull(freightChargeBaseCurrency, getConfigurationKey().NoOfDecimalForPrice));
-            const shearingCostSelectedCurrency = convertIntoBase(getValues('ShearingCostSelectedCurrency'))
-            setValue('ShearingCostBaseCurrency', checkForDecimalAndNull(shearingCostSelectedCurrency, getConfigurationKey().NoOfDecimalForPrice));
-            const basicPriceSelectedCurrencyTemp = checkForNull(getValues('BasicRateSelectedCurrency')) + checkForNull(getValues('FreightChargeSelectedCurrency')) + checkForNull(getValues('ShearingCostSelectedCurrency'))
-            const basicPriceBaseCurrencyTemp = convertIntoBase(basicPriceSelectedCurrencyTemp)
+        }
+        const freightChargeBaseCurrency = convertIntoBase(getValues('FreightChargeSelectedCurrency'))
+        setValue('FreightChargeBaseCurrency', checkForDecimalAndNull(freightChargeBaseCurrency, getConfigurationKey().NoOfDecimalForPrice));
+        const shearingCostSelectedCurrency = convertIntoBase(getValues('ShearingCostSelectedCurrency'))
+        setValue('ShearingCostBaseCurrency', checkForDecimalAndNull(shearingCostSelectedCurrency, getConfigurationKey().NoOfDecimalForPrice));
+        const basicPriceSelectedCurrencyTemp = checkForNull(getValues('BasicRateSelectedCurrency')) + checkForNull(getValues('FreightChargeSelectedCurrency')) + checkForNull(getValues('ShearingCostSelectedCurrency')) + checkForNull(getValues('OtherCostSelectedCurrency'))
+        
+        const basicPriceBaseCurrencyTemp = convertIntoBase(basicPriceSelectedCurrencyTemp)
+        
             let basicPriceBaseCurrency
             if (states.costingTypeId === ZBCTypeId) {
                 basicPriceBaseCurrency = basicPriceBaseCurrencyTemp
@@ -529,13 +534,17 @@ function AddRMFinancialDetails(props) {
             let conditionList = recalculateConditions(basicPriceSelectedCurrencyTemp, basicPriceBaseCurrency)
 
             const sumBaseCurrency = conditionList?.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCostConversion), 0);
+            
             setValue('FinalConditionCostBaseCurrency', checkForDecimalAndNull(sumBaseCurrency, getConfigurationKey().NoOfDecimalForPrice))
 
             const sumSelectedCurrency = conditionList?.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCost), 0);
             setValue('FinalConditionCostSelectedCurrency', checkForDecimalAndNull(sumSelectedCurrency, getConfigurationKey().NoOfDecimalForPrice))
-
+            
+            
             const netLandedCostSelectedCurrency = checkForNull(basicPriceSelectedCurrencyTemp) + checkForNull(sumSelectedCurrency)
+            
             const netLandedCostBaseCurrency = checkForNull(basicPriceBaseCurrencyTemp) + checkForNull(sumBaseCurrency)
+            
             setValue('NetLandedCostSelectedCurrency', checkForDecimalAndNull(netLandedCostSelectedCurrency, getConfigurationKey().NoOfDecimalForPrice));
             setValue('NetLandedCostBaseCurrency', checkForDecimalAndNull(netLandedCostBaseCurrency, getConfigurationKey().NoOfDecimalForPrice));
             let netCostChanged = false
@@ -565,7 +574,7 @@ function AddRMFinancialDetails(props) {
                 ...obj,
             }))
 
-        }
+        
         dispatch(SetRawMaterialDetails({ ...rawMaterailDetailsRef.current, states: state }, () => { }))
     }
     /**
@@ -786,17 +795,59 @@ function AddRMFinancialDetails(props) {
         setState(prevState => ({ ...prevState, isOpenOtherCostDrawer: true }))
     }
 
+// ... existing code ...
+
 const closeOtherCostToggle = (type, data, total, totalBase) => {
     if (type === 'Save') {
-            setState(prevState => ({ ...prevState, isOpenOtherCostDrawer: false, otherCostTableData: data, totalOtherCost: totalBase }))
+        // Update state
+        setState(prevState => ({ 
+            ...prevState, 
+            isOpenOtherCostDrawer: false, 
+            otherCostTableData: data, 
+            totalOtherCost: totalBase 
+        }))
+
+        // Set other cost base currency
         setValue('OtherCostBaseCurrency', totalBase)
+
+        const sumBaseCurrency = data?.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.NetCost), 0);
+        
+        const sumSelectedCurrency = data?.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.NetCostConversion), 0);
+        
+        const finalBasicPriceBaseCurrency = checkForNull(state.FinalBasicPriceBaseCurrency);
+        
+        const netLandedCostINR = (states.isImport ? sumBaseCurrency : sumSelectedCurrency) + finalBasicPriceBaseCurrency;
+        
+        const netLandedCostSelectedCurrency = sumSelectedCurrency + checkForNull(state.FinalBasicPriceSelectedCurrency);
+        
+        if(states.isImport){
             setValue('NetLandedCostBaseCurrency', checkForNull(totalBase) + checkForNull(getValues('BasicRateBaseCurrency')))
-        dispatch(setOtherCostDetails(data))
-            setState(prevState => ({ ...prevState, NetLandedCostBaseCurrency: checkForNull(totalBase) + checkForNull(getValues('BasicRateBaseCurrency')) }))
+            setValue('NetLandedCostSelectedCurrency', checkForDecimalAndNull(netLandedCostSelectedCurrency, getConfigurationKey().NoOfDecimalForPrice))
+        }else{
+            setValue('NetLandedCostBaseCurrency', checkForNull(totalBase) + checkForNull(getValues('BasicRateBaseCurrency')))
+        
+        }
+        
+       
+
+        // Update state with new net landed cost
+        setState(prevState => ({
+            ...prevState,
+            NetLandedCostBaseCurrency: netLandedCostINR
+        }));
+
+        // Dispatch other cost details
+        dispatch(setOtherCostDetails(data));
+
+        // Add console logs for debugging
+        
+       
     } else {
-            setState(prevState => ({ ...prevState, isOpenOtherCostDrawer: false }))
+        setState(prevState => ({ ...prevState, isOpenOtherCostDrawer: false }))
     }
 }
+
+// ... existing code ...
 
     const conditionToggle = () => {
         setState(prevState => ({ ...prevState, isOpenConditionDrawer: true }))

@@ -1078,7 +1078,7 @@ function RMImportListing(props) {
                     <AgGridColumn field="Currency" cellRenderer={"currencyFormatter"}></AgGridColumn>
 
                     <AgGridColumn field="BasicRatePerUOM" headerName="Basic Rate (Currency)" cellRenderer={'commonCostFormatter'}></AgGridColumn>
-                    <AgGridColumn field="BasicRatePerUOMConversion" headerName={headerNames?.BasicRate} cellRenderer='commonCostFormatter'></AgGridColumn>
+                    {/* <AgGridColumn field="BasicRatePerUOMConversion" headerName={headerNames?.BasicRate} cellRenderer='commonCostFormatter'></AgGridColumn> */}
                     <AgGridColumn field="IsScrapUOMApply" headerName="Has different Scrap Rate UOM" cellRenderer='commonCostFormatter'></AgGridColumn>
                     <AgGridColumn field="ScrapUnitOfMeasurement" headerName='Scrap Rate UOM' cellRenderer='commonCostFormatter'></AgGridColumn>
                     <AgGridColumn field="CalculatedFactor" headerName='Calculated Factor' cellRenderer='commonCostFormatter'></AgGridColumn>
