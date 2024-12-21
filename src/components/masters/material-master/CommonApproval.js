@@ -441,10 +441,23 @@ function CommonApproval(props) {
 
 
     const costFormatter = (props) => {
+        const row= props?.valueFormatted ? props.valueFormatted : props?.data;
+        
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cell != null ? cell : '';
+        return cell != null ? cell : row?.OtherNetCostConversion;
     }
-
+    const netLanedCostFormatter = (props) => {
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        
+      if (row?.EntryType === 'Domestic') {
+            return (row?.NetLandedCost ?? '-');
+        }else{
+            
+            return (row?.NetLandedCostConversion ?? '-');
+        }
+    }
+  
     const viewDetails = (approvalNumber = '', approvalProcessId = '', costingTypeId = '', id = '') => {
         setApprovalData({ approvalProcessId: approvalProcessId, approvalNumber: approvalNumber, costingTypeId: costingTypeId, id: id })
         setShowApprovalSummary(true)
@@ -870,6 +883,7 @@ function CommonApproval(props) {
         actionRenderer: buttonFormatter,
         statusFilterCostingHead: CostingHeadDropdownFilter,
         statusFilterCostingHeadApproval: CostingHeadDropdownFilter,
+        netLanedCostFormatter: netLanedCostFormatter,
     };
 
     const isRowSelectable = (rowNode) => {
@@ -991,7 +1005,7 @@ function CommonApproval(props) {
 
                                     {IsShowFreightAndShearingCostFields() && (props?.MasterId === RM_MASTER_ID && (<AgGridColumn width="165" field="RMShearingCost" headerName='Shearing Cost' cellRenderer='shearingCostFormatter'></AgGridColumn>))}
 
-                                    {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="165" field="NetLandedCost" cellRenderer='costFormatter'></AgGridColumn>}
+                                    {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="165" field="NetLandedCost" cellRenderer="netLanedCostFormatter"></AgGridColumn>}
 
                                     {!props?.isApproval && <AgGridColumn headerClass="justify-content-center"  tooltipField="TooltipText" cellClass="text-center" field="DisplayStatus" cellRenderer='statusFormatter' headerName="Status" floatingFilterComponent="statusFilter" floatingFilterComponentParams={floatingFilterStatus} ></AgGridColumn>}
 

@@ -229,7 +229,7 @@ function AddRMFinancialDetails(props) {
             setValue('frequencyOfSettlement', { label: Data?.FrequencyOfSettlement, value: Data?.FrequencyOfSettlementId })
             setValue('fromDate', DayTime(Data?.FromDate).$d)
             setValue('toDate', DayTime(Data?.ToDate).$d)
-            setValue('OtherCostBaseCurrency', Data?.OtherNetCostConversion)
+            setValue('OtherCostBaseCurrency', Data?.OtherNetCost)
             setValue('Index', { label: Data?.IndexExchangeName, value: Data?.IndexExchangeId })
             setValue('ExchangeSource', { label: Data?.ExchangeRateSourceName, value: Data?.ExchangeRateSourceName })
             setState(prevState => ({
@@ -1686,7 +1686,7 @@ const closeOtherCostToggle = (type, data, total, totalBase) => {
                                         <div className='w-100'>
                                             <TextFieldHookForm
                                                 label={`Other Cost (${state.currency?.label === undefined ? 'Currency' : state.currency?.label})`}
-                                                name={"Othet"}
+                                                name={"OtherCost"}
                                                 placeholder={"-"}
                                                 Controller={Controller}
                                                 control={control}
