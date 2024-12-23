@@ -937,7 +937,13 @@ function AddMoreOperation(props) {
                                                 required: false,
                                                 validate: {
                                                     acceptAllExceptSingleSpecialCharacter,
-                                                    maxLength25,
+                                                    maxLength25: (value) => {
+                                                        if (value && value.length > 25) {
+                                                            Toaster.warning('Description cannot exceed 25 characters');
+                                                            return 'Max length must be 25';
+                                                        }
+                                                        return true;
+                                                    },
                                                     checkWhiteSpaces,
                                                 }
                                             }}
