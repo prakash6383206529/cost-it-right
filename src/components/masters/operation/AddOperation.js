@@ -1439,7 +1439,7 @@ class AddOperation extends Component {
                           label={`Operation Name`}
                           name={"OperationName"}
                           type="text"
-                          placeholder={isEditFlag ? '-' : "Select"}
+                          placeholder={isEditFlag ? '-' : "Enter"}
                           validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength80, checkWhiteSpaces, hashValidation]}
                           onChange={this.checkUniqCodeByName}
                           component={renderText}
@@ -1469,7 +1469,7 @@ class AddOperation extends Component {
                           label={`Description`}
                           name={"Description"}
                           type="text"
-                          placeholder={isViewMode ? '-' : "Select"}
+                          placeholder={isViewMode ? '-' : "Enter"}
                           validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
                           component={renderText}
                           disabled={isViewMode ? true : false || isDetailEntry}
