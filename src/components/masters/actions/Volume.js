@@ -117,7 +117,7 @@ export function getVolumeDataList(skip, take, isPagination, obj, callback) {
       IsCustomerDataShow: obj?.IsCustomerDataShow,
       IsVendorDataShow: obj?.IsVendorDataShow,
       IsZeroDataShow: obj?.IsZeroDataShow,
-      PartType: obj?.PartType
+      partType: obj?.PartType
     });
     axios.get(`${API.getVolumeDataList}?${queryParams}`, config())
       .then((response) => {
