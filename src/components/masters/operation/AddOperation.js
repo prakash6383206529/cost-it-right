@@ -1164,7 +1164,7 @@ class AddOperation extends Component {
                           label={`Operation Name`}
                           name={"OperationName"}
                           type="text"
-                          placeholder={isEditFlag ? '-' : "Select"}
+                          placeholder={isEditFlag ? '-' : "Enter"}
                           validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength80, checkWhiteSpaces, hashValidation]}
                           onChange={this.checkUniqCodeByName}
                           component={renderText}
@@ -1194,7 +1194,7 @@ class AddOperation extends Component {
                           label={`Description`}
                           name={"Description"}
                           type="text"
-                          placeholder={isViewMode ? '-' : "Select"}
+                          placeholder={isViewMode ? '-' : "Enter"}
                           validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
                           component={renderText}
                           disabled={isViewMode ? true : false}
@@ -1371,7 +1371,7 @@ class AddOperation extends Component {
                           label={`Labour Rate/${this.state.UOM.label ? this.state.UOM.label : 'UOM'}`}
                           name={"LabourRatePerUOM"}
                           type="text"
-                          placeholder={isViewMode ? '-' : "Select"}
+                          placeholder={isViewMode ? '-' : "Enter"}
                           validate={[positiveAndDecimalNumber, maxLength10, number]}
                           component={renderTextInputField}
                           disabled={isEditFlag ? true : false}
