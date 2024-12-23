@@ -2539,25 +2539,34 @@ export const VolumeTempData = [
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const Fuel = [
-    { label: 'FuelName', value: 'FuelName', }, //*
-    { label: 'UOM', value: 'UOM', }, //*
-    { label: 'State', value: 'State', }, //*
-    { label: 'Rate', value: 'Rate', }, //*
-    { label: 'EffectiveDate', value: 'EffectiveDate', }, //*
+    { label: 'FuelName', value: 'FuelName', },
+    { label: 'UOM', value: 'UOM', },
+    { label: 'State', value: 'State', },
+    { label: 'FuelRate', value: 'FuelRate', },
+    { label: 'PlantCode', value: 'PlantCode', },
+    { label: 'Country', value: 'Country', },
+    { label: 'City', value: 'City', },
+    { label: 'EffectiveDate', value: 'EffectiveDate', },
 ]
 
 export const FuelTempData = [
     {
         'FuelName': 'Petrol',
-        "UOM": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
+        "UOM": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram/Liter",
         'State': 'Madhya Pradesh',
-        'Rate': '100',
+        'FuelRate': '100',
+        'PlantCode': '1001',
+        'Country': 'India',
+        'City': 'Indore',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
     }, {
         'FuelName': 'Petrol',
-        "UOM": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
-        'State': 'Madhya Pradesh',
-        'Rate': '100',
+        "UOM": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram/Liter",
+        'State': 'Maharashtra',
+        'FuelRate': '108',
+        'PlantCode': '1001',
+        'Country': 'India',
+        'City': 'Mumbai',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
     }
 ]
