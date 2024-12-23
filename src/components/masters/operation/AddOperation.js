@@ -1191,6 +1191,10 @@ class AddOperation extends Component {
       obj.plantCurrencyID = this.state.plantCurrencyID
       obj.plantCurrency = this.props.fieldsObj?.plantCurrency
       obj.hidePlantCurrency = this.state?.hidePlantCurrency
+      obj.labourRatePerUOM = fieldsObj?.LabourRatePerUOM || ''
+      obj.rate = fieldsObj?.Rate || ''
+      obj.consumption = fieldsObj?.Consumption || ''
+      obj.weldingRate = fieldsObj?.WeldingRate || ''
       if (String(this.state.operationType.label) === "Ni Cr Plating") {
 
         obj.useWatchArray = ['wireRate', 'consumptionWire', 'gasRate', 'consumptionGas', 'electricityRate', 'consumptionPower', 'manPowerCost', 'staffCost', 'maintenanceCost', 'consumablesCost', 'waterCost', 'jigStripping', 'statuatoryLicense', 'rejnReworkPercent', 'profitPercent']
