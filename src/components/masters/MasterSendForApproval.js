@@ -137,7 +137,7 @@ function MasterSendForApproval(props) {
             OnboardingMasterId: OnboardingId,
             ApprovalTypeId: masterId !== 0 ? costingTypeIdToApprovalTypeIdFunction(props?.costingTypeId) : approvalDetails?.ApprovalTypeId,
             ReasonId: reasonId,
-            PlantId: props?.isRFQ ? RFQPlantId : (approvalObj ? approvalObj.Plant?.[0].PlantId ?? EMPTY_GUID : props.masterPlantId ?? EMPTY_GUID),
+            PlantId: props?.isRFQ ? RFQPlantId : (approvalObj ? approvalObj?.Plant?.[0]?.PlantId ?? EMPTY_GUID : props?.masterPlantId ?? EMPTY_GUID),
             DivisionId: divisionId ?? null
         };
 
