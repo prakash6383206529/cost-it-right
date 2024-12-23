@@ -427,7 +427,7 @@ const ExchangeRateListing = (props) => {
                     </div>
                 </div>
             </div>
-            {state.showPopup && <PopupMsgWrapper isOpen={state.showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} />}
+            {state.showPopup && <PopupMsgWrapper isOpen={state.showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.EXCHANGE_DELETE_ALERT}`} />}
         </ >
     );
 }
