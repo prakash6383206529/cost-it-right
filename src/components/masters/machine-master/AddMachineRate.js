@@ -700,8 +700,8 @@ class AddMachineRate extends Component {
       vendorName: vendorName ?? [],
       selectedPlants: this.state.selectedPlants,
       selectedEffectiveDate: this.props.fieldsObj.EffectiveDate,
-      selectedCustomer: client ?? []
-
+      selectedCustomer: client ?? [],
+      fieldsObj: this.props.fieldsObj
     }
     this.props.displayMoreDetailsForm(data)
   }
