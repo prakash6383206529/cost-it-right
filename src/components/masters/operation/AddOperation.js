@@ -985,6 +985,12 @@ class AddOperation extends Component {
       obj.isSurfaceTreatment = isSurfaceTreatment
       obj.OperationId = OperationId
 
+      // Add these new properties
+      obj.labourRatePerUOM = fieldsObj?.LabourRatePerUOM || ''
+      obj.rate = fieldsObj?.Rate || ''
+      obj.consumption = fieldsObj?.Consumption || ''
+      obj.weldingRate = fieldsObj?.WeldingRate || ''
+
       if (String(this.state.operationType.label) === "Ni Cr Plating") {
 
         obj.useWatchArray = ['wireRate', 'consumptionWire', 'gasRate', 'consumptionGas', 'electricityRate', 'consumptionPower', 'manPowerCost', 'staffCost', 'maintenanceCost', 'consumablesCost', 'waterCost', 'jigStripping', 'statuatoryLicense', 'rejnReworkPercent', 'profitPercent']
@@ -1627,7 +1633,7 @@ class AddOperation extends Component {
 */
 function mapStateToProps(state) {
   const { comman, otherOperation, supplier, auth, costing, client } = state;
-  const fieldsObj = selector(state, 'OperationCode', 'text', 'OperationName', 'Description', 'operationType', 'technology', 'clientName', 'EffectiveDate', 'Plant', 'WeldingRate', 'Consumption');
+  const fieldsObj = selector(state, 'OperationCode', 'text', 'OperationName', 'Description', 'operationType', 'technology', 'clientName', 'EffectiveDate', 'Plant', 'WeldingRate', 'Consumption', 'Rate', 'LabourRatePerUOM');
   const { plantSelectList, filterPlantList, UOMSelectList, } = comman;
   const { operationData } = otherOperation;
   const { vendorWithVendorCodeSelectList } = supplier;

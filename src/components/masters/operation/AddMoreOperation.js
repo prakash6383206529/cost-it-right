@@ -281,6 +281,10 @@ function AddMoreOperation(props) {
             technologyTemp.push(obj)
         })
 
+        setValue("OperationBasicRate", addMoreDetailObj?.weldingRate)
+        setValue("OperationConsumption", addMoreDetailObj?.consumption)
+        setValue("LabourRatePerUOM", addMoreDetailObj?.labourRatePerUOM)
+        setValue("Rate", addMoreDetailObj?.rate)
         setValue('technology', technologyTemp)
         setValue('operationName', addMoreDetailObj.operationName)
         setValue('description', addMoreDetailObj.description)
@@ -394,8 +398,12 @@ function AddMoreOperation(props) {
             UnitOfMeasurementId: uom.value,
             IsSurfaceTreatmentOperation: addMoreDetailObj?.isSurfaceTreatment,
 
-            Rate: isWelding ? dataToSend.netCostWelding : dataToSend.netCost,
-            LabourRatePerUOM: initialConfiguration && initialConfiguration.IsOperationLabourRateConfigure ? values.LabourRatePerUOM : '',
+            Rate: isWelding ? dataToSend?.netCostWelding : dataToSend?.netCost,
+            LabourRatePerUOM: initialConfiguration && initialConfiguration?.IsOperationLabourRateConfigure ? values?.LabourRatePerUOM : '',
+            OperationBasicRate: values?.OperationBasicRate,
+            OperationConsumption: values?.OperationConsumption,
+
+
             Technology: technologyArray,
             Remark: values.remark ? values.remark : '',
             Plant: plantArray,
