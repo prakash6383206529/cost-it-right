@@ -1954,7 +1954,7 @@ class AddMachineRate extends Component {
                               onClick={() =>
                                 this.onPressVendor(ZBCTypeId)
                               }
-                              disabled={isEditFlag ? true : false || isViewFlag}
+                              disabled={(isEditFlag || isViewMode) ? true : false}
                             />{" "}
                             <span>Zero Based</span>
                           </Label>}
@@ -1968,7 +1968,7 @@ class AddMachineRate extends Component {
                               onClick={() =>
                                 this.onPressVendor(VBCTypeId)
                               }
-                              disabled={isEditFlag ? true : false || isViewFlag}
+                              disabled={(isEditFlag || isViewMode) ? true : false}
                             />{" "}
                             <span>{VendorLabel} Based</span>
                           </Label>}
@@ -1982,7 +1982,7 @@ class AddMachineRate extends Component {
                               onClick={() =>
                                 this.onPressVendor(CBCTypeId)
                               }
-                              disabled={isEditFlag ? true : false || isViewFlag}
+                              disabled={(isEditFlag || isViewMode) ? true : false}
                             />{" "}
                             <span>Customer Based</span>
                           </Label>}
