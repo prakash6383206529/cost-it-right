@@ -144,6 +144,11 @@ class AddExchangeRate extends Component {
   */
   handleCurrency = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
+      // Check if selected currency matches To Currency
+      if (this.state.toCurrency && newValue.value === this.state.toCurrency.value) {
+        Toaster.warning('From Currency and To Currency cannot be the same');
+        return;
+      }
       this.setState({ currency: newValue, });
     } else {
       this.setState({ currency: [], })
@@ -156,6 +161,11 @@ class AddExchangeRate extends Component {
   */
   handleToCurrency = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
+      // Check if selected currency matches From Currency
+      if (newValue.value === this.state.currency.value) {
+        Toaster.warning('From Currency and To Currency cannot be the same');
+        return;
+      }
       this.setState({ toCurrency: newValue, });
     } else {
       this.setState({ toCurrency: [], })
