@@ -5626,6 +5626,7 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADRM = [
     { label: "Revised RM Cost", value: "NewRMPrice" },
     { label: "Variance (RM Cost)", value: "RMVariance" },
     { label: "Impact/Quarter (w.r.t. Existing)", value: "ImpactPerQuarter" },
+    { label: "Impact/Quarter (w.r.t. Budgeted Price)", value: "BudgetedPriceImpactPerQuarter" },
 ]
 
 export const SIMULATIONAPPROVALSUMMARYDOWNLOADER = [
@@ -5649,6 +5650,7 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADER = [
     { label: "Revised Net Cost", value: "NewPOPrice" },
     { label: "Variance (w.r.t. Existing)", value: "POVariance" },
     { label: "Impact/Quarter (w.r.t. Existing)", value: "ImpactPerQuarter" },
+    { label: "Impact/Quarter (w.r.t. Budgeted Price)", value: "BudgetedPriceImpactPerQuarter" },
 ]
 
 export const SIMULATIONAPPROVALSUMMARYDOWNLOADST = [
@@ -5673,6 +5675,7 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADST = [
     { label: "Revised Net ST Cost", value: "NewNetSurfaceTreatmentCost" },
     { label: "Variance (ST Cost)", value: "NetSurfaceTreatmentCostVariance" },
     { label: "Impact/Quarter (w.r.t. Existing)", value: "ImpactPerQuarter" },
+    { label: "Impact/Quarter (w.r.t. Budgeted Price)", value: "BudgetedPriceImpactPerQuarter" },
 ]
 export const SIMULATIONAPPROVALSUMMARYDOWNLOADCP = [         // KEEP COMMENTED ON RE						//RE
 
@@ -5692,6 +5695,7 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADCP = [         // KEEP COMMENTED O
     { label: "Revised CC", value: "NewNetCC" },
     { label: "CC Variance", value: "Variance" },
     { label: `Impact for Quarter (${reactLocalStorage.getObject("baseCurrency")})`, value: "ImpactPerQuarter" },
+    { label: "Impact/Quarter (w.r.t. Budgeted Price)", value: "BudgetedPriceImpactPerQuarter" },
 
 ]
 
@@ -6677,6 +6681,7 @@ export const InitialGridForTokenSummary = [
 
 export const LastGridForTokenSummary = [
     { label: "Impact/Quarter (w.r.t. Existing)", value: "ImpactPerQuarter" },
+    { label: "Impact/Quarter (w.r.t. Budgeted Price)", value: "BudgetedPriceImpactPerQuarter" },
     { label: "Existing Net Cost", value: "OldPOPrice" },
     { label: "Revised Net Cost", value: "NewPOPrice" },
     { label: "Variance (w.r.t. Existing)", value: "POVariance" },
