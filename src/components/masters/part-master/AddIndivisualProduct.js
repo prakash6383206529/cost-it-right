@@ -374,7 +374,7 @@ class AddIndivisualProduct extends Component {
     */
     render() {
         const { handleSubmit, initialConfiguration, t, productHierarchyData } = this.props;
-        const productLabel = productHierarchyData.length > 0 ? productHierarchyData[productHierarchyData?.length - 1]?.ProductHierarchyName : 'Name'
+        const productLabel = productHierarchyData.length > 0 ? productHierarchyData[productHierarchyData?.length - 1]?.ProductHierarchyName : 'Product'
         const { isEditFlag, isViewMode, setDisable } = this.state;
         return (
             <>
