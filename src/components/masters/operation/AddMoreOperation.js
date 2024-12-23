@@ -2158,7 +2158,7 @@ function AddMoreOperation(props) {
                                 {
                                     <div className={getAccordianClassName(isConsumablesCostOpen)}>
 
-                                        {(other || isPlating) && <><Col md="3">
+                                        {(other || isPlating) && <><Col md="3" className="mb-4">
                                             <SearchableSelectHookForm
                                                 name="crmHeadConsumableMaintenanceCost"
                                                 type="text"
@@ -2731,7 +2731,7 @@ function AddMoreOperation(props) {
 
                                         {(other || isPlating) &&
                                             <>
-                                                <Col md="3">
+                                                <Col md="3" className="mb-4">
                                                     <SearchableSelectHookForm
                                                         name="crmHeadStatuaryLicense"
                                                         type="text"
