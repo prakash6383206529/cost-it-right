@@ -132,7 +132,7 @@ const UOM = props?.RowData?.IndexUOM || (Array.isArray(props?.uom) ? '' : props?
     const handleEdit = (indexValue) => {
         setEditIndex(indexValue);
         setIsEditMode(true);
-
+        
         let selectedData = tableData[indexValue];
         setValue('Cost', {
             label: selectedData.CostHeaderName,
@@ -154,7 +154,7 @@ const UOM = props?.RowData?.IndexUOM || (Array.isArray(props?.uom) ? '' : props?
         setValue('ApplicabilityCostCurrency', selectedData.ApplicabilityCost);
         setValue('ApplicabilityBaseCost', isBOP ? selectedData.ApplicabilityCost : selectedData.ApplicabilityCostConversion);
         setValue('CostCurrency', selectedData.NetCost);
-        setValue('CostBaseCurrency', isBOP ? selectedData?.NetCost : selectedData.NetCostConversion);
+        setValue('CostBaseCurrency', isBOP || RawMaterialNonIndexed ? selectedData?.NetCost : selectedData.NetCostConversion);
         setValue('CostDescription', selectedData.Description);
         setValue('Remark', selectedData.Remark);
         setRawMaterialCommodityIndexRateAndOtherCostDetailsId(selectedData?.RawMaterialCommodityIndexRateAndOtherCostDetailsId ?? null)
