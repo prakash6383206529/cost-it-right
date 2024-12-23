@@ -349,7 +349,7 @@ class AddMachineRate extends Component {
             value: Data?.VendorId,
             label: Data?.VendorName
           } : [];
-    
+
           const clientData = Data?.CustomerId && Data?.CustomerName ? {
             value: Data?.CustomerId,
             label: Data?.CustomerName
@@ -423,7 +423,7 @@ class AddMachineRate extends Component {
               IsFinancialDataChanged: false,
               costingTypeId: (Data.CostingTypeId),
               client: clientData,  // Updated
-          vendorName: vendorData,  // Updated
+              vendorName: vendorData,  // Updated
               // client: Data.CustomerName !== undefined ? { label: Data?.CustomerName ?? '', value: Data?.CustomerId ?? '' } : [],
               IsCopied: Data.IsCopied,
               IsDetailedEntry: Data.IsDetailedEntry,
@@ -505,7 +505,7 @@ class AddMachineRate extends Component {
 * @description called
 */
   handleClient = (newValue, actionMeta) => {
-    
+
     if (newValue && newValue !== '') {
       this.setState({ client: newValue });
     } else {
@@ -1183,9 +1183,9 @@ class AddMachineRate extends Component {
           EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
           MachineProcessGroup: this.props.processGroupApiData,
           VendorPlant: [],
-          CustomerId: costingTypeId === CBCTypeId && client ? 
-          (client.value || null) : 
-          null,
+          CustomerId: costingTypeId === CBCTypeId && client ?
+            (client.value || null) :
+            null,
           DestinationPlantId: '',
         }
 
@@ -1506,7 +1506,7 @@ class AddMachineRate extends Component {
                               onClick={() =>
                                 this.onPressVendor(ZBCTypeId)
                               }
-                              disabled={isEditFlag ? true : false}
+                              disabled={(isEditFlag || isViewMode) ? true : false}
                             />{" "}
                             <span>Zero Based</span>
                           </Label>}
@@ -1520,7 +1520,7 @@ class AddMachineRate extends Component {
                               onClick={() =>
                                 this.onPressVendor(VBCTypeId)
                               }
-                              disabled={isEditFlag ? true : false}
+                              disabled={(isEditFlag || isViewMode) ? true : false}
                             />{" "}
                             <span>{VendorLabel} Based</span>
                           </Label>}
@@ -1534,7 +1534,7 @@ class AddMachineRate extends Component {
                               onClick={() =>
                                 this.onPressVendor(CBCTypeId)
                               }
-                              disabled={isEditFlag ? true : false}
+                              disabled={(isEditFlag || isViewMode) ? true : false}
                             />{" "}
                             <span>Customer Based</span>
                           </Label>}
