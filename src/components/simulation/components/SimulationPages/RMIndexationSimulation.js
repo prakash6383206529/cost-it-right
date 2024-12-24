@@ -848,14 +848,14 @@ function RMIndexationSimulation(props) {
     const revisedBasicRateHeader = (props) => {
         return (
             <div className='ag-header-cell-label'>
-                <span className='ag-header-cell-text '>Revised {!isImpactedMaster && <i className={`fa fa-info-circle tooltip_custom_right tooltip-icon mb-n3 ml-4 mt2 `} id={"basicRate-tooltip"}></i>} </span>
+                <span className='ag-header-cell-text '><span className={`${!isImpactedMaster ? 'mr-1' : ''}`}>Revised</span> {!isImpactedMaster && <i className={`fa fa-info-circle tooltip_custom_right tooltip-icon mb-n3 ml-4 mt2 `} id={"basicRate-tooltip"}></i>} </span>
             </div>
         );
     };
     const revisedScrapRateHeader = (props) => {
         return (
             <div className='ag-header-cell-label'>
-                <span className='ag-header-cell-text'>Revised {!isImpactedMaster && <i className={`fa fa-info-circle tooltip_custom_right tooltip-icon mb-n3 ml-4 mt2 `} id={"scrapRate-tooltip"}></i>} </span>
+                <span className='ag-header-cell-text'><span className={`${!isImpactedMaster ? 'mr-1' : ''}`}>Revised</span> {!isImpactedMaster && <i className={`fa fa-info-circle tooltip_custom_right tooltip-icon mb-n3 ml-4 mt2 `} id={"scrapRate-tooltip"}></i>} </span>
             </div>
         );
     };
@@ -1430,12 +1430,13 @@ function RMIndexationSimulation(props) {
 
                             </Col>
                         </Row>
-                        {(!isIndexedRM && !isImpactedMaster && !isApprovalSummary && !isRunSimulationClicked) && <WarningMessage dClass={"mr-5"} textClass={"pt-1"} message={"Please click on the right icon in the action column to save changes."} />}
 
                         {
                             !isImpactedMaster && !isApprovalSummary &&
                             <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                                 <div className="col-sm-12 text-right bluefooter-butn d-flex justify-content-end align-items-center">
+                                    {(!isIndexedRM && !isImpactedMaster && !isApprovalSummary && !isRunSimulationClicked) && <WarningMessage dClass={"mr-4"} message={"Please click on the right icon in the action column to save changes."} />}
+
                                     {((props.isCostingSimulation || props?.isRMNonIndexSimulation) && !isRunSimulationClicked) && <div className="inputbox date-section mr-3 verfiy-page simulation_effectiveDate">
                                         {<DatePicker
                                             name="EffectiveDate"
