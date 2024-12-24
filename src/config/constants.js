@@ -1430,6 +1430,7 @@ export const GET_UNASSOCIATED_RM_NAME_SELECTLIST = 'GET_UNASSOCIATED_RM_NAME_SEL
 export const SET_FILTERED_RM_DATA = 'SET_FILTERED_RM_DATA'
 export const STATUS_COLUMN_DATA = 'STATUS_COLUMN_DATA'
 export const IS_RESET = 'IS_RESET'
+export const IS_RESET_COSTING_HEAD = 'IS_RESET_COSTING_HEAD'
 export const SET_COSTING_HEAD_FILTER = 'SET_COSTING_HEAD_FILTER'
 
 
@@ -2028,6 +2029,8 @@ export const SET_SIMULATION_APPLICABILITY = 'SET_SIMULATION_APPLICABILITY'
 export const SET_EXCHANGE_RATE_LIST_BEFORE_DRAFT = 'SET_EXCHANGE_RATE_LIST_BEFORE_DRAFT'
 export const SET_SELECTED_CUSTOMER_SIMULATION = 'SET_SELECTED_CUSTOMER_SIMULATION'
 export const GET_SELECTLIST_COSTING_HEADS = 'GET_SELECTLIST_COSTING_HEADS'
+export const SET_EFFECTIVE_DATE = 'SET_EFFECTIVE_DATE';
+
 
 // ASSEMBLY TECHNOLOGY
 export const SET_SELECTED_VENDOR_SIMULATION = 'SET_SELECTED_VENDOR_SIMULATION'
@@ -2297,6 +2300,7 @@ export const DEPARTMENT = 'Department'
 export const LEVELS = 'Levels'
 export const COMPANY = 'Company'//MINDA
 export const RFQUSER = 'RFQUser'
+export const DELEGATION = 'Delegation'
 export const DIVISION = 'Division'
 
 //DEPRECIATION TYPE ENUMS
@@ -2928,6 +2932,11 @@ export const VendorManagement = "Vendor-Management"
 export const simulationMaster = "Simulation"
 export const DashboardMaster = "Analytics and Reports"
 export const IMPORT = "Import"
+export const INDEXED = "Indexed"
+export const NONINDEXED = "Non Indexed"
+export const DOMESTIC = "Domestic"
+export const IMPORTED = "Imported"
+
 
 // SPACE KEY CODE
 export const SPACEBAR = 32
@@ -3275,7 +3284,5 @@ export const RAWMATERIALCOST = 'Raw Material Other Cost'
 export const COSTINGCONDITIONCOST = 'Costing Condition Cost'
 
 //VERSION 
-export const VERSION = "V3.1.27";
-
-
+export const VERSION = "V3.1.29";
 

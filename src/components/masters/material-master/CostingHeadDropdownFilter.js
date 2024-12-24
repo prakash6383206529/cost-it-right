@@ -11,8 +11,8 @@ function CostingHeadDropdownFilter(props) {
     const [currentValue, setCurrentValue] = useState(null);
     const CostingHeadOptions = reactLocalStorage.getObject('CostingHeadOptions');
     const getGridHeight = useSelector(state => state.comman.getGridHeight)
-    const isReset = useSelector((state) => state.comman.isReset);
-    const { costingHeadFilter } = useSelector((state) => state.comman);
+    const isResetCostingHead = useSelector((state) => state?.comman?.isResetCostingHead);
+    const { costingHeadFilter } = useSelector((state) => state?.comman);
 
     const { register, control, setValue } = useForm({
         mode: 'onBlur',
@@ -44,8 +44,7 @@ function CostingHeadDropdownFilter(props) {
         return localizedOptions;
     };
     useEffect(() => {
-
-        if (isReset && isReset?.data) {
+        if (isResetCostingHead && isResetCostingHead?.data) {
             setValue("costingHeadDropDown", [])
             setCurrentValue(null);
             dispatch(setCostingHeadFilter(  [],CostingHeadOptions)); // Reset the filter in Redux
@@ -54,33 +53,8 @@ function CostingHeadDropdownFilter(props) {
         }
         
 
-    }, [isReset])
+    }, [isResetCostingHead])
 
-    // useEffect(() => {
-    //     
-    //     if (isReset && isReset?.data) {
-    //         
-    //         setValue("costingHeadDropDown", null);
-    //         setCurrentValue(null);
-    //                     dispatch(setCostingHeadFilter(null)); // Reset the filter in Redux
-
-    //     } else if (props.api && props.column) {
-    //         const filterModel = props.api.getFilterModel();
-    //         const fieldFilter = filterModel[props.column.colId];
-    //         
-    //         if (fieldFilter) {
-    //             const localizedOptions = getLocalizedOptions();
-    //             const selectedOption = localizedOptions.find(option => option.value === fieldFilter.filter);
-    //             
-    //             if (selectedOption) {
-    //                 setValue("costingHeadDropDown", selectedOption);
-    //                 setCurrentValue(selectedOption);
-    //                 dispatch(setCostingHeadFilter(selectedOption,CostingHeadOptions));
-
-    //             }
-    //         }
-    //     }
-    // }, [isReset, props.api, props.column, setValue]);
 
     const valueChanged = (event) => {
         

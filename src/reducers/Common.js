@@ -71,7 +71,8 @@ import {
   GET_COST_FREQUENCY_SETTLEMENT,
   GET_TAX_CODE_SELECTLIST,
   SET_COSTING_HEAD_FILTER,
-  SET_LOCALIZED_COSTING_HEAD_OPTIONS
+  SET_LOCALIZED_COSTING_HEAD_OPTIONS,
+  IS_RESET_COSTING_HEAD
 } from '../config/constants';
 
 const initialState = {
@@ -488,12 +489,17 @@ export default function commanReducer(state = initialState, action) {
     case SET_COSTING_HEAD_FILTER:
       return {
         ...state,
-        costingHeadFilter: action.payload
+        costingHeadFilter: action?.payload
       };
     case IS_RESET:
       return {
         ...state,
         isReset: action.payload
+      };
+    case IS_RESET_COSTING_HEAD:
+      return {
+        ...state,
+        isResetCostingHead: action.payload
       };
     case GET_GRID_HEIGHT:
       return {

@@ -23,7 +23,7 @@ import ScrollToTop from '../../common/ScrollToTop'
 import { PaginationWrapper } from '../../common/commonPagination'
 import { checkFinalUser, getReleaseStrategyApprovalDetails } from '../../costing/actions/Costing'
 import SingleDropdownFloationFilter from '../../masters/material-master/SingleDropdownFloationFilter'
-import { agGridStatus, isResetClick, getGridHeight, dashboardTabLock } from '../../../actions/Common'
+import { agGridStatus, isResetClick, getGridHeight, dashboardTabLock, setResetCostingHead } from '../../../actions/Common'
 import { costingTypeIdToApprovalTypeIdFunction } from '../../common/CommonFunctions'
 import { Steps } from './TourMessages'
 import TourWrapper from '../../common/Tour/TourWrapper'
@@ -154,6 +154,9 @@ function SimulationApprovalListing(props) {
 
     useEffect(() => {
         setIsSuperAdmin(userDetails()?.Role === "SuperAdmin")
+        return () => {
+            dispatch(setResetCostingHead(true, "costingHead"))
+        }
     }, [])
 
     useEffect(() => {
@@ -250,6 +253,7 @@ function SimulationApprovalListing(props) {
 
                         setTimeout(() => {
                             dispatch(isResetClick(false))
+                            dispatch(setResetCostingHead(false, "costingHead"))
                             setWarningMessage(false)
                             setFloatingFilterData(obj)
                         }, 23);
@@ -335,6 +339,7 @@ function SimulationApprovalListing(props) {
     const resetState = () => {
         dispatch(agGridStatus("", ""))
         dispatch(isResetClick(true))
+        dispatch(setResetCostingHead(true, "costingHead"))
         setIsFilterButtonClicked(false)
         setIsLoader(true)
         gridOptions?.columnApi?.resetColumnState(null);
@@ -896,7 +901,7 @@ function SimulationApprovalListing(props) {
                 !showApprovalSumary &&
                 <div className={`${!isSmApprovalListing && 'container-fluid'} approval-listing-page`} id='history-go-to-top'>
                     {(isLoader) ? <LoaderCustom customClass={isDashboard ? "dashboard-loader" : "loader-center"} /> : <div>
-                        < div className={`ag-grid-react custom-pagination`}>
+                        < div className={`ag-grid-react grid-parent-wrapper custom-pagination`}>
                             <form onSubmit={handleSubmit(() => { })} noValidate>
                                 {!isDashboard && <ScrollToTop pointProp={"history-go-to-top"} />}
                                 <Row className="pt-4">
@@ -928,7 +933,7 @@ function SimulationApprovalListing(props) {
                                 </Row >
                             </form >
 
-                            <div className={`ag-grid-wrapper p-relative ${isDashboard ? (simualtionApprovalList && simualtionApprovalList?.length <= 0) || noData ? "overlay-contain" : "" : (simualtionApprovalListDraft && simualtionApprovalListDraft?.length <= 0) || noData ? "overlay-contain" : ""} ${isDashboard ? "report-grid" : ""}`}>
+                            <div className={`ag-grid-wrapper p-relative ${isDashboard ? (simualtionApprovalList && simualtionApprovalList?.length <= 0) || noData ? "overlay-contain" : "" : (simualtionApprovalListDraft && simualtionApprovalListDraft?.length <= 0) || noData ? "overlay-contain" : ""} ${isDashboard ? "grid-parent-wrapper" : ""}`}>
                                 <div className="ag-grid-header">
                                     <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
                                     {!isDashboard && <TourWrapper

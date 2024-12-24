@@ -22,7 +22,7 @@ import AddLimit from "./AddLimit";
 import WarningMessage from "../../common/WarningMessage";
 import { setSelectedRowForPagination } from "../../simulation/actions/Simulation";
 import _ from "lodash";
-import { disabledClass, isResetClick } from "../../../actions/Common";
+import { disabledClass, setResetCostingHead } from "../../../actions/Common";
 import { reactLocalStorage } from "reactjs-localstorage";
 import VolumeBulkUploadDrawer from "../../massUpload/VolumeBulkUploadDrawer";
 import { Drawer } from "@material-ui/core";
@@ -177,13 +177,13 @@ function VolumeListing(props) {
     getTableListData(0, defaultPageSize, true);
     return () => {
       dispatch(setSelectedRowForPagination([]));
+      dispatch(setResetCostingHead(true, "costingHead"))
     };
   }, []);
 
   useEffect(() => {
     setIsLoader(true);
     applyPermission(topAndLeftMenuData);
-    dispatch(isResetClick(false, "costingHead"))
     setTimeout(() => {
       setIsLoader(false);
     }, 200);
@@ -259,7 +259,7 @@ function VolumeListing(props) {
 
         setTimeout(() => {
           setWarningMessage(false);
-          dispatch(isResetClick(false, "costingHead"))
+          dispatch(setResetCostingHead(false, "costingHead"))
         }, 330);
 
         setTimeout(() => {
@@ -530,7 +530,7 @@ function VolumeListing(props) {
   const resetState = () => {
     setNoData(false);
     gridApi.deselectAll();
-    dispatch(isResetClick(true, "costingHead"))
+    dispatch(setResetCostingHead(true, "costingHead"))
     gridOptions.columnApi.resetColumnState();
     gridOptions.api.setFilterModel(null);
 
@@ -659,7 +659,7 @@ function VolumeListing(props) {
   return (
     <>
       <div
-        className={`ag-grid-react container-fluid blue-before-inside ${downloadAccessibility ? "show-table-btn no-tab-page" : ""
+        className={`ag-grid-react grid-parent-wrapper container-fluid blue-before-inside ${downloadAccessibility ? "show-table-btn no-tab-page" : ""
           }`}
         id="go-to-top"
       >

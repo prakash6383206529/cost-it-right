@@ -232,7 +232,7 @@ function NFRApprovalListing(props) {
 
                     <Row>
                         <Col>
-                            <div className={`ag-grid-react report-grid p-relative`}>
+                            <div className={`ag-grid-react grid-parent-wrapper p-relative`}>
 
                                 <div id={'parentId'} className={`ag-grid-wrapper height-width-wrapper min-height-auto p-relative ${rowData?.length <= 0 ? 'overlay-contain' : ''} `}>
                                     <div className="ag-grid-header d-flex justify-content-between">

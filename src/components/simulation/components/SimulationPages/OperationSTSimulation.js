@@ -26,6 +26,7 @@ import { OPERATION_IMPACT_DOWNLOAD_EXCEl } from '../../../../config/masterData';
 import { simulationContext } from '..';
 import { useLabels } from '../../../../helper/core';
 import CostingHeadDropdownFilter from '../../../masters/material-master/CostingHeadDropdownFilter';
+import { setResetCostingHead } from '../../../../actions/Common';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -66,13 +67,13 @@ function OperationSTSimulation(props) {
     const dispatch = useDispatch()
 
     const { selectedMasterForSimulation, selectedTechnologyForSimulation } = useSelector(state => state.simulation)
-    const {costingHeadFilter} =useSelector(state => state.common )
+    const costingHeadFilter =useSelector(state => state?.common?.costingHeadFilter )
     useEffect(() => {
    
-        if (costingHeadFilter && costingHeadFilter.data) {
-          const matchedOption = costingHeadFilter.CostingHeadOptions.find(option => option.value === costingHeadFilter.data.value);
+        if (costingHeadFilter && costingHeadFilter?.data) {
+          const matchedOption = costingHeadFilter?.CostingHeadOptions?.find(option => option?.value === costingHeadFilter?.data?.value);
           if (matchedOption) {
-            gridApi?.setQuickFilter(matchedOption.label);
+            gridApi?.setQuickFilter(matchedOption?.label);
           }
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -123,6 +124,11 @@ function OperationSTSimulation(props) {
             handleEditMasterPage(showEditMaster, showverifyPage)
         }
     }, [showverifyPage])
+    useEffect(() => {
+        return () => {
+            dispatch(setResetCostingHead(true, "costingHead"))
+          }
+    }, [])
 
     // const newRateFormatter = (props) => {
     //     const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -405,7 +411,9 @@ function OperationSTSimulation(props) {
         nullHandler: props.nullHandler && props.nullHandler,
         rateFormatter: rateFormatter,
         oldBasicRateFormatter: oldBasicRateFormatter,
-        consumptionFormatter: consumptionFormatter
+        consumptionFormatter: consumptionFormatter,
+        statusFilter: CostingHeadDropdownFilter,
+
     };
 
 
@@ -513,7 +521,7 @@ function OperationSTSimulation(props) {
     const operationTypes = getOperationTypes(list);
     return (
         <div>
-            <div className={`ag-grid-react`}>
+            <div className={`ag-grid-react grid-parent-wrapper`}>
                 {!showverifyPage &&
                     <Fragment>
                         {!isImpactedMaster && showTooltip && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={basicRateviewTooltip} toggle={basicRatetooltipToggle} target={"basicRate-tooltip"} >{"To edit revised net rate please double click on the field."}</Tooltip>}
@@ -617,7 +625,7 @@ function OperationSTSimulation(props) {
                                                 enableBrowserTooltips={true}
                                             // frameworkComponents={frameworkComponents}
                                             >
-                                                {!isImpactedMaster && <AgGridColumn field="CostingHead" tooltipField='CostingHead' headerName="Costing Head" editable='false' minWidth={190} cellRenderer={'combinedCostingHeadRenderer'}
+                                                {!isImpactedMaster && <AgGridColumn field="CostingHead" tooltipField='CostingHead' headerName="Costing Head" editable='false' minWidth={190}  cellRenderer={'combinedCostingHeadRenderer'}
                                                  floatingFilterComponentParams={floatingFilterStatus} 
                                                  floatingFilterComponent="statusFilter"></AgGridColumn>}
                                                 <AgGridColumn field="ForType" headerName="Operation Type" cellRenderer={'hyphenFormatter'} minWidth={190}></AgGridColumn>
@@ -657,7 +665,7 @@ function OperationSTSimulation(props) {
                                         <div className="inputbox date-section mr-3 verfiy-page simulation_effectiveDate">
                                             <DatePicker
                                                 name="EffectiveDate"
-                                                id='EffectiveDate'
+                                                id="EffectiveDate"
                                                 selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
                                                 onChange={handleEffectiveDateChange}
                                                 showMonthDropdown

@@ -239,3 +239,35 @@ div[class$="MenuList"] {
 .rm-master-form {
   min-height: calc(100vh - 232px);
 }
+
+.ag-header-row {
+  height: 38px !important;
+  background-color: #d4dfff47;
+
+  .ag-grid-multi {
+    height: 30px !important;
+
+    .form-group-searchable-select {
+      margin-bottom: 0 !important;
+
+      .multi-select-container__control {
+        height: 30px !important;
+
+        .multi-select-container__value-container {
+          height: 30px !important;
+          overflow-y: auto !important;
+          max-width: 100% !important;
+        }
+      }
+
+      .multi-select-container__indicators {
+        height: 30px !important;
+      }
+    }
+  }
+
+  input {
+    height: auto !important;
+  }
+
+}

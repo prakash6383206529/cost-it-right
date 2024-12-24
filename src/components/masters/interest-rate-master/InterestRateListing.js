@@ -25,7 +25,7 @@ import { getConfigurationKey, loggedInUserId } from '../../../helper';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import SingleDropdownFloationFilter from '../material-master/SingleDropdownFloationFilter';
 import { checkMasterCreateByCostingPermission, hideCustomerFromExcel } from '../../common/CommonFunctions';
-import { TourStartAction, agGridStatus, isResetClick } from '../../../actions/Common';
+import { TourStartAction, agGridStatus, setResetCostingHead } from '../../../actions/Common';
 import Button from '../../layout/Button';
 import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from '../../common/Tour/TourMessages';
@@ -68,7 +68,7 @@ const InterestRateListing = (props) => {
   const { vendorLabel ,vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels()
   const [gridApi, setGridApi] = useState(null);
   const { statusColumnData } = useSelector((state) => state.comman);
-  const { costingHeadFilter } = useSelector((state) => state.comman);
+  const { costingHeadFilter } = useSelector((state) => state?.comman);
 
   const { t } = useTranslation("common")
   const { topAndLeftMenuData } = useSelector((state) => state.auth);
@@ -80,6 +80,7 @@ const InterestRateListing = (props) => {
     setTimeout(() => {
       getTableListData()
     }, 500);
+    
     // eslint-disable-next-line react-hooks/exhaustive-deps
 
   }, []);
@@ -87,10 +88,10 @@ const InterestRateListing = (props) => {
     if (statusColumnData) {
       state.gridApi?.setQuickFilter(statusColumnData.data);
     }
-    if (costingHeadFilter && costingHeadFilter.data) {
-      const matchedOption = costingHeadFilter.CostingHeadOptions.find(option => option.value === costingHeadFilter.data.value);
+    if (costingHeadFilter && costingHeadFilter?.data) {
+      const matchedOption = costingHeadFilter?.CostingHeadOptions?.find(option => option?.value === costingHeadFilter?.data?.value);
       if (matchedOption) {
-        state.gridApi?.setQuickFilter(matchedOption.label);
+        state.gridApi?.setQuickFilter(matchedOption?.label);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -357,7 +358,7 @@ const InterestRateListing = (props) => {
     gridOptions.columnApi.resetColumnState();
     gridOptions.api.setFilterModel(null);
     dispatch(agGridStatus("", ""))
-    dispatch(isResetClick(true, "ICCApplicability"))
+    dispatch(setResetCostingHead(true, 'applicability'))
 
   }
 
@@ -405,7 +406,7 @@ const InterestRateListing = (props) => {
 
   return (
     <>
-      <div className={`ag-grid-react report-grid p-relative ${DownloadAccessibility ? "show-table-btn" : ""}`} id='go-to-top'>
+      <div className={`ag-grid-react grid-parent-wrapper p-relative ${DownloadAccessibility ? "show-table-btn" : ""}`} id='go-to-top'>
         <div className="container-fluid">
           <ScrollToTop pointProp='go-to-top' />
           <form noValidate  >

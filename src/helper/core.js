@@ -15,11 +15,11 @@ export const CompanyLogo = (props) => {
 export const CirLogo = (props) => {
   return <img className="logo-second" src={SecondaryLogo} height={props.height ?? ''} alt="Cost It Right" />
 }
-
+export const screenWidth = window.screen.width;
 //
 export const useLabels = () => {
   // const { t } = useTranslation('MasterLabels');
-  const labels = ['MasterLabels', 'CostingLabels','CommonLabels'];
+  const labels = ['MasterLabels', 'CostingLabels', 'CommonLabels'];
   const { i18n } = useTranslation(labels);
   // Create separate translation functions for each namespace
   const tMasterLabels = i18n.getFixedT(null, 'MasterLabels');
@@ -98,7 +98,6 @@ const getLocalizedLabelMap = (t) => {
   };
 
   const allLabels = getAllLabels();
-  console.log("allLabels:", allLabels);
 
   const labelMap = {};
   Object.entries(allLabels.MasterLabels ? allLabels.MasterLabels : DefaultLocalizationLabel).forEach(([key, value]) => {

@@ -19,7 +19,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { setSelectedRowForPagination } from '../../simulation/actions/Simulation';
 import WarningMessage from '../../common/WarningMessage';
-import { disabledClass, fetchModelTypeAPI } from '../../../actions/Common';
+import { disabledClass, fetchModelTypeAPI, setResetCostingHead } from '../../../actions/Common';
 import _ from 'lodash';
 import SingleDropdownFloationFilter from '../material-master/SingleDropdownFloationFilter';
 import { agGridStatus, getGridHeight, isResetClick } from '../../../actions/Common';
@@ -157,7 +157,10 @@ const onFilterChange = (event) => {
         dispatch(agGridStatus("", ""))
         setSelectedRowForPagination([])
         dispatch(resetStatePagination());
-
+        return () => {
+            dispatch(setResetCostingHead(true, "costingHead"))
+        }
+       
     }, [])
 
     useEffect(() => {
@@ -232,6 +235,7 @@ const onFilterChange = (event) => {
                         }, 100);
                     }
                     dispatch(isResetClick(false, "applicablity"))
+                    dispatch(setResetCostingHead(false, "costingHead"))
                 }, 330);
 
                 setTimeout(() => {
@@ -335,6 +339,7 @@ const onFilterChange = (event) => {
         setNoData(false)
         dispatch(agGridStatus("", ""))
         dispatch(isResetClick(true, "applicablity"))
+        dispatch(setResetCostingHead(true, "costingHead"))
         setIsFilterButtonClicked(false)
         gridApi.deselectAll()
         gridOptions?.columnApi?.resetColumnState(null);
@@ -707,7 +712,7 @@ const onFilterChange = (event) => {
         <>
             {
                 isLoader ? <LoaderCustom customClass={"loader-center"} /> :
-                    <div className={`ag-grid-react custom-pagination ${DownloadAccessibility ? "show-table-btn" : ""}`}>
+                    <div className={`ag-grid-react grid-parent-wrapper custom-pagination ${DownloadAccessibility ? "show-table-btn" : ""}`}>
                         {disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
                         <form onSubmit={(onSubmit)} noValidate>
                             <Row className="pt-4 ">

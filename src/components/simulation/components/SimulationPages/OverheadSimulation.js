@@ -20,6 +20,7 @@ import { checkForChangeInOverheadProfit1Values, checkForChangeInOverheadProfit2V
 import { PaginationWrapper } from '../../../common/commonPagination';
 import { useLabels } from '../../../../helper/core';
 import CostingHeadDropdownFilter from '../../../masters/material-master/CostingHeadDropdownFilter';
+import { setResetCostingHead } from '../../../../actions/Common';
 
 const gridOptions = {};
 
@@ -42,14 +43,14 @@ function OverheadSimulation(props) {
     const [isDisable, setIsDisable] = useState(false)
     const dispatch = useDispatch()
     const { selectedMasterForSimulation } = useSelector(state => state.simulation)
-    const {costingHeadFilter} =useSelector(state => state.common )
+    const {costingHeadFilter} =useSelector(state => state?.common )
 
     useEffect(() => {
    
-        if (costingHeadFilter && costingHeadFilter.data) {
-          const matchedOption = costingHeadFilter.CostingHeadOptions.find(option => option.value === costingHeadFilter.data.value);
+        if (costingHeadFilter && costingHeadFilter?.data) {
+          const matchedOption = costingHeadFilter?.CostingHeadOptions?.find(option => option?.value === costingHeadFilter?.data?.value);
           if (matchedOption) {
-            gridApi?.setQuickFilter(matchedOption.label);
+            gridApi?.setQuickFilter(matchedOption?.label);
           }
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -65,6 +66,11 @@ function OverheadSimulation(props) {
             return null
         })
     }, [list])
+    useEffect(() => {
+        return () => {
+            dispatch(setResetCostingHead(true, "costingHead"))
+          }
+    }, [])
 
 
     // VERIFY SIMUALTION BUTTON (SUBMIT)
@@ -931,7 +937,7 @@ function OverheadSimulation(props) {
     return (
 
         <div>
-            <div className={`ag-grid-react`}>
+            <div className={`ag-grid-react grid-parent-wrapper`}>
 
                 {
 

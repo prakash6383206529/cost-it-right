@@ -1605,3 +1605,44 @@ export function MonocartonBulkUploadCosting(data, callback) {
     });
   }
 }
+/**
+ * @method getPackagingCalculation
+ * @description Get packaging calculator data
+*/
+export function getPackagingCalculation(costingId, rawMaterialId, weightCalculationId, callback) {
+  return (dispatch) => {
+    //dispatch({ type: API_REQUEST });
+    const queryParams = `costingId=${costingId}&rawMaterialId=${EMPTY_GUID}&weightCalculationId=${weightCalculationId ? weightCalculationId : "0"}`
+    const request = axios.get(`${API.getPackagingCalculation}?${queryParams}`, config());
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      } else {
+        Toaster.error(MESSAGES.SOME_ERROR);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+      apiErrors(error);
+    });
+  };
+}
+
+/**
+ * @method savePackagingCalculation
+ * @description save packaging calculator data
+*/
+export function savePackagingCalculation(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.savePackagingCalculation, data, config());
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      apiErrors(error);
+      callback(error);
+    });
+  };
+}

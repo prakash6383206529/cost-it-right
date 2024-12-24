@@ -20,7 +20,7 @@ import ReactExport from 'react-export-excel';
 import { CheckApprovalApplicableMaster, getConfigurationKey, getLocalizedCostingHeadValue, searchNocontentFilter, setLoremIpsum } from '../../../helper';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { getListingForSimulationCombined, setSelectedRowForPagination } from '../../simulation/actions/Simulation';
-import { disabledClass, getApprovalTypeSelectList, getGridHeight, isResetClick } from '../../../actions/Common';
+import { disabledClass, getApprovalTypeSelectList, getGridHeight, setResetCostingHead } from '../../../actions/Common';
 import WarningMessage from '../../common/WarningMessage';
 import AnalyticsDrawer from './AnalyticsDrawer'
 import _ from 'lodash';
@@ -89,7 +89,8 @@ function RMDomesticListing(props) {
    
     const [compareDrawer, setCompareDrawer] = useState(false)
     const [rowDataForCompare, setRowDataForCompare] = useState([])
-    const isRfq = props?.quotationId !== null || props?.quotationId !== '' || props?.quotationId !== undefined ? true : false
+    const isRfq = props?.quotationId !== null && props?.quotationId !== '' && props?.quotationId !== undefined ? true : false
+    
     var filterParams = {
         date: "", inRangeInclusive: true, filterOptions: ['equals', 'inRange'],
         comparator: function (filterLocalDateAtMidnight, cellValue) {
@@ -152,10 +153,12 @@ function RMDomesticListing(props) {
                     props?.changeTokenCheckBox(false)
                 }
                 getDataList(null, null, null, null, null, 0, 0, defaultPageSize, true, floatingFilterData)
-                dispatch(isResetClick(false, "costingHead"))
 
             }
             setvalue({ min: 0, max: 0 });
+        }
+        return () => {
+            dispatch(setResetCostingHead(true, "costingHead"))
         }
     }, [])
 
@@ -259,7 +262,7 @@ function RMDomesticListing(props) {
 
                     setTimeout(() => {
                         setWarningMessage(false)
-                        dispatch(isResetClick(false, "costingHead"))
+                        dispatch(setResetCostingHead(false, "costingHead"))
 
                     }, 330);
 
@@ -380,7 +383,7 @@ function RMDomesticListing(props) {
     const resetState = () => {
         setNoData(false)
         setinRangeDate([])
-        dispatch(isResetClick(true, "costingHead"))
+        dispatch(setResetCostingHead(true, "costingHead"))
 
         setIsFilterButtonClicked(false)
         gridOptions?.columnApi?.resetColumnState(null);
@@ -917,7 +920,7 @@ const combinedCostingHeadRenderer = (props) => {
 
     }
     return (
-        <div className={`ag-grid-react ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${DownloadAccessibility ? "show-table-btn" : ""} ${isSimulation ? 'simulation-height' : props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
+        <div className={`ag-grid-react grid-parent-wrapper ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${DownloadAccessibility ? "show-table-btn" : ""} ${isSimulation ? 'simulation-height' : props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
             {(loader && !props.isMasterSummaryDrawer) ? <LoaderCustom customClass="simulation-Loader" /> :
                 <>
                     {disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
@@ -1092,6 +1095,7 @@ const combinedCostingHeadRenderer = (props) => {
                                         {IsShowFreightAndShearingCostFields() && (<AgGridColumn field="RMShearingCost" headerName="Shearing Cost" cellRenderer='commonCostFormatter'></AgGridColumn>)}
                                         {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((props.isMasterSummaryDrawer && rmDataList[0]?.CostingTypeId === ZBCTypeId) || !props.isMasterSummaryDrawer) && <AgGridColumn field="NetCostWithoutConditionCost" headerName="Basic Price" cellRenderer='commonCostFormatter'></AgGridColumn>}
                                         {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((props.isMasterSummaryDrawer && rmDataList[0]?.CostingTypeId === ZBCTypeId) || !props.isMasterSummaryDrawer) && <AgGridColumn field="NetConditionCost" headerName="Net Condition Cost" cellRenderer='commonCostFormatter'></AgGridColumn>}
+                                        <AgGridColumn field="OtherNetCost" headerName='Other Net Cost' cellRenderer='commonCostFormatter'></AgGridColumn>
                                         <AgGridColumn field="NetLandedCost" headerName="Net Cost" cellRenderer='costFormatter'></AgGridColumn>
 
                                         <AgGridColumn field="EffectiveDate" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>

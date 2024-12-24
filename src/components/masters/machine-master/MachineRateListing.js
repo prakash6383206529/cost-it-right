@@ -25,7 +25,7 @@ import _ from 'lodash';
 import { PaginationWrappers } from '../../common/Pagination/PaginationWrappers';
 import PaginationControls from '../../common/Pagination/PaginationControls';
 import { setSelectedRowForPagination } from '../../simulation/actions/Simulation';
-import { disabledClass, isResetClick } from '../../../actions/Common';
+import { disabledClass, setResetCostingHead } from '../../../actions/Common';
 import AnalyticsDrawer from '../material-master/AnalyticsDrawer';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { checkMasterCreateByCostingPermission, hideCustomerFromExcel } from '../../common/CommonFunctions';
@@ -114,6 +114,7 @@ const MachineRateListing = (props) => {
     return () => {
       dispatch(setSelectedRowForPagination([]));
       dispatch(resetStatePagination());
+      dispatch(setResetCostingHead(true, "costingHead"));
 
     };
     // eslint-disable-next-line
@@ -267,7 +268,7 @@ const MachineRateListing = (props) => {
 
   const resetState = () => {
     setState((prevState) => ({ ...prevState, noData: false, warningMessage: false, }));
-    dispatch(isResetClick(true, "Operation"));
+    dispatch(setResetCostingHead(true, "costingHead"));
     setState((prevState) => ({ ...prevState, isFilterButtonClicked: false, }));
     setSearchText(''); // Clear the search text state
     if (state.gridApi) { state.gridApi.setQuickFilter(''); }
@@ -718,7 +719,7 @@ const MachineRateListing = (props) => {
   };
 
   return (
-    <div className={`ag-grid-react ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${permissions?.Download ? "show-table-btn" : ""} ${props.isSimulation ? 'simulation-height' : ''}`}>
+    <div className={`ag-grid-react grid-parent-wrapper ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${permissions?.Download ? "show-table-btn" : ""} ${props.isSimulation ? 'simulation-height' : ''}`}>
       {(state.isLoader && !props.isMasterSummaryDrawer) && <LoaderCustom customClass="simulation-Loader" />} {state.disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
       <form noValidate> {(state.isLoader && !props.isMasterSummaryDrawer) && <LoaderCustom customClass="simulation-Loader" />}
         {state.disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}

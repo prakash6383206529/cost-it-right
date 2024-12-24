@@ -22,7 +22,6 @@ const LanguageDropdown = () => {
     };
 
     const [selectedLanguage, setSelectedLanguage] = useState(getInitialLanguage);
-    console.log(selectedLanguage);
     const { register, control, setValue } = useForm({
         mode: 'onChange',
         defaultValues: {

@@ -3,7 +3,7 @@ import { Row, Col, } from 'reactstrap';
 import {
   deleteRawMaterialAPI, getAllRMDataList
 } from '../actions/Material';
-import { defaultPageSize, EMPTY_DATA, ENTRY_TYPE_IMPORT, FILE_URL, RMIMPORT, ZBCTypeId } from '../../../config/constants';
+import { defaultPageSize, DOMESTIC, EMPTY_DATA, ENTRY_TYPE_IMPORT, FILE_URL, RMIMPORT, ZBCTypeId } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
@@ -26,7 +26,7 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { getListingForSimulationCombined, setSelectedRowForPagination } from '../../simulation/actions/Simulation';
 import WarningMessage from '../../common/WarningMessage';
 import _ from 'lodash';
-import { disabledClass, isResetClick } from '../../../actions/Common';
+import { disabledClass, setResetCostingHead } from '../../../actions/Common';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import AnalyticsDrawer from './AnalyticsDrawer';
 import { checkMasterCreateByCostingPermission, hideCustomerFromExcel, hideMultipleColumnFromExcel } from '../../common/CommonFunctions';
@@ -162,12 +162,12 @@ function RMImportListing(props) {
         return () => {
           dispatch(setSelectedRowForPagination([]))
           dispatch(resetStatePagination());
-          dispatch(isResetClick(false, "costingHead"))
 
           reactLocalStorage.setObject('selectedRow', {})
         }
       }
     }, 300);
+   
 
   }, [])
 
@@ -191,6 +191,9 @@ function RMImportListing(props) {
         setvalue({ min: 0, max: 0 });
       }
     }, 300);
+    return () => {
+      dispatch(setResetCostingHead(true, "costingHead"))
+    }
 
   }, [])
   const floatingFilterStatus = {
@@ -297,7 +300,7 @@ function RMImportListing(props) {
 
           setTimeout(() => {
             setWarningMessage(false)
-            dispatch(isResetClick(false, "costingHead"))
+            dispatch(setResetCostingHead(false, "costingHead"))
 
           }, 330);
 
@@ -741,7 +744,7 @@ function RMImportListing(props) {
     setNoData(false)
     setFilterModel({})
     setinRangeDate([])
-    dispatch(isResetClick(true, "costingHead"))
+    dispatch(setResetCostingHead(true, "costingHead"))
     setIsFilterButtonClicked(false)
     gridOptions?.columnApi?.resetColumnState(null);
     gridOptions?.api?.setFilterModel(null);
@@ -897,6 +900,17 @@ function RMImportListing(props) {
   const backToSimulation = (value) => {
     setEditSelectedList(false)
   }
+  const netLanedCostFormatter = (props) => {
+    const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+    const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+    
+  if (row?.EntryType === DOMESTIC) {
+        return (row?.NetLandedCost ?? '-');
+    }else{
+        
+        return (row?.NetLandedCostConversion ?? '-');
+    }
+}
 
   const frameworkComponents = {
     totalValueRenderer: buttonFormatter,
@@ -911,12 +925,13 @@ function RMImportListing(props) {
     combinedCostingHeadRenderer: combinedCostingHeadRenderer,
     currencyFormatter: currencyFormatter,
     attachmentFormatter: attachmentFormatter,
-    statusFilter : CostingHeadDropdownFilter
+    statusFilter : CostingHeadDropdownFilter,
+    netLanedCostFormatter: netLanedCostFormatter
 
   };
 
   return (
-    <div>{!editSelectedList && <div className={`ag-grid-react custom-pagination ${isSimulation ? 'simulation-height' : props?.isMasterSummaryDrawer ? "" : 'min-height100vh'}  ${DownloadAccessibility ? "show-table-btn" : ""}`}>
+    <div>{!editSelectedList && <div className={`ag-grid-react grid-parent-wrapper custom-pagination ${isSimulation ? 'simulation-height' : props?.isMasterSummaryDrawer ? "" : 'min-height100vh'}  ${DownloadAccessibility ? "show-table-btn" : ""}`}>
       {(loader && !props?.isMasterSummaryDrawer) ? <LoaderCustom customClass="simulation-Loader" /> :
         <>
           {disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
@@ -1063,7 +1078,7 @@ function RMImportListing(props) {
                     <AgGridColumn field="Currency" cellRenderer={"currencyFormatter"}></AgGridColumn>
 
                     <AgGridColumn field="BasicRatePerUOM" headerName="Basic Rate (Currency)" cellRenderer={'commonCostFormatter'}></AgGridColumn>
-                    <AgGridColumn field="BasicRatePerUOMConversion" headerName={headerNames?.BasicRate} cellRenderer='commonCostFormatter'></AgGridColumn>
+                    {/* <AgGridColumn field="BasicRatePerUOMConversion" headerName={headerNames?.BasicRate} cellRenderer='commonCostFormatter'></AgGridColumn> */}
                     <AgGridColumn field="IsScrapUOMApply" headerName="Has different Scrap Rate UOM" cellRenderer='commonCostFormatter'></AgGridColumn>
                     <AgGridColumn field="ScrapUnitOfMeasurement" headerName='Scrap Rate UOM' cellRenderer='commonCostFormatter'></AgGridColumn>
                     <AgGridColumn field="CalculatedFactor" headerName='Calculated Factor' cellRenderer='commonCostFormatter'></AgGridColumn>
@@ -1081,9 +1096,9 @@ function RMImportListing(props) {
                     {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((props?.isMasterSummaryDrawer && rmImportDataList[0]?.CostingTypeId === ZBCTypeId) || !props?.isMasterSummaryDrawer) && !isFromVerifyPage && <AgGridColumn field="NetCostWithoutConditionCostConversion" headerName={headerNames?.BasicPrice} cellRenderer='commonCostFormatter'></AgGridColumn>}
                     {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((props?.isMasterSummaryDrawer && rmImportDataList[0]?.CostingTypeId === ZBCTypeId) || !props?.isMasterSummaryDrawer) && !isFromVerifyPage && <AgGridColumn field="NetConditionCost" headerName="Net Condition Cost (Currency)" cellRenderer='commonCostFormatter'></AgGridColumn>}
                     {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((props?.isMasterSummaryDrawer && rmImportDataList[0]?.CostingTypeId === ZBCTypeId) || !props?.isMasterSummaryDrawer) && !isFromVerifyPage && <AgGridColumn field="NetConditionCostConversion" headerName={headerNames?.NetConditionCost} cellRenderer='commonCostFormatter'></AgGridColumn>}
-
-                    <AgGridColumn field="NetLandedCost" headerName="Net Cost (Currency)" cellRenderer='costFormatter'></AgGridColumn>
-                    <AgGridColumn field="NetLandedCostConversion" headerName={headerNames?.NetCost} cellRenderer='costFormatter'></AgGridColumn>
+                    <AgGridColumn field="OtherNetCost" headerName='Other Net Cost' cellRenderer='commonCostFormatter'></AgGridColumn>
+                    <AgGridColumn field="NetLandedCost" headerName="Net Cost (Currency)" cellRenderer='netLanedCostFormatter'></AgGridColumn>
+                    {/* <AgGridColumn field="NetLandedCostConversion" headerName={headerNames?.NetCost} cellRenderer='costFormatter'></AgGridColumn> */}
 
                     <AgGridColumn field="EffectiveDate" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                     {(!isSimulation && !props?.isMasterSummaryDrawer) && <AgGridColumn width={160} field="RawMaterialId" cellClass="ag-grid-action-container actions-wrapper" pinned="right" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}

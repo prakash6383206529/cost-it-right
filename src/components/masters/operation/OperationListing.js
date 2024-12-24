@@ -23,7 +23,7 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { getListingForSimulationCombined, setSelectedRowForPagination, } from '../../simulation/actions/Simulation'
 import WarningMessage from '../../common/WarningMessage';
 import _ from 'lodash';
-import { TourStartAction, disabledClass, isResetClick } from '../../../actions/Common';
+import { TourStartAction, disabledClass, setResetCostingHead } from '../../../actions/Common';
 import AnalyticsDrawer from '../material-master/AnalyticsDrawer';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { checkMasterCreateByCostingPermission, hideCustomerFromExcel } from '../../common/CommonFunctions';
@@ -138,7 +138,9 @@ const OperationListing = (props) => {
     useEffect(() => {
         dispatch(setSelectedRowForPagination([]));
         dispatch(resetStatePagination());
-
+        return () => {
+            dispatch(setResetCostingHead(true, "costingHead"))
+          }
         // eslint-disable-next-line
     }, []);
 
@@ -244,6 +246,7 @@ const OperationListing = (props) => {
                 }, 600);
 
                 setTimeout(() => {
+                    dispatch(setResetCostingHead(false, "costingHead"))
                     setState(prevState => ({ ...prevState, warningMessage: false }))
                 }, 335);
                 setTimeout(() => {
@@ -324,7 +327,7 @@ const OperationListing = (props) => {
 
     const resetState = () => {
         setState((prevState) => ({ ...prevState, noData: false, warningMessage: false, }));
-        dispatch(isResetClick(true, "Operation"));
+        dispatch(setResetCostingHead(true, "costingHead"));
         setState((prevState) => ({ ...prevState, isFilterButtonClicked: false, }));
         setSearchText(''); // Clear the search text state
         if (state.gridApi) {
@@ -811,7 +814,7 @@ const OperationListing = (props) => {
     return (
         <div className={`${isSimulation ? 'simulation-height' : props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
             {(state.isLoader && !props.isMasterSummaryDrawer) && <LoaderCustom customClass="simulation-Loader" />}            {state.disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
-            <div className={`ag-grid-react ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${permissionData?.Download ? "show-table-btn no-tab-page" : ""}`}>
+            <div className={`ag-grid-react grid-parent-wrapper ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${permissionData?.Download ? "show-table-btn no-tab-page" : ""}`}>
                 <form>
                     <Row className={`${props?.isMasterSummaryDrawer ? '' : 'pt-4'} filter-row-large blue-before ${isSimulation || props.benchMark ? "zindex-0" : ""}`}>
                         <Col md="3" lg="3">

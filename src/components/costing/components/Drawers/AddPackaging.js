@@ -17,6 +17,8 @@ import TooltipCustom from '../../../common/Tooltip';
 import { CRMHeads, WACTypeId } from '../../../../config/constants';
 import { fetchCostingHeadsAPI } from '../../../../actions/Common';
 import Toaster from '../../../common/Toaster';
+import PackagingCalculator from '../WeightCalculatorDrawer/PackagingCalculator';
+// import PackagingCalculator from '../WeightCalculatorDrawer/PackagingCalculator';
 
 function IsolateReRender(control) {
   const values = useWatch({
@@ -64,6 +66,8 @@ function AddPackaging(props) {
   const [errorMessage, setErrorMessage] = useState('')
   const [removeApplicability, setRemoveApplicability] = useState([])
   const [totalRMGrossWeight, setTotalRMGrossWeight] = useState('')
+  const [showCalculator, setShowCalculator] = useState(false)
+  const [openCalculator, setOpenCalculator] = useState(false)
 
   const fieldValues = IsolateReRender(control)
   const { costingData, ComponentItemData } = useSelector(state => state.costing)
@@ -156,6 +160,7 @@ function AddPackaging(props) {
       if (!removeApplicability?.includes(PACK_AND_FREIGHT_PER_KG)) {
         tempList.push({ label: PACK_AND_FREIGHT_PER_KG, value: PACK_AND_FREIGHT_PER_KG })
       }
+      // tempList.push({ label: 'Crate/Trolley', value: 'Crate/Trolley' })
       return tempList;
     }
     if (label === 'FrieghtType') {
@@ -180,6 +185,11 @@ function AddPackaging(props) {
     if (newValue && newValue !== '') {
       setApplicability(newValue)
       calculateApplicabilityCost(newValue.label, true)
+      if(newValue.label === 'Crate/Trolley'){
+        setShowCalculator(true)
+      }else{
+        setShowCalculator(false)
+      }
     } else {
       setApplicability([])
     }
@@ -410,7 +420,9 @@ function AddPackaging(props) {
 
     toggleDrawer('', formData)
   }
-
+const toggleWeightCalculator = () => {
+  setOpenCalculator(!openCalculator)
+}
   /**
   * @method render
   * @description Renders the component
@@ -499,6 +511,7 @@ function AddPackaging(props) {
                       disabled={!PackageType ? true : false}
                     />
                   </Col>}
+                 
                   {/* {
                     applicability.label === 'Fixed'?
                     <Col md="12">
@@ -609,7 +622,7 @@ function AddPackaging(props) {
                     </Col>
                   </>}
 
-                  {costingData.TechnologyId !== LOGISTICS &&
+                  {costingData.TechnologyId !== LOGISTICS && !showCalculator &&
                     applicability?.label !== 'Fixed' && applicability?.label !== PACK_AND_FREIGHT_PER_KG &&
                     <Col md="12">
                       <TextFieldHookForm
@@ -659,7 +672,15 @@ function AddPackaging(props) {
                       errors={errors.PackagingCost}
                       disabled={applicability?.label === 'Fixed' ? false : true}
                     />
+                      {showCalculator && <button
+                    id={`RM_calculator`}
+                    className={`CalculatorIcon cr-cl-icon RM_calculator`}
+                    type={'button'}
+                    onClick={() => toggleWeightCalculator()}
+                    disabled={false}
+                  />}
                   </Col>
+                 
                   }
 
                   {initialConfiguration.IsShowCRMHead && <Col md="12">
@@ -706,6 +727,11 @@ function AddPackaging(props) {
                   </div>
                 </Row>
               </>
+              {openCalculator && <PackagingCalculator
+                isOpen={openCalculator}
+                anchor={'right'}
+                toggleDrawer={toggleWeightCalculator}
+               />}
             </form>
 
           </div>
@@ -715,4 +741,4 @@ function AddPackaging(props) {
   );
 }
 
-export default React.memo(AddPackaging);
+export default React.memo(AddPackaging);  

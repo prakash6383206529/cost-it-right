@@ -24,7 +24,7 @@ import WarningMessage from '../../common/WarningMessage';
 import { setSelectedRowForPagination } from '../../simulation/actions/Simulation';
 import _ from 'lodash';
 import SingleDropdownFloationFilter from '../material-master/SingleDropdownFloationFilter';
-import { agGridStatus, getGridHeight, isResetClick, disabledClass, fetchModelTypeAPI } from '../../../actions/Common';
+import { agGridStatus, getGridHeight, isResetClick, disabledClass, fetchModelTypeAPI, setResetCostingHead } from '../../../actions/Common';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { checkMasterCreateByCostingPermission, hideCustomerFromExcel } from '../../common/CommonFunctions';
 import PaginationControls from '../../common/Pagination/PaginationControls';
@@ -124,7 +124,9 @@ function ProfitListing(props) {
         dispatch(isResetClick(false, "applicablity"))
         dispatch(agGridStatus("", ""))
         dispatch(resetStatePagination());
-
+        return () => {
+            dispatch(setResetCostingHead(true, "costingHead"))
+        }
 
     }, [])
 
@@ -212,6 +214,7 @@ function ProfitListing(props) {
                         }, 100);
                     }
                     dispatch(isResetClick(false, "applicablity"))
+                    dispatch(setResetCostingHead(false, "costingHead"))
                 }, 330);
 
                 setTimeout(() => {
@@ -298,6 +301,7 @@ function ProfitListing(props) {
         setNoData(false)
         dispatch(agGridStatus("", ""))
         dispatch(isResetClick(true, "applicablity"))
+        dispatch(setResetCostingHead(true, "costingHead"))
         setIsFilterButtonClicked(false)
         gridApi.deselectAll()
         gridOptions?.columnApi?.resetColumnState(null);
@@ -738,7 +742,7 @@ function ProfitListing(props) {
                         <Row>
                             <Col>
 
-                                <div className={`ag-grid-wrapper height-width-wrapper report-grid ${(overheadProfitList && overheadProfitList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
+                                <div className={`ag-grid-wrapper height-width-wrapper grid-parent-wrapper ${(overheadProfitList && overheadProfitList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                                     <div className="ag-grid-header">
                                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
                                         <TourWrapper

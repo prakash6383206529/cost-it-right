@@ -18,7 +18,7 @@ import "ag-grid-community/dist/styles/ag-theme-material.css";
 import PopupMsgWrapper from "../../common/PopupMsgWrapper";
 import { getListingForSimulationCombined, setSelectedRowForPagination, } from "../../simulation/actions/Simulation";
 import WarningMessage from "../../common/WarningMessage";
-import { TourStartAction, disabledClass, isResetClick } from "../../../actions/Common";
+import { TourStartAction, disabledClass, setResetCostingHead } from "../../../actions/Common";
 import _ from "lodash";
 import AnalyticsDrawer from "../material-master/AnalyticsDrawer";
 import { reactLocalStorage } from "reactjs-localstorage";
@@ -138,13 +138,15 @@ const BOPImportListing = (props) => {
         return () => {
           dispatch(setSelectedRowForPagination([]))
           dispatch(resetStatePagination());
-          dispatch(isResetClick(false, "costingHead"))
 
 
           // reactLocalStorage.setObject('selectedRow', {})
         }
       }
     }, 300);
+    return () => {
+      dispatch(setResetCostingHead(true, "costingHead"))
+    }
 
   }, [])
   useEffect(() => {
@@ -300,7 +302,7 @@ const BOPImportListing = (props) => {
               setState((prevState) => ({
                 ...prevState, warningMessage: false,
               }));
-              dispatch(isResetClick(false, "costingHead"))
+              dispatch(setResetCostingHead(false, "costingHead"))
 
             }, 335);
 
@@ -410,7 +412,7 @@ const BOPImportListing = (props) => {
       ...prevState, noData: false, inRangeDate: [], isFilterButtonClicked: false
     }));
     state.gridApi.deselectAll();
-    dispatch(isResetClick(true, "costingHead"))
+    dispatch(setResetCostingHead(true, "costingHead"))
 
     gridOptions?.columnApi?.resetColumnState(null);
     gridOptions?.api?.setFilterModel(null);
@@ -982,7 +984,7 @@ const BOPImportListing = (props) => {
     <div>
       {!editSelectedList && (
         <div
-          className={`ag-grid-react custom-pagination ${permissions?.Download ? "show-table-btn" : ""
+          className={`ag-grid-react grid-parent-wrapper custom-pagination ${permissions?.Download ? "show-table-btn" : ""
             } ${props.isSimulation ? "simulation-height" : props.isMasterSummaryDrawer ? "" : "min-height100vh"}`}
         >
           {state.isLoader && !props.isMasterSummaryDrawer ? (

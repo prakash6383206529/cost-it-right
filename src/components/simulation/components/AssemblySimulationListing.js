@@ -20,6 +20,7 @@ import DatePicker from "react-datepicker";
 import { getMaxDate } from '../SimulationUtils';
 import WarningMessage from '../../common/WarningMessage';
 import { simulationContext } from '.';
+import { screenWidth } from '../../../helper/core';
 
 const gridOptions = {};
 
@@ -227,7 +228,7 @@ function AssemblySimulationListing(props) {
                         <Row>
                             <Col className={`${multiTechnologyCostinig && multiTechnologyCostinig?.length <= 0 ? "overlay-contain" : ""}`}>
                                 <div className="ag-grid-wrapper assembly-simulaiton">
-                                    <div className="ag-grid-header d-flex align-items-center">
+                                    <div className={`ag-grid-header d-flex justify-content-between align-items-center ${screenWidth < 1600 ? 'mt-5' : ''}`}>
                                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
                                         <button type="button" className="user-btn float-right" id="simulation-back" title="Reset Grid" onClick={() => resetState()}>
                                             <div className="refresh mr-0"></div>
