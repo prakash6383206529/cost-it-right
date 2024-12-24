@@ -13,6 +13,8 @@ import TooltipCustom from '../../../../common/Tooltip'
 import { debounce } from 'lodash'
 import { saveRawMaterialCalculationForMonoCartonCorrugatedBox } from '../../../actions/CostWorking'
 import PopupMsgWrapper from '../../../../common/PopupMsgWrapper'
+import Lamination from './Lamination'
+
 const tableheaders = ['Paper Layer', 'Type of Paper (Raw Material)', 'RM Rate', 'GSM', 'Flute %', 'Flute Value',]
 function PaperCorrugatedBox(props) {
 
@@ -21,7 +23,8 @@ function PaperCorrugatedBox(props) {
         tableData: [],
         totalGSM: 0,
         showPopup: false,
-        RmContainer: []
+        RmContainer: [],
+        totalRatePerKg: 0
     })
     const [calculationState, setCalculationState] = useState({
         SheetDeclePerInch: 0,
@@ -144,7 +147,7 @@ function PaperCorrugatedBox(props) {
         switch (label) {
             case 'RawMaterial':
                 rmData && rmData.map((item) => {
-                    temp.push({ label: item?.RMName, value: item?.RawMaterialId, RawMaterialRate: item?.RMRate })
+                    temp.push({ label: item?.RMName, value: item?.RawMaterialId, RawMaterialRate: item?.RMRate, Density: item?.Density })
                     return null
                 })
                 return temp;
@@ -197,7 +200,7 @@ function PaperCorrugatedBox(props) {
 
     }
     const calculateRMCostAndRMCostPerPc = (TotalArea) => {
-        const totalRMSheetCost = calculationState.BoardCost * TotalArea
+        const totalRMSheetCost = (calculationState.BoardCost + state.totalRatePerKg) * TotalArea
         const rmCost = totalRMSheetCost / checkForNull(getValuesCalculatorForm('NoOfUps'))
         setValueCalculatorForm('RMCost', checkForDecimalAndNull(rmCost, NoOfDecimalForPrice))
         setValueCalculatorForm('TotalRMSheetCost', checkForDecimalAndNull(totalRMSheetCost, NoOfDecimalForPrice))
@@ -324,6 +327,9 @@ function PaperCorrugatedBox(props) {
             ...prevState,
             RmContainer: prevState.RmContainer?.filter((_, ind) => ind !== index)
         }));
+    }
+    const getRatePerKg = (value) => {
+        setState((prevState) => ({ ...prevState, totalRatePerKg: value }))
     }
     const headerInputDisabled = props?.CostingViewMode ? props?.CostingViewMode : state.tableData?.length !== 0 ? true : false
     return (
@@ -554,6 +560,7 @@ function PaperCorrugatedBox(props) {
                     </Table>
                 </Col>
             </Row>
+            {/* <Lamination renderListing={renderListing} CostingViewMode={props.CostingViewMode} getRatePerKg={getRatePerKg} /> */}
             <Row>
                 <Col md="12">
                     <HeaderTitle
