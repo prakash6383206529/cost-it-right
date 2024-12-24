@@ -171,6 +171,9 @@ class AddProfit extends Component {
   */
   getDetails = () => {
     const { data } = this.props;
+    if (data?.ProfitApplicabilityType?.includes("Part Cost")) {
+      this.setState({ showPartCost: true })
+    }
     if (data && data.isEditFlag) {
       this.setState({
         isEditFlag: false,
