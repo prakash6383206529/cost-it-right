@@ -984,8 +984,6 @@ class AddOperation extends Component {
       obj.customer = this.state.client
       obj.isSurfaceTreatment = isSurfaceTreatment
       obj.OperationId = OperationId
-
-      // Add these new properties
       obj.labourRatePerUOM = fieldsObj?.LabourRatePerUOM || ''
       obj.rate = fieldsObj?.Rate || ''
       obj.consumption = fieldsObj?.Consumption || ''
