@@ -34,7 +34,7 @@ import { useQueryClient } from "react-query";
 
 function AddRMMaster(props) {
     const { data, EditAccessibilityRMANDGRADE, AddAccessibilityRMANDGRADE } = props
-    const { register, handleSubmit, formState: { errors }, control, setValue, getValues, reset, isRMAssociated ,clearErrors} = useForm({
+    const { register, handleSubmit, formState: { errors }, control, setValue, getValues, reset, isRMAssociated, clearErrors } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
     });
@@ -647,7 +647,7 @@ function AddRMMaster(props) {
                             reset={reset}
                         />
                         <RemarksAndAttachments states={state}
-                        Controller={Controller}
+                            Controller={Controller}
                             control={control}
                             register={register}
                             setValue={setValue}
@@ -713,7 +713,7 @@ function AddRMMaster(props) {
                             IsImportEntry={state.isImport}
                             costingTypeId={state.costingTypeId}
                             levelDetails={state.levelDetails}
-                            currency={{ label: reactLocalStorage.getObject("baseCurrency"), value: reactLocalStorage.getObject("baseCurrency") }}
+                            currency={state?.approvalObj?.Currency ? { label: state?.approvalObj?.Currency, value: state?.approvalObj?.Currency } : { label: "Currency", value: "Currency" }}
                             Technology={state.Technology}
                             showScrapKeys={rawMaterailDetails?.ShowScrapKeys}
                             toolTipTextObject={state.toolTipTextObject}
