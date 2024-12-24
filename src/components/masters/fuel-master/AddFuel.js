@@ -272,6 +272,9 @@ class AddFuel extends Component {
         city: {},
       }, () => {
         this.props.change('Rate', '')
+        this.props.change('CountryId', "")
+        this.props.change('StateId', "")
+        this.props.change('CityId', "")
       }
       );
       this.setState({ AddUpdate: false, errorObj: { state: false, rate: false, effectiveDate: false } })
