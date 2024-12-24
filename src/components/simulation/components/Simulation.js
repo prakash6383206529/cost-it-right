@@ -244,8 +244,8 @@ function Simulation(props) {
                 setShowApplicabilityDropdown(true)
             } else if (checkForNull(value.value) === Number(RAWMATERIALINDEX)) {
                 setShowMasterList(false)
-                if(!getConfigurationKey()?.IsShowMaterialIndexation){
-                  handleType(indexationDropdown[1]?.value)  
+                if (!getConfigurationKey()?.IsShowMaterialIndexation) {
+                    handleType(indexationDropdown[1]?.value)
                 }
             } else {
                 setShowTokenDropdown(true)
@@ -1295,11 +1295,16 @@ function Simulation(props) {
                 }
                 Data && Data.forEach((element, index) => {
                     if (index !== 0) {
-                        if (element.IsVendor !== Data[index - 1].IsVendor) {
+                        if (element.CostingHead !== Data[index - 1].CostingHead) {
                             (Data.length !== 0) && setFilterStatus('Please filter out the Costing Head')
                             setEditWarning(true);
                             flag = false
                         }
+                        // if (element.IsVendor !== Data[index - 1].IsVendor) {
+                        //     (Data.length !== 0) && setFilterStatus('Please filter out the Costing Head')
+                        //     setEditWarning(true);
+                        //     flag = false
+                        // }
                         if (element.Vendor !== Data[index - 1].Vendor) {
                             (Data.length !== 0) && setFilterStatus(`Please filter out the ${vendorLabel}`)
                             setEditWarning(true);
@@ -1569,7 +1574,7 @@ function Simulation(props) {
                     return ''
                 }
             case String(RAWMATERIALINDEX):
-                return <RMIndexationSimulation backToSimulation={backToSimulation} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData} master={master.label} tokenForMultiSimulation={tempObject} technology={technology.label} technologyId={technology.value} isRMNonIndexSimulation={type===NONINDEXED?true:false} />
+                return <RMIndexationSimulation backToSimulation={backToSimulation} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData} master={master.label} tokenForMultiSimulation={tempObject} technology={technology.label} technologyId={technology.value} isRMNonIndexSimulation={type === NONINDEXED ? true : false} />
             default:
                 break;
         }
@@ -1756,7 +1761,7 @@ function Simulation(props) {
                                     </div>
                                 }
                                 {
-                                    ((String(master?.value) === RAWMATERIALINDEX &&getConfigurationKey()?.IsShowMaterialIndexation) || ((String(master?.value) === RMDOMESTIC || String(master?.value) === RMIMPORT) && getConfigurationKey()?.IsShowMaterialIndexation)) &&
+                                    ((String(master?.value) === RAWMATERIALINDEX && getConfigurationKey()?.IsShowMaterialIndexation) || ((String(master?.value) === RMDOMESTIC || String(master?.value) === RMIMPORT) && getConfigurationKey()?.IsShowMaterialIndexation)) &&
                                     <div className="d-inline-flex justify-content-start align-items-center mr-2 mb-3 zindex-unset">
                                         <div className="flex-fills label">Type:</div>
                                         <div className="flex-fills hide-label pl-0 d-flex mr-3">

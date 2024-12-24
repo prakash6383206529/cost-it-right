@@ -553,7 +553,7 @@ export default function costingReducer(state = initialState, action) {
     case BOP_DRAWER_LIST:
       let tempBOP = [...action.payload]
       let arrayBOP = tempBOP && tempBOP.map((item) => {
-        item.NetLandedCostCombine = item.EntryType === IMPORT ? item.NetLandedCostConversion : item.NetLandedCost
+        item.NetLandedCostCombine = /* item.EntryType === IMPORT ? item.NetLandedCostConversion :  */item.NetLandedCost
         item.NetLandedCostCurrency = item.EntryType === IMPORT ? item.NetLandedCost : '-'
         return item
       })

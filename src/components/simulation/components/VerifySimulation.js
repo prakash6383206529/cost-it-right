@@ -3,7 +3,7 @@ import { Row, Col, Tooltip, } from 'reactstrap';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import NoContentFound from '../../common/NoContentFound';
-import { EMPTY_DATA, EXCHNAGERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, BOPDOMESTIC, BOPIMPORT, MACHINERATE, OVERHEAD, defaultPageSize, COMBINED_PROCESS, CBCTypeId } from '../../../config/constants';
+import { EMPTY_DATA, EXCHNAGERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, BOPDOMESTIC, BOPIMPORT, MACHINERATE, OVERHEAD, defaultPageSize, COMBINED_PROCESS, CBCTypeId, ZBCTypeId } from '../../../config/constants';
 import { getAllMultiTechnologyCostings, getAllMultiTechnologyImpactedSimulationCostings, getAllSimulationBoughtOutPart, getVerifyBoughtOutPartSimulationList, getverifyCombinedProcessSimulationList, getVerifyExchangeSimulationList, getVerifyMachineRateSimulationList, getVerifySimulationList, getVerifySurfaceTreatmentSimulationList, runSimulationOnSelectedBoughtOutPart } from '../actions/Simulation';
 import RunSimulationDrawer from './RunSimulationDrawer';
 import CostingSimulation from './CostingSimulation';
@@ -942,11 +942,12 @@ function VerifySimulation(props) {
                                             {isSurfaceTreatmentOrOperation === true && operationTypes.includes('Welding') && <AgGridColumn width={185} field="OldOperationConsumption" tooltipField="OldOperationRate" headerName="Consumption"></AgGridColumn>}
                                             {isSurfaceTreatmentOrOperation === true && operationTypes.includes('Welding') && <AgGridColumn width={220} field="OldOperationBasicRate" tooltipField="OldOperationRate" headerName="Existing Welding Material Rate/kg"></AgGridColumn>}
                                             {isSurfaceTreatmentOrOperation === true && operationTypes.includes('Welding') && <AgGridColumn width={220} field="NewOperationBasicRate" tooltipField="NewOperationRate" headerName="Revised Welding Material Rate/kg"></AgGridColumn>}
+                                            {<AgGridColumn field='Currency' headerName='Master Currency' />}
                                             {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="OldOperationRate" tooltipField="OldOperationRate" headerName="Existing Rate"></AgGridColumn>}
                                             {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="NewOperationRate" tooltipField="NewOperationRate" headerName="Revised Rate"></AgGridColumn>}
 
-                                            {/* {isBOPDomesticOrImport === true && <AgGridColumn width={145} field="OldBoughtOutPartRate" tooltipField="OldBoughtOutPartRate" headerName="Existing Basic Rate (Currency)" cellRenderer={existingBasicFormatter}></AgGridColumn>}
-                                            {isBOPDomesticOrImport === true && <AgGridColumn width={150} field="NewBoughtOutPartRate" tooltipField="NewBoughtOutPartRate" cellRenderer='newBRFormatter' headerName="Revised Basic Rate (Currency)"></AgGridColumn>} */}
+                                            {isBOPDomesticOrImport === true && <AgGridColumn width={145} field="OldBoughtOutPartRate" tooltipField="OldBoughtOutPartRate" headerName="Existing Basic Rate (Master Currency)" cellRenderer={existingBasicFormatter}></AgGridColumn>}
+                                            {isBOPDomesticOrImport === true && <AgGridColumn width={150} field="NewBoughtOutPartRate" tooltipField="NewBoughtOutPartRate" cellRenderer='newBRFormatter' headerName="Revised Basic Rate (Master Currency)"></AgGridColumn>}
 
                                             {/* {isBOPDomesticOrImport === true && <AgGridColumn width={140} field="OldNetLandedCost" tooltipField='OldNetLandedCost' headerName='Existing Net Landed Cost (Currency)' cellRenderer={priceFormatter} ></AgGridColumn>}
                                             {isBOPDomesticOrImport === true && <AgGridColumn width={140} field="NewNetLandedCost" tooltipField='NewNetLandedCost' headerName='Revised Net Landed Cost (Currency)' cellRenderer={priceFormatter} ></AgGridColumn>} */}
@@ -954,14 +955,14 @@ function VerifySimulation(props) {
                                             {isMachineRate && <AgGridColumn width={145} field="OldMachineRate" tooltipField="OldMachineRate" headerName="Existing Machine Rate"></AgGridColumn>}
                                             {isMachineRate && <AgGridColumn width={150} field="NewMachineRate" tooltipField="NewMachineRate" headerName="Revised Machine Rate"></AgGridColumn>}
 
-                                                {<AgGridColumn field='Currency' headerName='Master Currency'/>}
+
                                             {isRMDomesticOrRMImport === true && <AgGridColumn width={145} field="OldBasicRate" tooltipField="OldBasicRate" headerName="Existing Basic Rate (Master Currency)"></AgGridColumn>}
                                             {isRMDomesticOrRMImport === true && <AgGridColumn width={150} field="NewBasicRate" tooltipField="NewBasicRate" cellRenderer='newRMBasicRateFormatter' headerName="Revised Basic Rate (Master Currency)"></AgGridColumn>}
-                                            {isRMDomesticOrRMImport === true && <AgGridColumn width={145} field="OldOtherNetCost" cellRenderer={zeroFormatter}  headerName="Existing Other Cost (Master Currency)"></AgGridColumn>}
-                                            {isRMDomesticOrRMImport === true && <AgGridColumn width={150} field="NewOtherNetCost" cellRenderer={zeroFormatter}  headerName="Revised Other Cost (Master Currency)"></AgGridColumn>}
-                                            {isRMDomesticOrRMImport === true && <AgGridColumn width={145} field="OldNetConditionCost" cellRenderer={zeroFormatter}  headerName="Existing Condition Cost (Master Currency)"></AgGridColumn>}
-                                            {isRMDomesticOrRMImport === true && <AgGridColumn width={150} field="NewNetConditionCost" cellRenderer={zeroFormatter}  headerName="Revised Condition Cost (Master Currency)"></AgGridColumn>}
-                                            
+                                            {(isRMDomesticOrRMImport === true || isBOPDomesticOrImport) && <AgGridColumn width={145} field="OldOtherNetCost" cellRenderer={zeroFormatter} headerName="Existing Other Cost (Master Currency)"></AgGridColumn>}
+                                            {(isRMDomesticOrRMImport === true || isBOPDomesticOrImport) && <AgGridColumn width={150} field="NewOtherNetCost" cellRenderer={zeroFormatter} headerName="Revised Other Cost (Master Currency)"></AgGridColumn>}
+                                            {((isRMDomesticOrRMImport === true || isBOPDomesticOrImport) && verifyList && verifyList[0]?.CostingHeadId === ZBCTypeId) && <AgGridColumn width={145} field="OldNetConditionCost" cellRenderer={zeroFormatter} headerName="Existing Condition Cost (Master Currency)"></AgGridColumn>}
+                                            {((isRMDomesticOrRMImport === true || isBOPDomesticOrImport) && verifyList && verifyList[0]?.CostingHeadId === ZBCTypeId) && <AgGridColumn width={150} field="NewNetConditionCost" cellRenderer={zeroFormatter} headerName="Revised Condition Cost (Master Currency)"></AgGridColumn>}
+
 
                                             {isRMDomesticOrRMImport === true && <AgGridColumn width={145} field="OldScrapRate" tooltipField="OldScrapRate" headerName="Existing Scrap Rate (Master Currency)"></AgGridColumn>}
                                             {isRMDomesticOrRMImport === true && <AgGridColumn width={150} field="NewScrapRate" tooltipField="NewScrapRate" cellRenderer='newSRFormatter' headerName="Revised Scrap Rate (Master Currency)" ></AgGridColumn>}
