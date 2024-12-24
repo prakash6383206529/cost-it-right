@@ -798,6 +798,7 @@ function AddRMFinancialDetails(props) {
 // ... existing code ...
 
 const closeOtherCostToggle = (type, data, total, totalBase) => {
+
     if (type === 'Save') {
         // Update state
         setState(prevState => ({ 
@@ -808,7 +809,9 @@ const closeOtherCostToggle = (type, data, total, totalBase) => {
         }))
 
         // Set other cost base currency
-        setValue('OtherCostBaseCurrency', totalBase)
+        setValue('OtherCost', checkForDecimalAndNull(totalBase, getConfigurationKey().NoOfDecimalForPrice))
+        const otherCostBaseCurrency = convertIntoBase(totalBase)
+        setValue('OtherCostBaseCurrency', checkForDecimalAndNull(otherCostBaseCurrency, getConfigurationKey().NoOfDecimalForPrice))
 
         const sumBaseCurrency = data?.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.NetCost), 0);
         
@@ -821,11 +824,10 @@ const closeOtherCostToggle = (type, data, total, totalBase) => {
         const netLandedCostSelectedCurrency = sumSelectedCurrency + checkForNull(state.FinalBasicPriceSelectedCurrency);
         
         if(states.isImport){
-            setValue('NetLandedCostBaseCurrency', checkForNull(totalBase) + checkForNull(getValues('BasicRateBaseCurrency')))
+            setValue('NetLandedCostBaseCurrency', checkForNull(otherCostBaseCurrency) + checkForNull(getValues('BasicRateBaseCurrency')))
             setValue('NetLandedCostSelectedCurrency', checkForDecimalAndNull(netLandedCostSelectedCurrency, getConfigurationKey().NoOfDecimalForPrice))
         }else{
             setValue('NetLandedCostBaseCurrency', checkForNull(totalBase) + checkForNull(getValues('BasicRateBaseCurrency')))
-        
         }
         
        
@@ -839,9 +841,6 @@ const closeOtherCostToggle = (type, data, total, totalBase) => {
         // Dispatch other cost details
         dispatch(setOtherCostDetails(data));
 
-        // Add console logs for debugging
-        
-       
     } else {
         setState(prevState => ({ ...prevState, isOpenOtherCostDrawer: false }))
     }
@@ -1970,9 +1969,12 @@ const closeOtherCostToggle = (type, data, total, totalBase) => {
                     closeDrawer={closeOtherCostToggle}
                     anchor={'right'}
                     rawMaterial={true}
-                    rmBasicRate={state.totalBasicRate}
+                    rmBasicRate={states.isImport?getValues('BasicRateSelectedCurrency'):state.totalBasicRate}
                     ViewMode={isViewFlag}
                     uom={state.UOM}
+                    currency={state.currency}
+                    currencyValue={state.currencyValue}
+                    isFromImport={states.isImport}
                 />
             }
 
