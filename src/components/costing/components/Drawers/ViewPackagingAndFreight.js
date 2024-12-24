@@ -1,16 +1,21 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Container, Row, Col, Table } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
 import NoContentFound from '../../../common/NoContentFound';
 import { EMPTY_DATA } from '../../../../config/constants';
 import { checkForDecimalAndNull } from '../../../../helper';
 import { useSelector } from 'react-redux';
+import PackagingCalculator from '../WeightCalculatorDrawer/PackagingCalculator';
 
 function ViewPackagingAndFreight(props) {
 
   const { packagingData, freightData } = props.packagingAndFreightCost;
   const { isPDFShow, isLogisticsTechnology } = props
-
+  const [packagingCalculatorDrawer, setPackagingCalculatorDrawer] = useState(false)
+  const [rowObjData, setRowObjData] = useState({
+    PackagingDetailId:null,
+    CostingPackagingCalculationDetailsId:null
+  })
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
   /**
@@ -26,6 +31,18 @@ function ViewPackagingAndFreight(props) {
       return
     }
     props.closeDrawer('')
+  }
+
+  const getPackagingCalculator = (index) => {
+    setRowObjData({
+      PackagingDetailId:packagingData[index]?.PackagingDetailId,
+      CostingPackagingCalculationDetailsId:packagingData[index]?.CostingPackagingCalculationDetailsId
+    })
+    setPackagingCalculatorDrawer(true)
+  }
+
+  const closePackagingCalculatorDrawer = () => {
+    setPackagingCalculatorDrawer(false)
   }
 
   const packageTableData = () => {
@@ -63,7 +80,14 @@ function ViewPackagingAndFreight(props) {
                       </td>}
                       <td>{item.Rate ? checkForDecimalAndNull(item.Rate, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
                       <td>{item.Quantity ? checkForDecimalAndNull(item.Quantity, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
-                      <td>{item.PackagingCost ? checkForDecimalAndNull(item.PackagingCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+                      <td>{item.PackagingCost ? checkForDecimalAndNull(item.PackagingCost, initialConfiguration.NoOfDecimalForPrice) : '-'}
+                      {item?.CostingPackagingCalculationDetailsId !== 0 && item?.CostingPackagingCalculationDetailsId !== null && <button
+                        className="CalculatorIcon cr-cl-icon mr-auto ml-0"
+                        type={"button"}
+                        onClick={() => { getPackagingCalculator(index) }}
+                      />}
+                      </td>
+
                       {initialConfiguration.IsShowCRMHead && <td>{item.PackagingCRMHead ? item.PackagingCRMHead : '-'}</td>}
                     </tr>
                   )
@@ -160,6 +184,15 @@ function ViewPackagingAndFreight(props) {
                 {!isLogisticsTechnology && freightTableData()}
               </div>
             </div>
+            {packagingCalculatorDrawer && (
+              <PackagingCalculator
+                anchor={`right`}
+                isOpen={packagingCalculatorDrawer}
+                closeCalculator={closePackagingCalculatorDrawer}
+                rowObjData={rowObjData}
+                CostingViewMode={true}
+              />
+            )}
           </div>
         </Container>
       </Drawer> : <>
