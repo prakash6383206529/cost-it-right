@@ -182,7 +182,7 @@ class AddOverhead extends Component {
   */
   getDetails = () => {
     const { data } = this.props;
-    if (data?.OverheadApplicabilityType === "Part Cost") {
+    if (data?.OverheadApplicabilityType?.includes("Part Cost")) {
       this.setState({ showPartCost: true })
     }
     if (data && data.isEditFlag) {
