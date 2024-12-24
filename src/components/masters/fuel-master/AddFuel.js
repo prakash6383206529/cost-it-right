@@ -390,9 +390,9 @@ class AddFuel extends Component {
         this.props.change("RateConversion", '')
         this.props.change("RateLocalConversion", '')
         this.props.change("Rate", '')
-        this.props.change('CountryId', {})
-        this.props.change('StateId', {})
-        this.props.change('CityId', {})
+        this.props.change('CountryId', "")
+        this.props.change('StateId', "")
+        this.props.change('CityId', "")
 
       }
       );
