@@ -101,29 +101,17 @@ const BOPDomesticListing = (props) => {
 
   });
 
-  const params = useMemo(() => {
-    let obj = { ...state.floatingFilterData }
-    obj.bopFor = ''
-    obj.CategoryId = 0
-    obj.vendorId = ''
-    obj.plantId = ''
-    obj.skip = 0
-    obj.take = 10
-    obj.isPagination = true
-    obj.dataObj = {}
-    obj.isReset = false
-    obj.StatusId = [props?.approvalStatus].join(",")
-    obj.EntryType = Number(ENTRY_TYPE_DOMESTIC)
-    obj.isImport = false
-    obj.bop_for = ""
-    obj.master = 'BoughtOutPart'
-    obj.tabs = 'Domestic'
-    return obj;
-  }, []);
 
-  const { isLoading, isError, error, data } = useFetchAPICall('MastersBoughtOutPart_GetAllBoughtOutPartByFilter', params);
+
+
 
   useEffect(() => {
+    setTimeout(() => {
+      if (!props.stopApiCallOnCancel) {
+        getDataList("", 0, "", "", 0, defaultPageSize, true, state.floatingFilterData);
+      }
+    }, 300);
+
     return () => {
       setTimeout(() => {
         if (!props.stopApiCallOnCancel) {

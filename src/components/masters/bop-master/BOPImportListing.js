@@ -18,7 +18,7 @@ import "ag-grid-community/dist/styles/ag-theme-material.css";
 import PopupMsgWrapper from "../../common/PopupMsgWrapper";
 import { getListingForSimulationCombined, setSelectedRowForPagination, } from "../../simulation/actions/Simulation";
 import WarningMessage from "../../common/WarningMessage";
-import { TourStartAction, disabledClass, useFetchAPICall } from "../../../actions/Common";
+import { TourStartAction, disabledClass } from "../../../actions/Common";
 import _ from "lodash";
 import AnalyticsDrawer from "../material-master/AnalyticsDrawer";
 import { reactLocalStorage } from "reactjs-localstorage";
@@ -152,7 +152,7 @@ const BOPImportListing = (props) => {
     return obj;
   }, []);
 
-  const { isLoading, isError, error, data } = useFetchAPICall('MastersBoughtOutPart_GetAllBoughtOutPartByFilter_Import', params);
+
 
   useEffect(() => {
     setTimeout(() => {
@@ -183,7 +183,7 @@ const BOPImportListing = (props) => {
             getDataList("", 0, "", "", 0, defaultPageSize, true, state.floatingFilterData);
           }
         } else {
-          // getDataList("", 0, "", "", 0, defaultPageSize, true, state.floatingFilterData);
+          getDataList("", 0, "", "", 0, defaultPageSize, true, state.floatingFilterData);
         }
       } else {
         setState((prevState) => ({ ...prevState, isLoader: false }));
