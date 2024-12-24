@@ -147,7 +147,7 @@ function RMDomesticListing(props) {
         }
 
         return {
-            data: data,
+            data: {technologyId: props?.technology??null},
             skip: 0,
             take: globalTakes,
             isPagination: true,
