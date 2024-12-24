@@ -330,7 +330,8 @@ function ProfitListing(props) {
             isEditFlag: true,
             Id: Id,
             IsVendor: rowData.CostingHead,
-            isViewMode: isViewMode
+            isViewMode: isViewMode,
+            ProfitApplicabilityType: rowData?.ProfitApplicabilityType
         }
         props.getDetails(data);
     }
