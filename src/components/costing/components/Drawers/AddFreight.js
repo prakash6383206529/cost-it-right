@@ -26,7 +26,7 @@ function AddFreight(props) {
     Capacity: rowObjData && rowObjData.Capacity !== undefined ? { label: rowObjData.Capacity, value: rowObjData.Capacity } : [],
     Criteria: rowObjData && rowObjData.Criteria !== undefined ? { label: rowObjData.Criteria, value: rowObjData.Criteria } : '',
     Rate: rowObjData && rowObjData.Rate !== undefined ? rowObjData.Rate : '',
-    Quantity: rowObjData && rowObjData?.Quantity !== undefined ? Number(checkForNull(rowObjData?.Quantity))?.toFixed(6) : '',
+    Quantity: rowObjData && rowObjData.Quantity !== undefined ? checkForDecimalAndNull(rowObjData?.Quantity, getConfigurationKey().NoOfDecimalForInputOutput) : '',
     FreightCost: rowObjData && rowObjData.FreightCost !== undefined ? rowObjData.FreightCost : '',
     crmHeadFreight: rowObjData && rowObjData.FreightCRMHead !== undefined ? { label: rowObjData.FreightCRMHead, value: 1 } : '',
   }
@@ -86,7 +86,7 @@ function AddFreight(props) {
         }, 0)
       })
       // setTotalFinishWeight(totalFinishWeight)
-      setValue("Quantity", Number(totalFinishWeight).toFixed(6))
+      setValue("Quantity", checkForDecimalAndNull(totalFinishWeight, getConfigurationKey().NoOfDecimalForInputOutput))
       setTotalRMGrossWeight(totalGrossWeight)
 
     }
@@ -404,20 +404,13 @@ function AddFreight(props) {
   // MAY BE USED LATER 
   const handleQuantityChange = (event) => {
     if (!isNaN(event.target.value)) {
-      // Format input value to 6 decimal places
-      const formattedValue = Number(event.target.value)?.toFixed(6)
-
-      if (checkForNull(totalRMGrossWeight) !== 0 &&
-        (freightType === FullTruckLoad || freightType === PartTruckLoad) &&
-        formattedValue > totalRMGrossWeight) {
+      if (checkForNull(totalRMGrossWeight) !== 0 && (freightType === FullTruckLoad || freightType === PartTruckLoad) && event.target.value > totalRMGrossWeight) {
         Toaster.warning("Enter value less than gross weight.")
         setTimeout(() => {
           setValue('Quantity', '')
         }, 50);
         return false
-      }
-      setValue('Quantity', formattedValue)
-      calculateCostValue(formattedValue, getValues('Rate'))
+      } calculateCostValue(event.target.value, getValues('Rate'))
     }
   }
 
