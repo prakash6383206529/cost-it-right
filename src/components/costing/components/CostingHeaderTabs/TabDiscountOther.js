@@ -691,7 +691,7 @@ function TabDiscountOther(props) {
               let obj = {}
               obj.OtherCostDescription = item.Description
               obj.OtherCostApplicability = item.ApplicabilityType
-              obj.PercentageOtherCost = item.Value ? item.Value : ''
+              obj.PercentageOtherCost = item.Value ? item.Value : '-'
               obj.AnyOtherCost = item.NetCost
               obj.ApplicabilityCost = item?.ApplicabilityCost
               obj.CRMHead = item?.CRMHead
@@ -707,7 +707,7 @@ function TabDiscountOther(props) {
               obj.ApplicabilityIdRef = item.ApplicabilityIdRef
               obj.ApplicabilityType = item.ApplicabilityType
               obj.ApplicabilityCost = item?.ApplicabilityCost
-              obj.PercentageDiscountCost = item.Value ? item.Value : ''
+              obj.PercentageDiscountCost = item.Value ? item.Value : '-'
               obj.NetCost = item.NetCost
               obj.CRMHead = item?.CRMHead
               discountTemp.push(obj)
@@ -1923,20 +1923,17 @@ function TabDiscountOther(props) {
 
   const showBasicRateTooltip = () => {
     let basicrate = `Basic Price = Total Cost + Other Cost`
-    let netCost = `Net Cost = Total Cost + Other Cost`
+    let netCost = `Net Cost = Basic Price`
     if (initialConfiguration?.IsAddNPVInNetCost) {
       basicrate = basicrate + ' + NPV Cost'
-      netCost = netCost + ' + NPV Cost'
     }
     if (initialConfiguration?.IsAddPaymentTermInNetCost) {
       basicrate = basicrate + ' + Payment Terms Cost'
-      netCost = netCost + ' + Payment Terms Cost'
     }
     if (initialConfiguration?.IsBasicRateAndCostingConditionVisible) {
       netCost = netCost + ' + Condition Cost'
     }
     basicrate = basicrate + ' - Hundi/Discount Value'
-    netCost = netCost + ' - Hundi/Discount Value'
     return { basicrate: basicrate, netCost: netCost }
   }
 
@@ -2146,7 +2143,7 @@ function TabDiscountOther(props) {
                     </Row>
                     {initialConfiguration?.IsBasicRateAndCostingConditionVisible &&
                       <Col md="3">
-                        <TooltipCustom disabledIcon={true} width="280px" id="basic-rate" tooltipText={showBasicRateTooltip()?.netCost} />
+                        <TooltipCustom disabledIcon={true} width="280px" id="basic-rate" tooltipText={showBasicRateTooltip()?.basicrate} />
                         <TextFieldHookForm
                           label={`Basic Price (${reactLocalStorage.getObject("baseCurrency")})`}
                           name={'BasicRateINR'}
