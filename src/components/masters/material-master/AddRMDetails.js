@@ -80,7 +80,6 @@ function AddRMDetails(props) {
     };
 
     const [state, setState] = useState(initialState);
-    console.log(state,'state')
     const dispatch = useDispatch()
     const { technologyLabel } = useLabels();
     const plantSelectList = useSelector(state => state.comman.plantSelectList);
@@ -108,9 +107,7 @@ function AddRMDetails(props) {
         if (getCostingTypeIdByCostingPermission() === CBCTypeId) {
             dispatch(getClientSelectList(() => { }))
         }
-        dispatch(setRawMaterialDetails({ ...rawMaterailDetailsRef.current, HasDifferentSource: state.HasDifferentSource }, () => { }))
         dispatch(getExchangeRateSource((res) => { }))
-
     }, [])
     useEffect(() => {
         if (states.costingTypeId === CBCTypeId) {
@@ -161,8 +158,9 @@ function AddRMDetails(props) {
                     isShowIndexCheckBox: Data?.IsIndexationDetails
                 }))
             }
-            dispatch(setRawMaterialDetails({ ...rawMaterailDetailsRef.current, Technology: { label: Data?.TechnologyName, value: Data?.TechnologyId }, }, () => { }))
-            dispatch(setRawMaterialDetails({ ...rawMaterailDetailsRef.current, SourceVendor: Data?.IsSourceVendor ? { label: Data?.SourceVendorName, value: Data?.SourceVendorId } : [], isShowIndexCheckBox: Data?.IsIndexationDetails }, () => { }))
+            setTimeout(() => {
+                dispatch(setRawMaterialDetails({ ...rawMaterailDetailsRef.current,Vendor: { label: Data?.VendorName, value: Data?.Vendor }, customer: { label: Data?.CustomerName, value: Data?.CustomerId }, Technology: { label: Data?.TechnologyName, value: Data?.TechnologyId }, SourceVendor: Data?.IsSourceVendor ? { label: Data?.SourceVendorName, value: Data?.SourceVendorId } : [], isShowIndexCheckBox: Data?.IsIndexationDetails }, () => { }))
+            }, 500);
         }
     }, [props?.DataToChange])
     useEffect(() => {
