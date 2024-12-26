@@ -56,7 +56,7 @@ function RMDomesticListing(props) {
     const rmDataList = useSelector((state) => state.material.rmDataList);
     const allRmDataList = useSelector((state) => state.material.allRmDataList);
     const filteredRMData = useSelector((state) => state.material.filteredRMData);
-    const { selectedRowForPagination } = useSelector((state => state.simulation))
+    const { selectedRowForPagination, simulationCostingStatus } = useSelector((state => state.simulation))
     const { globalTakes } = useSelector((state) => state.pagination);
     const [selectedCostingHead, setSelectedCostingHead] = useState(null);
 
@@ -90,7 +90,7 @@ function RMDomesticListing(props) {
     const [compareDrawer, setCompareDrawer] = useState(false)
     const [rowDataForCompare, setRowDataForCompare] = useState([])
     const isRfq = props?.quotationId !== null && props?.quotationId !== '' && props?.quotationId !== undefined ? true : false
-    
+
     var filterParams = {
         date: "", inRangeInclusive: true, filterOptions: ['equals', 'inRange'],
         comparator: function (filterLocalDateAtMidnight, cellValue) {
@@ -208,13 +208,16 @@ function RMDomesticListing(props) {
             departmentCode: isSimulation ? userDepartmetList() : "",
             statusId: CheckApprovalApplicableMaster(RM_MASTER_ID) ? APPROVAL_ID : 0,
             ListFor: ListFor,
-            StatusId: statusString
+            StatusId: statusString,
         }
         //THIS CONDTION IS FOR IF THIS COMPONENT IS RENDER FROM MASTER APPROVAL SUMMARY IN THIS NO GET API
         if (isPagination === true) {
             setloader(true)
         }
         dataObj.RawMaterialEntryType = Number(ENTRY_TYPE_DOMESTIC)
+        if (isSimulation && getConfigurationKey().IsDivisionAllowedForDepartment) {
+            dataObj.isRequestForPendingSimulation = simulationCostingStatus
+        }
         if (!props.isMasterSummaryDrawer) {
             dispatch(getAllRMDataList(filterData, skip, take, isPagination, dataObj, false, (res) => {
                 // apply(selectedRowForPagination, selectedRowForPagination.length)

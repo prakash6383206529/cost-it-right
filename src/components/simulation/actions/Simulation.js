@@ -63,7 +63,8 @@ import {
     GET_SIMULATED_RAW_MATERIAL_SUMMARY,
     GET_RM_INDEXATION_COSTING_SIMULATION_LIST,
     SET_EFFECTIVE_DATE,
-    SET_IS_PENDING_SIMULATION_FROM_OTHER_DIV
+    SET_IS_PENDING_SIMULATION_FROM_OTHER_DIV,
+    GET_SIMULATION_COSTING_STATUS
 } from '../../../config/constants';
 import { apiErrors, encodeQueryParamsAndLog } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
@@ -2005,6 +2006,10 @@ export function checkFinalLevelApproverForApproval(data, callback) {
         const request = axios.post(API.checkFinalLevelApproverForApproval, data, config());
         request.then((response) => {
             if (response.data.Result) {
+                dispatch({
+                    type: GET_SIMULATION_COSTING_STATUS,
+                    payload: response.data.Data,
+                });
                 callback(response);
             }
         }).catch((error) => {
@@ -2028,6 +2033,25 @@ export function setIsPendingSimulationFromOtherDiv(data) {
         dispatch({
             type: SET_IS_PENDING_SIMULATION_FROM_OTHER_DIV,
             payload: data,
+        });
+    }
+}
+
+export function getSimulationCostingStatus(data, callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getSimulationCostingStatus}?LoggedInUserId=${data.LoggedInUserId}&statusId=${data.statusId ?? ''}&simulationTechnologyId=${data.simulationTechnologyId ?? ''}`, config());
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_SIMULATION_COSTING_STATUS,
+                    payload: response.data.Result,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            callback(error);
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
         });
     }
 }

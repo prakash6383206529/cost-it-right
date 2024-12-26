@@ -1080,6 +1080,7 @@ export const API = {
   getAllSimulationBoughtOutPart: `${BASE_URL}/simulation/get-all-simulation-bought-out-part`,
   getSapPushDetailsHeader: `${BASE_URL}/ExternalIntegration/get-sap-push-details-header`,
   sapPushBulkUpload: `${BASE_URL}/ExternalIntegration/bulk-upload-for-sap-push-details`,
+  getSimulationCostingStatus: `${BASE_URL}/app-simulation-approval-system/get-simulation-costing-status`,
 
 
   // ASSEMBLY TECHNOLOGY
@@ -2030,7 +2031,7 @@ export const SET_EXCHANGE_RATE_LIST_BEFORE_DRAFT = 'SET_EXCHANGE_RATE_LIST_BEFOR
 export const SET_SELECTED_CUSTOMER_SIMULATION = 'SET_SELECTED_CUSTOMER_SIMULATION'
 export const GET_SELECTLIST_COSTING_HEADS = 'GET_SELECTLIST_COSTING_HEADS'
 export const SET_EFFECTIVE_DATE = 'SET_EFFECTIVE_DATE';
-
+export const GET_SIMULATION_COSTING_STATUS = 'GET_SIMULATION_COSTING_STATUS'
 export const SET_IS_PENDING_SIMULATION_FROM_OTHER_DIV = 'SET_IS_PENDING_SIMULATION_FROM_OTHER_DIV'
 
 // ASSEMBLY TECHNOLOGY

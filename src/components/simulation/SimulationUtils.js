@@ -450,7 +450,7 @@ export const ErrorMessage = (props) => {
 }
 // **END** SHOWING STATUS BOX ON THE TOP FOR ERROR AND SUCCESS RESPONSE
 
-export const pendingSimulationAlert = () => {
+export const pendingSimulationAlert = (pendingOtherDivStatus) => {
     // Function to toggle table visibility
     const toggleTableVisibility = () => {
         const table = document.querySelector('.error-table-container');
@@ -471,15 +471,18 @@ export const pendingSimulationAlert = () => {
                 <p className="alert-text">
                     Simulations have already been run on the following masters from other divisions.
                     Please approve them before running any new simulations.
+                    {pendingOtherDivStatus && pendingOtherDivStatus.map((item, index) => {
+                        return <div key={index}>{item.MasterName} <strong>{item.impectedCount}</strong></div>
+                    })}
                 </p>
-                <button
+                {/* <button
                     onClick={toggleTableVisibility}
                     className="toggle-button"
                 >
                     <i className="toggle-icon fa fa-chevron-up" style={{ fontSize: '20px' }} />
-                </button>
+                </button> */}
             </div>
-            <div className="error-table-container">
+            {/* <div className="error-table-container">
                 <table className="alert-table">
                     <thead>
                         <tr>
@@ -502,7 +505,7 @@ export const pendingSimulationAlert = () => {
                 <div className="action-text">
                     <strong>Action Required:</strong> Approve the above simulations before proceeding.
                 </div>
-            </div>
+            </div> */}
 
         </div>
     );

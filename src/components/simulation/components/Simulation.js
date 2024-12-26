@@ -4,7 +4,7 @@ import RMDomesticListing from '../../masters/material-master/RMDomesticListing';
 import RMImportListing from '../../masters/material-master/RMImportListing';
 import { Row, Col } from 'reactstrap'
 import { Controller, useForm } from 'react-hook-form';
-import { getMasterSelectListSimulation, getTokenSelectListAPI, setSelectedRowForPagination, setMasterForSimulation, setTechnologyForSimulation, setTokenCheckBoxValue, setTokenForSimulation, getSelectListOfMasters, setVendorForSimulation, setIsMasterAssociatedWithCosting, setSimulationApplicability, setCustomerForSimulation, getCostingHeadsList, setIsPendingSimulationFromOtherDiv } from '../actions/Simulation';
+import { getMasterSelectListSimulation, getTokenSelectListAPI, setSelectedRowForPagination, setMasterForSimulation, setTechnologyForSimulation, setTokenCheckBoxValue, setTokenForSimulation, getSelectListOfMasters, setVendorForSimulation, setIsMasterAssociatedWithCosting, setSimulationApplicability, setCustomerForSimulation, getCostingHeadsList, setIsPendingSimulationFromOtherDiv, getSimulationCostingStatus } from '../actions/Simulation';
 import { useDispatch, useSelector } from 'react-redux';
 import SimulationUploadDrawer from './SimulationUploadDrawer';
 import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, RM_MASTER_ID, searchCount, VBC_VENDOR_TYPE, APPROVED_STATUS, EMPTY_GUID, MACHINE, MASTERS, VBCTypeId, ZBCTypeId, CBCTypeId, ZBC, RAWMATERIALINDEX, NONINDEXED } from '../../../config/constants';
@@ -63,7 +63,7 @@ function Simulation(props) {
         reValidateMode: 'onChange',
     })
 
-    const { selectedMasterForSimulation, selectedTechnologyForSimulation, getTokenSelectList, tokenCheckBoxValue, tokenForSimulation, selectedCustomerSimulation, selectedVendorForSimulation, isMasterAssociatedWithCosting, selectListCostingHead } = useSelector(state => state.simulation)
+    const { selectedMasterForSimulation, selectedTechnologyForSimulation, getTokenSelectList, tokenCheckBoxValue, tokenForSimulation, selectedCustomerSimulation, selectedVendorForSimulation, isMasterAssociatedWithCosting, selectListCostingHead, simulationCostingStatus } = useSelector(state => state.simulation)
     const plantSelectList = useSelector(state => state.comman.plantSelectList);
     const [master, setMaster] = useState([])
 
@@ -106,6 +106,7 @@ function Simulation(props) {
     const [plant, setPlant] = useState('')
     const [type, setType] = useState('')
     const [rawMaterialIds, setRawMaterialIds] = useState([])
+    const [pendingOtherDivStatus, setPendingOtherDivStatus] = useState({})
     const { technologyLabel } = useLabels();
     const dispatch = useDispatch()
     const vendorSelectList = useSelector(state => state.comman.vendorWithVendorCodeSelectList)
@@ -155,7 +156,23 @@ function Simulation(props) {
             reactLocalStorage?.setObject('vendorData', [])
         }
     }, [])
+    useEffect(() => {
+        if (getConfigurationKey().IsDivisionAllowedForDepartment) {
+            setloader(true)
+            dispatch(getSimulationCostingStatus({
+                LoggedInUserId: loggedInUserId(),
+                statusId: 1,
 
+            }, (res) => {
+                if (res && res.data.DataList.length > 0) {
+                    setPendingOtherDivStatus(res.data.DataList)
+                } else {
+
+                }
+                setloader(false)
+            }))
+        }
+    }, [])
     const masterList = useSelector(state => state.simulation.masterSelectListSimulation)
     const isPendingSimulationFromOtherDiv = useSelector(state => state.simulation.isPendingSimulationFromOtherDiv)
     const rmDomesticListing = useSelector(state => state.material.rmDataList)
@@ -1664,7 +1681,7 @@ function Simulation(props) {
                     {isHide &&
                         <Row>
                             <Col md="12" className="filter-block zindex-9 simulation-labels">
-                                {false && <Errorbox customClass={'error'} errorText={pendingSimulationAlert()} />}
+                                {simulationCostingStatus && <Errorbox customClass={'error'} errorText={pendingSimulationAlert(pendingOtherDivStatus)} />}
                                 <div className="d-inline-flex justify-content-start align-items-center pr-3 mb-3 zindex-unset ">
                                     <div className="flex-fills label">Masters:</div>
                                     <div className="hide-label flex-fills pl-0">
