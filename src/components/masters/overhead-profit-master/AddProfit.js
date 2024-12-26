@@ -182,7 +182,7 @@ class AddProfit extends Component {
 
           const Data = res.data.Data;
           this.setState({ DataToChange: Data })
-          Data?.ProfitApplicabilityType === "Part Cost" ? this.setState({ showPartCost: true }) : this.setState({ showPartCost: false })
+          Data?.ProfitApplicabilityType?.includes("Part Cost") ? this.setState({ showPartCost: true }) : this.setState({ showPartCost: false })
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
           this.setState({ minEffectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '' })
           setTimeout(() => {
