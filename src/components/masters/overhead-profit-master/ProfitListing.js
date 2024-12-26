@@ -337,7 +337,6 @@ function ProfitListing(props) {
             Id: Id,
             IsVendor: rowData.CostingHead,
             isViewMode: isViewMode,
-            ProfitApplicabilityType: rowData?.ProfitApplicabilityType
         }
         props.getDetails(data);
     }

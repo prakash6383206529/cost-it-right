@@ -376,7 +376,6 @@ function OverheadListing(props) {
             IsVendor: rowData.CostingHead,
             isViewMode: isViewMode,
             costingTypeId: rowData.CostingTypeId,
-            OverheadApplicabilityType: rowData?.OverheadApplicabilityType
         }
         props.getDetails(data);
     }
