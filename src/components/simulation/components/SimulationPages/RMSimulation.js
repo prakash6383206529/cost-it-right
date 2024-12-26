@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef, useContext } from 'react';
 import { Row, Col, Tooltip, } from 'reactstrap';
 import DayTime from '../../../common/DayTimeWrapper'
-import { CBCTypeId, defaultPageSize, EMPTY_DATA, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, BOPIMPORT, DOMESTIC } from '../../../../config/constants';
+import { CBCTypeId, defaultPageSize, EMPTY_DATA, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, BOPIMPORT, DOMESTIC, ZBCTypeId } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey,getLocalizedCostingHeadValue, loggedInUserId, searchNocontentFilter } from '../../../../helper';
 import Toaster from '../../../common/Toaster';
@@ -193,7 +193,7 @@ function RMSimulation(props) {
 
             setNetCostWithoutConditionCost(obj.NewNetCostWithoutConditionCost)
             list[rowIndex] = obj
-           
+
 
             setIsLoader(true)
             setTimeout(() => {
@@ -222,19 +222,14 @@ function RMSimulation(props) {
 
     const setValueFunction = (check, tempList = []) => {
         /**********POST METHOD TO CALL HERE AND AND SEND TOKEN TO VERIFY PAGE TODO ****************/
+        let obj = {}
+        obj.Technology = technology
+        obj.SimulationTechnologyId = check ? RMIMPORT : selectedMasterForSimulation.value
+        obj.SimulationHeadId = list[0]?.CostingTypeId
+        obj.Masters = master
+        obj.LoggedInUserId = loggedInUserId()
 
-        let obj = {
-            IsExchangeRateSimulation: check,
-            SimulationRawMaterials: [],
-            SimulationExchangeRates: [],
-            SimulationIds: [],
-            TechnologyId: technologyId,
-            SimulationTechnologyId: check ? RMIMPORT : selectedMasterForSimulation.value,
-            //EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
-            LoggedInUserId: loggedInUserId(),
-            SimulationHeadId: list[0]?.CostingTypeId,
-            IsSimulationWithOutCosting: true,
-        };
+        obj.TechnologyId = technologyId
 
         if (filteredRMData.plantId && filteredRMData.plantId.value) {
             obj.PlantId = filteredRMData.plantId ? filteredRMData.plantId.value : ''
@@ -242,13 +237,13 @@ function RMSimulation(props) {
         let tempArr = []
         if (String(selectedMasterForSimulation.value) === String(RMDOMESTIC) || String(selectedMasterForSimulation.value) === String(RMIMPORT)) {
 
-list && list.map(item => {
-  if ((item.NewBasicRate !== undefined || item.NewScrapRate !== undefined || item.NewBasicrateFromPercentage) && ((item.NewBasicRate !== undefined || item.NewBasicrateFromPercentage) ? Number(item.NewBasicRate) : (Number(item.BasicRate)) !== Number(item.BasicRatePerUOM) || ((item.NewScrapRate !== undefined || item.NewBasicrateFromPercentage) ? Number(item.NewScrapRate) : Number(item.ScrapRate)) !== Number(item.ScrapRate))) {
-                    let tempObj = { 
+            list && list.map(item => {
+                if ((item.NewBasicRate !== undefined || item.NewScrapRate !== undefined || item.NewBasicrateFromPercentage) && ((item.NewBasicRate !== undefined || item.NewBasicrateFromPercentage) ? Number(item.NewBasicRate) : (Number(item.BasicRate)) !== Number(item.BasicRatePerUOM) || ((item.NewScrapRate !== undefined || item.NewBasicrateFromPercentage) ? Number(item.NewScrapRate) : Number(item.ScrapRate)) !== Number(item.ScrapRate))) {
+                    let tempObj = {
                         IsAppliedChanges: true,
                         CostingHead: item.CostingHead === 'Vendor Based' ? VBC : ZBC,
                         RawMaterialId: item.RawMaterialId,
-                        NewRawMaterialId: item.NewRawMaterialId ?item.NewRawMaterialId:null,
+                        NewRawMaterialId: item.NewRawMaterialId ? item.NewRawMaterialId : null,
                         PlantId: item.PlantId,
                         RawMaterialName: item.RawMaterialName,
                         RawMaterialGrade: item.RawMaterialGradeName,
@@ -340,28 +335,28 @@ list && list.map(item => {
         let isScrapRateGreaterThanBasiRate = false
         let scrapRateChangeArr = [];
         let basicRateZeroCount = 0
-    list && list.map((li) => {
+        list && list.map((li) => {
             const oldNetLandedCost = Number(li.NetLandedCost)
-            const newNetLandedCost = Number(checkForNull(li?.NewBasicRate || li?.BasicRatePerUOM) + 
-                                          checkForNull(li?.NewOtherNetCost) + 
-                                          checkForNull(li?.RMFreightCost) + 
-                                          checkForNull(li?.RMShearingCost) +
-                                          checkForNull(li?.NewNetConditionCost))
-    
+            const newNetLandedCost = Number(checkForNull(li?.NewBasicRate || li?.BasicRatePerUOM) +
+                checkForNull(li?.NewOtherNetCost) +
+                checkForNull(li?.RMFreightCost) +
+                checkForNull(li?.RMShearingCost) +
+                checkForNull(li?.NewNetConditionCost))
+
             if (oldNetLandedCost === newNetLandedCost) {
                 netLandedCostChangeCount = netLandedCostChangeCount + 1
             }
-           if (oldNetLandedCost !== newNetLandedCost && 
+            if (oldNetLandedCost !== newNetLandedCost &&
                 (Number(li.ScrapRate) === Number(li?.NewScrapRate || li.ScrapRate))) {
                 scrapRateChangeArr.push(li)
             }
-            if (li.NewBasicrateFromPercentage === undefined || 
-                li?.NewBasicrateFromPercentage < (li?.NewScrapRate === undefined || li?.NewScrapRate === '' ? 
-                Number(li?.ScrapRate) : Number(li?.NewScrapRate))) {
-                if ((li?.NewBasicRate === undefined || li?.NewBasicRate === '' ? 
-                    Number(li?.BasicRatePerUOM) : Number(li?.NewBasicRate)) < 
-                    (li?.NewScrapRate === undefined || li?.NewScrapRate === '' ? 
+            if (li.NewBasicrateFromPercentage === undefined ||
+                li?.NewBasicrateFromPercentage < (li?.NewScrapRate === undefined || li?.NewScrapRate === '' ?
                     Number(li?.ScrapRate) : Number(li?.NewScrapRate))) {
+                if ((li?.NewBasicRate === undefined || li?.NewBasicRate === '' ?
+                    Number(li?.BasicRatePerUOM) : Number(li?.NewBasicRate)) <
+                    (li?.NewScrapRate === undefined || li?.NewScrapRate === '' ?
+                        Number(li?.ScrapRate) : Number(li?.NewScrapRate))) {
                     isScrapRateGreaterThanBasiRate = true
                 }
                 if (isScrapRateGreaterThanBasiRate && !(Number(netLandedCostChangeCount) === Number(list.length))) {
@@ -376,13 +371,13 @@ list && list.map(item => {
             }
             return null;
         })
-    
-                if ((selectedMasterForSimulation?.value === RMDOMESTIC || selectedMasterForSimulation?.value === RMIMPORT) && 
+
+        if ((selectedMasterForSimulation?.value === RMDOMESTIC || selectedMasterForSimulation?.value === RMIMPORT) &&
             netLandedCostChangeCount === list.length) {
             Toaster.warning('There is no changes in net cost. Please make changes to run simulation')
             return false
         }
-    if (basicRateZeroCount > 0) {
+        if (basicRateZeroCount > 0) {
             Toaster.warning('Basic Rate should not be zero')
             return false
         }
@@ -396,7 +391,7 @@ list && list.map(item => {
             return false
         }
         setIsDisable(true)
-    
+
         if (selectedMasterForSimulation?.value === EXCHNAGERATE) {
             dispatch(createMultipleExchangeRate(exchangeRateListBeforeDraft, currencySelectList, effectiveDate, res => {
                 setValueFunction(true, res);
@@ -567,7 +562,7 @@ const combinedCostingHeadRenderer = (props) => {
                 {
                     isImpactedMaster ?
                         checkForNull(row?.OldScrapRatePerScrapUOM) :
-                        <span title={cell && value ? checkForNull(Number(cell)) : Number(checkForNull(row?.ScrapRate))}>{cell && value ? checkForNull(Number(cell)) :checkForNull( Number(checkForNull(row?.ScrapRate)))}</span>
+                        <span title={cell && value ? checkForNull(Number(cell)) : Number(checkForNull(row?.ScrapRate))}>{cell && value ? checkForNull(Number(cell)) : checkForNull(Number(checkForNull(row?.ScrapRate)))}</span>
                 }
             </>
         )
@@ -638,13 +633,15 @@ const combinedCostingHeadRenderer = (props) => {
             row.NewBasicrateFromPercentage = percentageCalc
             NewBasicRate = percentageCalc + row?.RMFreightCost + row?.RMShearingCost
         }
-        
-        const newValue = Number(checkForDecimalAndNull(NewBasicRate) + checkForNull(row?.NewOtherNetCost) + checkForNull(row?.NewNetConditionCost));
-       const oldValue = Number(checkForDecimalAndNull(row?.EntryType === DOMESTIC ? row?.NetLandedCost : row?.NetLandedCostConversion));
-         const classGreen = newValue === oldValue ? 'form-class' : 
-                          newValue > oldValue ? 'red-value form-control' : 
-                          'green-value form-control';
-    
+
+        const newValue = Number(checkForDecimalAndNull(NewBasicRate, getConfigurationKey().NoOfDecimalForPrice) + checkForNull(row?.NewOtherNetCost) + checkForNull(row?.NewNetConditionCost));
+        // const oldValue = Number(checkForDecimalAndNull(row?.EntryType === DOMESTIC ? row?.NetLandedCost : row?.NetLandedCostConversion, getConfigurationKey().NoOfDecimalForPrice));
+        const oldValue = checkForDecimalAndNull(row?.NetLandedCost, getConfigurationKey().NoOfDecimalForPrice)
+
+        const classGreen = newValue === oldValue ? 'form-class' :
+            newValue > oldValue ? 'red-value form-control' :
+                'green-value form-control';
+
         return showValue(row, classGreen, NewBasicRate);
         // checkForDecimalAndNull(NewBasicRate, getConfigurationKey().NoOfDecimalForPrice)
     }
@@ -989,7 +986,7 @@ const combinedCostingHeadRenderer = (props) => {
 
         const value = beforeSaveCell(cell, props, 'otherCost')
         const showValue = cell && value ? checkForDecimalAndNull(Number(cell), getConfigurationKey().NoOfDecimalForPrice) : checkForDecimalAndNull(Number(row?.NetConditionCost), getConfigurationKey().NoOfDecimalForPrice)
-        const classGreen = (checkForDecimalAndNull(row?.NewNetConditionCost )> checkForDecimalAndNull(row?.NetConditionCost)) ? 'red-value form-control' : (checkForDecimalAndNull(row?.NetConditionCost) < checkForDecimalAndNull(row?.OldConditionNetCost)) ? 'green-value form-control' : 'form-class'
+        const classGreen = (checkForDecimalAndNull(row?.NewNetConditionCost, getConfigurationKey().NoOfDecimalForPrice) > checkForDecimalAndNull(row?.NetConditionCost, getConfigurationKey().NoOfDecimalForPrice)) ? 'red-value form-control' : (checkForDecimalAndNull(row?.NetConditionCost, getConfigurationKey().NoOfDecimalForPrice) < checkForDecimalAndNull(row?.OldConditionNetCost, getConfigurationKey().NoOfDecimalForPrice)) ? 'green-value form-control' : 'form-class'
         setRowIndex(props?.node?.rowIndex)
 
         return (
@@ -1045,24 +1042,24 @@ const combinedCostingHeadRenderer = (props) => {
         maxValue: 1,
         suppressFilterButton: true,
         component: CostingHeadDropdownFilter,
-    
+
     };
     const netLanedCostFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        
-      if (row?.EntryType === DOMESTIC) {
-            return (row?.NetLandedCost ?? '-');
-        }else{
-            
-            return (row?.NetLandedCostConversion ?? '-');
+
+        if (isImpactedMaster) {
+            return (row?.OldNetLandedCost ?? '-');
+        } else {
         }
+        return (row?.NetLandedCost ?? '-');
     }
-const frameworkComponents = {
+   
+    const frameworkComponents = {
         effectiveDateFormatter: effectiveDateFormatter,
         combinedCostingHeadRenderer: combinedCostingHeadRenderer,
 
-     costingHeadFormatter: costingHeadFormatter,
+        costingHeadFormatter: costingHeadFormatter,
         CostFormatter: CostFormatter,
         newScrapRateFormatter: newScrapRateFormatter,
         newScrapRateUOMFormatter: newScrapRateUOMFormatter,
@@ -1275,7 +1272,7 @@ const frameworkComponents = {
                                                     !isImpactedMaster &&
                                                     <AgGridColumn width={columnWidths.CostingHead} field="CostingHead" tooltipField='CostingHead' headerName="Costing Head" editable='false' cellRenderer={'combinedCostingHeadRenderer'}
                                                     floatingFilterComponentParams={floatingFilterStatus}
-                                                    floatingFilterComponent="statusFilter"></AgGridColumn>
+                                                        floatingFilterComponent="statusFilter"></AgGridColumn>
                                                 }
                                                 <AgGridColumn width={columnWidths.RawMaterialName} field="RawMaterialName" tooltipField='RawMaterialName' editable='false' headerName="Raw Material"></AgGridColumn>
                                                 <AgGridColumn width={columnWidths.RawMaterialGradeName} field="RawMaterialGradeName" tooltipField='RawMaterialGradeName' editable='false' headerName="Grade" ></AgGridColumn>
@@ -1294,10 +1291,10 @@ const frameworkComponents = {
                                                 {/* {String(props?.masterId) === String(RMIMPORT) && <AgGridColumn field="Currency" tooltipField='Currency' editable='false' headerName="Currency" minWidth={140} ></AgGridColumn>} */}
                                                 {/* {(isImpactedMaster && String(props?.masterId) === String(RMIMPORT)) && <AgGridColumn field="ExchangeRate" tooltipField='ExchangeRate' editable='false' headerName="Existing Exchange Rate" minWidth={140} ></AgGridColumn>}
                                                 {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn width={120}field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>} */}
-                                                <AgGridColumn field="Currency" width={120}cellRenderer={"currencyFormatter"}></AgGridColumn>
+                                                <AgGridColumn field="Currency" width={120} cellRenderer={"currencyFormatter"}></AgGridColumn>
                                                 <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={
-                                                   "Basic Rate (Currency)"
-                                                     
+                                                    "Basic Rate (Currency)"
+
                                                 } marryChildren={true} >
                                                     <AgGridColumn width={120} cellRenderer='oldBasicRateFormatter' field={isImpactedMaster ? "OldBasicRate" : "BasicRatePerUOM"} editable='false' headerName="Existing" colId={isImpactedMaster ? "OldBasicRate" : "BasicRatePerUOM"}></AgGridColumn>
                                                     <AgGridColumn width={120} cellRenderer='newBasicRateFormatter' editable={isImpactedMaster ? false : EditableCallbackForNewBasicRate} onCellValueChanged='cellChange' field="NewBasicRate" headerName="Revised" colId='NewBasicRate' headerComponent={'revisedBasicRateHeader'}></AgGridColumn>
@@ -1307,7 +1304,7 @@ const frameworkComponents = {
                                                 </AgGridColumn>}
                                                 <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} marryChildren={true} headerName={
                                                     "Scrap Rate (Currency)"
-                                                     
+
                                                 }>
                                                     {isScrapUOMApplyTemp && <AgGridColumn width={columnWidths.ScrapRatePerScrapUOM} field={isImpactedMaster ? "OldScrapRatePerScrapUOM" : "ScrapRatePerScrapUOM"} editable='false' cellRenderer='oldScrapRateFormatterPerScrapUOM' headerName="Existing (In Scrap UOM)" colId={isImpactedMaster ? "ScrapRatePerScrapUOM" : "ScrapRatePerScrapUOM"} ></AgGridColumn>}
                                                     {isScrapUOMApplyTemp && <AgGridColumn width={columnWidths.NewScrapRatePerScrapUOM} cellRenderer='newScrapRateUOMFormatter' field='NewScrapRatePerScrapUOM' headerName="Revised (In Scrap UOM)" colId={"NewScrapRatePerScrapUOM"} editable={isImpactedMaster ? false : EditableCallbackForNewScrapRate}></AgGridColumn>}
@@ -1315,25 +1312,25 @@ const frameworkComponents = {
                                                     <AgGridColumn width={120} cellRenderer={'newScrapRateFormatter'} field="NewScrapRate" headerName="Revised" colId="NewScrapRate" valueGetter={ageValueGetterScrapRate} headerComponent={'revisedScrapRateHeader'} editable={isImpactedMaster ? false : EditableCallbackForNewScrapRateSecond} ></AgGridColumn>
                                                 </AgGridColumn>
                                                 <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={300} headerName={
-                                                   "Other Cost (Currency)"
-                                                   
+                                                    "Other Cost (Currency)"
+
                                                 } marryChildren={true} >
                                                     {/* <AgGridColumn width={150} cellRenderer='existingOtherCostFormatter' field={isImpactedMaster ? "OtherNetCost" : 'isCostingSimulation' ? 'OldRawMaterialIndexationDetails.OtherNetCost' : "OtherNetCost"} editable='false' headerName="Existing" colId={isImpactedMaster ? "OtherNetCost" : "OtherNetCost"} ></AgGridColumn>
                                                     <AgGridColumn width={150} cellRenderer='revisedOtherCostFormatter' editable={false} onCellValueChanged='cellChange' field={'isCostingSimulation' ? 'NewRawMaterialIndexationDetails.OtherNetCost' : "NewOtherNetCost"} headerName="Revised" colId='NewOtherNetCost' headerComponent={'revisedBasicRateHeader'}></AgGridColumn> */}
                                                     <AgGridColumn width={150} cellRenderer='existingOtherCostFormatter' field={"isImpactedMaster ? OldOtherCost : OtherNetCost"} editable='false' headerName="Existing" colId={isImpactedMaster ? "OtherNetCost" : "OtherNetCost"} ></AgGridColumn>
                                                     <AgGridColumn width={150} cellRenderer='revisedOtherCostFormatter' editable={false} onCellValueChanged='cellChange' field={isImpactedMaster ? "NewOtherCost" : "NewOtherNetCost"} headerName="Revised" colId='NewOtherNetCost' ></AgGridColumn>
                                                 </AgGridColumn>
-                                                 {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={
+                                                {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={
                                                     "Basic Price (Currency)"
-                                                      
+
                                                 }>
-                                                    <AgGridColumn width={columnWidths.NetCostWithoutConditionCost} field={isImpactedMaster ? 'OldNetCostWithoutConditionCost' : 'NetCostWithoutConditionCost'} editable='false'  headerName="Existing" colId='NetCostWithoutConditionCost'></AgGridColumn>
+                                                    <AgGridColumn width={columnWidths.NetCostWithoutConditionCost} field={isImpactedMaster ? 'OldNetCostWithoutConditionCost' : 'NetCostWithoutConditionCost'} editable='false' headerName="Existing" colId='NetCostWithoutConditionCost'></AgGridColumn>
                                                     <AgGridColumn width={columnWidths.NewNetCostWithoutConditionCost} field={isImpactedMaster ? "NewNetCostWithoutConditionCost" : "NewNetCostWithoutConditionCost"} editable='false' headerName="Revised" colId='NewNetCostWithoutConditionCost'></AgGridColumn>
                                                 </AgGridColumn>}
-                                               
-                                                {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={300} headerName={
+
+                                                {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible&& list[0]?.CostingTypeId === ZBCTypeId && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={300} headerName={
                                                     "Condition Cost (Currency)"
-                                                      
+
                                                 } marryChildren={true} >
                                                     {/* <AgGridColumn width={150} cellRenderer='existingConditionCostFormatter' field={isImpactedMaster ? "NetConditionCost" : 'isCostingSimulation' ? 'OldRawMaterialIndexationDetails.NetConditionCost' : "NetConditionCost"} editable='false' headerName="Existing" colId={isImpactedMaster ? "NetConditionCost" : "NetConditionCost"} ></AgGridColumn>
                                                     <AgGridColumn width={150} cellRenderer='revisedConditionCostFormatter' editable={false} onCellValueChanged='cellChange' field={'isCostingSimulation' ? 'NewRawMaterialIndexationDetails.NetConditionCost' : "NewNetConditionCost"} headerName="Revised" colId='NewNetConditionCost' headerComponent={'revisedBasicRateHeader'}></AgGridColumn> */}
@@ -1350,7 +1347,7 @@ const frameworkComponents = {
                                                 {technologyId === String(FORGING) && <AgGridColumn width={170} field="MachiningScrapRate" tooltipField='MachiningScrapRate' editable='false' headerName="Machining Scrap Rate" cellRenderer={'CostFormatter'}></AgGridColumn>}
                                                 {<AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={
                                                     "Net Cost (Currency)"
-                                                       
+
                                                 }>
                                                     <AgGridColumn width={columnWidths.NetLandedCost} field="NetLandedCost" tooltipField='NetLandedCost' editable='false' cellRenderer={'netLanedCostFormatter'} headerName="Existing" colId='NetLandedCost'></AgGridColumn>
                                                     <AgGridColumn width={columnWidths.NewNetLandedCost} field="NewNetLandedCost" editable='false' valueGetter={ageValueGetterLanded} cellRenderer={'NewcostFormatter'} headerName="Revised" colId='NewNetLandedCost'></AgGridColumn>

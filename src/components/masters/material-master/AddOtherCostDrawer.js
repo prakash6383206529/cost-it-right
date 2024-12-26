@@ -603,7 +603,7 @@ function AddOtherCostDrawer(props) {
                                                 <Col md={3} className={'px-2'}>
 
                                                     <TextFieldHookForm
-                                                        label={`Applicability Cost (${props?.isFromImport ? props?.currency?.label : reactLocalStorage.getObject("baseCurrency")}${UOM ? `/${UOM}` : ''})`}
+                                                        label={`Applicability Cost (${props?.isFromImport ? props?.currency?.label : reactLocalStorage.getObject("baseCurrency")}${UOM ? `/${UOM}` : ''})`} 
                                                         name={'ApplicabilityBaseCost'}
                                                         id={'cost-by-percent'}
                                                         Controller={Controller}
@@ -758,11 +758,11 @@ function AddOtherCostDrawer(props) {
                                                             <td>{item.Description}</td>
                                                             <td>{item.Type}</td>
                                                             <td>{item.Applicability}</td>
-                                                            {!props.rawMaterial && <td>{item.ApplicabilityCost}</td>}
-                                                            <td>{item.ApplicabilityCostConversion}</td>
-                                                            <td>{item.Value !== '-' ? checkForDecimalAndNull(item.Value, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
-                                                            {!props.rawMaterial && <td>{item.NetCost !== '-' ? item.NetCost : '-'}</td>}
-                                                            <td>{item.NetCostConversion !== '-' ? item.NetCostConversion : '-'}</td>
+                                                            {!props.rawMaterial && <td>{checkForDecimalAndNull(item?.ApplicabilityCost, initialConfiguration?.NoOfDecimalForPrice)}</td>}
+                                                            <td>{checkForDecimalAndNull(item?.ApplicabilityCostConversion, initialConfiguration?.NoOfDecimalForPrice)}</td>
+                                                            <td>{item.Value !== '-' ? checkForDecimalAndNull(item?.Value, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
+                                                            {!props.rawMaterial && <td>{item?.NetCost !== '-' ? checkForDecimalAndNull(item?.NetCost, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>}
+                                                            <td>{item?.NetCostConversion !== '-' ? checkForDecimalAndNull(item?.NetCostConversion, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
                                                             <td>{item.Remark}</td>
                                                             {!props.hideAction && (
                                                                 <td>
