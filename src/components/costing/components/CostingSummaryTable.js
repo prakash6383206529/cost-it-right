@@ -188,13 +188,6 @@ const CostingSummaryTable = (props) => {
   }
 
   useEffect(() => {
-    let isShow = false
-    viewCostingData && viewCostingData?.map(item => {
-      if (item?.CostingCurrency !== initialConfiguration?.BaseCurrency) {
-        isShow = true
-      }
-    })
-    setShowConvertedCurrencyCheckbox(isShow)
     setIsScrapRecoveryPercentageApplied((_.map(viewCostingData, 'IsScrapRecoveryPercentageApplied') || []).some(value => value === true));
     if (showDynamicKeys) {
       setOtherCostDetailsOverhead(commonFunction('OtherCostDetailsOverhead'))
@@ -350,7 +343,14 @@ const CostingSummaryTable = (props) => {
   }, [viewCostingData])
 
   useEffect(() => {
+    if (viewCostingData && _.map(viewCostingData, 'CostingCurrency').every(element => element === getConfigurationKey().BaseCurrency)) {
+      setShowConvertedCurrencyCheckbox(false)
+    } else {
+      setShowConvertedCurrencyCheckbox(true)
+    }
+
     viewCostingData && viewCostingData.map((item) => {
+      console.log("item ==> ", item);
       if (item.costingHeadCheck === NCC) {
         setIsNccCosting(true)
       }
@@ -2206,7 +2206,7 @@ const CostingSummaryTable = (props) => {
                         {<th style={{ width: cssObj.particularWidth - (cssObj.particularWidth / 4) + "%" }} ></th>}
                         {viewCostingData && viewCostingData?.map((data, index) => {
                           return (<>
-                            <th style={{ width: cssObj.particularWidth + "%" }} key={index} scope="col" className='approval-summary-headers'>{props.uniqueShouldCostingId?.includes(data.costingId) ? "Should Cost" : data?.bestCost === true ? "Best Cost" : ""}</th>
+                            <th style={{ width: cssObj.particularWidth + "%" }} key={index} scope="col" className='approval-summary-headers'>{props.uniqueShouldCostingId?.includes(data.costingId) ? "Should Cost" : data?.bestCost === true ? "Best Cost" : ""}{data?.bestCost === true && <TooltipCustom id={'best-cost-tooltip'} width={"290px"} tooltipText={"If you wish to see Best Cost, Please click on 'Show Converted Currency'."} />}</th>
                           </>
                           )
                         })}
@@ -3398,7 +3398,7 @@ const CostingSummaryTable = (props) => {
                           {viewCostingData &&
                             viewCostingData?.map((data, index) => {
                               return <td className={tableDataClass(data)}>
-                                {viewCostingData?.[0]?.CostingCurrency}:    {displayValueWithSign(data, "nPOPrice")}
+                                {data?.bestCost !== true ? (viewCostingData?.[0]?.CostingCurrency + ' : ') : ''}    {displayValueWithSign(data, "nPOPrice")}
                                 {
                                   (data?.bestCost !== true) && (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&
                                   <button
