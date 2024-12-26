@@ -190,9 +190,10 @@ class AddOverhead extends Component {
       })
       this.props.getOverheadData(data.Id, res => {
         if (res && res.data && res.data.Result) {
+
           const Data = res.data.Data;
           this.setState({ DataToChange: Data })
-          Data?.OverheadApplicabilityType === "Part Cost" ? this.setState({ showPartCost: true }) : this.setState({ showPartCost: false })
+          Data?.OverheadApplicabilityType?.includes("Part Cost") ? this.setState({ showPartCost: true }) : this.setState({ showPartCost: false })
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
           this.setState({ minEffectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '' })
           setTimeout(() => {
