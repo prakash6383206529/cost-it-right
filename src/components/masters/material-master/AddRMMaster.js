@@ -71,7 +71,7 @@ function AddRMMaster(props) {
     })
     const isViewFlag = data?.isViewFlag === true ? true : false
     const rawMaterailDetails = useSelector((state) => state.material.rawMaterailDetails)
-
+    
     const { commodityDetailsArray } = useSelector((state) => state.indexation)
     const { otherCostDetailsArray } = useSelector((state) => state.indexation)
 
@@ -428,7 +428,7 @@ function AddRMMaster(props) {
             "NetCostWithoutConditionCostConversion": state?.isImport ? values?.BasicPriceBaseCurrency : 0,
             "NetConditionCost": state?.isImport ? values?.FinalConditionCostSelectedCurrency : values?.FinalConditionCostBaseCurrency,
             "NetConditionCostConversion": state?.isImport ? values?.FinalConditionCostBaseCurrency : 0,
-            "CurrencyExchangeRate": rawMaterailDetails?.CurrencyValue,
+            "CurrencyExchangeRate": rawMaterailDetails?.currencyValue,
             "RawMaterialFreightCostConversion": state?.isImport ? values?.FreightChargeBaseCurrency : 0,
             "RawMaterialShearingCostConversion": state?.isImport ? values?.ShearingCostBaseCurrency : 0,
             "JaliScrapCostConversion": state.isImport ? values?.CircleScrapCostBaseCurrency : 0,
@@ -449,7 +449,7 @@ function AddRMMaster(props) {
             "FrequencyOfSettlement": values?.frequencyOfSettlement?.label,
             "CommodityNetCost": values.BasicPriceBaseCurrency,
             "CommodityNetCostConversion": values.BasicPriceBaseCurrency,
-            "OtherNetCost": values.OtherCostBaseCurrency,
+            "OtherNetCost": state?.isImport ? values?.OtherCost : values?.OtherCostBaseCurrency,
             "OtherNetCostConversion": values.OtherCostBaseCurrency,
             "RawMaterialOtherCostDetails": otherCostDetailsArray,
             "IsIndexationDetails": rawMaterailDetails?.isShowIndexCheckBox === true ? true : false,
@@ -689,7 +689,7 @@ function AddRMMaster(props) {
                             IsImportEntry={state.isImport}
                             costingTypeId={state.costingTypeId}
                             levelDetails={state.levelDetails}
-                            currency={{ label: reactLocalStorage.getObject("baseCurrency"), value: reactLocalStorage.getObject("baseCurrency") }}
+                            currency={state?.approvalObj?.Currency ? { label: state?.approvalObj?.Currency, value: state?.approvalObj?.Currency } : { label: "Currency", value: "Currency" }}
                             Technology={state.Technology}
                             showScrapKeys={rawMaterailDetails?.ShowScrapKeys}
                             toolTipTextObject={state.toolTipTextObject}
@@ -703,4 +703,4 @@ function AddRMMaster(props) {
 
     )
 }
-export default AddRMMaster
+export default AddRMMaster  
