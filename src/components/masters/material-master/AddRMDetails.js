@@ -90,7 +90,7 @@ function AddRMDetails(props) {
     const cityList = useSelector((state) => state.comman.cityList)
     const RMIndex = getConfigurationKey()?.IsShowMaterialIndexation
     const { t } = useTranslation('MasterLabels');
-    const { isMultipleUserAllowForApproval } = useSelector((state) => state.auth.initialConfiguration)
+    const { IsMultipleUserAllowForApproval } = useSelector((state) => state.auth.initialConfiguration)
 
 
     useEffect(() => {
@@ -280,7 +280,8 @@ function AddRMDetails(props) {
             setState(prevState => ({ ...prevState, plants: [] }));
         }
         dispatch(SetRawMaterialDetails({ Plants: newValue }, () => { }))
-        handleCommonFunction(isMultipleUserAllowForApproval ? newValue?.value : EMPTY_GUID, state?.rmSpec?.value)
+        handleCommonFunction(IsMultipleUserAllowForApproval ? newValue?.value : EMPTY_GUID, state?.rmSpec?.value)
+        console.log(newValue, 'newValue', IsMultipleUserAllowForApproval)
     }
     const handleCommonFunction = (plantId, partId) => {
         console.log(plantId, partId, 'plantId, partId')
@@ -391,7 +392,7 @@ function AddRMDetails(props) {
         if (newValue && newValue !== '') {
             setState(prevState => ({ ...prevState, rmSpec: newValue, rmCode: { label: newValue.RawMaterialCode, value: newValue.value }, rmCategory: [], isCodeDisabled: true }));
             setValue('RawMaterialCode', { label: newValue.RawMaterialCode, value: newValue.value })
-            handleCommonFunction(isMultipleUserAllowForApproval ? state.plants?.value : EMPTY_GUID, newValue.value)
+            handleCommonFunction(IsMultipleUserAllowForApproval ? state.plants?.value : EMPTY_GUID, newValue.value)
         } else {
             setState(prevState => ({ ...prevState, rmSpec: [], rmCode: [], rmCategory: [], isCodeDisabled: false }));
         }
@@ -428,7 +429,7 @@ function AddRMDetails(props) {
                     return false
                 }
                 let Data = res?.data?.Data
-                handleCommonFunction(isMultipleUserAllowForApproval ? state.plants?.value : EMPTY_GUID, Data.SpecificationId)
+                handleCommonFunction(IsMultipleUserAllowForApproval ? state.plants?.value : EMPTY_GUID, Data.SpecificationId)
                 setState(prevState => ({
                     ...prevState,
                     rmName: { label: Data.RawMaterialName, value: Data.RawMaterialId, },

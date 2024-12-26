@@ -9150,3 +9150,48 @@ iframe {
 .mh-inherit {
   min-height: inherit !important;
 }
+
+
+.pending-simulation-alert {
+  background: #fff9e600;
+  text-align: left;
+
+  .alert-text {
+    color: #666;
+  }
+
+  .alert-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 15px 0;
+  }
+
+  .alert-table th,
+  .alert-table td {
+    border: 1px solid #ffb6b6;
+    padding: 8px;
+    text-align: left;
+  }
+
+  .alert-table th {
+    background-color: #fc577438;
+  }
+
+  .action-text {
+    color: #d32f2f;
+    margin: 0;
+  }
+
+  .toggle-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0px;
+    margin-left: 10px;
+
+    &:focus {
+      border: none !important;
+      box-shadow: none !important;
+    }
+  }
+}

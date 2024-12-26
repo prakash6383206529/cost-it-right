@@ -4,7 +4,7 @@ import RMDomesticListing from '../../masters/material-master/RMDomesticListing';
 import RMImportListing from '../../masters/material-master/RMImportListing';
 import { Row, Col } from 'reactstrap'
 import { Controller, useForm } from 'react-hook-form';
-import { getMasterSelectListSimulation, getTokenSelectListAPI, setSelectedRowForPagination, setMasterForSimulation, setTechnologyForSimulation, setTokenCheckBoxValue, setTokenForSimulation, getSelectListOfMasters, setVendorForSimulation, setIsMasterAssociatedWithCosting, setSimulationApplicability, setCustomerForSimulation, getCostingHeadsList } from '../actions/Simulation';
+import { getMasterSelectListSimulation, getTokenSelectListAPI, setSelectedRowForPagination, setMasterForSimulation, setTechnologyForSimulation, setTokenCheckBoxValue, setTokenForSimulation, getSelectListOfMasters, setVendorForSimulation, setIsMasterAssociatedWithCosting, setSimulationApplicability, setCustomerForSimulation, getCostingHeadsList, setIsPendingSimulationFromOtherDiv } from '../actions/Simulation';
 import { useDispatch, useSelector } from 'react-redux';
 import SimulationUploadDrawer from './SimulationUploadDrawer';
 import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, RM_MASTER_ID, searchCount, VBC_VENDOR_TYPE, APPROVED_STATUS, EMPTY_GUID, MACHINE, MASTERS, VBCTypeId, ZBCTypeId, CBCTypeId, ZBC, RAWMATERIALINDEX, NONINDEXED } from '../../../config/constants';
@@ -47,6 +47,8 @@ import RMIndexationSimulationListing from './SimulationPages/RMIndexationSimulat
 import RMIndexationSimulation from './SimulationPages/RMIndexationSimulation';
 import { setCommodityDetails } from '../../masters/actions/Indexation';
 import { useLabels, useWithLocalization } from '../../../helper/core';
+import { Errorbox } from '../../common/ErrorBox';
+import { pendingSimulationAlert } from '../SimulationUtils';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -155,6 +157,7 @@ function Simulation(props) {
     }, [])
 
     const masterList = useSelector(state => state.simulation.masterSelectListSimulation)
+    const isPendingSimulationFromOtherDiv = useSelector(state => state.simulation.isPendingSimulationFromOtherDiv)
     const rmDomesticListing = useSelector(state => state.material.rmDataList)
     const rmImportListing = useSelector(state => state.material.rmImportDataList)
     const bopDomesticList = useSelector(state => state.material.bopDomesticList)
@@ -171,7 +174,7 @@ function Simulation(props) {
             setShowTokenDropdown(false)
         }
     }, [selectedTechnologyForSimulation])
-
+    console.log(isPendingSimulationFromOtherDiv, "isPendingSimulationFromOtherDiv")
     useEffect(() => {
         renderListing('vendor')
     }, [vendorSelectList])
@@ -180,6 +183,9 @@ function Simulation(props) {
         if (showMasterList) {
             setShowEditTable(false)
         }
+        dispatch(setIsPendingSimulationFromOtherDiv({
+            BOPNew: true,
+        }))
     }, [showMasterList])
     useEffect(() => {
         if (handleEditMasterPage) {
@@ -1561,7 +1567,7 @@ function Simulation(props) {
                     return ''
                 }
             case String(RAWMATERIALINDEX):
-                return <RMIndexationSimulation backToSimulation={backToSimulation} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData} master={master.label} tokenForMultiSimulation={tempObject} technology={technology.label} technologyId={technology.value} isRMNonIndexSimulation={type?.value===NONINDEXED?true:false}/>
+                return <RMIndexationSimulation backToSimulation={backToSimulation} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData} master={master.label} tokenForMultiSimulation={tempObject} technology={technology.label} technologyId={technology.value} isRMNonIndexSimulation={type?.value === NONINDEXED ? true : false} />
             default:
                 break;
         }
@@ -1658,7 +1664,7 @@ function Simulation(props) {
                     {isHide &&
                         <Row>
                             <Col md="12" className="filter-block zindex-9 simulation-labels">
-
+                                {false && <Errorbox customClass={'error'} errorText={pendingSimulationAlert()} />}
                                 <div className="d-inline-flex justify-content-start align-items-center pr-3 mb-3 zindex-unset ">
                                     <div className="flex-fills label">Masters:</div>
                                     <div className="hide-label flex-fills pl-0">

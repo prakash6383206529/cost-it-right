@@ -33,8 +33,8 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 function OtherCostingSimulation(props) {
     const { simulationId, isFromApprovalListing, master, statusForLinkedToken } = props
-const {vendorLabel} = useLabels()
-     const [selectedRowData, setSelectedRowData] = useState([]);
+    const { vendorLabel } = useLabels()
+    const [selectedRowData, setSelectedRowData] = useState([]);
     const [tokenNo, setTokenNo] = useState('')
     const [CostingDetailDrawer, setCostingDetailDrawer] = useState(false)
     const [isVerifyImpactDrawer, setIsVerifyImpactDrawer] = useState(false)
@@ -706,6 +706,8 @@ const {vendorLabel} = useLabels()
                                                     <AgGridColumn width={110} field="ECNNumber" headerName='ECN No.' cellRenderer='ecnFormatter'></AgGridColumn>
                                                     <AgGridColumn width={130} field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>
                                                     <AgGridColumn width={140} field="VendorName" tooltipField='VendorName' cellRenderer='vendorFormatter' headerName={vendorLabel}></AgGridColumn>
+                                                    {<AgGridColumn width={185} field="DivisionCode" tooltipField="DivisionCode" headerName="Division"></AgGridColumn>}
+
                                                     {/* MINDA */}
                                                     {showSaLineNumber() && <AgGridColumn width={130} field="SANumber" headerName='SA Number' editable={true}></AgGridColumn>}
                                                     {showSaLineNumber() && <AgGridColumn width={130} field="LineNumber" headerName='Line Number' editable={true}></AgGridColumn>}

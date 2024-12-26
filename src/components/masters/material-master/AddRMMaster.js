@@ -263,6 +263,8 @@ function AddRMMaster(props) {
                 }))
             }
             setState(prevState => ({ ...prevState, CostingTypePermission: false, finalApprovalLoader: false }))
+        }).catch((error) => {
+            setState(prevState => ({ ...prevState, disableSendForApproval: true }))
         })
     }
     /**
