@@ -849,7 +849,6 @@ input::-webkit-input-placeholder {
   .tab-pane {
     .filter-block {
       position: initial;
-      height: 32px !important;
       margin-bottom: 25px;
       background-color: none;
 
@@ -885,7 +884,6 @@ input::-webkit-input-placeholder {
 
     .filter-block {
       position: initial;
-      height: 32px !important;
       margin-bottom: 25px;
 
       &:before {
@@ -8298,12 +8296,14 @@ body {
 
 // <-------END simulation token dropdown css------>
 
-.simulation-labels {
+.simulation-labels.filter-block {
   .w-72 {
     .flex-fills.label {
       min-width: 72px !important;
     }
   }
+
+  height: auto !important;
 }
 
 @media screen and (min-width: $middleDesktop) {
@@ -9161,7 +9161,7 @@ iframe {
   }
 
   .alert-table {
-    width: 100%;
+    width: 475px;
     border-collapse: collapse;
     margin: 15px 0;
   }

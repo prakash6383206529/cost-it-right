@@ -106,7 +106,7 @@ function Simulation(props) {
     const [plant, setPlant] = useState('')
     const [type, setType] = useState('')
     const [rawMaterialIds, setRawMaterialIds] = useState([])
-    const [pendingOtherDivStatus, setPendingOtherDivStatus] = useState({})
+    const [pendingOtherDivStatus, setPendingOtherDivStatus] = useState([])
     const { technologyLabel } = useLabels();
     const dispatch = useDispatch()
     const vendorSelectList = useSelector(state => state.comman.vendorWithVendorCodeSelectList)
@@ -159,17 +159,19 @@ function Simulation(props) {
     useEffect(() => {
         if (getConfigurationKey().IsDivisionAllowedForDepartment) {
             setloader(true)
-            dispatch(getSimulationCostingStatus({
+            let obj = {
                 LoggedInUserId: loggedInUserId(),
                 statusId: 1,
+            }
+            dispatch(getSimulationCostingStatus(obj, (res) => {
 
-            }, (res) => {
-                if (res && res.data.DataList.length > 0) {
-                    setPendingOtherDivStatus(res.data.DataList)
+                if (res && res.data && res.data.DataList) {
+                    setPendingOtherDivStatus(res && res.data && res.data.DataList)
                 } else {
 
                 }
                 setloader(false)
+
             }))
         }
     }, [])
@@ -1681,7 +1683,7 @@ function Simulation(props) {
                     {isHide &&
                         <Row>
                             <Col md="12" className="filter-block zindex-9 simulation-labels">
-                                {simulationCostingStatus && <Errorbox customClass={'error'} errorText={pendingSimulationAlert(pendingOtherDivStatus)} />}
+                                {simulationCostingStatus && !loader && <Errorbox customClass={'error'} errorText={pendingSimulationAlert(pendingOtherDivStatus)} />}
                                 <div className="d-inline-flex justify-content-start align-items-center pr-3 mb-3 zindex-unset ">
                                     <div className="flex-fills label">Masters:</div>
                                     <div className="hide-label flex-fills pl-0">

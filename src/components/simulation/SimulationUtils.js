@@ -464,48 +464,43 @@ export const pendingSimulationAlert = (pendingOtherDivStatus) => {
             icon.className = 'toggle-icon fa fa-chevron-down';
         }
     };
-
     return (
         <div className="pending-simulation-alert">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <p className="alert-text">
                     Simulations have already been run on the following masters from other divisions.
                     Please approve them before running any new simulations.
-                    {pendingOtherDivStatus && pendingOtherDivStatus.map((item, index) => {
-                        return <div key={index}>{item.MasterName} <strong>{item.impectedCount}</strong></div>
-                    })}
+
                 </p>
-                {/* <button
+                <button
                     onClick={toggleTableVisibility}
                     className="toggle-button"
                 >
                     <i className="toggle-icon fa fa-chevron-up" style={{ fontSize: '20px' }} />
-                </button> */}
+                </button>
             </div>
-            {/* <div className="error-table-container">
+            <div className="error-table-container">
                 <table className="alert-table">
                     <thead>
                         <tr>
                             <th>Master</th>
-                            <th>Technology</th>
+                            <th>Count</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>RM Master</td>
-                            <td>Sheet Metal</td>
-                        </tr>
-                        <tr>
-                            <td>BOP Master</td>
-                            <td>Forging</td>
-                        </tr>
+                        {pendingOtherDivStatus && pendingOtherDivStatus.map((item, index) => {
+                            return <tr key={index}>
+                                <td>{item.SimulationTechnology}</td>
+                                <td><strong>{item.ImpactedCount}</strong></td>
+                            </tr>
+                        })}
                     </tbody>
                 </table>
 
                 <div className="action-text">
                     <strong>Action Required:</strong> Approve the above simulations before proceeding.
                 </div>
-            </div> */}
+            </div>
 
         </div>
     );

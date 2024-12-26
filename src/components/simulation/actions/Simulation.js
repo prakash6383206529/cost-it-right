@@ -2041,7 +2041,7 @@ export function getSimulationCostingStatus(data, callback) {
     return (dispatch) => {
         const request = axios.get(`${API.getSimulationCostingStatus}?LoggedInUserId=${data.LoggedInUserId}&statusId=${data.statusId ?? ''}&simulationTechnologyId=${data.simulationTechnologyId ?? ''}`, config());
         request.then((response) => {
-            if (response.data.Result) {
+            if (response.data.Result || response.status === 204) {
                 dispatch({
                     type: GET_SIMULATION_COSTING_STATUS,
                     payload: response.data.Result,
