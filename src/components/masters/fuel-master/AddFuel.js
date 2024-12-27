@@ -344,9 +344,30 @@ class AddFuel extends Component {
     let count = 0;
     setTimeout(() => {
 
-      if (country.length === 0 || city.length === 0) {
-        this.setState({ errorObj: { ...this.state.errorObj, state: true } })
-        count++
+      if (!country || Object.keys(country).length === 0) {
+        this.setState({ errorObj: { ...this.state.errorObj, country: true } })
+        count++;
+      }
+
+      if (!city || Object.keys(city).length === 0) {
+        this.setState({ errorObj: { ...this.state.errorObj, city: true } })
+        count++;
+      }
+
+      if (country?.label) {
+        if (country.label === 'India') {
+          if (!StateName || Object.keys(StateName).length === 0) {
+            this.setState({ errorObj: { ...this.state.errorObj, state: true } });
+            count++
+          } else {
+            this.setState({ errorObj: { ...this.state.errorObj, state: false } });
+          }
+        } else {
+          this.setState({ errorObj: { ...this.state.errorObj, state: false } });
+        }
+      } else {
+        this.setState({ errorObj: { ...this.state.errorObj, state: true } });
+        count++;
       }
       if (fieldsObj === undefined || Number(fieldsObj) === 0) {
         this.setState({ errorObj: { ...this.state.errorObj, rate: true } })
@@ -382,7 +403,7 @@ class AddFuel extends Component {
       })
       this.setState({
         rateGrid: tempArray,
-        // StateName: [],
+        StateName: [],
         effectiveDate: '',
         country: {},
         city: {},
@@ -396,7 +417,7 @@ class AddFuel extends Component {
 
       }
       );
-      this.setState({ AddUpdate: false, errorObj: { state: false, rate: false, effectiveDate: false } })
+      this.setState({ AddUpdate: false, errorObj: { state: false, rate: false, effectiveDate: false, country: false, city: false } })
     }, 200);
   }
 
@@ -408,6 +429,8 @@ class AddFuel extends Component {
       country: [],
       city: [],
       effectiveDate: "",
+      errorObj: { city: false, state: false, rate: false, country: false, effectiveDate: false }
+
     }, () =>
       this.props.change("RateConversion", ''),
       this.props.change("RateLocalConversion", ''),
@@ -837,7 +860,13 @@ class AddFuel extends Component {
 
   countryHandler = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ country: newValue, state: [], city: [] }, () => {
+      this.setState({
+        country: newValue, state: [], city: [],
+        errorObj: {
+          ...this.state.errorObj,
+          country: false
+        }
+      }, () => {
         this.getAllCityData()
       });
     } else {
@@ -852,7 +881,12 @@ class AddFuel extends Component {
   */
   stateHandler = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ StateName: newValue, city: [] }, () => {
+      this.setState({
+        StateName: newValue, city: [], errorObj: {
+          ...this.state.errorObj,
+          state: false
+        }
+      }, () => {
         const { StateName } = this.state;
         this.props.fetchCityDataAPI(StateName.value, () => { })
       });
@@ -874,7 +908,12 @@ class AddFuel extends Component {
 
   cityHandler = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ city: newValue });
+      this.setState({
+        city: newValue, errorObj: {
+          ...this.state.errorObj,
+          city: false
+        }
+      });
     } else {
       this.setState({ city: [] });
     }
@@ -1264,12 +1303,12 @@ class AddFuel extends Component {
                                 component={searchableSelect}
                                 placeholder={'Select'}
                                 options={this.renderListing('country')}
-                                validate={(this.state.country == null || this.state.country.length === 0) ? [required] : []}
                                 required={true}
                                 handleChangeDescription={this.countryHandler}
                                 valueDescription={this.state.country}
                                 disabled={isViewMode}
                               />
+                              {this.state.errorObj?.country && <div className='text-help p-absolute'>This field is required.</div>}
                             </div>
                           </Col>
 
@@ -1283,12 +1322,12 @@ class AddFuel extends Component {
                                   component={searchableSelect}
                                   placeholder={'Select'}
                                   options={this.renderListing('state')}
-                                  validate={(this.state.StateName == null || this.state.StateName.length === 0) ? [required] : []}
                                   required={true}
                                   handleChangeDescription={this.stateHandler}
                                   valueDescription={this.state.StateName}
                                   disabled={isViewMode}
                                 />
+                                {this.state.errorObj?.state && <div className='text-help p-absolute'>This field is required.</div>}
                               </div>
                             </Col>}
 
@@ -1301,12 +1340,12 @@ class AddFuel extends Component {
                                 component={searchableSelect}
                                 placeholder={'Select'}
                                 options={this.renderListing('city')}
-                                validate={(this.state.city == null || this.state.city.length === 0) ? [required] : []}
                                 required={true}
                                 handleChangeDescription={this.cityHandler}
                                 valueDescription={this.state.city}
                                 disabled={isViewMode}
                               />
+                              {this.state.errorObj?.city && <div className='text-help p-absolute'>This field is required.</div>}
                             </div>
                           </Col>
                           <Col md="3">
