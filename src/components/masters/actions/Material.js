@@ -623,7 +623,7 @@ export function deleteMaterialTypeAPI(MaterialTypeId, callback) {
             .then((response) => {
                 callback(response);
             }).catch((error) => {
-                callback(error.response);
+                // callback(error.response);
                 apiErrors(error);
                 dispatch({ type: API_FAILURE });
             });
