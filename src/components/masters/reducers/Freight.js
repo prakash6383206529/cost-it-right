@@ -11,6 +11,7 @@ import {
     GET_ALL_ADDITIONAL_FREIGHT_SUCCESS,
     GET_ADDITIONAL_FREIGHT_DATA_SUCCESS,
     GET_ADDITIONAL_FREIGHT_BY_SUPPLIER_SUCCESS,
+    GET_TRUCK_DIMENSIONS_SELECTLIST,
 } from '../../../config/constants';
 
 const initialState = {
@@ -92,6 +93,12 @@ export default function freightReducer(state = initialState, action) {
                 ...state,
                 loading: false,
                 freightRateCriteriaSelectList: action.payload
+            };
+        case GET_TRUCK_DIMENSIONS_SELECTLIST:
+            return {
+                ...state,
+                loading: false,
+                truckDimensionsSelectList: action.payload
             };
         default:
             return state;

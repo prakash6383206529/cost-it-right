@@ -450,6 +450,8 @@ export const API = {
   getFreightModeSelectList: `${BASE_URL}/configuration/select-list-get-freight-modes`,
   getFreigtFullTruckCapacitySelectList: `${BASE_URL}/configuration/select-list-get-full-truck-capacity`,
   getFreigtRateCriteriaSelectList: `${BASE_URL}/configuration/select-list-get-full-truck-ratecriteria`,
+  getTruckDimensionsSelectList: `${BASE_URL}/masters-freight/get-truck-dimensions-select-list`,
+  saveTruckDimensions: `${BASE_URL}/masters-freight/save-truck-dimensions`,
 
   //API's for Additional freight master
   createAdditionalFreightAPI: `${BASE_URL}/masters-additional-freight/create`,
@@ -1635,6 +1637,7 @@ export const GET_FREIGHT_FAILURE = 'GET_FREIGHT_FAILURE'
 export const GET_FREIGHT_MODE_SELECTLIST = 'GET_FREIGHT_MODE_SELECTLIST'
 export const GET_FREIGHT_FULL_TRUCK_CAPACITY_SELECTLIST = 'GET_FREIGHT_FULL_TRUCK_CAPACITY_SELECTLIST'
 export const GET_FREIGHT_RATE_CRITERIA_SELECTLIST = 'GET_FREIGHT_RATE_CRITERIA_SELECTLIST'
+export const GET_TRUCK_DIMENSIONS_SELECTLIST = 'GET_TRUCK_DIMENSIONS_SELECTLIST'
 
 //ADDITIONAL FREIGHT MASTER
 export const GET_ALL_ADDITIONAL_FREIGHT_SUCCESS = 'GET_ALL_ADDITIONAL_FREIGHT_SUCCESS'
