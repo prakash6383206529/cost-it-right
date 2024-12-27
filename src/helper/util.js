@@ -920,22 +920,22 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
   obj.NetLabourCostLocalConversion = dataFromAPI?.NetLabourCostLocalConversion
   obj.IndirectLaborCostLocalConversion = dataFromAPI?.IndirectLaborCostLocalConversion
   obj.StaffCostLocalConversion = dataFromAPI?.StaffCostLocalConversion
-  obj.NetRawMaterialsCostConversion = dataFromAPI?.NetRawMaterialsCostConversion
-  obj.NetBoughtOutPartCostConversion = dataFromAPI?.NetBoughtOutPartCostConversion
-  obj.NetConversionCostConversion = dataFromAPI?.NetConversionCostConversion
-  obj.NetProcessCostConversion = dataFromAPI?.NetProcessCostConversion
-  obj.NetOperationCostConversion = dataFromAPI?.NetOperationCostConversion
-  obj.NetOtherOperationCostConversion = dataFromAPI?.NetOtherOperationCostConversion
-  obj.NetTotalRMBOPCCConversion = dataFromAPI?.NetTotalRMBOPCCConversion
-  obj.NetSurfaceTreatmentCostConversion = dataFromAPI?.NetSurfaceTreatmentCostConversion
-  obj.TransportationCostConversion = dataFromAPI?.TransportationCostConversion
-  obj.NetFreightPackagingCostConversion = dataFromAPI?.NetFreightPackagingCostConversion
-  obj.NetToolCostConversion = dataFromAPI?.NetToolCostConversion
-  obj.NetDiscountsCostConversion = dataFromAPI?.NetDiscountsCostConversion
-  obj.NetOtherCostConversion = dataFromAPI?.NetOtherCostConversion
-  obj.SurfaceTreatmentCostConversion = dataFromAPI?.SurfaceTreatmentCostConversion
-  obj.NetOverheadAndProfitCostConversion = dataFromAPI?.NetOverheadAndProfitCostConversion
-  obj.OverheadCostConversion = dataFromAPI?.OverheadCostConversion
+  obj.NetRawMaterialsCostConversion = isBestCost ? dataFromAPI?.NetRawMaterialsCost : dataFromAPI?.NetRawMaterialsCostConversion
+  obj.NetBoughtOutPartCostConversion = isBestCost ? dataFromAPI?.NetBoughtOutPartCost : dataFromAPI?.NetBoughtOutPartCostConversion
+  obj.NetConversionCostConversion = isBestCost ? dataFromAPI?.NetConversionCost : dataFromAPI?.NetConversionCostConversion
+  obj.NetProcessCostConversion = isBestCost ? dataFromAPI?.NetProcessCost : dataFromAPI?.NetProcessCostConversion
+  obj.NetOperationCostConversion = isBestCost ? dataFromAPI?.NetOperationCost : dataFromAPI?.NetOperationCostConversion
+  obj.NetOtherOperationCostConversion = isBestCost ? dataFromAPI?.NetOtherOperationCost : dataFromAPI?.NetOtherOperationCostConversion
+  obj.NetTotalRMBOPCCConversion = isBestCost ? dataFromAPI?.NetTotalRMBOPCC : dataFromAPI?.NetTotalRMBOPCCConversion
+  obj.NetSurfaceTreatmentCostConversion = isBestCost ? dataFromAPI?.NetSurfaceTreatmentCost : dataFromAPI?.NetSurfaceTreatmentCostConversion
+  obj.TransportationCostConversion = isBestCost ? dataFromAPI?.TransportationCost : dataFromAPI?.TransportationCostConversion
+  obj.NetFreightPackagingCostConversion = isBestCost ? dataFromAPI?.NetFreightPackagingCost : dataFromAPI?.NetFreightPackagingCostConversion
+  obj.NetToolCostConversion = isBestCost ? dataFromAPI?.NetToolCost : dataFromAPI?.NetToolCostConversion
+  obj.NetDiscountsCostConversion = isBestCost ? dataFromAPI?.NetDiscountsCost : dataFromAPI?.NetDiscountsCostConversion
+  obj.NetOtherCostConversion = isBestCost ? dataFromAPI?.NetOtherCost : dataFromAPI?.NetOtherCostConversion
+  obj.SurfaceTreatmentCostConversion = isBestCost ? dataFromAPI?.SurfaceTreatmentCost : dataFromAPI?.SurfaceTreatmentCostConversion
+  obj.NetOverheadAndProfitCostConversion = isBestCost ? dataFromAPI?.NetOverheadAndProfitCost : dataFromAPI?.NetOverheadAndProfitCostConversion
+  obj.OverheadCostConversion = isBestCost ? dataFromAPI?.OverheadCost : dataFromAPI?.OverheadCostConversion
   obj.ProfitCostConversion = dataFromAPI?.ProfitCostConversion
   obj.RejectionCostConversion = dataFromAPI?.RejectionCostConversion
   obj.ICCCostConversion = dataFromAPI?.ICCCostConversion
@@ -956,7 +956,7 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
   obj.NetPOPriceLocalConversion = dataFromAPI?.NetPOPriceLocalConversion
   obj.NetPOPriceConversion = dataFromAPI?.NetPOPriceConversion
   obj.BasicRateConversion = dataFromAPI?.BasicRateConversion
-  obj.NetToolCostConversion = dataFromAPI?.NetToolCostConversion
+  obj.NetToolCostConversion = isBestCost ? dataFromAPI?.NetToolCost : dataFromAPI?.NetToolCostConversion
   obj.NetOverheadAndProfitConversion = dataFromAPI?.NetOverheadAndProfitConversion
   obj.NetSurfaceTreatmentConversion = dataFromAPI?.NetSurfaceTreatmentConversion
   obj.NetFreightPackagingConversion = dataFromAPI?.NetFreightPackagingConversion
@@ -1754,9 +1754,9 @@ export const RFQ_KEYS = {
   SPECIFICATION_MANDATORY: getConfigurationKey()?.RFQManditFields?.IsSpecificationMandatory,
   ANNUAL_FORECAST_MANDATORY: getConfigurationKey()?.RFQManditFields?.IsAnnualForecastMandatory,
   REMARKS_ATTACHMENT_MANDATORY: getConfigurationKey()?.RFQManditFields?.IsRemarksAndAttachmentMandatory,
-  SHOW_N100_HAVELLS: getConfigurationKey()?.RFQManditFields?.IsShowN100andHavellsAndProprietaryType, 
+  SHOW_N100_HAVELLS: getConfigurationKey()?.RFQManditFields?.IsShowN100andHavellsAndProprietaryType,
   VISIBILITY_CONDITION: getConfigurationKey()?.RFQManditFields?.IsVisibilityConditionMandatory,
-  SHOW_RM: getConfigurationKey()?.RFQManditFields?.IsShowRMForRFQ, 
-  SHOW_BOP: getConfigurationKey()?.RFQManditFields?.IsShowBOPForRFQ, 
-  SHOW_TOOLING: getConfigurationKey()?.RFQManditFields?.IsShowToolingForRFQ 
+  SHOW_RM: getConfigurationKey()?.RFQManditFields?.IsShowRMForRFQ,
+  SHOW_BOP: getConfigurationKey()?.RFQManditFields?.IsShowBOPForRFQ,
+  SHOW_TOOLING: getConfigurationKey()?.RFQManditFields?.IsShowToolingForRFQ
 };

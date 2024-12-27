@@ -220,7 +220,7 @@ function AddRfq(props) {
     const showOnlyFirstModule = !initialConfiguration?.IsManageSeparateUserPermissionForPartAndVendorInRaiseRFQ;
     const { toolingSpecificRowData } = useSelector(state => state?.rfq);
     const disableUOMFiled = (selectedOption === "Raw Material" || selectedOption === "Bought Out Part") ? (Object.keys(prNumber).length !== 0 || (dataProps?.isViewFlag) ? true : false || disabledPartUid) : true
-const showTcoFields = initialConfiguration.IsShowTCO
+    const showTcoFields = initialConfiguration.IsShowTCO
 
 
 
@@ -304,25 +304,25 @@ const showTcoFields = initialConfiguration.IsShowTCO
 
 
     useEffect(() => {
-        if(showOnlyFirstModule){
+        if (showOnlyFirstModule) {
             if (showSendButton === DRAFT) {
                 setDisabledVendoUId((Vendor && (Vendor?.Add || Vendor?.Edit)) ? false : true)
                 setShowVendorSection((Vendor && (Vendor?.Add || Vendor?.Edit)) ? false : true)
                 setReviewButtonPermission(Vendor && (Vendor?.SendForReview) ? true : false)
-    
+
             } else if (dataProps?.isAddFlag || showSendButton === PREDRAFT) {
-    
+
                 setDisabledPartUId((Part && (Part?.Add || Part?.Edit)) ? false : true)
             } else {
                 setShowVendorSection(false)
             }
-        }else{
+        } else {
             setShowVendorSection(false)
             setDisabledPartUId(false)
             setDisabledVendoUId(false)
             setReviewButtonPermission(false)
         }
-       
+
     }, [showSendButton, Vendor, Part])
 
     useEffect(() => {
@@ -992,30 +992,30 @@ const showTcoFields = initialConfiguration.IsShowTCO
             })
             return temp;
         }
-if (label === 'PartType') {
-    partTypeList && partTypeList.map((item) => {
-        if (item?.Value === '0') return false;
-        if (item?.Value === PRODUCT_ID) return false;
-        // Skip BOP if configuration or mandatory field check fails
-        if (item?.Text === BOUGHTOUTPARTSPACING && 
-            (!getConfigurationKey()?.IsBoughtOutPartCostingConfigured || 
-             !RFQ_KEYS?.SHOW_BOP)) {
-            return false;
+        if (label === 'PartType') {
+            partTypeList && partTypeList.map((item) => {
+                if (item?.Value === '0') return false;
+                if (item?.Value === PRODUCT_ID) return false;
+                // Skip BOP if configuration or mandatory field check fails
+                if (item?.Text === BOUGHTOUTPARTSPACING &&
+                    (!getConfigurationKey()?.IsBoughtOutPartCostingConfigured ||
+                        !RFQ_KEYS?.SHOW_BOP)) {
+                    return false;
+                }
+                // Skip Tooling if mandatory field check fails 
+                if (item?.Text === 'Tooling' && !RFQ_KEYS?.SHOW_TOOLING) {
+                    return false;
+                }
+                // Skip Component/BOP for Assembly technology
+                if (String(technology?.value) === String(ASSEMBLY) &&
+                    ((item?.Text === COMPONENT_PART) || (item?.Text === BOUGHTOUTPARTSPACING))) {
+                    return false;
+                }
+                temp.push({ label: item?.Text, value: item?.Value });
+                return null;
+            });
+            return temp;
         }
-        // Skip Tooling if mandatory field check fails 
-        if (item?.Text === 'Tooling' && !RFQ_KEYS?.SHOW_TOOLING) {
-            return false;
-        }
-// Skip Component/BOP for Assembly technology
-        if (String(technology?.value) === String(ASSEMBLY) && 
-            ((item?.Text === COMPONENT_PART) || (item?.Text === BOUGHTOUTPARTSPACING))) {
-            return false;
-        }
-temp.push({ label: item?.Text, value: item?.Value });
-        return null;
-    });
-    return temp;
-}
         if (label === 'prNo') {
             SelectPurchaseRequisition && SelectPurchaseRequisition.map((item) => {
                 if (item?.Value === '0') return false
@@ -1061,10 +1061,10 @@ temp.push({ label: item?.Text, value: item?.Value });
                 warningMessgae = 'Select a RM, then add attachment doucments'
                 title = 'RM'
                 break
-                case "componentAssembly":
-                    warningMessgae = `Select a part, then click on + button to start inputing Specification, RM details${RFQ_KEYS?.REMARKS_ATTACHMENT_MANDATORY ? ' and mandatory attachments' : ' and attachments'}.`
-                    title = 'Part'
-                    break
+            case "componentAssembly":
+                warningMessgae = `Select a part, then click on + button to start inputing Specification, RM details${RFQ_KEYS?.REMARKS_ATTACHMENT_MANDATORY ? ' and mandatory attachments' : ' and attachments'}.`
+                title = 'Part'
+                break
             case "Tooling":
                 warningMessgae = "Select a PR Number, then edit the Tool No, add the specification and attachment documents"
                 title = 'Tooling'
@@ -1146,11 +1146,11 @@ temp.push({ label: item?.Text, value: item?.Value });
                 return false;
             }
         }
-        
-if (!showVendorSection && RFQ_KEYS?.REMARKS_ATTACHMENT_MANDATORY && !getValues('remark')) {
-    Toaster.warning("Notes field is mandatory.");
-    return false;
-}
+
+        if (!showVendorSection && RFQ_KEYS?.REMARKS_ATTACHMENT_MANDATORY && !getValues('remark')) {
+            Toaster.warning("Notes field is mandatory.");
+            return false;
+        }
         //dispatch(getTargetPrice(plant, technology, assemblyPartNumber, (res) => { }))
         // dispatch(getRfqPartDetails( (res) => {
         //const quotationPartIds = res?.data?.Data.map(item => item?.QuotationPartId);
@@ -1496,7 +1496,7 @@ if (!showVendorSection && RFQ_KEYS?.REMARKS_ATTACHMENT_MANDATORY && !getValues('
     }
 
     const updateRawMaterialList = (obj) => {
-        
+
         setRawMaterialList(prevList => [
             obj
         ]);
@@ -1512,7 +1512,7 @@ if (!showVendorSection && RFQ_KEYS?.REMARKS_ATTACHMENT_MANDATORY && !getValues('
     }
     const validateFormDetails = () => {
         const missingFields = [];
-        
+
         // Define validation rules per type
         const validationRules = {
             "Raw Material": [
@@ -1532,7 +1532,7 @@ if (!showVendorSection && RFQ_KEYS?.REMARKS_ATTACHMENT_MANDATORY && !getValues('
                     key: RFQ_KEYS?.SPECIFICATION_MANDATORY,
                     check: data => {
                         return !data?.BopSpecification || data.BopSpecification.length === 0;
-                      },                    field: "specification"
+                    }, field: "specification"
                 },
                 {
                     key: RFQ_KEYS?.REMARKS_ATTACHMENT_MANDATORY,
@@ -1579,7 +1579,7 @@ if (!showVendorSection && RFQ_KEYS?.REMARKS_ATTACHMENT_MANDATORY && !getValues('
                     field: "specification"
                 },
                 {
-                    key: RFQ_KEYS?.ANNUAL_FORECAST_MANDATORY, 
+                    key: RFQ_KEYS?.ANNUAL_FORECAST_MANDATORY,
                     check: data => !data?.SOPQuantityDetails?.length,
                     field: "SOP quantity details"
                 },
@@ -1595,9 +1595,9 @@ if (!showVendorSection && RFQ_KEYS?.REMARKS_ATTACHMENT_MANDATORY && !getValues('
                 }
             ]
         };
-const data = {
+        const data = {
             "Raw Material": RawMaterialList[0],
-            "Bought Out Part": bopList[0], 
+            "Bought Out Part": bopList[0],
             "componentAssembly": {
                 remark,
                 attachments: childPartFiles,
@@ -1605,7 +1605,7 @@ const data = {
                 ...tableData[0],
                 Specification: specificationList
             },
-            
+
             "Tooling": {
                 ...toolingList[0],
                 SOPQuantityDetails: sopQuantityList,
@@ -1614,15 +1614,15 @@ const data = {
                 Specification: specificationList
             }
         }[selectedOption];
-    
+
         if (!data) {
             return true;
         }
-    
+
         const rulesForType = validationRules[selectedOption];
         if (!rulesForType) return true;
-    
-        
+
+
         rulesForType.forEach(({ key, check, field }) => {
             const isMandatory = key; // Remove extra parenthesis
             console.log(`Checking ${field}:`, {
@@ -1630,22 +1630,22 @@ const data = {
                 checkResult: check(data),
                 value: data[field]
             });
-        
+
             if (isMandatory && check(data)) {
                 missingFields.push(field);
             }
         });
-    
-        
-        
+
+
+
         if (missingFields.length) {
             const message = `Please fill ${missingFields.join(", ").replace(/,([^,]*)$/, ' and$1')}.`;
-            
+
             Toaster.warning(message);
             return false;
         }
-    
-        
+
+
         return true;
     };
     const addRowPartNoTable = () => {
@@ -1859,7 +1859,7 @@ const data = {
                     Toaster.warning("Please select all the mandatory fields");
                     return false
                 }
-                
+
                 // else if (selectedOption === "Raw Material" && (RawMaterialList[0]?.RawMaterialReamrk === '' || RawMaterialList[0]?.RawMaterialAttachments?.length === 0)) {
                 //     Toaster.warning('Please fill the remark and attachment documents!');
                 //     return false;
@@ -1929,7 +1929,7 @@ const data = {
             }
             if (!validateFormDetails()) {
                 return false;
-              }
+            }
             if (nfrId && nfrId.value !== null) {//CHECK_NFR
                 dispatch(getNfrAnnualForecastQuantity(nfrId.value, getValues('partNumber')?.value, sopdate = "", (res) => {
                     Data = res.data.Data
@@ -3408,7 +3408,7 @@ const data = {
                                             <span> RM</span>
                                         </Label>}
 
-                                       {RFQ_KEYS?.SHOW_BOP && <Label id="rfq_boughtOutPart" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                                        {RFQ_KEYS?.SHOW_BOP && <Label id="rfq_boughtOutPart" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
                                             <input
                                                 type="radio"
                                                 name="radioGroup"
@@ -3560,7 +3560,7 @@ const data = {
                                                     placeholder={"Select"}
                                                     Controller={Controller}
                                                     control={control}
-                                                    rules={{ required: true }}git 
+                                                    rules={{ required: true }} git
                                                     register={register}
                                                     defaultValue={partType.length !== 0 ? partType : ""}
                                                     options={renderListing('PartType')}
@@ -3740,12 +3740,12 @@ const data = {
                                                         />
                                                     </Col>
                                                 }
-                                                 
+
                                                 {havellsKey && (selectedOption === 'componentAssembly') &&
 
 
                                                     <Col md="3">
-                                                         <TooltipCustom id="target-price-tooltip" tooltipText="Target price will be approved price of ZBC costing." />
+                                                        <TooltipCustom id="target-price-tooltip" tooltipText="Target price will be approved price of ZBC costing." />
                                                         <TextFieldHookForm
                                                             // title={titleObj.descriptionTitle}
                                                             label="Target Price"
@@ -3896,7 +3896,7 @@ const data = {
                                                                     stopEditingWhenCellsLoseFocus={true}
                                                                     suppressColumnVirtualisation={true}
                                                                     enableBrowserTooltips={true}
-                                                                    //headerHeight={35}
+                                                                //headerHeight={35}
                                                                 >
                                                                     {selectedOption === "Raw Material" && <AgGridColumn width={"230px"} field="RawMaterialName" headerName="Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                                                                     {selectedOption === "Raw Material" && <AgGridColumn width={"230px"} field="RawMaterialGrade" headerName="Grade" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
@@ -4273,7 +4273,7 @@ const data = {
                                                     register={register}
                                                     //defaultValue={DestinationPlant.length !== 0 ? DestinationPlant : ""}
                                                     // options={renderListing("DestinationPlant")}
-                                                    mandatory={RFQ_KEYS?.REMARKS_ATTACHMENT_MANDATORY?true:false}
+                                                    mandatory={RFQ_KEYS?.REMARKS_ATTACHMENT_MANDATORY ? true : false}
                                                     customClassName={"withBorder"}
                                                     handleChange={() => { }}
                                                     errors={errors.remark}
@@ -4367,7 +4367,7 @@ const data = {
                                                 <div className={"cancel-icon"}></div>
                                                 {"Cancel"}
                                             </button>
-                                            {reviewButtonPermission&&showOnlyFirstModule && (
+                                            {reviewButtonPermission && showOnlyFirstModule && (
                                                 <>
                                                     <Button
                                                         id="Return_RFQ_for_Review"

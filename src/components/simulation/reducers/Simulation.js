@@ -346,7 +346,6 @@ export default function SimulationReducer(state = initialState, action) {
             }
          
         case SET_EFFECTIVE_DATE:
-            console.log("action.payload",action.payload)
             return {
             
           ...state,

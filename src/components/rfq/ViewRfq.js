@@ -1091,9 +1091,10 @@ function RfqListing(props) {
     // Function that takes an array of objects as an input and returns the same array with an additional object representing the "best cost"
     const bestCostObjectFunction = (arrayList) => {
         // Create a copy of the input array to prevent mutation
+        let returnArray = _.cloneDeep(arrayList);
         let finalArrayList = _.cloneDeep(arrayList);
         let showConvertedCurrencyCheckbox = false
-        if (viewCostingData && _.map(viewCostingData, 'CostingCurrency').every(element => element === getConfigurationKey().BaseCurrency)) {
+        if (arrayList && _.map(arrayList, 'CostingCurrency').every(element => element === getConfigurationKey().BaseCurrency)) {
             showConvertedCurrencyCheckbox = false
         } else {
             showConvertedCurrencyCheckbox = true
@@ -1112,12 +1113,12 @@ function RfqListing(props) {
             if (isAssemblyTechnology) {
                 keysToCheck = ["NetTotalRMBOPCCConversion", "sTreatment", "nPackagingAndFreight", "totalToolCost", "nsTreamnt", "tCost", "nConvCost", "netSurfaceTreatmentCost", "nOverheadProfit", "nPoPriceCurrency", "nPOPrice", "nPOPriceWithCurrency", "TotalTCOCost"];
                 keysToCheckSum = ["NetTotalRMBOPCCConversion", "nPackagingAndFreight", "totalToolCost", "nConvCost", "netSurfaceTreatmentCost", "nOverheadProfit", "TotalTCOCost"];
-            } else if (showConvertedCurrencyCheckbox) {
-                keysToCheck = ["netRM", "NetRawMaterialsCostConversion", "NetBoughtOutPartCostConversion", "NetProcessCostConversion", "NetOperationCostConversion", "NetSurfaceTreatmentCostConversion", "NetFreightPackagingCostConversion", "NetToolCostConversion", "netBOP", "pCost", "oCost", "nsTreamnt", "tCost", "nConvCost", "nTotalRMBOPCC", "netSurfaceTreatmentCost", "nOverheadProfit", "nPoPriceCurrency", "nPOPrice", "nPOPriceWithCurrency", "TotalTCOCost", "BasicRateConversion"];
+            } if (showConvertedCurrencyCheckbox) {
+                keysToCheck = ["NetRawMaterialsCostConversion", "NetBoughtOutPartCostConversion", "NetProcessCostConversion", "NetOperationCostConversion", "NetOtherOperationCostConversion", "NetTotalRMBOPCCConversion", "RejectionCostConversion", "NetConversionCostConversion", "NetSurfaceTreatmentCostConversion", "NetFreightPackagingCostConversion", "NetOverheadAndProfitCostConversion", "NetToolCostConversion", "DiscountCostConversion", "OtherCostConversion", "netRM", "netBOP", "pCost", "oCost", "nsTreamnt", "tCost", "nConvCost", "nTotalRMBOPCC", "netSurfaceTreatmentCost", "nOverheadProfit", "nPoPriceCurrency", "nPOPrice", "nPOPriceWithCurrency", "TotalTCOCost", "BasicRateConversion"];
                 keysToCheckSum = ["NetRawMaterialsCostConversion", "NetBoughtOutPartCostConversion", "NetFreightPackagingCostConversion", "NetToolCostConversion", "NetConversionCostConversion", "NetSurfaceTreatmentCostConversion", "NetOverheadAndProfitCostConversion", "TotalTCOCost"];
-            } else if (!showConvertedCurrencyCheckbox) {
-                keysToCheck = ["netRM", "NetRawMaterialsCostConversion", "NetBoughtOutPartCostConversion", "NetProcessCostConversion", "NetOperationCostConversion", "NetSurfaceTreatmentCostConversion", "NetFreightPackagingCostConversion", "NetToolCostConversion", "netBOP", "pCost", "oCost", "sTreatment", "nPackagingAndFreight", "totalToolCost", "nsTreamnt", "tCost", "nConvCost", "nTotalRMBOPCC", "netSurfaceTreatmentCost", "nOverheadProfit", "nPoPriceCurrency", "nPOPrice", "nPOPriceWithCurrency", "TotalTCOCost"];
-                keysToCheckSum = ["netRM", "netBOP", "nPackagingAndFreight", "totalToolCost", "nConvCost", "netSurfaceTreatmentCost", "nOverheadProfit", "TotalTCOCost"];
+            } if (showConvertedCurrencyCheckbox === false) {
+                keysToCheck = ["NetRawMaterialsCostConversion", "NetBoughtOutPartCostConversion", "NetProcessCostConversion", "NetOperationCostConversion", "NetOtherOperationCostConversion", "NetTotalRMBOPCCConversion", "RejectionCostConversion", "NetConversionCostConversion", "NetSurfaceTreatmentCostConversion", "NetFreightPackagingCostConversion", "NetOverheadAndProfitCostConversion", "NetToolCostConversion", "DiscountCostConversion", "OtherCostConversion"];
+                keysToCheckSum = ["NetRawMaterialsCostConversion", "NetBoughtOutPartCostConversion", "NetProcessCostConversion", "NetConversionCostConversion", "NetSurfaceTreatmentCostConversion", "NetFreightPackagingCostConversion", "NetOverheadAndProfitCostConversion", "NetToolCostConversion"];
             }
             // Create a new object to represent the "best cost" and set it to the first object in the input array
             let minObject = _.cloneDeep(finalArrayList[0]);
@@ -1125,7 +1126,7 @@ function RfqListing(props) {
             // Loop through each object in the input array
             for (let i = 0; i < finalArrayList?.length; i++) {
                 // Get the current object
-                let currentObject = finalArrayList[i];
+                let currentObject = _.cloneDeep(finalArrayList[i]);
 
                 // Loop through each key in the current object
                 for (let key in currentObject) {
@@ -1151,7 +1152,7 @@ function RfqListing(props) {
                 }
                 // Set the attachment and bestCost properties of the minimum object
                 let sum = 0
-                for (let key in finalArrayList[0]) {
+                for (let key in minObject) {
                     if (keysToCheckSum?.includes(key)) {
                         if (!keysToAvoid?.includes(key)) {
                             if (isNumber(minObject[key])) {
@@ -1169,11 +1170,11 @@ function RfqListing(props) {
                 minObject.nPOPrice = sum
             }
             // Add the minimum object to the end of the array
-            finalArrayList.push(minObject);
+            returnArray.push(minObject);
         }
 
         // Return the modified array
-        return finalArrayList;
+        return returnArray;
     }
 
     const addComparisonDrawerToggle = () => {
@@ -1216,10 +1217,12 @@ function RfqListing(props) {
                             setMultipleCostingDetails([...arr])
                             dispatch(setCostingViewData([...arr]))
 
-                            setaddComparisonToggle(true)
                             setloader(false)
                             setViewRMCompare(false)
                             setViewBOPCompare(false)
+                            setTimeout(() => {
+                                setaddComparisonToggle(true)
+                            }, 200);
                         }
                         setCompareButtonPressed(false)
                     }))
@@ -1247,8 +1250,10 @@ function RfqListing(props) {
                             let dat = [...temp]
                             let tempArrToSend = _.uniqBy(dat, 'costingId')
                             let arr = bestCostObjectFunction(tempArrToSend)
-                            setMultipleCostingDetails([...arr])
-                            dispatch(setCostingViewData([...arr]))
+                            if (arr?.length > 0) {
+                                setMultipleCostingDetails([...arr])
+                                dispatch(setCostingViewData([...arr]))
+                            }
 
                             setaddComparisonToggle(true)
                             setloader(false)

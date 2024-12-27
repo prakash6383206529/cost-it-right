@@ -86,6 +86,7 @@ function CostingHeaderTabs(props) {
     reValidateMode: 'onChange',
   });
   const currencySelectList = useSelector(state => state?.exchangeRate?.currencySelectList)
+  console.log("currencySelectList ==> ", currencySelectList);
   const exchangeRateSourceList = useSelector((state) => state.comman.exchangeRateSourceList)
   const [exchangeRateSource, setExchangeRateSource] = useState('');
   const [currency, setCurrency] = useState('');
@@ -684,7 +685,7 @@ function CostingHeaderTabs(props) {
                 options={renderListing("Currency")}
                 handleChange={handleChangeCurrency}
                 defaultValue={currency?.length !== 0 ? currency : ""}
-                disabled={(costData?.CostingCurrencyId ? true : false) || CostingViewMode||IsCostingDateDisabled}
+                disabled={(costData?.CostingCurrencyId ? true : false) || CostingViewMode || IsCostingDateDisabled}
               />
             </Col>
             <Col md="3">

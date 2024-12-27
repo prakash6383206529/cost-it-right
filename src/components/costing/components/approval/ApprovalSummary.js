@@ -178,7 +178,7 @@ function ApprovalSummary(props) {
                 return null
               })
               dispatch(rfqGetBestCostingDetails(BestCostAndShouldCostDetails?.BestCostId, (res) => {
-                tempObj = formViewData(res?.data?.Data, '', true)
+                tempObj = formViewData(res?.data?.Data?.CostingBestCostRequest, '', true)
                 tempObj[0].bestCost = true
                 temp.push(tempObj[0])
                 let dat = [...temp]

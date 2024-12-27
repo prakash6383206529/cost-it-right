@@ -350,7 +350,6 @@ const CostingSummaryTable = (props) => {
     }
 
     viewCostingData && viewCostingData.map((item) => {
-      console.log("item ==> ", item);
       if (item.costingHeadCheck === NCC) {
         setIsNccCosting(true)
       }
@@ -2206,7 +2205,7 @@ const CostingSummaryTable = (props) => {
                         {<th style={{ width: cssObj.particularWidth - (cssObj.particularWidth / 4) + "%" }} ></th>}
                         {viewCostingData && viewCostingData?.map((data, index) => {
                           return (<>
-                            <th style={{ width: cssObj.particularWidth + "%" }} key={index} scope="col" className='approval-summary-headers'>{props.uniqueShouldCostingId?.includes(data.costingId) ? "Should Cost" : data?.bestCost === true ? "Best Cost" : ""}{data?.bestCost === true && <TooltipCustom id={'best-cost-tooltip'} width={"290px"} tooltipText={"If you wish to see Best Cost, Please click on 'Show Converted Currency'."} />}</th>
+                            <th style={{ width: cssObj.particularWidth + "%" }} key={index} scope="col" className='approval-summary-headers'>{props.uniqueShouldCostingId?.includes(data.costingId) ? "Should Cost" : data?.bestCost === true ? `Best Cost (${getConfigurationKey().BaseCurrency})` : ""}{data?.bestCost === true && <TooltipCustom id={'best-cost-tooltip'} width={"290px"} tooltipText={"If you wish to see Best Cost, Please click on 'Show Converted Currency'."} />}</th>
                           </>
                           )
                         })}
@@ -2663,7 +2662,16 @@ const CostingSummaryTable = (props) => {
                                   viewCostingData?.map((data, index) => {
                                     return (
                                       <td className={tableDataClass(data)}>
-                                        {displayValueWithSign(data, 'netRM')} {showConvertedCurrency ? '(' : ''}{showConvertedCurrency && displayValueWithSign(data, 'NetRawMaterialsCostConversion')}{showConvertedCurrency ? ')' : ''}
+                                        {data?.bestCost === true ? <>
+                                          {showConvertedCurrencyCheckbox ? <>
+                                            {displayValueWithSign(data, 'NetRawMaterialsCostConversion')}
+                                          </> : <>
+                                            {displayValueWithSign(data, 'netRM')}
+                                          </>}
+                                        </> : <>
+                                          {displayValueWithSign(data, 'netRM')} {showConvertedCurrency ? '(' : ''}{showConvertedCurrency && displayValueWithSign(data, 'NetRawMaterialsCostConversion')}{showConvertedCurrency ? ')' : ''}
+                                        </>}
+
                                         {
                                           (data?.bestCost !== true) && (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&
                                           <button
@@ -2697,7 +2705,15 @@ const CostingSummaryTable = (props) => {
                                     viewCostingData?.map((data, index) => {
                                       return (
                                         <td className={tableDataClass(data)}>
-                                          {displayValueWithSign(data, "netBOP")} {showConvertedCurrency ? '(' : ''}{showConvertedCurrency && displayValueWithSign(data, 'NetBoughtOutPartCostConversion')}{showConvertedCurrency ? ')' : ''}
+                                          {data?.bestCost === true ? <>
+                                            {showConvertedCurrencyCheckbox ? <>
+                                              {displayValueWithSign(data, 'NetBoughtOutPartCostConversion')}
+                                            </> : <>
+                                              {displayValueWithSign(data, 'netBOP')}
+                                            </>}
+                                          </> : <>
+                                            {displayValueWithSign(data, 'netBOP')} {showConvertedCurrency ? '(' : ''}{showConvertedCurrency && displayValueWithSign(data, 'NetBoughtOutPartCostConversion')}{showConvertedCurrency ? ')' : ''}
+                                          </>}
                                           {
                                             (data?.bestCost !== true) && (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&
                                             <button
@@ -2788,7 +2804,15 @@ const CostingSummaryTable = (props) => {
                                   viewCostingData?.map((data, index) => {
                                     return (
                                       <td className={tableDataClass(data)}>
-                                        {displayValueWithSign(data, 'nConvCost')} {showConvertedCurrency ? '(' : ''}{showConvertedCurrency && displayValueWithSign(data, 'NetConversionCostConversion')}{showConvertedCurrency ? ')' : ''}
+                                        {data?.bestCost === true ? <>
+                                          {showConvertedCurrencyCheckbox ? <>
+                                            {displayValueWithSign(data, 'NetConversionCostConversion')}
+                                          </> : <>
+                                            {displayValueWithSign(data, 'nConvCost')}
+                                          </>}
+                                        </> : <>
+                                          {displayValueWithSign(data, 'nConvCost')} {showConvertedCurrency ? '(' : ''}{showConvertedCurrency && displayValueWithSign(data, 'NetConversionCostConversion')}{showConvertedCurrency ? ')' : ''}
+                                        </>}
                                         {
                                           (data?.bestCost !== true) && (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&
                                           <button
@@ -2855,7 +2879,15 @@ const CostingSummaryTable = (props) => {
                               viewCostingData?.map((data, index) => {
                                 return (
                                   <td className={tableDataClass(data)}>
-                                    {displayValueWithSign(data, 'nsTreamnt')} {showConvertedCurrency ? '(' : ''}{showConvertedCurrency && displayValueWithSign(data, 'NetSurfaceTreatmentCostConversion')}{showConvertedCurrency ? ')' : ''}
+                                    {data?.bestCost === true ? <>
+                                      {showConvertedCurrencyCheckbox ? <>
+                                        {displayValueWithSign(data, 'NetSurfaceTreatmentCostConversion')}
+                                      </> : <>
+                                        {displayValueWithSign(data, 'nsTreamnt')}
+                                      </>}
+                                    </> : <>
+                                      {displayValueWithSign(data, 'nsTreamnt')} {showConvertedCurrency ? '(' : ''}{showConvertedCurrency && displayValueWithSign(data, 'NetSurfaceTreatmentCostConversion')}{showConvertedCurrency ? ')' : ''}
+                                    </>}
                                     {
                                       (data?.bestCost !== true) && (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&
                                       <button
@@ -2991,7 +3023,15 @@ const CostingSummaryTable = (props) => {
                               viewCostingData?.map((data, index) => {
                                 return (
                                   <td className={tableDataClass(data)}>
-                                    {displayValueWithSign(data, 'nOverheadProfit')} {showConvertedCurrency ? '(' : ''}{showConvertedCurrency && displayValueWithSign(data, 'NetOverheadAndProfitCostConversion')}{showConvertedCurrency ? ')' : ''}
+                                    {data?.bestCost === true ? <>
+                                      {showConvertedCurrencyCheckbox ? <>
+                                        {displayValueWithSign(data, 'NetOverheadAndProfitCostConversion')}
+                                      </> : <>
+                                        {displayValueWithSign(data, 'nOverheadProfit')}
+                                      </>}
+                                    </> : <>
+                                      {displayValueWithSign(data, 'nOverheadProfit')} {showConvertedCurrency ? '(' : ''}{showConvertedCurrency && displayValueWithSign(data, 'NetOverheadAndProfitCostConversion')}{showConvertedCurrency ? ')' : ''}
+                                    </>}
                                     {
                                       (data?.bestCost !== true) && (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&
                                       <button
@@ -3042,7 +3082,15 @@ const CostingSummaryTable = (props) => {
                               viewCostingData?.map((data, index) => {
                                 return (
                                   <td className={tableDataClass(data)}>
-                                    {displayValueWithSign(data, 'nPackagingAndFreight')} {showConvertedCurrency ? '(' : ''}{showConvertedCurrency && displayValueWithSign(data, 'NetFreightPackagingCostConversion')}{showConvertedCurrency ? ')' : ''}
+                                    {data?.bestCost === true ? <>
+                                      {showConvertedCurrencyCheckbox ? <>
+                                        {displayValueWithSign(data, 'NetFreightPackagingCostConversion')}
+                                      </> : <>
+                                        {displayValueWithSign(data, 'nPackagingAndFreight')}
+                                      </>}
+                                    </> : <>
+                                      {displayValueWithSign(data, 'nPackagingAndFreight')} {showConvertedCurrency ? '(' : ''}{showConvertedCurrency && displayValueWithSign(data, 'NetFreightPackagingCostConversion')}{showConvertedCurrency ? ')' : ''}
+                                    </>}
                                     {
                                       (data?.bestCost !== true) && (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&
                                       <button
@@ -3133,7 +3181,15 @@ const CostingSummaryTable = (props) => {
                                   <th>Net Tool Cost {showConvertedCurrency ? '(' + initialConfiguration?.BaseCurrency + ')' : ''} </th>
                                   {viewCostingData.map((data, index) => (
                                     <td className={tableDataClass(data)}>
-                                      {displayValueWithSign(data, "totalToolCost")} {showConvertedCurrency ? '(' : ''}{showConvertedCurrency && displayValueWithSign(data, 'NetToolCostConversion')}{showConvertedCurrency ? ')' : ''}
+                                      {data?.bestCost === true ? <>
+                                        {showConvertedCurrencyCheckbox ? <>
+                                          {displayValueWithSign(data, 'NetToolCostConversion')}
+                                        </> : <>
+                                          {displayValueWithSign(data, 'totalToolCost')}
+                                        </>}
+                                      </> : <>
+                                        {displayValueWithSign(data, 'totalToolCost')} {showConvertedCurrency ? '(' : ''}{showConvertedCurrency && displayValueWithSign(data, 'NetToolCostConversion')}{showConvertedCurrency ? ')' : ''}
+                                      </>}
                                       {data?.bestCost !== true && data?.CostingHeading !== VARIANCE && !pdfHead && !drawerDetailPDF && (
                                         <button
                                           id="view_toolCost"

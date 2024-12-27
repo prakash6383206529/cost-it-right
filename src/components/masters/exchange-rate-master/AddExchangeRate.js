@@ -297,10 +297,10 @@ class AddExchangeRate extends Component {
   */
   onSubmit = debounce((values) => {
     const { isEditFlag, currency, effectiveDate, ExchangeRateId, DataToChange, DropdownChanged, customer, costingTypeId, vendorName, budgeting, toCurrency, exchangeRateSource } = this.state;
-   if(currency?.label===toCurrency?.label){
-    Toaster.warning('From and To currency can not be same')
-       return false 
-}
+    if (currency?.label === toCurrency?.label) {
+      Toaster.warning('From and To currency can not be same')
+      return false
+    }
     /** Update existing detail of exchange master **/
     if (isEditFlag) {
       if (DataToChange.CurrencyExchangeRate === values.CurrencyExchangeRate &&

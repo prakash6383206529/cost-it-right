@@ -470,7 +470,7 @@ function ViewOverheadProfit(props) {
 
                 <th>{`Applicability`}</th>
                 <th>{`Repayment Period (No. of days)`}</th>
-                <th>{`Interest Rate ${iccPaymentData.PaymentTermDetail.PaymentTermApplicability === 'Fixed' ? '' : '(%)'}`}</th>
+                <th>{`Interest Rate ${iccPaymentData.PaymentTermDetail?.PaymentTermApplicability === 'Fixed' ? '' : '(%)'}`}</th>
                 <th>{`Cost`}</th>
                 {initialConfiguration.IsShowCRMHead && <th>{`CRM Head`}</th>}
                 <th>{`Remark`}</th>
@@ -478,15 +478,15 @@ function ViewOverheadProfit(props) {
             </thead>
             <tbody>
               {
-                (iccPaymentData.PaymentTermDetail.PaymentTermApplicability === null) ?
+                (iccPaymentData.PaymentTermDetail?.PaymentTermApplicability === null) ?
                   <tr>
                     <td colSpan={8}>
                       <NoContentFound title={EMPTY_DATA} />
                     </td>
                   </tr> :
                   <tr>
-                    <td>{iccPaymentData.PaymentTermDetail.PaymentTermApplicability ? iccPaymentData.PaymentTermDetail.PaymentTermApplicability : '-'}</td>
-                    <td>{iccPaymentData.PaymentTermDetail.PaymentTermApplicability === 'Fixed' ? '-' : iccPaymentData.PaymentTermDetail.RepaymentPeriod ? checkForDecimalAndNull(iccPaymentData.PaymentTermDetail.RepaymentPeriod, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+                    <td>{iccPaymentData.PaymentTermDetail?.PaymentTermApplicability ? iccPaymentData.PaymentTermDetail?.PaymentTermApplicability : '-'}</td>
+                    <td>{iccPaymentData.PaymentTermDetail?.PaymentTermApplicability === 'Fixed' ? '-' : iccPaymentData.PaymentTermDetail.RepaymentPeriod ? checkForDecimalAndNull(iccPaymentData.PaymentTermDetail.RepaymentPeriod, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
                     <td>{iccPaymentData.PaymentTermDetail.InterestRate ? checkForDecimalAndNull(iccPaymentData.PaymentTermDetail.InterestRate, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
                     <td>{iccPaymentData.PaymentTermDetail.NetCost ? checkForDecimalAndNull(iccPaymentData.PaymentTermDetail.NetCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
                     {initialConfiguration.IsShowCRMHead && <td>{iccPaymentData.PaymentTermDetail.PaymentTermCRMHead}</td>}
@@ -566,7 +566,7 @@ function ViewOverheadProfit(props) {
           {rejectData.RejectionApplicability != null && rejectTableData()}
           {/* //COMMENTED CODE DUE TO PAGE BLANK, ONCE FIXED IT BY ADITI IT WILL BE UNCOMMENT */}
           {/* {iccPaymentData.ICCApplicabilityDetail.ICCApplicability != null && iccTableData()} */}
-          {/* {iccPaymentData.PaymentTermDetail.PaymentTermApplicability != null && paymentTableData()} */}
+          {/* {iccPaymentData.PaymentTermDetail?.PaymentTermApplicability != null && paymentTableData()} */}
           {viewRejectionRecovery && rejectRecoveryTableData()}
         </>
 

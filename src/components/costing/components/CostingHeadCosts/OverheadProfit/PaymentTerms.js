@@ -31,7 +31,7 @@ const PaymentTerms = React.memo((props) => {
     const dispatch = useDispatch()
     const { CostingEffectiveDate } = useSelector(state => state.costing)
     const [IsPaymentTermsApplicable, setIsPaymentTermsApplicable] = useState(CostingInterestRateDetail && CostingInterestRateDetail.IsPaymentTerms ? true : false)
-    const [paymentTermsApplicability, setPaymentTermsApplicability] = useState(PaymentTermDetail !== undefined ? { label: PaymentTermDetail.PaymentTermApplicability, value: PaymentTermDetail.PaymentTermApplicability } : [])
+    const [paymentTermsApplicability, setPaymentTermsApplicability] = useState(PaymentTermDetail !== undefined ? { label: PaymentTermDetail?.PaymentTermApplicability, value: PaymentTermDetail?.PaymentTermApplicability } : [])
     const [PaymentTermInterestRateId, setPaymentTermInterestRateId] = useState(PaymentTermDetail !== undefined ? PaymentTermDetail.InterestRateId : '')
     const [tempPaymentTermObj, setTempPaymentTermObj] = useState(PaymentTermDetail)
 
@@ -148,8 +148,8 @@ const PaymentTerms = React.memo((props) => {
                     setValue('RepaymentPeriodPercentage', Data.InterestRate !== null ? Data.InterestRate : 0)
                     setValue('RepaymentPeriodFixed', Data.InterestRate !== null ? Data.InterestRate : 0)
                     setPaymentTermInterestRateId(Data.InterestRateId !== EMPTY_GUID ? Data.InterestRateId : null)
-                    checkPaymentTermApplicability(Data.PaymentTermApplicability)
-                    setPaymentTermsApplicability({ label: Data.PaymentTermApplicability, value: Data.PaymentTermApplicability })
+                    checkPaymentTermApplicability(Data?.PaymentTermApplicability)
+                    setPaymentTermsApplicability({ label: Data?.PaymentTermApplicability, value: Data?.PaymentTermApplicability })
                 } else if (res.status === 204) {
                     setLoader(false)
                     setValue('RepaymentPeriodDays', '')
@@ -172,8 +172,8 @@ const PaymentTerms = React.memo((props) => {
             setValue('RepaymentPeriodCost', getCostingPaymentDetails?.PaymentTermDetail ? checkForDecimalAndNull(getCostingPaymentDetails?.PaymentTermDetail?.NetCost, initialConfiguration.NoOfDecimalForPrice) : '')
             // setValue('ApplicabilityCost', getCostingPaymentDetails? checkForDecimalAndNull(getCostingPaymentDetails?.ApplicabilityCost, initialConfiguration.NoOfDecimalForPrice) : '')
             setPaymentTermInterestRateId(getCostingPaymentDetails?.PaymentTermDetail?.InterestRateId !== EMPTY_GUID ? getCostingPaymentDetails?.PaymentTermDetail.InterestRateId : null);
-            checkPaymentTermApplicability(getCostingPaymentDetails?.PaymentTermDetail.PaymentTermApplicability);
-            setPaymentTermsApplicability({ label: getCostingPaymentDetails?.PaymentTermDetail.PaymentTermApplicability, value: getCostingPaymentDetails?.PaymentTermDetail?.PaymentTermApplicability });
+            checkPaymentTermApplicability(getCostingPaymentDetails?.PaymentTermDetail?.PaymentTermApplicability);
+            setPaymentTermsApplicability({ label: getCostingPaymentDetails?.PaymentTermDetail?.PaymentTermApplicability, value: getCostingPaymentDetails?.PaymentTermDetail?.PaymentTermApplicability });
         }
 
         else {
