@@ -1138,9 +1138,10 @@ function ViewDrawer(props) {
                                                             placeholder={"Select"}
                                                             Controller={Controller}
                                                             control={control}
-                                                            rules={{ required: false }}
+                                                            rules={{ required: RFQ_KEYS?.RM_MANDATORY ? true : false }}
                                                             register={register}
-                                                            mandatory={true}
+                                                            mandatory={  RFQ_KEYS?.RM_MANDATORY ? true : false }
+                                                        
                                                             handleChange={(newValue) => handleChildPart(newValue)}
                                                             errors={errors.partNumber}
                                                             disabled={(isViewFlag || type === Component) ? true : false}

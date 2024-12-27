@@ -3445,7 +3445,7 @@ const data = {
                                 <form>
 
                                     <Row className="part-detail-wrapper">
-                                        <TooltipCustom id="technology" disabledIcon={true} tooltipText="To initiate RFI creation, select the technology, plant code, part type, and input part number (all three characters are necessary)" />
+                                        <TooltipCustom id="technology" disabledIcon={true} tooltipText={`To initiate ${!initialConfiguration.IsManageSeparateUserPermissionForPartAndVendorInRaiseRFQ ? "RFI" : "RFQ"} creation, select the technology, plant code, part type, and input part number (all three characters are necessary)`} />
 
                                         {quotationType !== "Bought Out Part" && (
                                             <Col md="3">
