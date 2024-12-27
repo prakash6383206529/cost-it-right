@@ -122,7 +122,7 @@ function RfqListing(props) {
     const userMasterLevelAPI = useSelector((state) => state.auth.userMasterLevelAPI)
     const isAssemblyTechnology = rowData && rowData?.length > 0 ? rowData[0]?.TechnologyId === ASSEMBLY : false
     let arr = []
-    const { technologyLabel ,vendorLabel } = useLabels();
+    const { technologyLabel, vendorLabel } = useLabels();
     const history = useHistory();
     const location = useLocation();
     useEffect(() => {
@@ -1092,6 +1092,12 @@ function RfqListing(props) {
     const bestCostObjectFunction = (arrayList) => {
         // Create a copy of the input array to prevent mutation
         let finalArrayList = _.cloneDeep(arrayList);
+        let showConvertedCurrencyCheckbox = false
+        if (viewCostingData && _.map(viewCostingData, 'CostingCurrency').every(element => element === getConfigurationKey().BaseCurrency)) {
+            showConvertedCurrencyCheckbox = false
+        } else {
+            showConvertedCurrencyCheckbox = true
+        }
 
         // Check if the input array is empty or null
         if (!finalArrayList || finalArrayList.length === 0) {
@@ -1104,10 +1110,13 @@ function RfqListing(props) {
             const keysToAvoid = ["TotalTCOCost"];
             // const keysToCheck = ["nPOPriceWithCurrency"];
             if (isAssemblyTechnology) {
-                keysToCheck = ["nTotalRMBOPCC", "sTreatment", "nPackagingAndFreight", "totalToolCost", "nsTreamnt", "tCost", "nConvCost", "netSurfaceTreatmentCost", "nOverheadProfit", "nPoPriceCurrency", "nPOPrice", "nPOPriceWithCurrency", "TotalTCOCost"];
-                keysToCheckSum = ["nTotalRMBOPCC", "nPackagingAndFreight", "totalToolCost", "nConvCost", "netSurfaceTreatmentCost", "nOverheadProfit", "TotalTCOCost"];
-            } else {
-                keysToCheck = ["netRM", "netBOP", "pCost", "oCost", "sTreatment", "nPackagingAndFreight", "totalToolCost", "nsTreamnt", "tCost", "nConvCost", "nTotalRMBOPCC", "netSurfaceTreatmentCost", "nOverheadProfit", "nPoPriceCurrency", "nPOPrice", "nPOPriceWithCurrency", "TotalTCOCost"];
+                keysToCheck = ["NetTotalRMBOPCCConversion", "sTreatment", "nPackagingAndFreight", "totalToolCost", "nsTreamnt", "tCost", "nConvCost", "netSurfaceTreatmentCost", "nOverheadProfit", "nPoPriceCurrency", "nPOPrice", "nPOPriceWithCurrency", "TotalTCOCost"];
+                keysToCheckSum = ["NetTotalRMBOPCCConversion", "nPackagingAndFreight", "totalToolCost", "nConvCost", "netSurfaceTreatmentCost", "nOverheadProfit", "TotalTCOCost"];
+            } else if (showConvertedCurrencyCheckbox) {
+                keysToCheck = ["netRM", "NetRawMaterialsCostConversion", "NetBoughtOutPartCostConversion", "NetProcessCostConversion", "NetOperationCostConversion", "NetSurfaceTreatmentCostConversion", "NetFreightPackagingCostConversion", "NetToolCostConversion", "netBOP", "pCost", "oCost", "nsTreamnt", "tCost", "nConvCost", "nTotalRMBOPCC", "netSurfaceTreatmentCost", "nOverheadProfit", "nPoPriceCurrency", "nPOPrice", "nPOPriceWithCurrency", "TotalTCOCost", "BasicRateConversion"];
+                keysToCheckSum = ["NetRawMaterialsCostConversion", "NetBoughtOutPartCostConversion", "NetFreightPackagingCostConversion", "NetToolCostConversion", "NetConversionCostConversion", "NetSurfaceTreatmentCostConversion", "NetOverheadAndProfitCostConversion", "TotalTCOCost"];
+            } else if (!showConvertedCurrencyCheckbox) {
+                keysToCheck = ["netRM", "NetRawMaterialsCostConversion", "NetBoughtOutPartCostConversion", "NetProcessCostConversion", "NetOperationCostConversion", "NetSurfaceTreatmentCostConversion", "NetFreightPackagingCostConversion", "NetToolCostConversion", "netBOP", "pCost", "oCost", "sTreatment", "nPackagingAndFreight", "totalToolCost", "nsTreamnt", "tCost", "nConvCost", "nTotalRMBOPCC", "netSurfaceTreatmentCost", "nOverheadProfit", "nPoPriceCurrency", "nPOPrice", "nPOPriceWithCurrency", "TotalTCOCost"];
                 keysToCheckSum = ["netRM", "netBOP", "nPackagingAndFreight", "totalToolCost", "nConvCost", "netSurfaceTreatmentCost", "nOverheadProfit", "TotalTCOCost"];
             }
             // Create a new object to represent the "best cost" and set it to the first object in the input array

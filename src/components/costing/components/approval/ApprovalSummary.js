@@ -555,8 +555,7 @@ function ApprovalSummary(props) {
                   <thead>
                     <tr>
                       <th>{technologyLabel}:</th>
-                      {getConfigurationKey().IsSourceExchangeRateNameVisible && <th>Exchange Rate Source:</th>}
-                      <th>Source Currency:</th>
+
                       <th>Part Type:</th>
                       <th>Assembly/Part No:</th>
                       <th>Assembly/Part Name:</th>
@@ -569,16 +568,7 @@ function ApprovalSummary(props) {
                   </thead>
                   <tbody>
                     <td>{partDetail?.Technology ? partDetail?.Technology : '-'}</td>
-                    {getConfigurationKey().IsSourceExchangeRateNameVisible && <td className='overflow'>
-                      <span className="d-block " title={approvalDetails?.ExchangeRateSourceName}>
-                        {approvalDetails?.ExchangeRateSourceName ? approvalDetails?.ExchangeRateSourceName : '-'}
-                      </span>
-                    </td>}
-                    <td className='overflow'>
-                      <span className="d-block " title={approvalDetails?.CostingCurrency}>
-                        {approvalDetails?.CostingCurrency ? approvalDetails?.CostingCurrency : '-'}
-                      </span>
-                    </td>
+
                     <td className='overflow'>
                       <span className="d-block " title={partDetail?.PartType}>
                         {partDetail?.PartType ? partDetail?.PartType : '-'}
@@ -635,6 +625,8 @@ function ApprovalSummary(props) {
                       {(approvalDetails.CostingTypeId === ZBCTypeId || approvalDetails.CostingTypeId === CBCTypeId) && <th>  {`Plant (Code):`} </th>}
 
                       <th>{`SOB (%):`}</th>
+                      {getConfigurationKey().IsSourceExchangeRateNameVisible && <th>Exchange Rate Source:</th>}
+                      <th>Currency:</th>
                       {initialConfiguration?.IsBasicRateAndCostingConditionVisible && <th>{`Basic Price:`}</th>}
                       {/* <th>{`ECN Ref No`}</th> */}
                       <th>{`Existing Price:`}</th>
@@ -682,6 +674,16 @@ function ApprovalSummary(props) {
                       {approvalDetails.CostingTypeId === ZBCTypeId && <td> {(approvalDetails.PlantName) ? `${approvalDetails.PlantName}` : '-'}</td>}
                       <td>
                         {approvalDetails.ShareOfBusiness !== null ? approvalDetails.ShareOfBusiness : '-'}
+                      </td>
+                      {getConfigurationKey().IsSourceExchangeRateNameVisible && <td className='overflow'>
+                        <span className="d-block " title={approvalDetails?.ExchangeRateSourceName}>
+                          {approvalDetails?.ExchangeRateSourceName ? approvalDetails?.ExchangeRateSourceName : '-'}
+                        </span>
+                      </td>}
+                      <td className='overflow'>
+                        <span className="d-block " title={approvalDetails?.CostingCurrency}>
+                          {approvalDetails?.CostingCurrency ? approvalDetails?.CostingCurrency : '-'}
+                        </span>
                       </td>
                       {initialConfiguration?.IsBasicRateAndCostingConditionVisible && <td>
                         {approvalDetails.BasicRate ? checkForDecimalAndNull(approvalDetails.BasicRate, initialConfiguration?.NoOfDecimalForPrice) : '-'}

@@ -1961,32 +1961,13 @@ const rmAPICalling = (params, dispatch) => {
   }
 }
 
-const bopAPICalling = (params, dispatch) => {
-  const { tabs } = params;
-  switch (tabs?.trim()) {
-    case "Domestic":
-    case "Import":
-      dispatch(getBOPDataList(params, params?.skip, params?.take, params?.isPagination, params, params?.isImport, (res) => { }))
-      break;
-    case "Specification":
-      dispatch(getRMSpecificationDataList(params?.data, () => { }))
-      break;
-    case "Material":
-      dispatch(getMaterialTypeDataListAPI(() => { }))
-      break;
-    default:
-      break;
-  }
-}
+
 
 export const apiCallingFunction = (params, dispatch) => {
   const { master } = params;
   switch (master?.trim()) {
     case "RawMaterial":
       rmAPICalling(params, dispatch)
-      break;
-    case "BoughtOutPart":
-      bopAPICalling(params, dispatch)
       break;
     default:
       break;

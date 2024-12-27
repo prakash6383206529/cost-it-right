@@ -50,6 +50,7 @@ import { labels, LabelsClass } from '../../../helper/core';
 import { getPlantUnitAPI } from '../actions/Plant';
 import AddOtherCostDrawer from '../material-master/AddOtherCostDrawer';
 
+
 const selector = formValueSelector('AddBOPImport');
 
 class AddBOPImport extends Component {
@@ -1209,6 +1210,7 @@ class AddBOPImport extends Component {
   * @description used to Reset form
   */
   cancel = (type) => {
+
     const { reset } = this.props;
     reset();
     this.setState({
@@ -1218,6 +1220,7 @@ class AddBOPImport extends Component {
       sourceLocation: [],
       UOM: {},
     })
+
     this.props.getBOPImportById('', res => { })
     this.props.hideForm(type)
   }
@@ -2121,7 +2124,7 @@ class AddBOPImport extends Component {
                             <div className='d-flex align-items-center'>
                               <div className="w-100">
                                 <Field
-                                  label={`Other Cost/${this?.state?.UOM?.label ? this.state?.UOM?.label : 'UOM'} (${this?.props?.fieldsObj?.plantCurrency ?? 'Currency'})`}
+                                  label={`Other Cost/${this?.state?.UOM?.label ? this.state?.UOM?.label : 'UOM'}  (${this?.state?.currency?.label === undefined ? 'Currency' : this.state?.currency?.label})`}
                                   name={"OtherCost"}
                                   type="text"
                                   placeholder={"-"}

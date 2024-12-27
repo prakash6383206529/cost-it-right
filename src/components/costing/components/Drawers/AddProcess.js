@@ -22,6 +22,7 @@ import { hyphenFormatter } from '../../../masters/masterUtil';
 import { ViewCostingContext } from '../CostingDetails';
 import { useLabels } from '../../../../helper/core';
 import WarningMessage from '../../../common/WarningMessage';
+import { reactLocalStorage } from 'reactjs-localstorage';
 
 const gridOptions = {};
 
@@ -260,6 +261,13 @@ function AddProcess(props) {
     return rowData?.IsValidExchangeRate ? checkForDecimalAndNull(cellValue, getConfigurationKey().NoOfDecimalForPrice) : '-'
   }
 
+  const currencyFormatter = (props) => {
+    console.log("props", props)
+    const cellValue = props?.valueFormatted ? props?.valueFormatted : props?.value;
+    return cellValue !== '-' ? cellValue : reactLocalStorage.getObject("baseCurrency")
+  }
+
+
   const frameworkComponents = {
     // totalValueRenderer: this.buttonFormatter,
     // effectiveDateRenderer: this.effectiveDateFormatter,
@@ -272,7 +280,8 @@ function AddProcess(props) {
     customNoRowsOverlay: NoContentFound,
     checkBoxRenderer: checkBoxRenderer,
     hyphenFormatter: hyphenFormatter,
-    rateFormat: rateFormat
+    rateFormat: rateFormat,
+    currencyFormatter: currencyFormatter,
   };
 
   useEffect(() => {
@@ -404,6 +413,7 @@ function AddProcess(props) {
                                   <AgGridColumn field="MachineTypeName" headerName="Machine Type"></AgGridColumn>
                                   <AgGridColumn field="Tonnage" headerName="Machine Tonnage" cellRenderer={"hyphenFormatter"}></AgGridColumn>
                                   <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
+                                  {/* <AgGridColumn field="Currency" cellRenderer={'currencyFormatter'}></AgGridColumn> */}
                                   <AgGridColumn field="MachineRate" headerName={'Machine Rate'} cellRenderer={'rateFormat'}></AgGridColumn>
 
                                 </AgGridReact>
