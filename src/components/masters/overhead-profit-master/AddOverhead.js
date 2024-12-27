@@ -100,7 +100,7 @@ class AddOverhead extends Component {
       this.props.getRawMaterialNameChild(() => { })
     }
     this.props.getPlantSelectListByType(ZBC, "MASTER", '', () => { })
-    this.props.fetchCostingHeadsAPI('master', false, res => { });
+    this.props.fetchCostingHeadsAPI('Overhead and Profits', false, res => { });
     this.getDetails();
   }
   componentWillUnmount() {
