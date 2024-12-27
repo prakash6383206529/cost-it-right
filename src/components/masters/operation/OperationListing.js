@@ -62,7 +62,7 @@ const OperationListing = (props) => {
         selectedRowDataAnalytics: [],
         inRangeDate: [],
         //states for pagination purpose
-        floatingFilterData: { CostingHead: "", Technology: "", OperationName: "", OperationCode: "", Plants: "", VendorName: "", UnitOfMeasurement: "", Rate: "", EffectiveDate: "", DepartmentName: props.isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant ? userDepartmetList() : "", CustomerName: '', ForType: '' },
+        floatingFilterData: { CostingHead: "", Technology: "", OperationName: "", OperationCode: "", Plants: "", VendorName: "", UOM: "", Rate: "", EffectiveDate: "", DepartmentName: props.isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant ? userDepartmetList() : "", CustomerName: '', ForType: '' },
         warningMessage: false,
         filterModel: {},
         totalRecordCount: 0,
