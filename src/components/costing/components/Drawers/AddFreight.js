@@ -517,7 +517,7 @@ function AddFreight(props) {
       FullTruckLoadId: isEditFlag ? rowObjData?.FullTruckLoadId : fullTruckLoadId,
     }
 
-    if (doesObjectExist(gridData, formData)) {
+    if (doesObjectExist(gridData, formData) && !isEditFlag) {
       Toaster.warning("Data already exists in the grid.")
       return false;
     }
@@ -691,11 +691,11 @@ function AddFreight(props) {
                       mandatory={freightType !== Fixed ? true : false}
                       rules={{
                         required: freightType !== Fixed ? true : false,
-                        validate: freightType !== Fixed ? { number, checkWhiteSpaces, percentageLimitValidation } : {},
-                        max: {
+                        validate: freightType === Percentage ? { number, checkWhiteSpaces, percentageLimitValidation } : { number, checkWhiteSpaces },
+                        max: freightType === Percentage ? {
                           value: 100,
                           message: 'Percentage should be less than 100'
-                        },
+                        } : {},
                       }}
                       handleChange={() => { }}
                       defaultValue={''}
