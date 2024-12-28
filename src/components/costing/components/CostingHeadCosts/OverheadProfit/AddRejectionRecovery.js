@@ -41,6 +41,7 @@ function AddRejectionRecovery(props) {
     const CostingViewMode = useContext(ViewCostingContext);
     const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
     const dispatch = useDispatch()
+    const costingHead = useSelector(state => state.comman.costingHead)
 
     const toggleDrawer = (event, formData = {}) => {
         if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
@@ -57,9 +58,9 @@ function AddRejectionRecovery(props) {
         const temp = [];
 
         if (label === 'recoveryApplicability') {
-            REJECTION_RECOVERY_APPLICABILITY && REJECTION_RECOVERY_APPLICABILITY.map(item => {
-                if (isPartType?.label === ASSEMBLYNAME && item.value === '24') return false;
-                temp.push({ label: item.label, value: item.value })
+            costingHead && costingHead?.map(item => {
+                if (!REJECTION_RECOVERY_APPLICABILITY?.includes(item.Text)) return false;
+                temp.push({ label: item.Text, value: item.Value })
                 return null;
             });
             return temp;

@@ -9368,11 +9368,7 @@ export const NFR_COMPONENT_CUSTOMIZED_NAME = 'Part'
 export const NFR_BOP_STANDARD_NAME = 'BoughtOutPart'
 export const NFR_RAW_MATERIAL_NAME = 'RawMaterial'
 
-export const REJECTION_RECOVERY_APPLICABILITY = [
-    { label: "Scrap Rate * Net Weight", value: '24' },
-    // { label: "Scap Rate * Net weight", value: 1 },
-    { label: "Fixed", value: '7' },
-]
+export const REJECTION_RECOVERY_APPLICABILITY = ["ScrapRate * NetWeight", "Fixed"]
 
 export const PACK_AND_FREIGHT_PER_KG = 'Per kg'
 
