@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Container, Row, Col, Table } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
 import NoContentFound from '../../../common/NoContentFound';
@@ -12,12 +12,21 @@ function ViewPackagingAndFreight(props) {
   const { packagingData, freightData } = props.packagingAndFreightCost;
   const { isPDFShow, isLogisticsTechnology } = props
   const [packagingCalculatorDrawer, setPackagingCalculatorDrawer] = useState(false)
+  const [viewCostingData, setViewCostingData] = useState([])
+  // console.log(viewCostingData, "viewCostingData")
   const [rowObjData, setRowObjData] = useState({
     PackagingDetailId:null,
-    CostingPackagingCalculationDetailsId:null
+    CostingPackagingCalculationDetailsId:null,
+    SimulationTempData:null
   })
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-
+  const { viewCostingDetailData} = useSelector((state) => state.costing)
+  console.log(viewCostingDetailData, "viewCostingDetailData")
+  useEffect(() => {
+    if (viewCostingDetailData && viewCostingDetailData?.length > 0) {
+      setViewCostingData(viewCostingDetailData)
+    } 
+  }, [viewCostingDetailData])
   /**
     * @method toggleDrawer
     * @description closing drawer
@@ -36,7 +45,8 @@ function ViewPackagingAndFreight(props) {
   const getPackagingCalculator = (index) => {
     setRowObjData({
       PackagingDetailId:packagingData[index]?.PackagingDetailId,
-      CostingPackagingCalculationDetailsId:packagingData[index]?.CostingPackagingCalculationDetailsId
+      CostingPackagingCalculationDetailsId:packagingData[index]?.CostingPackagingCalculationDetailsId,
+      SimulationTempData:viewCostingDetailData
     })
     setPackagingCalculatorDrawer(true)
   }
@@ -191,6 +201,9 @@ function ViewPackagingAndFreight(props) {
                 closeCalculator={closePackagingCalculatorDrawer}
                 rowObjData={rowObjData}
                 CostingViewMode={true}
+                simulationMode={props?.simulationMode}
+                viewPackaingData={packagingData}
+                index={props?.index}
               />
             )}
           </div>

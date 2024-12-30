@@ -1669,3 +1669,26 @@ export function getVolumePerDayForPackagingCalculator(partId, plantId, effective
     });
   };
 }
+/**
+ * @method getSimulationPackagingCalculation
+ * @description Get simulation packaging calculator data
+*/
+export function getSimulationPackagingCalculation(simulationId, costingId, callback) {
+  return (dispatch) => {
+    const queryParams = `simulationId=${simulationId}&costingId=${costingId}`
+    const request = axios.get(`${API.getSimulationPackagingCalculation}?${queryParams}`, config());
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      } else if (response.status === 204) {
+        callback(response);
+      } else {
+        Toaster.error(MESSAGES.SOME_ERROR);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+      apiErrors(error);
+    });
+  };
+}

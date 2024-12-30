@@ -19,6 +19,7 @@ export const config = () => {
 
 
 const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
+// const BASE_URL = `http://10.10.1.100:10152/api/v1`;
 export const FILE_URL = `${process.env.REACT_APP_FILE_URL}`;
 
 /** Export API */
@@ -640,6 +641,7 @@ export const API = {
   getPackagingCalculation: `${BASE_URL}/costing/get-costing-packaging-calculation-details`,
   savePackagingCalculation: `${BASE_URL}/costing/save-costing-packaging-calculation-details`,
   getVolumePerDayForPackagingCalculator: `${BASE_URL}/costing/get-volume-per-day-for-packaging-calculator`,
+  getSimulationPackagingCalculation: `${BASE_URL}/simulation/get-simulation-costing-packaging-calculation-details`,
 
   //Insulation calculator
   saveRawMaterialCalculationForInsulation: `${BASE_URL}/costing/save-raw-material-insulation-calculation-details`,

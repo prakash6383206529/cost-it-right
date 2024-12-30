@@ -630,8 +630,16 @@ function CostingSimulation(props) {
         })
         dispatch(getComparisionSimulationData(obj, res => {
             const Data = res.data.Data
-            const obj1 = [...formViewData(Data.OldCosting, 'Old Costing'), ...formViewData(Data.NewCosting, 'New Costing'), ...formViewData(Data.Variance, 'Variance')]
-            dispatch(setCostingViewData(obj1))
+            console.log(Data,'data')
+            // const obj1 = [...formViewData(Data.OldCosting, 'Old Costing'), ...formViewData(Data.NewCosting, 'New Costing'), ...formViewData(Data.Variance, 'Variance')]
+            const obj1 = formViewData(Data.OldCosting, 'Old Costing')
+            const obj2 = formViewData(Data.NewCosting, 'New Costing')
+            const obj3 = formViewData(Data.Variance, 'Variance')
+            const objj3 = [obj1[0], obj2[0], obj3[0]]
+            objj3[1].SimulationId = Data?.SimulationId
+            objj3[1].SimulationStatusId = Data?.SimulationStatusId
+            console.log(objj3,'objj3')
+            dispatch(setCostingViewData(objj3))
             setCostingDetailDrawer(true)
         }))
     }

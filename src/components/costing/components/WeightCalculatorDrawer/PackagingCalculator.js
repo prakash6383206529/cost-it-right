@@ -7,10 +7,11 @@ import Toaster from '../../../common/Toaster'
 import TooltipCustom from '../../../common/Tooltip'
 import Button from '../../../layout/Button'
 import { TextFieldHookForm } from '../../../layout/HookFormInputs'
-import { getPackagingCalculation, getVolumePerDayForPackagingCalculator, savePackagingCalculation } from '../../actions/CostWorking'
+import { getPackagingCalculation, getSimulationPackagingCalculation, getVolumePerDayForPackagingCalculator, savePackagingCalculation } from '../../actions/CostWorking'
 import { Drawer } from '@material-ui/core'
 import { useTranslation } from 'react-i18next'
 import { ViewCostingContext } from '../CostingDetails'
+import { AWAITING_APPROVAL_ID, DRAFT, PENDING_FOR_APPROVAL_ID, REJECTEDID } from '../../../../config/constants'
 function PackagingCalculator(props) {
 const {rowObjData} = props
     const [state, setState] = useState({
@@ -51,41 +52,65 @@ const {rowObjData} = props
         }
     }, [calclulationFieldValues,state?.spacerPackingInsertRecoveryCostPerKg]);
     useEffect(() => {
+        if(!CostingViewMode){
         dispatch(getVolumePerDayForPackagingCalculator(costingData?.PartId, costingData?.PlantId, CostingEffectiveDate, costingData?.VendorId, (res) => {
             let data = res?.data?.Data
             setValue('VolumePerDay', checkForDecimalAndNull(data?.VolumePerDay, NoOfDecimalForInputOutput))
             setValue('VolumePerAnnum', checkForDecimalAndNull(data?.VolumePerAnnum, NoOfDecimalForInputOutput))
             setState((prevState) => ({ ...prevState, volumePerDay: data?.VolumePerDay, volumePerAnnum: data?.VolumePerAnnum }))
         }))
-        let calculatorId = rowObjData && Object.keys(rowObjData).length > 0?rowObjData?.CostingPackagingCalculationDetailsId:props?.costingPackagingCalculationDetailsId??null
-        let packagingDetailId = rowObjData && Object.keys(rowObjData).length > 0?rowObjData?.PackagingDetailId:null
+        }
+        const tempData = rowObjData?.SimulationTempData
+        console.log(tempData[0])
+        const index = props?.viewPackaingData?.findIndex(item => item.PackagingDetailId === rowObjData?.PackagingDetailId)
+        console.log(props?.viewPackaingData[index])
+        console.log(props.simulationMode)
+        if (props.simulationMode && String(tempData[index]?.CostingHeading) === String("New Costing") && (Number(tempData[index]?.SimulationStatusId) === Number(REJECTEDID) || Number(tempData[index]?.SimulationStatusId) === Number(PENDING_FOR_APPROVAL_ID) || Number(tempData[index]?.SimulationStatusId) === Number(AWAITING_APPROVAL_ID)||Number(tempData[index]?.SimulationStatusId) === Number(DRAFT)) && props?.viewPackaingData[index]?.Applicability === 'Crate/Trolley') {
+            dispatch(getSimulationPackagingCalculation(tempData[index]?.SimulationId, costingData?.CostingId, (res) => {
+                console.log(res)
+                let data = res?.data?.Data
+                setFormValues(data)
+             }))
+        }
+        else{
+            let calculatorId = rowObjData && Object.keys(rowObjData).length > 0?rowObjData?.CostingPackagingCalculationDetailsId:props?.costingPackagingCalculationDetailsId??null
+            let packagingDetailId = rowObjData && Object.keys(rowObjData).length > 0?rowObjData?.PackagingDetailId:null
         dispatch(getPackagingCalculation(costingData?.CostingId, packagingDetailId, calculatorId, (res) => {
             let data = res?.data?.Data
-            setValue('NoOfComponentsPerCrate', checkForDecimalAndNull(data?.NoOfComponentsPerCrate, NoOfDecimalForInputOutput))
-            setValue('NoOfCratesRequiredPerDay', checkForDecimalAndNull(data?.NoOfCratesRequiredPerDay, NoOfDecimalForInputOutput))
-            setValue('StockNormDays', checkForDecimalAndNull(data?.StockNormDays, NoOfDecimalForInputOutput))
-            setValue('CostOfCrate', checkForDecimalAndNull(data?.CostOfCrate, NoOfDecimalForInputOutput))
-            setValue('TotalCostOfCrate', checkForDecimalAndNull(data?.TotalCostOfCrate, NoOfDecimalForInputOutput))
-            setValue('AmortizedNoOfYears', checkForDecimalAndNull(data?.AmortizedNoOfYears, NoOfDecimalForInputOutput))
-            setValue('WeightOfCover', checkForDecimalAndNull(data?.WeightOfCoverPerKg, NoOfDecimalForInputOutput))
-            setValue('CostOfCoverPerKg', checkForDecimalAndNull(data?.CostOfCoverPerKg, NoOfDecimalForInputOutput))
-            setValue('NoOfPartsPerCover', checkForDecimalAndNull(data?.NoOfPartsPerCover, NoOfDecimalForInputOutput))
-            setValue('SpacerPackingInsertCost', checkForDecimalAndNull(data?.SpacerPackingInsertCostIfAny, NoOfDecimalForInputOutput))
-            setValue('NoOfSpacerPackingInsert', checkForDecimalAndNull(data?.NoOfSpacersPackingInsert, NoOfDecimalForInputOutput))
-            setValue('SpacerPackingInsertRecovery', checkForDecimalAndNull(data?.SpacersPackingInsertRecoveryPercentage, NoOfDecimalForInputOutput))
-            setValue('SpacerPackingInsertRecoveryCostPerKg', checkForDecimalAndNull(data?.SpacersPackingInsertRecoveryCostPerKg, NoOfDecimalForInputOutput))
-            setValue('TotalCostOfSpacerPackingInsert', checkForDecimalAndNull(data?.CostOfSpacersPackingInsert, NoOfDecimalForInputOutput))
-            setValue('PackingCost', checkForDecimalAndNull(data?.PackingCost, NoOfDecimalForInputOutput))
-            setState((prevState) => ({ ...prevState, 
-                noOfCratesRequiredPerDay: data?.NoOfCratesRequiredPerDay,
-                totalCostOfCrate: data?.TotalCostOfCrate,
-                spacerPackingInsertRecoveryCostPerKg: data?.SpacersPackingInsertRecoveryCostPerKg, 
-                totalCostOfSpacerPackingInsert: data?.CostOfSpacersPackingInsert, 
-                packingCost: data?.PackingCost }))
+            setFormValues(data)
+           
         }))
+    }
     }, [])
 
-
+const setFormValues=(data)=>{
+    setValue('NoOfComponentsPerCrate', checkForDecimalAndNull(data?.NoOfComponentsPerCrate, NoOfDecimalForInputOutput))
+    setValue('NoOfCratesRequiredPerDay', checkForDecimalAndNull(data?.NoOfCratesRequiredPerDay, NoOfDecimalForInputOutput))
+    setValue('StockNormDays', checkForDecimalAndNull(data?.StockNormDays, NoOfDecimalForInputOutput))
+    setValue('CostOfCrate', checkForDecimalAndNull(data?.CostOfCrate, NoOfDecimalForPrice))
+    setValue('TotalCostOfCrate', checkForDecimalAndNull(data?.TotalCostOfCrate, NoOfDecimalForPrice))
+    setValue('AmortizedNoOfYears', checkForDecimalAndNull(data?.AmortizedNoOfYears, NoOfDecimalForInputOutput))
+    setValue('WeightOfCover', checkForDecimalAndNull(data?.WeightOfCoverPerKg, NoOfDecimalForInputOutput))
+    setValue('CostOfCoverPerKg', checkForDecimalAndNull(data?.CostOfCoverPerKg, NoOfDecimalForPrice))
+    setValue('NoOfPartsPerCover', checkForDecimalAndNull(data?.NoOfPartsPerCover, NoOfDecimalForInputOutput))
+    setValue('SpacerPackingInsertCost', checkForDecimalAndNull(data?.SpacerPackingInsertCostIfAny, NoOfDecimalForPrice))
+    setValue('NoOfSpacerPackingInsert', checkForDecimalAndNull(data?.NoOfSpacersPackingInsert, NoOfDecimalForInputOutput))
+    setValue('SpacerPackingInsertRecovery', checkForDecimalAndNull(data?.SpacersPackingInsertRecoveryPercentage, NoOfDecimalForInputOutput))
+    setValue('SpacerPackingInsertRecoveryCostPerKg', checkForDecimalAndNull(data?.SpacersPackingInsertRecoveryCostPerKg, NoOfDecimalForPrice))
+    setValue('TotalCostOfSpacerPackingInsert', checkForDecimalAndNull(data?.CostOfSpacersPackingInsert, NoOfDecimalForPrice))
+    setValue('PackingCost', checkForDecimalAndNull(data?.PackingCost, NoOfDecimalForPrice))
+    setValue('VolumePerDay', checkForDecimalAndNull(data?.VolumePerDay, NoOfDecimalForInputOutput))
+    setValue('VolumePerAnnum', checkForDecimalAndNull(data?.VolumePerAnnum, NoOfDecimalForInputOutput))
+    setState((prevState) => ({ ...prevState, 
+        noOfCratesRequiredPerDay: data?.NoOfCratesRequiredPerDay,
+        totalCostOfCrate: data?.TotalCostOfCrate,
+        spacerPackingInsertRecoveryCostPerKg: data?.SpacersPackingInsertRecoveryCostPerKg, 
+        totalCostOfSpacerPackingInsert: data?.CostOfSpacersPackingInsert, 
+        packingCost: data?.PackingCost,
+        volumePerDay: data?.VolumePerDay,
+        volumePerAnnum: data?.VolumePerAnnum,
+     }))
+}
     const packagingCalculatorFields = [
         { label: t('noOfComponentsPerCrate', { defaultValue: 'No of components per crate/trolley' }), name: 'NoOfComponentsPerCrate', mandatory: true, searchable: false, disabled: CostingViewMode ? CostingViewMode : false },
         { label: t('volumePerDay', { defaultValue: 'Volume per day' }), name: 'VolumePerDay', mandatory: false, disabled: true ,tooltip: { text: `Coming from volume master`, width: '250px' ,disabled: false} },
