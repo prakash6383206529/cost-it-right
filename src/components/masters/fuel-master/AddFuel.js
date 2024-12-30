@@ -240,20 +240,20 @@ class AddFuel extends Component {
       }
 
       if (country?.label) {
-        if (country.label === 'India') {
-          if (!StateName || Object.keys(StateName).length === 0) {
-            this.setState({ errorObj: { ...this.state.errorObj, state: true } });
-            count++
-          } else {
-            this.setState({ errorObj: { ...this.state.errorObj, state: false } });
-          }
-        } else {
-          this.setState({ errorObj: { ...this.state.errorObj, state: false } });
-        }
+        const isIndia = country.label === 'India';
+        const hasStateName = StateName && Object.keys(StateName).length > 0;
+
+        this.setState({
+          errorObj: { ...this.state.errorObj, state: isIndia && !hasStateName },
+        });
+
+        if (isIndia && !hasStateName) count++;
       } else {
         this.setState({ errorObj: { ...this.state.errorObj, state: true } });
         count++;
       }
+
+
       if (fieldsObj === undefined || Number(fieldsObj) === 0) {
         this.setState({ errorObj: { ...this.state.errorObj, rate: true } })
         count++
