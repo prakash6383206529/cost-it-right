@@ -11,7 +11,7 @@ import { getPackagingCalculation, getSimulationPackagingCalculation, getVolumePe
 import { Drawer } from '@material-ui/core'
 import { useTranslation } from 'react-i18next'
 import { ViewCostingContext } from '../CostingDetails'
-import { AWAITING_APPROVAL_ID, DRAFT, PENDING_FOR_APPROVAL_ID, REJECTEDID } from '../../../../config/constants'
+import { AWAITING_APPROVAL_ID, DRAFT, DRAFTID, PENDING_FOR_APPROVAL_ID, REJECTEDID } from '../../../../config/constants'
 function PackagingCalculator(props) {
 const {rowObjData} = props
     const [state, setState] = useState({
@@ -61,26 +61,24 @@ const {rowObjData} = props
         }))
         }
         const tempData = rowObjData?.SimulationTempData
-        console.log(tempData[0])
-        const index = props?.viewPackaingData?.findIndex(item => item.PackagingDetailId === rowObjData?.PackagingDetailId)
-        console.log(props?.viewPackaingData[index])
-        console.log(props.simulationMode)
-        if (props.simulationMode && String(tempData[index]?.CostingHeading) === String("New Costing") && (Number(tempData[index]?.SimulationStatusId) === Number(REJECTEDID) || Number(tempData[index]?.SimulationStatusId) === Number(PENDING_FOR_APPROVAL_ID) || Number(tempData[index]?.SimulationStatusId) === Number(AWAITING_APPROVAL_ID)||Number(tempData[index]?.SimulationStatusId) === Number(DRAFT)) && props?.viewPackaingData[index]?.Applicability === 'Crate/Trolley') {
-            dispatch(getSimulationPackagingCalculation(tempData[index]?.SimulationId, costingData?.CostingId, (res) => {
-                console.log(res)
-                let data = res?.data?.Data
-                setFormValues(data)
-             }))
-        }
-        else{
+        // const index = props?.viewPackaingData?.findIndex(item => item.PackagingDetailId === rowObjData?.PackagingDetailId)
+        // if (props.simulationMode && tempData?.map(item => item?.CostingHeading)?.includes("New Costing") && tempData?.map(item => Number(item?.SimulationStatusId)).some(id => [REJECTEDID, PENDING_FOR_APPROVAL_ID, AWAITING_APPROVAL_ID, DRAFTID].includes(id)) && props?.viewPackaingData[index]?.Applicability === 'Crate/Trolley') {
+        //     const simulationId = tempData.find(item => item?.CostingHeading === "New Costing")?.SimulationId
+        //     dispatch(getSimulationPackagingCalculation(simulationId, costingId, (res) => {
+            //         let data = res?.data?.Data
+            //         setFormValues(data)
+            //      }))
+            // }
+            // else{
+            const costingId = costingData?.CostingId??tempData.find(item => item?.CostingHeading === "Old Costing")?.costingId
             let calculatorId = rowObjData && Object.keys(rowObjData).length > 0?rowObjData?.CostingPackagingCalculationDetailsId:props?.costingPackagingCalculationDetailsId??null
             let packagingDetailId = rowObjData && Object.keys(rowObjData).length > 0?rowObjData?.PackagingDetailId:null
-        dispatch(getPackagingCalculation(costingData?.CostingId, packagingDetailId, calculatorId, (res) => {
+        dispatch(getPackagingCalculation(costingId, packagingDetailId, calculatorId, (res) => {
             let data = res?.data?.Data
             setFormValues(data)
            
         }))
-    }
+    // }
     }, [])
 
 const setFormValues=(data)=>{
@@ -178,7 +176,7 @@ const setFormValues=(data)=>{
     const calculateSpacerPackingInsertRecoveryCost = (value) => {
         const spacerPackingInsertCost = checkForNull(getValues('SpacerPackingInsertCost'))
         const noOfSpacerPackingInsert = checkForNull(getValues('NoOfSpacerPackingInsert'))
-        const spacerPackingInsertRecovery = checkForNull(getValues('SpacerPackingInsertRecovery'))
+        const spacerPackingInsertRecovery = checkForNull(value)
         const recoveryCost = spacerPackingInsertCost * noOfSpacerPackingInsert * (spacerPackingInsertRecovery / 100)
         setValue('SpacerPackingInsertRecoveryCostPerKg', checkForDecimalAndNull(recoveryCost, NoOfDecimalForPrice));
         setState((prevState) => ({ ...prevState, spacerPackingInsertRecoveryCostPerKg: recoveryCost }))
