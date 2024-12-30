@@ -1,14 +1,18 @@
 // Table.js
-import React from 'react';
+// Table.js
+import React, { useState } from 'react';
 import { getVendorPlantSelectList } from '../../../actions/Common';
 import { useLabels } from '../../../helper/core';
+import TooltipCustom from '../../common/Tooltip';
 
 const Table = (props) => {
-    const { headerData, sectionData, children } = props;
+    const { headerData, sectionData, children,showConvertedCurrency, 
+        onConvertedCurrencyChange,showConvertedCurrencyCheckbox,onViewOtherCost } = props;
     const { vendorLabel } = useLabels()
 
     const renderList = (sectionData) => {
         const { isHighlightedRow, header, data } = sectionData
+        
         return <>
             {isHighlightedRow ? <> {header.length > 1 && <tr className='summary-table-main-row'>
                 <td>
@@ -24,11 +28,24 @@ const Table = (props) => {
                     </td>
                 ))}
             </tr>}
-                <tr className='background-light-blue'>
+            <tr className='background-light-blue'>
                     <td>{header[header.length - 1]}</td>
                     {data.map((item, index) => (
                         <td key={index}>
-                            <div>{item[item.length - 1] ?? '-'}</div>
+                            <div className="d-flex align-items-center justify-content-between">
+                                <span>{item[item.length - 1] ?? '-'}</span>
+                                {/* Add view icon for Other Net Cost column */}
+                                {header[header.length - 1].includes('Other Net Cost') && !headerData[index].bestCost && (
+                                   <button
+                                   id="view_conversion_cost"
+                                   type="button"
+                                   title='View'
+                                   className="float-right mb-0 View "
+                                   onClick={() => onViewOtherCost(index)}
+                                 >
+                                 </button>
+                                )}
+                            </div>
                         </td>
                     ))}
                 </tr>
@@ -51,8 +68,28 @@ const Table = (props) => {
     }
 
     return (
-        <table className='table table-bordered costing-summary-table'>
-            <thead>
+        <>
+        {showConvertedCurrencyCheckbox && (
+            <div className="currency-controls d-flex justify-content-end align-items-center mb-3">
+                <label className="custom-checkbox mb-0 mr-2 d-flex align-items-center">
+                    <input
+                        type="checkbox"
+                        checked={showConvertedCurrency}
+                        onChange={() => onConvertedCurrencyChange(!showConvertedCurrency)}
+                    />
+                    <span className="before-box mr-2" />
+                    <span>Show Converted Currency</span>
+                </label>
+                <TooltipCustom 
+                    id={'converted-currency-tooltip'} 
+                    width={"290px"} 
+                    tooltipText={"If you wish to see Best Cost, Please click on 'Show Converted Currency'."}
+                />
+            </div>
+        )}
+        <div className="table-container">
+            <table className='table table-bordered costing-summary-table'>
+                <thead>
                 <tr>
                     <th></th>
                     {headerData.map((item, index) => {
@@ -91,6 +128,8 @@ const Table = (props) => {
                 {children}
             </tbody>
         </table>
+        </div>
+        </>
     );
 };
 
