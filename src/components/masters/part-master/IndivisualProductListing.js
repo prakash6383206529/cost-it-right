@@ -150,7 +150,7 @@ const IndivisualProductListing = (props) => {
         {permissions.View && (
           <button
             title="View"
-            className="View Tour_List_View"
+            className="View Tour_List_View mr-2"
             type={"button"}
             onClick={() => viewOrEditItemDetails(cellValue, true)}
           />

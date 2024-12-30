@@ -64,7 +64,7 @@ const VendorListing = (props) => {
     pageNo: 1,
     pageNoNew: 1,
     floatingFilterData: {
-      vendorType: "",
+      VendorType: "",
       vendorName: "",
       VendorCode: "",
       Country: "",
@@ -248,10 +248,6 @@ const VendorListing = (props) => {
     );
   };
 
-  const floatingFilterVendorType = {
-    maxValue: 6, suppressFilterButton: true, component: "vendorType",
-  };
-
   const onFloatingFilterChanged = (value) => {
     setTimeout(() => {
       if (supplierDataList?.length !== 0) {
@@ -305,6 +301,9 @@ const VendorListing = (props) => {
     }
   };
 
+  const floatingFilterVendorType = {
+    maxValue: 6, suppressFilterButton: true, component: "vendorType", onFloatingFilterChanged: onFloatingFilterChanged
+  };
   /**
    * filter data
    */

@@ -1912,7 +1912,7 @@ function AddRMFinancialDetails(props) {
                     anchor={'right'}
                     basicRateCurrency={state.FinalBasicPriceSelectedCurrency}
                     basicRateBase={state.FinalBasicPriceBaseCurrency}
-                    ViewMode={((state.isEditFlag && state.isRMAssociated) || state.isViewFlag)}
+                    ViewMode={((state.isEditFlag && state.isRMAssociated) || isViewFlag)}
                     isFromMaster={true}
                     isFromImport={states.isImport}
                     EntryType={checkForNull(ENTRY_TYPE_DOMESTIC)}

@@ -307,8 +307,8 @@ const InterestRateListing = (props) => {
       } else if (item.PaymentTermPercent === null) {
         item.PaymentTermPercent = ' '
       }
-      else if (item.VendorName === '-') {
-        item.VendorName = ' '
+      else if (item?.VendorName === '' || item?.VendorName === null) {
+        item.VendorName = '-'
       }
       return item
     })

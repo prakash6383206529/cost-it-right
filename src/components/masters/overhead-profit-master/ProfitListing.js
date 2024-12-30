@@ -330,7 +330,7 @@ function ProfitListing(props) {
             isEditFlag: true,
             Id: Id,
             IsVendor: rowData.CostingHead,
-            isViewMode: isViewMode
+            isViewMode: isViewMode,
         }
         props.getDetails(data);
     }
@@ -574,29 +574,17 @@ function ProfitListing(props) {
     const returnExcelColumn = (data = [], TempData) => {
         let excelData = hideCustomerFromExcel(data, "CustomerName")
         let temp = []
-        temp = TempData && TempData.map((item) => {
-            if (item.ClientName === '-') {
-                item.ClientName = ' '
-            }
-            if (item.ClientName === null) {
-                item.ClientName = ' '
-            } if (item.ProfitBOPPercentage === null) {
-                item.ProfitBOPPercentage = ' '
-            } if (item.ProfitMachiningCCPercentage === null) {
-                item.ProfitMachiningCCPercentage = ' '
-            } if (item.ProfitPercentage === null) {
-                item.ProfitPercentage = ' '
-            } if (item.ProfitRMPercentage === null) {
-                item.ProfitRMPercentage = ' '
-            } if (item?.VendorName === '-') {
-                item.VendorName = ' '
-            }
+        temp = TempData && TempData?.map(item => {
+            Object.keys(item).forEach(field => {
+                if (item[field] === null || item[field] === '') {
+                    item[field] = '-';
+                }
+            });
             if (item?.EffectiveDate?.includes('T')) {
-                item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')
-
+                item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY');
             }
-            return item
-        })
+            return item;
+        });
         const isShowRawMaterial = getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC
         const excelColumns = excelData && excelData.map((ele, index) => {
             if ((ele.label === 'Raw Material Name' || ele.label === 'Raw Material Grade') && !isShowRawMaterial) {

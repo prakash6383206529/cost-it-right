@@ -984,6 +984,10 @@ class AddOperation extends Component {
       obj.customer = this.state.client
       obj.isSurfaceTreatment = isSurfaceTreatment
       obj.OperationId = OperationId
+      obj.labourRatePerUOM = fieldsObj?.LabourRatePerUOM || ''
+      obj.rate = fieldsObj?.Rate || ''
+      obj.consumption = fieldsObj?.Consumption || ''
+      obj.weldingRate = fieldsObj?.WeldingRate || ''
 
       if (String(this.state.operationType.label) === "Ni Cr Plating") {
 
@@ -1164,7 +1168,7 @@ class AddOperation extends Component {
                           label={`Operation Name`}
                           name={"OperationName"}
                           type="text"
-                          placeholder={isEditFlag ? '-' : "Select"}
+                          placeholder={isEditFlag ? '-' : "Enter"}
                           validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength80, checkWhiteSpaces, hashValidation]}
                           onChange={this.checkUniqCodeByName}
                           component={renderText}
@@ -1194,7 +1198,7 @@ class AddOperation extends Component {
                           label={`Description`}
                           name={"Description"}
                           type="text"
-                          placeholder={isViewMode ? '-' : "Select"}
+                          placeholder={isViewMode ? '-' : "Enter"}
                           validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
                           component={renderText}
                           disabled={isViewMode ? true : false}
@@ -1371,7 +1375,7 @@ class AddOperation extends Component {
                           label={`Labour Rate/${this.state.UOM.label ? this.state.UOM.label : 'UOM'}`}
                           name={"LabourRatePerUOM"}
                           type="text"
-                          placeholder={isViewMode ? '-' : "Select"}
+                          placeholder={isViewMode ? '-' : "Enter"}
                           validate={[positiveAndDecimalNumber, maxLength10, number]}
                           component={renderTextInputField}
                           disabled={isEditFlag ? true : false}
@@ -1627,7 +1631,7 @@ class AddOperation extends Component {
 */
 function mapStateToProps(state) {
   const { comman, otherOperation, supplier, auth, costing, client } = state;
-  const fieldsObj = selector(state, 'OperationCode', 'text', 'OperationName', 'Description', 'operationType', 'technology', 'clientName', 'EffectiveDate', 'Plant', 'WeldingRate', 'Consumption');
+  const fieldsObj = selector(state, 'OperationCode', 'text', 'OperationName', 'Description', 'operationType', 'technology', 'clientName', 'EffectiveDate', 'Plant', 'WeldingRate', 'Consumption', 'Rate', 'LabourRatePerUOM');
   const { plantSelectList, filterPlantList, UOMSelectList, } = comman;
   const { operationData } = otherOperation;
   const { vendorWithVendorCodeSelectList } = supplier;

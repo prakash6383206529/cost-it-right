@@ -385,7 +385,7 @@ function OperationCost(props) {
                     icon={"plus"}
                     buttonName={"OPER"}
                   />}
-                <TooltipCustom tooltipClass="operation-defination" customClass="mt-2 mr-2" id={`operation-defination`} width="400px" tooltipText={"An operation is a detailed step within the manufacturing process involved in creating a part. It often includes tasks where human effort is added, like putting parts together, checking quality, or doing other hands-on work to complete the manufacturing process."} />
+                {!CostingViewMode && <TooltipCustom tooltipClass="operation-defination" customClass="mt-2 mr-2" id={`operation-defination`} width="400px" tooltipText={"An operation is a detailed step within the manufacturing process involved in creating a part. It often includes tasks where human effort is added, like putting parts together, checking quality, or doing other hands-on work to complete the manufacturing process."} />}
               </div>
             </Col>
           </Row>

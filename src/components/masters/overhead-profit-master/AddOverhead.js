@@ -100,7 +100,7 @@ class AddOverhead extends Component {
       this.props.getRawMaterialNameChild(() => { })
     }
     this.props.getPlantSelectListByType(ZBC, "MASTER", '', () => { })
-    this.props.fetchCostingHeadsAPI('master', false, res => { });
+    this.props.fetchCostingHeadsAPI('Overhead and Profits', false, res => { });
     this.getDetails();
   }
   componentWillUnmount() {
@@ -193,6 +193,7 @@ class AddOverhead extends Component {
 
           const Data = res.data.Data;
           this.setState({ DataToChange: Data })
+          Data?.OverheadApplicabilityType?.includes("Part Cost") ? this.setState({ showPartCost: true }) : this.setState({ showPartCost: false })
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
           this.setState({ minEffectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '' })
           setTimeout(() => {

@@ -101,23 +101,23 @@ export function getVolumeDataList(skip, take, isPagination, obj, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });    
     const queryParams = encodeQueryParamsAndLog({
-      CostingHead: obj.CostingHead,
-      Year: obj.Year,
-      Month: obj.Month,
-      Vendor: obj.Vendor,
-      Plant: obj.Plant,
-      PartNumber: obj.PartNumber,
-      PartName: obj.PartName,
-      BudgetedQuantity: obj.BudgetedQuantity,
-      ApprovedQuantity: obj.ApprovedQuantity,
+      CostingHead: obj?.CostingHead,
+      Year: obj?.Year,
+      Month: obj?.Month,
+      Vendor: obj?.VendorName,
+      Plant: obj?.Plant,
+      PartNumber: obj?.PartNumber,
+      PartName: obj?.PartName,
+      BudgetedQuantity: obj?.BudgetedQuantity,
+      ApprovedQuantity: obj?.ApprovedQuantity,
       applyPagination: isPagination,
       skip: skip,
       take: take,
-      CustomerName: obj.CustomerName,
-      IsCustomerDataShow: obj.IsCustomerDataShow,
-      IsVendorDataShow: obj.IsVendorDataShow,
-      IsZeroDataShow: obj.IsZeroDataShow,
-      partType: obj.PartType
+      CustomerName: obj?.CustomerName,
+      IsCustomerDataShow: obj?.IsCustomerDataShow,
+      IsVendorDataShow: obj?.IsVendorDataShow,
+      IsZeroDataShow: obj?.IsZeroDataShow,
+      partType: obj?.PartType
     });
     axios.get(`${API.getVolumeDataList}?${queryParams}`, config())
       .then((response) => {

@@ -625,22 +625,43 @@ function AddBudget(props) {
             temp.push(obj)
         })
 
-
+        let formData = {
+            LoggedInUserId: loggedInUserId(),
+            FinancialYear: values?.FinancialYear?.label,
+            NetPoPrice: values?.currentPrice,
+            BudgetedPoPrice: totalSum,
+            BudgetedPoPriceInCurrency: totalSum / currencyExchangeRate,
+            CostingHeadId: costingTypeId,
+            PartId: part?.value,
+            PartName: part?.label,
+            RevisionNumber: part?.RevisionNumber,
+            PlantId: selectedPlants?.value,
+            PlantName: selectedPlants?.label,
+            VendorId: vendorName?.value,
+            VendorName: vendorName?.label,
+            CustomerId: client?.value,
+            BudgetingPartCostingDetails: temp,
+            CurrencyId: currency?.value,
+            Currency: currency?.label,
+            ConditionsData: conditionTableData
+        }
         if (isEditFlag) {
-
-            let formData = { BudgetingId: BudgetId, LoggedInUserId: loggedInUserId(), FinancialYear: DataChanged.FinancialYear, NetPoPrice: values.currentPrice, BudgetedPoPrice: totalSum, BudgetedPoPriceInCurrency: totalSum / currencyExchangeRate, CostingHeadId: costingTypeId, PartId: DataChanged.PartId, RevisionNumber: DataChanged.RevisionNumber, PlantId: DataChanged.PlantId, VendorId: DataChanged.VendorId, CustomerId: DataChanged.CustomerId, BudgetingPartCostingDetails: temp }
-
-            dispatch(updateBudget(formData, (res) => {
-                setSetDisable(false)
-                if (res?.data?.Result) {
-                    Toaster.success(MESSAGES.BUDGET_UPDATE_SUCCESS)
-                    cancel('submit')
-                }
-            }))
+            if (isFinalApprover) {
+                dispatch(updateBudget(formData, (res) => {
+                    setSetDisable(false)
+                    if (res?.data?.Result) {
+                        Toaster.success(MESSAGES.BUDGET_UPDATE_SUCCESS)
+                        cancel('submit')
+                    }
+                }))
+            } else {
+                setApprovalObj(formData)
+                setTimeout(() => {
+                    setApproveDrawer(true)
+                }, 300);
+            }
 
         } else {
-
-            let formData = { LoggedInUserId: loggedInUserId(), FinancialYear: values.FinancialYear.label, NetPoPrice: values.currentPrice, BudgetedPoPrice: totalSum, BudgetedPoPriceInCurrency: totalSum / currencyExchangeRate, CostingHeadId: costingTypeId, PartId: part.value, PartName: part.label, RevisionNumber: part.RevisionNumber, PlantId: selectedPlants.value, PlantName: selectedPlants.label, VendorId: vendorName.value, VendorName: vendorName.label, CustomerId: client.value, BudgetingPartCostingDetails: temp, CurrencyId: currency.value, Currency: currency.label, ConditionsData: conditionTableData }
             if (isFinalApprover) {
                 dispatch(createBudget(formData, (res) => {
                     setSetDisable(false)
@@ -650,16 +671,12 @@ function AddBudget(props) {
                     }
                 }))
             } else {
-
                 setApprovalObj(formData)
-
                 setTimeout(() => {
                     setApproveDrawer(true)
                 }, 300);
-
             }
         }
-
     }, 500)
 
     const handleKeyDown = function (e) {

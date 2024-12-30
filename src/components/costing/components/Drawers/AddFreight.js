@@ -26,7 +26,7 @@ function AddFreight(props) {
     Capacity: rowObjData && rowObjData.Capacity !== undefined ? { label: rowObjData.Capacity, value: rowObjData.Capacity } : [],
     Criteria: rowObjData && rowObjData.Criteria !== undefined ? { label: rowObjData.Criteria, value: rowObjData.Criteria } : '',
     Rate: rowObjData && rowObjData.Rate !== undefined ? rowObjData.Rate : '',
-    Quantity: rowObjData && rowObjData.Quantity !== undefined ? checkForNull(rowObjData.Quantity) : '',
+    Quantity: rowObjData && rowObjData.Quantity !== undefined ? checkForDecimalAndNull(rowObjData?.Quantity, getConfigurationKey().NoOfDecimalForInputOutput) : '',
     FreightCost: rowObjData && rowObjData.FreightCost !== undefined ? rowObjData.FreightCost : '',
     crmHeadFreight: rowObjData && rowObjData.FreightCRMHead !== undefined ? { label: rowObjData.FreightCRMHead, value: 1 } : '',
   }
@@ -86,7 +86,7 @@ function AddFreight(props) {
         }, 0)
       })
       // setTotalFinishWeight(totalFinishWeight)
-      setValue("Quantity", totalFinishWeight)
+      setValue("Quantity", checkForDecimalAndNull(totalFinishWeight, getConfigurationKey().NoOfDecimalForInputOutput))
       setTotalRMGrossWeight(totalGrossWeight)
 
     }
@@ -517,7 +517,7 @@ function AddFreight(props) {
       FullTruckLoadId: isEditFlag ? rowObjData?.FullTruckLoadId : fullTruckLoadId,
     }
 
-    if (doesObjectExist(gridData, formData)) {
+    if (doesObjectExist(gridData, formData) && !isEditFlag) {
       Toaster.warning("Data already exists in the grid.")
       return false;
     }
@@ -691,11 +691,11 @@ function AddFreight(props) {
                       mandatory={freightType !== Fixed ? true : false}
                       rules={{
                         required: freightType !== Fixed ? true : false,
-                        validate: freightType !== Fixed ? { number, checkWhiteSpaces, percentageLimitValidation } : {},
-                        max: {
+                        validate: freightType === Percentage ? { number, checkWhiteSpaces, percentageLimitValidation } : { number, checkWhiteSpaces },
+                        max: freightType === Percentage ? {
                           value: 100,
                           message: 'Percentage should be less than 100'
-                        },
+                        } : {},
                       }}
                       handleChange={() => { }}
                       defaultValue={''}

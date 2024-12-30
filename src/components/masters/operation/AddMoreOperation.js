@@ -281,6 +281,10 @@ function AddMoreOperation(props) {
             technologyTemp.push(obj)
         })
 
+        setValue("OperationBasicRate", addMoreDetailObj?.weldingRate)
+        setValue("OperationConsumption", addMoreDetailObj?.consumption)
+        setValue("LabourRatePerUOM", addMoreDetailObj?.labourRatePerUOM)
+        setValue("Rate", addMoreDetailObj?.rate)
         setValue('technology', technologyTemp)
         setValue('operationName', addMoreDetailObj.operationName)
         setValue('description', addMoreDetailObj.description)
@@ -394,8 +398,12 @@ function AddMoreOperation(props) {
             UnitOfMeasurementId: uom.value,
             IsSurfaceTreatmentOperation: addMoreDetailObj?.isSurfaceTreatment,
 
-            Rate: isWelding ? dataToSend.netCostWelding : dataToSend.netCost,
-            LabourRatePerUOM: initialConfiguration && initialConfiguration.IsOperationLabourRateConfigure ? values.LabourRatePerUOM : '',
+            Rate: isWelding ? dataToSend?.netCostWelding : dataToSend?.netCost,
+            LabourRatePerUOM: initialConfiguration && initialConfiguration?.IsOperationLabourRateConfigure ? values?.LabourRatePerUOM : '',
+            OperationBasicRate: values?.OperationBasicRate,
+            OperationConsumption: values?.OperationConsumption,
+
+
             Technology: technologyArray,
             Remark: values.remark ? values.remark : '',
             Plant: plantArray,
@@ -808,6 +816,14 @@ function AddMoreOperation(props) {
         return `accordian-content form-group row mx-0 w-100 ${value ? '' : 'd-none'}`
     }
 
+    const validateDescription = (value) => {
+        if (value && value.length > 25) {
+            Toaster.warning('Description cannot exceed 25 characters');
+            return false;
+        }
+        return true;
+    }
+
     return (
         <div className="container-fluid">
             {isLoader && <Loader />}
@@ -933,7 +949,7 @@ function AddMoreOperation(props) {
                                                     checkWhiteSpaces,
                                                 }
                                             }}
-                                            handleChange={() => { }}
+                                            handleChange={(e) => validateDescription(e.target.value)}
                                             placeholder={'Enter'}
                                             customClassName={'withBorder'}
                                             disabled={isViewMode}
@@ -1736,7 +1752,7 @@ function AddMoreOperation(props) {
                                 {
                                     <div className={getAccordianClassName(isConsumablesCostOpen)}>
 
-                                        {(other || isPlating) && <><Col md="3">
+                                        {(other || isPlating) && <><Col md="3" className="mb-4">
                                             <SearchableSelectHookForm
                                                 name="crmHeadConsumableMaintenanceCost"
                                                 type="text"
@@ -2309,7 +2325,7 @@ function AddMoreOperation(props) {
 
                                         {(other || isPlating) &&
                                             <>
-                                                <Col md="3">
+                                                <Col md="3" className="mb-4">
                                                     <SearchableSelectHookForm
                                                         name="crmHeadStatuaryLicense"
                                                         type="text"
