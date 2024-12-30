@@ -534,6 +534,7 @@ function RunSimulationDrawer(props) {
             let resOfCostingHead = type === 'Additional Other Cost' ? otherCostApplicabilityListing : remainingApplicabilityListing
 
             resOfCostingHead && resOfCostingHead.map(item => {
+                if(item?.Text === "Crate/Trolley")return false
                 if (item.Value === '0' || item.Value === '8') return false;
                 if (Number(simulationTechnologyId) === ASSEMBLY_TECHNOLOGY_MASTER) {
                     if (!item.Text.includes('RM')) {

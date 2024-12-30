@@ -667,7 +667,8 @@ const closeCalculator = (formData,packingCost) => {
 
 
                   {costingData.TechnologyId !== LOGISTICS && <Col md="12">
-                    <TextFieldHookForm
+                    <div className="packaging-cost-warpper">
+                      <TextFieldHookForm
                       label="Packaging Cost"
                       name={'PackagingCost'}
                       Controller={Controller}
@@ -681,17 +682,18 @@ const closeCalculator = (formData,packingCost) => {
                       handleChange={packingCostHandler}
                       defaultValue={''}
                       className=""
-                      customClassName={'withBorder mb-0'}
+                      customClassName={'withBorder w-100 mb-0'}
                       errors={errors.PackagingCost}
                       disabled={applicability?.label === 'Fixed' ? false : true}
                     />
                       {showCalculator && <button
                     id={`RM_calculator`}
-                    className={`CalculatorIcon cr-cl-icon RM_calculator`}
+                    className={`CalculatorIcon mb-0 mt-1 ml-2 cr-cl-icon RM_calculator`}
                     type={'button'}
                     onClick={() => toggleWeightCalculator()}
                     disabled={false}
-                  />}
+                    />}
+                    </div>
                   </Col>
                  
                   }
