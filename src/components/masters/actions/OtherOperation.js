@@ -282,7 +282,8 @@ export function getOperationsDataList(filterData, skip, take, isPagination, obj,
             IsVendorDataShow: vbc,
             IsZeroDataShow: zbc,
             FromDate: (obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[0] : "",
-            ToDate: (obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[1] : ""
+            ToDate: (obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[1] : "",
+            isRequestForPendingSimulation: obj.isRequestForPendingSimulation ? true : false
         });
         axios.get(`${API.getOperationsDataList}?${QueryParams}&${queryParamsSecond}`, config())
 

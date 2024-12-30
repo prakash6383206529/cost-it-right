@@ -239,7 +239,6 @@ function AddRMMaster(props) {
         levelDetailsTemp = userTechnologyDetailByMasterId(state.costingTypeId, RM_MASTER_ID, masterLevels)
         setState(prevState => ({ ...prevState, levelDetails: levelDetailsTemp }))
         fetchDivisionId(requestObject, dispatch).then((divisionId) => {
-            console.log(divisionId, 'divisionId')
             let obj = {
                 DepartmentId: userDetails().DepartmentId,
                 UserId: loggedInUserId(),

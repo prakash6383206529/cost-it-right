@@ -216,7 +216,7 @@ function RMDomesticListing(props) {
         }
         dataObj.RawMaterialEntryType = Number(ENTRY_TYPE_DOMESTIC)
         if (isSimulation && getConfigurationKey().IsDivisionAllowedForDepartment) {
-            dataObj.isRequestForPendingSimulation = simulationCostingStatus
+            dataObj.isRequestForPendingSimulation = simulationCostingStatus ? true : false
         }
         if (!props.isMasterSummaryDrawer) {
             dispatch(getAllRMDataList(filterData, skip, take, isPagination, dataObj, false, (res) => {

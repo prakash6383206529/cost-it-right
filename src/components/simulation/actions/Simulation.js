@@ -2044,8 +2044,27 @@ export function getSimulationCostingStatus(data, callback) {
             if (response.data.Result || response.status === 204) {
                 dispatch({
                     type: GET_SIMULATION_COSTING_STATUS,
-                    payload: response.data.Result,
+                    payload: response.data.DataList && response.data.DataList.length > 0 ? response.data.DataList : false,
                 });
+                callback(response);
+            }
+        }).catch((error) => {
+            callback(error);
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    }
+}
+
+export function getImpactedDataList(data, callback) {
+    const queryParams = encodeQueryParamsAndLog({
+        LoggedInUserId: loggedInUserId(),
+        statusId: data.statusId,
+    });
+    return (dispatch) => {
+        const request = axios.get(`${API.getImpactedDataList}?${queryParams}`, config());
+        request.then((response) => {
+            if (response.data.Result || response.status === 204) {
                 callback(response);
             }
         }).catch((error) => {
