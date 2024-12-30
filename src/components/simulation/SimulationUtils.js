@@ -449,3 +449,59 @@ export const ErrorMessage = (props) => {
     </>)
 }
 // **END** SHOWING STATUS BOX ON THE TOP FOR ERROR AND SUCCESS RESPONSE
+
+export const pendingSimulationAlert = (pendingOtherDivStatus) => {
+    // Function to toggle table visibility
+    const toggleTableVisibility = () => {
+        const table = document.querySelector('.error-table-container');
+        const icon = document.querySelector('.toggle-icon');
+
+        if (table.style.display === 'none') {
+            table.style.display = 'table';
+            icon.className = 'toggle-icon fa fa-chevron-up';
+        } else {
+            table.style.display = 'none';
+            icon.className = 'toggle-icon fa fa-chevron-down';
+        }
+    };
+    return (
+        <div className="pending-simulation-alert">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <p className="alert-text">
+                    Simulations have already been run on the following masters from other divisions.
+                    Please approve them before running any new simulations.
+
+                </p>
+                <button
+                    onClick={toggleTableVisibility}
+                    className="toggle-button"
+                >
+                    <i className="toggle-icon fa fa-chevron-up" style={{ fontSize: '20px' }} />
+                </button>
+            </div>
+            <div className="error-table-container">
+                <table className="alert-table">
+                    <thead>
+                        <tr>
+                            <th>Master</th>
+                            <th>Count</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {pendingOtherDivStatus && pendingOtherDivStatus.map((item, index) => {
+                            return <tr key={index}>
+                                <td>{item.SimulationTechnology}</td>
+                                <td><strong>{item.ImpactedCount}</strong></td>
+                            </tr>
+                        })}
+                    </tbody>
+                </table>
+
+                <div className="action-text">
+                    <strong>Action Required:</strong> Approve the above simulations before proceeding.
+                </div>
+            </div>
+
+        </div>
+    );
+};

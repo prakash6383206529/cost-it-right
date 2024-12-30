@@ -51,14 +51,14 @@ const BOPDomesticListing = (props) => {
   const searchRef = useRef(null);
   const { bopDomesticList, allBopDataList } = useSelector(state => state.boughtOutparts);
   const { initialConfiguration } = useSelector(state => state.auth);
-  const { selectedRowForPagination } = useSelector(state => state.simulation)
+  const { selectedRowForPagination, simulationCostingStatus } = useSelector(state => state.simulation)
   const { globalTakes } = useSelector((state) => state.pagination);
   const tourStartData = useSelector(state => state.comman.tourStartData);
   // const isRfq = props?.quotationId !== null || props?.quotationId !== '' || props?.quotationId !== undefined ? true : false
   const isRfq = props?.quotationId !== null && props?.quotationId !== '' && props?.quotationId !== undefined;
 
   const { t } = useTranslation("common")
-  const { technologyLabel, vendorLabel,vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels();
+  const { technologyLabel, vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels();
   const [state, setState] = useState({
     isOpen: false,
     isEditFlag: false,
@@ -172,6 +172,10 @@ const BOPDomesticListing = (props) => {
           props?.changeTokenCheckBox(false)
         }
         dataObj.EntryType = Number(ENTRY_TYPE_DOMESTIC)
+        if (props.isSimulation) {
+          dataObj.isRequestForPendingSimulation = simulationCostingStatus ? true : false
+        }
+
 
         dispatch(getBOPDataList(filterData, skip, take, isPagination, dataObj, false, (res) => {
 
@@ -449,11 +453,11 @@ const BOPDomesticListing = (props) => {
     suppressFilterButton: true,
     component: CostingHeadDropdownFilter,
     onFilterChange: (originalValue, value) => {
-            setState((prevState) => ({ ...prevState, disableFilter: false }));
-        setState((prevState) => ({ ...prevState, floatingFilterData: { ...prevState.floatingFilterData, CostingHead: value } }));
-      
+      setState((prevState) => ({ ...prevState, disableFilter: false }));
+      setState((prevState) => ({ ...prevState, floatingFilterData: { ...prevState.floatingFilterData, CostingHead: value } }));
+
     }
-};
+  };
   const closeBulkUploadDrawer = (event, type) => {
     setState((prevState) => ({ ...prevState, isBulkUpload: false }))
     if (type !== 'cancel') {
@@ -529,11 +533,11 @@ const BOPDomesticListing = (props) => {
   const combinedCostingHeadRenderer = (props) => {
     // Call the existing checkBoxRenderer
     costingHeadFormatter(props);
-  
+
     // Get and localize the cell value
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     const localizedValue = getLocalizedCostingHeadValue(cellValue, vendorBasedLabel, zeroBasedLabel, customerBasedLabel);
-  
+
     // Return the localized value (the checkbox will be handled by AgGrid's default renderer)
     return localizedValue;
   };
@@ -829,7 +833,7 @@ const BOPDomesticListing = (props) => {
     // checkBoxRenderer: checkBoxRenderer,
     commonCostFormatter: commonCostFormatter,
     attachmentFormatter: attachmentFormatter,
-    statusFilter : CostingHeadDropdownFilter
+    statusFilter: CostingHeadDropdownFilter
   };
 
   const closeAnalyticsDrawer = () => {
@@ -948,7 +952,7 @@ const BOPDomesticListing = (props) => {
                 suppressRowClickSelection={true}
                 enableBrowserTooltips={true}  >
                 <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}
-                  floatingFilterComponentParams={floatingFilterStatus} 
+                  floatingFilterComponentParams={floatingFilterStatus}
                   floatingFilterComponent="statusFilter"></AgGridColumn>
                 <AgGridColumn field="BoughtOutPartNumber" headerName={`${showBopLabel()} Part No.`}></AgGridColumn>
                 <AgGridColumn field="BoughtOutPartName" headerName={`${showBopLabel()} Part Name`}></AgGridColumn>

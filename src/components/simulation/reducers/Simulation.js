@@ -36,7 +36,9 @@ import {
     GET_INDEXED_RM_FOR_SIMULATION,
     GET_SIMULATED_RAW_MATERIAL_SUMMARY,
     GET_RM_INDEXATION_COSTING_SIMULATION_LIST,
-    SET_EFFECTIVE_DATE
+    SET_EFFECTIVE_DATE,
+    SET_IS_PENDING_SIMULATION_FROM_OTHER_DIV,
+    GET_SIMULATION_COSTING_STATUS
 } from '../../../config/constants';
 import { tokenStatus, tokenStatusName } from '../../../config/masterData';
 import { showBopLabel, updateBOPValues } from '../../../helper';
@@ -45,7 +47,8 @@ const initialState = {
     selectedRowForPagination: [],
     costingSimulationList: [],
     keysForDownloadSummary: {},
-    indexedRMForSimulation: []
+    indexedRMForSimulation: [],
+    simulationCostingStatus: false
 };
 
 export default function SimulationReducer(state = initialState, action) {
@@ -155,7 +158,7 @@ export default function SimulationReducer(state = initialState, action) {
             return {
                 ...state,
                 loading: false,
-                selectedMasterForSimulation: action.payload
+                selectedMasterForSimulation: action.payload ?? { label: "", value: "" }
             }
         case GET_SELECTLIST_APPLICABILITY_HEAD:
             return {
@@ -342,13 +345,25 @@ export default function SimulationReducer(state = initialState, action) {
                 loading: false,
                 rmIndexationCostingSimulationList: action.payload
             }
-            case SET_EFFECTIVE_DATE:
-            
+        case SET_EFFECTIVE_DATE:
+
             return {
-            
-          ...state,
-          selectedEffectiveDate: action.payload
-               
+
+                ...state,
+                selectedEffectiveDate: action.payload
+
+            }
+        case SET_IS_PENDING_SIMULATION_FROM_OTHER_DIV:
+            return {
+                ...state,
+                loading: false,
+                isPendingSimulationFromOtherDiv: { ...state.isPendingSimulationFromOtherDiv, ...action.payload }
+            }
+        case GET_SIMULATION_COSTING_STATUS:
+            return {
+                ...state,
+                loading: false,
+                simulationCostingStatus: action.payload
             }
         default:
             return state;

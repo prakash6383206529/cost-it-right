@@ -736,9 +736,9 @@ class AddIndivisualPart extends Component {
                                   onChange={this.handleEffectiveDateChange}
                                   type="text"
                                   validate={[required]}
-                                  maxDate={getEffectiveDateMaxDate()}
+                                  // maxDate={getEffectiveDateMaxDate()}
 
-                                  minDate={isEditFlag ? this.state.minEffectiveDate : getEffectiveDateMinDate()}
+                                  // minDate={isEditFlag ? this.state.minEffectiveDate : getEffectiveDateMinDate()}
                                   autoComplete={'off'}
                                   required={true}
                                   changeHandler={(e) => {

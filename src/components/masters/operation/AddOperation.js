@@ -718,7 +718,7 @@ class AddOperation extends Component {
 
   handleDestinationPlant = (newValue) => {
     this.setState({ destinationPlant: newValue })
-    if (!this.state.isViewMode && getConfigurationKey()?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !getConfigurationKey()?.IsDivisionAllowedForDepartment) {
+    if (!this.state.isViewMode && getConfigurationKey()?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(OPERATIONS_ID) === true && getConfigurationKey()?.IsDivisionAllowedForDepartment) {
       this.commonFunction(newValue ? newValue.value : '')
     }
   }

@@ -87,12 +87,12 @@ const OperationListing = (props) => {
     })
     const tourStartData = useSelector(state => state.comman.tourStartData);
     const { t } = useTranslation("common")
-    const { technologyLabel, vendorLabel ,vendorBasedLabel, zeroBasedLabel, customerBasedLabel} = useLabels();
+    const { technologyLabel, vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels();
     const [searchText, setSearchText] = useState('');
     const { operationList, allOperationList, operationDataHold } = useSelector(state => state.otherOperation);
     const { topAndLeftMenuData } = useSelector(state => state.auth);
     const { globalTakes } = useSelector(state => state.pagination);
-    const { selectedRowForPagination } = useSelector(state => state.simulation);
+    const { selectedRowForPagination, simulationCostingStatus } = useSelector(state => state.simulation);
     useEffect(() => {
         if (!topAndLeftMenuData) {
             setState(prevState => ({ ...prevState, isLoader: true }));
@@ -140,7 +140,7 @@ const OperationListing = (props) => {
         dispatch(resetStatePagination());
         return () => {
             dispatch(setResetCostingHead(true, "costingHead"))
-          }
+        }
         // eslint-disable-next-line
     }, []);
 
@@ -193,6 +193,10 @@ const OperationListing = (props) => {
             } else {
                 filterData.OperationType = ''
             }
+            if (props.isSimulation) {
+                dataObj.isRequestForPendingSimulation = simulationCostingStatus ? true : false
+            }
+
 
             // dataObj.IsCustomerDataShow = reactLocalStorage.getObject('cbcCostingPermission')
             dispatch(getOperationsDataList(filterData, skip, take, isPagination, dataObj, res => {
@@ -466,18 +470,18 @@ const OperationListing = (props) => {
         return cell != null ? cell : '-';
     }
 
-    
+
     const combinedCostingHeadRenderer = (props) => {
         // Call the existing checkBoxRenderer
         costingHeadFormatter(props);
-      
+
         // Get and localize the cell value
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const localizedValue = getLocalizedCostingHeadValue(cellValue, vendorBasedLabel, zeroBasedLabel, customerBasedLabel);
-      
+
         // Return the localized value (the checkbox will be handled by AgGrid's default renderer)
         return localizedValue;
-      };
+    };
     /**
     * @method costingHeadFormatter
     * @description Renders Costing head
@@ -796,8 +800,8 @@ const OperationListing = (props) => {
         suppressFilterButton: true,
         component: CostingHeadDropdownFilter,
         onFilterChange: (originalValue, value) => {
-          setState((prevState) => ({ ...prevState, floatingFilterData: { ...prevState.floatingFilterData, CostingHead: value } }));   
-          setState((prevState) => ({ ...prevState, disableFilter: false }));
+            setState((prevState) => ({ ...prevState, floatingFilterData: { ...prevState.floatingFilterData, CostingHead: value } }));
+            setState((prevState) => ({ ...prevState, disableFilter: false }));
         }
     };
     const frameworkComponents = {
@@ -809,7 +813,7 @@ const OperationListing = (props) => {
         hyphenFormatter: hyphenFormatter,
         commonCostFormatter: commonCostFormatter,
         attachmentFormatter: attachmentFormatter,
-        statusFilter : CostingHeadDropdownFilter
+        statusFilter: CostingHeadDropdownFilter
     };
     return (
         <div className={`${isSimulation ? 'simulation-height' : props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
@@ -915,8 +919,8 @@ const OperationListing = (props) => {
                             {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
 
                             <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'combinedCostingHeadRenderer'}
-                               floatingFilterComponentParams={floatingFilterStatus} 
-                               floatingFilterComponent="statusFilter"></AgGridColumn>
+                                floatingFilterComponentParams={floatingFilterStatus}
+                                floatingFilterComponent="statusFilter"></AgGridColumn>
                             {!isSimulation && <AgGridColumn field="Technology" tooltipField='Technology' filter={true} floatingFilter={true} headerName={technologyLabel}></AgGridColumn>}
                             {getConfigurationKey().IsShowDetailedOperationBreakup && <AgGridColumn field="ForType" headerName="Operation Type" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                             <AgGridColumn field="OperationName" tooltipField="OperationName" headerName="Operation Name"></AgGridColumn>

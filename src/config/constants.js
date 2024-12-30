@@ -779,6 +779,7 @@ export const API = {
   deleteDivisionAPI: `${BASE_URL}/user-department/delete-division`,
   getDivisionListAPI: `${BASE_URL}/user-department/select-list-get-divisions`,
   getAllDivisionListAssociatedWithDepartment: `${BASE_URL}/user-department/get-all-division-list-associated-with-departments`,
+  checkDivisionByPlantAndGetDivisionIdByPart: `${BASE_URL}/user-department/check-and-get-division-applied-on-plant-and-part`,
 
   //LEVEL'S API
   assignUserLevelAPI: `${BASE_URL}/user-level/assign-user-level-for-costing`,
@@ -1086,6 +1087,8 @@ export const API = {
   getAllSimulationBoughtOutPart: `${BASE_URL}/simulation/get-all-simulation-bought-out-part`,
   getSapPushDetailsHeader: `${BASE_URL}/ExternalIntegration/get-sap-push-details-header`,
   sapPushBulkUpload: `${BASE_URL}/ExternalIntegration/bulk-upload-for-sap-push-details`,
+  getSimulationCostingStatus: `${BASE_URL}/app-simulation-approval-system/get-simulation-costing-status`,
+  getImpactedDataList: `${BASE_URL}/app-simulation-approval-system/get-simulation-costing-status-details`,
 
 
   // ASSEMBLY TECHNOLOGY
@@ -2037,7 +2040,9 @@ export const SET_EXCHANGE_RATE_LIST_BEFORE_DRAFT = 'SET_EXCHANGE_RATE_LIST_BEFOR
 export const SET_SELECTED_CUSTOMER_SIMULATION = 'SET_SELECTED_CUSTOMER_SIMULATION'
 export const GET_SELECTLIST_COSTING_HEADS = 'GET_SELECTLIST_COSTING_HEADS'
 export const SET_EFFECTIVE_DATE = 'SET_EFFECTIVE_DATE';
-
+export const GET_SIMULATION_COSTING_STATUS = 'GET_SIMULATION_COSTING_STATUS'
+export const SET_IS_PENDING_SIMULATION_FROM_OTHER_DIV = 'SET_IS_PENDING_SIMULATION_FROM_OTHER_DIV'
+export const GET_IMPACTED_DATA_LIST = 'GET_IMPACTED_DATA_LIST'
 
 // ASSEMBLY TECHNOLOGY
 export const SET_SELECTED_VENDOR_SIMULATION = 'SET_SELECTED_VENDOR_SIMULATION'
@@ -2369,6 +2374,7 @@ export const SUPPLIER_MANAGEMENT = '/initiate-unblocking'
 export const lOGIN_AUDITS = '/login-audit'
 export const SUPPLIER_APPROVAL_SUMMARY = '/supplier-approval-summary'
 export const SAP_PUSH_DETAIL = '/sap-push-detail'//MINDA
+export const IMPACTED_DATA_LIST = '/impacted-data-list'
 
 
 export const EMPTY_GUID = "00000000-0000-0000-0000-000000000000"

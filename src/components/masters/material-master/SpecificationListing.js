@@ -451,19 +451,9 @@ const SpecificationListing = (props) => {
                 <AgGridColumn field="RMName"></AgGridColumn>
                 <AgGridColumn field="RMGrade" headerName="Grade"></AgGridColumn>
                 <AgGridColumn field="RMSpec" headerName="Spec"></AgGridColumn>
-                <AgGridColumn
-                  field="RawMaterialCode"
-                  headerName="Code"
-                  cellRenderer="hyphenFormatter"
-                ></AgGridColumn>
-                <AgGridColumn
-                  field="SpecificationId"
-                  cellClass="ag-grid-action-container"
-                  headerName="Action"
-                  type="rightAligned"
-                  floatingFilter={false}
-                  cellRenderer={"totalValueRenderer"}
-                ></AgGridColumn>
+                <AgGridColumn field="RawMaterialCode" headerName="Code" cellRenderer="hyphenFormatter"></AgGridColumn>
+                <AgGridColumn field="Division" headerName="Division" cellRenderer={"hyphenFormatter"}  ></AgGridColumn>
+                <AgGridColumn field="SpecificationId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"}></AgGridColumn>
               </AgGridReact>}
               {
                 <PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} />

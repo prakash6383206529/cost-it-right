@@ -56,9 +56,9 @@ function RMDomesticListing(props) {
     const rmDataList = useSelector((state) => state.material.rmDataList);
     const allRmDataList = useSelector((state) => state.material.allRmDataList);
     const filteredRMData = useSelector((state) => state.material.filteredRMData);
-    const { selectedRowForPagination } = useSelector((state => state.simulation))
+    const { selectedRowForPagination, simulationCostingStatus } = useSelector((state => state.simulation))
     const { globalTakes } = useSelector((state) => state.pagination);
-  const [selectedCostingHead, setSelectedCostingHead] = useState(null);
+    const [selectedCostingHead, setSelectedCostingHead] = useState(null);
 
     const [showPopup, setShowPopup] = useState(false)
     const [deletedId, setDeletedId] = useState('')
@@ -86,11 +86,11 @@ function RMDomesticListing(props) {
 
     const { t } = useTranslation("MasterLabel")
     const { technologyLabel, RMCategoryLabel, vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels();
-   
+
     const [compareDrawer, setCompareDrawer] = useState(false)
     const [rowDataForCompare, setRowDataForCompare] = useState([])
     const isRfq = props?.quotationId !== null && props?.quotationId !== '' && props?.quotationId !== undefined ? true : false
-    
+
     var filterParams = {
         date: "", inRangeInclusive: true, filterOptions: ['equals', 'inRange'],
         comparator: function (filterLocalDateAtMidnight, cellValue) {
@@ -128,7 +128,7 @@ function RMDomesticListing(props) {
 
     };
 
-    
+
     useEffect(() => {
         if (rmDataList?.length > 0) {
             setTotalRecordCount(rmDataList[0].TotalRecordCount)
@@ -136,7 +136,7 @@ function RMDomesticListing(props) {
         else {
             setNoData(false)
         }
-      
+
     }, [rmDataList, dispatch])
 
 
@@ -208,13 +208,16 @@ function RMDomesticListing(props) {
             departmentCode: isSimulation ? userDepartmetList() : "",
             statusId: CheckApprovalApplicableMaster(RM_MASTER_ID) ? APPROVAL_ID : 0,
             ListFor: ListFor,
-            StatusId: statusString
+            StatusId: statusString,
         }
         //THIS CONDTION IS FOR IF THIS COMPONENT IS RENDER FROM MASTER APPROVAL SUMMARY IN THIS NO GET API
         if (isPagination === true) {
             setloader(true)
         }
         dataObj.RawMaterialEntryType = Number(ENTRY_TYPE_DOMESTIC)
+        if (isSimulation && getConfigurationKey().IsDivisionAllowedForDepartment) {
+            dataObj.isRequestForPendingSimulation = simulationCostingStatus ? true : false
+        }
         if (!props.isMasterSummaryDrawer) {
             dispatch(getAllRMDataList(filterData, skip, take, isPagination, dataObj, false, (res) => {
                 // apply(selectedRowForPagination, selectedRowForPagination.length)
@@ -293,7 +296,7 @@ function RMDomesticListing(props) {
     }
 
     const onFloatingFilterChanged = (value) => {
-        
+
         setTimeout(() => {
             if (rmDataList.length !== 0) {
                 setNoData(searchNocontentFilter(value, noData))
@@ -301,7 +304,7 @@ function RMDomesticListing(props) {
         }, 500);
         setDisableFilter(false)
         const model = gridOptions?.api?.getFilterModel();
-        
+
         setFilterModel(model)
         if (!isFilterButtonClicked) {
             setWarningMessage(true)
@@ -805,18 +808,18 @@ function RMDomesticListing(props) {
         checkboxSelection: isFirstColumn
     };
 
-  
-const combinedCostingHeadRenderer = (props) => {
-    // Call the existing checkBoxRenderer
-    checkBoxRenderer(props);
-  
-    // Get and localize the cell value
-    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-    const localizedValue = getLocalizedCostingHeadValue(cellValue, vendorBasedLabel, zeroBasedLabel, customerBasedLabel);
-  
-    // Return the localized value (the checkbox will be handled by AgGrid's default renderer)
-    return localizedValue;
-  };
+
+    const combinedCostingHeadRenderer = (props) => {
+        // Call the existing checkBoxRenderer
+        checkBoxRenderer(props);
+
+        // Get and localize the cell value
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const localizedValue = getLocalizedCostingHeadValue(cellValue, vendorBasedLabel, zeroBasedLabel, customerBasedLabel);
+
+        // Return the localized value (the checkbox will be handled by AgGrid's default renderer)
+        return localizedValue;
+    };
     const checkBoxRenderer = (props) => {
         let selectedRowForPagination = reactLocalStorage.getObject('selectedRow').selectedRow
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -837,13 +840,13 @@ const combinedCostingHeadRenderer = (props) => {
         setAnalyticsDrawer(false)
     }
 
-   
-      const floatingFilterStatus = {
+
+    const floatingFilterStatus = {
         maxValue: 1,
         suppressFilterButton: true,
         component: CostingHeadDropdownFilter,
         onFilterChange: (originalValue, value) => {
-            
+
             setSelectedCostingHead(originalValue);
             setDisableFilter(false);
             setFloatingFilterData(prevState => ({
@@ -852,7 +855,7 @@ const combinedCostingHeadRenderer = (props) => {
             }));
         }
     };
-      
+
     const showAnalytics = (cell, rowData) => {
         setSelectedRowData(rowData)
         setAnalyticsDrawer(true)
@@ -1061,13 +1064,13 @@ const combinedCostingHeadRenderer = (props) => {
                                         suppressRowClickSelection={true}
                                         enableBrowserTooltips={true}
                                     >
-                                        <AgGridColumn 
-                                            cellClass="has-checkbox" 
-                                            field="CostingHead" 
-                                            headerName='Costing Head' 
-                                            floatingFilterComponentParams={floatingFilterStatus} 
+                                        <AgGridColumn
+                                            cellClass="has-checkbox"
+                                            field="CostingHead"
+                                            headerName='Costing Head'
+                                            floatingFilterComponentParams={floatingFilterStatus}
                                             floatingFilterComponent="statusFilter"
-                                            cellRenderer={combinedCostingHeadRenderer} 
+                                            cellRenderer={combinedCostingHeadRenderer}
                                         />
                                         <AgGridColumn field="TechnologyName" headerName={technologyLabel}></AgGridColumn>
                                         <AgGridColumn field="RawMaterialName" headerName='Raw Material'></AgGridColumn>
@@ -1078,7 +1081,7 @@ const combinedCostingHeadRenderer = (props) => {
                                         <AgGridColumn field="MaterialType"></AgGridColumn>
                                         <AgGridColumn field="DestinationPlantName" headerName="Plant (Code)"></AgGridColumn>
                                         <AgGridColumn field="VendorName" headerName={vendorLabel + " (Code)"}></AgGridColumn>
-                                        {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
+                                        {true && <AgGridColumn field="Division" headerName="Division"></AgGridColumn>}
                                         {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                                         {getConfigurationKey()?.IsShowSourceVendorInRawMaterial && <AgGridColumn field="SourceVendorName" headerName={`Source ${vendorLabel} Name`} cellRenderer='hyphenFormatter'></AgGridColumn>}
                                         <AgGridColumn field="UnitOfMeasurementName" headerName='UOM'></AgGridColumn>

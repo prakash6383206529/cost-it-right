@@ -1764,6 +1764,8 @@ function CostingSimulation(props) {
                                                     {Number(amendmentDetails?.SimulationHeadId) === Number(VBCTypeId) && <AgGridColumn width={150} field="VendorName" tooltipField='VendorName' headerName={vendorLabel + " (Code)"}></AgGridColumn>}
                                                     {Number(amendmentDetails?.SimulationHeadId) === Number(CBCTypeId) && <AgGridColumn width={150} field="CustomerName" tooltipField='CustomerName' headerName='Customer (Code)'></AgGridColumn>}
                                                     {isSimulationWithCosting && <AgGridColumn width={150} field="PlantName" tooltipField='PlantName' cellRenderer='plantFormatter' headerName='Plant (Code)'></AgGridColumn>}
+                                                    {getConfigurationKey().IsDivisionAllowedForDepartment && isSimulationWithCosting && <AgGridColumn width={185} field="DivisionCode" tooltipField="DivisionCode" headerName="Division"></AgGridColumn>}
+
                                                     {isSimulationWithCosting && <AgGridColumn width={150} field="InfoCategory" tooltipField='InfoCategory' cellRenderer='hyphenFormatter' headerName='Category'></AgGridColumn>}
                                                     {isSimulationWithCosting && <AgGridColumn width={140} field="BudgetedPrice" tooltipField='BudgetedPrice' headerName='Budgeted Price' cellRenderer='impactPerQuarterFormatter'></AgGridColumn>}
 

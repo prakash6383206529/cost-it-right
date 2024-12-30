@@ -372,7 +372,7 @@ const BOPManage = (props) => {
                                 <AgGridColumn field="BoughtOutPartName" headerName={`${showBopLabel()} Part Name`}></AgGridColumn>
                                 <AgGridColumn field="BoughtOutPartCategoryName" headerName={`${showBopLabel()} Category`}></AgGridColumn>
                                 <AgGridColumn field="BoughtOutPartEntryType" headerName="Entry Type" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-
+                                <AgGridColumn field="Division" headerName="Division" cellRenderer={"hyphenFormatter"}  ></AgGridColumn>
                             </AgGridReact>
                             {<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} />}
                         </div>

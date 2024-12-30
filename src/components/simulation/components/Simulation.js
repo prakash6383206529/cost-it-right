@@ -4,7 +4,7 @@ import RMDomesticListing from '../../masters/material-master/RMDomesticListing';
 import RMImportListing from '../../masters/material-master/RMImportListing';
 import { Row, Col } from 'reactstrap'
 import { Controller, useForm } from 'react-hook-form';
-import { getMasterSelectListSimulation, getTokenSelectListAPI, setSelectedRowForPagination, setMasterForSimulation, setTechnologyForSimulation, setTokenCheckBoxValue, setTokenForSimulation, getSelectListOfMasters, setVendorForSimulation, setIsMasterAssociatedWithCosting, setSimulationApplicability, setCustomerForSimulation, getCostingHeadsList } from '../actions/Simulation';
+import { getMasterSelectListSimulation, getTokenSelectListAPI, setSelectedRowForPagination, setMasterForSimulation, setTechnologyForSimulation, setTokenCheckBoxValue, setTokenForSimulation, getSelectListOfMasters, setVendorForSimulation, setIsMasterAssociatedWithCosting, setSimulationApplicability, setCustomerForSimulation, getCostingHeadsList, setIsPendingSimulationFromOtherDiv } from '../actions/Simulation';
 import { useDispatch, useSelector } from 'react-redux';
 import SimulationUploadDrawer from './SimulationUploadDrawer';
 import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, RM_MASTER_ID, searchCount, VBC_VENDOR_TYPE, APPROVED_STATUS, EMPTY_GUID, MACHINE, MASTERS, VBCTypeId, ZBCTypeId, CBCTypeId, ZBC, RAWMATERIALINDEX, NONINDEXED } from '../../../config/constants';
@@ -47,6 +47,8 @@ import RMIndexationSimulationListing from './SimulationPages/RMIndexationSimulat
 import RMIndexationSimulation from './SimulationPages/RMIndexationSimulation';
 import { setCommodityDetails } from '../../masters/actions/Indexation';
 import { useLabels, useWithLocalization } from '../../../helper/core';
+import { Errorbox } from '../../common/ErrorBox';
+import { pendingSimulationAlert } from '../SimulationUtils';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -61,7 +63,7 @@ function Simulation(props) {
         reValidateMode: 'onChange',
     })
 
-    const { selectedMasterForSimulation, selectedTechnologyForSimulation, getTokenSelectList, tokenCheckBoxValue, tokenForSimulation, selectedCustomerSimulation, selectedVendorForSimulation, isMasterAssociatedWithCosting, selectListCostingHead } = useSelector(state => state.simulation)
+    const { selectedMasterForSimulation, selectedTechnologyForSimulation, getTokenSelectList, tokenCheckBoxValue, tokenForSimulation, selectedCustomerSimulation, selectedVendorForSimulation, isMasterAssociatedWithCosting, selectListCostingHead, simulationCostingStatus } = useSelector(state => state.simulation)
     const plantSelectList = useSelector(state => state.comman.plantSelectList);
     const [master, setMaster] = useState([])
 
@@ -74,6 +76,7 @@ function Simulation(props) {
     const [tableData, setTableData] = useState([])
     const [rowCount, setRowCount] = useState({})
     const [editWarning, setEditWarning] = useState(true)
+    const [impactedTechnologyList, setImpactedTechnologyList] = useState([])
     /**************************************** UNCOMMENT THIS WHENEVER WE WILL APPLY VENDOR CHECK ********************************************/
     // const [vendor, setVendor] = useState({})
 
@@ -171,7 +174,6 @@ function Simulation(props) {
             setShowTokenDropdown(false)
         }
     }, [selectedTechnologyForSimulation])
-
     useEffect(() => {
         renderListing('vendor')
     }, [vendorSelectList])
@@ -180,6 +182,9 @@ function Simulation(props) {
         if (showMasterList) {
             setShowEditTable(false)
         }
+        dispatch(setIsPendingSimulationFromOtherDiv({
+            BOPNew: true,
+        }))
     }, [showMasterList])
     useEffect(() => {
         if (handleEditMasterPage) {
@@ -208,6 +213,7 @@ function Simulation(props) {
     };
 
     const handleMasterChange = (value) => {
+
         setCostingHead('')
         setValue('CostingHead', '')
         dispatch(setFilterForRM({ costingHeadTemp: '', plantId: '', RMid: '', RMGradeid: '', Vendorid: '' }))
@@ -221,6 +227,8 @@ function Simulation(props) {
         setValue('token', '')
         setValue('Plant', '')
         setPlant('')
+
+
         setShowDropdown({})
         dispatch(setVendorForSimulation(''))
         setIsTechnologyDisable(false)
@@ -265,6 +273,13 @@ function Simulation(props) {
             // SINCE WE ARE IN MASTER HANDLE CHANGE, TO SET VALUE OF ASSEMBLY TECHNOLOGY IN DROPDOWN WE NEED TO GET DYNAMIC VALUE FROM DROPDOWN API'S REDUCER
             setShowTokenDropdown(false)
             dispatch(setTechnologyForSimulation(value))
+        }
+        if (simulationCostingStatus) {
+            let filteredList = simulationCostingStatus.filter((item) => item?.SimulationTechnologyId === Number(value?.value))
+            if (filteredList.length > 0) {
+                let Technologies = filteredList[0]?.Technologies.map((item) => ({ label: item?.Text, value: item?.Value }))
+                setImpactedTechnologyList(Technologies)
+            }
         }
         setEditWarning(applyEditCondSimulation(value.value))
         setFilterStatus(`Please check the ${(value.label)} that you want to edit.`)
@@ -820,11 +835,18 @@ function Simulation(props) {
 
         if (label === 'masters') {
             // temp.push({ label: '-', value: '0' })
-            masterList && masterList.map((item) => {
-                if (item.Value === '0') return false
-                temp.push({ label: item.Text, value: item.Value })
-                return null
-            })
+            if (simulationCostingStatus) {
+                simulationCostingStatus.map((item) => {
+                    temp.push({ label: item?.SimulationTechnology, value: String(item?.SimulationTechnologyId) })
+                    return null
+                })
+            } else {
+                masterList && masterList.map((item) => {
+                    if (item.Value === '0') return false
+                    temp.push({ label: item.Text, value: item.Value })
+                    return null
+                })
+            }
             return temp
         }
 
@@ -1561,7 +1583,7 @@ function Simulation(props) {
                     return ''
                 }
             case String(RAWMATERIALINDEX):
-                return <RMIndexationSimulation backToSimulation={backToSimulation} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData} master={master.label} tokenForMultiSimulation={tempObject} technology={technology.label} technologyId={technology.value} isRMNonIndexSimulation={type?.value===NONINDEXED?true:false}/>
+                return <RMIndexationSimulation backToSimulation={backToSimulation} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData} master={master.label} tokenForMultiSimulation={tempObject} technology={technology.label} technologyId={technology.value} isRMNonIndexSimulation={type?.value === NONINDEXED ? true : false} />
             default:
                 break;
         }
@@ -1658,7 +1680,7 @@ function Simulation(props) {
                     {isHide &&
                         <Row>
                             <Col md="12" className="filter-block zindex-9 simulation-labels">
-
+                                {simulationCostingStatus && <Errorbox customClass={'error'} errorText={pendingSimulationAlert(simulationCostingStatus)} />}
                                 <div className="d-inline-flex justify-content-start align-items-center pr-3 mb-3 zindex-unset ">
                                     <div className="flex-fills label">Masters:</div>
                                     <div className="hide-label flex-fills pl-0">
@@ -1738,7 +1760,7 @@ function Simulation(props) {
                                                 rules={{ required: false }}
                                                 register={register}
                                                 defaultValue={technology.length !== 0 ? technology : ''}
-                                                options={renderListing('technology')}
+                                                options={simulationCostingStatus ? impactedTechnologyList : renderListing('technology')}
                                                 mandatory={false}
                                                 handleChange={handleTechnologyChange}
                                                 errors={errors.Technology}

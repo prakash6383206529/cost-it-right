@@ -30,6 +30,7 @@ import AddIndexationMaterialListing from "./AddIndexationMaterialListing"
 import HeaderTitle from "../../common/HeaderTitle";
 import { getRawMaterialDataBySourceVendor, setCommodityDetails, setOtherCostDetails } from "../actions/Indexation";
 import { useLabels } from "../../../helper/core";
+import { fetchDivisionId } from "../../costing/CostingUtil";
 
 function AddRMMaster(props) {
     const { data, EditAccessibilityRMANDGRADE, AddAccessibilityRMANDGRADE } = props
@@ -233,32 +234,37 @@ function AddRMMaster(props) {
         dispatch(fetchSpecificationDataAPI(0, () => { }))
         props?.hideForm(type)
     }
-    const commonFunction = (plantId = EMPTY_GUID, isDivision = false, masterLevels = []) => {
+    const commonFunction = (requestObject, masterLevels = []) => {
         let levelDetailsTemp = []
         levelDetailsTemp = userTechnologyDetailByMasterId(state.costingTypeId, RM_MASTER_ID, masterLevels)
         setState(prevState => ({ ...prevState, levelDetails: levelDetailsTemp }))
-        let obj = {
-            DepartmentId: userDetails().DepartmentId,
-            UserId: loggedInUserId(),
-            TechnologyId: RM_MASTER_ID,
-            Mode: 'master',
-            approvalTypeId: costingTypeIdToApprovalTypeIdFunction(state.costingTypeId),
-            plantId: plantId
-        }
-        if (getConfigurationKey().IsMasterApprovalAppliedConfigure && !isDivision) {
-            dispatch(checkFinalUser(obj, (res) => {
-                if (res?.data?.Result && res?.data?.Data?.IsFinalApprover) {
+        fetchDivisionId(requestObject, dispatch).then((divisionId) => {
+            let obj = {
+                DepartmentId: userDetails().DepartmentId,
+                UserId: loggedInUserId(),
+                TechnologyId: RM_MASTER_ID,
+                Mode: 'master',
+                approvalTypeId: costingTypeIdToApprovalTypeIdFunction(state.costingTypeId),
+                plantId: (getConfigurationKey().IsMultipleUserAllowForApproval && requestObject?.PlantId) ? requestObject?.PlantId : EMPTY_GUID,
+                divisionId: divisionId
+            }
+            if (getConfigurationKey().IsMasterApprovalAppliedConfigure) {
+                dispatch(checkFinalUser(obj, (res) => {
+                    if (res?.data?.Result && res?.data?.Data?.IsFinalApprover) {
 
-                    setState(prevState => ({ ...prevState, isFinalApprovar: res?.data?.Data?.IsFinalApprover, CostingTypePermission: true, finalApprovalLoader: false, disableSendForApproval: false }))
-                }
-                else if (res?.data?.Data?.IsUserInApprovalFlow === false || res?.data?.Data?.IsNextLevelUserExist === false) {
-                    setState(prevState => ({ ...prevState, disableSendForApproval: true }))
-                } else {
-                    setState(prevState => ({ ...prevState, disableSendForApproval: false }))
-                }
-            }))
-        }
-        setState(prevState => ({ ...prevState, CostingTypePermission: false, finalApprovalLoader: false }))
+                        setState(prevState => ({ ...prevState, isFinalApprovar: res?.data?.Data?.IsFinalApprover, CostingTypePermission: true, finalApprovalLoader: false, disableSendForApproval: false }))
+                    }
+                    else if (res?.data?.Data?.IsUserInApprovalFlow === false || res?.data?.Data?.IsNextLevelUserExist === false) {
+                        setState(prevState => ({ ...prevState, disableSendForApproval: true }))
+                    } else {
+                        setState(prevState => ({ ...prevState, disableSendForApproval: false }))
+                    }
+                }))
+            }
+            setState(prevState => ({ ...prevState, CostingTypePermission: false, finalApprovalLoader: false }))
+        }).catch((error) => {
+            setState(prevState => ({ ...prevState, disableSendForApproval: true }))
+        })
     }
     /**
     * @method getDetails
