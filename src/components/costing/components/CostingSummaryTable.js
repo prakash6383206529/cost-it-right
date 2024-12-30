@@ -3829,6 +3829,8 @@ const {isNetPoPrice , setIsNetPoPrice} = useState(false)
             closeDrawer={closeViewDrawer}
             isLogisticsTechnology={isLogisticsTechnology}
             anchor={'right'}
+            simulationMode={simulationMode}
+            index={index}
           />
         )
       }

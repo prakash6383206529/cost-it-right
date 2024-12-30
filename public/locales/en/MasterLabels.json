@@ -5,5 +5,8 @@
     "TechnologyLabel": "Technology",
     "VendorLabel": "Vendor",
     "RMVendorLabel": "Vendor",
-    "BOPVendorLabel": "Vendor"
+    "BOPVendorLabel": "Vendor",
+    "LengthLabel": "Length",
+    "BreadthLabel": "Breadth",
+    "HeightLabel": "Height"
 }

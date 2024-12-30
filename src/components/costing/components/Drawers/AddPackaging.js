@@ -68,6 +68,7 @@ function AddPackaging(props) {
   const [totalRMGrossWeight, setTotalRMGrossWeight] = useState('')
   const [showCalculator, setShowCalculator] = useState(false)
   const [openCalculator, setOpenCalculator] = useState(false)
+  const [costingPackagingCalculationDetailsId, setCostingPackagingCalculationDetailsId] = useState('')
 
   const fieldValues = IsolateReRender(control)
   const { costingData, ComponentItemData } = useSelector(state => state.costing)
@@ -96,7 +97,9 @@ function AddPackaging(props) {
       })
       // setTotalFinishWeight(totalFinishWeight)
 
-      setValue("Quantity", totalFinishWeight)
+      if(applicability?.label === 'Crate/Trolley'){
+        setShowCalculator(true)
+      }
       setTotalRMGrossWeight(totalGrossWeight)
     }
   }, [RMCCTabData, applicability])
@@ -109,10 +112,13 @@ function AddPackaging(props) {
   }, [fieldValues]);
 
   useEffect(() => {
-    let request = partType ? 'multiple technology assembly' : ''
+    let request = partType ? 'multiple technology assembly' : 'Packaging'
     dispatch(fetchCostingHeadsAPI(request, false, (res) => { }))
     const removeApplicabilityList = _.map(gridData, 'Applicability')
     setRemoveApplicability(removeApplicabilityList)
+    if(applicability?.label === 'Crate/Trolley'){
+      setShowCalculator(true)
+    }
   }, [])
 
   // useEffect(() => {
@@ -415,13 +421,20 @@ function AddPackaging(props) {
         PackagingCRMHead: getValues('crmHeadPackaging') ? getValues('crmHeadPackaging').label : '',
         Rate: getValues('Rate'),
         Quantity: getValues('Quantity'),
+        CostingPackagingCalculationDetailsId: costingPackagingCalculationDetailsId??null
       }
     }
 
     toggleDrawer('', formData)
   }
-const toggleWeightCalculator = () => {
-  setOpenCalculator(!openCalculator)
+const toggleWeightCalculator = (packingCost) => {
+  setOpenCalculator(true)
+}
+const closeCalculator = (formData,packingCost) => {
+  setCostingPackagingCalculationDetailsId(formData?.CalculationId)
+  setValue('PackagingCost', checkForDecimalAndNull(packingCost, getConfigurationKey().NoOfDecimalForPrice))
+  setPackagingCost(packingCost)
+  setOpenCalculator(false)
 }
   /**
   * @method render
@@ -654,7 +667,8 @@ const toggleWeightCalculator = () => {
 
 
                   {costingData.TechnologyId !== LOGISTICS && <Col md="12">
-                    <TextFieldHookForm
+                    <div className="packaging-cost-warpper">
+                      <TextFieldHookForm
                       label="Packaging Cost"
                       name={'PackagingCost'}
                       Controller={Controller}
@@ -662,23 +676,24 @@ const toggleWeightCalculator = () => {
                       register={register}
                       mandatory={applicability?.label === 'Fixed' ? true : false}
                       rules={{
-                        required: true,
+                        required: applicability?.label === 'Fixed' ? true : false,
                         validate: applicability?.label === 'Fixed' ? { number, checkWhiteSpaces, decimalNumberLimit6 } : {}
                       }}
                       handleChange={packingCostHandler}
                       defaultValue={''}
                       className=""
-                      customClassName={'withBorder mb-0'}
+                      customClassName={'withBorder w-100 mb-0'}
                       errors={errors.PackagingCost}
                       disabled={applicability?.label === 'Fixed' ? false : true}
                     />
                       {showCalculator && <button
                     id={`RM_calculator`}
-                    className={`CalculatorIcon cr-cl-icon RM_calculator`}
+                    className={`CalculatorIcon mb-0 mt-1 ml-2 cr-cl-icon RM_calculator`}
                     type={'button'}
                     onClick={() => toggleWeightCalculator()}
                     disabled={false}
-                  />}
+                    />}
+                    </div>
                   </Col>
                  
                   }
@@ -727,13 +742,16 @@ const toggleWeightCalculator = () => {
                   </div>
                 </Row>
               </>
-              {openCalculator && <PackagingCalculator
+            
+            </form>
+            {openCalculator && <PackagingCalculator
                 isOpen={openCalculator}
                 anchor={'right'}
-                toggleDrawer={toggleWeightCalculator}
+                closeCalculator={closeCalculator}
+                rowObjData={rowObjData}
+                CostingViewMode={isEditFlag ? true : false}
+                costingPackagingCalculationDetailsId={costingPackagingCalculationDetailsId}
                />}
-            </form>
-
           </div>
         </Container>
       </Drawer>

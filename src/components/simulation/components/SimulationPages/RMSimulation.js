@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef, useContext } from 'react';
 import { Row, Col, Tooltip, } from 'reactstrap';
 import DayTime from '../../../common/DayTimeWrapper'
-import { CBCTypeId, defaultPageSize, EMPTY_DATA, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, BOPIMPORT, DOMESTIC } from '../../../../config/constants';
+import { CBCTypeId, defaultPageSize, EMPTY_DATA, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, BOPIMPORT, DOMESTIC, ZBCTypeId } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, getLocalizedCostingHeadValue, loggedInUserId, searchNocontentFilter } from '../../../../helper';
 import Toaster from '../../../common/Toaster';
@@ -34,6 +34,7 @@ import AddOtherCostDrawer from '../../../masters/material-master/AddOtherCostDra
 import { setCommodityDetails } from '../../../masters/actions/Indexation';
 import AddConditionCosting from '../../../costing/components/CostingHeadCosts/AdditionalOtherCost/AddConditionCosting';
 import { updateCostValue } from '../../../common/CommonFunctions';
+import CostingHeadDropdownFilter from '../../../masters/material-master/CostingHeadDropdownFilter';
 
 const gridOptions = {
 
@@ -975,7 +976,7 @@ function RMSimulation(props) {
 
         const value = beforeSaveCell(cell, props, 'otherCost')
         const showValue = cell && value ? checkForDecimalAndNull(Number(cell), getConfigurationKey().NoOfDecimalForPrice) : checkForDecimalAndNull(Number(row?.NetConditionCost), getConfigurationKey().NoOfDecimalForPrice)
-        const classGreen = (checkForDecimalAndNull(row?.NewNetConditionCost) > checkForDecimalAndNull(row?.NetConditionCost)) ? 'red-value form-control' : (checkForDecimalAndNull(row?.NetConditionCost) < checkForDecimalAndNull(row?.OldConditionNetCost)) ? 'green-value form-control' : 'form-class'
+        const classGreen = (checkForDecimalAndNull(row?.NewNetConditionCost, getConfigurationKey().NoOfDecimalForPrice) > checkForDecimalAndNull(row?.NetConditionCost, getConfigurationKey().NoOfDecimalForPrice)) ? 'red-value form-control' : (checkForDecimalAndNull(row?.NetConditionCost, getConfigurationKey().NoOfDecimalForPrice) < checkForDecimalAndNull(row?.OldConditionNetCost, getConfigurationKey().NoOfDecimalForPrice)) ? 'green-value form-control' : 'form-class'
         setRowIndex(props?.node?.rowIndex)
 
         return (
@@ -1027,15 +1028,14 @@ function RMSimulation(props) {
         </div>
         )
     }
-    // const floatingFilterStatus = {
-    //     maxValue: 1,
-    //     suppressFilterButton: true,
-    //     component: CostingHeadDropdownFilter,
+    const floatingFilterStatus = {
+        maxValue: 1,
+        suppressFilterButton: true,
+        component: CostingHeadDropdownFilter,
 
-    // };
+    };
     const netLanedCostFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
 
         if (isImpactedMaster) {
@@ -1047,7 +1047,6 @@ function RMSimulation(props) {
 
     const frameworkComponents = {
         effectiveDateFormatter: effectiveDateFormatter,
-        // combinedCostingHeadRenderer: combinedCostingHeadRenderer,
 
         costingHeadFormatter: costingHeadFormatter,
         CostFormatter: CostFormatter,
@@ -1261,6 +1260,7 @@ function RMSimulation(props) {
                                                 {
                                                     !isImpactedMaster &&
                                                     <AgGridColumn width={columnWidths.CostingHead} field="CostingHead" tooltipField='CostingHead' headerName="Costing Head" editable='false' cellRenderer={'combinedCostingHeadRenderer'}
+                                                        floatingFilterComponentParams={floatingFilterStatus}
                                                         floatingFilterComponent="statusFilter"></AgGridColumn>
                                                 }
                                                 <AgGridColumn width={columnWidths.RawMaterialName} field="RawMaterialName" tooltipField='RawMaterialName' editable='false' headerName="Raw Material"></AgGridColumn>
@@ -1317,7 +1317,7 @@ function RMSimulation(props) {
                                                     <AgGridColumn width={columnWidths.NewNetCostWithoutConditionCost} field={isImpactedMaster ? "NewNetCostWithoutConditionCost" : "NewNetCostWithoutConditionCost"} editable='false' headerName="Revised" colId='NewNetCostWithoutConditionCost'></AgGridColumn>
                                                 </AgGridColumn>}
 
-                                                {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={300} headerName={
+                                                {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && list[0]?.CostingTypeId === ZBCTypeId && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={300} headerName={
                                                     "Condition Cost (Currency)"
 
                                                 } marryChildren={true} >

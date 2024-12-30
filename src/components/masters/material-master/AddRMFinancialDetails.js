@@ -1,6 +1,6 @@
 import React, { Fragment, useEffect, useRef, useState } from "react"
 import { fetchSpecificationDataAPI, getCurrencySelectList, getPlantSelectListByType, getUOMSelectList, getVendorNameByVendorSelectList, getFrequencySettlement, getExchangeRateSource } from "../../../actions/Common"
-import { CBCTypeId, EMPTY_GUID, ENTRY_TYPE_DOMESTIC, SPACEBAR, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, searchCount } from "../../../config/constants"
+import { CBCTypeId, DOMESTIC, EMPTY_GUID, ENTRY_TYPE_DOMESTIC, ENTRY_TYPE_IMPORT, SPACEBAR, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, searchCount } from "../../../config/constants"
 import { useDispatch, useSelector } from "react-redux"
 import { getCostingSpecificTechnology, getExchangeRateByCurrency } from "../../costing/actions/Costing"
 import { IsFetchExchangeRateVendorWise, IsShowFreightAndShearingCostFields, getConfigurationKey, labelWithUOMAndCurrency, labelWithUOMAndUOM, loggedInUserId, showRMScrapKeys } from "../../../helper"
@@ -28,7 +28,7 @@ import { addDays, endOfMonth, addWeeks, addMonths, addQuarters, addYears, isLeap
 import { TestHeadless } from "ag-grid-community"
 import AddIndexationMaterialListing from "./AddIndexationMaterialListing"
 import { getIndexSelectList, setOtherCostDetails } from "../actions/Indexation"
-import { getEffectiveDateMaxDate, getEffectiveDateMinDate } from "../../common/CommonFunctions"
+import { getEffectiveDateMinDate } from "../../common/CommonFunctions"
 function AddRMFinancialDetails(props) {
     const { Controller, control, register, setValue, getValues, errors, reset, useWatch, states, data, isRMAssociated, disableAll } = props
     const { isEditFlag, isViewFlag } = data
@@ -96,6 +96,7 @@ function AddRMFinancialDetails(props) {
         exchange: [],
         index: [],
         enableHalfMonthDays: false,
+        totalOtherCostBaseCurrency: 0,
 
     });
     const [showScrapKeys, setShowScrapKeys] = useState({
@@ -129,7 +130,7 @@ function AddRMFinancialDetails(props) {
         control,
         name: ['JaliScrapCostSelectedCurrency', 'ForgingScrapSelectedCurrency', 'ScrapRateSelectedCurrency', 'cutOffPriceSelectedCurrency', 'CircleScrapCostSelectedCurrency', 'MachiningScrapSelectedCurrency']
     })
-
+    
     useEffect(() => {
         rawMaterailDetailsRef.current = rawMaterailDetails
     }, [rawMaterailDetails])
@@ -147,7 +148,7 @@ function AddRMFinancialDetails(props) {
         dispatch(SetRawMaterialDetails({ ...rawMaterailDetailsRef.current, ShowScrapKeys: showScrapKeys }, () => { }))
     }, [showScrapKeys])
     useEffect(() => {
-        dispatch(SetRawMaterialDetails({ ...rawMaterailDetailsRef.current, CurrencyValue: state.currencyValue }, () => { }))
+        dispatch(SetRawMaterialDetails({ ...rawMaterailDetailsRef.current, currencyValue: state.currencyValue }, () => { }))
     }, [state.currencyValue])
     useEffect(() => {
         dispatch(getUOMSelectList(() => { }))
@@ -179,7 +180,7 @@ function AddRMFinancialDetails(props) {
     }, [rawMaterailDetails?.customer])
     useEffect(() => {
         if (states.isImport) {
-            
+
             calculateNetCostImport()
         }
     }, [fieldValuesImport, state.currencyValue])
@@ -198,41 +199,44 @@ function AddRMFinancialDetails(props) {
             let Data = props?.DataToChange
             setValue('UnitOfMeasurement', { label: Data?.UnitOfMeasurementName, value: Data?.UOM })
             setValue('cutOffPriceSelectedCurrency', Data?.CutOffPrice)
-            setValue('cutOffPriceBaseCurrency', states.isImport ? Data?.CutOffPriceInINR : Data?.CutOffPrice)
+            setValue('cutOffPriceBaseCurrency', Data?.RawMaterialEntryType === ENTRY_TYPE_IMPORT ? Data?.CutOffPriceInINR : Data?.CutOffPrice)
             setValue('BasicRateSelectedCurrency', Data?.BasicRatePerUOM)
-            setValue('BasicRateBaseCurrency', states.isImport ? Data?.BasicRatePerUOMConversion : Data?.BasicRatePerUOM)
+            setValue('BasicRateBaseCurrency', Data?.RawMaterialEntryType === ENTRY_TYPE_DOMESTIC ? Data?.BasicRatePerUOM : Data?.BasicRatePerUOMConversion)
             setValue('ScrapRatePerScrapUOM', Data?.ScrapRatePerScrapUOM)
-            setValue('ScrapRatePerScrapUOMBaseCurrency', states.isImport ? Data?.ScrapRatePerScrapUOMConversion : Data?.ScrapRatePerScrapUOM)
+            setValue('ScrapRatePerScrapUOMBaseCurrency', Data?.RawMaterialEntryType === ENTRY_TYPE_IMPORT ? Data?.ScrapRatePerScrapUOMConversion : Data?.ScrapRatePerScrapUOM)
             setValue('ScrapRateSelectedCurrency', Data?.ScrapRate)
-            setValue('ScrapRateBaseCurrency', states.isImport ? Data?.ScrapRateInINR : Data?.ScrapRate)
+            setValue('ScrapRateBaseCurrency', Data?.RawMaterialEntryType === ENTRY_TYPE_IMPORT? Data?.ScrapRateInINR : Data?.ScrapRate)
             setValue('ShearingCostSelectedCurrency', Data?.RMShearingCost)
-            setValue('ShearingCostBaseCurrency', states.isImport ? Data?.RawMaterialShearingCostConversion : Data?.RMShearingCost)
+            setValue('ShearingCostBaseCurrency', Data?.RawMaterialEntryType === ENTRY_TYPE_IMPORT ? Data?.RawMaterialShearingCostConversion : Data?.RMShearingCost)
             setValue('FreightChargeSelectedCurrency', Data?.RMFreightCost)
-            setValue('FreightChargeBaseCurrency', states.isImport ? Data?.RawMaterialFreightCostConversion : Data?.RMFreightCost)
+            setValue('FreightChargeBaseCurrency', Data?.RawMaterialEntryType === ENTRY_TYPE_IMPORT ? Data?.RawMaterialFreightCostConversion : Data?.RMFreightCost)
             setValue('ConversionRatio', Data?.UOMToScrapUOMRatio)
             setValue('UOMToScrapUOMRatio', Data?.UOMToScrapUOMRatio)
             setValue('BasicPriceSelectedCurrency', Data?.NetCostWithoutConditionCost)
-            setValue('BasicPriceBaseCurrency', states.isImport ? Data?.NetCostWithoutConditionCostConversion : Data?.NetCostWithoutConditionCost)
+            setValue('BasicPriceBaseCurrency', Data?.RawMaterialEntryType === ENTRY_TYPE_IMPORT ? Data?.NetCostWithoutConditionCostConversion : Data?.NetCostWithoutConditionCost)
             setValue('NetLandedCostSelectedCurrency', Data?.NetLandedCost)
-            setValue('NetLandedCostBaseCurrency', states.isImport ? Data?.NetLandedCostConversion : Data?.NetLandedCost)
+            setValue('NetLandedCostBaseCurrency', Data?.RawMaterialEntryType === ENTRY_TYPE_DOMESTIC ? Data?.NetLandedCost : Data?.NetLandedCostConversion)
             setValue('FinalConditionCostSelectedCurrency', Data?.NetConditionCost)
-            setValue('FinalConditionCostBaseCurrency', states.isImport ? Data?.NetConditionCostConversion : Data?.NetConditionCost)
+            setValue('FinalConditionCostBaseCurrency', Data?.RawMaterialEntryType === ENTRY_TYPE_IMPORT ? Data?.NetConditionCostConversion : Data?.NetConditionCost)
             setValue('ScrapRateUOM', { label: Data?.ScrapUnitOfMeasurement, value: Data?.ScrapUnitOfMeasurementId })
             setValue('CalculatedFactor', Data?.CalculatedFactor)
             setValue('effectiveDate', Data?.EffectiveDate ? DayTime(Data?.EffectiveDate).$d : '')
             setValue('CircleScrapCostSelectedCurrency', Data?.JaliScrapCost)
-            setValue('CircleScrapCostBaseCurrency', states.isImport ? Data?.JaliScrapCostConversion : Data?.JaliScrapCost)
+            setValue('CircleScrapCostBaseCurrency', Data?.RawMaterialEntryType === ENTRY_TYPE_IMPORT ? Data?.JaliScrapCostConversion : Data?.JaliScrapCost)
             setValue('currency', { label: Data?.Currency, value: Data?.CurrencyId })
             setValue('MachiningScrapSelectedCurrency', Data?.MachiningScrapRate)
-            setValue('MachiningScrapBaseCurrency', states.isImport ? Data?.MachiningScrapRateInINR : Data?.MachiningScrapRate)
+            setValue('MachiningScrapBaseCurrency', Data?.RawMaterialEntryType === ENTRY_TYPE_IMPORT? Data?.MachiningScrapRateInINR : Data?.MachiningScrapRate)
             setValue('JaliScrapCostBaseCurrency', Data?.ScrapRate)
             setValue('ForgingScrapBaseCurrency', Data?.ScrapRate)
             setValue('frequencyOfSettlement', { label: Data?.FrequencyOfSettlement, value: Data?.FrequencyOfSettlementId })
             setValue('fromDate', DayTime(Data?.FromDate).$d)
             setValue('toDate', DayTime(Data?.ToDate).$d)
-            setValue('OtherCostBaseCurrency', Data?.OtherNetCost)
+            setValue('OtherCostBaseCurrency',  Data?.RawMaterialEntryType === ENTRY_TYPE_IMPORT?Data?.OtherCostBaseCurrency:Data?.OtherNetCostConversion)
+            setValue('OtherCost', Data?.OtherNetCost)
             setValue('Index', { label: Data?.IndexExchangeName, value: Data?.IndexExchangeId })
             setValue('ExchangeSource', { label: Data?.ExchangeRateSourceName, value: Data?.ExchangeRateSourceName })
+            setValue("NetLandedCostBaseCurrency", Data?.RawMaterialEntryType === ENTRY_TYPE_IMPORT ? Data?.NetLandedCostConversion : Data?.NetLandedCost)
+            setValue("NetLandedCostSelectedCurrency", Data?.RawMaterialEntryType === ENTRY_TYPE_IMPORT ? Data?.NetLandedCost : Data?.NetLandedCost)
             setState(prevState => ({
                 ...prevState,
                 effectiveDate: Data?.EffectiveDate ? DayTime(Data?.EffectiveDate).$d : '',
@@ -241,7 +245,7 @@ function AddRMFinancialDetails(props) {
                 IsApplyHasDifferentUOM: Data?.IsScrapUOMApply,
                 ScrapRateUOM: { label: Data?.ScrapUnitOfMeasurement, value: Data?.ScrapUnitOfMeasurementId },
                 FinalConditionCostSelectedCurrency: Data?.NetConditionCost,
-                FinalConditionCostBaseCurrency: states.isImport ? Data?.NetConditionCostConversion : Data?.NetConditionCost,
+                FinalConditionCostBaseCurrency: Data?.RawMaterialEntryType === ENTRY_TYPE_IMPORT? Data?.NetConditionCostConversion : Data?.NetConditionCost,
                 conditionTableData: Data?.RawMaterialConditionsDetails,
                 currency: Data?.Currency !== undefined ? { label: Data?.Currency, value: Data?.CurrencyId } : [],
                 showCurrency: true,
@@ -249,7 +253,8 @@ function AddRMFinancialDetails(props) {
                 calculatedFactor: Data?.CalculatedFactor,
                 otherCostTableData: Data?.RawMaterialOtherCostDetails,
                 isShowIndexCheckBox: Data?.IsIndexationDetails,
-                totalOtherCost: Data?.OtherNetCostConversion,
+                totalOtherCost: Data?.OtherNetCost,
+                totalOtherCostBaseCurrency: Data?.OtherNetCostConversion,
                 minDate: DayTime(Data?.EffectiveDate).$d
             }))
             dispatch(SetRawMaterialDetails({ ...rawMaterailDetailsRef.current, isShowIndexCheckBox: Data?.IsIndexationDetails }, () => { }))
@@ -502,9 +507,12 @@ function AddRMFinancialDetails(props) {
         let obj = {}
         const cutOffPriceBaseCurrency = convertIntoBase(getValues('cutOffPriceSelectedCurrency'))
         setValue('cutOffPriceBaseCurrency', checkForDecimalAndNull(cutOffPriceBaseCurrency, getConfigurationKey().NoOfDecimalForPrice));
+        const otherCostBaseCurrency = convertIntoBase(state?.totalOtherCost)
+        setValue('OtherCostBaseCurrency', checkForDecimalAndNull(otherCostBaseCurrency, getConfigurationKey().NoOfDecimalForPrice))
         const basicRateBaseCurrency = convertIntoBase(getValues('BasicRateSelectedCurrency'))
-        
-        setValue('BasicRateBaseCurrency', checkForDecimalAndNull(basicRateBaseCurrency, getConfigurationKey().NoOfDecimalForPrice));
+ setValue('BasicRateBaseCurrency', checkForDecimalAndNull(basicRateBaseCurrency, getConfigurationKey().NoOfDecimalForPrice));
+        // setValue('OtherCost', checkForDecimalAndNull(totalBase, getConfigurationKey().NoOfDecimalForPrice))
+
         if (state.IsApplyHasDifferentUOM) {
             const conversionFactorTemp = 1 / getValues('ConversionRatio')
             setState(prevState => ({ ...prevState, CalculatedFactor: conversionFactorTemp }))
@@ -520,61 +528,61 @@ function AddRMFinancialDetails(props) {
         setValue('FreightChargeBaseCurrency', checkForDecimalAndNull(freightChargeBaseCurrency, getConfigurationKey().NoOfDecimalForPrice));
         const shearingCostSelectedCurrency = convertIntoBase(getValues('ShearingCostSelectedCurrency'))
         setValue('ShearingCostBaseCurrency', checkForDecimalAndNull(shearingCostSelectedCurrency, getConfigurationKey().NoOfDecimalForPrice));
-        const basicPriceSelectedCurrencyTemp = checkForNull(getValues('BasicRateSelectedCurrency')) + checkForNull(getValues('FreightChargeSelectedCurrency')) + checkForNull(getValues('ShearingCostSelectedCurrency')) + checkForNull(getValues('OtherCostSelectedCurrency'))
-        
+        const basicPriceSelectedCurrencyTemp = checkForNull(getValues('BasicRateSelectedCurrency')) + checkForNull(getValues('FreightChargeSelectedCurrency')) + checkForNull(getValues('ShearingCostSelectedCurrency')) + checkForNull(state?.totalOtherCost ?? 0)
+
         const basicPriceBaseCurrencyTemp = convertIntoBase(basicPriceSelectedCurrencyTemp)
         
-            let basicPriceBaseCurrency
-            if (states.costingTypeId === ZBCTypeId) {
-                basicPriceBaseCurrency = basicPriceBaseCurrencyTemp
-            }
-            setValue('BasicPriceSelectedCurrency', checkForDecimalAndNull(basicPriceSelectedCurrencyTemp, getConfigurationKey().NoOfDecimalForPrice));
-            setValue('BasicPriceBaseCurrency', checkForDecimalAndNull(basicPriceBaseCurrency, getConfigurationKey().NoOfDecimalForPrice));
+        let basicPriceBaseCurrency
+        if (states.costingTypeId === ZBCTypeId) {
+            basicPriceBaseCurrency = basicPriceBaseCurrencyTemp
+        }
+        setValue('BasicPriceSelectedCurrency', checkForDecimalAndNull(basicPriceSelectedCurrencyTemp, getConfigurationKey().NoOfDecimalForPrice));
+        setValue('BasicPriceBaseCurrency', checkForDecimalAndNull(basicPriceBaseCurrency, getConfigurationKey().NoOfDecimalForPrice));
 
-            let conditionList = recalculateConditions(basicPriceSelectedCurrencyTemp, basicPriceBaseCurrency)
+        let conditionList = recalculateConditions(basicPriceSelectedCurrencyTemp, basicPriceBaseCurrency)
 
-            const sumBaseCurrency = conditionList?.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCostConversion), 0);
-            
-            setValue('FinalConditionCostBaseCurrency', checkForDecimalAndNull(sumBaseCurrency, getConfigurationKey().NoOfDecimalForPrice))
+        const sumBaseCurrency = conditionList?.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCostConversion), 0);
 
-            const sumSelectedCurrency = conditionList?.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCost), 0);
-            setValue('FinalConditionCostSelectedCurrency', checkForDecimalAndNull(sumSelectedCurrency, getConfigurationKey().NoOfDecimalForPrice))
-            
-            
-            const netLandedCostSelectedCurrency = checkForNull(basicPriceSelectedCurrencyTemp) + checkForNull(sumSelectedCurrency)
-            
-            const netLandedCostBaseCurrency = checkForNull(basicPriceBaseCurrencyTemp) + checkForNull(sumBaseCurrency)
-            
-            setValue('NetLandedCostSelectedCurrency', checkForDecimalAndNull(netLandedCostSelectedCurrency, getConfigurationKey().NoOfDecimalForPrice));
-            setValue('NetLandedCostBaseCurrency', checkForDecimalAndNull(netLandedCostBaseCurrency, getConfigurationKey().NoOfDecimalForPrice));
-            let netCostChanged = false
-            if (isEditFlag) {
-                if (checkForNull(netLandedCostBaseCurrency) === checkForNull(props?.DataToChange?.NetLandedCostBaseCurrency)) {
-                    netCostChanged = false
-                } else {
-                    netCostChanged = true
-                }
-                dispatch(SetRawMaterialDetails({ ...rawMaterailDetailsRef.current, netCostChanged: netCostChanged }, () => { }))
-            }
+        setValue('FinalConditionCostBaseCurrency', checkForDecimalAndNull(sumBaseCurrency, getConfigurationKey().NoOfDecimalForPrice))
 
-            setState(prevState => ({
-                ...prevState,
-                FinalCutOffBaseCurrency: getValues('cutOffPrice'),
-                FinalBasicRateBaseCurrency: getValues('BasicRateBaseCurrency'),
-                FinalMachiningScrapCostBaseCurrency: getValues('MachiningScrap'),
-                FinalCircleScrapCostBaseCurrency: getValues('CircleScrapCost'),
-                FinalFreightCostBaseCurrency: getValues('FreightCharge'),
-                FinalShearingCostBaseCurrency: getValues('ShearingCost'),
-                FinalBasicPriceBaseCurrency: basicPriceBaseCurrency,
-                NetLandedCostBaseCurrency: netLandedCostBaseCurrency,
-                conditionTableData: conditionList,
-                ConversionRatio: getValues('ConversionRatio'),
-                ScrapRatePerScrapUOM: getValues('ScrapRatePerScrapUOM'),
-                FinalBasicPriceSelectedCurrency: basicPriceSelectedCurrencyTemp,
-                ...obj,
-            }))
+        const sumSelectedCurrency = conditionList?.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCost), 0);
+        setValue('FinalConditionCostSelectedCurrency', checkForDecimalAndNull(sumSelectedCurrency, getConfigurationKey().NoOfDecimalForPrice))
 
+
+        const netLandedCostSelectedCurrency = checkForNull(basicPriceSelectedCurrencyTemp) + checkForNull(sumSelectedCurrency)
+
+        const netLandedCostBaseCurrency = checkForNull(basicPriceBaseCurrencyTemp) + checkForNull(sumBaseCurrency)
         
+        setValue('NetLandedCostSelectedCurrency', checkForDecimalAndNull(netLandedCostSelectedCurrency, getConfigurationKey().NoOfDecimalForPrice));
+        setValue('NetLandedCostBaseCurrency', checkForDecimalAndNull(netLandedCostBaseCurrency, getConfigurationKey().NoOfDecimalForPrice));
+        let netCostChanged = false
+        if (isEditFlag) {
+            if (checkForNull(netLandedCostBaseCurrency) === checkForNull(props?.DataToChange?.NetLandedCostBaseCurrency)) {
+                netCostChanged = false
+            } else {
+                netCostChanged = true
+            }
+            dispatch(SetRawMaterialDetails({ ...rawMaterailDetailsRef.current, netCostChanged: netCostChanged }, () => { }))
+        }
+
+        setState(prevState => ({
+            ...prevState,
+            FinalCutOffBaseCurrency: getValues('cutOffPrice'),
+            FinalBasicRateBaseCurrency: getValues('BasicRateBaseCurrency'),
+            FinalMachiningScrapCostBaseCurrency: getValues('MachiningScrap'),
+            FinalCircleScrapCostBaseCurrency: getValues('CircleScrapCost'),
+            FinalFreightCostBaseCurrency: getValues('FreightCharge'),
+            FinalShearingCostBaseCurrency: getValues('ShearingCost'),
+            FinalBasicPriceBaseCurrency: basicPriceBaseCurrency,
+            NetLandedCostBaseCurrency: netLandedCostBaseCurrency,
+            conditionTableData: conditionList,
+            ConversionRatio: getValues('ConversionRatio'),
+            ScrapRatePerScrapUOM: getValues('ScrapRatePerScrapUOM'),
+            FinalBasicPriceSelectedCurrency: basicPriceSelectedCurrencyTemp,
+            ...obj,
+        }))
+
+
         dispatch(SetRawMaterialDetails({ ...rawMaterailDetailsRef.current, states: state }, () => { }))
     }
     /**
@@ -643,6 +651,8 @@ function AddRMFinancialDetails(props) {
                         } else {
                             setState(prevState => ({ ...prevState, showWarning: false }));
                         }
+                        dispatch(SetRawMaterialDetails({ currencyValue: checkForNull(res.data.Data.CurrencyExchangeRate) }, () => { }))
+
                         setState(prevState => ({ ...prevState, currencyValue: checkForNull(res.data.Data.CurrencyExchangeRate) }));
                     }));
                 }
@@ -761,6 +771,7 @@ function AddRMFinancialDetails(props) {
                 } else {
                     setState(prevState => ({ ...prevState, showWarning: false }))
                 }
+                dispatch(SetRawMaterialDetails({ currencyValue: checkForNull(res.data.Data.CurrencyExchangeRate) }, () => { }))
                 setState(prevState => ({ ...prevState, currencyValue: checkForNull(res.data.Data.CurrencyExchangeRate) }));
             }));
         }
@@ -775,6 +786,7 @@ function AddRMFinancialDetails(props) {
                 } else {
                     setState(prevState => ({ ...prevState, showWarning: false }))
                 }
+                dispatch(SetRawMaterialDetails({ currencyValue: checkForNull(res.data.Data.CurrencyExchangeRate) }, () => { }))
                 setState(prevState => ({ ...prevState, currencyValue: checkForNull(res.data.Data.CurrencyExchangeRate) }));
             }));
         }
@@ -795,58 +807,64 @@ function AddRMFinancialDetails(props) {
         setState(prevState => ({ ...prevState, isOpenOtherCostDrawer: true }))
     }
 
-// ... existing code ...
+    // ... existing code ...
 
-const closeOtherCostToggle = (type, data, total, totalBase) => {
+    const closeOtherCostToggle = (type, data, total, totalBase) => {
 
-    if (type === 'Save') {
-        // Update state
-        setState(prevState => ({ 
-            ...prevState, 
-            isOpenOtherCostDrawer: false, 
-            otherCostTableData: data, 
-            totalOtherCost: totalBase 
-        }))
+        if (type === 'Save') {
+            // Update state
+            setState(prevState => ({
+                ...prevState,
+                isOpenOtherCostDrawer: false,
+                otherCostTableData: data,
+                totalOtherCost: totalBase
+            }))
 
-        // Set other cost base currency
-        setValue('OtherCost', checkForDecimalAndNull(totalBase, getConfigurationKey().NoOfDecimalForPrice))
-        const otherCostBaseCurrency = convertIntoBase(totalBase)
-        setValue('OtherCostBaseCurrency', checkForDecimalAndNull(otherCostBaseCurrency, getConfigurationKey().NoOfDecimalForPrice))
+            // Set other cost base currency
+            setValue('OtherCost', checkForDecimalAndNull(totalBase, getConfigurationKey().NoOfDecimalForPrice))
+            const otherCostBaseCurrency = convertIntoBase(totalBase)
+            setValue('OtherCostBaseCurrency', checkForDecimalAndNull(otherCostBaseCurrency, getConfigurationKey().NoOfDecimalForPrice))
 
-        const sumBaseCurrency = data?.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.NetCost), 0);
+            const sumBaseCurrency = data?.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.NetCost), 0);
+
+            const sumSelectedCurrency = data?.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.NetCostConversion), 0);
         
-        const sumSelectedCurrency = data?.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.NetCostConversion), 0);
-        
-        const finalBasicPriceBaseCurrency = checkForNull(state.FinalBasicPriceBaseCurrency);
-        
-        const netLandedCostINR = (states.isImport ? sumBaseCurrency : sumSelectedCurrency) + finalBasicPriceBaseCurrency;
-        
-        const netLandedCostSelectedCurrency = sumSelectedCurrency + checkForNull(state.FinalBasicPriceSelectedCurrency);
-        
-        if(states.isImport){
-            setValue('NetLandedCostBaseCurrency', checkForNull(otherCostBaseCurrency) + checkForNull(getValues('BasicRateBaseCurrency')))
-            setValue('NetLandedCostSelectedCurrency', checkForDecimalAndNull(netLandedCostSelectedCurrency, getConfigurationKey().NoOfDecimalForPrice))
-        }else{
-            setValue('NetLandedCostBaseCurrency', checkForNull(totalBase) + checkForNull(getValues('BasicRateBaseCurrency')))
+            const finalBasicPriceBaseCurrency = checkForNull(state.FinalBasicPriceBaseCurrency);
+
+            const netLandedCostINR = (states.isImport ? sumBaseCurrency : sumSelectedCurrency) + finalBasicPriceBaseCurrency;
+
+            const netLandedCostSelectedCurrency = sumSelectedCurrency + checkForNull(getValues('BasicRateSelectedCurrency'));
+
+
+
+
+
+
+            if (states.isImport) {
+                setValue('NetLandedCostBaseCurrency', checkForNull(otherCostBaseCurrency) + checkForNull(getValues('BasicRateBaseCurrency')))
+                setValue('NetLandedCostSelectedCurrency', checkForDecimalAndNull(netLandedCostSelectedCurrency, getConfigurationKey().NoOfDecimalForPrice))
+            } else {
+                setValue('NetLandedCostBaseCurrency', checkForNull(totalBase) + checkForNull(getValues('BasicRateBaseCurrency')))
+
+            }
+
+
+
+            // Update state with new net landed cost
+            setState(prevState => ({
+                ...prevState,
+                NetLandedCostBaseCurrency: netLandedCostINR
+            }));
+
+            // Dispatch other cost details
+            dispatch(setOtherCostDetails(data));
+
+        } else {
+            setState(prevState => ({ ...prevState, isOpenOtherCostDrawer: false }))
         }
-        
-       
-
-        // Update state with new net landed cost
-        setState(prevState => ({
-            ...prevState,
-            NetLandedCostBaseCurrency: netLandedCostINR
-        }));
-
-        // Dispatch other cost details
-        dispatch(setOtherCostDetails(data));
-
-    } else {
-        setState(prevState => ({ ...prevState, isOpenOtherCostDrawer: false }))
     }
-}
 
-// ... existing code ...
+    // ... existing code ...
 
     const conditionToggle = () => {
         setState(prevState => ({ ...prevState, isOpenConditionDrawer: true }))
@@ -903,7 +921,6 @@ const closeOtherCostToggle = (type, data, total, totalBase) => {
                         !((rawMaterailDetails?.Vendor && rawMaterailDetails?.Vendor?.label) ||
                             (rawMaterailDetails?.customer && rawMaterailDetails?.customer?.length !== 0))) {
                         setState(prevState => ({ ...prevState, showWarning: true }));
-
                         return;
                     }
 
@@ -913,6 +930,7 @@ const closeOtherCostToggle = (type, data, total, totalBase) => {
                         } else {
                             setState(prevState => ({ ...prevState, showWarning: false }));
                         }
+                        dispatch(SetRawMaterialDetails({ currencyValue: checkForNull(res.data.Data.CurrencyExchangeRate) }, () => { }))
                         setState(prevState => ({ ...prevState, currencyValue: checkForNull(res.data.Data.CurrencyExchangeRate) }));
                     }));
                 }
@@ -1934,7 +1952,6 @@ const closeOtherCostToggle = (type, data, total, totalBase) => {
                                         disabled={disableAll || isViewFlag}
                                         mandatory={true}
                                         errors={errors && errors.effectiveDate}
-                                        maxDate={getEffectiveDateMaxDate()}
                                         minDate={state.isShowIndexCheckBox ? addDays(new Date(state.toDate), 1) : isEditFlag ? state.minDate : getEffectiveDateMinDate()}
                                     />
                                 </div>
@@ -1969,12 +1986,13 @@ const closeOtherCostToggle = (type, data, total, totalBase) => {
                     closeDrawer={closeOtherCostToggle}
                     anchor={'right'}
                     rawMaterial={true}
-                    rmBasicRate={states.isImport?getValues('BasicRateSelectedCurrency'):state.totalBasicRate}
+                    rmBasicRate={states.isImport ? getValues('BasicRateSelectedCurrency') : state.totalBasicRate}
                     ViewMode={isViewFlag}
                     uom={state.UOM}
                     currency={state.currency}
                     currencyValue={state.currencyValue}
                     isFromImport={states.isImport}
+
                 />
             }
 
