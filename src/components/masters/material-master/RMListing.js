@@ -143,9 +143,7 @@ const RMListing = (props) => {
   const confirmDelete = (ID) => {
     dispatch(
       deleteMaterialTypeAPI(ID, (res) => {
-        if (res.status === 417 && res.data.Result === false) {
-          Toaster.error(res.data.Message);
-        } else if (res && res.data && res.data.Result === true) {
+        if (res && res?.data && res?.data?.Result === true) {
           Toaster.success(MESSAGES.DELETE_MATERIAL_SUCCESS);
           setState((prevState) => ({ ...prevState, dataCount: 0 }));
           getListData();
