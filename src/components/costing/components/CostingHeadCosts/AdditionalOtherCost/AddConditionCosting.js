@@ -568,7 +568,7 @@ function AddConditionCosting(props) {
                                             className=""
                                             customClassName={'withBorder'}
                                             errors={errors.Condition}
-                                            disabled={checkCondtionDisabled || ViewMode}
+                                            disabled={checkCondtionDisabled || props?.ViewMode}
                                         />
                                     </Col>
 

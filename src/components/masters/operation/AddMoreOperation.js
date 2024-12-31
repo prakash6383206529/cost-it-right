@@ -1290,7 +1290,7 @@ function AddMoreOperation(props) {
                                                 required: false,
                                                 validate: {
                                                     acceptAllExceptSingleSpecialCharacter,
-                                                    maxLength25,
+                                                    maxLength80,
                                                     checkWhiteSpaces,
                                                 }
                                             }}
