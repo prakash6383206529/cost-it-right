@@ -88,12 +88,13 @@ function ViewPackagingAndFreight(props) {
                       </td>}
                       <td>{item.Rate ? checkForDecimalAndNull(item.Rate, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
                       <td>{item.Quantity ? checkForDecimalAndNull(item.Quantity, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
-                      <td>{item.PackagingCost ? checkForDecimalAndNull(item.PackagingCost, initialConfiguration.NoOfDecimalForPrice) : '-'}
+                      <td><div className='d-flex align-items-center'>{item.PackagingCost ? checkForDecimalAndNull(item.PackagingCost, initialConfiguration.NoOfDecimalForPrice) : '-'}
                       {item?.CostingPackagingCalculationDetailsId !== 0 && item?.CostingPackagingCalculationDetailsId !== null && <button
-                        className="CalculatorIcon cr-cl-icon mr-auto ml-0"
+                        className="CalculatorIcon cr-cl-icon ml-1"
                         type={"button"}
                         onClick={() => { getPackagingCalculator(index) }}
                       />}
+                      </div>
                       </td>
 
                       {initialConfiguration.IsShowCRMHead && <td>{item.PackagingCRMHead ? item.PackagingCRMHead : '-'}</td>}
