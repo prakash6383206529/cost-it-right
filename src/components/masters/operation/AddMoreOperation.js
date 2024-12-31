@@ -816,13 +816,6 @@ function AddMoreOperation(props) {
         return `accordian-content form-group row mx-0 w-100 ${value ? '' : 'd-none'}`
     }
 
-    const validateDescription = (value) => {
-        if (value && value.length > 25) {
-            Toaster.warning('Description cannot exceed 25 characters');
-            return false;
-        }
-        return true;
-    }
 
     return (
         <div className="container-fluid">
@@ -945,11 +938,11 @@ function AddMoreOperation(props) {
                                                 required: false,
                                                 validate: {
                                                     acceptAllExceptSingleSpecialCharacter,
-                                                    maxLength25,
+                                                    maxLength80,
                                                     checkWhiteSpaces,
                                                 }
                                             }}
-                                            handleChange={(e) => validateDescription(e.target.value)}
+                                            handleChange={() => { }}
                                             placeholder={'Enter'}
                                             customClassName={'withBorder'}
                                             disabled={isViewMode}
@@ -1092,7 +1085,7 @@ function AddMoreOperation(props) {
                                     <div className={getAccordianClassName(isMaterialCostOpen)}>
 
                                         {other &&
-                                            <><Col md="3">
+                                            <><Col md="3" className="mb-3">
                                                 <SearchableSelectHookForm
                                                     name="crmHeadMaterialCost"
                                                     type="text"
@@ -1141,7 +1134,7 @@ function AddMoreOperation(props) {
                                             </>}
 
                                         {(isWelding || isPlating) && <>
-                                            <Col md="3">
+                                            <Col md="3" className="mb-3">
                                                 <SearchableSelectHookForm
                                                     name="crmHeadWireRate"
                                                     type="text"
@@ -1245,7 +1238,7 @@ function AddMoreOperation(props) {
                                             </Col>
 
 
-                                            <Col md="3">
+                                            <Col md="3" className="mb-3">
                                                 <SearchableSelectHookForm
                                                     name="crmHeadGasRate"
                                                     type="text"
@@ -1265,7 +1258,7 @@ function AddMoreOperation(props) {
                                                     disabled={isViewMode}
                                                 />
                                             </Col>
-                                            <Col md="3">
+                                            <Col md="3" className="mb-3">
 
                                                 <NumberFieldHookForm
                                                     label={getLabel('gasRate')}
@@ -1291,7 +1284,7 @@ function AddMoreOperation(props) {
                                             </Col>
 
 
-                                            <Col md="3">
+                                            <Col md="3" className="mb-3">
                                                 <NumberFieldHookForm
                                                     label={`Consumption`}
                                                     name={'consumptionGas'}
