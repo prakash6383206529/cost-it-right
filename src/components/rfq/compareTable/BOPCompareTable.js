@@ -57,7 +57,7 @@ const BOPCompareTable = (props) => {
 
             }
         }))
-    }, [])
+    }, [showConvertedCurrency])
 
     
     useEffect(() => {
@@ -163,7 +163,9 @@ const BOPCompareTable = (props) => {
                 costingType: item.CostingHead === "Zero Based" ? 
                     "ZBC" : 
                     item.CostingHead === "Vendor Based" ? "VBC" : "",
-                vendorCode: item.VendorCode
+                vendorCode: item.VendorCode,
+                showConvertedCurrencyCheckbox: item.bestCost===""&&showConvertedCurrencyCheckbox
+
             }));
     
             const sections = [
@@ -219,58 +221,58 @@ const BOPCompareTable = (props) => {
         setSelectedBopId([id]);
         setOpenSpecification(true);
     };
-  const bestCostObjectFunction = (arrayList) => {
-    if (!arrayList?.length) return [];
+    const bestCostObjectFunction = (arrayList) => {
+        if (!arrayList?.length) return [];
+    
+        const returnArray = _.cloneDeep(arrayList);
+        const finalArrayList = _.cloneDeep(arrayList);
+        
+        // Check if currency conversion needed
+        const isSameCurrency = _.map(arrayList, 'Currency')
+            .every(element => element === getConfigurationKey().BaseCurrency);
+        
+        const minObject = { 
+            ...finalArrayList[0],
+            attachment: [],
+            bestCost: true
+        };
+    
+        // Handle different cases
+        if (isSameCurrency) {
+            const keys = ["NetLandedCost", "BasicRatePerUOM", "OtherNetCost"];
+            Object.keys(minObject).forEach(key => minObject[key] = "");
 
-    const returnArray = _.cloneDeep(arrayList);
-    const finalArrayList = _.cloneDeep(arrayList);
-   
-    // Check if currency conversion needed
-    const isSameCurrency = _.map(arrayList, 'Currency')
-        .every(element => element === getConfigurationKey().BaseCurrency);
-   
-    const minObject = {
-        ...finalArrayList[0],
-        attachment: [],
-        bestCost: true
+            // Find minimum values for each key
+            keys.forEach(key => {
+                minObject[key] = Math.min(...finalArrayList
+                    .map(item => isNumber(item[key]) ? checkForNull(item[key]) : Infinity));
+            });
+            
+            minObject.nPOPrice = keys.reduce((sum, key) => 
+                sum + checkForNull(minObject[key]), 0);
+        } 
+        else if (!showConvertedCurrency) {
+            // Set all values to "-" when different currencies without conversion
+            Object.keys(minObject).forEach(key => minObject[key] = "");
+        } 
+        else {
+            // Handle converted currency case
+            const conversionKeys = ["NetLandedCostConversion", "BasicRatePerUOMConversion", "OtherNetCostConversion"];
+            
+            Object.keys(minObject).forEach(key => minObject[key] = "");
+            
+            conversionKeys.forEach(key => {
+                minObject[key] = Math.min(...finalArrayList
+                    .map(item => isNumber(item[key]) ? checkForNull(item[key]) : Infinity));
+            });
+            
+            minObject.nPOPrice = conversionKeys.reduce((sum, key) => 
+                sum + checkForNull(minObject[key]), 0);
+        }
+    
+        returnArray.push(minObject);
+        return returnArray;
     };
-
-    // Handle different cases
-    if (isSameCurrency) {
-        const keys = ["NetLandedCost", "BasicRatePerUOM", "OtherNetCost"];
-        Object.keys(minObject).forEach(key => minObject[key] = "");
-
-        // Find minimum values for each key
-        keys.forEach(key => {
-            minObject[key] = Math.min(...finalArrayList
-                .map(item => isNumber(item[key]) ? checkForNull(item[key]) : Infinity));
-        });
-       
-        minObject.nPOPrice = keys.reduce((sum, key) =>
-            sum + checkForNull(minObject[key]), 0);
-    }
-    else if (!showConvertedCurrency) {
-        // Set all values to "-" when different currencies without conversion
-        Object.keys(minObject).forEach(key => minObject[key] = "");
-    }
-    else {
-        // Handle converted currency case
-        const conversionKeys = ["NetLandedCostConversion", "BasicRatePerUOMConversion", "OtherNetCostConversion"];
-       
-        Object.keys(minObject).forEach(key => minObject[key] = "");
-       
-        conversionKeys.forEach(key => {
-            minObject[key] = Math.min(...finalArrayList
-                .map(item => isNumber(item[key]) ? checkForNull(item[key]) : Infinity));
-        });
-       
-        minObject.nPOPrice = conversionKeys.reduce((sum, key) =>
-            sum + checkForNull(minObject[key]), 0);
-    }
-
-    returnArray.push(minObject);
-    return returnArray;
-};
     
 
     const checkBoxHandle = (item, index) => {
