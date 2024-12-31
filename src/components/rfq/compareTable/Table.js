@@ -9,7 +9,7 @@ const Table = (props) => {
     const { headerData, sectionData, children,showConvertedCurrency, 
         onConvertedCurrencyChange,showConvertedCurrencyCheckbox,onViewOtherCost } = props;
     const { vendorLabel } = useLabels()
-
+        
     const renderList = (sectionData) => {
         const { isHighlightedRow, header, data } = sectionData
         
@@ -32,18 +32,18 @@ const Table = (props) => {
                     <td>{header[header.length - 1]}</td>
                     {data.map((item, index) => (
                         <td key={index}>
-                            <div className="d-flex align-items-center justify-content-between">
+                            <div className="d-flex align-items-center justify-content-between mr-0">
                                 <span>{item[item.length - 1] ?? '-'}</span>
                                 {/* Add view icon for Other Net Cost column */}
-                                {header[header.length - 1].includes('Other Net Cost') && !headerData[index].bestCost && (
-                                   <button
-                                   id="view_conversion_cost"
-                                   type="button"
-                                   title='View'
-                                   className="float-right mb-0 View "
-                                   onClick={() => onViewOtherCost(index)}
-                                 >
-                                 </button>
+                                {header[header.length - 1].includes('Other Net Cost') && headerData[index].bestCost !== "" && (
+        <button
+            id="view_conversion_cost"
+            type="button"
+            title='View'
+                                   className="float-right mb-0 View mr-0 "
+            onClick={() => onViewOtherCost(index)}
+        >
+        </button>
                                 )}
                             </div>
                         </td>
@@ -93,7 +93,7 @@ const Table = (props) => {
                 <tr>
                     <th></th>
                     {headerData.map((item, index) => {
-                        return (<th>{item.bestCost ? 'BestCost' : item.shouldCost ? 'ShouldCost' : ''}</th>)
+                        return (<th>{item.bestCost==="" ? 'BestCost' : item.shouldCost ? 'ShouldCost' : ''}</th>)
                     })}
                 </tr>
                 <tr>
