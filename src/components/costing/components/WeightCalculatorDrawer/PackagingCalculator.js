@@ -43,7 +43,7 @@ const {rowObjData} = props
     const { t } = useTranslation('CostingLabels');
     const calclulationFieldValues = useWatch({
         control: control, 
-        name: ['NoOfComponentsPerCrate','WeightOfCover', 'CostOfCrate','CostOfCoverPerKg', 'AmortizedNoOfYears', 'NoOfPartsPerCover', 'SpacerPackingInsertCost', 'NoOfSpacerPackingInsert'],
+        name: ['NoOfComponentsPerCrate','StockNormDays','WeightOfCover', 'CostOfCrate','CostOfCoverPerKg', 'AmortizedNoOfYears', 'NoOfPartsPerCover', 'SpacerPackingInsertCost', 'NoOfSpacerPackingInsert'],
         defaultValue: [] 
     })
     useEffect(() => {
