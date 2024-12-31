@@ -173,7 +173,7 @@ function Pipe(props) {
             calculateWeightOfSheet()
             calculateWeightOfPart()
             calculateWeightOfScrap()
-            calculateNetSurfaceArea()
+
             setGrossWeight()
         }
     }, [fieldValues])
@@ -186,7 +186,7 @@ function Pipe(props) {
                 calculateNetSurfaceArea()
             }
         }
-    }, [isOneSide])
+    }, [isOneSide, fieldValues])
     const setFinishWeight = (e) => {
         const FinishWeightOfSheet = e.target.value
         const grossWeight = checkForNull(getValues('GrossWeight'))
