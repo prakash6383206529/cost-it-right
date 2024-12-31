@@ -144,9 +144,12 @@ function PackageCost(props) {
                             <td>{item.Rate ? checkForDecimalAndNull(item.Rate, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
                             <td>{item.Quantity ? checkForDecimalAndNull(item.Quantity, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
                             {costingData.TechnologyId !== LOGISTICS && <td>{item.IsPackagingCostFixed === false ? '-' : (item.PackagingCostPercentage ? item.PackagingCostPercentage : '-')}</td>}
-                            <td>{checkForDecimalAndNull(item.PackagingCost, initialConfiguration.NoOfDecimalForPrice)}
-                              {CostingViewMode &&(item?.CostingPackagingCalculationDetailsId !== 0 && item?.CostingPackagingCalculationDetailsId !== null)&& <button title='Calculator' className="CalculatorIcon cr-cl-icon mr-auto ml-0" type={'button'}  
+                            <td><div className='d-flex align-items-center'>{checkForDecimalAndNull(item.PackagingCost, initialConfiguration.NoOfDecimalForPrice)}
+                              {CostingViewMode &&(item?.CostingPackagingCalculationDetailsId !== 0 && item?.CostingPackagingCalculationDetailsId !== null)&& <button title='Calculator' 
+                              className="CalculatorIcon cr-cl-icon ml-1"
+                              type={'button'}  
                               onClick={() => { getPackagingCalculator(index) }} />}
+                            </div>
                             </td>
                             {initialConfiguration.IsShowCRMHead && <td>{item?.PackagingCRMHead}</td>}
                             <td style={{ textAlign: "right" }}>

@@ -265,7 +265,7 @@ const User = () => {
               Manage RFQ Users
             </NavLink>
           </NavItem>}
-          {true && <NavItem>
+          {false && <NavItem>
             <NavLink className={classnames({ active: state.activeTab === '7' })} onClick={() => { toggle('7'); }}>
               Manage Delegation
             </NavLink>

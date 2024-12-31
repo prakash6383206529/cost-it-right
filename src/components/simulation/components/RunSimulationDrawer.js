@@ -27,6 +27,7 @@ import { fetchCostingHeadsAPI } from '../../../actions/Common';
 import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from './TourMessages';
 import { useTranslation } from 'react-i18next';
+import TooltipCustom from '../../common/Tooltip';
 
 function RunSimulationDrawer(props) {
     const { objs, masterId, date, simulationTechnologyId } = props
@@ -887,6 +888,11 @@ function RunSimulationDrawer(props) {
                                                                         onChange={() => handleAdditional('Packaging')}
                                                                     />
                                                                 </label>
+                                                                <TooltipCustom
+                                                                 id="packaging-calculation"
+                                                                 tooltipText={"By applying additional packaging, the already added packaging will be removed"}
+                                                                 customClass="mt-1"
+                                                                />  
                                                             </div>
                                                         )
                                                         }
