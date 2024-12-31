@@ -1498,7 +1498,7 @@ function AddMoreOperation(props) {
                                     <div className={getAccordianClassName(isMaterialCostOpen)}>
 
                                         {other &&
-                                            <><Col md="3">
+                                            <><Col md="3" className="mb-3">
                                                 <SearchableSelectHookForm
                                                     name="crmHeadMaterialCost"
                                                     type="text"
@@ -1547,7 +1547,7 @@ function AddMoreOperation(props) {
                                             </>}
 
                                         {(isWelding || isPlating) && <>
-                                            <Col md="3">
+                                            <Col md="3" className="mb-3">
                                                 <SearchableSelectHookForm
                                                     name="crmHeadWireRate"
                                                     type="text"
@@ -1651,7 +1651,7 @@ function AddMoreOperation(props) {
                                             </Col>
 
 
-                                            <Col md="3">
+                                            <Col md="3" className="mb-3">
                                                 <SearchableSelectHookForm
                                                     name="crmHeadGasRate"
                                                     type="text"
@@ -1671,7 +1671,7 @@ function AddMoreOperation(props) {
                                                     disabled={isViewMode}
                                                 />
                                             </Col>
-                                            <Col md="3">
+                                            <Col md="3" className="mb-3">
 
                                                 <NumberFieldHookForm
                                                     label={getLabel('gasRate')}
@@ -1697,7 +1697,7 @@ function AddMoreOperation(props) {
                                             </Col>
 
 
-                                            <Col md="3">
+                                            <Col md="3" className="mb-3">
                                                 <NumberFieldHookForm
                                                     label={`Consumption`}
                                                     name={'consumptionGas'}
