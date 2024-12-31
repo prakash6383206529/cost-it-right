@@ -54,14 +54,15 @@ const[selectedItem,setSelectedItem] = useState(null)
 
             }
         }))
-    }, [])
+    }, [showConvertedCurrency])
     useEffect(() => {
         
-        if (viewRmDetails && _.map(viewRmDetails, 'Currency').every(element => element === getConfigurationKey().BaseCurrency)) {
-            setShowConvertedCurrencyCheckbox(false)
-          } else {
-            setShowConvertedCurrencyCheckbox(true)
-          }
+if (viewRmDetails && _.map(viewRmDetails, 'Currency').every(element => 
+    element === getConfigurationKey().BaseCurrency || element === '')) {
+    setShowConvertedCurrencyCheckbox(false)
+} else {
+    setShowConvertedCurrencyCheckbox(true)
+}
       
           if (viewRmDetails.length !== 0) {
             let sectionOne = [];
@@ -101,16 +102,17 @@ const[selectedItem,setSelectedItem] = useState(null)
                 item.RawMaterialCategoryName,
                 item.Currency,
                 effectiveDate,
-                showConvertedCurrency? 
-                    `${item.BasicRatePerUOM} (${item.BasicRatePerUOMConversion})` : 
-                    item.BasicRatePerUOM
+                showConvertedCurrency ? 
+                item.bestCost ? item.BasicRatePerUOMConversion : `${item.BasicRatePerUOM} (${item.BasicRatePerUOMConversion})` : 
+                item.BasicRatePerUOM
+        
             ];
                 sectionOne.push(formattedDataOne);
         
                 //section two data start
                 const formattedDataTwo = [
-                    showConvertedCurrency? 
-                    `${item.OtherNetCost} (${item.OtherNetCostConversion})` : 
+                    showConvertedCurrency ? 
+                    item.bestCost ? item.OtherNetCostConversion : `${item.OtherNetCost} (${item.OtherNetCostConversion})` : 
                     item.OtherNetCost,
                 ]
                 sectionTwo.push(formattedDataTwo)
@@ -125,8 +127,8 @@ const[selectedItem,setSelectedItem] = useState(null)
                 if (showConvertedCurrencyCheckbox) {
                     formattedDataThree.push(
                         showConvertedCurrency ? 
-                    `${item.NetLandedCost} (${item.NetLandedCostConversion})` : 
-                    item.NetLandedCost,
+                        item.bestCost ? item.NetLandedCostConversion : `${item.NetLandedCost} (${item.NetLandedCostConversion})` : 
+                        item.NetLandedCost,
                        
                     )
                 } else {
@@ -176,96 +178,57 @@ const[selectedItem,setSelectedItem] = useState(null)
         }
     }, [viewRmDetails,showConvertedCurrency])
     const bestCostObjectFunction = (arrayList) => {
-let returnArray = _.cloneDeep(arrayList);
-        let finalArrayList = _.cloneDeep(arrayList);
-        let showConvertedCurrencyCheckbox = false
-        if (arrayList && _.map(arrayList, 'Currency').every(element => element === getConfigurationKey().BaseCurrency)) {
-            showConvertedCurrencyCheckbox = false
-        } else {
-            showConvertedCurrencyCheckbox = true
-        }
+        if (!arrayList?.length) return [];
+    
+        const returnArray = _.cloneDeep(arrayList);
+        const finalArrayList = _.cloneDeep(arrayList);
         
-        // Check if the input array is empty or null
-        if (!finalArrayList || finalArrayList.length === 0) {
-            // If so, return an empty array
-            return [];
-        } else {
-            // Define an array of keys to check when finding the "best cost"
-            let keysToCheck = []
-            let keysToCheckSum = []
-            if (showConvertedCurrencyCheckbox) {
-                keysToCheck = ["NetLandedCost", "BasicRatePerUOM", "OtherNetCost","NetLandedCostConversion","BasicRatePerUOMConversion","OtherNetCostConversion"];
-                keysToCheckSum = ["NetLandedCost", "BasicRatePerUOM", "OtherNetCost","NetLandedCostConversion","BasicRatePerUOMConversion","OtherNetCostConversion"];
-            } if (showConvertedCurrencyCheckbox === false) {
-                keysToCheck = ["NetLandedCostConversion","BasicRatePerUOMConversion","OtherNetCostConversion"];
-                keysToCheckSum = ["NetLandedCostConversion","BasicRatePerUOMConversion","OtherNetCostConversion"];
-            }
-            // Create a new object to represent the "best cost" and set it to the first object in the input array
-            let minObject = { ...finalArrayList[0] };
+        // Check if currency conversion needed
+        const isSameCurrency = _.map(arrayList, 'Currency')
+            .every(element => element === getConfigurationKey().BaseCurrency);
+        
+        const minObject = { 
+            ...finalArrayList[0],
+            attachment: [],
+            bestCost: true
+        };
+    
+        // Handle different cases
+        if (isSameCurrency) {
+            const keys = ["NetLandedCost", "BasicRatePerUOM", "OtherNetCost"];
+            Object.keys(minObject).forEach(key => minObject[key] = "");
 
-            // Loop through each object in the input array
-            for (let i = 0; i < finalArrayList?.length; i++) {
-                // Get the current object
-                let currentObject = _.cloneDeep(finalArrayList[i]);
-
-                // Loop through each key in the current object
-                for (let key in currentObject) {
-                    // Check if the key is in the keysToCheck array
-                    if (keysToCheck?.includes(key)) {
-                        // Check if the current value and the minimum value for this key are both numbers
-                        if (isNumber(currentObject[key]) && isNumber(minObject[key])) {
-                            // If so, check if the current value is smaller than the minimum value
-                            if (checkForNull(currentObject[key]) < checkForNull(minObject[key])) {
-                                // If so, set the current value as the minimum value
-                                minObject[key] = currentObject[key];
-                            }
-                        } else if (Array.isArray(currentObject[key])) {
-                            // Set the minimum value for this key to an empty array
-                            minObject[key] = [];
-                        }
-                    }
-                }
-            }
-
-            // Ensure keysToCheck have default value of 0 if they are null or undefined
-            for (let key of keysToCheck) {
-                if (minObject[key] == null) {
-                    minObject[key] = 0;
-                }
-            }
-
-            // Set all other keys to an empty string
-            for (let key in minObject) {
-                if (!keysToCheck.includes(key)) {
-                    minObject[key] = "";
-                }
-            }
-
-            // Set the attachment and bestCost properties of the minimum object
-            let sum = 0;
-            for (let key in minObject) {
-                if (keysToCheckSum?.includes(key)) {
-                    if (isNumber(minObject[key])) {
-                        sum = sum + checkForNull(minObject[key]);
-                    } else if (Array.isArray(minObject[key])) {
-                        minObject[key] = [];
-                    }
-                } else {
-                    minObject[key] = minObject[key] || "";
-                }
-            }
-
-            minObject.attachment = [];
-            minObject.bestCost = true;
-            minObject.nPOPrice = sum;
-
-            // Add the minimum object to the end of the array
-            returnArray.push(minObject);
+            // Find minimum values for each key
+            keys.forEach(key => {
+                minObject[key] = Math.min(...finalArrayList
+                    .map(item => isNumber(item[key]) ? checkForNull(item[key]) : Infinity));
+            });
+            
+            minObject.nPOPrice = keys.reduce((sum, key) => 
+                sum + checkForNull(minObject[key]), 0);
+        } 
+        else if (!showConvertedCurrency) {
+            // Set all values to "-" when different currencies without conversion
+            Object.keys(minObject).forEach(key => minObject[key] = "");
+        } 
+        else {
+            // Handle converted currency case
+            const conversionKeys = ["NetLandedCostConversion", "BasicRatePerUOMConversion", "OtherNetCostConversion"];
+            
+            Object.keys(minObject).forEach(key => minObject[key] = "");
+            
+            conversionKeys.forEach(key => {
+                minObject[key] = Math.min(...finalArrayList
+                    .map(item => isNumber(item[key]) ? checkForNull(item[key]) : Infinity));
+            });
+            
+            minObject.nPOPrice = conversionKeys.reduce((sum, key) => 
+                sum + checkForNull(minObject[key]), 0);
         }
-
-        // Return the modified array
+    
+        returnArray.push(minObject);
         return returnArray;
-    }
+    };
     const checkBoxHandle = (item, index) => {
         setCheckBoxCheck(prevState => {
             const newState = { ...prevState, [index]: !prevState[index] }
