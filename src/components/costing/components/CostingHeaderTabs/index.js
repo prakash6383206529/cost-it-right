@@ -86,7 +86,6 @@ function CostingHeaderTabs(props) {
     reValidateMode: 'onChange',
   });
   const currencySelectList = useSelector(state => state?.exchangeRate?.currencySelectList)
-  console.log("currencySelectList ==> ", currencySelectList);
   const exchangeRateSourceList = useSelector((state) => state.comman.exchangeRateSourceList)
   const [exchangeRateSource, setExchangeRateSource] = useState('');
   const [currency, setCurrency] = useState('');

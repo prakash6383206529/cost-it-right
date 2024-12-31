@@ -262,7 +262,6 @@ function AddProcess(props) {
   }
 
   const currencyFormatter = (props) => {
-    console.log("props", props)
     const cellValue = props?.valueFormatted ? props?.valueFormatted : props?.value;
     return cellValue !== '-' ? cellValue : reactLocalStorage.getObject("baseCurrency")
   }

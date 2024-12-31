@@ -5,27 +5,35 @@ import { useDispatch, useSelector } from 'react-redux';
 import DayTime from '../../common/DayTimeWrapper';
 import LoaderCustom from '../../common/LoaderCustom';
 import { getViewBOPDetails, setBopCostingData } from '../../masters/actions/BoughtOutParts';
-import { checkForNull } from '../../../helper';
+import { checkForNull, getConfigurationKey } from '../../../helper';
 import _, { isNumber } from 'lodash';
 import ProcessDrawer from '../ProcessDrawer';
 import PartSpecificationDrawer from '../../costing/components/PartSpecificationDrawer';
 import WarningMessage from '../../common/WarningMessage';
 import { useLabels } from '../../../helper/core';
+import AddOtherCostDrawer from '../../masters/material-master/AddOtherCostDrawer';
+
 const BOPCompareTable = (props) => {
     const dispatch = useDispatch()
     const { viewBOPDetails } = useSelector((state) => state.boughtOutparts);
     const [openSpecification, setOpenSpecification] = useState(false)
     const [selectedBopId, setSelectedBopId] = useState(null) // [setSelectedBopId, setSelectedBopId]
-
     const [sectionData, setSectionData] = useState([])
     const [mainHeadingData, setMainHeadingData] = useState([])
     const [checkBoxCheck, setCheckBoxCheck] = useState({})
     const [selectedItems, setSelectedItems] = useState([])
     const [selectedIndices, setSelectedIndices] = useState([])
     const { vendorLabel } = useLabels();
-
+    const[selectedItem,setSelectedItem] = useState(null)
+    const[otherCostDrawer,setOtherCostDrawer] = useState(false)
     const [isLoader, setIsLoader] = useState(false)
     const showCheckbox = viewBOPDetails && viewBOPDetails?.some(item => item?.IsShowCheckBoxForApproval === true);
+    const [showConvertedCurrency, setShowConvertedCurrency] = useState(false)
+    const [showConvertedCurrencyCheckbox, setShowConvertedCurrencyCheckbox] = useState(false)
+        // Add handler function
+        const handleConvertedCurrencyChange = (value) => {
+            setShowConvertedCurrency(value);
+        }
     useEffect(() => {
         setIsLoader(true)
         let temp = []
@@ -50,186 +58,220 @@ const BOPCompareTable = (props) => {
             }
         }))
     }, [])
+
+    
     useEffect(() => {
+        if (viewBOPDetails && _.map(viewBOPDetails, 'Currency').every(element => 
+            element === getConfigurationKey().BaseCurrency)) {
+            setShowConvertedCurrencyCheckbox(false)
+        } else {
+            setShowConvertedCurrencyCheckbox(true)
+        }
+    
         if (viewBOPDetails.length !== 0) {
             let sectionOne = [];
             let sectionTwo = [];
-            let sectionThree = []
-            let sectionOneHeader = ["BOP No.", "BOP Name", "Category", "UOM", /* "Specification", */ 'Plant (Code)', `${vendorLabel} (Code)`, 'Effective Date', 'Basic Rate']
-            let sectionTwoHeader = ['Minimum Order Quantity', 'BOP Net Cost']
-            let sectionThreeHeader = [
-                <span className="d-block small-grey-text p-relative">
-                    BOP Specification
-                    <button className="Balance mb-0 button-stick" type="button" onClick={handleOpenSpecificationDrawerMultiple}>
-                    </button>
-                </span>,
-                'Remark'
+            let sectionThree = [];
+    
+            // Update headers with correct fields
+            let sectionOneHeader = [
+                "BOP No.", 
+                "BOP Name", 
+                "Currency", 
+                "Category", 
+                "UOM",
+                'Plant (Code)', 
+                `${vendorLabel} (Code)`, 
+                'Effective Date',
+                showConvertedCurrency ? 
+                    `Basic Rate (${getConfigurationKey().BaseCurrency})` : 
+                    'Basic Rate'
             ];
-            let mainHeader = []
+    
+            if (showConvertedCurrency) {
+                sectionOneHeader.push(
+                    showConvertedCurrency ? 
+                        `Other Net Cost (${getConfigurationKey().BaseCurrency})` : 
+                        'Other Net Cost'
+                );
+            } else {
+                sectionOneHeader.push('Other Net Cost');
+            }
+    
             viewBOPDetails.map((item, index) => {
-                //section one data start
-                const effectiveDate = item?.EffectiveDate
-                    ? (item?.EffectiveDate !== "-" ? DayTime(item?.EffectiveDate).format('DD/MM/YYYY') : '-') : '-';
+                // Section One Data
                 const formattedDataOne = [
-                    item?.BoughtOutPartNumber,
-                    item?.BoughtOutPartName,
-                    item?.BoughtOutPartCategory,
-                    item?.UOM,
-                    /*  item?.BoughtOutPartSpecificationName, */
-                    item?.Plants,
-                    item?.Vendor,
-                    effectiveDate,
-                    item?.BasicRate
+                    item.BoughtOutPartNumber,
+                    item.BoughtOutPartName,
+                    item.Currency,
+                    item.BoughtOutPartCategory,
+                    item.UOM,
+                    item.Plants,
+                    `${item.Vendor} (${item.VendorCode})`,
+                    item.EffectiveDate ? 
+                        DayTime(item.EffectiveDate).format('DD/MM/YYYY') : 
+                        '-',
+                    showConvertedCurrency ? 
+                        item.bestCost ? 
+                            item.BasicRateConversion : 
+                            `${item.BasicRate} (${item.BasicRateConversion})` : 
+                        item.BasicRate,
+                    showConvertedCurrency ? 
+                        item.bestCost ? 
+                            item.OtherNetCostConversion : 
+                            `${item.OtherNetCost} (${item.OtherNetCostConversion})` : 
+                        item.OtherNetCost
                 ];
                 sectionOne.push(formattedDataOne);
-
-                //section two data start
+    
+                // Section Two Data
                 const formattedDataTwo = [
-                    item?.NumberOfPieces,
-                    item?.NetLandedCost
-                ]
-                sectionTwo.push(formattedDataTwo)
-
-                //section Three
-                // sectionThree.push([item?.Remark])
-                sectionThree = viewBOPDetails.map(item => [
-                    item?.bestCost === true ? ' ' : (
-                        <div onClick={() => handleOpenSpecificationDrawerSingle(item?.BoughtOutPartId)} className={'link'}>
-                            View Specifications
-                        </div>
-                    ),
-                    item?.Remark
-                ]);
-
-                //mainheader data start
-                const mainHeaderObj = {
-                    vendorName: item?.Vendor,
-                    onChange: () => checkBoxHandle(item, index),
-                    checked: checkBoxCheck[index],
-                    isCheckBox: !props?.compare ? item?.bestCost ? false : item?.IsShowCheckBoxForApproval : false,
-                    bestCost: item?.bestCost,
-                    shouldCost: props?.uniqueShouldCostingId?.includes(item?.BoughtOutPartId) ? "Should Cost" : "",
-                    costingType: item?.CostingType === "Zero Based" ? "ZBC" : item?.costingType === "Vendor Based" ? "VBC" : "",
-                    vendorCode: item?.VendorCode,
-
-
+                    item.NumberOfPieces,
+                    showConvertedCurrency ? 
+                        item.bestCost ? 
+                            item.NetLandedCostConversion : 
+                            `${item.NetLandedCost} (${item.NetLandedCostConversion})` : 
+                        item.NetLandedCost
+                ];
+                sectionTwo.push(formattedDataTwo);
+            });
+    
+            // Section Three Data
+            sectionThree = viewBOPDetails.map(item => [
+                item?.bestCost ? '-' : (
+                    <div 
+                        onClick={() => handleOpenSpecificationDrawerSingle(item.BoughtOutPartId)} 
+                        className={'link'}
+                    >
+                        View Specifications
+                    </div>
+                ),
+                item.Remark || '-'
+            ]);
+    
+            // Main Header Data
+            const mainHeader = viewBOPDetails.map((item, index) => ({
+                vendorName: item.Vendor,
+                onChange: () => checkBoxHandle(item, index),
+                checked: checkBoxCheck[index],
+                isCheckBox: !props?.compare ? 
+                    item?.bestCost ? false : item?.IsShowCheckBoxForApproval : 
+                    false,
+                bestCost: item?.bestCost,
+                shouldCost: props?.uniqueShouldCostingId?.includes(item.BoughtOutPartId) ? 
+                    "Should Cost" : "",
+                costingType: item.CostingHead === "Zero Based" ? 
+                    "ZBC" : 
+                    item.CostingHead === "Vendor Based" ? "VBC" : "",
+                vendorCode: item.VendorCode
+            }));
+    
+            const sections = [
+                {
+                    header: sectionOneHeader,
+                    data: sectionOne,
+                    isHighlightedRow: true,
+                },
+                {
+                    header: ['Minimum Order Quantity', 'BOP Net Cost'],
+                    data: sectionTwo,
+                    isHighlightedRow: true,
+                },
+                {
+                    header: [
+                        <span className="d-block small-grey-text p-relative">
+                            BOP Specification
+                            <button 
+                                className="Balance mb-0 button-stick" 
+                                type="button" 
+                                onClick={handleOpenSpecificationDrawerMultiple}
+                            >
+                            </button>
+                        </span>,
+                        'Remark'
+                    ],
+                    data: sectionThree,
+                    isHighlightedRow: false,
                 }
-                mainHeader.push(mainHeaderObj)
-            })
-            const sectionOneDataObj = {
-                header: sectionOneHeader,
-                data: sectionOne,
-                isHighlightedRow: true,
-            }
-            const sectionTwoDataObj = {
-                header: sectionTwoHeader,
-                data: sectionTwo,
-                isHighlightedRow: true,
-            }
-            const sectionThreeDataObj = {
-                header: sectionThreeHeader,
-                data: sectionThree,
-                isHighlightedRow: false,
-            }
-            setSectionData([sectionOneDataObj, sectionTwoDataObj, sectionThreeDataObj])
-            setMainHeadingData(mainHeader)
+            ];
+    
+            setSectionData(sections);
+            setMainHeadingData(mainHeader);
         }
-    }, [viewBOPDetails])
+    }, [viewBOPDetails, showConvertedCurrency]);
     const closeSpecificationDrawer = () => {
         setOpenSpecification(false);
     };
 
     const handleOpenSpecificationDrawerMultiple = () => {
         let ids = viewBOPDetails
+            .filter(item => !item?.bestCost) // Filter out best cost rows
             .map(item => item?.BoughtOutPartId)
             .filter(id => id !== null && id !== undefined && id !== '-');
-        setSelectedBopId(ids);
-        setOpenSpecification(true);
+        
+        if (ids.length > 0) {
+            setSelectedBopId(ids);
+            setOpenSpecification(true);
+        }
     };
 
     const handleOpenSpecificationDrawerSingle = (id) => {
         setSelectedBopId([id]);
         setOpenSpecification(true);
     };
-    const bestCostObjectFunction = (arrayList) => {
+  const bestCostObjectFunction = (arrayList) => {
+    if (!arrayList?.length) return [];
 
-        let finalArrayList = [...arrayList];
+    const returnArray = _.cloneDeep(arrayList);
+    const finalArrayList = _.cloneDeep(arrayList);
+   
+    // Check if currency conversion needed
+    const isSameCurrency = _.map(arrayList, 'Currency')
+        .every(element => element === getConfigurationKey().BaseCurrency);
+   
+    const minObject = {
+        ...finalArrayList[0],
+        attachment: [],
+        bestCost: true
+    };
 
-        // Check if the input array is empty or null
-        if (!finalArrayList || finalArrayList?.length === 0) {
-            // If so, return an empty array
-            return [];
-        } else {
-            // Define an array of keys to check when finding the "best cost"
-            const keysToCheck = ["NetLandedCost", "BasicRate"];
-            const keysToCheckSum = ["NetLandedCost", "BasicRate"];;
+    // Handle different cases
+    if (isSameCurrency) {
+        const keys = ["NetLandedCost", "BasicRatePerUOM", "OtherNetCost"];
+        Object.keys(minObject).forEach(key => minObject[key] = "");
 
-            // Create a new object to represent the "best cost" and set it to the first object in the input array
-            let minObject = { ...finalArrayList[0] };
-
-            // Loop through each object in the input array
-            for (let i = 0; i < finalArrayList?.length; i++) {
-                // Get the current object
-                let currentObject = finalArrayList[i];
-
-                // Loop through each key in the current object
-                for (let key in currentObject) {
-                    // Check if the key is in the keysToCheck array
-                    if (keysToCheck?.includes(key)) {
-                        // Check if the current value and the minimum value for this key are both numbers
-                        if (isNumber(currentObject[key]) && isNumber(minObject[key])) {
-                            // If so, check if the current value is smaller than the minimum value
-                            if (checkForNull(currentObject[key]) < checkForNull(minObject[key])) {
-                                // If so, set the current value as the minimum value
-                                minObject[key] = currentObject[key];
-                            }
-                        } else if (Array.isArray(currentObject[key])) {
-                            // Set the minimum value for this key to an empty array
-                            minObject[key] = [];
-                        }
-                    }
-                }
-            }
-
-            // Ensure keysToCheck have default value of 0 if they are null or undefined
-            for (let key of keysToCheck) {
-                if (minObject[key] == null) {
-                    minObject[key] = 0;
-                }
-            }
-
-            // Set all other keys to an empty string
-            for (let key in minObject) {
-                if (!keysToCheck.includes(key)) {
-                    minObject[key] = "";
-                }
-            }
-
-            // Set the attachment and bestCost properties of the minimum object
-            let sum = 0;
-            for (let key in finalArrayList[0]) {
-                if (keysToCheckSum?.includes(key)) {
-                    if (isNumber(minObject[key])) {
-                        sum = sum + checkForNull(minObject[key]);
-                    } else if (Array.isArray(minObject[key])) {
-                        minObject[key] = [];
-                    }
-                } else {
-                    minObject[key] = minObject[key] || "";
-                }
-            }
-
-            minObject.attachment = [];
-            minObject.bestCost = true;
-            minObject.nPOPrice = sum;
-
-            // Add the minimum object to the end of the array
-            finalArrayList.push(minObject);
-        }
-
-        // Return the modified array
-        return finalArrayList;
+        // Find minimum values for each key
+        keys.forEach(key => {
+            minObject[key] = Math.min(...finalArrayList
+                .map(item => isNumber(item[key]) ? checkForNull(item[key]) : Infinity));
+        });
+       
+        minObject.nPOPrice = keys.reduce((sum, key) =>
+            sum + checkForNull(minObject[key]), 0);
     }
+    else if (!showConvertedCurrency) {
+        // Set all values to "-" when different currencies without conversion
+        Object.keys(minObject).forEach(key => minObject[key] = "");
+    }
+    else {
+        // Handle converted currency case
+        const conversionKeys = ["NetLandedCostConversion", "BasicRatePerUOMConversion", "OtherNetCostConversion"];
+       
+        Object.keys(minObject).forEach(key => minObject[key] = "");
+       
+        conversionKeys.forEach(key => {
+            minObject[key] = Math.min(...finalArrayList
+                .map(item => isNumber(item[key]) ? checkForNull(item[key]) : Infinity));
+        });
+       
+        minObject.nPOPrice = conversionKeys.reduce((sum, key) =>
+            sum + checkForNull(minObject[key]), 0);
+    }
+
+    returnArray.push(minObject);
+    return returnArray;
+};
+    
 
     const checkBoxHandle = (item, index) => {
         setCheckBoxCheck(prevState => {
@@ -258,6 +300,13 @@ const BOPCompareTable = (props) => {
             return newIndices
         })
     }
+    const onViewOtherCost = (index) => {
+        
+        const selectedItem = viewBOPDetails[index];
+        setSelectedItem(selectedItem)
+        
+        setOtherCostDrawer(true)
+    }
 
 
     useEffect(() => {
@@ -271,9 +320,33 @@ const BOPCompareTable = (props) => {
         <div>
             {showCheckbox && !props?.compare && < WarningMessage dClass={"float-right justify-content-end"} message={'Click the checkbox to approve, reject, or return the quotation'} />}
 
-            <Table headerData={mainHeadingData} sectionData={sectionData}>
+            <Table headerData={mainHeadingData} sectionData={sectionData}showConvertedCurrency={showConvertedCurrency}
+                onConvertedCurrencyChange={handleConvertedCurrencyChange}
+                showConvertedCurrencyCheckbox={showConvertedCurrencyCheckbox}
+                onViewOtherCost={onViewOtherCost}>
+                          
+
                 {isLoader && <LoaderCustom customClass="" />}
             </Table>
+            {
+    otherCostDrawer &&
+    <AddOtherCostDrawer
+    isOpen={otherCostDrawer}
+    anchor={"right"}
+    closeDrawer={() => setOtherCostDrawer(false)}
+    rawMaterial={true}
+    rmBasicRate={selectedItem?.BasicRatePerUOM}
+    ViewMode={true}
+    rmTableData={selectedItem?.BoughtOutPartOtherCostDetailsSchema}
+    RowData={selectedItem}
+    plantCurrency={selectedItem?.Currency}
+    settlementCurrency={selectedItem?.Currency}
+    isImpactedMaster={true}
+    disabled={true}
+    
+/>
+}
+
             {openSpecification && <PartSpecificationDrawer
                 isOpen={openSpecification}
                 closeDrawer={closeSpecificationDrawer}
