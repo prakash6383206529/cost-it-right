@@ -97,8 +97,6 @@ const setFormValues=(data)=>{
     setValue('SpacerPackingInsertRecoveryCostPerKg', checkForDecimalAndNull(data?.SpacersPackingInsertRecoveryCostPerKg, NoOfDecimalForPrice))
     setValue('TotalCostOfSpacerPackingInsert', checkForDecimalAndNull(data?.CostOfSpacersPackingInsert, NoOfDecimalForPrice))
     setValue('PackingCost', checkForDecimalAndNull(data?.PackingCost, NoOfDecimalForPrice))
-    setValue('VolumePerDay', checkForDecimalAndNull(data?.VolumePerDay, NoOfDecimalForInputOutput))
-    setValue('VolumePerAnnum', checkForDecimalAndNull(data?.VolumePerAnnum, NoOfDecimalForInputOutput))
     setState((prevState) => ({ ...prevState, 
         noOfCratesRequiredPerDay: data?.NoOfCratesRequiredPerDay,
         totalCostOfCrate: data?.TotalCostOfCrate,
@@ -108,6 +106,14 @@ const setFormValues=(data)=>{
         volumePerDay: data?.VolumePerDay,
         volumePerAnnum: data?.VolumePerAnnum,
      }))
+     if(CostingViewMode){
+        setValue('VolumePerDay', checkForDecimalAndNull(data?.VolumePerDay, NoOfDecimalForInputOutput))
+        setValue('VolumePerAnnum', checkForDecimalAndNull(data?.VolumePerAnnum, NoOfDecimalForInputOutput))
+        setState((prevState) => ({ ...prevState, 
+            volumePerDay: data?.VolumePerDay,
+            volumePerAnnum: data?.VolumePerAnnum,
+         }))
+     }
 }
     const packagingCalculatorFields = [
         { label: t('noOfComponentsPerCrate', { defaultValue: 'No of components per crate/trolley' }), name: 'NoOfComponentsPerCrate', mandatory: true, searchable: false, disabled: CostingViewMode ? CostingViewMode : false },
