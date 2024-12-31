@@ -833,6 +833,12 @@ class BulkUpload extends Component {
                                 if (fileHeads[i] === `IsBreakup${showBopLabel()}`) {
                                     fileHeads[i] = `IsBreakupBoughtOutPart`
                                 }
+                                if (fileHeads[i] === 'OverheadRMCost/PartCost') {
+                                    fileHeads[i] = 'OverheadRMPercentage'
+                                }
+                                if (fileHeads[i] === 'ProfitRMCost/PartCost') {
+                                    fileHeads[i] = 'ProfitRMPercentage'
+                                }
                                 const key = this.getValueFromMasterData(fileHeads[i], masterDataArray)
 
                                 obj[key] = el;
