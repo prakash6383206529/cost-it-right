@@ -103,7 +103,7 @@ if (viewRmDetails && _.map(viewRmDetails, 'Currency').every(element =>
                 item.Currency,
                 effectiveDate,
                 showConvertedCurrency ? 
-                item.bestCost ? item.BasicRatePerUOMConversion : `${item.BasicRatePerUOM} (${item.BasicRatePerUOMConversion})` : 
+                item.bestCost==="" ? item.BasicRatePerUOMConversion : `${item.BasicRatePerUOM} (${item.BasicRatePerUOMConversion})` : 
                 item.BasicRatePerUOM
         
             ];
@@ -112,7 +112,7 @@ if (viewRmDetails && _.map(viewRmDetails, 'Currency').every(element =>
                 //section two data start
                 const formattedDataTwo = [
                     showConvertedCurrency ? 
-                    item.bestCost ? item.OtherNetCostConversion : `${item.OtherNetCost} (${item.OtherNetCostConversion})` : 
+                    item.bestCost==="" ? item.OtherNetCostConversion : `${item.OtherNetCost} (${item.OtherNetCostConversion})` : 
                     item.OtherNetCost,
                 ]
                 sectionTwo.push(formattedDataTwo)
@@ -127,7 +127,7 @@ if (viewRmDetails && _.map(viewRmDetails, 'Currency').every(element =>
                 if (showConvertedCurrencyCheckbox) {
                     formattedDataThree.push(
                         showConvertedCurrency ? 
-                        item.bestCost ? item.NetLandedCostConversion : `${item.NetLandedCost} (${item.NetLandedCostConversion})` : 
+                        item.bestCost==="" ? item.NetLandedCostConversion : `${item.NetLandedCost} (${item.NetLandedCostConversion})` : 
                         item.NetLandedCost,
                        
                     )
@@ -149,6 +149,7 @@ if (viewRmDetails && _.map(viewRmDetails, 'Currency').every(element =>
                     shouldCost: props?.uniqueShouldCostingId?.includes(item?.RawMaterialId) ? "Should Cost" : "",
                     costingType: item.CostingType === "Zero Based" ? "ZBC" : item.costingType === "Vendor Based" ? "VBC" : "",
                     vendorCode: item.VendorCode,
+                    showConvertedCurrencyCheckbox: item.bestCost===""&&showConvertedCurrencyCheckbox
                 }
                 mainHeader.push(mainHeaderObj)
             })
