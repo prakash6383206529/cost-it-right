@@ -816,13 +816,6 @@ function AddMoreOperation(props) {
         return `accordian-content form-group row mx-0 w-100 ${value ? '' : 'd-none'}`
     }
 
-    const validateDescription = (value) => {
-        if (value && value.length > 25) {
-            Toaster.warning('Description cannot exceed 25 characters');
-            return false;
-        }
-        return true;
-    }
 
     return (
         <div className="container-fluid">
@@ -945,11 +938,11 @@ function AddMoreOperation(props) {
                                                 required: false,
                                                 validate: {
                                                     acceptAllExceptSingleSpecialCharacter,
-                                                    maxLength25,
+                                                    maxLength80,
                                                     checkWhiteSpaces,
                                                 }
                                             }}
-                                            handleChange={(e) => validateDescription(e.target.value)}
+                                            handleChange={() => { }}
                                             placeholder={'Enter'}
                                             customClassName={'withBorder'}
                                             disabled={isViewMode}
