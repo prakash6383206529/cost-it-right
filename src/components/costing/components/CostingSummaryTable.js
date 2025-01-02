@@ -343,7 +343,9 @@ const CostingSummaryTable = (props) => {
   }, [viewCostingData])
 
   useEffect(() => {
-    if (viewCostingData && _.map(viewCostingData, 'CostingCurrency').every(element => element === getConfigurationKey().BaseCurrency)) {
+    let currency = viewCostingData?.length > 0 ? _.map(viewCostingData, 'CostingCurrency') : []
+    currency?.pop()
+    if (currency?.every(element => element === getConfigurationKey().BaseCurrency)) {
       setShowConvertedCurrencyCheckbox(false)
     } else {
       setShowConvertedCurrencyCheckbox(true)
@@ -2107,6 +2109,21 @@ const CostingSummaryTable = (props) => {
             {<Col md={simulationMode || props.isRfqCosting || isApproval ? "12" : "8"} className="text-right">
               <div className='d-flex justify-content-end mb-2'>
                 <div className='d-flex justify-content-end align-items-center'>
+                  {showConvertedCurrencyCheckbox && <span className="d-inline-block">
+                    <label
+                      className={`custom-checkbox mb-0`}
+                      onChange={checkboxHandler}
+                    >
+                      Show Converted Currency
+                      <input
+                        type="checkbox"
+                      />
+                      <span
+                        className=" before-box"
+                        onChange={checkboxHandler}
+                      />
+                    </label>
+                  </span>}
                   {props.isRfqCosting && !isApproval && showCheckbox && !drawerViewMode && <WarningMessage dClass={"justify-content-end mr-2"} message={'Click the checkbox to approve, reject, or return the quotation'} />}
 
                   {downloadAccessibility && <ExcelFile filename={'Costing Summary'} fileExtension={'.xls'} element={<button type="button" className={'user-btn excel-btn mr5 mb-2'} id="costingSummary_excel" title="Excel"><img src={ExcelIcon} alt="download" /></button>}>
@@ -2277,21 +2294,6 @@ const CostingSummaryTable = (props) => {
                                     {data?.CostingHeading === VARIANCE && ((!pdfHead)) && <TooltipCustom customClass="mb-0 ml-1" id="variance" tooltipText={`Variance = (${data.costingTypeId === CBCTypeId ? "New Costing - Old Costing" : "Old Costing - New Costing"})`} />}
                                   </div >
                                   <div className="action  text-right">
-                                    {showConvertedCurrencyCheckbox && <span className="d-inline-block">
-                                      <label
-                                        className={`custom-checkbox mb-0`}
-                                        onChange={checkboxHandler}
-                                      >
-                                        Show Converted Currency
-                                        <input
-                                          type="checkbox"
-                                        />
-                                        <span
-                                          className=" before-box"
-                                          onChange={checkboxHandler}
-                                        />
-                                      </label>
-                                    </span>}
                                     {((!pdfHead && !drawerDetailPDF)) && (data?.IsAssemblyCosting === true) && < button id="costingSummary_viewbom" title='View BOM' className="hirarchy-btn mr-1 mb-0 align-middle" type={'button'} onClick={() => viewBomCostingDetail(index)} />}
                                     {((!viewMode && (!pdfHead && !drawerDetailPDF)) && EditAccessibility) && (data?.status === DRAFT) && <button id="costingSummary_edit" className="Edit mr-1 mb-0 align-middle" type={"button"} title={"Edit Costing"} onClick={() => editCostingDetail(index)} />}
                                     {((!viewMode && (!pdfHead && !drawerDetailPDF)) && ViewAccessibility) && (data?.status === DRAFT) && <button id="costingSummary_view" className="View mr-1 mb-0 align-middle" type={"button"} title={"View Costing"} onClick={() => viewCostingDetail(index)} />}
