@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { Row, Col, Container, } from 'reactstrap'
 import { Controller, useForm, useWatch } from 'react-hook-form'
-import { number, checkWhiteSpaces, maxLength7, checkForNull, checkForDecimalAndNull, loggedInUserId } from '../../../../helper'
+import { number, checkWhiteSpaces, maxLength7, checkForNull, checkForDecimalAndNull, loggedInUserId, getConfigurationKey } from '../../../../helper'
 import { useDispatch, useSelector } from 'react-redux'
 import Toaster from '../../../common/Toaster'
 import TooltipCustom from '../../../common/Tooltip'
@@ -29,6 +29,7 @@ const {rowObjData} = props
     const { NoOfDecimalForPrice, NoOfDecimalForInputOutput } = useSelector((state) => state.auth.initialConfiguration)
     const costingViewMode = useContext(ViewCostingContext);
     const CostingViewMode = costingViewMode??props?.CostingViewMode
+    const DaysInMonthForVolumePerDay = getConfigurationKey().DaysInMonthForVolumePerDayPackagingCalculation
     const dispatch = useDispatch()
     const {
         register,
@@ -57,13 +58,14 @@ const {rowObjData} = props
         if(!CostingViewMode){
         dispatch(getVolumePerDayForPackagingCalculator(costingData?.PartId, costingData?.PlantId, CostingEffectiveDate, costingData?.VendorId, (res) => {
             if(res?.status === 204){
+                setState((prevState) => ({ ...prevState, disableSubmit: true }))
                 Toaster.warning("Volume data doesn't exist for the selected part. Add the volume to calculate the packaging cost.")
                 return false
             }
             let data = res?.data?.Data
             setValue('VolumePerDay', checkForDecimalAndNull(data?.VolumePerDay, NoOfDecimalForInputOutput))
             setValue('VolumePerAnnum', checkForDecimalAndNull(data?.VolumePerAnnum, NoOfDecimalForInputOutput))
-            setState((prevState) => ({ ...prevState, volumePerDay: data?.VolumePerDay, volumePerAnnum: data?.VolumePerAnnum }))
+            setState((prevState) => ({ ...prevState, volumePerDay: data?.VolumePerDay, volumePerAnnum: data?.VolumePerAnnum,disableSubmit: false }))
         }))
         }
         const tempData = rowObjData?.SimulationTempData
@@ -123,8 +125,8 @@ const setFormValues=(data)=>{
 }
     const packagingCalculatorFields = [
         { label: t('noOfComponentsPerCrate', { defaultValue: 'No. of components per crate/trolley' }), name: 'NoOfComponentsPerCrate', mandatory: true, searchable: false, disabled: CostingViewMode ? CostingViewMode : false },
-        { label: t('volumePerDay', { defaultValue: 'Volume per day' }), name: 'VolumePerDay', mandatory: false, disabled: true ,tooltip: { text: `Coming from volume master`, width: '250px', customClass:"mt-4" ,disabledIcon: false} },
-        { label: t('volumePerAnnum', { defaultValue: 'Volume per annum' }), name: 'VolumePerAnnum', mandatory: false, disabled: true, tooltip: { text: `${t('volumePerDay', { defaultValue: 'Volume per day' })} * 25 * 12`, width: '250px' ,disabledIcon: true} },
+        { label: t('volumePerDay', { defaultValue: 'Volume per day' }), name: 'VolumePerDay', mandatory: false, disabled: true ,tooltip: { text: `Coming from the volume master, budgeted for the specified effective date (Budgeted Quantity / ${DaysInMonthForVolumePerDay})`, width: '250px', customClass:"mt-4" ,disabledIcon: false} },
+        { label: t('volumePerAnnum', { defaultValue: 'Volume per annum' }), name: 'VolumePerAnnum', mandatory: false, disabled: true, tooltip: { text: `${t('volumePerDay', { defaultValue: 'Volume per day' })} * ${DaysInMonthForVolumePerDay} * 12`, width: '250px' ,disabledIcon: true} },
         { label: t('noOfCratesRequiredPerDay', { defaultValue: 'No. of crates/trolley required per day' }), name: 'NoOfCratesRequiredPerDay', mandatory: false, disabled: true, tooltip: { text: `${t('volumePerDay', { defaultValue: 'Volume per day' })} / ${t('noOfComponentsPerCrate', { defaultValue: 'No. of components per crate/trolley' })}`, width: '250px',disabledIcon: true } },
         { label: t('stockNormDays', { defaultValue: 'Stock Norm days' }), name: 'StockNormDays', mandatory: true, disabled: CostingViewMode ? CostingViewMode : false },
         { label: t('costOfCrate', { defaultValue: 'Cost of crate/trolley' }), name: 'CostOfCrate', mandatory: true, disabled: CostingViewMode ? CostingViewMode : false },
