@@ -1379,7 +1379,7 @@ export const OverheadAndProfitTooltip = (id, object, arr, conditon, NoOfDecimalF
     return conditon ? <TooltipCustom id={id} width={"290px"} tooltipText={text} /> : ''
   } else if (id.includes("Combined")) {
     text = <>{arr[0]?.IsRMCutOffApplicable === true && <p>{`RM cut-off price ${applyValue} applied`}</p>}{object && object?.OverheadApplicability && object?.OverheadApplicability.includes('BOP') && conditon && <p>{showBopLabel()} cost is not included for {showBopLabel()} part type</p>}</>;
-    return (arr[0]?.IsRMCutOffApplicable === true) || (object && object?.OverheadApplicability && object?.OverheadApplicability.includes('BOP') && conditon) ? <TooltipCustom id={id} width={"290px"} tooltipText={text} /> : ""
+    return (arr[0]?.IsRMCutOffApplicable === true && id.includes("RM")) || (object && object?.OverheadApplicability && object?.OverheadApplicability.includes('BOP') && conditon) ? <TooltipCustom id={id} width={"290px"} tooltipText={text} /> : ""
   }
 }
 
