@@ -252,8 +252,19 @@ const BOPCompareTable = (props) => {
                 sum + checkForNull(minObject[key]), 0);
         } 
         else if (!showConvertedCurrency) {
-            // Set all values to "-" when different currencies without conversion
+            // First set all keys to empty string
             Object.keys(minObject).forEach(key => minObject[key] = "");
+            
+            // Find minimum values for conversion keys but don't show in UI
+            const conversionKeys = ["NetLandedCostConversion", "BasicRatePerUOMConversion", "OtherNetCostConversion"];
+            
+            conversionKeys.forEach(key => {
+                minObject[key] = Math.min(...finalArrayList
+                    .map(item => isNumber(item[key]) ? checkForNull(item[key]) : Infinity));
+            });
+            
+            // Set bestCost empty to ensure UI shows empty strings
+            minObject.bestCost = "";
         } 
         else {
             // Handle converted currency case

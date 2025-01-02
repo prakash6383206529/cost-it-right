@@ -34,7 +34,7 @@ const[selectedItem,setSelectedItem] = useState(null)
     }
 
     useEffect(() => {
-        if(!RfqMasterApprovalDrawer){
+        //if(!RfqMasterApprovalDrawer){
         setIsLoader(true)
         let temp = []
         const uniqueShouldCostingIdArr = props?.uniqueShouldCostingId || [];
@@ -55,9 +55,10 @@ const[selectedItem,setSelectedItem] = useState(null)
                 dispatch(setRawMaterialCostingData([...arr]))
 
             }
-        }))}
+        }))
+   // }
     }, [showConvertedCurrency])
-    useEffect(() => {
+useEffect(() => {
         
 if (viewRmDetails && _.map(viewRmDetails, 'Currency').every(element => 
     element === getConfigurationKey().BaseCurrency || element === '')) {
@@ -92,17 +93,17 @@ if (viewRmDetails && _.map(viewRmDetails, 'Currency').every(element =>
             
             viewRmDetails.map((item, index) => {
                 //section one data start
-                const RMNameGrade = `${item.RawMaterialName}-${item.RawMaterialGradeName}`;
-                const effectiveDate = item.EffectiveDate ? (item.EffectiveDate !== "-" ? DayTime(item.EffectiveDate).format('DD/MM/YYYY') : '-') : '-';
+                const RMNameGrade = `${item?.RawMaterialName}-${item?.RawMaterialGradeName}`;
+                const effectiveDate = item?.EffectiveDate ? (item?.EffectiveDate !== "-" ? DayTime(item?.EffectiveDate).format('DD/MM/YYYY') : '-') : '-';
              // ... existing code ...
              const formattedDataOne = [
-                item.TechnologyName,
-                item.DestinationPlantName,
-                item.RawMaterialCode,
+                item?.TechnologyName,
+                item?.DestinationPlantName,
+                item?.RawMaterialCode,
                 RMNameGrade,
-                item.RawMaterialSpecificationName,
-                item.RawMaterialCategoryName,
-                item.Currency,
+                item?.RawMaterialSpecificationName,
+                item?.RawMaterialCategoryName,
+                item?.Currency,
                 effectiveDate,
                 showConvertedCurrency ? 
                 item.bestCost==="" ? item.BasicRatePerUOMConversion : `${item.BasicRatePerUOM} (${item.BasicRatePerUOMConversion})` : 
@@ -114,8 +115,8 @@ if (viewRmDetails && _.map(viewRmDetails, 'Currency').every(element =>
                 //section two data start
                 const formattedDataTwo = [
                     showConvertedCurrency ? 
-                    item.bestCost==="" ? item.OtherNetCostConversion : `${item.OtherNetCost} (${item.OtherNetCostConversion})` : 
-                    item.OtherNetCost,
+                    item?.bestCost==="" ? item?.OtherNetCostConversion : `${item?.OtherNetCost} (${item?.OtherNetCostConversion})` : 
+                    item?.OtherNetCost,
                 ]
                 sectionTwo.push(formattedDataTwo)
                 

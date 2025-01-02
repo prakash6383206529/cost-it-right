@@ -177,7 +177,8 @@ function RMImportListing(props) {
       isImport: true,
       dataObj: obj,
       master: 'RawMaterial',
-      tabs: 'Import'
+      tabs: 'Import',
+      isMasterSummaryDrawer: props?.isMasterSummaryDrawer
     }
   }, []);
 
@@ -510,7 +511,7 @@ function RMImportListing(props) {
     } else {
       isEditbale = false
     }
-    console.log("isRfq",isRfq,isMasterSummaryDrawer)
+    
     if (isRfq && isMasterSummaryDrawer) {
       
       return (
@@ -1112,7 +1113,7 @@ function RMImportListing(props) {
                     {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((props?.isMasterSummaryDrawer && rmImportDataList[0]?.CostingTypeId === ZBCTypeId) || !props?.isMasterSummaryDrawer) && !isFromVerifyPage && <AgGridColumn field="NetConditionCost" headerName="Net Condition Cost" cellRenderer='commonCostFormatter'></AgGridColumn>}
                     <AgGridColumn field="NetLandedCost" headerName="Net Cost" cellRenderer='costFormatter'></AgGridColumn>
                     <AgGridColumn field="EffectiveDate" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-                    {((!isSimulation && !props.isMasterSummaryDrawer) || (props.isRfq  && props?.isMasterSummaryDrawer) )&& <AgGridColumn width={160} field="RawMaterialId" cellClass="ag-grid-action-container" pinned="right" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                    {((!isSimulation && !props.isMasterSummaryDrawer) || (isRfq && props?.isMasterSummaryDrawer)) && <AgGridColumn width={160} field="RawMaterialId" cellClass="ag-grid-action-container" pinned="right" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
 
                     <AgGridColumn field="VendorId" hide={true}></AgGridColumn>
 

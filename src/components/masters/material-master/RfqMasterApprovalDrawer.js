@@ -9,12 +9,14 @@ import { rfqGetBestCostingDetails } from '../../rfq/actions/rfq';
 import { useDispatch } from 'react-redux';
 import { formViewData } from '../../../helper';
 import _ from 'lodash';
+import { setRawMaterialCostingData } from '../actions/Material';
 
 const RfqMasterApprovalDrawer = (props) => {
   
   const dispatch = useDispatch();
   const [isLoader, setIsLoader] = useState(false);
   const [uniqueShouldCostingId,setUniqueShouldCostingId  ] = useState([])
+  const [bestCostData,setBestCostData] = useState([])
   const { register, control, handleSubmit, formState: { errors } } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
@@ -83,6 +85,7 @@ const RfqMasterApprovalDrawer = (props) => {
             quotationId={props.quotationId}
             uniqueShouldCostingId={uniqueShouldCostingId}
             RfqMasterApprovalDrawer={true}
+            bestCostData={bestCostData}
           />}
           {props.type === 'Bought Out Part' && <BOPCompareTable
             // checkCostingSelected={checkCostingSelected}
@@ -91,6 +94,7 @@ const RfqMasterApprovalDrawer = (props) => {
             uniqueShouldCostingId={uniqueShouldCostingId}
             quotationId={props.quotationId}
             RfqMasterApprovalDrawer={true}
+            bestCostData={bestCostData}
           />}
         </div>
       </div>
