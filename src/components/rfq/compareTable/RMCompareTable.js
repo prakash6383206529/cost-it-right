@@ -12,6 +12,7 @@ import { useLabels } from '../../../helper/core';
 import AddOtherCostDrawer from '../../masters/material-master/AddOtherCostDrawer';
 
 const RMCompareTable = (props) => {
+    const { RfqMasterApprovalDrawer=false } = props
     const dispatch = useDispatch()
     const { viewRmDetails } = useSelector(state => state.material)
     const [sectionData, setSectionData] = useState([])
@@ -33,6 +34,7 @@ const[selectedItem,setSelectedItem] = useState(null)
     }
 
     useEffect(() => {
+        if(!RfqMasterApprovalDrawer){
         setIsLoader(true)
         let temp = []
         const uniqueShouldCostingIdArr = props?.uniqueShouldCostingId || [];
@@ -53,7 +55,7 @@ const[selectedItem,setSelectedItem] = useState(null)
                 dispatch(setRawMaterialCostingData([...arr]))
 
             }
-        }))
+        }))}
     }, [showConvertedCurrency])
     useEffect(() => {
         
@@ -209,8 +211,19 @@ if (viewRmDetails && _.map(viewRmDetails, 'Currency').every(element =>
                 sum + checkForNull(minObject[key]), 0);
         } 
         else if (!showConvertedCurrency) {
-            // Set all values to "-" when different currencies without conversion
+            // First set all keys to empty string
             Object.keys(minObject).forEach(key => minObject[key] = "");
+            
+            // Find minimum values for conversion keys but don't show in UI
+            const conversionKeys = ["NetLandedCostConversion", "BasicRatePerUOMConversion", "OtherNetCostConversion"];
+            
+            conversionKeys.forEach(key => {
+                minObject[key] = Math.min(...finalArrayList
+                    .map(item => isNumber(item[key]) ? checkForNull(item[key]) : Infinity));
+            });
+            
+            // Set bestCost empty to ensure UI shows empty strings
+            minObject.bestCost = "";
         } 
         else {
             // Handle converted currency case
@@ -245,7 +258,6 @@ if (viewRmDetails && _.map(viewRmDetails, 'Currency').every(element =>
             }
             return newItems
         })
-
         setSelectedIndices(prevIndices => {
             let newIndices
             if (prevIndices.includes(index)) {

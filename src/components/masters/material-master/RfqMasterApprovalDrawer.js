@@ -82,6 +82,7 @@ const RfqMasterApprovalDrawer = (props) => {
             selectedRows={props.selectedRows[0].BestCostAndShouldCostMasterDetails?.RawMaterialIdList}
             quotationId={props.quotationId}
             uniqueShouldCostingId={uniqueShouldCostingId}
+            RfqMasterApprovalDrawer={true}
           />}
           {props.type === 'Bought Out Part' && <BOPCompareTable
             // checkCostingSelected={checkCostingSelected}
@@ -89,6 +90,7 @@ const RfqMasterApprovalDrawer = (props) => {
             selectedRows={props.selectedRows[0].BestCostAndShouldCostMasterDetails.BoughtOutPartIdList}
             uniqueShouldCostingId={uniqueShouldCostingId}
             quotationId={props.quotationId}
+            RfqMasterApprovalDrawer={true}
           />}
         </div>
       </div>
