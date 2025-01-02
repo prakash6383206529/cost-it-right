@@ -2664,15 +2664,11 @@ const CostingSummaryTable = (props) => {
                                   viewCostingData?.map((data, index) => {
                                     return (
                                       <td className={tableDataClass(data)}>
-                                        {data?.bestCost === true ? <>
-                                          {showConvertedCurrencyCheckbox ? <>
-                                            {displayValueWithSign(data, 'NetRawMaterialsCostConversion')}
-                                          </> : <>
-                                            {displayValueWithSign(data, 'netRM')}
-                                          </>}
-                                        </> : <>
-                                          {displayValueWithSign(data, 'netRM')} {showConvertedCurrency ? '(' : ''}{showConvertedCurrency && displayValueWithSign(data, 'NetRawMaterialsCostConversion')}{showConvertedCurrency ? ')' : ''}
-                                        </>}
+                                        {data?.bestCost === true ?
+                                          <>{showConvertedCurrencyCheckbox ? (showConvertedCurrency && displayValueWithSign(data, 'NetRawMaterialsCostConversion')) : displayValueWithSign(data, 'NetRawMaterialsCostConversion')}</>
+                                          :
+                                          <>{displayValueWithSign(data, 'netRM')} {showConvertedCurrency ? '(' : ''}{showConvertedCurrency && displayValueWithSign(data, 'NetRawMaterialsCostConversion')}{showConvertedCurrency ? ')' : ''}</>
+                                        }
 
                                         {
                                           (data?.bestCost !== true) && (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&
@@ -2707,15 +2703,11 @@ const CostingSummaryTable = (props) => {
                                     viewCostingData?.map((data, index) => {
                                       return (
                                         <td className={tableDataClass(data)}>
-                                          {data?.bestCost === true ? <>
-                                            {showConvertedCurrencyCheckbox ? <>
-                                              {displayValueWithSign(data, 'NetBoughtOutPartCostConversion')}
-                                            </> : <>
-                                              {displayValueWithSign(data, 'netBOP')}
-                                            </>}
-                                          </> : <>
-                                            {displayValueWithSign(data, 'netBOP')} {showConvertedCurrency ? '(' : ''}{showConvertedCurrency && displayValueWithSign(data, 'NetBoughtOutPartCostConversion')}{showConvertedCurrency ? ')' : ''}
-                                          </>}
+                                          {data?.bestCost === true ?
+                                            <>{showConvertedCurrencyCheckbox ? (showConvertedCurrency && displayValueWithSign(data, 'NetBoughtOutPartCostConversion')) : displayValueWithSign(data, 'NetBoughtOutPartCostConversion')}</>
+                                            :
+                                            <>{displayValueWithSign(data, 'netBOP')} {showConvertedCurrency ? '(' : ''}{showConvertedCurrency && displayValueWithSign(data, 'NetBoughtOutPartCostConversion')}{showConvertedCurrency ? ')' : ''}</>
+                                          }
                                           {
                                             (data?.bestCost !== true) && (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&
                                             <button
@@ -2806,15 +2798,11 @@ const CostingSummaryTable = (props) => {
                                   viewCostingData?.map((data, index) => {
                                     return (
                                       <td className={tableDataClass(data)}>
-                                        {data?.bestCost === true ? <>
-                                          {showConvertedCurrencyCheckbox ? <>
-                                            {displayValueWithSign(data, 'NetConversionCostConversion')}
-                                          </> : <>
-                                            {displayValueWithSign(data, 'nConvCost')}
-                                          </>}
-                                        </> : <>
-                                          {displayValueWithSign(data, 'nConvCost')} {showConvertedCurrency ? '(' : ''}{showConvertedCurrency && displayValueWithSign(data, 'NetConversionCostConversion')}{showConvertedCurrency ? ')' : ''}
-                                        </>}
+                                        {data?.bestCost === true ?
+                                          <>{showConvertedCurrencyCheckbox ? (showConvertedCurrency && displayValueWithSign(data, 'NetConversionCostConversion')) : displayValueWithSign(data, 'NetConversionCostConversion')}</>
+                                          :
+                                          <>{displayValueWithSign(data, 'nConvCost')} {showConvertedCurrency ? '(' : ''}{showConvertedCurrency && displayValueWithSign(data, 'NetConversionCostConversion')}{showConvertedCurrency ? ')' : ''}</>
+                                        }
                                         {
                                           (data?.bestCost !== true) && (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&
                                           <button
@@ -2881,15 +2869,11 @@ const CostingSummaryTable = (props) => {
                               viewCostingData?.map((data, index) => {
                                 return (
                                   <td className={tableDataClass(data)}>
-                                    {data?.bestCost === true ? <>
-                                      {showConvertedCurrencyCheckbox ? <>
-                                        {displayValueWithSign(data, 'NetSurfaceTreatmentCostConversion')}
-                                      </> : <>
-                                        {displayValueWithSign(data, 'nsTreamnt')}
-                                      </>}
-                                    </> : <>
-                                      {displayValueWithSign(data, 'nsTreamnt')} {showConvertedCurrency ? '(' : ''}{showConvertedCurrency && displayValueWithSign(data, 'NetSurfaceTreatmentCostConversion')}{showConvertedCurrency ? ')' : ''}
-                                    </>}
+                                    {data?.bestCost === true ?
+                                      <>{showConvertedCurrencyCheckbox ? (showConvertedCurrency && displayValueWithSign(data, 'NetSurfaceTreatmentCostConversion')) : displayValueWithSign(data, 'NetSurfaceTreatmentCostConversion')}</>
+                                      :
+                                      <>{displayValueWithSign(data, 'nsTreamnt')} {showConvertedCurrency ? '(' : ''}{showConvertedCurrency && displayValueWithSign(data, 'NetSurfaceTreatmentCostConversion')}{showConvertedCurrency ? ')' : ''}</>
+                                    }
                                     {
                                       (data?.bestCost !== true) && (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&
                                       <button
@@ -3025,15 +3009,11 @@ const CostingSummaryTable = (props) => {
                               viewCostingData?.map((data, index) => {
                                 return (
                                   <td className={tableDataClass(data)}>
-                                    {data?.bestCost === true ? <>
-                                      {showConvertedCurrencyCheckbox ? <>
-                                        {displayValueWithSign(data, 'NetOverheadAndProfitCostConversion')}
-                                      </> : <>
-                                        {displayValueWithSign(data, 'nOverheadProfit')}
-                                      </>}
-                                    </> : <>
-                                      {displayValueWithSign(data, 'nOverheadProfit')} {showConvertedCurrency ? '(' : ''}{showConvertedCurrency && displayValueWithSign(data, 'NetOverheadAndProfitCostConversion')}{showConvertedCurrency ? ')' : ''}
-                                    </>}
+                                    {data?.bestCost === true ?
+                                      <>{showConvertedCurrencyCheckbox ? (showConvertedCurrency && displayValueWithSign(data, 'NetOverheadAndProfitCostConversion')) : displayValueWithSign(data, 'NetOverheadAndProfitCostConversion')}</>
+                                      :
+                                      <>{displayValueWithSign(data, 'nOverheadProfit')} {showConvertedCurrency ? '(' : ''}{showConvertedCurrency && displayValueWithSign(data, 'NetOverheadAndProfitCostConversion')}{showConvertedCurrency ? ')' : ''}</>
+                                    }
                                     {
                                       (data?.bestCost !== true) && (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&
                                       <button
@@ -3084,15 +3064,11 @@ const CostingSummaryTable = (props) => {
                               viewCostingData?.map((data, index) => {
                                 return (
                                   <td className={tableDataClass(data)}>
-                                    {data?.bestCost === true ? <>
-                                      {showConvertedCurrencyCheckbox ? <>
-                                        {displayValueWithSign(data, 'NetFreightPackagingCostConversion')}
-                                      </> : <>
-                                        {displayValueWithSign(data, 'nPackagingAndFreight')}
-                                      </>}
-                                    </> : <>
-                                      {displayValueWithSign(data, 'nPackagingAndFreight')} {showConvertedCurrency ? '(' : ''}{showConvertedCurrency && displayValueWithSign(data, 'NetFreightPackagingCostConversion')}{showConvertedCurrency ? ')' : ''}
-                                    </>}
+                                    {data?.bestCost === true ?
+                                      <>{showConvertedCurrencyCheckbox ? (showConvertedCurrency && displayValueWithSign(data, 'NetFreightPackagingCostConversion')) : displayValueWithSign(data, 'NetFreightPackagingCostConversion')}</>
+                                      :
+                                      <>{displayValueWithSign(data, 'nPackagingAndFreight')} {showConvertedCurrency ? '(' : ''}{showConvertedCurrency && displayValueWithSign(data, 'NetFreightPackagingCostConversion')}{showConvertedCurrency ? ')' : ''}</>
+                                    }
                                     {
                                       (data?.bestCost !== true) && (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&
                                       <button
@@ -3183,15 +3159,11 @@ const CostingSummaryTable = (props) => {
                                   <th>Net Tool Cost {showConvertedCurrency ? '(' + initialConfiguration?.BaseCurrency + ')' : ''} </th>
                                   {viewCostingData.map((data, index) => (
                                     <td className={tableDataClass(data)}>
-                                      {data?.bestCost === true ? <>
-                                        {showConvertedCurrencyCheckbox ? <>
-                                          {displayValueWithSign(data, 'NetToolCostConversion')}
-                                        </> : <>
-                                          {displayValueWithSign(data, 'totalToolCost')}
-                                        </>}
-                                      </> : <>
-                                        {displayValueWithSign(data, 'totalToolCost')} {showConvertedCurrency ? '(' : ''}{showConvertedCurrency && displayValueWithSign(data, 'NetToolCostConversion')}{showConvertedCurrency ? ')' : ''}
-                                      </>}
+                                      {data?.bestCost === true ?
+                                        <>{showConvertedCurrencyCheckbox ? (showConvertedCurrency && displayValueWithSign(data, 'NetToolCostConversion')) : displayValueWithSign(data, 'NetToolCostConversion')}</>
+                                        :
+                                        <>{displayValueWithSign(data, 'totalToolCost')} {showConvertedCurrency ? '(' : ''}{showConvertedCurrency && displayValueWithSign(data, 'NetToolCostConversion')}{showConvertedCurrency ? ')' : ''}</>
+                                      }
                                       {data?.bestCost !== true && data?.CostingHeading !== VARIANCE && !pdfHead && !drawerDetailPDF && (
                                         <button
                                           id="view_toolCost"
@@ -3361,7 +3333,15 @@ const CostingSummaryTable = (props) => {
                                 viewCostingData?.map((data) => {
                                   return (
                                     <td className={tableDataClass(data)}>
-                                      {displayValueWithSign(data, 'BasicRate')} {showConvertedCurrency ? '(' : ''}{showConvertedCurrency && displayValueWithSign(data, 'BasicRateConversion')}{showConvertedCurrency ? ')' : ''}
+                                      {data?.bestCost === true ? <>
+                                        {showConvertedCurrencyCheckbox ? <>
+                                          {showConvertedCurrency && displayValueWithSign(data, 'BasicRateConversion')}
+                                        </> : <>
+                                          {displayValueWithSign(data, 'BasicRate')}
+                                        </>}
+                                      </> : <>
+                                        {displayValueWithSign(data, 'BasicRate')} {showConvertedCurrency ? '(' : ''}{showConvertedCurrency && displayValueWithSign(data, 'BasicRateConversion')}{showConvertedCurrency ? ')' : ''}
+                                      </>}
                                     </td>
                                   )
                                 })}
@@ -3377,7 +3357,7 @@ const CostingSummaryTable = (props) => {
                                   return (
                                     <td className={tableDataClass(data)}>
                                       <span title={data?.netNpvCost} className={`d-block small-grey-text w-fit `}>
-                                        {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.netNpvCost, initialConfiguration.NoOfDecimalForPrice) : ''}
+                                        {(data?.CostingHeading !== VARIANCE && data?.bestCost !== true) ? checkForDecimalAndNull(data?.netNpvCost, initialConfiguration.NoOfDecimalForPrice) : ''}
                                       </span>
 
                                     </td>
@@ -3395,7 +3375,7 @@ const CostingSummaryTable = (props) => {
                                   return (
                                     <td className={tableDataClass(data)}>
                                       <span title={data?.netConditionCost} className={`d-block small-grey-text w-fit `}>
-                                        {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.netConditionCost, initialConfiguration.NoOfDecimalForPrice) : ''}
+                                        {(data?.CostingHeading !== VARIANCE && data?.bestCost !== true) ? checkForDecimalAndNull(data?.netConditionCost, initialConfiguration.NoOfDecimalForPrice) : ''}
                                       </span>
 
                                     </td>
@@ -3456,7 +3436,7 @@ const CostingSummaryTable = (props) => {
                           {viewCostingData &&
                             viewCostingData?.map((data, index) => {
                               return <td className={tableDataClass(data)}>
-                                {data?.bestCost !== true ? (viewCostingData?.[0]?.CostingCurrency + ' : ') : ''}    {displayValueWithSign(data, "nPOPrice")}
+                                {data?.bestCost !== true ? (viewCostingData?.[0]?.CostingCurrency + ' : ') : ''}    {data?.bestCost === true ? (showConvertedCurrency ? displayValueWithSign(data, "nPOPrice") : null) : displayValueWithSign(data, "nPOPrice")}
                                 {
                                   (data?.bestCost !== true) && (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&
                                   <button
@@ -3478,7 +3458,7 @@ const CostingSummaryTable = (props) => {
                           {viewCostingData &&
                             viewCostingData?.map((data, index) => {
                               return <td className={tableDataClass(data)}>
-                                {viewCostingData?.[0]?.LocalCurrency}:    {displayValueWithSign(data, "NetPOPriceLocalConversion")}
+                                {data?.bestCost !== true && <>{viewCostingData?.[0]?.LocalCurrency}:    {displayValueWithSign(data, "NetPOPriceLocalConversion")}</>}
                                 {
                                   (data?.bestCost !== true) && (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&
                                   <button
@@ -3500,7 +3480,7 @@ const CostingSummaryTable = (props) => {
                           {viewCostingData &&
                             viewCostingData?.map((data, index) => {
                               return <td className={tableDataClass(data)}>
-                                {getConfigurationKey().BaseCurrency}:    {displayValueWithSign(data, "NetPOPriceConversion")}
+                                {data?.bestCost !== true && <>{getConfigurationKey().BaseCurrency}:    {displayValueWithSign(data, "NetPOPriceConversion")}</>}
                                 {
                                   (data?.bestCost !== true) && (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&
                                   <button
