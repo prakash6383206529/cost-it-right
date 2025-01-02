@@ -101,37 +101,37 @@ const BOPCompareTable = (props) => {
             viewBOPDetails.map((item, index) => {
                 // Section One Data
                 const formattedDataOne = [
-                    item.BoughtOutPartNumber,
-                    item.BoughtOutPartName,
-                    item.Currency,
-                    item.BoughtOutPartCategory,
-                    item.UOM,
-                    item.Plants,
-                    `${item.Vendor} (${item.VendorCode})`,
-                    item.EffectiveDate ? 
-                        DayTime(item.EffectiveDate).format('DD/MM/YYYY') : 
+                    item?.BoughtOutPartNumber,
+                    item?.BoughtOutPartName,
+                    item?.Currency,
+                    item?.BoughtOutPartCategory,
+                    item?.UOM,
+                    item?.Plants,
+                    `${item?.Vendor} (${item?.VendorCode})`,
+                    item?.EffectiveDate ? 
+                        DayTime(item?.EffectiveDate).format('DD/MM/YYYY') : 
                         '-',
                     showConvertedCurrency ? 
-                        item.bestCost ? 
-                            item.BasicRateConversion : 
-                            `${item.BasicRate} (${item.BasicRateConversion})` : 
-                        item.BasicRate,
+                        item?.bestCost ? 
+                            item?.BasicRateConversion : 
+                            `${item?.BasicRate} (${item?.BasicRateConversion})` : 
+                        item?.BasicRate,
                     showConvertedCurrency ? 
-                        item.bestCost ? 
-                            item.OtherNetCostConversion : 
-                            `${item.OtherNetCost} (${item.OtherNetCostConversion})` : 
-                        item.OtherNetCost
+                        item?.bestCost ? 
+                            item?.OtherNetCostConversion : 
+                            `${item?.OtherNetCost} (${item?.OtherNetCostConversion})` : 
+                        item?.OtherNetCost
                 ];
                 sectionOne.push(formattedDataOne);
     
                 // Section Two Data
                 const formattedDataTwo = [
-                    item.NumberOfPieces,
+                    item?.NumberOfPieces,
                     showConvertedCurrency ? 
-                        item.bestCost ? 
-                            item.NetLandedCostConversion : 
-                            `${item.NetLandedCost} (${item.NetLandedCostConversion})` : 
-                        item.NetLandedCost
+                        item?.bestCost ? 
+                            item?.NetLandedCostConversion : 
+                            `${item?.NetLandedCost} (${item?.NetLandedCostConversion})` : 
+                        item?.NetLandedCost
                 ];
                 sectionTwo.push(formattedDataTwo);
             });
