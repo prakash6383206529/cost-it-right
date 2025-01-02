@@ -482,7 +482,6 @@ const AddFreight = (props) => {
   const gridHandler = () => {
     const { FullTruckCapacity, RateCriteria, gridTable, Load } = state;
     const Rate = getValuesTableForm("Rate");
-    console.log(errorsTableForm, "errorsTableForm");
     if (errorsTableForm && Object.keys(errorsTableForm)?.length > 0) {
       return false;
     }
@@ -1061,7 +1060,7 @@ if(errorsTableForm && Object.keys(errorsTableForm)?.length > 0){
                                 errors={errorsTableForm?.FullTruckCapacity}
                                 />
                           </Col>}
-                          <Col md="2">
+                          {/* <Col md="2">
                             <div className="d-flex justify-space-between inputwith-icon form-group">
                               <SearchableSelectHookForm
                                 name="TruckDimensions"
@@ -1093,7 +1092,7 @@ if(errorsTableForm && Object.keys(errorsTableForm)?.length > 0){
                               </button>
                             </div>
                           </div>
-                          </Col>
+                          </Col> */}
                           <Col md="2">
                             <SearchableSelectHookForm
                               name="RateCriteria"
@@ -1163,7 +1162,7 @@ if(errorsTableForm && Object.keys(errorsTableForm)?.length > 0){
                                     type="button"
                                     disabled={isViewMode}
                                     className={"user-btn mt30 pull-left"}
-                                    // onClick={gridHandler}
+                                    onClick={gridHandler}
                                   >
                                     <div className={"plus"}></div>
                                     ADD
