@@ -232,7 +232,7 @@ function AddTool(props) {
   const handlePartNumChange = (newValue) => {
     setValue('partQuantity', newValue?.partQuantity)
     setValue('partType', newValue?.partType)
-    setValue('ProcessOrOperation', { label: '', value: '' })
+    setValue('ProcessOrOperation', "")
     // setValue('processOrOperationQuantity', '')
     setValue('type', '')
     setPartNumberDetail(newValue)

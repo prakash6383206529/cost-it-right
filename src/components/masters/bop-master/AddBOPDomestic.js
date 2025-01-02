@@ -693,7 +693,7 @@ class AddBOPDomestic extends Component {
 
     let conditionList = this.recalculateConditions(basicPriceBaseCurrency)
 
-    const sumBase = conditionList.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCost), 0);
+    const sumBase = conditionList.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj?.ConditionCostPerQuantity), 0);
     let netLandedCostBaseCurrency = checkForNull(sumBase) + checkForNull(basicPriceBaseTemp)
 
     this.props.change("BasicPriceBase", checkForDecimalAndNull(basicPriceBaseCurrency, initialConfiguration.NoOfDecimalForPrice))
