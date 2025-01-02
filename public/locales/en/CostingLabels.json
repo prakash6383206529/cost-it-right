@@ -2,7 +2,7 @@
     "discount": "Hundi/Discount",
     "return": "Return",
     "toolMaintenanceCost": "Tool Maintenance Cost (per pcs)",
-    "noOfComponentsPerCrate": "No of components per crate/trolley",
+    "noOfComponentsPerCrate": "No. of components per crate/trolley",
     "amortizedNoOfYears": "Amortized no. of years",
     "weightOfCover": "Weight of cover (kg)",
     "costOfCoverPerKg": "Cost of cover per kg",
@@ -12,5 +12,5 @@
     "spacerPackingInsertRecovery": "Spacer/packing/insert recovery %",
     "spacerPackingInsertRecoveryCostPerKg": "Spacer/packing/insert recovery cost per kg",
     "costOfSpacerPackingInsert": "Cost of spacer/packing/insert",
-    "packingCost": "Packing Cost"
+    "packagingCost": "Packaging Cost"
 }
