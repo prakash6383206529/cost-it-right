@@ -73,40 +73,27 @@ function AddRejectionRecovery(props) {
                 ...state,
                 rejectionApplicabilityType: e.label,
                 rejectionApplicabilityTypeValue: e.value,
-                netRejectionRecovery: '',
             })
-            setValue('NetRejectionRecovery', '');
-            if (e.label === 'Fixed') {
-                setState({
-                    ...state,
-                    rejectionApplicabilityType: e.label,
-                    rejectionApplicabilityTypeValue: e.value,
-                    rejectionRecoveryPercentage: '',
-                    effectiveRecoveryPercentage: '',
-                    recoveryCostApplicability: '',
-                    netRejectionRecovery: '',
-                });
-                setValue('RejectionRecoveryPercentage', '')
-                setValue('EffectiveRecoveryPercentage', '')
-                setValue('RecoveryCostApplicability', '')
-                setValue('NetRejectionRecovery', '');
-            }
         } else {
             setState({
                 ...state,
                 rejectionApplicabilityTypeValue: '',
                 rejectionApplicabilityType: '',
-                rejectionRecoveryPercentage: '',
-                effectiveRecoveryPercentage: '',
-                recoveryCostApplicability: '',
-                netRejectionRecovery: '',
             })
-            setValue('RejectionRecoveryPercentage', '');
-            setValue('EffectiveRecoveryPercentage', '');
-            setValue('RecoveryCostApplicability', '');
-            setValue('NetRejectionRecovery', '');
         }
-
+        setState({
+            ...state,
+            rejectionApplicabilityType: e.label,
+            rejectionApplicabilityTypeValue: e.value,
+            netRejectionRecovery: '',
+            rejectionRecoveryPercentage: '',
+            effectiveRecoveryPercentage: '',
+            recoveryCostApplicability: '',
+        })
+        setValue('NetRejectionRecovery', '');
+        setValue('RejectionRecoveryPercentage', '')
+        setValue('EffectiveRecoveryPercentage', '')
+        setValue('RecoveryCostApplicability', '')
     }
 
     useEffect(() => {
