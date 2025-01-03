@@ -1468,16 +1468,19 @@ export function showRMScrapKeys(technology) {
       obj.showForging = true
       obj.showCircleJali = false
       obj.showScrap = false
+      obj.name = 'Forging Scrap Rate'
       break;
     case SHEETMETAL:
       obj.showForging = false
       obj.showCircleJali = true
       obj.showScrap = false
+      obj.name = 'Circle Jali Scrap Rate'
       break;
     default:
       obj.showForging = false
       obj.showCircleJali = false
       obj.showScrap = true
+      obj.name = 'Scrap Rate'
       break;
   }
   return obj
