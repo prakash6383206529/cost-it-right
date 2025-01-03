@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getViewRawMaterialDetails, setRawMaterialCostingData } from '../../masters/actions/Material';
 import DayTime from '../../common/DayTimeWrapper';
 import LoaderCustom from '../../common/LoaderCustom';
-import { checkForNull, getConfigurationKey } from '../../../helper';
+import { calculateBestCost, checkForNull, getConfigurationKey } from '../../../helper';
 import _, { isNumber } from 'lodash';
 import WarningMessage from '../../common/WarningMessage';
 import { useLabels } from '../../../helper/core';
@@ -26,38 +26,38 @@ const RMCompareTable = (props) => {
 const[otherCostDrawer,setOtherCostDrawer] = useState(false)
 const[selectedItem,setSelectedItem] = useState(null)
     const showCheckbox = viewRmDetails && viewRmDetails?.some(item => item.IsShowCheckBoxForApproval === true);
-    const [showConvertedCurrency, setShowConvertedCurrency] = useState(false)
+    const [showConvertedCurrency, setShowConvertedCurrency] = useState(true)
 
     // Add handler function
     const handleConvertedCurrencyChange = (value) => {
-        setShowConvertedCurrency(value);
+       setShowConvertedCurrency(value);
     }
 
-    useEffect(() => {
-        //if(!RfqMasterApprovalDrawer){
-        setIsLoader(true)
-        let temp = []
-        const uniqueShouldCostingIdArr = props?.uniqueShouldCostingId || [];
-        const idArr = props?.selectedRows.map(item => item.RawMaterialId);
-        const combinedArr = Array.from(new Set([...uniqueShouldCostingIdArr, ...idArr]));
-        dispatch(getViewRawMaterialDetails(combinedArr, res => {
+useEffect(() => {
+    //if(!RfqMasterApprovalDrawer){
+    setIsLoader(true)
+    let temp = []
+    const uniqueShouldCostingIdArr = props?.uniqueShouldCostingId || [];
+    const idArr = props?.selectedRows.map(item => item.RawMaterialId);
+    const combinedArr = Array.from(new Set([...uniqueShouldCostingIdArr, ...idArr]));
+    dispatch(getViewRawMaterialDetails(combinedArr, res => {
 
-            setIsLoader(false)
-            if (res) {
-                res?.data?.DataList?.map((item) => {
-                    temp.push(item)
-                    return null
-                })
-                let dat = [...temp]
+        setIsLoader(false)
+        if (res) {
+            res?.data?.DataList?.map((item) => {
+                temp.push(item)
+                return null
+            })
+            let dat = [...temp]
 
-                let tempArrToSend = _.uniqBy(dat, 'RawMaterialId')
-                let arr = bestCostObjectFunction(tempArrToSend)
-                dispatch(setRawMaterialCostingData([...arr]))
+            let tempArrToSend = _.uniqBy(dat, 'RawMaterialId')
+            let arr = bestCostObjectFunction(tempArrToSend)
+            dispatch(setRawMaterialCostingData([...arr]))
 
-            }
-        }))
-   // }
-    }, [showConvertedCurrency])
+        }
+    }))
+// }
+}, [showConvertedCurrency])
 useEffect(() => {
         
 if (viewRmDetails && _.map(viewRmDetails, 'Currency').every(element => 

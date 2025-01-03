@@ -28,7 +28,7 @@ const BOPCompareTable = (props) => {
     const[otherCostDrawer,setOtherCostDrawer] = useState(false)
     const [isLoader, setIsLoader] = useState(false)
     const showCheckbox = viewBOPDetails && viewBOPDetails?.some(item => item?.IsShowCheckBoxForApproval === true);
-    const [showConvertedCurrency, setShowConvertedCurrency] = useState(false)
+    const [showConvertedCurrency, setShowConvertedCurrency] = useState(true)
     const [showConvertedCurrencyCheckbox, setShowConvertedCurrencyCheckbox] = useState(false)
         // Add handler function
         const handleConvertedCurrencyChange = (value) => {
