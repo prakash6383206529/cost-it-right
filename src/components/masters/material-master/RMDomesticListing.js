@@ -85,7 +85,8 @@ function RMDomesticListing(props) {
     const { technologyLabel, RMCategoryLabel, vendorLabel } = useLabels();
     const [compareDrawer, setCompareDrawer] = useState(false)
     const [rowDataForCompare, setRowDataForCompare] = useState([])
-    const isRfq = props?.quotationId !== null || props?.quotationId !== '' || props?.quotationId !== undefined ? true : false
+    
+    const isRfq = props?.quotationId !== null && props?.quotationId !== '' && props?.quotationId !== undefined
     var filterParams = {
         date: "", inRangeInclusive: true, filterOptions: ['equals', 'inRange'],
         comparator: function (filterLocalDateAtMidnight, cellValue) {
@@ -920,6 +921,12 @@ function RMDomesticListing(props) {
         attachmentFormatter: attachmentFormatter,
 
     }
+    
+    
+        
+        
+        
+
     return (
         <div className={`ag-grid-react ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${DownloadAccessibility ? "show-table-btn" : ""} ${isSimulation ? 'simulation-height' : props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
             {(loader && !props.isMasterSummaryDrawer) ? <LoaderCustom customClass="simulation-Loader" /> :

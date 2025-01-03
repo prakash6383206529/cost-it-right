@@ -110,7 +110,7 @@ function RMImportListing(props) {
     NetConditionCost: `Net Condition Cost (${reactLocalStorage.getObject("baseCurrency")})`,
     NetCost: `Net Cost (${reactLocalStorage.getObject("baseCurrency")})`,
   }
-  const isRfq = props?.quotationId !== null || props?.quotationId !== '' || props?.quotationId !== undefined ? true : false
+  const isRfq = props?.quotationId !== null && props?.quotationId !== '' && props?.quotationId !== undefined
 
   
 
