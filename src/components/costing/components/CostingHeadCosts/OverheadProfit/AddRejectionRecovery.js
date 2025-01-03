@@ -73,11 +73,23 @@ function AddRejectionRecovery(props) {
                 ...state,
                 rejectionApplicabilityType: e.label,
                 rejectionApplicabilityTypeValue: e.value,
+                netRejectionRecovery: '',
             })
+            setValue('NetRejectionRecovery', '');
             if (e.label === 'Fixed') {
+                setState({
+                    ...state,
+                    rejectionApplicabilityType: e.label,
+                    rejectionApplicabilityTypeValue: e.value,
+                    rejectionRecoveryPercentage: '',
+                    effectiveRecoveryPercentage: '',
+                    recoveryCostApplicability: '',
+                    netRejectionRecovery: '',
+                });
                 setValue('RejectionRecoveryPercentage', '')
                 setValue('EffectiveRecoveryPercentage', '')
                 setValue('RecoveryCostApplicability', '')
+                setValue('NetRejectionRecovery', '');
             }
         } else {
             setState({
@@ -89,6 +101,10 @@ function AddRejectionRecovery(props) {
                 recoveryCostApplicability: '',
                 netRejectionRecovery: '',
             })
+            setValue('RejectionRecoveryPercentage', '');
+            setValue('EffectiveRecoveryPercentage', '');
+            setValue('RecoveryCostApplicability', '');
+            setValue('NetRejectionRecovery', '');
         }
 
     }
