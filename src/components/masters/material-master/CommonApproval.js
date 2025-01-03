@@ -720,7 +720,7 @@ function CommonApproval(props) {
             //params.api.sizeColumnsToFit();
             
         }
-        window.screen.width >= 1920 && params.api.sizeColumnsToFit();
+        window.screen.width > 1920 && params.api.sizeColumnsToFit();
     };
 
     const onFilterTextBoxChanged = (e) => {

@@ -94,6 +94,7 @@ function RMIndexationSimulation(props) {
     const [openConditionCostDrawer, setOpenConditionCostDrawer] = useState(false)
     const [conditionCostDetailForRow, setConditionCostDetailForRow] = useState([])
     const [rowIndex, setRowIndex] = useState('')
+    const [isSaving, setIsSaving] = useState(false);
     const { register, control, setValue, formState: { errors }, } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
@@ -110,7 +111,7 @@ function RMIndexationSimulation(props) {
     const { commodityDetailsArray } = useSelector((state) => state.indexation)
     const { filteredRMData } = useSelector(state => state.material)
     const selectedEffectiveDate = useSelector((state) => state.simulation.selectedEffectiveDate);
-    const columnWidths = {
+  const columnWidths = {
         CostingHead: showCompressedColumns ? 50 : 140,
         VendorCode: showCompressedColumns ? 50 : 160,
         RawMaterialName: showCompressedColumns ? 50 : 160,
@@ -141,14 +142,16 @@ function RMIndexationSimulation(props) {
     }, [isApprovalSummary])
 
     useEffect(() => {
+        
+        if (!isSaving) return; // Only run if saving
 
         if (indexedRMForSimulation && indexedRMForSimulation?.[rowIndex] && !isImpactedMaster) {
             let obj = indexedRMForSimulation?.[rowIndex]
-            obj.otherCostTableData = obj.NewRawMaterialOtherCostDetails
-            obj.conditionTableData = obj.NewRawMaterialConditionsDetails
+            obj.otherCostTableData = obj.NewRawMaterialOtherCostDetails || []
+            obj.conditionTableData = obj.NewRawMaterialConditionsDetails || []
 
             const updatedObjOtherCost = updateCostValue(false, obj, totalBasicRate, true, true)
-            obj.NewRawMaterialOtherCostDetails = updatedObjOtherCost?.tableData
+obj.NewRawMaterialOtherCostDetails = updatedObjOtherCost?.tableData
             obj.NewOtherNetCost = updatedObjOtherCost?.formValue?.value
             obj.NewOtherNetCostConversion = updatedObjOtherCost?.formValue?.value
             obj.NewOtherNetCostLocalConversion = updatedObjOtherCost?.formValue?.value
@@ -161,22 +164,21 @@ function RMIndexationSimulation(props) {
             obj.NewConditionNetCostConversion = updatedObjConditionCost?.formValue?.value
             obj.NewConditionNetCostLocalConversion = updatedObjConditionCost?.formValue?.value
 
-
-            obj.NewNetLandedCost = checkForNull(totalBasicRate) + checkForNull(updatedObjOtherCost?.formValue?.value) + checkForNull(updatedObjConditionCost?.formValue?.value)
-            obj.NewNetCostWithoutConditionCost = checkForNull(totalBasicRate) + checkForNull(updatedObjOtherCost?.formValue?.value)
-            obj.NewNetLandedCostConversion = checkForNull(totalBasicRate) + checkForNull(updatedObjOtherCost?.formValue?.value) + checkForNull(updatedObjConditionCost?.formValue?.value)
-            obj.NewNetLandedCostLocalConversion = checkForNull(totalBasicRate) + checkForNull(updatedObjOtherCost?.formValue?.value) + checkForNull(updatedObjConditionCost?.formValue?.value)
+         
+                obj.NewNetLandedCost = checkForNull(totalBasicRate) + checkForNull(updatedObjOtherCost?.formValue?.value) + checkForNull(updatedObjConditionCost?.formValue?.value)
+                obj.NewNetCostWithoutConditionCost = checkForNull(totalBasicRate) + checkForNull(updatedObjOtherCost?.formValue?.value)
+                obj.NewNetLandedCostConversion = checkForNull(totalBasicRate) + checkForNull(updatedObjOtherCost?.formValue?.value) + checkForNull(updatedObjConditionCost?.formValue?.value)
+                obj.NewNetLandedCostLocalConversion = checkForNull(totalBasicRate) + checkForNull(updatedObjOtherCost?.formValue?.value) + checkForNull(updatedObjConditionCost?.formValue?.value)
 
             setNetCostWithoutConditionCost(obj.NewNetCostWithoutConditionCost)
             indexedRMForSimulation[rowIndex] = obj
             setIsLoader(true)
             setTimeout(() => {
                 setIsLoader(false)
+                setIsSaving(false) // Reset saving state
             }, 200);
         }
-
-
-    }, [totalBasicRate, openOtherCostDrawer, openConditionCostDrawer, otherCostDetailForRow, indexedRMForSimulation])
+    }, [totalBasicRate, openOtherCostDrawer, openConditionCostDrawer, otherCostDetailForRow, indexedRMForSimulation, isSaving]);
     useEffect(() => {
         if ((!props?.isFromApprovalListing && !isApprovalSummary && !isCostingSimulation)) {
             setIsLoader(true)
@@ -192,9 +194,7 @@ function RMIndexationSimulation(props) {
                 "IsSimulationWithOutCosting": true
 
             }
-
             dispatch(draftSimulationForRMMaster(obj, (res) => {
-
 
                 let obj1 = {
                     SimulationId: res?.data?.Identity
@@ -254,7 +254,6 @@ function RMIndexationSimulation(props) {
             handleEditMasterPage(showEditMaster, showverifyPage)
         }
     }, [showverifyPage])
-
     useEffect(() => {
         if (list && list.length > 0) {
 
@@ -562,7 +561,7 @@ function RMIndexationSimulation(props) {
     const closeCommodityDrawer = (type, basicRate = '') => {
         if (type === 'Save') {
             setTotalBasicRate(basicRate)
-
+            setIsSaving(true)
             calculateAndSave(basicRate, [], 0, '', editIndex);
         }
         setOpenCommodityDrawer(false)
@@ -574,18 +573,18 @@ function RMIndexationSimulation(props) {
     const otherCostDrawer = (value, row, index, type) => {
         setRowData(row)
         if (type === 'Old') {
-            const basicRate = checkForNull(row?.OldBasicRatePerUOM)
+const basicRate = checkForNull(row?.OldBasicRatePerUOM)
             setCommodityDetailsData(row?.OldMaterialCommodityIndexRateDetails)
-
+            // setIsSaving(true)
             setTotalBasicRate(basicRate)
             setNetCostWithoutConditionCost(row?.OldNetCostWithoutConditionCost)
             setOtherCostDetailForRow(row?.OldRawMaterialOtherCostDetails)
             setIsViewFlag(true)
             setEditIndex(index)
         } else {
-            const basicRate = checkForNull(row?.NewBasicRatePerUOM)
+const basicRate = checkForNull(row?.NewBasicRatePerUOM)
             setCommodityDetailsData(row?.NewMaterialCommodityIndexRateDetails)
-
+            setIsSaving(true)
             setTotalBasicRate(basicRate)
             setNetCostWithoutConditionCost(row?.NewNetCostWithoutConditionCost)
             setOtherCostDetailForRow(row?.NewRawMaterialOtherCostDetails)
@@ -601,7 +600,7 @@ function RMIndexationSimulation(props) {
         if (type === 'Old') {
             const basicRate = checkForNull(row?.OldBasicRatePerUOM)
             setCommodityDetailsData(row?.OldMaterialCommodityIndexRateDetails)
-
+            //setIsSaving(true)
             setTotalBasicRate(basicRate)
             setNetCostWithoutConditionCost(row?.OldNetCostWithoutConditionCost)
             setConditionCostDetailForRow(row?.OldRawMaterialConditionsDetails
@@ -612,7 +611,7 @@ function RMIndexationSimulation(props) {
         } else {
             const basicRate = checkForNull(row?.NewBasicRatePerUOM)
             setCommodityDetailsData(row?.NewMaterialCommodityIndexRateDetails)
-
+            setIsSaving(true)
             setTotalBasicRate(basicRate)
             setNetCostWithoutConditionCost(row?.NewNetCostWithoutConditionCost)
 
@@ -627,19 +626,18 @@ function RMIndexationSimulation(props) {
 
     }
     const closeOtherCostDrawer = (type, data, total, totalBase) => {
-
         if (type === 'Save') {
-
             calculateAndSave(totalBasicRate, data, totalBase, 'Other Cost', editIndex)
-        }
+}
         setOpenOtherCostDrawer(false)
         setIsViewFlag(false)
         setOtherCostDetailForRow([])
     }
-    const closeConditionCostDrawer = (type, data, total, totalBase) => {
+const closeConditionCostDrawer = (type, data, total, totalBase) => {
         if (type === 'Save' || type === 'save') {
-            const newConditionCost = data.reduce((acc, item) => checkForNull(acc) + checkForNull(item?.ConditionCostPerQuantity || 0), 0);
-
+            setIsSaving(true); // Set saving state before calculations
+            const newConditionCost = data.reduce((acc, item) =>
+                checkForNull(acc) + checkForNull(item?.ConditionCostPerQuantity || 0), 0);
             calculateAndSave(totalBasicRate, data, newConditionCost, 'Condition Cost', editIndex)
         }
         setOpenConditionCostDrawer(false)
@@ -650,7 +648,6 @@ function RMIndexationSimulation(props) {
 
     const calculateAndSave = (basicRate = 0, data = [], totalBase = 0, type = '', currentIndex = null) => {
         const selectedRow = indexedRMForSimulation[currentIndex];
-
 
         // Create base object with only required fields
         const obj = {
@@ -681,7 +678,7 @@ function RMIndexationSimulation(props) {
             BasicRatePerUOMConversion: type === 'Other Cost' || type === 'Condition Cost' ?
                 selectedRow?.NewBasicRatePerUOM || selectedRow?.OldBasicRatePerUOM :
                 Number(basicRate),
-            OtherNetCost: type === 'Other Cost' ? totalBase : selectedRow?.NewOtherNetCost,
+OtherNetCost: type === 'Other Cost' ? totalBase : selectedRow?.NewOtherNetCost,
             OtherNetCostConversion: type === 'Other Cost' ? totalBase : selectedRow?.NewOtherNetCost,
             NetConditionCost: type === 'Condition Cost' ? totalBase : selectedRow?.NewNetConditionCost,
             NetConditionCostConversion: type === 'Condition Cost' ? totalBase : selectedRow?.NewNetConditionCost,
@@ -700,6 +697,7 @@ function RMIndexationSimulation(props) {
             if (response?.data?.Result) {
                 dispatch(editRMIndexedSimulationData({ SimulationId: simulationId }, (res) => {
                     setIsLoader(!res?.data?.Result);
+                    setIsSaving(true);
                 }));
             }
         }));
@@ -839,9 +837,9 @@ function RMIndexationSimulation(props) {
     }
 
     const NewcostFormatter = (props) => {
-        const row = props?.valueFormatted ? props.valueFormatted : isCostingSimulation ? props.data.NewRawMaterialIndexationDetails : props?.data;
-        const rowValue = isCostingSimulation ? row.NetLandedCost : row?.NewNetLandedCost
-        const classGreen = (checkForDecimalAndNull(row?.NewNetLandedCost, getConfigurationKey().NoOfDecimalForPrice) > checkForDecimalAndNull(row?.OldNetLandedCost, getConfigurationKey().NoOfDecimalForPrice)) ? 'red-value form-control' : (checkForDecimalAndNull(row?.NewNetLandedCost, getConfigurationKey().NoOfDecimalForPrice) < checkForDecimalAndNull(row?.OldNetLandedCost, getConfigurationKey().NoOfDecimalForPrice)) ? 'green-value form-control' : 'form-class'
+const row = props?.valueFormatted ? props.valueFormatted : isCostingSimulation ? props.data.NewRawMaterialIndexationDetails : props?.data;
+const rowValue = isCostingSimulation ? row.NetLandedCost : row?.NewNetLandedCost
+const classGreen = (checkForDecimalAndNull(row?.NewNetLandedCost, getConfigurationKey().NoOfDecimalForPrice) > checkForDecimalAndNull(row?.OldNetLandedCost, getConfigurationKey().NoOfDecimalForPrice)) ? 'red-value form-control' : (checkForDecimalAndNull(row?.NewNetLandedCost, getConfigurationKey().NoOfDecimalForPrice) < checkForDecimalAndNull(row?.OldNetLandedCost, getConfigurationKey().NoOfDecimalForPrice)) ? 'green-value form-control' : 'form-class'
 
         return rowValue ? <span title={checkForDecimalAndNull(rowValue, getConfigurationKey().NoOfDecimalForPrice)} className={`${classGreen} with-button`}>{checkForDecimalAndNull(rowValue, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
@@ -906,6 +904,7 @@ function RMIndexationSimulation(props) {
     const onCellValueChanged = (props) => {
         const rowData = props?.data
         if (rowData) {
+            setIsSaving(true)
             setTotalBasicRate(rowData?.NewBasicRatePerUOM)
             setNetCostWithoutConditionCost(rowData?.NewNetCostWithoutConditionCost)
         }
@@ -1092,7 +1091,7 @@ function RMIndexationSimulation(props) {
 
         const value = beforeSaveCell(cell, props, 'otherCost')
         const showValue = cell && value ? checkForDecimalAndNull(Number(cell), getConfigurationKey().NoOfDecimalForPrice) : checkForDecimalAndNull(Number(row?.NetConditionCost), getConfigurationKey().NoOfDecimalForPrice)
-        const classGreen = (checkForDecimalAndNull(row?.NewNetConditionCost, getConfigurationKey().NoOfDecimalForPrice) > checkForDecimalAndNull(row?.OldNetConditionCost, getConfigurationKey().NoOfDecimalForPrice)) ? 'red-value form-control' : (checkForDecimalAndNull(row?.NewNetConditionCost, getConfigurationKey().NoOfDecimalForPrice) < checkForDecimalAndNull(row?.OldNetConditionCost, getConfigurationKey().NoOfDecimalForPrice)) ? 'green-value form-control' : 'form-class'
+        const classGreen = (checkForDecimalAndNull(row?.NewNetConditionCost,getConfigurationKey().NoOfDecimalForPrice) > checkForDecimalAndNull(row?.OldNetConditionCost,getConfigurationKey().NoOfDecimalForPrice)) ? 'red-value form-control' : (checkForDecimalAndNull(row?.NewNetConditionCost,getConfigurationKey().NoOfDecimalForPrice) < checkForDecimalAndNull(row?.OldNetConditionCost,getConfigurationKey().NoOfDecimalForPrice)) ? 'green-value form-control' : 'form-class'
         setRowIndex(props?.node?.rowIndex)
 
         return (
@@ -1136,8 +1135,7 @@ function RMIndexationSimulation(props) {
 
     const actionCellRenderer = (props) => {
         const isDisabled = isRunSimulationClicked || isApprovalSummary || isImpactedMaster;
-
-        return <div >
+ return <div >
             <button title='Save' className="SaveIcon" type={'button'} onClick={() => saveBasicRate(props)} disabled={isDisabled} />
             {/* <button title='Discard' className="CancelIcon" type={'button'} onClick={() => discardBasicRate(props)} /> */}
         </div>
@@ -1148,20 +1146,21 @@ function RMIndexationSimulation(props) {
 
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const currentIndex = props.rowIndex; // Store index in local variable
-
         setIsLoader(true);
         if (/* props?.isRMNonIndexSimulation && */ selectedEffectiveDate === null || selectedEffectiveDate === undefined) {
             Toaster.warning("Please select effective date")
             setIsLoader(false);
             return false
         }
-
         setEditIndex(currentIndex)
 
         setRowData(row)
 
         setTotalBasicRate(checkForNull(row?.NewBasicRatePerUOM))
+        setIsSaving(true)
         setNetCostWithoutConditionCost(row?.NewNetCostWithoutConditionCost)
+        setIsSaving(true) // Add this line to trigger useEffect
+
         setTimeout(() => {
 
             calculateAndSave(row?.NewBasicRatePerUOM, [], 0, '', currentIndex);
@@ -1195,7 +1194,7 @@ function RMIndexationSimulation(props) {
         existingOtherCostFormatter: existingOtherCostFormatter,
         revisedOtherCostFormatter: revisedOtherCostFormatter,
         scrapEditableCallback: scrapEditableCallback,
-        newBasicRateFormatterForNonIndexedRM: newBasicRateFormatterForNonIndexedRM,
+newBasicRateFormatterForNonIndexedRM: newBasicRateFormatterForNonIndexedRM,
         actionCellRenderer: actionCellRenderer,
         existingConditionCostFormatter: existingConditionCostFormatter,
         revisedConditionCostFormatter: revisedConditionCostFormatter
@@ -1212,13 +1211,11 @@ function RMIndexationSimulation(props) {
         }
         return valueReturn
     }
-
-
+   
     const basicRatetooltipToggle = () => {
         setBasicRateViewTooltip(!basicRateviewTooltip)
     }
     const scrapRatetooltipToggle = () => {
-
         setScrapRateViewTooltip(!scrapRateviewTooltip)
     }
 
@@ -1309,7 +1306,6 @@ function RMIndexationSimulation(props) {
                                             }
                                         </div>
                                     </div>
-
                                     <div className="ag-theme-material p-relative" style={{ width: '100%' }}>
                                         {/*  {isLoader && <LoaderCustom />} */}
                                         {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found simulation-lisitng" />}
@@ -1339,7 +1335,7 @@ function RMIndexationSimulation(props) {
                                                 onFilterModified={onFloatingFilterChanged}
                                                 enableBrowserTooltips={true}
                                             >
-                                                {
+                                                                                              {
                                                     !isImpactedMaster &&
                                                     <AgGridColumn width={columnWidths.CostingHead} field="CostingHead" tooltipField='CostingHead' headerName="Costing Head" editable='false' cellRenderer={'costingHeadFormatter'}></AgGridColumn>
                                                 }
@@ -1370,8 +1366,8 @@ function RMIndexationSimulation(props) {
                                                     <AgGridColumn width={columnWidths.NewFromDate} field={isCostingSimulation ? 'NewRawMaterialIndexationDetails.FromDate' : "NewFromDate"} editable='false' cellRenderer={'effectiveDateFormatter'} headerName={props.isImpactedMaster && !props.lastRevision ? "New Effective date" : "New From Date"} ></AgGridColumn>
                                                     <AgGridColumn width={columnWidths.OldToDate} field={isCostingSimulation ? 'OldRawMaterialIndexationDetails.ToDate' : "OldToDate"} editable='false' cellRenderer={'effectiveDateFormatter'} headerName={props.isImpactedMaster && !props.lastRevision ? "Old Effective date" : "Old To Date"} ></AgGridColumn>
                                                     <AgGridColumn width={columnWidths.NewToDate} field={isCostingSimulation ? 'NewRawMaterialIndexationDetails.ToDate' : "NewToDate"} editable='false' cellRenderer={'effectiveDateFormatter'} headerName={props.isImpactedMaster && !props.lastRevision ? "New Effective date" : "New To Date"} ></AgGridColumn></>}
-                                                {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn width={120} field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>}
-                                                <AgGridColumn field="Currency" width={120} cellRenderer={"currencyFormatter"}></AgGridColumn>
+                                                    {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn width={120} field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>}
+                                                    <AgGridColumn field="Currency" width={120} cellRenderer={"currencyFormatter"}></AgGridColumn>
                                                 <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={300} headerName={"Basic Rate (Currency)"} marryChildren={true} >
                                                     {!isIndexedRM && <AgGridColumn width={120} field={isImpactedMaster ? "OldBasicRate" : isCostingSimulation ? 'OldRawMaterialIndexationDetails.BasicRate' : "OldBasicRatePerUOM"} editable='false' headerName="Existing" colId={isImpactedMaster ? "OldBasicRate" : "OldBasicRatePerUOM"}></AgGridColumn>}
                                                     {isIndexedRM && <AgGridColumn width={150} cellRenderer='oldBasicRateFormatter' field={isImpactedMaster ? "OldBasicRate" : isCostingSimulation ? 'OldRawMaterialIndexationDetails.BasicRate' : "OldBasicRatePerUOM"} editable='false' headerName="Existing" colId={isImpactedMaster ? "OldBasicRate" : "OldBasicRatePerUOM"}></AgGridColumn>}
@@ -1394,7 +1390,7 @@ function RMIndexationSimulation(props) {
                                                     <AgGridColumn width={150} cellRenderer='revisedOtherCostFormatter' editable={false} onCellValueChanged='cellChange' field={isCostingSimulation ? 'NewRawMaterialIndexationDetails.OtherNetCost' : "NewOtherNetCost"} headerName="Revised" colId='NewOtherNetCost'></AgGridColumn>
                                                 </AgGridColumn>
                                                 {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={"Basic Price (Currency)"}>
-                                                    <AgGridColumn width={columnWidths.NetCostWithoutConditionCost} field={isImpactedMaster ? 'OldNetCostWithoutConditionCost' : 'OldNetCostWithoutConditionCost'} editable='false' cellRenderer={'costFormatter'} headerName="Existing" colId='NetCostWithoutConditionCost'></AgGridColumn>
+<AgGridColumn width={columnWidths.NetCostWithoutConditionCost} field={isImpactedMaster ? 'OldNetCostWithoutConditionCost' : 'OldNetCostWithoutConditionCost'} editable='false' cellRenderer={'costFormatter'} headerName="Existing" colId='NetCostWithoutConditionCost'></AgGridColumn>
                                                     <AgGridColumn width={columnWidths.NewNetCostWithoutConditionCost} field={isImpactedMaster ? "NewNetCostWithoutConditionCost" : "NewNetCostWithoutConditionCost"} editable='false' cellRenderer={'costFormatter'} headerName="Revised" colId='NewNetCostWithoutConditionCost'></AgGridColumn>
                                                 </AgGridColumn>}
 
@@ -1435,7 +1431,7 @@ function RMIndexationSimulation(props) {
                             !isImpactedMaster && !isApprovalSummary &&
                             <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                                 <div className="col-sm-12 text-right bluefooter-butn d-flex justify-content-end align-items-center">
-                                    {(!isIndexedRM && !isImpactedMaster && !isApprovalSummary && !isRunSimulationClicked) && <WarningMessage dClass={"mr-4"} message={"Please click on the right icon in the action column to save changes."} />}
+                                {(!isIndexedRM && !isImpactedMaster && !isApprovalSummary && !isRunSimulationClicked) && <WarningMessage dClass={"mr-4"} message={"Please click on the right icon in the action column to save changes."} />}
 
                                     {((props.isCostingSimulation || props?.isRMNonIndexSimulation) && !isRunSimulationClicked) && <div className="inputbox date-section mr-3 verfiy-page simulation_effectiveDate">
                                         {<DatePicker

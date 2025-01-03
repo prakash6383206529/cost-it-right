@@ -750,8 +750,8 @@ const UOM = props?.RowData?.IndexUOM || (Array.isArray(props?.uom) ? '' : props?
                                                             {(!props.rawMaterial || isBOP) && <td>{item.ApplicabilityCost}</td>}
                                                             {!isBOP && <td>{item.ApplicabilityCostConversion}</td>}
                                                             <td>{item.Value !== '-' ? checkForDecimalAndNull(item.Value, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
-                                                            {(!props.rawMaterial || isBOP) && <td>{item.NetCost !== '-' ? item.NetCost : '-'}</td>}
-                                                            {!isBOP && <td>{item.NetCostConversion !== '-' ?RawMaterialNonIndexed?item?.NetCost: item?.NetCostConversion : '-'}</td>}
+                                                            {(!props.rawMaterial || isBOP) && <td>{item.NetCost !== '-' ? checkForDecimalAndNull(item.NetCost, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>}
+                                                            {!isBOP && <td>{checkForDecimalAndNull(item.NetCostConversion, initialConfiguration?.NoOfDecimalForPrice) !== '-' ?RawMaterialNonIndexed?checkForDecimalAndNull(item?.NetCost, initialConfiguration?.NoOfDecimalForPrice): checkForDecimalAndNull(item?.NetCostConversion, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>}
                                                             <td>{item.Remark}</td>
                                                             {!props.hideAction && (
                                                                 <td>
