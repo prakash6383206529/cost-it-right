@@ -901,7 +901,7 @@ class AddMachineRate extends Component {
   * @description called
   */
   moreDetailsToggler = (Id, editFlag) => {
-    const { selectedTechnology, vendorName, costingTypeId, client, plantCurrency, settlementCurrency, plantExchangeRateId, settlementExchangeRateId, plantCurrencyID, isImport, currency } = this.state;
+    const { selectedTechnology, vendorName, costingTypeId, client, machineType, plantCurrency, settlementCurrency, plantExchangeRateId, settlementExchangeRateId, plantCurrencyID, isImport, currency } = this.state;
 
     if (selectedTechnology == null || selectedTechnology.length === 0 || Object.keys(selectedTechnology).length < 0) {
       Toaster.warning(`${this.props.t('Technology', { ns: 'MasterLabels', defaultValue: 'Technology' })} should not be empty.`)
@@ -937,7 +937,7 @@ class AddMachineRate extends Component {
       currency: currency,
       callExchangeRateAPI: this.callExchangeRateAPI,
       handleCalculation: this?.handleCalculation,
-      machineType: this.state.machineType,
+      machineType: machineType
     }
     this.props.displayMoreDetailsForm(data)
   }
