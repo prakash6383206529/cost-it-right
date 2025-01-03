@@ -3,7 +3,7 @@ import React from 'react';
 import 'react-toastify/dist/ReactToastify.css';
 import DayTime from '../components/common/DayTimeWrapper';
 import { reactLocalStorage } from 'reactjs-localstorage'
-import { checkForDecimalAndNull, checkForNull } from './validation'
+import { checkForDecimalAndNull, checkForNull, isNumber } from './validation'
 import {
   PLASTIC, SHEET_METAL, WIRING_HARNESS, PLATING, SPRINGS, HARDWARE, NON_FERROUS_LPDDC, MACHINING,
   ELECTRONICS, RIVET, NON_FERROUS_HPDC, RUBBER, NON_FERROUS_GDC, FORGINGNAME, FASTNERS, RIVETS, RMDOMESTIC, RMIMPORT, BOPDOMESTIC, BOPIMPORT, COMBINED_PROCESS, PROCESS, OPERATIONS, SURFACETREATMENT, MACHINERATE, OVERHEAD, PROFIT, EXCHNAGERATE, DISPLAY_G, DISPLAY_KG, DISPLAY_MG, VARIANCE, EMPTY_GUID, ZBCTypeId, DIECASTING, MECHANICAL_PROPRIETARY, ELECTRICAL_PROPRIETARY, LOGISTICS, CORRUGATEDBOX, FABRICATION, FERROUSCASTING, WIREFORMING, ELECTRONICSNAME, ELECTRIC, Assembly, ASSEMBLYNAME, PLASTICNAME,
@@ -1762,4 +1762,64 @@ export const RFQ_KEYS = {
   SHOW_RM: getConfigurationKey()?.RFQManditFields?.IsShowRMForRFQ,
   SHOW_BOP: getConfigurationKey()?.RFQManditFields?.IsShowBOPForRFQ,
   SHOW_TOOLING: getConfigurationKey()?.RFQManditFields?.IsShowToolingForRFQ
+};
+export const calculateBestCost = (arrayList, showConvertedCurrency = false) => {
+  if (!arrayList?.length) return [];
+
+  // First, remove any existing bestCost items to prevent duplicates
+  const finalArrayList = _.cloneDeep(arrayList).filter(item => !item.bestCost);
+  
+  // If array is empty after filtering, return original array
+  if (!finalArrayList.length) return arrayList;
+  
+  // Check if currency conversion needed
+  const isSameCurrency = _.map(finalArrayList, 'Currency')
+      .every(element => element === getConfigurationKey().BaseCurrency);
+  
+  const minObject = { 
+      ...finalArrayList[0],
+      attachment: [],
+      bestCost: true
+  };
+
+  // Rest of your existing logic...
+  if (isSameCurrency) {
+      const keys = ["NetLandedCost", "BasicRatePerUOM", "OtherNetCost"];
+      Object.keys(minObject).forEach(key => minObject[key] = "");
+
+      keys.forEach(key => {
+          minObject[key] = Math.min(...finalArrayList
+              .map(item => isNumber(item[key]) ? checkForNull(item[key]) : Infinity));
+      });
+      
+      minObject.nPOPrice = keys.reduce((sum, key) => 
+          sum + checkForNull(minObject[key]), 0);
+  } 
+  else if (!showConvertedCurrency) {
+      Object.keys(minObject).forEach(key => minObject[key] = "");
+      
+      const conversionKeys = ["NetLandedCostConversion", "BasicRatePerUOMConversion", "OtherNetCostConversion"];
+      
+      conversionKeys.forEach(key => {
+          minObject[key] = Math.min(...finalArrayList
+              .map(item => isNumber(item[key]) ? checkForNull(item[key]) : Infinity));
+      });
+      
+      minObject.bestCost = "";
+  } 
+  else {
+      const conversionKeys = ["NetLandedCostConversion", "BasicRatePerUOMConversion", "OtherNetCostConversion"];
+      
+      Object.keys(minObject).forEach(key => minObject[key] = "");
+      
+      conversionKeys.forEach(key => {
+          minObject[key] = Math.min(...finalArrayList
+              .map(item => isNumber(item[key]) ? checkForNull(item[key]) : Infinity));
+      });
+      
+      minObject.nPOPrice = conversionKeys.reduce((sum, key) => 
+          sum + checkForNull(minObject[key]), 0);
+  }
+
+  return [...finalArrayList, minObject];
 };

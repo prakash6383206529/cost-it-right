@@ -28,7 +28,7 @@ const BOPCompareTable = (props) => {
     const[otherCostDrawer,setOtherCostDrawer] = useState(false)
     const [isLoader, setIsLoader] = useState(false)
     const showCheckbox = viewBOPDetails && viewBOPDetails?.some(item => item?.IsShowCheckBoxForApproval === true);
-    const [showConvertedCurrency, setShowConvertedCurrency] = useState(false)
+    const [showConvertedCurrency, setShowConvertedCurrency] = useState(true)
     const [showConvertedCurrencyCheckbox, setShowConvertedCurrencyCheckbox] = useState(false)
         // Add handler function
         const handleConvertedCurrencyChange = (value) => {
@@ -101,37 +101,37 @@ const BOPCompareTable = (props) => {
             viewBOPDetails.map((item, index) => {
                 // Section One Data
                 const formattedDataOne = [
-                    item.BoughtOutPartNumber,
-                    item.BoughtOutPartName,
-                    item.Currency,
-                    item.BoughtOutPartCategory,
-                    item.UOM,
-                    item.Plants,
-                    `${item.Vendor} (${item.VendorCode})`,
-                    item.EffectiveDate ? 
-                        DayTime(item.EffectiveDate).format('DD/MM/YYYY') : 
+                    item?.BoughtOutPartNumber,
+                    item?.BoughtOutPartName,
+                    item?.Currency,
+                    item?.BoughtOutPartCategory,
+                    item?.UOM,
+                    item?.Plants,
+                    `${item?.Vendor} (${item?.VendorCode})`,
+                    item?.EffectiveDate ? 
+                        DayTime(item?.EffectiveDate).format('DD/MM/YYYY') : 
                         '-',
                     showConvertedCurrency ? 
-                        item.bestCost ? 
-                            item.BasicRateConversion : 
-                            `${item.BasicRate} (${item.BasicRateConversion})` : 
-                        item.BasicRate,
+                        item?.bestCost ? 
+                            item?.BasicRateConversion : 
+                            `${item?.BasicRate} (${item?.BasicRateConversion})` : 
+                        item?.BasicRate,
                     showConvertedCurrency ? 
-                        item.bestCost ? 
-                            item.OtherNetCostConversion : 
-                            `${item.OtherNetCost} (${item.OtherNetCostConversion})` : 
-                        item.OtherNetCost
+                        item?.bestCost ? 
+                            item?.OtherNetCostConversion : 
+                            `${item?.OtherNetCost} (${item?.OtherNetCostConversion})` : 
+                        item?.OtherNetCost
                 ];
                 sectionOne.push(formattedDataOne);
     
                 // Section Two Data
                 const formattedDataTwo = [
-                    item.NumberOfPieces,
+                    item?.NumberOfPieces,
                     showConvertedCurrency ? 
-                        item.bestCost ? 
-                            item.NetLandedCostConversion : 
-                            `${item.NetLandedCost} (${item.NetLandedCostConversion})` : 
-                        item.NetLandedCost
+                        item?.bestCost ? 
+                            item?.NetLandedCostConversion : 
+                            `${item?.NetLandedCost} (${item?.NetLandedCostConversion})` : 
+                        item?.NetLandedCost
                 ];
                 sectionTwo.push(formattedDataTwo);
             });
@@ -239,7 +239,7 @@ const BOPCompareTable = (props) => {
     
         // Handle different cases
         if (isSameCurrency) {
-            const keys = ["NetLandedCost", "BasicRatePerUOM", "OtherNetCost"];
+            const keys = ["NetLandedCost", "BasicRate", "OtherNetCost"];
             Object.keys(minObject).forEach(key => minObject[key] = "");
 
             // Find minimum values for each key
@@ -252,8 +252,19 @@ const BOPCompareTable = (props) => {
                 sum + checkForNull(minObject[key]), 0);
         } 
         else if (!showConvertedCurrency) {
-            // Set all values to "-" when different currencies without conversion
+            // First set all keys to empty string
             Object.keys(minObject).forEach(key => minObject[key] = "");
+            
+            // Find minimum values for conversion keys but don't show in UI
+            const conversionKeys = ["NetLandedCostConversion", "BasicRateConversion", "OtherNetCostConversion"];
+           
+            conversionKeys.forEach(key => {
+                minObject[key] = Math.min(...finalArrayList
+                    .map(item => isNumber(item[key]) ? checkForNull(item[key]) : Infinity));
+            });
+            
+            // Set bestCost empty to ensure UI shows empty strings
+            minObject.bestCost = "";
         } 
         else {
             // Handle converted currency case
@@ -322,7 +333,8 @@ const BOPCompareTable = (props) => {
         <div>
             {showCheckbox && !props?.compare && < WarningMessage dClass={"float-right justify-content-end"} message={'Click the checkbox to approve, reject, or return the quotation'} />}
 
-            <Table headerData={mainHeadingData} sectionData={sectionData}showConvertedCurrency={showConvertedCurrency}
+            <Table headerData={mainHeadingData}sectionData={sectionData} uniqueShouldCostingId={props?.uniqueShouldCostingId}
+                showConvertedCurrency={showConvertedCurrency}
                 onConvertedCurrencyChange={handleConvertedCurrencyChange}
                 showConvertedCurrencyCheckbox={showConvertedCurrencyCheckbox}
                 onViewOtherCost={onViewOtherCost}>

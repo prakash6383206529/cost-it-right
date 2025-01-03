@@ -43,7 +43,8 @@ import {
     GET_MANAGE_SPECIFICATION, GET_UNASSOCIATED_RM_NAME_SELECTLIST, SET_FILTERED_RM_DATA, GET_RM_APPROVAL_LIST, GET_ALL_MASTER_APPROVAL_DEPARTMENT, GET_ALL_MASTER_APPROVAL_USERS_BY_DEPARTMENT, EMPTY_GUID, BUDGET_ID, GET_VOLUME_DATA_LIST, GET_SPECIFICATION_SELECTLIST_SUCCESS, GET_RM_SPECIFICATION_LIST_SUCCESS, GET_BOP_IMPORT_DATA_LIST, ONBOARDINGID, GET_ONBOARDING_SUMMARY_DATA_LIST, RAW_MATERIAL_DETAILS,
     COMMODITY_INDEX_RATE_AVERAGE,
     GET_RM_DETAILS,
-    EXCHANGE_RATE_DETAILS
+    EXCHANGE_RATE_DETAILS,
+    ENTRY_TYPE_DOMESTIC
 } from '../../../config/constants';
 import { apiErrors, encodeQueryParamsAndLog } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
@@ -1600,16 +1601,16 @@ export function getMasterApprovalSummary(tokenNo, approvalProcessId, masterId, O
             `${API.getMasterApprovalSummaryByApprovalNo}/${tokenNo}/${approvalProcessId}/${loggedInUserId()}`, config())
         request
             .then((response) => {
-                if (response?.data.Result) {
+              if (response?.data.Result) {
 
                     if (Number(masterId) === RM_MASTER_ID) {
-                        if (response?.data?.Data?.ImpactedMasterDataList.RawMaterialListResponse[0]?.Currency === reactLocalStorage.getObject("baseCurrency")) {
+                        if (response?.data?.Data?.ImpactedMasterDataList.RawMaterialListResponse[0]?.RawMaterialEntryType === ENTRY_TYPE_DOMESTIC) {
                             dispatch({
                                 type: GET_RM_DOMESTIC_LIST,
                                 payload: response?.data?.Data?.ImpactedMasterDataList.RawMaterialListResponse,
                             })
                         } else {
-                            dispatch({
+                           dispatch({
                                 type: GET_RM_IMPORT_LIST,
                                 payload: response?.data?.Data?.ImpactedMasterDataList.RawMaterialListResponse,
                             })
@@ -1617,7 +1618,7 @@ export function getMasterApprovalSummary(tokenNo, approvalProcessId, masterId, O
                         callback(response)
                     }
                     else if (Number(masterId) === BOP_MASTER_ID) {
-                        if (response?.data?.Data?.ImpactedMasterDataList.BOPListResponse[0]?.Currency === reactLocalStorage.getObject("baseCurrency")) {
+                        if (response?.data?.Data?.ImpactedMasterDataList.BOPListResponse[0]?.EntryType === ENTRY_TYPE_DOMESTIC) {
                             dispatch({
                                 type: GET_BOP_DOMESTIC_DATA_LIST,
                                 payload: response?.data?.Data?.ImpactedMasterDataList.BOPListResponse,

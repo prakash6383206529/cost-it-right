@@ -717,9 +717,10 @@ function CommonApproval(props) {
         setGridColumnApi(params.columnApi)
         params.api.paginationGoToPage(0);
         if (props?.OnboardingApprovalId === ONBOARDINGID) {
-            params.api.sizeColumnsToFit();
+            //params.api.sizeColumnsToFit();
+            
         }
-
+        window.screen.width >= 1920 && params.api.sizeColumnsToFit();
     };
 
     const onFilterTextBoxChanged = (e) => {

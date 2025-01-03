@@ -41,6 +41,7 @@ import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from '../../common/Tour/TourMessages';
 import { useTranslation } from 'react-i18next';
 import { useLabels, useWithLocalization } from '../../../helper/core';
+import RfqMasterApprovalDrawer from './RfqMasterApprovalDrawer';
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -93,6 +94,8 @@ function RMImportListing(props) {
   const [showExtraData, setShowExtraData] = useState(false)
   const [render, setRender] = useState(true)
   const [disableEdit, setDisableEdit] = useState(true)
+  const [compareDrawer, setCompareDrawer] = useState(false)
+    const [rowDataForCompare, setRowDataForCompare] = useState([])
   const { t } = useTranslation("common")
   const netCostHeader = `Net Cost (${reactLocalStorage.getObject("baseCurrency")})`
   const { tokenForSimulation, selectedMasterForSimulation } = useSelector(state => state.simulation)
@@ -107,6 +110,10 @@ function RMImportListing(props) {
     NetConditionCost: `Net Condition Cost (${reactLocalStorage.getObject("baseCurrency")})`,
     NetCost: `Net Cost (${reactLocalStorage.getObject("baseCurrency")})`,
   }
+  const isRfq = props?.quotationId !== null && props?.quotationId !== '' && props?.quotationId !== undefined
+
+  
+
   var filterParams = {
     date: "", inRangeInclusive: true, filterOptions: ['equals', 'inRange'],
     comparator: function (filterLocalDateAtMidnight, cellValue) {
@@ -170,7 +177,8 @@ function RMImportListing(props) {
       isImport: true,
       dataObj: obj,
       master: 'RawMaterial',
-      tabs: 'Import'
+      tabs: 'Import',
+      isMasterSummaryDrawer: props?.isMasterSummaryDrawer
     }
   }, []);
 
@@ -482,12 +490,15 @@ function RMImportListing(props) {
   const onPopupConfirmBulk = () => {
     confirmDelete(deletedId);
   }
-
+  const handleCompareDrawer = (data) => {
+    setCompareDrawer(true)
+    setRowDataForCompare([data])
+}
   /**
   * @method buttonFormatter
   * @description Renders buttons
   */
-  const { benchMark } = props
+  const { benchMark, isMasterSummaryDrawer } = props
   const buttonFormatter = (props) => {
     const cellValue = props?.valueFormatted ? props?.valueFormatted : props?.value;
     const rowData = props?.valueFormatted ? props?.valueFormatted : props?.data;
@@ -500,7 +511,15 @@ function RMImportListing(props) {
     } else {
       isEditbale = false
     }
+    
+    if (isRfq && isMasterSummaryDrawer) {
+      
+      return (
+          <button className="Balance mb-0 button-stick" type="button" onClick={() => handleCompareDrawer(rowData)}>
 
+          </button>
+      );
+  }
     if (showExtraData && props.rowIndex === 0) {
       isDeleteButton = true
     } else {
@@ -667,7 +686,12 @@ function RMImportListing(props) {
       resetState()
     }
   }
-
+  const closeCompareDrawer = (event, type) => {
+    setCompareDrawer(false);
+    if (type !== 'cancel') {
+        resetState()
+    }
+}
   /**
   * @method densityAlert
   * @description confirm Redirection to Material tab.
@@ -1089,7 +1113,8 @@ function RMImportListing(props) {
                     {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((props?.isMasterSummaryDrawer && rmImportDataList[0]?.CostingTypeId === ZBCTypeId) || !props?.isMasterSummaryDrawer) && !isFromVerifyPage && <AgGridColumn field="NetConditionCost" headerName="Net Condition Cost" cellRenderer='commonCostFormatter'></AgGridColumn>}
                     <AgGridColumn field="NetLandedCost" headerName="Net Cost" cellRenderer='costFormatter'></AgGridColumn>
                     <AgGridColumn field="EffectiveDate" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-                    {(!isSimulation && !props?.isMasterSummaryDrawer) && <AgGridColumn width={160} field="RawMaterialId" cellClass="ag-grid-action-container actions-wrapper" pinned="right" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                    {((!isSimulation && !props.isMasterSummaryDrawer) || (isRfq && props?.isMasterSummaryDrawer)) && <AgGridColumn width={160} field="RawMaterialId" cellClass="ag-grid-action-container" pinned="right" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+
                     <AgGridColumn field="VendorId" hide={true}></AgGridColumn>
 
                     <AgGridColumn field="TechnologyId" hide={true}></AgGridColumn>
@@ -1182,6 +1207,18 @@ function RMImportListing(props) {
           tokenForMultiSimulation={tokenForSimulation?.length !== 0 ? [{ SimulationId: tokenForSimulation?.value }] : []}
         />
       }
+        {compareDrawer &&
+                <RfqMasterApprovalDrawer
+                    isOpen={compareDrawer}
+                    anchor={'right'}
+                    selectedRows={rowDataForCompare}
+                    type={'Raw Material'}
+                    quotationId={props.quotationId}
+                    closeDrawer={closeCompareDrawer}
+                // selectedRow = {props.bopDataResponse}
+                />
+
+            }
     </div >
   );
 }

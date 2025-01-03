@@ -35,11 +35,13 @@ import TourWrapper from "../../common/Tour/TourWrapper";
 import { Steps } from "../../common/Tour/TourMessages";
 import { useTranslation } from "react-i18next";
 import { useLabels, useWithLocalization } from "../../../helper/core";
+import RfqMasterApprovalDrawer from "../material-master/RfqMasterApprovalDrawer";
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
 const BOPImportListing = (props) => {
   const { t } = useTranslation("common")
+  const isRfq = props?.quotationId !== null && props?.quotationId !== '' && props?.quotationId !== undefined;
 
   const [state, setState] = useState({
     isOpen: false,
@@ -110,6 +112,8 @@ const BOPImportListing = (props) => {
     tempList: [],
     render: false,
     disableEdit: true,
+    compareDrawer: false,
+    rowDataForCompare: [],
   });
   const dispatch = useDispatch();
   const permissions = useContext(ApplyPermission);
@@ -123,6 +127,7 @@ const BOPImportListing = (props) => {
   const { selectedRowForPagination, tokenForSimulation } = useSelector(
     (state) => state.simulation
   );
+
   useEffect(() => {
     if (bopImportList?.length > 0) {
       setState((prevState) => ({ ...prevState, totalRecordCount: bopImportList[0].TotalRecordCount, isLoader: false, render: false }));
@@ -503,6 +508,12 @@ const BOPImportListing = (props) => {
     );
     setState((prevState) => ({ ...prevState, showPopup: false }));
   };
+  const closeCompareDrawer = (event, type) => {
+    setState((prevState) => ({ ...prevState, compareDrawer: false }));
+    if (type !== 'cancel') {
+      resetState()
+    }
+  }
   const onPopupConfirm = () => {
     confirmDelete(state.deletedId);
   };
@@ -528,11 +539,15 @@ const BOPImportListing = (props) => {
       analyticsDrawer: true,
     }));
   };
+  const handleCompareDrawer = (data) => {
+
+    setState((prevState) => ({ ...prevState, compareDrawer: true, rowDataForCompare: [data] }))
+  }
   /**
    * @method buttonFormatter
    * @description Renders buttons
    */
-  const { benchMark } = props
+  const { benchMark ,isMasterSummaryDrawer} = props
   const buttonFormatter = (props) => {
     const cellValue = props?.valueFormatted
       ? props.valueFormatted
@@ -540,7 +555,13 @@ const BOPImportListing = (props) => {
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
     let isEditable = false;
     let isDeleteButton = false;
+    if (isRfq && isMasterSummaryDrawer) {
+      return (
+        <button className="Balance mb-0 button-stick" type="button" onClick={() => handleCompareDrawer(rowData)}>
 
+        </button>
+      );
+    }
     if (permissions?.Edit) {
       isEditable = true;
     }
@@ -550,6 +571,13 @@ const BOPImportListing = (props) => {
       if (permissions?.Delete && !rowData.IsBOPAssociated) {
         isDeleteButton = true
       }
+    }
+    if (isRfq && isMasterSummaryDrawer) {
+      return (
+        <button className="Balance mb-0 button-stick" type="button" onClick={() => handleCompareDrawer(rowData)}>
+
+        </button>
+      );
     }
     return (
       <>
@@ -589,6 +617,7 @@ const BOPImportListing = (props) => {
       </>
     );
   };
+ 
   /**
    * @method commonCostFormatter
    * @description Renders buttons
@@ -1135,7 +1164,7 @@ const BOPImportListing = (props) => {
                         <AgGridColumn field="NetLandedCost" headerName="Net Cost" cellRenderer="costFormatter"></AgGridColumn>
                         {/* <AgGridColumn field="NetLandedCostConversion" headerName={headerNames?.NetCost} cellRenderer={"commonCostFormatter"}></AgGridColumn> */}
                         <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={"effectiveDateFormatter"} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-                        {!props.isSimulation && !props.isMasterSummaryDrawer && (<AgGridColumn field="BoughtOutPartId" width={160} pinned="right" cellClass="ag-grid-action-container actions-wrapper" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"} ></AgGridColumn>)}
+                        {((!props?.isSimulation && !props?.isMasterSummaryDrawer) || (isRfq && props?.isMasterSummaryDrawer)) && <AgGridColumn field="BoughtOutPartId" width={170} pinned="right" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                         {props.isMasterSummaryDrawer && (<AgGridColumn field="Attachements" headerName="Attachments" cellRenderer={"attachmentFormatter"}></AgGridColumn>)}
                         {props.isMasterSummaryDrawer && (<AgGridColumn field="Remark" tooltipField="Remark"></AgGridColumn>)}</AgGridReact>}
                       <div>
@@ -1189,6 +1218,19 @@ const BOPImportListing = (props) => {
           }
         />
       )}
+       {
+        state.compareDrawer &&
+        <RfqMasterApprovalDrawer
+          isOpen={state.compareDrawer}
+          anchor={'right'}
+          selectedRows={props.bopDataResponse}
+          type={'Bought Out Part'}
+          quotationId={props.quotationId}
+          closeDrawer={closeCompareDrawer}
+        // selectedRow = {props.bopDataResponse}
+        />
+
+      }
     </div>
   );
 };

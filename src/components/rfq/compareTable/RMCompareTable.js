@@ -5,13 +5,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getViewRawMaterialDetails, setRawMaterialCostingData } from '../../masters/actions/Material';
 import DayTime from '../../common/DayTimeWrapper';
 import LoaderCustom from '../../common/LoaderCustom';
-import { checkForNull, getConfigurationKey } from '../../../helper';
+import { calculateBestCost, checkForNull, getConfigurationKey } from '../../../helper';
 import _, { isNumber } from 'lodash';
 import WarningMessage from '../../common/WarningMessage';
 import { useLabels } from '../../../helper/core';
 import AddOtherCostDrawer from '../../masters/material-master/AddOtherCostDrawer';
 
 const RMCompareTable = (props) => {
+    const { RfqMasterApprovalDrawer=false } = props
     const dispatch = useDispatch()
     const { viewRmDetails } = useSelector(state => state.material)
     const [sectionData, setSectionData] = useState([])
@@ -25,37 +26,39 @@ const RMCompareTable = (props) => {
 const[otherCostDrawer,setOtherCostDrawer] = useState(false)
 const[selectedItem,setSelectedItem] = useState(null)
     const showCheckbox = viewRmDetails && viewRmDetails?.some(item => item.IsShowCheckBoxForApproval === true);
-    const [showConvertedCurrency, setShowConvertedCurrency] = useState(false)
+    const [showConvertedCurrency, setShowConvertedCurrency] = useState(true)
 
     // Add handler function
     const handleConvertedCurrencyChange = (value) => {
-        setShowConvertedCurrency(value);
+       setShowConvertedCurrency(value);
     }
 
-    useEffect(() => {
-        setIsLoader(true)
-        let temp = []
-        const uniqueShouldCostingIdArr = props?.uniqueShouldCostingId || [];
-        const idArr = props?.selectedRows.map(item => item.RawMaterialId);
-        const combinedArr = Array.from(new Set([...uniqueShouldCostingIdArr, ...idArr]));
-        dispatch(getViewRawMaterialDetails(combinedArr, res => {
+useEffect(() => {
+    //if(!RfqMasterApprovalDrawer){
+    setIsLoader(true)
+    let temp = []
+    const uniqueShouldCostingIdArr = props?.uniqueShouldCostingId || [];
+    const idArr = props?.selectedRows.map(item => item.RawMaterialId);
+    const combinedArr = Array.from(new Set([...uniqueShouldCostingIdArr, ...idArr]));
+    dispatch(getViewRawMaterialDetails(combinedArr, res => {
 
-            setIsLoader(false)
-            if (res) {
-                res?.data?.DataList?.map((item) => {
-                    temp.push(item)
-                    return null
-                })
-                let dat = [...temp]
+        setIsLoader(false)
+        if (res) {
+            res?.data?.DataList?.map((item) => {
+                temp.push(item)
+                return null
+            })
+            let dat = [...temp]
 
-                let tempArrToSend = _.uniqBy(dat, 'RawMaterialId')
-                let arr = bestCostObjectFunction(tempArrToSend)
-                dispatch(setRawMaterialCostingData([...arr]))
+            let tempArrToSend = _.uniqBy(dat, 'RawMaterialId')
+            let arr = bestCostObjectFunction(tempArrToSend)
+            dispatch(setRawMaterialCostingData([...arr]))
 
-            }
-        }))
-    }, [showConvertedCurrency])
-    useEffect(() => {
+        }
+    }))
+// }
+}, [showConvertedCurrency])
+useEffect(() => {
         
 if (viewRmDetails && _.map(viewRmDetails, 'Currency').every(element => 
     element === getConfigurationKey().BaseCurrency || element === '')) {
@@ -90,17 +93,17 @@ if (viewRmDetails && _.map(viewRmDetails, 'Currency').every(element =>
             
             viewRmDetails.map((item, index) => {
                 //section one data start
-                const RMNameGrade = `${item.RawMaterialName}-${item.RawMaterialGradeName}`;
-                const effectiveDate = item.EffectiveDate ? (item.EffectiveDate !== "-" ? DayTime(item.EffectiveDate).format('DD/MM/YYYY') : '-') : '-';
+                const RMNameGrade = `${item?.RawMaterialName}-${item?.RawMaterialGradeName}`;
+                const effectiveDate = item?.EffectiveDate ? (item?.EffectiveDate !== "-" ? DayTime(item?.EffectiveDate).format('DD/MM/YYYY') : '-') : '-';
              // ... existing code ...
              const formattedDataOne = [
-                item.TechnologyName,
-                item.DestinationPlantName,
-                item.RawMaterialCode,
+                item?.TechnologyName,
+                item?.DestinationPlantName,
+                item?.RawMaterialCode,
                 RMNameGrade,
-                item.RawMaterialSpecificationName,
-                item.RawMaterialCategoryName,
-                item.Currency,
+                item?.RawMaterialSpecificationName,
+                item?.RawMaterialCategoryName,
+                item?.Currency,
                 effectiveDate,
                 showConvertedCurrency ? 
                 item.bestCost==="" ? item.BasicRatePerUOMConversion : `${item.BasicRatePerUOM} (${item.BasicRatePerUOMConversion})` : 
@@ -112,8 +115,8 @@ if (viewRmDetails && _.map(viewRmDetails, 'Currency').every(element =>
                 //section two data start
                 const formattedDataTwo = [
                     showConvertedCurrency ? 
-                    item.bestCost==="" ? item.OtherNetCostConversion : `${item.OtherNetCost} (${item.OtherNetCostConversion})` : 
-                    item.OtherNetCost,
+                    item?.bestCost==="" ? item?.OtherNetCostConversion : `${item?.OtherNetCost} (${item?.OtherNetCostConversion})` : 
+                    item?.OtherNetCost,
                 ]
                 sectionTwo.push(formattedDataTwo)
                 
@@ -209,8 +212,19 @@ if (viewRmDetails && _.map(viewRmDetails, 'Currency').every(element =>
                 sum + checkForNull(minObject[key]), 0);
         } 
         else if (!showConvertedCurrency) {
-            // Set all values to "-" when different currencies without conversion
+            // First set all keys to empty string
             Object.keys(minObject).forEach(key => minObject[key] = "");
+            
+            // Find minimum values for conversion keys but don't show in UI
+            const conversionKeys = ["NetLandedCostConversion", "BasicRatePerUOMConversion", "OtherNetCostConversion"];
+            
+            conversionKeys.forEach(key => {
+                minObject[key] = Math.min(...finalArrayList
+                    .map(item => isNumber(item[key]) ? checkForNull(item[key]) : Infinity));
+            });
+            
+            // Set bestCost empty to ensure UI shows empty strings
+            minObject.bestCost = "";
         } 
         else {
             // Handle converted currency case
@@ -245,7 +259,6 @@ if (viewRmDetails && _.map(viewRmDetails, 'Currency').every(element =>
             }
             return newItems
         })
-
         setSelectedIndices(prevIndices => {
             let newIndices
             if (prevIndices.includes(index)) {
