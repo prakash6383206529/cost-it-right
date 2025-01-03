@@ -681,7 +681,7 @@ class AddMachineRate extends Component {
   * @description called
   */
   moreDetailsToggler = (Id, editFlag) => {
-    const { selectedTechnology, vendorName, costingTypeId, client } = this.state;
+    const { selectedTechnology, vendorName, costingTypeId, client, machineType } = this.state;
     if (selectedTechnology == null || selectedTechnology.length === 0 || Object.keys(selectedTechnology).length < 0) {
       Toaster.warning(`${this.props.t('TechnologyLabel', { ns: 'MasterLabels', defaultValue: 'Technology' })} should not be empty.`)
       return false;
@@ -701,7 +701,8 @@ class AddMachineRate extends Component {
       selectedPlants: this.state.selectedPlants,
       selectedEffectiveDate: this.props.fieldsObj.EffectiveDate,
       selectedCustomer: client ?? [],
-      fieldsObj: this.props.fieldsObj
+      fieldsObj: this.props.fieldsObj,
+      machineType: machineType
     }
     this.props.displayMoreDetailsForm(data)
   }
