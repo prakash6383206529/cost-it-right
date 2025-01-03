@@ -430,10 +430,12 @@ function AddPackaging(props) {
 const toggleWeightCalculator = (packingCost) => {
   setOpenCalculator(true)
 }
-const closeCalculator = (formData,packingCost) => {
-  setCostingPackagingCalculationDetailsId(formData?.CalculationId)
-  setValue('PackagingCost', checkForDecimalAndNull(packingCost, getConfigurationKey().NoOfDecimalForPrice))
-  setPackagingCost(packingCost)
+const closeCalculator = (calculatorId,packingCost,type) => {
+  setCostingPackagingCalculationDetailsId(calculatorId)
+  if(type === 'Save'){
+    setValue('PackagingCost', checkForDecimalAndNull(packingCost, getConfigurationKey().NoOfDecimalForPrice))
+    setPackagingCost(packingCost)
+  }
   setOpenCalculator(false)
 }
   /**

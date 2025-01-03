@@ -13,6 +13,7 @@ import { useTranslation } from 'react-i18next'
 import { ViewCostingContext } from '../CostingDetails'
 import { AWAITING_APPROVAL_ID, DRAFT, DRAFTID, PENDING_FOR_APPROVAL_ID, REJECTEDID } from '../../../../config/constants'
 import { debounce } from 'lodash'
+import LoaderCustom from '../../../common/LoaderCustom'
 function PackagingCalculator(props) {
 const {rowObjData} = props
     const [state, setState] = useState({
@@ -23,7 +24,8 @@ const {rowObjData} = props
         totalCostOfCrate:0,
         spacerPackingInsertRecoveryCost:0,
         totalCostOfSpacerPackingInsert:0,
-        disableSubmit:false
+        disableSubmit:false,
+        loader:false,
     })
     const { costingData, CostingEffectiveDate} = useSelector(state => state.costing)
     const { NoOfDecimalForPrice, NoOfDecimalForInputOutput } = useSelector((state) => state.auth.initialConfiguration)
@@ -55,19 +57,7 @@ const {rowObjData} = props
         }
     }, [calclulationFieldValues,state?.spacerPackingInsertRecoveryCostPerKg,state?.volumePerDay,state?.volumePerAnnum]);
     useEffect(() => {
-        if(!CostingViewMode){
-        dispatch(getVolumePerDayForPackagingCalculator(costingData?.PartId, costingData?.PlantId, CostingEffectiveDate, costingData?.VendorId, (res) => {
-            if(res?.status === 204){
-                setState((prevState) => ({ ...prevState, disableSubmit: true }))
-                Toaster.warning("Volume data doesn't exist for the selected part. Add the volume to calculate the packaging cost.")
-                return false
-            }
-            let data = res?.data?.Data
-            setValue('VolumePerDay', checkForDecimalAndNull(data?.VolumePerDay, NoOfDecimalForInputOutput))
-            setValue('VolumePerAnnum', checkForDecimalAndNull(data?.VolumePerAnnum, NoOfDecimalForInputOutput))
-            setState((prevState) => ({ ...prevState, volumePerDay: data?.VolumePerDay, volumePerAnnum: data?.VolumePerAnnum,disableSubmit: false }))
-        }))
-        }
+      
         const tempData = rowObjData?.SimulationTempData
         // const index = props?.viewPackaingData?.findIndex(item => item.PackagingDetailId === rowObjData?.PackagingDetailId)
         // if (props.simulationMode && tempData?.map(item => item?.CostingHeading)?.includes("New Costing") && tempData?.map(item => Number(item?.SimulationStatusId)).some(id => [REJECTEDID, PENDING_FOR_APPROVAL_ID, AWAITING_APPROVAL_ID, DRAFTID].includes(id)) && props?.viewPackaingData[index]?.Applicability === 'Crate/Trolley') {
@@ -78,17 +68,38 @@ const {rowObjData} = props
             //      }))
             // }
             // else{
-            const costingId = costingData?.CostingId??tempData.find(item => item?.CostingHeading === "Old Costing")?.costingId
-            let calculatorId = rowObjData && Object.keys(rowObjData).length > 0?rowObjData?.CostingPackagingCalculationDetailsId:props?.costingPackagingCalculationDetailsId??null
-            let packagingDetailId = rowObjData && Object.keys(rowObjData).length > 0?rowObjData?.PackagingDetailId:null
-        dispatch(getPackagingCalculation(costingId, packagingDetailId, calculatorId, (res) => {
-            let data = res?.data?.Data
-            setFormValues(data)
-           
-        }))
+            const getPackagingCalculationData = () => {
+                const costingId = costingData?.CostingId ?? tempData.find(item => item?.CostingHeading === "Old Costing")?.costingId
+                const calculatorId = rowObjData && Object.keys(rowObjData).length > 0 ? rowObjData?.CostingPackagingCalculationDetailsId : props?.costingPackagingCalculationDetailsId ?? null
+                const packagingDetailId = rowObjData && Object.keys(rowObjData).length > 0 ? rowObjData?.PackagingDetailId : null
+                
+                setState((prevState) => ({ ...prevState, loader: true }))
+                dispatch(getPackagingCalculation(costingId, packagingDetailId, calculatorId, (res) => {
+                    let data = res?.data?.Data
+                    setFormValues(data)
+                    if(!CostingViewMode){
+                        getVolumePerDayData()
+                    }
+                    setState((prevState) => ({ ...prevState, loader: false }))
+                }))
+            }
+
+            getPackagingCalculationData()
     // }
     }, [])
-
+const getVolumePerDayData = () => {
+    dispatch(getVolumePerDayForPackagingCalculator(costingData?.PartId, costingData?.PlantId, CostingEffectiveDate, costingData?.VendorId, (res) => {
+        if(res?.status === 204){
+            setState((prevState) => ({ ...prevState, disableSubmit: true }))
+            Toaster.warning("Volume data doesn't exist for the selected part. Add the volume to calculate the packaging cost.")
+            return false
+        }
+        let data = res?.data?.Data
+        setValue('VolumePerDay', checkForDecimalAndNull(data?.VolumePerDay, NoOfDecimalForInputOutput))
+        setValue('VolumePerAnnum', checkForDecimalAndNull(data?.VolumePerAnnum, NoOfDecimalForInputOutput))
+        setState((prevState) => ({ ...prevState, volumePerDay: data?.VolumePerDay, volumePerAnnum: data?.VolumePerAnnum,disableSubmit: false }))
+    }))
+}
 const setFormValues=(data)=>{
     setValue('NoOfComponentsPerCrate', data?.NoOfComponentsPerCrate?checkForDecimalAndNull(data?.NoOfComponentsPerCrate, NoOfDecimalForInputOutput):'')
     setValue('NoOfCratesRequiredPerDay', data?.NoOfCratesRequiredPerDay?checkForDecimalAndNull(data?.NoOfCratesRequiredPerDay, NoOfDecimalForInputOutput):'')
@@ -230,12 +241,12 @@ const setFormValues=(data)=>{
                 setState((prevState) => ({ ...prevState, disableSubmit: false }))
                 formData.CalculationId = res?.data?.Identity
                 Toaster.success("Calculation saved successfully")
-                props.closeCalculator(formData,state?.packingCost)
+                props.closeCalculator(formData.CalculationId,state?.packingCost,'Save')
             }
         }))
-    }, 500)
+    }, 500) 
     const cancelHandler = () => {
-        props.closeCalculator('',state?.packingCost)
+        props.closeCalculator(props?.costingPackagingCalculationDetailsId,'','Cancel')
     }
     return (
         <Drawer anchor={props.anchor} open={props.isOpen}
@@ -243,6 +254,7 @@ const setFormValues=(data)=>{
         >
             <Container>
                 <div className={`drawer-wrapper layout-min-width-860px`}>
+                       {state?.loader && <LoaderCustom customClass="packaging-calculator-drawer-loader" />}
                     <Row className="drawer-heading">
                         <Col>
                             <div className={'header-wrapper left'}>
