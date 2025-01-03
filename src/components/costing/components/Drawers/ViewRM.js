@@ -3,7 +3,7 @@ import Drawer from '@material-ui/core/Drawer'
 import WeightCalculator from '../WeightCalculatorDrawer';
 import { useDispatch, useSelector } from 'react-redux';
 import Toaster from '../../../common/Toaster';
-import { IsShowFreightAndShearingCostFields, checkForDecimalAndNull, checkTechnologyIdAndRfq, getChangeHighlightClass, getConfigurationKey, isRMDivisorApplicable } from '../../../../helper';
+import { IsShowFreightAndShearingCostFields, checkForDecimalAndNull, checkTechnologyIdAndRfq, getChangeHighlightClass, getConfigurationKey, isRMDivisorApplicable, showRMScrapKeys } from '../../../../helper';
 import NoContentFound from '../../../common/NoContentFound';
 import { AWAITING_APPROVAL_ID, EMPTY_DATA, PENDING_FOR_APPROVAL_ID, REJECTEDID, TOOLING } from '../../../../config/constants';
 import { SHEETMETAL, RUBBER, FORGING, DIE_CASTING, PLASTIC, CORRUGATEDBOX, Ferrous_Casting, MACHINING, WIREFORMING, getTechnology, ELECTRICAL_STAMPING, INSULATION } from '../../../../config/masterData'
@@ -251,7 +251,7 @@ function ViewRM(props) {
 
               <th>{`RM Code`}</th>
               <th>{`RM Rate`}</th>
-              <th>{`Scrap Rate`}</th>
+              <th>{showRMScrapKeys(viewCostingData && Number(viewCostingData[props.index]?.technologyId))?.name}</th>
               {isScrapRecoveryApplied && <th>{`Scrap Recovery (%)`}</th>}
               <th>{`Gross Weight (Kg)`}</th>
               <th>{`Finish Weight (Kg)`}</th>

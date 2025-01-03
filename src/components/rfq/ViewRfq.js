@@ -98,6 +98,7 @@ function RfqListing(props) {
     const agGridRef = useRef(null);
     const [viewRMCompare, setViewRMCompare] = useState(false)
     const [viewBOPCompare, setViewBOPCompare] = useState(false)
+    
     const [partType, setPartType] = useState('')
     const [approveDrawer, setApproveDrawer] = useState(false)
     const [quotationId, setQuotationId] = useState('')
@@ -119,7 +120,7 @@ function RfqListing(props) {
         isDateChanged: false,
         costingTypeId: ZBCTypeId
     })
-    const userMasterLevelAPI = useSelector((state) => state.auth.userMasterLevelAPI)
+    const userMasterLevelAPI = useSelector((state) => state?.auth?.userMasterLevelAPI)
     const isAssemblyTechnology = rowData && rowData?.length > 0 ? rowData[0]?.TechnologyId === ASSEMBLY : false
     let arr = []
     const { technologyLabel, vendorLabel } = useLabels();
@@ -129,17 +130,21 @@ function RfqListing(props) {
         getDataList()
     }, [])
     useEffect(() => {
-        if (partType === 'Raw Material' || partType === 'Bought Out Part') {
-
-            dispatch(getUsersMasterLevelAPI(loggedInUserId(), partType === 'Raw Material' ? RM_MASTER_ID : BOP_MASTER_ID, (res) => {
-
-
-                setTimeout(() => {
-                    commonFunction(partType, rowData[0]?.PlantId)
-                }, 100);
-            }))
+        if (compareButtonPressed && (partType === 'Raw Material' || partType === 'Bought Out Part')) {
+            const masterId = partType === 'Raw Material' ? RM_MASTER_ID : BOP_MASTER_ID;
+            
+            // Wait for userMasterLevelAPI to be available
+            if (!userMasterLevelAPI) {
+                dispatch(getUsersMasterLevelAPI(loggedInUserId(), masterId, (res) => {
+                    if (res) {
+                        commonFunction(partType, rowData[0]?.PlantId);
+                    }
+                }));
+            } else {
+                commonFunction(partType, rowData[0]?.PlantId);
+            }
         }
-    }, [partType])
+    }, [compareButtonPressed, partType, userMasterLevelAPI]) // Add dependencies
     useEffect(() => {
         if (rowData[0]?.QuotationId) {
             dispatch(setQuotationIdForRFQ(rowData[0]?.QuotationId))
@@ -233,6 +238,16 @@ function RfqListing(props) {
         setDisableApproveRejectButton(isApproval.length > 0)
 
     }, [viewCostingData, selectedCostingList, selectedRows, viewBOPDetails, viewRmDetails, partType])
+
+    useEffect(() => {
+        if (compareButtonPressed && (partType === 'Raw Material' || partType === 'Bought Out Part')) {
+            dispatch(getUsersMasterLevelAPI(loggedInUserId(), partType === 'Raw Material' ? RM_MASTER_ID : BOP_MASTER_ID, (res) => {
+                setTimeout(() => {
+                    commonFunction(partType, rowData[0]?.PlantId)
+                }, 100);
+            }))
+        }
+    }, [compareButtonPressed]) // Only depend on compareButtonPressed
 
     /**
     * @method hideForm
@@ -418,17 +433,37 @@ function RfqListing(props) {
     }
 
     const commonFunction = (type, plantId = EMPTY_GUID) => {
-
-        const { costingTypeId } = state
+        const { costingTypeId } = state;
+        
         if (type === 'Raw Material' || type === 'Bought Out Part') {
-
-            let levelDetailsTemp = userTechnologyDetailByMasterId(costingTypeId, type === 'Raw Material' ? RM_MASTER_ID : BOP_MASTER_ID, userMasterLevelAPI);
-            setState(prevState => ({ ...prevState, levelDetails: levelDetailsTemp }));
-
-            let obj = {
+            const masterId = type === 'Raw Material' ? RM_MASTER_ID : BOP_MASTER_ID;
+            
+            // Add check for userMasterLevelAPI
+            if (!userMasterLevelAPI) {
+                console.error('userMasterLevelAPI is not available');
+                return;
+            }
+    
+            const levelDetailsTemp = userTechnologyDetailByMasterId(
+                costingTypeId, 
+                masterId,
+                userMasterLevelAPI
+            );
+    
+            if (!levelDetailsTemp) {
+                console.error('Could not get level details');
+                return;
+            }
+    
+            setState(prevState => ({ 
+                ...prevState, 
+                levelDetails: levelDetailsTemp 
+            }));
+    
+            const obj = {
                 DepartmentId: userDetails().DepartmentId,
                 UserId: loggedInUserId(),
-                TechnologyId: type === 'Raw Material' ? RM_MASTER_ID : BOP_MASTER_ID,
+                TechnologyId: masterId,
                 Mode: 'master',
                 approvalTypeId: costingTypeIdToApprovalTypeIdFunction(costingTypeId),
                 plantId: plantId

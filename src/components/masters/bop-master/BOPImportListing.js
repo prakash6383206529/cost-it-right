@@ -41,6 +41,7 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
 const BOPImportListing = (props) => {
   const { t } = useTranslation("common")
+  const isRfq = props?.quotationId !== null && props?.quotationId !== '' && props?.quotationId !== undefined;
 
   const [state, setState] = useState({
     isOpen: false,
@@ -111,8 +112,8 @@ const BOPImportListing = (props) => {
     tempList: [],
     render: false,
     disableEdit: true,
-    compareDrawer : false,
-    rowDataForCompare : [],
+    compareDrawer: false,
+    rowDataForCompare: [],
   });
   const dispatch = useDispatch();
   const permissions = useContext(ApplyPermission);
@@ -126,7 +127,6 @@ const BOPImportListing = (props) => {
   const { selectedRowForPagination, tokenForSimulation } = useSelector(
     (state) => state.simulation
   );
-  const isRfq = props?.quotationId !== null && props?.quotationId !== '' && props?.quotationId !== undefined
 
   useEffect(() => {
     if (bopImportList?.length > 0) {
@@ -508,6 +508,12 @@ const BOPImportListing = (props) => {
     );
     setState((prevState) => ({ ...prevState, showPopup: false }));
   };
+  const closeCompareDrawer = (event, type) => {
+    setState((prevState) => ({ ...prevState, compareDrawer: false }));
+    if (type !== 'cancel') {
+      resetState()
+    }
+  }
   const onPopupConfirm = () => {
     confirmDelete(state.deletedId);
   };
@@ -533,6 +539,10 @@ const BOPImportListing = (props) => {
       analyticsDrawer: true,
     }));
   };
+  const handleCompareDrawer = (data) => {
+
+    setState((prevState) => ({ ...prevState, compareDrawer: true, rowDataForCompare: [data] }))
+  }
   /**
    * @method buttonFormatter
    * @description Renders buttons
@@ -561,6 +571,13 @@ const BOPImportListing = (props) => {
       if (permissions?.Delete && !rowData.IsBOPAssociated) {
         isDeleteButton = true
       }
+    }
+    if (isRfq && isMasterSummaryDrawer) {
+      return (
+        <button className="Balance mb-0 button-stick" type="button" onClick={() => handleCompareDrawer(rowData)}>
+
+        </button>
+      );
     }
     return (
       <>
@@ -600,16 +617,7 @@ const BOPImportListing = (props) => {
       </>
     );
   };
-  const handleCompareDrawer = (data) => {
-
-    setState((prevState) => ({ ...prevState, compareDrawer: true, rowDataForCompare: [data] }))
-  }
-  const closeCompareDrawer = (event, type) => {
-    setState((prevState) => ({ ...prevState, compareDrawer: false }));
-    if (type !== 'cancel') {
-      resetState()
-    }
-  }
+ 
   /**
    * @method commonCostFormatter
    * @description Renders buttons

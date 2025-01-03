@@ -239,7 +239,7 @@ const BOPCompareTable = (props) => {
     
         // Handle different cases
         if (isSameCurrency) {
-            const keys = ["NetLandedCost", "BasicRatePerUOM", "OtherNetCost"];
+            const keys = ["NetLandedCost", "BasicRate", "OtherNetCost"];
             Object.keys(minObject).forEach(key => minObject[key] = "");
 
             // Find minimum values for each key
@@ -256,8 +256,8 @@ const BOPCompareTable = (props) => {
             Object.keys(minObject).forEach(key => minObject[key] = "");
             
             // Find minimum values for conversion keys but don't show in UI
-            const conversionKeys = ["NetLandedCostConversion", "BasicRatePerUOMConversion", "OtherNetCostConversion"];
-            
+            const conversionKeys = ["NetLandedCostConversion", "BasicRateConversion", "OtherNetCostConversion"];
+           
             conversionKeys.forEach(key => {
                 minObject[key] = Math.min(...finalArrayList
                     .map(item => isNumber(item[key]) ? checkForNull(item[key]) : Infinity));
@@ -333,7 +333,8 @@ const BOPCompareTable = (props) => {
         <div>
             {showCheckbox && !props?.compare && < WarningMessage dClass={"float-right justify-content-end"} message={'Click the checkbox to approve, reject, or return the quotation'} />}
 
-            <Table headerData={mainHeadingData} sectionData={sectionData}showConvertedCurrency={showConvertedCurrency}
+            <Table headerData={mainHeadingData}sectionData={sectionData} uniqueShouldCostingId={props?.uniqueShouldCostingId}
+                showConvertedCurrency={showConvertedCurrency}
                 onConvertedCurrencyChange={handleConvertedCurrencyChange}
                 showConvertedCurrencyCheckbox={showConvertedCurrencyCheckbox}
                 onViewOtherCost={onViewOtherCost}>

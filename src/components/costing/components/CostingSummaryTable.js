@@ -14,7 +14,7 @@ import ViewPackagingAndFreight from './Drawers/ViewPackagingAndFreight'
 import ViewToolCost from './Drawers/viewToolCost'
 import SendForApproval from './approval/SendForApproval'
 import Toaster from '../../common/Toaster'
-import { checkForDecimalAndNull, checkForNull, checkPermission, formViewData, getTechnologyPermission, loggedInUserId, userDetails, allEqual, getConfigurationKey, getCurrencySymbol, highlightCostingSummaryValue, checkVendorPlantConfigurable, userTechnologyLevelDetails, showSaLineNumber, showBopLabel, checkTechnologyIdAndRfq } from '../../../helper'
+import { checkForDecimalAndNull, checkForNull, checkPermission, formViewData, getTechnologyPermission, loggedInUserId, userDetails, allEqual, getConfigurationKey, getCurrencySymbol, highlightCostingSummaryValue, checkVendorPlantConfigurable, userTechnologyLevelDetails, showSaLineNumber, showBopLabel, checkTechnologyIdAndRfq, showRMScrapKeys } from '../../../helper'
 import Attachament from './Drawers/Attachament'
 import { BOPDOMESTIC, BOPIMPORT, COSTING, DRAFT, FILE_URL, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, VARIANCE, VBC, ZBC, VIEW_COSTING_DATA, VIEW_COSTING_DATA_LOGISTICS, NCC, EMPTY_GUID, ZBCTypeId, VBCTypeId, NCCTypeId, CBCTypeId, VIEW_COSTING_DATA_TEMPLATE, PFS2TypeId, REJECTED, SWAP_POSITIVE_NEGATIVE, WACTypeId, UNDER_REVISION, showDynamicKeys, } from '../../../config/constants'
 import { useHistory } from "react-router-dom";
@@ -345,10 +345,13 @@ const CostingSummaryTable = (props) => {
   useEffect(() => {
     let currency = viewCostingData?.length > 0 ? _.map(viewCostingData, 'CostingCurrency') : []
     currency?.pop()
-    if (currency?.every(element => element === getConfigurationKey().BaseCurrency)) {
+    if (props?.isRfqCosting && currency?.every(element => element === getConfigurationKey().BaseCurrency)) {
       setShowConvertedCurrencyCheckbox(false)
     } else {
       setShowConvertedCurrencyCheckbox(true)
+      if (props.isRfqCosting) {
+        setShowConvertedCurrency(true)
+      }
     }
 
     viewCostingData && viewCostingData.map((item) => {
@@ -2117,10 +2120,12 @@ const CostingSummaryTable = (props) => {
                       Show Converted Currency
                       <input
                         type="checkbox"
+                        checked={showConvertedCurrency}
                       />
                       <span
                         className=" before-box"
                         onChange={checkboxHandler}
+                        checked={showConvertedCurrency}
                       />
                     </label>
                   </span>}
@@ -2584,7 +2589,7 @@ const CostingSummaryTable = (props) => {
                                   <td>
                                     <span className="d-block small-grey-text">RM-Grade</span>
                                     <span className={highlighter("rmRate")}>RM Rate</span>
-                                    <span className={highlighter("scrapRate")}>Scrap Rate</span>
+                                    <span className={highlighter("scrapRate")}>{showRMScrapKeys(viewCostingData && Number(viewCostingData[0]?.technologyId))?.name}</span>
                                     {isScrapRecoveryPercentageApplied && <span className={highlighter("", "scrap-recovery")}>Scrap Recovery %</span>}
                                     <span className={highlighter("", "rm-reducer")}>Gross Weight</span>
                                     <span className={highlighter("", "finish-reducer")}>Finish Weight</span>

@@ -630,14 +630,13 @@ data.RawMaterialBestCostRequest = {
                         };
                         
                             break;
-
                         case 2: // Bought Out Part
                         tempData = { ...viewBOPDetails[viewBOPDetails?.length - 1] }
                             data.BoughtOutPartBestCostRequest = {
                                 "QuotationPartId": selectedRows[0]?.QuotationPartId ?? 0,
-                                "NetBoughtOutPartCost": tempData?.NetLandedCost ?? 0,
-                                "OtherCost": tempData?.OtherNetCost ?? 0,
-                                "BasicRate": tempData?.BasicRate ?? 0,
+                                "NetBoughtOutPartCost": tempData?.NetLandedCostConversion ?? 0,
+                                "OtherCost": tempData?.OtherNetCostConversion ?? 0,
+                                "BasicRate": tempData?.BasicRateConversion ?? 0,
                             };
                             break;
 
@@ -675,7 +674,10 @@ data.RawMaterialBestCostRequest = {
                 // obj.IsFinalApprovalProcess = false
                 // obj.IsRFQCostingSendForApproval = props.isRFQ ? true : false
                 const approvalObjects = Array.isArray(approvalDetails) ? approvalDetails : [approvalDetails];
+                console.log(levelDetails);
                 const processedApprovalObjects = approvalObjects.map(item => ({
+                    
+                    
                     ApprovalProcessSummaryId: item?.ApprovalProcessSummaryId !== null ? item?.ApprovalProcessSummaryId : 0,
                     ApprovalProcessId: item?.ApprovalProcessId !== null ? item?.ApprovalProcessId : 0,
                     ApprovalToken: item?.Token !== null ? item?.Token : 0,
@@ -702,6 +704,7 @@ data.RawMaterialBestCostRequest = {
                 }));
                 setIsLoader(true);
                 const processApproval = (objects) => {
+console.log(objects);
 
                     return new Promise((resolve, reject) => {
                         dispatch(approvalOrRejectRequestByMasterApprove(objects, res => {
