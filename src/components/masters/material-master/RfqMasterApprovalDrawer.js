@@ -7,12 +7,11 @@ import RMCompareTable from '../../rfq/compareTable/RMCompareTable';
 import BOPCompareTable from '../../rfq/compareTable/BOPCompareTable';
 import { rfqGetBestCostingDetails } from '../../rfq/actions/rfq';
 import { useDispatch, useSelector } from 'react-redux';
-import { calculateBestCost } from '../../../helper';
+import { calculateBestCost, formViewData } from '../../../helper';
 import _ from 'lodash';
 
 
 const RfqMasterApprovalDrawer = (props) => {
-  
   const dispatch = useDispatch();
   const [isLoader, setIsLoader] = useState(false);
   const [uniqueShouldCostingId,setUniqueShouldCostingId  ] = useState([])
@@ -21,15 +20,28 @@ const RfqMasterApprovalDrawer = (props) => {
     mode: 'onChange',
     reValidateMode: 'onChange',
   });
+  const { selectedRows } = props
+  
+  const { viewRmDetails, viewBopDetails } = useSelector(state => state.material)
+  
+
+  useEffect(() => {
+    let tempObj = []
+    let temp = []
+    dispatch(rfqGetBestCostingDetails(selectedRows[0]?.BestCostAndShouldCostMasterDetails?.BestCostId, (res) => {
+      
+      tempObj = formViewData(res?.data?.Data, '', true)
+      tempObj[0].bestCost = true
+      temp.push(tempObj[0])
 
   const { selectedRows } = props
 
-useEffect(() => {
-  dispatch(rfqGetBestCostingDetails(selectedRows[0]?.BestCostAndShouldCostMasterDetails?.BestCostId, (res) => {
-    let temp = []
-    const uniqueShouldCostingIdArr = props?.uniqueShouldCostingId || [];
-    const idArr = props?.selectedRows.map(item => item.RawMaterialId);
-    const combinedArr = Array.from(new Set([...uniqueShouldCostingIdArr, ...idArr]));
+// useEffect(() => {
+//   dispatch(rfqGetBestCostingDetails(selectedRows[0]?.BestCostAndShouldCostMasterDetails?.BestCostId, (res) => {
+//     let temp = []
+//     const uniqueShouldCostingIdArr = props?.uniqueShouldCostingId || [];
+//     const idArr = props?.selectedRows.map(item => item.RawMaterialId);
+//     const combinedArr = Array.from(new Set([...uniqueShouldCostingIdArr, ...idArr]));
 
     // Call API based on part type
     // if (props.type === 'Raw Material') {
