@@ -93,7 +93,7 @@ const SendForApproval = (props) => {
   const [noApprovalExistMessage, setNoApprovalExistMessage] = useState('')
   const [isShowDivision, setIsShowDivision] = useState(false)
   const [divisionList, setDivisionList] = useState([])
-  const [division, setDivision] = useState('')
+  const [division, setDivision] = useState(null)
   const [checkMultiDept, setCheckMultiDept] = useState(false)
 
   const apicall = (technologyId, depart, ApprovalTypeId, isdisable, levelsList, divisionId = '') => {
@@ -211,6 +211,7 @@ const SendForApproval = (props) => {
         } else {
           userTechnology(viewApprovalData[0]?.costingTypeId, res?.data?.Data)
         }
+
         setApprovalType(viewApprovalData[0]?.costingTypeId)
       }
 
@@ -386,6 +387,7 @@ const SendForApproval = (props) => {
   const callCheckFinalUserApi = (newValue, approvaltypeTest = approvalType) => {
     const tempDropdownList = []
     const fetchApprovalData = (divisionId) => {
+      setDivision(divisionId)
       let requestApprovalObject = {
         LoggedInUserId: userData.LoggedInUserId,
         DepartmentId: newValue,
@@ -430,7 +432,7 @@ const SendForApproval = (props) => {
         "PartId": viewApprovalData[0]?.partId
       }
       fetchDivisionId(requestObject, dispatch).then((divisionId) => {
-
+        setDivision(divisionId)
         let obj = {
           DepartmentId: newValue,
           UserId: loggedInUserId(),
@@ -440,7 +442,6 @@ const SendForApproval = (props) => {
           plantId: (IsApprovalLevelFilterByPlant && viewApprovalData[0]?.destinationPlantId) ? viewApprovalData[0]?.destinationPlantId : null,
           divisionId: divisionId
         }
-
 
         dispatch(checkFinalUser(obj, (res) => {
           const data = res?.data?.Data
@@ -477,7 +478,6 @@ const SendForApproval = (props) => {
 
         }))
       }).catch((error) => {
-        console.log(error, "error")
       })
     }
 
@@ -513,17 +513,17 @@ const SendForApproval = (props) => {
     if (newValue && newValue !== '') {
       if (getConfigurationKey().IsDivisionAllowedForDepartment) {
         setDivisionList([])
-        setDivision('')
+        // setDivision('')
         setValue('Division', '')
         setValue('approver', '')
         setApprover('')
         setApprovalDropDown([])
         setShowValidation(false)
         let departmentIds = [newValue.value]
-        fetchDivisionList(departmentIds)
+        // fetchDivisionList(departmentIds)
       } else {
         setDivisionList([])
-        setDivision('')
+        // setDivision('')
         callCheckFinalUserApi(newValue?.value, approvalType)
       }
       setValue('approver', '')
@@ -537,10 +537,10 @@ const SendForApproval = (props) => {
   }
   const handleDivisionChange = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      setDivision(newValue)
+      // setDivision(newValue)
       callCheckFinalUserApi(selectedDepartment?.value, approvalType)
     } else {
-      setDivision('')
+      // setDivision('')
     }
   }
   /**
@@ -691,8 +691,6 @@ const SendForApproval = (props) => {
       let temp = []
 
       viewApprovalData.map((data) => {
-
-
         let tempObj = {}
         tempObj.ApprovalProcessSummaryId = data.ApprovalProcessSummaryId
         tempObj.ApprovalToken = data.ApprovalToken
@@ -732,14 +730,10 @@ const SendForApproval = (props) => {
         tempObj.BudgetedPriceVariance = data.BudgetedPriceVariance
         tempObj.IsRFQCostingSendForApproval = props?.isRfq ? true : false
         tempObj.ApprovalTypeId = approvalType
-        tempObj.DivisionId = division?.value ?? null
+        tempObj.DivisionId = division ?? null
         temp.push(tempObj)
         return null
       })
-
-
-
-      // action
 
       dispatch(approvalRequestByApprove(temp, res => {
 
@@ -863,11 +857,8 @@ const SendForApproval = (props) => {
       obj.MaterialGroup = SAPData.MaterialGroup?.label
       obj.DecimalOption = SAPData.DecimalOption?.value
       obj.ApprovalTypeId = approvalType
-      obj.InfoCategeory = data?.infoCategeory?.value ?? ''
-      obj.ValuationType = data?.evaluationType?.label ?? ''
       obj.PlannedDelTime = data?.leadTime
-      obj.DivisionId = division?.value ?? null
-
+      obj.DivisionId = division ?? null
 
       // debounce_fun()
       // 

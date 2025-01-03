@@ -92,9 +92,8 @@ const ImpactedDataList = () => {
     const viewDetails = (rowData) => {
         setDrawerRowData(rowData?.ImpactedMasters)
         setTimeout(() => {
-
             setIsOpen(true)
-        }, 400);
+        }, 200);
     }
 
     const buttonRenderer = (props) => {
@@ -185,23 +184,23 @@ const ImpactedDataList = () => {
                                                 headerName="Part Name"
                                             />
                                             <AgGridColumn
+                                                field="TokenNumber"
+                                                headerName="Token Number"
+                                            />
+                                            <AgGridColumn
                                                 field="Vendor"
-                                                headerName="Vendor"
+                                                headerName="Vendor (Code)"
                                                 cellRenderer="renderVendor"
                                             />
                                             <AgGridColumn
                                                 field="Plant"
-                                                headerName="Plant"
+                                                headerName="Plant (Code)"
                                                 cellRenderer="renderPlant"
                                             />
                                             <AgGridColumn
                                                 field="Customer"
-                                                headerName="Customer"
+                                                headerName="Customer (Code)"
                                                 cellRenderer="renderCustomer"
-                                            />
-                                            <AgGridColumn
-                                                field="TokenNumber"
-                                                headerName="Token Number"
                                             />
                                             <AgGridColumn
                                                 field="CostingSimulationStatus"
@@ -209,13 +208,7 @@ const ImpactedDataList = () => {
                                                 cellClass="text-center"
                                                 cellRenderer='statusFormatter'
                                             />
-                                            <AgGridColumn
-                                                field="ImpactedMasters"
-                                                headerName="Impacted Masters"
-                                                cellRenderer="impactedMastersRenderer"
-                                                width={400}
-                                            />
-                                            <AgGridColumn width={160} field="ImpactedMasters" cellClass="ag-grid-action-container" pinned="right" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'buttonRenderer'}></AgGridColumn>
+                                            <AgGridColumn width={160} field="CostingSimulationStatus" cellClass="ag-grid-action-container" pinned="right" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'buttonRenderer'}></AgGridColumn>
                                         </AgGridReact>
                                     </div>
                                 </div>
@@ -224,7 +217,7 @@ const ImpactedDataList = () => {
                     </div>
                 )}
             </div>
-            {isOpen && <ViewImpactedDataDrawer anchor="right" isOpen={isOpen} setIsOpen={setIsOpen} gridProps={gridProps} onFilterTextBoxChanged={onFilterTextBoxChanged} rowData={drawerRowData} />}
+            {isOpen && <ViewImpactedDataDrawer anchor="right" isOpen={isOpen} setIsOpen={setIsOpen} gridProps={gridProps} onFilterTextBoxChanged={onFilterTextBoxChanged} />}
         </Container>
     )
 }
