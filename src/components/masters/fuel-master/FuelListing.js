@@ -146,7 +146,8 @@ const FuelListing = (props) => {
   };
 
   const closeBulkUploadDrawer = () => {
-    setState((prevState) => ({ ...prevState, isBulkUpload: false }), () => { getDataList(0, 0); });
+    setState((prevState) => ({ ...prevState, isBulkUpload: false, isLoader: true }));
+    getDataList(0, 0);
   };
 
 
