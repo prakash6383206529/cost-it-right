@@ -1523,8 +1523,8 @@ function SimulationApprovalSummary(props) {
                                                                     &&
                                                                     < AgGridColumn width={140} field="DraftPOPrice" headerName="Draft Net Cost" ></AgGridColumn>
                                                                 }
-                                                                {isMasterAssociatedWithCosting && < AgGridColumn width={140} field="ImpactPerQuarter" headerName="Impact/Quarter (w.r.t. Existing)" cellRenderer='impactPerQuarterFormatter'></AgGridColumn>}
-                                                                {isMasterAssociatedWithCosting && <AgGridColumn width={140} field="BudgetedPriceImpactPerQuarter" headerName='Impact/Quarter (w.r.t. Budgeted Price)' cellRenderer='impactPerQuarterFormatter'></AgGridColumn>}
+                                                                {isMasterAssociatedWithCosting && < AgGridColumn width={160} field="ImpactPerQuarter" headerName="Impact/Quarter (w.r.t. Existing)" cellRenderer='impactPerQuarterFormatter'></AgGridColumn>}
+                                                                {isMasterAssociatedWithCosting && <AgGridColumn width={180} field="BudgetedPriceImpactPerQuarter" headerName='Impact/Quarter (w.r.t. Budgeted Price)' cellRenderer='impactPerQuarterFormatter'></AgGridColumn>}
 
                                                                 {isMasterAssociatedWithCosting && <AgGridColumn width={140} field="SimulationCostingId" pinned="right" cellRenderer='buttonFormatter' floatingFilter={false} cellClass="ag-grid-action-container" headerName="Actions" type="rightAligned"></AgGridColumn>}
                                                                 {/* <AgGridColumn field="Status" headerName='Status' cellRenderer='statusFormatter'></AgGridColumn>

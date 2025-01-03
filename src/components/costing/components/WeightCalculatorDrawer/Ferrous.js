@@ -297,7 +297,7 @@ function Ferrous(props) {
                 calculateNetRmRate();
                 calculateNetScrapRate();
             }
-
+            calculatetotalCostInputWeight();
             calculateRemainingCalculation();
         }, 300);
     };
@@ -903,6 +903,7 @@ function Ferrous(props) {
 
         // Recalculate percentages and update form values
         let totalPercentage = 0;
+        const inputWeight = getValues('inputWeight')
         updatedMaterials.forEach((item, idx) => {
             const currentPercentage = parseFloat(getValues(`rmGridFields.${idx}.Percentage`) || 0);
             totalPercentage += currentPercentage;
@@ -927,10 +928,7 @@ function Ferrous(props) {
         // Enable/disable fields based on total percentage
         setFieldsEnabled(totalPercentage === 100 && updatedMaterials.length > 0);
 
-        // Recalculate other values
-        calculateNetRmRate();
-        calculateNetScrapRate();
-        calculateRemainingCalculation();
+        setValue("inputWeight", updatedMaterials.length === 0 ? 0 : inputWeight)
 
         // Update unselected raw materials
         const deletedItem = tableRawMaterials[index];
@@ -949,6 +947,11 @@ function Ferrous(props) {
             setValue(`rmGridFields.${i}.Percentage`, getValues(`rmGridFields.${i + 1}.Percentage`));
         }
         setValue(`rmGridFields.${updatedMaterials.length}.Percentage`, '');
+        // Recalculate other values
+        calculateNetRmRate();
+        calculateNetScrapRate();
+        calculateRemainingCalculation();
+        calculatetotalCostInputWeight();
     };
 
     const resetBinderMaterials = () => {
@@ -1278,7 +1281,7 @@ function Ferrous(props) {
                                     mandatory={true}
                                     isMulti={true}
                                     errors={errorsTableForm.RawMaterialBinders}
-                                    disabled={!fieldsEnabled}
+                                    disabled={!fieldsEnabled || props.CostingViewMode}
                                     // disabled={!fieldsEnabled || props?.CostingViewMode ? props?.CostingViewMode : state.tableData.length !== 0 ? true : false}
                                     handleChange={(selected, action) => rawMaterialBinderHandler(selected, 'binders')}
                                     value={getValuesTableForm('RawMaterialBinders')} // Add this line
