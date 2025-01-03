@@ -345,7 +345,7 @@ const CostingSummaryTable = (props) => {
   useEffect(() => {
     let currency = viewCostingData?.length > 0 ? _.map(viewCostingData, 'CostingCurrency') : []
     currency?.pop()
-    if (currency?.every(element => element === getConfigurationKey().BaseCurrency)) {
+    if (props?.isRfqCosting && currency?.every(element => element === getConfigurationKey().BaseCurrency)) {
       setShowConvertedCurrencyCheckbox(false)
     } else {
       setShowConvertedCurrencyCheckbox(true)
