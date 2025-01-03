@@ -290,7 +290,6 @@ const BOPMaster = () => {
                       />
                     </TabPane>
                   )}
-
                   {Number(state.activeTab) === 3 && (
                     <TabPane tabId="3">
                       <SOBListing

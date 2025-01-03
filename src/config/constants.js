@@ -19,6 +19,7 @@ export const config = () => {
 
 
 const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
+// const BASE_URL = `http://10.10.1.100:10152/api/v1`;
 export const FILE_URL = `${process.env.REACT_APP_FILE_URL}`;
 
 /** Export API */
@@ -450,6 +451,8 @@ export const API = {
   getFreightModeSelectList: `${BASE_URL}/configuration/select-list-get-freight-modes`,
   getFreigtFullTruckCapacitySelectList: `${BASE_URL}/configuration/select-list-get-full-truck-capacity`,
   getFreigtRateCriteriaSelectList: `${BASE_URL}/configuration/select-list-get-full-truck-ratecriteria`,
+  getTruckDimensionsSelectList: `${BASE_URL}/masters-freight/get-truck-dimensions-select-list`,
+  saveTruckDimensions: `${BASE_URL}/masters-freight/save-truck-dimensions`,
 
   //API's for Additional freight master
   createAdditionalFreightAPI: `${BASE_URL}/masters-additional-freight/create`,
@@ -635,6 +638,10 @@ export const API = {
   getRawMaterialCalculationForMachining: `${BASE_URL}/costing/get-raw-material-machining-calculation-details`,
   getSimulationRmMachiningCalculation: `${BASE_URL}/simulation/get-simulation-raw-material-machining-calculation-details`,
   getSimulationCorrugatedAndMonoCartonCalculation: `${BASE_URL}/simulation/get-simulation-raw-material-corrugated-and-mono-carton-box-calculation-details`,
+  getPackagingCalculation: `${BASE_URL}/costing/get-costing-packaging-calculation-details`,
+  savePackagingCalculation: `${BASE_URL}/costing/save-costing-packaging-calculation-details`,
+  getVolumePerDayForPackagingCalculator: `${BASE_URL}/costing/get-volume-per-day-for-packaging-calculator`,
+  getSimulationPackagingCalculation: `${BASE_URL}/simulation/get-simulation-costing-packaging-calculation-details`,
 
   //Insulation calculator
   saveRawMaterialCalculationForInsulation: `${BASE_URL}/costing/save-raw-material-insulation-calculation-details`,
@@ -772,6 +779,7 @@ export const API = {
   deleteDivisionAPI: `${BASE_URL}/user-department/delete-division`,
   getDivisionListAPI: `${BASE_URL}/user-department/select-list-get-divisions`,
   getAllDivisionListAssociatedWithDepartment: `${BASE_URL}/user-department/get-all-division-list-associated-with-departments`,
+  checkDivisionByPlantAndGetDivisionIdByPart: `${BASE_URL}/user-department/check-and-get-division-applied-on-plant-and-part`,
 
   //LEVEL'S API
   assignUserLevelAPI: `${BASE_URL}/user-level/assign-user-level-for-costing`,
@@ -1079,6 +1087,8 @@ export const API = {
   getAllSimulationBoughtOutPart: `${BASE_URL}/simulation/get-all-simulation-bought-out-part`,
   getSapPushDetailsHeader: `${BASE_URL}/ExternalIntegration/get-sap-push-details-header`,
   sapPushBulkUpload: `${BASE_URL}/ExternalIntegration/bulk-upload-for-sap-push-details`,
+  getSimulationCostingStatus: `${BASE_URL}/app-simulation-approval-system/get-simulation-costing-status`,
+  getImpactedDataList: `${BASE_URL}/app-simulation-approval-system/get-simulation-costing-status-details`,
 
 
   // ASSEMBLY TECHNOLOGY
@@ -1632,6 +1642,7 @@ export const GET_FREIGHT_FAILURE = 'GET_FREIGHT_FAILURE'
 export const GET_FREIGHT_MODE_SELECTLIST = 'GET_FREIGHT_MODE_SELECTLIST'
 export const GET_FREIGHT_FULL_TRUCK_CAPACITY_SELECTLIST = 'GET_FREIGHT_FULL_TRUCK_CAPACITY_SELECTLIST'
 export const GET_FREIGHT_RATE_CRITERIA_SELECTLIST = 'GET_FREIGHT_RATE_CRITERIA_SELECTLIST'
+export const GET_TRUCK_DIMENSIONS_SELECTLIST = 'GET_TRUCK_DIMENSIONS_SELECTLIST'
 
 //ADDITIONAL FREIGHT MASTER
 export const GET_ALL_ADDITIONAL_FREIGHT_SUCCESS = 'GET_ALL_ADDITIONAL_FREIGHT_SUCCESS'
@@ -2029,7 +2040,9 @@ export const SET_EXCHANGE_RATE_LIST_BEFORE_DRAFT = 'SET_EXCHANGE_RATE_LIST_BEFOR
 export const SET_SELECTED_CUSTOMER_SIMULATION = 'SET_SELECTED_CUSTOMER_SIMULATION'
 export const GET_SELECTLIST_COSTING_HEADS = 'GET_SELECTLIST_COSTING_HEADS'
 export const SET_EFFECTIVE_DATE = 'SET_EFFECTIVE_DATE';
-
+export const GET_SIMULATION_COSTING_STATUS = 'GET_SIMULATION_COSTING_STATUS'
+export const SET_IS_PENDING_SIMULATION_FROM_OTHER_DIV = 'SET_IS_PENDING_SIMULATION_FROM_OTHER_DIV'
+export const GET_IMPACTED_DATA_LIST = 'GET_IMPACTED_DATA_LIST'
 
 // ASSEMBLY TECHNOLOGY
 export const SET_SELECTED_VENDOR_SIMULATION = 'SET_SELECTED_VENDOR_SIMULATION'
@@ -2361,6 +2374,7 @@ export const SUPPLIER_MANAGEMENT = '/initiate-unblocking'
 export const lOGIN_AUDITS = '/login-audit'
 export const SUPPLIER_APPROVAL_SUMMARY = '/supplier-approval-summary'
 export const SAP_PUSH_DETAIL = '/sap-push-detail'//MINDA
+export const IMPACTED_DATA_LIST = '/impacted-data-list'
 
 
 export const EMPTY_GUID = "00000000-0000-0000-0000-000000000000"
@@ -3283,5 +3297,5 @@ export const RAWMATERIALCOST = 'Raw Material Other Cost'
 export const COSTINGCONDITIONCOST = 'Costing Condition Cost'
 
 //VERSION 
-export const VERSION = "V3.1.29";
+export const VERSION = "V3.1.31.1";
 

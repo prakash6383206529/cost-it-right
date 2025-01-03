@@ -27,6 +27,7 @@ import { fetchCostingHeadsAPI } from '../../../actions/Common';
 import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from './TourMessages';
 import { useTranslation } from 'react-i18next';
+import TooltipCustom from '../../common/Tooltip';
 
 function RunSimulationDrawer(props) {
     const { objs, masterId, date, simulationTechnologyId } = props
@@ -534,6 +535,7 @@ function RunSimulationDrawer(props) {
             let resOfCostingHead = type === 'Additional Other Cost' ? otherCostApplicabilityListing : remainingApplicabilityListing
 
             resOfCostingHead && resOfCostingHead.map(item => {
+                if(item?.Text === "Crate/Trolley")return false
                 if (item.Value === '0' || item.Value === '8') return false;
                 if (Number(simulationTechnologyId) === ASSEMBLY_TECHNOLOGY_MASTER) {
                     if (!item.Text.includes('RM')) {
@@ -886,6 +888,11 @@ function RunSimulationDrawer(props) {
                                                                         onChange={() => handleAdditional('Packaging')}
                                                                     />
                                                                 </label>
+                                                                <TooltipCustom
+                                                                 id="packaging-calculation"
+                                                                 tooltipText={"By applying additional packaging, the already added packaging will be removed"}
+                                                                 customClass="mt-1"
+                                                                />  
                                                             </div>
                                                         )
                                                         }

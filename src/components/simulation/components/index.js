@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { connect } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
 import { TabContent, TabPane, Nav, NavItem, NavLink, } from 'reactstrap';
 import classnames from 'classnames';
 
@@ -12,6 +12,10 @@ import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from './TourMessages';
 import { useTranslation } from 'react-i18next';
 import { useCallback } from 'react';
+import ImpactedDataList from './SimulationPages/ImpactedDataList';
+import { getConfigurationKey, loggedInUserId } from '../../../helper';
+import { getSimulationCostingStatus } from '../actions/Simulation';
+import LoaderCustom from '../../common/LoaderCustom';
 export const simulationContext = React.createContext();
 
 
@@ -23,10 +27,13 @@ function SimulationTab(props) {
     const [showverifyPage, setShowverifyPage] = useState(false);
     const [costingDrawerPage, setDrawerCostingPage] = useState(false)
     const { t } = useTranslation("Simulation")
+    const [showImpactedList, setShowImpactedList] = useState(false)
 
     const [showCompressedColumns, setShowCompressedColumns] = useState(false)
     const [showTour, setShowTour] = useState(false)
     const [render, setRender] = useState(false)
+    const dispatch = useDispatch()
+    const [loader, setLoader] = useState(false)
     const { selectedMasterForSimulation, simulationApplicability, selectedTechnologyForSimulation, isMasterAssociatedWithCosting, selectedVendorForSimulation } = useSelector(state => state.simulation)
     /**
      * @method toggle
@@ -47,6 +54,20 @@ function SimulationTab(props) {
         }
     }, [])
 
+    useEffect(() => {
+        if (getConfigurationKey().IsDivisionAllowedForDepartment) {
+            setLoader(true)
+            let obj = {
+                LoggedInUserId: loggedInUserId(),
+                statusId: 1,
+            }
+            dispatch(getSimulationCostingStatus(obj, (res) => {
+                setShowImpactedList(res && res.data && res.data.Result ? true : false)
+                setLoader(false)
+
+            }))
+        }
+    }, [])
     /**
    * @method toggleExtraData
    * @description Used to handle extra data
@@ -79,7 +100,7 @@ function SimulationTab(props) {
     return (
         <>
             <div className="user-page container-fluid">
-                <div>
+                {loader ? <LoaderCustom customClass={'loader-center'} /> : <div>
                     <Nav tabs className="subtabs mt-0">
                         {(JSON.parse(localStorage.getItem('simulationAddPermission')))?.length !== 0 && <NavItem>
                             <NavLink
@@ -103,6 +124,17 @@ function SimulationTab(props) {
                                 Simulation History
                             </NavLink>
                         </NavItem>}
+                        {showImpactedList && <NavItem>
+                            <NavLink
+                                className={classnames({ active: activeTab === "3" })}
+                                onClick={() => {
+                                    toggle("3");
+                                    // history.push("/impacted-data-list");
+                                }}
+                            >
+                                Impacted Data
+                            </NavLink>
+                        </NavItem>}
                         {activeTab === "1" && <TourWrapper
                             buttonSpecificProp={{ id: "Simulation_Tour", onClick: toggleExtraData }}
                             stepsSpecificProp={{
@@ -118,10 +150,13 @@ function SimulationTab(props) {
                             {activeTab === "2" && <TabPane tabId="2">
                                 <SimulationApprovalListing activeTab={activeTab} />
                             </TabPane>}
+                            {activeTab === "3" && <TabPane tabId="3">
+                                <ImpactedDataList activeTab={activeTab} />
+                            </TabPane>}
                         </simulationContext.Provider>
 
                     </TabContent>
-                </div>
+                </div>}
             </div>
         </>
     );

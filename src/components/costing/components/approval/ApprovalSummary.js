@@ -29,6 +29,7 @@ import { MESSAGES } from '../../../../config/message'
 import CostingApproveReject from './CostingApproveReject'
 import { ErrorMessage } from '../../../simulation/SimulationUtils'
 import { useLabels } from '../../../../helper/core'
+import { fetchDivisionId } from '../../CostingUtil'
 export const QuotationIdFromSummary = React.createContext();
 
 function ApprovalSummary(props) {
@@ -226,7 +227,6 @@ function ApprovalSummary(props) {
           EffectiveDate: ApprovalDetails[0].EffectiveDate,
           VendorId: VendorId,
           QuotationId: QuotationId,
-          DivisionId: DivisionId
         })
         let requestArray = []
         let requestObject = {}
@@ -249,21 +249,31 @@ function ApprovalSummary(props) {
             if (res?.data?.Data?.IsUserInApprovalFlow && !res?.data?.Data?.IsFinalApprover) {
               setShowFinalLevelButton(res?.data?.Data?.IsFinalApprover)
             } else if (res?.data?.Data?.IsPFSOrBudgetingDetailsExist === false) {
-              let obj = {
-                DepartmentId: DepartmentId,
-                UserId: loggedInUserId(),
-                TechnologyId: technologyId,
-                Mode: 'costing',
-                // approvalTypeId: costingTypeIdToApprovalTypeIdFunction(CostingTypeId),
-                approvalTypeId: ApprovalTypeId,
-                plantId: Data.DestinationPlantId ?? EMPTY_GUID,
-                divisionId: DivisionId ?? null
+              let divisionReqData = {
+                "PlantId": Data?.DestinationPlantId,
+                "PartId": PartId
               }
-              dispatch(checkFinalUser(obj, res => {
-                if (res && res.data && res.data.Result) {
-                  setShowFinalLevelButton(res.data.Data.IsFinalApprover)
+              fetchDivisionId(divisionReqData, dispatch).then((divisionId) => {
+                setApprovalData(prevState => ({
+                  ...prevState,
+                  DivisionId: divisionId
+                }))
+                let obj = {
+                  DepartmentId: DepartmentId,
+                  UserId: loggedInUserId(),
+                  TechnologyId: technologyId,
+                  Mode: 'costing',
+                  // approvalTypeId: costingTypeIdToApprovalTypeIdFunction(CostingTypeId),
+                  approvalTypeId: ApprovalTypeId,
+                  plantId: Data.DestinationPlantId ?? EMPTY_GUID,
+                  divisionId: divisionId
                 }
-              }))
+                dispatch(checkFinalUser(obj, res => {
+                  if (res && res.data && res.data.Result) {
+                    setShowFinalLevelButton(res.data.Data.IsFinalApprover)
+                  }
+                }))
+              })
             } else if (res?.data?.Data?.IsFinalApprover) {
               setShowFinalLevelButton(res?.data?.Data?.IsFinalApprover)
               return false
@@ -272,22 +282,32 @@ function ApprovalSummary(props) {
             }
           }))
         } else {
-          let obj = {
-            DepartmentId: DepartmentId,
-            UserId: loggedInUserId(),
-            TechnologyId: technologyId,
-            Mode: 'costing',
-            // approvalTypeId: costingTypeIdToApprovalTypeIdFunction(CostingTypeId),
-            approvalTypeId: ApprovalTypeId,
-
-            plantId: Data.DestinationPlantId,
-            divisionId: DivisionId ?? null
+          let divisionReqData = {
+            "PlantId": Data?.DestinationPlantId,
+            "PartId": PartId
           }
-          dispatch(checkFinalUser(obj, res => {
-            if (res && res.data && res.data.Result) {
-              setShowFinalLevelButton(res.data.Data.IsFinalApprover)
+          fetchDivisionId(divisionReqData, dispatch).then((divisionId) => {
+            setApprovalData(prevState => ({
+              ...prevState,
+              DivisionId: divisionId
+            }))
+            let obj = {
+              DepartmentId: DepartmentId,
+              UserId: loggedInUserId(),
+              TechnologyId: technologyId,
+              Mode: 'costing',
+              // approvalTypeId: costingTypeIdToApprovalTypeIdFunction(CostingTypeId),
+              approvalTypeId: ApprovalTypeId,
+
+              plantId: Data.DestinationPlantId,
+              divisionId: divisionId ?? null
             }
-          }))
+            dispatch(checkFinalUser(obj, res => {
+              if (res && res.data && res.data.Result) {
+                setShowFinalLevelButton(res.data.Data.IsFinalApprover)
+              }
+            }))
+          })
         }
 
         dispatch(getSingleCostingDetails(CostingId, res => {

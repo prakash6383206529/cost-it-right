@@ -259,7 +259,7 @@ function Dashboard(props) {
                   </div>
                 </Row>
               }
-              <Row className="m-0 delegation" id={`${pageDropDownRef === 'delegation' ? 'refresh-to-top' : ''}`}>
+              {/* <Row className="m-0 delegation" id={`${pageDropDownRef === 'delegation' ? 'refresh-to-top' : ''}`}>
                 <div className="graph-box w-100">
                   <Row>
                     <Col md="8"><h3 className="mb-0">Delegation Status{acc4 && <TourWrapper
@@ -368,7 +368,7 @@ function Dashboard(props) {
                     </TabContent></Col>
                   </Row>}
                 </div>
-              </Row>
+              </Row> */}
             </form>
           </div >
           <Row className="m-0">

@@ -1,17 +1,16 @@
-import React, { Component } from "react";
-import { connect } from "react-redux";
-import { Field, reduxForm, formValueSelector, clearFields } from "redux-form";
+import React, { useEffect, useState } from "react";
+import {  useDispatch, useSelector } from "react-redux";
+import {  clearFields } from "redux-form";
 import { Row, Col, Table, Label } from "reactstrap";
-import { required, checkForNull, maxLength10, checkForDecimalAndNull, number, decimalNumberLimit6, checkWhiteSpaces } from "../../../helper/validation";
-import { renderTextInputField, searchableSelect, validateForm } from "../../layout/FormInputs";
-import { fetchSupplierCityDataAPI, getAllCity, getVendorNameByVendorSelectList, getPlantSelectListByType, getCityByCountryAction } from "../../../actions/Common";
+import {checkForNull, maxLength10, checkForDecimalAndNull, number, decimalNumberLimit6, checkWhiteSpaces } from "../../../helper/validation";
+import {  getVendorNameByVendorSelectList, getPlantSelectListByType } from "../../../actions/Common";
 import {
   createFreight, updateFright, getFreightData, getFreightModeSelectList, getFreigtFullTruckCapacitySelectList, getFreigtRateCriteriaSelectList,
+  getTruckDimensionsSelectList,
 } from "../actions/Freight";
 import Toaster from "../../common/Toaster";
 import { MESSAGES } from "../../../config/message";
-import { loggedInUserId, userDetails } from "../../../helper/auth";
-import DatePicker from "react-datepicker";
+import { getConfigurationKey, loggedInUserId, userDetails } from "../../../helper/auth";
 import "react-datepicker/dist/react-datepicker.css";
 import AddVendorDrawer from "../supplier-master/AddVendorDrawer";
 import DayTime from "../../common/DayTimeWrapper"
@@ -20,95 +19,129 @@ import { CBCTypeId, EMPTY_DATA, FullTruckLoad, SPACEBAR, VBCTypeId, VBC_VENDOR_T
 import LoaderCustom from "../../common/LoaderCustom";
 import { debounce } from "lodash";
 import AsyncSelect from 'react-select/async';
-import { onFocus } from "../../../helper";
 import { getClientSelectList, } from '../actions/Client';
 import { reactLocalStorage } from "reactjs-localstorage";
 import { autoCompleteDropdown, getCostingTypeIdByCostingPermission, getEffectiveDateMaxDate, getEffectiveDateMinDate } from "../../common/CommonFunctions";
 import PopupMsgWrapper from "../../common/PopupMsgWrapper";
 import { FREIGHT_LOAD_OPTIONS } from "../../../config/masterData";
-import { label } from "react-dom-factories";
-import { subDays } from "date-fns";
-import { withTranslation } from "react-i18next";
 import { LabelsClass } from "../../../helper/core";
+import { t } from "i18next";
+import { Controller, useForm } from "react-hook-form";
+import Button from "../../layout/Button";
+import { DatePickerHookForm, SearchableSelectHookForm, TextFieldHookForm } from "../../layout/HookFormInputs";
+import DimensionsFieldsRenderer from "../../common/DimensionsFieldsRenderer";
 
+const AddFreight = (props) => {
+  const {
+    register: registerMainForm,
+    handleSubmit: handleSubmitMainForm, 
+    control: controlMainForm,
+    setValue: setValueMainForm,
+    getValues: getValuesMainForm,
+    reset: resetMainForm,
+    formState: { errors: errorsMainForm },
+  } = useForm({
+    mode: 'onChange',
+    reValidateMode: 'onChange',
+  });
 
-const selector = formValueSelector("AddFreight");
-class AddFreight extends Component {
-  constructor(props) {
-    super(props);
-    this.child = React.createRef();
-    this.state = {
-      FreightID: "",
-      isEditFlag: false,
-      isViewMode: this.props?.data?.isViewMode ? true : false,
-      isEditMode: this.props?.data?.isEditMode ? true : false,
-      IsVendor: false,
-      TransportMode: [],
-      FullTruckCapacity: [],
-      RateCriteria: [],
-      isEditIndex: false,
-      gridEditIndex: "",
-      gridTable: [],
-      isOpenVendor: false,
-      vendorName: [],
-      IsLoadingUnloadingApplicable: false,
-      sourceLocation: [],
-      destinationLocation: [],
-      effectiveDate: "",
-      DataToChange: [],
-      AddUpdate: true,
-      DeleteChanged: true,
-      HandleChanged: true,
-      setDisable: false,
-      isVendorNameNotSelected: false,
-      inputLoader: false,
-      client: [],
-      costingTypeId: ZBCTypeId,
-      errorObj: {
-        capacity: false,
-        criteria: false,
-        rate: false,
-        load: false
-      },
-      showErrorOnFocus: false,
-      showPopup: false,
-      vendorFilterList: [],
-      Plant: [],
-      showEffectiveDateError: false,
-      Load: []
-    };
-  }
+  const {
+    register: registerTableForm,
+    handleSubmit: handleSubmitTableForm,
+    control: controlTableForm, 
+    setValue: setValueTableForm,
+    getValues: getValuesTableForm,
+    reset: resetTableForm,
+    formState: { errors: errorsTableForm },
+  } = useForm({
+    mode: 'onChange',
+    reValidateMode: 'onChange',
+  });
+
+  const [state, setState] = useState({
+    freightID: "",
+    isEditFlag: false,
+    isViewMode: props?.data?.isViewMode ? true : false,
+    isEditMode: props?.data?.isEditMode ? true : false,
+    isVendor: false,
+    transportMode: [],
+    fullTruckCapacity: [], 
+    rateCriteria: [],
+    isEditIndex: false,
+    gridEditIndex: "",
+    gridTable: [],
+    isOpenVendor: false,
+    vendorName: [],
+    isLoadingUnloadingApplicable: false,
+    sourceLocation: [],
+    destinationLocation: [],
+    effectiveDate: "",
+    dataToChange: [],
+    addUpdate: true,
+    deleteChanged: true,
+    handleChanged: true,
+    setDisable: false,
+    isVendorNameNotSelected: false,
+    inputLoader: false,
+    client: [],
+    costingTypeId: ZBCTypeId,
+    errorObj: {
+      capacity: false,
+      criteria: false,
+      rate: false,
+      load: false
+    },
+    showErrorOnFocus: false,
+    showPopup: false,
+    vendorFilterList: [],
+    plant: [],
+    showEffectiveDateError: false,
+    load: [],
+    truckDimensions: [],
+    openDimensionDrawer: false,
+    isEditDimension: false,
+  });
+  const dispatch = useDispatch();
+  const cityList = useSelector(state => state.comman.cityList);
+  const clientSelectList = useSelector(state => state.client.clientSelectList);
+  const freightModeSelectList = useSelector(state => state.freight.freightModeSelectList);
+  const freightFullTruckCapacitySelectList = useSelector(state => state.freight.freightFullTruckCapacitySelectList);
+  const freightRateCriteriaSelectList = useSelector(state => state.freight.freightRateCriteriaSelectList);
+  const plantSelectList = useSelector(state => state.comman.plantSelectList);
+
   /**
-   * @method componentDidMount
    * @description Called after rendering the component
    */
-  componentDidMount() {
-    this.setState({ costingTypeId: getCostingTypeIdByCostingPermission() })
-    if (!this.state.isViewMode) {
-      this.props.getFreigtFullTruckCapacitySelectList((res) => { });
-      this.props.getFreigtRateCriteriaSelectList((res) => { });
+  useEffect(() => {
+    
+    setState(prev => ({...prev, costingTypeId: getCostingTypeIdByCostingPermission()}));
+
+    if (!state.isViewMode) {
+      dispatch(getFreigtFullTruckCapacitySelectList((res) => { }));
+      dispatch(getFreigtRateCriteriaSelectList((res) => { }));
     }
-    if (!(this.props.data.isEditFlag || this.state.isViewMode)) {
-      // this.props.getAllCity(cityId => {
-      // this.props.getCityByCountry(0, 0,'', () => { })
-      this.props.getClientSelectList(() => { })
-      // })
+
+    if (!(props.data.isEditFlag || state.isViewMode)) {
+      dispatch(getClientSelectList(() => { }));
     }
-    this.props.getPlantSelectListByType(ZBC, "MASTER", '', () => { })
-    this.props.getFreightModeSelectList((res) => { });
-    this.getDetails();
-  }
-  componentWillUnmount() {
-    reactLocalStorage?.setObject('vendorData', [])
-  }
+
+    dispatch(getPlantSelectListByType(ZBC, "MASTER", '', () => { }));
+    dispatch(getFreightModeSelectList((res) => { }));
+    getDetails();
+
+    return () => {
+      reactLocalStorage?.setObject('vendorData', []);
+    };
+  }, []);
   /**
   * @method onPressVendor
   * @description Used for Vendor checked
   */
-  onPressVendor = (costingHeadFlag) => {
+  const onPressVendor = (costingHeadFlag) => {
+    
     const fieldsToClear = [
       'Mode',
-      'vendorName',
+      'vendorName', 
       'SourceLocation',
       'DestinationLocation',
       'clientName',
@@ -116,114 +149,116 @@ class AddFreight extends Component {
       'DestinationPlant',
     ];
     fieldsToClear.forEach(fieldName => {
-      this.props.dispatch(clearFields('AddFreight', false, false, fieldName));
+      dispatch(clearFields('AddFreight', false, false, fieldName));
     });
-    this.setState({
+    setState(prev => ({
+      ...prev,
       vendorName: [],
       costingTypeId: costingHeadFlag
-    });
+    }));
     if (costingHeadFlag === CBCTypeId) {
-      this.props.getClientSelectList(() => { })
+      dispatch(getClientSelectList(() => { }));
     }
   }
   /**
    * @method handleTransportMoodChange
    * @description  used to handle BOP Category Selection
    */
-  handleTransportMoodChange = (newValue, actionMeta) => {
+  const handleTransportMoodChange = (newValue, actionMeta) => {
     if (newValue && newValue !== "") {
-      this.setState({ TransportMode: newValue });
+      setState(prev => ({...prev, TransportMode: newValue}));
     } else {
-      this.setState({ TransportMode: [] });
-    }
-  };
-  /**
-* @method handleClient
-* @description called
-*/
-  handleClient = (newValue, actionMeta) => {
-    if (newValue && newValue !== '') {
-      this.setState({ client: newValue });
-    } else {
-      this.setState({ client: [] })
+      setState(prev => ({...prev, TransportMode: []}));
     }
   };
 
   /**
-  * @method handlePlant
-  * @description called
-  */
-  handlePlant = (newValue, actionMeta) => {
+   * @method handleClient
+   * @description called
+   */
+  const handleClient = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ Plant: newValue });
+      setState(prev => ({...prev, client: newValue}));
     } else {
-      this.setState({ Plant: [] })
+      setState(prev => ({...prev, client: []}));
     }
   };
 
   /**
-  * @method handleLoad
-  * @description Load
-  */
-  handleLoad = (newValue, actionMeta) => {
+   * @method handlePlant
+   * @description called
+   */
+  const handlePlant = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      const { errorObj } = this.state
-      let obj = { ...errorObj }
-      obj.load = false
-      this.setState({
+      setState(prev => ({...prev, Plant: newValue}));
+    } else {
+      setState(prev => ({...prev, Plant: []}));
+    }
+  };
+
+  /**
+   * @method handleLoad
+   * @description Load
+   */
+  const handleLoad = (newValue, actionMeta) => {
+    if (newValue && newValue !== '') {
+      const { errorObj } = state;
+      let obj = { ...errorObj };
+      obj.load = false;
+      setState(prev => ({
+        ...prev,
         FullTruckCapacity: [],
         RateCriteria: [],
-      }, () => this.props.change("Rate", ''));
-      this.setState({ Load: newValue, errorObj: obj });
+        Load: newValue,
+        errorObj: obj
+      }));
+      setValueTableForm("Rate", '');
     } else {
-      this.setState({ Load: [] })
+      setState(prev => ({...prev, Load: []}));
     }
   };
-
   /**
    * @method getDetails
    * @description Used to get Details
    */
-  getDetails = () => {
-    const { data } = this.props;
+  const getDetails = () => {
+    const { data } = props;
     if (data && data.isEditFlag) {
-      this.setState({
+      setState(prev => ({
+        ...prev,
         isEditFlag: false,
         isLoader: true,
         FreightID: data.Id,
-      });
+      }));
 
-      this.props.getFreightData(data.Id, (res) => {
+      dispatch(getFreightData(data.Id, (res) => {
         if (res && res.data && res.data.Result) {
           const Data = res.data.Data;
-          this.setState({ DataToChange: Data })
+          setState(prev => ({ ...prev, DataToChange: Data }));
+          
           setTimeout(() => {
-            const { freightModeSelectList, } = this.props;
-            let modeObj =
-              freightModeSelectList && freightModeSelectList.find((item) => item?.Value === Data.Mode);
-            let GridArray =
-              Data &&
-              Data.FullTruckLoadDetails.map((item) => {
-                return {
-                  FullTruckLoadId: item?.FullTruckLoadId,
-                  FreightId: item?.FreightId,
-                  Capacity: item?.Capacity,
-                  RateCriteria: item?.RateCriteria,
-                  Rate: item?.Rate,
-                  Load: { label: item?.FreightLoadType, value: item?.EFreightLoadType },
-                  EFreightLoadType: item?.EFreightLoadType,
-                  IsFreightAssociated: item?.IsFreightAssociated,
-                };
-              });
-            this.setState({
+            let modeObj = freightModeSelectList && freightModeSelectList.find((item) => item?.Value === Data.Mode);
+            
+            let GridArray = Data && Data.FullTruckLoadDetails.map((item) => {
+              return {
+                FullTruckLoadId: item?.FullTruckLoadId,
+                FreightId: item?.FreightId,
+                Capacity: item?.Capacity,
+                RateCriteria: item?.RateCriteria,
+                Rate: item?.Rate,
+                Load: { label: item?.FreightLoadType, value: item?.EFreightLoadType },
+                EFreightLoadType: item?.EFreightLoadType,
+                IsFreightAssociated: item?.IsFreightAssociated,
+              };
+            });
+            setState(prev => ({
+              ...prev,
               isEditFlag: true,
-              // isLoader: false,
               costingTypeId: Data.CostingTypeId,
               IsLoadingUnloadingApplicable: Data.IsLoadingUnloadingApplicable,
-              TransportMode:
-                modeObj && modeObj !== undefined
-                  ? { label: modeObj.Text, value: modeObj.Value }
-                  : [],
+              TransportMode: modeObj && modeObj !== undefined
+                ? { label: modeObj.Text, value: modeObj.Value }
+                : [],
               vendorName: Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.VendorId } : [],
               client: Data.CustomerName !== undefined ? { label: Data.CustomerName, value: Data.CustomerId } : [],
               sourceLocation: Data.SourceCityName !== undefined ? { label: Data.SourceCityName, value: Data.SourceCityId } : [],
@@ -231,23 +266,25 @@ class AddFreight extends Component {
               gridTable: GridArray,
               Plant: { label: Data.PlantName, value: Data.PlantId },
               effectiveDate: DayTime(Data?.EffectiveDate).isValid() ? new Date(Data?.EffectiveDate) : ''
-            }, () => this.setState({ isLoader: false }));
+            }));
+            setState(prev => ({ ...prev, isLoader: false }));
           }, 200);
         }
-      });
+      }));
     } else {
-      this.setState({
-        isLoader: false,
-      })
-      this.props.getFreightData("", (res) => { });
+      setState(prev => ({
+        ...prev,
+        isLoader: false
+      }));
+      dispatch(getFreightData("",(res) => { }));
     }
   };
+
   /**
    * @method renderListing
    * @description Used to show type of listing
    */
-  renderListing = (label) => {
-    const { cityList, clientSelectList, freightModeSelectList, freightFullTruckCapacitySelectList, freightRateCriteriaSelectList, plantSelectList } = this.props;
+  const renderListing = (label) => {
     const temp = [];
     if (label === "SourceLocation") {
       cityList &&
@@ -317,415 +354,425 @@ class AddFreight extends Component {
       })
       return temp
     }
+    if (label === 'TruckDimensions') {
+      return [{label: 'L(10), B(10), H(10)', value: 'L(10), B(10), H(10)'}, {label: 'L(10), B(10), H(10)', value: 'L(10), B(10), H(10)'}];
+    }
   };
   /**
    * @method handleVendorName
    * @description called
    */
-  handleVendorName = (newValue, actionMeta) => {
+  const handleVendorName = (newValue, actionMeta) => {
     if (newValue && newValue !== "") {
-      this.setState({ vendorName: newValue, isVendorNameNotSelected: false });
+      setState(prev => ({...prev, vendorName: newValue, isVendorNameNotSelected: false}));
     } else {
-      this.setState({ vendorName: [] });
+      setState(prev => ({...prev, vendorName: []}));
     }
   };
-  vendorToggler = () => {
-    this.setState({ isOpenVendor: true });
+
+  const vendorToggler = () => {
+    setState(prev => ({...prev, isOpenVendor: true}));
   };
-  async closeVendorDrawer(e = '', formData = {}, type) {
+  const closeVendorDrawer = async (e = '', formData = {}, type) => {
     if (type === 'submit') {
-      this.setState({ isOpenVendor: false })
-      const res = await getVendorNameByVendorSelectList(VBC_VENDOR_TYPE, this.state.vendorName)
-      let vendorDataAPI = res?.data?.SelectList
-      reactLocalStorage?.setObject('vendorData', vendorDataAPI)
+      setState(prev => ({...prev, isOpenVendor: false}));
+      const res = await getVendorNameByVendorSelectList(VBC_VENDOR_TYPE, state.vendorName);
+      let vendorDataAPI = res?.data?.SelectList;
+      reactLocalStorage?.setObject('vendorData', vendorDataAPI);
       if (Object.keys(formData).length > 0) {
-        this.setState({ vendorName: { label: `${formData.VendorName} (${formData.VendorCode})`, value: formData.VendorId }, })
+        setState(prev => ({
+          ...prev, 
+          vendorName: { 
+            label: `${formData.VendorName} (${formData.VendorCode})`, 
+            value: formData.VendorId 
+          }
+        }));
       }
     }
     else {
-      this.setState({ isOpenVendor: false })
+      setState(prev => ({...prev, isOpenVendor: false}));
     }
-  }
+  };
   /**
    * @method handleSourceCity
    * @description called
    */
-  handleSourceCity = (newValue, actionMeta) => {
+  const handleSourceCity = (newValue, actionMeta) => {
     if (newValue && newValue !== "") {
-      this.setState({ sourceLocation: newValue });
+      setState(prev => ({...prev, sourceLocation: newValue}));
     } else {
-      this.setState({ sourceLocation: [] });
+      setState(prev => ({...prev, sourceLocation: []}));
     }
   };
+
   /**
-   * @method handleDestinationCity
+   * @method handleDestinationCity  
    * @description called
    */
-  handleDestinationCity = (newValue, actionMeta) => {
+  const handleDestinationCity = (newValue, actionMeta) => {
     if (newValue && newValue !== "") {
-      this.setState({ destinationLocation: newValue });
+      setState(prev => ({...prev, destinationLocation: newValue}));
     } else {
-      this.setState({ destinationLocation: [] });
+      setState(prev => ({...prev, destinationLocation: []}));
     }
   };
+
   /**
    * @method onPressLoadUnload
    * @description USED FOR LOAD UNLOAD CHECKED
    */
-  onPressLoadUnload = () => {
-    this.setState({
-      IsLoadingUnloadingApplicable: !this.state.IsLoadingUnloadingApplicable,
-    });
+  const onPressLoadUnload = () => {
+    setState(prev => ({
+      ...prev,
+      IsLoadingUnloadingApplicable: !prev.IsLoadingUnloadingApplicable
+    }));
   };
+
   /**
    * @method handleCapacity
    * @description called
    */
-  handleCapacity = (newValue, actionMeta) => {
+  const handleCapacity = (newValue, actionMeta) => {
     if (newValue && newValue !== "") {
-      this.setState({ FullTruckCapacity: newValue });
+      setState(prev => ({...prev, FullTruckCapacity: newValue}));
     } else {
-      this.setState({ FullTruckCapacity: [] });
+      setState(prev => ({...prev, FullTruckCapacity: []}));
     }
-    this.setState({ HandleChanged: false })
+    setState(prev => ({...prev, HandleChanged: false}));
   };
 
   /**
    * @method criteriaHandler
    * @description called
    */
-  criteriaHandler = (newValue, actionMeta) => {
+  const criteriaHandler = (newValue, actionMeta) => {
     if (newValue && newValue !== "") {
-      this.setState({ RateCriteria: newValue });
+      setState(prev => ({...prev, RateCriteria: newValue}));
     } else {
-      this.setState({ RateCriteria: [] });
+      setState(prev => ({...prev, RateCriteria: []}));
     }
-    this.setState({ HandleChanged: false })
+    setState(prev => ({...prev, HandleChanged: false}));
   };
 
-  rateChange = (newValue) => {
-    const { errorObj } = this.state
-    let obj = { ...errorObj }
-    if (decimalNumberLimit6(newValue?.target?.value) !== undefined || checkWhiteSpaces(newValue?.target?.value) !== undefined || number(newValue?.target?.value) !== undefined) {
-      obj.rate = true;
-    } else {
-      obj.rate = false;
-    }
-    this.setState({ errorObj: obj });
-
-  }
+  const rateChange = (newValue) => {
+    setState(prev => {
+      const obj = { ...prev.errorObj };
+      if (decimalNumberLimit6(newValue?.target?.value) !== undefined || checkWhiteSpaces(newValue?.target?.value) !== undefined || number(newValue?.target?.value) !== undefined) {
+        obj.rate = true;
+      } else {
+        obj.rate = false;
+      }
+      return { ...prev, errorObj: obj };
+    });
+  };
 
   /**
    * @method handleChange
    * @description Handle Effective Date
    */
-  handleEffectiveDateChange = (date) => {
-    this.setState({ effectiveDate: date, showEffectiveDateError: false });
+  const handleEffectiveDateChange = (date) => {
+    setState(prev => ({
+      ...prev,
+      effectiveDate: date,
+      showEffectiveDateError: false
+    }));
   };
 
-  checkValidation = () => {
-    const { FullTruckCapacity, RateCriteria, Load } = this.state;
-    const { fieldsObj } = this.props;
 
-    let count = 0;
-    let errorObj = { ...this.state.errorObj };
-
-    if (Load?.value === FullTruckLoad && FullTruckCapacity.length === 0) {
-      errorObj.capacity = true;
-      count++;
+  const gridHandler = () => {
+    const { FullTruckCapacity, RateCriteria, gridTable, Load } = state;
+    const Rate = getValuesTableForm("Rate");
+    console.log(errorsTableForm, "errorsTableForm");
+    if (errorsTableForm && Object.keys(errorsTableForm)?.length > 0) {
+      return false;
     }
 
-    if (RateCriteria.length === 0) {
-      errorObj.criteria = true;
-      count++;
-    }
-
-    if (fieldsObj === undefined || Number(fieldsObj) === 0) {
-      errorObj.rate = true;
-      count++;
-    }
-
-    if (Load.length === 0) {
-      errorObj.load = true;
-      count++;
-    }
-
-    if (count > 0) {
-      this.setState({ errorObj });
-    }
-    if (count > 0) return true;
-    return false;
-  }
-
-  gridHandler = () => {
-    const {
-      FullTruckCapacity,
-      RateCriteria,
-      gridTable,
-      Load
-    } = this.state;
-    const { fieldsObj } = this.props;
-
-    if (this.checkValidation()) {
-      return false
-    }
-
-    // CONDITION TO CHECK DUPLICATE ENTRY IN GRID
-    const isExist = gridTable.findIndex(
-      (el) =>
-        (el.Capacity ? el.Capacity : undefined) === (FullTruckCapacity.value ? FullTruckCapacity.value : undefined) &&
-        el.RateCriteria === RateCriteria.value &&
-        el.EFreightLoadType === Load?.value
-    );
-
-    if (isExist !== -1) {
+    // Check for duplicate entry
+    const isDuplicate = checkDuplicateEntry(FullTruckCapacity, RateCriteria, Load, gridTable);
+    if (isDuplicate) {
       Toaster.warning("This freight entry already exists.");
       return false;
     }
 
-    const Rate = fieldsObj && fieldsObj !== undefined ? checkForNull(fieldsObj) : 0;
-    const tempArray = [
-      ...gridTable,
-      {
-        FullTruckLoadId: "",
-        Capacity: FullTruckCapacity.label,
-        RateCriteria: RateCriteria.label,
-        Rate: Rate,
-        Load: Load,
-        EFreightLoadType: Load?.value,
-        IsFreightAssociated: false
-      }
-    ];
+    const newGridItem = {
+      FullTruckLoadId: "",
+      Capacity: FullTruckCapacity?.label,
+      RateCriteria: RateCriteria?.label,
+      Rate: checkForNull(Rate) || 0,
+      Load: Load,
+      EFreightLoadType: Load?.value,
+      IsFreightAssociated: false
+    };
 
-    this.setState(
-      {
-        gridTable: tempArray,
-        FullTruckCapacity: [],
-        RateCriteria: [],
-        Load: [],
-        AddUpdate: false,
-        errorObj: { capacity: false, criteria: false, rate: false, load: false }
-      },
-      () => this.props.change("Rate", '')
-    );
+    setState(prev => ({
+      ...prev,
+      gridTable: [...prev.gridTable, newGridItem],
+      AddUpdate: false
+    }));
+
+    resetFormFields();
   };
 
   /**
    * @method updateGrid
    * @description Used to handle update grid
    */
-  updateGrid = () => {
-    const { FullTruckCapacity, RateCriteria, gridTable, gridEditIndex, Load } = this.state;
-    const { fieldsObj } = this.props;
-    const Rate =
-      fieldsObj && fieldsObj !== undefined ? checkForNull(fieldsObj) : 0;
-    //CONDITION TO SKIP DUPLICATE ENTRY IN GRID
-    let skipEditedItem = gridTable.filter((el, i) => {
-      if (i === gridEditIndex) return false;
-      return true;
-    });
-    if (fieldsObj === undefined || Number(fieldsObj) === 0) {
-      this.setState({ errorObj: { rate: true } })
-      return false
-    }
+  const updateGrid = () => {
+    const { FullTruckCapacity, RateCriteria, gridTable, gridEditIndex, Load } = state;
+    const Rate = getValuesTableForm("Rate");
 
-    if (this.checkValidation()) {
-      return false
+    if (!Rate || Number(Rate) === 0) {
+      return false;
     }
-
-    //CONDITION TO CHECK DUPLICATE ENTRY EXCEPT EDITED RECORD
-    const isExist = skipEditedItem.findIndex(
-      (el) =>
-        el.Capacity === FullTruckCapacity.value &&
-        el.RateCriteria === RateCriteria.value &&
-        el.EFreightLoadType === Load?.value
-    );
-    if (isExist !== -1) {
+if(errorsTableForm && Object.keys(errorsTableForm)?.length > 0){ 
+  return false;
+}
+    // Filter out edited item to check duplicates
+    const otherItems = gridTable.filter((_, i) => i !== gridEditIndex);
+    const isDuplicate = checkDuplicateEntry(FullTruckCapacity, RateCriteria, Load, otherItems);
+    if (isDuplicate) {
       Toaster.warning("This freight entry already exists.");
       return false;
     }
-    let tempArray = [];
-    let tempData = gridTable[gridEditIndex];
 
-    tempData = {
-      ...tempData,
-      Capacity: FullTruckCapacity.label,
-      RateCriteria: RateCriteria.label,
-      Rate: Rate,
+    const updatedItem = {
+      ...gridTable[gridEditIndex],
+      Capacity: FullTruckCapacity?.label,
+      RateCriteria: RateCriteria?.label,
+      Rate: checkForNull(Rate) || 0,
       Load: Load,
       EFreightLoadType: Load?.value,
     };
-    tempArray = Object.assign([...gridTable], { [gridEditIndex]: tempData });
-    this.setState(
-      {
-        gridTable: tempArray,
-        FullTruckCapacity: [],
-        RateCriteria: [],
-        gridEditIndex: "",
-        isEditIndex: false,
-        Load: []
-      },
-      () => this.props.change("Rate", '')
-    );
 
-    this.setState({ AddUpdate: false, errorObj: { rate: false } })
+    const updatedGrid = [...gridTable];
+    updatedGrid[gridEditIndex] = updatedItem;
+
+    setState(prev => ({
+      ...prev,
+      gridTable: updatedGrid,
+      gridEditIndex: "",
+      isEditIndex: false,
+      AddUpdate: false
+    }));
+
+    resetFormFields();
   };
+
   /**
-   * @method resetGridData
-   * @description Used to handle resetGridData
+   * @method resetFormFields
+   * @description Reset form fields and errors
    */
-  resetGridData = () => {
-    this.setState(
-      {
-        FullTruckCapacity: [],
-        RateCriteria: [],
-        gridEditIndex: "",
-        isEditIndex: false,
-        Load: [],
-        errorObj: {
-          capacity: false,
-          criteria: false,
-          rate: false,
-          load: false
-        }
+  const resetFormFields = () => {
+    // Reset form state
+    setState(prev => ({
+      ...prev,
+      FullTruckCapacity: [],
+      RateCriteria: [], 
+      Load: [],
+      errorObj: {
+        capacity: false,
+        criteria: false,
+        rate: false,
+        load: false
       },
-      () => this.props.change("Rate", '')
+      isEditIndex: false, // Reset edit mode
+      gridEditIndex: "", // Clear edit index
+      AddUpdate: false // Reset update flag
+    }));
+
+    // Reset form values
+    setValueTableForm("Rate", "");
+    
+    // Reset specific form fields and errors, preserving effective date
+    const currentValues = getValuesTableForm();
+    resetTableForm({
+      Rate: "",
+      FullTruckCapacity: "",
+      RateCriteria: "",
+      Load: "",
+      EffectiveDate: currentValues.EffectiveDate // Preserve effective date
+    });
+  };
+
+  /**
+   * @method checkDuplicateEntry
+   * @description Check for duplicate entries in grid
+   */
+  const checkDuplicateEntry = (capacity, criteria, load, grid) => {
+    return grid.some(el => 
+      (el.Capacity ? el.Capacity : undefined) === (capacity?.value ? capacity?.value : undefined) &&
+      el.RateCriteria === criteria?.value &&
+      el.EFreightLoadType === load?.value
     );
   };
   /**
    * @method editGridItemDetails
-   * @description used to Edit grid data
+   * @description Edit grid data
    */
-  editGridItemDetails = (index) => {
-    const { gridTable } = this.state;
-    const tempData = gridTable[index];
-    this.setState(
-      {
-        gridEditIndex: index,
-        isEditIndex: true,
-        FullTruckCapacity: {
-          label: tempData.Capacity,
-          value: tempData.Capacity,
-        },
-        RateCriteria: {
-          label: tempData.RateCriteria,
-          value: tempData.RateCriteria,
-        },
-        Load: tempData?.Load
+  const editGridItemDetails = React.useCallback((index) => {
+    const item = state.gridTable[index];
+    setState(prev => ({
+      ...prev,
+      gridEditIndex: index,
+      isEditIndex: true,
+      FullTruckCapacity: {
+        label: item?.Capacity,
+        value: item?.Capacity,
       },
-      () => this.props.change("Rate", tempData.Rate)
-    );
+      RateCriteria: {
+        label: item?.RateCriteria,
+        value: item?.RateCriteria, 
+      },
+      Load: {
+        label: item?.Load?.label,
+        value: item?.Load?.value
+      }
+    }));
 
-  };
+    // Reset form values first
+    resetTableForm({
+      Rate: "",
+      FullTruckCapacity: "",
+      RateCriteria: "",
+      Load: ""
+    });
+
+    // Set new values in a batch to avoid synthetic event reuse
+    setTimeout(() => {
+      setValueTableForm("Rate", item.Rate);
+      setValueTableForm("Capacity", {
+        label: item?.Capacity,
+        value: item?.Capacity
+      });
+      setValueTableForm("RateCriteria", {
+        label: item?.RateCriteria,
+        value: item?.RateCriteria
+      });
+      setValueTableForm("Load", {
+        label: item?.Load?.label,
+        value: item?.Load?.value  
+      });
+    }, 0);
+  }, [state.gridTable, setState, resetTableForm, setValueTableForm]);
+
   /**
    * @method deleteGridItem
-   * @description DELETE GRID ITEM
+   * @description Delete grid item
    */
-  deleteGridItem = (index) => {
-    const { gridTable } = this.state;
-    let tempData = gridTable.filter((item, i) => {
-      if (i === index) return false;
-      return true;
-    });
-    this.resetGridData()
-    this.setState({ gridTable: tempData });
-    this.setState({ DeleteChanged: false });
+  const deleteGridItem = (index) => {
+    setState(prev => ({
+      ...prev,
+      gridTable: prev.gridTable.filter((_, i) => i !== index),
+      deleteChanged: false
+    }));
+    resetFormFields();
   };
+
   /**
    * @method cancel
    * @description used to Reset form
    */
-  cancel = (type) => {
-    const { reset } = this.props;
-    reset();
-    this.setState({
-      IsVendor: false,
+  const cancel = (type) => {
+    resetMainForm();
+    setState(prev => ({
+      ...prev,
+      isVendor: false,
       isOpenVendor: false,
       vendorName: [],
-      sourceLocation: [],
-      destinationLocation: [],
-    });
-    this.props.hideForm(type);
+      sourceLocation: [], 
+      destinationLocation: []
+    }));
+    props.hideForm(type);
   };
-  cancelHandler = () => {
-    if (this.state.isViewMode) {
-      this.cancel('cancel')
+
+  const cancelHandler = () => {
+    if (state.isViewMode) {
+      cancel('cancel');
     } else {
-      this.setState({ showPopup: true })
+      setState(prev => ({...prev, showPopup: true}));
     }
-  }
-  onPopupConfirm = () => {
-    this.cancel('cancel')
-    this.setState({ showPopup: false })
-  }
-  closePopUp = () => {
-    this.setState({ showPopup: false })
-  }
+  };
+
+  const onPopupConfirm = () => {
+    cancel('cancel');
+    setState(prev => ({...prev, showPopup: false}));
+  };
+
+  const closePopUp = () => {
+    setState(prev => ({...prev, showPopup: false}));
+  };
   /**
    * @method onSubmit
    * @description Used to Submit the form
    */
-  onSubmit = debounce((values) => {
-    const { TransportMode, vendorName, IsLoadingUnloadingApplicable, sourceLocation, destinationLocation, client,
-      FreightID, gridTable, isEditFlag, DataToChange, HandleChanged, AddUpdate, DeleteChanged, costingTypeId } = this.state;
+  const onSubmit = debounce(handleSubmitMainForm((values) => {
+    const {  vendorName, IsLoadingUnloadingApplicable, sourceLocation, destinationLocation, client,
+      FreightID, gridTable, isEditFlag, DataToChange, HandleChanged, AddUpdate, DeleteChanged, costingTypeId } = state;
 
-    if (this.state.effectiveDate === '' || !this.state.effectiveDate) {
-      this.setState({ showEffectiveDateError: true })
-      return false
+    const formValues = getValuesMainForm();
+    console.log(formValues, "formValues");
+    if (state.effectiveDate === '' || !state.effectiveDate) {
+      setState(prev => ({...prev, showEffectiveDateError: true}));
+      return false;
     }
-    if (checkForNull(this.state?.gridTable?.length) === 0) {
-      Toaster.warning("Please add at least one data in Load Section.")
-      return false
+
+    if (checkForNull(state?.gridTable?.length) === 0) {
+      Toaster.warning("Please add at least one data in Load Section.");
+      return false;
     }
+
     if (costingTypeId === VBCTypeId && vendorName.length <= 0) {
-      this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
-      return false
+      setState(prev => ({...prev, isVendorNameNotSelected: true}));
+      return false;
     }
-    this.setState({ isVendorNameNotSelected: false })
+
+    setState(prev => ({...prev, isVendorNameNotSelected: false}));
 
     const userDetail = userDetails();
+    
     if (isEditFlag) {
       if (
-        DataToChange.LoadingUnloadingCharges === values.LoadingUnloadingCharges &&
-        DataToChange.PartTruckLoadRatePerCubicFeet === values.PartTruckLoadRatePerCubicFeet &&
-        DataToChange.PartTruckLoadRatePerKilogram === values.PartTruckLoadRatePerKilogram
-        &&
+        DataToChange.LoadingUnloadingCharges === formValues.LoadingUnloadingCharges &&
+        DataToChange.PartTruckLoadRatePerCubicFeet === formValues.PartTruckLoadRatePerCubicFeet &&
+        DataToChange.PartTruckLoadRatePerKilogram === formValues.PartTruckLoadRatePerKilogram &&
         (AddUpdate && HandleChanged) &&
         DeleteChanged
       ) {
-
-        this.cancel('cancel')
-        return false
+        cancel('cancel');
+        return false;
       }
-      this.setState({ setDisable: true })
-      let requestData = {
+
+      const requestData = {
         FreightId: FreightID,
         IsLoadingUnloadingApplicable: IsLoadingUnloadingApplicable,
-        LoadingUnloadingCharges: values.LoadingUnloadingCharges,
-        PartTruckLoadRatePerKilogram: values.PartTruckLoadRatePerKilogram,
-        PartTruckLoadRatePerCubicFeet: values.PartTruckLoadRatePerCubicFeet,
+        LoadingUnloadingCharges: formValues.LoadingUnloadingCharges,
+        PartTruckLoadRatePerKilogram: formValues.PartTruckLoadRatePerKilogram,
+        PartTruckLoadRatePerCubicFeet: formValues.PartTruckLoadRatePerCubicFeet,
         FullTruckLoadDetails: gridTable,
         LoggedInUserId: loggedInUserId(),
-        PlantId: this.state.Plant?.value,
-
+        PlantId: state.Plant?.value,
         CostingTypeId: costingTypeId,
         Mode: "Road",
         VendorId: costingTypeId === VBCTypeId ? vendorName.value : userDetail.ZBCSupplierInfo.VendorId,
         CustomerId: costingTypeId === CBCTypeId ? client.value : '',
-        EffectiveDate: this.state.effectiveDate,
+        EffectiveDate: state.effectiveDate,
       };
 
-
-      this.props.updateFright(requestData, (res) => {
-        this.setState({ setDisable: false })
+      dispatch(updateFright(requestData, (res) => {
         if (res?.data?.Result) {
           Toaster.success(MESSAGES.UPDATE_FREIGHT_SUCCESSFULLY);
-          this.cancel('submit');
+          cancel('submit');
         }
-      });
-      this.setState({ HandleChanged: true, AddUpdate: true, DeleteChanged: true })
+      }));
+
+      setState(prev => ({
+        ...prev,
+        HandleChanged: true,
+        AddUpdate: true,
+        DeleteChanged: true
+      }));
+
     } else {
-      this.setState({ setDisable: true })
       const formData = {
         CostingTypeId: costingTypeId,
         Mode: "Road",
@@ -733,26 +780,25 @@ class AddFreight extends Component {
         SourceCityId: sourceLocation.value,
         DestinationCityId: destinationLocation.value,
         IsLoadingUnloadingApplicable: IsLoadingUnloadingApplicable,
-        LoadingUnloadingCharges: values.LoadingUnloadingCharges,
-        PartTruckLoadRatePerKilogram: values.PartTruckLoadRatePerKilogram,
-        PartTruckLoadRatePerCubicFeet: values.PartTruckLoadRatePerCubicFeet,
+        LoadingUnloadingCharges: formValues.LoadingUnloadingCharges,
+        PartTruckLoadRatePerKilogram: formValues.PartTruckLoadRatePerKilogram,
+        PartTruckLoadRatePerCubicFeet: formValues.PartTruckLoadRatePerCubicFeet,
         FullTruckLoadDetails: gridTable,
         LoggedInUserId: loggedInUserId(),
         CustomerId: costingTypeId === CBCTypeId ? client.value : '',
-        EffectiveDate: DayTime(this.state.effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
-        PlantId: this.state.Plant?.value,
+        EffectiveDate: DayTime(state.effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
+        PlantId: state.Plant?.value,
       };
-      this.props.createFreight(formData, (res) => {
-        this.setState({ setDisable: false })
+
+      dispatch(createFreight(formData, (res) => {
         if (res?.data?.Result) {
           Toaster.success(MESSAGES.ADD_FREIGHT_SUCCESSFULLY);
-          this.cancel('submit');
+          cancel('submit');
         }
-      });
+      }));
     }
-  }, 500)
-
-  handleKeyDown = function (e) {
+  }), 500);
+  const handleKeyDown = (e) => {
     if (e.key === 'Enter' && e.shiftKey === false) {
       e.preventDefault();
     }
@@ -762,46 +808,59 @@ class AddFreight extends Component {
    * @method render
    * @description Renders the component
    */
-  render() {
-    const { handleSubmit, initialConfiguration, t } = this.props;
-    const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
+  
+  const VendorLabel = LabelsClass(t, 'MasterLabels').vendorLabel;
 
-    const { isOpenVendor, isEditFlag, isViewMode, setDisable, costingTypeId, isEditMode } = this.state;
-    const filterList = async (inputValue) => {
-      const { vendorFilterList } = this.state
-      if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
-        inputValue = inputValue.trim();
+  const { isOpenVendor, isEditFlag, isViewMode, setDisable, costingTypeId, isEditMode } = state;
+  const filterList = async (inputValue) => {
+    if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
+      inputValue = inputValue.trim();
+    }
+    const resultInput = inputValue.slice(0, searchCount)
+    if (inputValue?.length >= searchCount && state.vendorFilterList !== resultInput) {
+      setState(prev => ({...prev, inputLoader: true}));
+      let res = await getVendorNameByVendorSelectList(VBC_VENDOR_TYPE, resultInput);
+      setState(prev => ({
+        ...prev, 
+        inputLoader: false,
+        vendorFilterList: resultInput
+      }));
+      let vendorDataAPI = res?.data?.SelectList;
+      if (inputValue) {
+        return autoCompleteDropdown(inputValue, vendorDataAPI, false, [], true);
+      } else {
+        return vendorDataAPI;
       }
-      const resultInput = inputValue.slice(0, searchCount)
-      if (inputValue?.length >= searchCount && vendorFilterList !== resultInput) {
-        this.setState({ inputLoader: true })
-        let res
-        res = await getVendorNameByVendorSelectList(VBC_VENDOR_TYPE, resultInput)
-        this.setState({ inputLoader: false })
-        this.setState({ vendorFilterList: resultInput })
-        let vendorDataAPI = res?.data?.SelectList
-        if (inputValue) {
-          return autoCompleteDropdown(inputValue, vendorDataAPI, false, [], true)
-        } else {
-          return vendorDataAPI
-        }
-      }
+    }
+    else {
+      if (inputValue?.length < searchCount) return false;
       else {
-        if (inputValue?.length < searchCount) return false
-        else {
-          let VendorData = reactLocalStorage?.getObject('Data')
-          if (inputValue) {
-            return autoCompleteDropdown(inputValue, VendorData, false, [], false)
-          } else {
-            return VendorData
-          }
+        let VendorData = reactLocalStorage?.getObject('Data');
+        if (inputValue) {
+          return autoCompleteDropdown(inputValue, VendorData, false, [], false);
+        } else {
+          return VendorData;
         }
       }
-    };
+    }
+  };
+  const handleTruckDimensions = (e) => {
+    setState(prev => ({...prev, truckDimensions: e}));
+    console.log(e, "e");
+  };
+  const dimensionToggler = (isEditMode) => {
+    setState(prev => ({...prev, openDimensionDrawer: true, isEditDimension: isEditMode}));
+  };
+  const closeDimensionDrawer = (type) => {
+    if(type==='Save'){
+      dispatch(getTruckDimensionsSelectList(() => { }));
+    }
+    setState(prev => ({...prev, openDimensionDrawer: false}));
+  };
 
     return (
       <>
-        {this.state.isLoader && <LoaderCustom />}
+        {state.isLoader && <LoaderCustom />}
         <div className="container-fluid">
           <div>
             <div className="login-container signup-form">
@@ -820,8 +879,8 @@ class AddFreight extends Component {
                     <form
                       noValidate
                       className="form"
-                      onSubmit={handleSubmit(this.onSubmit.bind(this))}
-                      onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
+                      onSubmit={handleSubmitMainForm(onSubmit)}
+                      onKeyDown={(e) => { handleKeyDown(e, onSubmit); }}
                     >
                       <div className="add-min-height">
                         <Row>
@@ -830,13 +889,9 @@ class AddFreight extends Component {
                               <input
                                 type="radio"
                                 name="costingHead"
-                                checked={
-                                  costingTypeId === ZBCTypeId ? true : false
-                                }
-                                onClick={() =>
-                                  this.onPressVendor(ZBCTypeId)
-                                }
-                                disabled={isEditFlag ? true : false}
+                                checked={costingTypeId === ZBCTypeId}
+                                onClick={() => onPressVendor(ZBCTypeId)}
+                                disabled={isEditFlag}
                               />{" "}
                               <span>Zero Based</span>
                             </Label>}
@@ -844,13 +899,9 @@ class AddFreight extends Component {
                               <input
                                 type="radio"
                                 name="costingHead"
-                                checked={
-                                  costingTypeId === VBCTypeId ? true : false
-                                }
-                                onClick={() =>
-                                  this.onPressVendor(VBCTypeId)
-                                }
-                                disabled={isEditFlag ? true : false}
+                                checked={costingTypeId === VBCTypeId}
+                                onClick={() => onPressVendor(VBCTypeId)}
+                                disabled={isEditFlag}
                               />{" "}
                               <span>{VendorLabel} Based</span>
                             </Label>}
@@ -858,13 +909,9 @@ class AddFreight extends Component {
                               <input
                                 type="radio"
                                 name="costingHead"
-                                checked={
-                                  costingTypeId === CBCTypeId ? true : false
-                                }
-                                onClick={() =>
-                                  this.onPressVendor(CBCTypeId)
-                                }
-                                disabled={isEditFlag ? true : false}
+                                checked={costingTypeId === CBCTypeId}
+                                onClick={() => onPressVendor(CBCTypeId)}
+                                disabled={isEditFlag}
                               />{" "}
                               <span>Customer Based</span>
                             </Label>}
@@ -874,344 +921,238 @@ class AddFreight extends Component {
                           <Col md="12">
                             <div className="left-border">{"Freight:"}</div>
                           </Col>
-                          {/* <Col md="3">
-                            <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                              <div className="fullinput-icon">
-                                <Field
-                                  name="Mode"
-                                  type="text"
-                                  label="Mode"
-                                  component={searchableSelect}
-                                  placeholder={isEditFlag ? '-' : "Select"}
-                                  options={this.renderListing("FREIGHT_MODE")}
-                                  //onKeyUp={(e) => this.changeItemDesc(e)}
-                                  validate={
-                                    this.state.TransportMode == null ||
-                                      this.state.TransportMode.length === 0
-                                      ? [required]
-                                      : []
-                                  }
-                                  required={true}
-                                  handleChangeDescription={
-                                    this.handleTransportMoodChange
-                                  }
-                                  valueDescription={this.state.TransportMode}
-                                  disabled={isEditFlag ? true : false}
-                                />
-                              </div>
-                            </div>
-                          </Col> */}
                           {costingTypeId === VBCTypeId && (
-                            <Col md="3">
+                            <Col className="col-md-15">
                               <label>{VendorLabel} (Code)<span className="asterisk-required">*</span></label>
                               <div className="d-flex justify-space-between align-items-center async-select">
                                 <div className="fullinput-icon p-relative">
-                                  {this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
+                                  {state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
                                   <AsyncSelect
-                                    name="vendorName"
-                                    ref={this.myRef}
-                                    key={this.state.updateAsyncDropdown}
-                                    loadOptions={filterList}
-                                    onChange={(e) => this.handleVendorName(e)}
-                                    value={this.state.vendorName}
-                                    noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN : "No results found"}
-                                    isDisabled={(isEditFlag) ? true : false}
-                                    onKeyDown={(onKeyDown) => {
-                                      if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
-                                    }}
-                                    onFocus={() => onFocus(this)}
-                                  />
+                                        name="vendorName"
+                                        loadOptions={filterList}
+                                        onChange={(e) => handleVendorName(e)}
+                                        value={state.vendor}
+                                        noOptionsMessage={({ inputValue }) => inputValue?.length < 3 ? MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN : "No results found"}
+                                        isDisabled={isEditFlag || isViewMode}
+                                        onKeyDown={(onKeyDown) => {
+                                            if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
+                                        }}
+                                        onBlur={() => setState(prevState => ({ ...prevState, showErrorOnFocus: false }))}
+                                    />
                                 </div>
                                 {!isEditFlag && (
-                                  <div
-                                    onClick={this.vendorToggler}
-                                    className={"plus-icon-square  right"}
-                                  ></div>
+                                  <Button
+                                  id="addFreight_vendorToggle"
+                                  onClick={vendorToggler}
+                                  className={"right mt-0"}
+                                  variant="plus-icon-square"
+                              />
                                 )}
                               </div>
-                              {((this.state.showErrorOnFocus && this.state.vendorName.length === 0) || this.state.isVendorNameNotSelected) && <div className='text-help mt-1'>This field is required.</div>}
+                              {((state.showErrorOnFocus && state.vendorName.length === 0) || state.isVendorNameNotSelected) && <div className='text-help mt-1'>This field is required.</div>}
                             </Col>
                           )}
                           {costingTypeId === CBCTypeId && (
-                            <Col md="3">
-                              <Field
+                            <Col className="col-md-15">
+                              <SearchableSelectHookForm
                                 name="clientName"
-                                type="text"
                                 label={"Customer (Code)"}
-                                component={searchableSelect}
+                                Controller={Controller}
+                                control={controlMainForm}
+                                register={registerMainForm}
+                                mandatory={true}
+                                rules={{ required: true }}
                                 placeholder={isEditFlag ? '-' : "Select"}
-                                options={this.renderListing("ClientList")}
-                                //onKeyUp={(e) => this.changeItemDesc(e)}
-                                validate={
-                                  this.state.client == null ||
-                                    this.state.client.length === 0
-                                    ? [required]
-                                    : []
-                                }
-                                required={true}
-                                handleChangeDescription={this.handleClient}
-                                valueDescription={this.state.client}
-                                disabled={isEditFlag ? true : false}
+                                options={renderListing("ClientList")}
+                                defaultValue={state.client}
+                                handleChange={handleClient}
+                                disabled={isEditFlag}
+                                errors={errorsMainForm?.clientName}
                               />
                             </Col>
                           )}
-                          <Col md="3">
-                            <Field
-                              name="Plant"
-                              type="text"
-                              label={"Plant (Code)"}
-                              component={searchableSelect}
-                              placeholder={isEditFlag ? '-' : "Select"}
-                              options={this.renderListing("Plant")}
-                              //onKeyUp={(e) => this.changeItemDesc(e)}
-                              validate={
-                                this.state.Plant == null ||
-                                  this.state.Plant.length === 0
-                                  ? [required]
-                                  : []
-                              }
-                              required={true}
-                              handleChangeDescription={this.handlePlant}
-                              valueDescription={this.state.Plant}
-                              disabled={isEditFlag ? true : false}
-                            />
+                          <Col className="col-md-15">
+                            <SearchableSelectHookForm
+                                    label={'Plant (Code)'}
+                                    name="Plants"
+                                    Controller={Controller}
+                                    control={controlMainForm}
+                                    register={registerMainForm}
+                                    mandatory={true}
+                                    rules={{ required: true }}
+                                    placeholder={'Select'}
+                                    options={renderListing("Plant")}
+                                    defaultValue={state.plants}
+                                    handleChange={handlePlant}
+                                    disabled={isEditFlag || isViewMode}
+                                    errors={errorsMainForm?.Plants}
+                                />
                           </Col>
-                          <Col md="3">
-                            <div className="form-group">
-                              <label>Effective Date<span className="asterisk-required">*</span></label>
+                          <Col className="col-md-15">
                               <div className="inputbox date-section">
-                                <DatePicker
-                                  name="EffectiveDate"
-                                  selected={DayTime(this.state.effectiveDate).isValid() ? this.state.effectiveDate : ""}
-                                  onChange={this.handleEffectiveDateChange}
-                                  showMonthDropdown
-                                  showYearDropdown
-                                  dropdownMode="select"
-                                  dateFormat="dd/MM/yyyy"
-                                  placeholderText={isViewMode ? '-' : "Select Date"}
-                                  className="withBorder"
-                                  autoComplete={"off"}
-                                  disabledKeyboardNavigation
-                                  onChangeRaw={(e) => e.preventDefault()}
-                                  disabled={isViewMode || isEditMode}
-                                  minDate={getEffectiveDateMinDate()}
-                                  maxDate={ getEffectiveDateMaxDate()}
-
-
-                                />
-                                {this.state.showEffectiveDateError && <div className='text-help'>This field is required.</div>}
-                              </div>
-                            </div >
-                          </Col >
-                          {/* <Col md="3">
-                            <Field
-                              name="SourceLocation"
-                              type="text"
-                              label="Source City"
-                              component={searchableSelect}
-                              placeholder={isViewMode ? '-' : 'Select'}
-                              options={this.renderListing("SourceLocation")}
-                              //onKeyUp={(e) => this.changeItemDesc(e)}
-                              validate={
-                                this.state.sourceLocation == null ||
-                                  this.state.sourceLocation.length === 0
-                                  ? [required]
-                                  : []
-                              }
-                              required={true}
-                              handleChangeDescription={this.handleSourceCity}
-                              valueDescription={this.state.sourceLocation}
-                              disabled={isEditFlag ? true : false}
-                            />
-                          </Col> */}
-                          {/* <Col md="3">
-                            <Field
-                              name="DestinationLocation"
-                              type="text"
-                              label="Destination City"
-                              component={searchableSelect}
-                              placeholder={isViewMode ? '-' : 'Select'}
-                              options={this.renderListing("DestinationLocation")}
-                              //onKeyUp={(e) => this.changeItemDesc(e)}
-                              validate={
-                                this.state.destinationLocation == null ||
-                                  this.state.destinationLocation.length === 0
-                                  ? [required]
-                                  : []
-                              }
-                              required={true}
-                              handleChangeDescription={this.handleDestinationCity}
-                              valueDescription={this.state.destinationLocation}
-                              disabled={isEditFlag ? true : false}
-                            />
-                          </Col> */}
-                        </Row>
-                        {/* <Row className="mb27">
-                          <Col md="12">
-                            <label
-                              className={`custom-checkbox w-auto ${isViewMode ? "disabled" : ""}`}
-                              onChange={this.onPressLoadUnload}
-                            >
-                              Loading/Unloading Charges
-                              <input
-                                type="checkbox"
-                                checked={this.state.IsLoadingUnloadingApplicable}
-                                disabled={isViewMode}
-                              />
-                              <span
-                                className=" before-box"
-                                checked={this.state.IsLoadingUnloadingApplicable}
-                                onChange={this.onPressLoadUnload}
-                              />
-                            </label>
-                          </Col>
-                          <Col md="3" className="hide-label-inside">
-                            <Field
-                              label={``}
-                              name={"LoadingUnloadingCharges"}
-                              type="text"
-                              placeholder={isViewMode ? '-' : 'Enter'}
-                              validate={[positiveAndDecimalNumber, maxLength10, decimalLengthFour, number]}
-                              component={renderTextInputField}
-                              disabled={isViewMode}
-                              className=""
-                              customClassName=" withBorder mn-height-auto"
-                            />
-                          </Col>
-                        </Row> */}
-                        <Row>
-                          {/* <Col md="12">
-                            <div className="left-border">
-                              {"Part Truck Load:"}
+                                <DatePickerHookForm
+                                        name="EffectiveDate"
+                                        label="Effective Date"
+                                        rules={{ required: true }}
+                                        selected={DayTime(state.effectiveDate).isValid() ? new Date(state.effectiveDate) : ''}
+                                        Controller={Controller}
+                                        control={controlMainForm}
+                                        register={registerMainForm}
+                                        placeholder="Select date"
+                                        showMonthDropdown
+                                        showYearDropdown
+                                        dateFormat="dd/MM/yyyy"
+                                        dropdownMode="select"
+                                        customClassName="withBorder"
+                                        className="withBorder"
+                                        autoComplete="off"
+                                        disabledKeyboardNavigation
+                                        disabled={isViewMode || isEditMode}
+                                        mandatory={true}
+                                        errors={errorsMainForm?.effectiveDate}
+                                        minDate={getEffectiveDateMinDate()}
+                                        maxDate={getEffectiveDateMaxDate()}
+                                        handleChange={handleEffectiveDateChange}
+                                    />
                             </div>
                           </Col>
-                          <Col md="3">
-                            <Field
-                              label={`Rate (${reactLocalStorage.getObject("baseCurrency")}/Kg)`}
-                              name={"PartTruckLoadRatePerKilogram"}
-                              type="text"
-                              placeholder={isViewMode ? '-' : 'Enter'}
-                              validate={[positiveAndDecimalNumber, maxLength10, decimalLengthFour, number]}
-                              component={renderTextInputField}
-                              disabled={isViewMode}
-                              className=" "
-                              customClassName=" withBorder"
-                            />
-                          </Col>
-                          <Col md="3">
-                            <Field
-                              label={`Rate (${reactLocalStorage.getObject("baseCurrency")}/Cubic Feet)`}
-                              name={"PartTruckLoadRatePerCubicFeet"}
-                              type="text"
-                              placeholder={isViewMode ? '-' : 'Enter'}
-                              validate={[positiveAndDecimalNumber, maxLength10, decimalLengthFour, number]}
-                              component={renderTextInputField}
-                              disabled={isViewMode}
-                              className=" "
-                              customClassName=" withBorder"
-                            />
-                          </Col> */}
-
-
                         </Row>
-                        <Row className="truck-load-form-container">
-                          <Col md="12">
-                            <div className="left-border">
-                              {"Load:"}
+                        <Row className={'mt-3'}>
+                        <form onSubmit={handleSubmitTableForm(gridHandler)}>
+                          <Row>
+                            <Col md="12">
+                              <div className="left-border">
+                                {"Load:"}
                             </div>
                           </Col>
-                          <Col md="3">
-                            <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                              <div className="fullinput-icon">
-                                <Field
+                          <Col md="2">
+                                <SearchableSelectHookForm
                                   name="Load"
-                                  type="text"
                                   label="Load"
-                                  component={searchableSelect}
+                                  Controller={Controller}
+                                  control={controlTableForm}
+                                  register={registerTableForm}
+                                  mandatory={true}
+                                  rules={{ required: true }}
                                   placeholder={isViewMode ? '-' : 'Select'}
-                                  options={this.renderListing("Load")}
-                                  handleChangeDescription={this.handleLoad}
-                                  valueDescription={this.state?.Load}
+                                  options={renderListing("Load")}
+                                  handleChange={handleLoad}
+                                  value={state?.Load}
                                   disabled={isViewMode}
-                                  required={true}
+                                  errors={errorsTableForm?.Load}
                                 />
-                                {this.state?.errorObj?.load && <div className='text-help p-absolute bottom-7'>This field is required.</div>}
-                              </div>
-                            </div>
                           </Col>
-                          {this.state.Load?.value === FullTruckLoad && <Col md="2">
-                            <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                              <div className="fullinput-icon">
-                                <Field
-                                  name="Capacity"
-                                  type="text"
-                                  label="Capacity"
-                                  component={searchableSelect}
-                                  placeholder={isViewMode ? '-' : 'Select'}
-                                  options={this.renderListing(
-                                    "FULL_TRUCK_CAPACITY"
-                                  )}
-
-                                  handleChangeDescription={this.handleCapacity}
-                                  valueDescription={this.state.FullTruckCapacity}
-                                  disabled={isViewMode}
-                                  required={true}
+                          {state.Load?.value === FullTruckLoad && <Col md="2">
+                              <SearchableSelectHookForm
+                                name="Capacity"
+                                label="Capacity"
+                                Controller={Controller}
+                                control={controlTableForm}
+                                register={registerTableForm}
+                                mandatory={true}
+                                rules={{ required: true }}
+                                placeholder={isViewMode ? '-' : 'Select'}
+                                options={renderListing(
+                                  "FULL_TRUCK_CAPACITY"
+                                )}
+                                handleChange={handleCapacity}
+                                value={state.FullTruckCapacity}
+                                disabled={isViewMode}
+                                errors={errorsTableForm?.FullTruckCapacity}
                                 />
-                                {this.state.errorObj.capacity && this.state.FullTruckCapacity.length === 0 && <div className='text-help p-absolute bottom-7'>This field is required.</div>}
-                              </div>
-                            </div>
                           </Col>}
                           <Col md="2">
-                            <Field
+                            <div className="d-flex justify-space-between inputwith-icon form-group">
+                              <SearchableSelectHookForm
+                                name="TruckDimensions"
+                                label="Truck Dimensions"
+                                Controller={Controller}
+                                control={controlTableForm}
+                                register={registerTableForm}
+                                mandatory={true}
+                                rules={{ required: true }}
+                                placeholder={isViewMode ? '-' : 'Select'}
+                                options={renderListing("TruckDimensions")}
+                                handleChange={handleTruckDimensions}
+                                value={state?.truckDimensions}
+                                disabled={isViewMode}
+                                errors={errorsTableForm?.TruckDimensions}
+                              />
+                            <div className='action-icon-container'>
+                              <div
+                                onClick={dimensionToggler}
+                                className={"plus-icon-square mt-0 right"}
+                              ></div>
+                              <button 
+                                type="button" 
+                                onClick={() => dimensionToggler(true)} 
+                                className={'user-btn'} 
+                                disabled={state.truckDimensions?.label ? false : true}
+                              >
+                                <div className={"edit_pencil_icon right"}></div>
+                              </button>
+                            </div>
+                          </div>
+                          </Col>
+                          <Col md="2">
+                            <SearchableSelectHookForm
                               name="RateCriteria"
-                              type="text"
                               label="Criteria"
-                              component={searchableSelect}
+                              Controller={Controller}
+                              control={controlTableForm}
+                              register={registerTableForm}
+                              mandatory={true}
+                              rules={{ required: true }}
                               placeholder={isViewMode ? '-' : 'Select'}
-                              options={this.renderListing(
+                              options={renderListing(
                                 "FREIGHT_RATE_CRITERIA"
                               )}
                               disabled={isViewMode}
-                              handleChangeDescription={this.criteriaHandler}
-                              valueDescription={this.state.RateCriteria}
-                              required={true}
+                              handleChange={criteriaHandler}
+                              value={state.RateCriteria}
+                              errors={errorsTableForm?.RateCriteria}
                             />
-                            {this.state.errorObj.criteria && this.state.RateCriteria.length === 0 && <div className='text-help p-absolute'>This field is required.</div>}
                           </Col>
                           <Col md="2">
-                            <Field
+                            <TextFieldHookForm
                               label={`Rate (${reactLocalStorage.getObject("baseCurrency")})`}
                               name={"Rate"}
-                              type="text"
                               placeholder={isViewMode ? '-' : 'Enter'}
-                              validate={[decimalNumberLimit6, maxLength10, number]}
-                              component={renderTextInputField}
-                              onChange={this.rateChange}
-                              required={true}
-                              disabled={isViewMode}
-                              className=" "
-                              customClassName="withBorder"
+                              rules={{
+                                required: true,
+                                validate: { number, decimalNumberLimit6,maxLength10 },
+                            }}
+                            defaultValue={''}
+                            Controller={Controller}
+                            control={controlTableForm}
+                            register={registerTableForm}
+                            mandatory={true}
+                            disabled={isViewMode}
+                            className=" "
+                            customClassName=" withBorder"
+                            handleChange={rateChange}
+                            errors={errorsTableForm?.Rate}
                             />
-                            {this.state.errorObj.rate && (this.props.fieldsObj === undefined || Number(this.props.fieldsObj) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
+                            {state.errorObj.rate && (!getValuesTableForm("Rate") || Number(getValuesTableForm("Rate")) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
                           </Col>
+                          {console.log(errorsTableForm, "errorsTableForm")}
                           <Col md="2">
                             <div className="pt-2">
-                              {this.state.isEditIndex ? (
+                              {state.isEditIndex ? (
                                 <>
                                   <button
                                     type="button"
                                     className={
                                       "btn btn-primary mt30 pull-left mr5 px-2 mb-2"
                                     }
-                                    onClick={this.updateGrid}
+                                    onClick={updateGrid}
                                   >
                                     Update
                                   </button>
                                   <button
                                     type="button"
                                     className={"reset-btn mt30 pull-left mb-2 w-auto px-1"}
-
-                                    onClick={this.resetGridData}
+                                    onClick={resetFormFields}
                                   >
                                     Cancel
                                   </button>
@@ -1222,7 +1163,7 @@ class AddFreight extends Component {
                                     type="button"
                                     disabled={isViewMode}
                                     className={"user-btn mt30 pull-left"}
-                                    onClick={this.gridHandler}
+                                    // onClick={gridHandler}
                                   >
                                     <div className={"plus"}></div>
                                     ADD
@@ -1230,7 +1171,7 @@ class AddFreight extends Component {
                                   <button
                                     type="button"
                                     className={"reset-btn mt30 ml5 pull-left"}
-                                    onClick={this.resetGridData}
+                                    onClick={resetFormFields}
                                     disabled={isViewMode}
                                   >
                                     Reset
@@ -1239,7 +1180,7 @@ class AddFreight extends Component {
                               )}
                             </div>
                           </Col>
-                        </Row >
+                          </Row>
                         <Row>
                           <Col md="12">
                             <Table className="table border" size="sm">
@@ -1253,38 +1194,39 @@ class AddFreight extends Component {
                                 </tr>
                               </thead>
                               <tbody>
-                                {this.state.gridTable &&
-                                  this.state.gridTable.map((item, index) => {
+                                {state.gridTable?.length > 0 &&
+                                  state.gridTable?.map((item, index) => {
                                     return (
                                       <tr key={index}>
                                         <td>{item?.Load?.label ? item?.Load?.label : '-'}</td>
                                         <td>{item?.Capacity ? item?.Capacity : '-'}</td>
                                         <td>{item?.RateCriteria ? item?.RateCriteria : '-'}</td>
-                                        <td>{item?.Rate ? checkForDecimalAndNull(item?.Rate, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+                                        <td>{item?.Rate ? checkForDecimalAndNull(item?.Rate, getConfigurationKey()?.NoOfDecimalForPrice) : '-'}</td>
                                         <td>
-                                          <button className="Edit mr-2" type={"button"} disabled={isViewMode || item?.IsFreightAssociated} onClick={() => this.editGridItemDetails(index)} />
-                                          <button className="Delete" type={"button"} disabled={isViewMode || item?.IsFreightAssociated} onClick={() => this.deleteGridItem(index)} />
+                                          <button className="Edit mr-2" type={"button"} disabled={isViewMode || item?.IsFreightAssociated} onClick={() => editGridItemDetails(index)} />
+                                          <button className="Delete" type={"button"} disabled={isViewMode || item?.IsFreightAssociated} onClick={() => deleteGridItem(index)} />
                                         </td>
                                       </tr>
                                     );
                                   })}
                               </tbody>
-                              {this.state.gridTable.length === 0 && <tbody className="border">
+                              {state.gridTable?.length === 0 && <tbody className="border">
                                 <tr>
                                   <td colSpan={"5"}> <NoContentFound title={EMPTY_DATA} /></td>
                                 </tr>
                               </tbody>}
                             </Table>
                           </Col>
-
                         </Row>
-                      </div >
+                        </form>
+                        </Row>
+                      </div>
                       <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                         <div className="col-sm-12 text-right bluefooter-butn">
                           <button
                             type={"button"}
                             className="mr15 cancel-btn"
-                            onClick={this.cancelHandler}
+                            onClick={cancelHandler}
                             disabled={setDisable}
                           >
                             <div className={"cancel-icon"}></div>
@@ -1307,85 +1249,26 @@ class AddFreight extends Component {
             </div>
           </div>
           {
-            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
+            state.showPopup && <PopupMsgWrapper isOpen={state.showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
+          }
+          {
+            state.openDimensionDrawer && <DimensionsFieldsRenderer 
+            handleChange={handleTruckDimensions}
+            cancelHandler={closeDimensionDrawer}
+            isOpen={state.openDimensionDrawer}
+            /> 
           }
           {isOpenVendor && (
             <AddVendorDrawer
               isOpen={isOpenVendor}
-              closeDrawer={this.closeVendorDrawer = this.closeVendorDrawer.bind(this)}
+              closeDrawer={closeVendorDrawer}
               isEditFlag={false}
               ID={""}
               anchor={"right"}
             />
-          )
-          }
+          )}
         </div>
       </>
     );
   }
-}
-/**
- * @method mapStateToProps
- * @description return state to component as props
- * @param {*} state
- */
-function mapStateToProps(state) {
-  const fieldsObj = selector(state, "Rate");
-  const { comman, freight, auth, client } = state;
-  const { initialConfiguration } = auth;
-  const { cityList, vendorWithVendorCodeSelectList, plantSelectList } = comman;
-  const { clientSelectList } = client;
-  const {
-    freightData,
-    freightModeSelectList,
-    freightFullTruckCapacitySelectList,
-    freightRateCriteriaSelectList,
-  } = freight;
-  let initialValues = {};
-  if (freightData && freightData !== undefined) {
-    initialValues = {
-      PartTruckLoadRatePerKilogram: freightData.PartTruckLoadRatePerKilogram,
-      PartTruckLoadRatePerCubicFeet: freightData.PartTruckLoadRatePerCubicFeet,
-      LoadingUnloadingCharges: freightData.LoadingUnloadingCharges, clientSelectList
-    };
-  }
-  return {
-    cityList,
-    vendorWithVendorCodeSelectList,
-    freightModeSelectList,
-    freightFullTruckCapacitySelectList,
-    freightRateCriteriaSelectList,
-    freightData,
-    fieldsObj,
-    initialValues,
-    initialConfiguration,
-    clientSelectList,
-    plantSelectList
-  };
-}
-/**
- * @method connect
- * @description connect with redux
- * @param {function} mapStateToProps
- * @param {function} mapDispatchToProps
- */
-export default connect(mapStateToProps, {
-  fetchSupplierCityDataAPI,
-  createFreight,
-  updateFright,
-  getFreightData,
-  getFreightModeSelectList,
-  getFreigtFullTruckCapacitySelectList,
-  getFreigtRateCriteriaSelectList,
-  getCityByCountryAction,
-  getAllCity,
-  getClientSelectList,
-  getPlantSelectListByType,
-})(
-  reduxForm({
-    form: "AddFreight",
-    validate: validateForm,
-    enableReinitialize: true,
-    touchOnChange: true
-  })(withTranslation(['FreightMaster', 'MasterLabels'])(AddFreight)),
-)
+export default AddFreight;

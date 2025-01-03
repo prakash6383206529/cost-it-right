@@ -167,7 +167,7 @@ function RMImportListing(props) {
         }
       }
     }, 300);
-   
+
 
   }, [])
 
@@ -903,14 +903,10 @@ function RMImportListing(props) {
   const netLanedCostFormatter = (props) => {
     const row = props?.valueFormatted ? props.valueFormatted : props?.data;
     const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-    
-  if (row?.EntryType === DOMESTIC) {
-        return (row?.NetLandedCost ?? '-');
-    }else{
-        
-        return (row?.NetLandedCostConversion ?? '-');
-    }
-}
+
+    return (row?.NetLandedCost ?? '-');
+
+  }
 
   const frameworkComponents = {
     totalValueRenderer: buttonFormatter,
@@ -923,6 +919,7 @@ function RMImportListing(props) {
     statusFormatter: statusFormatter,
     hyphenFormatter: hyphenFormatter,
     combinedCostingHeadRenderer: combinedCostingHeadRenderer,
+checkBoxRenderer: checkBoxRenderer,
     currencyFormatter: currencyFormatter,
     attachmentFormatter: attachmentFormatter,
     statusFilter : CostingHeadDropdownFilter,

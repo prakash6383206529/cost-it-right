@@ -630,8 +630,14 @@ function CostingSimulation(props) {
         })
         dispatch(getComparisionSimulationData(obj, res => {
             const Data = res.data.Data
-            const obj1 = [...formViewData(Data.OldCosting, 'Old Costing'), ...formViewData(Data.NewCosting, 'New Costing'), ...formViewData(Data.Variance, 'Variance')]
-            dispatch(setCostingViewData(obj1))
+            // const obj1 = [...formViewData(Data.OldCosting, 'Old Costing'), ...formViewData(Data.NewCosting, 'New Costing'), ...formViewData(Data.Variance, 'Variance')]
+            const obj1 = formViewData(Data.OldCosting, 'Old Costing')
+            const obj2 = formViewData(Data.NewCosting, 'New Costing')
+            const obj3 = formViewData(Data.Variance, 'Variance')
+            const objj3 = [obj1[0], obj2[0], obj3[0]]
+            objj3[1].SimulationId = Data?.SimulationId
+            objj3[1].SimulationStatusId = Data?.SimulationStatusId
+            dispatch(setCostingViewData(objj3))
             setCostingDetailDrawer(true)
         }))
     }
@@ -1758,6 +1764,8 @@ function CostingSimulation(props) {
                                                     {Number(amendmentDetails?.SimulationHeadId) === Number(VBCTypeId) && <AgGridColumn width={150} field="VendorName" tooltipField='VendorName' headerName={vendorLabel + " (Code)"}></AgGridColumn>}
                                                     {Number(amendmentDetails?.SimulationHeadId) === Number(CBCTypeId) && <AgGridColumn width={150} field="CustomerName" tooltipField='CustomerName' headerName='Customer (Code)'></AgGridColumn>}
                                                     {isSimulationWithCosting && <AgGridColumn width={150} field="PlantName" tooltipField='PlantName' cellRenderer='plantFormatter' headerName='Plant (Code)'></AgGridColumn>}
+                                                    {getConfigurationKey().IsDivisionAllowedForDepartment && isSimulationWithCosting && <AgGridColumn width={185} field="DivisionCode" tooltipField="DivisionCode" headerName="Division"></AgGridColumn>}
+
                                                     {isSimulationWithCosting && <AgGridColumn width={150} field="InfoCategory" tooltipField='InfoCategory' cellRenderer='hyphenFormatter' headerName='Category'></AgGridColumn>}
                                                     {isSimulationWithCosting && <AgGridColumn width={140} field="BudgetedPrice" tooltipField='BudgetedPrice' headerName='Budgeted Price' cellRenderer='impactPerQuarterFormatter'></AgGridColumn>}
 

@@ -849,7 +849,6 @@ input::-webkit-input-placeholder {
   .tab-pane {
     .filter-block {
       position: initial;
-      height: 32px !important;
       margin-bottom: 25px;
       background-color: none;
 
@@ -885,7 +884,6 @@ input::-webkit-input-placeholder {
 
     .filter-block {
       position: initial;
-      height: 32px !important;
       margin-bottom: 25px;
 
       &:before {
@@ -8298,12 +8296,14 @@ body {
 
 // <-------END simulation token dropdown css------>
 
-.simulation-labels {
+.simulation-labels.filter-block {
   .w-72 {
     .flex-fills.label {
       min-width: 72px !important;
     }
   }
+
+  height: auto !important;
 }
 
 @media screen and (min-width: $middleDesktop) {
@@ -9149,4 +9149,49 @@ iframe {
 
 .mh-inherit {
   min-height: inherit !important;
+}
+
+
+.pending-simulation-alert {
+  background: #fff9e600;
+  text-align: left;
+
+  .alert-text {
+    color: #666;
+  }
+
+  .alert-table {
+    width: 475px;
+    border-collapse: collapse;
+    margin: 15px 0;
+  }
+
+  .alert-table th,
+  .alert-table td {
+    border: 1px solid #ffb6b6;
+    padding: 8px;
+    text-align: left;
+  }
+
+  .alert-table th {
+    background-color: #fc577438;
+  }
+
+  .action-text {
+    color: #d32f2f;
+    margin: 0;
+  }
+
+  .toggle-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0px;
+    margin-left: 10px;
+
+    &:focus {
+      border: none !important;
+      box-shadow: none !important;
+    }
+  }
 }

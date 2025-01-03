@@ -54,7 +54,7 @@ function MRSimulation(props) {
     const [basicRateviewTooltip, setBasicRateViewTooltip] = useState(false)
     const [textFilterSearch, setTextFilterSearch] = useState('')
     const gridRef = useRef();
-const {vendorLabel} = useLabels()
+    const { vendorLabel } = useLabels()
     const { technologyLabel } = useLabels();
     const { register, control, setValue, formState: { errors }, } = useForm({
         mode: 'onChange',
@@ -126,15 +126,15 @@ const {vendorLabel} = useLabels()
     }
 
     const newRateFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const value = beforeSaveCell(cell)
+        const cell = row?.IsSimulated ? row?.NewMachineRate : props?.valueFormatted ? props.valueFormatted : props?.value;
+        const value = row?.IsSimulated ? row?.NewMachineRate : beforeSaveCell(cell)
         return (
             <>
                 {
                     isImpactedMaster ?
                         row.NewMachineRate :
-                        <span id={`newRateMachineRate-${props.rowIndex}`} className={`${!isbulkUpload ? 'form-control' : ''} netCost_revised`} title={cell && value ? Number(cell) : Number(row.MachineRate)}>{cell && value ? Number(cell) : Number(row.MachineRate)} </span>
+                        <span id={`newRateMachineRate-${props.rowIndex}`} className={`${!isbulkUpload ? 'form-control' : ''} ${row?.IsSimulated ? 'disabled' : ''} netCost_revised`} title={cell && value ? Number(cell) : Number(row.MachineRate)}>{cell && value ? Number(cell) : Number(row.MachineRate)} </span>
                 }
 
             </>
@@ -366,6 +366,7 @@ const {vendorLabel} = useLabels()
             let tempObj = {}
             tempObj.MachineId = item.MachineId
             tempObj.MachineProcessRateId = item.MachineProcessRateId
+            tempObj.NewMachineProcessRateId = item?.NewMachine && item?.NewMachine?.MachineProcessRateId ? item?.NewMachine?.MachineProcessRateId : null ?? null
             tempObj.OldMachineRate = item.MachineRate
             tempObj.NewMachineRate = item.NewMachineRate
             tempArr.push(tempObj)
@@ -392,6 +393,16 @@ const {vendorLabel} = useLabels()
     const onBtExport = () => {
         return returnExcelColumn(MACHINE_IMPACT_DOWNLOAD_EXCEl, list)
     };
+    const EditableCallbackForNewBasicRate = (props) => {
+        const rowData = props?.data;
+        let value = false
+        if (isImpactedMaster || rowData?.IsSimulated) {
+            value = false
+        } else {
+            value = true
+        }
+        return value
+    }
 
     const returnExcelColumn = (data = [], TempData) => {
 
@@ -528,7 +539,7 @@ const {vendorLabel} = useLabels()
                                                 }
                                                 <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Net Machine Rate" marryChildren={true} >
                                                     <AgGridColumn width={120} field="MachineRate" tooltipField='MachineRate' editable='false' headerName="Existing" cellRenderer='oldRateFormatter' colId="MachineRate" suppressSizeToFit={true}></AgGridColumn>
-                                                    <AgGridColumn width={120} cellRenderer='newRateFormatter' editable={!isImpactedMaster} field="NewMachineRate" headerName="Revised" colId='NewMachineRate' headerComponent={'revisedBasicRateHeader'} suppressSizeToFit={true}></AgGridColumn>
+                                                    <AgGridColumn width={120} cellRenderer='newRateFormatter' editable={EditableCallbackForNewBasicRate} field="NewMachineRate" headerName="Revised" colId='NewMachineRate' headerComponent={'revisedBasicRateHeader'} suppressSizeToFit={true}></AgGridColumn>
                                                 </AgGridColumn>
                                                 {props.children}
                                                 <AgGridColumn field="EffectiveDate" headerName={props.isImpactedMaster && !props.lastRevision ? "Current Effective date" : "Effective Date"} editable='false' minWidth={columnWidths.EffectiveDate} cellRenderer='effectiveDateRenderer'></AgGridColumn>

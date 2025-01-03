@@ -1609,10 +1609,10 @@ export function MonocartonBulkUploadCosting(data, callback) {
  * @method getPackagingCalculation
  * @description Get packaging calculator data
 */
-export function getPackagingCalculation(costingId, rawMaterialId, weightCalculationId, callback) {
+export function getPackagingCalculation(costingId, costingPackagingDetailsId, costingPackagingCalculatorDetailsId, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const queryParams = `costingId=${costingId}&rawMaterialId=${EMPTY_GUID}&weightCalculationId=${weightCalculationId ? weightCalculationId : "0"}`
+    const queryParams = `costingId=${costingId}&costingPackagingDetailsId=${costingPackagingDetailsId}&costingPackagingCalculatorDetailsId=${costingPackagingCalculatorDetailsId}`
     const request = axios.get(`${API.getPackagingCalculation}?${queryParams}`, config());
     request.then((response) => {
       if (response.data.Result) {
@@ -1643,6 +1643,52 @@ export function savePackagingCalculation(data, callback) {
       dispatch({ type: API_FAILURE });
       apiErrors(error);
       callback(error);
+    });
+  };
+}
+/**
+ * @method getVolumePerDayForPackagingCalculator
+ * @description Get volume per day data for packaging calculator
+*/
+export function getVolumePerDayForPackagingCalculator(partId, plantId, effectiveDate, vendorId, callback) {
+  return (dispatch) => {
+    const queryParams = `partId=${partId}&plantId=${plantId}&effectiveDate=${effectiveDate}&vendorId=${vendorId}`
+    const request = axios.get(`${API.getVolumePerDayForPackagingCalculator}?${queryParams}`, config());
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      } else if (response.status === 204) {
+        callback(response);
+      } else {
+        Toaster.error(MESSAGES.SOME_ERROR);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+      apiErrors(error);
+    });
+  };
+}
+/**
+ * @method getSimulationPackagingCalculation
+ * @description Get simulation packaging calculator data
+*/
+export function getSimulationPackagingCalculation(simulationId, costingId, callback) {
+  return (dispatch) => {
+    const queryParams = `simulationId=${simulationId}&costingId=${costingId}`
+    const request = axios.get(`${API.getSimulationPackagingCalculation}?${queryParams}`, config());
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      } else if (response.status === 204) {
+        callback(response);
+      } else {
+        Toaster.error(MESSAGES.SOME_ERROR);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+      apiErrors(error);
     });
   };
 }

@@ -84,11 +84,11 @@ const MachineRateListing = (props) => {
   });
   const [searchText, setSearchText] = useState('');
   const { machineDatalist, allMachineDataList } = useSelector(state => state.machine)
-  const { selectedRowForPagination } = useSelector(state => state.simulation);
+  const { selectedRowForPagination, simulationCostingStatus } = useSelector(state => state.simulation);
   const { globalTakes } = useSelector(state => state.pagination);
   const permissions = useContext(ApplyPermission);
   const tourStartData = useSelector(state => state.comman.tourStartData);
-  const { technologyLabel ,vendorLabel,vendorBasedLabel, zeroBasedLabel, customerBasedLabel} = useLabels();
+  const { technologyLabel, vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels();
   useEffect(() => {
     const fetchData = async () => {
       setTimeout(() => {
@@ -124,10 +124,10 @@ const MachineRateListing = (props) => {
     suppressFilterButton: true,
     component: CostingHeadDropdownFilter,
     onFilterChange: (originalValue, value) => {
-      setState((prevState) => ({ ...prevState, floatingFilterData: { ...prevState.floatingFilterData, CostingHead: value } }));   
+      setState((prevState) => ({ ...prevState, floatingFilterData: { ...prevState.floatingFilterData, CostingHead: value } }));
       setState((prevState) => ({ ...prevState, disableFilter: false }));
     }
-};
+  };
 
   const getDataList = (costing_head = '', technology_id = 0, vendor_id = '', machine_type_id = 0, process_id = '', plant_id = '', skip = 0, take = 10, isPagination = true, dataObj = {}) => {
     if (state.filterModel?.EffectiveDateNew) {
@@ -148,7 +148,9 @@ const MachineRateListing = (props) => {
       dataObj.TechnologyId = props.technology.value
       dataObj.Technologies = props.technology.label
     }
-
+    if (props.isSimulation) {
+      dataObj.isRequestForPendingSimulation = simulationCostingStatus ? true : false
+    }
     if (props.isMasterSummaryDrawer !== undefined && !props.isMasterSummaryDrawer) {
       if (props.isSimulation) { props?.changeTokenCheckBox(false) }
       setState((prevState) => ({ ...prevState, isLoader: isPagination ? true : false }))
@@ -409,11 +411,11 @@ const MachineRateListing = (props) => {
   const combinedCostingHeadRenderer = (props) => {
     // Call the existing checkBoxRenderer
     costingHeadFormatter(props);
-  
+
     // Get and localize the cell value
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     const localizedValue = getLocalizedCostingHeadValue(cellValue, vendorBasedLabel, zeroBasedLabel, customerBasedLabel);
-  
+
     // Return the localized value (the checkbox will be handled by AgGrid's default renderer)
     return localizedValue;
   };
@@ -792,8 +794,8 @@ const MachineRateListing = (props) => {
                 enableBrowserTooltips={true}
               >
                 { }
-                <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadRenderer'}   floatingFilterComponentParams={floatingFilterStatus} 
-                                            floatingFilterComponent="statusFilter"></AgGridColumn>
+                <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadRenderer'} floatingFilterComponentParams={floatingFilterStatus}
+                  floatingFilterComponent="statusFilter"></AgGridColumn>
                 {!isSimulation && <AgGridColumn field="Technology" headerName={technologyLabel}></AgGridColumn>}
                 <AgGridColumn field="MachineName" headerName="Machine Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 <AgGridColumn field="MachineNumber" headerName="Machine Number" cellRenderer={'hyphenFormatter'}></AgGridColumn>

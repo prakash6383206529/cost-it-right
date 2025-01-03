@@ -50,6 +50,8 @@ import ViewTcoDetail from './CostingHeadCosts/AdditionalOtherCost/ViewTcoDetail'
 import AddNpvCost from './CostingHeadCosts/AdditionalOtherCost/AddNpvCost'
 import { BarChartComparison } from './BarChartComparison'
 import { CirLogo, CompanyLogo, useLabels } from '../../../helper/core'
+import { checkDivisionByPlantAndGetDivisionIdByPart } from '../../../actions/Common'
+import { fetchDivisionId } from '../CostingUtil'
 
 
 
@@ -1227,32 +1229,42 @@ const {isNetPoPrice , setIsNetPoPrice} = useState(false)
             if (levelDetailsTemp?.length === 0) {
               Toaster.warning("You don't have permission to send costing for approval.")
             } else {
-              let obj = {}
-              obj.DepartmentId = userDetails().DepartmentId
-              obj.UserId = loggedInUserId()
-              obj.TechnologyId = partInfo.TechnologyId
-              obj.Mode = 'costing'
-              obj.approvalTypeId = costingTypeIdToApprovalTypeIdFunction(viewCostingData[0]?.costingTypeId)
-              obj.plantId = viewCostingData[index]?.destinationPlantId ?? EMPTY_GUID
+              let requestObject = {
+                "PlantId": viewCostingData[0]?.destinationPlantId,
+                "PartId": viewCostingData[0]?.partId
+              }
               const { Department } = userDetails()
-              if (Department.length === 1 && !initialConfiguration.IsDivisionAllowedForDepartment) {
-                dispatch(checkFinalUser(obj, res => {
-                  if (res?.data?.Result) {
-                    setIsFinalCommonApproval(res?.data?.Data?.IsFinalApprover)
-                    if (res?.data?.Data?.IsUserInApprovalFlow === true && res?.data?.Data?.IsFinalApprover === false) {
-                      sendForApprovalData(multipleCostings)
-                      setShowApproval(true)
-                    } else if (res?.data?.Data?.IsFinalApprover === true) {
-                      Toaster.warning("Final level user cannot send costing for approval.")
-                    } else {
-                      Toaster.warning("User does not have permission to send costing for approval.")
+              if (Department.length === 1 || getConfigurationKey()?.IsDivisionAllowedForDepartment) {
+                fetchDivisionId(requestObject, dispatch).then((divisionId) => {
+                  dataSelected[0].DivisionId = divisionId
+                  let obj = {}
+                  obj.DepartmentId = userDetails().DepartmentId
+                  obj.UserId = loggedInUserId()
+                  obj.TechnologyId = partInfo.TechnologyId
+                  obj.Mode = 'costing'
+                  obj.approvalTypeId = costingTypeIdToApprovalTypeIdFunction(viewCostingData[0]?.costingTypeId)
+                  obj.plantId = viewCostingData[index]?.destinationPlantId ?? EMPTY_GUID
+                  obj.divisionId = divisionId
+
+                  dispatch(checkFinalUser(obj, res => {
+                    if (res?.data?.Result) {
+                      setIsFinalCommonApproval(res?.data?.Data?.IsFinalApprover)
+                      if (res?.data?.Data?.IsUserInApprovalFlow === true && res?.data?.Data?.IsFinalApprover === false) {
+                        sendForApprovalData(multipleCostings)
+                        setShowApproval(true)
+                      } else if (res?.data?.Data?.IsFinalApprover === true) {
+                        Toaster.warning("Final level user cannot send costing for approval.")
+                      } else {
+                        Toaster.warning("User does not have permission to send costing for approval.")
+                      }
                     }
-                  }
-                }))
+                  }))
+                })
               } else {
                 sendForApprovalData(multipleCostings)
                 setShowApproval(true)
               }
+
             }
           }
         }))
@@ -1415,26 +1427,41 @@ const {isNetPoPrice , setIsNetPoPrice} = useState(false)
             if (levelDetailsTemp?.length === 0) {
               Toaster.warning("You don't have permission to send costing for approval.")
             } else {
-              let obj = {}
-              obj.DepartmentId = userDetails().DepartmentId
-              obj.UserId = loggedInUserId()
-              obj.TechnologyId = partInfo.TechnologyId
-              obj.Mode = 'costing'
-              obj.approvalTypeId = costingTypeIdToApprovalTypeIdFunction(viewCostingData[0]?.costingTypeId)
-              obj.plantId = viewCostingData[index]?.destinationPlantId ?? EMPTY_GUID
-              dispatch(checkFinalUser(obj, res => {
-                if (res?.data?.Result) {
-                  setIsFinalCommonApproval(res?.data?.Data?.IsFinalApprover)
-                  if (res?.data?.Data?.IsUserInApprovalFlow === true && res?.data?.Data?.IsFinalApprover === false) {
-                    sendForApprovalData([data[0]?.costingId], index)
-                    setShowApproval(true)
-                  } else if (res?.data?.Data?.IsFinalApprover === true) {
-                    Toaster.warning("Final level user cannot send costing for approval.")
-                  } else {
-                    Toaster.warning("User does not have permission to send costing for approval.")
-                  }
+              const { Department } = userDetails()
+              if (Department.length === 1 || getConfigurationKey()?.IsDivisionAllowedForDepartment) {
+                let requestObject = {
+                  "PlantId": viewCostingData[0]?.destinationPlantId,
+                  "PartId": viewCostingData[0]?.partId
                 }
-              }))
+                fetchDivisionId(requestObject, dispatch).then((divisionId) => {
+                  let selectedDataObj = { DivisionId: divisionId }
+                  setDataSelected([selectedDataObj])
+                  let obj = {}
+                  obj.DepartmentId = userDetails().DepartmentId
+                  obj.UserId = loggedInUserId()
+                  obj.TechnologyId = partInfo.TechnologyId
+                  obj.Mode = 'costing'
+                  obj.approvalTypeId = costingTypeIdToApprovalTypeIdFunction(viewCostingData[0]?.costingTypeId)
+                  obj.plantId = viewCostingData[index]?.destinationPlantId ?? EMPTY_GUID
+                  obj.divisionId = divisionId
+                  dispatch(checkFinalUser(obj, res => {
+                    if (res?.data?.Result) {
+                      setIsFinalCommonApproval(res?.data?.Data?.IsFinalApprover)
+                      if (res?.data?.Data?.IsUserInApprovalFlow === true && res?.data?.Data?.IsFinalApprover === false) {
+                        sendForApprovalData([data[0]?.costingId], index)
+                        setShowApproval(true)
+                      } else if (res?.data?.Data?.IsFinalApprover === true) {
+                        Toaster.warning("Final level user cannot send costing for approval.")
+                      } else {
+                        Toaster.warning("User does not have permission to send costing for approval.")
+                      }
+                    }
+                  }))
+                })
+              } else {
+                sendForApprovalData([data[0]?.costingId], index)
+                setShowApproval(true)
+              }
             }
           }
         }))
@@ -3802,6 +3829,8 @@ const {isNetPoPrice , setIsNetPoPrice} = useState(false)
             closeDrawer={closeViewDrawer}
             isLogisticsTechnology={isLogisticsTechnology}
             anchor={'right'}
+            simulationMode={simulationMode}
+            index={index}
           />
         )
       }
