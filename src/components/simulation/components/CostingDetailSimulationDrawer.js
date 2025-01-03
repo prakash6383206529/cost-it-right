@@ -212,12 +212,12 @@ function CostingDetailSimulationDrawer(props) {
                                             (Number(masterID) === Number(MACHINERATE)) &&
                                             <>
                                                 <Col md="3">
-                                                    <label>Existing Machine Rate ({reactLocalStorage.getObject("baseCurrency")})</label>
-                                                    <label className={`${pricesDetail?.OldMachineRate > pricesDetail?.NewMachineRate ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail?.OldMachineRate, getConfigurationKey().NoOfDecimalForPrice)}</label>
+                                                    <label>Existing Machine Cost ({reactLocalStorage.getObject("baseCurrency")})</label>
+                                                    <label className={`${pricesDetail?.OldNetProcessCost > pricesDetail?.NewNetProcessCost ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail?.OldNetProcessCost, getConfigurationKey().NoOfDecimalForPrice)}</label>
                                                 </Col>
                                                 <Col md="3">
-                                                    <label>Revised Machine Rate ({reactLocalStorage.getObject("baseCurrency")})</label>
-                                                    <label className={`${pricesDetail?.OldMachineRate > pricesDetail?.NewMachineRate ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail?.NewMachineRate, getConfigurationKey().NoOfDecimalForPrice)}</label>
+                                                    <label>Revised Machine Cost ({reactLocalStorage.getObject("baseCurrency")})</label>
+                                                    <label className={`${pricesDetail?.OldNetProcessCost > pricesDetail?.NewNetProcessCost ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail?.NewNetProcessCost, getConfigurationKey().NoOfDecimalForPrice)}</label>
                                                 </Col>
                                             </>
                                         }
