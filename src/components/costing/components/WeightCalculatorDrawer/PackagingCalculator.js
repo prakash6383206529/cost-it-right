@@ -53,7 +53,7 @@ const {rowObjData} = props
         if (!CostingViewMode && calclulationFieldValues.some(value => value !== undefined)) {
             calculateAllValues();
         }
-    }, [calclulationFieldValues,state?.spacerPackingInsertRecoveryCostPerKg]);
+    }, [calclulationFieldValues,state?.spacerPackingInsertRecoveryCostPerKg,state?.volumePerDay,state?.volumePerAnnum]);
     useEffect(() => {
         if(!CostingViewMode){
         dispatch(getVolumePerDayForPackagingCalculator(costingData?.PartId, costingData?.PlantId, CostingEffectiveDate, costingData?.VendorId, (res) => {
@@ -168,10 +168,9 @@ const setFormValues=(data)=>{
         
         const packingCost = (
             (totalCostOfCrate / (state.volumePerAnnum * amortizedNoOfYears)) + 
-            ((weightOfCover * costOfCoverPerKg) / noOfPartsPerCover) + 
+            (checkForNull((weightOfCover * costOfCoverPerKg) / noOfPartsPerCover)) + 
             costOfSpacerPackingInsert
         )
-    
         // Update state
         setState(prevState => ({
             ...prevState,
