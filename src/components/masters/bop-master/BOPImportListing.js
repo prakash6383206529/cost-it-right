@@ -127,6 +127,7 @@ const BOPImportListing = (props) => {
   const { selectedRowForPagination, tokenForSimulation } = useSelector(
     (state) => state.simulation
   );
+
   useEffect(() => {
     if (bopImportList?.length > 0) {
       setState((prevState) => ({ ...prevState, totalRecordCount: bopImportList[0].TotalRecordCount, isLoader: false, render: false }));
@@ -554,7 +555,13 @@ const BOPImportListing = (props) => {
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
     let isEditable = false;
     let isDeleteButton = false;
+    if (isRfq && isMasterSummaryDrawer) {
+      return (
+        <button className="Balance mb-0 button-stick" type="button" onClick={() => handleCompareDrawer(rowData)}>
 
+        </button>
+      );
+    }
     if (permissions?.Edit) {
       isEditable = true;
     }
@@ -610,6 +617,7 @@ const BOPImportListing = (props) => {
       </>
     );
   };
+ 
   /**
    * @method commonCostFormatter
    * @description Renders buttons

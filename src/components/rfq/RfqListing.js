@@ -109,7 +109,7 @@ function RfqListing(props) {
     const location = useLocation();
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
 
-    const hideRemarkHistoryIcon = !initialConfiguration?.IsManageSeparateUserPermissionForPartAndVendorInRaiseRFQ;
+    const hideRemarkHistoryIcon = initialConfiguration?.IsManageSeparateUserPermissionForPartAndVendorInRaiseRFQ;
 
 
     useEffect(() => {
@@ -858,7 +858,7 @@ function RfqListing(props) {
                                                     <AgGridColumn field="VendorName" tooltipField="VendorName" headerName={vendorLabel + " (Code)"} cellRendererFramework={CustomCellRenderer}></AgGridColumn>
                                                     <AgGridColumn field="PlantName" tooltipField="PlantName" headerName='Plant (Code)'></AgGridColumn>
                                                     <AgGridColumn field="TechnologyName" width={"160px"} headerName={technologyLabel}></AgGridColumn>
-                                                   {!initialConfiguration.IsManageSeparateUserPermissionForPartAndVendorInRaiseRFQ && <AgGridColumn field="RaisedBy" width={"160px"} headerName='Initiated By'></AgGridColumn>}
+                                                   {initialConfiguration.IsManageSeparateUserPermissionForPartAndVendorInRaiseRFQ && <AgGridColumn field="RaisedBy" width={"160px"} headerName='Initiated By'></AgGridColumn>}
                                                     <AgGridColumn 
                                                         field="RaisedOn" 
                                                         headerName="Raised On"
@@ -866,7 +866,7 @@ function RfqListing(props) {
                                                         filter="agDateColumnFilter"
                                                         filterParams={raisedOnFilterParams}
                                                     />
-                                                   {!initialConfiguration.IsManageSeparateUserPermissionForPartAndVendorInRaiseRFQ && <AgGridColumn 
+                                                   {initialConfiguration.IsManageSeparateUserPermissionForPartAndVendorInRaiseRFQ && <AgGridColumn 
                                                         field="PartDataSentDate" 
                                                         headerName="RFI Date"
                                                         cellRenderer="dateFormatter"

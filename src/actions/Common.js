@@ -1963,8 +1963,14 @@ const rmAPICalling = (params, dispatch) => {
 
 
 
+// ... existing code ...
+
 export const apiCallingFunction = (params, dispatch) => {
-  const { master } = params;
+  const { master, isMasterSummaryDrawer } = params;
+  if (isMasterSummaryDrawer) {
+    return;
+  }
+
   switch (master?.trim()) {
     case "RawMaterial":
       rmAPICalling(params, dispatch)
@@ -1973,6 +1979,8 @@ export const apiCallingFunction = (params, dispatch) => {
       break;
   }
 }
+
+// ... existing code ...
 
 export function useFetchAPICall(keyName, params = {}) {
   const dispatch = useDispatch();

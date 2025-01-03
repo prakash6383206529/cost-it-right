@@ -28,7 +28,7 @@ const BOPCompareTable = (props) => {
     const[otherCostDrawer,setOtherCostDrawer] = useState(false)
     const [isLoader, setIsLoader] = useState(false)
     const showCheckbox = viewBOPDetails && viewBOPDetails?.some(item => item?.IsShowCheckBoxForApproval === true);
-    const [showConvertedCurrency, setShowConvertedCurrency] = useState(false)
+    const [showConvertedCurrency, setShowConvertedCurrency] = useState(true)
     const [showConvertedCurrencyCheckbox, setShowConvertedCurrencyCheckbox] = useState(false)
         // Add handler function
         const handleConvertedCurrencyChange = (value) => {
@@ -254,7 +254,7 @@ const BOPCompareTable = (props) => {
         else if (!showConvertedCurrency) {
             // First set all keys to empty string
             Object.keys(minObject).forEach(key => minObject[key] = "");
-           
+            
             // Find minimum values for conversion keys but don't show in UI
             const conversionKeys = ["NetLandedCostConversion", "BasicRateConversion", "OtherNetCostConversion"];
            
@@ -262,10 +262,10 @@ const BOPCompareTable = (props) => {
                 minObject[key] = Math.min(...finalArrayList
                     .map(item => isNumber(item[key]) ? checkForNull(item[key]) : Infinity));
             });
-           
+            
             // Set bestCost empty to ensure UI shows empty strings
             minObject.bestCost = "";
-        }
+        } 
         else {
             // Handle converted currency case
             const conversionKeys = ["NetLandedCostConversion", "BasicRatePerUOMConversion", "OtherNetCostConversion"];

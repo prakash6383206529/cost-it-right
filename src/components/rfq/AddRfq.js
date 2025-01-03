@@ -217,7 +217,7 @@ function AddRfq(props) {
     const [remarkDrawer, setRemarkDrawer] = useState(false)
     const [reviewButtonPermission, setReviewButtonPermission] = useState(false)
 
-    const showOnlyFirstModule = !initialConfiguration?.IsManageSeparateUserPermissionForPartAndVendorInRaiseRFQ;
+    const showOnlyFirstModule = initialConfiguration?.IsManageSeparateUserPermissionForPartAndVendorInRaiseRFQ;
     const { toolingSpecificRowData } = useSelector(state => state?.rfq);
     const disableUOMFiled = (selectedOption === "Raw Material" || selectedOption === "Bought Out Part") ? (Object.keys(prNumber).length !== 0 || (dataProps?.isViewFlag) ? true : false || disabledPartUid) : true
     const showTcoFields = initialConfiguration.IsShowTCO
@@ -3445,7 +3445,7 @@ function AddRfq(props) {
                                 <form>
 
                                     <Row className="part-detail-wrapper">
-                                        <TooltipCustom id="technology" disabledIcon={true} tooltipText={`To initiate ${!initialConfiguration.IsManageSeparateUserPermissionForPartAndVendorInRaiseRFQ ? "RFI" : "RFQ"} creation, select the technology, plant code, part type, and input part number (all three characters are necessary)`} />
+                                        <TooltipCustom id="technology" disabledIcon={true} tooltipText={`To initiate ${initialConfiguration?.IsManageSeparateUserPermissionForPartAndVendorInRaiseRFQ ? "RFI" : "RFQ"} creation, select the technology, plant code, part type, and input part number (all three characters are necessary)`} />
 
                                         {quotationType !== "Bought Out Part" && (
                                             <Col md="3">

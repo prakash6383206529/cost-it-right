@@ -155,11 +155,12 @@ function RMDomesticListing(props) {
             isImport: false,
             dataObj: obj,
             master: 'RawMaterial',
-            tabs: 'Domestic'
+            tabs: 'Domestic',
+            isMasterSummaryDrawer: props?.isMasterSummaryDrawer
         }
     }, []);
 
-    const { isLoading, isError, error, data } = useFetchAPICall('MastersRawMaterial_GetAllRawMaterialList', params);
+     const { isLoading, isError, error, data } = useFetchAPICall('MastersRawMaterial_GetAllRawMaterialList', params);
 
     useEffect(() => {
         if (rmDataList?.length > 0) {
@@ -171,6 +172,7 @@ function RMDomesticListing(props) {
         }
 
     }, [rmDataList])
+
 
     useEffect(() => {
         if (!props.stopApiCallOnCancel) {
@@ -247,6 +249,7 @@ function RMDomesticListing(props) {
         dataObj.OtherNetCost = floatingFilterData?.OtherNetCost
 
         if (!props.isMasterSummaryDrawer) {
+            
             dispatch(getAllRMDataList(filterData, skip, take, isPagination, dataObj, false, (res) => {
                 // apply(selectedRowForPagination, selectedRowForPagination.length)
                 if (isSimulation) {
@@ -497,6 +500,7 @@ function RMDomesticListing(props) {
     * @description Renders buttons
     */
     const handleCompareDrawer = (data) => {
+        
         setCompareDrawer(true)
         setRowDataForCompare([data])
     }
@@ -916,6 +920,12 @@ function RMDomesticListing(props) {
         attachmentFormatter: attachmentFormatter,
 
     }
+    
+    
+        
+        
+        
+
     return (
         <div className={`ag-grid-react ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${DownloadAccessibility ? "show-table-btn" : ""} ${isSimulation ? 'simulation-height' : props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
             {(loader && !props.isMasterSummaryDrawer) ? <LoaderCustom customClass="simulation-Loader" /> :
