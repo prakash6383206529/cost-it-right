@@ -472,21 +472,19 @@ export function rfqGetBestCostingDetails(bestCostId, callback) {
                 // Format the data based on type
                 let formattedData = null;
 
-                console.log("tempObj", tempObj);
-                if (tempObj?.BoughtOutPartBestCostRequest) {
+                 if (tempObj?.BoughtOutPartBestCostRequest) {
                     formattedData = {
                         BestCostId: tempObj.BestCostId,
-                        bestCost: true,
+                        bestCost: '',
                         BasicRateConversion : tempObj?.BoughtOutPartBestCostRequest?.BasicRate,
                         NetLandedCostConversion : tempObj?.BoughtOutPartBestCostRequest?.NetBoughtOutPartCost,
                         OtherNetCostConversion : tempObj?.BoughtOutPartBestCostRequest?.OtherCost,
                         nPOPrice : tempObj?.BoughtOutPartBestCostRequest?.POPrice,
                         QuotationPartId : tempObj?.BoughtOutPartBestCostRequest?.QuotationPartId,
-                        UOM: '-',
-                        Currency: getConfigurationKey().BaseCurrency,
-                        Plants: '-',
-                        Vendor: '-',
-                        VendorCode: '-',
+                        UOM: '',
+                        Plants: '',
+                        Vendor: '',
+                        VendorCode: '',
                         EffectiveDate: null,
                         Attachements: [],
                         BoughtOutPartOtherCostDetailsSchema: []
@@ -494,17 +492,16 @@ export function rfqGetBestCostingDetails(bestCostId, callback) {
                 } else if (tempObj?.RawMaterialBestCostRequest) {
                     formattedData = {
                         BestCostId: tempObj.BestCostId,
-                        bestCost: true,
+                        bestCost: '',
                         BasicRateConversion : tempObj?.RawMaterialBestCostRequest?.BasicRate,
                         NetLandedCostConversion : tempObj?.RawMaterialBestCostRequest?.NetLandedCost,
                         OtherNetCostConversion : tempObj?.RawMaterialBestCostRequest?.OtherNetCost,
                         nPOPrice : tempObj?.RawMaterialBestCostRequest?.POPrice,
                         QuotationPartId : tempObj?.RawMaterialBestCostRequest?.QuotationPartId,
-                        UOM: '-',
-                        Currency: getConfigurationKey().BaseCurrency,
-                        Plants: '-',
-                        Vendor: '-',
-                        VendorCode: '-',
+                        UOM: '',
+                        Plants: '',
+                        Vendor: '',
+                        VendorCode: '',
                         EffectiveDate: null,
                         Attachements: [],
                         RawMaterialOtherCostDetailsSchema: []

@@ -33,12 +33,13 @@ const BOPCompareTable = (props) => {
     );    
     
     const bestCostingData = useSelector(state => state?.rfq?.bestCostingData)
-    console.log("bestCostingData", bestCostingData);
+    
 
     const [showConvertedCurrency, setShowConvertedCurrency] = useState(true)
     const [showConvertedCurrencyCheckbox, setShowConvertedCurrencyCheckbox] = useState(false)
         // Add handler function
         const handleConvertedCurrencyChange = (value) => {
+            
             setShowConvertedCurrency(value);
         }
         
@@ -60,24 +61,25 @@ const BOPCompareTable = (props) => {
                 let dat = [...temp]
 
                 let tempArrToSend = _.uniqBy(dat, 'BoughtOutPartId')
-                console.log("tempArrToSend", tempArrToSend);
+                
                 if(!props?.RfqMasterApprovalDrawer){
-                    console.log("bestCostingData ifffff", bestCostingData);
+                    
                     // When coming from view RFQ screen
                     let arr = bestCostObjectFunction(tempArrToSend)
                     dispatch(setBopCostingData([...arr]))
                 } else {
                     if(bestCostingData){
                  
+                 
                     const arr = [...tempArrToSend, bestCostingData]
                     
                     dispatch(setBopCostingData([...arr]))
-                    setShowConvertedCurrency(true)
+                    // setShowConvertedCurrency(true)
                     }
                     else{
                         dispatch(setBopCostingData([...tempArrToSend]))
 
-                        setShowConvertedCurrency(false)
+                        // setShowConvertedCurrency(false)
                     }
                 }
 
@@ -86,6 +88,7 @@ const BOPCompareTable = (props) => {
     
     }, [showConvertedCurrency, bestCostingData])
 
+    
     
     useEffect(() => {
         if (viewBOPDetails && _.map(viewBOPDetails, 'Currency').every(element => 
@@ -139,12 +142,12 @@ const BOPCompareTable = (props) => {
                         DayTime(item?.EffectiveDate).format('DD/MM/YYYY') : 
                         '-',
                     showConvertedCurrency ? 
-                        item?.bestCost ? 
+                    item.bestCost==="" ? 
                             item?.BasicRateConversion : 
                             `${item?.BasicRate} (${item?.BasicRateConversion})` : 
                         item?.BasicRate,
                     showConvertedCurrency ? 
-                        item?.bestCost ? 
+                    item.bestCost===""? 
                             item?.OtherNetCostConversion : 
                             `${item?.OtherNetCost} (${item?.OtherNetCostConversion})` : 
                         item?.OtherNetCost
@@ -155,7 +158,7 @@ const BOPCompareTable = (props) => {
                 const formattedDataTwo = [
                     item?.NumberOfPieces,
                     showConvertedCurrency ? 
-                        item?.bestCost ? 
+                    item.bestCost==="" ? 
                             item?.NetLandedCostConversion : 
                             `${item?.NetLandedCost} (${item?.NetLandedCostConversion})` : 
                         item?.NetLandedCost
