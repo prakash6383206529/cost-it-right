@@ -120,17 +120,17 @@ export const RMDomesticZBCTempData = [
         "SourceLocation": "Jamshedpur",
         "UOM": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         "BasicRate": "20",
-        "CostTypeForOtherCost":"Import Freight",
-        "DescriptionForOtherCost":"Test",
-        "TypeForOtherCost":"Percentage",
-        "ApplicabilityForOtherCost":"Basic Rate",
-        "PercentageOrCostForOtherCost":"2",
-        "RemarkForOtherCost":"TestForOtherCost",
-        "CostingCondition":"Gross price cust.sim (CU00)",
-        "TypeForCostingCondition":"Quantity",
-        "QuantityForCostingCondition":"2",
-        "ApplicabilityForCostingCondition":"",
-        "PercentageOrCostForCostingCondition":"3",
+        "CostTypeForOtherCost": "Import Freight",
+        "DescriptionForOtherCost": "Test",
+        "TypeForOtherCost": "Percentage",
+        "ApplicabilityForOtherCost": "Basic Rate",
+        "PercentageOrCostForOtherCost": "2",
+        "RemarkForOtherCost": "TestForOtherCost",
+        "CostingCondition": "Gross price cust.sim (CU00)",
+        "TypeForCostingCondition": "Quantity",
+        "QuantityForCostingCondition": "2",
+        "ApplicabilityForCostingCondition": "",
+        "PercentageOrCostForCostingCondition": "3",
         "IsScrapUOMApply": "Yes",
         "ScrapUnitOfMeasurement": "Kilogram",
         "UOMToScrapUOMRatio": "10",
@@ -145,34 +145,34 @@ export const RMDomesticZBCTempData = [
         "Remark": "Remark Content",
     },
     {
-        "CostTypeForOtherCost":"Processing Cost",
-        "DescriptionForOtherCost":"Test",
-        "TypeForOtherCost":"Fixed",
-        "PercentageOrCostForOtherCost":"12",
-        "RemarkForOtherCost":"TestForOtherCost",
-        "CostingCondition":"Insurance Local % (ZIN5)",
-        "TypeForCostingCondition":"Percentage",
-        "ApplicabilityForCostingCondition":"Basic Price",
-        "PercentageOrCostForCostingCondition":"2",
+        "CostTypeForOtherCost": "Processing Cost",
+        "DescriptionForOtherCost": "Test",
+        "TypeForOtherCost": "Fixed",
+        "PercentageOrCostForOtherCost": "12",
+        "RemarkForOtherCost": "TestForOtherCost",
+        "CostingCondition": "Insurance Local % (ZIN5)",
+        "TypeForCostingCondition": "Percentage",
+        "ApplicabilityForCostingCondition": "Basic Price",
+        "PercentageOrCostForCostingCondition": "2",
     },
     {
-        "CostTypeForOtherCost":"Other Cost",
-        "DescriptionForOtherCost":"Test",
-        "TypeForOtherCost":"Percentage",
-        "ApplicabilityForOtherCost":"Basic Rate + Import Freight + Processing Cost",
-        "PercentageOrCostForOtherCost":"2",
-        "RemarkForOtherCost":"TestForOtherCost",
-        "CostingCondition":"Freight Local Abs (FRB2)",
-        "TypeForCostingCondition":"Fixed",
-        "PercentageOrCostForCostingCondition":"10",
+        "CostTypeForOtherCost": "Other Cost",
+        "DescriptionForOtherCost": "Test",
+        "TypeForOtherCost": "Percentage",
+        "ApplicabilityForOtherCost": "Basic Rate + Import Freight + Processing Cost",
+        "PercentageOrCostForOtherCost": "2",
+        "RemarkForOtherCost": "TestForOtherCost",
+        "CostingCondition": "Freight Local Abs (FRB2)",
+        "TypeForCostingCondition": "Fixed",
+        "PercentageOrCostForCostingCondition": "10",
     },
     {
-        "CostTypeForOtherCost":"Discount Cost",
-        "DescriptionForOtherCost":"Test",
-        "TypeForOtherCost":"Percentage",
-        "ApplicabilityForOtherCost":"Basic Rate + Import Freight + Processing Cost + Other Cost",
-        "PercentageOrCostForOtherCost":"10",
-        "RemarkForOtherCost":"TestForOtherCost",
+        "CostTypeForOtherCost": "Discount Cost",
+        "DescriptionForOtherCost": "Test",
+        "TypeForOtherCost": "Percentage",
+        "ApplicabilityForOtherCost": "Basic Rate + Import Freight + Processing Cost + Other Cost",
+        "PercentageOrCostForOtherCost": "10",
+        "RemarkForOtherCost": "TestForOtherCost",
     },
     // {
     //     //"CostingHead": "ZBC",
@@ -274,7 +274,7 @@ export const RMDomesticVBC = [
     { label: "Spec", value: "RMSpec" }, //*
     { label: "Code", value: "RawMaterialCode" }, //*
     { label: "Category", value: "Category" }, //*
-    { label: "TechnologyLabel", value: "TechnologyName", defaultValue: "Technology" }, //*
+    { label: "Technology", value: "TechnologyName", defaultValue: "Technology" }, //*
     { label: "VendorCode", value: "VendorCode" }, //NOUI,*
     { label: "PlantCode", value: "DestinationPlantCode" }, //NOUI
     { label: "Exchange Rate Source", value: "ExchangeRateSourceName" },
@@ -324,17 +324,17 @@ export const RMDomesticVBCTempData = [
         "SourceLocation": "Jamshedpur",
         "UOM": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         "BasicRate": "500",
-        "CostTypeForOtherCost":"Import Freight",
-        "DescriptionForOtherCost":"Test",
-        "TypeForOtherCost":"Percentage",
-        "ApplicabilityForOtherCost":"Basic Rate",
-        "PercentageOrCostForOtherCost":"2",
-        "RemarkForOtherCost":"TestForOtherCost",
-        "CostingCondition":"Gross price cust.sim (CU00)",
-        "TypeForCostingCondition":"Quantity",
-        "QuantityForCostingCondition":"2",
-        "ApplicabilityForCostingCondition":"",
-        "PercentageOrCostForCostingCondition":"3",
+        "CostTypeForOtherCost": "Import Freight",
+        "DescriptionForOtherCost": "Test",
+        "TypeForOtherCost": "Percentage",
+        "ApplicabilityForOtherCost": "Basic Rate",
+        "PercentageOrCostForOtherCost": "2",
+        "RemarkForOtherCost": "TestForOtherCost",
+        "CostingCondition": "Gross price cust.sim (CU00)",
+        "TypeForCostingCondition": "Quantity",
+        "QuantityForCostingCondition": "2",
+        "ApplicabilityForCostingCondition": "",
+        "PercentageOrCostForCostingCondition": "3",
         "IsScrapUOMApply": "Yes",
         "ScrapUnitOfMeasurement": "Kilogram",
         "UOMToScrapUOMRatio": "10",
@@ -349,34 +349,34 @@ export const RMDomesticVBCTempData = [
         "Remark": "Remark Content",
     },
     {
-        "CostTypeForOtherCost":"Processing Cost",
-        "DescriptionForOtherCost":"Test",
-        "TypeForOtherCost":"Fixed",
-        "PercentageOrCostForOtherCost":"12",
-        "RemarkForOtherCost":"TestForOtherCost",
-        "CostingCondition":"Insurance Local % (ZIN5)",
-        "TypeForCostingCondition":"Percentage",
-        "ApplicabilityForCostingCondition":"Basic Price",
-        "PercentageOrCostForCostingCondition":"2",
+        "CostTypeForOtherCost": "Processing Cost",
+        "DescriptionForOtherCost": "Test",
+        "TypeForOtherCost": "Fixed",
+        "PercentageOrCostForOtherCost": "12",
+        "RemarkForOtherCost": "TestForOtherCost",
+        "CostingCondition": "Insurance Local % (ZIN5)",
+        "TypeForCostingCondition": "Percentage",
+        "ApplicabilityForCostingCondition": "Basic Price",
+        "PercentageOrCostForCostingCondition": "2",
     },
     {
-        "CostTypeForOtherCost":"Other Cost",
-        "DescriptionForOtherCost":"Test",
-        "TypeForOtherCost":"Percentage",
-        "ApplicabilityForOtherCost":"Basic Rate + Import Freight + Processing Cost",
-        "PercentageOrCostForOtherCost":"2",
-        "RemarkForOtherCost":"TestForOtherCost",
-        "CostingCondition":"Freight Local Abs (FRB2)",
-        "TypeForCostingCondition":"Fixed",
-        "PercentageOrCostForCostingCondition":"10",
+        "CostTypeForOtherCost": "Other Cost",
+        "DescriptionForOtherCost": "Test",
+        "TypeForOtherCost": "Percentage",
+        "ApplicabilityForOtherCost": "Basic Rate + Import Freight + Processing Cost",
+        "PercentageOrCostForOtherCost": "2",
+        "RemarkForOtherCost": "TestForOtherCost",
+        "CostingCondition": "Freight Local Abs (FRB2)",
+        "TypeForCostingCondition": "Fixed",
+        "PercentageOrCostForCostingCondition": "10",
     },
     {
-        "CostTypeForOtherCost":"Discount Cost",
-        "DescriptionForOtherCost":"Test",
-        "TypeForOtherCost":"Percentage",
-        "ApplicabilityForOtherCost":"Basic Rate + Import Freight + Processing Cost + Other Cost",
-        "PercentageOrCostForOtherCost":"10",
-        "RemarkForOtherCost":"TestForOtherCost",
+        "CostTypeForOtherCost": "Discount Cost",
+        "DescriptionForOtherCost": "Test",
+        "TypeForOtherCost": "Percentage",
+        "ApplicabilityForOtherCost": "Basic Rate + Import Freight + Processing Cost + Other Cost",
+        "PercentageOrCostForOtherCost": "10",
+        "RemarkForOtherCost": "TestForOtherCost",
     },
     // {
     //     //"CostingHead": "VBC",
@@ -475,7 +475,7 @@ export const RMImportZBC = [
     { label: "Spec", value: "RMSpec" }, //*
     { label: "Code", value: "RawMaterialCode" }, //*
     { label: "Category", value: "Category" }, //*
-    { label: "TechnologyLabel", value: "TechnologyName", defaultValue: "Technology" }, //*
+    { label: "Technology", value: "TechnologyName", defaultValue: "Technology" }, //*
     { label: "PlantCode", value: "DestinationPlantCode" }, //*
     { label: "Exchange Rate Source", value: "ExchangeRateSourceName" },
     { label: "VendorCode", value: "VendorCode" }, //NOUI
@@ -528,17 +528,17 @@ export const RMImportZBCTempData = [
         "UOM": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         "Currency": "INR",
         "BasicRate": "500",
-        "CostTypeForOtherCost":"Import Freight",
-        "DescriptionForOtherCost":"Test",
-        "TypeForOtherCost":"Percentage",
-        "ApplicabilityForOtherCost":"Basic Rate",
-        "PercentageOrCostForOtherCost":"2",
-        "RemarkForOtherCost":"TestForOtherCost",
-        "CostingCondition":"Gross price cust.sim (CU00)",
-        "TypeForCostingCondition":"Quantity",
-        "QuantityForCostingCondition":"2",
-        "ApplicabilityForCostingCondition":"",
-        "PercentageOrCostForCostingCondition":"3",
+        "CostTypeForOtherCost": "Import Freight",
+        "DescriptionForOtherCost": "Test",
+        "TypeForOtherCost": "Percentage",
+        "ApplicabilityForOtherCost": "Basic Rate",
+        "PercentageOrCostForOtherCost": "2",
+        "RemarkForOtherCost": "TestForOtherCost",
+        "CostingCondition": "Gross price cust.sim (CU00)",
+        "TypeForCostingCondition": "Quantity",
+        "QuantityForCostingCondition": "2",
+        "ApplicabilityForCostingCondition": "",
+        "PercentageOrCostForCostingCondition": "3",
         "IsScrapUOMApply": "Yes",
         "ScrapUnitOfMeasurement": "Kilogram",
         "UOMToScrapUOMRatio": "10",
@@ -553,34 +553,34 @@ export const RMImportZBCTempData = [
         "Remark": "Remark Text",
     },
     {
-        "CostTypeForOtherCost":"Processing Cost",
-        "DescriptionForOtherCost":"Test",
-        "TypeForOtherCost":"Fixed",
-        "PercentageOrCostForOtherCost":"12",
-        "RemarkForOtherCost":"TestForOtherCost",
-        "CostingCondition":"Insurance Local % (ZIN5)",
-        "TypeForCostingCondition":"Percentage",
-        "ApplicabilityForCostingCondition":"Basic Price",
-        "PercentageOrCostForCostingCondition":"2",
+        "CostTypeForOtherCost": "Processing Cost",
+        "DescriptionForOtherCost": "Test",
+        "TypeForOtherCost": "Fixed",
+        "PercentageOrCostForOtherCost": "12",
+        "RemarkForOtherCost": "TestForOtherCost",
+        "CostingCondition": "Insurance Local % (ZIN5)",
+        "TypeForCostingCondition": "Percentage",
+        "ApplicabilityForCostingCondition": "Basic Price",
+        "PercentageOrCostForCostingCondition": "2",
     },
     {
-        "CostTypeForOtherCost":"Other Cost",
-        "DescriptionForOtherCost":"Test",
-        "TypeForOtherCost":"Percentage",
-        "ApplicabilityForOtherCost":"Basic Rate + Import Freight + Processing Cost",
-        "PercentageOrCostForOtherCost":"2",
-        "RemarkForOtherCost":"TestForOtherCost",
-        "CostingCondition":"Freight Local Abs (FRB2)",
-        "TypeForCostingCondition":"Fixed",
-        "PercentageOrCostForCostingCondition":"10",
+        "CostTypeForOtherCost": "Other Cost",
+        "DescriptionForOtherCost": "Test",
+        "TypeForOtherCost": "Percentage",
+        "ApplicabilityForOtherCost": "Basic Rate + Import Freight + Processing Cost",
+        "PercentageOrCostForOtherCost": "2",
+        "RemarkForOtherCost": "TestForOtherCost",
+        "CostingCondition": "Freight Local Abs (FRB2)",
+        "TypeForCostingCondition": "Fixed",
+        "PercentageOrCostForCostingCondition": "10",
     },
     {
-        "CostTypeForOtherCost":"Discount Cost",
-        "DescriptionForOtherCost":"Test",
-        "TypeForOtherCost":"Percentage",
-        "ApplicabilityForOtherCost":"Basic Rate + Import Freight + Processing Cost + Other Cost",
-        "PercentageOrCostForOtherCost":"10",
-        "RemarkForOtherCost":"TestForOtherCost",
+        "CostTypeForOtherCost": "Discount Cost",
+        "DescriptionForOtherCost": "Test",
+        "TypeForOtherCost": "Percentage",
+        "ApplicabilityForOtherCost": "Basic Rate + Import Freight + Processing Cost + Other Cost",
+        "PercentageOrCostForOtherCost": "10",
+        "RemarkForOtherCost": "TestForOtherCost",
     },
     // {
     //     //"CostingHead": "ZBC",
@@ -680,7 +680,7 @@ export const RMDomesticCBC = [
     { label: "Spec", value: "RMSpec" }, //*
     { label: "Code", value: "RawMaterialCode" }, //*
     { label: "Category", value: "Category" }, //*
-    { label: "TechnologyLabel", value: "TechnologyName", defaultValue: "Technology" }, //*
+    { label: "Technology", value: "TechnologyName", defaultValue: "Technology" }, //*
     { label: "CustomerCode", value: "CustomerCode" }, //NOUI,*
     { label: "UOM", value: "UOM" }, //*
     { label: "BasicRate", value: "BasicRate" }, //*
@@ -722,17 +722,17 @@ export const RMDomesticCBCTempData = [
         "CustomerCode": "C-10008",
         "UOM": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         "BasicRate": "500",
-        "CostTypeForOtherCost":"Import Freight",
-        "DescriptionForOtherCost":"Test",
-        "TypeForOtherCost":"Percentage",
-        "ApplicabilityForOtherCost":"Basic Rate",
-        "PercentageOrCostForOtherCost":"2",
-        "RemarkForOtherCost":"TestForOtherCost",
-        "CostingCondition":"Gross price cust.sim (CU00)",
-        "TypeForCostingCondition":"Quantity",
-        "QuantityForCostingCondition":"2",
-        "ApplicabilityForCostingCondition":"",
-        "PercentageOrCostForCostingCondition":"3",
+        "CostTypeForOtherCost": "Import Freight",
+        "DescriptionForOtherCost": "Test",
+        "TypeForOtherCost": "Percentage",
+        "ApplicabilityForOtherCost": "Basic Rate",
+        "PercentageOrCostForOtherCost": "2",
+        "RemarkForOtherCost": "TestForOtherCost",
+        "CostingCondition": "Gross price cust.sim (CU00)",
+        "TypeForCostingCondition": "Quantity",
+        "QuantityForCostingCondition": "2",
+        "ApplicabilityForCostingCondition": "",
+        "PercentageOrCostForCostingCondition": "3",
         "IsScrapUOMApply": "Yes",
         "ScrapUnitOfMeasurement": "Kilogram",
         "UOMToScrapUOMRatio": "10",
@@ -749,34 +749,34 @@ export const RMDomesticCBCTempData = [
         "Remark": "Remark Content",
     },
     {
-        "CostTypeForOtherCost":"Processing Cost",
-        "DescriptionForOtherCost":"Test",
-        "TypeForOtherCost":"Fixed",
-        "PercentageOrCostForOtherCost":"12",
-        "RemarkForOtherCost":"TestForOtherCost",
-        "CostingCondition":"Insurance Local % (ZIN5)",
-        "TypeForCostingCondition":"Percentage",
-        "ApplicabilityForCostingCondition":"Basic Price",
-        "PercentageOrCostForCostingCondition":"2",
+        "CostTypeForOtherCost": "Processing Cost",
+        "DescriptionForOtherCost": "Test",
+        "TypeForOtherCost": "Fixed",
+        "PercentageOrCostForOtherCost": "12",
+        "RemarkForOtherCost": "TestForOtherCost",
+        "CostingCondition": "Insurance Local % (ZIN5)",
+        "TypeForCostingCondition": "Percentage",
+        "ApplicabilityForCostingCondition": "Basic Price",
+        "PercentageOrCostForCostingCondition": "2",
     },
     {
-        "CostTypeForOtherCost":"Other Cost",
-        "DescriptionForOtherCost":"Test",
-        "TypeForOtherCost":"Percentage",
-        "ApplicabilityForOtherCost":"Basic Rate + Import Freight + Processing Cost",
-        "PercentageOrCostForOtherCost":"2",
-        "RemarkForOtherCost":"TestForOtherCost",
-        "CostingCondition":"Freight Local Abs (FRB2)",
-        "TypeForCostingCondition":"Fixed",
-        "PercentageOrCostForCostingCondition":"10",
+        "CostTypeForOtherCost": "Other Cost",
+        "DescriptionForOtherCost": "Test",
+        "TypeForOtherCost": "Percentage",
+        "ApplicabilityForOtherCost": "Basic Rate + Import Freight + Processing Cost",
+        "PercentageOrCostForOtherCost": "2",
+        "RemarkForOtherCost": "TestForOtherCost",
+        "CostingCondition": "Freight Local Abs (FRB2)",
+        "TypeForCostingCondition": "Fixed",
+        "PercentageOrCostForCostingCondition": "10",
     },
     {
-        "CostTypeForOtherCost":"Discount Cost",
-        "DescriptionForOtherCost":"Test",
-        "TypeForOtherCost":"Percentage",
-        "ApplicabilityForOtherCost":"Basic Rate + Import Freight + Processing Cost + Other Cost",
-        "PercentageOrCostForOtherCost":"10",
-        "RemarkForOtherCost":"TestForOtherCost",
+        "CostTypeForOtherCost": "Discount Cost",
+        "DescriptionForOtherCost": "Test",
+        "TypeForOtherCost": "Percentage",
+        "ApplicabilityForOtherCost": "Basic Rate + Import Freight + Processing Cost + Other Cost",
+        "PercentageOrCostForOtherCost": "10",
+        "RemarkForOtherCost": "TestForOtherCost",
     },
     // {
     //     "RawMaterial": "CRCA",
@@ -866,7 +866,7 @@ export const RMImportVBC = [
     { label: "Spec", value: "RMSpec" }, //*
     { label: "Code", value: "RawMaterialCode" }, //*
     { label: "Category", value: "Category" }, //*
-    { label: "TechnologyLabel", value: "TechnologyName", defaultValue: "Technology" }, //*
+    { label: "Technology", value: "TechnologyName", defaultValue: "Technology" }, //*
     { label: "VendorCode", value: "VendorCode" }, //NOUI
     { label: "PlantCode", value: "DestinationPlantCode" }, //NOUI
     { label: "Exchange Rate Source", value: "ExchangeRateSourceName" },
@@ -918,17 +918,17 @@ export const RMImportVBCTempData = [
         "UOM": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         "Currency": "INR",
         "BasicRate": "500",
-        "CostTypeForOtherCost":"Import Freight",
-        "DescriptionForOtherCost":"Test",
-        "TypeForOtherCost":"Percentage",
-        "ApplicabilityForOtherCost":"Basic Rate",
-        "PercentageOrCostForOtherCost":"2",
-        "RemarkForOtherCost":"TestForOtherCost",
-        "CostingCondition":"Gross price cust.sim (CU00)",
-        "TypeForCostingCondition":"Quantity",
-        "QuantityForCostingCondition":"2",
-        "ApplicabilityForCostingCondition":"",
-        "PercentageOrCostForCostingCondition":"3",
+        "CostTypeForOtherCost": "Import Freight",
+        "DescriptionForOtherCost": "Test",
+        "TypeForOtherCost": "Percentage",
+        "ApplicabilityForOtherCost": "Basic Rate",
+        "PercentageOrCostForOtherCost": "2",
+        "RemarkForOtherCost": "TestForOtherCost",
+        "CostingCondition": "Gross price cust.sim (CU00)",
+        "TypeForCostingCondition": "Quantity",
+        "QuantityForCostingCondition": "2",
+        "ApplicabilityForCostingCondition": "",
+        "PercentageOrCostForCostingCondition": "3",
         "IsScrapUOMApply": "Yes",
         "ScrapUnitOfMeasurement": "Kilogram",
         "UOMToScrapUOMRatio": "10",
@@ -943,34 +943,34 @@ export const RMImportVBCTempData = [
         "Remark": "Remark Text",
     },
     {
-        "CostTypeForOtherCost":"Processing Cost",
-        "DescriptionForOtherCost":"Test",
-        "TypeForOtherCost":"Fixed",
-        "PercentageOrCostForOtherCost":"12",
-        "RemarkForOtherCost":"TestForOtherCost",
-        "CostingCondition":"Insurance Local % (ZIN5)",
-        "TypeForCostingCondition":"Percentage",
-        "ApplicabilityForCostingCondition":"Basic Price",
-        "PercentageOrCostForCostingCondition":"2",
+        "CostTypeForOtherCost": "Processing Cost",
+        "DescriptionForOtherCost": "Test",
+        "TypeForOtherCost": "Fixed",
+        "PercentageOrCostForOtherCost": "12",
+        "RemarkForOtherCost": "TestForOtherCost",
+        "CostingCondition": "Insurance Local % (ZIN5)",
+        "TypeForCostingCondition": "Percentage",
+        "ApplicabilityForCostingCondition": "Basic Price",
+        "PercentageOrCostForCostingCondition": "2",
     },
     {
-        "CostTypeForOtherCost":"Other Cost",
-        "DescriptionForOtherCost":"Test",
-        "TypeForOtherCost":"Percentage",
-        "ApplicabilityForOtherCost":"Basic Rate + Import Freight + Processing Cost",
-        "PercentageOrCostForOtherCost":"2",
-        "RemarkForOtherCost":"TestForOtherCost",
-        "CostingCondition":"Freight Local Abs (FRB2)",
-        "TypeForCostingCondition":"Fixed",
-        "PercentageOrCostForCostingCondition":"10",
+        "CostTypeForOtherCost": "Other Cost",
+        "DescriptionForOtherCost": "Test",
+        "TypeForOtherCost": "Percentage",
+        "ApplicabilityForOtherCost": "Basic Rate + Import Freight + Processing Cost",
+        "PercentageOrCostForOtherCost": "2",
+        "RemarkForOtherCost": "TestForOtherCost",
+        "CostingCondition": "Freight Local Abs (FRB2)",
+        "TypeForCostingCondition": "Fixed",
+        "PercentageOrCostForCostingCondition": "10",
     },
     {
-        "CostTypeForOtherCost":"Discount Cost",
-        "DescriptionForOtherCost":"Test",
-        "TypeForOtherCost":"Percentage",
-        "ApplicabilityForOtherCost":"Basic Rate + Import Freight + Processing Cost + Other Cost",
-        "PercentageOrCostForOtherCost":"10",
-        "RemarkForOtherCost":"TestForOtherCost",
+        "CostTypeForOtherCost": "Discount Cost",
+        "DescriptionForOtherCost": "Test",
+        "TypeForOtherCost": "Percentage",
+        "ApplicabilityForOtherCost": "Basic Rate + Import Freight + Processing Cost + Other Cost",
+        "PercentageOrCostForOtherCost": "10",
+        "RemarkForOtherCost": "TestForOtherCost",
     },
     // {
     //     //"CostingHead": "VBC",
@@ -1068,7 +1068,7 @@ export const RMImportCBC = [
     { label: "Spec", value: "RMSpec" }, //*
     { label: "Code", value: "RawMaterialCode" }, //*
     { label: "Category", value: "Category" }, //*
-    { label: "TechnologyLabel", value: "TechnologyName", defaultValue: "Technology" }, //*
+    { label: "Technology", value: "TechnologyName", defaultValue: "Technology" }, //*
     { label: "CustomerCode", value: "CustomerCode" }, //NOUI
     { label: "UOM", value: "UOM" }, //*
     { label: "Currency", value: "Currency" }, //*
@@ -1113,17 +1113,17 @@ export const RMImportCBCTempData = [
         "UOM": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         "Currency": "INR",
         "BasicRate": "500",
-        "CostTypeForOtherCost":"Import Freight",
-        "DescriptionForOtherCost":"Test",
-        "TypeForOtherCost":"Percentage",
-        "ApplicabilityForOtherCost":"Basic Rate",
-        "PercentageOrCostForOtherCost":"2",
-        "RemarkForOtherCost":"TestForOtherCost",
-        "CostingCondition":"Gross price cust.sim (CU00)",
-        "TypeForCostingCondition":"Quantity",
-        "QuantityForCostingCondition":"2",
-        "ApplicabilityForCostingCondition":"",
-        "PercentageOrCostForCostingCondition":"3",
+        "CostTypeForOtherCost": "Import Freight",
+        "DescriptionForOtherCost": "Test",
+        "TypeForOtherCost": "Percentage",
+        "ApplicabilityForOtherCost": "Basic Rate",
+        "PercentageOrCostForOtherCost": "2",
+        "RemarkForOtherCost": "TestForOtherCost",
+        "CostingCondition": "Gross price cust.sim (CU00)",
+        "TypeForCostingCondition": "Quantity",
+        "QuantityForCostingCondition": "2",
+        "ApplicabilityForCostingCondition": "",
+        "PercentageOrCostForCostingCondition": "3",
         "IsScrapUOMApply": "Yes",
         "ScrapUnitOfMeasurement": "Kilogram",
         "UOMToScrapUOMRatio": "10",
@@ -1140,34 +1140,34 @@ export const RMImportCBCTempData = [
         "Remark": "Remark Text",
     },
     {
-        "CostTypeForOtherCost":"Processing Cost",
-        "DescriptionForOtherCost":"Test",
-        "TypeForOtherCost":"Fixed",
-        "PercentageOrCostForOtherCost":"12",
-        "RemarkForOtherCost":"TestForOtherCost",
-        "CostingCondition":"Insurance Local % (ZIN5)",
-        "TypeForCostingCondition":"Percentage",
-        "ApplicabilityForCostingCondition":"Basic Price",
-        "PercentageOrCostForCostingCondition":"2",
+        "CostTypeForOtherCost": "Processing Cost",
+        "DescriptionForOtherCost": "Test",
+        "TypeForOtherCost": "Fixed",
+        "PercentageOrCostForOtherCost": "12",
+        "RemarkForOtherCost": "TestForOtherCost",
+        "CostingCondition": "Insurance Local % (ZIN5)",
+        "TypeForCostingCondition": "Percentage",
+        "ApplicabilityForCostingCondition": "Basic Price",
+        "PercentageOrCostForCostingCondition": "2",
     },
     {
-        "CostTypeForOtherCost":"Other Cost",
-        "DescriptionForOtherCost":"Test",
-        "TypeForOtherCost":"Percentage",
-        "ApplicabilityForOtherCost":"Basic Rate + Import Freight + Processing Cost",
-        "PercentageOrCostForOtherCost":"2",
-        "RemarkForOtherCost":"TestForOtherCost",
-        "CostingCondition":"Freight Local Abs (FRB2)",
-        "TypeForCostingCondition":"Fixed",
-        "PercentageOrCostForCostingCondition":"10",
+        "CostTypeForOtherCost": "Other Cost",
+        "DescriptionForOtherCost": "Test",
+        "TypeForOtherCost": "Percentage",
+        "ApplicabilityForOtherCost": "Basic Rate + Import Freight + Processing Cost",
+        "PercentageOrCostForOtherCost": "2",
+        "RemarkForOtherCost": "TestForOtherCost",
+        "CostingCondition": "Freight Local Abs (FRB2)",
+        "TypeForCostingCondition": "Fixed",
+        "PercentageOrCostForCostingCondition": "10",
     },
     {
-        "CostTypeForOtherCost":"Discount Cost",
-        "DescriptionForOtherCost":"Test",
-        "TypeForOtherCost":"Percentage",
-        "ApplicabilityForOtherCost":"Basic Rate + Import Freight + Processing Cost + Other Cost",
-        "PercentageOrCostForOtherCost":"10",
-        "RemarkForOtherCost":"TestForOtherCost",
+        "CostTypeForOtherCost": "Discount Cost",
+        "DescriptionForOtherCost": "Test",
+        "TypeForOtherCost": "Percentage",
+        "ApplicabilityForOtherCost": "Basic Rate + Import Freight + Processing Cost + Other Cost",
+        "PercentageOrCostForOtherCost": "10",
+        "RemarkForOtherCost": "TestForOtherCost",
     },
     // {
     //     "RawMaterial": "CRCA",
@@ -1356,7 +1356,7 @@ export const Vendor = [
     { label: 'AddressLine1', value: 'AddressLine1', },
     { label: 'AddressLine2', value: 'AddressLine2', },
     { label: 'Potential Vendor', value: 'IsCriticalVendor' },
-    { label: "TechnologyLabel", value: 'Technology', defaultValue: "Technology" },
+    { label: "Technology", value: 'Technology', defaultValue: "Technology" },
     { label: 'PlantCode', value: 'PlantCode' }
 ]
 
@@ -1521,7 +1521,7 @@ export const ZBCOperation = [
     { label: 'UOM', value: 'UOM', }, //*
     { label: 'LabourRate', value: 'LabourRate', }, //NOUI
     { label: 'SurfaceTreatmentOperation', value: 'SurfaceTreatmentOperation' },
-    { label: "TechnologyLabel", value: 'Technology', defaultValue: "Technology" },
+    { label: "Technology", value: 'Technology', defaultValue: "Technology" },
     { label: 'EffectiveDate', value: 'EffectiveDate' },
     { label: 'OperationType', value: 'OperationType' },
     { label: 'MaterialGasCRMHead/NiScrapCrmHead', value: 'MaterialGasCRMHead' },
@@ -1571,7 +1571,7 @@ export const ZBCOperation = [
 ]
 export const ZBCOperationSmallForm = [
     { label: "Note", value: "Note" },
-    { label: "TechnologyLabel", value: 'Technology', defaultValue: "Technology" }, //*
+    { label: "Technology", value: 'Technology', defaultValue: "Technology" }, //*
     { label: 'OperationType', value: 'OperationType', },
     { label: 'OperationName', value: 'OperationName', }, //*
     { label: "OperationCode", value: "OperationCode" },
@@ -1792,7 +1792,7 @@ export const VBCOperation = [
     { label: 'LabourRate', value: 'LabourRate', }, //NOUI
     { label: 'SurfaceTreatmentOperation', value: 'SurfaceTreatmentOperation' },
     { label: 'LabourRatePerUOM', value: 'LabourRatePerUOM' },
-    { label: "TechnologyLabel", value: 'Technology', defaultValue: "Technology" },
+    { label: "Technology", value: 'Technology', defaultValue: "Technology" },
     { label: 'Remark', value: 'Remark' },
     { label: 'Plant', value: 'Plant' },
     { label: 'EffectiveDate', value: 'EffectiveDate' },
@@ -1846,7 +1846,7 @@ export const VBCOperation = [
 ]
 export const VBCOperationSmallForm = [
     { label: "Note", value: "Note" },
-    { label: "TechnologyLabel", value: 'Technology', defaultValue: "Technology" }, //*
+    { label: "Technology", value: 'Technology', defaultValue: "Technology" }, //*
     { label: 'OperationType', value: 'OperationType', },
     { label: 'OperationName', value: 'OperationName', }, //*
     { label: "OperationCode", value: "OperationCode" },
@@ -2073,7 +2073,7 @@ export const CBCOperation = [
     { label: 'LabourRate', value: 'LabourRate', }, //NOUI
     { label: 'SurfaceTreatmentOperation', value: 'SurfaceTreatmentOperation' },
     { label: 'LabourRatePerUOM', value: 'LabourRatePerUOM' },
-    { label: "TechnologyLabel", value: 'Technology', defaultValue: "Technology" },
+    { label: "Technology", value: 'Technology', defaultValue: "Technology" },
     { label: 'Remark', value: 'Remark' },
     { label: 'Plant', value: 'Plant' },
     { label: 'EffectiveDate', value: 'EffectiveDate' },
@@ -2126,7 +2126,7 @@ export const CBCOperation = [
 ]
 export const CBCOperationSmallForm = [
     { label: "Note", value: "Note" }, //*
-    { label: "TechnologyLabel", value: 'Technology', defaultValue: "Technology" }, //*
+    { label: "Technology", value: 'Technology', defaultValue: "Technology" }, //*
     { label: 'OperationType', value: 'OperationType', },
     { label: 'OperationName', value: 'OperationName', }, //*
     { label: "OperationCode", value: "OperationCode" },
@@ -2586,7 +2586,7 @@ export const BOP_ZBC_DOMESTIC = [
     { label: 'BoughtOutPartName', value: 'BoughtOutPartName', }, //*
     { label: 'CategoryName', value: 'CategoryName', }, //*
     { label: 'Specification', value: 'Specification', },
-    { label: "SAPCode", value: "SAPCode", },
+    { label: "SAPCode", value: "SAPPartNumber", },
     { label: 'UnitOfMeasurement', value: 'UnitOfMeasurement', }, //*
     { label: 'PlantCode', value: 'DestinationPlantCode', }, //*
     { label: 'Exchange Rate Source', value: 'ExchangeRateSourceName' },
@@ -2614,7 +2614,7 @@ export const BOP_ZBC_DOMESTIC_TempData = [
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
         'Specification': '20 mm',
-        'SAPCode': 'SAP 01',
+        'SAPPartNumber': 'SAP 01',
         "UnitOfMeasurement": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         'DestinationPlantCode': 'Plant101',
         "ExchangeRateSourceName": "SBI",
@@ -2639,7 +2639,7 @@ export const BOP_ZBC_DOMESTIC_TempData = [
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
         'Specification': '20 mm',
-        'SAPCode': 'SAP 01',
+        'SAPPartNumber': 'SAP 01',
         "UnitOfMeasurement": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
         'DestinationPlantCode': 'Plant101',
         "ExchangeRateSourceName": "SBI",
@@ -2664,7 +2664,7 @@ export const BOP_ZBC_DOMESTIC_TempData = [
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
         'Specification': '20 mm',
-        'SAPCode': 'SAP 01',
+        'SAPPartNumber': 'SAP 01',
         "UnitOfMeasurement": "shot/stroke/Number",
         'DestinationPlantCode': 'Plant101',
         "ExchangeRateSourceName": "SBI",
@@ -2676,8 +2676,8 @@ export const BOP_ZBC_DOMESTIC_TempData = [
         'TypeForOtherCost': 'Percentage',
         'ApplicabilityForOtherCost': 'Basic Rate + Import Freight + Processing Cost',
         'PercentageOrCostForOtherCost': '2',
-        'RemarkForOtherCost': 'Test',   
-        'CostingCondition' : 'Freight Local Abs (FRB2)',
+        'RemarkForOtherCost': 'Test',
+        'CostingCondition': 'Freight Local Abs (FRB2)',
         'TypeForCostingCondition': 'Fixed',
         'QuantityForCostingCondition': '',
         'ApplicabilityForCostingCondition': '',
@@ -2695,7 +2695,7 @@ export const BOP_VBC_DOMESTIC = [
     { label: 'BoughtOutPartName', value: 'BoughtOutPartName', }, //*
     { label: 'CategoryName', value: 'CategoryName', }, //*
     { label: 'Specification', value: 'Specification', },
-    { label: "SAPCode", value: "SAPCode", },
+    { label: "SAPCode", value: "SAPPartNumber", },
     { label: 'UnitOfMeasurement', value: 'UnitOfMeasurement', }, //*
     { label: 'PlantCode', value: 'DestinationPlantCode', }, //*
     { label: 'Exchange Rate Source', value: 'ExchangeRateSourceName' },
@@ -2726,7 +2726,7 @@ export const BOP_VBC_DOMESTIC_TempData = [
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
         'Specification': '20 mm',
-        'SAPCode': 'SAP 01',
+        'SAPPartNumber': 'SAP 01',
         "UnitOfMeasurement": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         'DestinationPlantCode': "1032",
         "ExchangeRateSourceName": "SBI",
@@ -2756,7 +2756,7 @@ export const BOP_VBC_DOMESTIC_TempData = [
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
         'Specification': '20 mm',
-        'SAPCode': 'SAP 01',
+        'SAPPartNumber': 'SAP 01',
         "UnitOfMeasurement": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
         'DestinationPlantCode': "1032",
         "ExchangeRateSourceName": "SBI",
@@ -2786,7 +2786,7 @@ export const BOP_VBC_DOMESTIC_TempData = [
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
         'Specification': '20 mm',
-        'SAPCode': 'SAP 01',
+        'SAPPartNumber': 'SAP 01',
         "UnitOfMeasurement": "shot/stroke/Number",
         'DestinationPlantCode': "1032",
         "ExchangeRateSourceName": "SBI",
@@ -2803,8 +2803,8 @@ export const BOP_VBC_DOMESTIC_TempData = [
         'TypeForOtherCost': 'Percentage',
         'ApplicabilityForOtherCost': 'Basic Rate + Import Freight + Processing Cost',
         'PercentageOrCostForOtherCost': '2',
-        'RemarkForOtherCost': 'Test',   
-        'CostingCondition' : 'Freight Local Abs (FRB2)',
+        'RemarkForOtherCost': 'Test',
+        'CostingCondition': 'Freight Local Abs (FRB2)',
         'TypeForCostingCondition': 'Fixed',
         'QuantityForCostingCondition': '',
         'ApplicabilityForCostingCondition': '',
@@ -2819,13 +2819,13 @@ export const BOP_DETAILED_DOMESTIC = [
     { label: 'BoughtOutPartName', value: 'BoughtOutPartName', }, //*
     { label: 'CategoryName', value: 'CategoryName', }, //*
     { label: 'Specification', value: 'Specification', },
-    { label: "SAPCode", value: "SAPCode", },
+    { label: "SAPCode", value: "SAPPartNumber", },
     { label: 'UnitOfMeasurement', value: 'UnitOfMeasurement', }, //*
     { label: 'PlantCode', value: 'DestinationPlantCode', }, //*
     { label: 'Exchange Rate Source', value: 'ExchangeRateSourceName' },
     { label: 'VendorCode', value: 'VendorCode', }, //NOUI
     { label: 'IsBreakupBoughtOutPart', value: 'IsBreakupBoughtOutPart', }, //NOUI
-    { label: "TechnologyLabel", value: 'TechnologyName', defaultValue: "Technology" }, //NOUI
+    { label: "Technology", value: 'TechnologyName', defaultValue: "Technology" }, //NOUI
     { label: 'Source', value: 'Source', },
     { label: 'SourceLocation', value: 'SourceLocation', },
     { label: 'EffectiveDate', value: 'EffectiveDate', },
@@ -2838,7 +2838,7 @@ export const BOP_DETAILED_DOMESTIC_TempData = [
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
         'Specification': '20 mm',
-        'SAPCode': 'SAP 01',
+        'SAPPartNumber': 'SAP 01',
         "UnitOfMeasurement": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         'DestinationPlantCode': "1032",
         "ExchangeRateSourceName": "SBI",
@@ -2856,7 +2856,7 @@ export const BOP_DETAILED_DOMESTIC_TempData = [
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
         'Specification': '20 mm',
-        'SAPCode': 'SAP 01',
+        'SAPPartNumber': 'SAP 01',
         "UnitOfMeasurement": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
         'DestinationPlantCode': "1032",
         "ExchangeRateSourceName": "SBI",
@@ -2874,7 +2874,7 @@ export const BOP_DETAILED_DOMESTIC_TempData = [
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
         'Specification': '20 mm',
-        'SAPCode': 'SAP 01',
+        'SAPPartNumber': 'SAP 01',
         "UnitOfMeasurement": "shot/stroke/Number",
         'DestinationPlantCode': "1032",
         "ExchangeRateSourceName": "SBI",
@@ -2898,7 +2898,7 @@ export const BOP_ZBC_IMPORT = [
     { label: 'BoughtOutPartName', value: 'BoughtOutPartName', }, //*
     { label: 'CategoryName', value: 'CategoryName', }, //*
     { label: 'Specification', value: 'Specification', },
-    { label: "SAPCode", value: "SAPCode", },
+    { label: "SAPCode", value: "SAPPartNumber", },
     { label: 'UnitOfMeasurement', value: 'UnitOfMeasurement', }, //*
     { label: 'PlantCode', value: 'DestinationPlantCode', }, //*
     { label: 'Exchange Rate Source', value: 'ExchangeRateSourceName' },
@@ -2929,7 +2929,7 @@ export const BOP_ZBC_IMPORT_TempData = [
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
         'Specification': '20 mm',
-        'SAPCode': 'SAP 01',
+        'SAPPartNumber': 'SAP 01',
         "UnitOfMeasurement": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         'DestinationPlantCode': 'Plant101',
         "ExchangeRateSourceName": "SBI",
@@ -2958,7 +2958,7 @@ export const BOP_ZBC_IMPORT_TempData = [
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
         'Specification': '20 mm',
-        'SAPCode': 'SAP 01',
+        'SAPPartNumber': 'SAP 01',
         "UnitOfMeasurement": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
         'DestinationPlantCode': 'Plant101',
         "ExchangeRateSourceName": "RBI",
@@ -2987,7 +2987,7 @@ export const BOP_ZBC_IMPORT_TempData = [
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
         'Specification': '20 mm',
-        'SAPCode': 'SAP 01',
+        'SAPPartNumber': 'SAP 01',
         "UnitOfMeasurement": "shot/stroke/Number",
         'DestinationPlantCode': 'Plant101',
         "ExchangeRateSourceName": "RBI",
@@ -3003,8 +3003,8 @@ export const BOP_ZBC_IMPORT_TempData = [
         'TypeForOtherCost': 'Percentage',
         'ApplicabilityForOtherCost': 'Basic Rate + Import Freight + Processing Cost',
         'PercentageOrCostForOtherCost': '2',
-        'RemarkForOtherCost': 'Test',   
-        'CostingCondition' : 'Freight Local Abs (FRB2)',
+        'RemarkForOtherCost': 'Test',
+        'CostingCondition': 'Freight Local Abs (FRB2)',
         'TypeForCostingCondition': 'Fixed',
         'QuantityForCostingCondition': '',
         'ApplicabilityForCostingCondition': '',
@@ -3018,7 +3018,7 @@ export const BOP_CBC_DOMESTIC = [
     { label: 'BoughtOutPartName', value: 'BoughtOutPartName', }, //*
     { label: 'CategoryName', value: 'CategoryName', }, //*
     { label: 'Specification', value: 'Specification', },
-    { label: "SAPCode", value: "SAPCode", },
+    { label: "SAPCode", value: "SAPPartNumber", },
     { label: 'UnitOfMeasurement', value: 'UnitOfMeasurement', }, //*
     { label: 'PlantCode', value: 'DestinationPlantCode', }, //*
     { label: 'CustomerCode', value: 'CustomerCode', }, //NOUI
@@ -3046,7 +3046,7 @@ export const BOP_CBC_DOMESTIC_TempData = [
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
         'Specification': '20 mm',
-        'SAPCode': 'SAP 01',
+        'SAPPartNumber': 'SAP 01',
         "UnitOfMeasurement": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         'DestinationPlantCode': "1032",
         "CustomerCode": "C-10008",
@@ -3071,7 +3071,7 @@ export const BOP_CBC_DOMESTIC_TempData = [
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
         'Specification': '20 mm',
-        'SAPCode': 'SAP 01',
+        'SAPPartNumber': 'SAP 01',
         "UnitOfMeasurement": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
         'DestinationPlantCode': "1032",
         "CustomerCode": "C-10008",
@@ -3096,7 +3096,7 @@ export const BOP_CBC_DOMESTIC_TempData = [
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
         'Specification': '20 mm',
-        'SAPCode': 'SAP 01',
+        'SAPPartNumber': 'SAP 01',
         "UnitOfMeasurement": "shot/stroke/Number",
         'DestinationPlantCode': "1032",
         "CustomerCode": "C-10008",
@@ -3108,8 +3108,8 @@ export const BOP_CBC_DOMESTIC_TempData = [
         'TypeForOtherCost': 'Percentage',
         'ApplicabilityForOtherCost': 'Basic Rate + Import Freight + Processing Cost',
         'PercentageOrCostForOtherCost': '2',
-        'RemarkForOtherCost': 'Test',   
-        'CostingCondition' : 'Freight Local Abs (FRB2)',
+        'RemarkForOtherCost': 'Test',
+        'CostingCondition': 'Freight Local Abs (FRB2)',
         'TypeForCostingCondition': 'Fixed',
         'QuantityForCostingCondition': '',
         'ApplicabilityForCostingCondition': '',
@@ -3127,13 +3127,13 @@ export const BOP_DETAILED_IMPORT = [
     { label: 'BoughtOutPartName', value: 'BoughtOutPartName', }, //*
     { label: 'CategoryName', value: 'CategoryName', }, //*
     { label: 'Specification', value: 'Specification', },
-    { label: "SAPCode", value: "SAPCode", },
+    { label: "SAPCode", value: "SAPPartNumber", },
     { label: 'UnitOfMeasurement', value: 'UnitOfMeasurement', }, //*
     { label: 'PlantCode', value: 'DestinationPlantCode', },
     { label: 'Exchange Rate Source', value: 'ExchangeRateSourceName' },
     { label: 'VendorCode', value: 'VendorCode', }, //NOUI
     { label: 'IsBreakupBoughtOutPart', value: 'IsBreakupBoughtOutPart', }, //NOUI
-    { label: "TechnologyLabel", value: 'TechnologyName', defaultValue: "Technology" }, //NOUI
+    { label: "Technology", value: 'TechnologyName', defaultValue: "Technology" }, //NOUI
     // { label: 'VendorPlant', value: 'VendorPlant' },
     // { label: 'VendorPlantCode', value: 'VendorPlantCode', }, //NOUI
     { label: 'SourceVendorName', value: 'SourceVendorName', },
@@ -3152,7 +3152,7 @@ export const BOP_DETAILED_IMPORT_TempData = [
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
         'Specification': '20 mm',
-        'SAPCode': 'SAP 01',
+        'SAPPartNumber': 'SAP 01',
         "UnitOfMeasurement": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         'DestinationPlantCode': '1032',
         "ExchangeRateSourceName": "SBI",
@@ -3173,7 +3173,7 @@ export const BOP_DETAILED_IMPORT_TempData = [
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
         'Specification': '20 mm',
-        'SAPCode': 'SAP 01',
+        'SAPPartNumber': 'SAP 01',
         "UnitOfMeasurement": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
         'DestinationPlantCode': '1032',
         "ExchangeRateSourceName": "RBI",
@@ -3194,7 +3194,7 @@ export const BOP_DETAILED_IMPORT_TempData = [
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
         'Specification': '20 mm',
-        'SAPCode': 'SAP 01',
+        'SAPPartNumber': 'SAP 01',
         "UnitOfMeasurement": "shot/stroke/Number",
         'DestinationPlantCode': '1032',
         "ExchangeRateSourceName": "RBI",
@@ -3221,7 +3221,7 @@ export const BOP_VBC_IMPORT = [
     { label: 'BoughtOutPartName', value: 'BoughtOutPartName', }, //*
     { label: 'CategoryName', value: 'CategoryName', }, //*
     { label: 'Specification', value: 'Specification', },
-    { label: "SAPCode", value: "SAPCode", },
+    { label: "SAPCode", value: "SAPPartNumber", },
     { label: 'UnitOfMeasurement', value: 'UnitOfMeasurement', }, //*
     { label: 'PlantCode', value: 'DestinationPlantCode', },
     { label: 'Exchange Rate Source', value: 'ExchangeRateSourceName' },
@@ -3257,7 +3257,7 @@ export const BOP_VBC_IMPORT_TempData = [
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
         'Specification': '20 mm',
-        'SAPCode': 'SAP 01',
+        'SAPPartNumber': 'SAP 01',
         "UnitOfMeasurement": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         'DestinationPlantCode': '1032',
         "ExchangeRateSourceName": "SBI",
@@ -3288,7 +3288,7 @@ export const BOP_VBC_IMPORT_TempData = [
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
         'Specification': '20 mm',
-        'SAPCode': 'SAP 01',
+        'SAPPartNumber': 'SAP 01',
         "UnitOfMeasurement": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
         'DestinationPlantCode': '1032',
         "ExchangeRateSourceName": "RBI",
@@ -3319,7 +3319,7 @@ export const BOP_VBC_IMPORT_TempData = [
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
         'Specification': '20 mm',
-        'SAPCode': 'SAP 01',
+        'SAPPartNumber': 'SAP 01',
         "UnitOfMeasurement": "shot/stroke/Number",
         'DestinationPlantCode': '1032',
         "ExchangeRateSourceName": "RBI",
@@ -3337,8 +3337,8 @@ export const BOP_VBC_IMPORT_TempData = [
         'TypeForOtherCost': 'Percentage',
         'ApplicabilityForOtherCost': 'Basic Rate + Import Freight + Processing Cost',
         'PercentageOrCostForOtherCost': '2',
-        'RemarkForOtherCost': 'Test',   
-        'CostingCondition' : 'Freight Local Abs (FRB2)',
+        'RemarkForOtherCost': 'Test',
+        'CostingCondition': 'Freight Local Abs (FRB2)',
         'TypeForCostingCondition': 'Fixed',
         'QuantityForCostingCondition': '',
         'ApplicabilityForCostingCondition': '',
@@ -3352,7 +3352,7 @@ export const BOP_CBC_IMPORT = [
     { label: 'BoughtOutPartName', value: 'BoughtOutPartName', }, //*
     { label: 'CategoryName', value: 'CategoryName', }, //*
     { label: 'Specification', value: 'Specification', },
-    { label: "SAPCode", value: "SAPCode", },
+    { label: "SAPCode", value: "SAPPartNumber", },
     { label: 'UnitOfMeasurement', value: 'UnitOfMeasurement', }, //*
     { label: 'PlantCode', value: 'DestinationPlantCode', },
     { label: 'Exchange Rate Source', value: 'ExchangeRateSourceName' },
@@ -3384,7 +3384,7 @@ export const BOP_CBC_IMPORT_TempData = [
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
         'Specification': '20 mm',
-        'SAPCode': 'SAP 01',
+        'SAPPartNumber': 'SAP 01',
         "UnitOfMeasurement": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         'DestinationPlantCode': '1032',
         "ExchangeRateSourceName": "SBI",
@@ -3413,7 +3413,7 @@ export const BOP_CBC_IMPORT_TempData = [
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
         'Specification': '20 mm',
-        'SAPCode': 'SAP 01',
+        'SAPPartNumber': 'SAP 01',
         "UnitOfMeasurement": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
         'DestinationPlantCode': '1032',
         "ExchangeRateSourceName": "RBI",
@@ -3442,7 +3442,7 @@ export const BOP_CBC_IMPORT_TempData = [
         'BoughtOutPartName': 'Screw',
         'CategoryName': 'Machine',
         'Specification': '20 mm',
-        'SAPCode': 'SAP 01',
+        'SAPPartNumber': 'SAP 01',
         "UnitOfMeasurement": "shot/stroke/Number",
         'DestinationPlantCode': '1032',
         "ExchangeRateSourceName": "RBI",
@@ -3458,8 +3458,8 @@ export const BOP_CBC_IMPORT_TempData = [
         'TypeForOtherCost': 'Percentage',
         'ApplicabilityForOtherCost': 'Basic Rate + Import Freight + Processing Cost',
         'PercentageOrCostForOtherCost': '2',
-        'RemarkForOtherCost': 'Test',   
-        'CostingCondition' : 'Freight Local Abs (FRB2)',
+        'RemarkForOtherCost': 'Test',
+        'CostingCondition': 'Freight Local Abs (FRB2)',
         'TypeForCostingCondition': 'Fixed',
         'QuantityForCostingCondition': '',
         'ApplicabilityForCostingCondition': '',
@@ -3739,7 +3739,7 @@ export const Bought_Out_Parts = [
     { label: 'Quantity', value: 'Quantity', },
     { label: 'NetLandedCost', value: 'NetLandedCost', },
     { label: 'PartNumber', value: 'PartNumber', },
-    { label: 'TechnologyLabel', value: 'TechnologyName', defaultValue: "Technology" },
+    { label: 'Technology', value: 'TechnologyName', defaultValue: "Technology" },
     { label: 'CategoryName', value: 'CategoryName', },
     { label: 'CategoryTypeName', value: 'CategoryTypeName', },
     { label: 'Specification', value: 'Specification', },
@@ -3779,7 +3779,7 @@ export const OtherOperation = [
     { label: 'OtherOperationName', value: 'OtherOperationName', },
     { label: 'OperationProcessCode', value: 'OperationProcessCode', },
     { label: 'Description', value: 'Description', },
-    { label: "TechnologyLabel", value: 'TechnologyName', defaultValue: "Technology" },
+    { label: "Technology", value: 'TechnologyName', defaultValue: "Technology" },
     { label: 'SupplierName', value: 'SupplierName', },
     { label: 'OperationName', value: 'OperationName', },
     { label: 'UnitOfMeasurementName', value: 'UnitOfMeasurementName', },
@@ -3820,7 +3820,7 @@ export const Power = [
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const MachineZBC = [
-    { label: "TechnologyLabel", value: 'Technology', defaultValue: "Technology" }, //*
+    { label: "Technology", value: 'Technology', defaultValue: "Technology" }, //*
     { label: 'PlantCode', value: 'PlantCode', }, //*
     { label: 'MachineNo', value: 'MachineNo', }, //*
     { label: 'MachineSpecification', value: 'MachineSpecification', },
@@ -3913,7 +3913,7 @@ export const MachineZBCTempData = [
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const MHRMoreZBC = [
-    { label: "TechnologyLabel", value: "Technology", defaultValue: "Technology" }, //*
+    { label: "Technology", value: "Technology", defaultValue: "Technology" }, //*
     { label: "PlantCode", value: "PlantCode", }, //*
     { label: "VendorCode", value: "VendorCode", },
     { label: "CustomerCode", value: "CustomerCode", },
@@ -4351,7 +4351,7 @@ export const MHRMoreZBCTempData = [
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const MachineVBC = [
-    { label: "TechnologyLabel", value: 'Technology', defaultValue: "Technology" }, //*
+    { label: "Technology", value: 'Technology', defaultValue: "Technology" }, //*
     { label: 'VendorCode', value: 'VendorCode', }, // not on UI
     { label: 'PlantCode', value: 'PlantCode', }, // not on UI
     { label: 'MachineNo', value: 'MachineNo', }, //*
@@ -4446,7 +4446,7 @@ export const MachineVBCTempData = [
     }
 ]
 export const MachineCBC = [
-    { label: "TechnologyLabel", value: 'Technology', defaultValue: "Technology" }, //*
+    { label: "Technology", value: 'Technology', defaultValue: "Technology" }, //*
     { label: 'CustomerCode', value: 'CustomerCode', }, // not on UI
     { label: 'PlantCode', value: 'PlantCode', }, // not on UI
     { label: 'MachineNo', value: 'MachineNo', }, //*
@@ -4553,7 +4553,7 @@ export const PartComponent = [
     { label: 'DrawingNo', value: 'DrawingNo', },
     { label: "SAPCode", value: "SAPCode", },
     { label: 'UnitOfMeasurement', value: 'UnitOfMeasurement', }, //*
-    { label: "TechnologyLabel", value: 'TechnologyName', defaultValue: "Technology" },
+    { label: "Technology", value: 'TechnologyName', defaultValue: "Technology" },
     { label: 'EffectiveDate', value: 'EffectiveDate', }, //,* maybe only star
     { label: 'Remark', value: 'Remark', },
 ]
@@ -4718,7 +4718,7 @@ export const BOMUpload = [
     { label: "Quantity", value: "Quantity" }, //NOUI
     { label: "EffectiveDate", value: "EffectiveDate" },
     { label: "Remark", value: "Remark" },
-    { label: "TechnologyLabel", value: 'TechnologyName', defaultValue: "Technology" },
+    { label: "Technology", value: 'TechnologyName', defaultValue: "Technology" },
     { label: 'UnitOfMeasurement', value: 'UnitOfMeasurement', }, //*
 ]
 
@@ -5183,7 +5183,7 @@ export const RMDomesticSimulation = [
     { label: "Spec", value: "RawMaterialSpecificationName" },
     { label: "Code", value: "RawMaterialCode", },
     { label: "Category", value: "Category" },
-    { label: "TechnologyLabel", value: "TechnologyName", defaultValue: "Technology" },
+    { label: "Technology", value: "TechnologyName", defaultValue: "Technology" },
     { label: "Plant (Code)", value: "DestinationPlantName" },
     { label: "Vendor (Code)", value: "VendorName" },
     //MINDA
@@ -5212,7 +5212,7 @@ export const RMImportSimulation = [
     { label: "Spec", value: "RawMaterialSpecificationName" },
     { label: "Code", value: "RawMaterialCode", },
     { label: "Category", value: "Category" },
-    { label: "TechnologyLabel", value: "TechnologyName", defaultValue: "Technology" },
+    { label: "Technology", value: "TechnologyName", defaultValue: "Technology" },
     { label: "Plant (Code)", value: "DestinationPlantName" },
     { label: "Vendor (Code)", value: "VendorName" },
     //MINDA
@@ -5233,7 +5233,7 @@ export const RMImportSimulation = [
 ]
 
 export const SurfaceTreatmentSimulation = [
-    { label: "TechnologyLabel", value: "Technology", defaultValue: "Technology" },
+    { label: "Technology", value: "Technology", defaultValue: "Technology" },
     { label: "CostingHead", value: "CostingHead" },
     { label: "OperationName", value: "OperationName" },
     { label: "OperationCode", value: "OperationCode" },
@@ -5251,7 +5251,7 @@ export const SurfaceTreatmentSimulation = [
 ]
 
 export const OperationSimulation = [
-    { label: "TechnologyLabel", value: "Technology", defaultValue: "Technology" },
+    { label: "Technology", value: "Technology", defaultValue: "Technology" },
     { label: "CostingHead", value: "CostingHead" },
     { label: "OperationName", value: "OperationName" },
     { label: "OperationCode", value: "OperationCode" },
@@ -5275,7 +5275,7 @@ export const OperationSimulation = [
 
 export const MachineRateSimulation = [
     { label: "CostingHead", value: "CostingHead" },
-    { label: "TechnologyLabel", value: "Technology", defaultValue: "Technology" },
+    { label: "Technology", value: "Technology", defaultValue: "Technology" },
     { label: "MachineName", value: "MachineName", },
     { label: "MachineNumber", value: "MachineNumber", },
     { label: "MachineTypeName", value: "MachineTypeName" },
@@ -5829,7 +5829,7 @@ export const IdForMultiTechnology = ['13', '10', '9']   //Assembly, Electrical P
 export const CostingSimulationDownloadRM = [
     { label: "Costing Head", value: "CostingHead" },
     { label: "CostingNumber", value: "CostingNumber" },
-    { label: "TechnologyLabel", value: "Technology", defaultValue: "Technology" },
+    { label: "Technology", value: "Technology", defaultValue: "Technology" },
     { label: "Raw Material", value: "RMName" },
     { label: "Grade", value: "RMGrade" },
     { label: "Spec", value: "RMSpec" },
@@ -5899,7 +5899,7 @@ export const COMBINEDPROCESSSIMULATION = [          			//RE
     { label: "Vendor Name", value: "VendorName" },
     { label: "Plant", value: "PlantName" },
     { label: "PlantCode", value: "PlantCode" },
-    { label: "TechnologyLabel", value: "Technology", defaultValue: "Technology" },
+    { label: "Technology", value: "Technology", defaultValue: "Technology" },
     //{ label: "Raw Material", value: "RMName" },
     //{ label: "RawMaterial Grade", value: "RMGrade" },
     { label: "Part No", value: "PartNo" },
@@ -5940,7 +5940,7 @@ export const COMBINEDPROCESSSIMULATION = [          			//RE
 export const CostingSimulationDownloadST = [
     { label: "Costing Head", value: "CostingHead" },
     { label: "CostingNumber", value: "CostingNumber" },
-    { label: "TechnologyLabel", value: "Technology", defaultValue: "Technology" },
+    { label: "Technology", value: "Technology", defaultValue: "Technology" },
     { label: "Part No", value: "PartNo" },
     { label: "Part Name", value: "PartName" },
     { label: "Part Type", value: "PartType" },
@@ -5999,7 +5999,7 @@ export const CostingSimulationDownloadST = [
 export const CostingSimulationDownloadOperation = [
     { label: "Costing Head", value: "CostingHead" },
     { label: "CostingNumber", value: "CostingNumber" },
-    { label: "TechnologyLabel", value: "Technology", defaultValue: "Technology" },
+    { label: "Technology", value: "Technology", defaultValue: "Technology" },
     { label: "Part No", value: "PartNo" },
     { label: "Part Name", value: "PartName" },
     { label: "Part Type", value: "PartType" },
@@ -6057,7 +6057,7 @@ export const CostingSimulationDownloadOperation = [
 export const CostingSimulationDownloadBOP = [
     { label: "Costing Head", value: "CostingHead" },
     { label: "CostingNumber", value: "CostingNumber" },
-    { label: "TechnologyLabel", value: "Technology", defaultValue: "Technology" },
+    { label: "Technology", value: "Technology", defaultValue: "Technology" },
     { label: "Part No", value: "PartNo" },
     { label: "Part Name", value: "PartName" },
     { label: "Part Type", value: "PartType" },
@@ -6286,17 +6286,16 @@ export const BOP_DOMESTIC_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead", },
     { label: "BOP Part No.", value: "BoughtOutPartNumber", },
     { label: "BOP Part Name", value: "BoughtOutPartName", },
-    { label: "Min Order Quantity", value: "Quantity", },
     { label: "BOP Part Category", value: "BoughtOutPartCategory", },
     { label: "UOM", value: "UOM", },
     { label: "Specification", value: "Specification", },
-    { label: "SAP Code", value: "SAPCode", },
+    { label: "SAP Code", value: "SAPPartNumber", },
     { label: "Plant (Code)", value: "Plants", },
     { label: "Vendor (Code)", value: "Vendor", },
     //MINDA
     // { label: "Company (Code)", value: "DepartmentName", },
     { label: 'IsBreakupBoughtOutPart', value: 'IsBreakupBoughtOutPart', },
-    { label: "TechnologyLabel", value: 'TechnologyName', defaultValue: "Technology" },
+    { label: "Technology", value: 'TechnologyName', defaultValue: "Technology" },
     { label: "Customer (Code)", value: "CustomerName", },
     { label: "Minimum Order Quantity", value: "NumberOfPieces", },
     { label: "ExchangeRateSourceName", value: "ExchangeRateSourceName" },
@@ -6319,14 +6318,14 @@ export const BOP_IMPORT_DOWNLOAD_EXCEl = [
     { label: "BOP Category", value: "BoughtOutPartCategory" },
     { label: "UOM", value: "UOM" },
     { label: "Specification", value: "Specification" },
-    { label: "SAP Code", value: "SAPCode", },
+    { label: "SAP Code", value: "SAPPartNumber", },
     { label: "Plant (Code)", value: "Plants" },
     { label: "Vendor (Code)", value: "Vendor" },
     //MINDA
     // { label: "Company (Code)", value: "DepartmentName", },
     { label: "Customer (Code)", value: "CustomerName", },
     { label: 'IsBreakupBoughtOutPart', value: 'IsBreakupBoughtOutPart', },
-    { label: "TechnologyLabel", value: 'TechnologyName', defaultValue: "Technology" },
+    { label: "Technology", value: 'TechnologyName', defaultValue: "Technology" },
     { label: "Inco Terms", value: "IncoTermDescriptionAndInfoTerm" },
     { label: "Payment Terms", value: "PaymentTermDescriptionAndPaymentTerm" },
     { label: "Minimum Order Quantity", value: "NumberOfPieces", },
@@ -6381,15 +6380,21 @@ export const EXCHANGERATE_DOWNLOAD_EXCEl = [
 ]
 
 export const FREIGHT_DOWNLOAD_EXCEl = [
-    { label: "Costing Head", value: "CostingHead", },
-    { label: "Mode", value: "Mode", },
-    { label: "Vendor (Code)", value: "VendorName", },
-    { label: "Customer (Code)", value: "CustomerName", },
-    // { label: "Source City", value: "SourceCity", },
-    // { label: "Destination City", value: "DestinationCity", },
+    { label: "Costing Head", value: "CostingHead" },
+    { label: "Mode", value: "Mode" },
+    { label: "Vendor (Code)", value: "VendorName" },
+    { label: "Plant (Code)", value: "Plant" },
+    { label: "Customer (Code)", value: "CustomerName" },
+    // { label: "Source City", value: "SourceCity" },
+    // { label: "Destination City", value: "DestinationCity" },
     { label: "Exchange Rate Source", value: "ExchangeRateSourceName", },
-    { label: "Currency", value: "Currency", },
-]
+    { label: "Load", value: "FreightLoadType" },
+    { label: "Capacity", value: "Capacity" },
+    { label: "Criteria", value: "RateCriteria" },
+    { label: "Rate", value: "Rate" },
+    { label: "Effective Date", value: "EffectiveDate" }
+];
+
 
 export const FUELLISTING_DOWNLOAD_EXCEl = [
     { label: "Fuel", value: "FuelName", },
@@ -6445,7 +6450,7 @@ export const LABOUR_DOWNLOAD_EXCEl = [
 
 export const MACHINERATE_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead", },
-    { label: "TechnologyLabel", value: "Technology", defaultValue: "Technology" },
+    { label: "Technology", value: "Technology", defaultValue: "Technology" },
     { label: "Machine Name", value: "MachineName" },
     { label: "Machine Number", value: "MachineNumber", },
     { label: "Machine Type", value: "MachineTypeName", },
@@ -6468,7 +6473,7 @@ export const PROCESSLISTING_DOWNLOAD_EXCEl = [
 
 export const RMDOMESTIC_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead", },
-    { label: "TechnologyLabel", value: "TechnologyName", defaultValue: "Technology" },
+    { label: "Technology", value: "TechnologyName", defaultValue: "Technology" },
     { label: "Raw Material", value: "RawMaterialName", },
     { label: "Grade", value: "RawMaterialGradeName", },
     { label: "Spec", value: "RawMaterialSpecificationName", },
@@ -6507,7 +6512,7 @@ export const RMDOMESTIC_DOWNLOAD_EXCEl = [
 
 export const RMIMPORT_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead", },
-    { label: "TechnologyLabel", value: "TechnologyName", defaultValue: "Technology" },
+    { label: "Technology", value: "TechnologyName", defaultValue: "Technology" },
     { label: "Raw Material", value: "RawMaterialName", },
     { label: "Grade", value: "RawMaterialGradeName", },
     { label: "Spec", value: "RawMaterialSpecificationName", },
@@ -6619,7 +6624,7 @@ export const RMINDEXATION = [
 ]
 export const OPERATION_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead", },
-    { label: "TechnologyLabel", value: "Technology", defaultValue: "Technology" },
+    { label: "Technology", value: "Technology", defaultValue: "Technology" },
     { label: "Operation Name", value: "OperationName", },
     { label: "Operation Code", value: "OperationCode", },
     { label: "Plant (Code)", value: "Plants", },
@@ -6644,14 +6649,14 @@ export const OVERHEAD_DOWNLOAD_EXCEl = [
     { label: "Model Type", value: "ModelType", },
     { label: "Overhead Applicability", value: "OverheadApplicabilityType", },
     { label: "Overhead Applicability (%)", value: "OverheadPercentage", },
-    { label: "Overhead on RM (%)", value: "OverheadRMPercentage", },
+    { label: "Overhead on RM/ Part Cost (%)", value: "OverheadRMPercentage", },
     { label: "Overhead on BOP (%)", value: "OverheadBOPPercentage", },
     { label: "Overhead on CC (%)", value: "OverheadMachiningCCPercentage", },
     { label: "Effective Date", value: "EffectiveDate", },
 ]
 
 export const ASSEMBLYPART_DOWNLOAD_EXCEl = [
-    { label: "TechnologyLabel", value: "Technology", defaultValue: "Technology" },
+    { label: "Technology", value: "Technology", defaultValue: "Technology" },
     { label: "BOM No.", value: "BOMNumber", },
     { label: "Part No.", value: "PartNumber", },
     { label: "Name", value: "PartName", },
@@ -6663,11 +6668,12 @@ export const ASSEMBLYPART_DOWNLOAD_EXCEl = [
     { label: "Drawing No.", value: "DrawingNumber", },
     { label: "Effective Date", value: "EffectiveDate", },
     { label: 'UnitOfMeasurement', value: 'UnitOfMeasurement', }, //*
+    { label: "Status", value: "IsActive", },
 
 ]
 
 export const INDIVIDUALPART_DOWNLOAD_EXCEl = [
-    { label: "TechnologyLabel", value: "Technology", defaultValue: "Technology" },
+    { label: "Technology", value: "Technology", defaultValue: "Technology" },
     { label: "Part No.", value: "PartNumber", },
     { label: "Name", value: "PartName", },
     { label: "SAP Code", value: "SAPCode", },
@@ -6675,6 +6681,7 @@ export const INDIVIDUALPART_DOWNLOAD_EXCEl = [
     { label: "Revision No.", value: "RevisionNumber", },
     { label: "Drawing No.", value: "DrawingNumber", },
     { label: "Effective Date", value: "EffectiveDate", },
+    { label: "Status", value: "IsActive", },
     { label: 'UnitOfMeasurement', value: 'UnitOfMeasurement', },
 
 ]
@@ -6770,7 +6777,7 @@ export const PROFIT_DOWNLOAD_EXCEl = [
     { label: "Model Type", value: "ModelType", },
     { label: "Profit Applicability", value: "ProfitApplicabilityType", },
     { label: "Profit Applicability (%)", value: "ProfitPercentage", },
-    { label: "Profit on RM (%)", value: "ProfitRMPercentage", },
+    { label: "Profit on RM/ Part Cost (%)", value: "ProfitRMPercentage", },
     { label: "Profit on BOP (%)", value: "ProfitBOPPercentage", },
     { label: "Profit on CC (%)", value: "ProfitMachiningCCPercentage", },
     { label: "Effective Date", value: "EffectiveDate", },
@@ -6791,7 +6798,7 @@ export const ZBCPLANT_DOWNLOAD_EXCEl = [
 ]
 export const REPORT_DOWNLOAD_EXCEl = [
     { label: "Costing Version", value: "CostingNumber", },
-    { label: "TechnologyLabel", value: "TechnologyName", defaultValue: "Technology" },
+    { label: "Technology", value: "TechnologyName", defaultValue: "Technology" },
     { label: "Plant (Code)", value: "Plant", },
     { label: "Vendor (Code)", value: "Vendor", },
     { label: "Customer (Code)", value: "Customer", },
@@ -6874,7 +6881,7 @@ export const REPORT_DOWNLOAD_EXCEl = [
 ]
 
 export const CombinedProcessSimulation = [         //  						//RE
-    { label: "TechnologyLabel", value: "TechnologyName", defaultValue: "Technology" },
+    { label: "Technology", value: "TechnologyName", defaultValue: "Technology" },
     { label: "PartName", value: "PartName" },
     { label: "PartNumber", value: "PartNumber" },
     { label: "PlantName", value: "PlantName" },
@@ -7010,7 +7017,6 @@ export const RM_IMPACT_DOWNLOAD_EXCEl_IMPORT = [
 export const BOP_IMPACT_DOWNLOAD_EXCEl = [
     { label: "BOP Part No", value: "BoughtOutPartNumber", },
     { label: "BOP Part Name", value: "BoughtOutPartName", },
-    { label: "Min Order Quantity", value: "Quantity", },
     { label: "Existing Basic Rate", value: "OldBOPRate", },
     { label: "Revised Basic Rate", value: "NewBOPRate", },
     { label: "Minimum Order Quantity", value: "Quantity", },
@@ -7156,7 +7162,7 @@ export const InitialGridForToken = [
 
     { label: "Costing Head", value: "CostingHead" },
     { label: "CostingNumber", value: "CostingNumber" },
-    { label: "TechnologyLabel", value: "Technology", defaultValue: "Technology" },
+    { label: "Technology", value: "Technology", defaultValue: "Technology" },
     { label: "Part No", value: "PartNo" },
     { label: "Part Name", value: "PartName" },
     { label: "ECN Number", value: "ECNNumber" },
@@ -7275,7 +7281,7 @@ export const ImpactedRMDownload = [
     { label: "Spec", value: "RMSpec" },
     { label: "Code", value: "RawMaterialCode" },
     { label: "Category", value: "Category" },
-    { label: "TechnologyLabel", value: "TechnologyName", defaultValue: "Technology" },
+    { label: "Technology", value: "TechnologyName", defaultValue: "Technology" },
     { label: "VendorName", value: "VendorName" },
     { label: "UOM", value: "UOM" },
     { label: "ExistingBasicRate", value: "OldBasicRate" },
@@ -7308,7 +7314,7 @@ export const ImpactedOPERATIONDownload = [
     { label: "EffectiveDate", value: "EffectiveDate" },
 ]
 export const ImpactedSTDownload = [
-    { label: "TechnologyLabel", value: "Technology", defaultValue: "Technology" },
+    { label: "Technology", value: "Technology", defaultValue: "Technology" },
     { label: "VendorName", value: "VendorName" },
     { label: "OperationName", value: "OperationName" },
     { label: "OperationCode", value: "OperationCode" },
@@ -7359,7 +7365,7 @@ export const EXCHANGESIMULATIONDOWNLOAD = [
 export const CostingSimulationDownloadMR = [
     { label: "Costing Head", value: "CostingHead" },
     { label: "CostingNumber", value: "CostingNumber" },
-    { label: "TechnologyLabel", value: "Technology", defaultValue: "Technology" },
+    { label: "Technology", value: "Technology", defaultValue: "Technology" },
     { label: "Part No", value: "PartNo" },
     { label: "Part Name", value: "PartName" },
     { label: "Part Type", value: "PartType" },
@@ -8790,7 +8796,7 @@ export const CostingSimulationDownloadAssemblyTechnology = [
     { label: "Vendor (Code)", value: "VendorName" },
     { label: "Plant", value: "PlantName" },
     { label: "PlantCode", value: "PlantCode" },
-    { label: "TechnologyLabel", value: "Technology", defaultValue: "Technology" },
+    { label: "Technology", value: "Technology", defaultValue: "Technology" },
     { label: "Part No", value: "PartNo" },
     { label: "Part Name", value: "PartName" },
     { label: "ECN Number", value: "ECNNumber" },

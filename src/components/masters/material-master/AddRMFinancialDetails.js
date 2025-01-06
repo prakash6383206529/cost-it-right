@@ -1,6 +1,6 @@
 import React, { Fragment, useEffect, useRef, useState } from "react"
 import { fetchSpecificationDataAPI, getCurrencySelectList, getPlantSelectListByType, getUOMSelectList, getVendorNameByVendorSelectList, getFrequencySettlement, getExchangeRateSource } from "../../../actions/Common"
-import { CBCTypeId, EMPTY_GUID, ENTRY_TYPE_DOMESTIC, INR, SPACEBAR, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, effectiveDateRangeDays, searchCount } from "../../../config/constants"
+import { CBCTypeId, DOMESTIC, EMPTY_GUID, ENTRY_TYPE_DOMESTIC, INR, ENTRY_TYPE_IMPORT, SPACEBAR, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, effectiveDateRangeDays, searchCount } from "../../../config/constants"
 import { useDispatch, useSelector } from "react-redux"
 import { getCostingSpecificTechnology, getExchangeRateByCurrency } from "../../costing/actions/Costing"
 import { IsFetchExchangeRateVendorWise, IsShowFreightAndShearingCostFields, getConfigurationKey, labelWithUOMAndCurrency, labelWithUOMAndUOM, loggedInUserId, showRMScrapKeys } from "../../../helper"
@@ -131,7 +131,6 @@ function AddRMFinancialDetails(props) {
         control,
         name: ['JaliScrapCost', 'ForgingScrapBaseCurrency', 'ScrapRate', 'cutOffPriceBaseCurrency', 'CircleScrapCostBaseCurrency', 'MachiningScrapBaseCurrency']
     })
-
     useEffect(() => {
         calculateNetCostDomestic();
     }, [values])
@@ -187,7 +186,7 @@ function AddRMFinancialDetails(props) {
                 }
             }));
         }
-    }, [getValues('Plants'), getValues('ExchangeSource'), state.effectiveDate, getValues('effectiveDate'), rawMaterailDetails?.Vendor, getValues('clientName'),state.currency]);
+    }, [getValues('Plants'), getValues('ExchangeSource'), state.effectiveDate, getValues('effectiveDate'), rawMaterailDetails?.Vendor, getValues('clientName'), state.currency]);
     useEffect(() => {
         dispatch(getFrequencySettlement(() => { }))
         dispatch(getCurrencySelectList(() => { }))
@@ -290,7 +289,7 @@ function AddRMFinancialDetails(props) {
         const isBasicRateVisible = getConfigurationKey().IsBasicRateAndCostingConditionVisible &&
             Number(states.costingTypeId) === Number(ZBCTypeId);
         const netCostText = isBasicRateVisible ? `Basic Price + Condition Cost` : `Basic Rate + Other Cost`;
-        const netCostlabel = states.isImport ? `Net Cost (${state?.currency?.label??'Currency'}/${state.UOM?.label === undefined ? 'UOM' : state.UOM?.label})` : `Net Cost (${!getValues('plantCurrency') ? 'Plant Currency' : getValues('plantCurrency')})`
+        const netCostlabel = states.isImport ? `Net Cost (${state?.currency?.label ?? 'Currency'}/${state.UOM?.label === undefined ? 'UOM' : state.UOM?.label})` : `Net Cost (${!getValues('plantCurrency') ? 'Plant Currency' : getValues('plantCurrency')})`
         return {
             toolTipTextNetCostSelectedCurrency: netCostText,
             tooltipTextPlantCurrency: state.hidePlantCurrency
@@ -757,7 +756,10 @@ function AddRMFinancialDetails(props) {
         setState(prevState => ({ ...prevState, isOpenOtherCostDrawer: true }))
     }
 
+    // ... existing code ...
+
     const closeOtherCostToggle = (type, data, total, totalBase) => {
+
         if (type === 'Save') {
             if (Number(states.costingTypeId) === Number(ZBCTypeId) && state.NetConditionCost) {
                 Toaster.warning("Please click on refresh button to update condition cost data.")
@@ -781,6 +783,8 @@ function AddRMFinancialDetails(props) {
             setState(prevState => ({ ...prevState, isOpenOtherCostDrawer: false }))
         }
     }
+
+    // ... existing code ...
 
     const conditionToggle = () => {
         setState(prevState => ({ ...prevState, isOpenConditionDrawer: true }))
@@ -935,7 +939,7 @@ function AddRMFinancialDetails(props) {
         }
         return true;
     };
- 
+
     const updateTableCost = (isConditionCost = false) => {
         const result = updateCostValue(isConditionCost, state, getValues('BasicRate'));
         // Update state
@@ -1682,7 +1686,7 @@ function AddRMFinancialDetails(props) {
                     closeDrawer={closeOtherCostToggle}
                     anchor={'right'}
                     rawMaterial={true}
-                    rmBasicRate={state.totalBasicRate}
+                    rmBasicRate={states.isImport ? getValues('BasicRateSelectedCurrency') : state.totalBasicRate}
                     ViewMode={isViewFlag}
                     uom={state.UOM}
                     isImport={states.isImport}

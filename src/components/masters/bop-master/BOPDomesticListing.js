@@ -10,7 +10,7 @@ import DayTime from '../../common/DayTimeWrapper'
 import BulkUpload from '../../massUpload/BulkUpload';
 import { BOP_DOMESTIC_DOWNLOAD_EXCEl, } from '../../../config/masterData';
 import LoaderCustom from '../../common/LoaderCustom';
-import { getConfigurationKey, loggedInUserId, searchNocontentFilter, setLoremIpsum, showBopLabel, updateBOPValues, userDepartmetList } from '../../../helper';
+import { getConfigurationKey, getLocalizedCostingHeadValue, loggedInUserId, searchNocontentFilter, setLoremIpsum, showBopLabel, updateBOPValues, userDepartmetList } from '../../../helper';
 import { BopDomestic, } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -20,7 +20,7 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { getListingForSimulationCombined, setSelectedRowForPagination } from '../../simulation/actions/Simulation';
 import WarningMessage from '../../common/WarningMessage';
 import { hyphenFormatter } from '../masterUtil';
-import { TourStartAction, disabledClass, useFetchAPICall } from '../../../actions/Common';
+import { TourStartAction, disabledClass, isResetClick, setResetCostingHead, useFetchAPICall } from '../../../actions/Common';
 import _ from 'lodash';
 import AnalyticsDrawer from '../material-master/AnalyticsDrawer';
 import { reactLocalStorage } from 'reactjs-localstorage';
@@ -37,6 +37,7 @@ import { Steps } from '../../common/Tour/TourMessages';
 import { useTranslation } from 'react-i18next';
 import RfqMasterApprovalDrawer from '../material-master/RfqMasterApprovalDrawer';
 import { useLabels, useWithLocalization } from '../../../helper/core';
+import CostingHeadDropdownFilter from '../material-master/CostingHeadDropdownFilter';
 
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -50,14 +51,14 @@ const BOPDomesticListing = (props) => {
   const searchRef = useRef(null);
   const { bopDomesticList, allBopDataList } = useSelector(state => state.boughtOutparts);
   const { initialConfiguration } = useSelector(state => state.auth);
-  const { selectedRowForPagination } = useSelector(state => state.simulation)
+  const { selectedRowForPagination, simulationCostingStatus } = useSelector(state => state.simulation)
   const { globalTakes } = useSelector((state) => state.pagination);
   const tourStartData = useSelector(state => state.comman.tourStartData);
   // const isRfq = props?.quotationId !== null || props?.quotationId !== '' || props?.quotationId !== undefined ? true : false
   const isRfq = props?.quotationId !== null && props?.quotationId !== '' && props?.quotationId !== undefined
 
   const { t } = useTranslation("common")
-  const { technologyLabel, vendorLabel } = useLabels();
+  const { technologyLabel, vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels();
   const [state, setState] = useState({
     isOpen: false,
     isEditFlag: false,
@@ -82,7 +83,7 @@ const BOPDomesticListing = (props) => {
     inRangeDate: [],
     analyticsDrawer: false,
     selectedRowData: [],
-    floatingFilterData: { CostingHead: "", BoughtOutPartNumber: "", BoughtOutPartName: "", BoughtOutPartCategory: "", UOM: "", Specification: "", Plants: "", Vendor: "", BasicRate: "", NetLandedCost: "", EffectiveDate: "", DepartmentName: props.isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant ? userDepartmetList() : "", CustomerName: "", NumberOfPieces: "", NetCostWithoutConditionCost: "", NetConditionCost: "", IsBreakupBoughtOutPart: "", TechnologyName: "", SAPCode: "", Currency: "", ExchangeRateSourceName: "", OtherNetCost: "" },
+    floatingFilterData: { CostingHead: "", BoughtOutPartNumber: "", BoughtOutPartName: "", BoughtOutPartCategory: "", UOM: "", Specification: "", Plants: "", Vendor: "", BasicRate: "", NetLandedCost: "", EffectiveDate: "", DepartmentName: props.isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant ? userDepartmetList() : "", CustomerName: "", NumberOfPieces: "", NetCostWithoutConditionCost: "", NetConditionCost: "", IsBreakupBoughtOutPart: "", TechnologyName: "", SAPPartNumber: "", Currency: "", ExchangeRateSourceName: "", OtherNetCost: "" },
     warningMessage: false,
     filterModel: {},
     // pageNo: 1,
@@ -111,8 +112,8 @@ const BOPDomesticListing = (props) => {
         getDataList("", 0, "", "", 0, defaultPageSize, true, state.floatingFilterData);
       }
     }, 300);
-
     return () => {
+      dispatch(setResetCostingHead(true, "costingHead"))
       setTimeout(() => {
         if (!props.stopApiCallOnCancel) {
           dispatch(setSelectedRowForPagination([]));
@@ -120,10 +121,9 @@ const BOPDomesticListing = (props) => {
 
         }
       }, 300)
-    };
-  },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []);
+    }
+  }, []);
+
   useEffect(() => {
     if (bopDomesticList?.length > 0) {
       setState((prevState) => ({ ...prevState, totalRecordCount: bopDomesticList[0].TotalRecordCount, isLoader: false, render: false }));
@@ -169,6 +169,11 @@ const BOPDomesticListing = (props) => {
         dataObj.Currency = floatingFilterData?.Currency
         dataObj.ExchangeRateSourceName = floatingFilterData?.ExchangeRateSourceName
         dataObj.OtherNetCost = floatingFilterData?.OtherNetCost
+        if (props.isSimulation) {
+          dataObj.isRequestForPendingSimulation = simulationCostingStatus ? true : false
+        }
+
+
         dispatch(getBOPDataList(filterData, skip, take, isPagination, dataObj, false, (res) => {
 
 
@@ -220,6 +225,8 @@ const BOPDomesticListing = (props) => {
             }, 300);
             setTimeout(() => {
               setState((prevState) => ({ ...prevState, warningMessage: false }))
+              dispatch(setResetCostingHead(false, "costingHead"))
+
             }, 335);
 
             setTimeout(() => {
@@ -369,6 +376,7 @@ const BOPDomesticListing = (props) => {
     setState((prevState) => ({ ...prevState, noData: false, inRangeDate: [], isFilterButtonClicked: false }));
     state.gridApi.setQuickFilter(null)
     state.gridApi.deselectAll();
+    dispatch(setResetCostingHead(true, "costingHead"))
     gridOptions?.columnApi?.resetColumnState(null);
     gridOptions?.api?.setFilterModel(null);
     for (var prop in state.floatingFilterData) {
@@ -437,7 +445,16 @@ const BOPDomesticListing = (props) => {
       setState((prevState) => ({ ...prevState, isBulkUpload: true }))
     }
   }
+  const floatingFilterStatus = {
+    maxValue: 1,
+    suppressFilterButton: true,
+    component: CostingHeadDropdownFilter,
+    onFilterChange: (originalValue, value) => {
+      setState((prevState) => ({ ...prevState, disableFilter: false }));
+      setState((prevState) => ({ ...prevState, floatingFilterData: { ...prevState.floatingFilterData, CostingHead: value } }));
 
+    }
+  };
   const closeBulkUploadDrawer = (event, type) => {
     setState((prevState) => ({ ...prevState, isBulkUpload: false }))
     if (type !== 'cancel') {
@@ -509,6 +526,18 @@ const BOPDomesticListing = (props) => {
     const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
     return cell ? cell : '-';
   }
+
+  const combinedCostingHeadRenderer = (props) => {
+    // Call the existing checkBoxRenderer
+    costingHeadFormatter(props);
+
+    // Get and localize the cell value
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    const localizedValue = getLocalizedCostingHeadValue(cellValue, vendorBasedLabel, zeroBasedLabel, customerBasedLabel);
+
+    // Return the localized value (the checkbox will be handled by AgGrid's default renderer)
+    return localizedValue;
+  };
   /**
   * @method costingHeadFormatter
   * @description Renders Costing head
@@ -664,7 +693,7 @@ const BOPDomesticListing = (props) => {
       if (column.value === "NumberOfPieces") {
         return getConfigurationKey().IsMinimumOrderQuantityVisible
       }
-      if (column.value === "SAPCode") {
+      if (column.value === "SAPPartNumber") {
         return getConfigurationKey().IsSAPCodeRequired
       }
       if (column.value === "ExchangeRateSourceName") {
@@ -693,7 +722,7 @@ const BOPDomesticListing = (props) => {
       tempData = data
     }
     if (!getConfigurationKey().IsSAPCodeRequired) {
-      tempData = hideColumnFromExcel(tempData, "SAPCode")
+      tempData = hideColumnFromExcel(tempData, "SAPPartNumber")
     }
     temp = TempData && TempData.map((item) => {
       if (item.Plants === '-') {
@@ -805,11 +834,12 @@ const BOPDomesticListing = (props) => {
     totalValueRenderer: buttonFormatter,
     customNoRowsOverlay: NoContentFound,
     hyphenFormatter: hyphenFormatter,
-    costingHeadFormatter: costingHeadFormatter,
+    costingHeadFormatter: combinedCostingHeadRenderer,
     effectiveDateFormatter: effectiveDateFormatter,
     // checkBoxRenderer: checkBoxRenderer,
     commonCostFormatter: commonCostFormatter,
     attachmentFormatter: attachmentFormatter,
+    statusFilter: CostingHeadDropdownFilter
   };
 
   const closeAnalyticsDrawer = () => {
@@ -852,7 +882,7 @@ const BOPDomesticListing = (props) => {
   }
 
   return (
-    <div className={`ag-grid-react ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${permissions?.Download ? "show-table-btn" : ""} ${props.isSimulation ? 'simulation-height' : props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
+    <div className={`ag-grid-react grid-parent-wrapper ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${permissions?.Download ? "show-table-btn" : ""} ${props.isSimulation ? 'simulation-height' : props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
       {(state.isLoader && !props.isMasterSummaryDrawer) && <LoaderCustom customClass="simulation-Loader" />}
       {state.disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
       <form noValidate >
@@ -927,7 +957,9 @@ const BOPDomesticListing = (props) => {
                 onFilterModified={onFloatingFilterChanged}
                 suppressRowClickSelection={true}
                 enableBrowserTooltips={true}  >
-                <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
+                <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}
+                  floatingFilterComponentParams={floatingFilterStatus}
+                  floatingFilterComponent="statusFilter"></AgGridColumn>
                 <AgGridColumn field="BoughtOutPartNumber" headerName={`${showBopLabel()} Part No.`}></AgGridColumn>
                 <AgGridColumn field="BoughtOutPartName" headerName={`${showBopLabel()} Part Name`}></AgGridColumn>
                 <AgGridColumn field="BoughtOutPartCategory" headerName={`${showBopLabel()} Category`}></AgGridColumn>

@@ -4,16 +4,17 @@ import { Field, reduxForm, formValueSelector, clearFields } from "redux-form";
 import { Row, Col, Label, } from 'reactstrap';
 import {
   required, checkForNull, checkForDecimalAndNull, acceptAllExceptSingleSpecialCharacter, maxLength20,
-  maxLength10, positiveAndDecimalNumber, maxLength512, decimalLengthsix, checkWhiteSpaces, checkSpacesInString, maxLength80, number, postiveNumber, hashValidation
+  maxLength10, positiveAndDecimalNumber, maxLength512, decimalLengthsix, checkWhiteSpaces, checkSpacesInString, maxLength80, number, postiveNumber, hashValidation,
+  validateFileName
 } from "../../../helper/validation";
-import { renderText, searchableSelect, renderTextAreaField, renderDatePicker, renderTextInputField, focusOnError } from "../../layout/FormInputs";
+import { renderText, searchableSelect, renderTextAreaField, renderDatePicker, renderTextInputField, focusOnError, validateForm } from "../../layout/FormInputs";
 import { getPlantBySupplier, getUOMSelectList, getCurrencySelectList, getPlantSelectListByType, getAllCity, getVendorNameByVendorSelectList, getCityByCountryAction, getExchangeRateSource } from '../../../actions/Common';
 import {
   createBOP, updateBOP, getBOPCategorySelectList, getBOPImportById,
   fileUploadBOPDomestic, getIncoTermSelectList, getPaymentTermSelectList, checkAndGetBopPartNo
 } from '../actions/BoughtOutParts';
 import Toaster from '../../common/Toaster';
-import { MESSAGES } from '../../../config/message';
+import { AttachmentValidationInfo, MESSAGES } from '../../../config/message';
 import { getConfigurationKey, IsFetchExchangeRateVendorWise, loggedInUserId, showBopLabel, userDetails } from "../../../helper/auth";
 import "react-datepicker/dist/react-datepicker.css";
 import Dropzone from 'react-dropzone-uploader';
@@ -34,7 +35,7 @@ import _, { debounce } from 'lodash';
 import AsyncSelect from 'react-select/async';
 import { getClientSelectList, } from '../actions/Client';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { autoCompleteDropdown, convertIntoCurrency, costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission, getEffectiveDateMinDate } from '../../common/CommonFunctions';
+import { autoCompleteDropdown, convertIntoCurrency, costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission, getEffectiveDateMaxDate, getEffectiveDateMinDate } from '../../common/CommonFunctions';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { checkFinalUser } from '../../../components/costing/actions/Costing'
 import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions';
@@ -149,6 +150,8 @@ class AddBOPImport extends Component {
       ExchangeRateId: null,
       totalBasicRate: 0,
       totalOtherCost: 0,
+      isSAPCodeDisabled: false,
+      sourceLocationInputLoader: false,
     }
     this.state = { ...this.initialState };
 
@@ -375,7 +378,10 @@ class AddBOPImport extends Component {
         }
         this.props.checkAndGetBopPartNo(obj, (res) => {
           let Data = res.data.Identity;
+          let sapCode = res?.data?.DynamicData?.sapPartNumber
           this.props.change('BoughtOutPartNumber', Data)
+          this.props.change('SAPPartNumber', sapCode)
+          this.setState({ isSAPCodeDisabled: sapCode === '' ? false : true, IsSAPCodeHandle: sapCode === '' ? false : true })
         })
       }
     } else {
@@ -392,7 +398,10 @@ class AddBOPImport extends Component {
       }
       this.props.checkAndGetBopPartNo(obj, (res) => {
         let Data = res.data.Identity;
+        let sapCode = res?.data?.DynamicData?.sapPartNumber
         this.props.change('BoughtOutPartNumber', Data)
+        this.props.change('SAPPartNumber', sapCode)
+        this.setState({ isSAPCodeDisabled: sapCode === '' ? false : true, IsSAPCodeHandle: sapCode === '' ? false : true })
       })
     }
   }, 500)
@@ -900,7 +909,7 @@ class AddBOPImport extends Component {
    */
   handleMessageChange = (e) => {
     this.setState({
-      remarks: e.target.value,
+      remarks: e?.target?.value,
       isSourceChange: true
     })
   }
@@ -1077,9 +1086,9 @@ class AddBOPImport extends Component {
       inputValue = inputValue.trim();
     }
     if (inputValue?.length >= searchCount) {
-      this.setState({ inputLoader: true });
+      this.setState({ sourceLocationInputLoader: true });
       let res = await this.props.getCityByCountryAction(0, 0, inputValue);
-      this.setState({ inputLoader: false });
+      this.setState({ sourceLocationInputLoader: false });
       let cityDataAPI = res?.data?.SelectList;
       if (inputValue) {
         return autoCompleteDropdown(inputValue, cityDataAPI, false, [], true);
@@ -1138,7 +1147,17 @@ class AddBOPImport extends Component {
     if (status === 'done') {
       let data = new FormData()
       data.append('file', file)
+      if (!validateFileName(file.name)) {
+        this.dropzone.current.files.pop()
+        this.setDisableFalseFunction()
+        return false;
+      }
       this.props.fileUploadBOPDomestic(data, (res) => {
+        if (res && res?.status !== 200) {
+          this.dropzone.current.files.pop()
+          this.setDisableFalseFunction()
+          return false
+        }
         this.setDisableFalseFunction()
         let Data = res.data[0]
         const { files } = this.state;
@@ -1263,7 +1282,7 @@ class AddBOPImport extends Component {
   handleBasicRateChange = (e) => {
     this.setState({ totalBasicRate: e.target.value })
   }
-  handleBOPOperation = (formData, isEditFlag) => {
+  handleBOPOperation = (formData, isEditFlag, isOnlySAPCodeChanged) => {
     const operation = isEditFlag ? this.props.updateBOP : this.props.createBOP;
     const successMessage = isEditFlag ? MESSAGES.UPDATE_BOP_SUCESS : MESSAGES.BOP_ADD_SUCCESS;
 
@@ -1272,14 +1291,14 @@ class AddBOPImport extends Component {
       if (res?.data?.Result) {
         Toaster.success(successMessage);
         if (isEditFlag) {
-          if (!this.state.isEditBtnClicked) {
-            this.cancel('submit');
-          } else {
+          if (this.state.isEditBtnClicked && isOnlySAPCodeChanged === true) {
             this.getDetails();
             this.setState({
               IsSapCodeEditView: true,
               IsSAPCodeHandle: false
             });
+          } else {
+            this.cancel('submit');
           }
         } else {
           this.cancel('submit');
@@ -1300,7 +1319,7 @@ class AddBOPImport extends Component {
       UOM, DataToChange, isDateChange, IsFinancialDataChanged, incoTerm, paymentTerm, isClientVendorBOP, isTechnologyVisible,
       Technology, NetConditionCost, conditionTableData, BasicPrice, NetLandedCost, otherCostTableData, totalOtherCost,
       currencyValue, DropdownChanged, IsSAPCodeUpdated, IsSAPCodeHandle, LocalExchangeRateId, LocalCurrencyId, plantCurrencyValue, ExchangeRateId, ExchangeSource } = this.state;
-    const { fieldsObj, isBOPAssociated } = this.props
+    const { fieldsObj, isBOPAssociated, initialConfiguration } = this.props
 
     const userDetailsBop = JSON.parse(localStorage.getItem('userDetail'))
     if (costingTypeId !== CBCTypeId && vendorName.length <= 0) {
@@ -1380,6 +1399,10 @@ class AddBOPImport extends Component {
     }
 
     formData.BoughtOutPartConditionsDetails = conditionTableData
+    // formData.CurrencyExchangeRate = currencyValue
+    let isOnlySAPCodeChanged = false
+
+
     // CHECK IF CREATE MODE OR EDIT MODE !!!  IF: EDIT  ||  ELSE: CREATE
     if (isEditFlag) {
       let basicPriceSelectedCurrency
@@ -1396,9 +1419,9 @@ class AddBOPImport extends Component {
         ((DataToChange?.Remark ? DataToChange?.Remark : '') === (values?.Remark ? values?.Remark : '')) &&
         ((DataToChange?.SAPPartNumber ? DataToChange?.SAPPartNumber : '') === (values?.SAPPartNumber ? values?.SAPPartNumber : ''))
         &&
-        ((DataToChange?.Source ? String(DataToChange?.Source) : '-') === (values?.Source ? String(values?.Source) : '-')) &&
+        ((DataToChange?.Source ? String(DataToChange?.Source) : ' ') === (values?.Source ? String(values?.Source) : '')) &&
         ((DataToChange?.SourceLocation ? String(DataToChange?.SourceLocation) : '') === (sourceLocation?.value ? String(sourceLocation?.value) : '')) &&
-        checkForNull(basicPriceSelectedCurrency) === checkForNull(DataToChange?.NetCostWithoutConditionCost) &&
+        checkForNull(basicPriceSelectedCurrency).toFixed(initialConfiguration?.NoOfDecimalForPrice) === checkForNull(DataToChange?.NetCostWithoutConditionCost).toFixed(initialConfiguration?.NoOfDecimalForPrice) &&
 
         checkForNull(fieldsObj?.NumberOfPieces) === checkForNull(DataToChange?.NumberOfPieces) &&
         checkForNull(fieldsObj?.BasicRate) === checkForNull(DataToChange?.BasicRate) &&
@@ -1425,17 +1448,32 @@ class AddBOPImport extends Component {
           }
         }
       }
+      if (((files ? JSON.stringify(files) : []) === (DataToChange?.Attachements ? JSON.stringify(DataToChange?.Attachements) : [])) &&
+        ((DataToChange?.Remark ? DataToChange?.Remark : '') === (values?.Remark ? values?.Remark : '')) &&
+        ((DataToChange?.SAPPartNumber ? DataToChange?.SAPPartNumber : '') !== (values?.SAPPartNumber ? values?.SAPPartNumber : '')) &&
+        ((DataToChange?.Source ? String(DataToChange?.Source) : '') === (values?.Source ? String(values?.Source) : '')) &&
+        ((DataToChange?.SourceLocation ? String(DataToChange?.SourceLocation) : '') === (sourceLocation?.value ? String(sourceLocation?.value) : '')) &&
+        checkForNull(basicPriceSelectedCurrency).toFixed(initialConfiguration?.NoOfDecimalForPrice) === checkForNull(DataToChange?.NetCostWithoutConditionCost).toFixed(initialConfiguration?.NoOfDecimalForPrice) &&
+        checkForNull(fieldsObj?.NumberOfPieces).toFixed(initialConfiguration?.NoOfDecimalForPrice) === checkForNull(DataToChange?.NumberOfPieces).toFixed(initialConfiguration?.NoOfDecimalForPrice) &&
+        checkForNull(fieldsObj?.BasicRateSelectedCurrency).toFixed(initialConfiguration?.NoOfDecimalForPrice) === checkForNull(DataToChange?.BasicRate).toFixed(initialConfiguration?.NoOfDecimalForPrice) &&
+        // checkForNull(netLandedCostSelectedCurrency).toFixed(initialConfiguration?.NoOfDecimalForPrice) === checkForNull(DataToChange?.NetLandedCost).toFixed(initialConfiguration?.NoOfDecimalForPrice) && checkForNull(FinalConditionCostSelectedCurrency).toFixed(initialConfiguration?.NoOfDecimalForPrice) === checkForNull(DataToChange?.NetConditionCost).toFixed(initialConfiguration?.NoOfDecimalForPrice) && DropdownChanged &&
+        ((DataToChange.TechnologyId ? String(DataToChange.TechnologyId) : '') === (Technology?.value ? String(Technology?.value) : ''))) {
+        isOnlySAPCodeChanged = true;
+      } else {
+        isOnlySAPCodeChanged = false;
+      }
+
     }
 
     //  IF: APPROVAL FLOW
-    if (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar && !isTechnologyVisible) {
+    if (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar && !isTechnologyVisible && (isEditFlag ? !isOnlySAPCodeChanged : true)) {
       formData.IsSendForApproval = true
       this.setState({ approveDrawer: true, approvalObj: formData })
     }
     //  ELSE: NO APPROVAL FLOW
     else {
       formData.IsSendForApproval = false;
-      this.handleBOPOperation(formData, isEditFlag);
+      this.handleBOPOperation(formData, isEditFlag, isOnlySAPCodeChanged);
     }
 
 
@@ -1892,7 +1930,7 @@ class AddBOPImport extends Component {
                                   placeholder={isViewMode ? "-" : "Enter"}
                                   validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkSpacesInString, hashValidation]}
                                   component={renderText}
-                                  disabled={(IsSapCodeEditView && isEditFlag) || isViewMode}
+                                  disabled={(IsSapCodeEditView && isEditFlag) || isViewMode || this?.state?.isSAPCodeDisabled}
                                   value={this.state.SapCode}
                                   onChange={this.handleChangeSapCode}
                                   className=" "
@@ -2071,6 +2109,7 @@ class AddBOPImport extends Component {
                                 type="text"
                                 minDate={isEditFlag ? this.state.minEffectiveDate : getEffectiveDateMinDate()}
                                 validate={[required]}
+                                maxDate={getEffectiveDateMaxDate()}
                                 autoComplete={'off'}
                                 required={true}
                                 changeHandler={(e) => {
@@ -2301,7 +2340,7 @@ class AddBOPImport extends Component {
                           </Col>
                           <Col md="3">
                             <label>
-                              Upload Files (upload up to {getConfigurationKey().MaxMasterFilesToUpload} files)
+                              Upload Files (upload up to {getConfigurationKey().MaxMasterFilesToUpload} files)<AttachmentValidationInfo />
                             </label>
                             <div className={`alert alert-danger mt-2 ${this.state.files.length === getConfigurationKey().MaxMasterFilesToUpload ? '' : 'd-none'}`} role="alert">
                               Maximum file upload limit reached.
@@ -2592,6 +2631,7 @@ export default connect(mapStateToProps, {
   getPlantUnitAPI
 })(reduxForm({
   form: 'AddBOPImport',
+  validate: validateForm,
   touchOnChange: true,
   onSubmitFail: (errors) => {
     focusOnError(errors)

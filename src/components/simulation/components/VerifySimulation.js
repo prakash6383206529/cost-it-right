@@ -42,6 +42,7 @@ function VerifySimulation(props) {
     const [objs, setObj] = useState({})
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
+    const [isLoader, setIsLoader] = useState(false)
     const [noData, setNoData] = useState(false);
     const [minimumPoPrice, setMinimumPoPrice] = useState('');
     const [currencyViewTooltip, setCurrencyViewTooltip] = useState(false)
@@ -62,7 +63,7 @@ function VerifySimulation(props) {
     const [showRM, setShowRM] = useState(simulationApplicability?.value === 'RM');
     const [showBOP, setShowBOP] = useState(simulationApplicability?.value === 'BOP');
     const [showComponent, setShowComponent] = useState(simulationApplicability?.value === 'Component');
-    const runSimulationPermission = !((JSON.parse(localStorage.getItem('simulationRunPermission'))).includes(selectedMasterForSimulation?.label))
+    const runSimulationPermission = !((JSON.parse(localStorage.getItem('simulationRunPermission')))?.includes(selectedMasterForSimulation?.label))
     const { selectedTechnologyForSimulation } = useSelector(state => state.simulation)
     const { selectedVendorForSimulation } = useSelector(state => state.simulation)
 
@@ -135,9 +136,11 @@ function VerifySimulation(props) {
             } else if (selectedMasterForSimulation?.value === EXCHNAGERATE && simulationApplicability?.value === APPLICABILITY_BOP_SIMULATION) {
                 masterTemp = BOPIMPORT
             }
+            setIsLoader(true)
             switch (Number(masterTemp)) {
                 case Number(RMDOMESTIC):
                     dispatch(getVerifySimulationList(props.token, plant, rawMatrialId, (res) => {
+                        setIsLoader(false)
                         if (res.data.Result) {
                             const data = res.data.Data
                             if (data.SimulationImpactedCostings.length === 0) {
@@ -156,6 +159,7 @@ function VerifySimulation(props) {
                     break;
                 case Number(RMIMPORT):
                     dispatch(getVerifySimulationList(props.token, plant, rawMatrialId, (res) => {
+                        setIsLoader(false)
                         if (res.data.Result) {
                             const data = res.data.Data
                             if (data.SimulationImpactedCostings.length === 0) {
@@ -175,6 +179,7 @@ function VerifySimulation(props) {
                 case Number(SURFACETREATMENT):
 
                     dispatch(getVerifySurfaceTreatmentSimulationList(props.token, (res) => {
+                        setIsLoader(false)
                         if (res.data.Result) {
                             const data = res.data.Data
                             if (data.SimulationSurfaceTreatmentAndOperationImpactedCosting.length === 0) {           //   for condition
@@ -193,6 +198,7 @@ function VerifySimulation(props) {
                 case Number(OPERATIONS):
 
                     dispatch(getVerifySurfaceTreatmentSimulationList(props.token, (res) => {
+                        setIsLoader(false)
                         if (res.data.Result) {
                             const data = res.data.Data
                             if (data.SimulationSurfaceTreatmentAndOperationImpactedCosting.length === 0) {           //   for condition
@@ -211,6 +217,7 @@ function VerifySimulation(props) {
                 case Number(MACHINERATE):
 
                     dispatch(getVerifyMachineRateSimulationList(props.token, (res) => {
+                        setIsLoader(false)
                         if (res.data.Result) {
                             const data = res.data.Data
                             if (data.SimulationMachineProcesstImpactedCostings.length === 0) {           //   for condition
@@ -229,6 +236,7 @@ function VerifySimulation(props) {
                 case Number(BOPDOMESTIC):
                     if (isMasterAssociatedWithCosting) {
                         dispatch(getVerifyBoughtOutPartSimulationList(props.token, (res) => {
+                            setIsLoader(false)
                             if (res.data.Result) {
                                 const data = res.data.Data
                                 if (data.simulationBoughtOutPartImpactedCostings.length === 0) {
@@ -245,6 +253,7 @@ function VerifySimulation(props) {
                         }))
                     } else {
                         dispatch(getAllSimulationBoughtOutPart(props.token, (res) => {
+                            setIsLoader(false)
                             if (res.data.Result) {
                                 const data = res.data.Data
                                 if (data.SimulationBoughtOutPart.length === 0) {
@@ -266,6 +275,7 @@ function VerifySimulation(props) {
 
                     if (isMasterAssociatedWithCosting) {
                         dispatch(getVerifyBoughtOutPartSimulationList(props.token, (res) => {
+                            setIsLoader(false)
                             if (res.data.Result) {
                                 const data = res.data.Data
                                 if (data.simulationBoughtOutPartImpactedCostings.length === 0) {
@@ -282,6 +292,7 @@ function VerifySimulation(props) {
                         }))
                     } else {
                         dispatch(getAllSimulationBoughtOutPart(props.token, (res) => {
+                            setIsLoader(false)
                             if (res.data.Result) {
                                 const data = res.data.Data
                                 if (data.SimulationBoughtOutPart.length === 0) {
@@ -339,6 +350,7 @@ function VerifySimulation(props) {
                 case Number(EXCHNAGERATE):
 
                     dispatch(getVerifyExchangeSimulationList(props.token, (res) => {
+                        setIsLoader(false)
                         if (res.data.Result) {
                             const data = res.data.Data
                             if (data.SimulationExchangeRateImpactedCostings.length === 0) {
@@ -358,6 +370,7 @@ function VerifySimulation(props) {
                 case Number(COMBINED_PROCESS):          						//RE
 
                     dispatch(getverifyCombinedProcessSimulationList(props.token, (res) => {
+                        setIsLoader(false)
                         if (res.data.Result) {
                             const data = res.data.Data
                             if (data.SimulationCombinedProcessImpactedCostings.length === 0) {           //   for condition
@@ -374,6 +387,7 @@ function VerifySimulation(props) {
                     }))
                     break;
                 default:
+                    setIsLoader(false)
                     break;
             }
         }
@@ -486,6 +500,19 @@ function VerifySimulation(props) {
         const classGreen = (row.NewNetCC > row.OldNetCC) ? 'red-value form-control' : (row.NewNetCC < row.OldNetCC) ? 'green-value form-control' : 'form-class'
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : '-'
     }
+    const operationRateFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const classGreen = (row.NewOperationRate > row.OldOperationRate) ? 'red-value form-control' : (row.NewOperationRate < row.OldOperationRate) ? 'green-value form-control' : 'form-class'
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : '-'
+    }
+    const machineRateFormatter = (props) => {
+
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const classGreen = (row.NewMachineRate > row.OldMachineRate) ? 'red-value form-control' : (row.NewMachineRate < row.OldMachineRate) ? 'green-value form-control' : 'form-class'
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : '-'
+    }
 
     const decimalFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
@@ -549,11 +576,6 @@ function VerifySimulation(props) {
         setSelectedRowData(selectedRows)
     }
 
-    useEffect(() => {
-        if (verifyList && verifyList.length > 0) {
-            // window.screen.width >= 1600 && gridRef.current.api.sizeColumnsToFit();
-        }
-    }, [verifyList])
 
     const checkForResponse = (res) => {
         if ('response' in res) {
@@ -845,7 +867,9 @@ function VerifySimulation(props) {
         hyphenFormatter: hyphenFormatter,
         currencyHeader: currencyHeader,
         newNetLandedCostFormatter: newNetLandedCostFormatter,
-        zeroFormatter: zeroFormatter
+        zeroFormatter: zeroFormatter,
+        operationRateFormatter: operationRateFormatter,
+        machineRateFormatter: machineRateFormatter
     };
     function getOperationTypes(list) {
         return list && list?.map(item => item.ForType);
@@ -892,7 +916,7 @@ function VerifySimulation(props) {
                                     </div >
                                     <div className="ag-theme-material p-relative">
                                         {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found simulation-lisitng" />}
-                                        {verifyList && <AgGridReact
+                                        {isLoader ? <LoaderCustom customClass="center-loader" /> : <AgGridReact
                                             defaultColDef={defaultColDef}
                                             floatingFilter={true}
                                             domLayout='autoHeight'
@@ -935,6 +959,7 @@ function VerifySimulation(props) {
                                             {!isMultiTechnology && verifyList && verifyList[0]?.CostingHeadId !== CBCTypeId && <AgGridColumn width={140} field="VendorName" tooltipField="VendorName" cellRenderer='renderVendor' headerName={`${vendorLabel} (Code)`}></AgGridColumn>}
                                             {!isMultiTechnology && verifyList && verifyList[0]?.CostingHeadId === CBCTypeId && <AgGridColumn width={140} field="CustomerName" tooltipField="CustomerName" cellRenderer='renderCustomer' headerName="Customer (Code)"></AgGridColumn>}
                                             <AgGridColumn width={120} field="PlantName" tooltipField="PlantName" cellRenderer='renderPlant' headerName="Plant (Code)"></AgGridColumn>
+                                            {getConfigurationKey().IsDivisionAllowedForDepartment && <AgGridColumn width={185} field="DivisionCode" tooltipField="DivisionCode" headerName="Division"></AgGridColumn>}
                                             {!isMultiTechnology && !isOverHeadProfit && !isCombinedProcess && getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>}
                                             {!isMultiTechnology && !isOverHeadProfit && !isCombinedProcess && <AgGridColumn field={isMasterAssociatedWithCosting ? "CostingCurrency" : "Currency"} tooltipField='Currency' editable='false' headerName="Currency" headerComponent={'currencyHeader'} minWidth={140} ></AgGridColumn>}
                                             {isMasterAssociatedWithCosting && !isMultiTechnology && <AgGridColumn width={130} field="POPrice" tooltipField="POPrice" headerName={`Existing Net Cost (Currency)`} cellRenderer='priceFormatter'></AgGridColumn>}
@@ -944,7 +969,7 @@ function VerifySimulation(props) {
                                             {isSurfaceTreatmentOrOperation === true && operationTypes.includes('Welding') && <AgGridColumn width={220} field="NewOperationBasicRate" tooltipField="NewOperationRate" headerName="Revised Welding Material Rate/kg"></AgGridColumn>}
                                             {<AgGridColumn field='Currency' headerName='Master Currency' />}
                                             {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="OldOperationRate" tooltipField="OldOperationRate" headerName="Existing Rate"></AgGridColumn>}
-                                            {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="NewOperationRate" tooltipField="NewOperationRate" headerName="Revised Rate"></AgGridColumn>}
+                                            {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="NewOperationRate" tooltipField="NewOperationRate" cellRenderer={'operationRateFormatter'} headerName="Revised Rate"></AgGridColumn>}
 
                                             {isBOPDomesticOrImport === true && <AgGridColumn width={145} field="OldBoughtOutPartRate" tooltipField="OldBoughtOutPartRate" headerName="Existing Basic Rate (Master Currency)" cellRenderer={existingBasicFormatter}></AgGridColumn>}
                                             {isBOPDomesticOrImport === true && <AgGridColumn width={150} field="NewBoughtOutPartRate" tooltipField="NewBoughtOutPartRate" cellRenderer='newBRFormatter' headerName="Revised Basic Rate (Master Currency)"></AgGridColumn>}
@@ -953,7 +978,7 @@ function VerifySimulation(props) {
                                             {isBOPDomesticOrImport === true && <AgGridColumn width={140} field="NewNetLandedCost" tooltipField='NewNetLandedCost' headerName='Revised Net Landed Cost (Currency)' cellRenderer={priceFormatter} ></AgGridColumn>} */}
 
                                             {isMachineRate && <AgGridColumn width={145} field="OldMachineRate" tooltipField="OldMachineRate" headerName="Existing Machine Rate"></AgGridColumn>}
-                                            {isMachineRate && <AgGridColumn width={150} field="NewMachineRate" tooltipField="NewMachineRate" headerName="Revised Machine Rate"></AgGridColumn>}
+                                            {isMachineRate && <AgGridColumn width={150} field="NewMachineRate" tooltipField="NewMachineRate" cellRenderer={"machineRateFormatter"} headerName="Revised Machine Rate"></AgGridColumn>}
 
 
                                             {isRMDomesticOrRMImport === true && <AgGridColumn width={145} field="OldBasicRate" tooltipField="OldBasicRate" headerName="Existing Basic Rate (Master Currency)"></AgGridColumn>}

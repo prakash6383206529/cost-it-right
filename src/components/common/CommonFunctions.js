@@ -1,8 +1,8 @@
 import { reactLocalStorage } from "reactjs-localstorage";
 import _ from 'lodash';
-import { CBCAPPROVALTYPEID, CBCTypeId, dropdownLimit, NCCAPPROVALTYPEID, NCCTypeId, NFRAPPROVALTYPEID, NFRTypeId, RELEASESTRATEGYTYPEID1, RELEASESTRATEGYTYPEID2, RELEASESTRATEGYTYPEID3, RELEASESTRATEGYTYPEID4, VBCAPPROVALTYPEID, VBCTypeId, WACAPPROVALTYPEID, WACTypeId, ZBCAPPROVALTYPEID, ZBCTypeId, PFS2APPROVALTYPEID, PFS2TypeId, RELEASE_STRATEGY_B1, RELEASE_STRATEGY_B1_NEW, RELEASE_STRATEGY_B2, RELEASE_STRATEGY_B2_NEW, RELEASE_STRATEGY_B3, RELEASE_STRATEGY_B3_NEW, RELEASE_STRATEGY_B4, RELEASE_STRATEGY_B6, RELEASE_STRATEGY_B6_NEW, RELEASE_STRATEGY_B4_NEW, RELEASESTRATEGYTYPEID6, LPSAPPROVALTYPEID, CLASSIFICATIONAPPROVALTYPEID, RAWMATERIALAPPROVALTYPEID, effectiveDateRangeDays, searchCount } from "../../config/constants";
+import { CBCAPPROVALTYPEID, CBCTypeId, dropdownLimit, NCCAPPROVALTYPEID, NCCTypeId, NFRAPPROVALTYPEID, NFRTypeId, RELEASESTRATEGYTYPEID1, RELEASESTRATEGYTYPEID2, RELEASESTRATEGYTYPEID3, RELEASESTRATEGYTYPEID4, VBCAPPROVALTYPEID, VBCTypeId, WACAPPROVALTYPEID, WACTypeId, ZBCAPPROVALTYPEID, ZBCTypeId, PFS2APPROVALTYPEID, PFS2TypeId, RELEASE_STRATEGY_B1, RELEASE_STRATEGY_B1_NEW, RELEASE_STRATEGY_B2, RELEASE_STRATEGY_B2_NEW, RELEASE_STRATEGY_B3, RELEASE_STRATEGY_B3_NEW, RELEASE_STRATEGY_B4, RELEASE_STRATEGY_B6, RELEASE_STRATEGY_B6_NEW, RELEASE_STRATEGY_B4_NEW, RELEASESTRATEGYTYPEID6, LPSAPPROVALTYPEID, CLASSIFICATIONAPPROVALTYPEID, RAWMATERIALAPPROVALTYPEID, searchCount, effectiveDateRangeDayPrevious, effectiveDateRangeDayFuture } from "../../config/constants";
 import Toaster from "./Toaster";
-import { subDays } from "date-fns";
+import { addDays, subDays } from "date-fns";
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey } from "../../helper";
 
 // COMMON FILTER FUNCTION FOR AUTOCOMPLETE DROPDOWN
@@ -356,15 +356,30 @@ export const getCostingConditionTypes = (conditionName) => {
 }
 
 
-export const getEffectiveDateMinDate = (minDate) => {
+export const getEffectiveDateMinDate = () => {
+    // Get the value from initialConfiguration in Redux store
+    const effectiveDateRangeDayPrevious = reactLocalStorage.getObject('InitialConfiguration')?.EffectiveDateRangeDayPrevious;
 
-    if (effectiveDateRangeDays === null) {
+    if (effectiveDateRangeDayPrevious === null) {
         return new Date(new Date().getFullYear() - 100, 0, 1); // Allow dates up to 100 years in the past
     }
-    if (effectiveDateRangeDays === 0) {
+    if (effectiveDateRangeDayPrevious === 0) {
         return new Date(); // No past dates
     }
-    return subDays(new Date(), effectiveDateRangeDays);
+    return subDays(new Date(), effectiveDateRangeDayPrevious);
+};
+
+export const getEffectiveDateMaxDate = () => {
+    const effectiveDateRangeDayFuture = reactLocalStorage.getObject('InitialConfiguration')?.EffectiveDateRangeDayFuture;
+
+    if (effectiveDateRangeDayFuture === null) {
+        return new Date(new Date().getFullYear() + 100, 11, 31); // Allow dates up to 100 years in the future
+    }
+    if (effectiveDateRangeDayFuture === 0) {
+        return new Date(); // No future dates
+    }
+
+    return addDays(new Date(), effectiveDateRangeDayFuture);
 };
 export const convertIntoCurrency = (price, currencyValue) => {
     return checkForNull(price) * checkForNull(currencyValue ?? 1)
@@ -430,16 +445,16 @@ export const handleApplicability = (value, basicPriceBaseCurrency, arr, costFiel
 /**
  * Recalculates condition costs
  */
-export const recalculateConditions = (basicPriceBaseCurrency, state,isSimulation,nonIndexationSimulation) => {      
-    
-    
+export const recalculateConditions = (basicPriceBaseCurrency, state, isSimulation, nonIndexationSimulation) => {
+
+
     return recalculateCosts(
         false,
         basicPriceBaseCurrency,
         "ConditionType",
         "Applicability",
         "Percentage",
-        { 
+        {
             mainCost: "ConditionCost",
             conversionCost: "ConditionCostConversion",
             perQuantityCost: "ConditionCostPerQuantity",
@@ -452,7 +467,7 @@ export const recalculateConditions = (basicPriceBaseCurrency, state,isSimulation
         "Basic Price",
         isSimulation,
         nonIndexationSimulation,
-    );  
+    );
 };
 
 /**
@@ -474,22 +489,22 @@ export const recalculateOtherCost = (basicRate, state, isSimulation) => {
         state,
         "Basic Rate",
         isSimulation,
-        
+
     );
 };
 
 /**
  * Core cost recalculation logic
  */
-export const recalculateCosts = (isOtherCost, basicValue, typeField, applicabilityField, percentageField, resultFields, headerName, state, applicabilityName, isSimulation, basicRateValue,nonIndexationSimulation = false) => {
+export const recalculateCosts = (isOtherCost, basicValue, typeField, applicabilityField, percentageField, resultFields, headerName, state, applicabilityName, isSimulation, basicRateValue, nonIndexationSimulation = false) => {
     // Select the correct data array and make a deep copy
     const dataArray = isOtherCost ? state.otherCostTableData : state.conditionTableData;
-    
-    const costField = isOtherCost ? 'NetCost' : !nonIndexationSimulation?'ConditionCost':'NewConditionCost';
+
+    const costField = isOtherCost ? 'NetCost' : !nonIndexationSimulation ? 'ConditionCost' : 'NewConditionCost';
     let copiedData = _.cloneDeep(dataArray) ?? [];
-    
+
     // Create a temporary array for calculations
-    let tempArr = copiedData||[];
+    let tempArr = copiedData || [];
     // Process each item in the array
     copiedData?.forEach((item, index) => {
         if (item?.[typeField] === "Percentage") {
@@ -523,13 +538,13 @@ export const recalculateCosts = (isOtherCost, basicValue, typeField, applicabili
 /**
  * Updates cost values and handles state updates
  */
-export const updateCostValue = (isConditionCost, state, price, isSimulation = false,nonIndexationSimulation = false) => {
+export const updateCostValue = (isConditionCost, state, price, isSimulation = false, nonIndexationSimulation = false) => {
     // Get table data and settings based on cost type
-  const table = isConditionCost
-        ? recalculateConditions(isSimulation ? price : (nonIndexationSimulation ?state.OldNetCostWithoutConditionCost
+    const table = isConditionCost
+        ? recalculateConditions(isSimulation ? price : (nonIndexationSimulation ? state.OldNetCostWithoutConditionCost
 
-            :state.NetCostWithoutConditionCost), state, isSimulation,nonIndexationSimulation)
-        : recalculateOtherCost(price, state, isSimulation,nonIndexationSimulation);
+            : state.NetCostWithoutConditionCost), state, isSimulation, nonIndexationSimulation)
+        : recalculateOtherCost(price, state, isSimulation, nonIndexationSimulation);
 
     // Calculate sum
     const costField = isConditionCost ? 'ConditionCostPerQuantity' : 'NetCost';

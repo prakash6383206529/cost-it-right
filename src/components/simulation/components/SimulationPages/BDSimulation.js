@@ -204,6 +204,7 @@ function BDSimulation(props) {
             if (item.NewBasicRate !== undefined ? Number(item.NewBasicRate) : Number(item.BasicRate)) {
                 let tempObj = {};
                 tempObj.BoughtOutPartId = item?.BoughtOutPartId || "00000000-0000-0000-0000-000000000000";
+                tempObj.NewBoughtOutPartId = (item?.NewBoughtOutPart && item?.NewBoughtOutPart?.BoughtOutPartId ? item?.NewBoughtOutPart?.BoughtOutPartId : null) ?? null
                 tempObj.OldBOPRate = item?.BasicRate || 0;
                 tempObj.NewBOPRate = item?.NewBasicRate ? item?.NewBasicRate : item?.BasicRate || 0;
                 tempObj.OldNetLandedCost = item.NetLandedCost || 0;
@@ -257,7 +258,7 @@ function BDSimulation(props) {
             if (oldNetLandedCost === newNetLandedCost) {
                 netLandedCostChangeCount = netLandedCostChangeCount + 1
             }
-            if (Number(li.BasicRate) === Number(li.NewBasicRate) || li?.NewBasicRate === undefined) {
+            if (Number(li.BasicRate) === (li?.IsSimulated ? li?.NewBoughtOutPart?.BasicRate : Number(li.NewBasicRate)) || (li?.IsSimulated ? false : li?.NewBasicRate === undefined)) {
 
                 basicRateCount = basicRateCount + 1
             }
@@ -311,15 +312,15 @@ function BDSimulation(props) {
     }
 
     const newBasicRateFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const value = beforeSaveCell(cell)
+        const cell = row?.IsSimulated ? row?.NewBoughtOutPart?.BasicRate : props?.valueFormatted ? props.valueFormatted : props?.value;
+        const value = row?.IsSimulated ? row?.NewBoughtOutPart?.BasicRate : beforeSaveCell(cell)
         return (
             <>
                 {
                     isImpactedMaster ?
                         Number(row.NewBOPRate) :
-                        <span id={`newBasicRate-${props.rowIndex}`} className={`${!isbulkUpload ? 'form-control' : ''}`} title={cell && value ? Number(cell) : Number(row.BasicRate)}>{cell && value ? Number(cell) : Number(row.BasicRate)} </span>
+                        <span id={`newBasicRate-${props.rowIndex}`} className={`${!isbulkUpload ? 'form-control' : ''} ${row?.IsSimulated ? 'disabled' : ''}`} title={cell && value ? Number(cell) : Number(row.BasicRate)}>{cell && value ? Number(cell) : Number(row.BasicRate)} </span>
                 }
 
             </>
@@ -391,6 +392,17 @@ function BDSimulation(props) {
             return false
         }
         return true
+    }
+
+    const EditableCallbackForNewBasicRate = (props) => {
+        const rowData = props?.data;
+        let value = false
+        if (isImpactedMaster || rowData?.IsSimulated) {
+            value = false
+        } else {
+            value = true
+        }
+        return value
     }
 
     const NewcostFormatter = (props) => {
@@ -961,7 +973,7 @@ function BDSimulation(props) {
 
                                                 } marryChildren={true} width={240}>
                                                     <AgGridColumn width={120} field="BasicRate" editable='false' cellRenderer='oldBasicRateFormatter' headerName="Existing" colId="BasicRate" suppressSizeToFit={true}></AgGridColumn>
-                                                    <AgGridColumn width={120} cellRenderer='newBasicRateFormatter' onCellValueChanged='cellChange' field="NewBasicRate" editable={isImpactedMaster ? false : EditableCallbackForBasicRate} headerName="Revised" colId='NewBasicRate' headerComponent={'revisedBasicRateHeader'} suppressSizeToFit={true}></AgGridColumn>
+                                                    <AgGridColumn width={120} cellRenderer='newBasicRateFormatter' onCellValueChanged='cellChange' field="NewBasicRate" editable={EditableCallbackForNewBasicRate} headerName="Revised" colId='NewBasicRate' headerComponent={'revisedBasicRateHeader'} suppressSizeToFit={true}></AgGridColumn>
                                                 </AgGridColumn>
 
                                                 <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={300} headerName={

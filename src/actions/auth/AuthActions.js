@@ -97,6 +97,8 @@ export function TokenAPI(requestData, callback) {
             Token: requestData.Token,
             Audiance: requestData.audiance
         };
+
+
         // Fetch the public IP from a service (if necessary).
         // axios.get('https://api.ipify.org?format=json')
         //     .then(response => {
@@ -146,6 +148,8 @@ const getLocalIPAddress = async () => {
         return null;
     }
 };
+
+
 
 export function AutoSignin(requestData, callback) {
     return (dispatch) => {
@@ -298,17 +302,17 @@ export function getAllUserAPI(callback) {
 export function getAllUserDataAPI(data, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.get(`${API.getAllUserDataAPI}?department_id=${data.DepartmentId}&role_id=${data.RoleId}&logged_in_user=${data.logged_in_user}&userType=${data.userType}`, config())
+        axios.get(`${API.getAllUserDataAPI}?department_id=${data?.DepartmentId}&role_id=${data?.RoleId}&logged_in_user=${data?.logged_in_user}&name=${data?.name}&userType=${data?.userType}&email=${data?.email}&mobileNo=${data?.mobileNo}&phoneNo=${data?.phone}&company=${data?.company}&createdBy=${data?.createdBy}&createdDate=${data?.createdDate}&modifiedDate=${data?.modifiedDate}&userName=${data?.userName}&modifiedBy=${data?.modifiedBy}&role=${data?.role}&isApplyPagination=${data?.isPagination}&skip=${data?.skip}&take=${data?.take}`, config())
             .then((response) => {
-                if (data.userType === 'RFQ') {
+                if (data?.userType === 'RFQ') {
                     dispatch({
                         type: GET_RFQ_USER_DATA_SUCCESS,
-                        payload: response.status === 200 ? response.data.DataList : [],
+                        payload: response.status === 200 ? response?.data?.DataList : [],
                     });
                 } else {
                     dispatch({
                         type: GET_USER_DATA_SUCCESS,
-                        payload: response.status === 200 ? response.data.DataList : [],
+                        payload: response.status === 200 ? response?.data?.DataList : [],
                     });
                 }
                 callback(response);

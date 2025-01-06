@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, } from 'reactstrap';
 import { getOverheadDataList, deleteOverhead } from '../actions/OverheadProfit';
 import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
-import { getConfigurationKey, loggedInUserId, searchNocontentFilter, setLoremIpsum, showBopLabel } from '../../../helper';
+import { getConfigurationKey, getLocalizedCostingHeadValue, loggedInUserId, searchNocontentFilter, setLoremIpsum, showBopLabel } from '../../../helper';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
@@ -19,7 +19,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { setSelectedRowForPagination } from '../../simulation/actions/Simulation';
 import WarningMessage from '../../common/WarningMessage';
-import { disabledClass, fetchModelTypeAPI } from '../../../actions/Common';
+import { disabledClass, fetchModelTypeAPI, setResetCostingHead } from '../../../actions/Common';
 import _ from 'lodash';
 import SingleDropdownFloationFilter from '../material-master/SingleDropdownFloationFilter';
 import { agGridStatus, getGridHeight, isResetClick } from '../../../actions/Common';
@@ -34,6 +34,7 @@ import { Steps } from '../../common/Tour/TourMessages';
 import { ApplyPermission } from '.';
 import BulkUpload from '../../../../src/components/massUpload/BulkUpload';
 import { useLabels, useWithLocalization } from '../../../helper/core';
+import CostingHeadDropdownFilter from '../material-master/CostingHeadDropdownFilter';
 
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -43,10 +44,11 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
 
 function OverheadListing(props) {
+
     const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = props;
     const { t } = useTranslation("common")
     const permissions = useContext(ApplyPermission);
-    const { vendorLabel } = useLabels()
+    const { vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels()
 
     const [showPopup, setShowPopup] = useState(false)
     const [deletedId, setDeletedId] = useState('')
@@ -80,11 +82,40 @@ function OverheadListing(props) {
     const [modelText, setModelText] = useState('')
 
 
-
+// In CostingHeadDropdownFilter.js
+const onFilterChange = (event) => {
+    // Clean and encode the filter value
+    const filterValue = event.target.value;
+    const cleanedValue = encodeFilterValue(filterValue);
+    
+    // Call the parent's filter change handler
+    if (props.onFilterChange) {
+      props.onFilterChange(filterValue, cleanedValue);
+    }
+  };
+  
+  // Helper function to clean and encode filter value
+  const encodeFilterValue = (value) => {
+    if (!value) return '';
+    
+    // Replace special combinations with encoded versions
+    const encodedValue = value
+      .replace(/\s\+\s/g, '%2B') // Replace ' + ' with encoded plus
+      .replace(/\s/g, '%20');    // Replace spaces with encoded spaces
+      
+    return encodedValue;
+  };
     var floatingFilterOverhead = {
         maxValue: 1,
         suppressFilterButton: true,
-        component: 'overhead'
+        component: 'overhead',
+        onFilterChange: (originalValue, encodedValue) => {
+            setDisableFilter(false);
+            setFloatingFilterData(prevState => ({
+              ...prevState,
+              OverheadApplicabilityType: encodedValue
+            }));
+          }
     }
 
     const { isBulkUpload } = state;
@@ -126,7 +157,10 @@ function OverheadListing(props) {
         dispatch(agGridStatus("", ""))
         setSelectedRowForPagination([])
         dispatch(resetStatePagination());
-
+        return () => {
+            dispatch(setResetCostingHead(true, "costingHead"))
+        }
+       
     }, [])
 
     useEffect(() => {
@@ -154,10 +188,17 @@ function OverheadListing(props) {
             overhead_applicability_type_id: overhead,
             model_type_id: modelType,
         }
+          // Clean up the dataObj filters before sending to API
+  const cleanedDataObj = {
+    ...dataObj,
+    OverheadApplicabilityType: dataObj?.OverheadApplicabilityType 
+      ? decodeURIComponent(dataObj?.OverheadApplicabilityType)
+      : ''
+  };
         if (isPagination === true) {
             setIsLoader(true)
         }
-        dispatch(getOverheadDataList(filterData, skip, take, isPagination, dataObj, (res) => {
+        dispatch(getOverheadDataList(filterData, skip, take, isPagination, cleanedDataObj, (res) => {
             setIsLoader(false)
             if (res && res.status === 204) {
                 setTotalRecordCount(0)
@@ -194,6 +235,7 @@ function OverheadListing(props) {
                         }, 100);
                     }
                     dispatch(isResetClick(false, "applicablity"))
+                    dispatch(setResetCostingHead(false, "costingHead"))
                 }, 330);
 
                 setTimeout(() => {
@@ -297,6 +339,7 @@ function OverheadListing(props) {
         setNoData(false)
         dispatch(agGridStatus("", ""))
         dispatch(isResetClick(true, "applicablity"))
+        dispatch(setResetCostingHead(true, "costingHead"))
         setIsFilterButtonClicked(false)
         gridApi.deselectAll()
         gridOptions?.columnApi?.resetColumnState(null);
@@ -593,7 +636,17 @@ function OverheadListing(props) {
         gridApi.setQuickFilter(e.target.value);
     }
 
+    const combinedCostingHeadRenderer = (props) => {
+        // Call the existing checkBoxRenderer
+        checkBoxRenderer(props);
 
+        // Get and localize the cell value
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const localizedValue = getLocalizedCostingHeadValue(cellValue, vendorBasedLabel, zeroBasedLabel, customerBasedLabel);
+
+        // Return the localized value (the checkbox will be handled by AgGrid's default renderer)
+        return localizedValue;
+    };
     const checkBoxRenderer = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         if (selectedRowForPagination?.length > 0) {
@@ -631,15 +684,27 @@ function OverheadListing(props) {
         headerCheckboxSelectionFilteredOnly: true,
         checkboxSelection: isFirstColumn
     };
-
+    const floatingFilterStatus = {
+        maxValue: 1,
+        suppressFilterButton: true,
+        component: CostingHeadDropdownFilter, onFilterChange: (originalValue, value) => {
+            // setSelectedCostingHead(originalValue);
+            setDisableFilter(false);
+            setFloatingFilterData(prevState => ({
+                ...prevState,
+                CostingHead: value
+            }));
+        }
+    };
     const frameworkComponents = {
         totalValueRenderer: buttonFormatter,
         effectiveDateFormatter: effectiveDateFormatter,
         statusButtonFormatter: statusButtonFormatter,
         hyphenFormatter: hyphenFormatter,
         customNoRowsOverlay: NoContentFound,
-        checkBoxRenderer: checkBoxRenderer,
+        combinedCostingHeadRenderer: combinedCostingHeadRenderer,
         valuesFloatingFilter: SingleDropdownFloationFilter,
+        statusFilter: CostingHeadDropdownFilter,
     };
 
 
@@ -647,7 +712,7 @@ function OverheadListing(props) {
         <>
             {
                 isLoader ? <LoaderCustom customClass={"loader-center"} /> :
-                    <div className={`ag-grid-react custom-pagination ${DownloadAccessibility ? "show-table-btn" : ""}`}>
+                    <div className={`ag-grid-react grid-parent-wrapper custom-pagination ${DownloadAccessibility ? "show-table-btn" : ""}`}>
                         {disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
                         <form onSubmit={(onSubmit)} noValidate>
                             <Row className="pt-4 ">
@@ -736,7 +801,8 @@ function OverheadListing(props) {
                                             onFilterModified={onFloatingFilterChanged}
                                             suppressRowClickSelection={true}
                                         >
-                                            <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={checkBoxRenderer}></AgGridColumn>
+                                            <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={combinedCostingHeadRenderer} floatingFilterComponentParams={floatingFilterStatus}
+                                                floatingFilterComponent="statusFilter"></AgGridColumn>
                                             {getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC && <AgGridColumn field="RawMaterialName" headerName='Raw Material Name'></AgGridColumn>}
                                             {getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC && <AgGridColumn field="RawMaterialGrade" headerName="Raw Material Grade"></AgGridColumn>}
                                             {(getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate || getConfigurationKey().IsDestinationPlantConfigure) && <AgGridColumn field="PlantName" headerName="Plant (Code)"></AgGridColumn>}
@@ -745,7 +811,7 @@ function OverheadListing(props) {
                                             <AgGridColumn field="ModelType" headerName="Model Type"></AgGridColumn>
                                             <AgGridColumn field="OverheadApplicabilityType" headerName="Overhead Applicability" floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterOverhead}></AgGridColumn>
                                             <AgGridColumn width={215} field="OverheadPercentage" headerName="Overhead Applicability (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                            <AgGridColumn field="OverheadRMPercentage" headerName="Overhead on RM (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                            <AgGridColumn field="OverheadRMPercentage" headerName="Overhead on RM/ Part Cost (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                             <AgGridColumn field="OverheadBOPPercentage" headerName={`Overhead on ${showBopLabel()} (%)`} cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                             <AgGridColumn field="OverheadMachiningCCPercentage" headerName="Overhead on CC (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                             <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>

@@ -125,9 +125,9 @@ function VerifyImpactDrawer(props) {
                     <Table responsive className="border impact-drawer-table sub-table">
                       <tbody>
                         <tr>
-                      {CostingTypeId === CBCTypeId ? <th>Customer (Code):</th> : CostingTypeId !== ZBCTypeId && <th>{vendorLabel} (Code):</th>}
+                          {CostingTypeId === CBCTypeId ? <th>Customer (Code):</th> : CostingTypeId !== ZBCTypeId && <th>{vendorLabel} (Code):</th>}
                           {isSimulationWithCosting ? <th>Technology:</th> : <th>Association:</th>}
-<th>Master:</th>
+                          <th>Master:</th>
                           <th>Costing Head:</th>
                           <th>Effective Date:</th>
                           <th>Impact/Quarter (w.r.t. Existing):</th>
@@ -136,7 +136,7 @@ function VerifyImpactDrawer(props) {
                       </tbody>
                       <tbody>
                         <tr>
-                          {CostingTypeId === CBCTypeId ? <td>{amendmentDetails.CustomerName}</td> : CostingTypeId !== ZBCTypeId &&CostingTypeId !== ZBCTypeId &&<td>{amendmentDetails.Vendor}</td>}
+                          {CostingTypeId === CBCTypeId ? <td>{amendmentDetails.CustomerName}</td> : CostingTypeId !== ZBCTypeId && CostingTypeId !== ZBCTypeId && <td>{amendmentDetails.Vendor}</td>}
                           {isSimulationWithCosting ? <td>{amendmentDetails.Technology}</td> : <td>{'Non Associated'}</td>}
                           <td>{amendmentDetails?.SimulationAppliedOn}</td>
                           <td>{amendmentDetails?.CostingHead}</td>
@@ -172,7 +172,7 @@ function VerifyImpactDrawer(props) {
               }
               <Row className="mb-3 pr-0 mx-0">
                 <Col md="12">
-                  {fgWiseAcc && <ErrorMessage />}
+                  {fgWiseAcc && <ErrorMessage isGreen={true} />}
                 </Col>
 
                 <Col md="6"> <HeaderTitle title={'FG wise Impact:'} /></Col>
@@ -199,6 +199,8 @@ function VerifyImpactDrawer(props) {
                       isVerifyImpactDrawer={true}
                       fgWiseAccDisable={fgWiseAccDisable}
                       tooltipEffectiveDate={DayTime(amendmentDetails.EffectiveDate).format('DD-MM-YYYY')}
+                      isSimulation={props?.isSimulation}
+                      isCosting={props?.isCosting}
                     />
                   </Col>
                 </Row>

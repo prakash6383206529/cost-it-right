@@ -806,3 +806,98 @@
 .paper-corrugated::before {
   right: -18px !important;
 }
+
+
+
+.table-wrapper {
+  // display: flex;
+  // align-items: center;
+  position: relative;
+  margin: 20px;
+}
+
+// .table-container {
+//   position: relative;
+//   overflow-x: auto;
+//   /* Enable horizontal scrolling */
+//   overflow-y: auto;
+//   /* Enable vertical scrolling, limited to container */
+//   border: 1px solid #ccc;
+//   // max-height: 500px;
+//   /* Restrict height for vertical scrolling */
+//   white-space: nowrap;
+//   /* Prevent table content wrapping */
+// }
+
+// .horizontal-table {
+//   border-collapse: collapse;
+//   width: max-content;
+//   /* Ensure table is wider than container */
+// }
+
+.sticky-scroll-btn {
+  position: sticky;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  height: 0;
+  width: calc(100% + 27px);
+  display: flex;
+  justify-content: space-between;
+}
+
+.scroll-btn {
+  background-color: #d3d3d38f;
+  width: 19px;
+  height: 86px;
+  border: none;
+  border-radius: 2px;
+  /* border-top-left-radius: 30px; */
+  /* border-bottom-left-radius: 30px; */
+  cursor: pointer;
+  z-index: 10;
+  /* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); */
+  outline: none;
+  margin-left: -23px;
+}
+
+.scroll-btn svg {
+  width: 25px;
+  height: 42px;
+  fill: #555;
+  margin-left: -9px;
+}
+
+.scroll-btn.left {
+  margin-left: -23px;
+}
+
+.scroll-btn.right {}
+
+
+.scroll-btn:focus {
+  outline: none;
+  border: unset !important;
+  box-shadow: unset !important;
+}
+
+.scroll-btn:hover {
+  background-color: #c0c0c0;
+  /* Slightly darker grey on hover */
+}
+
+// .scroll-btn:hover {
+//   background-color: #0056b3;
+// }
+.packaging-cost-warpper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.packaging-cost-calculator-warpper {
+  label {
+    min-height: 44px;
+    place-content: end;
+  }
+}

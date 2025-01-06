@@ -9,7 +9,7 @@ import { MESSAGES } from '../../../config/message';
 import { getConfigurationKey, loggedInUserId, } from "../../../helper/auth";
 import "react-datepicker/dist/react-datepicker.css";
 import DayTime from '../../common/DayTimeWrapper'
-import { renderDatePicker, renderText, renderTextInputField, searchableSelect, } from "../../layout/FormInputs";
+import { renderDatePicker, renderText, renderTextInputField, searchableSelect, validateForm, } from "../../layout/FormInputs";
 import LoaderCustom from '../../common/LoaderCustom';
 import { debounce } from 'lodash';
 import { onFocus } from '../../../helper';
@@ -17,7 +17,7 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { CBCTypeId, searchCount, SPACEBAR, VBC_VENDOR_TYPE, VBCTypeId, ZBCTypeId } from '../../../config/constants';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import AsyncSelect from 'react-select/async';
-import { autoCompleteDropdown, getCostingTypeIdByCostingPermission, getEffectiveDateMinDate } from '../../common/CommonFunctions';
+import { autoCompleteDropdown, getCostingTypeIdByCostingPermission, getEffectiveDateMaxDate, getEffectiveDateMinDate } from '../../common/CommonFunctions';
 import { getClientSelectList, } from '../actions/Client';
 import { getExchangeRateSource, getVendorNameByVendorSelectList } from '../../../actions/Common';
 import { subDays } from 'date-fns';
@@ -703,6 +703,7 @@ class AddExchangeRate extends Component {
                             selected={DayTime(this.state.effectiveDate).isValid() ? new Date(this.state.effectiveDate) : null}
                             onChange={this.handleEffectiveDateChange}
                             minDate={getEffectiveDateMinDate()}
+                            maxDate={getEffectiveDateMaxDate()}
                             type="text"
                             validate={[required]}
                             autoComplete={"off"}
@@ -808,6 +809,7 @@ export default connect(mapStateToProps, {
   getExchangeRateSource
 })(reduxForm({
   form: 'AddExchangeRate',
+  validate: validateForm,
   enableReinitialize: true,
 
 })(withTranslation(['ExchangeRateMaster', 'MasterLabels'])(AddExchangeRate)),

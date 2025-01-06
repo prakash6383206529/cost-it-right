@@ -3,7 +3,7 @@ import { Field, reduxForm } from "redux-form";
 import Toaster from "../common/Toaster";
 import { connect } from "react-redux";
 import { Loader } from "../common/Loader";
-import { searchableSelect, focusOnError } from "../layout/FormInputs";
+import { searchableSelect, focusOnError, validateForm } from "../layout/FormInputs";
 
 import { setApprovalLevelForTechnology, getAllTechnologyAPI, getAllLevelAPI } from "../../actions/auth/AuthActions";
 import { MESSAGES } from "../../config/message";
@@ -25,7 +25,7 @@ class LevelTechnology extends Component {
     * @description used to called after mounting component
     */
     componentDidMount() {
-        this.props.getAllTechnologyAPI(() => { })
+        this.props.getAllTechnologyAPI(() => { }, '', true)
         this.props.getAllLevelAPI(() => { })
     }
 
@@ -201,6 +201,7 @@ export default connect(mapStateToProps, {
     setApprovalLevelForTechnology,
 })(reduxForm({
     form: 'LevelTechnology',
+    validate: validateForm,
     onSubmitFail: errors => {
         focusOnError(errors);
     },

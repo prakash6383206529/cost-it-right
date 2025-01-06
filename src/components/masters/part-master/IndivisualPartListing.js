@@ -553,7 +553,7 @@ const IndivisualPartListing = (props) => {
     }
   };
 
-const INDIVIDUALPART_DOWNLOAD_EXCEL_LOCALIZATION = useWithLocalization(INDIVIDUALPART_DOWNLOAD_EXCEl, "MasterLabels")
+  const INDIVIDUALPART_DOWNLOAD_EXCEL_LOCALIZATION = useWithLocalization(INDIVIDUALPART_DOWNLOAD_EXCEl, "MasterLabels")
   const onBtExport = () => {
 
     let tempArr = [];
@@ -563,6 +563,9 @@ const INDIVIDUALPART_DOWNLOAD_EXCEL_LOCALIZATION = useWithLocalization(INDIVIDUA
     const filteredLabels = INDIVIDUALPART_DOWNLOAD_EXCEL_LOCALIZATION.filter(column => {
       if (column.value === "UnitOfMeasurement") {
         return initialConfiguration?.IsShowUnitOfMeasurementInPartMaster
+      }
+      if (column.value === "SAPCode") {
+        return initialConfiguration?.IsSAPCodeRequired
       }
       return true;
     })
@@ -578,25 +581,28 @@ const INDIVIDUALPART_DOWNLOAD_EXCEL_LOCALIZATION = useWithLocalization(INDIVIDUA
 
     let temp = [];
     temp = TempData && TempData.map((item) => {
+      let newItem = { ...item };
+      const defaultValues = {
+        ECNNumber: " ",
+        RevisionNumber: " ",
+        DrawingNumber: " ",
+        Technology: " ",
+      };
 
-      if (item.ECNNumber === null) {
-        item.ECNNumber = " ";
-      } else if (item.RevisionNumber === null) {
-        item.RevisionNumber = " ";
-      } else if (item.DrawingNumber === null) {
-        item.DrawingNumber = " ";
-      } else if (item.Technology === "-") {
-        item.Technology = " ";
-      } else if (item.EffectiveDate !== "") {
+      // Assign default values if necessary
+      Object.keys(defaultValues).forEach(key => {
+        if (item[key] === null || item[key] === "-") {
+          newItem[key] = defaultValues[key];
+        }
+      });
 
-        item.EffectiveDate = DayTime(item.EffectiveDate).format("DD/MM/YYYY");
-      }
-
-      else if (item.EffectiveDateNew !== "") {
-
-        item.EffectiveDateNew = DayTime(item.EffectiveDateNew).format("DD/MM/YYYY");
-      }
-      return item;
+      ["EffectiveDate", "EffectiveDateNew"].forEach(dateKey => {
+        if (item[dateKey]) {
+          newItem[dateKey] = DayTime(item[dateKey]).format("DD/MM/YYYY");
+        }
+      });
+      newItem.IsActive = item.IsActive ? 'Active' : 'Inactive';
+      return newItem;
     });
 
     return (
@@ -844,7 +850,7 @@ const INDIVIDUALPART_DOWNLOAD_EXCEL_LOCALIZATION = useWithLocalization(INDIVIDUA
                 <AgGridColumn field="RevisionNumber" headerName="Revision No." cellRenderer={"hyphenFormatter"}  ></AgGridColumn>
                 <AgGridColumn field="DrawingNumber" headerName="Drawing No." cellRenderer={"hyphenFormatter"}  ></AgGridColumn>
                 {initialConfiguration?.IsShowUnitOfMeasurementInPartMaster && <AgGridColumn field="UnitOfMeasurementSymbol" headerName="UOM" cellRenderer={"hyphenFormatter"}  ></AgGridColumn>}
-
+                <AgGridColumn field="Division" headerName="Division" cellRenderer={"hyphenFormatter"}  ></AgGridColumn>
                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={"effectiveDateFormatter"} filter="agDateColumnFilter" filterParams={filterParams} ></AgGridColumn>
                 <AgGridColumn pinned="right" field="IsActive" headerName="Status" floatingFilter={false} cellRenderer={"statusButtonFormatter"} ></AgGridColumn>
                 <AgGridColumn field="PartId" pinned="right" cellClass="ag-grid-action-container" headerName="Action" width={160} type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"} ></AgGridColumn>

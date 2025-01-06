@@ -206,11 +206,12 @@ class AddFreight extends Component {
   */
   onPressVendor = (costingHeadFlag) => {
     this.props.reset();
-      // Store current isImport value
-      const currentIsImport = this.state.isImport;
-    this.setState({ ...this.initialState, costingTypeId: costingHeadFlag,
+    // Store current isImport value
+    const currentIsImport = this.state.isImport;
+    this.setState({
+      ...this.initialState, costingTypeId: costingHeadFlag,
       isImport: currentIsImport // Preserve isImport value
-       }, () => {
+    }, () => {
       if (costingHeadFlag === CBCTypeId) {
         this.props.getClientSelectList(() => { })
       }
@@ -958,7 +959,7 @@ class AddFreight extends Component {
   };
 
   freightRateTitle = () => {
-    const rateLabel = this.state.isImport ? `Rate (${this.state.currency?.label ?? 'Currency'})` :`Rate (${this.props.fieldsObj?.plantCurrency ?? 'Plant Currency'})`
+    const rateLabel = this.state.isImport ? `Rate (${this.state.currency?.label ?? 'Currency'})` : `Rate (${this.props.fieldsObj?.plantCurrency ?? 'Plant Currency'})`
     return {
       tooltipTextPlantCurrency: `${rateLabel} * Plant Currency Rate (${this.state?.plantCurrency ?? ''})`,
       toolTipTextNetCostBaseCurrency: `${rateLabel} * Currency Rate (${this.state?.settlementCurrency ?? ''})`,
@@ -977,7 +978,7 @@ class AddFreight extends Component {
 
     // Generate tooltip text based on the condition
     return <>
-      {!this.state?.hidePlantCurrency               
+      {!this.state?.hidePlantCurrency
         ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrencyLabel}, `
         : ''}<p>Exchange Rate: 1 {currencyLabel} = {settlementCurrencyRate} {baseCurrency}</p>
     </>;
@@ -1240,7 +1241,7 @@ class AddFreight extends Component {
                             </Col>
                           )}
                           <Col md="3">
-                          {!this.state.hidePlantCurrency &&this.props.fieldsObj?.plantCurrency&&!this.state.isImport && <TooltipCustom width="350px" id="plantCurrency" tooltipText={`Exchange Rate: 1 ${this.props.fieldsObj?.plantCurrency } = ${this.state?.plantCurrency ?? '-'} ${reactLocalStorage.getObject("baseCurrency")}`} />}
+                            {!this.state.hidePlantCurrency && this.props.fieldsObj?.plantCurrency && !this.state.isImport && <TooltipCustom width="350px" id="plantCurrency" tooltipText={`Exchange Rate: 1 ${this.props.fieldsObj?.plantCurrency} = ${this.state?.plantCurrency ?? '-'} ${reactLocalStorage.getObject("baseCurrency")}`} />}
                             <Field
                               name="plantCurrency"
                               type="text"
@@ -1497,7 +1498,7 @@ class AddFreight extends Component {
                             {this.state.errorObj.rate && (this.props.fieldsObj === undefined || Number(this.props.fieldsObj) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
                           </Col>}
                           <Col md="3">
-                          {this.state.isImport && <TooltipCustom disabledIcon={true} id="rate-local" tooltipText={hidePlantCurrency ? this.freightRateTitle()?.toolTipTextNetCostBaseCurrency : this.freightRateTitle()?.tooltipTextPlantCurrency} />}
+                            {this.state.isImport && <TooltipCustom disabledIcon={true} id="rate-local" tooltipText={hidePlantCurrency ? this.freightRateTitle()?.toolTipTextNetCostBaseCurrency : this.freightRateTitle()?.tooltipTextPlantCurrency} />}
                             <Field
                               label={`Rate (${this.props.fieldsObj?.plantCurrency ?? 'Currency'})`}
                               name={"RateLocalConversion"}

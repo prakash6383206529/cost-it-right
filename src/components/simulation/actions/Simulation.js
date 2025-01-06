@@ -62,13 +62,16 @@ import {
     GET_INDEXED_RM_FOR_SIMULATION,
     GET_SIMULATED_RAW_MATERIAL_SUMMARY,
     GET_RM_INDEXATION_COSTING_SIMULATION_LIST,
-    SET_EFFECTIVE_DATE
+    SET_EFFECTIVE_DATE,
+    SET_IS_PENDING_SIMULATION_FROM_OTHER_DIV,
+    GET_SIMULATION_COSTING_STATUS
 } from '../../../config/constants';
 import { apiErrors, encodeQueryParamsAndLog } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { loggedInUserId } from '../../../helper';
+import _ from 'lodash';
 
 // const config() = config
 
@@ -643,9 +646,8 @@ export function uploadSimulationAttachment(data, callback) {
             .then((response) => {
                 callback(response)
             }).catch(error => {
-                callback(error.response)
                 dispatch({ type: API_FAILURE })
-                callback(error)
+                callback(error.toString())
             })
     }
 }
@@ -1883,7 +1885,8 @@ export function editRMIndexedSimulationData(data, callback) {
         const request = axios.get(`${API.editRMIndexedSimulationData}?${queryParams}`, config());
         request.then((response) => {
             if (response.data.Result) {
-                dispatch({ type: GET_INDEXED_RM_FOR_SIMULATION, payload: response?.data?.Data?.SimulationRawMaterialDetailsResponse });
+                const clonedData = _.cloneDeep(response?.data?.Data?.SimulationRawMaterialDetailsResponse);
+                dispatch({ type: GET_INDEXED_RM_FOR_SIMULATION, payload: clonedData });
                 callback(response);
             }
         }).catch((error) => {
@@ -1997,11 +2000,77 @@ export function getRMIndexationCostingSimulationListing(data, skip, take, isPagi
         });
     };
 }
+
+export function checkFinalLevelApproverForApproval(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.checkFinalLevelApproverForApproval, data, config());
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_SIMULATION_COSTING_STATUS,
+                    payload: response.data.Data,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            callback(error);
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
 export function setEffectiveDateRMNonIndexation(value) {
     return (dispatch) => {
         dispatch({
             type: SET_EFFECTIVE_DATE,
             payload: value,
+        });
+    }
+}
+
+export function setIsPendingSimulationFromOtherDiv(data) {
+    return (dispatch) => {
+        dispatch({
+            type: SET_IS_PENDING_SIMULATION_FROM_OTHER_DIV,
+            payload: data,
+        });
+    }
+}
+
+export function getSimulationCostingStatus(data, callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getSimulationCostingStatus}?LoggedInUserId=${data.LoggedInUserId}&statusId=${data.statusId ?? ''}&simulationTechnologyId=${data.simulationTechnologyId ?? ''}`, config());
+        request.then((response) => {
+            if (response.data.Result || response.status === 204) {
+                dispatch({
+                    type: GET_SIMULATION_COSTING_STATUS,
+                    payload: response.data.DataList && response.data.DataList.length > 0 ? response.data.DataList : false,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            callback(error);
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    }
+}
+
+export function getImpactedDataList(data, callback) {
+    const queryParams = encodeQueryParamsAndLog({
+        LoggedInUserId: loggedInUserId(),
+        statusId: data.statusId,
+    });
+    return (dispatch) => {
+        const request = axios.get(`${API.getImpactedDataList}?${queryParams}`, config());
+        request.then((response) => {
+            if (response.data.Result || response.status === 204) {
+                callback(response);
+            }
+        }).catch((error) => {
+            callback(error);
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
         });
     }
 }

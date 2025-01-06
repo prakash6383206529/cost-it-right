@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector, propTypes, clearFields } from "redux-form";
 import { Row, Col, Label, } from 'reactstrap';
 import { required, postiveNumber, maxLength10, nonZero, number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation, } from "../../../helper/validation";
-import { renderDatePicker, renderMultiSelectField, renderText, renderTextInputField, searchableSelect, } from "../../layout/FormInputs";
+import { renderDatePicker, renderMultiSelectField, renderText, renderTextInputField, searchableSelect, validateForm, } from "../../layout/FormInputs";
 import { updateInterestRate, createInterestRate, getPaymentTermsAppliSelectList, getICCAppliSelectList, getInterestRateData, } from '../actions/InterestRateMaster';
 import { getPlantSelectListByType, getVendorNameByVendorSelectList } from '../../../actions/Common';
 import { MESSAGES } from '../../../config/message';
@@ -18,7 +18,7 @@ import { CBCTypeId, SPACEBAR, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, search
 import { onFocus, showDataOnHover } from '../../../helper';
 import { getClientSelectList, } from '../actions/Client';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { autoCompleteDropdown, getCostingTypeIdByCostingPermission, getEffectiveDateMinDate } from '../../common/CommonFunctions';
+import { autoCompleteDropdown, getCostingTypeIdByCostingPermission, getEffectiveDateMaxDate, getEffectiveDateMinDate } from '../../common/CommonFunctions';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { getRawMaterialNameChild, getRMGradeSelectListByRawMaterial } from '../actions/Material'
 import TourWrapper from '../../common/Tour/TourWrapper';
@@ -1038,6 +1038,7 @@ class AddInterestRate extends Component {
                               onChange={this.handleEffectiveDateChange}
                               type="text"
                               minDate={isEditFlag ? this.state.minEffectiveDate : getEffectiveDateMinDate()}
+                              maxDate={getEffectiveDateMaxDate()}
                               validate={[required]}
                               autoComplete={'off'}
                               required={true}
@@ -1139,6 +1140,7 @@ export default connect(mapStateToProps, {
   getRMGradeSelectListByRawMaterial
 })(reduxForm({
   form: 'AddInterestRate',
+  validate: validateForm,
   enableReinitialize: true,
   touchOnChange: true
 })(withTranslation(['InterestRate'])(AddInterestRate)));

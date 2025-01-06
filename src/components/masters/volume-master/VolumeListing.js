@@ -10,7 +10,7 @@ import { VOLUME_DOWNLOAD_EXCEl } from "../../../config/masterData";
 import AddVolume from "./AddVolume";
 import BulkUpload from "../../massUpload/BulkUpload";
 import { ADDITIONAL_MASTERS, VOLUME, VolumeMaster, } from "../../../config/constants";
-import { checkPermission, searchNocontentFilter, setLoremIpsum } from "../../../helper/util";
+import { checkPermission, getLocalizedCostingHeadValue, searchNocontentFilter, setLoremIpsum } from "../../../helper/util";
 import LoaderCustom from "../../common/LoaderCustom";
 import ReactExport from "react-export-excel";
 import { AgGridColumn, AgGridReact } from "ag-grid-react";
@@ -22,7 +22,7 @@ import AddLimit from "./AddLimit";
 import WarningMessage from "../../common/WarningMessage";
 import { setSelectedRowForPagination } from "../../simulation/actions/Simulation";
 import _ from "lodash";
-import { disabledClass } from "../../../actions/Common";
+import { disabledClass, setResetCostingHead } from "../../../actions/Common";
 import { reactLocalStorage } from "reactjs-localstorage";
 import VolumeBulkUploadDrawer from "../../massUpload/VolumeBulkUploadDrawer";
 import { Drawer } from "@material-ui/core";
@@ -36,6 +36,7 @@ import TourWrapper from "../../common/Tour/TourWrapper";
 import { Steps } from "../../common/Tour/TourMessages";
 import { useTranslation } from "react-i18next";
 import { useLabels, useWithLocalization } from "../../../helper/core";
+import CostingHeadDropdownFilter from "../material-master/CostingHeadDropdownFilter";
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
@@ -169,13 +170,14 @@ function VolumeListing(props) {
   const { selectedRowForPagination } = useSelector((state) => state.simulation);
   const dispatch = useDispatch();
   const { t } = useTranslation("Common");
-  const { vendorLabel } = useLabels()
+  const { vendorLabel,vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels()
 
   useEffect(() => {
     applyPermission(topAndLeftMenuData);
     getTableListData(0, defaultPageSize, true);
     return () => {
       dispatch(setSelectedRowForPagination([]));
+      dispatch(setResetCostingHead(true, "costingHead"))
     };
   }, []);
 
@@ -257,6 +259,7 @@ function VolumeListing(props) {
 
         setTimeout(() => {
           setWarningMessage(false);
+          dispatch(setResetCostingHead(false, "costingHead"))
         }, 330);
 
         setTimeout(() => {
@@ -527,6 +530,7 @@ function VolumeListing(props) {
   const resetState = () => {
     setNoData(false);
     gridApi.deselectAll();
+    dispatch(setResetCostingHead(true, "costingHead"))
     gridOptions.columnApi.resetColumnState();
     gridOptions.api.setFilterModel(null);
 
@@ -590,6 +594,18 @@ function VolumeListing(props) {
     checkboxSelection: isFirstColumn,
   };
 
+  
+  const combinedCostingHeadRenderer = (props) => {
+    // Call the existing checkBoxRenderer
+    checkBoxRenderer(props);
+  
+    // Get and localize the cell value
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    const localizedValue = getLocalizedCostingHeadValue(cellValue, vendorBasedLabel, zeroBasedLabel, customerBasedLabel);
+  
+    // Return the localized value (the checkbox will be handled by AgGrid's default renderer)
+    return localizedValue;
+  };
   const checkBoxRenderer = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     if (selectedRowForPagination?.length > 0) {
@@ -607,11 +623,24 @@ function VolumeListing(props) {
       return cellValue;
     }
   };
-
+  const floatingFilterStatus = {
+    maxValue: 1,
+    suppressFilterButton: true,
+    component: CostingHeadDropdownFilter,
+    onFilterChange: (originalValue, value) => {
+        // setSelectedCostingHead(originalValue);
+        setDisableFilter(false);
+        setFloatingFilterData(prevState => ({
+            ...prevState,
+            CostingHead: value
+        }));
+    }
+};
   const frameworkComponents = {
     totalValueRenderer: buttonFormatter,
     customNoRowsOverlay: NoContentFound,
     hyphenFormatter: hyphenFormatter,
+    statusFilter: CostingHeadDropdownFilter,
   };
 
   if (showVolumeForm) {
@@ -630,7 +659,7 @@ function VolumeListing(props) {
   return (
     <>
       <div
-        className={`ag-grid-react container-fluid blue-before-inside ${downloadAccessibility ? "show-table-btn no-tab-page" : ""
+        className={`ag-grid-react grid-parent-wrapper container-fluid blue-before-inside ${downloadAccessibility ? "show-table-btn no-tab-page" : ""
           }`}
         id="go-to-top"
       >
@@ -718,7 +747,9 @@ function VolumeListing(props) {
                   onRowSelected={onRowSelect}
                   suppressRowClickSelection={true}
                 >
-                  <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={checkBoxRenderer}></AgGridColumn>
+                  <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={combinedCostingHeadRenderer}
+                     floatingFilterComponentParams={floatingFilterStatus} 
+                     floatingFilterComponent="statusFilter"></AgGridColumn>
                   <AgGridColumn field="Year" headerName="Year"></AgGridColumn>
                   <AgGridColumn field="Month" headerName="Month"></AgGridColumn>
                   <AgGridColumn field="VendorName" headerName={`${vendorLabel} (Code)`} cellRenderer={"hyphenFormatter"}></AgGridColumn>

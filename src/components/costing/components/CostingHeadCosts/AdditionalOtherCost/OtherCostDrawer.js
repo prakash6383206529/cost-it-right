@@ -212,11 +212,11 @@ function OtherCostDrawer(props) {
             OtherCostType: otherCostType?.label,
             OtherCostApplicability: otherCostApplicability?.label,
             OtherCostApplicabilityId: otherCostApplicability?.value,
-            PercentageOtherCost: otherCostType?.label === 'Fixed' ? '-' : getValues('PercentageOtherCost'),
+            PercentageOtherCost: otherCostType?.label === 'Fixed' ? '' : getValues('PercentageOtherCost'),
             OtherCostDescription: getValues('OtherCostDescription'),
             AnyOtherCost: otherCostType?.label === 'Fixed' ? getValues('AnyOtherCost') : otherCost,
             ApplicabilityCost: applicabilityCost,
-            CRMHead: getValues('crmHeadOtherCost') ? getValues('crmHeadOtherCost').label : '-'
+            CRMHead: getValues('crmHeadOtherCost') ? getValues('crmHeadOtherCost').label : ''
         }
         setOtherCostTotal(0)
         setOtherCostTotal(calculateSumOfValues([...gridData, obj]))
@@ -234,11 +234,11 @@ function OtherCostDrawer(props) {
             OtherCostType: otherCostType?.label,
             OtherCostApplicability: otherCostApplicability?.label,
             OtherCostApplicabilityId: otherCostApplicability?.value,
-            PercentageOtherCost: otherCostType?.label === 'Fixed' ? '-' : getValues('PercentageOtherCost'),
+            PercentageOtherCost: otherCostType?.label === 'Fixed' ? '' : getValues('PercentageOtherCost'),
             OtherCostDescription: getValues('OtherCostDescription'),
             AnyOtherCost: otherCostType?.label === 'Fixed' ? getValues('AnyOtherCost') : otherCost,
             ApplicabilityCost: applicabilityCost,
-            CRMHead: getValues('crmHeadOtherCost') ? getValues('crmHeadOtherCost').label : '-'
+            CRMHead: getValues('crmHeadOtherCost') ? getValues('crmHeadOtherCost').label : ''
         }
 
         let tempArr = Object.assign([...gridData], { [editIndex]: obj })
@@ -269,7 +269,7 @@ function OtherCostDrawer(props) {
         const editObj = gridData[index]
         setValue('OtherCostType', { label: editObj.OtherCostType, value: editObj.OtherCostType })
         setValue('OtherCostApplicability', { label: editObj.OtherCostApplicability, value: editObj.OtherCostApplicabilityId })
-        setValue('PercentageOtherCost', editObj.PercentageOtherCost === '-' ? 0 : editObj.PercentageOtherCost)
+        setValue('PercentageOtherCost', editObj.PercentageOtherCost === '' ? 0 : editObj.PercentageOtherCost)
         setValue('OtherCostDescription', editObj.OtherCostDescription)
         setValue('AnyOtherCost', editObj.AnyOtherCost)
         setValue('crmHeadOtherCost', { label: editObj.CRMHead, value: index })

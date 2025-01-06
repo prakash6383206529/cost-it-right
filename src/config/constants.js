@@ -455,6 +455,8 @@ export const API = {
   getFreightModeSelectList: `${BASE_URL}/configuration/select-list-get-freight-modes`,
   getFreigtFullTruckCapacitySelectList: `${BASE_URL}/configuration/select-list-get-full-truck-capacity`,
   getFreigtRateCriteriaSelectList: `${BASE_URL}/configuration/select-list-get-full-truck-ratecriteria`,
+  getTruckDimensionsSelectList: `${BASE_URL}/masters-freight/get-truck-dimensions-select-list`,
+  saveTruckDimensions: `${BASE_URL}/masters-freight/save-truck-dimensions`,
 
   //API's for Additional freight master
   createAdditionalFreightAPI: `${BASE_URL}/masters-additional-freight/create`,
@@ -641,6 +643,10 @@ export const API = {
   getRawMaterialCalculationForMachining: `${BASE_URL}/costing/get-raw-material-machining-calculation-details`,
   getSimulationRmMachiningCalculation: `${BASE_URL}/simulation/get-simulation-raw-material-machining-calculation-details`,
   getSimulationCorrugatedAndMonoCartonCalculation: `${BASE_URL}/simulation/get-simulation-raw-material-corrugated-and-mono-carton-box-calculation-details`,
+  getPackagingCalculation: `${BASE_URL}/costing/get-costing-packaging-calculation-details`,
+  savePackagingCalculation: `${BASE_URL}/costing/save-costing-packaging-calculation-details`,
+  getVolumePerDayForPackagingCalculator: `${BASE_URL}/costing/get-volume-per-day-for-packaging-calculator`,
+  getSimulationPackagingCalculation: `${BASE_URL}/simulation/get-simulation-costing-packaging-calculation-details`,
 
   //Insulation calculator
   saveRawMaterialCalculationForInsulation: `${BASE_URL}/costing/save-raw-material-insulation-calculation-details`,
@@ -778,6 +784,7 @@ export const API = {
   deleteDivisionAPI: `${BASE_URL}/user-department/delete-division`,
   getDivisionListAPI: `${BASE_URL}/user-department/select-list-get-divisions`,
   getAllDivisionListAssociatedWithDepartment: `${BASE_URL}/user-department/get-all-division-list-associated-with-departments`,
+  checkDivisionByPlantAndGetDivisionIdByPart: `${BASE_URL}/user-department/check-and-get-division-applied-on-plant-and-part`,
 
   //LEVEL'S API
   assignUserLevelAPI: `${BASE_URL}/user-level/assign-user-level-for-costing`,
@@ -847,6 +854,7 @@ export const API = {
   // ApproveReject Drawer final approver
   checkFinalUser: `${BASE_URL}/app-approval-system/final-user-check`,
   getReleaseStrategyApprovalDetails: `${BASE_URL}/app-approval-system/get-release-strategy-approval-details`,
+  checkFinalLevelApproverForApproval: `${BASE_URL}/app-approval-system/check-is-user-final-level-approver-for-approvals`,
 
   //PRIVILEGE
   createPrivilegePage: `${BASE_URL}/app-privilege-permission/create-privilege-page`,
@@ -1084,6 +1092,8 @@ export const API = {
   getAllSimulationBoughtOutPart: `${BASE_URL}/simulation/get-all-simulation-bought-out-part`,
   getSapPushDetailsHeader: `${BASE_URL}/ExternalIntegration/get-sap-push-details-header`,
   sapPushBulkUpload: `${BASE_URL}/ExternalIntegration/bulk-upload-for-sap-push-details`,
+  getSimulationCostingStatus: `${BASE_URL}/app-simulation-approval-system/get-simulation-costing-status`,
+  getImpactedDataList: `${BASE_URL}/app-simulation-approval-system/get-simulation-costing-status-details`,
 
 
   // ASSEMBLY TECHNOLOGY
@@ -1224,6 +1234,8 @@ export const API = {
   rfqSaveBestCosting: `${BASE_URL}/rfq-costing/rfq-save-best-costing`,
   getAssemblyChildpart: `${BASE_URL}/rfq-quotation/get-assembly-child-part`,
   getRfqPartDetails: `${BASE_URL}/rfq-quotation/get-quotation-part-detail`,
+  checkRmExistInRfq: `${BASE_URL}/rfq-quotation/rfq-check-exist-raw-matarial`,
+  checkBopExistInRfq: `${BASE_URL}/rfq-quotation/rfq-check-exist-bought-out-part`,
 
   //vendor management
   getVendorClassificationList: `${BASE_URL}/vendor/get-classifications-status`,
@@ -1432,6 +1444,9 @@ export const GET_UNASSOCIATED_RM_NAME_SELECTLIST = 'GET_UNASSOCIATED_RM_NAME_SEL
 export const SET_FILTERED_RM_DATA = 'SET_FILTERED_RM_DATA'
 export const STATUS_COLUMN_DATA = 'STATUS_COLUMN_DATA'
 export const IS_RESET = 'IS_RESET'
+export const IS_RESET_COSTING_HEAD = 'IS_RESET_COSTING_HEAD'
+export const SET_COSTING_HEAD_FILTER = 'SET_COSTING_HEAD_FILTER'
+
 
 //RM EXCHANGE RATE SOURCE
 export const GET_RM_EXCHANGE_RATE_SOURCE = 'GET_RM_EXCHANGE_RATE_SOURCE'
@@ -1633,6 +1648,7 @@ export const GET_FREIGHT_FAILURE = 'GET_FREIGHT_FAILURE'
 export const GET_FREIGHT_MODE_SELECTLIST = 'GET_FREIGHT_MODE_SELECTLIST'
 export const GET_FREIGHT_FULL_TRUCK_CAPACITY_SELECTLIST = 'GET_FREIGHT_FULL_TRUCK_CAPACITY_SELECTLIST'
 export const GET_FREIGHT_RATE_CRITERIA_SELECTLIST = 'GET_FREIGHT_RATE_CRITERIA_SELECTLIST'
+export const GET_TRUCK_DIMENSIONS_SELECTLIST = 'GET_TRUCK_DIMENSIONS_SELECTLIST'
 
 //ADDITIONAL FREIGHT MASTER
 export const GET_ALL_ADDITIONAL_FREIGHT_SUCCESS = 'GET_ALL_ADDITIONAL_FREIGHT_SUCCESS'
@@ -2034,7 +2050,9 @@ export const SET_EXCHANGE_RATE_LIST_BEFORE_DRAFT = 'SET_EXCHANGE_RATE_LIST_BEFOR
 export const SET_SELECTED_CUSTOMER_SIMULATION = 'SET_SELECTED_CUSTOMER_SIMULATION'
 export const GET_SELECTLIST_COSTING_HEADS = 'GET_SELECTLIST_COSTING_HEADS'
 export const SET_EFFECTIVE_DATE = 'SET_EFFECTIVE_DATE';
-
+export const GET_SIMULATION_COSTING_STATUS = 'GET_SIMULATION_COSTING_STATUS'
+export const SET_IS_PENDING_SIMULATION_FROM_OTHER_DIV = 'SET_IS_PENDING_SIMULATION_FROM_OTHER_DIV'
+export const GET_IMPACTED_DATA_LIST = 'GET_IMPACTED_DATA_LIST'
 
 // ASSEMBLY TECHNOLOGY
 export const SET_SELECTED_VENDOR_SIMULATION = 'SET_SELECTED_VENDOR_SIMULATION'
@@ -2288,7 +2306,7 @@ export const WIREFORMING = 'Wire Forming'
 export const ELECTRIC = 'Electric'
 export const ELECTRONICSNAME = 'Electronics'
 export const TOOLING = 'Tooling'
-
+export const COSTING_BULKUPLOAD = 'Costing Bulk Upload'
 export const COMBINED_PROCESS_NAME = 'Combined Process';          						//RE
 export const ZBC_COSTING = 'Costing - ZBC';
 export const VBC_COSTING = 'Costing - VBC';
@@ -2304,6 +2322,7 @@ export const DEPARTMENT = 'Department'
 export const LEVELS = 'Levels'
 export const COMPANY = 'Company'//MINDA
 export const RFQUSER = 'RFQUser'
+export const DELEGATION = 'Delegation'
 export const DIVISION = 'Division'
 
 //DEPRECIATION TYPE ENUMS
@@ -2339,6 +2358,7 @@ export const BoughtOutPart = '3'
 export const Component = '2'
 export const Product = '4'
 export const ToolingId = '5'
+export const COMPONENTASSEMBLY = "componentAssembly"
 
 
 export const COSTING_PATH = '/costing'
@@ -2364,6 +2384,7 @@ export const SUPPLIER_MANAGEMENT = '/initiate-unblocking'
 export const lOGIN_AUDITS = '/login-audit'
 export const SUPPLIER_APPROVAL_SUMMARY = '/supplier-approval-summary'
 export const SAP_PUSH_DETAIL = '/sap-push-detail'//MINDA
+export const IMPACTED_DATA_LIST = '/impacted-data-list'
 
 
 export const EMPTY_GUID = "00000000-0000-0000-0000-000000000000"
@@ -2938,6 +2959,9 @@ export const DashboardMaster = "Analytics and Reports"
 export const IMPORT = "Import"
 export const INDEXED = "Indexed"
 export const NONINDEXED = "Non Indexed"
+export const DOMESTIC = "Domestic"
+export const IMPORTED = "Imported"
+
 
 // SPACE KEY CODE
 export const SPACEBAR = 32
@@ -3040,9 +3064,9 @@ export const BUDGETBULKUPLOAD = 'Budget'
 //added for OverheadProfit
 export const OVERHEADBULKUPLOAD = 'Overhead'
 export const PROFITBULKUPLOAD = 'Profit'
-export const ASSEMBLYORCOMPONENTSRFQ = "Assembly Or Components RFQ"
-export const BOUGHTOUTPARTSRFQ = "Bought Out Parts RFQ"
-export const RAWMATERIALSRFQ = "Raw Materials RFQ"
+export const ASSEMBLYORCOMPONENTSRFQ = "AssemblyOrComponentsRFQ"
+export const BOUGHTOUTPARTSRFQ = "BoughtOutPartsRFQ"
+export const RAWMATERIALSRFQ = "RawMaterialsRFQ"
 export const SAP_PUSH = "SAP Push"
 
 
@@ -3145,7 +3169,7 @@ export const typeData = [
 ];
 
 export const LANGUAGES = [
-  { value: 'en-US', label: 'English - EN', },
+  { value: 'en', label: 'English - EN', },
   { value: 'hi', label: 'हिन्दी - HI', },
   { value: 'mr', label: 'मराठी - MR', },
 ]
@@ -3277,6 +3301,8 @@ export const customHavellsChanges = true
 export const countDownBlinkingTime = 2
 export const clientName = 'Havells'
 export const isShowTaxCode = true
+export const effectiveDateRangeDayPrevious = 7
+export const effectiveDateRangeDayFuture = 7
 export const effectiveDateRangeDays = null
 // CONSTANT FOR COSTING ENTRY TYPE ID
 export const COMMODITYCOST = 'Commodity Cost'

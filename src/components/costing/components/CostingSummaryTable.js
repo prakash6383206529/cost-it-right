@@ -50,6 +50,8 @@ import ViewTcoDetail from './CostingHeadCosts/AdditionalOtherCost/ViewTcoDetail'
 import AddNpvCost from './CostingHeadCosts/AdditionalOtherCost/AddNpvCost'
 import { BarChartComparison } from './BarChartComparison'
 import { CirLogo, CompanyLogo, useLabels } from '../../../helper/core'
+import { checkDivisionByPlantAndGetDivisionIdByPart } from '../../../actions/Common'
+import { fetchDivisionId } from '../CostingUtil'
 
 
 
@@ -134,6 +136,7 @@ const CostingSummaryTable = (props) => {
   const [showPieChartObj, setShowPieChartObj] = useState([])
   const [releaseStrategyDetails, setReleaseStrategyDetails] = useState({})
   const [viewCostingData, setViewCostingData] = useState([])
+  const [viewBarChart, setviewBarChart] = useState(false)
 
   const [viewButton, setViewButton] = useState(true)
   const [editButton, setEditButton] = useState(true)
@@ -208,10 +211,12 @@ const CostingSummaryTable = (props) => {
   const [openNpvDrawer, setNpvDrawer] = useState(false);
   const [isOpenRejectedCosting, setIsOpenRejectedCosting] = useState(false);
   const [isFinalCommonApproval, setIsFinalCommonApproval] = useState(false);
+  const [showLeftButton, setShowLeftButton] = useState(false);
+  const [showRightButton, setShowRightButton] = useState(true);
   const [tcoAndNpvDrawer, setTcoAndNpvDrawer] = useState(false);
   const [costingId, setCostingId] = useState("");
   const { discountLabel, toolMaintenanceCostLabel } = useLabels();
-
+  const { isNetPoPrice, setIsNetPoPrice } = useState(false)
   const [drawerOpen, setDrawerOpen] = useState({
     BOP: false,
     process: false,
@@ -225,6 +230,7 @@ const CostingSummaryTable = (props) => {
   const componentRef = useRef();
   const onBeforeContentResolve = useRef(null)
   const onBeforeContentResolveDetail = useRef(null)
+  const tableContainerRef = useRef(null);
 
   useEffect(() => {
     if (viewCostingDetailData && viewCostingDetailData.length > 0 && !props?.isRejectedSummaryTable) {
@@ -341,6 +347,7 @@ const CostingSummaryTable = (props) => {
       setCssObj(prevState => ({ ...prevState, particularWidth: 50 / viewCostingData.length, tableWidth: "auto" }))
     }
   }, [viewCostingData])
+
 
   useEffect(() => {
     let currency = viewCostingData?.length > 0 ? _.map(viewCostingData, 'CostingCurrency') : []
@@ -690,10 +697,11 @@ const CostingSummaryTable = (props) => {
       let tempArr = temp && temp?.filter(item => item?.bestCost !== true)
       temp = props?.bestCostObjectFunction(tempArr)
     }
-    if (simulationMode && viewCostingData?.length >= 2) {
+    if (simulationMode && viewCostingData?.length > 2 && viewCostingData?.length <= 3) {
       setIsComparing(false)
       temp.push(varianceData)
     }
+    handleScroll()
     dispatch(setCostingViewData(temp))
   }
 
@@ -744,7 +752,6 @@ const CostingSummaryTable = (props) => {
     const userDetail = userDetails()
     let tempData = viewCostingData[index]
     const type = viewCostingData[index]?.costingTypeId
-
     const Data = {
       PartId: partNumber.partId,
       PartTypeId: partInfo.PartTypeId,
@@ -913,9 +920,11 @@ const CostingSummaryTable = (props) => {
     setMultipleCostings([])
     setShowWarningMsg(true)
     if (simulationMode && e === 'submit') {
-
+      setviewBarChart(true)
       const varianceData = viewCostingData?.filter(item => item?.CostingHeading === VARIANCE);
-      setVarianceData(...varianceData)
+      if (varianceData?.length > 0) {
+        setVarianceData(...varianceData)
+      }
       const filteredCostingData = viewCostingData?.filter(item => item?.CostingHeading !== VARIANCE);
       setIsComparing(true)
       dispatch(setCostingViewData(filteredCostingData));
@@ -1030,7 +1039,7 @@ const CostingSummaryTable = (props) => {
           obj.oldPrice = viewCostingData[index]?.oldPoPrice
           obj.revisedPrice = viewCostingData[index]?.poPrice
           obj.nPOPriceWithCurrency = viewCostingData[index]?.nPOPriceWithCurrency
-          obj.currencyRate = viewCostingData[index]?.currency.currencyValue
+          obj.currencyRate = viewCostingData[index]?.currencyRate
           obj.variance = Number(viewCostingData[index]?.poPrice && viewCostingData[index]?.poPrice !== '-' ? viewCostingData[index]?.oldPoPrice : 0) - Number(viewCostingData[index]?.poPrice && viewCostingData[index]?.poPrice !== '-' ? viewCostingData[index]?.poPrice : 0)
           let date = viewCostingData[index]?.effectiveDate
           if (viewCostingData[index]?.effectiveDate) {
@@ -1111,7 +1120,7 @@ const CostingSummaryTable = (props) => {
       })
   }
 
-  const checkCostings = () => {
+  const checkCostings = debounce(() => {
     if (dataSelected?.length === 0) {
       Toaster.warning("Please select at least one costing to send for approval")
       return false
@@ -1127,11 +1136,20 @@ const CostingSummaryTable = (props) => {
     let plantArray = []
 
     list && list?.map((item) => {
-      vendorArray.push(item.vendorId)
-      effectiveDateArray.push(item.effectiveDate)
-      plantArray.push(item.PlantCode)
+
+
+      vendorArray?.push(item?.vendorId)
+      effectiveDateArray?.push(item?.effectiveDate)
+      plantArray?.push(item?.plantCode)
       return null
     })
+    const hasZeroPrice = viewCostingData?.some(data =>
+      Number(data?.poPrice) === Number(0))
+
+    if (hasZeroPrice) {
+      Toaster.warning('Net price is 0, cannot proceed with approval.')
+      return false
+    }
     if (effectiveDateArray?.includes('')) {
       Toaster.warning('Please select the effective date.')
       return false
@@ -1224,39 +1242,49 @@ const CostingSummaryTable = (props) => {
             if (levelDetailsTemp?.length === 0) {
               Toaster.warning("You don't have permission to send costing for approval.")
             } else {
-              let obj = {}
-              obj.DepartmentId = userDetails().DepartmentId
-              obj.UserId = loggedInUserId()
-              obj.TechnologyId = partInfo.TechnologyId
-              obj.Mode = 'costing'
-              obj.approvalTypeId = costingTypeIdToApprovalTypeIdFunction(viewCostingData[0]?.costingTypeId)
-              obj.plantId = viewCostingData[index]?.destinationPlantId ?? EMPTY_GUID
+              let requestObject = {
+                "PlantId": viewCostingData[0]?.destinationPlantId,
+                "PartId": viewCostingData[0]?.partId
+              }
               const { Department } = userDetails()
-              if (Department.length === 1 && !initialConfiguration.IsDivisionAllowedForDepartment) {
-                dispatch(checkFinalUser(obj, res => {
-                  if (res?.data?.Result) {
-                    setIsFinalCommonApproval(res?.data?.Data?.IsFinalApprover)
-                    if (res?.data?.Data?.IsUserInApprovalFlow === true && res?.data?.Data?.IsFinalApprover === false) {
-                      sendForApprovalData(multipleCostings)
-                      setShowApproval(true)
-                    } else if (res?.data?.Data?.IsFinalApprover === true) {
-                      Toaster.warning("Final level user cannot send costing for approval.")
-                    } else {
-                      Toaster.warning("User does not have permission to send costing for approval.")
+              if (Department.length === 1 || getConfigurationKey()?.IsDivisionAllowedForDepartment) {
+                fetchDivisionId(requestObject, dispatch).then((divisionId) => {
+                  dataSelected[0].DivisionId = divisionId
+                  let obj = {}
+                  obj.DepartmentId = userDetails().DepartmentId
+                  obj.UserId = loggedInUserId()
+                  obj.TechnologyId = partInfo.TechnologyId
+                  obj.Mode = 'costing'
+                  obj.approvalTypeId = costingTypeIdToApprovalTypeIdFunction(viewCostingData[0]?.costingTypeId)
+                  obj.plantId = viewCostingData[index]?.destinationPlantId ?? EMPTY_GUID
+                  obj.divisionId = divisionId
+
+                  dispatch(checkFinalUser(obj, res => {
+                    if (res?.data?.Result) {
+                      setIsFinalCommonApproval(res?.data?.Data?.IsFinalApprover)
+                      if (res?.data?.Data?.IsUserInApprovalFlow === true && res?.data?.Data?.IsFinalApprover === false) {
+                        sendForApprovalData(multipleCostings)
+                        setShowApproval(true)
+                      } else if (res?.data?.Data?.IsFinalApprover === true) {
+                        Toaster.warning("Final level user cannot send costing for approval.")
+                      } else {
+                        Toaster.warning("User does not have permission to send costing for approval.")
+                      }
                     }
-                  }
-                }))
+                  }))
+                })
               } else {
                 sendForApprovalData(multipleCostings)
                 setShowApproval(true)
               }
+
             }
           }
         }))
       }
     }
 
-  }
+  }, 300)
 
   useEffect(() => {
     if (viewCostingData?.length === 1) {
@@ -1412,26 +1440,41 @@ const CostingSummaryTable = (props) => {
             if (levelDetailsTemp?.length === 0) {
               Toaster.warning("You don't have permission to send costing for approval.")
             } else {
-              let obj = {}
-              obj.DepartmentId = userDetails().DepartmentId
-              obj.UserId = loggedInUserId()
-              obj.TechnologyId = partInfo.TechnologyId
-              obj.Mode = 'costing'
-              obj.approvalTypeId = costingTypeIdToApprovalTypeIdFunction(viewCostingData[0]?.costingTypeId)
-              obj.plantId = viewCostingData[index]?.destinationPlantId ?? EMPTY_GUID
-              dispatch(checkFinalUser(obj, res => {
-                if (res?.data?.Result) {
-                  setIsFinalCommonApproval(res?.data?.Data?.IsFinalApprover)
-                  if (res?.data?.Data?.IsUserInApprovalFlow === true && res?.data?.Data?.IsFinalApprover === false) {
-                    sendForApprovalData([data[0]?.costingId], index)
-                    setShowApproval(true)
-                  } else if (res?.data?.Data?.IsFinalApprover === true) {
-                    Toaster.warning("Final level user cannot send costing for approval.")
-                  } else {
-                    Toaster.warning("User does not have permission to send costing for approval.")
-                  }
+              const { Department } = userDetails()
+              if (Department.length === 1 || getConfigurationKey()?.IsDivisionAllowedForDepartment) {
+                let requestObject = {
+                  "PlantId": viewCostingData[0]?.destinationPlantId,
+                  "PartId": viewCostingData[0]?.partId
                 }
-              }))
+                fetchDivisionId(requestObject, dispatch).then((divisionId) => {
+                  let selectedDataObj = { DivisionId: divisionId }
+                  setDataSelected([selectedDataObj])
+                  let obj = {}
+                  obj.DepartmentId = userDetails().DepartmentId
+                  obj.UserId = loggedInUserId()
+                  obj.TechnologyId = partInfo.TechnologyId
+                  obj.Mode = 'costing'
+                  obj.approvalTypeId = costingTypeIdToApprovalTypeIdFunction(viewCostingData[0]?.costingTypeId)
+                  obj.plantId = viewCostingData[index]?.destinationPlantId ?? EMPTY_GUID
+                  obj.divisionId = divisionId
+                  dispatch(checkFinalUser(obj, res => {
+                    if (res?.data?.Result) {
+                      setIsFinalCommonApproval(res?.data?.Data?.IsFinalApprover)
+                      if (res?.data?.Data?.IsUserInApprovalFlow === true && res?.data?.Data?.IsFinalApprover === false) {
+                        sendForApprovalData([data[0]?.costingId], index)
+                        setShowApproval(true)
+                      } else if (res?.data?.Data?.IsFinalApprover === true) {
+                        Toaster.warning("Final level user cannot send costing for approval.")
+                      } else {
+                        Toaster.warning("User does not have permission to send costing for approval.")
+                      }
+                    }
+                  }))
+                })
+              } else {
+                sendForApprovalData([data[0]?.costingId], index)
+                setShowApproval(true)
+              }
             }
           }
         }))
@@ -2082,11 +2125,51 @@ const CostingSummaryTable = (props) => {
     })
     return arr
   }
-
   const checkboxHandler = () => {
     setShowConvertedCurrency(!showConvertedCurrency)
   }
+  const handleScroll = () => {
+    if (tableContainerRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = tableContainerRef.current;
 
+      setShowLeftButton(scrollLeft > 0);
+      if (viewCostingData?.length > (window.screen.width >= 1600 ? 3 : 2)) {
+        // setShowRightButton(true)
+        setShowRightButton(true)
+
+      } else {
+        setShowRightButton(false)
+      }
+
+      // Toggle visibility of right button
+    }
+  };
+  useEffect(() => {
+    const container = tableContainerRef.current;
+    if (container) {
+      container.addEventListener("scroll", handleScroll);
+    }
+    handleScroll(); // Check initial scroll state
+    return () => {
+      if (container) {
+        container.removeEventListener("scroll", handleScroll);
+      }
+    };
+  }, [viewCostingData]);
+  const scrollLeft = () => {
+    if (tableContainerRef.current) {
+      tableContainerRef.current.scrollBy({ left: -100, behavior: "smooth" });
+      handleScroll()
+    }
+  };
+
+  const scrollRight = () => {
+    if (tableContainerRef.current) {
+      tableContainerRef.current.scrollBy({ left: 100, behavior: "smooth" });
+      const { scrollLeft, scrollWidth, clientWidth } = tableContainerRef.current;
+      setShowRightButton(scrollLeft + clientWidth < scrollWidth);
+    }
+  };
   return (
     <Fragment>
       {
@@ -2168,7 +2251,7 @@ const CostingSummaryTable = (props) => {
                         {'Send For Approval'}
                       </button>
                     )}
-                    <button
+                    {!simulationDrawer && <button
                       type="button"
                       id="costingSummary_addtocomparison"
 
@@ -2177,7 +2260,7 @@ const CostingSummaryTable = (props) => {
                     >
                       <div className="compare-arrows"></div>
                       Add To Comparison{' '}
-                    </button>
+                    </button>}
                   </>
                 }
               </div >
@@ -2192,9 +2275,16 @@ const CostingSummaryTable = (props) => {
                 <Col md="10">
                   <div id="bar-chart-compare" className="left-border">{'Bar Chart Comparison:'}</div>
                 </Col>
+                <Col md="2" className="text-right">
+                  <div className="right-border">
+                    <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setviewBarChart(!viewBarChart) }}>
+                      {viewBarChart ? <i className="fa fa-minus"></i> : <i className="fa fa-plus"></i>}
+                    </button>
+                  </div>
+                </Col>
               </Row>
 
-              <Row>
+              {viewBarChart && <Row>
                 <Col md="12" className="costing-summary-row">
                   {isComparing &&
                     <BarChartComparison
@@ -2204,6 +2294,7 @@ const CostingSummaryTable = (props) => {
                   }
                 </Col>
               </Row>
+              }
             </>
             )}
           <div ref={componentRef}>
@@ -2219,8 +2310,25 @@ const CostingSummaryTable = (props) => {
                   </Col> */}
                 </>}
 
-              <Col md="12">
-                <div className={`${viewCostingData[0]?.technologyId !== LOGISTICS ? '' : `overflow-y-hidden ${props?.isRfqCosting ? 'layout-min-height-440px' : ''}`} table-responsive `}>
+              <Col md="12" >
+                <div className='sticky-scroll-btn'>
+                  <div>
+                    <button type='button' className={`scroll-btn left ${showLeftButton ? '' : 'd-none'}`} onClick={scrollLeft}>
+                      <svg viewBox="0 0 24 24">
+                        <path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6z" />
+                      </svg>
+                    </button>
+                  </div>
+                  <div>
+                    <button type='button' className={`scroll-btn right ${showRightButton ? '' : 'd-none'}`} onClick={scrollRight}>
+                      <svg viewBox="0 0 24 24">
+                        <path d="M8.59 16.59L13.17 12l-4.58-4.59L10 6l6 6-6 6z" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+                <div ref={tableContainerRef} className={`${viewCostingData[0]?.technologyId !== LOGISTICS ? '' : `overflow-y-hidden ${props?.isRfqCosting ? 'layout-min-height-440px' : ''}`} table-responsive`}>
+
                   <table style={{ minWidth: cssObj.tableWidth }} className={`table table-bordered costing-summary-table mb-0 ${approvalMode ? 'costing-approval-summary' : ''}`}>
                     {props.isRfqCosting && <thead>
                       <tr>
@@ -2333,6 +2441,7 @@ const CostingSummaryTable = (props) => {
                             </td >
                             {viewCostingData &&
                               viewCostingData?.map((data, index) => {
+
                                 const isPieChartVisible = viewPieChart[index];
                                 const dateVersionAndStatus = (data?.bestCost === true) ? ' ' : `${DayTime(data?.costingDate).format('DD-MM-YYYY')}-${data?.CostingNumber}${props.isRfqCosting ? (notSelectedCostingId?.includes(data?.costingId) ? "-Not Selected" : `-${data?.status}`) : props.costingSummaryMainPage ? `-${data?.status}` : ''}`
                                 return (
@@ -2361,7 +2470,7 @@ const CostingSummaryTable = (props) => {
                                     {(!data?.bestCost === true) && (
                                       <span className="d-flex justify-content-between align-items-center pie-chart-container">
                                         <span>
-                                          {(data?.bestCost === true) ? ' ' : checkForDecimalAndNull(data?.poPrice, initialConfiguration.NoOfDecimalForPrice)}
+                                          {(data?.bestCost === true) ? ' ' : checkForDecimalAndNull(data?.poPrice, initialConfiguration?.NoOfDecimalForPrice)}
                                           {(data?.bestCost === true) ? ' ' : ` (${(data?.effectiveDate && data?.effectiveDate !== '') ? DayTime(data?.effectiveDate).format('DD-MM-YYYY') : "-"})`}
                                           { }
                                         </span>
@@ -3848,6 +3957,8 @@ const CostingSummaryTable = (props) => {
             closeDrawer={closeViewDrawer}
             isLogisticsTechnology={isLogisticsTechnology}
             anchor={'right'}
+            simulationMode={simulationMode}
+            index={index}
           />
         )
       }

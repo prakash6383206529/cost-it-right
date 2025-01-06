@@ -6,7 +6,7 @@ import {
     required, email, minLength7, maxLength70, minLength10, acceptAllExceptSingleSpecialCharacter,
     maxLength80, maxLength20, postiveNumber, maxLength5, maxLength12, checkWhiteSpaces, checkSpacesInString, number
 } from "../../../helper/validation";
-import { renderText, renderEmailInputField, searchableSelect, renderTextInputField, } from "../../layout/FormInputs";
+import { renderText, renderEmailInputField, searchableSelect, renderTextInputField, validateForm, } from "../../layout/FormInputs";
 import { createClient, updateClient, getClientData } from '../actions/Client';
 import { fetchStateDataAPI, fetchCityDataAPI } from '../../../actions/Common';
 import Toaster from '../../common/Toaster';
@@ -501,6 +501,7 @@ export default connect(mapStateToProps, {
     getClientData
 })(reduxForm({
     form: 'AddClient',
+    validate: validateForm,
     enableReinitialize: true,
     touchOnChange: true
 })(AddClient));

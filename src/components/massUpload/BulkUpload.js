@@ -70,7 +70,7 @@ import DayTime from '../common/DayTimeWrapper';
 import { checkSAPCodeinExcel } from './DownloadUploadBOMxls';
 import WarningMessage from '../common/WarningMessage';
 import Switch from 'react-switch'
-import { searchableSelect } from '../layout/FormInputs';
+import { searchableSelect, validateForm } from '../layout/FormInputs';
 import { LabelsClass, localizeHeadersWithLabels } from '../../helper/core';
 import { withTranslation } from 'react-i18next';
 import { sapPushBulkUpload } from '../masters/actions/SAPDetail';
@@ -937,7 +937,7 @@ class BulkUpload extends Component {
             CostingTypeId: costingTypeId,
             TypeOfEntry: this.props.masterId === RM_MASTER_ID && this.state.isImport ? ENTRY_TYPE_IMPORT : typeOfEntryId ? typeOfEntryId : 0,
             DivisionId: this.state.division?.value,
-            DepartmentId: this.state.disableDept ? this.state.department[0].value : this.state.department?.value
+            DepartmentId: this.state.disableDept ? this.state.department[0]?.value : this.state.department?.value
         }
         if (costingTypeId === ZBCADDMORE || costingTypeId === ZBCADDMOREOPERATION) {
             masterUploadData.CostingTypeId = ZBCTypeId
@@ -1612,6 +1612,7 @@ export default connect(mapStateToProps, {
     sapPushBulkUpload
 })(reduxForm({
     form: 'BulkUpload',
+    validate: validateForm,
     enableReinitialize: true,
     touchOnChange: true
 })(withTranslation('MasterLabels')(BulkUpload)));

@@ -3,8 +3,8 @@ import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector, clearFields } from "redux-form";
 import { Row, Col, Table, Label } from 'reactstrap';
 import { required, checkForNull, getCodeBySplitting, checkForDecimalAndNull, positiveAndDecimalNumber, maxLength10, decimalLengthFour, decimalLengthThree, number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation } from "../../../helper/validation";
-import { searchableSelect, renderMultiSelectField, focusOnError, renderDatePicker, renderText, renderTextInputField } from "../../layout/FormInputs";
-import { getPowerTypeSelectList, getUOMSelectList, getPlantBySupplier, getVendorNameByVendorSelectList, getExchangeRateSource, getCurrencySelectList, fetchCountryDataAPI, fetchCityDataAPI, getCityByCountryAction, fetchStateDataAPI } from '../../../actions/Common';
+import { searchableSelect, renderMultiSelectField, focusOnError, renderDatePicker, renderText, renderTextInputField, validateForm } from "../../layout/FormInputs";
+import { getPowerTypeSelectList, getUOMSelectList, getPlantBySupplier, getAllCity, fetchStateDataAPI, getVendorNameByVendorSelectList, getExchangeRateSource, getCurrencySelectList, fetchCountryDataAPI, fetchCityDataAPI, getCityByCountryAction } from '../../../actions/Common';
 import {
   getFuelByPlant, createPowerDetail, updatePowerDetail, getPlantListByAddress, createVendorPowerDetail, updateVendorPowerDetail, getDieselRateByStateAndUOM,
   getPowerDetailData, getVendorPowerDetailData,
@@ -25,7 +25,7 @@ import LoaderCustom from '../../common/LoaderCustom';
 import _, { debounce } from 'lodash';
 import AsyncSelect from 'react-select/async';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { autoCompleteDropdown, getCostingTypeIdByCostingPermission, getEffectiveDateMinDate } from '../../common/CommonFunctions';
+import { autoCompleteDropdown, getCostingTypeIdByCostingPermission, getEffectiveDateMaxDate, getEffectiveDateMinDate } from '../../common/CommonFunctions';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { getClientSelectList, } from '../actions/Client';
 import TooltipCustom from '../../common/Tooltip';
@@ -575,9 +575,10 @@ class AddPower extends Component {
     this.props.reset();
     // Store current isImport value
     const currentIsImport = this.state.isImport;
-    this.setState({ ...this.initialState, costingTypeId: costingHeadFlag,
+    this.setState({
+      ...this.initialState, costingTypeId: costingHeadFlag,
       isImport: currentIsImport // Preserve isImport value
-     }, () => {
+    }, () => {
       if (costingHeadFlag === CBCTypeId) {
         //this.props.getClientSelectList(() => { })
       }
@@ -1683,13 +1684,13 @@ class AddPower extends Component {
 
     // Generate tooltip text based on the condition
     return <>
-      {!this.state?.hidePlantCurrency               
+      {!this.state?.hidePlantCurrency
         ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrencyLabel}, `
         : ''}<p>Exchange Rate: 1 {currencyLabel} = {settlementCurrencyRate} {baseCurrency}</p>
     </>;
   };
   powerRateTitle = () => {
-    const rateLabel = this.state.isImport ? `Net Cost/Unit (${this.state?.currency?.label ?? 'Currency'})` :`Net Cost/Unit (${this.props.fieldsObj?.plantCurrency ?? 'Plant Currency'})`
+    const rateLabel = this.state.isImport ? `Net Cost/Unit (${this.state?.currency?.label ?? 'Currency'})` : `Net Cost/Unit (${this.props.fieldsObj?.plantCurrency ?? 'Plant Currency'})`
     return {
       tooltipTextPlantCurrency: `${rateLabel} * Plant Currency Rate (${this.state?.plantCurrency ?? ''})`,
       toolTipTextNetCostBaseCurrency: `${rateLabel} * Currency Rate (${this.state?.settlementCurrency ?? ''})`,
@@ -1996,7 +1997,7 @@ class AddPower extends Component {
                           </Col>
                         )}
                         <Col md="3">
-                        {!this.state.hidePlantCurrency &&this.props.fieldsObj?.plantCurrency&&!this.state.isImport && <TooltipCustom width="350px" id="plantCurrency" tooltipText={`Exchange Rate: 1 ${this.props.fieldsObj?.plantCurrency } = ${this.state?.plantCurrency ?? '-'} ${reactLocalStorage.getObject("baseCurrency")}`} />}
+                          {!this.state.hidePlantCurrency && this.props.fieldsObj?.plantCurrency && !this.state.isImport && <TooltipCustom width="350px" id="plantCurrency" tooltipText={`Exchange Rate: 1 ${this.props.fieldsObj?.plantCurrency} = ${this.state?.plantCurrency ?? '-'} ${reactLocalStorage.getObject("baseCurrency")}`} />}
                           <Field
                             name="plantCurrency"
                             type="text"
@@ -2056,6 +2057,8 @@ class AddPower extends Component {
                                     placeholder={isViewMode ? '-' : "Select Date"}
                                     onFocus={() => onFocus(this, true)}
                                     minDate={getEffectiveDateMinDate()}
+                                    maxDate={getEffectiveDateMaxDate()}
+
 
                                   />
                                 </div>
@@ -2086,7 +2089,7 @@ class AddPower extends Component {
                               </div>
                             </Col>}
                             < Col md="3">
-                            {this.state.isImport && <TooltipCustom disabledIcon={true} id="cost-local" tooltipText={hidePlantCurrency ? this.powerRateTitle()?.toolTipTextNetCostBaseCurrency : this.powerRateTitle()?.tooltipTextPlantCurrency} />}
+                              {this.state.isImport && <TooltipCustom disabledIcon={true} id="cost-local" tooltipText={hidePlantCurrency ? this.powerRateTitle()?.toolTipTextNetCostBaseCurrency : this.powerRateTitle()?.tooltipTextPlantCurrency} />}
                               <div className="d-flex justify-space-between align-items-center inputwith-icon">
                                 <div className="fullinput-icon">
                                   <Field
@@ -2804,6 +2807,7 @@ export default connect(mapStateToProps, {
   getPlantCurrencyByPlantIds,
 })(reduxForm({
   form: 'AddPower',
+  validate: validateForm,
   enableReinitialize: true,
   touchOnChange: true,
   onSubmitFail: errors => {

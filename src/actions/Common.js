@@ -72,7 +72,9 @@ import {
   SIMULATION_LEVEL,
   MASTER_LEVEL,
   ONBOARDING_MANAGEMENT_LEVEL,
-  GET_TAX_CODE_SELECTLIST
+  GET_TAX_CODE_SELECTLIST,
+  SET_COSTING_HEAD_FILTER,
+  IS_RESET_COSTING_HEAD,
 } from '../config/constants';
 import { apiErrors, encodeQueryParamsAndLog } from '../helper/util';
 import { MESSAGES } from '../config/message';
@@ -1552,6 +1554,19 @@ export function getPartSelectList(partNumber, callback) {
   });
 }
 
+// costing head filter
+export function setCostingHeadFilter(data, CostingHeadOptions) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_COSTING_HEAD_FILTER,
+      payload: {
+        data: data,
+        CostingHeadOptions: CostingHeadOptions
+
+      }
+    });
+  };
+}
 
 export function agGridStatus(data, id, arr = [], arrReports = []) {
   return (dispatch) => {
@@ -1574,6 +1589,17 @@ export function isResetClick(data, component) {
   return (dispatch) => {
     dispatch({
       type: IS_RESET,
+      payload: { data: data, component: component },
+    })
+
+  }
+}
+
+// FUNCTION TO CHECK IF RESET BUTTON IS CLICKED IN PAGINATION COMPONENT.
+export function setResetCostingHead(data, component) {
+  return (dispatch) => {
+    dispatch({
+      type: IS_RESET_COSTING_HEAD,
       payload: { data: data, component: component },
     })
 
@@ -1990,3 +2016,24 @@ export function useFetchAPICall(keyName, params = {}) {
     }
   });
 }
+export function checkDivisionByPlantAndGetDivisionIdByPart(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.checkDivisionByPlantAndGetDivisionIdByPart, data, config())
+    request
+      .then((response) => {
+        if (response.data.Result) {
+          callback(response)
+        } else {
+          dispatch({ type: API_FAILURE })
+          if (response.data.Message) {
+            Toaster.error(response.data.Message)
+          }
+        }
+      })
+      .catch((error) => {
+        dispatch({ type: API_FAILURE })
+        apiErrors(error)
+      })
+  }
+}
+

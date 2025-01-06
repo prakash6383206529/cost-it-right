@@ -270,7 +270,7 @@ function ProcessCost(props) {
       tempData = {
         ...tempData,
         Quantity: tempData.UOMType === TIME ? checkForNull(weightData.CycleTime) : weightData.Quantity,
-        ProductionPerHour: tempData.UOMType === TIME ? checkForNull(weightData.PartPerHour) : '-',
+        ProductionPerHour: tempData.UOMType === TIME ? checkForNull(weightData.PartPerHour) :'',
         ProcessCost: weightData.ProcessCost,
         IsCalculatedEntry: true,
         ProcessCalculationId: EMPTY_GUID,
@@ -306,7 +306,7 @@ function ProcessCost(props) {
       tempData = {
         ...tempData,
         Quantity: tempData.UOMType === TIME ? checkForNull(weightData.CycleTime) : weightData.Quantity,
-        ProductionPerHour: tempData.UOMType === TIME ? checkForNull(weightData.PartPerHour) : '-',
+        ProductionPerHour: tempData.UOMType === TIME ? checkForNull(weightData.PartPerHour) : '',
         ProcessCost: weightData.ProcessCost,
         IsCalculatedEntry: true,
         ProcessCalculationId: EMPTY_GUID,
@@ -332,7 +332,7 @@ function ProcessCost(props) {
       processTempData = {
         ...processTempData,
         Quantity: totalQuantity,
-        ProductionPerHour: tempData.UOMType !== TIME ? '-' : ProductionPerHour,
+        ProductionPerHour: tempData.UOMType !== TIME ? '' : ProductionPerHour,
         ProcessCost: ProcessCostTotal,
         ProcessList: gridTempArr
       }
@@ -500,7 +500,7 @@ function ProcessCost(props) {
 
     const productionPerHrs = (rowArray, UOMType, processQuantityMain) => {
       // IF GROUP NAME IS THERE ,THEN QUAMTITY WILL BE SUM OF THE QUANTITY OF PROCESSESS OF THAT GROUP,OTHERWISE MAIN QUANTITY
-      return rowArray.length > 0 ? (UOMType !== TIME ? '-' : (3600 / calculateRowQuantity(rowArray))) : (UOMType !== TIME ? '-' : (3600 / processQuantityMain))
+      return rowArray.length > 0 ? (UOMType !== TIME ? '' : (3600 / calculateRowQuantity(rowArray))) : (UOMType !== TIME ? '' : (3600 / processQuantityMain))
     }
 
 
@@ -794,7 +794,7 @@ function ProcessCost(props) {
       ...parentTempData,
       ProcessList: tempArrAfterDelete,
       ProcessCost: ProcessCostTotal,
-      ProductionPerHour: tempArrAfterDelete.length > 0 && tempArrAfterDelete[0].UOMType !== TIME ? '-' : ProductionPerHourTotal,
+      ProductionPerHour: tempArrAfterDelete.length > 0 && tempArrAfterDelete[0].UOMType !== TIME ? '' : ProductionPerHourTotal,
       Quantity: QuantityTotal
     }
     tempArr2 = Object.assign([...processGroupGrid], { [parentIndex]: parentTempData })
@@ -811,6 +811,7 @@ function ProcessCost(props) {
     setGridData(tempArr2)
     dispatch(setProcessGroupGrid(formatReducerArray(tempArr2)))
     setTabData(tempArr3)
+
     tempArrAfterDelete && tempArrAfterDelete.map((el, i) => {
       setValue(`${SingleProcessGridField}.${i}.${parentIndex}.ProcessCost`, checkForDecimalAndNull(el.ProcessCost, initialConfiguration.NoOfDecimalForPrice))
       setValue(`${SingleProcessGridField}.${i}${parentIndex}${el.ProcessName}.Quantity`, checkForDecimalAndNull(el.Quantity, getConfigurationKey().NoOfDecimalForInputOutput))
@@ -851,7 +852,7 @@ function ProcessCost(props) {
         ...tempData,
         Quantity: event.target.value,
         IsCalculatedEntry: false,
-        ProductionPerHour: tempData.UOMType !== TIME ? '-' : productionPerHour,
+        ProductionPerHour: tempData.UOMType !== TIME ? '' : productionPerHour,
         ProcessCost: processCost
       }
       let gridTempArr = Object.assign([...processGroupGrid], { [index]: tempData })
@@ -976,13 +977,12 @@ function ProcessCost(props) {
       processTempData = {
         ...processTempData,
         Quantity: quantityTotal,
-        ProductionPerHour: tempData.UOMType !== TIME ? '-' : groupProductionPerHour,
+        ProductionPerHour: tempData.UOMType !== TIME ? '' : groupProductionPerHour,
         IsCalculatedEntry: false,
         ProcessCost: ProcessCostTotal,
         ProcessList: gridTempArr
       }
       let processTemparr = Object.assign([...processGroupGrid], { [parentIndex]: processTempData })
-
       let apiArr = formatMainArr(processTemparr)
 
 
@@ -1129,7 +1129,7 @@ function ProcessCost(props) {
             <td>{item.Tonnage}</td>
             <td>{item.MHR}</td>
             <td>{item.UOM}</td>
-            <td><div className='w-fit' id={`part-hour${index}`}><TooltipCustom disabledIcon={true} id={`part-hour${index}`} tooltipText={"Parts/Hour = (3600 / Quantity)"} />{(item?.ProductionPerHour === '-' || item?.ProductionPerHour === 0 || item?.ProductionPerHour === null || item?.ProductionPerHour === undefined) ? '-' : Math.round(item.ProductionPerHour)}</div></td>
+            <td><div className='w-fit' id={`part-hour${index}`}><TooltipCustom disabledIcon={true} id={`part-hour${index}`} tooltipText={"Parts/Hour = (3600 / Quantity)"} />{(item?.ProductionPerHour === '' || item?.ProductionPerHour === 0 || item?.ProductionPerHour === null || item?.ProductionPerHour === undefined) ? '-' : Math.round(item.ProductionPerHour)}</div></td>
             <td>
               <div className='d-flex align-items-center'>
                 <span className="d-inline-block  mr-2">
@@ -1480,7 +1480,7 @@ function ProcessCost(props) {
                             <td>{item.Tonnage ? checkForNull(item.Tonnage) : '-'}</td>
                             <td>{item.MHR}</td>
                             <td>{item.UOM}</td>
-                            <td><div className='w-fit' id={`part-hour${index}`}><TooltipCustom disabledIcon={true} id={`part-hour${index}`} tooltipText={"Parts/Hour = (3600 / Quantity)"} />{(item?.ProductionPerHour === '-' || item?.ProductionPerHour === 0 || item?.ProductionPerHour === null || item?.ProductionPerHour === undefined) ? '-' : Math.round(item.ProductionPerHour)}</div></td>
+                            <td><div className='w-fit' id={`part-hour${index}`}><TooltipCustom disabledIcon={true} id={`part-hour${index}`} tooltipText={"Parts/Hour = (3600 / Quantity)"} />{(item?.ProductionPerHour === '' || item?.ProductionPerHour === 0 || item?.ProductionPerHour === null || item?.ProductionPerHour === undefined) ? '-' : Math.round(item.ProductionPerHour)}</div></td>
                             <td >
                               {
 

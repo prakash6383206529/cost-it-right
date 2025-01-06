@@ -104,12 +104,10 @@
 }
 
 .hirarchy-btn {
-    @include icons(
-        "../../images/hirarchy-btn.svg",
+    @include icons("../../images/hirarchy-btn.svg",
         $background-size: none,
         $shadowColor: #0cbeeb,
-        $borderColor: #bbe8f9
-    );
+        $borderColor: #bbe8f9);
     background-color: #cef2fb;
     margin-left: 5px;
     border-radius: 4px;
@@ -649,6 +647,7 @@
 }
 
 @media (max-width: $belowLaptop) {
+
     .Add,
     .Edit,
     .Balance,
@@ -754,7 +753,7 @@
     @media screen and (max-width: $max1367) {
         left: 1114px !important;
 
-        > div {
+        >div {
             left: 74% !important;
         }
 
@@ -930,7 +929,15 @@
         left: 5px;
     }
 }
-#addRMDomestic_otherToggle.blurPlus-icon-square{margin-left:5px!important;}
+
+#addRMDomestic_otherToggle.blurPlus-icon-square {
+    margin-left: 5px !important;
+}
+
 #addBOPImport_condition.plus-icon-square {
     margin-top: 0;
+}
+
+.microsot-logo {
+    @include icons("../../images/microshot-logo.svg", 21px, 21px);
 }

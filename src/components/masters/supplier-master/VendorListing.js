@@ -576,7 +576,7 @@ const VendorListing = (props) => {
       //  pageNo: 1, pageNoNew: 1, currentRowIndex: 0,
     }));
     dispatch(updatePageNumber(1));
-    dispatch(updateCurrentRowIndex(0));
+    dispatch(updateCurrentRowIndex(10));
     getTableListData(0, state.floatingFilterData, 10, true);
     dispatch(setSelectedRowForPagination([]));
     dispatch(updateGlobalTake(10));
@@ -704,7 +704,7 @@ const VendorListing = (props) => {
 
   return (
     <div
-      className={`ag-grid-react container-fluid blue-before-inside report-grid custom-pagination ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""
+      className={`ag-grid-react container-fluid blue-before-inside grid-parent-wrapper custom-pagination ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""
         }`}
       id="go-to-top"
     >
@@ -795,7 +795,7 @@ const VendorListing = (props) => {
               enablePivot={true}
               enableBrowserTooltips={true}
             >
-              <AgGridColumn field="VendorType" tooltipField="VendorType" width={"240px"} headerName={vendorLabel + " Type"} cellRenderer={"checkBoxRenderer"} floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterVendorType}              ></AgGridColumn>
+              <AgGridColumn field="VendorType" tooltipField="VendorType" width={"280px"} headerName={vendorLabel + " Type"} cellRenderer={"checkBoxRenderer"} floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterVendorType}              ></AgGridColumn>
               <AgGridColumn field="VendorName" headerName={vendorLabel + " Name"}             ></AgGridColumn>
               <AgGridColumn field="VendorCode" headerName={vendorLabel + " Code"}              ></AgGridColumn>
               <AgGridColumn field="Country" headerName="Country" cellRenderer={"hyphenFormatter"}              ></AgGridColumn>

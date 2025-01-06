@@ -4,7 +4,7 @@ import { Field, reduxForm } from "redux-form";
 import { Row, Col } from 'reactstrap';
 import { required, checkWhiteSpaces, alphaNumeric, acceptAllExceptSingleSpecialCharacter, maxLength20, maxLength80, maxLength512, checkSpacesInString, hashValidation } from "../../../helper/validation";
 import { loggedInUserId } from "../../../helper/auth";
-import { renderDatePicker, renderText, renderTextAreaField, } from "../../layout/FormInputs";
+import { renderDatePicker, renderText, renderTextAreaField, validateForm, } from "../../layout/FormInputs";
 import { createProduct, updateProduct, getProductData, fileUploadProduct, getPreFilledProductLevelValues, storeHierarchyData, getAllProductLevels, } from '../actions/Part';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
@@ -23,7 +23,7 @@ import { withTranslation } from 'react-i18next';
 import Button from '../../layout/Button';
 import AssociateHierarchy from './AssociateHierarchy';
 import { subDays } from 'date-fns';
-import { getEffectiveDateMinDate } from '../../common/CommonFunctions';
+import { getEffectiveDateMaxDate, getEffectiveDateMinDate } from '../../common/CommonFunctions';
 
 class AddIndivisualProduct extends Component {
     constructor(props) {
@@ -530,6 +530,7 @@ class AddIndivisualProduct extends Component {
                                                                     placeholder={isViewMode ? '-' : "Select Date"}
                                                                     selected={this.state.effectiveDate}
                                                                     minDate={isEditFlag ? this.state.minEffectiveDate : getEffectiveDateMinDate()}
+                                                                    maxDate={getEffectiveDateMaxDate()}
                                                                     onChange={this.handleEffectiveDateChange}
                                                                     type="text"
                                                                     validate={[required]}
@@ -763,6 +764,7 @@ export default connect(mapStateToProps, {
     getAllProductLevels
 })(reduxForm({
     form: 'AddIndivisualPart',
+    validate: validateForm,
     enableReinitialize: true,
     touchOnChange: true
 })(withTranslation(['PartMaster'])(AddIndivisualProduct)),

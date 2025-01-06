@@ -42,6 +42,7 @@ import { getExchangeRateSource, getTaxCodeSelectList } from '../../../../actions
 import { SearchableSelectHookForm } from '../../../layout/HookFormInputs';
 import { Controller, useForm } from 'react-hook-form';
 import { getCurrencySelectList } from '../../../masters/actions/ExchangeRateMaster';
+import { getEffectiveDateMaxDate, getEffectiveDateMinDate } from '../../../common/CommonFunctions';
 export const PreviousTabData = React.createContext();
 
 function CostingHeaderTabs(props) {
@@ -467,7 +468,9 @@ function CostingHeaderTabs(props) {
    * @description date Function
    */
   const dateFunction = () => {
-    let arr = [costData.LastApproveEffectiveDate, costData.PartEffectiveDate]
+    let arr = [costData.LastApproveEffectiveDate, costData.PartEffectiveDate, new Date(getEffectiveDateMinDate()).toISOString().split('.')[0]  // Converted format
+    ]
+
     const largestDate = new Date(Math.max(...arr.filter(Boolean).map(date => Date.parse(date))));
     return new Date(largestDate)
   }

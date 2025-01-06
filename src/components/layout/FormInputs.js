@@ -4,11 +4,49 @@ import DatePicker from "react-datepicker";
 import PropTypes from "prop-types";
 import "./formInputs.scss";
 import { SPACEBAR } from "../../config/constants";
+import { validateSpecialChars } from "../../helper";
 
 /*
 @method: renderLoginTextInputField
 @desc: Render login page input
 */
+const handleInputChange = (input, field, e) => {
+  const value = e.target.value;
+  const validationError = validateSpecialChars(value);
+
+  try {
+    if (validationError) {
+      input.onChange(value);
+      field.meta.error = validationError;
+      field.meta.touched = true;
+      input.onBlur(); // Force error display
+
+      // Just set the error without throwing SubmissionError
+      return false;
+    } else {
+      input.onChange(e);
+      return true;
+    }
+  } catch (error) {
+    console.error('Validation error:', error);
+    return false;
+  }
+};
+export const validateForm = values => {
+  const errors = {};
+  Object.keys(values).forEach(fieldName => {
+    const convertLowerCase = fieldName ? fieldName.toLowerCase() : '';
+    if (!convertLowerCase.includes('date')) {
+      const value = values[fieldName];
+      const validationError = validateSpecialChars(value);
+      if (validationError) {
+        errors[fieldName] = validationError;
+      }
+    }
+  });
+  return errors;
+};
+
 export function renderLoginTextInputField(field) {
   const {
     input,
@@ -26,6 +64,7 @@ export function renderLoginTextInputField(field) {
           type="email"
           className={`form-control`}
           {...input}
+          onChange={(e) => handleInputChange(input, field, e)}
         />
         <div className="input-group-prepend">
           <span className="input-group-text bg-white">
@@ -380,6 +419,7 @@ export function renderTextInputField(field) {
           type="text"
           className={`form-control ${InputClassName}`}
           {...input}
+          onChange={(e) => handleInputChange(input, field, e)}  // Use custom onChange handler
         />
         {field.iconName && (
           <div className="input-group-prepend">
@@ -389,7 +429,9 @@ export function renderTextInputField(field) {
           </div>
         )}
       </div>
-      <div className="text-help mb-2">{touched ? error : ""}</div>
+      <div className="text-help mb-2">
+        {touched ? (validateSpecialChars(input.value) || error) : ""}
+      </div>
     </div>
   );
 }
@@ -523,13 +565,14 @@ export function renderTextAreaField(field) {
           className="form-control withoutBorder"
           {...input}
           id={specificId}
+          onChange={(e) => handleInputChange(input, field, e)}
           placeholder={placeholder}
           disabled={disabledLabel}
           autoComplete={'off'}
         />
       </div>
       {/* <div className="text-help mb-2">{touched && field.input.value === '' ? 'This field is required' : ""}</div> */}
-      <div className="text-help mb-2">{touched ? error : ""}</div>
+      <div className="text-help mb-2">{touched ? (validateSpecialChars(input.value) || error) : ""}</div>
     </div>
   );
 }
@@ -555,6 +598,7 @@ export const focusOnError = (errors) => {
 };
 
 /********************************
+ ********************************* 
  ********************************* 
  ********************************* 
  ********************************* 
@@ -605,10 +649,11 @@ export function renderText(field) {
           {...input}
           {...others}
           className={InputClassName}
+          onChange={(e) => handleInputChange(input, field, e)}
           autoComplete={'off'}
         />
       </div>
-      <div className="text-help mb-2">{touched ? error : ""}</div>
+      <div className="text-help mb-2">{touched ? (validateSpecialChars(input.value) || error) : ""}</div>
     </div>
   );
 }
@@ -623,7 +668,7 @@ export function InputHiddenField(field) {
 }
 
 export function renderDatePicker(field) {
-  const { input, placeholder, disabled, meta: { touched, error, form }, minDate } = field;
+  const { input, placeholder, disabled, meta: { touched, error, form }, minDate, maxDate } = field;
   const specificId = `${form}_${input.name}`;
   return (
     <div className={"react-picker-box"}>
@@ -633,7 +678,7 @@ export function renderDatePicker(field) {
         {...input}
         dateFormat="dd/MM/yyyy"
         placeholderText={placeholder}
-        //maxDate={new Date()}
+        maxDate={maxDate ? maxDate : null}
         minDate={minDate ? new Date(minDate) : null}
         showMonthDropdown
         showYearDropdown

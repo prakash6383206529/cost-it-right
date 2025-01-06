@@ -1,10 +1,10 @@
-import React, { lazy, Suspense, useMemo } from 'react';
+import React, { lazy, Suspense, useMemo, useRef } from 'react';
 import { useState, useEffect, } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, } from 'reactstrap';
 import { deleteRawMaterialAPI, getAllRMDataList, setReducerRMListing } from '../actions/Material';
 import { IsShowFreightAndShearingCostFields, loggedInUserId, userDepartmetList } from "../../../helper/auth"
-import { API, defaultPageSize, EMPTY_DATA, ENTRY_TYPE_DOMESTIC, FILE_URL, RMDOMESTIC, ZBCTypeId } from '../../../config/constants';
+import { defaultPageSize, EMPTY_DATA, ENTRY_TYPE_DOMESTIC, FILE_URL, MASTERS, RMDOMESTIC, ZBCTypeId } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
@@ -17,10 +17,10 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import ReactExport from 'react-export-excel';
-import { CheckApprovalApplicableMaster, getConfigurationKey, searchNocontentFilter, setLoremIpsum } from '../../../helper';
+import { CheckApprovalApplicableMaster, getConfigurationKey, getLocalizedCostingHeadValue, searchNocontentFilter, setLoremIpsum } from '../../../helper';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { getListingForSimulationCombined, setSelectedRowForPagination } from '../../simulation/actions/Simulation';
-import { disabledClass, useFetchAPICall } from '../../../actions/Common';
+import { disabledClass, useFetchAPICall, getApprovalTypeSelectList, getGridHeight, setResetCostingHead } from '../../../actions/Common';
 import WarningMessage from '../../common/WarningMessage';
 import AnalyticsDrawer from './AnalyticsDrawer'
 import _ from 'lodash';
@@ -36,13 +36,16 @@ import { Steps } from '../../common/Tour/TourMessages';
 import { useTranslation } from 'react-i18next';
 import BulkUpload from '../../massUpload/BulkUpload';
 import RfqMasterApprovalDrawer from './RfqMasterApprovalDrawer';
-import { useLabels, useWithLocalization } from '../../../helper/core';
+import { localizeHeadersWithLabels, useLabels, useLocalizedHeaders, useWithLocalization } from '../../../helper/core';
+import CostingHeadDropdownFilter from './CostingHeadDropdownFilter';
+
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
 
 function RMDomesticListing(props) {
+
     const { AddAccessibility, BulkUploadAccessibility, ViewRMAccessibility, EditAccessibility, DeleteAccessibility, DownloadAccessibility, isSimulation, apply, selectionForListingMasterAPI, objectForMultipleSimulation, ListFor, initialConfiguration } = props;
     const [value, setvalue] = useState({ min: 0, max: 0 });
     const [isBulkUpload, setisBulkUpload] = useState(false);
@@ -53,8 +56,9 @@ function RMDomesticListing(props) {
     const rmDataList = useSelector((state) => state.material.rmDataList);
     const allRmDataList = useSelector((state) => state.material.allRmDataList);
     const filteredRMData = useSelector((state) => state.material.filteredRMData);
-    const { selectedRowForPagination } = useSelector((state => state.simulation))
+    const { selectedRowForPagination, simulationCostingStatus } = useSelector((state => state.simulation))
     const { globalTakes } = useSelector((state) => state.pagination);
+    const [selectedCostingHead, setSelectedCostingHead] = useState(null);
 
     const [showPopup, setShowPopup] = useState(false)
     const [deletedId, setDeletedId] = useState('')
@@ -71,21 +75,22 @@ function RMDomesticListing(props) {
     const [pageNoNew, setPageNoNew] = useState(1)
     const [totalRecordCount, setTotalRecordCount] = useState(0)
     const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false)
-    // const [currentRowIndex, setCurrentRowIndex] = useState(defaultPageSize)
     const [noData, setNoData] = useState(false)
     const [dataCount, setDataCount] = useState(0)
     const [inRangeDate, setinRangeDate] = useState([])
-    // const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
     const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: "", TechnologyName: "", RawMaterialName: "", RawMaterialGradeName: "", RawMaterialSpecificationName: "", RawMaterialCode: "", Category: "", MaterialType: "", DestinationPlantName: "", UnitOfMeasurementName: "", VendorName: "", BasicRatePerUOM: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", EffectiveDate: "", DepartmentName: isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant ? userDepartmetList() : "", NetConditionCost: "", NetCostWithoutConditionCost: "", MachiningScrapRate: "", IsScrapUOMApply: "", ScrapUnitOfMeasurement: "", CalculatedFactor: "", ScrapRatePerScrapUOM: "", Currency: "", ExchangeRateSourceName: "", OtherNetCost: "" })
     const [attachment, setAttachment] = useState(false);
     const [viewAttachment, setViewAttachment] = useState([])
     const [showExtraData, setShowExtraData] = useState(false)
     const [render, setRender] = useState(true)
-    const { t } = useTranslation("common")
-    const { technologyLabel, RMCategoryLabel, vendorLabel } = useLabels();
+
+    const { t } = useTranslation(["MasterLabel", "common"])
+    const { technologyLabel, RMCategoryLabel, vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels();
+
     const [compareDrawer, setCompareDrawer] = useState(false)
     const [rowDataForCompare, setRowDataForCompare] = useState([])
     const isRfq = props?.quotationId !== null && props?.quotationId !== '' && props?.quotationId !== undefined ? true : false
+
     var filterParams = {
         date: "", inRangeInclusive: true, filterOptions: ['equals', 'inRange'],
         comparator: function (filterLocalDateAtMidnight, cellValue) {
@@ -147,7 +152,7 @@ function RMDomesticListing(props) {
         }
 
         return {
-            data: {technologyId: props?.technology??null},
+            data: { technologyId: props?.technology ?? null },
             skip: 0,
             take: globalTakes,
             isPagination: true,
@@ -160,7 +165,7 @@ function RMDomesticListing(props) {
         }
     }, []);
 
-     const { isLoading, isError, error, data } = useFetchAPICall('MastersRawMaterial_GetAllRawMaterialList', params);
+    const { isLoading, isError, error, data } = useFetchAPICall('MastersRawMaterial_GetAllRawMaterialList', params);
 
     useEffect(() => {
         if (rmDataList?.length > 0) {
@@ -171,7 +176,8 @@ function RMDomesticListing(props) {
             setNoData(false)
         }
 
-    }, [rmDataList])
+    }, [rmDataList, dispatch])
+
 
 
     useEffect(() => {
@@ -188,6 +194,9 @@ function RMDomesticListing(props) {
                 }
             }
             setvalue({ min: 0, max: 0 });
+        }
+        return () => {
+            dispatch(setResetCostingHead(true, "costingHead"))
         }
     }, [])
 
@@ -237,7 +246,7 @@ function RMDomesticListing(props) {
             departmentCode: isSimulation ? userDepartmetList() : "",
             statusId: CheckApprovalApplicableMaster(RM_MASTER_ID) ? APPROVAL_ID : 0,
             ListFor: ListFor,
-            StatusId: statusString
+            StatusId: statusString,
         }
         //THIS CONDTION IS FOR IF THIS COMPONENT IS RENDER FROM MASTER APPROVAL SUMMARY IN THIS NO GET API
         if (isPagination === true) {
@@ -248,8 +257,11 @@ function RMDomesticListing(props) {
         dataObj.ExchangeRateSourceName = floatingFilterData?.ExchangeRateSourceName
         dataObj.OtherNetCost = floatingFilterData?.OtherNetCost
 
+        if (isSimulation && getConfigurationKey().IsDivisionAllowedForDepartment) {
+            dataObj.isRequestForPendingSimulation = simulationCostingStatus ? true : false
+        }
         if (!props.isMasterSummaryDrawer) {
-            
+
             dispatch(getAllRMDataList(filterData, skip, take, isPagination, dataObj, false, (res) => {
                 // apply(selectedRowForPagination, selectedRowForPagination.length)
                 if (isSimulation) {
@@ -296,6 +308,8 @@ function RMDomesticListing(props) {
 
                     setTimeout(() => {
                         setWarningMessage(false)
+                        dispatch(setResetCostingHead(false, "costingHead"))
+
                     }, 330);
 
                     setTimeout(() => {
@@ -325,6 +339,7 @@ function RMDomesticListing(props) {
     }
 
     const onFloatingFilterChanged = (value) => {
+
         setTimeout(() => {
             if (rmDataList.length !== 0) {
                 setNoData(searchNocontentFilter(value, noData))
@@ -332,6 +347,7 @@ function RMDomesticListing(props) {
         }, 500);
         setDisableFilter(false)
         const model = gridOptions?.api?.getFilterModel();
+
         setFilterModel(model)
         if (!isFilterButtonClicked) {
             setWarningMessage(true)
@@ -397,6 +413,8 @@ function RMDomesticListing(props) {
         setNoData(false)
         setWarningMessage(false)
         setIsFilterButtonClicked(true)
+        gridApi.setQuickFilter(null)
+
         // setPageNo(1)
         dispatch(updatePageNumber(1))
         setPageNoNew(1)
@@ -411,6 +429,8 @@ function RMDomesticListing(props) {
     const resetState = () => {
         setNoData(false)
         setinRangeDate([])
+        dispatch(setResetCostingHead(true, "costingHead"))
+
         setIsFilterButtonClicked(false)
         gridOptions?.columnApi?.resetColumnState(null);
         gridOptions?.api?.setFilterModel(null);
@@ -500,7 +520,7 @@ function RMDomesticListing(props) {
     * @description Renders buttons
     */
     const handleCompareDrawer = (data) => {
-        
+
         setCompareDrawer(true)
         setRowDataForCompare([data])
     }
@@ -747,7 +767,7 @@ function RMDomesticListing(props) {
         }
 
     }
-    const RMDOMESTIC_DOWNLOAD_EXCEl_LOCALIZATION = useWithLocalization(RMDOMESTIC_DOWNLOAD_EXCEl, "MasterLabels")
+    const RMDOMESTIC_DOWNLOAD_EXCEl_LOCALIZATION = useLocalizedHeaders(RMDOMESTIC_DOWNLOAD_EXCEl)
     const onBtExport = () => {
         let tempArr = []
         //tempArr = gridApi && gridApi?.getSelectedRows()
@@ -838,6 +858,18 @@ function RMDomesticListing(props) {
         checkboxSelection: isFirstColumn
     };
 
+
+    const combinedCostingHeadRenderer = (props) => {
+        // Call the existing checkBoxRenderer
+        checkBoxRenderer(props);
+
+        // Get and localize the cell value
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const localizedValue = getLocalizedCostingHeadValue(cellValue, vendorBasedLabel, zeroBasedLabel, customerBasedLabel);
+
+        // Return the localized value (the checkbox will be handled by AgGrid's default renderer)
+        return localizedValue;
+    };
     const checkBoxRenderer = (props) => {
         let selectedRowForPagination = reactLocalStorage.getObject('selectedRow').selectedRow
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -857,6 +889,22 @@ function RMDomesticListing(props) {
     const closeAnalyticsDrawer = () => {
         setAnalyticsDrawer(false)
     }
+
+
+    const floatingFilterStatus = {
+        maxValue: 1,
+        suppressFilterButton: true,
+        component: CostingHeadDropdownFilter,
+        onFilterChange: (originalValue, value) => {
+
+            setSelectedCostingHead(originalValue);
+            setDisableFilter(false);
+            setFloatingFilterData(prevState => ({
+                ...prevState,
+                CostingHead: value
+            }));
+        }
+    };
 
     const showAnalytics = (cell, rowData) => {
         setSelectedRowData(rowData)
@@ -918,16 +966,20 @@ function RMDomesticListing(props) {
         hyphenFormatter: hyphenFormatter,
         checkBoxRenderer: checkBoxRenderer,
         attachmentFormatter: attachmentFormatter,
+        combinedCostingHeadRenderer: combinedCostingHeadRenderer,
+        statusFilter: CostingHeadDropdownFilter,
+
+
 
     }
-    
-    
-        
-        
-        
+
+
+
+
+
 
     return (
-        <div className={`ag-grid-react ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${DownloadAccessibility ? "show-table-btn" : ""} ${isSimulation ? 'simulation-height' : props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
+        <div className={`ag-grid-react grid-parent-wrapper ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${DownloadAccessibility ? "show-table-btn" : ""} ${isSimulation ? 'simulation-height' : props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
             {(loader && !props.isMasterSummaryDrawer) ? <LoaderCustom customClass="simulation-Loader" /> :
                 <>
                     {disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
@@ -1068,7 +1120,14 @@ function RMDomesticListing(props) {
                                         suppressRowClickSelection={true}
                                         enableBrowserTooltips={true}
                                     >
-                                        <AgGridColumn cellClass="has-checkbox" field="CostingHead" headerName='Costing Head' cellRenderer={checkBoxRenderer}></AgGridColumn>
+                                        <AgGridColumn
+                                            cellClass="has-checkbox"
+                                            field="CostingHead"
+                                            headerName='Costing Head'
+                                            floatingFilterComponentParams={floatingFilterStatus}
+                                            floatingFilterComponent="statusFilter"
+                                            cellRenderer={combinedCostingHeadRenderer}
+                                        />
                                         <AgGridColumn field="TechnologyName" headerName={technologyLabel}></AgGridColumn>
                                         <AgGridColumn field="RawMaterialName" headerName='Raw Material'></AgGridColumn>
                                         <AgGridColumn field="RawMaterialGradeName" headerName="Grade"></AgGridColumn>
@@ -1078,7 +1137,7 @@ function RMDomesticListing(props) {
                                         <AgGridColumn field="MaterialType"></AgGridColumn>
                                         <AgGridColumn field="DestinationPlantName" headerName="Plant (Code)"></AgGridColumn>
                                         <AgGridColumn field="VendorName" headerName={vendorLabel + " (Code)"}></AgGridColumn>
-                                        {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
+                                        {true && <AgGridColumn field="Division" headerName="Division"></AgGridColumn>}
                                         {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                                         {getConfigurationKey()?.IsShowSourceVendorInRawMaterial && <AgGridColumn field="SourceVendorName" headerName={`Source ${vendorLabel} Name`} cellRenderer='hyphenFormatter'></AgGridColumn>}
                                         <AgGridColumn field="UnitOfMeasurementName" headerName='UOM'></AgGridColumn>
@@ -1095,6 +1154,7 @@ function RMDomesticListing(props) {
                                         {/* {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((props.isMasterSummaryDrawer && rmDataList[0]?.CostingTypeId === ZBCTypeId) || !props.isMasterSummaryDrawer) && <AgGridColumn field="NetCostWithoutConditionCost" headerName="Basic Price" cellRenderer='commonCostFormatter'></AgGridColumn>} */}
                                         <AgGridColumn field="OtherNetCost" headerName='Other Net Cost' cellRenderer='commonCostFormatter'></AgGridColumn>
                                         {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((props.isMasterSummaryDrawer && rmDataList[0]?.CostingTypeId === ZBCTypeId) || !props.isMasterSummaryDrawer) && <AgGridColumn field="NetConditionCost" headerName="Net Condition Cost" cellRenderer='commonCostFormatter'></AgGridColumn>}
+                                        <AgGridColumn field="OtherNetCost" headerName='Other Net Cost' cellRenderer='commonCostFormatter'></AgGridColumn>
                                         <AgGridColumn field="NetLandedCost" headerName="Net Cost" cellRenderer='costFormatter'></AgGridColumn>
 
                                         <AgGridColumn field="EffectiveDate" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>

@@ -2,13 +2,13 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Row, Col } from 'reactstrap';
-import { required, checkWhiteSpaces, alphaNumeric, acceptAllExceptSingleSpecialCharacter, maxLength20, maxLength80, maxLength512 } from "../../../helper/validation";
+import { required, checkWhiteSpaces, alphaNumeric, acceptAllExceptSingleSpecialCharacter, maxLength20, maxLength80, maxLength512, validateFileName } from "../../../helper/validation";
 import { getConfigurationKey, loggedInUserId } from "../../../helper/auth";
-import { renderDatePicker, renderText, renderTextAreaField, } from "../../layout/FormInputs";
+import { renderDatePicker, renderText, renderTextAreaField, validateForm, } from "../../layout/FormInputs";
 import { createPart, updatePart, getPartData, fileUploadPart, fileDeletePart, } from '../actions/Part';
 import { getPlantSelectList, } from '../../../actions/Common';
 import Toaster from '../../common/Toaster';
-import { MESSAGES } from '../../../config/message';
+import { AttachmentValidationInfo, MESSAGES } from '../../../config/message';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
 import DayTime from '../../common/DayTimeWrapper'
@@ -131,7 +131,17 @@ class AddIndivisualProduct extends Component {
     if (status === 'done') {
       let data = new FormData()
       data.append('file', file)
+      if (!validateFileName(file.name)) {
+        this.dropzone.current.files.pop()
+        this.setDisableFalseFunction()
+        return false;
+      }
       this.props.fileUploadPart(data, (res) => {
+        if (res && res?.status !== 200) {
+          this.dropzone.current.files.pop()
+          this.setState(prevState => ({ ...prevState, attachmentLoader: false }))
+          return false
+        }
         let Data = res.data[0]
         const { files } = this.state;
         files.push(Data)
@@ -539,7 +549,7 @@ class AddIndivisualProduct extends Component {
                           </Col>
                           <Col md="3">
                             <label>
-                              Upload Files (upload up to 3 files)
+                              Upload Files (upload up to 3 files) <AttachmentValidationInfo />
                             </label>
                             {this.state.files &&
                               this.state.files.length >= 3 ? (
@@ -701,5 +711,6 @@ export default connect(mapStateToProps, {
   fileDeletePart,
 })(reduxForm({
   form: 'AddIndivisualProduct',
+  validate: validateForm,
   enableReinitialize: true,
 })(AddIndivisualProduct));

@@ -603,18 +603,18 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
   let temp = []
   let dataFromAPI = costingSummary
   let obj = {}
-  obj.IsShowCheckBoxForApproval = dataFromAPI.IsShowCheckBoxForApproval
-  obj.zbc = dataFromAPI.TypeOfCosting || dataFromAPI.TypeOfCosting === 0 ? dataFromAPI.TypeOfCosting : '-'
-  obj.IsApprovalLocked = dataFromAPI.IsApprovalLocked !== null ? dataFromAPI.IsApprovalLocked : '-'
-  obj.poPrice = dataFromAPI.NetPOPrice ? dataFromAPI.NetPOPrice : '0'
-  obj.costingName = dataFromAPI.DisplayCostingNumber ? dataFromAPI.DisplayCostingNumber : '-'
-  obj.costingDate = dataFromAPI.CostingDate ? dataFromAPI.CostingDate : '-'
-  obj.CostingNumber = dataFromAPI.CostingNumber ? dataFromAPI.CostingNumber : '-'
-  obj.status = dataFromAPI.CostingStatus ? dataFromAPI.CostingStatus : '-'
-  obj.rm = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingRawMaterialsCost.length > 0 ? dataFromAPI?.CostingPartDetails?.CostingRawMaterialsCost[0].RMName : '-'
+  obj.IsShowCheckBoxForApproval = dataFromAPI?.IsShowCheckBoxForApproval
+  obj.zbc = dataFromAPI?.TypeOfCosting || dataFromAPI?.TypeOfCosting === 0 ? dataFromAPI?.TypeOfCosting : '-'
+  obj.IsApprovalLocked = dataFromAPI?.IsApprovalLocked !== null ? dataFromAPI?.IsApprovalLocked : '-'
+  obj.poPrice = dataFromAPI?.NetPOPrice ? dataFromAPI?.NetPOPrice : '0'
+  obj.costingName = dataFromAPI?.DisplayCostingNumber ? dataFromAPI?.DisplayCostingNumber : '-'
+  obj.costingDate = dataFromAPI?.CostingDate ? dataFromAPI?.CostingDate : '-'
+  obj.CostingNumber = dataFromAPI?.CostingNumber ? dataFromAPI?.CostingNumber : '-'
+  obj.status = dataFromAPI?.CostingStatus ? dataFromAPI?.CostingStatus : '-'
+  obj.rm = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingRawMaterialsCost?.length > 0 ? dataFromAPI?.CostingPartDetails?.CostingRawMaterialsCost[0]?.RMName : '-'
   obj.gWeight = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetGrossWeight ? dataFromAPI?.CostingPartDetails?.NetGrossWeight : 0
   obj.fWeight = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetFinishWeight ? dataFromAPI?.CostingPartDetails?.NetFinishWeight : 0
-  obj.netRM = dataFromAPI.NetRawMaterialsCost && dataFromAPI.NetRawMaterialsCost ? dataFromAPI.NetRawMaterialsCost : 0
+  obj.netRM = dataFromAPI?.NetRawMaterialsCost && dataFromAPI?.NetRawMaterialsCost ? dataFromAPI?.NetRawMaterialsCost : 0
   obj.netBOP = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetBoughtOutPartCost ? dataFromAPI?.CostingPartDetails?.NetBoughtOutPartCost : 0
   obj.pCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetProcessCost ? dataFromAPI?.CostingPartDetails?.NetProcessCost : 0
   obj.oCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetOperationCost ? dataFromAPI?.CostingPartDetails?.NetOperationCost : 0
@@ -622,7 +622,7 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
   obj.nsTreamnt = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetSurfaceTreatmentCost !== undefined ? dataFromAPI?.CostingPartDetails?.NetSurfaceTreatmentCost : 0
   obj.tCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetTransportationCost ? dataFromAPI?.CostingPartDetails?.NetTransportationCost : 0
   obj.nConvCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetConversionCost ? dataFromAPI?.CostingPartDetails?.NetConversionCost : 0
-  obj.nTotalRMBOPCC = dataFromAPI?.CostingPartDetails && dataFromAPI.NetTotalRMBOPCC ? dataFromAPI.NetTotalRMBOPCC : 0
+  obj.nTotalRMBOPCC = dataFromAPI?.CostingPartDetails && dataFromAPI?.NetTotalRMBOPCC ? dataFromAPI?.NetTotalRMBOPCC : 0
   obj.netSurfaceTreatmentCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetSurfaceTreatmentCost ? dataFromAPI?.CostingPartDetails?.NetSurfaceTreatmentCost : 0
   obj.RawMaterialCalculatorId = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.RawMaterialCalculatorId ? dataFromAPI?.CostingPartDetails?.RawMaterialCalculatorId : 0
   obj.modelType = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.ModelType ? dataFromAPI?.CostingPartDetails?.ModelType : '-'
@@ -782,9 +782,9 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
   obj.vendorName = dataFromAPI?.VendorName ? dataFromAPI?.VendorName : '-'
   obj.vendorCode = dataFromAPI?.VendorCode ? dataFromAPI?.VendorCode : '-'
   obj.vendor = dataFromAPI?.VendorName && dataFromAPI?.VendorCode ? `${dataFromAPI?.VendorName} (${dataFromAPI?.VendorCode})` : '-'
-  obj.vendorPlantId = dataFromAPI?.VendorPlantId ? dataFromAPI?.VendorPlantId : '-'
-  obj.vendorPlantName = dataFromAPI?.VendorPlantName ? dataFromAPI?.VendorPlantName : '-'
-  obj.vendorPlantCode = dataFromAPI?.VendorPlantCode ? dataFromAPI?.VendorPlantCode : '-'
+  obj.vendorPlantId = dataFromAPI?.VendorPlantId ? dataFromAPI?.VendorPlantId : ''
+  obj.vendorPlantName = dataFromAPI?.VendorPlantName ? dataFromAPI?.VendorPlantName : ''
+  obj.vendorPlantCode = dataFromAPI?.VendorPlantCode ? dataFromAPI?.VendorPlantCode : ''
   obj.costingId = dataFromAPI?.CostingId ? dataFromAPI?.CostingId : '-'
   obj.oldPoPrice = dataFromAPI?.OldPOPrice ? dataFromAPI?.OldPOPrice : 0
   obj.technology = dataFromAPI?.Technology ? dataFromAPI?.Technology : '-'
@@ -834,8 +834,8 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
   obj.otherDiscountApplicablity = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.OtherCostDetails.HundiOrDiscountValue !== null ? dataFromAPI?.CostingPartDetails?.OtherCostDetails.DiscountApplicability : 0
   obj.otherDiscountValuePercent = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.OtherCostDetails.HundiOrDiscountPercentage !== null ? dataFromAPI?.CostingPartDetails?.OtherCostDetails.HundiOrDiscountPercentage : 0
   obj.otherDiscountCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.OtherCostDetails.HundiOrDiscountValue !== null ? dataFromAPI?.CostingPartDetails?.OtherCostDetails.HundiOrDiscountValue : 0
-  obj.currencyTitle = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.OtherCostDetails.Currency !== null ? dataFromAPI?.CostingPartDetails?.OtherCostDetails.Currency : '-'
-  obj.costingHead = dataFromAPI.TypeOfCosting && dataFromAPI.TypeOfCosting === 0 ? 'ZBC' : 'VBC'
+  obj.currencyTitle = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.OtherCostDetails?.Currency !== null ? dataFromAPI?.CostingPartDetails?.OtherCostDetails?.Currency : '-'
+  obj.costingHead = dataFromAPI?.TypeOfCosting && dataFromAPI?.TypeOfCosting === 0 ? 'ZBC' : 'VBC'
   obj.costingVersion = DayTime(obj?.costingDate).isValid() ? `${DayTime(obj?.costingDate).format('DD-MM-YYYY')}-${obj?.CostingNumber}${header === 'CostingSummaryMainPage' ? '-' : ''}${header === 'CostingSummaryMainPage' ? obj?.status : ''}` : '-'
   obj.PoPriceWithDate = `${obj?.poPrice} (${(obj?.effectiveDate && obj?.effectiveDate !== '') ? DayTime(obj?.effectiveDate).format('DD-MM-YYYY') : "-"})`
   obj.rmRate = obj?.netRMCostView && (obj?.netRMCostView.length > 1 || obj?.IsAssemblyCosting === true) ? 'Multiple RM' : (obj?.netRMCostView && obj?.netRMCostView[0] && obj?.netRMCostView[0].RMRate)
@@ -843,16 +843,16 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
   obj.BurningLossWeight = obj?.netRMCostView && (obj?.netRMCostView.length > 1 || obj?.IsAssemblyCosting === true) ? 'Multiple RM' : (obj?.netRMCostView && obj?.netRMCostView[0] && obj?.netRMCostView[0].BurningLossWeight)
   obj.ScrapWeight = obj?.netRMCostView && (obj?.netRMCostView.length > 1 || obj?.IsAssemblyCosting === true) ? 'Multiple RM' : (obj?.netRMCostView && obj?.netRMCostView[0] && obj?.netRMCostView[0].ScrapWeight)
   obj.nPoPriceCurrency = obj?.nPOPriceWithCurrency !== null ? (obj?.currency?.currencyTitle) !== "-" ? (obj?.nPOPriceWithCurrency) : obj?.nPOPrice : '-'
-  obj.currencyRate = obj?.CostingHeading !== VARIANCE ? obj?.currency.currencyValue === '-' ? '-' : obj?.currency.currencyValue : ''
-  obj.meltingLoss = obj?.netRMCostView && (obj?.netRMCostView.length > 1 || obj?.IsAssemblyCosting === true) ? 'Multiple RM' : (obj?.netRMCostView && obj?.netRMCostView[0] && obj?.netRMCostView[0].MeltingLoss + " (" + obj?.netRMCostView[0].LossPercentage + "%)")
+  obj.currencyRate = obj?.CostingHeading !== VARIANCE ? obj?.currency?.currencyValue === '-' ? '' : obj?.currency?.currencyValue : ''
+  obj.meltingLoss = obj?.netRMCostView && (obj?.netRMCostView?.length > 1 || obj?.IsAssemblyCosting === true) ? 'Multiple RM' : (obj?.netRMCostView && obj?.netRMCostView[0] && obj?.netRMCostView[0]?.MeltingLoss + " (" + obj?.netRMCostView[0]?.LossPercentage + "%)")
   obj.castingWeight = obj?.netRMCostView && (obj?.netRMCostView.length > 1 || obj?.IsAssemblyCosting === true) ? 'Multiple RM' : (obj?.netRMCostView && obj?.netRMCostView[0] && obj?.netRMCostView[0].CastingWeight)
   obj.costingTypeId = dataFromAPI?.CostingTypeId ? dataFromAPI?.CostingTypeId : ''
   obj.customerId = dataFromAPI?.CustomerId ? dataFromAPI?.CustomerId : EMPTY_GUID
   obj.customerName = dataFromAPI?.CustomerName ? dataFromAPI?.CustomerName : ''
   obj.customerCode = dataFromAPI?.CustomerCode ? dataFromAPI?.CustomerCode : ''
   obj.customer = dataFromAPI?.Customer ? dataFromAPI?.Customer : ''
-  obj.plantExcel = dataFromAPI.CostingTypeId === ZBCTypeId ? (dataFromAPI.PlantName ? `${dataFromAPI.PlantName}` : '') : (dataFromAPI.DestinationPlantName ? `${dataFromAPI.DestinationPlantName}` : '')
-  obj.vendorExcel = dataFromAPI.VendorName ? `${dataFromAPI.VendorName} (${dataFromAPI.VendorCode})` : ''
+  obj.plantExcel = dataFromAPI?.CostingTypeId === ZBCTypeId ? (dataFromAPI?.PlantName ? `${dataFromAPI?.PlantName}` : '') : (dataFromAPI?.DestinationPlantName ? `${dataFromAPI?.DestinationPlantName}` : '')
+  obj.vendorExcel = dataFromAPI?.VendorName ? `${dataFromAPI?.VendorName} (${dataFromAPI?.VendorCode})` : ''
   obj.sobPercentageExcel = dataFromAPI?.ShareOfBusinessPercent ? `${dataFromAPI?.ShareOfBusinessPercent}%` : 0
   obj.castingWeightExcel = obj?.netRMCostView && (obj?.netRMCostView.length > 1 || obj?.IsAssemblyCosting === true) ? 'Multiple RM' : checkForDecimalAndNull(dataFromAPI?.CostingPartDetails?.CastingWeight, getConfigurationKey().NoOfDecimalForPrice)
   obj.meltingLossExcel = obj?.netRMCostView && (obj?.netRMCostView.length > 1 || obj?.IsAssemblyCosting === true) ? 'Multiple RM' : `${checkForDecimalAndNull(dataFromAPI?.CostingPartDetails?.MeltingLoss, getConfigurationKey().NoOfDecimalForPrice)} (${dataFromAPI?.CostingPartDetails?.LossPercentage ? dataFromAPI?.CostingPartDetails?.LossPercentage : 0}%)`
@@ -1746,6 +1746,19 @@ export const removeSpaces = (str = '') => {
 export const getChangeHighlightClass = (originalValue, updatedValue) => {
   return updatedValue && updatedValue !== originalValue ? 'red-value' : '';
 };
+
+
+//localized listing
+export const getLocalizedCostingHeadValue = (cellValue, vendorBasedLabel, zeroBasedLabel, customerBasedLabel) => {
+  if (cellValue === true || cellValue === 'Vendor Based' || cellValue === 'VBC') {
+    return vendorBasedLabel;
+  } else if (cellValue === false || cellValue === 'Zero Based' || cellValue === 'ZBC') {
+    return zeroBasedLabel;
+  } else if (cellValue === 'Customer Based' || cellValue === 'CBC') {
+    return customerBasedLabel;
+  }
+  return cellValue;
+};
 // export const frameBreaker = () => {
 //   // Ensure window runs in top-level
 //   if (window.self !== window.top) {
@@ -1768,57 +1781,57 @@ export const calculateBestCost = (arrayList, showConvertedCurrency = false) => {
 
   // First, remove any existing bestCost items to prevent duplicates
   const finalArrayList = _.cloneDeep(arrayList).filter(item => !item.bestCost);
-  
+
   // If array is empty after filtering, return original array
   if (!finalArrayList.length) return arrayList;
-  
+
   // Check if currency conversion needed
   const isSameCurrency = _.map(finalArrayList, 'Currency')
-      .every(element => element === getConfigurationKey().BaseCurrency);
-  
-  const minObject = { 
-      ...finalArrayList[0],
-      attachment: [],
-      bestCost: true
+    .every(element => element === getConfigurationKey().BaseCurrency);
+
+  const minObject = {
+    ...finalArrayList[0],
+    attachment: [],
+    bestCost: true
   };
 
   // Rest of your existing logic...
   if (isSameCurrency) {
-      const keys = ["NetLandedCost", "BasicRatePerUOM", "OtherNetCost"];
-      Object.keys(minObject).forEach(key => minObject[key] = "");
+    const keys = ["NetLandedCost", "BasicRatePerUOM", "OtherNetCost"];
+    Object.keys(minObject).forEach(key => minObject[key] = "");
 
-      keys.forEach(key => {
-          minObject[key] = Math.min(...finalArrayList
-              .map(item => isNumber(item[key]) ? checkForNull(item[key]) : Infinity));
-      });
-      
-      minObject.nPOPrice = keys.reduce((sum, key) => 
-          sum + checkForNull(minObject[key]), 0);
-  } 
+    keys.forEach(key => {
+      minObject[key] = Math.min(...finalArrayList
+        .map(item => isNumber(item[key]) ? checkForNull(item[key]) : Infinity));
+    });
+
+    minObject.nPOPrice = keys.reduce((sum, key) =>
+      sum + checkForNull(minObject[key]), 0);
+  }
   else if (!showConvertedCurrency) {
-      Object.keys(minObject).forEach(key => minObject[key] = "");
-      
-      const conversionKeys = ["NetLandedCostConversion", "BasicRatePerUOMConversion", "OtherNetCostConversion"];
-      
-      conversionKeys.forEach(key => {
-          minObject[key] = Math.min(...finalArrayList
-              .map(item => isNumber(item[key]) ? checkForNull(item[key]) : Infinity));
-      });
-      
-      minObject.bestCost = "";
-  } 
+    Object.keys(minObject).forEach(key => minObject[key] = "");
+
+    const conversionKeys = ["NetLandedCostConversion", "BasicRatePerUOMConversion", "OtherNetCostConversion"];
+
+    conversionKeys.forEach(key => {
+      minObject[key] = Math.min(...finalArrayList
+        .map(item => isNumber(item[key]) ? checkForNull(item[key]) : Infinity));
+    });
+
+    minObject.bestCost = "";
+  }
   else {
-      const conversionKeys = ["NetLandedCostConversion", "BasicRatePerUOMConversion", "OtherNetCostConversion"];
-      
-      Object.keys(minObject).forEach(key => minObject[key] = "");
-      
-      conversionKeys.forEach(key => {
-          minObject[key] = Math.min(...finalArrayList
-              .map(item => isNumber(item[key]) ? checkForNull(item[key]) : Infinity));
-      });
-      
-      minObject.nPOPrice = conversionKeys.reduce((sum, key) => 
-          sum + checkForNull(minObject[key]), 0);
+    const conversionKeys = ["NetLandedCostConversion", "BasicRatePerUOMConversion", "OtherNetCostConversion"];
+
+    Object.keys(minObject).forEach(key => minObject[key] = "");
+
+    conversionKeys.forEach(key => {
+      minObject[key] = Math.min(...finalArrayList
+        .map(item => isNumber(item[key]) ? checkForNull(item[key]) : Infinity));
+    });
+
+    minObject.nPOPrice = conversionKeys.reduce((sum, key) =>
+      sum + checkForNull(minObject[key]), 0);
   }
 
   return [...finalArrayList, minObject];

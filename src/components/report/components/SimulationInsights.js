@@ -7,7 +7,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import ReactExport from 'react-export-excel';
 import { ReportMaster, EMPTY_DATA, defaultPageSize } from '../../../config/constants';
 import LoaderCustom from '../../common/LoaderCustom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import DayTime from '../../common/DayTimeWrapper'
 import WarningMessage from '../../common/WarningMessage';
 import SelectRowWrapper from '../../common/SelectRowWrapper'
@@ -16,6 +16,9 @@ import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from '../../common/Tour/TourMessages';
 import { useTranslation } from "react-i18next"
 import { useLabels } from '../../../helper/core';
+import { getLocalizedCostingHeadValue } from '../../../helper';
+import CostingHeadDropdownFilter from '../../masters/material-master/CostingHeadDropdownFilter';
+import { setResetCostingHead } from '../../../actions/Common';
 
 
 
@@ -48,8 +51,23 @@ function SimulationInsights(props) {
   const [warningMessage, setWarningMessage] = useState(false)
   const [globalTake, setGlobalTake] = useState(defaultPageSize)
   const [dataCount, setDataCount] = useState(0)
-
-  const { technologyLabel } = useLabels();
+  const { costingHeadFilter } = useSelector((state) => state?.comman);
+  const { technologyLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels();
+  useEffect(() => {
+   
+    if (costingHeadFilter && costingHeadFilter?.data) {
+      const matchedOption = costingHeadFilter?.CostingHeadOptions?.find(option => option?.value === costingHeadFilter?.data?.value);
+      if (matchedOption) {
+        gridApi?.setQuickFilter(matchedOption?.label);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ costingHeadFilter]);
+  useEffect(() => {
+    return () => {
+      dispatch(setResetCostingHead(true, "costingHead"))
+    }
+  }, [])
   var filterParams = {
     comparator: function (filterLocalDateAtMidnight, cellValue) {
       // var dateAsString = cellValue != null ? DayTime(cellValue).format('MM/DD/YYYY') : '';
@@ -369,6 +387,29 @@ function SimulationInsights(props) {
     noDataText: (simulationInsightsReport === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
 
   };
+  const floatingFilterStatus = {
+    maxValue: 1,
+    suppressFilterButton: true,
+    component: CostingHeadDropdownFilter,
+    onFilterChange: (originalValue, value) => {
+        // setSelectedCostingHead(originalValue);
+        // setDisableFilter(false);
+        setFloatingFilterData(prevState => ({
+            ...prevState,
+            CostingHead: value
+        }));
+    }
+};
+  const combinedCostingHeadRenderer = (props) => {
+    // Call the existing checkBoxRenderer
+  
+    // Get and localize the cell value
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    const localizedValue = getLocalizedCostingHeadValue(cellValue, vendorBasedLabel, zeroBasedLabel, customerBasedLabel);
+  
+    // Return the localized value (the checkbox will be handled by AgGrid's default renderer)
+    return localizedValue;
+  };
   const defaultColDef = {
 
     resizable: true,
@@ -379,8 +420,10 @@ function SimulationInsights(props) {
     checkboxSelection: isFirstColumn
   };
   const frameworkComponents = {
+    combinedCostingHeadRenderer: combinedCostingHeadRenderer,
     customLoadingOverlay: LoaderCustom,
     customNoRowsOverlay: NoContentFound,
+    statusFilter: CostingHeadDropdownFilter,
   };
   const onPageSizeChanged = (newPageSize) => {
     var value = document.getElementById('page-size').value;
@@ -416,7 +459,7 @@ function SimulationInsights(props) {
 
   return (
     // <div>{`hello`}</div>
-    <div className="container-fluid report-listing-page ag-grid-react custom-pagination">
+    <div className="container-fluid report-listing-page ag-grid-react grid-parent-wrapper custom-pagination">
       {loader && <LoaderCustom />}
       <Row className=" blue-before ">
         <Col md="10" lg="10" className="search-user-block mb-3">
@@ -477,7 +520,9 @@ function SimulationInsights(props) {
             >
               {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.</AgGridColumn> */}
               <AgGridColumn field="TokenNumber" headerName="Token No"></AgGridColumn>
-              <AgGridColumn field="CostingHead" headerName="Costing Head"></AgGridColumn>
+              <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'combinedCostingHeadRenderer'}
+                 floatingFilterComponentParams={floatingFilterStatus} 
+                     floatingFilterComponent="statusFilter"></AgGridColumn>
               <AgGridColumn field="Technology" headerName={technologyLabel}></AgGridColumn>
               <AgGridColumn field="VendorName" headerName="Simulated By"></AgGridColumn>
               <AgGridColumn field="ImpactCosting" headerName="Impacted Costing" ></AgGridColumn>

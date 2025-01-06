@@ -8,7 +8,7 @@ import { deleteBudget, getBudgetDataList, getPartCostingHead, } from '../actions
 import { BUDGET_DOWNLOAD_EXCEl, Vendor } from '../../../config/masterData'
 import BulkUpload from '../../massUpload/BulkUpload'
 import { ADDITIONAL_MASTERS } from '../../../config/constants'
-import { checkPermission, searchNocontentFilter, setLoremIpsum } from '../../../helper/util'
+import { checkPermission, getLocalizedCostingHeadValue, searchNocontentFilter, setLoremIpsum } from '../../../helper/util'
 import LoaderCustom from '../../common/LoaderCustom'
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -19,7 +19,7 @@ import { PaginationWrapper } from '../../common/commonPagination'
 import WarningMessage from '../../common/WarningMessage'
 import { setSelectedRowForPagination } from '../../simulation/actions/Simulation'
 import _ from 'lodash'
-import { TourStartAction, disabledClass } from '../../../actions/Common'
+import { TourStartAction, disabledClass, setResetCostingHead } from '../../../actions/Common'
 import { reactLocalStorage } from 'reactjs-localstorage'
 import { Drawer } from '@material-ui/core'
 import Attachament from '../../costing/components/Drawers/Attachament'
@@ -36,11 +36,14 @@ import { useTranslation } from 'react-i18next'
 import { useLabels, useWithLocalization } from '../../../helper/core'
 import { getConfigurationKey } from '../../../helper'
 import Switch from 'react-switch'
+import CostingHeadDropdownFilter from '../material-master/CostingHeadDropdownFilter'
+
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {};
 function BudgetListing(props) {
+
     const [shown, setShown] = useState(false);
     const [showBudgetForm, setShowBudgetForm] = useState(false);
     const [data, setData] = useState({ isEditFlag: false, ID: '' });
@@ -82,17 +85,19 @@ function BudgetListing(props) {
     const [isImport, setIsImport] = useState(false)
     const dispatch = useDispatch();
     const { t } = useTranslation("common")
-    const { vendorLabel } = useLabels()
+    const { vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels()
     useEffect(() => {
         applyPermission(topAndLeftMenuData)
         if (!props?.isMasterSummaryDrawer) {
             getTableListData(0, defaultPageSize, true)
+
             dispatch(getPartCostingHead((res) => {
                 reactLocalStorage.setObject("budgetCostingHeads", res?.data?.SelectList); //FOR SHOWING DYNAMIC HEADERS IN BUDGET BULK UPLOAD EXCEL DOWNLOAD
             }))
         } return () => {
             dispatch(setSelectedRowForPagination([]))
             dispatch(resetStatePagination());
+            dispatch(setResetCostingHead(true, "costingHead"))
 
         }
 
@@ -177,6 +182,7 @@ function BudgetListing(props) {
 
                 setTimeout(() => {
                     setWarningMessage(false)
+                    dispatch(setResetCostingHead(false, "costingHead"))
                 }, 330);
 
                 setTimeout(() => {
@@ -435,6 +441,7 @@ function BudgetListing(props) {
     }
 
     const resetState = () => {
+        dispatch(setResetCostingHead(true, "costingHead"))
         setNoData(false)
         gridOptions.columnApi.resetColumnState();
         gridOptions.api.setFilterModel(null);
@@ -486,6 +493,30 @@ function BudgetListing(props) {
         checkboxSelection: isFirstColumn
     };
 
+    const combinedCostingHeadRenderer = (props) => {
+        // Call the existing checkBoxRenderer
+        checkBoxRenderer(props);
+
+        // Get and localize the cell value
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const localizedValue = getLocalizedCostingHeadValue(cellValue, vendorBasedLabel, zeroBasedLabel, customerBasedLabel);
+
+        // Return the localized value (the checkbox will be handled by AgGrid's default renderer)
+        return localizedValue;
+    };
+    const floatingFilterStatus = {
+        maxValue: 1,
+        suppressFilterButton: true,
+        component: CostingHeadDropdownFilter,
+        onFilterChange: (originalValue, value) => {
+            // setSelectedCostingHead(originalValue);
+            setDisableFilter(false);
+            setFloatingFilterData(prevState => ({
+                ...prevState,
+                CostingHead: value
+            }));
+        }
+    };
     const checkBoxRenderer = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         if (selectedRowForPagination?.length > 0) {
@@ -507,9 +538,11 @@ function BudgetListing(props) {
     }
 
     const frameworkComponents = {
+        combinedCostingHeadRenderer: combinedCostingHeadRenderer,
         totalValueRenderer: buttonFormatter,
         customNoRowsOverlay: NoContentFound,
         hyphenFormatter: hyphenFormatter,
+        statusFilter: CostingHeadDropdownFilter,
 
     };
 
@@ -524,7 +557,7 @@ function BudgetListing(props) {
     const importToggle = () => {
         setIsImport(!isImport)
         getTableListData(0, defaultPageSize, true, !isImport)
-    
+
     }
     /**
      * @method render
@@ -532,7 +565,7 @@ function BudgetListing(props) {
      */
     return (
         <>
-            <div className={`ag-grid-react ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${downloadAccessibility ? "show-table-btn no-tab-page" : ""}`}>
+            <div className={`ag-grid-react grid-parent-wrapper ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${downloadAccessibility ? "show-table-btn no-tab-page" : ""}`}>
                 <ScrollToTop pointProp="go-to-top" />
                 {isLoader ? <LoaderCustom customClass={"loader-center"} /> :
                     <>
@@ -585,24 +618,24 @@ function BudgetListing(props) {
                                     </div>
                                 </Col>
                                 <Col md="4" className="switch mb15">
-                <label className="switch-level">
-                  <div className="left-title">Domestic</div>
-                  <Switch
-                    onChange={importToggle}
-                    checked={isImport}
-                    id="normal-switch"
-                    background="#4DC771"
-                    onColor="#4DC771"
-                    onHandleColor="#ffffff"
-                    offColor="#4DC771"
-                    uncheckedIcon={false}
-                    checkedIcon={false}
-                    height={20}
-                    width={46}
-                  />
-                  <div className="right-title">Import</div>
-                </label>
-              </Col>
+                                    <label className="switch-level">
+                                        <div className="left-title">Domestic</div>
+                                        <Switch
+                                            onChange={importToggle}
+                                            checked={isImport}
+                                            id="normal-switch"
+                                            background="#4DC771"
+                                            onColor="#4DC771"
+                                            onHandleColor="#ffffff"
+                                            offColor="#4DC771"
+                                            uncheckedIcon={false}
+                                            checkedIcon={false}
+                                            height={20}
+                                            width={46}
+                                        />
+                                        <div className="right-title">Import</div>
+                                    </label>
+                                </Col>
                             </Row>
                         </form>
 
@@ -638,7 +671,8 @@ function BudgetListing(props) {
                                     suppressRowClickSelection={true}
                                     enableBrowserTooltips={true}
                                 >
-                                    <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={checkBoxRenderer}></AgGridColumn>
+                                    <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={combinedCostingHeadRenderer} floatingFilterComponentParams={floatingFilterStatus}
+                                        floatingFilterComponent="statusFilter"></AgGridColumn>
                                     <AgGridColumn field="vendorNameWithCode" headerName={`${vendorLabel} (Code)`} cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="customerNameWithCode" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                                     <AgGridColumn field="plantNameWithCode" headerName="Plant (Code)"></AgGridColumn>

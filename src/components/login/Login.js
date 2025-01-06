@@ -1,7 +1,7 @@
 
 import React, { Component } from "react";
 import { Field, formValueSelector, reduxForm } from "redux-form";
-import { renderPasswordInputField, renderEmailInputField, focusOnError, renderText } from "../layout/FormInputs";
+import { renderPasswordInputField, renderEmailInputField, focusOnError, renderText, validateForm } from "../layout/FormInputs";
 import { connect } from "react-redux";
 import { loginUserAPI, getMenuByUser, TokenAPI, forgetPassword } from "../../actions/auth/AuthActions";
 import { maxLength70, maxLength25, required, email } from "../../helper/validation";
@@ -79,7 +79,8 @@ class Login extends Component {
   componentDidUpdate(prevProps, prevState) {
 
     if (prevState.isLoginWithMsal !== this.state.isLoginWithMsal && this.state.isLoginWithMsal) {
-      this.handleLoginWithMsal({});
+      // this.handleLoginWithMsal({});
+
     }
   }
 
@@ -194,7 +195,7 @@ class Login extends Component {
                 <h3 className="text-center">Welcome Back,<br /> Please login to your account</h3>
                 <form noValidate className="form" onSubmit={handleSubmit(this.onSubmit.bind(this))}>
                   <div className="input-group mail">
-                    {!this.state.isLoginWithMsal ? (
+                    {!(initialConfiguration && initialConfiguration?.IsLoginEmailConfigure) ? (
                       <span className="inputbox input-group">
                         <Field
                           name="username"
@@ -240,7 +241,7 @@ class Login extends Component {
                     />
                   </div>
                 </form>
-                <div className="text-center p-relative pt-5">
+                <div className="text-center p-relative pt-3">
                   <MsalAuthLogin setToken={this.setToken} setIsLoginWithMsal={this.setIsLoginWithMsal} setAudience={this.setAudience} />
                 </div>
                 {

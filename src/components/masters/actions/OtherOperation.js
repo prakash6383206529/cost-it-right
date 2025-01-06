@@ -285,7 +285,8 @@ export function getOperationsDataList(filterData, skip, take, isPagination, obj,
             FromDate: (obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[0] : "",
             ToDate: (obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[1] : "",
             Currency: obj.Currency !== undefined ? obj.Currency : "",
-            ExchangeRateSourceName: obj.ExchangeRateSourceName !== undefined ? obj.ExchangeRateSourceName : ""
+            ExchangeRateSourceName: obj.ExchangeRateSourceName !== undefined ? obj.ExchangeRateSourceName : "",
+            isRequestForPendingSimulation: obj.isRequestForPendingSimulation ? true : false
         });
         axios.get(`${API.getOperationsDataList}?${QueryParams}&${queryParamsSecond}`, config())
 
@@ -421,6 +422,7 @@ export function fileUploadOperation(data, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
+            callback(error.toString())
         });
     };
 }

@@ -44,6 +44,7 @@ import { useHistory, useLocation } from 'react-router-dom/cjs/react-router-dom';
 import { ASSEMBLY } from '../../config/masterData';
 import { customHavellsChanges } from '../.././config/constants';
 import { useLabels } from '../../helper/core';
+import { fetchDivisionId } from '../costing/CostingUtil';
 export const QuotationId = React.createContext();
 
 const gridOptions = {};
@@ -98,7 +99,7 @@ function RfqListing(props) {
     const agGridRef = useRef(null);
     const [viewRMCompare, setViewRMCompare] = useState(false)
     const [viewBOPCompare, setViewBOPCompare] = useState(false)
-    
+
     const [partType, setPartType] = useState('')
     const [approveDrawer, setApproveDrawer] = useState(false)
     const [quotationId, setQuotationId] = useState('')
@@ -132,7 +133,7 @@ function RfqListing(props) {
     useEffect(() => {
         if (compareButtonPressed && (partType === 'Raw Material' || partType === 'Bought Out Part')) {
             const masterId = partType === 'Raw Material' ? RM_MASTER_ID : BOP_MASTER_ID;
-            
+
             // Wait for userMasterLevelAPI to be available
             if (!userMasterLevelAPI) {
                 dispatch(getUsersMasterLevelAPI(loggedInUserId(), masterId, (res) => {
@@ -260,40 +261,6 @@ function RfqListing(props) {
                 setloader(false)
                 return false;
             }
-            let uniqueShouldCostId = [];
-            res?.data?.DataList && res?.data?.DataList.map(item => {
-                let unique
-                res?.data?.DataList && res?.data?.DataList.map(item => {
-                    const partTypes = item?.PartType?.split(',');
-
-                    partTypes?.forEach(type => {
-                        switch (type.trim()) {
-                            case 'Raw Material':
-                                unique = _.uniq(_.map(item?.ShouldRawMaterial, 'RawMaterialId'));
-                                uniqueShouldCostId.push(...unique);
-                                break;
-                            case 'Component':
-                            case 'Assembly':
-                                unique = _.uniq(_.map(item?.ShouldCostings, 'CostingId'));
-                                uniqueShouldCostId.push(...unique);
-                                break;
-                            case 'Bought Out Part':
-                                unique = _.uniq(_.map(item?.ShouldBoughtOutPart, 'BoughtOutPartId'));
-                                uniqueShouldCostId.push(...unique);
-                                break;
-                            case 'Tooling':
-                                unique = _.uniq(_.map(item?.ShouldCostings, 'CostingId'));
-                                uniqueShouldCostId.push(...unique);
-                                break;
-                            default:
-                                break;
-                        }
-                    });
-
-
-                })
-            })
-            setUniqueShouldCostingId(uniqueShouldCostId)
 
             let requestObject = {}
             requestObject.PartIdList = _.uniq(_.map(res?.data?.DataList, 'PartId'))
@@ -433,58 +400,51 @@ function RfqListing(props) {
     }
 
     const commonFunction = (type, plantId = EMPTY_GUID) => {
-        const { costingTypeId } = state;
-        
-        if (type === 'Raw Material' || type === 'Bought Out Part') {
-            const masterId = type === 'Raw Material' ? RM_MASTER_ID : BOP_MASTER_ID;
-            
-            // Add check for userMasterLevelAPI
-            if (!userMasterLevelAPI) {
-                console.error('userMasterLevelAPI is not available');
-                return;
-            }
-    
-            const levelDetailsTemp = userTechnologyDetailByMasterId(
-                costingTypeId, 
-                masterId,
-                userMasterLevelAPI
-            );
-    
-            if (!levelDetailsTemp) {
-                console.error('Could not get level details');
-                return;
-            }
-    
-            setState(prevState => ({ 
-                ...prevState, 
-                levelDetails: levelDetailsTemp 
-            }));
-    
-            const obj = {
+        const finalUserApi = (mode, divisionId, technologyId) => {
+            let obj = {
                 DepartmentId: userDetails().DepartmentId,
                 UserId: loggedInUserId(),
-                TechnologyId: masterId,
-                Mode: 'master',
+                TechnologyId: technologyId,
+                Mode: mode,
                 approvalTypeId: costingTypeIdToApprovalTypeIdFunction(costingTypeId),
-                plantId: plantId
+                plantId: rowData[0]?.PlantId,
+                DivisionId: divisionId
             };
+            dispatch(checkFinalUser(obj, (res) => {
+                if (res?.data?.Result && res?.data?.Data?.IsFinalApprover) {
+                    setState(prevState => ({
+                        ...prevState,
+                        isFinalApprovar: res?.data?.Data?.IsFinalApprover,
+                        CostingTypePermission: true,
+                        finalApprovalLoader: false
+                    }));
+                }
+                if (res?.data?.Data?.IsUserInApprovalFlow === false || res?.data?.Data?.IsNextLevelUserExist === false) {
+                    setState(prevState => ({ ...prevState, disableSendForApproval: true }));
+                } else {
+                    setState(prevState => ({ ...prevState, disableSendForApproval: false }));
+                }
+            }));
+        }
+        let fetchDivisionRequestObj = {
+            "PlantId": rowData[0]?.PlantId,
+            "PartId": rowData[0]?.PartId
+        }
+        const { costingTypeId } = state
+        if (type === 'Raw Material' || type === 'Bought Out Part') {
+            const getMasterType = type === 'Raw Material' ? RM_MASTER_ID : BOP_MASTER_ID
+            let levelDetailsTemp = userTechnologyDetailByMasterId(costingTypeId, getMasterType, userMasterLevelAPI);
+            setState(prevState => ({ ...prevState, levelDetails: levelDetailsTemp }));
 
             if (getConfigurationKey().IsMasterApprovalAppliedConfigure) {
-                dispatch(checkFinalUser(obj, (res) => {
-                    if (res?.data?.Result && res?.data?.Data?.IsFinalApprover) {
-                        setState(prevState => ({
-                            ...prevState,
-                            isFinalApprovar: res?.data?.Data?.IsFinalApprover,
-                            CostingTypePermission: true,
-                            finalApprovalLoader: false
-                        }));
-                    }
-                    if (res?.data?.Data?.IsUserInApprovalFlow === false || res?.data?.Data?.IsNextLevelUserExist === false) {
-                        setState(prevState => ({ ...prevState, disableSendForApproval: true }));
-                    } else {
-                        setState(prevState => ({ ...prevState, disableSendForApproval: false }));
-                    }
-                }));
+                if (getConfigurationKey()?.IsDivisionAllowedForDepartment) {
+                    fetchDivisionId(fetchDivisionRequestObj, dispatch).then((divisionId) => {
+                        selectedRows[0].DivisionId = divisionId
+                        finalUserApi('master', divisionId, getMasterType)
+                    })
+                } else {
+                    finalUserApi('master', null, getMasterType)
+                }
             }
             setState(prevState => ({ ...prevState, CostingTypePermission: false, finalApprovalLoader: false }));
         }
@@ -537,8 +497,18 @@ function RfqListing(props) {
             // setAddRfq(true)
             dispatch(storePartNumber(rowData))
 
-            sendForApprovalData(arr)
-            setSendForApproval(true)
+            if (getConfigurationKey()?.IsDivisionAllowedForDepartment) {
+                fetchDivisionId(fetchDivisionRequestObj, dispatch).then((divisionId) => {
+                    selectedRows[0].DivisionId = divisionId
+                    finalUserApi('costing', divisionId, rowData[0]?.TechnologyId)
+                    sendForApprovalData(arr)
+                    setSendForApproval(true)
+                })
+            } else {
+                sendForApprovalData(arr)
+                setSendForApproval(true)
+            }
+
         }
     }
 
@@ -1314,13 +1284,41 @@ function RfqListing(props) {
         // })
 
     }
+    // Helper function to get unique should cost IDs
+    const getUniqueShouldCostIds = (items) => {
+        let uniqueShouldCostId = [];
 
+        items.forEach(item => {
+            const partTypes = item?.PartType?.split(',');
+
+            partTypes?.forEach(type => {
+                let unique;
+                switch (type.trim()) {
+                    case 'Raw Material':
+                        unique = _.uniq(_.map(item?.ShouldRawMaterial, 'RawMaterialId'));
+                        break;
+                    case 'Component':
+                    case 'Assembly':
+                        unique = _.uniq(_.map(item?.ShouldCostings, 'CostingId'));
+                        break;
+                    case 'Bought Out Part':
+                        unique = _.uniq(_.map(item?.ShouldBoughtOutPart, 'BoughtOutPartId'));
+                        break;
+                    case 'Tooling':
+                        unique = _.uniq(_.map(item?.ShouldCostings, 'CostingId'));
+                        break;
+                    default:
+                        unique = [];
+                }
+                uniqueShouldCostId.push(...unique);
+            });
+        });
+
+        return uniqueShouldCostId;
+    };
     const onRowSelect = (event) => {
-
         if (event.node.isSelected()) {
             const selectedRowIndex = event.node.rowIndex;
-
-
             setSelectedRowIndex(selectedRowIndex)
         } else {
             setaddComparisonToggle(false)
@@ -1328,68 +1326,60 @@ function RfqListing(props) {
             gridApi?.deselectAll()
         }
 
-
         const selectedRows = gridApi?.getSelectedRows()
         let partNumber = []
         let data
-        const partTypes = selectedRows[0]?.PartType.split(',');
-        partTypes?.forEach(type => {
-            switch (type.trim()) {
-                case 'Raw Material':
-                    selectedRows?.map(item => partNumber?.push(item?.RawMaterial))
-                    data = partNumber.map(item => rowData?.filter(el => el.RawMaterial === item))
-                    // SELECTED ALL COSTING ON THE CLICK ON PARTbreak;
-                    break;
-                case 'Bought Out Part':
-                    selectedRows?.map(item => partNumber.push(item?.BoughtOutPart))
-                    data = partNumber.map(item => rowData?.filter(el => el.BoughtOutPart === item))             // SELECTED ALL COSTING ON THE CLICK ON PART
 
-                    break;
-                case 'Component':
-                case 'Assembly':
-                    selectedRows?.map(item => partNumber?.push(item?.PartNo))
-                    data = partNumber.map(item => rowData?.filter(el => el.PartNumber === item))             // SELECTED ALL COSTING ON THE CLICK ON PART
-                    break;
-                case 'Tooling':
+        if (selectedRows?.length > 0) {
+            const partTypes = selectedRows[0]?.PartType.split(',');
+            partTypes?.forEach(type => {
+                switch (type.trim()) {
+                    case 'Raw Material':
+                        selectedRows?.map(item => partNumber?.push(item?.RawMaterial))
+                        data = partNumber.map(item => rowData?.filter(el => el.RawMaterial === item))
+                        // SELECTED ALL COSTING ON THE CLICK ON PARTbreak;
+                        break;
+                    case 'Bought Out Part':
+                        selectedRows?.map(item => partNumber.push(item?.BoughtOutPart))
+                        data = partNumber.map(item => rowData?.filter(el => el.BoughtOutPart === item))             // SELECTED ALL COSTING ON THE CLICK ON PART
 
+                        break;
+                    case 'Component':
+                    case 'Assembly':
+                        selectedRows?.map(item => partNumber?.push(item?.PartNo))
+                        data = partNumber.map(item => rowData?.filter(el => el.PartNumber === item))             // SELECTED ALL COSTING ON THE CLICK ON PART
+                        break;
+                    case 'Tooling':
+                        selectedRows?.map(item => partNumber?.push(item?.PartNo))
+                        data = partNumber.map(item => rowData?.filter(el => el.PartNumber === item))
+                        break;
+                    default:
+                        break;
+                }
+            });
 
-                    selectedRows?.map(item => partNumber?.push(item?.PartNo))
+            let newArray = []
+            data?.map((item) => {
+                newArray = [...newArray, ...item]
+                return null
+            })
 
-                    data = partNumber.map(item => rowData?.filter(el => el.PartNumber === item))             // SELECTED ALL COSTING ON THE CLICK ON PART
-                    break;
-                default:
-                    break;
+            // Update uniqueShouldCostingId based on selected rows
+            const uniqueSelectedCosts = getUniqueShouldCostIds(newArray);
+            setUniqueShouldCostingId(uniqueSelectedCosts);
 
-
-
+            if (selectedRows[0]?.IsVisibiltyConditionMet && selectedRows[0].IsShowNetPoPrice) {
+                setisVisibiltyConditionMet(true)
+            } else {
+                setisVisibiltyConditionMet(false)
             }
 
-        })
-
-        let newArray = []
-
-        data?.map((item) => {
-            newArray = [...newArray, ...item]
-            return null
-        })
-
-
-
-        if (selectedRows && selectedRows.length > 0 && selectedRows[0]?.IsVisibiltyConditionMet && selectedRows[0].IsShowNetPoPrice) {
-            setisVisibiltyConditionMet(true)
-        } else {
-            setisVisibiltyConditionMet(false)
-        }
-
-
-
-        setSelectedRows(newArray)
-
-        if (selectedRows.length === 0) {
-            setAddComparisonButton(true)
-        } else {
+            setSelectedRows(newArray)
             setAddComparisonButton(false)
             setTechnologyId(selectedRows[0]?.TechnologyId)
+        } else {
+            setAddComparisonButton(true)
+            setUniqueShouldCostingId([]) // Clear should cost IDs when no rows selected
         }
     }
 
@@ -1455,6 +1445,8 @@ function RfqListing(props) {
         // <RfqListing />
 
         if (type !== "Cancel") {
+
+
             getDataList()
         }
     }
@@ -1661,6 +1653,7 @@ function RfqListing(props) {
                             technologyId={technologyId}
                             cancel={cancel}
                             selectedRows={selectedRows}
+                            dataSelected={selectedRows}
                             mandatoryRemark={mandatoryRemark}
                             callSapCheckAPI={false}
                         />

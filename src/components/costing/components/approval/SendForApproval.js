@@ -1,4 +1,4 @@
-import React, { Fragment, useState, useEffect } from 'react'
+import React, { Fragment, useState, useEffect, useRef } from 'react'
 import { Row, Col } from 'reactstrap'
 import { useForm, Controller, } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
@@ -6,11 +6,11 @@ import Toaster from '../../../common/Toaster'
 import Drawer from '@material-ui/core/Drawer'
 import { SearchableSelectHookForm, TextAreaHookForm, DatePickerHookForm, NumberFieldHookForm, AllApprovalField, } from '../../../layout/HookFormInputs'
 import { getReasonSelectList, getAllApprovalDepartment, getAllApprovalUserFilterByDepartment, sendForApprovalBySender, approvalRequestByApprove } from '../../actions/Approval'
-import { getConfigurationKey, handleDepartmentHeader, loggedInUserId, userDetails } from '../../../../helper/auth'
+import { getConfigurationKey, handleDepartmentHeader, loggedInUserId, showApprovalDropdown, userDetails } from '../../../../helper/auth'
 import { setCostingApprovalData, setCostingViewData, fileUploadCosting, checkFinalUser, getReleaseStrategyApprovalDetails } from '../../actions/Costing'
 import { getVolumeDataByPartAndYear, checkRegularizationLimit } from '../../../masters/actions/Volume'
 
-import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, userTechnologyLevelDetails } from '../../../../helper'
+import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, userTechnologyLevelDetails, validateFileName } from '../../../../helper'
 import DayTime from '../../../common/DayTimeWrapper'
 import WarningMessage from '../../../common/WarningMessage'
 import DatePicker from "react-datepicker";
@@ -26,22 +26,24 @@ import LoaderCustom from '../../../common/LoaderCustom'
 import TooltipCustom from '../../../common/Tooltip'
 import { getUsersTechnologyLevelAPI, getAllDivisionListAssociatedWithDepartment } from '../../../../actions/auth/AuthActions'
 import { rfqSaveBestCosting } from '../../../rfq/actions/rfq'
-import { getApprovalTypeSelectList } from '../../../../actions/Common'
+import { checkDivisionByPlantAndGetDivisionIdByPart, getApprovalTypeSelectList } from '../../../../actions/Common'
 import { reactLocalStorage } from 'reactjs-localstorage'
-import { transformApprovalItem } from '../../../common/CommonFunctions'
+import { getEffectiveDateMaxDate, transformApprovalItem } from '../../../common/CommonFunctions'
 import { checkSAPPoPrice } from '../../../simulation/actions/Simulation'
 import SAPApproval from '../../../SAPApproval'
 import { useLabels } from '../../../../helper/core'
+import { AttachmentValidationInfo } from '../../../../config/message'
+import { fetchDivisionId } from '../../CostingUtil'
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 const SendForApproval = (props) => {
+  const dropzone = useRef(null);
   const { isApprovalisting, selectedRows, mandatoryRemark, dataSelected, callSapCheckAPI } = props
   const dispatch = useDispatch()
   const { register, handleSubmit, control, setValue, getValues, formState: { errors } } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
   })
-
   const reasonsList = useSelector((state) => state.approval.reasonsList)
   const deptList = useSelector((state) => state.approval.approvalDepartmentList)
   const viewApprovalData = useSelector((state) => state.costing.costingApprovalData)
@@ -91,7 +93,7 @@ const SendForApproval = (props) => {
   const [noApprovalExistMessage, setNoApprovalExistMessage] = useState('')
   const [isShowDivision, setIsShowDivision] = useState(false)
   const [divisionList, setDivisionList] = useState([])
-  const [division, setDivision] = useState('')
+  const [division, setDivision] = useState(null)
   const [checkMultiDept, setCheckMultiDept] = useState(false)
 
   const apicall = (technologyId, depart, ApprovalTypeId, isdisable, levelsList, divisionId = '') => {
@@ -206,7 +208,10 @@ const SendForApproval = (props) => {
       } else {
         if (!getConfigurationKey().IsDivisionAllowedForDepartment) {
           apicall(props.technologyId, userData.DepartmentId, viewApprovalData[0]?.costingTypeId, false, res?.data?.Data)
+        } else {
+          userTechnology(viewApprovalData[0]?.costingTypeId, res?.data?.Data)
         }
+
         setApprovalType(viewApprovalData[0]?.costingTypeId)
       }
 
@@ -379,84 +384,105 @@ const SendForApproval = (props) => {
    * @description  USED TO HANDLE DEPARTMENT CHANGE
    */
 
-  const callCheckFinalUserApi = (newValue, approvaltypeTest = approvalType, divisionId = '') => {
+  const callCheckFinalUserApi = (newValue, approvaltypeTest = approvalType) => {
     const tempDropdownList = []
-    let requestObject = {
-      LoggedInUserId: userData.LoggedInUserId,
-      DepartmentId: newValue,
-      TechnologyId: props.technologyId,
-      ApprovalTypeId: approvaltypeTest,
-      plantId: (IsApprovalLevelFilterByPlant && viewApprovalData[0]?.destinationPlantId) ? viewApprovalData[0]?.destinationPlantId : null,
-      DivisionId: divisionId
-    }
-    let Data = []
-    let approverIdListTemp = []
-    let obj = {
-      DepartmentId: newValue,
-      UserId: loggedInUserId(),
-      TechnologyId: props.technologyId,
-      Mode: 'costing',
-      approvalTypeId: approvaltypeTest,
-      plantId: (IsApprovalLevelFilterByPlant && viewApprovalData[0]?.destinationPlantId) ? viewApprovalData[0]?.destinationPlantId : null,
-      divisionId: (divisionId || divisionId !== '') ? divisionId : null
-    }
-    dispatch(checkFinalUser(obj, (res) => {
-      const data = res?.data?.Data
-      if (data?.IsUserInApprovalFlow === true && data?.IsFinalApprover === false) {
-        dispatch(getAllApprovalUserFilterByDepartment(requestObject, (res) => {
-          Data = res.data.DataList[1] ? res.data.DataList[1] : []
-          setSelectedApprover(Data?.Value)
-          setSelectedApproverLevelId({ levelName: Data.LevelName, levelId: Data.LevelId })
-          res.data.DataList && res.data.DataList.map((item) => {
-            if (item.Value === '0') return false;
-            if (item.Value === EMPTY_GUID) return false;
-            tempDropdownList.push({ label: item.Text, value: item.Value, levelId: item.LevelId, levelName: item.LevelName })
-            approverIdListTemp.push(item.Value)
-            return null
-          })
-          if (tempDropdownList?.length === 0) {
-            setShowValidation(true)
-          } else {
-            setApprover(Data.Text ? Data.Text : '')
-            setShowValidation(false)
-            if (!initialConfiguration.IsMultipleUserAllowForApproval) {
-              setValue('approver', { label: Data.Text ? Data.Text : '', value: Data.Value ? Data.Value : '', levelId: Data.LevelId ? Data.LevelId : '', levelName: Data.LevelName ? Data.LevelName : '' })
-            }
-          }
-          setApprovalDropDown(tempDropdownList)
-          setApproverIdList(approverIdListTemp)
-          setNoApprovalExistMessage('')
-        }))
-      } else if (data?.IsUserInApprovalFlow === false) {
-        setValue('approver', { label: '', value: '', levelId: '', levelName: '' })
-        setApprover('')
-        setSelectedApprover('')
-        setApprovalDropDown([])
-        setApproverIdList([])
-        Toaster.warning('This user is not in approval flow.')
-        setNoApprovalExistMessage('')
-        return false
-      } else if (data?.IsNextLevelUserExist === false && data?.IsUserInApprovalFlow === true && data?.IsFinalApprover === false) {
-        setValue('approver', { label: '', value: '', levelId: '', levelName: '' })
-        setApprover('')
-        setSelectedApprover('')
-        setApprovalDropDown([])
-        setApproverIdList([])
-        setNoApprovalExistMessage('There is no higher approver available for this user in this department.')
-        return false
-      } else if (data?.IsUserInApprovalFlow === true && data?.IsFinalApprover === true && data?.IsNextLevelUserExist === false) {
-        setValue('approver', { label: '', value: '', levelId: '', levelName: '' })
-        setApprover('')
-        setSelectedApprover('')
-        setApprovalDropDown([])
-        setApproverIdList([])
-        setNoApprovalExistMessage('This user is final approver.')
-        Toaster.warning('This user is final approver.')
-        setNoApprovalExistMessage('')
-        return false
+    const fetchApprovalData = (divisionId) => {
+      setDivision(divisionId)
+      let requestApprovalObject = {
+        LoggedInUserId: userData.LoggedInUserId,
+        DepartmentId: newValue,
+        TechnologyId: props.technologyId,
+        ApprovalTypeId: approvaltypeTest,
+        plantId: (IsApprovalLevelFilterByPlant && viewApprovalData[0]?.destinationPlantId) ? viewApprovalData[0]?.destinationPlantId : null,
+        DivisionId: divisionId
       }
+      let Data = []
+      let approverIdListTemp = []
+      dispatch(getAllApprovalUserFilterByDepartment(requestApprovalObject, (res) => {
+        Data = res.data.DataList[1] ? res.data.DataList[1] : []
+        setSelectedApprover(Data?.Value)
+        setSelectedApproverLevelId({ levelName: Data.LevelName, levelId: Data.LevelId })
+        res.data.DataList && res.data.DataList.map((item) => {
+          if (item.Value === '0') return false;
+          if (item.Value === EMPTY_GUID) return false;
+          tempDropdownList.push({ label: item.Text, value: item.Value, levelId: item.LevelId, levelName: item.LevelName })
+          approverIdListTemp.push(item.Value)
+          return null
+        })
+        if (tempDropdownList?.length === 0) {
+          setShowValidation(true)
+        } else {
+          setApprover(Data.Text ? Data.Text : '')
+          setShowValidation(false)
+          if (!initialConfiguration.IsMultipleUserAllowForApproval) {
+            setValue('approver', { label: Data.Text ? Data.Text : '', value: Data.Value ? Data.Value : '', levelId: Data.LevelId ? Data.LevelId : '', levelName: Data.LevelName ? Data.LevelName : '' })
+          }
+        }
+        setApprovalDropDown(tempDropdownList)
+        setApproverIdList(approverIdListTemp)
+        setNoApprovalExistMessage('')
+      }))
+    }
+    const { Department } = userDetails()
+    if (Department.length === 1 || getConfigurationKey()?.IsDivisionAllowedForDepartment) {
+      fetchApprovalData(dataSelected[0].DivisionId)
+    } else {
+      let requestObject = {
+        "PlantId": viewApprovalData[0]?.destinationPlantId,
+        "PartId": viewApprovalData[0]?.partId
+      }
+      fetchDivisionId(requestObject, dispatch).then((divisionId) => {
+        setDivision(divisionId)
+        let obj = {
+          DepartmentId: newValue,
+          UserId: loggedInUserId(),
+          TechnologyId: props.technologyId,
+          Mode: 'costing',
+          approvalTypeId: approvaltypeTest,
+          plantId: (IsApprovalLevelFilterByPlant && viewApprovalData[0]?.destinationPlantId) ? viewApprovalData[0]?.destinationPlantId : null,
+          divisionId: divisionId
+        }
 
-    }))
+        dispatch(checkFinalUser(obj, (res) => {
+          const data = res?.data?.Data
+          if (data?.IsUserInApprovalFlow === true && data?.IsFinalApprover === false) {
+            fetchApprovalData(divisionId)
+          } else if (data?.IsUserInApprovalFlow === false) {
+            setValue('approver', { label: '', value: '', levelId: '', levelName: '' })
+            setApprover('')
+            setSelectedApprover('')
+            setApprovalDropDown([])
+            setApproverIdList([])
+            Toaster.warning('This user is not in approval flow.')
+            setNoApprovalExistMessage('')
+            return false
+          } else if (data?.IsNextLevelUserExist === false && data?.IsUserInApprovalFlow === true && data?.IsFinalApprover === false) {
+            setValue('approver', { label: '', value: '', levelId: '', levelName: '' })
+            setApprover('')
+            setSelectedApprover('')
+            setApprovalDropDown([])
+            setApproverIdList([])
+            setNoApprovalExistMessage('There is no higher approver available for this user in this department.')
+            return false
+          } else if (data?.IsUserInApprovalFlow === true && data?.IsFinalApprover === true && data?.IsNextLevelUserExist === false) {
+            setValue('approver', { label: '', value: '', levelId: '', levelName: '' })
+            setApprover('')
+            setSelectedApprover('')
+            setApprovalDropDown([])
+            setApproverIdList([])
+            setNoApprovalExistMessage('This user is final approver.')
+            Toaster.warning('This user is final approver.')
+            setNoApprovalExistMessage('')
+            return false
+          }
+
+        }))
+      }).catch((error) => {
+      })
+    }
+
+
+
   }
   const fetchDivisionList = (departmentIds) => {
     let obj = {
@@ -487,17 +513,17 @@ const SendForApproval = (props) => {
     if (newValue && newValue !== '') {
       if (getConfigurationKey().IsDivisionAllowedForDepartment) {
         setDivisionList([])
-        setDivision('')
+        // setDivision('')
         setValue('Division', '')
         setValue('approver', '')
         setApprover('')
         setApprovalDropDown([])
         setShowValidation(false)
         let departmentIds = [newValue.value]
-        fetchDivisionList(departmentIds)
+        // fetchDivisionList(departmentIds)
       } else {
         setDivisionList([])
-        setDivision('')
+        // setDivision('')
         callCheckFinalUserApi(newValue?.value, approvalType)
       }
       setValue('approver', '')
@@ -511,10 +537,10 @@ const SendForApproval = (props) => {
   }
   const handleDivisionChange = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      setDivision(newValue)
-      callCheckFinalUserApi(selectedDepartment?.value, approvalType, newValue?.value)
+      // setDivision(newValue)
+      callCheckFinalUserApi(selectedDepartment?.value, approvalType)
     } else {
-      setDivision('')
+      // setDivision('')
     }
   }
   /**
@@ -665,8 +691,6 @@ const SendForApproval = (props) => {
       let temp = []
 
       viewApprovalData.map((data) => {
-
-
         let tempObj = {}
         tempObj.ApprovalProcessSummaryId = data.ApprovalProcessSummaryId
         tempObj.ApprovalToken = data.ApprovalToken
@@ -706,14 +730,10 @@ const SendForApproval = (props) => {
         tempObj.BudgetedPriceVariance = data.BudgetedPriceVariance
         tempObj.IsRFQCostingSendForApproval = props?.isRfq ? true : false
         tempObj.ApprovalTypeId = approvalType
-        tempObj.DivisionId = division?.value ?? null
+        tempObj.DivisionId = division ?? null
         temp.push(tempObj)
         return null
       })
-
-
-
-      // action
 
       dispatch(approvalRequestByApprove(temp, res => {
 
@@ -837,11 +857,8 @@ const SendForApproval = (props) => {
       obj.MaterialGroup = SAPData.MaterialGroup?.label
       obj.DecimalOption = SAPData.DecimalOption?.value
       obj.ApprovalTypeId = approvalType
-      obj.InfoCategeory = data?.infoCategeory?.value ?? ''
-      obj.ValuationType = data?.evaluationType?.label ?? ''
       obj.PlannedDelTime = data?.leadTime
-      obj.DivisionId = division?.value ?? null
-
+      obj.DivisionId = division ?? null
 
       // debounce_fun()
       // 
@@ -904,6 +921,17 @@ const SendForApproval = (props) => {
     }
   }
 
+  /**
+  * @method setDisableFalseFunction
+  * @description setDisableFalseFunction
+  */
+  const setDisableFalseFunction = () => {
+    const loop = checkForNull(dropzone.current.files.length) - checkForNull(files.length)
+    if (checkForNull(loop) === 1 || checkForNull(dropzone.current.files.length) === checkForNull(files.length)) {
+      setIsDisable(false)
+    }
+  }
+
   const handleChangeQuantity = (e) => {
     checkQuantityLimitValue(e?.target?.value, isRegularize)
   };
@@ -941,7 +969,17 @@ const SendForApproval = (props) => {
     if (status === "done") {
       let data = new FormData();
       data.append("file", file);
+      if (!validateFileName(file.name)) {
+        dropzone.current.files.pop()
+        setDisableFalseFunction()
+        return false;
+      }
       dispatch(fileUploadCosting(data, (res) => {
+        if (res && res?.status !== 200) {
+          this.dropzone.current.files.pop()
+          setAttachmentLoader(false)
+          return false
+        }
         let Data = res.data[0];
         files.push(Data);
         setFiles(files);
@@ -950,8 +988,20 @@ const SendForApproval = (props) => {
       }));
     }
 
-    if (status === "rejected_file_type") {
-      Toaster.warning("Allowed only xls, doc, jpeg, pdf files.");
+    if (status === 'rejected_file_type') {
+      Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
+    } else if (status === 'error_file_size') {
+      setDisableFalseFunction()
+      setAttachmentLoader(false)
+      dropzone.current.files.pop()
+      Toaster.warning("File size greater than 20 mb not allowed")
+    } else if (status === 'error_validation'
+      || status === 'error_upload_params' || status === 'exception_upload'
+      || status === 'aborted' || status === 'error_upload') {
+      setDisableFalseFunction()
+      setAttachmentLoader(false)
+      dropzone.current.files.pop()
+      Toaster.warning("Something went wrong")
     }
   };
   const viewImpactDrawer = () => {
@@ -975,6 +1025,9 @@ const SendForApproval = (props) => {
       setFiles(tempArr);
       setAttachmentLoader(false)
       setIsOpen(!IsOpen);
+    }
+    if (dropzone?.current !== null) {
+      dropzone.current.files.pop()
     }
   };
 
@@ -1120,7 +1173,7 @@ const SendForApproval = (props) => {
                                     showMonthDropdown
                                     showYearDropdown
                                     dateFormat="DD/MM/YYYY"
-                                    //maxDate={new Date()}
+                                    maxDate={getEffectiveDateMaxDate()}
                                     placeholderText="Select date"
                                     customClassName="withBorder"
                                     className="withBorder"
@@ -1307,7 +1360,7 @@ const SendForApproval = (props) => {
                           register={register}
                           defaultValue={""}
                           options={renderDropdownListing("Dept")}
-                          disabled={disableRS || ((initialConfiguration.IsReleaseStrategyConfigured && Object.keys(approvalType)?.length === 0)) || disableDept}
+                          disabled={disableRS || (((initialConfiguration.IsReleaseStrategyConfigured && Object.keys(approvalType)?.length === 0) || disableDept) && !showApprovalDropdown())}
                           mandatory={true}
                           handleChange={handleDepartmentChange}
                           errors={errors.dept}
@@ -1349,7 +1402,7 @@ const SendForApproval = (props) => {
                             defaultValue={""}
                             options={approvalDropDown}
                             mandatory={true}
-                            disabled={disableRS || !(userData.Department.length > 1)}
+                            disabled={disableRS || (!(userData.Department.length > 1) && !showApprovalDropdown())}
                             customClassName={"mb-0 approver-wrapper"}
                             handleChange={handleApproverChange}
                             errors={errors.approver}
@@ -1458,13 +1511,14 @@ const SendForApproval = (props) => {
                   isRegularize ? (
                     <Row className="mb-4 mx-0">
                       <Col md="6" className="height152-label">
-                        <label>Upload Attachment (upload up to 4 files)</label>
+                        <label>Upload Attachment (upload up to 4 files)<AttachmentValidationInfo /></label>
                         {files && files.length >= 4 ? (
                           <div class="alert alert-danger" role="alert">
                             Maximum file upload limit reached.
                           </div>
                         ) : (
                           <Dropzone
+                            ref={dropzone}
                             onChangeStatus={handleChangeStatus}
                             PreviewComponent={Preview}
                             mandatory={true}
@@ -1581,6 +1635,7 @@ const SendForApproval = (props) => {
                 CostingTypeId={viewApprovalData[0]?.costingTypeId}
                 approvalSummaryTrue={true}
                 costingIdArray={costingIdArray}
+                isCosting={true}
               />
             }
           </div >

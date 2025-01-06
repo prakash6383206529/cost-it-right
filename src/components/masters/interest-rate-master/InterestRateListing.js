@@ -10,7 +10,7 @@ import DayTime from '../../common/DayTimeWrapper'
 import AddInterestRate from './AddInterestRate';
 import BulkUpload from '../../massUpload/BulkUpload';
 import { ADDITIONAL_MASTERS, InterestMaster, INTEREST_RATE } from '../../../config/constants';
-import { checkPermission, searchNocontentFilter, setLoremIpsum } from '../../../helper/util';
+import { checkPermission, getLocalizedCostingHeadValue, searchNocontentFilter, setLoremIpsum } from '../../../helper/util';
 import LoaderCustom from '../../common/LoaderCustom';
 import ReactExport from 'react-export-excel';
 import { INTERESTRATE_DOWNLOAD_EXCEl } from '../../../config/masterData';
@@ -25,12 +25,13 @@ import { getConfigurationKey, loggedInUserId } from '../../../helper';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import SingleDropdownFloationFilter from '../material-master/SingleDropdownFloationFilter';
 import { checkMasterCreateByCostingPermission, hideCustomerFromExcel } from '../../common/CommonFunctions';
-import { TourStartAction, agGridStatus, isResetClick } from '../../../actions/Common';
+import { TourStartAction, agGridStatus, setResetCostingHead } from '../../../actions/Common';
 import Button from '../../layout/Button';
 import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from '../../common/Tour/TourMessages';
 import { useTranslation } from 'react-i18next';
 import { useLabels, useWithLocalization } from '../../../helper/core';
+import CostingHeadDropdownFilter from '../material-master/CostingHeadDropdownFilter';
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
@@ -64,9 +65,11 @@ const InterestRateListing = (props) => {
     dataCount: 0,
     showExtraData: false
   })
-  const { vendorLabel } = useLabels()
+  const { vendorLabel ,vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels()
   const [gridApi, setGridApi] = useState(null);
   const { statusColumnData } = useSelector((state) => state.comman);
+  const { costingHeadFilter } = useSelector((state) => state?.comman);
+
   const { t } = useTranslation("common")
   const { topAndLeftMenuData } = useSelector((state) => state.auth);
   const { interestRateDataList } = useSelector((state) => state.interestRate);
@@ -77,17 +80,22 @@ const InterestRateListing = (props) => {
     setTimeout(() => {
       getTableListData()
     }, 500);
+    
     // eslint-disable-next-line react-hooks/exhaustive-deps
 
   }, []);
   useEffect(() => {
-
     if (statusColumnData) {
       state.gridApi?.setQuickFilter(statusColumnData.data);
     }
+    if (costingHeadFilter && costingHeadFilter?.data) {
+      const matchedOption = costingHeadFilter?.CostingHeadOptions?.find(option => option?.value === costingHeadFilter?.data?.value);
+      if (matchedOption) {
+        state.gridApi?.setQuickFilter(matchedOption?.label);
+      }
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-
-  }, [statusColumnData])
+  }, [statusColumnData, costingHeadFilter]);
 
   useEffect(() => {
     if (topAndLeftMenuData) {
@@ -217,6 +225,19 @@ const InterestRateListing = (props) => {
     )
   };
 
+  
+  const combinedCostingHeadRenderer = (props) => {
+    // Call the existing checkBoxRenderer
+    costingHeadFormatter(props);
+  
+    // Get and localize the cell value
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    const localizedValue = getLocalizedCostingHeadValue(cellValue, vendorBasedLabel, zeroBasedLabel, customerBasedLabel);
+  
+    // Return the localized value (the checkbox will be handled by AgGrid's default renderer)
+    return localizedValue;
+  };
+
   /**
     * @method costingHeadFormatter
     * @description Renders Costing head
@@ -337,7 +358,7 @@ const InterestRateListing = (props) => {
     gridOptions.columnApi.resetColumnState();
     gridOptions.api.setFilterModel(null);
     dispatch(agGridStatus("", ""))
-    dispatch(isResetClick(true, "ICCApplicability"))
+    dispatch(setResetCostingHead(true, 'applicability'))
 
   }
 
@@ -362,20 +383,30 @@ const InterestRateListing = (props) => {
     checkboxSelection: isFirstColumn
   };
 
+  const floatingFilterStatus = {
+    maxValue: 1,
+    suppressFilterButton: true,
+    component: CostingHeadDropdownFilter,
+    onFilterChange: (originalValue, value) => {
+      setState((prevState) => ({ ...prevState, floatingFilterData: { ...prevState.floatingFilterData, CostingHead: value } }));   
+      setState((prevState) => ({ ...prevState, disableFilter: false }));
+    }
+};
   const frameworkComponents = {
     totalValueRenderer: buttonFormatter,
     effectiveDateRenderer: effectiveDateFormatter,
     customLoadingOverlay: LoaderCustom,
     customNoRowsOverlay: NoContentFound,
-    costingHeadFormatter: costingHeadFormatter,
+    combinedCostingHeadRenderer: combinedCostingHeadRenderer,
     hyphenFormatter: hyphenFormatter,
     valuesFloatingFilter: SingleDropdownFloationFilter,
+    statusFilter: CostingHeadDropdownFilter,
   };
 
 
   return (
     <>
-      <div className={`ag-grid-react report-grid p-relative ${DownloadAccessibility ? "show-table-btn" : ""}`} id='go-to-top'>
+      <div className={`ag-grid-react grid-parent-wrapper p-relative ${DownloadAccessibility ? "show-table-btn" : ""}`} id='go-to-top'>
         <div className="container-fluid">
           <ScrollToTop pointProp='go-to-top' />
           <form noValidate  >
@@ -433,7 +464,8 @@ const InterestRateListing = (props) => {
                 frameworkComponents={frameworkComponents}
                 suppressRowClickSelection={true}
               >
-                <AgGridColumn width={180} field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
+                <AgGridColumn width={180} field="CostingHead" headerName="Costing Head" cellRenderer={'combinedCostingHeadRenderer'}   floatingFilterComponentParams={floatingFilterStatus} 
+                                            floatingFilterComponent="statusFilter"></AgGridColumn>
                 {getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC && <AgGridColumn field="RawMaterialName" headerName='Raw Material Name'></AgGridColumn>}
                 {getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC && <AgGridColumn field="RawMaterialGrade" headerName="Raw Material Grade"></AgGridColumn>}
                 {(getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate || getConfigurationKey().IsDestinationPlantConfigure) && <AgGridColumn field="PlantName" headerName="Plant (Code)"></AgGridColumn>}

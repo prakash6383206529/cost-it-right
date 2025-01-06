@@ -2415,6 +2415,7 @@ const RejectedCostingSummaryTable = (props) => {
             closeDrawer={closeViewDrawer}
             isLogisticsTechnology={isLogisticsTechnology}
             anchor={'right'}
+            simulationMode={simulationMode}
           />
         )
       }

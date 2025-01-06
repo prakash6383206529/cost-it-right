@@ -4,13 +4,14 @@ import { Field, reduxForm, formValueSelector, clearFields, getFormValues } from 
 import { Row, Col, Label, } from 'reactstrap';
 import {
   required, checkForNull, number, checkForDecimalAndNull, acceptAllExceptSingleSpecialCharacter, maxLength20,
-  maxLength, maxLength10, positiveAndDecimalNumber, maxLength512, maxLength80, checkWhiteSpaces, decimalLengthsix, checkSpacesInString, postiveNumber, hashValidation
+  maxLength, maxLength10, positiveAndDecimalNumber, maxLength512, maxLength80, checkWhiteSpaces, decimalLengthsix, checkSpacesInString, postiveNumber, hashValidation,
+  validateFileName,
 } from "../../../helper/validation";
-import { renderText, searchableSelect, renderTextAreaField, focusOnError, renderDatePicker, renderTextInputField } from "../../layout/FormInputs";
+import { renderText, searchableSelect, renderTextAreaField, focusOnError, renderDatePicker, renderTextInputField, validateForm } from "../../layout/FormInputs";
 import { getCityBySupplier, getPlantBySupplier, getUOMSelectList, getPlantSelectListByType, getAllCity, getVendorNameByVendorSelectList, getCityByCountryAction, getExchangeRateSource } from '../../../actions/Common';
 import { createBOP, updateBOP, getBOPCategorySelectList, getBOPDomesticById, fileUploadBOPDomestic, checkAndGetBopPartNo } from '../actions/BoughtOutParts';
 import Toaster from '../../common/Toaster';
-import { MESSAGES } from '../../../config/message';
+import { AttachmentValidationInfo, MESSAGES } from '../../../config/message';
 import { getConfigurationKey, IsFetchExchangeRateVendorWise, loggedInUserId, showBopLabel, userDetails } from "../../../helper/auth";
 import "react-datepicker/dist/react-datepicker.css";
 import Dropzone from 'react-dropzone-uploader';
@@ -29,7 +30,7 @@ import _, { debounce } from 'lodash';
 import AsyncSelect from 'react-select/async';
 import { getClientSelectList, } from '../actions/Client';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { autoCompleteDropdown, convertIntoCurrency, costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission, getEffectiveDateMinDate, recalculateConditions, updateCostValue } from '../../common/CommonFunctions';
+import { autoCompleteDropdown, convertIntoCurrency, costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission, getEffectiveDateMaxDate, getEffectiveDateMinDate, recalculateConditions, updateCostValue } from '../../common/CommonFunctions';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { checkFinalUser, getExchangeRateByCurrency } from '../../../components/costing/actions/Costing'
 import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions';
@@ -75,6 +76,7 @@ class AddBOPDomestic extends Component {
       approveDrawer: false,
       effectiveDate: '',
       minEffectiveDate: '',
+
       isDateChange: false,
       files: [],
       isFinalApprovar: false,
@@ -128,7 +130,9 @@ class AddBOPDomestic extends Component {
       LocalCurrencyId: null,
       LocalExchangeRateId: null,
       totalOtherCost: 0,
-      OtherNetCostConversion: 0
+      OtherNetCostConversion: 0,
+      isSAPCodeDisabled: false,
+      sourceLocationInputLoader: false // Add new state for source location loader
 
     }
     this.state = { ...this.initialState };
@@ -299,7 +303,10 @@ class AddBOPDomestic extends Component {
         }
         this.props.checkAndGetBopPartNo(obj, (res) => {
           let Data = res.data.Identity;
+          let sapCode = res?.data?.DynamicData?.sapPartNumber
           this.props.change('BoughtOutPartNumber', Data)
+          this.props.change('SAPPartNumber', sapCode)
+          this.setState({ isSAPCodeDisabled: sapCode === '' ? false : true, IsSAPCodeHandle: sapCode === '' ? false : true })
         })
       }
     } else {
@@ -316,7 +323,10 @@ class AddBOPDomestic extends Component {
       }
       this.props.checkAndGetBopPartNo(obj, (res) => {
         let Data = res.data.Identity;
+        let sapCode = res?.data?.DynamicData?.sapPartNumber
         this.props.change('BoughtOutPartNumber', Data)
+        this.props.change('SAPPartNumber', sapCode)
+        this.setState({ isSAPCodeDisabled: sapCode === '' ? false : true, IsSAPCodeHandle: sapCode === '' ? false : true })
       })
     }
   }, 500)
@@ -452,9 +462,9 @@ class AddBOPDomestic extends Component {
       inputValue = inputValue.trim();
     }
     if (inputValue?.length >= searchCount) {
-      this.setState({ inputLoader: true });
+      this.setState({ sourceLocationInputLoader: true });
       let res = await this.props.getCityByCountryAction(0, 0, inputValue);
-      this.setState({ inputLoader: false });
+      this.setState({ sourceLocationInputLoader: false });
       let cityDataAPI = res?.data?.SelectList;
       if (inputValue) {
         return autoCompleteDropdown(inputValue, cityDataAPI, false, [], true);
@@ -682,7 +692,7 @@ class AddBOPDomestic extends Component {
    */
   handleMessageChange = (e) => {
     this.setState({
-      remarks: e.target.value,
+      remarks: e?.target?.value,
       isSourceChange: true
     })
   }
@@ -746,7 +756,7 @@ class AddBOPDomestic extends Component {
       basicPriceBaseCurrency = basicPriceAndOtherCost
     }
     const conditionCostBaseCurrency = checkForNull(NetConditionCost)
-    let conditionList = recalculateConditions(basicPriceAndOtherCost,this.state)
+    let conditionList = recalculateConditions(basicPriceAndOtherCost, this.state)
     const sumBase = conditionList.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCostPerQuantity), 0);
     let netLandedCostPlantCurrency = checkForNull(sumBase) + checkForNull(basicPriceAndOtherCost)
     const netCostBaseCurrency = this.state.currencyValue * netLandedCostPlantCurrency
@@ -826,6 +836,7 @@ class AddBOPDomestic extends Component {
   // called every time a file's `status` changes
   handleChangeStatus = ({ meta, file }, status) => {
     const { files, } = this.state;
+    const fileName = file.name
     this.setState({ uploadAttachements: false, setDisable: true, attachmentLoader: true })
 
     if (status === 'removed') {
@@ -837,7 +848,18 @@ class AddBOPDomestic extends Component {
     if (status === 'done') {
       let data = new FormData()
       data.append('file', file)
+      if (!validateFileName(fileName)) {
+        this.dropzone.current.files.pop()
+        this.setDisableFalseFunction()
+        return false;
+      }
+
       this.props.fileUploadBOPDomestic(data, (res) => {
+        if (res && res?.status !== 200) {
+          this.dropzone.current.files.pop()
+          this.setDisableFalseFunction()
+          return false
+        }
         this.setDisableFalseFunction()
         let Data = res.data[0]
         const { files } = this.state;
@@ -961,7 +983,7 @@ class AddBOPDomestic extends Component {
       }
     }
   };
-  handleBOPOperation = (formData, isEditFlag) => {
+  handleBOPOperation = (formData, isEditFlag, isOnlySAPCodeChanged) => {
     const operation = isEditFlag ? this.props.updateBOP : this.props.createBOP;
     const successMessage = isEditFlag ? MESSAGES.UPDATE_BOP_SUCESS : MESSAGES.BOP_ADD_SUCCESS;
 
@@ -970,14 +992,14 @@ class AddBOPDomestic extends Component {
       if (res?.data?.Result) {
         Toaster.success(successMessage);
         if (isEditFlag) {
-          if (!this.state.isEditBtnClicked) {
-            this.cancel('submit');
-          } else {
+          if (this.state.isEditBtnClicked && isOnlySAPCodeChanged === true) {
             this.getDetails();
             this.setState({
               IsSapCodeEditView: true,
               IsSAPCodeHandle: false
             });
+          } else {
+            this.cancel('submit');
           }
         } else {
           this.cancel('submit');
@@ -998,8 +1020,8 @@ class AddBOPDomestic extends Component {
   onSubmit = debounce((values) => {
 
     const { BOPCategory, selectedPlants, vendorName, costingTypeId, sourceLocation, BOPID, isEditFlag, files, DropdownChanged, oldDate, client, effectiveDate, UOM, DataToCheck, isDateChange, IsFinancialDataChanged,
-      isClientVendorBOP, isTechnologyVisible, Technology, NetConditionCost, NetCostWithoutConditionCost, NetLandedCost, FinalBasicRateBaseCurrency, conditionTableData, isBOPAssociated, IsSAPCodeHandle, IsSAPCodeUpdated, currencyValue, LocalCurrencyId, LocalExchangeRateId, ExchangeSource, otherCostTableData, OtherNetCostConversion, totalOtherCost } = this.state;
-    const { fieldsObj } = this.props;
+      isClientVendorBOP, isTechnologyVisible, Technology, NetConditionCost, NetCostWithoutConditionCost, NetLandedCost, FinalConditionCostBaseCurrency, FinalBasicPriceBaseCurrency, FinalNetLandedCostBaseCurrency, FinalBasicRateBaseCurrency, conditionTableData, isBOPAssociated, IsSAPCodeHandle, IsSAPCodeUpdated, currencyValue, LocalCurrencyId, LocalExchangeRateId, ExchangeSource, otherCostTableData, OtherNetCostConversion, totalOtherCost } = this.state;
+    const { fieldsObj, initialConfiguration } = this.props;
     const userDetailsBop = JSON.parse(localStorage.getItem('userDetail'))
 
     if (costingTypeId !== CBCTypeId && vendorName.length <= 0) {
@@ -1073,8 +1095,16 @@ class AddBOPDomestic extends Component {
       BoughtOutPartOtherCostDetailsSchema: otherCostTableData
     };
 
-    formData.BoughtOutPartConditionsDetails = conditionTableData;
+    // formData.BasicRate = FinalBasicRateBaseCurrency
+    // formData.NetLandedCost = FinalNetLandedCostBaseCurrency
 
+    // if (costingTypeId === ZBCTypeId) {
+    //   formData.NetCostWithoutConditionCost = FinalBasicPriceBaseCurrency
+    //   formData.NetConditionCost = FinalConditionCostBaseCurrency
+    // }
+
+    formData.BoughtOutPartConditionsDetails = conditionTableData
+    let isOnlySAPCodeChanged = false
     // CHECK IF CREATE MODE OR EDIT MODE !!!  IF: EDIT  ||  ELSE: CREATE
     if (isEditFlag) {
       let basicPriceBaseCurrency
@@ -1087,7 +1117,7 @@ class AddBOPDomestic extends Component {
 
       if (((files ? JSON.stringify(files) : []) === (DataToCheck.Attachements ? JSON.stringify(DataToCheck.Attachements) : [])) && ((DataToCheck.Remark ? DataToCheck.Remark : '') === (values?.Remark ? values?.Remark : '')) &&
         ((DataToCheck.SAPPartNumber ? DataToCheck.SAPPartNumber : '') === (values?.SAPPartNumber ? values?.SAPPartNumber : '')) &&
-        ((DataToCheck.Source ? String(DataToCheck.Source) : '-') === (values?.Source ? String(values?.Source) : '-')) &&
+        ((DataToCheck.Source ? String(DataToCheck.Source) : '') === (values?.Source ? String(values?.Source) : '')) &&
         ((DataToCheck.SourceLocation ? String(DataToCheck.SourceLocation) : '') === (sourceLocation?.value ? String(sourceLocation?.value) : '')) &&
         checkForNull(fieldsObj?.BasicRate) === checkForNull(DataToCheck?.BasicRate) && checkForNull(basicPriceBaseCurrency) === checkForNull(DataToCheck?.NetCostWithoutConditionCost) &&
         checkForNull(netLandedCostBaseCurrency) === checkForNull(DataToCheck?.NetLandedCost) && checkForNull(NetConditionCost) === checkForNull(DataToCheck?.NetConditionCost) && DropdownChanged && ((DataToCheck.TechnologyId ? String(DataToCheck.TechnologyId) : '') === (Technology?.value ? String(Technology?.value) : ''))) {
@@ -1111,17 +1141,37 @@ class AddBOPDomestic extends Component {
           }
         }
       }
+      if (
+        (((files ? JSON.stringify(files) : []) === (DataToCheck.Attachements ? JSON.stringify(DataToCheck.Attachements) : [])) &&
+          ((DataToCheck.Remark ? DataToCheck.Remark : '') === (values?.Remark ? values?.Remark : '')) &&
+          ((DataToCheck.SAPPartNumber ? DataToCheck.SAPPartNumber : '') !== (values?.SAPPartNumber ? values?.SAPPartNumber : '')) && // SAP code not equal
+          ((DataToCheck.Source ? String(DataToCheck.Source) : '') === (values?.Source ? String(values?.Source) : '')) &&
+          ((DataToCheck.SourceLocation ? String(DataToCheck.SourceLocation) : '') === (sourceLocation?.value ? String(sourceLocation?.value) : '')) &&
+          checkForNull(fieldsObj?.BasicRateBase).toFixed(initialConfiguration?.NoOfDecimalForPrice) === checkForNull(DataToCheck?.BasicRate).toFixed(initialConfiguration?.NoOfDecimalForPrice) &&
+          checkForNull(basicPriceBaseCurrency).toFixed(initialConfiguration?.NoOfDecimalForPrice) === checkForNull(DataToCheck?.NetCostWithoutConditionCost).toFixed(initialConfiguration?.NoOfDecimalForPrice) &&
+          checkForNull(netLandedCostBaseCurrency).toFixed(initialConfiguration?.NoOfDecimalForPrice) === checkForNull(DataToCheck?.NetLandedCost).toFixed(initialConfiguration?.NoOfDecimalForPrice) &&
+          checkForNull(FinalConditionCostBaseCurrency).toFixed(initialConfiguration?.NoOfDecimalForPrice) === checkForNull(DataToCheck?.NetConditionCost).toFixed(initialConfiguration?.NoOfDecimalForPrice) &&
+          DropdownChanged &&
+          ((DataToCheck.TechnologyId ? String(DataToCheck.TechnologyId) : '') === (Technology?.value ? String(Technology?.value) : ''))
+        )
+      ) {
+        isOnlySAPCodeChanged = true;
+      } else {
+        isOnlySAPCodeChanged = false;
+      }
+
     }
 
+
     //  IF: APPROVAL FLOW
-    if (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar && !isTechnologyVisible) {
+    if (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar && !isTechnologyVisible && (isEditFlag ? !isOnlySAPCodeChanged : true)) {
       formData.IsSendForApproval = true
       this.setState({ approveDrawer: true, approvalObj: formData })
     }
     //  ELSE: NO APPROVAL FLOW
     else {
       formData.IsSendForApproval = false;
-      this.handleBOPOperation(formData, isEditFlag);
+      this.handleBOPOperation(formData, isEditFlag, isOnlySAPCodeChanged);
     }
   }, 500)
 
@@ -1234,10 +1284,10 @@ class AddBOPDomestic extends Component {
     const result = updateCostValue(isConditionCost, this.state, this.props.fieldsObj?.BasicRate);
     // Update state
     this.setState(result.updatedState);
-    
+
     // Update form value using this.props.change() instead of setValue()
     this.props.change(result.formValue.field, result.formValue.value);
-    
+
     // Handle any additional actions based on isConditionCost
     if (isConditionCost) {
       // Update condition cost related data
@@ -1604,7 +1654,7 @@ class AddBOPDomestic extends Component {
                                   placeholder={isViewMode ? "-" : "Enter"}
                                   validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkSpacesInString, hashValidation]}
                                   component={renderText}
-                                  disabled={(IsSapCodeEditView && isEditFlag) || isViewMode}
+                                  disabled={(IsSapCodeEditView && isEditFlag) || isViewMode || this?.state?.isSAPCodeDisabled}
                                   value={this.state.SapCode}
                                   onChange={this.handleChangeSapCode}
                                   className=" "
@@ -1715,6 +1765,8 @@ class AddBOPDomestic extends Component {
                                         if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
                                       }}
                                     />
+                                    {this.state.sourceLocationInputLoader && <LoaderCustom customClass={`input-loader`} />}
+
                                   </div>
                                 </div>
                               </Col>
@@ -1751,6 +1803,8 @@ class AddBOPDomestic extends Component {
                                 onChange={this.handleEffectiveDateChange}
                                 type="text"
                                 minDate={isEditFlag ? this.state.minEffectiveDate : getEffectiveDateMinDate()}
+                                maxDate={getEffectiveDateMaxDate()}
+
                                 validate={[required]}
                                 autoComplete={'off'}
                                 required={true}
@@ -1811,22 +1865,22 @@ class AddBOPDomestic extends Component {
                                   customClassName=" withBorder"
                                 />
                               </div>
-                              <div className="d-flex align-items-center" style={{marginTop: '-5px'}}>
-                                  <button type="button" id="other-cost-refresh" className={'refresh-icon ml-1'} onClick={() => this.updateTableCost(false)} disabled={this.props.data.isViewMode}>
-                                    <TooltipCustom disabledIcon={true} id="other-cost-refresh" tooltipText="Refresh to update other cost" />
-                                  </button>
-                                  <Button
-                                id="addBOPDomestic_otherCost"
-                                onClick={this.otherCostToggle}
-                                className={"right ml-1"}
-                                variant={
-                                  isViewMode ? "view-icon-primary" : !this.props.fieldsObj?.BasicRate
-                                    ? "blurPlus-icon-square"
-                                    : "plus-icon-square"
-                                }
-                                disabled={!this.props.fieldsObj?.BasicRate}
-                              />
-                                </div>
+                              <div className="d-flex align-items-center" style={{ marginTop: '-5px' }}>
+                                <button type="button" id="other-cost-refresh" className={'refresh-icon ml-1'} onClick={() => this.updateTableCost(false)} disabled={this.props.data.isViewMode}>
+                                  <TooltipCustom disabledIcon={true} id="other-cost-refresh" tooltipText="Refresh to update other cost" />
+                                </button>
+                                <Button
+                                  id="addBOPDomestic_otherCost"
+                                  onClick={this.otherCostToggle}
+                                  className={"right ml-1"}
+                                  variant={
+                                    isViewMode ? "view-icon-primary" : !this.props.fieldsObj?.BasicRate
+                                      ? "blurPlus-icon-square"
+                                      : "plus-icon-square"
+                                  }
+                                  disabled={!this.props.fieldsObj?.BasicRate}
+                                />
+                              </div>
                             </div>
                           </Col>
 
@@ -1864,7 +1918,7 @@ class AddBOPDomestic extends Component {
                                     customClassName=" withBorder"
                                   />
                                 </div>
-                                <div className="d-flex align-items-center" style={{marginTop: '-5px'}}>
+                                <div className="d-flex align-items-center" style={{ marginTop: '-5px' }}>
                                   <button type="button" id="condition-cost-refresh" className={'refresh-icon ml-1'} onClick={() => this.updateTableCost(true)} disabled={this.props.data.isViewMode}>
                                     <TooltipCustom disabledIcon={true} id="condition-cost-refresh" tooltipText="Refresh to update Condition cost" />
                                   </button>
@@ -1964,7 +2018,7 @@ class AddBOPDomestic extends Component {
                           </Col>
                           <Col md="3">
                             <label>
-                              Upload Files (upload up to {getConfigurationKey().MaxMasterFilesToUpload} files)
+                              Upload Files (upload up to {getConfigurationKey().MaxMasterFilesToUpload} files) <AttachmentValidationInfo />
                             </label>
                             <div className={`alert alert-danger mt-2 ${this.state.files.length === getConfigurationKey().MaxMasterFilesToUpload ? '' : 'd-none'}`} role="alert">
                               Maximum file upload limit reached.
@@ -2264,6 +2318,7 @@ export default connect(mapStateToProps, {
 })(reduxForm({
   form: 'AddBOPDomestic',
   touchOnChange: true,
+  validate: validateForm,
   onSubmitFail: (errors) => {
     focusOnError(errors)
   },

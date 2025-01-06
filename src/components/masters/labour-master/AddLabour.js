@@ -3,8 +3,8 @@ import { connect } from 'react-redux'
 import { Field, reduxForm, formValueSelector, clearFields } from 'redux-form'
 import { Row, Col, Table, Label } from 'reactstrap'
 import { required, checkForNull, positiveAndDecimalNumber, maxLength10, checkForDecimalAndNull, decimalLengthsix, number, maxPercentValue, percentageLimitValidation } from '../../../helper/validation'
-import { focusOnError, renderTextInputField, searchableSelect } from '../../layout/FormInputs'
-import { getPlantListByAddress } from '../actions/Fuel'
+import { focusOnError, renderTextInputField, searchableSelect, validateForm } from '../../layout/FormInputs'
+import { getPlantListByAddress, getPlantListByState } from '../actions/Fuel'
 import { getProductGroupSelectList } from '../actions/Part'
 import { createLabour, getLabourData, updateLabour, getLabourTypeByMachineTypeSelectList, } from '../actions/Labour'
 import { getMachineTypeSelectList } from '../actions/MachineMaster'
@@ -25,7 +25,7 @@ import _, { debounce } from 'lodash'
 import AsyncSelect from 'react-select/async';
 import { onFocus } from '../../../helper'
 import { reactLocalStorage } from 'reactjs-localstorage'
-import { autoCompleteDropdown, getEffectiveDateMinDate } from '../../common/CommonFunctions'
+import { autoCompleteDropdown, getEffectiveDateMaxDate, getEffectiveDateMinDate } from '../../common/CommonFunctions'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper'
 import { subDays } from 'date-fns'
 import { LabelsClass } from '../../../helper/core'
@@ -137,13 +137,13 @@ class AddLabour extends Component {
   }
   callExchangeRateAPI = () => {
     const { fieldsObj } = this.props
-    const { costingTypeId, vendorName, client, effectiveDate, ExchangeSource,IsEmployeContractual} = this.state;
+    const { costingTypeId, vendorName, client, effectiveDate, ExchangeSource, IsEmployeContractual } = this.state;
 
-    const vendorValue = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || (IsEmployeContractual&&costingTypeId === ZBCTypeId)) ? vendorName.value : EMPTY_GUID) : EMPTY_GUID
-    const costingType = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId ||  (IsEmployeContractual&&costingTypeId === ZBCTypeId)) ? VBCTypeId : costingTypeId) : ZBCTypeId
+    const vendorValue = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || (IsEmployeContractual && costingTypeId === ZBCTypeId)) ? vendorName.value : EMPTY_GUID) : EMPTY_GUID
+    const costingType = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || (IsEmployeContractual && costingTypeId === ZBCTypeId)) ? VBCTypeId : costingTypeId) : ZBCTypeId
     const hasCurrencyAndDate = fieldsObj?.plantCurrency && effectiveDate;
     if (hasCurrencyAndDate) {
-      if (IsFetchExchangeRateVendorWise() && ((IsEmployeContractual&&costingTypeId === ZBCTypeId)&&vendorName?.length === 0 && client?.length === 0)) {
+      if (IsFetchExchangeRateVendorWise() && ((IsEmployeContractual && costingTypeId === ZBCTypeId) && vendorName?.length === 0 && client?.length === 0)) {
         return;
       }
       if (this.props.fieldsObj?.plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
@@ -285,7 +285,7 @@ class AddLabour extends Component {
           if (item.Value === '0') return false
           if (this.findLabourtype(item.Value, this.state.gridTable)) return false;
 
-          if (costingTypeId === CBCTypeId) {
+          if (costingTypeId === CBCTypeId && this.props.initialConfiguration?.IsShowProductInLabour) {
             if (item.Text === 'Skilled') {
               temp.push({ label: item.Text, value: item.Value })
             }
@@ -942,7 +942,7 @@ class AddLabour extends Component {
   };
 
   DisplayLabourRatePlantCurrencyLabel = () => {
-    return <>Rate per Person/Annum ({this.props.fieldsObj.plantCurrency ??  "Plant Currency"})</>
+    return <>Rate per Person/Annum ({this.props.fieldsObj.plantCurrency ?? "Plant Currency"})</>
   }
   handleCalculation = (rate) => {
 
@@ -1139,7 +1139,7 @@ class AddLabour extends Component {
                     <Row>
                       <Col md="12" className="filter-block">
                         <div className=" flex-fills mb-2 w-100 pl-0">
-                          <h5>{costingTypeId === CBCTypeId ? "Product:" : `${VendorLabel}:`}</h5>
+                          <h5>{costingTypeId === CBCTypeId ? "Customer:" : `${VendorLabel}:`}</h5>
                         </div>
                       </Col>
                       {this.state.IsEmployeContractual && costingTypeId !== CBCTypeId && (
@@ -1193,7 +1193,7 @@ class AddLabour extends Component {
                         </Col>
                       )}
 
-                      {costingTypeId === CBCTypeId &&
+                      {(costingTypeId === CBCTypeId && initialConfiguration?.IsShowProductInLabour) &&
                         < Col md="3">
                           <div className="form-group">
                             <Field
@@ -1301,7 +1301,7 @@ class AddLabour extends Component {
                         </Col>
                       )}
                       <Col Col md="3" className='p-relative'>
-                        {!this.state.hidePlantCurrency &&this.props.fieldsObj?.plantCurrency&& <TooltipCustom width="350px" id="plantCurrency" tooltipText={`Exchange Rate: 1 ${this.props.fieldsObj?.plantCurrency } = ${this.state?.currencyValue ?? '-'} ${reactLocalStorage.getObject("baseCurrency")}`} />}
+                        {!this.state.hidePlantCurrency && this.props.fieldsObj?.plantCurrency && <TooltipCustom width="350px" id="plantCurrency" tooltipText={`Exchange Rate: 1 ${this.props.fieldsObj?.plantCurrency} = ${this.state?.currencyValue ?? '-'} ${reactLocalStorage.getObject("baseCurrency")}`} />}
                         <Field
                           label="Plant Currency"
                           name="plantCurrency"
@@ -1385,7 +1385,7 @@ class AddLabour extends Component {
                           </div>
                         </Col>
                         {!this?.state?.hidePlantCurrency && <Col md="3" className='UOM-label-container p-relative'>
-                          { <TooltipCustom disabledIcon={true} width={"350px"} id="rate" tooltipText={`Rate per Person/Annum (${this.props.fieldsObj.plantCurrency ??  "Plant Currency"}) * Plant Currency Rate (${this.state?.currencyValue ?? ''})`} />}
+                          {<TooltipCustom disabledIcon={true} width={"350px"} id="rate" tooltipText={`Rate per Person/Annum (${this.props.fieldsObj.plantCurrency ?? "Plant Currency"}) * Plant Currency Rate (${this.state?.currencyValue ?? ''})`} />}
                           <Field
                             label={`Rate per Person/Annum (${reactLocalStorage.getObject("baseCurrency")})`}
                             name={"LabourRateConversion"}
@@ -1457,7 +1457,7 @@ class AddLabour extends Component {
                                 disabled={isViewMode || isEditFlag}
                                 valueDescription={this.state.effectiveDate}
                                 minDate={getEffectiveDateMinDate()}
-
+                                maxDate={getEffectiveDateMaxDate()}
                               />
                               {this.state.errorObj.effectiveDate && this.state.effectiveDate === "" && <div className='text-help'>This field is required.</div>}
                             </div>
@@ -1681,6 +1681,7 @@ export default connect(mapStateToProps, {
 })(
   reduxForm({
     form: 'AddLabour',
+    validate: validateForm,
     enableReinitialize: true,
     touchOnChange: true,
     onSubmitFail: errors => {

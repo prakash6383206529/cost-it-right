@@ -11,7 +11,7 @@ import { fetchSpecificationDataAPI } from '../../actions/Common'
 import { getPartSelectListWtihRevNo } from '../masters/actions/Volume'
 import { autoCompleteDropdownPart } from '../common/CommonFunctions'
 import { reactLocalStorage } from 'reactjs-localstorage'
-import { MESSAGES } from '../../config/message'
+import { AttachmentValidationInfo, MESSAGES } from '../../config/message'
 import classnames from 'classnames';
 import redcrossImg from '../../assests/images/red-cross.png'
 
@@ -62,7 +62,7 @@ function ViewDrawer(props) {
     const [rmspecification, setRMSpecification] = useState([])
     const [rmName, setRMName] = useState([])
     const [rmgrade, setRMGrade] = useState([])
-    
+
     const [rmNameSelected, setRmNameSelected] = useState(false)
     const [selectedparts, setSelectedParts] = useState([])
     const [partName, setPartName] = useState('')
@@ -624,7 +624,7 @@ function ViewDrawer(props) {
                 const tableTexts = _.map(tableData, 'PartNumber');
                 const allPresent = _.every(dropdownTexts, text => _.includes(tableTexts, text));
                 if (RFQ_KEYS?.RM_MANDATORY && (type !== Component && partType !== "Tooling")) {
-                    
+
                     if (!allPresent) {
                         Toaster.warning('RM Name, RM Grade, and RM Specification are required for each part.');
                         return false;
@@ -1140,8 +1140,8 @@ function ViewDrawer(props) {
                                                             control={control}
                                                             rules={{ required: RFQ_KEYS?.RM_MANDATORY ? true : false }}
                                                             register={register}
-                                                            mandatory={  RFQ_KEYS?.RM_MANDATORY ? true : false }
-                                                        
+                                                            mandatory={RFQ_KEYS?.RM_MANDATORY ? true : false}
+
                                                             handleChange={(newValue) => handleChildPart(newValue)}
                                                             errors={errors.partNumber}
                                                             disabled={(isViewFlag || type === Component) ? true : false}
@@ -1195,7 +1195,7 @@ function ViewDrawer(props) {
                                                         Controller={Controller}
                                                         control={control}
                                                         selected={rmspecification ? rmspecification : ''}
-                                                        rules={{ required:getValues('RMName') ? true : false}}
+                                                        rules={{ required: getValues('RMName') ? true : false }}
                                                         register={register}
                                                         customClassName="costing-version"
                                                         options={renderListingRM('rmspecification')}
@@ -1214,7 +1214,7 @@ function ViewDrawer(props) {
                                                         Controller={Controller}
                                                         control={control}
                                                         register={register}
-                                                        rules={{ required: getValues('RMName') ? true : false}}
+                                                        rules={{ required: getValues('RMName') ? true : false }}
                                                         mandatory={getValues('RMName') ? true : false}
                                                         handleChange={handleCode}
                                                         isClearable={true}

@@ -17,7 +17,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import ReactExport from 'react-export-excel';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { PaginationWrapper } from '../../common/commonPagination'
-import { loggedInUserId, getConfigurationKey, userDepartmetList, searchNocontentFilter, setLoremIpsum, showEntryType } from '../../../helper'
+import { loggedInUserId, getConfigurationKey, userDepartmetList, searchNocontentFilter, setLoremIpsum, showEntryType, getLocalizedCostingHeadValue } from '../../../helper'
 import { getListingForSimulationCombined } from '../../simulation/actions/Simulation';
 import ProcessGroupDrawer from './ProcessGroupDrawer'
 import WarningMessage from '../../common/WarningMessage';
@@ -25,7 +25,7 @@ import _ from 'lodash';
 import { PaginationWrappers } from '../../common/Pagination/PaginationWrappers';
 import PaginationControls from '../../common/Pagination/PaginationControls';
 import { setSelectedRowForPagination } from '../../simulation/actions/Simulation';
-import { disabledClass, isResetClick } from '../../../actions/Common';
+import { disabledClass, setResetCostingHead } from '../../../actions/Common';
 import AnalyticsDrawer from '../material-master/AnalyticsDrawer';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { checkMasterCreateByCostingPermission, hideCustomerFromExcel } from '../../common/CommonFunctions';
@@ -41,6 +41,7 @@ import { TourStartAction } from '../../../actions/Common';
 import { useLabels, useWithLocalization } from '../../../helper/core';
 import Switch from 'react-switch'
 
+import CostingHeadDropdownFilter from '../material-master/CostingHeadDropdownFilter';
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -48,6 +49,7 @@ const gridOptions = {};
 
 const MachineRateListing = (props) => {
   const dispatch = useDispatch();
+
   const { t } = useTranslation("common")
   const [state, setState] = useState({
     isEditFlag: false,
@@ -85,11 +87,11 @@ const MachineRateListing = (props) => {
   });
   const [searchText, setSearchText] = useState('');
   const { machineDatalist, allMachineDataList } = useSelector(state => state.machine)
-  const { selectedRowForPagination } = useSelector(state => state.simulation);
+  const { selectedRowForPagination, simulationCostingStatus } = useSelector(state => state.simulation);
   const { globalTakes } = useSelector(state => state.pagination);
   const permissions = useContext(ApplyPermission);
   const tourStartData = useSelector(state => state.comman.tourStartData);
-  const { technologyLabel, vendorLabel } = useLabels();
+  const { technologyLabel, vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels();
   useEffect(() => {
     const fetchData = async () => {
       setTimeout(() => {
@@ -115,11 +117,20 @@ const MachineRateListing = (props) => {
     return () => {
       dispatch(setSelectedRowForPagination([]));
       dispatch(resetStatePagination());
+      dispatch(setResetCostingHead(true, "costingHead"));
 
     };
     // eslint-disable-next-line
   }, []);
-
+  const floatingFilterStatus = {
+    maxValue: 1,
+    suppressFilterButton: true,
+    component: CostingHeadDropdownFilter,
+    onFilterChange: (originalValue, value) => {
+      setState((prevState) => ({ ...prevState, floatingFilterData: { ...prevState.floatingFilterData, CostingHead: value } }));
+      setState((prevState) => ({ ...prevState, disableFilter: false }));
+    }
+  };
 
   const getDataList = (costing_head = '', technology_id = 0, vendor_id = '', machine_type_id = 0, process_id = '', plant_id = '', skip = 0, take = 10, isPagination = true, dataObj = {}, MachineEntryType = false) => {
     if (state.filterModel?.EffectiveDateNew) {
@@ -140,7 +151,9 @@ const MachineRateListing = (props) => {
       dataObj.TechnologyId = props.technology.value
       dataObj.Technologies = props.technology.label
     }
-
+    if (props.isSimulation) {
+      dataObj.isRequestForPendingSimulation = simulationCostingStatus ? true : false
+    }
     if (props.isMasterSummaryDrawer !== undefined && !props.isMasterSummaryDrawer) {
       if (props.isSimulation) { props?.changeTokenCheckBox(false) }
       setState((prevState) => ({ ...prevState, isLoader: isPagination ? true : false }))
@@ -262,7 +275,7 @@ const MachineRateListing = (props) => {
 
   const resetState = () => {
     setState((prevState) => ({ ...prevState, noData: false, warningMessage: false, }));
-    dispatch(isResetClick(true, "Operation"));
+    dispatch(setResetCostingHead(true, "costingHead"));
     setState((prevState) => ({ ...prevState, isFilterButtonClicked: false, }));
     setSearchText(''); // Clear the search text state
     if (state.gridApi) { state.gridApi.setQuickFilter(''); }
@@ -400,7 +413,17 @@ const MachineRateListing = (props) => {
       </>
     )
   };
+  const combinedCostingHeadRenderer = (props) => {
+    // Call the existing checkBoxRenderer
+    costingHeadFormatter(props);
 
+    // Get and localize the cell value
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    const localizedValue = getLocalizedCostingHeadValue(cellValue, vendorBasedLabel, zeroBasedLabel, customerBasedLabel);
+
+    // Return the localized value (the checkbox will be handled by AgGrid's default renderer)
+    return localizedValue;
+  };
   /**
   * @method costingHeadFormatter
   * @description Renders Costing head
@@ -661,11 +684,12 @@ const MachineRateListing = (props) => {
   const frameworkComponents = {
     totalValueRenderer: buttonFormatter,
     effectiveDateRenderer: effectiveDateFormatter,
-    costingHeadRenderer: costingHeadFormatter,
+    costingHeadRenderer: combinedCostingHeadRenderer,
     customNoRowsOverlay: NoContentFound,
     hyphenFormatter: hyphenFormatter,
     renderPlantFormatter: renderPlantFormatter,
     attachmentFormatter: attachmentFormatter,
+    statusFilter: CostingHeadDropdownFilter,
   };
 
   const onRowSelect = (event) => {
@@ -726,7 +750,7 @@ const MachineRateListing = (props) => {
     return MachineEntryType === ENTRY_TYPE_IMPORT ? MachineRate : MachineRateLocalConversion;
   }
   return (
-    <div className={`ag-grid-react ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${permissions?.Download ? "show-table-btn" : ""} ${props.isSimulation ? 'simulation-height' : ''}`}>
+    <div className={`ag-grid-react grid-parent-wrapper ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${permissions?.Download ? "show-table-btn" : ""} ${props.isSimulation ? 'simulation-height' : ''}`}>
       {(state.isLoader && !props.isMasterSummaryDrawer) && <LoaderCustom customClass="simulation-Loader" />} {state.disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
       <form noValidate> {(state.isLoader && !props.isMasterSummaryDrawer) && <LoaderCustom customClass="simulation-Loader" />}
         {state.disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
@@ -821,7 +845,8 @@ const MachineRateListing = (props) => {
                 enableBrowserTooltips={true}
               >
                 { }
-                <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
+                <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadRenderer'} floatingFilterComponentParams={floatingFilterStatus}
+                  floatingFilterComponent="statusFilter"></AgGridColumn>
                 {!isSimulation && <AgGridColumn field="Technology" headerName={technologyLabel}></AgGridColumn>}
 
                 <AgGridColumn field="MachineName" headerName="Machine Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>

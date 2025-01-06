@@ -9,7 +9,7 @@ import { getOperationsDataList, deleteOperationAPI, setOperationList } from '../
 import AddOperation from './AddOperation';
 import BulkUpload from '../../massUpload/BulkUpload';
 import { ADDITIONAL_MASTERS, OPERATION, OperationMaster, OPERATIONS_ID } from '../../../config/constants';
-import { checkPermission, searchNocontentFilter, setLoremIpsum } from '../../../helper/util';
+import { checkPermission, getLocalizedCostingHeadValue, searchNocontentFilter, setLoremIpsum } from '../../../helper/util';
 import { loggedInUserId } from '../../../helper/auth';
 import { userDepartmetList, getConfigurationKey } from '../../../helper'
 import { OPERATION_DOWNLOAD_EXCEl } from '../../../config/masterData';
@@ -23,7 +23,7 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { getListingForSimulationCombined, setSelectedRowForPagination, } from '../../simulation/actions/Simulation'
 import WarningMessage from '../../common/WarningMessage';
 import _ from 'lodash';
-import { TourStartAction, disabledClass, isResetClick } from '../../../actions/Common';
+import { TourStartAction, disabledClass, setResetCostingHead } from '../../../actions/Common';
 import AnalyticsDrawer from '../material-master/AnalyticsDrawer';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { checkMasterCreateByCostingPermission, hideCustomerFromExcel } from '../../common/CommonFunctions';
@@ -38,12 +38,14 @@ import { useTranslation } from 'react-i18next';
 import { useLabels, useWithLocalization } from '../../../helper/core';
 import Switch from 'react-switch'
 
+import CostingHeadDropdownFilter from '../material-master/CostingHeadDropdownFilter';
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {};
 
 const OperationListing = (props) => {
+
     const dispatch = useDispatch();
     const [state, setState] = useState({
         tableData: [],
@@ -88,12 +90,12 @@ const OperationListing = (props) => {
     })
     const tourStartData = useSelector(state => state.comman.tourStartData);
     const { t } = useTranslation("common")
-    const { technologyLabel, vendorLabel } = useLabels();
+    const { technologyLabel, vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels();
     const [searchText, setSearchText] = useState('');
     const { operationList, allOperationList, operationDataHold } = useSelector(state => state.otherOperation);
     const { topAndLeftMenuData } = useSelector(state => state.auth);
     const { globalTakes } = useSelector(state => state.pagination);
-    const { selectedRowForPagination } = useSelector(state => state.simulation);
+    const { selectedRowForPagination, simulationCostingStatus } = useSelector(state => state.simulation);
     useEffect(() => {
         if (!topAndLeftMenuData) {
             setState(prevState => ({ ...prevState, isLoader: true }));
@@ -139,7 +141,9 @@ const OperationListing = (props) => {
     useEffect(() => {
         dispatch(setSelectedRowForPagination([]));
         dispatch(resetStatePagination());
-
+        return () => {
+            dispatch(setResetCostingHead(true, "costingHead"))
+        }
         // eslint-disable-next-line
     }, []);
 
@@ -194,6 +198,11 @@ const OperationListing = (props) => {
             }
             dataObj.Currency = state.floatingFilterData?.Currency
             dataObj.ExchangeRateSourceName = state.floatingFilterData?.ExchangeRateSourceName
+            if (props.isSimulation) {
+                dataObj.isRequestForPendingSimulation = simulationCostingStatus ? true : false
+            }
+
+
             // dataObj.IsCustomerDataShow = reactLocalStorage.getObject('cbcCostingPermission')
             dispatch(getOperationsDataList(filterData, skip, take, isPagination, dataObj, res => {
                 setState(prevState => ({ ...prevState, noData: false }))
@@ -246,6 +255,7 @@ const OperationListing = (props) => {
                 }, 600);
 
                 setTimeout(() => {
+                    dispatch(setResetCostingHead(false, "costingHead"))
                     setState(prevState => ({ ...prevState, warningMessage: false }))
                 }, 335);
                 setTimeout(() => {
@@ -326,7 +336,7 @@ const OperationListing = (props) => {
 
     const resetState = () => {
         setState((prevState) => ({ ...prevState, noData: false, warningMessage: false, }));
-        dispatch(isResetClick(true, "Operation"));
+        dispatch(setResetCostingHead(true, "costingHead"));
         setState((prevState) => ({ ...prevState, isFilterButtonClicked: false, }));
         setSearchText(''); // Clear the search text state
         if (state.gridApi) {
@@ -465,6 +475,18 @@ const OperationListing = (props) => {
         return cell != null ? cell : '-';
     }
 
+
+    const combinedCostingHeadRenderer = (props) => {
+        // Call the existing checkBoxRenderer
+        costingHeadFormatter(props);
+
+        // Get and localize the cell value
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const localizedValue = getLocalizedCostingHeadValue(cellValue, vendorBasedLabel, zeroBasedLabel, customerBasedLabel);
+
+        // Return the localized value (the checkbox will be handled by AgGrid's default renderer)
+        return localizedValue;
+    };
     /**
     * @method costingHeadFormatter
     * @description Renders Costing head
@@ -792,20 +814,30 @@ const OperationListing = (props) => {
 
     }
 
+    const floatingFilterStatus = {
+        maxValue: 1,
+        suppressFilterButton: true,
+        component: CostingHeadDropdownFilter,
+        onFilterChange: (originalValue, value) => {
+            setState((prevState) => ({ ...prevState, floatingFilterData: { ...prevState.floatingFilterData, CostingHead: value } }));
+            setState((prevState) => ({ ...prevState, disableFilter: false }));
+        }
+    };
     const frameworkComponents = {
         totalValueRenderer: buttonFormatter,
         customNoRowsOverlay: NoContentFound,
-        costingHeadFormatter: costingHeadFormatter,
+        combinedCostingHeadRenderer: combinedCostingHeadRenderer,
         renderPlantFormatter: renderPlantFormatter,
         effectiveDateFormatter: effectiveDateFormatter,
         hyphenFormatter: hyphenFormatter,
         commonCostFormatter: commonCostFormatter,
         attachmentFormatter: attachmentFormatter,
+        statusFilter: CostingHeadDropdownFilter
     };
     return (
         <div className={`${isSimulation ? 'simulation-height' : props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
             {(state.isLoader && !props.isMasterSummaryDrawer) && <LoaderCustom customClass="simulation-Loader" />}            {state.disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
-            <div className={`ag-grid-react ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${permissionData?.Download ? "show-table-btn no-tab-page" : ""}`}>
+            <div className={`ag-grid-react grid-parent-wrapper ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${permissionData?.Download ? "show-table-btn no-tab-page" : ""}`}>
                 <form>
                     <Row>
                         <Col md="4" className="switch mt-3 mb-1">
@@ -927,7 +959,9 @@ const OperationListing = (props) => {
                         >
                             {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
 
-                            <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
+                            <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'combinedCostingHeadRenderer'}
+                                floatingFilterComponentParams={floatingFilterStatus}
+                                floatingFilterComponent="statusFilter"></AgGridColumn>
                             {!isSimulation && <AgGridColumn field="Technology" tooltipField='Technology' filter={true} floatingFilter={true} headerName={technologyLabel}></AgGridColumn>}
                             {getConfigurationKey().IsShowDetailedOperationBreakup && <AgGridColumn field="ForType" headerName="Operation Type" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                             <AgGridColumn field="OperationName" tooltipField="OperationName" headerName="Operation Name"></AgGridColumn>

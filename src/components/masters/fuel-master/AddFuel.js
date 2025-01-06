@@ -5,6 +5,7 @@ import { Row, Col, Table, Label } from 'reactstrap';
 import { required, checkForDecimalAndNull, positiveAndDecimalNumber, maxLength10, decimalLengthsix, number, getCodeBySplitting, checkForNull } from "../../../helper/validation";
 import {
   searchableSelect, focusOnError, renderTextInputField,
+  validateForm,
 } from "../../layout/FormInputs";
 import { getUOMSelectList, fetchStateDataAPI, getAllCity, getPlantSelectListByType, fetchCountryDataAPI, fetchCityDataAPI, getVendorNameByVendorSelectList, getCityByCountryAction, getExchangeRateSource, getCurrencySelectList, } from '../../../actions/Common';
 import { getFuelByPlant, createFuelDetail, updateFuelDetail, getFuelDetailData, getUOMByFuelId, getAllFuelAPI } from '../actions/Fuel';
@@ -22,7 +23,7 @@ import LoaderCustom from '../../common/LoaderCustom';
 import { debounce } from 'lodash';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import AsyncSelect from 'react-select/async';
-import { autoCompleteDropdown, getCostingTypeIdByCostingPermission, getEffectiveDateMinDate } from '../../common/CommonFunctions';
+import { autoCompleteDropdown, getCostingTypeIdByCostingPermission, getEffectiveDateMaxDate, getEffectiveDateMinDate } from '../../common/CommonFunctions';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { onFocus } from '../../../helper';
 import { getClientSelectList, } from '../actions/Client';
@@ -554,9 +555,10 @@ class AddFuel extends Component {
     this.props.reset();
     // Store current isImport value
     const currentIsImport = this.state.isImport;
-    this.setState({ ...this.initialState, costingTypeId: costingHeadFlag,
+    this.setState({
+      ...this.initialState, costingTypeId: costingHeadFlag,
       isImport: currentIsImport // Preserve isImport value
-     }, () => {
+    }, () => {
       if (costingHeadFlag === CBCTypeId) {
         //this.props.getClientSelectList(() => { })
       }
@@ -896,7 +898,7 @@ class AddFuel extends Component {
     }
   };
   fuelRateTitle = () => {
-    const rateLabel = this.state.isImport ? `Rate (${this.state.currency?.label ?? 'Currency'})` :`Rate (${this.props.fieldsObj?.plantCurrency ?? 'Plant Currency'})`
+    const rateLabel = this.state.isImport ? `Rate (${this.state.currency?.label ?? 'Currency'})` : `Rate (${this.props.fieldsObj?.plantCurrency ?? 'Plant Currency'})`
     return {
       tooltipTextPlantCurrency: `${rateLabel} * Plant Currency Rate (${this.state?.plantCurrency ?? ''})`,
       toolTipTextNetCostBaseCurrency: `${rateLabel} * Currency Rate (${this.state?.settlementCurrency ?? ''})`,
@@ -915,7 +917,7 @@ class AddFuel extends Component {
 
     // Generate tooltip text based on the condition
     return <>
-      {!this.state?.hidePlantCurrency               
+      {!this.state?.hidePlantCurrency
         ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrencyLabel}, `
         : ''}<p>Exchange Rate: 1 {currencyLabel} = {settlementCurrencyRate} {baseCurrency}</p>
     </>;
@@ -1096,7 +1098,7 @@ class AddFuel extends Component {
                             </Col>
                           )}
                           <Col md="3">
-                          {!this.state.hidePlantCurrency &&this.props.fieldsObj?.plantCurrency&&!this.state.isImport && <TooltipCustom width="350px" id="plantCurrency" tooltipText={`Exchange Rate: 1 ${this.props.fieldsObj?.plantCurrency } = ${this.state?.plantCurrency ?? '-'} ${reactLocalStorage.getObject("baseCurrency")}`} />}
+                            {!this.state.hidePlantCurrency && this.props.fieldsObj?.plantCurrency && !this.state.isImport && <TooltipCustom width="350px" id="plantCurrency" tooltipText={`Exchange Rate: 1 ${this.props.fieldsObj?.plantCurrency} = ${this.state?.plantCurrency ?? '-'} ${reactLocalStorage.getObject("baseCurrency")}`} />}
                             <Field
                               name="plantCurrency"
                               type="text"
@@ -1329,6 +1331,7 @@ class AddFuel extends Component {
                                   disabled={isViewMode || isEditFlag}
                                   minDate={getEffectiveDateMinDate()}
                                   valueDescription={this.state?.effectiveDate}
+                                  maxDate={getEffectiveDateMaxDate()}
 
                                 />
                                 {this.state.errorObj.effectiveDate && this.state.effectiveDate === "" && <div className='text-help'>This field is required.</div>}
@@ -1354,7 +1357,7 @@ class AddFuel extends Component {
                             </div>
                           </Col>}
                           <Col md="3">
-                          {this.state.isImport && <TooltipCustom disabledIcon={true} id="rate-local" tooltipText={hidePlantCurrency ? this.fuelRateTitle()?.toolTipTextNetCostBaseCurrency : this.fuelRateTitle()?.tooltipTextPlantCurrency} />}
+                            {this.state.isImport && <TooltipCustom disabledIcon={true} id="rate-local" tooltipText={hidePlantCurrency ? this.fuelRateTitle()?.toolTipTextNetCostBaseCurrency : this.fuelRateTitle()?.tooltipTextPlantCurrency} />}
                             <div className='p-relative'>
                               <Field
                                 label={`Rate (${fieldsObj?.plantCurrency ?? 'Currency'})`}
@@ -1376,7 +1379,7 @@ class AddFuel extends Component {
                           {!this.state?.hidePlantCurrency &&
                             (
                               <Col md="3">
-                                 <TooltipCustom disabledIcon={true} id="fuel-rate" tooltipText={this.state.isImport ? this.fuelRateTitle()?.toolTipTextNetCostBaseCurrency : this.fuelRateTitle()?.tooltipTextPlantCurrency} />
+                                <TooltipCustom disabledIcon={true} id="fuel-rate" tooltipText={this.state.isImport ? this.fuelRateTitle()?.toolTipTextNetCostBaseCurrency : this.fuelRateTitle()?.tooltipTextPlantCurrency} />
                                 <div className='p-relative'>
                                   <Field
                                     label={`Rate (${reactLocalStorage.getObject("baseCurrency")})`}
@@ -1400,7 +1403,7 @@ class AddFuel extends Component {
                                   <button type="button" className={"btn btn-primary pull-left mr5"} onClick={this.updateRateGrid}>Update</button>
                                   <button
                                     type="button"
-                                    className={"mr15 ml-1 add-cancel-btn cancel-btn"}
+                                    className={"mr15 ml-1 add-cancel-btn mt-0 mb-0 cancel-btn"}
                                     disabled={isViewMode}
                                     onClick={this.rateTableReset}
                                   >
@@ -1589,6 +1592,7 @@ export default connect(mapStateToProps, {
   getCurrencySelectList
 })(reduxForm({
   form: 'AddFuel',
+  validate: validateForm,
   enableReinitialize: true,
   touchOnChange: true,
   onSubmitFail: errors => {

@@ -5,7 +5,7 @@ import {
     getProfitDataList, deleteProfit, activeInactiveProfit,
 } from '../actions/OverheadProfit';
 import { EMPTY_DATA, defaultPageSize } from '../../../config/constants';
-import { getConfigurationKey, loggedInUserId, searchNocontentFilter, setLoremIpsum, showBopLabel, } from '../../../helper';
+import { getConfigurationKey, getLocalizedCostingHeadValue, loggedInUserId, searchNocontentFilter, setLoremIpsum, showBopLabel, } from '../../../helper';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
@@ -24,7 +24,7 @@ import WarningMessage from '../../common/WarningMessage';
 import { setSelectedRowForPagination } from '../../simulation/actions/Simulation';
 import _ from 'lodash';
 import SingleDropdownFloationFilter from '../material-master/SingleDropdownFloationFilter';
-import { agGridStatus, getGridHeight, isResetClick, disabledClass, fetchModelTypeAPI } from '../../../actions/Common';
+import { agGridStatus, getGridHeight, isResetClick, disabledClass, fetchModelTypeAPI, setResetCostingHead } from '../../../actions/Common';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { checkMasterCreateByCostingPermission, hideCustomerFromExcel } from '../../common/CommonFunctions';
 import PaginationControls from '../../common/Pagination/PaginationControls';
@@ -35,6 +35,7 @@ import { Steps } from '../../common/Tour/TourMessages';
 import { useTranslation } from 'react-i18next';
 import BulkUpload from '../../../../src/components/massUpload/BulkUpload';
 import { useLabels, useWithLocalization } from '../../../helper/core';
+import CostingHeadDropdownFilter from '../material-master/CostingHeadDropdownFilter';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -43,7 +44,8 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
 
 function ProfitListing(props) {
-    const { vendorLabel } = useLabels()
+
+    const { vendorLabel,vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels()
     const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = props
     const [showExtraData, setShowExtraData] = useState(false)
     const { t } = useTranslation("common")
@@ -122,7 +124,9 @@ function ProfitListing(props) {
         dispatch(isResetClick(false, "applicablity"))
         dispatch(agGridStatus("", ""))
         dispatch(resetStatePagination());
-
+        return () => {
+            dispatch(setResetCostingHead(true, "costingHead"))
+        }
 
     }, [])
 
@@ -210,6 +214,7 @@ function ProfitListing(props) {
                         }, 100);
                     }
                     dispatch(isResetClick(false, "applicablity"))
+                    dispatch(setResetCostingHead(false, "costingHead"))
                 }, 330);
 
                 setTimeout(() => {
@@ -296,6 +301,7 @@ function ProfitListing(props) {
         setNoData(false)
         dispatch(agGridStatus("", ""))
         dispatch(isResetClick(true, "applicablity"))
+        dispatch(setResetCostingHead(true, "costingHead"))
         setIsFilterButtonClicked(false)
         gridApi.deselectAll()
         gridOptions?.columnApi?.resetColumnState(null);
@@ -541,7 +547,17 @@ function ProfitListing(props) {
         setSelectedRowData(uniqeArray)
     }
 
-
+    const combinedCostingHeadRenderer = (props) => {
+        // Call the existing checkBoxRenderer
+        checkBoxRenderer(props);
+      
+        // Get and localize the cell value
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const localizedValue = getLocalizedCostingHeadValue(cellValue, vendorBasedLabel, zeroBasedLabel, customerBasedLabel);
+      
+        // Return the localized value (the checkbox will be handled by AgGrid's default renderer)
+        return localizedValue;
+      };
     const checkBoxRenderer = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
 
@@ -640,15 +656,28 @@ function ProfitListing(props) {
         headerCheckboxSelectionFilteredOnly: true,
         checkboxSelection: isFirstColumn
     };
-
+    const floatingFilterStatus = {
+        maxValue: 1,
+        suppressFilterButton: true,
+        component: CostingHeadDropdownFilter,
+        onFilterChange: (originalValue, value) => {
+            // setSelectedCostingHead(originalValue);
+            setDisableFilter(false);
+            setFloatingFilterData(prevState => ({
+                ...prevState,
+                CostingHead: value
+            }));
+        }
+    };
     const frameworkComponents = {
         totalValueRenderer: buttonFormatter,
-        costingHeadFormatter: costingHeadFormatter,
+        combinedCostingHeadRenderer: combinedCostingHeadRenderer,
         effectiveDateFormatter: effectiveDateFormatter,
         statusButtonFormatter: statusButtonFormatter,
         hyphenFormatter: hyphenFormatter,
         customNoRowsOverlay: NoContentFound,
         valuesFloatingFilter: SingleDropdownFloationFilter,
+        statusFilter: CostingHeadDropdownFilter,
     };
 
     return (
@@ -713,7 +742,7 @@ function ProfitListing(props) {
                         <Row>
                             <Col>
 
-                                <div className={`ag-grid-wrapper height-width-wrapper report-grid ${(overheadProfitList && overheadProfitList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
+                                <div className={`ag-grid-wrapper height-width-wrapper grid-parent-wrapper ${(overheadProfitList && overheadProfitList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                                     <div className="ag-grid-header">
                                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
                                         <TourWrapper
@@ -746,7 +775,9 @@ function ProfitListing(props) {
                                             suppressRowClickSelection={true}
                                         //onFilterModified={(e) => { setNoData(searchNocontentFilter(e)) }}
                                         >
-                                            <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={checkBoxRenderer}></AgGridColumn>
+                                            <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={combinedCostingHeadRenderer}
+                                               floatingFilterComponentParams={floatingFilterStatus} 
+                                               floatingFilterComponent="statusFilter"></AgGridColumn>
                                             {getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC && <AgGridColumn field="RawMaterialName" headerName='Raw Material Name'></AgGridColumn>}
                                             {getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC && <AgGridColumn field="RawMaterialGrade" headerName="Raw Material Grade"></AgGridColumn>}
                                             {(getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate || getConfigurationKey().IsDestinationPlantConfigure) && <AgGridColumn field="PlantName" headerName="Plant (Code)"></AgGridColumn>}
@@ -755,7 +786,7 @@ function ProfitListing(props) {
                                             <AgGridColumn field="ModelType" headerName="Model Type"></AgGridColumn>
                                             <AgGridColumn field="ProfitApplicabilityType" headerName="Profit Applicability" floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterProfit}></AgGridColumn>
                                             <AgGridColumn field="ProfitPercentage" headerName="Profit Applicability (%)" cellRenderer={'hyphenFormatter'} ></AgGridColumn>
-                                            <AgGridColumn field="ProfitRMPercentage" headerName="Profit on RM (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                            <AgGridColumn field="ProfitRMPercentage" headerName="Profit on RM/ Part Cost (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                             <AgGridColumn field="ProfitBOPPercentage" headerName={`Profit on ${showBopLabel()} (%)`} cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                             <AgGridColumn field="ProfitMachiningCCPercentage" headerName="Profit on CC (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                             <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>

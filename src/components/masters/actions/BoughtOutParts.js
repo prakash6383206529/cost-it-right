@@ -73,7 +73,8 @@ export function getBOPDataList(data, skip, take, isPagination, obj, isImport, ca
       NetCostWithoutConditionCost: obj.NetCostWithoutConditionCost !== undefined ? obj.NetCostWithoutConditionCost : "",
       BasicRateConversion: obj.BasicRateConversion !== undefined ? obj.BasicRateConversion : "",
       NetConditionCostConversion: obj.NetConditionCostConversion !== undefined ? obj.NetConditionCostConversion : "",
-      NetLandedCostConversionAPI: obj.NetLandedCostConversionAPI !== undefined ? obj.NetLandedCostConversionAPI : ""
+      NetLandedCostConversionAPI: obj.NetLandedCostConversionAPI !== undefined ? obj.NetLandedCostConversionAPI : "",
+      isRequestForPendingSimulation: obj?.isRequestForPendingSimulation ? true : false
     });
 
     // const queryParams = `bop_for=${data.bop_for}&NetCost=${obj.NetLandedCost !== undefined ? obj.NetLandedCost : ""}&ListFor=${data.ListFor ? data.ListFor : ''}&StatusId=${data.StatusId ? data.StatusId : ''}&DepartmentCode=${obj.DepartmentName !== undefined ? obj.DepartmentName : ""}&CustomerName=${obj.CustomerName !== undefined ? obj.CustomerName : ''}&TechnologyName=${obj.TechnologyName !== undefined ? obj.TechnologyName : ""}&FromDate=${(obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[0] : ""}&ToDate=${(obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[1] : ""}&IsCustomerDataShow=${reactLocalStorage.getObject('CostingTypePermission').cbc !== undefined ? reactLocalStorage.getObject('CostingTypePermission').cbc : false}&IsBOPAssociated=${data?.IsBOPAssociated}&IsVendorDataShow=${reactLocalStorage.getObject('CostingTypePermission').vbc}&IsZeroDataShow=${reactLocalStorage.getObject('CostingTypePermission').zbc}&IsBreakupBoughtOutPart=${data?.IsBreakupBoughtOutPart?.toLowerCase() === "yes" ? true : !data.IsBreakupBoughtOutPart ? '' : false}&IncoTerms=${obj.IncoTerms !== undefined ? obj.IncoTerms : ""}&CustomerName =${obj.CustomerName !== undefined ? obj.CustomerName : ""}&NetConditionCost =${obj.NetConditionCost !== undefined ? obj.NetConditionCost : ""}&NetCostWithoutConditionCostConversion =${obj.NetCostWithoutConditionCostConversion !== undefined ? obj.NetCostWithoutConditionCostConversion : ""}&NetCostWithoutConditionCost =${obj.NetCostWithoutConditionCost !== undefined ? obj.NetCostWithoutConditionCost : ""}&BasicRateConversion =${obj.BasicRateConversion !== undefined ? obj.BasicRateConversion : ""}&NetConditionCostConversion =${obj.NetConditionCostConversion !== undefined ? obj.NetConditionCostConversion : ""}&NetLandedCostConversionAPI =${obj.NetLandedCostConversionAPI !== undefined ? obj.NetLandedCostConversionAPI : ""}`
@@ -289,6 +290,7 @@ export function fileUploadBOPDomestic(data, callback) {
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
       apiErrors(error);
+      callback(error.toString())
     });
   };
 }

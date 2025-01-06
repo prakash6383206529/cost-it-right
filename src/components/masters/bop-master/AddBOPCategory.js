@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
 import { required, maxLength80, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, checkSpacesInString } from "../../../helper/validation";
-import { focusOnError, renderText, } from "../../layout/FormInputs";
+import { focusOnError, renderText, validateForm, } from "../../layout/FormInputs";
 import { createBOPCategory } from '../actions/BoughtOutParts';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
@@ -175,6 +175,7 @@ export default connect(mapStateToProps, {
     createBOPCategory,
 })(reduxForm({
     form: 'AddBOPCategory',
+    validate: validateForm,
     enableReinitialize: true,
     touchOnChange: true,
     onSubmitFail: errors => {

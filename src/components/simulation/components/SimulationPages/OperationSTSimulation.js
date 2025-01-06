@@ -3,7 +3,7 @@ import { Row, Col, Tooltip, } from 'reactstrap';
 import DayTime from '../../../common/DayTimeWrapper'
 import { CBCTypeId, defaultPageSize, EMPTY_DATA, OPERATIONS, SURFACETREATMENT } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
-import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter } from '../../../../helper';
+import { checkForDecimalAndNull, checkForNull, getConfigurationKey, getLocalizedCostingHeadValue, loggedInUserId, searchNocontentFilter } from '../../../../helper';
 import Toaster from '../../../common/Toaster';
 import { Fragment } from 'react';
 import { Controller, useForm } from 'react-hook-form'
@@ -25,6 +25,8 @@ import ReactExport from 'react-export-excel';
 import { OPERATION_IMPACT_DOWNLOAD_EXCEl } from '../../../../config/masterData';
 import { simulationContext } from '..';
 import { useLabels } from '../../../../helper/core';
+import CostingHeadDropdownFilter from '../../../masters/material-master/CostingHeadDropdownFilter';
+import { setResetCostingHead } from '../../../../actions/Common';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -34,7 +36,7 @@ const gridOptions = {
 
 };
 function OperationSTSimulation(props) {
-    
+
     const { showEditMaster, handleEditMasterPage, showCompressedColumns } = useContext(simulationContext) || {};
 
     const { list, isbulkUpload, rowCount, isImpactedMaster, lastRevision, tokenForMultiSimulation } = props
@@ -59,12 +61,23 @@ function OperationSTSimulation(props) {
         mode: 'onChange',
         reValidateMode: 'onChange',
     })
-    const {vendorLabel} = useLabels()
+    const { vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels()
 
 
     const dispatch = useDispatch()
 
     const { selectedMasterForSimulation, selectedTechnologyForSimulation } = useSelector(state => state.simulation)
+    const costingHeadFilter = useSelector(state => state?.common?.costingHeadFilter)
+    useEffect(() => {
+
+        if (costingHeadFilter && costingHeadFilter?.data) {
+            const matchedOption = costingHeadFilter?.CostingHeadOptions?.find(option => option?.value === costingHeadFilter?.data?.value);
+            if (matchedOption) {
+                gridApi?.setQuickFilter(matchedOption?.label);
+            }
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [costingHeadFilter]);
     const columnWidths = {
         CostingHead: showCompressedColumns ? 50 : 190,
         OperationName: showCompressedColumns ? 100 : 190,
@@ -111,6 +124,11 @@ function OperationSTSimulation(props) {
             handleEditMasterPage(showEditMaster, showverifyPage)
         }
     }, [showverifyPage])
+    useEffect(() => {
+        return () => {
+            dispatch(setResetCostingHead(true, "costingHead"))
+        }
+    }, [])
 
     // const newRateFormatter = (props) => {
     //     const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -139,8 +157,8 @@ function OperationSTSimulation(props) {
     //     )
     // }
     const newWeldingRateFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cell = row?.IsSimulated ? row?.NewOperation && row?.NewOperation?.Rate : props?.valueFormatted ? props.valueFormatted : props?.value;
 
         const value = beforeSaveCell(cell)
 
@@ -149,7 +167,7 @@ function OperationSTSimulation(props) {
                 {
                     row.ForType !== "Welding" ?
                         '-' ://NewNetOperationCost
-                        <span id={`newOperationRate-${props.rowIndex}`} className={`${!isImpactedMaster ? 'form-control' : ''} newRateFormatter netCost_revised`} title={cell && value ? Number(cell) : Number(row.OperationBasicRate)}>{cell && value ? Number(cell) : Number(row.OperationBasicRate)} </span>
+                        <span id={`newOperationRate-${props.rowIndex}`} className={`${!isImpactedMaster ? 'form-control' : ''} ${row?.IsSimulated ? 'disabled' : ''} newRateFormatter netCost_revised`} title={cell && value ? Number(cell) : Number(row.OperationBasicRate)}>{cell && value ? Number(cell) : Number(row.OperationBasicRate)} </span>
                 }
 
             </>
@@ -194,8 +212,8 @@ function OperationSTSimulation(props) {
         )
     }
     const rateFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cell = row?.IsSimulated ? row?.NewOperation && row?.NewOperation?.Rate : props?.valueFormatted ? props.valueFormatted : props?.value;
         const value = beforeSaveCell(cell)
         let valueShow
         if (lastRevision) {
@@ -212,7 +230,7 @@ function OperationSTSimulation(props) {
                 {
                     isImpactedMaster ?
                         valueShow ://NewNetOperationCost
-                        <span id={`newOperationRate-${props.rowIndex}`} className={`${true ? 'form-control' : ''} newRateFormatter netCost_revised`} title={cell && value ? Number(cell) : Number(row.NewRate)}>{cell && value ? Number(cell) : Number(row.NewRate)} </span>
+                        <span id={`newOperationRate-${props.rowIndex}`} className={`${true ? 'form-control' : ''} ${row?.IsSimulated ? 'disabled' : ''} newRateFormatter netCost_revised`} title={cell && value ? Number(cell) : Number(row.NewRate)}>{cell && value ? Number(cell) : Number(row.NewRate)} </span>
 
                 }
 
@@ -347,6 +365,18 @@ function OperationSTSimulation(props) {
         setIsWarningMessageShow(false)
     }
 
+    const combinedCostingHeadRenderer = (props) => {
+        // Call the existing checkBoxRenderer
+        costingHeadFormatter(props);
+
+        // Get and localize the cell value
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const localizedValue = getLocalizedCostingHeadValue(cellValue, vendorBasedLabel, zeroBasedLabel, customerBasedLabel);
+
+        // Return the localized value (the checkbox will be handled by AgGrid's default renderer)
+        return localizedValue;
+    };
+
     const costingHeadFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         return cell ? cell : '-';
@@ -375,13 +405,15 @@ function OperationSTSimulation(props) {
         oldRateFormatter: oldRateFormatter,
         vendorFormatter: vendorFormatter,
         plantFormatter: plantFormatter,
-        costingHeadFormatter: costingHeadFormatter,
+        combinedCostingHeadRenderer: combinedCostingHeadRenderer,
         customerFormatter: customerFormatter,
         revisedRateHeader: revisedRateHeader,
         nullHandler: props.nullHandler && props.nullHandler,
         rateFormatter: rateFormatter,
         oldBasicRateFormatter: oldBasicRateFormatter,
-        consumptionFormatter: consumptionFormatter
+        consumptionFormatter: consumptionFormatter,
+        statusFilter: CostingHeadDropdownFilter,
+
     };
 
 
@@ -423,6 +455,7 @@ function OperationSTSimulation(props) {
         arr && arr.map(item => {
             let tempObj = {}
             tempObj.OperationId = item.OperationId
+            tempObj.NewOperationId = item?.IsSimulated ? item?.NewOperation && item?.NewOperation?.OperationId ? item?.NewOperation?.OperationId : null : null
             tempObj.OldOperationRate = Number(item.Rate)
             tempObj.NewOperationRate = Number(item.NewRate)
             tempObj.OldOperationBasicRate = Number(item.OperationBasicRate)
@@ -447,6 +480,12 @@ function OperationSTSimulation(props) {
         }))
         setShowTooltip(false)
     }, 500);
+    const floatingFilterStatus = {
+        maxValue: 1,
+        suppressFilterButton: true,
+        component: CostingHeadDropdownFilter,
+
+    };
     const resetState = () => {
         gridApi?.setQuickFilter('');
         gridOptions?.columnApi?.resetColumnState();
@@ -475,6 +514,16 @@ function OperationSTSimulation(props) {
                 {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }
+    const EditableCallbackForNewBasicRate = (props) => {
+        const rowData = props?.data;
+        let value = false
+        if (isImpactedMaster || rowData?.IsSimulated) {
+            value = false
+        } else {
+            value = true
+        }
+        return value
+    }
 
 
     function getOperationTypes(list) {
@@ -483,7 +532,7 @@ function OperationSTSimulation(props) {
     const operationTypes = getOperationTypes(list);
     return (
         <div>
-            <div className={`ag-grid-react`}>
+            <div className={`ag-grid-react grid-parent-wrapper`}>
                 {!showverifyPage &&
                     <Fragment>
                         {!isImpactedMaster && showTooltip && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={basicRateviewTooltip} toggle={basicRatetooltipToggle} target={"basicRate-tooltip"} >{"To edit revised net rate please double click on the field."}</Tooltip>}
@@ -587,7 +636,9 @@ function OperationSTSimulation(props) {
                                                 enableBrowserTooltips={true}
                                             // frameworkComponents={frameworkComponents}
                                             >
-                                                {!isImpactedMaster && <AgGridColumn field="CostingHead" tooltipField='CostingHead' headerName="Costing Head" editable='false' minWidth={190} cellRenderer={'costingHeadFormatter'}></AgGridColumn>}
+                                                {!isImpactedMaster && <AgGridColumn field="CostingHead" tooltipField='CostingHead' headerName="Costing Head" editable='false' minWidth={190} cellRenderer={'combinedCostingHeadRenderer'}
+                                                    floatingFilterComponentParams={floatingFilterStatus}
+                                                    floatingFilterComponent="statusFilter"></AgGridColumn>}
                                                 <AgGridColumn field="ForType" headerName="Operation Type" cellRenderer={'hyphenFormatter'} minWidth={190}></AgGridColumn>
                                                 <AgGridColumn field="OperationName" tooltipField='OperationName' editable='false' headerName="Operation Name" minWidth={190}></AgGridColumn>
                                                 <AgGridColumn field="OperationCode" tooltipField='OperationCode' editable='false' headerName="Operation Code" minWidth={190}></AgGridColumn>
@@ -600,11 +651,11 @@ function OperationSTSimulation(props) {
                                                 <AgGridColumn field="Currency" minWidth={150}cellRenderer={"currencyFormatter"}></AgGridColumn>
                                                 {operationTypes.includes('Welding') && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" minWidth={320} headerName="Welding Material Rate/Kg" marryChildren={true} >
                                                     <AgGridColumn minWidth={150} field="" editable={false} headerName="Existing" colId="oldOperationBasicRate" cellRenderer='oldBasicRateFormatter'></AgGridColumn>
-                                                    <AgGridColumn minWidth={150} field="NewOperationBasicRate" editable={isImpactedMaster ? false : true} headerName="Revised" colId='newOperationBasicRate' headerComponent={'revisedRateHeader'} cellRenderer='newWeldingRateFormatter'></AgGridColumn>
+                                                    <AgGridColumn minWidth={150} field="NewOperationBasicRate" editable={EditableCallbackForNewBasicRate} headerName="Revised" colId='newOperationBasicRate' headerComponent={'revisedRateHeader'} cellRenderer='newWeldingRateFormatter'></AgGridColumn>
                                                 </AgGridColumn>}
                                                 <AgGridColumn headerClass="justify-content-center" cellClass="text-center" minWidth={240} headerName="Net Rate" marryChildren={true} >
                                                     <AgGridColumn minWidth={120} field="Rate" editable='false' headerName="Existing" colId="Rate" cellRenderer='oldRateFormatter'></AgGridColumn>
-                                                    <AgGridColumn minWidth={120} editable={operationTypes.includes('Welding') || isImpactedMaster ? false : true} field="NewRate" headerName="Revised" colId='NewRate' headerComponent={'revisedRateHeader'} cellRenderer='rateFormatter' valueGetter={ageValueGetterRate}
+                                                    <AgGridColumn minWidth={120} editable={operationTypes.includes('Welding') || EditableCallbackForNewBasicRate} field="NewRate" headerName="Revised" colId='NewRate' headerComponent={'revisedRateHeader'} cellRenderer='rateFormatter' valueGetter={ageValueGetterRate}
                                                     >
 
                                                     </AgGridColumn>
@@ -627,7 +678,7 @@ function OperationSTSimulation(props) {
                                         <div className="inputbox date-section mr-3 verfiy-page simulation_effectiveDate">
                                             <DatePicker
                                                 name="EffectiveDate"
-                                                id='EffectiveDate'
+                                                id="EffectiveDate"
                                                 selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
                                                 onChange={handleEffectiveDateChange}
                                                 showMonthDropdown

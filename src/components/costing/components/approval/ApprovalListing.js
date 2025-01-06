@@ -8,7 +8,7 @@ import NoContentFound from '../../../common/NoContentFound'
 import { defaultPageSize, DRAFT, EMPTY_DATA, EMPTY_GUID, REJECTED, ZBCTypeId } from '../../../../config/constants'
 import DayTime from '../../../common/DayTimeWrapper'
 import CostingApproveReject from './CostingApproveReject'
-import { allEqual, checkForDecimalAndNull, checkForNull, formViewData, removeSpaces, searchNocontentFilter, setLoremIpsum } from '../../../../helper'
+import { allEqual, checkForDecimalAndNull, checkForNull, formViewData, getLocalizedCostingHeadValue, removeSpaces, searchNocontentFilter, setLoremIpsum } from '../../../../helper'
 import { PENDING } from '../../../../config/constants'
 import Toaster from '../../../common/Toaster'
 import imgArrowDown from "../../../../assests/images/arrow-down.svg";
@@ -25,7 +25,7 @@ import SendForApproval from './SendForApproval'
 import CostingDetailSimulationDrawer from '../../../simulation/components/CostingDetailSimulationDrawer'
 import { PaginationWrapper } from '../../../common/commonPagination'
 import _ from 'lodash';
-import { setSelectedRowForPagination } from '../../../simulation/actions/Simulation'
+import { checkFinalLevelApproverForApproval, setSelectedRowForPagination } from '../../../simulation/actions/Simulation'
 import SingleDropdownFloationFilter from '../../../masters/material-master/SingleDropdownFloationFilter'
 import { agGridStatus, isResetClick, getGridHeight, dashboardTabLock } from '../../../../actions/Common'
 import PopupMsgWrapper from '../../../common/PopupMsgWrapper'
@@ -36,11 +36,14 @@ import TourWrapper from '../../../common/Tour/TourWrapper'
 import { Steps } from '../TourMessages'
 import { useTranslation } from 'react-i18next';
 import { useLabels } from '../../../../helper/core'
+import { fetchDivisionId } from '../../CostingUtil'
+import CostingHeadDropdownFilter from '../../../masters/material-master/CostingHeadDropdownFilter'
 
 const gridOptions = {};
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
 function ApprovalListing(props) {
+
   const { isDashboard } = props
   const loggedUser = loggedInUserId()
   const [loader, setloader] = useState(false);
@@ -83,13 +86,24 @@ function ApprovalListing(props) {
   const isApproval = props.isApproval;
   let approvalGridData = isDashboard ? approvalList : approvalListDraft
   const statusColumnData = useSelector((state) => state.comman.statusColumnData);
-  const { technologyLabel } = useLabels();
+  const { technologyLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels();
   var floatingFilterStatus = {
     maxValue: 1,
     suppressFilterButton: true,
     component: 'costingApproval',
     location: "costing"
   }
+  const [selectedDataObj, setSelectedDataObj] = useState({
+    DisplayStatus: [],
+    DepartmentId: [],
+    TechnologyName: [],
+    PlantId: [],
+    VendorId: [],
+    ReasonId: [],
+    EffectiveDate: [],
+    PartNumber: [],
+    TokenNo: []
+  })
   const { vendorLabel } = useLabels()
   useEffect(() => {
     setIsSuperAdmin(userDetails()?.Role === "SuperAdmin")
@@ -212,7 +226,19 @@ function ApprovalListing(props) {
     browserDatePicker: true,
     minValidYear: 2000,
   };
-
+  const floatingFilterStatusCostingHead = {
+    maxValue: 1,
+    suppressFilterButton: true,
+    component: CostingHeadDropdownFilter,
+    onFilterChange: (originalValue, value) => {
+      // setSelectedCostingHead(originalValue);
+      setDisableFilter(false);
+      setFloatingFilterData(prevState => ({
+        ...prevState,
+        CostingHead: value
+      }));
+    }
+  };
 
   /**
    * @method getTableData
@@ -641,53 +667,65 @@ function ApprovalListing(props) {
     let effectiveDateArray = []
     let plantArray = []
     let partArray = []
-
+    let tokenArr = []
     uniqeArray && uniqeArray.map((item) => {
       reasonArray.push(item.ReasonId)
       technologyArray.push(item.TechnologyId)
       departmentArray.push(item.DepartmentId)
       vendorArray.push(item.VendorId)
-      statusArray.push(item.SimulationTechnologyHead)
+      statusArray.push(item.Status)
       effectiveDateArray.push(item.EffectiveDate)
       plantArray.push(item.PlantCode)
       partArray.push(item.PartNumber)
+      tokenArr.push(item?.ApprovalNumber)
       return null
     })
+    setSelectedDataObj({
+      DisplayStatus: statusArray,
+      DepartmentId: departmentArray,
+      TechnologyName: technologyArray,
+      PlantId: plantArray,
+      VendorId: vendorArray,
+      ReasonId: reasonArray,
+      EffectiveDate: effectiveDateArray,
+      PartNumber: partArray,
+      TokenNo: tokenArr
+    })
 
-    if (!allEqual(departmentArray)) {
-      gridApi.deselectAll()
-      Toaster.warning(`${handleDepartmentHeader()} should be same for sending costings for approval`)
-      // return Toaster.warning("Purchase Group should be same for sending multiple costing for approval")   //RE
-    } else if (!allEqual(technologyArray)) {
-      gridApi.deselectAll()
-      Toaster.warning(`${technologyLabel} should be same for sending costings for approval`)
-    } else if (!allEqual(vendorArray)) {
-      gridApi.deselectAll()
-      Toaster.warning(`${vendorLabel} should be same for sending costings for approval`)
-    } else if (!allEqual(reasonArray)) {
-      gridApi.deselectAll()
-      Toaster.warning("Reason should be same for sending costings for approval")
-      //REASON CHECK IS NOT APPLICABLE IN RE   //RE
-      // else if (!allEqual(reasonArray)) {
-      //   gridApi.deselectAll()
-      //   Toaster.warning("Reason should be same for sending multiple costing for approval")
-      // }
-    } else if (!allEqual(statusArray)) {
-      gridApi.deselectAll()
-      Toaster.warning('Status should be same for sending costings for approval')
-    } else if (!allEqual(effectiveDateArray)) {
-      gridApi.deselectAll()
-      Toaster.warning('Effective Date should be same for sending costings for approval')
-    } else if (!allEqual(plantArray)) {
-      gridApi.deselectAll()
-      Toaster.warning('Plant should be same for sending costings for approval')
-    } else {
-      setReasonId(uniqeArray && uniqeArray[0]?.ReasonId)
-    }
-    if (uniqeArray.length > 1 && allEqual(vendorArray) && allEqual(plantArray) && allEqual(partArray)) {
-      gridApi.deselectAll()
-      Toaster.warning(`${vendorLabel} and Plant should be different against a Part number`)
-    }
+    // if (!allEqual(departmentArray)) {
+    //   gridApi.deselectAll()
+    //   Toaster.warning(`${handleDepartmentHeader()} should be same for sending costings for approval`)
+    //   // return Toaster.warning("Purchase Group should be same for sending multiple costing for approval")   //RE
+    // } else if (!allEqual(technologyArray)) {
+    //   gridApi.deselectAll()
+    //   Toaster.warning(`${technologyLabel} should be same for sending costings for approval`)
+    // } else if (!allEqual(vendorArray)) {
+    //   gridApi.deselectAll()
+    //   Toaster.warning(`${vendorLabel} should be same for sending costings for approval`)
+    // } else if (!allEqual(reasonArray)) {
+    //   gridApi.deselectAll()
+    //   Toaster.warning("Reason should be same for sending costings for approval")
+    //   //REASON CHECK IS NOT APPLICABLE IN RE   //RE
+    //   // else if (!allEqual(reasonArray)) {
+    //   //   gridApi.deselectAll()
+    //   //   Toaster.warning("Reason should be same for sending multiple costing for approval")
+    //   // }
+    // } else if (!allEqual(statusArray)) {
+    //   gridApi.deselectAll()
+    //   Toaster.warning('Status should be same for sending costings for approval')
+    // } else if (!allEqual(effectiveDateArray)) {
+    //   gridApi.deselectAll()
+    //   Toaster.warning('Effective Date should be same for sending costings for approval')
+    // } else if (!allEqual(plantArray)) {
+    //   gridApi.deselectAll()
+    //   Toaster.warning('Plant should be same for sending costings for approval')
+    // } else {
+    //   setReasonId(uniqeArray && uniqeArray[0]?.ReasonId)
+    // }
+    // if (uniqeArray.length > 1 && allEqual(vendorArray) && allEqual(plantArray) && allEqual(partArray)) {
+    //   gridApi.deselectAll()
+    //   Toaster.warning(`${vendorLabel} and Plant should be different against a Part number`)
+    // }
 
     setSelectedRowData(uniqeArray)
   }
@@ -707,61 +745,122 @@ function ApprovalListing(props) {
       Toaster.warning("Please select at least one costing to send for approval.")
       return false
     }
-    // MINDA
-    if (initialConfiguration.IsReleaseStrategyConfigured && selectedRowData && selectedRowData[0]?.Status === DRAFT) {
-      let dataList = costingIdObj(selectedRowData)
-      let requestObject = {
-        "RequestFor": "COSTING",
-        "TechnologyId": selectedRowData[0].TechnologyId,
-        "LoggedInUserId": loggedInUserId(),
-        "ReleaseStrategyApprovalDetails": dataList
-      }
-      dispatch(getReleaseStrategyApprovalDetails(requestObject, (res) => {
-        setReleaseStrategyDetails(res?.data?.Data)
-        if (res?.data?.Data?.IsUserInApprovalFlow) {
-          if (selectedRowData.length === 0) {
-            Toaster.warning('Please select atleast one approval to send for approval.')
-            return false
-          }
-          if (selectedRowData && selectedRowData[0]?.IsRegularizationLimitCrossed !== 'No') {
-            setShowPopup(true)
-          } else {
-            sendForApprovalDrawer()
-          }
-        } else if (res?.data?.Data?.IsPFSOrBudgetingDetailsExist === false) {
-
-          if (selectedRowData.length === 0) {
-            Toaster.warning('Please select atleast one approval to send for approval.')
-            return false
-          }
-          if (selectedRowData && selectedRowData[0]?.IsRegularizationLimitCrossed !== 'No') {
-            setShowPopup(true)
-          } else {
-            sendForApprovalDrawer()
-          }
-
-        } else if (res?.data?.Data?.IsFinalApprover === true) {
-          Toaster.warning('This is final level user')
-        } else if (res?.data?.Result === false) {
-          Toaster.warning(res?.data?.Message)
-        } else {
-          Toaster.warning('This user is not in approval cycle')
-        }
-      }))
-    } else {
-
-      if (selectedRowData.length === 0) {
-        Toaster.warning('Please select atleast one approval to send for approval.')
-        return false
-      }
-      if (selectedRowData && selectedRowData[0]?.IsRegularizationLimitCrossed !== 'No') {
-        setShowPopup(true)
-      } else {
-        sendForApprovalDrawer()
-      }
-
+    if (!allEqual(selectedDataObj.DisplayStatus)) {
+      Toaster.warning('Please select same status for sending multiple costing for approval')
+      return false
     }
+    let requestObject = {
+      LoggedInUserId: loggedInUserId(),
+      Mode: 'Costing',
+      ApprovalTokens: selectedDataObj.TokenNo
+    }
+    dispatch(checkFinalLevelApproverForApproval(requestObject, res => {
+      let Data = res?.data?.Data
+      if (Data?.IsFinalApprover && !Data?.IsNotFinalApproverForAllToken) {
+        setShowFinalLevelButton(false)
+        setApproveDrawer(true)
+      } else if (!Data?.IsFinalApprover && Data?.IsNotFinalApproverForAllToken) {
+        Toaster.warning(Data?.Message)
+        return false
+      } else {
+        setShowFinalLevelButton(true)
+        const validationChecks = [
+          {
+            condition: !allEqual(selectedDataObj.PlantId),
+            field: 'Plant'
+          },
+          {
+            condition: !allEqual(selectedDataObj.DepartmentId),
+            field: handleDepartmentHeader()
+          },
+          {
+            condition: !allEqual(selectedDataObj.ReasonId),
+            field: 'Reason'
+          },
+          {
+            condition: !allEqual(selectedDataObj.PartNumber),
+            field: 'Part Number'
+          },
+          {
+            condition: !allEqual(selectedDataObj.VendorId),
+            field: 'Vendor'
+          },
+          {
+            condition: !allEqual(selectedDataObj.TechnologyName),
+            field: 'Technology'
+          },
+          {
+            condition: !allEqual(selectedDataObj.EffectiveDate),
+            field: 'Effective Date'
+          }
+        ]
+        const failedChecks = validationChecks
+          .filter(check => check.condition)
+          .map(check => check.field)
+
+        if (failedChecks.length > 0) {
+          const fields = failedChecks.join(', ')
+          Toaster.warning(`${fields} should be same for sending multiple costing for approval`)
+          return false
+        }
+        // MINDA
+        if (initialConfiguration.IsReleaseStrategyConfigured && selectedRowData && selectedRowData[0]?.Status === DRAFT) {
+          let dataList = costingIdObj(selectedRowData)
+          let requestObject = {
+            "RequestFor": "COSTING",
+            "TechnologyId": selectedRowData[0].TechnologyId,
+            "LoggedInUserId": loggedInUserId(),
+            "ReleaseStrategyApprovalDetails": dataList
+          }
+          dispatch(getReleaseStrategyApprovalDetails(requestObject, (res) => {
+            setReleaseStrategyDetails(res?.data?.Data)
+            if (res?.data?.Data?.IsUserInApprovalFlow) {
+              if (selectedRowData.length === 0) {
+                Toaster.warning('Please select atleast one approval to send for approval.')
+                return false
+              }
+              if (selectedRowData && selectedRowData[0]?.IsRegularizationLimitCrossed !== 'No') {
+                setShowPopup(true)
+              } else {
+                sendForApprovalDrawer()
+              }
+            } else if (res?.data?.Data?.IsPFSOrBudgetingDetailsExist === false) {
+
+              if (selectedRowData.length === 0) {
+                Toaster.warning('Please select atleast one approval to send for approval.')
+                return false
+              }
+              if (selectedRowData && selectedRowData[0]?.IsRegularizationLimitCrossed !== 'No') {
+                setShowPopup(true)
+              } else {
+                sendForApprovalDrawer()
+              }
+
+            } else if (res?.data?.Data?.IsFinalApprover === true) {
+              Toaster.warning('This is final level user')
+            } else if (res?.data?.Result === false) {
+              Toaster.warning(res?.data?.Message)
+            } else {
+              Toaster.warning('This user is not in approval cycle')
+            }
+          }))
+        } else {
+
+          if (selectedRowData.length === 0) {
+            Toaster.warning('Please select atleast one approval to send for approval.')
+            return false
+          }
+          if (selectedRowData && selectedRowData[0]?.IsRegularizationLimitCrossed !== 'No') {
+            setShowPopup(true)
+          } else {
+            sendForApprovalDrawer()
+          }
+
+        }
+      }
+    }))
   }
+
 
   const sendForApprovalDrawer = () => {
 
@@ -852,30 +951,37 @@ function ApprovalListing(props) {
       dispatch(setCostingApprovalData(temp))
       return null
     })
-    let obj = {
-      DepartmentId: selectedRowData[0].Status === DRAFT ? EMPTY_GUID : selectedRowData[0]?.DepartmentId,
-      UserId: loggedInUserId(),
-      TechnologyId: selectedRowData[0].TechnologyId,
-      Mode: 'costing',
-      approvalTypeId: costingTypeIdToApprovalTypeIdFunction(selectedRowData[0]?.ApprovalTypeId ?? selectedRowData[0]?.CostingTypeId),
-      plantId: selectedRowData[0].PlantId ?? EMPTY_GUID,
-      divisionId: selectedRowData[0].DivisionId ?? null
+    let divisionReqData = {
+      "PlantId": selectedRowData[0].PlantId,
+      "PartId": selectedRowData[0].PartId
     }
-    dispatch(checkFinalUser(obj, res => {
-      if (res && res.data && res.data.Result) {
-        if (selectedRowData[0].Status === DRAFT) {
-          setOpenDraftDrawer(res.data.Data.IsFinalApprover ? false : true)
-          if (res.data.Data.IsFinalApprover) {
-            Toaster.warning("Final level approver can not send draft costing for approval")
-            gridApi.deselectAll()
+    fetchDivisionId(divisionReqData, dispatch).then((divisionId) => {
+      selectedRowData[0].DivisionId = divisionId
+      let obj = {
+        DepartmentId: selectedRowData[0].Status === DRAFT ? EMPTY_GUID : selectedRowData[0]?.DepartmentId,
+        UserId: loggedInUserId(),
+        TechnologyId: selectedRowData[0].TechnologyId,
+        Mode: 'costing',
+        approvalTypeId: costingTypeIdToApprovalTypeIdFunction(selectedRowData[0]?.ApprovalTypeId ?? selectedRowData[0]?.CostingTypeId),
+        plantId: selectedRowData[0].PlantId ?? EMPTY_GUID,
+        divisionId: divisionId
+      }
+      dispatch(checkFinalUser(obj, res => {
+        if (res && res.data && res.data.Result) {
+          if (selectedRowData[0].Status === DRAFT) {
+            setOpenDraftDrawer(res.data.Data.IsFinalApprover ? false : true)
+            if (res.data.Data.IsFinalApprover) {
+              Toaster.warning("Final level approver can not send draft costing for approval")
+              gridApi.deselectAll()
+            }
+          }
+          else {
+            setShowFinalLevelButton(!res.data.Data.IsFinalApprover)
+            setApproveDrawer(true)
           }
         }
-        else {
-          setShowFinalLevelButton(!res.data.Data.IsFinalApprover)
-          setApproveDrawer(true)
-        }
-      }
-    }))
+      }))
+    })
   }
 
   const closeDrawer = (e = '', type) => {
@@ -999,8 +1105,18 @@ function ApprovalListing(props) {
       }
     }
   }
+  const combinedCostingHeadRenderer = (props) => {
+    // Call the existing checkBoxRenderer
 
+    // Get and localize the cell value
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    const localizedValue = getLocalizedCostingHeadValue(cellValue, vendorBasedLabel, zeroBasedLabel, customerBasedLabel);
+
+    // Return the localized value (the checkbox will be handled by AgGrid's default renderer)
+    return localizedValue;
+  };
   const frameworkComponents = {
+    combinedCostingHeadRenderer: combinedCostingHeadRenderer,
     renderPlant: renderPlant,
     renderCustomer: renderCustomer,
     renderVendor: renderVendor,
@@ -1016,10 +1132,11 @@ function ApprovalListing(props) {
     reasonFormatter: reasonFormatter,
     lastApprovalFormatter: lastApprovalFormatter,
     statusFilter: SingleDropdownFloationFilter,
-    basicRateFormatter: basicRateFormatter
+    basicRateFormatter: basicRateFormatter,
+    statusFilterCostingHead: CostingHeadDropdownFilter
   };
 
-  const isRowSelectable = rowNode => rowNode.data ? (rowNode.data.Status === PENDING || rowNode.data.Status === REJECTED) : false
+  const isRowSelectable = rowNode => rowNode.data ? (rowNode.data.Status === PENDING || rowNode.data.Status === DRAFT || rowNode.data.Status === REJECTED) : false
 
   if (showApprovalSumary === true) {
 
@@ -1073,9 +1190,9 @@ function ApprovalListing(props) {
               </form >
               <Row>
                 <Col>
-                  <div className={`ag-grid-react custom-pagination`}>
+                  <div className={`ag-grid-react grid-parent-wrapper custom-pagination`}>
 
-                    <div id={'parentId'} className={`ag-grid-wrapper height-width-wrapper min-height-auto p-relative ${isDashboard ? (approvalList && approvalList?.length <= 0) || noData ? "overlay-contain" : "" : (approvalListDraft && approvalListDraft?.length <= 0) || noData ? "overlay-contain" : ""} ${isDashboard ? "report-grid" : ""}`}>
+                    <div id={'parentId'} className={`ag-grid-wrapper height-width-wrapper min-height-auto p-relative ${isDashboard ? (approvalList && approvalList?.length <= 0) || noData ? "overlay-contain" : "" : (approvalListDraft && approvalListDraft?.length <= 0) || noData ? "overlay-contain" : ""} ${isDashboard ? "grid-parent-wrapper" : ""}`}>
                       <div className="ag-grid-header">
                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
                         {!isDashboard && <TourWrapper
@@ -1120,7 +1237,8 @@ function ApprovalListing(props) {
                           <AgGridColumn cellClass="has-checkbox" field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Approval No."></AgGridColumn>
                           {/* {isApproval && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" field="Status" cellRenderer='statusFormatter' headerName="Status" floatingFilterComponent="statusFilter" floatingFilterComponentParams={floatingFilterStatus} ></AgGridColumn>} */}
                           <AgGridColumn field="CostingNumber" headerName="Costing Id" cellRenderer='hyperLinkableFormatter' ></AgGridColumn>
-                          <AgGridColumn field="CostingHead" headerName="Costing Head"  ></AgGridColumn>
+                          <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'combinedCostingHeadRenderer'} floatingFilterComponentParams={floatingFilterStatusCostingHead}
+                            floatingFilterComponent="statusFilterCostingHead" ></AgGridColumn>
                           <AgGridColumn field="CostingCurrency" headerName="Costing Currency" ></AgGridColumn>
                           <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source Name" ></AgGridColumn>
                           <AgGridColumn field="PartNumber" headerName='Part No.'></AgGridColumn>

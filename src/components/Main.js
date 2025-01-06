@@ -111,6 +111,7 @@ import {
   LPS,
   INDEXATION,
   ADD_AUCTION,
+  COSTING_BULKUPLOAD,
 } from "../config/constants";
 import ApprovalSummary from "./costing/components/approval/ApprovalSummary";
 import CostingSummaryBulkUpload from "./costing/components/CostingSummaryBulkUpload";
@@ -536,7 +537,7 @@ class Main extends Component {
                       path="/costing-bulkUpload"
                       component={AuthMiddleware(
                         CostingSummaryBulkUpload,
-                        SHEET_METAL
+                        COSTING_BULKUPLOAD
                       )}
                     />
 

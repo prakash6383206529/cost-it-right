@@ -14,6 +14,7 @@ import {
     GET_ALL_ADDITIONAL_FREIGHT_SUCCESS,
     GET_ADDITIONAL_FREIGHT_DATA_SUCCESS,
     GET_ADDITIONAL_FREIGHT_BY_SUPPLIER_SUCCESS,
+    GET_TRUCK_DIMENSIONS_SELECTLIST,
     config,
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
@@ -322,3 +323,53 @@ export function getAdditionalFreightBySupplier(sourceSupplierId, callback) {
         });
     };
 }
+/**
+ * @method getTruckDimensionsSelectList
+ * @description GET TRUCK DIMENSIONS SELECTLIST
+ */
+export function getTruckDimensionsSelectList(callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(API.getTruckDimensionsSelectList, config());
+        request.then((response) => {
+            dispatch({
+                type: GET_TRUCK_DIMENSIONS_SELECTLIST,
+                payload: response.data.SelectList,
+            });
+            callback(response);
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+            callback(error);
+        });
+    };
+}
+
+/**
+ * @method handleTruckDimensions 
+ * @description SAVE OR UPDATE TRUCK DIMENSIONS
+ */
+export function handleTruckDimensions(requestData, isUpdate = false, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const method = isUpdate ? 'put' : 'post';
+        const url = isUpdate ? API.updateTruckDimensions : API.saveTruckDimensions;
+        
+        axios[method](url, requestData, config())
+            .then((response) => {
+                if (response.data.Result) {
+                    callback(response);
+                } else {
+                    dispatch({ type: API_FAILURE });
+                    if (response.data.Message) {
+                        Toaster.warning(response.data.Message);
+                    }
+                }
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+                callback(error);
+            });
+    };
+}
+

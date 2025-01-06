@@ -7,16 +7,17 @@ import { Loader } from "../../common/Loader";
 import {
     maxLength12, required,
     checkWhiteSpaces, maxLength25, hashValidation, checkForNull, checkForDecimalAndNull, acceptAllExceptSingleSpecialCharacter, maxLength80,
+    validateFileName,
 } from "../../../helper/validation";
 
-import { MESSAGES } from "../../../config/message";
+import { AttachmentValidationInfo, MESSAGES } from "../../../config/message";
 import { getConfigurationKey, IsFetchExchangeRateVendorWise, loggedInUserId, userDetails } from "../../../helper/auth";
 import { Row, Col, Label } from 'reactstrap';
 import { CBCTypeId, CRMHeads, EMPTY_GUID, ENTRY_TYPE_DOMESTIC, ENTRY_TYPE_IMPORT, FILE_URL, OPERATIONS_ID, VBCTypeId, VBC_VENDOR_TYPE, ZBCTypeId, searchCount } from "../../../config/constants";
 import HeaderTitle from "../../common/HeaderTitle";
 import { useDispatch, useSelector } from 'react-redux'
 import { reactLocalStorage } from "reactjs-localstorage";
-import { autoCompleteDropdown, costingTypeIdToApprovalTypeIdFunction } from "../../common/CommonFunctions";
+import { autoCompleteDropdown, costingTypeIdToApprovalTypeIdFunction, getEffectiveDateMaxDate, getEffectiveDateMinDate } from "../../common/CommonFunctions";
 import { getClientSelectList } from "../actions/Client";
 import { AcceptableOperationUOM, LOGISTICS } from "../../../config/masterData";
 import { getUOMSelectList, getVendorNameByVendorSelectList } from "../../../actions/Common";
@@ -960,7 +961,17 @@ function AddMoreOperation(props) {
         if (status === 'done') {
             let data = new FormData()
             data.append('file', file)
+            if (!validateFileName(file.name)) {
+                this.dropzone.current.files.pop()
+                this.setDisableFalseFunction()
+                return false;
+            }
             dispatch(fileUploadOperation(data, (res) => {
+                if (res && res?.status !== 200) {
+                    this.dropzone.current.files.pop()
+                    this.setDisableFalseFunction()
+                    return false
+                }
                 setDisableFalseFunction()
                 if ('response' in res) {
                     status = res && res?.response?.status
@@ -1449,6 +1460,8 @@ function AddMoreOperation(props) {
                                                 customClassName="withBorder"
                                                 className="withBorder"
                                                 autoComplete={"off"}
+                                                maxDate={getEffectiveDateMaxDate()}
+                                                minDate={getEffectiveDateMinDate()}
                                                 disabledKeyboardNavigation
                                                 onChangeRaw={(e) => e.preventDefault()}
                                                 disabled={isViewMode}
@@ -3152,7 +3165,7 @@ function AddMoreOperation(props) {
                                     />
                                 </Col>
                                 <Col md="4">
-                                    <label>Upload Files (upload up to {initialConfiguration.MaxMasterFilesToUpload} files)</label>
+                                    <label>Upload Files (upload up to {initialConfiguration.MaxMasterFilesToUpload} files)<AttachmentValidationInfo /></label>
                                     <div className={`alert alert-danger mt-2 ${files.length === initialConfiguration.MaxMasterFilesToUpload ? '' : 'd-none'}`} role="alert">
                                         Maximum file upload limit reached.
                                     </div>

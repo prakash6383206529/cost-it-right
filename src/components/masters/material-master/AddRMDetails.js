@@ -1,6 +1,6 @@
 import React, { Fragment, useEffect, useRef, useState } from "react"
 import { fetchSpecificationDataAPI, getCityByCountry, getPlantSelectListByType, getRawMaterialCategory, getVendorNameByVendorSelectList, getExchangeRateSource } from "../../../actions/Common"
-import { CBCTypeId, FILE_URL, IsSelectSinglePlant, RAW_MATERIAL_VENDOR_TYPE, RM_MASTER_ID, SPACEBAR, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, searchCount } from "../../../config/constants"
+import { CBCTypeId, EMPTY_GUID, FILE_URL, IsSelectSinglePlant, RAW_MATERIAL_VENDOR_TYPE, RM_MASTER_ID, SPACEBAR, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, searchCount } from "../../../config/constants"
 import { useDispatch, useSelector } from "react-redux"
 import { getCostingSpecificTechnology } from "../../costing/actions/Costing"
 import { CheckApprovalApplicableMaster, getConfigurationKey, loggedInUserId } from "../../../helper"
@@ -93,6 +93,7 @@ function AddRMDetails(props) {
     const exchangeRateSourceList = useSelector((state) => state.comman.exchangeRateSourceList)
     const { t } = useTranslation('MasterLabels');
     const rawMaterailDetailsRef = useRef(rawMaterailDetails)
+    const { IsMultipleUserAllowForApproval } = useSelector((state) => state.auth.initialConfiguration)
 
     useEffect(() => {
         rawMaterailDetailsRef.current = rawMaterailDetails;
@@ -159,7 +160,7 @@ function AddRMDetails(props) {
                 }))
             }
             setTimeout(() => {
-                dispatch(setRawMaterialDetails({ ...rawMaterailDetailsRef.current,Vendor: { label: Data?.VendorName, value: Data?.Vendor }, customer: { label: Data?.CustomerName, value: Data?.CustomerId }, Technology: { label: Data?.TechnologyName, value: Data?.TechnologyId }, SourceVendor: Data?.IsSourceVendor ? { label: Data?.SourceVendorName, value: Data?.SourceVendorId } : [], isShowIndexCheckBox: Data?.IsIndexationDetails }, () => { }))
+                dispatch(setRawMaterialDetails({ ...rawMaterailDetailsRef.current, Vendor: { label: Data?.VendorName, value: Data?.Vendor }, customer: { label: Data?.CustomerName, value: Data?.CustomerId }, Technology: { label: Data?.TechnologyName, value: Data?.TechnologyId }, SourceVendor: Data?.IsSourceVendor ? { label: Data?.SourceVendorName, value: Data?.SourceVendorId } : [], isShowIndexCheckBox: Data?.IsIndexationDetails }, () => { }))
             }, 500);
         }
     }, [props?.DataToChange])
@@ -285,9 +286,14 @@ function AddRMDetails(props) {
         } else {
             setState(prevState => ({ ...prevState, plants: [] }));
         }
-        dispatch(setRawMaterialDetails({ ...rawMaterailDetailsRef.current, Plants: newValue }, () => { }))
-        if (getConfigurationKey()?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !getConfigurationKey()?.IsDivisionAllowedForDepartment) {
-            props?.commonFunction(newValue ? newValue.value : '', false, props?.masterLevels)
+        dispatch(setRawMaterialDetails({ Plants: newValue }, () => { }))
+        handleCommonFunction(IsMultipleUserAllowForApproval ? newValue?.value : EMPTY_GUID, state?.rmSpec?.value)
+        console.log(newValue, 'newValue', IsMultipleUserAllowForApproval)
+    }
+    const handleCommonFunction = (plantId, partId) => {
+        console.log(plantId, partId, 'plantId, partId')
+        if (getConfigurationKey()?.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true && plantId && partId) {
+            props?.commonFunction({ PlantId: plantId, PartId: partId }, props?.masterLevels)
         }
     }
     /**
@@ -393,6 +399,7 @@ function AddRMDetails(props) {
         if (newValue && newValue !== '') {
             setState(prevState => ({ ...prevState, rmSpec: newValue, rmCode: { label: newValue.RawMaterialCode, value: newValue.value }, rmCategory: [], isCodeDisabled: true }));
             setValue('RawMaterialCode', { label: newValue.RawMaterialCode, value: newValue.value })
+            handleCommonFunction(IsMultipleUserAllowForApproval ? state.plants?.value : EMPTY_GUID, newValue.value)
         } else {
             setState(prevState => ({ ...prevState, rmSpec: [], rmCode: [], rmCategory: [], isCodeDisabled: false }));
         }
@@ -429,12 +436,14 @@ function AddRMDetails(props) {
                     return false
                 }
                 let Data = res?.data?.Data
+                handleCommonFunction(IsMultipleUserAllowForApproval ? state.plants?.value : EMPTY_GUID, Data.SpecificationId)
                 setState(prevState => ({
                     ...prevState,
                     rmName: { label: Data.RawMaterialName, value: Data.RawMaterialId, },
                     rmGrade: { label: Data.GradeName, value: Data.GradeId },
                     rmSpec: { label: Data.Specification, value: Data.SpecificationId }
                 }))
+
                 setValue('RawMaterialName', { label: Data.RawMaterialName, value: Data.RawMaterialId, })
                 setValue('RawMaterialGrade', { label: Data.GradeName, value: Data.GradeId })
                 setValue('RawMaterialSpecification', { label: Data.Specification, value: Data.SpecificationId })
@@ -490,8 +499,13 @@ function AddRMDetails(props) {
         setState(prevState => ({ ...prevState, isRMDrawerOpen: true }));
     }
 
-    const vendorFilterList = (inputValue) => DropDownFilterList(inputValue, VBC_VENDOR_TYPE, 'vendorFilter', getVendorNameByVendorSelectList, setState, state);
-    const sourceVendorFilterList = (inputValue) => DropDownFilterList(inputValue, VBC_VENDOR_TYPE, 'sourceVendorFilter', getVendorNameByVendorSelectList, setState, state);
+
+    // const vendorFilterList = (inputValue) => DropDownFilterList(inputValue, RAW_MATERIAL_VENDOR_TYPE, 'vendorFilter', getVendorNameByVendorSelectList, setState, state);
+    const vendorFilterList = (inputValue) => {
+        const vendorType = states.costingTypeId === ZBCTypeId ? RAW_MATERIAL_VENDOR_TYPE : VBC_VENDOR_TYPE;
+        return DropDownFilterList(inputValue, vendorType, 'vendorFilter', getVendorNameByVendorSelectList, setState, state);
+    };
+    const sourceVendorFilterList = (inputValue) => DropDownFilterList(inputValue, RAW_MATERIAL_VENDOR_TYPE, 'sourceVendorFilter', getVendorNameByVendorSelectList, setState, state);
     const sourceLocationFilterList = (inputValue) => DropDownFilterList(inputValue, '', 'sourceLocationFilter', (filterType, resultInput) => getCityByCountry(0, 0, resultInput), setState, state);
 
 

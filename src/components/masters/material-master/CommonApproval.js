@@ -7,7 +7,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import LoaderCustom from '../../common/LoaderCustom'
 import NoContentFound from '../../common/NoContentFound';
 import DayTime from '../../common/DayTimeWrapper'
-import { IsShowFreightAndShearingCostFields, checkForDecimalAndNull, getConfigurationKey, handleDepartmentHeader, loggedInUserId, removeSpaces, searchNocontentFilter, showBopLabel, userDetails, userTechnologyDetailByMasterId, userTechnologyLevelDetailsWithoutCostingToApproval } from '../../../helper'
+import { IsShowFreightAndShearingCostFields, checkForDecimalAndNull, getConfigurationKey, getLocalizedCostingHeadValue, handleDepartmentHeader, loggedInUserId, removeSpaces, searchNocontentFilter, showBopLabel, userDetails, userTechnologyDetailByMasterId, userTechnologyLevelDetailsWithoutCostingToApproval } from '../../../helper'
 import { BOP_MASTER_ID, BUDGET_ID, CLASSIFICATIONAPPROVALTYPEID, EMPTY_DATA, LPSAPPROVALTYPEID, MACHINE_MASTER_ID, ONBOARDINGID, OPERATIONS_ID } from '../../../config/constants';
 import { deleteRawMaterialAPI, getRMApprovalList } from '../actions/Material';
 import SummaryDrawer from '../SummaryDrawer';
@@ -17,7 +17,7 @@ import WarningMessage from '../../common/WarningMessage';
 import Toaster from '../../common/Toaster'
 import { setSelectedRowForPagination } from '../../simulation/actions/Simulation';
 import { hyphenFormatter } from '../masterUtil';
-import { agGridStatus, dashboardTabLock, getGridHeight, isResetClick } from '../../../actions/Common'
+import { agGridStatus, dashboardTabLock, getGridHeight, isResetClick, setResetCostingHead } from '../../../actions/Common'
 import _ from 'lodash';
 import SingleDropdownFloationFilter from './SingleDropdownFloationFilter';
 import { reactLocalStorage } from 'reactjs-localstorage';
@@ -34,12 +34,14 @@ import PaginationControls from '../../common/Pagination/PaginationControls';
 import { resetStatePagination, updateCurrentRowIndex, updatePageNumber } from '../../common/Pagination/paginationAction';
 import SendForApproval from '../../vendorManagement/approval/SendForApproval';
 import { useLabels } from '../../../helper/core';
+import CostingHeadDropdownFilter from './CostingHeadDropdownFilter';
 
 const gridOptions = {
 };
 
 function CommonApproval(props) {
     const searchRef = useRef(null);
+
     const [gridApi, setGridApi] = useState(null);     // DON'T DELETE THIS STATE, IT IS USED BY AG-GRID
     const [gridColumnApi, setGridColumnApi] = useState(null);   // DON'T DELETE THIS STATE, IT IS USED BY AG-GRID
     const [selectedRowData, setSelectedRowData] = useState([]);
@@ -73,7 +75,7 @@ function CommonApproval(props) {
     const { globalTakes } = useSelector((state) => state.pagination)
     const statusColumnData = useSelector((state) => state.comman.statusColumnData);
     const netCostHeader = `Net Cost (${reactLocalStorage.getObject("baseCurrency")})`
-    const { technologyLabel, vendorLabel } = useLabels();
+    const { technologyLabel, vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel } = useLabels();
     useEffect(() => {
         dispatch(agGridStatus("", ""))
         dispatch(setSelectedRowForPagination([]))
@@ -90,6 +92,7 @@ function CommonApproval(props) {
             dispatch(setSelectedRowForPagination([]))
             setSelectedRowData([])
             dispatch(resetStatePagination())
+            dispatch(setResetCostingHead(true, "costingHead"))
         }
 
     }, [])
@@ -145,7 +148,6 @@ function CommonApproval(props) {
         dispatch(getGridHeight({ value: approvalList?.length, component: "common" }))
     }, [approvalList])
 
-
     /**
 * @method getTableData
 * @description getting approval list table
@@ -167,7 +169,6 @@ function CommonApproval(props) {
             setLoader(false)
             dispatch(dashboardTabLock(false))
             let obj = { ...floatingFilterData }
-
             if (res) {
                 if (res && res.status === 204) {
                     setTotalRecordCount(0)
@@ -182,10 +183,13 @@ function CommonApproval(props) {
                             isReset = false
                         }
                     }
+
                     // Sets the filter model via the grid API
                     isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(filterModel))
                     setTimeout(() => {
+
                         dispatch(isResetClick(false, "status"))
+                        dispatch(setResetCostingHead(false, "costingHead"))
                         setWarningMessage(false)
                         setFloatingFilterData(obj)
                     }, 23);
@@ -204,6 +208,7 @@ function CommonApproval(props) {
         }, 500);
         setDisableFilter(false)
         const model = gridOptions?.api?.getFilterModel();
+
         setFilterModel(model)
         if (!isFilterButtonClicked) {
             setWarningMessage(true)
@@ -265,11 +270,13 @@ function CommonApproval(props) {
     const resetState = () => {
         dispatch(agGridStatus("", ""))
         dispatch(isResetClick(true, "status"))
+        dispatch(setResetCostingHead(true, "costingHead"))
         setIsFilterButtonClicked(false)
         gridApi.setQuickFilter(null)
 
         gridOptions?.columnApi?.resetColumnState(null);
         gridOptions?.api?.setFilterModel(null);
+
         if (props?.OnboardingApprovalId === ONBOARDINGID) {
             gridApi.sizeColumnsToFit();
         }
@@ -320,7 +327,19 @@ function CommonApproval(props) {
             </>
         )
     }
-
+    const floatingFilterStatusCostingHead = {
+        maxValue: 1,
+        suppressFilterButton: true,
+        component: CostingHeadDropdownFilter,
+        onFilterChange: (originalValue, value) => {
+            // setSelectedCostingHead(originalValue);
+            setDisableFilter(false);
+            setFloatingFilterData(prevState => ({
+                ...prevState,
+                CostingHead: value
+            }));
+        }
+    };
     const requestedOnFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         return cell ? cell : '-';
@@ -423,8 +442,21 @@ function CommonApproval(props) {
 
 
     const costFormatter = (props) => {
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cell != null ? cell : '';
+        return cell != null ? cell : row?.OtherNetCostConversion;
+    }
+    const netLanedCostFormatter = (props) => {
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+
+        if (row?.EntryType === 'Domestic') {
+            return (row?.NetLandedCost ?? '-');
+        } else {
+
+            return (row?.NetLandedCostConversion ?? '-');
+        }
     }
 
     const viewDetails = (approvalNumber = '', approvalProcessId = '', costingTypeId = '', id = '') => {
@@ -718,7 +750,7 @@ function CommonApproval(props) {
         params.api.paginationGoToPage(0);
         if (props?.OnboardingApprovalId === ONBOARDINGID) {
             //params.api.sizeColumnsToFit();
-            
+
         }
         window.screen.width > 1920 && params.api.sizeColumnsToFit();
     };
@@ -816,7 +848,19 @@ function CommonApproval(props) {
             </>
         );
     };
+
+    const combinedCostingHeadRenderer = (props) => {
+        // Call the existing checkBoxRenderer
+
+        // Get and localize the cell value
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const localizedValue = getLocalizedCostingHeadValue(cellValue, vendorBasedLabel, zeroBasedLabel, customerBasedLabel);
+
+        // Return the localized value (the checkbox will be handled by AgGrid's default renderer)
+        return localizedValue;
+    };
     const frameworkComponents = {
+        combinedCostingHeadRenderer: combinedCostingHeadRenderer,
         renderPlant: renderPlant,
         renderVendor: renderVendor,
         priceFormatter: priceFormatter,
@@ -839,6 +883,9 @@ function CommonApproval(props) {
         breakupFormatter: breakupFormatter,
         technologyFormatter: technologyFormatter,
         actionRenderer: buttonFormatter,
+        statusFilterCostingHead: CostingHeadDropdownFilter,
+        statusFilterCostingHeadApproval: CostingHeadDropdownFilter,
+        netLanedCostFormatter: netLanedCostFormatter,
     };
 
     const isRowSelectable = (rowNode) => {
@@ -900,12 +947,12 @@ function CommonApproval(props) {
             </Row>
             <Row>
                 <Col>
-                    <div className={`ag-grid-react rmapproval-table`} >
+                    <div className={`ag-grid-react grid-parent-wrapper rmapproval-table`} >
                         <div className={`ag-grid-wrapper height-width-wrapper min-height-auto ${(approvalList && approvalList?.length <= 0) || noData ? "overlay-contain p-relative" : ""}`}>
                             <div className="ag-grid-header">
                                 <input ref={searchRef} type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
                             </div>
-                            <div className={`ag-theme-material ${props?.isApproval ? "report-grid" : ""} ${loader && "max-loader-height"}`}>
+                            <div className={`ag-theme-material ${props?.isApproval ? "grid-parent-wrapper" : ""} ${loader && "max-loader-height"}`}>
                                 {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found approval-listing" />}
                                 <AgGridReact
                                     floatingFilter={true}
@@ -935,7 +982,8 @@ function CommonApproval(props) {
 
                                     <AgGridColumn width="145" cellClass="has-checkbox" field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Token No."></AgGridColumn>
                                     {(props?.MasterId === RM_MASTER_ID || props?.MasterId === BOP_MASTER_ID) && <AgGridColumn width="145" field="EntryType" headerName='Entry Type'></AgGridColumn>}
-                                    {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="145" field="CostingHead" headerName='Costing Head'></AgGridColumn>}
+                                    {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="145" field="CostingHead" headerName='Costing Head' cellRenderer={'combinedCostingHeadRenderer'} floatingFilterComponentParams={floatingFilterStatusCostingHead}
+                                        floatingFilterComponent="statusFilterCostingHead"></AgGridColumn>}
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="145" field="ApprovalProcessId" hide></AgGridColumn>}
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="145" field="TechnologyName" headerName={technologyLabel}></AgGridColumn>}
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="145" field="RawMaterialName" headerName='Raw Material'></AgGridColumn>}
@@ -959,13 +1007,14 @@ function CommonApproval(props) {
 
                                     {IsShowFreightAndShearingCostFields() && (props?.MasterId === RM_MASTER_ID && (<AgGridColumn width="165" field="RMShearingCost" headerName='Shearing Cost' cellRenderer='shearingCostFormatter'></AgGridColumn>))}
 
-                                    {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="165" field="NetLandedCost" cellRenderer='costFormatter'></AgGridColumn>}
+                                    {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="165" field="NetLandedCost" cellRenderer="netLanedCostFormatter"></AgGridColumn>}
 
-                                    {!props?.isApproval && <AgGridColumn headerClass="justify-content-center" pinned="right" tooltipField="TooltipText" cellClass="text-center" field="DisplayStatus" cellRenderer='statusFormatter' headerName="Status" floatingFilterComponent="statusFilter" floatingFilterComponentParams={floatingFilterStatus} ></AgGridColumn>}
+                                    {!props?.isApproval && <AgGridColumn headerClass="justify-content-center" tooltipField="TooltipText" cellClass="text-center" field="DisplayStatus" cellRenderer='statusFormatter' headerName="Status" floatingFilterComponent="statusFilter" floatingFilterComponentParams={floatingFilterStatus} ></AgGridColumn>}
 
 
 
-                                    {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="145" field="CostingHead" headerName='Costing Head'></AgGridColumn>}
+                                    {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="145" field="CostingHead" headerName='Costing Head' cellRenderer={'combinedCostingHeadRenderer'} floatingFilterComponentParams={floatingFilterStatusCostingHead}
+                                        floatingFilterComponent="statusFilterCostingHead"></AgGridColumn>}
                                     {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="145" field="ApprovalProcessId" hide></AgGridColumn>}
                                     {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="145" field="BoughtOutPartNumber" headerName={`${showBopLabel()} Part No`}></AgGridColumn>}
                                     {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="145" field="BoughtOutPartName" headerName={`${showBopLabel()} Part Name`}></AgGridColumn>}
@@ -991,7 +1040,8 @@ function CommonApproval(props) {
                                     {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="140" field="NetLandedCostConversion" headerName={netCostHeader} cellRenderer='netCostFormatter'></AgGridColumn>}
 
                                     {/* {props?.MasterId === BOP_MASTER_ID && !props?.isApproval && <AgGridColumn headerClass="justify-content-center" pinned="right" cellClass="text-center" field="DisplayStatus" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>} */}
-                                    {props?.MasterId === MACHINE_MASTER_ID && <AgGridColumn width="145" field="CostingHead" headerName='Costing Head'></AgGridColumn>}
+                                    {props?.MasterId === MACHINE_MASTER_ID && <AgGridColumn width="145" field="CostingHead" headerName='Costing Head' cellRenderer={'combinedCostingHeadRenderer'} floatingFilterComponentParams={floatingFilterStatusCostingHead}
+                                        floatingFilterComponent="statusFilterCostingHead"></AgGridColumn>}
                                     {props?.MasterId === MACHINE_MASTER_ID && <AgGridColumn width="145" field="ApprovalProcessId" hide></AgGridColumn>}
                                     {props?.MasterId === MACHINE_MASTER_ID && <AgGridColumn width="145" field="Technology" headerName={technologyLabel}></AgGridColumn>}
                                     {props?.MasterId === MACHINE_MASTER_ID && <AgGridColumn width="145" field="VendorName" headerName={`${vendorLabel} (Code)`}></AgGridColumn>}
@@ -1004,7 +1054,8 @@ function CommonApproval(props) {
                                     {props?.MasterId === MACHINE_MASTER_ID && <AgGridColumn field="BasicRate" headerName="Machine Rate"></AgGridColumn>}
                                     {/* {props?.MasterId === MACHINE_MASTER_ID && !props?.isApproval && <AgGridColumn headerClass="justify-content-center" pinned="right" cellClass="text-center" field="DisplayStatus" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>} */}
 
-                                    {props?.MasterId === OPERATIONS_ID && <AgGridColumn width="145" field="CostingHead" headerName='Costing Head'></AgGridColumn>}
+                                    {props?.MasterId === OPERATIONS_ID && <AgGridColumn width="145" field="CostingHead" headerName='Costing Head' cellRenderer={'combinedCostingHeadRenderer'} floatingFilterComponentParams={floatingFilterStatusCostingHead}
+                                        floatingFilterComponent="statusFilterCostingHead"></AgGridColumn>}
                                     {props?.MasterId === OPERATIONS_ID && <AgGridColumn width="145" field="ApprovalProcessId" hide></AgGridColumn>}
                                     {props?.MasterId === OPERATIONS_ID && <AgGridColumn width="145" field="TechnologyName" tooltipField='Technology' headerName={technologyLabel}></AgGridColumn>}
                                     {props?.MasterId === OPERATIONS_ID && <AgGridColumn width="145" field="OperationName" headerName='Operation Name'></AgGridColumn>}
@@ -1016,7 +1067,8 @@ function CommonApproval(props) {
                                     {props?.MasterId === OPERATIONS_ID && <AgGridColumn field="BasicRate" headerName='Rate'></AgGridColumn>}
 
                                     {/* {props?.MasterId === OPERATIONS_ID && !props?.isApproval && <AgGridColumn headerClass="justify-content-center" pinned="right" cellClass="text-center" field="DisplayStatus" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>} */}
-                                    {props?.MasterId === BUDGET_ID && <AgGridColumn width="145" field="CostingHead" headerName='Costing Head'></AgGridColumn>}
+                                    {props?.MasterId === BUDGET_ID && <AgGridColumn width="145" field="CostingHead" headerName='Costing Head' cellRenderer={'combinedCostingHeadRenderer'} floatingFilterComponentParams={floatingFilterStatusCostingHead}
+                                        floatingFilterComponent="statusFilterCostingHead"></AgGridColumn>}
                                     {props?.MasterId === BUDGET_ID && <AgGridColumn width="145" field="FinancialYear" headerName='Financial Year'></AgGridColumn>}
                                     {props?.MasterId === BUDGET_ID && <AgGridColumn width="145" field="PartNumber" headerName='Part No.'></AgGridColumn>}
                                     {props?.MasterId === BUDGET_ID && <AgGridColumn width="145" field="PlantName" headerName='Plant (Code)'></AgGridColumn>}

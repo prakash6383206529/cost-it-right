@@ -521,3 +521,19 @@ span.input-group-text.bg-white {
   padding: 0 !important;
   margin-top: 5px;
 }
+
+.microsot-login-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 8px;
+  border-radius: 5px;
+  background-color: transparent;
+  border: 1px solid #d3d3d3;
+  font-size: 15px;
+
+  &:hover {
+    background-color: #edededb5;
+  }
+}

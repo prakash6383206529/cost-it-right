@@ -12,6 +12,7 @@ import LevelsListing from './LevelsListing';
 import UsersListing from './UsersListing';
 import RolesListing from './RolePermissions/RolesListing';
 import { reactLocalStorage } from 'reactjs-localstorage';
+import AddDelegation from './RolePermissions/AddDelegation';
 
 
 var isFirstTabActive = false
@@ -38,6 +39,7 @@ const User = () => {
     ViewLevelAccessibility: false,
     count: 0,
     RFQUser: false,
+    isDelegationForm: false,
   });
 
   useEffect(() => {
@@ -159,9 +161,17 @@ const User = () => {
       ...prevState,
       isRolePermissionForm: true,
       isUserForm: false,
-      data: {}
+      data: { isEditFlag: false, isNewRole: true }
     }));
   };
+  const displayDelegationForm = () => {
+    setState(prevState => ({
+      ...prevState,
+      isDelegationForm: true,
+      isUserForm: false,
+      data: { isEditFlag: false}
+    }));
+  };  
 
   const hideForm = () => {
     setState(prevState => ({
@@ -182,6 +192,16 @@ const User = () => {
     }));
   };
 
+  const getDelegationDetail = data => {
+    setState(prevState => ({
+      ...prevState,
+      isRolePermissionForm:false,
+      isDelegationForm: true,
+      isUserForm: false,
+      data: data
+    }));
+  };
+
   const getRoleDetail = data => {
     setState(prevState => ({
       ...prevState,
@@ -191,7 +211,7 @@ const User = () => {
     }));
   };
   const { isUserForm, isRolePermissionForm, data, ViewUserAccessibility,
-    ViewRoleAccessibility, ViewDepartmentAccessibility, ViewLevelAccessibility, ViewRFQUserAccessibility, ViewDivisionAccessibility } = state;
+    ViewRoleAccessibility, ViewDepartmentAccessibility, ViewLevelAccessibility, ViewRFQUserAccessibility, ViewDivisionAccessibility, isDelegationForm } = state;
 
   if (isUserForm === true) {
     return <UserRegistration
@@ -207,6 +227,7 @@ const User = () => {
       hideForm={hideForm}
     />
   }
+ 
 
   return (
     <Container fluid className="user-page">
@@ -242,6 +263,11 @@ const User = () => {
           {ViewRFQUserAccessibility && getConfigurationKey().IsRFQConfigured && <NavItem>
             <NavLink className={classnames({ active: state.activeTab === '6' })} onClick={() => { toggle('6'); }}>
               Manage RFQ Users
+            </NavLink>
+          </NavItem>}
+          {false && <NavItem>
+            <NavLink className={classnames({ active: state.activeTab === '7' })} onClick={() => { toggle('7'); }}>
+              Manage Delegation
             </NavLink>
           </NavItem>}
 
@@ -288,8 +314,25 @@ const User = () => {
                 tabId={state.activeTab}
               />
             </TabPane>}
+            {state.activeTab === '7' && ViewUserAccessibility &&
+            <TabPane tabId="7">
+              <UsersListing
+                RFQUser={false}
+                formToggle={displayDelegationForm}
+                getDelegationDetail={getDelegationDetail}
+                tabId={state.activeTab}
+                isDelegation={true}
+              />
+            </TabPane>}
         </TabContent>
       </div>
+      {
+        isDelegationForm && <AddDelegation
+          anchor={'right'}
+          isOpen={isDelegationForm}
+          hideForm={hideForm}
+        />
+      }
     </Container>
   );
 };

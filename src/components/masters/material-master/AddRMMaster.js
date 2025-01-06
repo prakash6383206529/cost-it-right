@@ -11,7 +11,7 @@ import Switch from 'react-switch'
 import { useDispatch, useSelector } from "react-redux";
 import Button from '../../layout/Button';
 import { animateScroll as scroll } from 'react-scroll';
-import { DatasetController } from "chart.js";
+// import { DatasetController } from "chart.js";
 import { debounce } from "lodash";
 import RemarksAndAttachments from "../Remark&Attachments";
 import { CheckApprovalApplicableMaster, checkForDecimalAndNull, checkForNull, getCodeBySplitting, getConfigurationKey, getNameBySplitting, loggedInUserId, userDetails, userTechnologyDetailByMasterId } from "../../../helper";
@@ -31,6 +31,7 @@ import HeaderTitle from "../../common/HeaderTitle";
 import { getRawMaterialDataBySourceVendor, setCommodityDetails, setOtherCostDetails } from "../actions/Indexation";
 import { useLabels } from "../../../helper/core";
 import { useQueryClient } from "react-query";
+import { fetchDivisionId } from "../../costing/CostingUtil";
 
 function AddRMMaster(props) {
     const { data, EditAccessibilityRMANDGRADE, AddAccessibilityRMANDGRADE } = props
@@ -243,32 +244,37 @@ function AddRMMaster(props) {
         dispatch(fetchSpecificationDataAPI(0, () => { }))
         props?.hideForm(type)
     }
-    const commonFunction = (plantId = EMPTY_GUID, isDivision = false, masterLevels = []) => {
+    const commonFunction = (requestObject, masterLevels = []) => {
         let levelDetailsTemp = []
         levelDetailsTemp = userTechnologyDetailByMasterId(state.costingTypeId, RM_MASTER_ID, masterLevels)
         setState(prevState => ({ ...prevState, levelDetails: levelDetailsTemp }))
-        let obj = {
-            DepartmentId: userDetails().DepartmentId,
-            UserId: loggedInUserId(),
-            TechnologyId: RM_MASTER_ID,
-            Mode: 'master',
-            approvalTypeId: costingTypeIdToApprovalTypeIdFunction(state.costingTypeId),
-            plantId: plantId
-        }
-        if (getConfigurationKey().IsMasterApprovalAppliedConfigure && !isDivision) {
-            dispatch(checkFinalUser(obj, (res) => {
-                if (res?.data?.Result && res?.data?.Data?.IsFinalApprover) {
+        fetchDivisionId(requestObject, dispatch).then((divisionId) => {
+            let obj = {
+                DepartmentId: userDetails().DepartmentId,
+                UserId: loggedInUserId(),
+                TechnologyId: RM_MASTER_ID,
+                Mode: 'master',
+                approvalTypeId: costingTypeIdToApprovalTypeIdFunction(state.costingTypeId),
+                plantId: (getConfigurationKey().IsMultipleUserAllowForApproval && requestObject?.PlantId) ? requestObject?.PlantId : EMPTY_GUID,
+                divisionId: divisionId
+            }
+            if (getConfigurationKey().IsMasterApprovalAppliedConfigure) {
+                dispatch(checkFinalUser(obj, (res) => {
+                    if (res?.data?.Result && res?.data?.Data?.IsFinalApprover) {
 
-                    setState(prevState => ({ ...prevState, isFinalApprovar: res?.data?.Data?.IsFinalApprover, CostingTypePermission: true, finalApprovalLoader: false, disableSendForApproval: false }))
-                }
-                else if (res?.data?.Data?.IsUserInApprovalFlow === false || res?.data?.Data?.IsNextLevelUserExist === false) {
-                    setState(prevState => ({ ...prevState, disableSendForApproval: true }))
-                } else {
-                    setState(prevState => ({ ...prevState, disableSendForApproval: false }))
-                }
-            }))
-        }
-        setState(prevState => ({ ...prevState, CostingTypePermission: false, finalApprovalLoader: false }))
+                        setState(prevState => ({ ...prevState, isFinalApprovar: res?.data?.Data?.IsFinalApprover, CostingTypePermission: true, finalApprovalLoader: false, disableSendForApproval: false }))
+                    }
+                    else if (res?.data?.Data?.IsUserInApprovalFlow === false || res?.data?.Data?.IsNextLevelUserExist === false) {
+                        setState(prevState => ({ ...prevState, disableSendForApproval: true }))
+                    } else {
+                        setState(prevState => ({ ...prevState, disableSendForApproval: false }))
+                    }
+                }))
+            }
+            setState(prevState => ({ ...prevState, CostingTypePermission: false, finalApprovalLoader: false }))
+        }).catch((error) => {
+            setState(prevState => ({ ...prevState, disableSendForApproval: true }))
+        })
     }
     /**
     * @method getDetails
@@ -727,4 +733,4 @@ function AddRMMaster(props) {
 
     )
 }
-export default AddRMMaster
+export default AddRMMaster  

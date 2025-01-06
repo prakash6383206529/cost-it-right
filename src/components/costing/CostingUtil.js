@@ -2,10 +2,13 @@
 import { useDispatch } from "react-redux";
 import { reactLocalStorage } from "reactjs-localstorage";
 import { HOUR, MICROSECONDS, MILLISECONDS, MINUTES, SECONDS } from "../../config/constants";
-import { checkForNull, loggedInUserId } from "../../helper"
+import { checkForNull, getConfigurationKey, loggedInUserId } from "../../helper"
 import DayTime from "../common/DayTimeWrapper";
 import { getBriefCostingById, gridDataAdded, isDataChange, saveAssemblyBOPHandlingCharge, saveBOMLevel, savePartNumber, setComponentDiscountOtherItemData, setComponentItemData, setComponentOverheadItemData, setComponentPackageFreightItemData, setComponentToolItemData, setOverheadProfitData, setPackageAndFreightData, setPartNumberArrayAPICALL, setProcessGroupGrid, setRMCCData, setSurfaceCostData, setToolTabData } from "./actions/Costing";
 import { PART_TYPE_ASSEMBLY } from "../../config/masterData";
+import { checkDivisionByPlantAndGetDivisionIdByPart } from "../../actions/Common";
+import Toaster from "../common/Toaster";
+import { MESSAGES } from "../../config/message";
 
 // TO CREATE OBJECT FOR IN SAVE-ASSEMBLY-PART-ROW-COSTING
 export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, tabId, effectiveDate, AddLabour = false, basicRateForST = '', isPartType = {}, IsAddPaymentTermInNetCost = false) => {
@@ -442,3 +445,26 @@ export const swappingLogicCommon = (givenArray, dragStart, dragEnd, e) => {
 
   return temp;
 };
+
+
+export const fetchDivisionId = (requestObject, dispatch) => {
+  return new Promise((resolve, reject) => {
+    if (getConfigurationKey()?.IsDivisionAllowedForDepartment) {
+      dispatch(checkDivisionByPlantAndGetDivisionIdByPart(requestObject, (res) => {
+        if (res?.data?.Result) {
+          const { Data } = res?.data
+          if (Data?.IsDivisionAppliedOnPlant && Data?.DivisionId) {
+            resolve(Data?.DivisionId)
+          } else if (Data?.IsDivisionAppliedOnPlant) {
+            reject(Toaster.warning(Data?.Message))
+          }
+          else resolve(null)
+        } else {
+          reject(Toaster.error(MESSAGES.SOME_ERROR))
+        }
+      }))
+    } else {
+      resolve(null)
+    }
+  })
+}

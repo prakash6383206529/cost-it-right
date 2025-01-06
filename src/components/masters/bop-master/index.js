@@ -228,7 +228,7 @@ const BOPMaster = () => {
                   </NavLink>
                 </NavItem>
 
-             
+
                 <NavItem>
                   <NavLink
                     className={classnames({ active: state.activeTab === "3" })}
@@ -290,7 +290,6 @@ const BOPMaster = () => {
                       />
                     </TabPane>
                   )}
-                  
                   {Number(state.activeTab) === 3 && (
                     <TabPane tabId="3">
                       <SOBListing
@@ -310,7 +309,7 @@ const BOPMaster = () => {
                       />
                     </TabPane>
                   )}
-                 
+
 
                   {Number(state.activeTab) === 5 && (
                     <TabPane tabId="5">

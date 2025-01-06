@@ -17,6 +17,8 @@ import TooltipCustom from '../../../common/Tooltip';
 import { CRMHeads, WACTypeId } from '../../../../config/constants';
 import { fetchCostingHeadsAPI } from '../../../../actions/Common';
 import Toaster from '../../../common/Toaster';
+import PackagingCalculator from '../WeightCalculatorDrawer/PackagingCalculator';
+// import PackagingCalculator from '../WeightCalculatorDrawer/PackagingCalculator';
 
 function IsolateReRender(control) {
   const values = useWatch({
@@ -64,6 +66,9 @@ function AddPackaging(props) {
   const [errorMessage, setErrorMessage] = useState('')
   const [removeApplicability, setRemoveApplicability] = useState([])
   const [totalRMGrossWeight, setTotalRMGrossWeight] = useState('')
+  const [showCalculator, setShowCalculator] = useState(false)
+  const [openCalculator, setOpenCalculator] = useState(false)
+  const [costingPackagingCalculationDetailsId, setCostingPackagingCalculationDetailsId] = useState('')
 
   const fieldValues = IsolateReRender(control)
   const { costingData, ComponentItemData } = useSelector(state => state.costing)
@@ -92,7 +97,9 @@ function AddPackaging(props) {
       })
       // setTotalFinishWeight(totalFinishWeight)
 
-      setValue("Quantity", totalFinishWeight)
+      if(applicability?.label === 'Crate/Trolley'){
+        setShowCalculator(true)
+      }
       setTotalRMGrossWeight(totalGrossWeight)
     }
   }, [RMCCTabData, applicability])
@@ -105,10 +112,13 @@ function AddPackaging(props) {
   }, [fieldValues]);
 
   useEffect(() => {
-    let request = partType ? 'multiple technology assembly' : ''
+    let request = partType ? 'multiple technology assembly' : 'Packaging'
     dispatch(fetchCostingHeadsAPI(request, false, (res) => { }))
     const removeApplicabilityList = _.map(gridData, 'Applicability')
     setRemoveApplicability(removeApplicabilityList)
+    if(applicability?.label === 'Crate/Trolley'){
+      setShowCalculator(true)
+    }
   }, [])
 
   // useEffect(() => {
@@ -156,6 +166,7 @@ function AddPackaging(props) {
       if (!removeApplicability?.includes(PACK_AND_FREIGHT_PER_KG)) {
         tempList.push({ label: PACK_AND_FREIGHT_PER_KG, value: PACK_AND_FREIGHT_PER_KG })
       }
+      // tempList.push({ label: 'Crate/Trolley', value: 'Crate/Trolley' })
       return tempList;
     }
     if (label === 'FrieghtType') {
@@ -180,6 +191,11 @@ function AddPackaging(props) {
     if (newValue && newValue !== '') {
       setApplicability(newValue)
       calculateApplicabilityCost(newValue.label, true)
+      if(newValue.label === 'Crate/Trolley'){
+        setShowCalculator(true)
+      }else{
+        setShowCalculator(false)
+      }
     } else {
       setApplicability([])
     }
@@ -405,12 +421,21 @@ function AddPackaging(props) {
         PackagingCRMHead: getValues('crmHeadPackaging') ? getValues('crmHeadPackaging').label : '',
         Rate: getValues('Rate'),
         Quantity: getValues('Quantity'),
+        CostingPackagingCalculationDetailsId: costingPackagingCalculationDetailsId??null
       }
     }
 
     toggleDrawer('', formData)
   }
-
+const toggleWeightCalculator = (packingCost) => {
+  setOpenCalculator(true)
+}
+const closeCalculator = (formData,packingCost) => {
+  setCostingPackagingCalculationDetailsId(formData?.CalculationId)
+  setValue('PackagingCost', checkForDecimalAndNull(packingCost, getConfigurationKey().NoOfDecimalForPrice))
+  setPackagingCost(packingCost)
+  setOpenCalculator(false)
+}
   /**
   * @method render
   * @description Renders the component
@@ -499,6 +524,7 @@ function AddPackaging(props) {
                       disabled={!PackageType ? true : false}
                     />
                   </Col>}
+                 
                   {/* {
                     applicability.label === 'Fixed'?
                     <Col md="12">
@@ -609,7 +635,7 @@ function AddPackaging(props) {
                     </Col>
                   </>}
 
-                  {costingData.TechnologyId !== LOGISTICS &&
+                  {costingData.TechnologyId !== LOGISTICS && !showCalculator &&
                     applicability?.label !== 'Fixed' && applicability?.label !== PACK_AND_FREIGHT_PER_KG &&
                     <Col md="12">
                       <TextFieldHookForm
@@ -641,7 +667,8 @@ function AddPackaging(props) {
 
 
                   {costingData.TechnologyId !== LOGISTICS && <Col md="12">
-                    <TextFieldHookForm
+                    <div className="packaging-cost-warpper">
+                      <TextFieldHookForm
                       label="Packaging Cost"
                       name={'PackagingCost'}
                       Controller={Controller}
@@ -649,17 +676,26 @@ function AddPackaging(props) {
                       register={register}
                       mandatory={applicability?.label === 'Fixed' ? true : false}
                       rules={{
-                        required: true,
+                        required: applicability?.label === 'Fixed' ? true : false,
                         validate: applicability?.label === 'Fixed' ? { number, checkWhiteSpaces, decimalNumberLimit6 } : {}
                       }}
                       handleChange={packingCostHandler}
                       defaultValue={''}
                       className=""
-                      customClassName={'withBorder mb-0'}
+                      customClassName={'withBorder w-100 mb-0'}
                       errors={errors.PackagingCost}
                       disabled={applicability?.label === 'Fixed' ? false : true}
                     />
+                      {showCalculator && <button
+                    id={`RM_calculator`}
+                    className={`CalculatorIcon mb-0 mt-1 ml-2 cr-cl-icon RM_calculator`}
+                    type={'button'}
+                    onClick={() => toggleWeightCalculator()}
+                    disabled={false}
+                    />}
+                    </div>
                   </Col>
+                 
                   }
 
                   {initialConfiguration.IsShowCRMHead && <Col md="12">
@@ -706,8 +742,16 @@ function AddPackaging(props) {
                   </div>
                 </Row>
               </>
+            
             </form>
-
+            {openCalculator && <PackagingCalculator
+                isOpen={openCalculator}
+                anchor={'right'}
+                closeCalculator={closeCalculator}
+                rowObjData={rowObjData}
+                CostingViewMode={isEditFlag ? true : false}
+                costingPackagingCalculationDetailsId={costingPackagingCalculationDetailsId}
+               />}
           </div>
         </Container>
       </Drawer>
@@ -715,4 +759,4 @@ function AddPackaging(props) {
   );
 }
 
-export default React.memo(AddPackaging);
+export default React.memo(AddPackaging);  

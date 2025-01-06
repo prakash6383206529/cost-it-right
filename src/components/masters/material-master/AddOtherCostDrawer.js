@@ -18,11 +18,11 @@ function AddOtherCostDrawer(props) {
 
 
 
-    const { rmBasicRate, isFromImport, RowData, RowIndex, isImport, plantCurrency, settlementCurrency, isBOP,RawMaterialNonIndexed=false,bopBasicRate } = props
+    const { rmBasicRate, isFromImport, RowData, RowIndex, isImport, plantCurrency, settlementCurrency, isBOP, RawMaterialNonIndexed = false, bopBasicRate } = props
     const Currency = RawMaterialNonIndexed ? settlementCurrency : ((isBOP && isImport) ? settlementCurrency : isBOP && !isImport ? plantCurrency : props?.RowData?.IndexCurrency) || 'Currency'
     const CurrencyLabel = RawMaterialNonIndexed ? settlementCurrency : (!props.rawMaterial ? reactLocalStorage.getObject('baseCurrency') : isImport && (props.rawMaterial || isBOP) ? settlementCurrency : plantCurrency) || 'Currency'
 
-const UOM = props?.RowData?.IndexUOM || (Array.isArray(props?.uom) ? '' : props?.uom?.label) || '';
+    const UOM = props?.RowData?.IndexUOM || (Array.isArray(props?.uom) ? '' : props?.uom?.label) || '';
     const [tableData, setTableData] = useState([]);
 
     const [disableTotalCost, setDisableTotalCost] = useState(true)
@@ -132,7 +132,7 @@ const UOM = props?.RowData?.IndexUOM || (Array.isArray(props?.uom) ? '' : props?
     const handleEdit = (indexValue) => {
         setEditIndex(indexValue);
         setIsEditMode(true);
-        
+
         let selectedData = tableData[indexValue];
         setValue('Cost', {
             label: selectedData.CostHeaderName,
@@ -356,16 +356,16 @@ const UOM = props?.RowData?.IndexUOM || (Array.isArray(props?.uom) ? '' : props?
         const newData = {
             MaterialCommodityStandardDetailsId: RowData?.MaterialCommodityStandardDetailsId, // Add MaterialCommodityStandardDetailsId
             RawMaterialCommodityIndexRateAndOtherCostDetailsId: RawMaterialCommodityIndexRateAndOtherCostDetailsId ?? null,
-            Type: getValues('Type') ? getValues('Type').label : '-',
-            CostHeaderName: getValues('Cost') ? getValues('Cost').label : '-',
-            Applicability: getValues('Applicability') ? getValues('Applicability').label : '-',
-            ApplicabilityCost: props.rawMaterial ? getValues('ApplicabilityBaseCost') : getValues('ApplicabilityCostCurrency') ? getValues('ApplicabilityCostCurrency') : '-',
-            ApplicabilityCostConversion: getValues('ApplicabilityBaseCost') ? getValues('ApplicabilityBaseCost') : '-',
-            Value: getValues('Percentage') ? getValues('Percentage') : '-',
-            NetCost: props.rawMaterial ? getValues('CostBaseCurrency') : getValues('CostCurrency') ? getValues('CostCurrency') : '-',
+            Type: getValues('Type') ? getValues('Type').label : '',
+            CostHeaderName: getValues('Cost') ? getValues('Cost').label : '',
+            Applicability: getValues('Applicability') ? getValues('Applicability').label : '',
+            ApplicabilityCost: props.rawMaterial ? getValues('ApplicabilityBaseCost') : getValues('ApplicabilityCostCurrency') ? getValues('ApplicabilityCostCurrency') : '',
+            ApplicabilityCostConversion: getValues('ApplicabilityBaseCost') ? getValues('ApplicabilityBaseCost') : '',
+            Value: getValues('Percentage') ? getValues('Percentage') : '',
+            NetCost: props.rawMaterial ? getValues('CostBaseCurrency') : getValues('CostCurrency') ? getValues('CostCurrency') : '',
             NetCostConversion: getValues('CostBaseCurrency'),
-            Description: getValues('CostDescription') ? getValues('CostDescription') : '-',
-            CostingConditionMasterId: getValues('Cost') ? getValues('Cost').value : '-',
+            Description: getValues('CostDescription') ? getValues('CostDescription') : '',
+            CostingConditionMasterId: getValues('Cost') ? getValues('Cost').value : '',
             Remark: getValues('Remark')
         };
         // If the CostHeaderName is 'Discount Cost', prepend '-' sign
@@ -482,7 +482,7 @@ const UOM = props?.RowData?.IndexUOM || (Array.isArray(props?.uom) ? '' : props?
                                     </div>
                                 </Col>
                             </Row>
-                            <form onSubmit={handleSubmit(onSubmit)}>
+                            <form noValidate onSubmit={handleSubmit(onSubmit)}>
                                 <div className='hidepage-size'>
 
                                     <Row>
@@ -495,6 +495,7 @@ const UOM = props?.RowData?.IndexUOM || (Array.isArray(props?.uom) ? '' : props?
                                                 control={control}
                                                 register={register}
                                                 mandatory={true}
+                                                rules={{ required: true }}
                                                 // options={conditionDropdown}
                                                 options={state.costDropdown}
 
@@ -502,7 +503,7 @@ const UOM = props?.RowData?.IndexUOM || (Array.isArray(props?.uom) ? '' : props?
                                                 defaultValue={''}
                                                 className=""
                                                 customClassName={'withBorder'}
-                                                errors={errors.Condition}
+                                                errors={errors.Cost}
                                                 disabled={props.ViewMode || isEditMode}
                                             />
                                         </Col>
@@ -516,14 +517,12 @@ const UOM = props?.RowData?.IndexUOM || (Array.isArray(props?.uom) ? '' : props?
                                                 mandatory={true}
                                                 rules={{
                                                     required: true,
-                                                    validate: { checkWhiteSpaces, hashValidation },
-                                                    maxLength: 80
                                                 }}
                                                 handleChange={() => { }}
                                                 defaultValue={""}
                                                 className=""
                                                 customClassName={"withBorder"}
-                                                errors={errors.OtherCostDescription}
+                                                errors={errors.CostDescription}
                                                 disabled={props.ViewMode}
                                             />
                                         </Col>
@@ -532,7 +531,7 @@ const UOM = props?.RowData?.IndexUOM || (Array.isArray(props?.uom) ? '' : props?
                                                 label={`Type`}
                                                 name={'Type'}
                                                 placeholder={'Select'}
-
+                                                rules={{ required: true, }}
                                                 Controller={Controller}
                                                 control={control}
                                                 register={register}
@@ -559,6 +558,8 @@ const UOM = props?.RowData?.IndexUOM || (Array.isArray(props?.uom) ? '' : props?
                                                         control={control}
                                                         register={register}
                                                         mandatory={true}
+                                                        rules={{ required: true, }}
+                                                        // options={conditionDropdown}
                                                         options={combinations}
                                                         handleChange={applicabilityChange}
                                                         defaultValue={''}
@@ -700,13 +701,13 @@ const UOM = props?.RowData?.IndexUOM || (Array.isArray(props?.uom) ? '' : props?
                                                 defaultValue={""}
                                                 className=""
                                                 customClassName={"withBorder"}
-                                                errors={errors.OtherCostDescription}
+                                                errors={errors.Remark}
                                                 disabled={props.ViewMode}
                                             />
                                         </Col>
                                         <Col md="3" className={toggleCondition()}>
                                             <button
-                                                type="button"
+                                                type="submit"
                                                 className={"user-btn  pull-left mt-1"}
                                                 onClick={addData}
                                                 disabled={props.ViewMode || props?.disabled}
@@ -738,7 +739,7 @@ const UOM = props?.RowData?.IndexUOM || (Array.isArray(props?.uom) ? '' : props?
                                                     {!isBOP && <th>{`Cost (${CurrencyLabel}${UOM ? `/${UOM}` : ''})`}</th>}
                                                     <th>{`Remark`}</th>
                                                     {!props.hideAction && <th className='text-right'>{`Action`}</th>}
-                                                </tr>
+                                                </tr >
 
                                                 {tableData && tableData.map((item, index) => (
                                                     <Fragment key={index}>
@@ -751,27 +752,31 @@ const UOM = props?.RowData?.IndexUOM || (Array.isArray(props?.uom) ? '' : props?
                                                             {!isBOP && <td>{item.ApplicabilityCostConversion}</td>}
                                                             <td>{item.Value !== '-' ? checkForDecimalAndNull(item.Value, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
                                                             {(!props.rawMaterial || isBOP) && <td>{item.NetCost !== '-' ? checkForDecimalAndNull(item.NetCost, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>}
-                                                            {!isBOP && <td>{checkForDecimalAndNull(item.NetCostConversion, initialConfiguration?.NoOfDecimalForPrice) !== '-' ?RawMaterialNonIndexed?checkForDecimalAndNull(item?.NetCost, initialConfiguration?.NoOfDecimalForPrice): checkForDecimalAndNull(item?.NetCostConversion, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>}
+                                                            {!isBOP && <td>{checkForDecimalAndNull(item.NetCostConversion, initialConfiguration?.NoOfDecimalForPrice) !== '-' ? RawMaterialNonIndexed ? checkForDecimalAndNull(item?.NetCost, initialConfiguration?.NoOfDecimalForPrice) : checkForDecimalAndNull(item?.NetCostConversion, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>}
                                                             <td>{item.Remark}</td>
-                                                            {!props.hideAction && (
-                                                                <td>
-                                                                    <div className='text-right'>
-                                                                        <button title='Edit' className="Edit mr-1" type='button' onClick={() => editDeleteData(index, 'edit')} disabled={props.ViewMode} />
-                                                                        <button title='Delete' className="Delete mr-1" type='button' onClick={() => editDeleteData(index, 'delete')} disabled={props.ViewMode} />
-                                                                    </div>
-                                                                </td>
-                                                            )}
-                                                        </tr>
-                                                    </Fragment>
+                                                            {
+                                                                !props.hideAction && (
+                                                                    <td>
+                                                                        <div className='text-right'>
+                                                                            <button title='Edit' className="Edit mr-1" type='button' onClick={() => editDeleteData(index, 'edit')} disabled={props.ViewMode} />
+                                                                            <button title='Delete' className="Delete mr-1" type='button' onClick={() => editDeleteData(index, 'delete')} disabled={props.ViewMode} />
+                                                                        </div>
+                                                                    </td>
+                                                                )
+                                                            }
+                                                        </tr >
+                                                    </Fragment >
                                                 ))}
 
-                                                {tableData && tableData.length === 0 && (
-                                                    <tr>
-                                                        <td colSpan="10">
-                                                            <NoContentFound title={EMPTY_DATA} />
-                                                        </td>
-                                                    </tr>
-                                                )}
+                                                {
+                                                    tableData && tableData.length === 0 && (
+                                                        <tr>
+                                                            <td colSpan="10">
+                                                                <NoContentFound title={EMPTY_DATA} />
+                                                            </td>
+                                                        </tr>
+                                                    )
+                                                }
 
                                                 <tr className='table-footer'>
                                                     <td colSpan={props.rawMaterial ? 6 : 7} className="text-right font-weight-600 fw-bold">{'Total Cost:'}</td>
@@ -783,12 +788,12 @@ const UOM = props?.RowData?.IndexUOM || (Array.isArray(props?.uom) ? '' : props?
                                                         </td>
                                                     }
                                                     <td colSpan={3} className="text-left">
-                                                        {checkForDecimalAndNull((isBOP||RawMaterialNonIndexed ? totalCostCurrency : totalCostBase), initialConfiguration?.NoOfDecimalForPrice)} ({isImport?settlementCurrency:plantCurrency})
+                                                        {checkForDecimalAndNull((isBOP || RawMaterialNonIndexed ? totalCostCurrency : totalCostBase), initialConfiguration?.NoOfDecimalForPrice)} ({isImport ? settlementCurrency : plantCurrency})
                                                     </td>
                                                 </tr>
-                                            </tbody>
-                                        </Table>
-                                    </Col>
+                                            </tbody >
+                                        </Table >
+                                    </Col >
 
                                 </div >
                                 <Row className="sf-btn-footer no-gutters drawer-sticky-btn justify-content-between mx-0">
@@ -810,7 +815,7 @@ const UOM = props?.RowData?.IndexUOM || (Array.isArray(props?.uom) ? '' : props?
                                         </button>
                                     </div>
                                 </Row>
-                            </form>
+                            </form >
                         </div >
                     </Container >
                 </div >

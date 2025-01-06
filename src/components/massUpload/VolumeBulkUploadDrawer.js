@@ -14,6 +14,7 @@ import { MESSAGES } from '../../config/message';
 import WarningMessage from '../common/WarningMessage';
 import { ExcelRenderer } from 'react-excel-renderer';
 import cloudImg from '../../assests/images/uploadcloud.png';
+import { validateForm } from '../layout/FormInputs';
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -241,6 +242,7 @@ export default connect(mapStateToProps,
     {
         bulkUploadVolume
     })(reduxForm({
+        validate: validateForm,
         form: 'VolumeBulkUploadDrawer',
         enableReinitialize: true,
         touchOnChange: true

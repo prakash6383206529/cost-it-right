@@ -30,7 +30,6 @@ function SingleDropdownFloationFilter(props) {
     })
 
     useEffect(() => {
-
         if (isReset && isReset?.data) {
             setValue("singleDropDown", [])
             setShowInputData([])
