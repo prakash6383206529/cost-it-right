@@ -100,9 +100,11 @@ function AddPackaging(props) {
       if(applicability?.label === 'Crate/Trolley'){
         setShowCalculator(true)
       }
+      setValue("Quantity", totalFinishWeight)
       setTotalRMGrossWeight(totalGrossWeight)
     }
   }, [RMCCTabData, applicability])
+  
 
   useEffect(() => {
     if (applicability && applicability?.value !== undefined) {
