@@ -73,23 +73,22 @@ function AddRejectionRecovery(props) {
                 ...state,
                 rejectionApplicabilityType: e.label,
                 rejectionApplicabilityTypeValue: e.value,
+                netRejectionRecovery: '',
+                rejectionRecoveryPercentage: '',
+                effectiveRecoveryPercentage: '',
+                recoveryCostApplicability: '',
             })
         } else {
             setState({
                 ...state,
                 rejectionApplicabilityTypeValue: '',
                 rejectionApplicabilityType: '',
+                netRejectionRecovery: '',
+                rejectionRecoveryPercentage: '',
+                effectiveRecoveryPercentage: '',
+                recoveryCostApplicability: '',
             })
         }
-        setState({
-            ...state,
-            rejectionApplicabilityType: e.label,
-            rejectionApplicabilityTypeValue: e.value,
-            netRejectionRecovery: '',
-            rejectionRecoveryPercentage: '',
-            effectiveRecoveryPercentage: '',
-            recoveryCostApplicability: '',
-        })
         setValue('NetRejectionRecovery', '');
         setValue('RejectionRecoveryPercentage', '')
         setValue('EffectiveRecoveryPercentage', '')
