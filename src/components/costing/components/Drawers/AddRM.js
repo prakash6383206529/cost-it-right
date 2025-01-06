@@ -10,7 +10,7 @@ import Toaster from '../../../common/Toaster';
 import { costingInfoContext } from '../CostingDetailStepTwo';
 import { EMPTY_GUID, ZBC } from '../../../../config/constants';
 import LoaderCustom from '../../../common/LoaderCustom';
-import { checkForDecimalAndNull, getConfigurationKey, searchNocontentFilter } from '../../../../helper';
+import { checkForDecimalAndNull, getConfigurationKey, searchNocontentFilter, showRMScrapKeys } from '../../../../helper';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
@@ -357,7 +357,7 @@ function AddRM(props) {
                         <AgGridColumn field="Currency" cellRenderer={'currencyFormatter'}></AgGridColumn>
                         <AgGridColumn field="UOM"></AgGridColumn>
                         <AgGridColumn field="BasicRatePerUOM" headerName="Basic Rate/UOM" cellRenderer={'priceFormatter'}></AgGridColumn>
-                        <AgGridColumn field="ScrapRate" headerName='Scrap Rate/UOM' cellRenderer={'priceFormatter'}></AgGridColumn>
+                        <AgGridColumn field="ScrapRate" headerName={showRMScrapKeys(costData?.TechnologyId)?.name} cellRenderer={'priceFormatter'}></AgGridColumn>
                         <AgGridColumn field="NetLandedCostCombine" headerName={`Net Cost ${sourceCurrencyFormatter(currencySource?.label)}/UOM`} cellRenderer={'netLandedFormat'}></AgGridColumn>
 
                       </AgGridReact >

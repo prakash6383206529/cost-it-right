@@ -125,34 +125,34 @@ function SimulationApproveReject(props) {
   }, [])
 
   useEffect(() => {
-    //THIS OBJ IS FOR SAVE SIMULATION
-    if (type === 'Sender' && !isSaveDone && !isSimulationApprovalListing) {
-      let simObj = formatRMSimulationObject(simulationDetail, costingArr, apiData, isRMIndexationSimulation)
+    if (type === 'Sender' && !isSaveDone && !isSimulationApprovalListing && !hasCalledAPI.current) {
+      let simObj = formatRMSimulationObject(simulationDetail, costingArr, apiData, isRMIndexationSimulation);
       //THIS CONDITION IS FOR SAVE SIMULATION
+      setLoader(true);
+      hasCalledAPI.current = true; //  ref to true to prevent future calls
+     
       dispatch(saveSimulationForRawMaterial(simObj, res => {
         if (res?.data?.Result) {
-          Toaster.success('Simulation has been saved successfully')
-          setLoader(true)
+          Toaster.success('Simulation has been saved successfully');
+         
           if (initialConfiguration?.IsSAPConfigured) {
             dispatch(checkSAPPoPrice(simulationDetail?.SimulationId, '', res => {
-              let status = 200
+              let status = 200;
               if ('response' in res) {
-
-                status = res && res?.response?.status
+                status = res && res?.response?.status;
               }
-
               if (status !== undefined && status === 200) {
                 setIsDisableSubmit(false)
               } else {
                 setIsDisableSubmit(true)
               }
-            }))
+            }));
           }
-          setLoader(false)
         }
-      }))
+        setLoader(false);
+      }));
     }
-  }, [simulationDetail])
+  }, [simulationDetail]);
 
   const callbackSetDataInFields = (obj) => {
     setDataInFields(obj)
