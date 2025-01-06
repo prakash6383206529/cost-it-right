@@ -1227,6 +1227,8 @@ const BOPImportListing = (props) => {
           type={'Bought Out Part'}
           quotationId={props.quotationId}
           closeDrawer={closeCompareDrawer}
+          summaryDrawer={props?.isMasterSummaryDrawer}
+
         // selectedRow = {props.bopDataResponse}
         />
 

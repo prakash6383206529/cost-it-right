@@ -27,9 +27,10 @@ import {
     SET_BOP_PR_QUOTATION_IDENTITY,
     UPDATED_TOOLING_DATA,
     SET_TOOLING_SPECIFIC_ROW_DATA,
+    BEST_COSTING_DATA,
 } from '../../../config/constants';
 import { MESSAGES } from '../../../config/message';
-import { loggedInUserId, userDetails } from '../../../helper';
+import { getConfigurationKey, loggedInUserId, userDetails } from '../../../helper';
 import { apiErrors } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
 
@@ -465,7 +466,57 @@ export function rfqGetBestCostingDetails(bestCostId, callback) {
     return (dispatch) => {
         const request = axios.get(`${API.rfqGetBestCostingDetails}?bestCostId=${bestCostId}`, config());
         request.then((response) => {
-            if (response?.data?.Result) {
+            if (response.data.Result || response.status === 204) {
+                const tempObj = response?.data?.Data;
+
+                // Format the data based on type
+                let formattedData = null;
+
+                console.log("tempObj", tempObj);
+                if (tempObj?.BoughtOutPartBestCostRequest) {
+                    formattedData = {
+                        BestCostId: tempObj.BestCostId,
+                        bestCost: true,
+                        BasicRateConversion : tempObj?.BoughtOutPartBestCostRequest?.BasicRate,
+                        NetLandedCostConversion : tempObj?.BoughtOutPartBestCostRequest?.NetBoughtOutPartCost,
+                        OtherNetCostConversion : tempObj?.BoughtOutPartBestCostRequest?.OtherCost,
+                        nPOPrice : tempObj?.BoughtOutPartBestCostRequest?.POPrice,
+                        QuotationPartId : tempObj?.BoughtOutPartBestCostRequest?.QuotationPartId,
+                        UOM: '-',
+                        Currency: getConfigurationKey().BaseCurrency,
+                        Plants: '-',
+                        Vendor: '-',
+                        VendorCode: '-',
+                        EffectiveDate: null,
+                        Attachements: [],
+                        BoughtOutPartOtherCostDetailsSchema: []
+                    };
+                } else if (tempObj?.RawMaterialBestCostRequest) {
+                    formattedData = {
+                        BestCostId: tempObj.BestCostId,
+                        bestCost: true,
+                        BasicRateConversion : tempObj?.RawMaterialBestCostRequest?.BasicRate,
+                        NetLandedCostConversion : tempObj?.RawMaterialBestCostRequest?.NetLandedCost,
+                        OtherNetCostConversion : tempObj?.RawMaterialBestCostRequest?.OtherNetCost,
+                        nPOPrice : tempObj?.RawMaterialBestCostRequest?.POPrice,
+                        QuotationPartId : tempObj?.RawMaterialBestCostRequest?.QuotationPartId,
+                        UOM: '-',
+                        Currency: getConfigurationKey().BaseCurrency,
+                        Plants: '-',
+                        Vendor: '-',
+                        VendorCode: '-',
+                        EffectiveDate: null,
+                        Attachements: [],
+                        RawMaterialOtherCostDetailsSchema: []
+                    };
+                }
+
+                // Store in bestCostingData reducer only
+                dispatch({
+                    type: BEST_COSTING_DATA,
+                    payload: formattedData || []
+                });
+
                 callback(response);
             }
         }).catch((error) => {
@@ -475,6 +526,7 @@ export function rfqGetBestCostingDetails(bestCostId, callback) {
         });
     };
 }
+
 export function getNfrAnnualForecastQuantity(nfrId, partId, sopDate, callback) {
     return (dispatch) => {
         const request = axios.get(`${API.getNfrAnnualForecastQuantity}?nfrId=${nfrId}&partId=${partId}&sopDate=${sopDate}`, config());

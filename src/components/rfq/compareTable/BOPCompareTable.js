@@ -14,8 +14,9 @@ import { useLabels } from '../../../helper/core';
 import AddOtherCostDrawer from '../../masters/material-master/AddOtherCostDrawer';
 
 const BOPCompareTable = (props) => {
+    
     const dispatch = useDispatch()
-    const { viewBOPDetails } = useSelector((state) => state.boughtOutparts);
+    const { viewBOPDetails } = useSelector((state) => state?.boughtOutparts);
     const [openSpecification, setOpenSpecification] = useState(false)
     const [selectedBopId, setSelectedBopId] = useState(null) // [setSelectedBopId, setSelectedBopId]
     const [sectionData, setSectionData] = useState([])
@@ -27,13 +28,20 @@ const BOPCompareTable = (props) => {
     const[selectedItem,setSelectedItem] = useState(null)
     const[otherCostDrawer,setOtherCostDrawer] = useState(false)
     const [isLoader, setIsLoader] = useState(false)
-    const showCheckbox = viewBOPDetails && viewBOPDetails?.some(item => item?.IsShowCheckBoxForApproval === true);
+    const showCheckbox = Array.isArray(viewBOPDetails) && viewBOPDetails.some(
+        item => item?.IsShowCheckBoxForApproval === true
+    );    
+    
+    const bestCostingData = useSelector(state => state?.rfq?.bestCostingData)
+    console.log("bestCostingData", bestCostingData);
+
     const [showConvertedCurrency, setShowConvertedCurrency] = useState(true)
     const [showConvertedCurrencyCheckbox, setShowConvertedCurrencyCheckbox] = useState(false)
         // Add handler function
         const handleConvertedCurrencyChange = (value) => {
             setShowConvertedCurrency(value);
         }
+        
     useEffect(() => {
         setIsLoader(true)
         let temp = []
@@ -52,12 +60,31 @@ const BOPCompareTable = (props) => {
                 let dat = [...temp]
 
                 let tempArrToSend = _.uniqBy(dat, 'BoughtOutPartId')
-                let arr = bestCostObjectFunction(tempArrToSend)
-                dispatch(setBopCostingData([...arr]))
+                console.log("tempArrToSend", tempArrToSend);
+                if(!props?.RfqMasterApprovalDrawer){
+                    console.log("bestCostingData ifffff", bestCostingData);
+                    // When coming from view RFQ screen
+                    let arr = bestCostObjectFunction(tempArrToSend)
+                    dispatch(setBopCostingData([...arr]))
+                } else {
+                    if(bestCostingData){
+                 
+                    const arr = [...tempArrToSend, bestCostingData]
+                    
+                    dispatch(setBopCostingData([...arr]))
+                    setShowConvertedCurrency(true)
+                    }
+                    else{
+                        dispatch(setBopCostingData([...tempArrToSend]))
+
+                        setShowConvertedCurrency(false)
+                    }
+                }
 
             }
         }))
-    }, [showConvertedCurrency])
+    
+    }, [showConvertedCurrency, bestCostingData])
 
     
     useEffect(() => {
@@ -68,7 +95,7 @@ const BOPCompareTable = (props) => {
             setShowConvertedCurrencyCheckbox(true)
         }
     
-        if (viewBOPDetails.length !== 0) {
+        if (viewBOPDetails?.length !== 0) {
             let sectionOne = [];
             let sectionTwo = [];
             let sectionThree = [];
@@ -137,7 +164,7 @@ const BOPCompareTable = (props) => {
             });
     
             // Section Three Data
-            sectionThree = viewBOPDetails.map(item => [
+            sectionThree = viewBOPDetails?.map(item => [
                 item?.bestCost ? '-' : (
                     <div 
                         onClick={() => handleOpenSpecificationDrawerSingle(item.BoughtOutPartId)} 
@@ -163,7 +190,7 @@ const BOPCompareTable = (props) => {
                 costingType: item.CostingHead === "Zero Based" ? 
                     "ZBC" : 
                     item.CostingHead === "Vendor Based" ? "VBC" : "",
-                vendorCode: item.VendorCode,
+                vendorCode: item?.VendorCode || "",
                 showConvertedCurrencyCheckbox: item.bestCost===""&&showConvertedCurrencyCheckbox
 
             }));
@@ -268,7 +295,7 @@ const BOPCompareTable = (props) => {
         } 
         else {
             // Handle converted currency case
-            const conversionKeys = ["NetLandedCostConversion", "BasicRatePerUOMConversion", "OtherNetCostConversion"];
+            const conversionKeys = ["NetLandedCostConversion", "BasicRateConversion", "OtherNetCostConversion"];
             
             Object.keys(minObject).forEach(key => minObject[key] = "");
             
