@@ -69,7 +69,7 @@ const RMListing = (props) => {
   const { isLoading, isError, error, data } = useFetchAPICall('MastersRawMaterial_GetAllMaterialType', params);
 
   useEffect(() => {
-    if (rawMaterialTypeDataList?.length > 0) {
+    if (rawMaterialTypeDataList&&rawMaterialTypeDataList?.length >= 0) {
       setState((prev) => ({ ...prev, render: false }));
     }
   }, [rawMaterialTypeDataList]);
