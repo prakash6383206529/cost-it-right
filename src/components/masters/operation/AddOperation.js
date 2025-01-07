@@ -115,7 +115,8 @@ class AddOperation extends Component {
       settlementExchangeRateId: '',
       plantCurrencyID: '',
       showWarning: false,
-      showPlantWarning: false
+      showPlantWarning: false,
+      isLoader: false
     }
     this.state = { ...this.initialState };
 
@@ -356,17 +357,23 @@ class AddOperation extends Component {
    */
   onPressVendor = (costingHeadFlag) => {
     this.props.reset();
-      // Store current isImport value
-      const currentIsImport = this.state.isImport;
+    this.setState({ isLoader: true });
+const currentIsImport = this.state.isImport;
+      const finalApprovalLoader = this.state.finalApprovalLoader
     this.setState({ ...this.initialState, costingTypeId: costingHeadFlag ,
-      isImport: currentIsImport // Preserve isImport value
+      isImport: currentIsImport ,
+      finalApprovalLoader:finalApprovalLoader
     }, () => {
       if (costingHeadFlag === CBCTypeId) {
-        this.props.getClientSelectList(() => { })
+        this.props.getClientSelectList(() => {
+          this.setState({ isLoader: false });
+        });
+      } else {
+        this.setState({ isLoader: false }); 
       }
     });
+    
   };
-
   /**
   * @method handleTechnology
   * @description Used handle technology
