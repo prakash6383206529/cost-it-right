@@ -21,7 +21,7 @@ const OtherCostTable = (props) => {
                         <th>{`Other Cost Description`}</th>
                         {/* <th>{`Other Cost Type`}</th> */}
                         <th>{`Other Cost Applicability`}</th>
-                        <th>{`Cost Applicability (${currencySource?.label ?? "Currency"})`}</th>
+                        <th>{`Cost Applicability (${currencySource?.label ?? initialConfiguration?.BaseCurrency})`}</th>
                         <th>{'Percentage (%)'}</th>
                         <th>{`Cost`}</th>
                         {!CostingViewMode && <th className='text-right'>{`Action`}</th>}
@@ -67,7 +67,7 @@ const OtherCostTable = (props) => {
                     ) : (
                         <tr className='table-footer'>
                             <td colSpan={initialConfiguration.IsShowCRMHead ? 5 : 4} className='text-right'>
-                                Total Other Cost (${currencySource?.label ?? "Currency"}):
+                                Total Other Cost ({currencySource?.label ?? initialConfiguration?.BaseCurrency}):
                             </td>
                             <td colSpan={3}>
                                 {checkForDecimalAndNull(otherCostTotal, initialConfiguration.NoOfDecimalForPrice)}
