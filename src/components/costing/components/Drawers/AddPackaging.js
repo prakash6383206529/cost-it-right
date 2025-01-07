@@ -59,7 +59,7 @@ function AddPackaging(props) {
   const [freightTypeState, setFreightTypeState] = useState(isEditFlag ? { label: rowObjData.PackagingDescription, value: rowObjData.PackagingDescription } : []);
   // const [PackageType, setPackageType] = useState(isEditFlag ? rowObjData.IsPackagingCostFixed : false);
   const [PackageType, setPackageType] = useState(true);
-  const [packagingCost, setPackagingCost] = useState(0)
+  const [packagingCost, setPackagingCost] = useState(rowObjData?.PackagingCost??0)
   const costingHead = useSelector(state => state.comman.costingHead)
   const { CostingDataList, isBreakupBoughtOutPartCostingFromAPI } = useSelector(state => state.costing)
   const [packagingCostDataFixed, setPackagingCostDataFixed] = useState(getValues('PackagingCost') ? getValues('PackagingCost') : '')
@@ -68,7 +68,7 @@ function AddPackaging(props) {
   const [totalRMGrossWeight, setTotalRMGrossWeight] = useState('')
   const [showCalculator, setShowCalculator] = useState(false)
   const [openCalculator, setOpenCalculator] = useState(false)
-  const [costingPackagingCalculationDetailsId, setCostingPackagingCalculationDetailsId] = useState('')
+  const [costingPackagingCalculationDetailsId, setCostingPackagingCalculationDetailsId] = useState(rowObjData?.CostingPackagingCalculationDetailsId??null)
 
   const fieldValues = IsolateReRender(control)
   const { costingData, ComponentItemData } = useSelector(state => state.costing)
@@ -277,7 +277,7 @@ function AddPackaging(props) {
         break;
       case 'BOP + CC':
 
-        if (!PackageType) {
+          if (!PackageType) {
           setValue('PackagingCost', '')
           setPackagingCost('')
         } else {
@@ -426,13 +426,13 @@ function AddPackaging(props) {
         CostingPackagingCalculationDetailsId: costingPackagingCalculationDetailsId??null
       }
     }
-
     toggleDrawer('', formData)
   }
 const toggleWeightCalculator = (packingCost) => {
   setOpenCalculator(true)
 }
 const closeCalculator = (calculatorId,packingCost,type) => {
+  
   setCostingPackagingCalculationDetailsId(calculatorId)
   if(type === 'Save'){
     setValue('PackagingCost', checkForDecimalAndNull(packingCost, getConfigurationKey().NoOfDecimalForPrice))

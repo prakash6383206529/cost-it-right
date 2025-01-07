@@ -69,10 +69,10 @@ const {rowObjData} = props
             // }
             // else{
             const getPackagingCalculationData = () => {
+
                 const costingId = costingData?.CostingId ?? tempData.find(item => item?.CostingHeading === "Old Costing")?.costingId
-                const calculatorId = rowObjData && Object.keys(rowObjData).length > 0 ? rowObjData?.CostingPackagingCalculationDetailsId : props?.costingPackagingCalculationDetailsId ?? null
+                const calculatorId = props?.costingPackagingCalculationDetailsId ?? null
                 const packagingDetailId = rowObjData && Object.keys(rowObjData).length > 0 ? rowObjData?.PackagingDetailId : null
-                
                 setState((prevState) => ({ ...prevState, loader: true }))
                 dispatch(getPackagingCalculation(costingId, packagingDetailId, calculatorId, (res) => {
                     let data = res?.data?.Data
@@ -178,9 +178,9 @@ const setFormValues=(data)=>{
         const noOfPartsPerCover = checkForNull(getValues('NoOfPartsPerCover'))
         
         const packingCost = (
-            (totalCostOfCrate / (state.volumePerAnnum * amortizedNoOfYears)) + 
+            (checkForNull(totalCostOfCrate / (state.volumePerAnnum * amortizedNoOfYears))) + 
             (checkForNull((weightOfCover * costOfCoverPerKg) / noOfPartsPerCover)) + 
-            costOfSpacerPackingInsert
+            checkForNull(costOfSpacerPackingInsert)
         )
         // Update state
         setState(prevState => ({
