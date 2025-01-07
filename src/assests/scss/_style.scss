@@ -6204,6 +6204,7 @@ body {
       .Returned,
       .NotSelected,
       .ExternalReject,
+      .NonAwarded,
       [class^="Pending"],
       [class^="Awaiting"],
       .Approved,
@@ -6212,7 +6213,9 @@ body {
       .RejectedBySystem,
       .History,
       .ApprovedByAssembly,
+      .Awarded,
       .PreDraft,
+
       .Sent {
         min-width: calc(90px * 80 / 100);
         height: calc(30px * 80 / 100);
