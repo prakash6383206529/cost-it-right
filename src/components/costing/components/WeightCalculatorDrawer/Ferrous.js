@@ -844,7 +844,7 @@ function Ferrous(props) {
         setValue('finishedWeight', '');
         setValue('scrapWeight', '');
         setValue('recovery', '');
-        // setValue('scrapCost', '');
+        setValue('inputWeight', 0);
         setValue('NetRMCost', '');
 
         // Reset rmGridFields
