@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { Row, Col, Container, } from 'reactstrap'
 import { Controller, useForm, useWatch } from 'react-hook-form'
-import { number, checkWhiteSpaces, maxLength7, checkForNull, checkForDecimalAndNull, loggedInUserId, getConfigurationKey } from '../../../../helper'
+import { number, checkWhiteSpaces, maxLength7,maxLength5,maxLength4,maxLength3, checkForNull, checkForDecimalAndNull, loggedInUserId, getConfigurationKey } from '../../../../helper'
 import { useDispatch, useSelector } from 'react-redux'
 import Toaster from '../../../common/Toaster'
 import TooltipCustom from '../../../common/Tooltip'
@@ -135,19 +135,19 @@ const setFormValues=(data)=>{
      }
 }
     const packagingCalculatorFields = [
-        { label: t('noOfComponentsPerCrate', { defaultValue: 'No. of components per crate/trolley' }), name: 'NoOfComponentsPerCrate', mandatory: true, searchable: false, disabled: CostingViewMode ? CostingViewMode : false },
+        { label: t('noOfComponentsPerCrate', { defaultValue: 'No. of components per crate/trolley' }), name: 'NoOfComponentsPerCrate', mandatory: true, searchable: false, validate:{maxLength5}, disabled: CostingViewMode ? CostingViewMode : false },
         { label: t('volumePerDay', { defaultValue: 'Volume per day' }), name: 'VolumePerDay', mandatory: false, disabled: true ,tooltip: { text: `Coming from the volume master, budgeted for the specified effective date (Budgeted Quantity / ${DaysInMonthForVolumePerDay})`, width: '250px', customClass:"mt-4" ,disabledIcon: false} },
         { label: t('volumePerAnnum', { defaultValue: 'Volume per annum' }), name: 'VolumePerAnnum', mandatory: false, disabled: true, tooltip: { text: `${t('volumePerDay', { defaultValue: 'Volume per day' })} * ${DaysInMonthForVolumePerDay} * 12`, width: '250px' ,disabledIcon: true} },
         { label: t('noOfCratesRequiredPerDay', { defaultValue: 'No. of crates/trolley required per day' }), name: 'NoOfCratesRequiredPerDay', mandatory: false, disabled: true, tooltip: { text: `${t('volumePerDay', { defaultValue: 'Volume per day' })} / ${t('noOfComponentsPerCrate', { defaultValue: 'No. of components per crate/trolley' })}`, width: '250px',disabledIcon: true } },
         { label: t('stockNormDays', { defaultValue: 'Stock Norm days' }), name: 'StockNormDays', mandatory: true, disabled: CostingViewMode ? CostingViewMode : false },
         { label: t('costOfCrate', { defaultValue: 'Cost of crate/trolley' }), name: 'CostOfCrate', mandatory: true, disabled: CostingViewMode ? CostingViewMode : false },
         { label: t('totalCostOfCrate', { defaultValue: 'Total cost of crate/trolley' }), name: 'TotalCostOfCrate', mandatory: false, disabled: true, tooltip: { text: `${t('noOfCratesRequiredPerDay', { defaultValue: 'No. of crates/trolley required per day' })} * ${t('stockNormDays', { defaultValue: 'Stock Norm days' })} * ${t('costOfCrate', { defaultValue: 'Cost of crate/trolley' })}`, width: '250px',disabledIcon: true } },
-        { label: t('amortizedNoOfYears', { defaultValue: 'Amortized no. of years' }), name: 'AmortizedNoOfYears', mandatory: false, disabled: CostingViewMode ? CostingViewMode : false },
+        { label: t('amortizedNoOfYears', { defaultValue: 'Amortized no. of years' }), name: 'AmortizedNoOfYears',validate:{maxLength3}, mandatory: false, disabled: CostingViewMode ? CostingViewMode : false },
         { label: t('weightOfCover', { defaultValue: 'Weight of cover (kg)' }), name: 'WeightOfCover', mandatory: false, disabled: CostingViewMode ? CostingViewMode : false },
         { label: t('costOfCoverPerKg', { defaultValue: 'Cost of cover per kg' }), name: 'CostOfCoverPerKg', mandatory: false, disabled: CostingViewMode ? CostingViewMode : false },
         { label: t('noOfPartsPerCover', { defaultValue: 'No. of parts per cover' }), name: 'NoOfPartsPerCover', mandatory: false, disabled: CostingViewMode ? CostingViewMode : false },
-        { label: t('spacerPackingInsertCost', { defaultValue: 'Spacer/packing/insert cost if any' }), name: 'SpacerPackingInsertCost', mandatory: true,  handleChange: (e) => { handleSpacerPackingInsertCost(e?.target?.value) }, disabled: CostingViewMode ? CostingViewMode : false },
-        { label: t('noOfSpacerPackingInsert', { defaultValue: 'No. of spacer/packing/insert' }), name: 'NoOfSpacerPackingInsert', mandatory: false,  handleChange: (e) => { handleNoOfSpacerPackingInsert(e?.target?.value) }, disabled: CostingViewMode ? CostingViewMode : false },
+        { label: t('spacerPackingInsertCost', { defaultValue: 'Spacer/packing/insert cost if any' }), name: 'SpacerPackingInsertCost', mandatory: true, validate:{maxLength4}, handleChange: (e) => { handleSpacerPackingInsertCost(e?.target?.value) }, disabled: CostingViewMode ? CostingViewMode : false },
+        { label: t('noOfSpacerPackingInsert', { defaultValue: 'No. of spacer/packing/insert' }), name: 'NoOfSpacerPackingInsert', mandatory: false, validate:{maxLength5}, handleChange: (e) => { handleNoOfSpacerPackingInsert(e?.target?.value) }, disabled: CostingViewMode ? CostingViewMode : false },
         { label: t('spacerPackingInsertRecovery', { defaultValue: 'Spacer/packing/insert recovery %' }), name: 'SpacerPackingInsertRecovery',  handleChange: (e) => { handleSpacerPackingInsertRecovery(e?.target?.value) },mandatory: false, percentageLimit: true, disabled: CostingViewMode ? CostingViewMode : false },
         { label: t('spacerPackingInsertRecoveryCostPerKg', { defaultValue: 'Spacer/packing/insert recovery cost per kg' }), name: 'SpacerPackingInsertRecoveryCostPerKg', mandatory: false, disabled: true, tooltip: { text: `${t('spacerPackingInsertCost', { defaultValue: 'Spacer/packing/insert cost if any' })} * ${t('noOfSpacerPackingInsert', { defaultValue: 'No. of spacer/packing/insert' })} * (${t('spacerPackingInsertRecovery', { defaultValue: 'Spacer/packing/insert recovery %' })} / 100)`, width: '250px',disabledIcon: true } },
         { label: t('costOfSpacerPackingInsert', { defaultValue: 'Cost of spacer/packing/insert' }), name: 'TotalCostOfSpacerPackingInsert', mandatory: false, disabled: true, tooltip: { text: `${t('spacerPackingInsertCost', { defaultValue: 'Spacer/packing/insert cost if any' })} * ${t('noOfSpacerPackingInsert', { defaultValue: 'No. of spacer/packing/insert' })} - ${t('spacerPackingInsertRecoveryCostPerKg', { defaultValue: 'Spacer/packing/insert recovery cost per kg' })}`, width: '250px',disabledIcon: true } },
@@ -290,7 +290,12 @@ const setFormValues=(data)=>{
                                             mandatory={item.mandatory}
                                             rules={{
                                                 required: item.mandatory,
-                                                validate: { number, checkWhiteSpaces, maxLength7, ...(item.disabled ? {} : {}) },
+                                                validate: { 
+                                                    ...item.validate || { maxLength7 },
+                                                    number, 
+                                                    checkWhiteSpaces,
+                                                    ...(item.disabled ? {} : {})
+                                                },
                                                 max: item.percentageLimit ? {
                                                     value: 100,
                                                     message: 'Percentage value should be equal to 100'
