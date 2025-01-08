@@ -3594,6 +3594,7 @@ const CostingSummaryTable = (props) => {
             editObject={editObject}
             anchor={'right'}
             viewMode={viewMode}
+            partId={viewCostingData && viewCostingData[index]?.partId}
           />
         )
       }
