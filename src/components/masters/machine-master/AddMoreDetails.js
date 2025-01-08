@@ -1255,7 +1255,7 @@ class AddMoreDetails extends Component {
         const dataObj = {
           labourTypeId: labourType.value,
           machineTypeId: machineType.value,
-          plantId: selectedPlants?.value,
+          plantId: selectedPlants[0]?.value,
           customerId: selectedCustomer?.value,
           vendorId: selectedVedor?.value,
           effectiveDate: effectiveDate,
@@ -2865,7 +2865,7 @@ class AddMoreDetails extends Component {
     const { UOM, entryType } = this.state;
     let currencyLabel = !entryType ? (this?.props?.fieldsObj?.plantCurrency || 'Currency') :
       (this?.state?.currency?.label || 'Currency')
-    return <>Machine Cost/{(UOM && UOM.length !== 0) ? displayUOM(UOM.label) : "UOM"} ({currencyLabel})</>
+    return <>Machine Cost ({currencyLabel})</>
   }
   handleChangeIncludeMachineRateDepreciation = (value) => {
     this.setState({ IsIncludeMachineRateDepreciation: !this.state.IsIncludeMachineRateDepreciation })
