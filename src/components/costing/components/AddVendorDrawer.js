@@ -261,7 +261,7 @@ function AddVendorDrawer(props) {
                       selected={isInfoCategorySelected}
                       id={'category'}
                     >
-                      Category
+                      Sub Contracting
                       <input
                         type="checkbox"
                       />
