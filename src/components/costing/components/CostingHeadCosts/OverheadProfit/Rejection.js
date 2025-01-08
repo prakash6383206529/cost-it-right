@@ -63,7 +63,7 @@ function Rejection(props) {
 
 
     useEffect(() => {
-        let request = partType ? 'multiple technology assembly' : ''
+        let request = partType ? 'multiple technology assembly' : 'rejection cost'
         dispatch(fetchCostingHeadsAPI(request, false, (res) => { }))
         setValue('RejectionPercentage', rejectionObj?.RejectionApplicability === "Fixed" ? rejectionObj?.RejectionCost : rejectionObj?.RejectionPercentage)
         setValue('crmHeadRejection', rejectionObj && rejectionObj?.RejectionCRMHead && { label: rejectionObj?.RejectionCRMHead, value: 1 })

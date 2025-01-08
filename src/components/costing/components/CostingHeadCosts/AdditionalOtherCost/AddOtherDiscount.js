@@ -61,7 +61,7 @@ function AddOtherDiscount(props) {
         }
     }, [fieldValuesForFixed])
     useEffect(() => {
-        let request = partType ? 'multiple technology assembly' : ''
+        let request = partType ? 'multiple technology assembly' : 'discount cost'
         dispatch(fetchCostingHeadsAPI(request, false, (res) => { }))
     }, [])
 
