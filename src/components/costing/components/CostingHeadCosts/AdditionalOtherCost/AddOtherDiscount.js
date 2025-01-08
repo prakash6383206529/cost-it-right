@@ -493,7 +493,7 @@ function AddOtherDiscount(props) {
                                     {
                                         <Col md="4">
                                             <TextFieldHookForm
-                                                label={`Applicability Cost (${currencySource?.label ?? "Currency"})`}
+                                                label={`Applicability Cost (${currencySource?.label ?? initialConfiguration?.BaseCurrency})`}
                                                 name={`ApplicabilityCost`}
                                                 Controller={Controller}
                                                 control={control}
