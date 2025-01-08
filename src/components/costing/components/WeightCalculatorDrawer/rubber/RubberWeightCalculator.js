@@ -159,7 +159,7 @@ function RubberWeightCalculator(props) {
     }
 
     const percentageChange = (e, index) => {
-        calculateNetSCrapRate()
+        calculateNetSCrapRate(e.target.value, index)
         calculateNetRmRate(e.target.value, index)
     }
     const calculateNetRmRate = (percentageValue, indexTemp) => {
@@ -179,11 +179,11 @@ function RubberWeightCalculator(props) {
         setValue('netTotalRmRate', checkForDecimalAndNull(Number(grossRMRate), getConfigurationKey().NoOfDecimalForPrice))
     }
 
-    const calculateNetSCrapRate = () => {
+    const calculateNetSCrapRate = (percentageValue, indexTemp) => {
         let NetScrapRate = 0;
         NetScrapRate = rmData && rmData.reduce((acc, val, index) => {
-            const Percentage = getValues(`${rmGridFields}.${index}.Percentage`)
-            return acc + checkForNull(Percentage * val.ScrapRate / 100)
+            const Percentage = (indexTemp === index) ? percentageValue : getValues(`rmGridFields.${index}.Percentage`)
+            return acc + (checkForNull(Percentage) * checkForNull(val.ScrapRate) / 100)
 
         }, 0)
         let obj = { ...dataToSend }
