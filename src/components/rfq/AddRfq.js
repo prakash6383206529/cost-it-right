@@ -3548,6 +3548,7 @@ function AddRfq(props) {
                                         onClick={bulkToggle}
                                         title={"Bulk Upload"}
                                         icon={"upload"}
+                                        disabled={dataProps?.isViewFlag }
                                     />}
                                     {(selectedOption === 'componentAssembly' || selectedOption === 'Tooling') && <>
                                         {heading()}
