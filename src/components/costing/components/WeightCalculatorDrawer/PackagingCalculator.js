@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import { Row, Col, Container, } from 'reactstrap'
 import { Controller, useForm, useWatch } from 'react-hook-form'
 import { number, checkWhiteSpaces, maxLength7,maxLength5,maxLength4,maxLength3, checkForNull, checkForDecimalAndNull, loggedInUserId, getConfigurationKey } from '../../../../helper'
@@ -44,7 +44,7 @@ const {rowObjData} = props
         mode: 'onChange',
         reValidateMode: 'onChange',
     });
-
+    const isSubmitting = useRef(false)
     const { t } = useTranslation('CostingLabels');
     const calclulationFieldValues = useWatch({
         control: control, 
@@ -236,7 +236,10 @@ const setFormValues=(data)=>{
             "CostOfSpacersPackingInsert": state?.totalCostOfSpacerPackingInsert,
             "PackingCost": state?.packingCost
           }
-        dispatch(savePackagingCalculation(formData, (res) => {
+        ;
+        if (!isSubmitting.current) {
+          isSubmitting.current = true;
+          dispatch(savePackagingCalculation(formData, (res) => {
             if (res?.data?.Result) {
                 setState((prevState) => ({ ...prevState, disableSubmit: false }))
                 formData.CalculationId = res?.data?.Identity
@@ -244,6 +247,7 @@ const setFormValues=(data)=>{
                 props.closeCalculator(formData.CalculationId,state?.packingCost,'Save')
             }
         }))
+    }
     }, 500) 
     const cancelHandler = () => {
         props.closeCalculator(props?.costingPackagingCalculationDetailsId,'','Cancel')
@@ -290,12 +294,7 @@ const setFormValues=(data)=>{
                                             mandatory={item.mandatory}
                                             rules={{
                                                 required: item.mandatory,
-                                                validate: { 
-                                                    ...item.validate || { maxLength7 },
-                                                    number, 
-                                                    checkWhiteSpaces,
-                                                    ...(item.disabled ? {} : {})
-                                                },
+                                                validate: { number, checkWhiteSpaces, ...(item.disabled ? {} : {}) },
                                                 max: item.percentageLimit ? {
                                                     value: 100,
                                                     message: 'Percentage value should be equal to 100'

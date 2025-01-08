@@ -10,8 +10,10 @@ import PackagingCalculator from '../WeightCalculatorDrawer/PackagingCalculator';
 function ViewPackagingAndFreight(props) {
 
   const { packagingData, freightData } = props.packagingAndFreightCost;
+  console.log(packagingData,"packagingData")
   const { isPDFShow, isLogisticsTechnology } = props
   const [packagingCalculatorDrawer, setPackagingCalculatorDrawer] = useState(false)
+  const [costingPackagingCalculationDetailsId, setCostingPackagingCalculationDetailsId] = useState(null)
   // const [viewCostingData, setViewCostingData] = useState([])
   const [rowObjData, setRowObjData] = useState({
     PackagingDetailId:null,
@@ -43,9 +45,9 @@ function ViewPackagingAndFreight(props) {
   const getPackagingCalculator = (index) => {
     setRowObjData({
       PackagingDetailId:packagingData[index]?.PackagingDetailId,
-      CostingPackagingCalculationDetailsId:packagingData[index]?.CostingPackagingCalculationDetailsId,
       SimulationTempData:viewCostingDetailData
     })
+    setCostingPackagingCalculationDetailsId(packagingData[index]?.CostingPackagingCalculationDetailsId)
     setPackagingCalculatorDrawer(true)
   }
 
@@ -203,6 +205,7 @@ function ViewPackagingAndFreight(props) {
                 simulationMode={props?.simulationMode}
                 viewPackaingData={packagingData}
                 index={props?.index}
+                costingPackagingCalculationDetailsId={costingPackagingCalculationDetailsId}
               />
             )}
           </div>
