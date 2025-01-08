@@ -24,7 +24,7 @@ export default function OtherDiscountTable(props) {
                         <th>{`Description`}</th>
                         {/* <th>{`Other Cost Type`}</th> */}
                         <th>{`Applicability`}</th>
-                        <th>{`Applicability (${currencySource?.label ?? "Currency"})`}</th>
+                        <th>{`Applicability (${currencySource?.label ?? initialConfiguration?.BaseCurrency})`}</th>
                         <th>{'Percentage (%)'}</th>
                         <th>{`Cost`}</th>
                         {!CostingViewMode && <th className='text-right'>{`Action`}</th>}
@@ -69,7 +69,7 @@ export default function OtherDiscountTable(props) {
                     ) : (
                         <tr className='table-footer'>
                             <td colSpan={initialConfiguration.IsShowCRMHead ? 5 : 4} className='text-right'>
-                                Total Discount Cost (${currencySource?.label ?? "Currency"})):
+                                Total Discount Cost ({currencySource?.label ?? initialConfiguration?.BaseCurrency}):
                             </td>
                             <td colSpan={3}>
                                 {checkForDecimalAndNull(tableData.otherCostTotal, initialConfiguration.NoOfDecimalForPrice)}
