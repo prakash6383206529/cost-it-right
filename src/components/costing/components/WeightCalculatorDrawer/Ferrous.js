@@ -335,7 +335,7 @@ function Ferrous(props) {
     };
     const calculateFinishWeight = () => {
         const castingWeight = Number(getValues('castingWeight'));
-        const totalLossWeight = Number(findLostWeight(tableVal));
+        const totalLossWeight = Number(findLostWeight(tableVal, false));
         const finishedWeight = checkForNull(castingWeight - totalLossWeight);
         setFinishWeight(finishedWeight);
         setValue('finishedWeight', checkForDecimalAndNull(finishedWeight, getConfigurationKey().NoOfDecimalForInputOutput));
