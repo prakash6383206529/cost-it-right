@@ -1171,7 +1171,9 @@ function SimulationApprovalSummary(props) {
     const header = {
         RevisedNetCost: `Revised Net Cost ${reactLocalStorage.getObject("baseCurrency")}`
     }
-
+    const CheckFinalLevel = (value) => {
+        setFinalLevelUser(value)
+    }
     return (
         <>
             {showListing === false &&
@@ -1840,6 +1842,7 @@ function SimulationApprovalSummary(props) {
                     technologyId={SimulationTechnologyId}
                     approvalTypeIdValue={simulationDetail?.ApprovalTypeId}
                     IsExchangeRateSimulation={keysForDownloadSummary?.IsExchangeRateSimulation}
+                    CheckFinalLevel={CheckFinalLevel}
                 // IsPushDrawer={showPushDrawer}
                 // dataSend={[approvalDetails, partDetail]}
                 />
@@ -1864,6 +1867,7 @@ function SimulationApprovalSummary(props) {
                     SimulationHeadId={simulationDetail?.SimulationHeadId}
                     costingTypeId={simulationDetail?.SimulationHeadId}
                     technologyId={SimulationTechnologyId}
+                    CheckFinalLevel={CheckFinalLevel}
                 />
             }
 
