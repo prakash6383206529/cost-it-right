@@ -186,8 +186,9 @@ const SpecificationListing = (props) => {
               id={`rmSpecification_edit${props.rowIndex}`}
               className={"mr-1 Tour_List_Edit"}
               variant="Edit"
-              onClick={() => editItemDetails(cellValue, rowData, false)}
+              onClick={() => handleEditClick(cellValue, rowData)}
               title={"Edit"}
+              disabled={rowData?.IsAssociated}
             />
           )}
           {isDeleteButton && (
@@ -204,6 +205,11 @@ const SpecificationListing = (props) => {
     };
   }, [permissions.Edit, permissions.Delete, tourStartData?.showExtraData]);
 
+  const handleEditClick = (cellValue, rowData) => {
+    if (!rowData.IsAssociated) {
+      editItemDetails(cellValue, rowData, false);
+    }
+  };
 
   const onFloatingFilterChanged = (value) => {
     setTimeout(() => {

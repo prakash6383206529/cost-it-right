@@ -376,7 +376,7 @@ const IndivisualPartListing = (props) => {
         {permissions.View && (
           <button
             title="View"
-            className="View Tour_List_View"
+            className="View Tour_List_View me-2"
             type={"button"}
             onClick={() => viewOrEditItemDetails(cellValue, rowData)}
           />

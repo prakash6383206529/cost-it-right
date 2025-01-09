@@ -908,7 +908,6 @@ function UserRegistration(props) {
         }
         getUserPermission(UserId)
       } else {
-
         if (!e) {
           setIsPermissionLoading(true)
         }

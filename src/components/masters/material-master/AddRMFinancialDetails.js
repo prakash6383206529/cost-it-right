@@ -234,8 +234,8 @@ function AddRMFinancialDetails(props) {
             setValue('JaliScrapCost', checkForDecimalAndNull(Data?.ScrapRate, getConfigurationKey()?.NoOfDecimalForPrice))
             setValue('ForgingScrap', checkForDecimalAndNull(Data?.ScrapRate, getConfigurationKey()?.NoOfDecimalForPrice))
             setValue('frequencyOfSettlement', { label: Data?.FrequencyOfSettlement, value: Data?.FrequencyOfSettlementId })
-            setValue('fromDate', DayTime(Data?.FromDate).$d)
-            setValue('toDate', DayTime(Data?.ToDate).$d)
+            setValue('fromDate', Data?.FromDate ? DayTime(Data?.FromDate).$d : '')
+            setValue('toDate', Data?.ToDate ? DayTime(Data?.ToDate).$d : '')
             setValue('OtherCost', checkForDecimalAndNull(Data?.OtherNetCost, getConfigurationKey()?.NoOfDecimalForPrice))
             setValue('Index', { label: Data?.IndexExchangeName, value: Data?.IndexExchangeId })
             setValue('plantCurrency', Data?.LocalCurrency)
@@ -255,7 +255,9 @@ function AddRMFinancialDetails(props) {
                 calculatedFactor: Data?.CalculatedFactor,
                 otherCostTableData: Data?.RawMaterialOtherCostDetails,
                 isShowIndexCheckBox: Data?.IsIndexationDetails,
-                minDate: DayTime(Data?.EffectiveDate).$d,
+                minDate: DayTime(Data?.FromDate).$d,
+                fromDate: Data?.FromDate ? DayTime(Data?.FromDate).$d : '',
+                toDate: Data?.ToDate ? DayTime(Data?.ToDate).$d : '',
                 totalBasicRate: Data?.CommodityNetCost,
                 NetConditionCost: Data?.NetConditionCost,
                 totalOtherCost: Data?.OtherNetCost,
@@ -475,11 +477,8 @@ function AddRMFinancialDetails(props) {
         }
 
         const basicPriceCurrencyTemp = checkForNull(getValues('BasicRate')) + checkForNull(state?.totalOtherCost)
-        let basicPriceBaseCurrency
-        if (costingTypeId === ZBCTypeId) {
-            basicPriceBaseCurrency = basicPriceCurrencyTemp
-        }
-        let conditionList = recalculateConditions(basicPriceBaseCurrency, state)
+        let basicPriceBaseCurrency = costingTypeId === ZBCTypeId ? basicPriceCurrencyTemp : 0;
+        let conditionList = recalculateConditions('', basicPriceBaseCurrency);
 
         const sumBaseCurrency = conditionList?.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCostPerQuantity), 0);
         let NetLandedCost = checkForNull(sumBaseCurrency) + checkForNull(basicPriceCurrencyTemp)
@@ -1596,7 +1595,7 @@ function AddRMFinancialDetails(props) {
                                             <Button
                                                 id="addRMDomestic_conditionToggl"
                                                 onClick={conditionToggle}
-                                                className={"right mt-1 ml-1"}
+                                                className={"right  mt-3 mb-2"}
                                                 variant={isViewFlag ? "view-icon-primary" : `${!getValues('BasicRate') ? 'blurPlus-icon-square' : 'plus-icon-square'}`}
                                                 title={isViewFlag ? "View" : "Add"}
                                                 disabled={!getValues('BasicRate')}

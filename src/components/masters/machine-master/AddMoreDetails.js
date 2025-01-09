@@ -3740,7 +3740,7 @@ class AddMoreDetails extends Component {
                                 name={"WorkingHoursPerShift"}
                                 type="text"
                                 placeholder={disableAllForm ? '-' : 'Enter'}
-                                validate={[hashValidation, maxValue24]}
+                                validate={[hashValidation, positiveAndDecimalNumber,maxValue24]}
                                 component={renderText}
                                 required={false}
                                 disabled={disableAllForm}

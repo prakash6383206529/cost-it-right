@@ -617,21 +617,21 @@ function MasterSendForApproval(props) {
                         BoughtOutPartBestCostRequest: null
                     };
                     let tempData = null
-                    
+
                     switch (checkForNull(masterId)) {
                         case 1: // Raw Material
-                         tempData = { ...viewRmDetails[viewRmDetails?.length - 1] }
+                            tempData = { ...viewRmDetails[viewRmDetails?.length - 1] }
 
-data.RawMaterialBestCostRequest = {
-                            "QuotationPartId": selectedRows[0]?.QuotationPartId ?? 0,
-                            "NetRawMaterialsCost": tempData?.NetLandedCostConversion ?? 0,
-                            "OtherCost": tempData?.OtherNetCostConversion ?? 0,
-                            "BasicRate": tempData?.BasicRatePerUOMConversion ?? 0,
-                        };
-                        
+                            data.RawMaterialBestCostRequest = {
+                                "QuotationPartId": selectedRows[0]?.QuotationPartId ?? 0,
+                                "NetRawMaterialsCost": tempData?.NetLandedCostConversion ?? 0,
+                                "OtherCost": tempData?.OtherNetCostConversion ?? 0,
+                                "BasicRate": tempData?.BasicRatePerUOMConversion ?? 0,
+                            };
+
                             break;
                         case 2: // Bought Out Part
-                        tempData = { ...viewBOPDetails[viewBOPDetails?.length - 1] }
+                            tempData = { ...viewBOPDetails[viewBOPDetails?.length - 1] }
                             data.BoughtOutPartBestCostRequest = {
                                 "QuotationPartId": selectedRows[0]?.QuotationPartId ?? 0,
                                 "NetBoughtOutPartCost": tempData?.NetLandedCostConversion ?? 0,
@@ -676,9 +676,7 @@ data.RawMaterialBestCostRequest = {
                 const approvalObjects = Array.isArray(approvalDetails) ? approvalDetails : [approvalDetails];
                 console.log(levelDetails);
                 const processedApprovalObjects = approvalObjects.map(item => ({
-                    
-                    
-                    ApprovalProcessSummaryId: item?.ApprovalProcessSummaryId !== null ? item?.ApprovalProcessSummaryId : 0,
+                    ApprovalProcessSummaryId: item?.MasterApprovalProcessSummaryId !== null ? item?.MasterApprovalProcessSummaryId : 0,
                     ApprovalProcessId: item?.ApprovalProcessId !== null ? item?.ApprovalProcessId : 0,
                     ApprovalToken: item?.Token !== null ? item?.Token : 0,
                     LoggedInUserId: loggedInUserId(),
@@ -704,7 +702,7 @@ data.RawMaterialBestCostRequest = {
                 }));
                 setIsLoader(true);
                 const processApproval = (objects) => {
-console.log(objects);
+                    console.log(objects);
 
                     return new Promise((resolve, reject) => {
                         dispatch(approvalOrRejectRequestByMasterApprove(objects, res => {
@@ -1338,7 +1336,7 @@ console.log(objects);
                                         disabled={isDisable}
                                     >
                                         <div className={'save-icon'}></div>
-                                        {isFinalApprover || type === 'Approve' || type === 'Reject'||type === 'Return' ? 'Submit' : 'Send For Approval'}
+                                        {isFinalApprover || type === 'Approve' || type === 'Reject' || type === 'Return' ? 'Submit' : 'Send For Approval'}
                                     </button>
                                 </div>
                             </Row>
