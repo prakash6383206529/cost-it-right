@@ -681,7 +681,7 @@ function CostingHeaderTabs(props) {
                 Controller={Controller}
                 control={control}
                 register={register}
-                mandatory={false}
+                mandatory={true}
                 rules={{ required: true }}
                 placeholder={'Select'}
                 options={renderListing("Currency")}

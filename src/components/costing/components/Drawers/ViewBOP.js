@@ -47,7 +47,6 @@ function ViewBOP(props) {
                 <th>{`${showBopLabel()} Part Name`}</th>
                 {checkTechnologyIdAndRfq(viewCostingData) && <th>{`${showBopLabel()} Updated Part Name`}</th>}
 
-                <th>{`Currency`}</th>
                 <th>{`Landed Cost `}</th>
                 <th>{`Quantity`}</th>
                 <th className={initialConfiguration.IsShowCRMHead ? "" : 'costing-border-right'}>{`Net ${showBopLabel()} Cost`}</th>
@@ -63,7 +62,6 @@ function ViewBOP(props) {
                       <td className={`${isPDFShow ? '' : 'text-overflow'}`}><span title={item.BOPPartNumber}>{item.BOPPartNumber}</span></td>
                       <td className={`${isPDFShow ? '' : 'text-overflow'}`}><span title={item.BOPPartName}>{item.BOPPartName}</span></td>
                       {checkTechnologyIdAndRfq(viewCostingData) && <td><div className={getChangeHighlightClass(item?.BOPPartName, item?.UpdatedBoughtOutPartPartName)}><span title={item?.UpdatedBoughtOutPartPartName}>{item?.UpdatedBoughtOutPartPartName}</span></div></td>}
-                      <td>{item.Currency}</td>
                       <td>
                         {checkForDecimalAndNull(item.LandedCostINR, initialConfiguration.NoOfDecimalForPrice)}
                       </td>

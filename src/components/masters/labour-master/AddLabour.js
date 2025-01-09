@@ -1193,7 +1193,7 @@ class AddLabour extends Component {
                         </Col>
                       )}
 
-                      {(costingTypeId === CBCTypeId && initialConfiguration?.IsShowProductInLabour) &&
+                      {costingTypeId === CBCTypeId && getConfigurationKey().IsShowProductInLabour &&
                         < Col md="3">
                           <div className="form-group">
                             <Field

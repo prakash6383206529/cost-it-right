@@ -414,10 +414,10 @@ export const checkPercentageValue = (value, msg = "Percentage value should not b
 //CHECK IS COSTING EFFECTIVE DATE SELECTED
 export const CheckIsCostingDateSelected = (costingDate, currency) => {
     const IsSelected = DayTime(costingDate).isValid() ? true : false;
-    if (!IsSelected || Object.keys(currency).length === 0) {
-        Toaster.warning('Please select Costing effective date.')
+    if (!IsSelected || currency?.label === null || currency?.label === undefined) {
+        Toaster.warning('Please select Costing effective date and Currency.')
     }
-    return (!IsSelected || Object.keys(currency).length === 0);
+    return (!IsSelected || currency?.label === null || currency?.label === undefined);
 }
 
 export const percentageOfNumber = (num, percentage) => {

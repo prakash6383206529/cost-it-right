@@ -30,6 +30,7 @@ function ViewOtherCostDrawer(props) {
         mode: 'onChange',
         reValidateMode: 'onChange',
     })
+    const showCurrency = (viewCostingData && viewCostingData[costingIndex]?.CostingCurrency) ? viewCostingData[costingIndex]?.CostingCurrency : reactLocalStorage.getObject("baseCurrency")
 
     useEffect(() => {
         if (props.costingSummary) {
@@ -98,7 +99,7 @@ function ViewOtherCostDrawer(props) {
                             {initialConfiguration.IsShowCRMHead && <th>{`CRM Head`}</th>}
                             <th className='custom-max-width-220px'>{`Discount Description/Remark`}</th>
                             <th>{`Discount Applicability`}</th>
-                            <th>{`Discount Applicability Cost (${reactLocalStorage.getObject("baseCurrency")})`}</th>
+                            <th>{`Discount Applicability Cost (${showCurrency})`}</th>
                             <th>{`Percentage (%)`}</th>
                             <th>{'Value'}</th>
                         </tr>
@@ -119,7 +120,7 @@ function ViewOtherCostDrawer(props) {
                         {discountData.length === 0 ? <tr>
                             <td colSpan={initialConfiguration.IsShowCRMHead ? 5 : 4}> <NoContentFound title={EMPTY_DATA} /></td>
                         </tr> : <tr className='table-footer'>
-                            <td className='text-right' colSpan={initialConfiguration.IsShowCRMHead ? 5 : 4}>Total Other Cost ({reactLocalStorage.getObject("baseCurrency")}):</td>
+                            <td className='text-right' colSpan={initialConfiguration.IsShowCRMHead ? 5 : 4}>Total Other Cost ({showCurrency}):</td>
                             <td colSpan={2}>{checkForDecimalAndNull(totalDiscountCost, initialConfiguration.NoOfDecimalForPrice)}</td>
                         </tr>}
                     </tbody>
@@ -143,7 +144,7 @@ function ViewOtherCostDrawer(props) {
                             {initialConfiguration.IsShowCRMHead && <th>{`CRM Head`}</th>}
                             <th>{`Other Cost Description`}</th>
                             <th>{`Other Cost Applicability`}</th>
-                            {<th>{`Cost Applicability (${reactLocalStorage.getObject('baseCurrency')})`}</th>}
+                            {<th>{`Cost Applicability (${showCurrency})`}</th>}
                             <th>{'Percentage (%)'}</th>
                             <th>{`Cost`}</th>
                         </tr>
@@ -165,7 +166,7 @@ function ViewOtherCostDrawer(props) {
                             <td colSpan={initialConfiguration.IsShowCRMHead ? 5 : 4}> <NoContentFound title={EMPTY_DATA} /></td>
                         </tr> :
                             <tr className='table-footer'>
-                                <td className='text-right' colSpan={initialConfiguration.IsShowCRMHead ? 5 : 4}>Total Other Cost ({reactLocalStorage.getObject("baseCurrency")}):</td>
+                                <td className='text-right' colSpan={initialConfiguration.IsShowCRMHead ? 5 : 4}>Total Other Cost ({showCurrency}):</td>
                                 <td colSpan={2}>{checkForDecimalAndNull(totalOtherCost, initialConfiguration.NoOfDecimalForPrice)}</td>
                             </tr>}
                     </tbody>
@@ -312,7 +313,7 @@ function ViewOtherCostDrawer(props) {
                                                 customClass={'underLine-title'}
                                             />
                                         </Col>
-                                        <ConditionCosting hideAction={true} tableData={conditionTableData} />
+                                        <ConditionCosting hideAction={true} tableData={conditionTableData} isFromImport={true} currency={{ label: showCurrency }} />
                                     </div>}
 
                                 {costingSummary && props?.isRfqCosting &&

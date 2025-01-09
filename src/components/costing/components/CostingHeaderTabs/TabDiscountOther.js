@@ -76,7 +76,7 @@ function TabDiscountOther(props) {
   const CostingViewMode = useContext(ViewCostingContext);
   const netPOPrice = useContext(NetPOPriceContext);
   const headerCosts = useContext(netHeadCostContext);
-  const currencySelectList = useSelector(state => state.comman.currencySelectList)
+  const currencySelectList = useSelector(state => state?.exchangeRate?.currencySelectList)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
 
@@ -238,7 +238,7 @@ function TabDiscountOther(props) {
 
     if (label === 'Currency') {
       currencySelectList && currencySelectList.map(item => {
-        if (item.Value === '0' || item.Text === initialConfiguration?.BaseCurrency || item.Text === currencySource?.label) return false;
+        if (item.Value === '0' || item.Text === currencySource?.label) return false;
         temp.push({ label: item.Text, value: item.Value })
         return null;
       });
@@ -2114,7 +2114,7 @@ function TabDiscountOther(props) {
                       <Col md="3">
                         <TooltipCustom disabledIcon={true} width="280px" id="basic-rate" tooltipText={`Basic Price = (Total Cost + Total Other Cost - ${discountLabel} Value)  ${initialConfiguration?.IsAddPaymentTermInNetCost ? "+ Payment Terms Cost" : ""}`} />
                         <TextFieldHookForm
-                          label={`Basic Price (${currencySource?.label ?? "Currency"})`}
+                          label={`Basic Price (${currencySource?.label ?? initialConfiguration?.BaseCurrency})`}
                           name={'BasicRateINR'}
                           Controller={Controller}
                           id="basic-rate"
@@ -2183,10 +2183,10 @@ function TabDiscountOther(props) {
                       CostingViewMode={CostingViewMode}
                     />
                     }
-                    <TooltipCustom disabledIcon={true} width="280px" id="net-po-price" tooltipText={`Net Cost = ${initialConfiguration?.IsBasicRateAndCostingConditionVisible ? 'Basic Rate + Total Costing Condition Cost' : `(Total Cost + Total Other Cost - ${discountLabel} Value ${initialConfiguration?.IsAddPaymentTermInNetCost ? " + Payment Terms Cost" : ""})  `}`} />
+                    <TooltipCustom disabledIcon={true} width="280px" id="net-po-price" tooltipText={`Net Cost (${currencySource?.label ?? initialConfiguration?.BaseCurrency}) = ${initialConfiguration?.IsBasicRateAndCostingConditionVisible ? 'Basic Rate + Total Costing Condition Cost' : `(Total Cost + Total Other Cost - ${discountLabel} Value ${initialConfiguration?.IsAddPaymentTermInNetCost ? " + Payment Terms Cost" : ""})  `}`} />
                     <Col md="3">
                       <TextFieldHookForm
-                        label={`Net Cost (${currencySource?.label ?? "Currency"})`}
+                        label={`Net Cost (${currencySource?.label ?? initialConfiguration?.BaseCurrency})`}
                         name={'NetPOPriceINR'}
                         Controller={Controller}
                         id="net-po-price"
@@ -2300,6 +2300,7 @@ function TabDiscountOther(props) {
                           />
                           {showWarning && <WarningMessage dClass="mt-n3" message={`${currency.label} rate is not present in the Exchange Master`} />}
                         </Col>
+                        <TooltipCustom disabledIcon={true} width="280px" id="net-po-price-currency" tooltipText={`Net Cost (${currency?.label ?? initialConfiguration?.BaseCurrency}) = Net Cost (${currencySource?.label ?? initialConfiguration?.BaseCurrency}) * ${CurrencyExchangeRate ?? 0}`} />
                         <Col md="3">
                           <TextFieldHookForm
                             label={`Net Cost${Object.keys(currency).length > 0 ? '(' + currency.label + ')' : ''}`}
@@ -2308,6 +2309,7 @@ function TabDiscountOther(props) {
                             control={control}
                             register={register}
                             mandatory={false}
+                            id="net-po-price-currency"
                             rules={{}}
                             handleChange={() => { }}
                             defaultValue={""}

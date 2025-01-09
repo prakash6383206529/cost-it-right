@@ -824,10 +824,10 @@ export function getMaterialTypeDataListAPI(callback) {
     return (dispatch) => {
         const request = axios.get(`${API.getMaterialTypeDataList}`, config());
         request.then((response) => {
-            if (response?.data.Result) {
+            if (response?.data?.Result || response?.status === 204  ) {
                 dispatch({
                     type: GET_RM_TYPE_DATALIST_SUCCESS,
-                    payload: response?.data.DataList,
+                    payload: response?.status === 204 ? [] : response?.data.DataList,
                 });
                 callback(response);
             }
