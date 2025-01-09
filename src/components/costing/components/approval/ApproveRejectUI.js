@@ -56,8 +56,8 @@ function ApproveRejectUI(props) {
   const deptList = useSelector((state) => state.approval.approvalDepartmentList)
   const reasonsList = useSelector((state) => state.approval.reasonsList)
   const approvalTypeSelectList = useSelector(state => state.comman.approvalTypeSelectList)
-
-  useEffect(() => {
+  
+useEffect(() => {
     if (props?.emptyDivision) {
       setValue('Division', '')
     }
@@ -75,18 +75,20 @@ function ApproveRejectUI(props) {
   useEffect(() => {
 
     if (getConfigurationKey().IsReleaseStrategyConfigured && (!setDataFromSummary || disableReleaseStrategy)) {
-
-      let appTypeId = approvalTypeSelectList && approvalTypeSelectList?.filter(element => Number(element?.Value) === Number(dataInFields?.ApprovalType?.value))[0]
+let appTypeId = approvalTypeSelectList && approvalTypeSelectList?.filter(element => Number(element?.Value) === Number(dataInFields?.ApprovalType?.value))[0]
       setValue('ApprovalType', appTypeId ? { label: appTypeId?.Text, value: appTypeId?.Value } : '')
-      setValue('dept', dataInFields?.Department ? dataInFields?.Department : '')
+      //setValue('dept', dataInFields?.Department ? dataInFields?.Department : '')
+      setValue('dept', dataInFields?.Department ? { label: dataInFields.Department.label, value: dataInFields.Department.value } : '')
       setValue('approver', dataInFields?.Approver ? dataInFields?.Approver : '')
 
     } else if (!getConfigurationKey().IsDivisionAllowedForDepartment || type === 'Approve') {
 
-      setValue('dept', dataInFields?.Department ? dataInFields?.Department : '')
+      setValue('dept', dataInFields?.Department ? { label: dataInFields.Department.label, value: dataInFields.Department.value } : '')
+//setValue('dept', dataInFields?.Department ? dataInFields?.Department : '')
       setValue('approver', dataInFields?.Approver ? dataInFields?.Approver : '')
     } else if (getConfigurationKey().IsDivisionAllowedForDepartment && type === 'Sender') {
-      setValue('dept', dataInFields?.Department ? dataInFields?.Department : '')
+      setValue('dept', dataInFields?.Department ? { label: dataInFields.Department.label, value: dataInFields.Department.value } : '')
+//setValue('dept', dataInFields?.Department ? dataInFields?.Department : '')
       setValue('approver', dataInFields?.Approver ? dataInFields?.Approver : '')
     }
   }, [dataInFields])
@@ -317,8 +319,7 @@ function ApproveRejectUI(props) {
   const submitForm = handleSubmit(() => {
     onSubmit()
   })
-
-  return (
+return (
     <>
       <Drawer
         anchor={props.anchor}

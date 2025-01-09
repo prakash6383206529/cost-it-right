@@ -589,6 +589,7 @@ function SimulationApprovalListing(props) {
         setIsPendingForApproval(arr.includes("Pending For Approval") ? true : false)
 
         if (JSON.stringify(selectedRows) === JSON.stringify('')) return false
+        
         setSelectedRowData(selectedRows)
         // if (isSelected) {
         //     let tempArr = [...selectedRowData, row]
@@ -607,7 +608,9 @@ function SimulationApprovalListing(props) {
         }
         // return rowNode.data ? !selectedIds.includes(rowNode.data.OperationId) : false;
     }
-
+const CheckFinalLevel = (value) => {
+    setShowFinalLevelButton(value)
+}
     const sendForApproval = () => {
         if (selectedRowData.length === 0) {
             Toaster.warning('Please select atleast one approval to send for approval.')
@@ -758,13 +761,22 @@ function SimulationApprovalListing(props) {
 
     }
 
+    // const closeDrawer = (e = '', type) => {
+        
+    //     gridApi.deselectAll()
+    //     setApproveDrawer(false)
+    //     if (type !== 'cancel') {
+    //         getTableData(0, 10, true, floatingFilterData)
+    //     }
+    //     //setSelectedRowData([])
+    // }
     const closeDrawer = (e = '', type) => {
-        gridApi.deselectAll()
-        setApproveDrawer(false)
+        // Only deselect rows if not canceling
         if (type !== 'cancel') {
+            gridApi.deselectAll()
             getTableData(0, 10, true, floatingFilterData)
         }
-        setSelectedRowData([])
+        setApproveDrawer(false)
     }
 
     if (redirectCostingSimulation === true) {
@@ -1031,6 +1043,7 @@ function SimulationApprovalListing(props) {
                                             releaseStrategyDetails={releaseStrategyDetails}
                                             technologyId={selectedRowData ? selectedRowData[0]?.SimulationTechnologyId : approvalData?.SimulationTechnologyId}
                                             IsExchangeRateSimulation={selectedRowData[0]?.IsExchangeRateSimulation}
+                                            CheckFinalLevel={CheckFinalLevel}
                                         />
                                     }
                                 </div >

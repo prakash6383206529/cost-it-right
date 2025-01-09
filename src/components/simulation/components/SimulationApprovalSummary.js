@@ -1193,6 +1193,9 @@ function SimulationApprovalSummary(props) {
                     </div>
                 </>
         }
+    }       
+    const CheckFinalLevel = (value) => {
+        setFinalLevelUser(value)
     }
     return (
         <>
@@ -1859,6 +1862,7 @@ function SimulationApprovalSummary(props) {
                     technologyId={SimulationTechnologyId}
                     approvalTypeIdValue={simulationDetail?.ApprovalTypeId}
                     IsExchangeRateSimulation={keysForDownloadSummary?.IsExchangeRateSimulation}
+                    CheckFinalLevel={CheckFinalLevel}
                 // IsPushDrawer={showPushDrawer}
                 // dataSend={[approvalDetails, partDetail]}
                 />
@@ -1883,6 +1887,7 @@ function SimulationApprovalSummary(props) {
                     SimulationHeadId={simulationDetail?.SimulationHeadId}
                     costingTypeId={simulationDetail?.SimulationHeadId}
                     technologyId={SimulationTechnologyId}
+                    CheckFinalLevel={CheckFinalLevel}
                 />
             }
 
