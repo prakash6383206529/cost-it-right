@@ -140,7 +140,7 @@ function ApprovalSummary(props) {
       if (res?.data?.Data?.Costings?.length > 0) {
         const { IsRFQCostingApproval, PartDetails, ApprovalDetails, ApprovalLevelStep, DepartmentId, Technology, ApprovalProcessId,
           ApprovalProcessSummaryId, ApprovalNumber, IsSent, IsFinalLevelButtonShow, IsPushedButtonShow,
-          CostingId, PartId, PartNumber, DepartmentCode, LastCostingId, DecimalOption, VendorId, IsRegularizationLimitCrossed, CostingHead, NCCPartQuantity, IsRegularized, ApprovalTypeId, CostingTypeId, BestCostAndShouldCostDetails, QuotationId, DivisionId } = res?.data?.Data?.Costings[0];
+          CostingId, PartId, PartNumber, DepartmentCode, LastCostingId, DecimalOption, VendorId, IsRegularizationLimitCrossed, CostingHead, NCCPartQuantity, IsRegularized, ApprovalTypeId, CostingTypeId, BestCostAndShouldCostDetails, QuotationId, DivisionId, DepartmentName } = res?.data?.Data?.Costings[0];
         setApprovalTypeId(ApprovalTypeId)
         setIsRFQCostingApproval(IsRFQCostingApproval)
         dispatch(setQuotationIdForRFQ(QuotationId))
@@ -207,6 +207,7 @@ function ApprovalSummary(props) {
         setShowPushButton(IsPushedButtonShow)
         setApprovalData({
           DepartmentId: DepartmentId,
+          DepartmentName: DepartmentName,
           Technology: Technology,
           TechnologyId: technologyId,
           ApprovalProcessId: ApprovalProcessId,

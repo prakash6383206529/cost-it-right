@@ -74,7 +74,7 @@ function ApproveRejectUI(props) {
 
   useEffect(() => {
     if (getConfigurationKey().IsReleaseStrategyConfigured && (!setDataFromSummary || disableReleaseStrategy)) {
-let appTypeId = approvalTypeSelectList && approvalTypeSelectList?.filter(element => Number(element?.Value) === Number(dataInFields?.ApprovalType?.value))[0]
+      let appTypeId = approvalTypeSelectList && approvalTypeSelectList?.filter(element => Number(element?.Value) === Number(dataInFields?.ApprovalType?.value))[0]
       setValue('ApprovalType', appTypeId ? { label: appTypeId?.Text, value: appTypeId?.Value } : '')
       //setValue('dept', dataInFields?.Department ? dataInFields?.Department : '')
       setValue('dept', dataInFields?.Department ? { label: dataInFields.Department.label, value: dataInFields.Department.value } : '')
@@ -82,9 +82,14 @@ let appTypeId = approvalTypeSelectList && approvalTypeSelectList?.filter(element
 
     } else if (!getConfigurationKey().IsDivisionAllowedForDepartment || type === 'Approve') {
       if (type === 'Approve') {
-         if (isSimulationApprovalListing) {
+        if (isSimulationApprovalListing) {
           setValue('dept', selectedRowData && selectedRowData.length !== 0 ?
             { label: selectedRowData[0]?.DepartmentName, value: selectedRowData[0]?.DepartmentId } : '')
+        } else if (!isSimulationApprovalListing && approvalData?.length > 0) {
+          setValue('dept', {
+            label: approvalData[0]?.DepartmentName || '',
+            value: approvalData[0]?.DepartmentId || ''
+          })
         } else {
           setValue('dept', simulationDetail ? { label: simulationDetail.DepartmentName || '', value: simulationDetail.DepartmentId || '' } : '')
         }
