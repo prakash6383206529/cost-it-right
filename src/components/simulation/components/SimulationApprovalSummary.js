@@ -169,7 +169,7 @@ function SimulationApprovalSummary(props) {
             dispatch(getApprovalSimulatedRawMaterialSummary(params, res => {
                 const { SimulationSteps, SimulatedCostingList, SimulationApprovalProcessId, Token, NumberOfCostings, IsSent, IsFinalLevelButtonShow,
                     IsPushedButtonShow, SimulationTechnologyId, SimulationApprovalProcessSummaryId, DepartmentCode, EffectiveDate, SimulationId, MaterialGroup, PurchasingGroup, DecimalOption,
-                    SenderReason, ImpactedMasterDataList, AmendmentDetails, Attachements, SenderReasonId, DepartmentId, TotalImpactPerQuarter, SimulationHeadId, TotalBudgetedPriceImpactPerQuarter, PartType, IsSimulationWithOutCosting, ApprovalTypeId } = res.data.Data
+                    SenderReason, ImpactedMasterDataList, AmendmentDetails, Attachements, SenderReasonId, DepartmentId, TotalImpactPerQuarter, SimulationHeadId, TotalBudgetedPriceImpactPerQuarter, PartType, IsSimulationWithOutCosting, ApprovalTypeId,DepartmentName } = res.data.Data
                 setSimulationData(res?.data?.Data)
                 setApprovalTypeId(ApprovalTypeId)
                 setDataForFetchingAllApprover({
@@ -185,7 +185,7 @@ function SimulationApprovalSummary(props) {
                     ImpactedMasterDataList: ImpactedMasterDataList, AmendmentDetails: AmendmentDetails, MaterialGroup: MaterialGroup,
                     PurchasingGroup: PurchasingGroup, DecimalOption: DecimalOption, Attachements: Attachements, SenderReasonId: SenderReasonId, DepartmentId: DepartmentId
                     , TotalImpactPerQuarter: TotalImpactPerQuarter, SimulationHeadId: SimulationHeadId, TotalBudgetedPriceImpactPerQuarter: TotalBudgetedPriceImpactPerQuarter
-                    , PartType: PartType, ApprovalTypeId: ApprovalTypeId
+                    , PartType: PartType, ApprovalTypeId: ApprovalTypeId,DepartmentName: DepartmentName
                 })
                 setIsApprovalDone(IsSent)
                 setShowFinalLevelButton(IsFinalLevelButtonShow)
@@ -195,7 +195,7 @@ function SimulationApprovalSummary(props) {
             dispatch(getApprovalSimulatedCostingSummary(reqParams, res => {
                 const { SimulationSteps, SimulatedCostingList, SimulationApprovalProcessId, Token, NumberOfCostings, IsSent, IsFinalLevelButtonShow,
                     IsPushedButtonShow, SimulationTechnologyId, SimulationApprovalProcessSummaryId, DepartmentCode, EffectiveDate, SimulationId, MaterialGroup, PurchasingGroup, DecimalOption,
-                    SenderReason, ImpactedMasterDataList, AmendmentDetails, Attachements, SenderReasonId, DepartmentId, TotalImpactPerQuarter, SimulationHeadId, TotalBudgetedPriceImpactPerQuarter, PartType, IsSimulationWithOutCosting, ApprovalTypeId, DivisionId } = res.data.Data
+                    SenderReason, ImpactedMasterDataList, AmendmentDetails, Attachements, SenderReasonId, DepartmentId, TotalImpactPerQuarter, SimulationHeadId, TotalBudgetedPriceImpactPerQuarter, PartType, IsSimulationWithOutCosting, ApprovalTypeId, DivisionId, DepartmentName } = res.data.Data
                 setApprovalTypeId(ApprovalTypeId)
                 let uniqueArr
                 setSimulationData(res?.data?.Data)
@@ -228,7 +228,7 @@ function SimulationApprovalSummary(props) {
                     ImpactedMasterDataList: ImpactedMasterDataList, AmendmentDetails: AmendmentDetails, MaterialGroup: MaterialGroup,
                     PurchasingGroup: PurchasingGroup, DecimalOption: DecimalOption, Attachements: Attachements, SenderReasonId: SenderReasonId, DepartmentId: DepartmentId
                     , TotalImpactPerQuarter: TotalImpactPerQuarter, SimulationHeadId: SimulationHeadId, TotalBudgetedPriceImpactPerQuarter: TotalBudgetedPriceImpactPerQuarter
-                    , PartType: PartType, ApprovalTypeId: ApprovalTypeId, DivisionId: DivisionId
+                    , PartType: PartType, ApprovalTypeId: ApprovalTypeId, DivisionId: DivisionId,DepartmentName: DepartmentName
                 })
                 let requestObject = {}
 

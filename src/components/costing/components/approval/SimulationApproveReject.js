@@ -452,7 +452,7 @@ function SimulationApproveReject(props) {
     const reason = dataInFields?.Reason
     const dept = dataInFields?.Department
     const approver = dataInFields?.Approver
-    setIsDisable(true)
+     setIsDisable(true)
 
     /****************************THIS IS FOR SIMUALTION (SAVE,SEND FOR APPROVAL,APPROVE AND REJECT CONDITION)******************************** */
     // THIS OBJ IS FOR SIMULATION APPROVE/REJECT
@@ -478,7 +478,7 @@ function SimulationApproveReject(props) {
           IsApproved: type === 'Approve' ? true : false,
           ApproverDepartmentId: dept && dept.value ? dept.value : '',
           ApproverDepartmentName: dept && dept.label ? dept.label : '',
-          IsFinalApprovalProcess: false,
+          IsFinalApprovalProcess: /* IsFinalLevel ? true :  */false,
           SimulationApprovalProcessSummaryId: item?.SimulationApprovalProcessSummaryId,
           IsMultiSimulation: isSimulationApprovalListing ? true : false,
           DivisionId: DivisionId ?? null
@@ -586,7 +586,7 @@ function SimulationApproveReject(props) {
         }
       }))
     } else {
-      //SIMULATION REJECT CONDITION
+     //SIMULATION REJECT CONDITION
       dispatch(simulationRejectRequestByApprove(approverObject, res => {
         setIsDisable(false)
         if (res?.data?.Result) {
