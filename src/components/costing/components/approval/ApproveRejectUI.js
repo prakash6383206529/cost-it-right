@@ -56,8 +56,8 @@ function ApproveRejectUI(props) {
   const deptList = useSelector((state) => state.approval.approvalDepartmentList)
   const reasonsList = useSelector((state) => state.approval.reasonsList)
   const approvalTypeSelectList = useSelector(state => state.comman.approvalTypeSelectList)
-  
-useEffect(() => {
+
+  useEffect(() => {
     if (props?.emptyDivision) {
       setValue('Division', '')
     }
@@ -73,7 +73,6 @@ useEffect(() => {
   }, [props?.showWarningMessage])
 
   useEffect(() => {
-
     if (getConfigurationKey().IsReleaseStrategyConfigured && (!setDataFromSummary || disableReleaseStrategy)) {
 let appTypeId = approvalTypeSelectList && approvalTypeSelectList?.filter(element => Number(element?.Value) === Number(dataInFields?.ApprovalType?.value))[0]
       setValue('ApprovalType', appTypeId ? { label: appTypeId?.Text, value: appTypeId?.Value } : '')
@@ -82,13 +81,23 @@ let appTypeId = approvalTypeSelectList && approvalTypeSelectList?.filter(element
       setValue('approver', dataInFields?.Approver ? dataInFields?.Approver : '')
 
     } else if (!getConfigurationKey().IsDivisionAllowedForDepartment || type === 'Approve') {
+      if (type === 'Approve') {
+         if (isSimulationApprovalListing) {
+          setValue('dept', selectedRowData && selectedRowData.length !== 0 ?
+            { label: selectedRowData[0]?.DepartmentName, value: selectedRowData[0]?.DepartmentId } : '')
+        } else {
+          setValue('dept', simulationDetail ? { label: simulationDetail.DepartmentName || '', value: simulationDetail.DepartmentId || '' } : '')
+        }
+      }
+      else {
+        setValue('dept', dataInFields?.Department ? { label: dataInFields?.Department?.label, value: dataInFields.Department.value } : '')
+        setValue('approver', dataInFields?.Approver ? dataInFields?.Approver : '')
+      }
 
-      setValue('dept', dataInFields?.Department ? { label: dataInFields.Department.label, value: dataInFields.Department.value } : '')
-//setValue('dept', dataInFields?.Department ? dataInFields?.Department : '')
-      setValue('approver', dataInFields?.Approver ? dataInFields?.Approver : '')
     } else if (getConfigurationKey().IsDivisionAllowedForDepartment && type === 'Sender') {
-      setValue('dept', dataInFields?.Department ? { label: dataInFields.Department.label, value: dataInFields.Department.value } : '')
-//setValue('dept', dataInFields?.Department ? dataInFields?.Department : '')
+
+      setValue('dept', dataInFields?.Department ? { label: dataInFields?.Department?.label, value: dataInFields.Department.value } : '')
+      //setValue('dept', dataInFields?.Department ? dataInFields?.Department : '')
       setValue('approver', dataInFields?.Approver ? dataInFields?.Approver : '')
     }
   }, [dataInFields])
@@ -313,7 +322,7 @@ let appTypeId = approvalTypeSelectList && approvalTypeSelectList?.filter(element
   const submitForm = handleSubmit(() => {
     onSubmit()
   })
-return (
+  return (
     <>
       <Drawer
         anchor={props.anchor}
@@ -394,7 +403,7 @@ return (
                         mandatory={true}
                         handleChange={handleDepartmentChange}
                         errors={errors.dept}
-                        disabled={(disableReleaseStrategy || !(userData.Department.length > 1 && reasonId !== REASON_ID) || (props.isApprovalListing && approvalData[0]?.DivisionId) ? true : false)}
+                        disabled={(disableReleaseStrategy || !(userData.Department.length > 1 && reasonId !== REASON_ID) || (props.isApprovalListing && approvalData[0]?.DivisionId) ? true : false) || type === 'Approve'}
                       />
                     </div>}
                     <div className="input-group form-group col-md-12 input-withouticon">
@@ -442,7 +451,7 @@ return (
                         mandatory={true}
                         handleChange={handleDepartmentChange}
                         errors={errors.dept}
-                        disabled={(disableReleaseStrategy || (getConfigurationKey().IsDivisionAllowedForDepartment ? true : !(userData.Department.length > 1 && reasonId !== REASON_ID)) || (isSimulationApprovalListing && selectedRowData[0]?.DivisionId) ? true : false)}
+                        disabled={(disableReleaseStrategy || (getConfigurationKey().IsDivisionAllowedForDepartment ? true : !(userData.Department.length > 1 && reasonId !== REASON_ID)) || (isSimulationApprovalListing && selectedRowData[0]?.DivisionId) ? true : false) || type === 'Approve'}
 
                       />
                     </div>}
