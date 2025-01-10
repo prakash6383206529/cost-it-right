@@ -1084,10 +1084,10 @@ export function isRMDivisorApplicable(technology) {
 
 
 
-export function findLostWeight(tableVal) {
+export function findLostWeight(tableVal, isPlastic = false) {
   let sum = 0
   tableVal && tableVal.map(item => {
-    if (Number(item.LossOfType) === 2) {
+    if (Number(item.LossOfType) === 2 && isPlastic) {
       return false
     } else {
       sum = sum + item.LossWeight
@@ -1768,57 +1768,57 @@ export const calculateBestCost = (arrayList, showConvertedCurrency = false) => {
 
   // First, remove any existing bestCost items to prevent duplicates
   const finalArrayList = _.cloneDeep(arrayList).filter(item => !item.bestCost);
-  
+
   // If array is empty after filtering, return original array
   if (!finalArrayList.length) return arrayList;
-  
+
   // Check if currency conversion needed
   const isSameCurrency = _.map(finalArrayList, 'Currency')
-      .every(element => element === getConfigurationKey().BaseCurrency);
-  
-  const minObject = { 
-      ...finalArrayList[0],
-      attachment: [],
-      bestCost: true
+    .every(element => element === getConfigurationKey().BaseCurrency);
+
+  const minObject = {
+    ...finalArrayList[0],
+    attachment: [],
+    bestCost: true
   };
 
   // Rest of your existing logic...
   if (isSameCurrency) {
-      const keys = ["NetLandedCost", "BasicRatePerUOM", "OtherNetCost"];
-      Object.keys(minObject).forEach(key => minObject[key] = "");
+    const keys = ["NetLandedCost", "BasicRatePerUOM", "OtherNetCost"];
+    Object.keys(minObject).forEach(key => minObject[key] = "");
 
-      keys.forEach(key => {
-          minObject[key] = Math.min(...finalArrayList
-              .map(item => isNumber(item[key]) ? checkForNull(item[key]) : Infinity));
-      });
-      
-      minObject.nPOPrice = keys.reduce((sum, key) => 
-          sum + checkForNull(minObject[key]), 0);
-  } 
+    keys.forEach(key => {
+      minObject[key] = Math.min(...finalArrayList
+        .map(item => isNumber(item[key]) ? checkForNull(item[key]) : Infinity));
+    });
+
+    minObject.nPOPrice = keys.reduce((sum, key) =>
+      sum + checkForNull(minObject[key]), 0);
+  }
   else if (!showConvertedCurrency) {
-      Object.keys(minObject).forEach(key => minObject[key] = "");
-      
-      const conversionKeys = ["NetLandedCostConversion", "BasicRatePerUOMConversion", "OtherNetCostConversion"];
-      
-      conversionKeys.forEach(key => {
-          minObject[key] = Math.min(...finalArrayList
-              .map(item => isNumber(item[key]) ? checkForNull(item[key]) : Infinity));
-      });
-      
-      minObject.bestCost = "";
-  } 
+    Object.keys(minObject).forEach(key => minObject[key] = "");
+
+    const conversionKeys = ["NetLandedCostConversion", "BasicRatePerUOMConversion", "OtherNetCostConversion"];
+
+    conversionKeys.forEach(key => {
+      minObject[key] = Math.min(...finalArrayList
+        .map(item => isNumber(item[key]) ? checkForNull(item[key]) : Infinity));
+    });
+
+    minObject.bestCost = "";
+  }
   else {
-      const conversionKeys = ["NetLandedCostConversion", "BasicRatePerUOMConversion", "OtherNetCostConversion"];
-      
-      Object.keys(minObject).forEach(key => minObject[key] = "");
-      
-      conversionKeys.forEach(key => {
-          minObject[key] = Math.min(...finalArrayList
-              .map(item => isNumber(item[key]) ? checkForNull(item[key]) : Infinity));
-      });
-      
-      minObject.nPOPrice = conversionKeys.reduce((sum, key) => 
-          sum + checkForNull(minObject[key]), 0);
+    const conversionKeys = ["NetLandedCostConversion", "BasicRatePerUOMConversion", "OtherNetCostConversion"];
+
+    Object.keys(minObject).forEach(key => minObject[key] = "");
+
+    conversionKeys.forEach(key => {
+      minObject[key] = Math.min(...finalArrayList
+        .map(item => isNumber(item[key]) ? checkForNull(item[key]) : Infinity));
+    });
+
+    minObject.nPOPrice = conversionKeys.reduce((sum, key) =>
+      sum + checkForNull(minObject[key]), 0);
   }
 
   return [...finalArrayList, minObject];

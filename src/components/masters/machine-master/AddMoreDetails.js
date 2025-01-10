@@ -212,8 +212,9 @@ class AddMoreDetails extends Component {
     //this.props.change('MachineType', editDetails?.fieldsObj?.MachineType ?? "")
     //this.props.change('currency', editDetails?.currency ?? {})
     if (this.state?.selectedPlants?.value && this.state?.selectedPlants?.value !== null) {
+      const PlantId = Array.isArray(this.state.selectedPlants) ? this.state.selectedPlants[0]?.value : this.state.selectedPlants?.value;
       let obj = {
-        plantId: this.state.selectedPlants?.value,
+        plantId: PlantId,
         vendorId: this.state.selectedVedor?.value ? this.state.selectedVedor?.value : '',
         customerId: this.state.selectedCustomer?.value ? this.state.selectedCustomer?.value : '',
         costingTypeId: this.state.CostingTypeId || null,
@@ -311,11 +312,12 @@ class AddMoreDetails extends Component {
       if (nextProps.data !== this.props.data) {
         const { fieldsObj, machineType, selectedPlants, selectedTechnology, selectedCustomer, selectedVedor, costingTypeId, vendorName, client } = nextProps.data;
         if (selectedPlants && Object.keys(selectedPlants)?.length > 0) {
+          const PlantId = Array.isArray(selectedPlants) ? selectedPlants[0]?.value : selectedPlants?.value;
           this.handlePlants(selectedPlants)
           if (machineType.value) {
             const data = {
               machineTypeId: machineType?.value ? machineType?.value : '',
-              plantId: selectedPlants?.value ? selectedPlants?.value : '',
+              plantId: PlantId,
               effectiveDate: fieldsObj?.EffectiveDate ? fieldsObj.EffectiveDate : '',
               vendorId: selectedVedor?.value ? selectedVedor?.value : '',
               customerId: selectedCustomer?.value ? selectedCustomer?.value : '',
@@ -490,9 +492,10 @@ class AddMoreDetails extends Component {
             }
             this.props.getLabourTypeByMachineTypeSelectList(data, () => { })
           }
+          const PlantId = Array.isArray(this.state.selectedPlants) ? this.state.selectedPlants[0]?.value : this.state.selectedPlants?.value;
           if (Data && Data.Plant[0]?.PlantId) {
             let obj = {
-              plantId: this.state.selectedPlants?.value,
+              plantId: PlantId,
               vendorId: this.state.selectedVedor?.value ? this.state.selectedVedor?.value : '',
               customerId: this.state.selectedCustomer?.value ? this.state.selectedCustomer?.value : '',
               costingTypeId: this.state.CostingTypeId || null,
@@ -768,7 +771,7 @@ class AddMoreDetails extends Component {
           //   (res) => { },
           // )
           let obj = {
-            plantId: this.state.selectedPlants?.value,
+            plantId: newValue?.value,
             vendorId: this.state.selectedVedor?.value ? this.state.selectedVedor?.value : '',
             customerId: this.state.selectedCustomer?.value ? this.state.selectedCustomer?.value : '',
             costingTypeId: this.state.CostingTypeId || null,
@@ -790,7 +793,7 @@ class AddMoreDetails extends Component {
               costingTypeId: this.state.costingTypeId ? this.state.costingTypeId : '',
               vendorId: this.state.vendorId ? this.state.vendorId : '',
               customerId: this.state.customerId ? this.state.customerId : '',
-              toCurrency: baseCurrency,
+              toCurrency: fieldsObj?.plantCurrency,
               ExchangeSource: data?.ExchangeRateSourceName || "",
               entryType: data?.entryType === "Import" ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC,
             }
@@ -858,9 +861,10 @@ class AddMoreDetails extends Component {
 
   callLabourTypeApi = () => {
     const { machineType, selectedPlants, effectiveDate, selectedCustomer, selectedVedor, costingTypeId } = this.state;
+    const PlantId = Array.isArray(selectedPlants) ? selectedPlants[0]?.value : selectedPlants?.value;
     const data = {
       machineTypeId: machineType?.value,
-      plantId: selectedPlants?.value,
+      plantId: PlantId,
       effectiveDate: effectiveDate,
       vendorId: selectedVedor?.value ? selectedVedor?.value : '',
       customerId: selectedCustomer?.value ? selectedCustomer?.value : '',
@@ -952,12 +956,13 @@ class AddMoreDetails extends Component {
     if (newValue && newValue !== '') {
       this.setState({ fuelType: newValue }, () => {
         const { fuelType, selectedPlants, currency, ExchangeSource, costingTypeId, vendorId, customerId, selectedCustomer, selectedVedor } = this.state;
+        const PlantId = Array.isArray(selectedPlants) ? selectedPlants[0]?.value : selectedPlants?.value;
         if (selectedPlants) {
           const requestData = {
             fuelId: fuelType.value,
-            plantId: selectedPlants?.value,
+            plantId: PlantId,
             effectiveDate: DayTime(effectiveDate).isValid() ? DayTime(effectiveDate).format('YYYY-MM-DD') : '',
-            toCurrency: reactLocalStorage.getObject("baseCurrency"),
+            toCurrency: this.props.fieldsObj?.plantCurrency,
             ExchangeSource: ExchangeSource?.label || "",
             costingTypeId: costingTypeId || '',
             vendorId: selectedVedor?.value || '',
@@ -1065,14 +1070,15 @@ class AddMoreDetails extends Component {
     if (Object.keys(selectedPlants)?.length > 0) {
       const baseCurrency = reactLocalStorage.getObject("baseCurrency")
       const data = this.props.data ?? {};
+      const PlantId = Array.isArray(selectedPlants) ? selectedPlants[0]?.value : selectedPlants?.value;
       setTimeout(() => {
         let obj = {
-          plantId: this.state.selectedPlants?.value,
+          plantId: PlantId,
           effectiveDate: date,
           costingTypeId: this.state.costingTypeId ? this.state.costingTypeId : '',
           vendorId: this.state.vendorId ? this.state.vendorId : '',
           customerId: this.state.customerId ? this.state.customerId : '',
-          toCurrency: baseCurrency,
+          toCurrency: fieldsObj?.plantCurrency,
           ExchangeSource: data?.ExchangeRateSourceName || "",
           entryType: data?.entryType === "Import" ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC,
 
@@ -1165,8 +1171,9 @@ class AddMoreDetails extends Component {
       this.props.change('TotalFuelCostPerYear', 0)
       if (this.state?.selectedPlants?.value && this.state?.selectedPlants?.value !== null) {
         //this.props.getFuelByPlant(this.state.selectedPlants?.value, () => { })
+        const PlantId = Array.isArray(this.state.selectedPlants) ? this.state.selectedPlants[0]?.value : this.state.selectedPlants?.value;
         let obj = {
-          plantId: this.state.selectedPlants?.value,
+          plantId: PlantId,
           vendorId: this.state.selectedVedor?.value ? this.state.selectedVedor?.value : '',
           customerId: this.state.selectedCustomer?.value ? this.state.selectedCustomer?.value : '',
           costingTypeId: this.state.CostingTypeId || null,
@@ -1197,15 +1204,16 @@ class AddMoreDetails extends Component {
       if (selectedPlants) {
         const baseCurrency = reactLocalStorage.getObject("baseCurrency")
         const data = this.props.data ?? {};
+        const PlantId = Array.isArray(selectedPlants) ? selectedPlants[0]?.value : selectedPlants?.value;
         setTimeout(() => {
 
           let obj = {
-            plantId: selectedPlants?.value,
+            plantId: PlantId,
             effectiveDate: effectiveDate,
             costingTypeId: this.state.costingTypeId ? this.state.costingTypeId : '',
             vendorId: this.state.vendorId ? this.state.vendorId : '',
             customerId: this.state.customerId ? this.state.customerId : '',
-            toCurrency: baseCurrency,
+            toCurrency: this.props.fieldsObj?.plantCurrency,
             ExchangeSource: data?.ExchangeRateSourceName || "",
             entryType: data?.entryType === "Import" ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC,
 
@@ -1252,15 +1260,16 @@ class AddMoreDetails extends Component {
         const { labourType, machineType, selectedPlants, effectiveDate, selectedCustomer, selectedVedor } = this.state;
         const baseCurrency = reactLocalStorage.getObject("baseCurrency")
         const { data } = this.props ?? {}
+        const PlantId = Array.isArray(selectedPlants) ? selectedPlants[0]?.value : selectedPlants?.value;
         const dataObj = {
           labourTypeId: labourType.value,
           machineTypeId: machineType.value,
-          plantId: selectedPlants?.value,
+          plantId: PlantId,
           customerId: selectedCustomer?.value,
           vendorId: selectedVedor?.value,
           effectiveDate: effectiveDate,
           costingTypeId: this.state.costingTypeId ? this.state.costingTypeId : '',
-          toCurrency: baseCurrency,
+          toCurrency: this.props.fieldsObj?.plantCurrency,
           ExchangeSource: data?.ExchangeRateSourceName || "",
 
         }
@@ -2731,14 +2740,15 @@ class AddMoreDetails extends Component {
     if (!isPowerOpen) {
       const baseCurrency = reactLocalStorage.getObject("baseCurrency")
       const data = this.props.data ?? {};
+      const PlantId = Array.isArray(selectedPlants) ? selectedPlants[0]?.value : selectedPlants?.value;
       setTimeout(() => {
         let obj = {
-          plantId: this.state.selectedPlants?.value,
+          plantId: PlantId,
           effectiveDate: effectiveDate,
           costingTypeId: this.state.costingTypeId ? this.state.costingTypeId : '',
           vendorId: this.state.vendorId ? this.state.vendorId : '',
           customerId: this.state.selectedCustomer?.value ? this.state.selectedCustomer?.value : '',
-          toCurrency: baseCurrency,
+          toCurrency: fieldsObj?.plantCurrency,
           ExchangeSource: data?.ExchangeRateSourceName || "",
           entryType: data?.entryType === "Import" ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC,
 
@@ -2865,7 +2875,7 @@ class AddMoreDetails extends Component {
     const { UOM, entryType } = this.state;
     let currencyLabel = !entryType ? (this?.props?.fieldsObj?.plantCurrency || 'Currency') :
       (this?.state?.currency?.label || 'Currency')
-    return <>Machine Cost/{(UOM && UOM.length !== 0) ? displayUOM(UOM.label) : "UOM"} ({currencyLabel})</>
+    return <>Machine Cost ({currencyLabel})</>
   }
   handleChangeIncludeMachineRateDepreciation = (value) => {
     this.setState({ IsIncludeMachineRateDepreciation: !this.state.IsIncludeMachineRateDepreciation })
@@ -2957,8 +2967,9 @@ class AddMoreDetails extends Component {
   ImportToggle = () => {
     this.setState({ powerIsImport: !this.state.powerIsImport }, () => {
       if (this.state?.selectedPlants?.value && this.state?.selectedPlants?.value !== null) {
+        const PlantId = Array.isArray(this.state.selectedPlants) ? this.state.selectedPlants[0]?.value : this.state.selectedPlants?.value;
         let obj = {
-          plantId: this.state.selectedPlants?.value,
+          plantId: PlantId,
           vendorId: this.state.selectedVedor?.value ? this.state.selectedVedor?.value : '',
           customerId: this.state.selectedCustomer?.value ? this.state.selectedCustomer?.value : '',
           costingTypeId: this.state.CostingTypeId || null,
@@ -5333,7 +5344,6 @@ function mapStateToProps(state) {
       Remark: machineData.Remark,
     }
   }
-
   return {
     vendorListByVendorType, technologySelectList, plantSelectList, UOMSelectList,
     machineTypeSelectList, processSelectList, ShiftTypeSelectList, DepreciationTypeSelectList,

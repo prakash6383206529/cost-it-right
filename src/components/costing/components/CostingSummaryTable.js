@@ -352,6 +352,9 @@ const CostingSummaryTable = (props) => {
       if (props.isRfqCosting) {
         setShowConvertedCurrency(true)
       }
+      if (!props?.isRfqCosting && currency?.every(element => element === null)) {
+        setShowConvertedCurrencyCheckbox(false)
+      }
     }
 
     viewCostingData && viewCostingData.map((item) => {
@@ -2294,7 +2297,7 @@ const CostingSummaryTable = (props) => {
                                     {
                                       (isApproval && data?.CostingHeading !== '-') ? <span>{data?.CostingHeading}</span> :
                                         (data?.bestCost === true) ? "" :
-                                          <span className={`checkbox-text`} title={title}><div><span>{heading(data).mainHeading}<span> {data.costingTypeId !== CBCTypeId && `(SOB: ${data?.shareOfBusinessPercent}%)`}</span></span><span className='sub-heading'>{heading(data).subHeading}-{data.costingHeadCheck}</span></div></span>
+                                          <span className={`checkbox-text`} title={title}><div><span>{heading(data).mainHeading}<span> ({heading(data).subHeading}) </span></span><span className='sub-heading'>{data.costingHeadCheck} {data.costingTypeId !== CBCTypeId && `(SOB: ${data?.shareOfBusinessPercent}%)`}</span></div></span>
                                     }
                                     {data?.CostingHeading === VARIANCE && ((!pdfHead)) && <TooltipCustom customClass="mb-0 ml-1" id="variance" tooltipText={`Variance = (${data.costingTypeId === CBCTypeId ? "New Costing - Old Costing" : "Old Costing - New Costing"})`} />}
                                   </div >
@@ -2393,10 +2396,10 @@ const CostingSummaryTable = (props) => {
                                     <span className="d-block">{(data?.bestCost === true) ? ' ' : data?.RevisionNumber}</span>
                                     <span className="d-block">{(data?.bestCost === true) ? ' ' : (data.costingTypeId === ZBCTypeId ? `${data?.plantName}` : `${data?.destinationPlantName}`)}</span>
 
-                                    {data?.technologyId !== TOOLING_ID && (
+                                    {data?.technologyId !== TOOLING_ID && data?.bestCost !== true && (
                                       <>
                                         {
-                                          props.isFromViewRFQ && data?.bestCost !== true ? <div className='d-flex align-items-center'>
+                                          props.isFromViewRFQ ? <div className='d-flex align-items-center'>
                                             <div className="w-100px costing-error-container">
                                               <TextFieldHookForm
                                                 label={false}
@@ -2424,7 +2427,7 @@ const CostingSummaryTable = (props) => {
                                                 disabled={data?.editSOBPercentage ? false : true}
                                               />
                                             </div>
-                                            {data?.bestCost !== true && showEditSOBButton && <>
+                                            {showEditSOBButton && <>
                                               {data?.editSOBPercentage ?
                                                 <>
                                                   <Button
@@ -3352,7 +3355,7 @@ const CostingSummaryTable = (props) => {
                                 })}
                             </tr>
                           }
-                          {!initialConfiguration?.IsShowTCO &&
+                          {!initialConfiguration?.IsShowTCO && initialConfiguration?.IsShowNpvCost &&
                             <tr>
                               <td>
                                 <span className={`d-block small-grey-text`}>NPV Cost</span>
@@ -3441,7 +3444,7 @@ const CostingSummaryTable = (props) => {
                           {viewCostingData &&
                             viewCostingData?.map((data, index) => {
                               return <td className={tableDataClass(data)}>
-                                {data?.bestCost !== true ? (viewCostingData?.[0]?.CostingCurrency + ' : ') : ''}    {data?.bestCost === true ? (showConvertedCurrency ? displayValueWithSign(data, "nPOPrice") : null) : displayValueWithSign(data, "nPOPrice")}
+                                {data?.bestCost !== true ? ((viewCostingData?.[0]?.CostingCurrency ? viewCostingData?.[0]?.CostingCurrency : initialConfiguration?.BaseCurrency) + ' : ') : ''}    {data?.bestCost === true ? (showConvertedCurrency ? displayValueWithSign(data, "nPOPrice") : initialConfiguration?.BaseCurrency) : displayValueWithSign(data, "nPOPrice")}
                                 {
                                   (data?.bestCost !== true) && (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&
                                   <button
@@ -3464,17 +3467,6 @@ const CostingSummaryTable = (props) => {
                             viewCostingData?.map((data, index) => {
                               return <td className={tableDataClass(data)}>
                                 {data?.bestCost !== true && <>{viewCostingData?.[0]?.LocalCurrency}:    {displayValueWithSign(data, "NetPOPriceLocalConversion")}</>}
-                                {
-                                  (data?.bestCost !== true) && (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&
-                                  <button
-                                    id="view_otherToolCost"
-                                    type="button"
-                                    title='View'
-                                    className="float-right mb-0 View "
-                                    onClick={() => viewNpvData(index)}
-                                  >
-                                  </button>
-                                }
                               </td >
                             })}
                         </tr >
@@ -3486,18 +3478,6 @@ const CostingSummaryTable = (props) => {
                             viewCostingData?.map((data, index) => {
                               return <td className={tableDataClass(data)}>
                                 {data?.bestCost !== true && <>{getConfigurationKey().BaseCurrency}:    {displayValueWithSign(data, "NetPOPriceConversion")}</>}
-                                {
-                                  (data?.bestCost !== true) && (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&
-                                  <button
-                                    id="view_otherToolCost"
-
-                                    type="button"
-                                    title='View'
-                                    className="float-right mb-0 View "
-                                    onClick={() => viewNpvData(index)}
-                                  >
-                                  </button>
-                                }
                               </td >
                             })}
 
