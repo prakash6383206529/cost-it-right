@@ -1817,6 +1817,9 @@ useEffect(() => {
         },
 
       },
+      datalabels: {
+        display: false, // Disable the default data labels (values) on the chart
+      },
     },
     layout: {
       padding: {

@@ -18,11 +18,11 @@ function AddOtherCostDrawer(props) {
 
 
 
-    const { rmBasicRate, isFromImport, RowData, RowIndex, isImport, plantCurrency, settlementCurrency, isBOP,RawMaterialNonIndexed=false,bopBasicRate } = props
+    const { rmBasicRate, isFromImport, RowData, RowIndex, isImport, plantCurrency, settlementCurrency, isBOP, RawMaterialNonIndexed = false, bopBasicRate } = props
     const Currency = RawMaterialNonIndexed ? settlementCurrency : ((isBOP && isImport) ? settlementCurrency : isBOP && !isImport ? plantCurrency : props?.RowData?.IndexCurrency) || 'Currency'
     const CurrencyLabel = RawMaterialNonIndexed ? settlementCurrency : (!props.rawMaterial ? reactLocalStorage.getObject('baseCurrency') : isImport && (props.rawMaterial || isBOP) ? settlementCurrency : plantCurrency) || 'Currency'
 
-const UOM = props?.RowData?.IndexUOM || (Array.isArray(props?.uom) ? '' : props?.uom?.label) || '';
+    const UOM = props?.RowData?.IndexUOM || (Array.isArray(props?.uom) ? '' : props?.uom?.label) || '';
     const [tableData, setTableData] = useState([]);
 
     const [disableTotalCost, setDisableTotalCost] = useState(true)
@@ -132,7 +132,7 @@ const UOM = props?.RowData?.IndexUOM || (Array.isArray(props?.uom) ? '' : props?
     const handleEdit = (indexValue) => {
         setEditIndex(indexValue);
         setIsEditMode(true);
-        
+
         let selectedData = tableData[indexValue];
         setValue('Cost', {
             label: selectedData.CostHeaderName,
@@ -751,7 +751,7 @@ const UOM = props?.RowData?.IndexUOM || (Array.isArray(props?.uom) ? '' : props?
                                                             {!isBOP && <td>{item.ApplicabilityCostConversion}</td>}
                                                             <td>{item.Value !== '-' ? checkForDecimalAndNull(item.Value, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>
                                                             {(!props.rawMaterial || isBOP) && <td>{item.NetCost !== '-' ? checkForDecimalAndNull(item.NetCost, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>}
-                                                            {!isBOP && <td>{checkForDecimalAndNull(item.NetCostConversion, initialConfiguration?.NoOfDecimalForPrice) !== '-' ?RawMaterialNonIndexed?checkForDecimalAndNull(item?.NetCost, initialConfiguration?.NoOfDecimalForPrice): checkForDecimalAndNull(item?.NetCostConversion, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>}
+                                                            {!isBOP && <td>{checkForDecimalAndNull(item.NetCostConversion, initialConfiguration?.NoOfDecimalForPrice) !== '-' ? RawMaterialNonIndexed ? checkForDecimalAndNull(item?.NetCost, initialConfiguration?.NoOfDecimalForPrice) : checkForDecimalAndNull(item?.NetCostConversion, initialConfiguration?.NoOfDecimalForPrice) : '-'}</td>}
                                                             <td>{item.Remark}</td>
                                                             {!props.hideAction && (
                                                                 <td>
@@ -783,7 +783,7 @@ const UOM = props?.RowData?.IndexUOM || (Array.isArray(props?.uom) ? '' : props?
                                                         </td>
                                                     }
                                                     <td colSpan={3} className="text-left">
-                                                        {checkForDecimalAndNull((isBOP||RawMaterialNonIndexed ? totalCostCurrency : totalCostBase), initialConfiguration?.NoOfDecimalForPrice)} ({isImport?settlementCurrency:plantCurrency})
+                                                        {checkForDecimalAndNull((isBOP || RawMaterialNonIndexed ? totalCostCurrency : totalCostBase), initialConfiguration?.NoOfDecimalForPrice)} ({(isImport ? settlementCurrency : plantCurrency) ?? initialConfiguration?.BaseCurrency})
                                                     </td>
                                                 </tr>
                                             </tbody>
