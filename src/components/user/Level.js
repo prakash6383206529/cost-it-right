@@ -279,10 +279,10 @@ const Level = (props) => {
     setValue('LevelId', '');
     if (Number(levelId) === COSTING_LEVEL) {
 
-      dispatch(getAllTechnologyAPI(() => { }))
+      dispatch(getAllTechnologyAPI(() => { }, '', true))
     } else if (Number(levelId) === SIMULATION_LEVEL) {
 
-      dispatch(getSimulationTechnologySelectList(() => { }))
+      dispatch(getSimulationTechnologySelectList(() => { }, '', true))
     }
     setState((prevState) => ({ ...prevState, levelType: levelId, technology: [], level: [], approvalTypeObject: [] }));
   };
