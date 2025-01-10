@@ -20,7 +20,7 @@ import { reactLocalStorage } from 'reactjs-localstorage'
 import { autoCompleteDropdown, autoCompleteDropdownPart, getCostingTypeIdByCostingPermission } from '../../common/CommonFunctions'
 import { useEffect } from 'react'
 import { useState } from 'react'
-import { NumberFieldHookForm, SearchableSelectHookForm } from '../../layout/HookFormInputs'
+import { AsyncSearchableSelectHookForm, NumberFieldHookForm, SearchableSelectHookForm } from '../../layout/HookFormInputs'
 import { Controller, useForm } from 'react-hook-form'
 import { createBudget, getApprovedPartCostingPrice, getMasterBudget, getPartCostingHead, updateBudget } from '../actions/Budget'
 import { checkFinalUser, getExchangeRateByCurrency } from '../../costing/actions/Costing'
@@ -61,8 +61,6 @@ function AddBudget(props) {
     const [showErrorOnFocus, setShowErrorOnFocus] = useState(false);
     const [costingTypeId, setCostingTypeId] = useState(ZBCTypeId);
     const [client, setClient] = useState([]);
-    const [isPartNumberNotSelected, setIsPartNumberNotSelected] = useState(false);
-    const [showErrorOnFocusPart, setShowErrorOnFocusPart] = useState(false);
     const [conditionAcc, setConditionAcc] = useState(false);
     const [partName, setPartName] = useState('');
     const [IsVendor, setIsVendor] = useState(false);
@@ -264,6 +262,7 @@ function AddBudget(props) {
     const handleVendorName = (newValue, actionMeta) => {
         if (newValue && newValue !== '') {
             setVendorName(newValue)
+            setIsVendorNameNotSelected(false)
             setDisableCurrency(false)
         } else {
             setVendorName([])
@@ -601,6 +600,12 @@ function AddBudget(props) {
         let endYear = year.label.slice(-4);
         let months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
         let temp = []
+        if (vendorName.length <= 0) {
+            if (costingTypeId === VBCTypeId) {
+                setIsVendorNameNotSelected(true)
+                return false
+            }
+        }
         tableData && tableData.map((item, index) => {
             let budGetingDetails = []
             let obj = {}
@@ -996,7 +1001,7 @@ function AddBudget(props) {
                                                                     </div>
                                                                 </>
                                                             )}
-                                                            <Col className="col-md-15">
+                                                            <Col className="col-md-3 p-relative">
                                                                 <SearchableSelectHookForm
                                                                     label={"Part Type"}
                                                                     name={"PartType"}
@@ -1013,28 +1018,27 @@ function AddBudget(props) {
                                                                     disabled={isViewMode ? true : false}
                                                                 />
                                                             </Col>
-                                                            <Col md="3">
-                                                                <label>{"Part No. (Revision No.)"}<span className="asterisk-required">*</span></label>
-                                                                <div className="d-flex justify-space-between align-items-center async-select">
-                                                                    <div className="fullinput-icon p-relative">
-                                                                        <AsyncSelect
-                                                                            id='AddBudget_PartNumber'
-                                                                            name="PartNumber"
-                                                                            //ref={this.myRef}
-                                                                            //key={updateAsyncDropdown}
-                                                                            loadOptions={partFilterList}
-                                                                            onChange={(e) => handlePartName(e)}
-                                                                            value={part}
-                                                                            noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN : "No results found"}
-                                                                            onKeyDown={(onKeyDown) => {
-                                                                                if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
-                                                                            }}
-                                                                            isDisabled={(isViewMode || partType.length === 0) ? true : false}
-                                                                            onBlur={() => setShowErrorOnFocusPart(true)}
-                                                                        />
-                                                                        {((showErrorOnFocusPart && part.length === 0) || isPartNumberNotSelected) && <div className='text-help mt-1'>This field is required.</div>}
-                                                                    </div>
-                                                                </div>
+                                                            <Col className="col-md-3 p-relative">
+                                                                <AsyncSearchableSelectHookForm
+                                                                    label={"Part No. (Revision No.)"}
+                                                                    id='AddBudget_PartNumber'
+                                                                    name={"PartNumber"}
+                                                                    placeholder={"Select"}
+                                                                    Controller={Controller}
+                                                                    value={part}
+                                                                    control={control}
+                                                                    rules={{ required: true }}
+                                                                    register={register}
+                                                                    defaultValue={part?.length !== 0 ? part : ""}
+                                                                    asyncOptions={partFilterList}
+                                                                    mandatory={true}
+                                                                    loadOptions={partFilterList}
+                                                                    handleChange={(e) => handlePartName(e)}
+                                                                    errors={errors.PartNumber}
+                                                                    disabled={(isViewMode || partType?.length === 0) ? true : false}
+                                                                    NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
+                                                                />
+
                                                             </Col>
 
                                                             <div className="col-md-3 p-relative">
