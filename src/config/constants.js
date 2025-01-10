@@ -2090,6 +2090,7 @@ export const GET_RFQ_TOOLING_DETAILS = "GET_RFQ_TOOLING_DETAILS"
 export const UPDATED_TOOLING_DATA = "UPDATED_TOOLING_DATA"
 export const SET_TOOLING_SPECIFIC_ROW_DATA = "SET_TOOLING_SPECIFIC_ROW_DATA"
 export const SET_SAP_DETAIL_KEYS = "SET_SAP_DETAIL_KEYS"
+export const BEST_COSTING_DATA = "BEST_COSTING_DATA"
 
 //AUCTION 
 export const SET_AUCTION_DATA = 'SET_AUCTION_DATA'
@@ -3285,7 +3286,7 @@ export const COSTINGCONDITIONCOST = 'Costing Condition Cost'
 export const IsSelectSinglePlant = true
 
 //VERSION 
-export const VERSION = "V3.1.63";
+export const VERSION = "V3.1.64";
 
 
 

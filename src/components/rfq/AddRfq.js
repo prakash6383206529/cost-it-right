@@ -219,7 +219,8 @@ function AddRfq(props) {
 
     const showOnlyFirstModule = initialConfiguration?.IsManageSeparateUserPermissionForPartAndVendorInRaiseRFQ;
     const { toolingSpecificRowData } = useSelector(state => state?.rfq);
-    const disableUOMFiled = (selectedOption === "Raw Material" || selectedOption === "Bought Out Part") ? (Object.keys(prNumber).length !== 0 || (dataProps?.isViewFlag) ? true : false || disabledPartUid) : true
+    const isQuotationReceived = () => dataProps?.rowData?.Status === 'Received' || dataProps?.rowData?.Status === 'Sent'
+    const disableUOMFiled = (Object.keys(prNumber).length !== 0 || dataProps?.isViewFlag ||  isQuotationReceived() ||    disabledPartUid)
     const showTcoFields = initialConfiguration.IsShowTCO
 
 
@@ -3568,7 +3569,7 @@ function AddRfq(props) {
                                                     mandatory={true}
                                                     handleChange={handlePartTypeChange}
                                                     errors={errors.Part}
-                                                    disabled={Object.keys(prNumber).length !== 0 || (dataProps?.isViewFlag) ? true : false || (technology.length === 0) ? true : false || updateButtonPartNoTable || disabledPartUid}
+                                                    disabled={Object.keys(prNumber).length !== 0  || isQuotationReceived() || (dataProps?.isViewFlag) ? true : false || (technology.length === 0) ? true : false || updateButtonPartNoTable || disabledPartUid}
                                                 />
                                             </Col>}
 
