@@ -73,7 +73,7 @@ const Level = (props) => {
 
         dispatch(getAllTechnologyAPI(() => { }, '', true))
       } else if (Number(state?.levelType) === SIMULATION_LEVEL) {
-        dispatch(getSimulationTechnologySelectList(() => { }))
+        dispatch(getSimulationTechnologySelectList(() => { }, '', true))
       }
       onPressRadioLevel(state?.levelType)
       dispatch(getAllLevelAPI(() => { setState((prevState) => ({ ...prevState, isLoader: isEditFlag ? true : false })) }))
