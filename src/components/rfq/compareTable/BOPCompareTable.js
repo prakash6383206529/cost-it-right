@@ -129,18 +129,19 @@ const BOPCompareTable = (props) => {
             }
     
             viewBOPDetails.map((item, index) => {
+                console.log(item)
                 // Section One Data
                 const formattedDataOne = [
-                    item?.BoughtOutPartNumber,
-                    item?.BoughtOutPartName,
-                    item?.Currency,
-                    item?.BoughtOutPartCategory,
-                    item?.UOM,
-                    item?.Plants,
+                    item?.BoughtOutPartNumber || '',
+                    item?.BoughtOutPartName || '',
+                    item?.Currency || '',
+                    item?.BoughtOutPartCategory || '',
+                    item?.UOM || '',
+                    item?.Plants || '',
                     `${item?.Vendor} (${item?.VendorCode})`,
                     item?.EffectiveDate ? 
                         DayTime(item?.EffectiveDate).format('DD/MM/YYYY') : 
-                        '-',
+                        '',
                     showConvertedCurrency ? 
                     item.bestCost==="" ? 
                             item?.BasicRateConversion : 
@@ -168,7 +169,7 @@ const BOPCompareTable = (props) => {
     
             // Section Three Data
             sectionThree = viewBOPDetails?.map(item => [
-                item?.bestCost ? '-' : (
+                item?.bestCost ? '' : (
                     <div 
                         onClick={() => handleOpenSpecificationDrawerSingle(item.BoughtOutPartId)} 
                         className={'link'}
@@ -176,7 +177,7 @@ const BOPCompareTable = (props) => {
                         View Specifications
                     </div>
                 ),
-                item.Remark || '-'
+                item.Remark || ''
             ]);
     
             // Main Header Data
@@ -239,7 +240,7 @@ const BOPCompareTable = (props) => {
         let ids = viewBOPDetails
             .filter(item => !item?.bestCost) // Filter out best cost rows
             .map(item => item?.BoughtOutPartId)
-            .filter(id => id !== null && id !== undefined && id !== '-');
+            .filter(id => id !== null && id !== undefined && id !== '');
         
         if (ids.length > 0) {
             setSelectedBopId(ids);
