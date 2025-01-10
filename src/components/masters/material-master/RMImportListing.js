@@ -1215,6 +1215,7 @@ function RMImportListing(props) {
                     type={'Raw Material'}
                     quotationId={props.quotationId}
                     closeDrawer={closeCompareDrawer}
+                    summaryDrawer={props?.isMasterSummaryDrawer}
                 // selectedRow = {props.bopDataResponse}
                 />
 

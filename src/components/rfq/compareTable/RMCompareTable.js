@@ -25,6 +25,7 @@ const RMCompareTable = (props) => {
     const [showConvertedCurrencyCheckbox, setShowConvertedCurrencyCheckbox] = useState(false)
 const[otherCostDrawer,setOtherCostDrawer] = useState(false)
 const[selectedItem,setSelectedItem] = useState(null)
+const bestCostingData = useSelector(state => state.rfq.bestCostingData)
     const showCheckbox = viewRmDetails && viewRmDetails?.some(item => item.IsShowCheckBoxForApproval === true);
     const [showConvertedCurrency, setShowConvertedCurrency] = useState(true)
 
@@ -32,6 +33,8 @@ const[selectedItem,setSelectedItem] = useState(null)
     const handleConvertedCurrencyChange = (value) => {
        setShowConvertedCurrency(value);
     }
+    console.log(viewRmDetails);
+    
 
 useEffect(() => {
     //if(!RfqMasterApprovalDrawer){
@@ -51,13 +54,26 @@ useEffect(() => {
             let dat = [...temp]
 
             let tempArrToSend = _.uniqBy(dat, 'RawMaterialId')
-            let arr = bestCostObjectFunction(tempArrToSend)
-            dispatch(setRawMaterialCostingData([...arr]))
+            if(!props?.RfqMasterApprovalDrawer){
+                let arr = bestCostObjectFunction(tempArrToSend)
+                dispatch(setRawMaterialCostingData([...arr]))
+            }
+            else{
+                if(bestCostingData){
+                    const arr = [...tempArrToSend, bestCostingData]
+                    dispatch(setRawMaterialCostingData([...arr]))
+                    setShowConvertedCurrency(true)
+                }
+                else{
+                    dispatch(setRawMaterialCostingData([...tempArrToSend]))
+                    setShowConvertedCurrency(false)
+                }
+            }
 
         }
     }))
 // }
-}, [showConvertedCurrency])
+}, [showConvertedCurrency,bestCostingData])
 useEffect(() => {
         
 if (viewRmDetails && _.map(viewRmDetails, 'Currency').every(element => 
