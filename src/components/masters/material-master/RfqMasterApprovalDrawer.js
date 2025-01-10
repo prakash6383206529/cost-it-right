@@ -21,7 +21,6 @@ const RfqMasterApprovalDrawer = (props) => {
     reValidateMode: 'onChange',
   });
   const { selectedRows } = props
-  console.log("selectedRows", selectedRows);
   
   useEffect(() => {
     dispatch(rfqGetBestCostingDetails(selectedRows[0]?.BestCostAndShouldCostMasterDetails?.BestCostId, (res) => {

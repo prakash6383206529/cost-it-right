@@ -33,7 +33,6 @@ const bestCostingData = useSelector(state => state.rfq.bestCostingData)
     const handleConvertedCurrencyChange = (value) => {
        setShowConvertedCurrency(value);
     }
-    console.log(viewRmDetails);
     
 
 useEffect(() => {
@@ -83,7 +82,7 @@ if (viewRmDetails && _.map(viewRmDetails, 'Currency').every(element =>
     setShowConvertedCurrencyCheckbox(true)
 }
       
-          if (viewRmDetails.length !== 0) {
+          if (viewRmDetails?.length !== 0) {
             let sectionOne = [];
             let sectionTwo = [];
             let sectionThree = []
@@ -303,7 +302,9 @@ if (viewRmDetails && _.map(viewRmDetails, 'Currency').every(element =>
     return (
         <div>
             {showCheckbox && !props?.compare && < WarningMessage dClass={"float-right justify-content-end"} message={'Click the checkbox to approve, reject, or return the quotation'} />}
-            <Table headerData={mainHeadingData} sectionData={sectionData} uniqueShouldCostingId={props?.uniqueShouldCostingId}
+            <Table headerData={mainHeadingData}
+             sectionData={sectionData}
+              uniqueShouldCostingId={props?.uniqueShouldCostingId}
                 showConvertedCurrency={showConvertedCurrency}
                 onConvertedCurrencyChange={handleConvertedCurrencyChange}
                 showConvertedCurrencyCheckbox={showConvertedCurrencyCheckbox}

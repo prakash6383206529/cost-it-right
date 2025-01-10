@@ -674,7 +674,6 @@ data.RawMaterialBestCostRequest = {
                 // obj.IsFinalApprovalProcess = false
                 // obj.IsRFQCostingSendForApproval = props.isRFQ ? true : false
                 const approvalObjects = Array.isArray(approvalDetails) ? approvalDetails : [approvalDetails];
-                console.log(levelDetails);
                 const processedApprovalObjects = approvalObjects.map(item => ({
                     
                     
@@ -704,7 +703,6 @@ data.RawMaterialBestCostRequest = {
                 }));
                 setIsLoader(true);
                 const processApproval = (objects) => {
-console.log(objects);
 
                     return new Promise((resolve, reject) => {
                         dispatch(approvalOrRejectRequestByMasterApprove(objects, res => {
