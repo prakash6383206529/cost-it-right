@@ -9,7 +9,6 @@ const Table = (props) => {
     const { headerData, sectionData, children, showConvertedCurrency,
         onConvertedCurrencyChange, showConvertedCurrencyCheckbox, onViewOtherCost } = props;
     const { vendorLabel } = useLabels()
-    
     const renderList = (sectionData) => {
         const { isHighlightedRow, header, data } = sectionData
 

@@ -12,68 +12,19 @@ import _ from 'lodash';
 
 
 const RfqMasterApprovalDrawer = (props) => {
+  
   const dispatch = useDispatch();
   const [isLoader, setIsLoader] = useState(false);
   const [uniqueShouldCostingId,setUniqueShouldCostingId  ] = useState([])
-  const [bestCostData,setBestCostData] = useState([])
   const { register, control, handleSubmit, formState: { errors } } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
   });
   const { selectedRows } = props
   
-  const { viewRmDetails, viewBopDetails } = useSelector(state => state.material)
-  
-
   useEffect(() => {
-    let tempObj = []
-    let temp = []
     dispatch(rfqGetBestCostingDetails(selectedRows[0]?.BestCostAndShouldCostMasterDetails?.BestCostId, (res) => {
-      
-      tempObj = formViewData(res?.data?.Data, '', true)
-      tempObj[0].bestCost = true
-      temp.push(tempObj[0])
-
-  const { selectedRows } = props
-
-// useEffect(() => {
-//   dispatch(rfqGetBestCostingDetails(selectedRows[0]?.BestCostAndShouldCostMasterDetails?.BestCostId, (res) => {
-//     let temp = []
-//     const uniqueShouldCostingIdArr = props?.uniqueShouldCostingId || [];
-//     const idArr = props?.selectedRows.map(item => item.RawMaterialId);
-//     const combinedArr = Array.from(new Set([...uniqueShouldCostingIdArr, ...idArr]));
-
-    // Call API based on part type
-    // if (props.type === 'Raw Material') {
-    //   dispatch(getViewRawMaterialDetails(combinedArr, res => {
-    //     setIsLoader(false)
-    //     if (res) {
-    //       res?.data?.DataList?.map((item) => {
-    //         temp.push(item)
-    //         return null
-    //       })
-    //       let dat = [...temp]
-    //       let tempArrToSend = _.uniqBy(dat, 'RawMaterialId')
-    //       let arr = calculateBestCost(tempArrToSend, true)
-    //       dispatch(setRawMaterialCostingData([...arr]))
-    //     }
-    //   }))
-    // } else if (props.type === 'Bought Out Part') {
-    //   dispatch(getViewBOPDetails(combinedArr, res => {
-    //     setIsLoader(false)
-    //     if (res) {
-    //       res?.data?.DataList?.map((item) => {
-    //         temp.push(item)
-    //         return null
-    //       })
-    //       let dat = [...temp]
-    //       let tempArrToSend = _.uniqBy(dat, 'BoughtOutPartId')
-    //       let arr = calculateBestCost(tempArrToSend,true)
-    //       dispatch(setBopCostingData([...arr]))
-    //     }
-    //   }))
-    // }
-  }))
+      }))
   uniqueShouldCost()
 }, [])
 
@@ -128,7 +79,6 @@ const onSubmit = handleSubmit((data) => {
             quotationId={props.quotationId}
             uniqueShouldCostingId={uniqueShouldCostingId}
             RfqMasterApprovalDrawer={true}
-            bestCostData={bestCostData}
           />}
           {props.type === 'Bought Out Part' && <BOPCompareTable
             // checkCostingSelected={checkCostingSelected}
@@ -137,7 +87,6 @@ const onSubmit = handleSubmit((data) => {
             uniqueShouldCostingId={uniqueShouldCostingId}
             quotationId={props.quotationId}
             RfqMasterApprovalDrawer={true}
-            bestCostData={bestCostData}
           />}
         </div>
       </div>

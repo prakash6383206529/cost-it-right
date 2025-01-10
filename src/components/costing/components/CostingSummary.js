@@ -727,6 +727,7 @@ function CostingSummary(props) {
         storeSummary={true}
         technology={technology}
         partTypeValue={partType}
+        showAddToComparison={true}
 
       />}
 

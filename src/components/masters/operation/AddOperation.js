@@ -92,7 +92,7 @@ class AddOperation extends Component {
       showErrorOnFocus: false,
       operationName: '',
       operationCode: '',
-      finalApprovalLoader: getConfigurationKey().IsDivisionAllowedForDepartment || !getConfigurationKey().IsMasterApprovalAppliedConfigure ? false : true,
+      finalApprovalLoader: getConfigurationKey().IsDivisionAllowedForDepartment || !(getConfigurationKey().IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(OPERATIONS_ID) === true) ? false : true,
       showPopup: false,
       levelDetails: {},
       noApprovalCycle: false,
@@ -358,21 +358,22 @@ class AddOperation extends Component {
   onPressVendor = (costingHeadFlag) => {
     this.props.reset();
     this.setState({ isLoader: true });
-const currentIsImport = this.state.isImport;
-      const finalApprovalLoader = this.state.finalApprovalLoader
-    this.setState({ ...this.initialState, costingTypeId: costingHeadFlag ,
-      isImport: currentIsImport ,
-      finalApprovalLoader:finalApprovalLoader
+    const currentIsImport = this.state.isImport;
+    const finalApprovalLoader = this.state.finalApprovalLoader
+    this.setState({
+      ...this.initialState, costingTypeId: costingHeadFlag,
+      isImport: currentIsImport,
+      finalApprovalLoader: finalApprovalLoader
     }, () => {
       if (costingHeadFlag === CBCTypeId) {
         this.props.getClientSelectList(() => {
           this.setState({ isLoader: false });
         });
       } else {
-        this.setState({ isLoader: false }); 
+        this.setState({ isLoader: false });
       }
     });
-    
+
   };
   /**
   * @method handleTechnology
@@ -1214,7 +1215,7 @@ const currentIsImport = this.state.isImport;
     }
   };
   OperationRateTitle = () => {
-    const rateLabel = this.state.isImport ? `Rate (${this.state.currency?.label ?? 'Currency'})` :`Rate (${this.props.fieldsObj?.plantCurrency ?? 'Plant Currency'})`
+    const rateLabel = this.state.isImport ? `Rate (${this.state.currency?.label ?? 'Currency'})` : `Rate (${this.props.fieldsObj?.plantCurrency ?? 'Plant Currency'})`
     return {
       tooltipTextPlantCurrency: `${rateLabel} * Plant Currency Rate (${this.state?.plantCurrency ?? ''})`,
       toolTipTextNetCostBaseCurrency: `${rateLabel} * Currency Rate (${this.state?.settlementCurrency ?? ''})`,
@@ -1233,7 +1234,7 @@ const currentIsImport = this.state.isImport;
 
     // Generate tooltip text based on the condition
     return <>
-      {!this.state?.hidePlantCurrency               
+      {!this.state?.hidePlantCurrency
         ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrencyLabel}, `
         : ''}<p>Exchange Rate: 1 {currencyLabel} = {settlementCurrencyRate} {baseCurrency}</p>
     </>;
@@ -1880,7 +1881,7 @@ const currentIsImport = this.state.isImport;
                         {"Cancel"}
                       </button>
                       {!isViewMode && <>
-                        {(!isViewMode && (CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure) || (initialConfiguration.IsMasterApprovalAppliedConfigure && !CostingTypePermission) ?
+                        {(!isViewMode && (CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure) || ((initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(OPERATIONS_ID) === true) && !CostingTypePermission) ?
                           <button id="AddOperation_SendForApproval" type="submit"
                             class="user-btn approval-btn save-btn mr5"
                             disabled={isViewMode || setDisable || disableSendForApproval}

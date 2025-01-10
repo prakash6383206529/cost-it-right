@@ -149,8 +149,7 @@ const CostingSummaryTable = (props) => {
   const showCheckbox = viewCostingData && viewCostingData.some(item => item.IsShowCheckBoxForApproval === true);
   const [showConvertedCurrency, setShowConvertedCurrency] = useState(false)
   const [showConvertedCurrencyCheckbox, setShowConvertedCurrencyCheckbox] = useState(false)
-
-  useEffect(() => {
+useEffect(() => {
     if (viewCostingDetailData && viewCostingDetailData?.length > 0 && !props?.isRejectedSummaryTable && !props?.isFromAssemblyTechnology) {
       setViewCostingData(viewCostingDetailData)
     } else if (viewRejectedCostingDetailData && viewRejectedCostingDetailData?.length > 0 && props?.isRejectedSummaryTable && !props?.isFromAssemblyTechnology) {
@@ -1818,6 +1817,9 @@ const CostingSummaryTable = (props) => {
         },
 
       },
+      datalabels: {
+        display: false, // Disable the default data labels (values) on the chart
+      },
     },
     layout: {
       padding: {
@@ -2171,7 +2173,7 @@ const CostingSummaryTable = (props) => {
                         {'Send For Approval'}
                       </button>
                     )}
-                    <button
+                    {props?.showAddToComparison&& <button
                       type="button"
                       id="costingSummary_addtocomparison"
 
@@ -2179,8 +2181,8 @@ const CostingSummaryTable = (props) => {
                       onClick={addComparisonDrawerToggle}
                     >
                       <div className="compare-arrows"></div>
-                      Add To Comparison{' '}
-                    </button>
+                      Add To Comparison1{' '}
+                    </button>}
                   </>
                 }
               </div >
@@ -2297,7 +2299,7 @@ const CostingSummaryTable = (props) => {
                                     {
                                       (isApproval && data?.CostingHeading !== '-') ? <span>{data?.CostingHeading}</span> :
                                         (data?.bestCost === true) ? "" :
-                                          <span className={`checkbox-text`} title={title}><div><span>{heading(data).mainHeading}<span> {data.costingTypeId !== CBCTypeId && `(SOB: ${data?.shareOfBusinessPercent}%)`}</span></span><span className='sub-heading'>{heading(data).subHeading}-{data.costingHeadCheck}</span></div></span>
+                                          <span className={`checkbox-text`} title={title}><div><span>{heading(data).mainHeading}<span> ({heading(data).subHeading}) </span></span><span className='sub-heading'>{data.costingHeadCheck} {data.costingTypeId !== CBCTypeId && `(SOB: ${data?.shareOfBusinessPercent}%)`}</span></div></span>
                                     }
                                     {data?.CostingHeading === VARIANCE && ((!pdfHead)) && <TooltipCustom customClass="mb-0 ml-1" id="variance" tooltipText={`Variance = (${data.costingTypeId === CBCTypeId ? "New Costing - Old Costing" : "Old Costing - New Costing"})`} />}
                                   </div >
