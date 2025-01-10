@@ -147,7 +147,7 @@ function RMDomesticListing(props) {
         }
 
         return {
-            data: {technologyId: props?.technology??null},
+            data: { technologyId: props?.technology ?? null },
             skip: 0,
             take: globalTakes,
             isPagination: true,
@@ -160,7 +160,7 @@ function RMDomesticListing(props) {
         }
     }, []);
 
-     const { isLoading, isError, error, data } = useFetchAPICall('MastersRawMaterial_GetAllRawMaterialList', params);
+    const { isLoading, isError, error, data } = useFetchAPICall('MastersRawMaterial_GetAllRawMaterialList', params);
 
     useEffect(() => {
         if (rmDataList?.length > 0) {
@@ -168,6 +168,7 @@ function RMDomesticListing(props) {
             setRender(false)
         }
         else {
+            setRender(false)
             setNoData(false)
         }
 
@@ -249,7 +250,7 @@ function RMDomesticListing(props) {
         dataObj.OtherNetCost = floatingFilterData?.OtherNetCost
 
         if (!props.isMasterSummaryDrawer) {
-            
+
             dispatch(getAllRMDataList(filterData, skip, take, isPagination, dataObj, false, (res) => {
                 // apply(selectedRowForPagination, selectedRowForPagination.length)
                 if (isSimulation) {
@@ -500,7 +501,7 @@ function RMDomesticListing(props) {
     * @description Renders buttons
     */
     const handleCompareDrawer = (data) => {
-        
+
         setCompareDrawer(true)
         setRowDataForCompare([data])
     }
@@ -920,11 +921,11 @@ function RMDomesticListing(props) {
         attachmentFormatter: attachmentFormatter,
 
     }
-    
-    
-        
-        
-        
+
+
+
+
+
 
     return (
         <div className={`ag-grid-react ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${DownloadAccessibility ? "show-table-btn" : ""} ${isSimulation ? 'simulation-height' : props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
