@@ -178,7 +178,8 @@ const User = () => {
       ...prevState,
       isUserForm: false,
       isRolePermissionForm: false,
-      data: {}
+      data: {},
+      isDelegationForm:false
     }));
   };
 
@@ -265,11 +266,11 @@ const User = () => {
               Manage RFQ Users
             </NavLink>
           </NavItem>}
-          {false && <NavItem>
+           <NavItem>
             <NavLink className={classnames({ active: state.activeTab === '7' })} onClick={() => { toggle('7'); }}>
               Manage Delegation
             </NavLink>
-          </NavItem>}
+          </NavItem>
 
         </Nav>
         <TabContent activeTab={state.activeTab}>
@@ -331,6 +332,7 @@ const User = () => {
           anchor={'right'}
           isOpen={isDelegationForm}
           hideForm={hideForm}
+          data={data}
         />
       }
     </Container>

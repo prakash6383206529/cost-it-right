@@ -13,9 +13,13 @@ import { debounce } from 'lodash';
 import Toaster from '../../common/Toaster';
 import { loggedInUserId } from "../../../helper/auth";
 import { acceptAllExceptSingleSpecialCharacter, maxLength20, maxLength512 } from "../../../helper";
+import { reactLocalStorage } from "reactjs-localstorage";
+import { createDelegation, getDelegateeUserList, getDelegationHistory } from "../../../actions/auth/AuthActions";
+import DayTime from "../../common/DayTimeWrapper";
 
 const AddDelegation = (props) => {
-    const { isEditFlag, isOpen, closeDrawer, anchor } = props;
+    const { isOpen, closeDrawer, anchor,data } = props;
+    const isView = data?.isView
     const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
     const [isEdit, setIsEdit] = useState(false);
     const [editIndex, setEditIndex] = useState('')
@@ -28,55 +32,114 @@ const AddDelegation = (props) => {
         fromDate: '',
         toDate: '',
         remarks: '',
-        allApprovalType: [{ label: 'Costing', value: '1' },
-            { label: 'Simulation', value: '2' },
-            { label: 'Master', value: '3' },
-            { label: 'Onboarding & Management', value: '4' }],
-        selectedApprovalType: []    
+        allApprovalType: [],
+        selectedApprovalType: [],
+        selectedUsers: [],
+        disableField: true
     });
     const { register, formState: { errors, isDirty }, control, setValue, handleSubmit, reset } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
     });
+    const {
+        register: registerTableForm,
+        handleSubmit: handleSubmitTableForm,
+        control: controlTableForm,
+        setValue: setValueTableForm,
+        getValues: getValuesTableForm,
+        formState: { errors: errorsTableForm },
+        reset: resetTableForm,
+    } = useForm({
+        mode: 'onChange',
+        reValidateMode: 'onChange',
+    });
     const dispatch = useDispatch()
+    const moduleType = reactLocalStorage.getObject('moduleType')
+    const delegateeUserList = useSelector(state => state.auth.delegateeUserList)
     useEffect(() => {
+        const allApprovalType = Object.entries(moduleType).map(([key, value]) => ({
+            label: key,
+            value: value
+        }));
+        setState(prevState => ({ ...prevState, allApprovalType: allApprovalType }));
     }, [])
+
+    useEffect(() => {
+        if (isView) {
+            dispatch(getDelegationHistory(props?.data?.UserId, (res) => {
+                console.log(res)
+                setGridData(res?.data?.Result)
+            }));
+        }
+    }, [isView,props?.data?.UserId])
 
     const [gridData, setGridData] = useState([]);
     const renderListing = (label) => {
-        const temp = [  { label: 'Select All', value: '0' },
-            { label: 'Costing', value: '1' },
-            { label: 'Simulation', value: '2' },
-            { label: 'Master', value: '3' },
-            { label: 'Onboarding & Management', value: '4' },]
+        const temp = []
         if (label === 'ApprovalType') {
-            // indexCommodityData && indexCommodityData.map((item) => {
-            //     if (item.Value === '--0--') return false
-            //     temp.push({ label: item.Text, value: item.Value })
-            //     return null
-            // })
-            // return temp
-            const isSelectAllOnly = temp.length === 1 && temp[0]?.Text === "Select All" && temp[0]?.Value === "0";
+            const moduleTypeArray = Object.entries(moduleType).map(([key, value]) => ({
+                label: key,
+                value: value
+            }));
+            moduleTypeArray.unshift({ label: 'Select All', value: '0' });
+            temp.push(...moduleTypeArray)
+            const isSelectAllOnly = temp.length === 1 && temp[0]?.label === "Select All" && temp[0]?.value === "0";
 
-			if (isSelectAllOnly) {
-				return [];
-			} else {
-				return temp;
-			}
+            if (isSelectAllOnly) {
+                return [];
+            } else {
+                return temp;
+            }
+        }
+        if (label === 'Users') {
+            delegateeUserList && delegateeUserList.map((item) => {
+                if (item.Value === '0') return false
+                temp.push({ label: item.Text, value: item.Value })
+                return null
+            })
+            return temp
+        }
+    };
+    useEffect(() => {
+        getDelegateeUsers()
+    }, [state?.fromDate, state?.toDate])
+
+    const getDelegateeUsers = () => {
+        if (state?.fromDate && state?.toDate) {
+            setState(prevState => ({ ...prevState, disableField: false }))
+            let data = {
+                delegatorUserId: props?.data?.UserId,
+                startDate: DayTime(state?.fromDate).format('YYYY-MM-DD'),
+                endDate: DayTime(state?.toDate).format('YYYY-MM-DD')
+            }
+            dispatch(getDelegateeUserList(data, () => { }));
         }
     };
 
     const handleApprovalType = (newValue) => {
-		if (newValue?.filter(element => element?.Value === '0')?.length > 0) {
+        if (newValue?.filter(element => element?.value === '0')?.length > 0) {
             setState(prevState => ({ ...prevState, selectedApprovalType: state.allApprovalType }))
-		} else {
+            setTimeout(() => {
+                setValueTableForm('ApprovalType', state.allApprovalType)
+            }, 50);
+        } else {
             setState(prevState => ({ ...prevState, selectedApprovalType: newValue }))
-		}
-	}
+            setValueTableForm('ApprovalType', newValue)
+        }
+    }
+    const handleUsers = (newValue) => {
+        setState(prevState => ({ ...prevState, selectedUsers: newValue }))
+    }
     const resetData = () => {
+        setValueTableForm('ApprovalType', [])
+        setValueTableForm('Users', [])
+        delete errorsTableForm.ApprovalType
+        delete errorsTableForm.Users
         setIsEdit(false)
         setEditIndex('')
+        setState(prevState => ({ ...prevState, selectedApprovalType: [], selectedUsers: [], allApprovalType: [] }));
     }
+
 
     const deleteItem = (index) => {
         const newGridData = [...gridData.slice(0, index), ...gridData.slice(index + 1)];
@@ -86,13 +149,19 @@ const AddDelegation = (props) => {
     };
 
     const onSubmit = debounce(values => {
-        if (isEdit) {
-            setState(prevState => ({ ...prevState, setDisable: true }));
-        
-        } else {
-            setState(prevState => ({ ...prevState, setDisable: true }));
-
+        let formData = {
+            "DelegatorUserId": props?.data?.UserId,
+            "LoggedInUserId": loggedInUserId(),
+            "Reason": values?.Remarks,
+            "DelegationRequestDetails": gridData
         }
+        dispatch(createDelegation(formData, (res) => {
+            if (res.data?.Result) {
+                Toaster.success('Delegation created successfully')
+                props.hideForm('Save')
+            }
+        }));
+
     }, 500);
 
     const updateRow = () => {
@@ -110,34 +179,29 @@ const AddDelegation = (props) => {
 
 
     const addRow = () => {
+        // Create an array of objects, one for each approval type
+        const newRows = state?.selectedApprovalType?.map(type => ({
+            "DelegateeUserId": state?.selectedUsers?.value,
+            "DelegateeUserName": state?.selectedUsers?.label,
+            "DelegationStartDate": state?.fromDate,
+            "DelegationEndDate": state?.toDate,
+            "ModuleId": type.value,
+            "ModuleName": type.label
+        }));
 
-        const obj = {
-
-        };
-        const newGridData = [...gridData, obj];
-
+        // Add all new rows to grid data
+        const newGridData = [...gridData, ...newRows];
         setGridData(newGridData);
-
         resetData();
     };
-
     const editItemDetails = (index) => {
         const editObj = gridData[index]
         setEditIndex(index)
         setIsEdit(true)
     }
 
-    const handleAddUpdateButtonClick = () => {
-        if (isEdit) {
-            updateRow();
-        } else {
-            addRow();
-        }
-        resetData();
-    };
-
     const toggleDrawer = (event, formData, type) => {
-        props.hideForm()
+        props.hideForm(type)
     };
     const cancel = (type) => {
         reset();
@@ -147,49 +211,40 @@ const AddDelegation = (props) => {
     const cancelHandler = () => {
         props.hideForm()
     };
-    const onPopupConfirm = () => {
-        cancel('cancel');
-        setState(prevState => ({ ...prevState, showPopup: false }));
-    };
-
-    const closePopUp = () => {
-        props.hideForm()
-    };
 
     const handleFromEffectiveDateChange = (date) => {
         setState(prevState => ({
             ...prevState,
             fromDate: date,
         }));
-
     };
     const handleToEffectiveDateChange = (date) => {
         setState(prevState => ({
             ...prevState,
             toDate: date,
         }));
-    }; 
-        /**
- * @method handleMessageChange
- * @description used remarks handler
- */
-        const handleMessageChange = (e) => {
-            setState(prevState => ({
-                ...prevState,
-                remarks: e?.target?.value,
-            }))
-        } 
+    };
+    /**
+* @method handleMessageChange
+* @description used remarks handler
+*/
+    const handleMessageChange = (e) => {
+        setState(prevState => ({
+            ...prevState,
+            remarks: e?.target?.value,
+        }))
+    }
     return (
         <div>
             <Drawer anchor={anchor} open={isOpen}>
                 <Container>
-                    <div className={'drawer-wrapper layout-min-width-600px'}>
-                        <form onSubmit={handleSubmit(onSubmit)}>
+                    <div className={'drawer-wrapper layout-min-width-820px'}>
+                        <form>
                             <Row className="drawer-heading">
                                 <Col>
                                     <div className={"header-wrapper left"}>
                                         <h3>
-                                            Add Temporary Delegation
+                                            {props?.data?.isShowHistory ? "Delegation History" : "Add Temporary Delegation"}
                                         </h3>
                                     </div>
                                     <div
@@ -198,8 +253,8 @@ const AddDelegation = (props) => {
                                     ></div>
                                 </Col>
                             </Row>
-                            <Row className="pl-3">
-                            <Col md="6">
+                            {!props?.data?.isShowHistory && <Row className="pl-3">
+                                <Col md="6">
                                     <div className="inputbox date-section">
                                         <DatePickerHookForm
                                             name={`fromDate`}
@@ -220,7 +275,7 @@ const AddDelegation = (props) => {
                                             autoComplete={"off"}
                                             disabledKeyboardNavigation
                                             onChangeRaw={(e) => e.preventDefault()}
-                                            disabled={false}
+                                            disabled={isView}
                                             mandatory={true}
                                             errors={errors && errors.fromDate}
                                         />
@@ -234,144 +289,138 @@ const AddDelegation = (props) => {
                                             handleChange={(date) => {
                                                 handleToEffectiveDateChange(date);
                                             }}
-                                            rules={{ required: false }}
+                                            rules={{ required: true }}
                                             Controller={Controller}
                                             control={control}
                                             register={register}
                                             showMonthDropdown
                                             showYearDropdown
                                             dateFormat="DD/MM/YYYY"
-                                            placeholder={ "Select date" }
+                                            placeholder={"Select date"}
                                             customClassName="withBorder"
                                             className="withBorder"
                                             autoComplete={"off"}
                                             disabledKeyboardNavigation
                                             onChangeRaw={(e) => e.preventDefault()}
-                                            disabled={false}
-                                            mandatory={false}
+                                            disabled={isView}
+                                            mandatory={true}
                                             errors={errors && errors.toDate}
                                             minDate={state.fromDate}
                                         />
                                     </div>
                                 </Col>
-                                </Row>
+                            </Row>}
+
+                            {!props?.data?.isShowHistory && <form>
                                 <Row className="pl-3">
-                                 
-                                </Row>
-                                <Row className="pl-3">
-                                <Col md="4" className="d-flex pb-4 justify-space-between align-items-center inputwith-icon ">
-                                    <div className="w-100">
-                                        <SearchableSelectHookForm
-                                            label={'Approval Type'}
-                                            name={'ApprovalType'}
-                                            placeholder={'Select'}
-                                            Controller={Controller}
-                                            control={control}
-                                            rules={{ required: true }}
-                                            register={register}
-                                            defaultValue={''}
-                                            options={renderListing('ApprovalType')}
-                                            mandatory={true}
-                                            handleChange={(option) => handleApprovalType(option)}
-                                            errors={errors.ApprovalType}
-                                            isMulti={true}
-                                        />
-                                    </div>
-                                </Col>
-                                <Col md="4" className="d-flex pb-4 justify-space-between align-items-center inputwith-icon ">
-                                    <div className="w-100">
-                                        <SearchableSelectHookForm
-                                            label={'Users'}
-                                            name={'Users'}
-                                            placeholder={'Select'}
-                                            Controller={Controller}
-                                            control={control}
-                                            rules={{ required: true }}
-                                            register={register}
-                                            defaultValue={''}
-                                            options={renderListing('ApprovalType')}
-                                            mandatory={true}
-                                            handleChange={(option) => handleApprovalType(option)}
-                                            errors={errors.ApprovalType}
-                                        />
-                                    </div>
-                                </Col>
-                                <Col md="4" className="d-flex pb-4 justify-space-between align-items-center inputwith-icon ">
-                                    {isEdit ? (
+                                    <Col md="4" className="d-flex pb-4 justify-space-between align-items-center inputwith-icon ">
+                                        <div className="w-100">
+                                            <SearchableSelectHookForm
+                                                label={'Approval Type'}
+                                                name={'ApprovalType'}
+                                                placeholder={'Select'}
+                                                Controller={Controller}
+                                                control={controlTableForm}
+                                                rules={{ required: true }}
+                                                register={registerTableForm}
+                                                defaultValue={state.selectedApprovalType}
+                                                options={renderListing('ApprovalType')}
+                                                mandatory={true}
+                                                handleChange={handleApprovalType}
+                                                errors={errorsTableForm.ApprovalType}
+                                                isMulti={true}
+                                                selected={state.selectedApprovalType}
+                                                disabled={state.disableField || isView}
+                                            />
+                                        </div>
+                                    </Col>
+                                    <Col md="4" className="d-flex pb-4 justify-space-between align-items-center inputwith-icon ">
+                                        <div className="w-100">
+                                            <SearchableSelectHookForm
+                                                label={'Users'}
+                                                name={'Users'}
+                                                placeholder={'Select'}
+                                                Controller={Controller}
+                                                control={controlTableForm}
+                                                rules={{ required: true }}
+                                                register={registerTableForm}
+                                                defaultValue={state.selectedUsers}
+                                                options={renderListing('Users')}
+                                                mandatory={true}
+                                                handleChange={handleUsers}
+                                                selected={state.selectedUsers}
+                                                errors={errorsTableForm.Users}
+                                                disabled={state.disableField || isView}
+                                            />
+                                        </div>
+                                    </Col>
+                                    <Col md="4" className="d-flex pb-4 justify-space-between align-items-center inputwith-icon ">
+
                                         <>
                                             <button
                                                 type="button"
                                                 className={"btn btn-primary pull-left mr5"}
-                                                onClick={handleAddUpdateButtonClick}
+                                                onClick={handleSubmitTableForm(isEdit ? updateRow : addRow)}
                                             >
-                                                Update
+                                                {isEdit ? 'Update' : 'Add'}
                                             </button>
                                             <button
                                                 type="button"
                                                 className={"mr5 ml-1 mt-0 add-cancel-btn cancel-btn"}
                                                 onClick={() => resetData()}
                                             >
-                                                <div className={"cancel-icon"}></div>Cancel
+                                                <div className={"cancel-icon"}></div>Reset
                                             </button>
                                         </>
-                                    ) : (
-                                        <>
-                                            <button
-                                                type="button"
-                                                className={`user-btn ${initialConfiguration.IsShowCRMHead ? '' : ''} pull-left`}
-                                                onClick={handleAddUpdateButtonClick}
-                                            >
-                                                <div className={"plus"}></div>ADD
 
-                                            </button>
-                                            <button
-                                                type="button"
-                                                className={`ml-1 ${initialConfiguration.IsShowCRMHead ? '' : ''} reset-btn`}
-                                                onClick={() => resetData()}
-                                            >
-                                                Reset
-                                            </button>
-                                        </>
-                                    )}
-                                </Col>
-                            </Row >
+                                    </Col>
+                                </Row >
+                            </form>}
                             <br />
                             <Col md="12" className="mb-2 pl-2 pr-3">
                                 <Table className="table mb-0 forging-cal-table" size="sm">
                                     <thead>
                                         <tr>
+                                            {props?.data?.isShowHistory && <th>{`Start Date`}</th>}
+                                            {props?.data?.isShowHistory && <th>{`End Date`}</th>}
                                             <th>{`Approval Type`}</th>
                                             <th>{`Users`}</th>
-                                            <th className='text-right'>{`Action`}</th>
+                                            {props?.data?.isShowHistory && <th>{`Remarks`}</th>}
+                                            {!props?.data?.isShowHistory && <th className='text-right'>{`Action`}</th>}
                                         </tr>
                                     </thead>
                                     <tbody >
-                                        {gridData.length > 0 ? (
+                                        {gridData && gridData?.length > 0 ? (
                                             <>
                                                 {gridData.map((item, index) => (
                                                     <tr key={index}>
-                                                        <td>{item.ApprovalType}</td>
-                                                        <td>{item.Users}</td>
-                                                        <td className='text-right'>
+                                                        {props?.data?.isShowHistory && <td>{item?.startDate}</td>}
+                                                        {props?.data?.isShowHistory && <td>{item?.endDate}</td>}
+                                                        <td>{item?.ModuleName}</td>
+                                                        <td>{item?.DelegateeUserName}</td>
+                                                        {props?.data?.isShowHistory && <td>{item?.Remarks}</td>}
+                                                        {!props?.data?.isShowHistory && <td className='text-right'>
                                                             <button
                                                                 className="Edit"
                                                                 title='Edit'
                                                                 type={"button"}
                                                                 onClick={() => editItemDetails(index)}
+                                                                disabled={isView}
                                                             />
                                                             <button
                                                                 className="Delete ml-1"
                                                                 title='Delete'
                                                                 type={"button"}
                                                                 onClick={() => deleteItem(index)}
+                                                                disabled={isView}
                                                             />
-                                                        </td>
+                                                        </td>}
                                                     </tr>
                                                 ))}
                                             </>
                                         ) : (
                                             <tr>
-                                                <td colSpan={4}>
+                                                <td colSpan={props?.data?.isShowHistory ? 6 : 5}>
                                                     <NoContentFound title={EMPTY_DATA} />
                                                 </td>
                                             </tr>
@@ -379,30 +428,30 @@ const AddDelegation = (props) => {
                                     </tbody>
                                 </Table>
                             </Col>
-                            <Col md="12" className="mb-2 pl-2 pr-3">
-                <TextAreaHookForm
-                    label={`Remarks`}
-                    name={"Remarks"}
-                    Controller={Controller}
-                    control={control}
-                    register={register}
-                    rowHeight={6}
-                    mandatory={false}
-                    rules={{
-                        validate: { maxLength20, acceptAllExceptSingleSpecialCharacter },
-                        maxLength: {
-                            value: 20,
-                            message: "Remark should be less than 20 words"
-                        },
-                    }}
-                    handleChange={handleMessageChange}
-                    defaultValue={""}
-                    className=""
-                    customClassName={"textAreaWithBorder"}
-                    errors={errors.Remarks}
-                    disabled={false}
-                />
-            </Col>
+                            {!props?.data?.isShowHistory && <Col md="12" className="mb-2 pl-2 pr-3">
+                                <TextAreaHookForm
+                                    label={`Remarks`}
+                                    name={"Remarks"}
+                                    Controller={Controller}
+                                    control={control}
+                                    register={register}
+                                    rowHeight={6}
+                                    mandatory={false}
+                                    rules={{
+                                        validate: { maxLength20, acceptAllExceptSingleSpecialCharacter },
+                                        maxLength: {
+                                            value: 20,
+                                            message: "Remark should be less than 20 words"
+                                        },
+                                    }}
+                                    handleChange={handleMessageChange}
+                                    defaultValue={""}
+                                    className=""
+                                    customClassName={"textAreaWithBorder"}
+                                    errors={errors.Remarks}
+                                    disabled={isView}
+                                />
+                            </Col>}
                             <Row className=" no-gutters justify-content-between">
                                 <div className="col-md-12">
                                     <div className="text-right ">
@@ -416,15 +465,16 @@ const AddDelegation = (props) => {
                                             <div className={"cancel-icon"}></div>
                                             CANCEL
                                         </button>
-                                        <button
+                                        {!props?.data?.isShowHistory && <button
                                             id="AddDelegation_Save"
-                                            type="submit"
+                                            type="button"
                                             className="user-btn save-btn"
+                                            onClick={handleSubmit(onSubmit)}
+                                            disabled={isView}
                                         >
-                                            {" "}
                                             <div className={"save-icon"}></div>
-                                            {isEditFlag ? "UPDATE" : "SAVE"}
-                                        </button>
+                                            SAVE
+                                        </button>}
                                     </div>
                                 </div>
                             </Row>
@@ -432,10 +482,7 @@ const AddDelegation = (props) => {
                     </div>
                 </Container>
             </Drawer>
-                  
-            {state.showPopup && (
-                <PopupMsgWrapper isOpen={state.showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
-            )}
+
         </div>
 
     )
