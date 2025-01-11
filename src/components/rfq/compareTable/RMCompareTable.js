@@ -106,7 +106,7 @@ if (viewRmDetails && _.map(viewRmDetails, 'Currency').every(element =>
             let sectionFourhHeader = ['Remark']
             let mainHeader = []
             
-            viewRmDetails.map((item, index) => {
+            viewRmDetails?.map((item, index) => {
                 //section one data start
                 const RMNameGrade = `${item?.RawMaterialName}-${item?.RawMaterialGradeName}`;
                 const effectiveDate = item?.EffectiveDate ? (item?.EffectiveDate !== "-" ? DayTime(item?.EffectiveDate).format('DD/MM/YYYY') : '-') : '-';

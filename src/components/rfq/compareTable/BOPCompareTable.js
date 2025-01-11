@@ -118,7 +118,7 @@ const BOPCompareTable = (props) => {
                 sectionOneHeader.push('Other Net Cost');
             }
 
-            viewBOPDetails.map((item, index) => {
+            viewBOPDetails?.map((item, index) => {
                 console.log(item)
                 // Section One Data
                 const formattedDataOne = [
@@ -171,8 +171,8 @@ const BOPCompareTable = (props) => {
             ]);
 
             // Main Header Data
-            const mainHeader = viewBOPDetails.map((item, index) => ({
-                vendorName: item.Vendor,
+            const mainHeader = viewBOPDetails?.map((item, index) => ({
+                vendorName: item?.Vendor,
                 onChange: () => checkBoxHandle(item, index),
                 checked: checkBoxCheck[index],
                 isCheckBox: !props?.compare ?
@@ -181,11 +181,11 @@ const BOPCompareTable = (props) => {
                 bestCost: item?.bestCost,
                 shouldCost: props?.uniqueShouldCostingId?.includes(item.BoughtOutPartId) ?
                     "Should Cost" : "",
-                costingType: item.CostingHead === "Zero Based" ?
+                costingType: item?.CostingHead === "Zero Based" ?
                     "ZBC" :
-                    item.CostingHead === "Vendor Based" ? "VBC" : "",
+                    item?.CostingHead === "Vendor Based" ? "VBC" : "",
                 vendorCode: item?.VendorCode || "",
-                showConvertedCurrencyCheckbox: item.bestCost === "" && showConvertedCurrencyCheckbox
+                showConvertedCurrencyCheckbox: item?.bestCost === "" && showConvertedCurrencyCheckbox
 
             }));
 
@@ -317,7 +317,7 @@ const BOPCompareTable = (props) => {
         setSelectedItems(prevItems => {
             let newItems
             if (prevItems.some(i => i.BoughtOutPartId === item?.BoughtOutPartId)) {
-                newItems = prevItems.filter(i => i.BoughtOutPartId !== item?.RawMaterialId)
+                newItems = prevItems.filter(i => i.BoughtOutPartId !== item?.BoughtOutPartId)
             } else {
                 newItems = [...prevItems, item]
             }
