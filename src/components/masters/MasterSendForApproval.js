@@ -617,21 +617,21 @@ function MasterSendForApproval(props) {
                         BoughtOutPartBestCostRequest: null
                     };
                     let tempData = null
-                    
+
                     switch (checkForNull(masterId)) {
                         case 1: // Raw Material
-                         tempData = { ...viewRmDetails[viewRmDetails?.length - 1] }
+                            tempData = { ...viewRmDetails[viewRmDetails?.length - 1] }
 
-data.RawMaterialBestCostRequest = {
-                            "QuotationPartId": selectedRows[0]?.QuotationPartId ?? 0,
-                            "NetRawMaterialsCost": tempData?.NetLandedCostConversion ?? 0,
-                            "OtherCost": tempData?.OtherNetCostConversion ?? 0,
-                            "BasicRate": tempData?.BasicRatePerUOMConversion ?? 0,
-                        };
-                        
+                            data.RawMaterialBestCostRequest = {
+                                "QuotationPartId": selectedRows[0]?.QuotationPartId ?? 0,
+                                "NetRawMaterialsCost": tempData?.NetLandedCostConversion ?? 0,
+                                "OtherCost": tempData?.OtherNetCostConversion ?? 0,
+                                "BasicRate": tempData?.BasicRatePerUOMConversion ?? 0,
+                            };
+
                             break;
                         case 2: // Bought Out Part
-                        tempData = { ...viewBOPDetails[viewBOPDetails?.length - 1] }
+                            tempData = { ...viewBOPDetails[viewBOPDetails?.length - 1] }
                             data.BoughtOutPartBestCostRequest = {
                                 "QuotationPartId": selectedRows[0]?.QuotationPartId ?? 0,
                                 "NetBoughtOutPartCost": tempData?.NetLandedCostConversion ?? 0,
@@ -675,8 +675,8 @@ data.RawMaterialBestCostRequest = {
                 // obj.IsRFQCostingSendForApproval = props.isRFQ ? true : false
                 const approvalObjects = Array.isArray(approvalDetails) ? approvalDetails : [approvalDetails];
                 const processedApprovalObjects = approvalObjects.map(item => ({
-                    
-                    
+
+
                     ApprovalProcessSummaryId: item?.ApprovalProcessSummaryId !== null ? item?.ApprovalProcessSummaryId : 0,
                     ApprovalProcessId: item?.ApprovalProcessId !== null ? item?.ApprovalProcessId : 0,
                     ApprovalToken: item?.Token !== null ? item?.Token : 0,

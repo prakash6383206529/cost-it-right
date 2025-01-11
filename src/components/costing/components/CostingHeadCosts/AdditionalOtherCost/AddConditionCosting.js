@@ -633,7 +633,7 @@ function AddConditionCosting(props) {
                                             <Col md={3} className={'px-2'}>
 
                                                 <TextFieldHookForm
-                                                    label={`Applicability Cost (${isFromImport ? currency?.label : PlantCurrency})`}
+                                                    label={`Applicability Cost (${(isFromImport ? currency?.label : PlantCurrency) ?? initialConfiguration?.BaseCurrency})`}
                                                     name={'ApplicabilityCost'}
                                                     id={'cost-by-percent'}
                                                     Controller={Controller}
@@ -681,7 +681,7 @@ function AddConditionCosting(props) {
                                     <Col md={3} className={'px-2'}>
                                         {type?.label === 'Percentage' && <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'cost-by-percent'} tooltipText={'Cost = (Percentage / 100) * Basic Price'} />}
                                         <TextFieldHookForm
-                                            label={`Cost (${isFromImport ? currency?.label : PlantCurrency})`}
+                                            label={`Cost (${(isFromImport ? currency?.label : PlantCurrency) ?? initialConfiguration?.BaseCurrency})`}
                                             name={'CostCurrency'}
                                             id={'cost-by-percent'}
                                             Controller={Controller}
@@ -705,7 +705,7 @@ function AddConditionCosting(props) {
                                             <Col md={3} className='px-2'>
                                                 <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'cost-per-quantity'} tooltipText={`Cost/Pc = Cost (${isFromImport ? currency?.label : reactLocalStorage.getObject("baseCurrency")}) / Quantity`} />
                                                 <TextFieldHookForm
-                                                    label={`Cost/Pc (${isFromImport ? currency?.label : PlantCurrency})`}
+                                                    label={`Cost/Pc (${(isFromImport ? currency?.label : PlantCurrency) ?? initialConfiguration?.BaseCurrency})`}
                                                     name={'ConditionCostPerQuantity'}
                                                     id={'cost-per-quantity'}
                                                     Controller={Controller}

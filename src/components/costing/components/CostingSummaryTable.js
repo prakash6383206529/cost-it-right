@@ -149,8 +149,7 @@ const CostingSummaryTable = (props) => {
   const showCheckbox = viewCostingData && viewCostingData.some(item => item.IsShowCheckBoxForApproval === true);
   const [showConvertedCurrency, setShowConvertedCurrency] = useState(false)
   const [showConvertedCurrencyCheckbox, setShowConvertedCurrencyCheckbox] = useState(false)
-
-  useEffect(() => {
+useEffect(() => {
     if (viewCostingDetailData && viewCostingDetailData?.length > 0 && !props?.isRejectedSummaryTable && !props?.isFromAssemblyTechnology) {
       setViewCostingData(viewCostingDetailData)
     } else if (viewRejectedCostingDetailData && viewRejectedCostingDetailData?.length > 0 && props?.isRejectedSummaryTable && !props?.isFromAssemblyTechnology) {
@@ -2174,7 +2173,7 @@ const CostingSummaryTable = (props) => {
                         {'Send For Approval'}
                       </button>
                     )}
-                    <button
+                    {props?.showAddToComparison&& <button
                       type="button"
                       id="costingSummary_addtocomparison"
 
@@ -2182,8 +2181,8 @@ const CostingSummaryTable = (props) => {
                       onClick={addComparisonDrawerToggle}
                     >
                       <div className="compare-arrows"></div>
-                      Add To Comparison{' '}
-                    </button>
+                      Add To Comparison1{' '}
+                    </button>}
                   </>
                 }
               </div >

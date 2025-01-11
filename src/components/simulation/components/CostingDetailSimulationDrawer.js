@@ -16,7 +16,6 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 
 
 function CostingDetailSimulationDrawer(props) {
-
     const toggleDrawer = (event, mode = false) => {
         if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
             return;
@@ -253,6 +252,7 @@ function CostingDetailSimulationDrawer(props) {
                                     fromCostingSummary={props?.fromCostingSummary}
                                     isRfqCosting={props?.isRfqCosting}
                                     isRejectedSummaryTable={props?.isRejectedSummaryTable} isFromAssemblyTechnology={props?.isFromAssemblyTechnology}
+                                    showAddToComparison={false}
                                 />
                             </form>
                         </div>
