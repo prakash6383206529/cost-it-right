@@ -31,7 +31,7 @@ import { getIndexSelectList, setOtherCostDetails } from "../actions/Indexation"
 import { getPlantUnitAPI } from "../actions/Plant"
 import _ from 'lodash'
 import WarningMessage from "../../common/WarningMessage"
-import { recalculateConditions, updateCostValue } from "../../common/CommonFunctions"
+import { getEffectiveDateMinDate, recalculateConditions, updateCostValue } from "../../common/CommonFunctions"
 function AddRMFinancialDetails(props) {
     const { Controller, control, register, setValue, getValues, errors, reset, useWatch, states, data, isRMAssociated, disableAll } = props
     const { isEditFlag, isViewFlag } = data
@@ -187,7 +187,7 @@ function AddRMFinancialDetails(props) {
                 }
             }));
         }
-    }, [getValues('Plants'), getValues('ExchangeSource'), state.effectiveDate, getValues('effectiveDate'), rawMaterailDetails?.Vendor, getValues('clientName'),state.currency]);
+    }, [getValues('Plants'), getValues('ExchangeSource'), state.effectiveDate, getValues('effectiveDate'), rawMaterailDetails?.Vendor, getValues('clientName'), state.currency]);
     useEffect(() => {
         dispatch(getFrequencySettlement(() => { }))
         dispatch(getCurrencySelectList(() => { }))
@@ -290,7 +290,7 @@ function AddRMFinancialDetails(props) {
         const isBasicRateVisible = getConfigurationKey().IsBasicRateAndCostingConditionVisible &&
             Number(states.costingTypeId) === Number(ZBCTypeId);
         const netCostText = isBasicRateVisible ? `Basic Price + Condition Cost` : `Basic Rate + Other Cost`;
-        const netCostlabel = states.isImport ? `Net Cost (${state?.currency?.label??'Currency'}/${state.UOM?.label === undefined ? 'UOM' : state.UOM?.label})` : `Net Cost (${!getValues('plantCurrency') ? 'Plant Currency' : getValues('plantCurrency')})`
+        const netCostlabel = states.isImport ? `Net Cost (${state?.currency?.label ?? 'Currency'}/${state.UOM?.label === undefined ? 'UOM' : state.UOM?.label})` : `Net Cost (${!getValues('plantCurrency') ? 'Plant Currency' : getValues('plantCurrency')})`
         return {
             toolTipTextNetCostSelectedCurrency: netCostText,
             tooltipTextPlantCurrency: state.hidePlantCurrency
@@ -935,7 +935,7 @@ function AddRMFinancialDetails(props) {
         }
         return true;
     };
- 
+
     const updateTableCost = (isConditionCost = false) => {
         const result = updateCostValue(isConditionCost, state, getValues('BasicRate'));
         // Update state
@@ -1234,10 +1234,10 @@ function AddRMFinancialDetails(props) {
                                     autoComplete={"off"}
                                     disabledKeyboardNavigation
                                     onChangeRaw={(e) => e.preventDefault()}
-                                    disabled={disableAll || isViewFlag}
+                                    disabled={disableAll || isViewFlag || (state.isShowIndexCheckBox && state.toDate === '')}
                                     mandatory={true}
                                     errors={errors && errors.effectiveDate}
-                                    minDate={state.isShowIndexCheckBox ? addDays(new Date(state.toDate), 1) : isEditFlag ? state.minDate : subDays(new Date(), effectiveDateRangeDays)}
+                                    minDate={state.isShowIndexCheckBox ? addDays(new Date(state?.toDate), 1) : isEditFlag ? state.minDate : getEffectiveDateMinDate()}
                                 />
                             </div>
                         </Col>
