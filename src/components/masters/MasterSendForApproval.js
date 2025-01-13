@@ -677,7 +677,7 @@ function MasterSendForApproval(props) {
                 const processedApprovalObjects = approvalObjects.map(item => ({
 
 
-                    ApprovalProcessSummaryId: item?.MasterApprovalProcessSummaryId !== null ? item?.MasterApprovalProcessSummaryId : 0,
+                    ApprovalProcessSummaryId: (item?.MasterApprovalProcessSummaryId ?? item?.ApprovalProcessSummaryId) ?? 0,
                     ApprovalProcessId: item?.ApprovalProcessId !== null ? item?.ApprovalProcessId : 0,
                     ApprovalToken: item?.Token !== null ? item?.Token : 0,
                     LoggedInUserId: loggedInUserId(),
