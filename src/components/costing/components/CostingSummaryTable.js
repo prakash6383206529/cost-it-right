@@ -149,7 +149,7 @@ const CostingSummaryTable = (props) => {
   const showCheckbox = viewCostingData && viewCostingData.some(item => item.IsShowCheckBoxForApproval === true);
   const [showConvertedCurrency, setShowConvertedCurrency] = useState(false)
   const [showConvertedCurrencyCheckbox, setShowConvertedCurrencyCheckbox] = useState(false)
-useEffect(() => {
+  useEffect(() => {
     if (viewCostingDetailData && viewCostingDetailData?.length > 0 && !props?.isRejectedSummaryTable && !props?.isFromAssemblyTechnology) {
       setViewCostingData(viewCostingDetailData)
     } else if (viewRejectedCostingDetailData && viewRejectedCostingDetailData?.length > 0 && props?.isRejectedSummaryTable && !props?.isFromAssemblyTechnology) {
@@ -2173,7 +2173,7 @@ useEffect(() => {
                         {'Send For Approval'}
                       </button>
                     )}
-                    {props?.showAddToComparison&& <button
+                    {props?.showAddToComparison && <button
                       type="button"
                       id="costingSummary_addtocomparison"
 
@@ -2300,7 +2300,6 @@ useEffect(() => {
                                       (isApproval && data?.CostingHeading !== '-') ? <span>{data?.CostingHeading}</span> :
                                         (data?.bestCost === true) ? "" :
                                           <span className={`checkbox-text`} title={title}><div><span>{heading(data).mainHeading}<span> ({heading(data).subHeading}) </span></span><span className='sub-heading'>{data.costingHeadCheck} {data.costingTypeId !== CBCTypeId && `(SOB: ${data?.shareOfBusinessPercent}%)`}</span></div></span>
-                                      // CS7-I110
                                     }
                                     {data?.CostingHeading === VARIANCE && ((!pdfHead)) && <TooltipCustom customClass="mb-0 ml-1" id="variance" tooltipText={`Variance = (${data.costingTypeId === CBCTypeId ? "New Costing - Old Costing" : "Old Costing - New Costing"})`} />}
                                   </div >
@@ -3524,7 +3523,6 @@ useEffect(() => {
                               return <td className={tableDataClass(data)}>
 
                                 {data?.currency.currencyTitle === '-' ? '-' : `${data?.currency.currencyTitle}: `} {displayValueWithSign(data, "nPOPriceWithCurrency")}
-                                {/* //CS7-I95 */}
                               </td>
                             })}
                         </tr>
@@ -3930,4 +3928,3 @@ CostingSummaryTable.defaultProps = {
   partNumber: {}
 }
 export default CostingSummaryTable
-// CS7-I120, CS7-I95, CS7-I110
