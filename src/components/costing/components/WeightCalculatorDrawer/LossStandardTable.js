@@ -855,7 +855,7 @@ function LossStandardTable(props) {
                 {checkForDecimalAndNull(burningWeight, trim)}
               </span>}
             {!props.isStamping && <span className="w-50 d-inline-block">
-              {`${props.isPlastic ? 'Total' : 'Net'} Loss ${isFerrous ? "Wt" : "Weight"}: `}
+              {`${props.isPlastic ? 'Other' : 'Net'} Loss ${isFerrous ? "Wt" : "Weight"}: `}
               {checkForDecimalAndNull(findLostWeight(tableData, false), trim)}
             </span>}
           </div>
