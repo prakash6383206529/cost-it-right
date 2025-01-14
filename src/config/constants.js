@@ -19,8 +19,10 @@ export const config = () => {
 
 
 const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
-// const BASE_URL = `http://10.10.1.100:4001/api/v1/`;
-// const BASE_URL = `http://172.16.0.18:81/api/v1`;
+//const BASE_URL = `http://10.10.1.100:4001/api/v1/`;
+ //const BASE_URL = `http://172.16.0.63:8081/api/v1`;
+ //const BASE_URL = `http://172.16.0.18:81/api/v1`;
+
 export const FILE_URL = `${process.env.REACT_APP_FILE_URL}`;
 
 
@@ -1224,6 +1226,9 @@ export const API = {
   rfqSaveBestCosting: `${BASE_URL}/rfq-costing/rfq-save-best-costing`,
   getAssemblyChildpart: `${BASE_URL}/rfq-quotation/get-assembly-child-part`,
   getRfqPartDetails: `${BASE_URL}/rfq-quotation/get-quotation-part-detail`,
+  checkRmExistInRfq: `${BASE_URL}/rfq-quotation/rfq-check-exist-raw-matarial`,
+  checkBopExistInRfq: `${BASE_URL}/rfq-quotation/rfq-check-exist-bought-out-part`,
+
 
   //vendor management
   getVendorClassificationList: `${BASE_URL}/vendor/get-classifications-status`,
@@ -2340,6 +2345,7 @@ export const BoughtOutPart = '3'
 export const Component = '2'
 export const Product = '4'
 export const ToolingId = '5'
+export const COMPONENTASSEMBLY = "componentAssembly"
 
 
 export const COSTING_PATH = '/costing'

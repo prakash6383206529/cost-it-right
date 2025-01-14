@@ -62,7 +62,7 @@ function ViewDrawer(props) {
     const [rmspecification, setRMSpecification] = useState([])
     const [rmName, setRMName] = useState([])
     const [rmgrade, setRMGrade] = useState([])
-    
+
     const [rmNameSelected, setRmNameSelected] = useState(false)
     const [selectedparts, setSelectedParts] = useState([])
     const [partName, setPartName] = useState('')
@@ -95,8 +95,7 @@ function ViewDrawer(props) {
     const [rmCode, setRMCode] = useState([])
     const [disabled, setDisabled] = useState(false)
 
-
-    useEffect(() => {
+   useEffect(() => {
 
         if (partType === 'Component') {
             setValue('AssemblyPartNumber', { label: AssemblyPartNumber?.label, value: AssemblyPartNumber?.value })
@@ -618,11 +617,10 @@ function ViewDrawer(props) {
 
         if (partType === "Component" || partType === "Tooling" || partType === "Bought Out Part") {
             const hasNonZeroQuantity = sopQuantityList && sopQuantityList.length > 0 && sopQuantityList[0].Quantity !== 0 && sopQuantityList[0].Quantity !== '0';
-
-            if (partType === "Component" || partType === "Tooling") {
+           if (partType === "Component" || partType === "Tooling") {
                 const dropdownTexts = _.map(getChildParts, 'Text');
                 const tableTexts = _.map(tableData, 'PartNumber');
-                const allPresent = _.every(dropdownTexts, text => _.includes(tableTexts, text));
+               const allPresent = _.every(dropdownTexts, text => _.includes(tableTexts, text));
                 if (RFQ_KEYS?.RM_MANDATORY && (type !== Component && partType !== "Tooling")) {
                     
                     if (!allPresent) {
@@ -1140,8 +1138,8 @@ function ViewDrawer(props) {
                                                             control={control}
                                                             rules={{ required: RFQ_KEYS?.RM_MANDATORY ? true : false }}
                                                             register={register}
-                                                            mandatory={  RFQ_KEYS?.RM_MANDATORY ? true : false }
-                                                        
+                                                            mandatory={RFQ_KEYS?.RM_MANDATORY ? true : false}
+
                                                             handleChange={(newValue) => handleChildPart(newValue)}
                                                             errors={errors.partNumber}
                                                             disabled={(isViewFlag || type === Component) ? true : false}
@@ -1165,7 +1163,9 @@ function ViewDrawer(props) {
                                                         options={renderListingRM('rmname')}
                                                         mandatory={RFQ_KEYS?.RM_MANDATORY ? true : false}
                                                         handleChange={(newValue) => handleRMName(newValue)}
-                                                        disabled={disabled || (isViewFlag || (isEditFlag && type === Component && tableData.length > 0 && !isEdit)) ? true : false}
+                                                        disabled={disabled || isViewFlag || (type === Component && tableData.length > 0 && !isEdit&&props?.dataProp?.isAddFlag)}
+                                                    //disabled={disabled || (isViewFlag || (isEditFlag && type === Component && tableData.length > 0 && !isEdit)) ? true : false}
+
                                                     />
                                                 </Col>
 
@@ -1183,7 +1183,7 @@ function ViewDrawer(props) {
                                                         options={renderListingRM('rmgrade')}
                                                         mandatory={getValues('RMName') ? true : false}
                                                         handleChange={(newValue) => handleRMGrade(newValue)}
-                                                        disabled={disabled || (isViewFlag || (isEditFlag && type === Component && tableData.length > 0 && !isEdit)) ? true : false}
+                                                        disabled={disabled || isViewFlag || (partType === 'Component' && tableData.length > 0 && !isEdit)}
                                                     />
                                                 </Col>
 
@@ -1195,13 +1195,13 @@ function ViewDrawer(props) {
                                                         Controller={Controller}
                                                         control={control}
                                                         selected={rmspecification ? rmspecification : ''}
-                                                        rules={{ required:getValues('RMName') ? true : false}}
+                                                        rules={{ required: getValues('RMName') ? true : false }}
                                                         register={register}
                                                         customClassName="costing-version"
                                                         options={renderListingRM('rmspecification')}
                                                         mandatory={getValues('RMName') ? true : false}
                                                         handleChange={(newValue) => handleRMSpecification(newValue)}
-                                                        disabled={disabled || (isViewFlag || (isEditFlag && type === Component && tableData.length > 0 && !isEdit)) ? true : false}
+                                                        disabled={disabled || isViewFlag || (partType === 'Component' && tableData.length > 0 && !isEdit)}
                                                     />
                                                 </Col>
 
@@ -1214,12 +1214,12 @@ function ViewDrawer(props) {
                                                         Controller={Controller}
                                                         control={control}
                                                         register={register}
-                                                        rules={{ required: getValues('RMName') ? true : false}}
+                                                        rules={{ required: getValues('RMName') ? true : false }}
                                                         mandatory={getValues('RMName') ? true : false}
                                                         handleChange={handleCode}
                                                         isClearable={true}
                                                         errors={errors.Code}
-                                                        disabled={(isViewFlag || (isEditFlag && type === Component && tableData.length > 0 && !isEdit)) ? true : false}
+                                                        disabled={disabled || isViewFlag || (partType === 'Component' && tableData.length > 0 && !isEdit)}
                                                     />
                                                 </Col>
                                             </Row>
