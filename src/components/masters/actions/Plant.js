@@ -14,6 +14,7 @@ import {
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
+import axiosInstance from '../../../utils/axiosInstance';
 
 // const config() = config;
 
@@ -23,7 +24,7 @@ import Toaster from '../../common/Toaster';
  */
 export function createPlantAPI(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.createPlantAPI, data, config());
+        const request = axiosInstance.post(API.createPlantAPI, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -127,7 +128,7 @@ export function getPlantUnitAPI(plantId, callback) {
 export function updatePlantAPI(plantId, request, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.put(`${API.updatePlantAPI}`, request, config())
+        axiosInstance.put(`${API.updatePlantAPI}`, request, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -145,7 +146,7 @@ export function updatePlantAPI(plantId, request, callback) {
 export function activeInactiveStatus(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.put(`${API.activeInactiveStatus}`, requestData, config())
+        axiosInstance.put(`${API.activeInactiveStatus}`, requestData, config())
             .then((response) => {
                 dispatch({ type: API_SUCCESS });
                 callback(response);

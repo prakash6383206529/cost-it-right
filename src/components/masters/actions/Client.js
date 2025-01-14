@@ -10,6 +10,7 @@ import {
     GET_POAM_STATUS_SELECTLIST
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
+import axiosInstance from '../../../utils/axiosInstance';
 // const config() = config
 
 /**
@@ -19,7 +20,7 @@ import { apiErrors } from '../../../helper/util';
 export function createClient(data, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axios.post(API.createClient, data, config());
+        const request = axiosInstance.post(API.createClient, data, config());
         request.then((response) => {
             if (response.data.Result === true) {
                 callback(response);
@@ -38,7 +39,7 @@ export function createClient(data, callback) {
 export function updateClient(requestData, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateClient}`, requestData, config())
+        axiosInstance.put(`${API.updateClient}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -168,7 +169,7 @@ export function checkAndGetCustomerCode(code, name, callback) {
             customerCode: code
         };
 
-        const request = axios.post(`${API.checkAndGetCustomerCode}`, requestBody, config());
+        const request = axiosInstance.post(`${API.checkAndGetCustomerCode}`, requestBody, config());
 
         request.then((response) => {
 

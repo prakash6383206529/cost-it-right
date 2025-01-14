@@ -23,6 +23,7 @@ import {
     from '../../../config/constants';
 import { apiErrors, encodeQueryParamsAndLog } from '../../../helper/util';
 import { userDetails } from '../../../helper';
+import axiosInstance from '../../../utils/axiosInstance';
 
 /**
  * @method getIndexSelectList
@@ -102,7 +103,7 @@ export function getCommodityCustomNameSelectListByType(callback) {
  */
 export function createCommodityCustomName(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.createCommodityCustomName, data, config());
+        const request = axiosInstance.post(API.createCommodityCustomName, data, config());
         request.then((response) => {
             if (response?.data.Result) {
                 dispatch({ type: CREATE_MATERIAL_SUCCESS, });
@@ -144,7 +145,7 @@ export function getCommodityStandardizationDataListAPI(callback) {
 */
 export function createCommodityStandardization(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.createCommodityStandardization, data, config());
+        const request = axiosInstance.post(API.createCommodityStandardization, data, config());
         request.then((response) => {
             if (response?.data.Result) {
                 dispatch({ type: CREATE_MATERIAL_SUCCESS, });
@@ -333,7 +334,7 @@ export function getIndexDataListAPI(obj, isPagination, skip, take, callback) {
  */
 export function createIndexData(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.createIndexData, data, config());
+        const request = axiosInstance.post(API.createIndexData, data, config());
         request.then((response) => {
             if (response?.data.Result) {
                 dispatch({ type: CREATE_MATERIAL_SUCCESS, });
@@ -370,7 +371,7 @@ export function deleteIndexData(indexExchangeId, callback) {
  */
 export function updateCommodityStandardization(requestData, callback) {
     return (dispatch) => {
-        axios.put(`${API.updateCommodityStandardization}`, requestData, config())
+        axiosInstance.put(`${API.updateCommodityStandardization}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -405,7 +406,7 @@ export function deleteCommodityStandardization(commodityStandardizationId, callb
  */
 export function updateIndexData(requestData, callback) {
     return (dispatch) => {
-        axios.put(`${API.updateIndexData}`, requestData, config())
+        axiosInstance.put(`${API.updateIndexData}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -420,7 +421,7 @@ export function updateIndexData(requestData, callback) {
  */
 export function bulkUploadIndexData(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.bulkUploadIndexData, data, config());
+        const request = axiosInstance.post(API.bulkUploadIndexData, data, config());
         request.then((response) => {
             if (response.status === 200) {
                 callback(response);
@@ -438,7 +439,7 @@ export function bulkUploadIndexData(data, callback) {
 */
 export function bulkUploadStandardizedCommodity(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.bulkUploadStandardizedCommodity, data, config());
+        const request = axiosInstance.post(API.bulkUploadStandardizedCommodity, data, config());
         request.then((response) => {
             if (response.status === 200) {
                 callback(response);
@@ -494,7 +495,7 @@ export function getAssociatedMaterialDetails(materialId, callback) {
  */
 export function bulkUploadIndex(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.bulkUploadIndex, data, config());
+        const request = axiosInstance.post(API.bulkUploadIndex, data, config());
         request.then((response) => {
             if (response.status === 200) {
                 callback(response);
@@ -512,7 +513,7 @@ export function bulkUploadIndex(data, callback) {
  */
 export function bulkUploadCommodityInIndex(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.bulkUploadCommodityInIndex, data, config());
+        const request = axiosInstance.post(API.bulkUploadCommodityInIndex, data, config());
         request.then((response) => {
             if (response.status === 200) {
                 callback(response);
@@ -548,7 +549,7 @@ export function deleteIndexCommodityLinking(indexExchangeId, callback) {
  */
 export function createIndex(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.createIndex, data, config());
+        const request = axiosInstance.post(API.createIndex, data, config());
         request.then((response) => {
             if (response?.data.Result) {
                 dispatch({ type: CREATE_MATERIAL_SUCCESS, });
@@ -567,7 +568,7 @@ export function createIndex(data, callback) {
  */
 export function updateIndex(requestData, callback) {
     return (dispatch) => {
-        axios.put(`${API.updateIndex}`, requestData, config())
+        axiosInstance.put(`${API.updateIndex}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -617,7 +618,7 @@ export function getCommodityStandardList(obj, isPagination, skip, take, callback
  */
 export function bulkUploadCommodityStandard(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.bulkUploadCommodityStandard, data, config());
+        const request = axiosInstance.post(API.bulkUploadCommodityStandard, data, config());
         request.then((response) => {
             if (response.status === 200) {
                 callback(response);
@@ -655,7 +656,7 @@ export function deleteCommodityStandard(commodityStandardId, callback) {
 export function deleteIndexDetailData(data, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.put(API.deleteIndexDetailData, data, config())
+        axiosInstance.put(API.deleteIndexDetailData, data, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -735,7 +736,7 @@ export function setOtherCostDetails(data) {
  */
 export function getLastRevisionRawMaterialDetails(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.getLastRevisionRawMaterialDetails, data, config());
+        const request = axiosInstance.post(API.getLastRevisionRawMaterialDetails, data, config());
         request.then((response) => {
             if (response) {
                 callback(response);

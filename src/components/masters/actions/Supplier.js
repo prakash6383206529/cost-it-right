@@ -19,6 +19,7 @@ import {
 import { apiErrors, encodeQueryParams, encodeQueryParamsAndLog } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
+import axiosInstance from '../../../utils/axiosInstance';
 
 // const config() = config
 
@@ -31,7 +32,7 @@ export function createSupplierAPI(data, callback) {
         // dispatch({
         //     type:  API_REQUEST,
         // });
-        const request = axios.post(API.createSupplierAPI, data, config());
+        const request = axiosInstance.post(API.createSupplierAPI, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -168,7 +169,7 @@ export function deleteSupplierAPI(vendorId, loggedInUserId, callback) {
 export function updateSupplierAPI(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateSupplierAPI}`, requestData, config())
+        axiosInstance.put(`${API.updateSupplierAPI}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -206,7 +207,7 @@ export function getRadioButtonSupplierType() {
 export function activeInactiveVendorStatus(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.put(`${API.activeInactiveVendorStatus}`, requestData, config())
+        axiosInstance.put(`${API.activeInactiveVendorStatus}`, requestData, config())
             .then((response) => {
                 dispatch({ type: API_SUCCESS });
                 callback(response);
@@ -223,7 +224,7 @@ export function activeInactiveVendorStatus(requestData, callback) {
  */
 export function vendorBulkUpload(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.vendorBulkUpload, data, config());
+        const request = axiosInstance.post(API.vendorBulkUpload, data, config());
         request.then((response) => {
             if (response.status === 200) {
                 callback(response);

@@ -50,6 +50,7 @@ import { getConfigurationKey, loggedInUserId, userDetails } from '../../../helpe
 import { MESSAGES } from '../../../config/message';
 import { rmQueryParms } from '../masterUtil';
 import { reactLocalStorage } from 'reactjs-localstorage';
+import axiosInstance from '../../../utils/axiosInstance';
 
 /**
  * @method createMaterialAPI
@@ -57,7 +58,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
  */
 export function createMaterialAPI(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.createMaterialAPI, data, config());
+        const request = axiosInstance.post(API.createMaterialAPI, data, config());
         request.then((response) => {
             if (response?.data.Result) {
                 dispatch({
@@ -116,7 +117,7 @@ export function getRawMaterialDataAPI(RawMaterialId, callback) {
 export function updateRawMaterialAPI(requestData, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateRawMaterialAPI}`, requestData, config())
+        axiosInstance.put(`${API.updateRawMaterialAPI}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -154,7 +155,7 @@ export function createRMCategoryAPI(data, callback) {
         // dispatch({
         //     type:  API_REQUEST,
         // });
-        const request = axios.post(API.createRMCategoryAPI, data, config());
+        const request = axiosInstance.post(API.createRMCategoryAPI, data, config());
         request.then((response) => {
             if (response?.data.Result) {
                 dispatch({
@@ -211,7 +212,7 @@ export function getCategoryDataAPI(CategoryId, callback) {
 export function updateCategoryAPI(requestData, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateCategoryAPI}`, requestData, config())
+        axiosInstance.put(`${API.updateCategoryAPI}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -248,7 +249,7 @@ export function createRMGradeAPI(data, callback) {
         // dispatch({
         //     type:  API_REQUEST,
         // });
-        const request = axios.post(API.createRMGradeAPI, data, config());
+        const request = axiosInstance.post(API.createRMGradeAPI, data, config());
         request.then((response) => {
             if (response?.data.Result) {
                 dispatch({
@@ -306,7 +307,7 @@ export function getRMGradeDataAPI(GradeId, callback) {
 export function updateRMGradeAPI(requestData, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateRMGradeAPI}`, requestData, config())
+        axiosInstance.put(`${API.updateRMGradeAPI}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -340,7 +341,7 @@ export function deleteRMGradeAPI(gradeId, loggedInUserId, callback) {
  */
 export function createRMSpecificationAPI(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.createRMSpecificationAPI, data, config());
+        const request = axiosInstance.post(API.createRMSpecificationAPI, data, config());
         request.then((response) => {
             if (response?.data.Result) {
                 dispatch({ type: CREATE_MATERIAL_SUCCESS, });
@@ -360,7 +361,7 @@ export function createRMSpecificationAPI(data, callback) {
  */
 export function createAssociation(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.createAssociation, data, config());
+        const request = axiosInstance.post(API.createAssociation, data, config());
         request.then((response) => {
             if (response?.data.Result) {
                 dispatch({ type: CREATE_MATERIAL_SUCCESS, });
@@ -437,7 +438,7 @@ export function getRMSpecificationDataList(data, callback) {
 export function updateRMSpecificationAPI(requestData, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateRMSpecificationAPI}`, requestData, config())
+        axiosInstance.put(`${API.updateRMSpecificationAPI}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -555,7 +556,7 @@ export function getRMTypeSelectListAPI(callback) {
  */
 export function createMaterialTypeAPI(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.createMaterialType, data, config());
+        const request = axiosInstance.post(API.createMaterialType, data, config());
         request.then((response) => {
             if (response?.data.Result) {
                 dispatch({
@@ -636,7 +637,7 @@ export function deleteMaterialTypeAPI(MaterialTypeId, callback) {
 export function updateMaterialtypeAPI(requestData, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateMaterialtypeAPI}`, requestData, config())
+        axiosInstance.put(`${API.updateMaterialtypeAPI}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -653,7 +654,7 @@ export function updateMaterialtypeAPI(requestData, callback) {
  */
 export function createRMDetailAPI(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.createMaterial, data, config());
+        const request = axiosInstance.post(API.createMaterial, data, config());
         request.then((response) => {
             if (response?.data.Result) {
                 dispatch({
@@ -682,7 +683,7 @@ export function createRMDetailAPI(data, callback) {
  */
 export function createRM(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.createRM, data, config());
+        const request = axiosInstance.post(API.createRM, data, config());
         request.then((response) => {
             if (response?.data.Result) {
                 callback(response);
@@ -758,7 +759,7 @@ export function getRMDataById(data, isValid, callback) {
 export function updateRMAPI(requestData, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateRMAPI}`, requestData, config())
+        axiosInstance.put(`${API.updateRMAPI}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -793,7 +794,7 @@ export function deleteRawMaterialDetailAPI(RawMaterialDetailsId, callback) {
 export function getMaterialDetailAPI(filterData) {
     return (dispatch) => {
         const API1 = axios.get(API.getMaterialTypeDataList, config());
-        const API2 = axios.post(API.getMaterial, filterData, config());
+        const API2 = axiosInstance.post(API.getMaterial, filterData, config());
         Promise.all([API1, API2])
             .then((response) => {
                 dispatch({
@@ -880,7 +881,7 @@ export function getAllRawMaterialList(callback) {
  */
 export function createRawMaterialNameChild(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.createRawMaterialNameChild, data, config());
+        const request = axiosInstance.post(API.createRawMaterialNameChild, data, config());
         request.then((response) => {
             if (response?.data.Result) {
                 callback(response);
@@ -1043,7 +1044,7 @@ export function getAllRMDataList(data, skip, take, isPagination, obj, isImport, 
  */
 export function fileUploadRMDomestic(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.fileUploadRMDomestic, data, config());
+        const request = axiosInstance.post(API.fileUploadRMDomestic, data, config());
         request.then((response) => {
             if (response && response?.status === 200) {
                 callback(response);
@@ -1062,7 +1063,7 @@ export function fileUploadRMDomestic(data, callback) {
  */
 export function fileUpdateRMDomestic(data, callback) {
     return (dispatch) => {
-        const request = axios.put(API.fileUpdateRMDomestic, data, config());
+        const request = axiosInstance.put(API.fileUpdateRMDomestic, data, config());
         request.then((response) => {
             if (response && response?.status === 200) {
                 callback(response);
@@ -1080,7 +1081,7 @@ export function fileUpdateRMDomestic(data, callback) {
  */
 export function bulkUploadRM(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.bulkUploadRM, data, config());
+        const request = axiosInstance.post(API.bulkUploadRM, data, config());
         request.then((response) => {
             if (response?.status === 200) {
                 callback(response);
@@ -1099,7 +1100,7 @@ export function bulkUploadRM(data, callback) {
  */
 export function bulkfileUploadRM(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.bulkfileUploadRM, data, config());
+        const request = axiosInstance.post(API.bulkfileUploadRM, data, config());
         request.then((response) => {
             if (response?.data.Result) {
                 callback(response);
@@ -1117,7 +1118,7 @@ export function bulkfileUploadRM(data, callback) {
  */
 export function bulkUploadRMSpecification(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.bulkUploadRMSpecification, data, config());
+        const request = axiosInstance.post(API.bulkUploadRMSpecification, data, config());
         request.then((response) => {
             if (response?.status === 200) {
                 callback(response);
@@ -1155,7 +1156,7 @@ export function getRawMaterialChildById(ID, callback) {
  */
 export function updateRawMaterialChildName(data, callback) {
     return (dispatch) => {
-        const request = axios.put(API.updateRawMaterialChildName, data, config());
+        const request = axiosInstance.put(API.updateRawMaterialChildName, data, config());
         request.then((response) => {
             if (response && response?.status === 200) {
                 callback(response);
@@ -1349,7 +1350,7 @@ export function getMaterialTypeSelectList(callback) {
 export function checkAndGetRawMaterialCode(obj, callback) {
     return (dispatch) => {
         let queryParams = `materialNameId=${obj?.materialNameId ? obj.materialNameId : EMPTY_GUID}&materialGradeId=${obj.materialGradeId ? obj.materialGradeId : EMPTY_GUID}&materialSpec=${obj.materialSpec}&materialCode=${obj.materialCode}`
-        const request = axios.post(`${API.checkAndGetRawMaterialCode}?${queryParams}`, '', config());
+        const request = axiosInstance.post(`${API.checkAndGetRawMaterialCode}?${queryParams}`, '', config());
         request.then((response) => {
             if (response && response?.status === 200) {
                 callback(response);
@@ -1467,7 +1468,7 @@ export function getAllMasterApprovalDepartment(callback) {
 */
 export function getAllMasterApprovalUserByDepartment(data, callback) {
     return (dispatch) => {
-        const request = axios.post(`${API.getAllMasterApprovalUserByDepartment}`, data, config(),)
+        const request = axiosInstance.post(`${API.getAllMasterApprovalUserByDepartment}`, data, config(),)
 
         request
             .then((response) => {
@@ -1500,7 +1501,7 @@ export function getAllMasterApprovalUserByDepartment(data, callback) {
  */
 export function masterApprovalRequestBySender(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.masterSendToApprover, data, config())
+        const request = axiosInstance.post(API.masterSendToApprover, data, config())
         request.then((response) => {
             if (response?.data.Result) {
                 callback(response)
@@ -1525,7 +1526,7 @@ export function masterApprovalRequestBySender(data, callback) {
  */
 export function approvalOrRejectRequestByMasterApprove(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.approveOrRejectMasterByApprover, data, config())
+        const request = axiosInstance.post(API.approveOrRejectMasterByApprover, data, config())
         request
             .then((response) => {
                 if (response?.data.Result) {
@@ -1739,7 +1740,7 @@ export function setRawMaterialCostingData(data) {
 };
 export function getViewRawMaterialDetails(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.getViewRawMaterialDetails, data, config())
+        const request = axiosInstance.post(API.getViewRawMaterialDetails, data, config())
         request
             .then((response) => {
                 if (response?.data.Result) {

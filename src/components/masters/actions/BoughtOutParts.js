@@ -23,6 +23,7 @@ import { apiErrors, encodeQueryParamsAndLog } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
 import { bopQueryParms } from '../masterUtil';
 import { reactLocalStorage } from 'reactjs-localstorage';
+import axiosInstance from "../../../utils/axiosInstance";
 
 // const config() = config
 
@@ -32,7 +33,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
  */
 export function createBOP(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.createBOP, data, config());
+    const request = axiosInstance.post(API.createBOP, data, config());
     request.then((response) => {
       if (response.data.Result) {
         callback(response);
@@ -203,7 +204,7 @@ export function deleteBOP(bopId, loggedInUserId, callback) {
 export function updateBOP(requestData, callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST });
-    axios.put(`${API.updateBOP}`, requestData, config())
+    axiosInstance.put(`${API.updateBOP}`, requestData, config())
       .then((response) => {
         callback(response);
       })
@@ -221,7 +222,7 @@ export function updateBOP(requestData, callback) {
  */
 export function createBOPCategory(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.createBOPCategory, data, config());
+    const request = axiosInstance.post(API.createBOPCategory, data, config());
     request.then((response) => {
       if (response.data.Result) {
         callback(response);
@@ -288,7 +289,7 @@ export function getPlantSelectListByVendor(VendorId, callback) {
  */
 export function fileUploadBOPDomestic(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.fileUploadBOPDomestic, data, config());
+    const request = axiosInstance.post(API.fileUploadBOPDomestic, data, config());
     request.then((response) => {
       if (response && response.status === 200) {
         callback(response);
@@ -308,7 +309,7 @@ export function fileUploadBOPDomestic(data, callback) {
  */
 export function bulkUploadBOP(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.bulkUploadBOP, data, config());
+    const request = axiosInstance.post(API.bulkUploadBOP, data, config());
     request.then((response) => {
       if (response.status === 200) {
         callback(response);
@@ -448,7 +449,7 @@ export function getManageBOPSOBById(boughtOutPartNumber, callback) {
 export function updateBOPSOBVendors(requestData, callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST });
-    axios.put(`${API.updateBOPSOBVendors}`, requestData, config())
+    axiosInstance.put(`${API.updateBOPSOBVendors}`, requestData, config())
       .then((response) => {
         callback(response);
       }).catch((error) => {
@@ -511,7 +512,7 @@ export function getPaymentTermSelectList(callback) {
 export function checkAndGetBopPartNo(obj, callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST });
-    const request = axios.post(`${API.checkAndGetBopPartNo}?bopName=${obj.bopName}&bopCategory=${obj.bopCategory}&bopNumber=${obj.bopNumber}`, "", config());
+    const request = axiosInstance.post(`${API.checkAndGetBopPartNo}?bopName=${obj.bopName}&bopCategory=${obj.bopCategory}&bopNumber=${obj.bopNumber}`, "", config());
     request.then((response) => {
       if (response && response.status === 200) {
         callback(response);
@@ -533,7 +534,7 @@ export function setBopCostingData(data) {
 };
 export function getViewBOPDetails(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.getViewBOPDetails, data, config())
+    const request = axiosInstance.post(API.getViewBOPDetails, data, config())
     request
       .then((response) => {
         if (response?.data.Result) {
