@@ -2025,7 +2025,7 @@ class AddMachineRate extends Component {
                               </button>
                               {!isViewMode && <>
 
-                                {(!isViewMode && (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure) || (initialConfiguration.IsMasterApprovalAppliedConfigure && !CostingTypePermission) ?
+                                {(!isViewMode && (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure) || (initialConfiguration.IsMasterApprovalAppliedConfigure &&CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !CostingTypePermission) ?
                                   <button id="AddMachineRate_SendForApproval" type="submit"
                                     class="user-btn approval-btn save-btn mr5"
                                     disabled={isViewMode || setDisable || disableSendForApproval || (isEditFlag && IsDetailedEntry)}
