@@ -10,6 +10,7 @@ import {
     config
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
+import axiosInstance from '../../../utils/axiosInstance';
 
 // const config() = config
 
@@ -20,7 +21,7 @@ import { apiErrors } from '../../../helper/util';
 export function createInterestRate(data, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.post(API.createInterestRate, data, config());
+        const request = axiosInstance.post(API.createInterestRate, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -120,7 +121,7 @@ export function deleteInterestRate(vendorIntrestRateId, loggedInUserId, callback
 export function updateInterestRate(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateInterestRate}`, requestData, config())
+        axiosInstance.put(`${API.updateInterestRate}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -185,7 +186,7 @@ export function getICCAppliSelectList(callback) {
  */
 export function bulkUploadInterestRateZBC(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.bulkUploadInterestRateZBC, data, config());
+        const request = axiosInstance.post(API.bulkUploadInterestRateZBC, data, config());
         request.then((response) => {
             if (response.status === 200) {
                 callback(response);
@@ -203,7 +204,7 @@ export function bulkUploadInterestRateZBC(data, callback) {
  */
 export function bulkUploadInterestRateVBC(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.bulkUploadInterestRateVBC, data, config());
+        const request = axiosInstance.post(API.bulkUploadInterestRateVBC, data, config());
         request.then((response) => {
             if (response.status === 200) {
                 callback(response);
@@ -222,7 +223,7 @@ export function bulkUploadInterestRateVBC(data, callback) {
  */
 export function bulkUploadInterestRateCBC(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.bulkUploadInterestRateCBC, data, config());
+        const request = axiosInstance.post(API.bulkUploadInterestRateCBC, data, config());
         request.then((response) => {
             if (response.status === 200) {
                 callback(response);

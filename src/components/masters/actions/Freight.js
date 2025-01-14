@@ -20,6 +20,7 @@ import {
 import { apiErrors } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
+import axiosInstance from '../../../utils/axiosInstance';
 
 // const config() = config;
 
@@ -29,7 +30,7 @@ import { MESSAGES } from '../../../config/message';
  */
 export function createFreight(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.createFreight, data, config());
+        const request = axiosInstance.post(API.createFreight, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -124,7 +125,7 @@ export function deleteFright(freightId, loggedInUserId, callback) {
 export function updateFright(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateFright}`, requestData, config())
+        axiosInstance.put(`${API.updateFright}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -201,7 +202,7 @@ export function getFreigtRateCriteriaSelectList() {
  */
 export function createAdditionalFreightAPI(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.createAdditionalFreightAPI, data, config());
+        const request = axiosInstance.post(API.createAdditionalFreightAPI, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -286,7 +287,7 @@ export function deleteAdditionalFreightAPI(Id, callback) {
 export function updateAdditionalFreightByIdAPI(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateAdditionalFreightByIdAPI}`, requestData, config())
+        axiosInstance.put(`${API.updateAdditionalFreightByIdAPI}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -302,7 +303,7 @@ export function updateAdditionalFreightByIdAPI(requestData, callback) {
  */
 export function getAdditionalFreightBySupplier(sourceSupplierId, callback) {
     return (dispatch) => {
-        const request = axios.post(`${API.getAdditionalFreightBySupplier}?sourceSupplierId=${sourceSupplierId}`, config());
+        const request = axiosInstance.post(`${API.getAdditionalFreightBySupplier}?sourceSupplierId=${sourceSupplierId}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({

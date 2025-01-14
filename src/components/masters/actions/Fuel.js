@@ -22,6 +22,7 @@ import {
 import { userDetails } from '../../../helper';
 import { apiErrors } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
+import axiosInstance from '../../../utils/axiosInstance';
 
 // const config() = config;
 
@@ -31,7 +32,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
  */
 export function createFuel(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.createFuel, data, config());
+        const request = axiosInstance.post(API.createFuel, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -49,7 +50,7 @@ export function createFuel(data, callback) {
  */
 export function createFuelDetail(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.createFuelDetail, data, config());
+        const request = axiosInstance.post(API.createFuelDetail, data, config());
         request.then((response) => {
             if (response && response.data && response.data.Result) {
                 callback(response);
@@ -68,7 +69,7 @@ export function createFuelDetail(data, callback) {
  */
 export function updateFuelDetail(data, callback) {
     return (dispatch) => {
-        const request = axios.put(API.updateFuelDetail, data, config());
+        const request = axiosInstance.put(API.updateFuelDetail, data, config());
         request.then((response) => {
             if (response && response.status === 200) {
                 callback(response);
@@ -306,7 +307,7 @@ export function getFuelListByState(ID, callback) {
  */
 export function fuelBulkUpload(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.fuelBulkUpload, data, config());
+        const request = axiosInstance.post(API.fuelBulkUpload, data, config());
         request.then((response) => {
             callback(response);
         }).catch((error) => {
@@ -323,7 +324,7 @@ export function fuelBulkUpload(data, callback) {
  */
 export function createPowerDetail(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.createPowerDetail, data, config());
+        const request = axiosInstance.post(API.createPowerDetail, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -342,7 +343,7 @@ export function createPowerDetail(data, callback) {
  */
 export function createVendorPowerDetail(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.createVendorPowerDetail, data, config());
+        const request = axiosInstance.post(API.createVendorPowerDetail, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -361,7 +362,7 @@ export function createVendorPowerDetail(data, callback) {
  */
 export function updatePowerDetail(data, callback) {
     return (dispatch) => {
-        const request = axios.put(API.updatePowerDetail, data, config());
+        const request = axiosInstance.put(API.updatePowerDetail, data, config());
         request.then((response) => {
             if (response && response.status === 200) {
                 callback(response);
@@ -380,7 +381,7 @@ export function updatePowerDetail(data, callback) {
  */
 export function updateVendorPowerDetail(data, callback) {
     return (dispatch) => {
-        const request = axios.put(API.updateVendorPowerDetail, data, config());
+        const request = axiosInstance.put(API.updateVendorPowerDetail, data, config());
         request.then((response) => {
             if (response && response.status === 200) {
                 callback(response);

@@ -15,6 +15,7 @@ import {
 } from '../../../config/constants'
 import { userDetails } from '../../../helper'
 import { apiErrors, encodeQueryParamsAndLog } from '../../../helper/util'
+import axiosInstance from '../../../utils/axiosInstance'
 // const config() = config
 
 /**
@@ -24,7 +25,7 @@ import { apiErrors, encodeQueryParamsAndLog } from '../../../helper/util'
 export function createVolume(data, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.post(API.createVolume, data, config())
+    const request = axiosInstance.post(API.createVolume, data, config())
     request
       .then((response) => {
         if (response.data.Result === true) {
@@ -46,7 +47,7 @@ export function createVolume(data, callback) {
 export function updateVolume(requestData, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    axios
+    axiosInstance
       .put(`${API.updateVolume}`, requestData, config())
       .then((response) => {
         callback(response)
@@ -195,7 +196,7 @@ export function getFinancialYearSelectList(callback) {
  */
 export function volumeBulkUpload(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.volumeBulkUpload, data, config())
+    const request = axiosInstance.post(API.volumeBulkUpload, data, config())
     request
       .then((response) => {
         if (response.status === 200) {
@@ -239,7 +240,7 @@ export function getVolumeDataByPartAndYear(partNumber, financialYear, plantId, v
  */
 export function createVolumeLimit(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.createVolumeLimit, data, config())
+    const request = axiosInstance.post(API.createVolumeLimit, data, config())
     request
       .then((response) => {
         if (response.status === 200) {
@@ -259,7 +260,7 @@ export function createVolumeLimit(data, callback) {
  */
 export function updateVolumeLimit(data, callback) {
   return (dispatch) => {
-    axios
+    axiosInstance
       .put(`${API.updateVolumeLimit}`, data, config())
       .then((response) => {
         callback(response)
@@ -331,7 +332,7 @@ export function getPartSelectListWtihRevNo(partNumber, technologyId, nfrId, part
  */
 export function bulkUploadVolume(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.bulkUploadVolume, data, config());
+    const request = axiosInstance.post(API.bulkUploadVolume, data, config());
     request.then((response) => {
       if (response.status === 200) {
         callback(response);

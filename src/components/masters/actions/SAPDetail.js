@@ -10,6 +10,7 @@ import {
 import { apiErrors } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
+import axiosInstance from '../../../utils/axiosInstance';
 
 
 // const config() = config
@@ -23,7 +24,7 @@ export function saveSAPDetail(data, callback) {
         // dispatch({
         //     type:  API_REQUEST,
         // });
-        const request = axios.post(API.saveSAPDetail, data, config());
+        const request = axiosInstance.post(API.saveSAPDetail, data, config());
         request.then((response) => {
             if (response.data.Result) {
 
@@ -48,7 +49,7 @@ export function updateSAPDetail(data, callback) {
         // dispatch({
         //     type:  API_REQUEST,
         // });
-        const request = axios.put(API.updateSAPDetail, data, config());
+        const request = axiosInstance.put(API.updateSAPDetail, data, config());
         request.then((response) => {
             if (response.data.Result) {
 
@@ -162,7 +163,7 @@ export function getSapPushDetailsHeader(callback) {
 }
 export function sapPushBulkUpload(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.sapPushBulkUpload, data, config());
+        const request = axiosInstance.post(API.sapPushBulkUpload, data, config());
         request.then((response) => {
             callback(response);
         }).catch((error) => {

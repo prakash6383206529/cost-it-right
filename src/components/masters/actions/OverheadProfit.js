@@ -17,6 +17,7 @@ import { apiErrors, encodeQueryParams, encodeQueryParamsAndLog } from '../../../
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
 import { reactLocalStorage } from 'reactjs-localstorage';
+import axiosInstance from '../../../utils/axiosInstance';
 // const config() = config
 
 /**
@@ -52,7 +53,7 @@ export function getOverheadProfitComboData(callback) {
 export function createOverhead(data, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axios.post(API.createOverhead, data, config());
+        const request = axiosInstance.post(API.createOverhead, data, config());
         request.then((response) => {
             if (response.data.Result === true) {
                 callback(response);
@@ -72,7 +73,7 @@ export function createOverhead(data, callback) {
 export function createProfit(data, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axios.post(API.createProfit, data, config());
+        const request = axiosInstance.post(API.createProfit, data, config());
         request.then((response) => {
             if (response.data.Result === true) {
                 callback(response);
@@ -92,7 +93,7 @@ export function createProfit(data, callback) {
 export function updateOverhead(requestData, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateOverhead}`, requestData, config())
+        axiosInstance.put(`${API.updateOverhead}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -110,7 +111,7 @@ export function updateOverhead(requestData, callback) {
 export function updateProfit(requestData, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateProfit}`, requestData, config())
+        axiosInstance.put(`${API.updateProfit}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -311,7 +312,7 @@ export function deleteProfit(profitId, loggedInUserId, callback) {
 export function activeInactiveOverhead(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.put(`${API.activeInactiveOverhead}`, requestData, config())
+        axiosInstance.put(`${API.activeInactiveOverhead}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -328,7 +329,7 @@ export function activeInactiveOverhead(requestData, callback) {
 export function activeInactiveProfit(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.put(`${API.activeInactiveProfit}`, requestData, config())
+        axiosInstance.put(`${API.activeInactiveProfit}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -344,7 +345,7 @@ export function activeInactiveProfit(requestData, callback) {
  */
 export function fileUploadOverHead(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.fileUploadOverHead, data, config());
+        const request = axiosInstance.post(API.fileUploadOverHead, data, config());
         request.then((response) => {
             if (response && response.status === 200) {
                 callback(response);
@@ -363,7 +364,7 @@ export function fileUploadOverHead(data, callback) {
  */
 export function fileUploadProfit(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.fileUploadProfit, data, config());
+        const request = axiosInstance.post(API.fileUploadProfit, data, config());
         request.then((response) => {
             if (response && response.status === 200) {
                 callback(response);
@@ -382,7 +383,7 @@ export function fileUploadProfit(data, callback) {
  */
 export function overheadBulkUpload(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.overheadBulkUpload, data, config());
+        const request = axiosInstance.post(API.overheadBulkUpload, data, config());
         request.then((response) => {
             if (response.status === 200) {
                 callback(response);
@@ -401,7 +402,7 @@ export function overheadBulkUpload(data, callback) {
  */
 export function profitBulkUpload(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.profitBulkUpload, data, config());
+        const request = axiosInstance.post(API.profitBulkUpload, data, config());
         request.then((response) => {
             if (response.status === 200) {
                 callback(response);

@@ -14,6 +14,7 @@ import {
 import { apiErrors } from '../../../helper/util';
 import DayTime from '../../common/DayTimeWrapper';
 import { reactLocalStorage } from 'reactjs-localstorage';
+import axiosInstance from '../../../utils/axiosInstance';
 
 // const config() = config
 
@@ -23,7 +24,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
  */
 export function createLabour(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.createLabour, data, config());
+        const request = axiosInstance.post(API.createLabour, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -125,7 +126,7 @@ export function deleteLabour(labourDetailId, loggedInUserId, callback) {
 export function updateLabour(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateLabour}`, requestData, config())
+        axiosInstance.put(`${API.updateLabour}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -206,7 +207,7 @@ export function getLabourTypeByMachineTypeSelectList(data, callback) {
  */
 export function labourBulkUpload(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.labourBulkUpload, data, config());
+        const request = axiosInstance.post(API.labourBulkUpload, data, config());
         request.then((response) => {
             if (response.status === 200) {
                 callback(response);
@@ -259,7 +260,7 @@ export function updateLabourTypeForMachineType(requestData, callback) {
 
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.put(API.updateLabourTypeForMachineType, requestData, config())
+        axiosInstance.put(API.updateLabourTypeForMachineType, requestData, config())
 
             .then((response) => {
                 callback(response);

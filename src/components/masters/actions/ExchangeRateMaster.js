@@ -15,6 +15,7 @@ import { loggedInUserId } from '../../../helper';
 import _ from 'lodash';
 import DayTime from '../../common/DayTimeWrapper';
 import { reactLocalStorage } from 'reactjs-localstorage';
+import axiosInstance from '../../../utils/axiosInstance';
 
 // const config() = config;
 
@@ -26,7 +27,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 export function createExchangeRate(data, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.post(API.createExchangeRate, data, config());
+        const request = axiosInstance.post(API.createExchangeRate, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -128,7 +129,7 @@ export function deleteExchangeRate(exchangeRateId, loggedInUserId, callback) {
 export function updateExchangeRate(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateExchangeRate}`, requestData, config())
+        axiosInstance.put(`${API.updateExchangeRate}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -186,7 +187,7 @@ export function createMultipleExchangeRate(dataList, currencySelectList, effecti
                 "IsExchangeRateSimulation": true,
                 "OldCurrencyExchangeRate": item?.CurrencyExchangeRate,
             }
-            const request = axios.post(API.createExchangeRate, data, config());
+            const request = axiosInstance.post(API.createExchangeRate, data, config());
             temp.push(request)
         })
         axios.all(temp).then((response) => {
