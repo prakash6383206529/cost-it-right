@@ -2300,6 +2300,7 @@ useEffect(() => {
                                       (isApproval && data?.CostingHeading !== '-') ? <span>{data?.CostingHeading}</span> :
                                         (data?.bestCost === true) ? "" :
                                           <span className={`checkbox-text`} title={title}><div><span>{heading(data).mainHeading}<span> ({heading(data).subHeading}) </span></span><span className='sub-heading'>{data.costingHeadCheck} {data.costingTypeId !== CBCTypeId && `(SOB: ${data?.shareOfBusinessPercent}%)`}</span></div></span>
+                                      // CS7-I110
                                     }
                                     {data?.CostingHeading === VARIANCE && ((!pdfHead)) && <TooltipCustom customClass="mb-0 ml-1" id="variance" tooltipText={`Variance = (${data.costingTypeId === CBCTypeId ? "New Costing - Old Costing" : "Old Costing - New Costing"})`} />}
                                   </div >
@@ -2940,6 +2941,7 @@ useEffect(() => {
                                       <div style={pdfHead ? { marginTop: '-4px' } : {}} className={`d-flex ${highlighter(["overheadOn", "overheadValue"], "multiple-key")}`}>
                                         <span className="d-inline-block w-50 small-grey-text">
                                           {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.overheadOn.overheadTitle : '')}
+                                          {(!pdfHead && !drawerDetailPDF && viewCostingData[index]?.isIncludeToolCostWithOverheadAndProfit) && <TooltipCustom customClass="mt-1 ml-1 p-absolute" id="overhead-toolcost-include" tooltipText={"Tool Cost Included"} />}
                                         </span>
                                         <span className="d-inline-block w-50 small-grey-text">
                                           {getOverheadPercentage(data)}
@@ -2951,6 +2953,7 @@ useEffect(() => {
                                       <div style={pdfHead ? { marginTop: '-3px' } : {}} className={`d-flex ${highlighter(["profitOn", "profitValue"], "multiple-key")}`}>
                                         <span className="d-inline-block w-50 small-grey-text">
                                           {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.profitOn.profitTitle : '')}
+                                          {(!pdfHead && !drawerDetailPDF && viewCostingData[index]?.isIncludeToolCostWithOverheadAndProfit) && <TooltipCustom customClass="mt-1 ml-1 p-absolute" id="profit-toolcost-include" tooltipText={"Tool Cost Included"} />}
                                         </span>{' '}
                                         <span className="d-inline-block w-50 small-grey-text">
                                           {getProfitPercentage(data)}
@@ -2962,6 +2965,7 @@ useEffect(() => {
                                       <div style={pdfHead ? { marginTop: '-3px' } : {}} className={`d-flex ${highlighter(["profitOn", "profitValue"], "multiple-key")}`}>
                                         <span className="d-inline-block w-50 small-grey-text">
                                           {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? ApplicabilityType ?? '-' : '')}
+                                          {(!pdfHead && !drawerDetailPDF && viewCostingData[index]?.isIncludeSurfaceTreatmentWithRejection) && <TooltipCustom customClass="mt-1 ml-1 p-absolute" id="st-rejection-include" tooltipText={"Surface Treatment Included"} />}
                                         </span>{' '}
                                         <span className="d-inline-block w-50 small-grey-text">
                                           {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? EffectiveRecoveryPercentage ?? '-' : '')}
@@ -3519,7 +3523,8 @@ useEffect(() => {
                             viewCostingData?.map((data, index) => {
                               return <td className={tableDataClass(data)}>
 
-                                {displayValueWithSign(data, "nPOPriceWithCurrency")}
+                                {data?.currency.currencyTitle === '-' ? '-' : `${data?.currency.currencyTitle}: `} {displayValueWithSign(data, "nPOPriceWithCurrency")}
+                                {/* //CS7-I95 */}
                               </td>
                             })}
                         </tr>
@@ -3925,3 +3930,4 @@ CostingSummaryTable.defaultProps = {
   partNumber: {}
 }
 export default CostingSummaryTable
+// CS7-I120, CS7-I95, CS7-I110

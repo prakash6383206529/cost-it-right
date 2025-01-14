@@ -92,7 +92,7 @@ class AddBOPDomestic extends Component {
       remarks: '',
       showErrorOnFocus: false,
       showErrorOnFocusDate: false,
-      finalApprovalLoader: getConfigurationKey().IsDivisionAllowedForDepartment || !getConfigurationKey().IsMasterApprovalAppliedConfigure ? false : true,
+      finalApprovalLoader: getConfigurationKey().IsDivisionAllowedForDepartment || !(getConfigurationKey().IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(BOP_MASTER_ID) === true) ? false : true,
       client: [],
       costingTypeId: ZBCTypeId,
       showPopup: false,
@@ -746,7 +746,7 @@ class AddBOPDomestic extends Component {
       basicPriceBaseCurrency = basicPriceAndOtherCost
     }
     const conditionCostBaseCurrency = checkForNull(NetConditionCost)
-    let conditionList = recalculateConditions(basicPriceAndOtherCost,this.state)
+    let conditionList = recalculateConditions(basicPriceAndOtherCost, this.state)
     const sumBase = conditionList.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCostPerQuantity), 0);
     let netLandedCostPlantCurrency = checkForNull(sumBase) + checkForNull(basicPriceAndOtherCost)
     const netCostBaseCurrency = this.state.currencyValue * netLandedCostPlantCurrency
@@ -1234,10 +1234,10 @@ class AddBOPDomestic extends Component {
     const result = updateCostValue(isConditionCost, this.state, this.props.fieldsObj?.BasicRate);
     // Update state
     this.setState(result.updatedState);
-    
+
     // Update form value using this.props.change() instead of setValue()
     this.props.change(result.formValue.field, result.formValue.value);
-    
+
     // Handle any additional actions based on isConditionCost
     if (isConditionCost) {
       // Update condition cost related data
@@ -1811,22 +1811,22 @@ class AddBOPDomestic extends Component {
                                   customClassName=" withBorder"
                                 />
                               </div>
-                              <div className="d-flex align-items-center" style={{marginTop: '-5px'}}>
-                                  <button type="button" id="other-cost-refresh" className={'refresh-icon ml-1'} onClick={() => this.updateTableCost(false)} disabled={this.props.data.isViewMode}>
-                                    <TooltipCustom disabledIcon={true} id="other-cost-refresh" tooltipText="Refresh to update other cost" />
-                                  </button>
-                                  <Button
-                                id="addBOPDomestic_otherCost"
-                                onClick={this.otherCostToggle}
-                                className={"right ml-1"}
-                                variant={
-                                  isViewMode ? "view-icon-primary" : !this.props.fieldsObj?.BasicRate
-                                    ? "blurPlus-icon-square"
-                                    : "plus-icon-square"
-                                }
-                                disabled={!this.props.fieldsObj?.BasicRate}
-                              />
-                                </div>
+                              <div className="d-flex align-items-center" style={{ marginTop: '-5px' }}>
+                                <button type="button" id="other-cost-refresh" className={'refresh-icon ml-1'} onClick={() => this.updateTableCost(false)} disabled={this.props.data.isViewMode}>
+                                  <TooltipCustom disabledIcon={true} id="other-cost-refresh" tooltipText="Refresh to update other cost" />
+                                </button>
+                                <Button
+                                  id="addBOPDomestic_otherCost"
+                                  onClick={this.otherCostToggle}
+                                  className={"right ml-1"}
+                                  variant={
+                                    isViewMode ? "view-icon-primary" : !this.props.fieldsObj?.BasicRate
+                                      ? "blurPlus-icon-square"
+                                      : "plus-icon-square"
+                                  }
+                                  disabled={!this.props.fieldsObj?.BasicRate}
+                                />
+                              </div>
                             </div>
                           </Col>
 
@@ -1864,7 +1864,7 @@ class AddBOPDomestic extends Component {
                                     customClassName=" withBorder"
                                   />
                                 </div>
-                                <div className="d-flex align-items-center" style={{marginTop: '-5px'}}>
+                                <div className="d-flex align-items-center" style={{ marginTop: '-5px' }}>
                                   <button type="button" id="condition-cost-refresh" className={'refresh-icon ml-1'} onClick={() => this.updateTableCost(true)} disabled={this.props.data.isViewMode}>
                                     <TooltipCustom disabledIcon={true} id="condition-cost-refresh" tooltipText="Refresh to update Condition cost" />
                                   </button>
@@ -2064,7 +2064,7 @@ class AddBOPDomestic extends Component {
                             buttonName="Cancel"
                           />
                           {!isViewMode && <>
-                            {((!isViewMode && (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure) || (initialConfiguration.IsMasterApprovalAppliedConfigure && !CostingTypePermission && !isTechnologyVisible)) && !isTechnologyVisible ?
+                            {((!isViewMode && (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure) || (initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !CostingTypePermission && !isTechnologyVisible)) && !isTechnologyVisible ?
                               <Button
                                 id="AddBOPDomestic_sendForApproval"
                                 type="submit"

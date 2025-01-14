@@ -302,7 +302,9 @@ const RMCompareTable = (props) => {
     return (
         <div>
             {showCheckbox && !props?.compare && < WarningMessage dClass={"float-right justify-content-end"} message={'Click the checkbox to approve, reject, or return the quotation'} />}
-            <Table headerData={mainHeadingData} sectionData={sectionData} uniqueShouldCostingId={props?.uniqueShouldCostingId}
+            <Table headerData={mainHeadingData}
+             sectionData={sectionData}
+              uniqueShouldCostingId={props?.uniqueShouldCostingId}
                 showConvertedCurrency={showConvertedCurrency}
                 onConvertedCurrencyChange={handleConvertedCurrencyChange}
                 showConvertedCurrencyCheckbox={showConvertedCurrencyCheckbox}
