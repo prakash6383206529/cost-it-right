@@ -1075,7 +1075,7 @@ class AddInterestRate extends Component {
                       {!isViewMode && <button
                         type="submit"
                         id='AddInterestRate_Save'
-                        disabled={isWarningVisible || isViewMode || setDisable}
+                        disabled={isViewMode || setDisable || isWarningVisible?!isEditFlag:false}
                         className="user-btn mr5 save-btn"
                       >
                         <div className={"save-icon"}></div>
