@@ -74,6 +74,7 @@ import { apiErrors, encodeQueryParamsAndLog } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
 import Toaster from '../../common/Toaster'
 import { reactLocalStorage } from 'reactjs-localstorage'
+import axiosInstance from '../../../utils/axiosInstance'
 // let config() = config
 
 /**
@@ -157,7 +158,7 @@ export function getPartInfo(PartId, callback) {
  */
 export function checkPartWithTechnology(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.checkPartWithTechnology, data, config())
+    const request = axiosInstance.post(API.checkPartWithTechnology, data, config())
     request.then((response) => {
       if (response.data.Result) {
         callback(response)
@@ -176,7 +177,7 @@ export function checkPartWithTechnology(data, callback) {
  */
 export function createCosting(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.createCosting, data, config())
+    const request = axiosInstance.post(API.createCosting, data, config())
     request.then((response) => {
       if (response.data.Result) {
         callback(response)
@@ -215,7 +216,7 @@ export function getExistingCosting(PartId, callback) {
 export function updateSOBDetail(requestData, callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST })
-    axios.put(`${API.updateSOBDetail}`, requestData, config())
+    axiosInstance.put(`${API.updateSOBDetail}`, requestData, config())
       .then((response) => {
         callback(response)
       }).catch((error) => {
@@ -232,7 +233,7 @@ export function updateSOBDetail(requestData, callback) {
 export function updateVBCSOBDetail(requestData, callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST })
-    axios.put(`${API.updateVBCSOBDetail}`, requestData, config())
+    axiosInstance.put(`${API.updateVBCSOBDetail}`, requestData, config())
       .then((response) => {
         callback(response)
       }).catch((error) => {
@@ -688,7 +689,7 @@ export function getProcessDrawerDataList(data, callback) {
  */
 export function saveCostingRMCCTab(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.saveCostingRMCCTab, data, config())
+    const request = axiosInstance.post(API.saveCostingRMCCTab, data, config())
     request
       .then((response) => {
         callback(response)
@@ -706,7 +707,7 @@ export function saveCostingRMCCTab(data, callback) {
  */
 export function saveComponentCostingRMCCTab(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.saveComponentCostingRMCCTab, data, config());
+    const request = axiosInstance.post(API.saveComponentCostingRMCCTab, data, config());
     request.then((response) => {
       callback(response);
     }).catch((error) => {
@@ -722,7 +723,7 @@ export function saveComponentCostingRMCCTab(data, callback) {
  */
 export function saveAssemblyCostingRMCCTab(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.saveAssemblyCostingRMCCTab, data, config());
+    const request = axiosInstance.post(API.saveAssemblyCostingRMCCTab, data, config());
     request.then((response) => {
       callback(response);
     }).catch((error) => {
@@ -795,7 +796,7 @@ export function setSurfaceCostInOverheadProfit(IsIncluded, callback) {
  */
 export function saveCostingSurfaceTab(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.saveCostingSurfaceTab, data, config());
+    const request = axiosInstance.post(API.saveCostingSurfaceTab, data, config());
     request.then((response) => {
       callback(response);
     }).catch((error) => {
@@ -909,7 +910,7 @@ export function getOverheadProfitDataByModelType(data, callback) {
  */
 export function saveCostingOverheadProfitTab(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.saveCostingOverheadProfitTab, data, config())
+    const request = axiosInstance.post(API.saveCostingOverheadProfitTab, data, config())
     request
       .then((response) => {
         callback(response)
@@ -927,7 +928,7 @@ export function saveCostingOverheadProfitTab(data, callback) {
  */
 export function saveAssemblyOverheadProfitTab(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.saveAssemblyOverheadProfitTab, data, config())
+    const request = axiosInstance.post(API.saveAssemblyOverheadProfitTab, data, config())
     request
       .then((response) => {
         callback(response)
@@ -945,7 +946,7 @@ export function saveAssemblyOverheadProfitTab(data, callback) {
  */
 export function saveComponentOverheadProfitTab(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.saveComponentOverheadProfitTab, data, config())
+    const request = axiosInstance.post(API.saveComponentOverheadProfitTab, data, config())
     request.then((response) => {
       callback(response)
     }).catch((error) => {
@@ -1047,7 +1048,7 @@ export function setPackageAndFreightData(TabData, callback) {
  */
 export function saveCostingPackageFreightTab(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.saveCostingPackageFreightTab, data, config())
+    const request = axiosInstance.post(API.saveCostingPackageFreightTab, data, config())
     request
       .then((response) => {
         callback(response)
@@ -1195,7 +1196,7 @@ export function setToolTabData(TabData, callback) {
  */
 export function saveToolTab(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.saveToolTab, data, config())
+    const request = axiosInstance.post(API.saveToolTab, data, config())
     request
       .then((response) => {
         callback(response)
@@ -1261,7 +1262,7 @@ export function getExchangeRateByCurrency(currency, costingHeadId, effectiveDate
  */
 export function saveDiscountOtherCostTab(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.saveDiscountOtherCostTab, data, config())
+    const request = axiosInstance.post(API.saveDiscountOtherCostTab, data, config())
     request.then((response) => {
       callback(response)
     }).catch((error) => {
@@ -1277,7 +1278,7 @@ export function saveDiscountOtherCostTab(data, callback) {
  */
 export function fileUploadCosting(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.fileUploadCosting, data, config())
+    const request = axiosInstance.post(API.fileUploadCosting, data, config())
     request.then((response) => {
       if (response && response.status === 200) {
         callback(response)
@@ -1375,7 +1376,7 @@ export function setEmptyExistingSupplierData(callback) {
  */
 export function createPartWithSupplier(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.createPartWithSupplier, data, config())
+    const request = axiosInstance.post(API.createPartWithSupplier, data, config())
     request
       .then((response) => {
         if (response.data.Result) {
@@ -1502,7 +1503,7 @@ export function setInventoryRowData(supplierColumn, data) {
  */
 export function getCostingOverHeadProByModelType(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.getCostingOverHeadProByModelType, data, config(),)
+    const request = axiosInstance.post(API.getCostingOverHeadProByModelType, data, config(),)
     request.then((response) => {
       if (response.data.Result) {
         callback(response)
@@ -1520,7 +1521,7 @@ export function getCostingOverHeadProByModelType(data, callback) {
  */
 export function saveCosting(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.saveCosting, data, config())
+    const request = axiosInstance.post(API.saveCosting, data, config())
     request
       .then((response) => {
         if (response.data.Result) {
@@ -1574,7 +1575,7 @@ export function fetchFreightHeadsAPI(callback) {
 export function reassignCostingAPI(CostingId, callback) {
   return (dispatch) => {
     //dispatch({ type: AUTH_API_REQUEST });
-    axios
+    axiosInstance
       .put(`${API.reassignCosting}/${CostingId}`, config())
       .then((response) => {
         if (response.data.Result) {
@@ -1596,7 +1597,7 @@ export function reassignCostingAPI(CostingId, callback) {
 export function cancelCostingAPI(CostingId, callback) {
   return (dispatch) => {
     //dispatch({ type: AUTH_API_REQUEST });
-    axios
+    axiosInstance
       .post(`${API.cancelCosting}/${CostingId}`, config())
       .then((response) => {
         if (response.data.Result) {
@@ -1618,7 +1619,7 @@ export function cancelCostingAPI(CostingId, callback) {
 export function getCostingFreight(data, callback) {
   return (dispatch) => {
     // dispatch({ type: API_REQUEST });
-    const request = axios.post(`${API.getCostingFreight}`, data, config())
+    const request = axiosInstance.post(`${API.getCostingFreight}`, data, config())
     request
       .then((response) => {
         if (response.data.Result) {
@@ -1655,7 +1656,7 @@ export function emptyCostingData() {
 export function copyCostingAPI(data, callback) {
   return (dispatch) => {
     // dispatch({ type: API_REQUEST });
-    const request = axios.post(`${API.copyCostingAPI}`, data, config())
+    const request = axiosInstance.post(`${API.copyCostingAPI}`, data, config())
     request
       .then((response) => {
         if (response.data.Result) {
@@ -1768,7 +1769,7 @@ export function getCostingSummaryByplantIdPartNo(partNo, plantId, vendorId, call
  */
 export function saveCopyCosting(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.saveCostingCopy, data, config())
+    const request = axiosInstance.post(API.saveCostingCopy, data, config())
     request
       .then((response) => {
         if (response.data.Result) {
@@ -1897,7 +1898,7 @@ export function getPartCostingVendorSelectList(partNumber, callback) {
 }
 
 export function getPartSelectListByTechnology(technologyId, partNumber, partTypeId, callback) {
-  return axios.get(`${API.getPartByTechnologyId}?technologyId=${technologyId}&partNumber=${partNumber}&partTypeId=${partTypeId}`, config()).catch(error => {
+  return axios.get(`${API.getPartByTechnologyId}?technologyId=${technologyId}&partNumber=${partNumber}&partTypeId=${partTypeId}&isActivePart=true`, config()).catch(error => {
     apiErrors(error);
     callback(error);
     return Promise.reject(error)
@@ -2051,7 +2052,7 @@ export function checkDataForCopyCosting(data, callback) {
 */
 export function saveAssemblyPartRowCostingCalculation(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.saveAssemblyPartRowCostingCalculation, data, config());
+    const request = axiosInstance.post(API.saveAssemblyPartRowCostingCalculation, data, config());
     request.then((response) => {
       callback(response);
     }).catch((error) => {
@@ -2115,7 +2116,7 @@ export function getNCCExistingCosting(PartId, callback) {
  */
 export function createNCCCosting(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.createNCCCosting, data, config())
+    const request = axiosInstance.post(API.createNCCCosting, data, config())
     request.then((response) => {
       if (response.data.Result) {
         callback(response)
@@ -2323,8 +2324,8 @@ export function getFgWiseImpactDataForCosting(costingId, callback) {
       type: GET_FG_WISE_IMPACT_DATA,
       payload: [],
     })
-    const request = axios.post(`${API.getFgWiseImpactDataForCosting}`, costingId, config());
-    // const request = axios.post(API.getFgWiseImpactDataForCosting, costingId, config())
+    const request = axiosInstance.post(`${API.getFgWiseImpactDataForCosting}`, costingId, config());
+    // const request = axiosInstance.post(API.getFgWiseImpactDataForCosting, costingId, config())
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -2350,7 +2351,7 @@ export function getFgWiseImpactDataForCosting(costingId, callback) {
 
 export function sapPushedCostingInitialMoment(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.sapPushedCostingInitialMoment, data, config());
+    const request = axiosInstance.post(API.sapPushedCostingInitialMoment, data, config());
     request.then((response) => {
       callback(response)
     }).catch((error) => {
@@ -2504,7 +2505,7 @@ export function setIncludeOverheadProfitIcc(IsIncluded, callback) {
  */
 export function createMultiTechnologyCosting(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.createMultiTechnologyCosting, data, config())
+    const request = axiosInstance.post(API.createMultiTechnologyCosting, data, config())
     request.then((response) => {
       if (response.data.Result) {
         callback(response)
@@ -2649,7 +2650,7 @@ export function getYOYCostList(data, callback) {
 
 export function saveCostingLabourDetails(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.saveCostingLabourDetails, data, config())
+    const request = axiosInstance.post(API.saveCostingLabourDetails, data, config())
     request.then((response) => {
       if (response.data.Result) {
         callback(response)
@@ -2664,7 +2665,7 @@ export function saveCostingLabourDetails(data, callback) {
 
 export function createPFS2Costing(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.createPFS2Costing, data, config())
+    const request = axiosInstance.post(API.createPFS2Costing, data, config())
     request.then((response) => {
       if (response.data.Result) {
         callback(response)
@@ -2784,7 +2785,7 @@ export function setCostingMode(value) {
  */
 export function getReleaseStrategyApprovalDetails(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.getReleaseStrategyApprovalDetails, data, config())
+    const request = axiosInstance.post(API.getReleaseStrategyApprovalDetails, data, config())
     request.then((response) => {
       callback(response)
     }).catch((error) => {
@@ -2805,7 +2806,7 @@ export function getReleaseStrategyApprovalDetails(data, callback) {
 export function updateCostingIdFromRfqToNfrPfs(requestData, callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST })
-    axios.post(`${API.updateCostingIdFromRfqToNfrPfs}`, requestData, config())
+    axiosInstance.post(`${API.updateCostingIdFromRfqToNfrPfs}`, requestData, config())
       .then((response) => {
         callback(response)
       }).catch((error) => {
@@ -2838,7 +2839,7 @@ export function openCloseStatus(status) {
  */
 export function getExternalIntegrationFgWiseImpactData(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.getExternalIntegrationFgWiseImpactData, data, config())
+    const request = axiosInstance.post(API.getExternalIntegrationFgWiseImpactData, data, config())
     request.then((response) => {
       if (response.data.Result || response?.status === 204) {
         dispatch({
@@ -2941,7 +2942,7 @@ export function getCostingPaymentTermDetail(costingId, callback) {
 }
 export function saveCostingPaymentTermDetail(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.saveCostingPaymentTermDetail, data, config())
+    const request = axiosInstance.post(API.saveCostingPaymentTermDetail, data, config())
     request.then((response) => {
       callback(response)
     }).catch((error) => {
@@ -2983,7 +2984,7 @@ export function getSpecificationDetailTco(quotationId, baseCostingIds, callback)
       BaseCostingIdList: baseCostingIds
     };
 
-    axios.post(url, requestData, config())
+    axiosInstance.post(url, requestData, config())
       .then((response) => {
         if (response.data.Result || response.status === 204) {
           dispatch({

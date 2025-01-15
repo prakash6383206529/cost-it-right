@@ -5,6 +5,7 @@ import {
   config,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
+import axiosInstance from '../../../utils/axiosInstance'
 
 /**
  * @method saveProcessCostCalculationData
@@ -12,7 +13,7 @@ import { apiErrors } from '../../../helper/util'
  */
 export function saveProcessCostCalculationData(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.saveProcessCostCalculation, data, config())
+    const request = axiosInstance.post(API.saveProcessCostCalculation, data, config())
     request
       .then((response) => {
         if (response.data.Result) {

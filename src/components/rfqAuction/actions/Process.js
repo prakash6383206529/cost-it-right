@@ -19,6 +19,7 @@ import {
     config
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
+import axiosInstance from '../../../utils/axiosInstance';
 
 // const config() = config
 
@@ -28,7 +29,7 @@ import { apiErrors } from '../../../helper/util';
  */
 export function createProcess(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.createProcess, data, config());
+        const request = axiosInstance.post(API.createProcess, data, config());
         request.then((response) => {
             if (response.data.Result === true) {
                 callback(response);
@@ -140,7 +141,7 @@ export function getProcessData(processId, callback) {
 export function updateProcess(request, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateProcess}`, request, config())
+        axiosInstance.put(`${API.updateProcess}`, request, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
