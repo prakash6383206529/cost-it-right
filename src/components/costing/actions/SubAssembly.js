@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { API, API_FAILURE, API_REQUEST, config, GET_COSTING_FOR_MULTI_TECHNOLOGY, GET_EDIT_PART_COST_DETAILS, GET_SETTLED_COSTING_DETAILS, GET_SETTLED_COSTING_DETAILS_VIEW, SUB_ASSEMBLY_TECHNOLOGY_ARRAY, } from '../../../config/constants'
 import { apiErrors } from '../../../helper'
+import axiosInstance from '../../../utils/axiosInstance'
 
 let headers = config
 
@@ -77,7 +78,7 @@ export function getEditPartCostDetails(data, callback) {
  */
 export function saveEditPartCostDetails(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.saveEditPartCostDetails, data, config())
+    const request = axiosInstance.post(API.saveEditPartCostDetails, data, config())
     request
       .then((response) => {
         callback(response)
@@ -120,7 +121,7 @@ export function getCostingForMultiTechnology(data, callback) {
  */
 export function saveSettledCostingDetails(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.saveSettledCostingDetails, data, config())
+    const request = axiosInstance.post(API.saveSettledCostingDetails, data, config())
     request.then((response) => {
       if (response.data.Result) {
         callback(response)
@@ -188,7 +189,7 @@ export function getSettledCostingDetails(CostingId, isViewMode, callback) {
  */
 export function updateMultiTechnologyTopAndWorkingRowCalculation(data, callback) {
   return (dispatch) => {
-    const request = axios.put(API.updateMultiTechnologyTopAndWorkingRowCalculation, data, config())
+    const request = axiosInstance.put(API.updateMultiTechnologyTopAndWorkingRowCalculation, data, config())
     request.then((response) => {
       if (response.data.Result) {
         callback(response)

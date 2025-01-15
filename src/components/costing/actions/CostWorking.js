@@ -10,6 +10,7 @@ import {
 import { apiErrors } from '../../../helper/util';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
+import axiosInstance from '../../../utils/axiosInstance';
 
 // const config() = config
 
@@ -92,7 +93,7 @@ export function getRawMaterialCalculationForSheetMetal(costingId, rawMaterialId,
 */
 export function saveRawMaterialCalculationForSheetMetal(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.saveRawMaterialCalculationForSheetMetal, data, config());
+    const request = axiosInstance.post(API.saveRawMaterialCalculationForSheetMetal, data, config());
     request.then((response) => {
       if (response.data.Result) {
         callback(response);
@@ -132,7 +133,7 @@ export function getRawMaterialCalculationForForging(costingId, rawMaterialId, we
 */
 export function saveRawMaterialCalculationForForging(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.saveRawMaterialCalculationForForging, data, config());
+    const request = axiosInstance.post(API.saveRawMaterialCalculationForForging, data, config());
     request.then((response) => {
       if (response.data.Result) {
         callback(response);
@@ -174,7 +175,7 @@ export function getRawMaterialCalculationForFerrous(costingId, rawMaterialId, we
 */
 export function saveRawMaterialCalculationForFerrous(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.saveRawMaterialCalculationForFerrous, data, config());
+    const request = axiosInstance.post(API.saveRawMaterialCalculationForFerrous, data, config());
     request.then((response) => {
       if (response.data.Result) {
         callback(response);
@@ -216,7 +217,7 @@ export function getRawMaterialCalculationForPlastic(costingId, rawMaterialId, we
 */
 export function saveRawMaterialCalculationForPlastic(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.saveRawMaterialCalculationForPlastic, data, config());
+    const request = axiosInstance.post(API.saveRawMaterialCalculationForPlastic, data, config());
     request.then((response) => {
       if (response.data.Result) {
         callback(response);
@@ -275,7 +276,7 @@ export function getRawMaterialCalculationForMonoCartonCorrugatedBox(costingId, r
 */
 export function saveRawMaterialCalculationForCorrugatedBox(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.saveRawMaterialCalculationForCorrugatedBox, data, config());
+    const request = axiosInstance.post(API.saveRawMaterialCalculationForCorrugatedBox, data, config());
     request.then((response) => {
       if (response.data.Result) {
         callback(response);
@@ -289,7 +290,7 @@ export function saveRawMaterialCalculationForCorrugatedBox(data, callback) {
 }
 export function saveRawMaterialCalculationForMonoCartonCorrugatedBox(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.saveRawMaterialCalculationForMonoCartonCorrugatedBox, data, config());
+    const request = axiosInstance.post(API.saveRawMaterialCalculationForMonoCartonCorrugatedBox, data, config());
     request.then((response) => {
       if (response.data.Result) {
         callback(response);
@@ -331,7 +332,7 @@ export function getRawMaterialCalculationForDieCasting(costingId, rawMaterialId,
 */
 export function saveRawMaterialCalculationForDieCasting(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.saveRawMaterialCalculationForDieCasting, data, config());
+    const request = axiosInstance.post(API.saveRawMaterialCalculationForDieCasting, data, config());
     request.then((response) => {
       if (response.data.Result) {
         callback(response);
@@ -370,7 +371,7 @@ export function getRawMaterialCalculationForRubber(costingId, rawMaterialId, wei
 */
 export function saveRawMaterialCalculationForRubber(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.saveRawMaterialCalculationForRubber, data, config());
+    const request = axiosInstance.post(API.saveRawMaterialCalculationForRubber, data, config());
     request.then((response) => {
       if (response.data.Result) {
         callback(response);
@@ -389,7 +390,7 @@ export function saveRawMaterialCalculationForRubber(data, callback) {
  */
 export function createWeightCalculationCosting(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.AddCostingWeightCalculation, data, config());
+    const request = axiosInstance.post(API.AddCostingWeightCalculation, data, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -418,7 +419,7 @@ export function createWeightCalculationCosting(data, callback) {
 export function updateWeightCalculationCosting(requestData, callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST });
-    axios.put(`${API.UpdateCostingWeightCalculation}`, requestData, config())
+    axiosInstance.put(`${API.UpdateCostingWeightCalculation}`, requestData, config())
       .then((response) => {
         dispatch({ type: UPDATE_WEIGHT_CALC_SUCCESS });
         callback(response);
@@ -491,7 +492,7 @@ export function getRawMaterialListBySupplierId(supplierId, callback) {
  */
 export function createNewCosting(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.createNewCosting, data, config());
+    const request = axiosInstance.post(API.createNewCosting, data, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -523,7 +524,7 @@ export function addCostingRawMaterial(data, selectedIndex, callback) {
     // dispatch({
     //     type:  API_REQUEST,
     // });
-    const request = axios.post(API.addCostingRawMaterial, data, config());
+    const request = axiosInstance.post(API.addCostingRawMaterial, data, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -593,7 +594,7 @@ export function getCostingDetailsById(costingId, isEditFlag, callback) {
 export function updateCostingRawMatrial(requestData, callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST });
-    axios.put(`${API.updateCostingRawMatrial}`, requestData, config())
+    axiosInstance.put(`${API.updateCostingRawMatrial}`, requestData, config())
       .then((response) => {
         dispatch({ type: UPDATE_COSTING_RM_SUCCESS });
         callback(response);
@@ -636,7 +637,7 @@ export function addCostingBoughtOutPart(data, callback) {
     // dispatch({
     //     type:  API_REQUEST,
     // });
-    const request = axios.post(API.addCostingBoughtOutPart, data, config());
+    const request = axiosInstance.post(API.addCostingBoughtOutPart, data, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -805,7 +806,7 @@ export function getProcessesSelectList(callback) {
  */
 export function saveProcessCosting(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.saveProcessCosting, data, config());
+    const request = axiosInstance.post(API.saveProcessCosting, data, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -888,7 +889,7 @@ export function getCostingBOP(costingId, callback) {
  */
 export function saveBOPCosting(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.saveBOPCosting, data, config());
+    const request = axiosInstance.post(API.saveBOPCosting, data, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -935,7 +936,7 @@ export function getOtherOpsSelectList(callback) {
  */
 export function saveOtherOpsCosting(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.saveOtherOpsCosting, data, config());
+    const request = axiosInstance.post(API.saveOtherOpsCosting, data, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -979,7 +980,7 @@ export function setCostingDetailRowData(data, selectedIndex) {
 export function updateCostingOtherOperation(requestData, callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST });
-    axios.put(`${API.updateCostingOtherOperation}`, requestData, config())
+    axiosInstance.put(`${API.updateCostingOtherOperation}`, requestData, config())
       .then((response) => {
         dispatch({ type: UPDATE_COSTING_OTHER_OPERATION_SUCCESS });
         callback(response);
@@ -996,7 +997,7 @@ export function updateCostingOtherOperation(requestData, callback) {
  */
 export function saveCostingAsDraft(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.saveCostingAsDraft, data, config());
+    const request = axiosInstance.post(API.saveCostingAsDraft, data, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -1088,11 +1089,11 @@ export function bulkUploadCosting(data, costingVersion, callback) {
   return (dispatch) => {
     let request;
     if (costingVersion === 'V2' || costingVersion === 'V4') {  // BULK UPLOAD NEW COSTING
-      request = axios.post(API.uploadCosting, data, config());
+      request = axiosInstance.post(API.uploadCosting, data, config());
     } else if (costingVersion === 'V3') { //  BULK UPLOAD COSTING FOR SHEET METAL
-      request = axios.post(API.uploadSheetMetal, data, config());
+      request = axiosInstance.post(API.uploadSheetMetal, data, config());
     } else {  // BULK UPLOAD OLD COSTING
-      request = axios.post(API.uploadOldCosting, data, config());
+      request = axiosInstance.post(API.uploadOldCosting, data, config());
     }
     request.then((response) => {
       if (response.status === 200) {
@@ -1117,7 +1118,7 @@ export function bulkUploadCosting(data, costingVersion, callback) {
 
 export function sendForApprovalFromBulkUpload(data, callback) {
   return (dispatch) => {
-    const request = axios.put(API.sendStatusForApproval, data, config());
+    const request = axiosInstance.put(API.sendStatusForApproval, data, config());
     request.then((response) => {
       if (response.status === 200) {
         callback(response);
@@ -1136,7 +1137,7 @@ export function sendForApprovalFromBulkUpload(data, callback) {
  */
 export function saveProcessCostCalculationData(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.saveProcessCostCalculation, data, config())
+    const request = axiosInstance.post(API.saveProcessCostCalculation, data, config())
     request
       .then((response) => {
         if (response.data.Result) {
@@ -1154,7 +1155,7 @@ export function saveProcessCostCalculationData(data, callback) {
 export function saveMachiningProcessCostCalculationData(data, callback) {
 
   return (dispatch) => {
-    const request = axios.post(API.saveMachiningProcessCostCalculation, data, config())
+    const request = axiosInstance.post(API.saveMachiningProcessCostCalculation, data, config())
     request
       .then((response) => {
         if (response.data.Result) {
@@ -1175,7 +1176,7 @@ export function saveMachiningProcessCostCalculationData(data, callback) {
  */
 export function saveDefaultProcessCostCalculationData(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.saveDefaultProcessCostCalculation, data, config())
+    const request = axiosInstance.post(API.saveDefaultProcessCostCalculation, data, config())
     request
       .then((response) => {
         if (response.data.Result) {
@@ -1243,9 +1244,9 @@ export function plasticBulkUploadCosting(data, costingVersion, callback) {
 
     let request;
     if (costingVersion === 'V2' || costingVersion === 'V4') {  // BULK UPLOAD NEW COSTING
-      request = axios.post(API.uploadPlasticCosting, data, config());
+      request = axiosInstance.post(API.uploadPlasticCosting, data, config());
     } else {  // BULK UPLOAD OLD COSTING
-      request = axios.post(API.uploadPlasticOldCosting, data, config());
+      request = axiosInstance.post(API.uploadPlasticOldCosting, data, config());
     }
     request.then((response) => {
       if (response.status === 200) {
@@ -1267,9 +1268,9 @@ export function machiningBulkUploadCosting(data, costingVersion, callback) {
 
     let request;
     if (costingVersion === 'V2' || costingVersion === 'V4') {  // BULK UPLOAD NEW COSTING
-      request = axios.post(API.uploadMachiningCosting, data, config());
+      request = axiosInstance.post(API.uploadMachiningCosting, data, config());
     } else {  // BULK UPLOAD OLD COSTING
-      request = axios.post(API.uploadMachiningOldCosting, data, config());
+      request = axiosInstance.post(API.uploadMachiningOldCosting, data, config());
     }
     request.then((response) => {
       if (response.status === 200) {
@@ -1289,7 +1290,7 @@ export function machiningBulkUploadCosting(data, costingVersion, callback) {
 export function corrugatedBoxBulkUploadCosting(data, callback) {
 
   return (dispatch) => {
-    const request = axios.post(API.uploadCorrugatedBoxCosting, data, config());
+    const request = axiosInstance.post(API.uploadCorrugatedBoxCosting, data, config());
     request.then((response) => {
       if (response.status === 200) {
         callback(response);
@@ -1307,7 +1308,7 @@ export function corrugatedBoxBulkUploadCosting(data, callback) {
 export function assemblyBulkUploadCosting(data, callback) {
 
   return (dispatch) => {
-    const request = axios.post(API.uploadAssemblyCosting, data, config());
+    const request = axiosInstance.post(API.uploadAssemblyCosting, data, config());
     request.then((response) => {
       if (response.status === 200) {
         callback(response);
@@ -1375,7 +1376,7 @@ export function getSimulationRmRubberCalculation(simulationId, costingId, callba
 
 export function saveRawMaterialCalculationForRubberCompound(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.saveRawMaterialCalculationForRubberCompound, data, config());
+    const request = axiosInstance.post(API.saveRawMaterialCalculationForRubberCompound, data, config());
     request.then((response) => {
       if (response.data.Result) {
         callback(response);
@@ -1391,7 +1392,7 @@ export function saveRawMaterialCalculationForRubberCompound(data, callback) {
 
 export function wiringHarnessBulkUploadCosting(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.uploadWiringHarnessCosting, data, config());
+    const request = axiosInstance.post(API.uploadWiringHarnessCosting, data, config());
     request.then((response) => {
       if (response.status === 200) {
         callback(response);
@@ -1408,7 +1409,7 @@ export function wiringHarnessBulkUploadCosting(data, callback) {
 
 export function diecastingBulkUploadCosting(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.uploadDiecastingCosting, data, config());
+    const request = axiosInstance.post(API.uploadDiecastingCosting, data, config());
     request.then((response) => {
       if (response.status === 200) {
         callback(response);
@@ -1451,7 +1452,7 @@ export function getRawMaterialCalculationForMachining(costingId, rawMaterialId, 
 */
 export function saveRawMaterialCalculationForMachining(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.saveRawMaterialCalculationForMachining, data, config());
+    const request = axiosInstance.post(API.saveRawMaterialCalculationForMachining, data, config());
     request.then((response) => {
       if (response.data.Result) {
         callback(response);
@@ -1507,7 +1508,7 @@ export function getSimulationCorrugatedAndMonoCartonCalculation(simulationId, co
  */
 export function saveRawMaterialCalculationForInsulation(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.saveRawMaterialCalculationForInsulation, data, config());
+    const request = axiosInstance.post(API.saveRawMaterialCalculationForInsulation, data, config());
     request.then((response) => {
       if (response.data.Result) {
         callback(response);
@@ -1549,7 +1550,7 @@ export function getRawMaterialCalculationForInsulation(costingId, rawMaterialId,
  */
 export function InsulationBulkUploadCosting(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.uploadInsulationCosting, data, config());
+    const request = axiosInstance.post(API.uploadInsulationCosting, data, config());
     request.then((response) => {
       if (response.status === 200) {
 
@@ -1571,7 +1572,7 @@ export function InsulationBulkUploadCosting(data, callback) {
  */
 export function ElectricalStampingCostingBulkImport(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.uploadElectricalStampingCosting, data, config());
+    const request = axiosInstance.post(API.uploadElectricalStampingCosting, data, config());
     request.then((response) => {
       if (response.status === 200) {
         callback(response);
@@ -1591,7 +1592,7 @@ export function ElectricalStampingCostingBulkImport(data, callback) {
  */
 export function MonocartonBulkUploadCosting(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.uploadMonocartonCosting, data, config());
+    const request = axiosInstance.post(API.uploadMonocartonCosting, data, config());
     request.then((response) => {
       if (response.status === 200) {
         callback(response);
@@ -1634,7 +1635,7 @@ export function getPackagingCalculation(costingId, costingPackagingDetailsId, co
 */
 export function savePackagingCalculation(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.savePackagingCalculation, data, config());
+    const request = axiosInstance.post(API.savePackagingCalculation, data, config());
     request.then((response) => {
       if (response.data.Result) {
         callback(response);
