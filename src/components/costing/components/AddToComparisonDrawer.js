@@ -18,7 +18,7 @@ import { useLabels } from '../../../helper/core'
 
 function AddToComparisonDrawer(props) {
   const loggedIn = isUserLoggedIn()
-  const { editObject, isEditFlag, viewMode, partId } = props
+  const { editObject, isEditFlag, viewMode } = props
 
   const { plantId, plantName, costingId, CostingNumber, index, VendorId, vendorName,
     vendorPlantName, vendorPlantId, destinationPlantName, customerName, customerId, destinationPlantId, costingTypeId, vendorCode, customerCode } = editObject
@@ -99,9 +99,9 @@ function AddToComparisonDrawer(props) {
       // setIsZbcSelected(false)
       setisCbcSelected(false)
       setisNccSelected(false)
-      dispatch(getPartCostingPlantSelectList(partId ? partId : "", (res) => {
+      dispatch(getPartCostingPlantSelectList(partNo.value !== undefined ? partNo.value : partNo.partId, (res) => {
         // dispatch(getCostingSummaryByplantIdPartNo('', '', () => { }))
-        dispatch(getPartCostingVendorSelectList(partId ? partId : "", () => { }))
+        dispatch(getPartCostingVendorSelectList(partNo.value !== undefined ? partNo.value : partNo.partId, () => { }))
         dispatch(getCostingByVendorAndVendorPlant('', '', '', '', '', '', '', () => { }))
       }),
       )
@@ -114,14 +114,14 @@ function AddToComparisonDrawer(props) {
         setIsVbcSelected(false)
         setisCbcSelected(false)
         setisNccSelected(false)
-        dispatch(getPartCostingPlantSelectList(partId ? partId : "", (res) => { }))
+        dispatch(getPartCostingPlantSelectList(partNo.value !== undefined ? partNo.value : partNo.partId, (res) => { }))
         commonApiCall(ZBCTypeId)
       } else if (costingTypeId === VBCTypeId) {//VBC COSTING CONDITION
         setIsZbcSelected(false)
         setIsVbcSelected(true)
         setisCbcSelected(false)
         setisNccSelected(false)
-        dispatch(getPartCostingVendorSelectList(partId ? partId : "", () => { }))
+        dispatch(getPartCostingVendorSelectList(partNo.value !== undefined ? partNo.value : partNo.partId, () => { }))
         // dispatch(getPlantBySupplier(VendorId, (res) => { }))
         dispatch(getPlantSelectListByType(ZBC, "COSTING", '', () => { }))
         commonApiCall(VBCTypeId)
@@ -167,7 +167,7 @@ function AddToComparisonDrawer(props) {
   const commonApiCall = (costingTypeId) => {
     if (((costingTypeId === VBCTypeId || costingTypeId === NCCTypeId) && VendorId && destinationPlantId) || (costingTypeId === CBCTypeId && customerId && destinationPlantId) || (costingTypeId === VBCTypeId && destinationPlantId)) {
       const infoCategoryValue = isInfoCategorySelected === true ? infoCategory[0]?.Text : infoCategory[1]?.Text
-      dispatch(getCostingByVendorAndVendorPlant(partId ? partId : "", VendorId, vendorPlantId, destinationPlantId, customerId, costingTypeId, costingTypeId === VBCTypeId ? infoCategoryValue : '', () => { }))
+      dispatch(getCostingByVendorAndVendorPlant(partNo.partId, VendorId, vendorPlantId, destinationPlantId, customerId, costingTypeId, costingTypeId === VBCTypeId ? infoCategoryValue : '', () => { }))
     }
   }
 
@@ -200,7 +200,7 @@ function AddToComparisonDrawer(props) {
       setIsVbcSelected(false)
       setisCbcSelected(false)
       setisNccSelected(false)
-      dispatch(getPartCostingPlantSelectList(partId ? partId : "", (res) => {
+      dispatch(getPartCostingPlantSelectList(partNo.value !== undefined ? partNo.value : partNo.partId, (res) => {
         commonApiCall(ZBCTypeId)
         setValue('costings', '')
         setValue('plant', '')
@@ -217,7 +217,7 @@ function AddToComparisonDrawer(props) {
       setValue('vendor', '')
       setValue('destinationPlant', '')
       commonApiCall(VBCTypeId)
-      dispatch(getPartCostingVendorSelectList(partId ? partId : "", () => { }))
+      dispatch(getPartCostingVendorSelectList(partNo.value !== undefined ? partNo.value : partNo.partId, () => { }))
       setVendor('')
       setPlant('')
 
@@ -246,7 +246,7 @@ function AddToComparisonDrawer(props) {
       setValue('destinationPlant', '')
       setCostingDropdown([])
       dispatch(getPlantSelectListByType(ZBC, "COSTING", '', () => { }))
-      dispatch(getPartCostingVendorSelectList(partId ? partId : "", () => { }))
+      dispatch(getPartCostingVendorSelectList(partNo.value !== undefined ? partNo.value : partNo.partId, () => { }))
       commonApiCall(NCCTypeId)
     }
   }
@@ -276,7 +276,7 @@ function AddToComparisonDrawer(props) {
       setCustomerId(value.value)
     }, 500);
     if (!getConfigurationKey().IsCBCApplicableOnPlant) {
-      dispatch(getCostingByVendorAndVendorPlant(partId ? partId : "", VendorId, vendorPlantId, userDetails.Plants[0].PlantId, customerId, costingTypeId, '', () => { }))
+      dispatch(getCostingByVendorAndVendorPlant(partNo.partId, VendorId, vendorPlantId, userDetails.Plants[0].PlantId, customerId, costingTypeId, '', () => { }))
     }
     dispatch(getPlantSelectListByType(ZBC, "COSTING", '', () => { }))
   }
@@ -531,7 +531,7 @@ function AddToComparisonDrawer(props) {
 
           obj.toolApplicability = { applicability: 'Applicability', value: 'Value', }
           obj.toolApplicabilityValue = {
-            toolTitle: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse.length > 0 && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolCostType !== null ? dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolCostType : "-",
+            toolTitle: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse.length > 0 && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolCostType !== null ? dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolCostType :"-",
             toolValue: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse.length > 0 && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolApplicabilityCost !== null ? dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolApplicabilityCost : 0,
           }
 
@@ -755,13 +755,13 @@ function AddToComparisonDrawer(props) {
     setPlant(value)
     if (isZbcSelected) {
       dispatch(
-        getCostingByVendorAndVendorPlant(partId ? partId : "", '', '', value.value, '', ZBCTypeId, '', (res) => {
+        getCostingByVendorAndVendorPlant(partNo.value !== undefined ? partNo.value : partNo.partId, '', '', value.value, '', ZBCTypeId, '', (res) => {
           setValue('costings', '')
         }),
       )
     }
     else if (isCbcSelected) {
-      dispatch(getCostingByVendorAndVendorPlant(partId ? partId : "", '', '', value.value, CustomerId, CBCTypeId, '', (res) => {
+      dispatch(getCostingByVendorAndVendorPlant(partNo.value !== undefined ? partNo.value : partNo.partId, '', '', value.value, CustomerId, CBCTypeId, '', (res) => {
         setValue('costings', '')
       }),
       )
@@ -779,7 +779,7 @@ function AddToComparisonDrawer(props) {
     }
     // dispatch(getCostingByVendorAndVendorPlant(partNo.partId, VendorId, vendorPlantId, destinationPlantId, customerId, costingTypeId, () => { }))
     const infoCategoryValue = isInfoCategorySelected === true ? infoCategory[0]?.Text : infoCategory[1]?.Text
-    dispatch(getCostingByVendorAndVendorPlant(partId ? partId : "", '', '', '', costingTypeId, infoCategoryValue, (res) => {
+    dispatch(getCostingByVendorAndVendorPlant(partNo.partId, value, '', '', '', costingTypeId, infoCategoryValue, (res) => {
       setValue('costings', '')
     }),
     )
@@ -797,7 +797,7 @@ function AddToComparisonDrawer(props) {
     }
     if (isVbcSelected) {
       const infoCategoryValue = isInfoCategorySelected === true ? infoCategory[0]?.Text : infoCategory[1]?.Text
-      dispatch(getCostingByVendorAndVendorPlant(partId ? partId : "", vendorId, '', value.value, '', VBCTypeId, infoCategoryValue, (res) => {
+      dispatch(getCostingByVendorAndVendorPlant(partNo.partId, vendorId, '', value.value, '', VBCTypeId, infoCategoryValue, (res) => {
         setValue('costings', '')
       }))
     }
@@ -814,7 +814,7 @@ function AddToComparisonDrawer(props) {
   }
   const handleVendorChangeForNCC = ({ value }) => {
     // setValue('destinationPlant', '')
-    dispatch(getCostingByVendorAndVendorPlant(partId ? partId : "", value, '', '', '', costingTypeId, '', (res) => {
+    dispatch(getCostingByVendorAndVendorPlant(partNo.partId, value, '', '', '', costingTypeId, '', (res) => {
       setValue('costings', '')
     }),
     )
@@ -893,7 +893,7 @@ function AddToComparisonDrawer(props) {
     if (isVbcSelected) {
       const infoCategoryValue = !isInfoCategorySelected === true ? infoCategory[0]?.Text : infoCategory[1]?.Text
       setTimeout(() => {
-        dispatch(getCostingByVendorAndVendorPlant(partId ? partId : "", vendorId, '', plant?.value, '', VBCTypeId, infoCategoryValue, (res) => {
+        dispatch(getCostingByVendorAndVendorPlant(partNo.partId, vendorId, '', plant?.value, '', VBCTypeId, infoCategoryValue, (res) => {
           setValue('costings', '')
         }))
       }, 50);
