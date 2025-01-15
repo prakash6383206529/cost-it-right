@@ -2179,7 +2179,7 @@ const CostingSummaryTable = (props) => {
                       onClick={addComparisonDrawerToggle}
                     >
                       <div className="compare-arrows"></div>
-                      Add To Comparison1{' '}
+                      Add To Comparison{' '}
                     </button>}
                   </>
                 }

@@ -1791,7 +1791,7 @@ function RfqListing(props) {
             {shouldShowButtons()&& <Row className="btn-sticky-container sf-btn-footer no-gutters justify-content-between">
                 {costingsDifferentStatus && <WarningMessage dClass={"col-md-12 pr-0 justify-content-end"} message={'Actions cannot be performed on costings with different statuses.'} />}
                 <div className="col-sm-12 text-right bluefooter-butn">
-                    {(matchedStatus?.length !== 0 || matchedStatus?.includes(RECEIVED)) && (<button
+                    {(matchedStatus?.length !== 0 || matchedStatus?.includes(RECEIVED))&& localStorage.getItem('showInitiateAuctionButton') && (<button
                         type="button"
                         className="submit-button save-btn mr-2"
                         id="addRFQ_save"
