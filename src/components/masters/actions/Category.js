@@ -17,6 +17,7 @@ import {
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
+import axiosInstance from '../../../utils/axiosInstance';
 
 // const config() = config
 
@@ -26,7 +27,7 @@ import Toaster from '../../common/Toaster';
  */
 export function createCategoryTypeAPI(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.createcategoryTypeAPI, data, config());
+        const request = axiosInstance.post(API.createcategoryTypeAPI, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -99,7 +100,7 @@ export function setEmptyCategoryTypeData(callback) {
 export function updateCategoryTypeAPI(requestData, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateCategoryTypeAPI}`, requestData, config())
+        axiosInstance.put(`${API.updateCategoryTypeAPI}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -132,7 +133,7 @@ export function deleteCategoryTypeAPI(CategoryTypeId, callback) {
  */
 export function createCategoryAPI(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.createCategoryAPI, data, config());
+        const request = axiosInstance.post(API.createCategoryAPI, data, config());
         request.then((response) => {
             if (response && response.data && response.data.Result) {
                 dispatch({
@@ -192,7 +193,7 @@ export function getCategoryData(CategoryId, callback) {
 export function updateCategoryMasterAPI(requestData, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateCategoryMasterAPI}`, requestData, config())
+        axiosInstance.put(`${API.updateCategoryMasterAPI}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {

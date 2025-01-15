@@ -12,6 +12,7 @@ import {
 import { apiErrors } from '../../../../helper/util';
 import { userDepartmetList } from '../../../../helper';
 import Toaster from '../../../common/Toaster';
+import axiosInstance from '../../../../utils/axiosInstance';
 
 export function getAllNfrList(callback) {
     return (dispatch) => {
@@ -53,7 +54,7 @@ export function getNfrPartDetails(nfrId, callback) {
  */
 export function saveNFRGroupDetails(requestData, callback) {
     return (dispatch) => {
-        axios.post(API.saveNFRGroupDetails, requestData, config())
+        axiosInstance.post(API.saveNFRGroupDetails, requestData, config())
             .then((response) => {
                 if (response && response.status === 200) {
                     callback(response);
@@ -87,7 +88,7 @@ export function getNFRPartWiseGroupDetail(data, callback) {
  */
 export function nfrSendToApproverBySender(requestData, callback) {
     return (dispatch) => {
-        axios.post(API.nfrSendToApproverBySender, requestData, config())
+        axiosInstance.post(API.nfrSendToApproverBySender, requestData, config())
             .then((response) => {
                 if ((response && response.status === 200) || response.data.Result) {
                     callback(response);
@@ -148,7 +149,7 @@ export function getNFRApprovalSummary(approvalProcessId, loggedInUserId, callbac
  */
 export function approvedCostingByApprover(requestData, callback) {
     return (dispatch) => {
-        axios.post(API.approvedCostingByApprover, requestData, config())
+        axiosInstance.post(API.approvedCostingByApprover, requestData, config())
             .then((response) => {
                 if ((response && response?.status === 200) || response?.data?.Result) {
                     callback(response);
@@ -180,7 +181,7 @@ export function nfrDetailsForDiscountAction(data) {
 
 export function pushNfrOnSap(requestData, callback) {
     return (dispatch) => {
-        axios.post(API.pushNfrOnSap, requestData, config())
+        axiosInstance.post(API.pushNfrOnSap, requestData, config())
             .then((response) => {
                 if (response && response.status === 200) {
                     callback(response);
@@ -229,7 +230,7 @@ export function saveNFRCostingInfo(data, callback) {
 
 export function saveOutsourcingData(requestData, callback) {
     return (dispatch) => {
-        axios.post(API.saveOutsourcingData, requestData, config())
+        axiosInstance.post(API.saveOutsourcingData, requestData, config())
             .then((response) => {
                 if (response && response.status === 200) {
                     callback(response);
@@ -317,7 +318,7 @@ export function setOpenAllTabs(data) {
  */
 export function pushNfrRmBopOnSap(requestData, callback) {
     return (dispatch) => {
-        axios.post(API.pushNfrRmBopOnSap, requestData, config())
+        axiosInstance.post(API.pushNfrRmBopOnSap, requestData, config())
             .then((response) => {
                 if (response && response.status === 200) {
                     callback(response);
@@ -335,7 +336,7 @@ export function pushNfrRmBopOnSap(requestData, callback) {
  */
 export function createNFRBOMDetails(requestData, callback) {
     return (dispatch) => {
-        axios.post(API.createNFRBOMDetails, requestData, config())
+        axiosInstance.post(API.createNFRBOMDetails, requestData, config())
             .then((response) => {
                 if (response && response.status === 200) {
                     callback(response);

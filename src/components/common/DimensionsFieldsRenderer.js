@@ -52,10 +52,11 @@ const DimensionsFieldsRenderer = ({
             height: data?.Height
         }
         dispatch(handleTruckDimensions(formData, true, (res) => {
-            if (res.data.Result) {
+            if (res?.data?.Result) {
                 Toaster.success(MESSAGES.TRUCK_DIMENSIONS_UPDATE_SUCCESS);
                 cancelHandler('Save');
             }
+           
         }));
     }
 
@@ -68,7 +69,12 @@ const DimensionsFieldsRenderer = ({
     const buttonProps={
 
     }
-
+    const handleKeyDown = (e) => {
+        // Prevent form submission on Enter key in input fields
+        if (e.key === 'Enter' && e.target.tagName === 'INPUT') {
+            e.preventDefault();
+        }
+    };
     return (
         <Drawer
             anchor={'right'}
@@ -80,7 +86,7 @@ const DimensionsFieldsRenderer = ({
                         noValidate
                         className="form"
                         onSubmit={handleSubmit(onSubmit)}
-                        onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
+                        onKeyDown={handleKeyDown}
                     >
                         <Row className="drawer-heading">
                             <Col>

@@ -210,6 +210,7 @@ export function createAdditionalFreightAPI(data, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
+            callback(error);
         });
     };
 }
@@ -356,7 +357,7 @@ export function handleTruckDimensions(requestData, isUpdate = false, callback) {
         const method = isUpdate ? 'put' : 'post';
         const url = isUpdate ? API.updateTruckDimensions : API.saveTruckDimensions;
         
-        axios[method](url, requestData, config())
+        axiosInstance[method](url, requestData, config())
             .then((response) => {
                 if (response.data.Result) {
                     callback(response);

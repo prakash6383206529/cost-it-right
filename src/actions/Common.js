@@ -79,6 +79,7 @@ import {
 import { apiErrors, encodeQueryParamsAndLog } from '../helper/util';
 import { MESSAGES } from '../config/message';
 import Toaster from '../components/common/Toaster';
+import axiosInstance from '../utils/axiosInstance';
 
 // const config() = config;
 
@@ -1635,7 +1636,7 @@ export function getPlantSelectListReducer(data) {
 
 export function getCostMovementReport(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.getCostMovementReport, data, config())
+    const request = axiosInstance.post(API.getCostMovementReport, data, config())
     request
       .then((response) => {
         if (response.data.Result) {
@@ -1750,7 +1751,7 @@ export function getApprovalTypeSelectListUserModule(id = '', callback) {
 
 export function saveCostingDetailNpv(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.saveCostingDetailNpv, data, config())
+    const request = axiosInstance.post(API.saveCostingDetailNpv, data, config())
     request
       .then((response) => {
         if (response.data.Result) {
@@ -1771,7 +1772,7 @@ export function saveCostingDetailNpv(data, callback) {
 
 export function saveCostingDetailCondition(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.saveCostingDetailCondition, data, config())
+    const request = axiosInstance.post(API.saveCostingDetailCondition, data, config())
     request
       .then((response) => {
         if (response.data.Result) {
@@ -1969,7 +1970,7 @@ export function getTaxCodeSelectList(callback) {
 
 export function checkDivisionByPlantAndGetDivisionIdByPart(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.checkDivisionByPlantAndGetDivisionIdByPart, data, config())
+    const request = axiosInstance.post(API.checkDivisionByPlantAndGetDivisionIdByPart, data, config())
     request
       .then((response) => {
         if (response.data.Result) {

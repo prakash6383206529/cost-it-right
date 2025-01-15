@@ -7,6 +7,7 @@ import {
     GET_TAX_DETAILS_DATA, config,
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
+import axiosInstance from '../../../utils/axiosInstance';
 
 // const config() = {
 //     'Content-Type': 'application/json',
@@ -21,7 +22,7 @@ import { apiErrors } from '../../../helper/util';
 export function createTaxDetails(data, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.post(API.createTaxDetails, data, config());
+        const request = axiosInstance.post(API.createTaxDetails, data, config());
         request.then((response) => {
             if (response.data.Result === true) {
                 callback(response);
@@ -110,7 +111,7 @@ export function deleteTaxDetails(Id, callback) {
 export function updateTaxDetails(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateTaxDetails}`, requestData, config())
+        axiosInstance.put(`${API.updateTaxDetails}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {

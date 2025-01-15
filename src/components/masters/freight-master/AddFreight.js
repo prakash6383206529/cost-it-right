@@ -482,7 +482,6 @@ const AddFreight = (props) => {
   const gridHandler = () => {
     const { FullTruckCapacity, RateCriteria, gridTable, Load } = state;
     const Rate = getValuesTableForm("Rate");
-    console.log(errorsTableForm, "errorsTableForm");
     if (errorsTableForm && Object.keys(errorsTableForm)?.length > 0) {
       return false;
     }
@@ -1133,9 +1132,8 @@ if(errorsTableForm && Object.keys(errorsTableForm)?.length > 0){
                             handleChange={rateChange}
                             errors={errorsTableForm?.Rate}
                             />
-                            {state.errorObj.rate && (!getValuesTableForm("Rate") || Number(getValuesTableForm("Rate")) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
+                            {state?.errorObj?.rate && (!getValuesTableForm("Rate") || Number(getValuesTableForm("Rate")) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
                           </Col>
-                          {console.log(errorsTableForm, "errorsTableForm")}
                           <Col md="2">
                             <div className="pt-2">
                               {state.isEditIndex ? (

@@ -10,6 +10,7 @@ import {
     API_SUCCESS
 } from '../../../config/constants';
 import { apiErrors, encodeQueryParamsAndLog } from '../../../helper/util';
+import axiosInstance from '../../../utils/axiosInstance';
 
 
 /**
@@ -19,7 +20,7 @@ import { apiErrors, encodeQueryParamsAndLog } from '../../../helper/util';
 export function createOutsourcing(data, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.post(API.createOutsourcing, data, config());
+        const request = axiosInstance.post(API.createOutsourcing, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -38,7 +39,7 @@ export function createOutsourcing(data, callback) {
 export function updateOutsourcing(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.put(`${API.updateOutsourcing}`, requestData, config())
+        axiosInstance.put(`${API.updateOutsourcing}`, requestData, config())
             .then((response) => {
                 if (response.data.Result) {
                     callback(response);
@@ -116,7 +117,7 @@ export function activeInactiveOutsourcingStatus(requestData, callback) {
 
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.put(`${API.activeInactiveOutsourcingStatus}`, requestData, config())
+        axiosInstance.put(`${API.activeInactiveOutsourcingStatus}`, requestData, config())
             .then((response) => {
                 dispatch({ type: API_SUCCESS });
                 callback(response);

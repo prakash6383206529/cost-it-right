@@ -18,6 +18,7 @@ import {
 import { apiErrors, loggedInUserId, userDetails } from '../../../helper';
 
 import { userDepartmetList } from '../../../helper';
+import axiosInstance from '../../../utils/axiosInstance';
 
 // const config() = config
 
@@ -136,7 +137,7 @@ export function getCostingReport(skip, take, isPagination, obj, isLastWeek, isCa
 export function getCostingBenchMarkRmReport(data, callback) {
 
     return (dispatch) => {
-        const request = axios.post(`${API.getCostingBenchMarkRmReport}`, data, config());
+        const request = axiosInstance.post(`${API.getCostingBenchMarkRmReport}`, data, config());
         request.then((response) => {
             dispatch({
                 type: GET_BENCHMARK_MASTER_LIST,
@@ -156,7 +157,7 @@ export function getCostingBenchMarkRmReport(data, callback) {
 export function getCostingBenchMarkBopReport(data, callback) {
 
     return (dispatch) => {
-        const request = axios.post(`${API.getCostingBenchMarkBopReport}`, data, config());
+        const request = axiosInstance.post(`${API.getCostingBenchMarkBopReport}`, data, config());
         request.then((response) => {
             dispatch({
                 type: GET_BENCHMARK_MASTER_LIST,
@@ -174,7 +175,7 @@ export function getCostingBenchMarkBopReport(data, callback) {
 export function getCostRatioReport(data, callback) {
 
     return (dispatch) => {
-        const request = axios.post(`${API.getCostRatioReport}`, data, config());
+        const request = axiosInstance.post(`${API.getCostRatioReport}`, data, config());
         request.then((response) => {
             dispatch({
                 type: GET_COST_RATIO_REPORT,
@@ -209,7 +210,7 @@ export function getRevisionNoFromPartId(PartId, callback) {
 export function getCostingBenchMarkOperationReport(data, callback) {
 
     return (dispatch) => {
-        const request = axios.post(`${API.getCostingBenchMarkOperationReport}`, data, config());
+        const request = axiosInstance.post(`${API.getCostingBenchMarkOperationReport}`, data, config());
         request.then((response) => {
             dispatch({
                 type: GET_BENCHMARK_MASTER_LIST,
@@ -228,7 +229,7 @@ export function getCostingBenchMarkOperationReport(data, callback) {
 export function getCostingBenchMarkMachineReport(data, callback) {
 
     return (dispatch) => {
-        const request = axios.post(`${API.getCostingBenchMarkMachineReport}`, data, config());
+        const request = axiosInstance.post(`${API.getCostingBenchMarkMachineReport}`, data, config());
         request.then((response) => {
             dispatch({
                 type: GET_BENCHMARK_MASTER_LIST,
@@ -247,7 +248,7 @@ export function getCostingBenchMarkMachineReport(data, callback) {
 export function getCostMovementReportByPart(data, callback) {
 
     return (dispatch) => {
-        const request = axios.post(`${API.getCostMovementReportByPart}`, data, config());
+        const request = axiosInstance.post(`${API.getCostMovementReportByPart}`, data, config());
         request.then((response) => {
             callback(response);
         }).catch((error) => {
@@ -290,7 +291,7 @@ export function getFormGridData(data) {
 export function getSalePurchaseProvisionReport(data, callback) {
 
     return (dispatch) => {
-        const request = axios.post(`${API.getSalePurchaseProvisionReport}`, data, config());
+        const request = axiosInstance.post(`${API.getSalePurchaseProvisionReport}`, data, config());
         request.then((response) => {
             callback(response);
         }).catch((error) => {
@@ -306,7 +307,7 @@ export function getSalePurchaseProvisionReport(data, callback) {
 export function getPoamSummaryReport(data, callback) {
 
     return (dispatch) => {
-        const request = axios.post(`${API.getPoamSummaryReport}`, data, config());
+        const request = axiosInstance.post(`${API.getPoamSummaryReport}`, data, config());
         request.then((response) => {
             callback(response);
         }).catch((error) => {
@@ -322,7 +323,7 @@ export function getPoamSummaryReport(data, callback) {
 export function getPoamImpactReport(data, callback) {
 
     return (dispatch) => {
-        const request = axios.post(`${API.getPoamImpactReport}`, data, config());
+        const request = axiosInstance.post(`${API.getPoamImpactReport}`, data, config());
         request.then((response) => {
             callback(response);
         }).catch((error) => {
@@ -338,7 +339,7 @@ export function getPoamImpactReport(data, callback) {
 export function getRMCostMovement(data, callback) {
 
     return (dispatch) => {
-        const request = axios.post(`${API.getRMCostMovement}`, data, config());
+        const request = axiosInstance.post(`${API.getRMCostMovement}`, data, config());
         request.then((response) => {
             callback(response);
         }).catch((error) => {
@@ -353,7 +354,7 @@ export function getRMCostMovement(data, callback) {
 export function getBOPCostMovement(data, callback) {
 
     return (dispatch) => {
-        const request = axios.post(`${API.getBOPCostMovement}`, data, config());
+        const request = axiosInstance.post(`${API.getBOPCostMovement}`, data, config());
         request.then((response) => {
             callback(response);
         }).catch((error) => {
@@ -367,7 +368,7 @@ export function getBOPCostMovement(data, callback) {
 }
 export function getOperationMovement(data, callback) {
     return (dispatch) => {
-        const request = axios.post(`${API.getOperationMovement}`, data, config());
+        const request = axiosInstance.post(`${API.getOperationMovement}`, data, config());
         request.then((response) => {
             callback(response);
         }).catch((error) => {
@@ -381,7 +382,7 @@ export function getOperationMovement(data, callback) {
 }
 export function getMachineProcessMovement(data, callback) {
     return (dispatch) => {
-        const request = axios.post(`${API.getMachineProcessMovement}`, data, config());
+        const request = axiosInstance.post(`${API.getMachineProcessMovement}`, data, config());
         request.then((response) => {
             callback(response);
         }).catch((error) => {
@@ -457,7 +458,7 @@ export function getProductlist(callback) {
 export function getProductPartDataList(data, callback) {
 
     return (dispatch) => {
-        const request = axios.post(`${API.getProductPartDataList}`, data, config(),)
+        const request = axiosInstance.post(`${API.getProductPartDataList}`, data, config(),)
         request.then((response) => {
             dispatch({
                 type: GET_PRODUCT_PART_DATA_LIST,
