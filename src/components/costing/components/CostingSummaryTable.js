@@ -1984,7 +1984,6 @@ const CostingSummaryTable = (props) => {
   }
 
   const handleSOBSave = (obj, index) => {
-    const lastvlue = viewCostingData[index]?.shareOfBusinessPercent
     let totalSObP = [];
     for (let i = 0; i < viewCostingData.length; i++) {
       if (typeof viewCostingData[i].shareOfBusinessPercent === 'number' && i !== index) {
@@ -1994,7 +1993,6 @@ const CostingSummaryTable = (props) => {
     const sum = totalSObP.reduce((accumulator, currentValue) => accumulator + currentValue, 0) + Number(getValues(`ShareOfBusinessPercent.${index}`));
     if (sum > 100) {
       Toaster.warning("Total SOB percentage cannot be more than 100%")
-      setValue(`ShareOfBusinessPercent.${index}`, lastvlue)
       return false;
     } else if (getValues(`ShareOfBusinessPercent.${index}`) === '') {
       setValue(`ShareOfBusinessPercent.${index}`, 0)
