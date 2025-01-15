@@ -100,7 +100,7 @@ function AddMoreOperation(props) {
         isFinalApprovar: false,
         disableSendForApproval: false,
         CostingTypePermission: false,
-        finalApprovalLoader: true,
+        finalApprovalLoader: getConfigurationKey().IsDivisionAllowedForDepartment || !(getConfigurationKey().IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(OPERATIONS_ID) === true) ? false : true,
         approveDrawer: false,
         approvalObj: {},
         levelDetails: {},
@@ -3258,7 +3258,7 @@ function AddMoreOperation(props) {
                                                 disabled={isViewMode || state.disableSendForApproval}
                                                 onClick={onSubmit}
                                                 icon={(!state.disableSendForApproval) ? "send-for-approval" : "save-icon"}
-                                                buttonName={(!state.disableSendForApproval) ? "Send For Approval" : isEditFlag ? "Update" : "Save1"}
+                                                buttonName={(!state.disableSendForApproval) ? "Send For Approval" : isEditFlag ? "Update" : "Save"}
                                             />
                                             :
                                             <Button

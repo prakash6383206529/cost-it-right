@@ -1086,10 +1086,11 @@ export function getAllTechnologyAPI(callback, data, manageLevel = false) {
  * @method getSimulationTechnologySelectList
  * @description GET SELECT LIST OF SIMULATION TECHNOLOGY
  */
-export function getSimulationTechnologySelectList(callback, data) {
+export function getSimulationTechnologySelectList(callback, data, manageLevel = false) {
+    const listFor = manageLevel ? data ?? "" : data ?? "users"
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getSimulationTechnologySelectList}?ListFor=${data ?? 'Users'}`, config());
+        const request = axios.get(`${API.getSimulationTechnologySelectList}?ListFor=${listFor}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({

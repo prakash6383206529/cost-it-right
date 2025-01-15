@@ -97,14 +97,14 @@ const BOPDomesticListing = (props) => {
     dataCount: 0,
     attachment: false,
     viewAttachment: [],
-    render: true,
+
     compareDrawer: false,
     rowDataForCompare: [],
 
   });
 
 
-
+  console.log(state?.isLoader, "LOADER", props?.isMasterSummaryDrawer, "MASTER SUMMARY DRAWER")
 
 
   useEffect(() => {
@@ -127,7 +127,7 @@ const BOPDomesticListing = (props) => {
 
   useEffect(() => {
     if (bopDomesticList?.length > 0) {
-      setState((prevState) => ({ ...prevState, totalRecordCount: bopDomesticList[0].TotalRecordCount, isLoader: false, render: false }));
+      setState((prevState) => ({ ...prevState, totalRecordCount: bopDomesticList[0].TotalRecordCount, isLoader: false, }));
     }
 
     if (props.isSimulation) {
@@ -177,7 +177,7 @@ const BOPDomesticListing = (props) => {
 
 
         dispatch(getBOPDataList(filterData, skip, take, isPagination, dataObj, false, (res) => {
-
+          console.log("res", res)
 
           setState((prevState) => ({ ...prevState, isLoader: false, noData: false }))
           if (props.isSimulation) {
@@ -190,12 +190,14 @@ const BOPDomesticListing = (props) => {
             setState((prevState) => ({ ...prevState, tableData: [] }))
 
           } else {
+
             setState((prevState) => ({ ...prevState, tableData: [] }))
           }
 
           if (res && res.status === 204) {
+            console.log("res in 204", res)
             setState((prevState) => ({
-              ...prevState, totalRecordCount: 0,
+              ...prevState, totalRecordCount: 0, isLoader: false, tableData: []
               // pageNo: 0
             }))
             dispatch(updatePageNumber(0))
@@ -658,9 +660,9 @@ const BOPDomesticListing = (props) => {
     dispatch(TourStartAction({
       showExtraData: showTour,
     }));
-    setState((prevState) => ({ ...prevState, render: true }));
+    setState((prevState) => ({ ...prevState, }));
     setTimeout(() => {
-      setState((prevState) => ({ ...prevState, render: false }));
+      setState((prevState) => ({ ...prevState, }));
     }, 100);
 
   }
@@ -947,7 +949,7 @@ const BOPDomesticListing = (props) => {
           <div className={`ag-grid-wrapper ${props?.isDataInMaster && !noData ? 'master-approval-overlay' : ''} ${(bopDomesticList && bopDomesticList?.length <= 0) || noData ? 'overlay-contain' : ''}`}>
             <div className={`ag-theme-material p-relative ${(state.isLoader && !props.isMasterSummaryDrawer) && "max-loader-height"}`}>
               {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found bop-drawer" />}
-              {(state.render || state.isLoader) ? <LoaderCustom customClass="loader-center" /> : <AgGridReact
+              {(state.isLoader) ? <LoaderCustom customClass="loader-center" /> : <AgGridReact
 
                 defaultColDef={defaultColDef}
                 floatingFilter={true}
@@ -1022,6 +1024,8 @@ const BOPDomesticListing = (props) => {
           type={'Bought Out Part'}
           quotationId={props.quotationId}
           closeDrawer={closeCompareDrawer}
+          summaryDrawer={props?.isMasterSummaryDrawer}
+
         // selectedRow = {props.bopDataResponse}
         />
 

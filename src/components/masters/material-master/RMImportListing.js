@@ -190,8 +190,9 @@ function RMImportListing(props) {
       setloader(false);
       setTotalRecordCount(rmImportDataList[0].TotalRecordCount)
       setRender(false)
-    }
-    else {
+    } else {
+      setloader(false);
+      setRender(false)
       setNoData(false)
     }
   }, [rmImportDataList])
@@ -1258,6 +1259,7 @@ function RMImportListing(props) {
           type={'Raw Material'}
           quotationId={props.quotationId}
           closeDrawer={closeCompareDrawer}
+          summaryDrawer={props?.isMasterSummaryDrawer}
         // selectedRow = {props.bopDataResponse}
         />
 

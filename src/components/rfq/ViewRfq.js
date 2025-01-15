@@ -400,6 +400,7 @@ function RfqListing(props) {
     }
 
     const commonFunction = (type, plantId = EMPTY_GUID) => {
+
         const finalUserApi = (mode, divisionId, technologyId) => {
             let obj = {
                 DepartmentId: userDetails().DepartmentId,
@@ -1381,7 +1382,65 @@ function RfqListing(props) {
             setAddComparisonButton(true)
             setUniqueShouldCostingId([]) // Clear should cost IDs when no rows selected
         }
-    }
+    };
+    // const onRowSelect = (event) => {
+    //     if (!event.node.isSelected()) {
+    //         setaddComparisonToggle(false);
+    //         setSelectedRowIndex('');
+    //         gridApi?.deselectAll();
+    //         return;
+    //     }
+    // setSelectedRowIndex(event.node.rowIndex);
+    // const selectedRow = event.node.data;
+    //     if (!selectedRow) return;
+    // const matchingRows = getMatchingRows(selectedRow);
+    // const visibleRows = matchingRows.filter(row =>
+    //         row?.IsVisibiltyConditionMet && row.IsShowNetPoPrice
+    //     );
+    // const hasVisibleRow = visibleRows.length > 0;
+    //     setisVisibiltyConditionMet(hasVisibleRow);
+    // const uniqueRows = getUniqueRows(visibleRows);
+    // setSelectedRows(uniqueRows);
+    //     setAddComparisonButton(uniqueRows.length === 0);
+    //     if (uniqueRows.length > 0) {
+    //         setTechnologyId(uniqueRows[0]?.TechnologyId);
+    //     }
+    // };
+    const getIdentifier = (type) => {
+        switch (type.trim()) {
+            case 'Raw Material': return 'RawMaterial';
+            case 'Bought Out Part': return 'BoughtOutPart';
+            case 'Component':
+            case 'Assembly':
+            case 'Tooling': return 'PartNumber';
+            default: return null;
+        }
+    };
+    const getMatchingRows = (selectedRow) => {
+        let matchingRows = [];
+        const partTypes = selectedRow?.PartType?.split(',') || [];
+
+        partTypes.forEach(type => {
+            const identifier = getIdentifier(type.trim());
+            if (!identifier) return;
+
+            const identifierValue = selectedRow[identifier];
+            const matches = rowData.filter(row => row[identifier] === identifierValue);
+            matchingRows = [...matchingRows, ...matches];
+        });
+
+        return matchingRows;
+    };
+
+    // Helper function to get unique rows
+    const getUniqueRows = (rows) => {
+        return _.uniqBy(rows, row => {
+            const type = row.PartType.split(',')[0].trim();
+            const identifier = getIdentifier(type);
+            return row[identifier];
+        });
+    };
+
 
     const dateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -1514,7 +1573,12 @@ function RfqListing(props) {
             state: { source: 'rfq', quotationId: quotationId }
         });
     }
-
+    const shouldShowButtons = () => {
+        const hasComparison = Boolean(addComparisonToggle);
+        const hasApproveReject = Boolean(disableApproveRejectButton);
+        const hasData = Boolean(viewCostingData?.length > 0 || viewRmDetails?.length > 0 || viewBOPDetails?.length > 0);
+        return hasComparison && hasApproveReject && hasData;
+    };
     return (
         <>
             <div className={`ag-grid-react rfq-portal ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "" : ""} ${true ? "show-table-btn" : ""} ${false ? 'simulation-height' : props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
@@ -1746,6 +1810,7 @@ function RfqListing(props) {
                                 showEditSOBButton={addComparisonToggle && disableApproveRejectButton && viewCostingData.length > 0}
                                 selectedTechnology={viewCostingData && viewCostingData.length > 0 && viewCostingData[0].technology}
                                 costingsDifferentStatus={costingsDifferentStatus}
+                                showAddToComparison={false}
                             />
 
                         )}
@@ -1794,7 +1859,7 @@ function RfqListing(props) {
                 }
 
             </div >
-            {addComparisonToggle && disableApproveRejectButton && (viewCostingData?.length > 0 || viewRmDetails?.length > 0 || viewBOPDetails?.length > 0) && <Row className="btn-sticky-container sf-btn-footer no-gutters justify-content-between">
+            {shouldShowButtons() && <Row className="btn-sticky-container sf-btn-footer no-gutters justify-content-between">
                 {costingsDifferentStatus && <WarningMessage dClass={"col-md-12 pr-0 justify-content-end"} message={'Actions cannot be performed on costings with different statuses.'} />}
                 <div className="col-sm-12 text-right bluefooter-butn">
                     {(matchedStatus?.length !== 0 || matchedStatus?.includes(RECEIVED)) && (<button

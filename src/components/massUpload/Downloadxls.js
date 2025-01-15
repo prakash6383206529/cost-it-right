@@ -34,7 +34,7 @@ import {
     SAP_PUSH_HEADER_DATA,
     SAP_PUSH_TEMP_DATA
 } from '../../config/masterData';
-import { checkVendorPlantConfigurable, getConfigurationKey, showBopLabel, updateBOPValues } from "../../helper";
+import { checkVendorPlantConfigurable, getConfigurationKey, RFQ_KEYS, showBopLabel, updateBOPValues } from "../../helper";
 import { checkSAPCodeinExcel } from "./DownloadUploadBOMxls";
 import { IsShowFreightAndShearingCostFields } from "../../helper";
 import { localizeHeadersWithLabels } from "../../helper/core";
@@ -247,9 +247,18 @@ class Downloadxls extends React.Component {
             case RAWMATERIALSRFQ:
                 const localizedRawMaterialHeaders = this.localizeHeaders(AddRawMaterialHeaderData);
                 return this.returnExcelColumn(localizedRawMaterialHeaders, AddRawMaterialTempData);
+
             case ASSEMBLYORCOMPONENTSRFQ:
-                const localizedAssemblyOrComponentHeaders = this.localizeHeaders(AddAssemblyOrComponentHeaderData);
-                return this.returnExcelColumn(localizedAssemblyOrComponentHeaders, AddAssemblyOrComponentTempData);
+                const headers = !RFQ_KEYS?.SHOW_N100_HAVELLS
+                    ? AddAssemblyOrComponentHeaderData.filter(h =>
+                        !['PartDesignSourceName', 'N100Timeline'].includes(h.value)
+                    )
+                    : AddAssemblyOrComponentHeaderData;
+                const templateData = !RFQ_KEYS?.SHOW_N100_HAVELLS
+                    ? AddAssemblyOrComponentTempData.map(({ PartDesignSourceName, N100Timeline, ...rest }) => rest)
+                    : AddAssemblyOrComponentTempData;
+                return this.returnExcelColumn(this.localizeHeaders(headers), templateData);
+
 
             //return this.returnCombinedExcelColumn(AddAssemblyOrComponentHeaderData, AddAssemblyOrComponentTempData, AddAssemblyOrComponentAdditionalInfoHeaderData, AddAssemblyOrComponentAdditionalInfoTempData);
             default:

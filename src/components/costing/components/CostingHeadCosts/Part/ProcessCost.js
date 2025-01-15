@@ -403,8 +403,8 @@ function ProcessCost(props) {
       Toaster.success('Remark saved successfully')
     }
     // setTabData(tempArr)
-    var button = document.getElementById(`popUpTriggers${index}`)
-    button.click()
+    var button = document.getElementById(`process_popUpTriggers${index}`)
+    button?.click()
   }
 
   const onRemarkPopUpClosee = (index) => {

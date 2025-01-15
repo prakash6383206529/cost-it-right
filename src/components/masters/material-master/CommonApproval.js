@@ -547,7 +547,7 @@ function CommonApproval(props) {
     */
     const closeDrawer = (e = '', type) => {
         setShowApprovalSummary(false)
-        if (type === 'submit') {
+        if (type === 'submit' || type === 'reject') {
             setLoader(true)
             getTableData(0, 10, true, floatingFilterData)
         }
@@ -1159,3 +1159,4 @@ function CommonApproval(props) {
 }
 
 export default CommonApproval;
+// HP3-I1368

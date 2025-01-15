@@ -671,9 +671,10 @@ function MasterSendForApproval(props) {
                 // obj.IsFinalApprovalProcess = false
                 // obj.IsRFQCostingSendForApproval = props.isRFQ ? true : false
                 const approvalObjects = Array.isArray(approvalDetails) ? approvalDetails : [approvalDetails];
-                console.log(levelDetails);
                 const processedApprovalObjects = approvalObjects.map(item => ({
-                    ApprovalProcessSummaryId: item?.MasterApprovalProcessSummaryId !== null ? item?.MasterApprovalProcessSummaryId : 0,
+
+
+                    ApprovalProcessSummaryId: (item?.MasterApprovalProcessSummaryId ?? item?.ApprovalProcessSummaryId) ?? 0,
                     ApprovalProcessId: item?.ApprovalProcessId !== null ? item?.ApprovalProcessId : 0,
                     ApprovalToken: item?.Token !== null ? item?.Token : 0,
                     LoggedInUserId: loggedInUserId(),
@@ -699,7 +700,6 @@ function MasterSendForApproval(props) {
                 }));
                 setIsLoader(true);
                 const processApproval = (objects) => {
-                    console.log(objects);
 
                     return new Promise((resolve, reject) => {
                         dispatch(approvalOrRejectRequestByMasterApprove(objects, res => {
@@ -708,6 +708,7 @@ function MasterSendForApproval(props) {
                             } else {
                                 reject(res);
                             }
+                            props.closeDrawer('', `${type === 'Reject' ? 'reject' : "submit"}`);
                         }));
                     });
                 };
@@ -1347,3 +1348,4 @@ function MasterSendForApproval(props) {
 }
 
 export default MasterSendForApproval;
+// HP3-I1368

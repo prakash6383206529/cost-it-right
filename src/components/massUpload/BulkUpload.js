@@ -56,7 +56,7 @@ import {
     AddAssemblyOrComponentHeaderData,
     SAP_PUSH_HEADER_DATA
 } from '../../config/masterData';
-import { CheckApprovalApplicableMaster, checkForSameFileUpload, updateBOPValues, userTechnologyDetailByMasterId } from '../../helper';
+import { CheckApprovalApplicableMaster, checkForSameFileUpload, RFQ_KEYS, updateBOPValues, userTechnologyDetailByMasterId } from '../../helper';
 import LoaderCustom from '../common/LoaderCustom';
 import PopupMsgWrapper from '../common/PopupMsgWrapper';
 import { MESSAGES } from '../../config/message';
@@ -591,8 +591,15 @@ class BulkUpload extends Component {
                             }
                             break;
                         case String(ASSEMBLYORCOMPONENTSRFQ):
-                            checkForFileHead = checkForSameFileUpload(AddAssemblyOrComponentHeaderData, fileHeads)
-                            break
+                            const headers = !RFQ_KEYS?.SHOW_N100_HAVELLS
+                                ? AddAssemblyOrComponentHeaderData.filter(h =>
+                                    !['PartDesignSourceName', 'N100Timeline'].includes(h.value)
+                                )
+                                : AddAssemblyOrComponentHeaderData;
+                            checkForFileHead = checkForSameFileUpload(headers, fileHeads)
+                            break;
+
+
                         case String(BOUGHTOUTPARTSRFQ):
                             checkForFileHead = checkForSameFileUpload(AddBoughtOutPartsHeaderData, fileHeads)
 

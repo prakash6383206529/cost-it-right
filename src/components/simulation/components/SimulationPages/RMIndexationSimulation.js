@@ -166,7 +166,6 @@ function RMIndexationSimulation(props) {
             obj.conditionTableData = obj.NewRawMaterialConditionsDetails || []
 
             const updatedObjOtherCost = updateCostValue(false, obj, totalBasicRate, true, true)
-
             obj.NewRawMaterialOtherCostDetails = updatedObjOtherCost?.tableData
             obj.NewOtherNetCost = updatedObjOtherCost?.formValue?.value
             obj.NewOtherNetCostConversion = updatedObjOtherCost?.formValue?.value
@@ -670,7 +669,6 @@ function RMIndexationSimulation(props) {
         setIsViewFlag(false)
         setOtherCostDetailForRow([])
     }
-
     const closeConditionCostDrawer = (type, data, total, totalBase) => {
         if (type === 'Save' || type === 'save') {
             setIsSaving(true); // Set saving state before calculations
@@ -716,7 +714,6 @@ function RMIndexationSimulation(props) {
             BasicRatePerUOMConversion: type === 'Other Cost' || type === 'Condition Cost' ?
                 selectedRow?.NewBasicRatePerUOM || selectedRow?.OldBasicRatePerUOM :
                 Number(basicRate),
-
             OtherNetCost: type === 'Other Cost' ? totalBase : selectedRow?.NewOtherNetCost,
             OtherNetCostConversion: type === 'Other Cost' ? totalBase : selectedRow?.NewOtherNetCost,
             NetConditionCost: type === 'Condition Cost' ? totalBase : selectedRow?.NewNetConditionCost,
@@ -1439,16 +1436,12 @@ function RMIndexationSimulation(props) {
                                                     <AgGridColumn width={150} cellRenderer='existingOtherCostFormatter' field={isImpactedMaster ? "OldOtherNetCost" : isCostingSimulation ? 'OldRawMaterialIndexationDetails.OtherNetCost' : "OldOtherNetCost"} editable='false' headerName="Existing" colId={isImpactedMaster ? "OldOtherNetCost" : "OldOtherNetCost"} ></AgGridColumn>
                                                     <AgGridColumn width={150} cellRenderer='revisedOtherCostFormatter' editable={false} onCellValueChanged='cellChange' field={isCostingSimulation ? 'NewRawMaterialIndexationDetails.OtherNetCost' : "NewOtherNetCost"} headerName="Revised" colId='NewOtherNetCost'></AgGridColumn>
                                                 </AgGridColumn>
-                                                {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={
-                                                    "Basic Price (Currency)"
-                                                }>
+                                                {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && tableData[0]?.CostingTypeId === ZBCTypeId && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={"Basic Price (Currency)"}>
                                                     <AgGridColumn width={columnWidths.NetCostWithoutConditionCost} field={isImpactedMaster ? 'OldNetCostWithoutConditionCost' : 'OldNetCostWithoutConditionCost'} editable='false' cellRenderer={'costFormatter'} headerName="Existing" colId='NetCostWithoutConditionCost'></AgGridColumn>
                                                     <AgGridColumn width={columnWidths.NewNetCostWithoutConditionCost} field={isImpactedMaster ? "NewNetCostWithoutConditionCost" : "NewNetCostWithoutConditionCost"} editable='false' cellRenderer={'costFormatter'} headerName="Revised" colId='NewNetCostWithoutConditionCost'></AgGridColumn>
                                                 </AgGridColumn>}
 
-                                                {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && tableData[0]?.CostingTypeId === ZBCTypeId && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={300} headerName={
-                                                    "Condition Cost (Currency)"
-                                                } marryChildren={true} >
+                                                {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && tableData[0]?.CostingTypeId === ZBCTypeId && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={300} headerName={"Condition Cost (Currency)"} marryChildren={true} >
 
                                                     <AgGridColumn width={150} cellRenderer='existingConditionCostFormatter' field={isImpactedMaster ? "OldNetConditionCost" : "OldNetConditionCost"} editable='false' headerName="Existing" colId={isImpactedMaster ? "NetConditionCost" : "NetConditionCost"} ></AgGridColumn>
                                                     <AgGridColumn width={150} cellRenderer='revisedConditionCostFormatter' editable={false} onCellValueChanged='cellChange' field={isImpactedMaster ? "NewNetConditionCost" : "NewNetConditionCost"} headerName="Revised" colId='NewNetConditionCost' ></AgGridColumn>

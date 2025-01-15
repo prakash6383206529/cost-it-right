@@ -169,7 +169,7 @@ function SimulationApprovalSummary(props) {
             dispatch(getApprovalSimulatedRawMaterialSummary(params, res => {
                 const { SimulationSteps, SimulatedCostingList, SimulationApprovalProcessId, Token, NumberOfCostings, IsSent, IsFinalLevelButtonShow,
                     IsPushedButtonShow, SimulationTechnologyId, SimulationApprovalProcessSummaryId, DepartmentCode, EffectiveDate, SimulationId, MaterialGroup, PurchasingGroup, DecimalOption,
-                    SenderReason, ImpactedMasterDataList, AmendmentDetails, Attachements, SenderReasonId, DepartmentId, TotalImpactPerQuarter, SimulationHeadId, TotalBudgetedPriceImpactPerQuarter, PartType, IsSimulationWithOutCosting, ApprovalTypeId } = res.data.Data
+                    SenderReason, ImpactedMasterDataList, AmendmentDetails, Attachements, SenderReasonId, DepartmentId, TotalImpactPerQuarter, SimulationHeadId, TotalBudgetedPriceImpactPerQuarter, PartType, IsSimulationWithOutCosting, ApprovalTypeId, DepartmentName } = res.data.Data
                 setSimulationData(res?.data?.Data)
                 setApprovalTypeId(ApprovalTypeId)
                 setDataForFetchingAllApprover({
@@ -185,7 +185,7 @@ function SimulationApprovalSummary(props) {
                     ImpactedMasterDataList: ImpactedMasterDataList, AmendmentDetails: AmendmentDetails, MaterialGroup: MaterialGroup,
                     PurchasingGroup: PurchasingGroup, DecimalOption: DecimalOption, Attachements: Attachements, SenderReasonId: SenderReasonId, DepartmentId: DepartmentId
                     , TotalImpactPerQuarter: TotalImpactPerQuarter, SimulationHeadId: SimulationHeadId, TotalBudgetedPriceImpactPerQuarter: TotalBudgetedPriceImpactPerQuarter
-                    , PartType: PartType, ApprovalTypeId: ApprovalTypeId
+                    , PartType: PartType, ApprovalTypeId: ApprovalTypeId, DepartmentName: DepartmentName
                 })
                 setIsApprovalDone(IsSent)
                 setShowFinalLevelButton(IsFinalLevelButtonShow)
@@ -195,7 +195,7 @@ function SimulationApprovalSummary(props) {
             dispatch(getApprovalSimulatedCostingSummary(reqParams, res => {
                 const { SimulationSteps, SimulatedCostingList, SimulationApprovalProcessId, Token, NumberOfCostings, IsSent, IsFinalLevelButtonShow,
                     IsPushedButtonShow, SimulationTechnologyId, SimulationApprovalProcessSummaryId, DepartmentCode, EffectiveDate, SimulationId, MaterialGroup, PurchasingGroup, DecimalOption,
-                    SenderReason, ImpactedMasterDataList, AmendmentDetails, Attachements, SenderReasonId, DepartmentId, TotalImpactPerQuarter, SimulationHeadId, TotalBudgetedPriceImpactPerQuarter, PartType, IsSimulationWithOutCosting, ApprovalTypeId, DivisionId } = res.data.Data
+                    SenderReason, ImpactedMasterDataList, AmendmentDetails, Attachements, SenderReasonId, DepartmentId, TotalImpactPerQuarter, SimulationHeadId, TotalBudgetedPriceImpactPerQuarter, PartType, IsSimulationWithOutCosting, ApprovalTypeId, DivisionId, DepartmentName } = res.data.Data
                 setApprovalTypeId(ApprovalTypeId)
                 let uniqueArr
                 setSimulationData(res?.data?.Data)
@@ -228,7 +228,7 @@ function SimulationApprovalSummary(props) {
                     ImpactedMasterDataList: ImpactedMasterDataList, AmendmentDetails: AmendmentDetails, MaterialGroup: MaterialGroup,
                     PurchasingGroup: PurchasingGroup, DecimalOption: DecimalOption, Attachements: Attachements, SenderReasonId: SenderReasonId, DepartmentId: DepartmentId
                     , TotalImpactPerQuarter: TotalImpactPerQuarter, SimulationHeadId: SimulationHeadId, TotalBudgetedPriceImpactPerQuarter: TotalBudgetedPriceImpactPerQuarter
-                    , PartType: PartType, ApprovalTypeId: ApprovalTypeId, DivisionId: DivisionId
+                    , PartType: PartType, ApprovalTypeId: ApprovalTypeId, DivisionId: DivisionId, DepartmentName: DepartmentName
                 })
                 let requestObject = {}
 
@@ -1194,6 +1194,9 @@ function SimulationApprovalSummary(props) {
                 </>
         }
     }
+    const CheckFinalLevel = (value) => {
+        setFinalLevelUser(value)
+    }
     return (
         <>
             {showListing === false &&
@@ -1463,8 +1466,8 @@ function SimulationApprovalSummary(props) {
                                                                 {isMasterAssociatedWithCosting && showSaLineNumber() && <AgGridColumn width={150} field="LineNumber" headerName="Line Number"></AgGridColumn>}
                                                                 {costingList[0]?.CostingHeadId === CBCTypeId && <AgGridColumn width={150} field="CustomerName" tooltipField='CustomerName' headerName="Customer (Code)"></AgGridColumn>}
                                                                 {String(SimulationTechnologyId) !== EXCHNAGERATE && <AgGridColumn width={150} field="PlantName" headerName='Plant (Code)' cellRenderer={'plantFormatter'} ></AgGridColumn>}
-                                                                {(isRMDomesticOrRMImport || isBOPDomesticOrImport || showRMColumn || showBOPColumn||isExchangeRate||isOperation || showOperationColumn||isMachineRate || showMachineRateColumn) && getConfigurationKey().IsSourceExchangeRateNameVisible&& <AgGridColumn width={100}field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>}
-                                                    {(isRMDomesticOrRMImport || isBOPDomesticOrImport || showRMColumn || showBOPColumn||isExchangeRate||isOperation || showOperationColumn||isMachineRate || showMachineRateColumn) && <AgGridColumn field={isMasterAssociatedWithCosting?"CostingCurrency":"Currency"} headerName='Currency' />}
+                                                                {(isRMDomesticOrRMImport || isBOPDomesticOrImport || showRMColumn || showBOPColumn || isExchangeRate || isOperation || showOperationColumn || isMachineRate || showMachineRateColumn) && getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn width={100} field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>}
+                                                                {(isRMDomesticOrRMImport || isBOPDomesticOrImport || showRMColumn || showBOPColumn || isExchangeRate || isOperation || showOperationColumn || isMachineRate || showMachineRateColumn) && <AgGridColumn field={isMasterAssociatedWithCosting ? "CostingCurrency" : "Currency"} headerName='Currency' />}
 
                                                                 {isMasterAssociatedWithCosting && <AgGridColumn width={140} field="BudgetedPrice" headerName='Budgeted Price' cellRenderer='impactPerQuarterFormatter'></AgGridColumn>}
 
@@ -1603,7 +1606,9 @@ function SimulationApprovalSummary(props) {
                                             isApproval={true}
                                             costingIdExist={true}
                                             selectedTechnology={technologyName}
-                                            simulationId={simulationDetail?.SimulationId} />}
+                                            simulationId={simulationDetail?.SimulationId}
+                                            showAddToComparison={true}
+                                        />}
                                     </Col>
                                 </Row>
                             </>
@@ -1862,6 +1867,7 @@ function SimulationApprovalSummary(props) {
                     technologyId={SimulationTechnologyId}
                     approvalTypeIdValue={simulationDetail?.ApprovalTypeId}
                     IsExchangeRateSimulation={keysForDownloadSummary?.IsExchangeRateSimulation}
+                    CheckFinalLevel={CheckFinalLevel}
                 // IsPushDrawer={showPushDrawer}
                 // dataSend={[approvalDetails, partDetail]}
                 />
@@ -1886,6 +1892,7 @@ function SimulationApprovalSummary(props) {
                     SimulationHeadId={simulationDetail?.SimulationHeadId}
                     costingTypeId={simulationDetail?.SimulationHeadId}
                     technologyId={SimulationTechnologyId}
+                    CheckFinalLevel={CheckFinalLevel}
                 />
             }
 

@@ -86,7 +86,7 @@ function SummaryDrawer(props) {
         setLoader(true)
 
         dispatch(getMasterApprovalSummary(approvalData.approvalNumber, approvalData.approvalProcessId, props?.masterId, props?.OnboardingApprovalId, res => {
-            
+
             const Data = res.data.Data
             const QuotationId = Data?.QuotationId
             setQuotationId(QuotationId)
@@ -97,12 +97,12 @@ function SummaryDrawer(props) {
             let masterPlantId = ''
             if (checkForNull(props?.masterId) === RM_MASTER_ID) {
                 CostingTypeId = Data?.ImpactedMasterDataList.RawMaterialListResponse[0]?.CostingTypeId
-               setFiles(Data?.ImpactedMasterDataList.RawMaterialListResponse[0].Attachements)
+                setFiles(Data?.ImpactedMasterDataList.RawMaterialListResponse[0].Attachements)
                 setRmDataResponse(Data?.ImpactedMasterDataList.RawMaterialListResponse)
                 masterPlantId = Data?.ImpactedMasterDataList.RawMaterialListResponse[0]?.MasterApprovalPlantId
                 Data?.ImpactedMasterDataList?.RawMaterialListResponse.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
                 setShowPushButton(Data?.IsPushedButtonShow)
-               if (Data?.ImpactedMasterDataList.RawMaterialListResponse[0]?.RawMaterialEntryType                    === ENTRY_TYPE_DOMESTIC) {
+                if (Data?.ImpactedMasterDataList.RawMaterialListResponse[0]?.RawMaterialEntryType === ENTRY_TYPE_DOMESTIC) {
                     setShowImport(false)
                 } else {
                     setShowImport(true)
@@ -111,13 +111,13 @@ function SummaryDrawer(props) {
                 CostingTypeId = Data?.ImpactedMasterDataList.BOPListResponse[0]?.CostingTypeId
                 setFiles(Data?.ImpactedMasterDataList.BOPListResponse[0].Attachements)
                 setBopDataResponse(Data?.ImpactedMasterDataList.BOPListResponse)
-               masterPlantId = Data?.ImpactedMasterDataList.BOPListResponse[0]?.MasterApprovalPlantId
+                masterPlantId = Data?.ImpactedMasterDataList.BOPListResponse[0]?.MasterApprovalPlantId
                 if (Data?.ImpactedMasterDataList.BOPListResponse[0]?.EntryType === ENTRY_TYPE_DOMESTIC) {
                     setShowImport(false)
-                    
-} else {
+
+                } else {
                     setShowImport(true)
-               }
+                }
                 Data?.ImpactedMasterDataList?.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
                 setShowPushButton(Data?.IsPushedButtonShow)
             } else if (checkForNull(props?.masterId) === OPERATIONS_ID) {
@@ -202,8 +202,8 @@ function SummaryDrawer(props) {
     const closeApproveRejectDrawer = (e, type) => {
         setApprovalDrawer(false)
         setRejectDrawer(false)
-        if (type === 'submit') {
-            cancel('submit')
+        if (type === 'submit' || type === 'reject') {
+            cancel(type)
         }
     }
 
@@ -239,7 +239,7 @@ function SummaryDrawer(props) {
     //             return '';
     //     }
     // }
-    
+
 
 
     return (
@@ -270,14 +270,14 @@ function SummaryDrawer(props) {
 
                                     {isRMApproval && <>
                                         {showImport ?
-                                            <RMImportListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' isDataInMaster={isDataInMaster} approvalStatus={APPROVED_STATUS} stopApiCallOnCancel={true} costingTypeId={approvalData?.costingTypeId}quotationId={quotationId} rmDataResponse={rmDataResponse} />
+                                            <RMImportListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' isDataInMaster={isDataInMaster} approvalStatus={APPROVED_STATUS} stopApiCallOnCancel={true} costingTypeId={approvalData?.costingTypeId} quotationId={quotationId} rmDataResponse={rmDataResponse} />
                                             :
                                             <RMDomesticListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' isDataInMaster={isDataInMaster} approvalStatus={APPROVED_STATUS} stopApiCallOnCancel={true} costingTypeId={approvalData?.costingTypeId} quotationId={quotationId} rmDataResponse={rmDataResponse} />
                                         }
                                     </>}
                                     {isBOPApproval && <>
                                         {showImport ?
-                                            <BOPImportListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' isDataInMaster={isDataInMaster} approvalStatus={APPROVED_STATUS} stopApiCallOnCancel={true} costingTypeId={approvalData?.costingTypeId}quotationId={quotationId} bopDataResponse={bopDataResponse} />
+                                            <BOPImportListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' isDataInMaster={isDataInMaster} approvalStatus={APPROVED_STATUS} stopApiCallOnCancel={true} costingTypeId={approvalData?.costingTypeId} quotationId={quotationId} bopDataResponse={bopDataResponse} />
                                             :
                                             <BOPDomesticListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' isDataInMaster={isDataInMaster} approvalStatus={APPROVED_STATUS} stopApiCallOnCancel={true} costingTypeId={approvalData?.costingTypeId} quotationId={quotationId} bopDataResponse={bopDataResponse} />
                                         }
@@ -346,9 +346,9 @@ function SummaryDrawer(props) {
                     levelDetails={levelDetails}
                     divisionId={divisionId}
                     masterSummary={true}
-                    // isRFQ={isRfq}
-                    // partType={getPartType(props?.masterId)}
-                    //approvalObj={approvalObj}
+                // isRFQ={isRfq}
+                // partType={getPartType(props?.masterId)}
+                //approvalObj={approvalObj}
                 />
             }
         </div >
@@ -356,3 +356,4 @@ function SummaryDrawer(props) {
 }
 
 export default SummaryDrawer;
+// HP3-I1368
