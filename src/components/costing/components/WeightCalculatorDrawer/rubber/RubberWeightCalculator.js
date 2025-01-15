@@ -1075,7 +1075,7 @@ function RubberWeightCalculator(props) {
 
 
                                 <Col md="3">
-                                    <TooltipCustom width={"240px"} disabledIcon={true} id={'netRmc'} tooltipText={'Net RMC = RM Cost + Rejection Cost'} />
+                                    <TooltipCustom width={"240px"} disabledIcon={true} id={'netRmc'} tooltipText={'Net RMC = RM Cost + Rejection Cost + Additional RM Cost'} />
                                     <TextFieldHookForm
                                         label={`Net RMC`}
                                         id={'netRmc'}
