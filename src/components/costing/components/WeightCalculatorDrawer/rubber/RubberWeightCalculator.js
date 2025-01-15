@@ -12,6 +12,7 @@ import { number, checkWhiteSpaces, percentageLimitValidation, decimalAndNumberVa
 import NoContentFound from '../../../../common/NoContentFound'
 import { EMPTY_DATA, hideDetailOfRubbercalci } from '../../../../../config/constants'
 import { toast } from 'react-toastify'
+import { calculateTotalPercentage } from '../../../CostingUtil'
 
 function RubberWeightCalculator(props) {
     const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest
@@ -54,9 +55,9 @@ function RubberWeightCalculator(props) {
             setTableData(WeightCalculatorRequest.CostingRubberAdditionalRawMaterial ? WeightCalculatorRequest.CostingRubberAdditionalRawMaterial : [])
             setRejectionCostType({ label: WeightCalculatorRequest.RejectionType, value: 5 })
             const rawMaterials = WeightCalculatorRequest?.CostingRubberCalculationRawMaterials || [];
-            const total = rawMaterials?.reduce((sum, item) => sum + checkForDecimalAndNull(item?.Percentage || 0), 0);
-            setFieldsEnabled(total !== 0)
-            setPercentage(total)
+            const result = calculateTotalPercentage(0, 0, rawMaterials, getValues,true);
+            setFieldsEnabled(result.total !== 0)
+            setPercentage(result.total)
             setTimeout(() => {
                 setValue('grossRMRate', WeightCalculatorRequest.GrossRMRate ? checkForDecimalAndNull(WeightCalculatorRequest.GrossRMRate, getConfigurationKey().NoOfDecimalForPrice) : '')
                 setValue('applicablityAdditional', WeightCalculatorRequest.RawMaterialCost ? checkForDecimalAndNull(WeightCalculatorRequest.RawMaterialCost, getConfigurationKey().NoOfDecimalForPrice) : '')
@@ -155,25 +156,24 @@ function RubberWeightCalculator(props) {
 
     }
 
-    const percentageChange = (e, index) => {
-        const currentValue = Number(e.target.value) || 0;
-        const sum = rmData?.reduce((total, _, idx) => {
-            return total + (idx === index ?
-                currentValue :
-                Number(getValues(`rmGridFields.${idx}.Percentage`)) || 0);
-        }, 0);
 
-        setPercentage(sum)
-        if (sum > 100) {
-            Toaster.warning(`Total percentage is ${sum}%, must be 100% to save the values`);
+    // Inside RubberWeightCalculator component
+    const percentageChange = (percentage, index) => {
+        
+        const result = calculateTotalPercentage(percentage, index, rmData, getValues,false);
+        setPercentage(result.total);
+        
+        if (!result.isValid) {
+            Toaster.warning(result.message);
             setFieldsEnabled(false);
             setValue(`rmGridFields.${index}.Percentage`, '');
             return false;
         }
-        setFieldsEnabled(sum === 100);
-        calculateNetSCrapRate(e.target.value, index)
-        calculateNetRmRate(e.target.value, index)
-    }
+        
+        setFieldsEnabled(result.total === 100);
+        calculateNetSCrapRate(percentage, index);
+        calculateNetRmRate(percentage, index);
+    };
     const calculateNetRmRate = (percentageValue, indexTemp) => {
 
         let grossRMRate = 0;
@@ -423,7 +423,7 @@ function RubberWeightCalculator(props) {
         } else {
 
             setValue('netRmc', checkForDecimalAndNull(rmCost + totalTableCost, getConfigurationKey().NoOfDecimalForPrice))
-            obj.NetRawMaterialCost = rmCost
+            obj.NetRawMaterialCost = rmCost + totalTableCost
         }
     }
 
@@ -575,7 +575,7 @@ function RubberWeightCalculator(props) {
                                                                 defaultValue={''}
                                                                 className=""
                                                                 customClassName={'withBorder'}
-                                                                handleChange={(e) => { percentageChange(e, index) }}
+                                                                handleChange={(e) => { percentageChange(e.target.value, index) }}
                                                                 errors={errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].Percentage : ''}
                                                                 disabled={props.CostingViewMode || disablePercentFields}
                                                             />
@@ -1083,7 +1083,7 @@ function RubberWeightCalculator(props) {
 
 
                                 <Col md="3">
-                                    <TooltipCustom width={"240px"} disabledIcon={true} id={'netRmc'} tooltipText={'Net RMC = RM Cost + Rejection Cost'} />
+                                    <TooltipCustom width={"240px"} disabledIcon={true} id={'netRmc'} tooltipText={'Net RMC = RM Cost + Rejection Cost + Net Cost'} />
                                     <TextFieldHookForm
                                         label={`Net RMC`}
                                         id={'netRmc'}

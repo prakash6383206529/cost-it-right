@@ -14,6 +14,7 @@ import NoContentFound from '../../../common/NoContentFound'
 import { EMPTY_DATA } from '../../../../config/constants'
 import PopupMsgWrapper from '../../../common/PopupMsgWrapper'
 import { MESSAGES } from '../../../../config/message'
+import { calculateTotalPercentage } from '../../CostingUtil'
 
 function Ferrous(props) {
     const WeightCalculatorRequest = props?.rmRowData?.WeightCalculatorRequest
@@ -184,6 +185,10 @@ function Ferrous(props) {
             }));
 
         setTableRawMaterials(rawMaterials);
+        const result = calculateTotalPercentage(0, 0, rawMaterials, getValues,true);
+        setPercentage(result.total);
+        setFieldsEnabled(result.total !== 0)
+
         rawMaterials.forEach((item, index) => {
             setValue(`rmGridFields.${index}.Percentage`, checkForDecimalAndNull(item?.Percentage, getConfigurationKey().NoOfDecimalForInputOutput));
         });
@@ -261,26 +266,20 @@ function Ferrous(props) {
         setValue('NetRMCost', checkForDecimalAndNull(netRMCost, getConfigurationKey().NoOfDecimalForPrice));
         return netRMCost;
     }
-    const totalPercentageValue = () => {
-        let sum = 0;
-        tableRawMaterials.forEach((item, index) => {
-            sum += parseFloat(getValues(`rmGridFields.${index}.Percentage`) || 0);
-        });
-        setPercentage(sum);
-        setFieldsEnabled(sum === 100 && tableRawMaterials.length > 0);
-        return checkForDecimalAndNull(sum, getConfigurationKey().NoOfDecimalForInputOutput);
-    };
+
     const percentageChange = (percentage, index) => {
 
         setValue(`rmGridFields.${index}.Percentage`, percentage);
-
+        
         setTimeout(() => {
-            const totalPercentage = totalPercentageValue();
-            if (totalPercentage > 100) {
-                Toaster.warning(`Total percentage is ${totalPercentage}%, must be 100% to save the values`);
+            const result = calculateTotalPercentage(percentage, index, tableRawMaterials, getValues,false);
+            setPercentage(result.total);
+            setFieldsEnabled(result.total === 100);
+            if (!result.isValid) {
+                Toaster.warning(result.message);
+                setFieldsEnabled(false);
                 return false;
             }
-
             const updatedItems = tableRawMaterials.map((item, idx) => {
                 const currentPercentage = idx === index ? parseFloat(percentage) || 0 : parseFloat(getValues(`rmGridFields.${idx}.Percentage`) || 0);
                 return {
@@ -586,22 +585,12 @@ function Ferrous(props) {
             }
         }));
     };
-    const [isSaveEnabled, setIsSaveEnabled] = useState(false);
 
-    useEffect(() => {
-        const totalPercentage = totalPercentageValue();
-        setIsSaveEnabled(totalPercentage === 100 && tableRawMaterials.length > 0);
-    }, [tableRawMaterials, getValues]);
     const onSubmit = debounce(handleSubmit((values) => {
         // if (!fieldsEnabled) {
         //     Toaster.warning('Please add raw materials and ensure their percentages sum up to 100% before saving.');
         //     return false;
         // }
-        if (totalPercentageValue() !== 100) {
-            Toaster.warning(`Total percentage is ${totalPercentageValue()}%, must be 100% to save the values`)
-            return false;
-        }
-
         saveCalculation();
     }), 500);
     const onCancel = () => {
@@ -784,7 +773,6 @@ function Ferrous(props) {
             calculateNetRmRate();
             calculateNetScrapRate();
             calculateRemainingCalculation();
-            totalPercentageValue();
         }, 300);
     };
 
