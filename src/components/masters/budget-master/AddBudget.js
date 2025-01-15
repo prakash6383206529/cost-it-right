@@ -68,7 +68,6 @@ function AddBudget(props) {
     const [currentPrice, setCurrentPrice] = useState(0);
     const [totalSum, setTotalSum] = useState(0);
     const [count, setCount] = useState(0);
-    const [isVendorNameNotSelected, setIsVendorNameNotSelected] = useState(false);
     const [vendorFilter, setVendorFilter] = useState([]);
     const [currency, setCurrency] = useState(0);
     const [showPopup, setShowPopup] = useState(false);
@@ -262,7 +261,6 @@ function AddBudget(props) {
     const handleVendorName = (newValue, actionMeta) => {
         if (newValue && newValue !== '') {
             setVendorName(newValue)
-            setIsVendorNameNotSelected(false)
             setDisableCurrency(false)
         } else {
             setVendorName([])
@@ -600,12 +598,6 @@ function AddBudget(props) {
         let endYear = year.label.slice(-4);
         let months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
         let temp = []
-        if (vendorName.length <= 0) {
-            if (costingTypeId === VBCTypeId) {
-                setIsVendorNameNotSelected(true)
-                return false
-            }
-        }
         tableData && tableData.map((item, index) => {
             let budGetingDetails = []
             let obj = {}
@@ -919,31 +911,31 @@ function AddBudget(props) {
                                                             )}
                                                             {costingTypeId === VBCTypeId && (<>
                                                                 <Col md="3">
-                                                                    <label>{vendorLabel} (Code)<span className="asterisk-required">*</span></label>
-                                                                    <div className="d-flex justify-space-between align-items-center p-relative async-select">
-                                                                        <div className="fullinput-icon p-relative">
-                                                                            {inputLoader && <LoaderCustom customClass={`input-loader`} />}
-                                                                            <AsyncSelect
-                                                                                id="AddBudget_vendorName"
-                                                                                name="vendorName"
-                                                                                //ref={this.myRef}
-                                                                                //key={this.state.updateAsyncDropdown}
-                                                                                loadOptions={vendorFilterList}
-                                                                                onChange={(e) => handleVendorName(e)}
-                                                                                value={vendorName}
-                                                                                noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN : "No results found"}
-                                                                                isDisabled={(isViewMode) ? true : false}
-                                                                                onKeyDown={(onKeyDown) => {
-                                                                                    if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
-                                                                                }}
-                                                                                onBlur={() => setShowErrorOnFocus(true)}
-                                                                            />
-                                                                        </div>
-                                                                    </div>
-                                                                    {((showErrorOnFocus && vendorName.length === 0) || isVendorNameNotSelected) && <div className='text-help mt-1'>This field is required.</div>}
+                                                                    <AsyncSearchableSelectHookForm
+                                                                        label={`${vendorLabel} (Code)`}
+                                                                        id='AddBudget_vendorName'
+                                                                        name={"vendorName"}
+                                                                        placeholder={"Select"}
+                                                                        Controller={Controller}
+                                                                        value={vendorName}
+                                                                        control={control}
+                                                                        rules={{ required: true }}
+                                                                        register={register}
+                                                                        defaultValue={vendorName?.length !== 0 ? vendorName : ""}
+                                                                        asyncOptions={vendorFilterList}
+                                                                        mandatory={true}
+                                                                        loadOptions={vendorFilterList}
+                                                                        handleChange={(e) => handleVendorName(e)}
+                                                                        errors={errors.vendorName}
+                                                                        disabled={isViewMode}
+                                                                        NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
+                                                                        isLoading={{
+                                                                            isLoader: inputLoader,
+                                                                            loaderClass: ''
+                                                                        }}
+                                                                    />
                                                                 </Col>
-                                                            </>
-                                                            )}
+                                                            </>)}
 
 
                                                             {((costingTypeId === VBCTypeId && getConfigurationKey().IsDestinationPlantConfigure) || (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant)) &&
