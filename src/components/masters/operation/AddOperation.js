@@ -1535,7 +1535,7 @@ class AddOperation extends Component {
                         {"Cancel"}
                       </button>
                       {!isViewMode && <>
-                        {(!isViewMode && (CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure) || (initialConfiguration.IsMasterApprovalAppliedConfigure && !CostingTypePermission) ?
+                        {(!isViewMode && (CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure) || ((initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(OPERATIONS_ID) === true) && !CostingTypePermission) ?
                           <button id="AddOperation_SendForApproval" type="submit"
                             class="user-btn approval-btn save-btn mr5"
                             disabled={isViewMode || setDisable || disableSendForApproval}
