@@ -72,6 +72,7 @@ import { MESSAGES } from '../../../config/message';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { loggedInUserId } from '../../../helper';
 import _ from 'lodash';
+import axiosInstance from '../../../utils/axiosInstance';
 
 // const config() = config
 
@@ -98,7 +99,7 @@ export function getSelectListOfMasters(callback) {
 
 export function runVerifySimulation(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.runSimulation, data, config());
+        const request = axiosInstance.post(API.runSimulation, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -181,7 +182,7 @@ export function setIsMasterAssociatedWithCosting(value) {
  */
 export function runSimulationOnSelectedBoughtOutPart(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.runSimulationOnSelectedBoughtOutPart, data, config());
+        const request = axiosInstance.post(API.runSimulationOnSelectedBoughtOutPart, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -196,7 +197,7 @@ export function runSimulationOnSelectedBoughtOutPart(data, callback) {
 
 export function runSimulationOnSelectedCosting(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.runSimulationOnSelectedCosting, data, config());
+        const request = axiosInstance.post(API.runSimulationOnSelectedCosting, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -319,7 +320,7 @@ export function getSelectListOfSimulationLinkingTokens(vendorId, simulationTechn
 
 export function saveSimulationForRawMaterial(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.saveSimulationForRawMaterial, data, config());
+        const request = axiosInstance.post(API.saveSimulationForRawMaterial, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -370,7 +371,7 @@ export function getApprovalSimulatedCostingSummary(params, callback) {
 export function getAllSimulationApprovalList(data, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.post(`${API.getSimulationApprovalListByDepartment}`, data, config());
+        const request = axiosInstance.post(`${API.getSimulationApprovalListByDepartment}`, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -409,7 +410,7 @@ export function getSimulationApprovalByDepartment(callback) {
  */
 export function simulationApprovalRequestByApprove(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.simulationApprove, data, config())
+        const request = axiosInstance.post(API.simulationApprove, data, config())
         request
             .then((response) => {
                 if (response.data.Result) {
@@ -435,7 +436,7 @@ export function simulationApprovalRequestByApprove(data, callback) {
 */
 export function simulationRejectRequestByApprove(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.simulationReject, data, config())
+        const request = axiosInstance.post(API.simulationReject, data, config())
         request.then((response) => {
             if (response.data.Result) {
                 callback(response)
@@ -459,7 +460,7 @@ export function simulationRejectRequestByApprove(data, callback) {
  */
 export function simulationApprovalRequestBySender(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.simulationSendToApprover, data, config())
+        const request = axiosInstance.post(API.simulationSendToApprover, data, config())
         request.then((response) => {
             if (response.data.Result) {
                 callback(response)
@@ -536,7 +537,7 @@ export function deleteDraftSimulation(data, callback) {
 export function uploadSimulationAttachmentByCategory(data, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.post(`${API.simulationUploadFileByCategory}`, data, config())
+        axiosInstance.post(`${API.simulationUploadFileByCategory}`, data, config())
             .then((response) => {
                 callback(response)
             }).catch(error => {
@@ -549,7 +550,7 @@ export function uploadSimulationAttachmentByCategory(data, callback) {
 export function uploadSimulationAttachmentonFTP(data, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.post(`${API.simulationUploadFtp}`, data, config())
+        axiosInstance.post(`${API.simulationUploadFtp}`, data, config())
             .then((response) => {
                 callback(response)
             }).catch(error => {
@@ -562,7 +563,7 @@ export function uploadSimulationAttachmentonFTP(data, callback) {
 export function runVerifyExchangeRateSimulation(data, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST })
-        const request = axios.post(API.draftExchangeRateSimulation, data, config());
+        const request = axiosInstance.post(API.draftExchangeRateSimulation, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -595,7 +596,7 @@ export function getVerifyExchangeSimulationList(token, callback) {
 
 export function runSimulationOnSelectedExchangeCosting(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.runSimulationOnSelectedExchangeCosting, data, config());
+        const request = axiosInstance.post(API.runSimulationOnSelectedExchangeCosting, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -642,7 +643,7 @@ export function getExchangeCostingSimulationList(token, callback) {
 export function uploadSimulationAttachment(data, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.post(`${API.uploadFileOnSimulation}`, data, config())
+        axiosInstance.post(`${API.uploadFileOnSimulation}`, data, config())
             .then((response) => {
                 callback(response)
             }).catch(error => {
@@ -698,7 +699,7 @@ export function getCombinedProcessList(data, callback) {
 export function runVerifyCombinedProcessSimulation(data, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST })
-        const request = axios.post(API.draftCombinedProcessSimulation, data, config());
+        const request = axiosInstance.post(API.draftCombinedProcessSimulation, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -762,7 +763,7 @@ export function getFgWiseImpactData(data, callback) {
 
 export function runSimulationOnSelectedCombinedProcessCosting(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.runSimulationOnSelectedCombinedProcessCosting, data, config());
+        const request = axiosInstance.post(API.runSimulationOnSelectedCombinedProcessCosting, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -858,7 +859,7 @@ export function getImpactedMasterData(simulationId, callback) {
 export function runVerifySurfaceTreatmentSimulation(data, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST })
-        const request = axios.post(API.draftSurfaceTreatmentSimulation, data, config());
+        const request = axiosInstance.post(API.draftSurfaceTreatmentSimulation, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -893,7 +894,7 @@ export function getVerifySurfaceTreatmentSimulationList(token, callback) {
 
 export function runSimulationOnSelectedSurfaceTreatmentCosting(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.runSimulationOnSelectedSurfaceTreatmentCosting, data, config());
+        const request = axiosInstance.post(API.runSimulationOnSelectedSurfaceTreatmentCosting, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -940,7 +941,7 @@ export function getCostingSurfaceTreatmentSimulationList(token, plantId, rawMatr
 export function runVerifyMachineRateSimulation(data, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST })
-        const request = axios.post(API.draftMachineRateSimulation, data, config());
+        const request = axiosInstance.post(API.draftMachineRateSimulation, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -954,7 +955,7 @@ export function runVerifyMachineRateSimulation(data, callback) {
 
 export function runSimulationOnSelectedMachineRateCosting(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.runSimulationOnSelectedMachineRateCosting, data, config());
+        const request = axiosInstance.post(API.runSimulationOnSelectedMachineRateCosting, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -969,7 +970,7 @@ export function runSimulationOnSelectedMachineRateCosting(data, callback) {
 
 export function runVerifyBoughtOutPartSimulation(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.draftBoughtOutpartSimulation, data, config());
+        const request = axiosInstance.post(API.draftBoughtOutpartSimulation, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -985,7 +986,7 @@ export function runVerifyBoughtOutPartSimulation(data, callback) {
 
 export function runSimulationOnSelectedBoughtOutPartCosting(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.runSimulationOnSelectedBoughtOutPartCosting, data, config());
+        const request = axiosInstance.post(API.runSimulationOnSelectedBoughtOutPartCosting, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -1076,7 +1077,7 @@ export function getSimulatedAssemblyWiseImpactDate(requestData, isAssemblyInDraf
             type: GET_ASSEMBLY_SIMULATION_LIST,
             payload: [],
         })
-        const request = axios.post(`${API.getSimulatedAssemblyWiseImpactDate}`, requestData, config());
+        const request = axiosInstance.post(`${API.getSimulatedAssemblyWiseImpactDate}`, requestData, config());
         request.then((response) => {
             // THIS BLOCK WORKS WHEN THERE IS DATA IN API
             if (response.data.Result) {
@@ -1156,7 +1157,7 @@ export function getVerifyOverheadSimulationList(token, callback) {
 
 export function runSimulationOnSelectedOverheadCosting(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.runSimulationOnSelectedOverheadCosting, data, config());
+        const request = axiosInstance.post(API.runSimulationOnSelectedOverheadCosting, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -1170,7 +1171,7 @@ export function runSimulationOnSelectedOverheadCosting(data, callback) {
 
 export function runVerifyOverheadSimulation(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.draftOverheadSimulation, data, config());
+        const request = axiosInstance.post(API.draftOverheadSimulation, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -1183,7 +1184,7 @@ export function runVerifyOverheadSimulation(data, callback) {
 }
 export function runVerifyProfitSimulation(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.draftProfitSimulation, data, config());
+        const request = axiosInstance.post(API.draftProfitSimulation, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -1216,7 +1217,7 @@ export function getVerifyProfitSimulationList(token, callback) {
 
 export function runSimulationOnSelectedProfitCosting(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.runSimulationOnSelectedProfitCosting, data, config());
+        const request = axiosInstance.post(API.runSimulationOnSelectedProfitCosting, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -1337,7 +1338,7 @@ export function getListingForSimulationCombined(requestData, master, callback) {
             default:
                 break;
         }
-        const request = axios.post(`${API.getListingForSimulationCombined}`, requestData, config());
+        const request = axiosInstance.post(`${API.getListingForSimulationCombined}`, requestData, config());
         request.then((response) => {
             callback(response)
             switch (master) {
@@ -1540,7 +1541,7 @@ export function getAllMultiTechnologyCostings(obj, callback) {
 
 export function runSimulationOnSelectedAssemblyTechnologyCosting(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.runSimulationOnSelectedAssemblyTechnologyCosting, data, config());
+        const request = axiosInstance.post(API.runSimulationOnSelectedAssemblyTechnologyCosting, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -1555,7 +1556,7 @@ export function runSimulationOnSelectedAssemblyTechnologyCosting(data, callback)
 
 export function draftSimulationMultiTechnology(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.draftSimulationMultiTechnology, data, config());
+        const request = axiosInstance.post(API.draftSimulationMultiTechnology, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -1619,7 +1620,7 @@ export function uploadSimulationAttachmentByCategoryAll(selectedFiles, callback)
         dispatch({ type: API_REQUEST })
         let temp = []
         selectedFiles && selectedFiles.map((item) => {
-            let request = axios.post(`${API.simulationUploadFileByCategory}`, item, config())
+            let request = axiosInstance.post(`${API.simulationUploadFileByCategory}`, item, config())
             temp.push(request)
         })
         axios.all(temp).then((response) => {
@@ -1900,7 +1901,7 @@ export function editRMIndexedSimulationData(data, callback) {
 
 export function draftSimulationForRMMaster(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.draftSimulationForRMMaster, data, config());
+        const request = axiosInstance.post(API.draftSimulationForRMMaster, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -1914,7 +1915,7 @@ export function draftSimulationForRMMaster(data, callback) {
 }
 export function updateSimulationRawMaterial(data, callback) {
     return (dispatch) => {
-        const request = axios.put(API.updateSimulationRawMaterial, data, config());
+        const request = axiosInstance.put(API.updateSimulationRawMaterial, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -1928,7 +1929,7 @@ export function updateSimulationRawMaterial(data, callback) {
 }
 export function runSimulationOnRawMaterial(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.runSimulationOnRawMaterial, data, config());
+        const request = axiosInstance.post(API.runSimulationOnRawMaterial, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -2003,7 +2004,7 @@ export function getRMIndexationCostingSimulationListing(data, skip, take, isPagi
 
 export function checkFinalLevelApproverForApproval(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.checkFinalLevelApproverForApproval, data, config());
+        const request = axiosInstance.post(API.checkFinalLevelApproverForApproval, data, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
