@@ -216,6 +216,9 @@ function AddRfq(props) {
     const [visualAdId, setVisualAdId] = useState("")
     const [remarkDrawer, setRemarkDrawer] = useState(false)
     const [reviewButtonPermission, setReviewButtonPermission] = useState(false)
+    const [n100Date, setN100Date] = useState(null);
+    const [sopDate, setSopDate] = useState(null);
+
 
     const showOnlyFirstModule = initialConfiguration.IsManageSeparateUserPemissionForPartAndVendorInRaiseRFQ;
     const { toolingSpecificRowData } = useSelector(state => state?.rfq);
@@ -2514,6 +2517,10 @@ function AddRfq(props) {
         setStorePartsDetail([]);
         setIsDisabled(false)
         setResetDrawer(true)
+        setRequirementDate("")
+        setN100Date(null)
+        setSopDate(null)
+        setSOPDate('')
 
         // setValue('technology', "")
     }
@@ -2925,7 +2932,16 @@ function AddRfq(props) {
 
 
     const handleRequirementDateChange = (value) => {
-        setRequirementDate(DayTime(value).format('YYYY-MM-DD HH:mm:ss'))
+        const formattedDate = DayTime(value).format('YYYY-MM-DD HH:mm:ss');
+        setRequirementDate(formattedDate);
+        setN100Date(value); // Store N-100 date
+
+        if (sopDate && value > sopDate) {
+
+            setSOPDate(''); // Reset SOP date if N-100 date is later
+            setSopDate(null);
+        }
+
         if (updateButtonPartNoTable && !isPartDetailUpdate) {
             setStorePartsDetail((prevDetails) => {
                 const updatedDetail = prevDetails?.map((item) => {
@@ -3652,6 +3668,7 @@ function AddRfq(props) {
                                                                     showYearDropdown
                                                                     dropdownMode='select'
                                                                     minDate={new Date()}
+                                                                    maxDate={sopDate || undefined}  // N-100 date can't be after SOP date
                                                                     dateFormat="dd/MM/yyyy"
                                                                     placeholderText="Select date"
                                                                     className="withBorder"
@@ -4322,6 +4339,12 @@ function AddRfq(props) {
                                             drawerViewMode={drawerViewMode}
                                             handleDrawer={handleDrawer}
                                             resetDrawer={resetDrawer}
+                                            n100Date={n100Date}
+                                            sopDate={sopDate}
+                                            setSopDate={setSopDate}
+                                            setN100Date={setN100Date}
+                                            setRequirementDate={setRequirementDate}
+
                                         />
                                     )
                                 }

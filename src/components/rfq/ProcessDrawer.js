@@ -43,7 +43,7 @@ function ViewDrawer(props) {
         { sop: 'SOP5' },
     ]
 
-    const { isOpen, anchor, isEditFlag, isViewFlag, AssemblyPartNumber, tableData, setTableData, specificationList, setSpecificationList, setRemark, setChildPartFiles, remark, partListData, sopQuantityList, setSopQuantityList, sopdate, setSOPDate, effectiveMinDate, childPartFiles, rmSpecificRowData, partType, bopNumber, handleDrawer, drawerViewMode, resetDrawer } = props
+    const { isOpen, anchor, isEditFlag, isViewFlag, AssemblyPartNumber, tableData, setTableData, specificationList, setSpecificationList, setRemark, setChildPartFiles, remark, partListData, sopQuantityList, setSopQuantityList, sopdate, n100Date, sopDate, setSopDate, setN100Date, setSOPDate, effectiveMinDate, childPartFiles, rmSpecificRowData, partType, bopNumber, handleDrawer, drawerViewMode, resetDrawer } = props
     const type = String(props?.type)
     const { register, handleSubmit, setValue, getValues, formState: { errors }, control } = useForm({
         mode: 'onChange',
@@ -1014,11 +1014,22 @@ function ViewDrawer(props) {
         return years;
     }
     const handleSOPDateChange = (value) => {
+        const formattedDate = DayTime(value).format('YYYY-MM-DD HH:mm:ss');
+
+        // Validate that selected date is after N-100 date
+        if (props.n100Date && value < props.n100Date) {
+            Toaster.warning("SOP date must be after N-100 date");
+            return;
+        }
+        // Update both local and parent state
+        setSOPDate(formattedDate);
+        setSopDate(value);
+
         let year = new Date(value).getFullYear()
         const yearList = getNextFiveYears(year)
         setIsNewDate(true)
         setFiveyearList(yearList)
-        setSOPDate(DayTime(value).format('YYYY-MM-DD HH:mm:ss'))
+        // setSOPDate(DayTime(value).format('YYYY-MM-DD HH:mm:ss'))
     }
     function shouldShowButtons(activeTab, propsPartType) {
         if (propsPartType === 'Tooling') {
@@ -1558,7 +1569,7 @@ function ViewDrawer(props) {
                                                             showYearDropdown
                                                             dropdownMode='select'
                                                             // minDate={new Date()}
-                                                            minDate={effectiveMinDate || new Date()}
+                                                            minDate={props.n100Date || new Date()} // SOP date must be after N-100 date
                                                             dateFormat="dd/MM/yyyy"
                                                             placeholderText="Select date"
                                                             className="withBorder"
