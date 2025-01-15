@@ -387,7 +387,7 @@ function RubberWeightCalculator(props) {
         let value = checkForNull(Number(getValues('rejectionValue')))
         let rmCost = checkForNull(Number(getValues('rmCost')))
         let totalTableCost = checkForNull(getTotal(tableData))
-
+        console.log("totalTableCost", totalTableCost)
         let obj = dataToSend
 
         if (value && rmCost && rejectionCostType) {
@@ -415,7 +415,7 @@ function RubberWeightCalculator(props) {
         } else {
 
             setValue('netRmc', checkForDecimalAndNull(rmCost + totalTableCost, getConfigurationKey().NoOfDecimalForPrice))
-            obj.NetRawMaterialCost = rmCost
+            obj.NetRawMaterialCost = rmCost + totalTableCost
         }
     }
 
@@ -1075,7 +1075,7 @@ function RubberWeightCalculator(props) {
 
 
                                 <Col md="3">
-                                    <TooltipCustom width={"240px"} disabledIcon={true} id={'netRmc'} tooltipText={'Net RMC = RM Cost + Rejection Cost'} />
+                                    <TooltipCustom width={"240px"} disabledIcon={true} id={'netRmc'} tooltipText={'Net RMC = RM Cost + Rejection Cost + Additional RM Cost'} />
                                     <TextFieldHookForm
                                         label={`Net RMC`}
                                         id={'netRmc'}
