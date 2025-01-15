@@ -108,6 +108,11 @@ function AddRMDetails(props) {
         if (states.costingTypeId === CBCTypeId) {
             dispatch(getClientSelectList(() => { }))
         }
+        setState(prevState => ({
+            ...prevState,
+            vendor: [],
+            sourceVendor: [],
+        }))
     }, [states.costingTypeId])
     useEffect(() => {
         if (props?.DataToChange && Object.keys(props?.DataToChange).length > 0) {
