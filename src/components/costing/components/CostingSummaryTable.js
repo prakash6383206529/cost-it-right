@@ -149,7 +149,7 @@ const CostingSummaryTable = (props) => {
   const showCheckbox = viewCostingData && viewCostingData.some(item => item.IsShowCheckBoxForApproval === true);
   const [showConvertedCurrency, setShowConvertedCurrency] = useState(false)
   const [showConvertedCurrencyCheckbox, setShowConvertedCurrencyCheckbox] = useState(false)
-useEffect(() => {
+  useEffect(() => {
     if (viewCostingDetailData && viewCostingDetailData?.length > 0 && !props?.isRejectedSummaryTable && !props?.isFromAssemblyTechnology) {
       setViewCostingData(viewCostingDetailData)
     } else if (viewRejectedCostingDetailData && viewRejectedCostingDetailData?.length > 0 && props?.isRejectedSummaryTable && !props?.isFromAssemblyTechnology) {
@@ -1984,7 +1984,6 @@ useEffect(() => {
   }
 
   const handleSOBSave = (obj, index) => {
-    const lastvlue = viewCostingData[index]?.shareOfBusinessPercent
     let totalSObP = [];
     for (let i = 0; i < viewCostingData.length; i++) {
       if (typeof viewCostingData[i].shareOfBusinessPercent === 'number' && i !== index) {
@@ -1994,7 +1993,6 @@ useEffect(() => {
     const sum = totalSObP.reduce((accumulator, currentValue) => accumulator + currentValue, 0) + Number(getValues(`ShareOfBusinessPercent.${index}`));
     if (sum > 100) {
       Toaster.warning("Total SOB percentage cannot be more than 100%")
-      setValue(`ShareOfBusinessPercent.${index}`, lastvlue)
       return false;
     } else if (getValues(`ShareOfBusinessPercent.${index}`) === '') {
       setValue(`ShareOfBusinessPercent.${index}`, 0)
@@ -2173,7 +2171,7 @@ useEffect(() => {
                         {'Send For Approval'}
                       </button>
                     )}
-                    {props?.showAddToComparison&& <button
+                    {props?.showAddToComparison && <button
                       type="button"
                       id="costingSummary_addtocomparison"
 
@@ -2181,7 +2179,7 @@ useEffect(() => {
                       onClick={addComparisonDrawerToggle}
                     >
                       <div className="compare-arrows"></div>
-                      Add To Comparison1{' '}
+                      Add To Comparison{' '}
                     </button>}
                   </>
                 }
@@ -2940,6 +2938,7 @@ useEffect(() => {
                                       <div style={pdfHead ? { marginTop: '-4px' } : {}} className={`d-flex ${highlighter(["overheadOn", "overheadValue"], "multiple-key")}`}>
                                         <span className="d-inline-block w-50 small-grey-text">
                                           {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.overheadOn.overheadTitle : '')}
+                                          {(!pdfHead && !drawerDetailPDF && viewCostingData[index]?.isIncludeToolCostWithOverheadAndProfit) && <TooltipCustom customClass="mt-1 ml-1 p-absolute" id="overhead-toolcost-include" tooltipText={"Tool Cost Included"} />}
                                         </span>
                                         <span className="d-inline-block w-50 small-grey-text">
                                           {getOverheadPercentage(data)}
@@ -2951,6 +2950,7 @@ useEffect(() => {
                                       <div style={pdfHead ? { marginTop: '-3px' } : {}} className={`d-flex ${highlighter(["profitOn", "profitValue"], "multiple-key")}`}>
                                         <span className="d-inline-block w-50 small-grey-text">
                                           {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.profitOn.profitTitle : '')}
+                                          {(!pdfHead && !drawerDetailPDF && viewCostingData[index]?.isIncludeToolCostWithOverheadAndProfit) && <TooltipCustom customClass="mt-1 ml-1 p-absolute" id="profit-toolcost-include" tooltipText={"Tool Cost Included"} />}
                                         </span>{' '}
                                         <span className="d-inline-block w-50 small-grey-text">
                                           {getProfitPercentage(data)}
@@ -2962,6 +2962,7 @@ useEffect(() => {
                                       <div style={pdfHead ? { marginTop: '-3px' } : {}} className={`d-flex ${highlighter(["profitOn", "profitValue"], "multiple-key")}`}>
                                         <span className="d-inline-block w-50 small-grey-text">
                                           {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? ApplicabilityType ?? '-' : '')}
+                                          {(!pdfHead && !drawerDetailPDF && viewCostingData[index]?.isIncludeSurfaceTreatmentWithRejection) && <TooltipCustom customClass="mt-1 ml-1 p-absolute" id="st-rejection-include" tooltipText={"Surface Treatment Included"} />}
                                         </span>{' '}
                                         <span className="d-inline-block w-50 small-grey-text">
                                           {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? EffectiveRecoveryPercentage ?? '-' : '')}
@@ -3519,7 +3520,7 @@ useEffect(() => {
                             viewCostingData?.map((data, index) => {
                               return <td className={tableDataClass(data)}>
 
-                                {displayValueWithSign(data, "nPOPriceWithCurrency")}
+                                {data?.currency.currencyTitle === '-' ? '-' : `${data?.currency.currencyTitle}: `} {displayValueWithSign(data, "nPOPriceWithCurrency")}
                               </td>
                             })}
                         </tr>

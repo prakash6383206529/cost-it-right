@@ -143,7 +143,7 @@ class AddMoreDetails extends Component {
       labourDetailId: '',
       IsIncludeMachineRateDepreciation: false,
       powerIdFromAPI: EMPTY_GUID,
-      finalApprovalLoader: getConfigurationKey().IsDivisionAllowedForDepartment || getConfigurationKey().IsMasterApprovalAppliedConfigure ? false : true,
+      finalApprovalLoader: getConfigurationKey().IsDivisionAllowedForDepartment || !(getConfigurationKey().IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true) ? false : true,
       showPopup: false,
       levelDetails: {},
       selectedCustomer: editDetails.selectedCustomer ?? [],
@@ -213,6 +213,19 @@ class AddMoreDetails extends Component {
     //this.props.change('currency', editDetails?.currency ?? {})
     if (this.state?.selectedPlants?.value && this.state?.selectedPlants?.value !== null) {
       const PlantId = Array.isArray(this.state.selectedPlants) ? this.state.selectedPlants[0]?.value : this.state.selectedPlants?.value;
+      if (editDetails?.machineType?.value) {
+        const data = {
+          machineTypeId: editDetails?.machineType?.value ? editDetails?.machineType?.value : '',
+          plantId: PlantId,
+          effectiveDate: editDetails?.fieldsObj?.EffectiveDate ? editDetails?.fieldsObj.EffectiveDate : '',
+          vendorId: this.state.selectedVedor?.value ? this.state.selectedVedor?.value : '',
+          customerId: this.state?.selectedCustomer?.value ? this.state.selectedCustomer?.value : '',
+          costingTypeId: this.state?.CostingTypeId || null,
+
+
+        }
+        this.props.getLabourTypeByMachineTypeSelectList(data, () => { })
+      }
       let obj = {
         plantId: PlantId,
         vendorId: this.state.selectedVedor?.value ? this.state.selectedVedor?.value : '',
@@ -5172,7 +5185,7 @@ class AddMoreDetails extends Component {
 
                         {
                           !isViewMode && <>
-                            {(!isViewMode && initialConfiguration.IsMasterApprovalAppliedConfigure && (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar)) || (initialConfiguration.IsMasterApprovalAppliedConfigure && !CostingTypePermission) ?
+                            {(!isViewMode && initialConfiguration.IsMasterApprovalAppliedConfigure && (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar)) || (initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !CostingTypePermission) ?
                               <button id="AddMoreDetails_SendForApproval" type="submit"
                                 class="user-btn approval-btn save-btn mr5"
 

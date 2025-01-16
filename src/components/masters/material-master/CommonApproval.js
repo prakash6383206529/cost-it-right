@@ -515,7 +515,7 @@ function CommonApproval(props) {
     */
     const closeDrawer = (e = '', type) => {
         setShowApprovalSummary(false)
-        if (type === 'submit') {
+        if (type === 'submit' || type === 'reject') {
             setLoader(true)
             getTableData(0, 10, true, floatingFilterData)
         }
@@ -718,7 +718,7 @@ function CommonApproval(props) {
         params.api.paginationGoToPage(0);
         if (props?.OnboardingApprovalId === ONBOARDINGID) {
             //params.api.sizeColumnsToFit();
-            
+
         }
         window.screen.width > 1920 && params.api.sizeColumnsToFit();
     };
@@ -1107,3 +1107,4 @@ function CommonApproval(props) {
 }
 
 export default CommonApproval;
+// HP3-I1368

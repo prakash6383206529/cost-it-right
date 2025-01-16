@@ -95,7 +95,11 @@ class SideBar extends Component {
         this.simulationPermission(res?.data?.Data, 1)
         this.simulationPermission(res?.data?.Data, 0)
         this.simulationPermission(res?.data?.Data, 2)
-
+        const hasReverseAuction = res?.data?.Data?.some(module => 
+          module.ModuleName === "Reverse Auction"
+        );
+        reactLocalStorage.setObject("showInitiateAuctionButton", hasReverseAuction);
+  
         let Data = res?.data?.Data
         let costingIndex = Data && Data?.findIndex(item => item?.ModuleName === COSTING)
         let cbcCostingData = Data && Data[costingIndex]?.Pages?.filter(item => item?.PageName === CBC_COSTING)

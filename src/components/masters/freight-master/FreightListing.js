@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, } from 'reactstrap';
-import { defaultPageSize, EMPTY_DATA , ENTRY_TYPE_IMPORT, ENTRY_TYPE_DOMESTIC} from '../../../config/constants';
+import { defaultPageSize, EMPTY_DATA, ENTRY_TYPE_IMPORT, ENTRY_TYPE_DOMESTIC } from '../../../config/constants';
 import { getFreightDataList, deleteFright, } from '../actions/Freight';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
@@ -66,7 +66,7 @@ const FreightListing = (props) => {
   */
   const getDataList = (freight_for = '', vendor_id = '', source_city_id = 0, destination_city_id = 0, FreightEntryType = false) => {
     const { zbc, vbc, cbc } = reactLocalStorage.getObject('CostingTypePermission')
-    const filterData = { freight_for: freight_for, vendor_id: vendor_id, source_city_id: source_city_id, destination_city_id: destination_city_id, IsCustomerDataShow: cbc, IsVendorDataShow: vbc, IsZeroDataShow: zbc,  FreightEntryType: FreightEntryType ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC }
+    const filterData = { freight_for: freight_for, vendor_id: vendor_id, source_city_id: source_city_id, destination_city_id: destination_city_id, IsCustomerDataShow: cbc, IsVendorDataShow: vbc, IsZeroDataShow: zbc, FreightEntryType: FreightEntryType ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC }
     dispatch(getFreightDataList(filterData, (res) => {
       setState((prevState) => ({ ...prevState, isLoader: false }))
       if (res && res.status === 200) {
@@ -268,33 +268,33 @@ const FreightListing = (props) => {
     setState((prevState) => ({ ...prevState, isImport: !state.isImport }));
     getDataList(null, null, null, null, !state.isImport)
 
-}
+  }
 
   return (
     <div className={`ag-grid-react ${permissions.Download ? "show-table-btn" : ""}`}>
       {state.isLoader && <LoaderCustom />}
       <form noValidate>
-  
+
         <Row className="pt-4">
-        <Col md="4" className="switch mb15">
-                <label className="switch-level">
-                  <div className="left-title">Domestic</div>
-                  <Switch
-                    onChange={importToggle}
-                    checked={state.isImport}
-                    id="normal-switch"
-                    background="#4DC771"
-                    onColor="#4DC771"
-                    onHandleColor="#ffffff"
-                    offColor="#4DC771"
-                    uncheckedIcon={false}
-                    checkedIcon={false}
-                    height={20}
-                    width={46}
-                  />
-                  <div className="right-title">Import</div>
-                </label>
-              </Col>
+          <Col md="4" className="switch mb15">
+            <label className="switch-level">
+              <div className="left-title">Domestic</div>
+              <Switch
+                onChange={importToggle}
+                checked={state.isImport}
+                id="normal-switch"
+                background="#4DC771"
+                onColor="#4DC771"
+                onHandleColor="#ffffff"
+                offColor="#4DC771"
+                uncheckedIcon={false}
+                checkedIcon={false}
+                height={20}
+                width={46}
+              />
+              <div className="right-title">Import</div>
+            </label>
+          </Col>
           <Col md="6" className="search-user-block mb-3">
             <div className="d-flex justify-content-end bd-highlight w100">
               <div>
@@ -318,7 +318,7 @@ const FreightListing = (props) => {
             <div className="ag-grid-header">
               <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
             </div>
-           
+
             <div className={`ag-theme-material`}>
               {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
               <AgGridReact
@@ -348,10 +348,8 @@ const FreightListing = (props) => {
                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'}></AgGridColumn>
                 {/* <AgGridColumn field="SourceCity" headerName="Source City"></AgGridColumn>
                 <AgGridColumn field="DestinationCity" headerName="Destination City"></AgGridColumn> */}
-                {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
-                <AgGridColumn field="Currency" headerName="Currency" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'}></AgGridColumn>
-                <AgGridColumn width='200px' field="FreightId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'} ></AgGridColumn>
+
+                <AgGridColumn width='220px' field="FreightId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'} ></AgGridColumn>
               </AgGridReact>
               {<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} />}
             </div>
