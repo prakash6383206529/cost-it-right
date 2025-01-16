@@ -216,9 +216,9 @@ function AddRfq(props) {
     const [visualAdId, setVisualAdId] = useState("")
     const [remarkDrawer, setRemarkDrawer] = useState(false)
     const [reviewButtonPermission, setReviewButtonPermission] = useState(false)
-// Add these state variables at the top with other states
-const [n100Date, setN100Date] = useState(null);
-const [sopDate, setSopDate] = useState(null);
+    // Add these state variables at the top with other states
+    const [n100Date, setN100Date] = useState(null);
+    const [sopDate, setSopDate] = useState(null);
     const showOnlyFirstModule = initialConfiguration?.IsManageSeparateUserPermissionForPartAndVendorInRaiseRFQ;
     const { toolingSpecificRowData } = useSelector(state => state?.rfq);
     const isQuotationReceived = () => dataProps?.rowData?.Status === 'Received' || dataProps?.rowData?.Status === 'Sent'
@@ -1354,7 +1354,7 @@ const [sopDate, setSopDate] = useState(null);
         let isDuplicateEntry = false
         let temp = [];
         let data = {};
-        if(!getValues("vendor")){
+        if (!getValues("vendor")) {
             Toaster.warning("Please select vendor")
             return false
         }
@@ -1674,16 +1674,16 @@ const [sopDate, setSopDate] = useState(null);
 
 
         const rulesForType = validationRules[selectedOption];
-        
+
         if (!rulesForType) return true;
 
 
         rulesForType.forEach(({ key, check, field }) => {
             const isMandatory = key; // Remove extra parenthesis
-           
+
             if (isMandatory && check(data)) {
-                
-                
+
+
                 missingFields.push(field);
             }
         });
@@ -1953,7 +1953,7 @@ const [sopDate, setSopDate] = useState(null);
                     Toaster.warning("ZBC costing approval is required for this plant to raise a quote.");
                     return false;
                 }
-                 // else if(RFQ_KEYS?.ANNUAL_FORECAST_MANDATORY && sopdate&&sopQuantityList?.length === 0) {
+                // else if(RFQ_KEYS?.ANNUAL_FORECAST_MANDATORY && sopdate&&sopQuantityList?.length === 0) {
                 //     Toaster.warning('Please fill the SOP quantity details!');
                 //     return false;
                 // }
@@ -1968,8 +1968,8 @@ const [sopDate, setSopDate] = useState(null);
 
                     Toaster.warning("Please select all the mandatory fields");
                     return false
-                } 
-                 //  else if (selectedOption === "Bought Out Part" && (bopList[0]?.BopReamrk === "" || bopList[0]?.BopAttachments?.length === 0)) {
+                }
+                //  else if (selectedOption === "Bought Out Part" && (bopList[0]?.BopReamrk === "" || bopList[0]?.BopAttachments?.length === 0)) {
                 //     Toaster.warning('Remarks and Attachments are required!');
                 //     return false;
                 // }
@@ -1986,7 +1986,7 @@ const [sopDate, setSopDate] = useState(null);
             }
             if (!validateFormDetails()) {
                 return false;
-            }            if (nfrId && nfrId.value !== null) {//CHECK_NFR
+            } if (nfrId && nfrId.value !== null) {//CHECK_NFR
                 dispatch(getNfrAnnualForecastQuantity(nfrId.value, getValues('partNumber')?.value, sopdate = "", (res) => {
                     Data = res.data.Data
                 }));
@@ -2685,11 +2685,11 @@ const [sopDate, setSopDate] = useState(null);
         setStorePartsDetail([]);
         setIsDisabled(false)
         setResetDrawer(true)
-// Reset both N-100 and SOP dates
-setRequirementDate("")
-setN100Date(null)
-setSopDate(null)
-setSOPDate('')
+        // Reset both N-100 and SOP dates
+        setRequirementDate("")
+        setN100Date(null)
+        setSopDate(null)
+        setSOPDate('')
         // setValue('technology', "")
     }
 
@@ -3103,9 +3103,9 @@ setSOPDate('')
         const formattedDate = DayTime(value).format('YYYY-MM-DD HH:mm:ss');
         setRequirementDate(formattedDate);
         setN100Date(value); // Store N-100 date
-    
+
         if (sopDate && value > sopDate) {
-            
+
             setSOPDate(''); // Reset SOP date if N-100 date is later
             setSopDate(null);
         }
@@ -3497,7 +3497,7 @@ setSOPDate('')
                                 <form>
 
                                     <Row className="part-detail-wrapper">
-                                    <TooltipCustom id="technology" disabledIcon={true} tooltipText={`To initiate ${initialConfiguration?.IsManageSeparateUserPermissionForPartAndVendorInRaiseRFQ ? "RFI" : "RFQ"} creation, select the technology, plant code, part type, and input part number (all three characters are necessary)`} />
+                                        <TooltipCustom id="technology" disabledIcon={true} tooltipText={`To initiate ${initialConfiguration?.IsManageSeparateUserPermissionForPartAndVendorInRaiseRFQ ? "RFI" : "RFQ"} creation, select the technology, plant code, part type, and input part number (all three characters are necessary)`} />
 
                                         {quotationType !== "Bought Out Part" && (
                                             <Col md="3">
@@ -3817,43 +3817,43 @@ setSOPDate('')
                                                     </Col>
                                                 }
 
-                                                { RFQ_KEYS?.SHOW_N100_HAVELLS &&
-                                                 <Col md="3">
-                                                    <div className="inputbox date-section h-auto">
-                                                        <div className="form-group">
+                                                {RFQ_KEYS?.SHOW_N100_HAVELLS &&
+                                                    <Col md="3">
+                                                        <div className="inputbox date-section h-auto">
+                                                            <div className="form-group">
 
-                                                            <label>{selectedOption === TOOLING ? 'Delivery Date' : "N-100 Timeline"}<span className="asterisk-required">*</span></label>
-                                                            {selectedOption !== TOOLING && <TooltipCustom id="timeline" tooltipText="Part Rediness timeline for Quality, N-10 & N-100" />}
-                                                            <div id="addRFQDate_container" className="inputbox date-section">
-                                                                <DatePicker
+                                                                <label>{selectedOption === TOOLING ? 'Delivery Date' : "N-100 Timeline"}<span className="asterisk-required">*</span></label>
+                                                                {selectedOption !== TOOLING && <TooltipCustom id="timeline" tooltipText="Part Rediness timeline for Quality, N-10 & N-100" />}
+                                                                <div id="addRFQDate_container" className="inputbox date-section">
+                                                                    <DatePicker
 
-                                                                    name={'RequirementDate'}
-                                                                    placeholder={'Select'}
-                                                                    //selected={submissionDate}
-                                                                    selected={DayTime(requirementDate).isValid() ? new Date(requirementDate) : ''}
-                                                                    onChange={handleRequirementDateChange}
-                                                                    showMonthDropdown
-                                                                    showYearDropdown
-                                                                    dropdownMode='select'
-                                                                    minDate={new Date()}
-                                                                    maxDate={sopDate || undefined} // N-100 date can't be after SOP date
-                                                                    dateFormat="dd/MM/yyyy"
-                                                                    placeholderText="Select date"
-                                                                    className="withBorder"
-                                                                    autoComplete={"off"}
-                                                                    mandatory={true}
-                                                                    disabled={selectedOption === 'Tooling' ? true : Object.keys(prNumber).length !== 0 ? !updateButtonPartNoTable : (dataProps?.isViewFlag) ? true : false || disabledPartUid}
-                                                                    errors={errors.RequirementDate}
-                                                                    disabledKeyboardNavigation
-                                                                    onChangeRaw={(e) => e.preventDefault()}
-                                                                // disabled={dataProps?.isAddFlag ? partNoDisable : (dataProps?.isViewFlag || !isEditAll)}
-                                                                />
-                                                                {isWarningMessageShow && <WarningMessage dClass={"error-message"} textClass={"pt-1"} message={"Please select effective date"} />}
+                                                                        name={'RequirementDate'}
+                                                                        placeholder={'Select'}
+                                                                        //selected={submissionDate}
+                                                                        selected={DayTime(requirementDate).isValid() ? new Date(requirementDate) : ''}
+                                                                        onChange={handleRequirementDateChange}
+                                                                        showMonthDropdown
+                                                                        showYearDropdown
+                                                                        dropdownMode='select'
+                                                                        minDate={new Date()}
+                                                                        maxDate={sopDate || undefined} // N-100 date can't be after SOP date
+                                                                        dateFormat="dd/MM/yyyy"
+                                                                        placeholderText="Select date"
+                                                                        className="withBorder"
+                                                                        autoComplete={"off"}
+                                                                        mandatory={true}
+                                                                        disabled={selectedOption === 'Tooling' ? true : Object.keys(prNumber).length !== 0 ? !updateButtonPartNoTable : (dataProps?.isViewFlag) ? true : false || disabledPartUid}
+                                                                        errors={errors.RequirementDate}
+                                                                        disabledKeyboardNavigation
+                                                                        onChangeRaw={(e) => e.preventDefault()}
+                                                                    // disabled={dataProps?.isAddFlag ? partNoDisable : (dataProps?.isViewFlag || !isEditAll)}
+                                                                    />
+                                                                    {isWarningMessageShow && <WarningMessage dClass={"error-message"} textClass={"pt-1"} message={"Please select effective date"} />}
+                                                                </div>
                                                             </div>
                                                         </div>
-                                                    </div>
 
-                                                </Col>}
+                                                    </Col>}
 
 
 
@@ -4512,6 +4512,7 @@ setSOPDate('')
                                             setSopDate={setSopDate}
                                             setN100Date={setN100Date}
                                             setRequirementDate={setRequirementDate}
+                                            partTypeInPartList={partType?.label}
                                         />
                                     )
                                 }
