@@ -92,7 +92,7 @@ function ViewOverheadProfit(props) {
               <tr>
                 <th>{`Overhead On`}</th>
                 <th>{viewOverheadData.IsOverheadFixedApplicable ? 'Fixed' : 'Percentage (%)'}</th>
-                <th><div className='w-fit'>Cost (Applicability){showTooltipForOH.includes(true) && !isPDFShow && <TooltipCustom width="250px" customClass="mt-1 ml-1" id="overhead-rm-applicable" tooltipText={overheadAndProfitTooltipText} />}</div></th>
+                <th><div className='w-fit'>Cost (Applicability){showTooltipForOH.includes(true) && viewOverheadData.OverheadApplicability?.includes('CC') && !isPDFShow && <TooltipCustom width="250px" customClass="mt-1 ml-1" id="overhead-rm-applicable" tooltipText={overheadAndProfitTooltipText} />}</div></th>
                 <th>{`Overhead`}</th>
                 {initialConfiguration.IsShowCRMHead && <th>{`CRM Head`}</th>}
                 <th>{`Remark`}</th>
@@ -214,7 +214,7 @@ function ViewOverheadProfit(props) {
               <tr>
                 <th>{`Profit On`}</th>
                 <th>{viewProfitData.IsProfitFixedApplicable ? 'Fixed' : 'Percentage (%)'}</th>
-                <th><div className='w-fit'>Cost (Applicability){showTooltipForOH.includes(true) && !isPDFShow && <TooltipCustom width="250px" customClass="mt-1 ml-1" id="profit-rm-applicable" tooltipText={overheadAndProfitTooltipText} />}</div></th>
+                <th><div className='w-fit'>Cost (Applicability){showTooltipForOH.includes(true) && viewProfitData.ProfitApplicability?.includes('CC') && !isPDFShow && <TooltipCustom width="250px" customClass="mt-1 ml-1" id="profit-rm-applicable" tooltipText={overheadAndProfitTooltipText} />}</div></th>
                 <th>{`Profit`}</th>
                 {initialConfiguration.IsShowCRMHead && <th>{`CRM Head`}</th>}
                 <th>{`Remark`}</th>
@@ -341,7 +341,7 @@ function ViewOverheadProfit(props) {
 
                 <th>{`Applicability`}</th>
                 <th>{`Rejection ${rejectData?.RejectionApplicability === 'Fixed' ? '' : '(%)'}`}</th>
-                <th><div className='w-fit'>Cost (Applicability){isIncludeSurfaceTreatmentWithRejection && !isPDFShow && <TooltipCustom width="250px" customClass="mt-1 ml-1" id="rejection-table" tooltipText={'Surface Treatment Cost Included'} />}</div></th>
+                <th><div className='w-fit'>Cost (Applicability){isIncludeSurfaceTreatmentWithRejection && rejectData.RejectionApplicability?.includes('CC') && !isPDFShow && <TooltipCustom width="250px" customClass="mt-1 ml-1" id="rejection-table" tooltipText={'Surface Treatment Cost Included'} />}</div></th>
                 <th>{`Rejection`}</th>
                 <th>{`Net Rejection`}</th>
                 {initialConfiguration.IsShowCRMHead && <th>{`CRM Head`}</th>}
@@ -423,7 +423,7 @@ function ViewOverheadProfit(props) {
 
                 <th>{`Applicability`}</th>
                 <th>{`Interest Rate ${iccPaymentData.ICCApplicabilityDetail.ICCApplicability === 'Fixed' ? '' : '(%)'}`}</th>
-                <th><div className='w-fit'>Cost (Applicability){showToolTipForICC.includes(true) && !isPDFShow && <TooltipCustom width="250px" customClass="mt-1 ml-1" id="icc-table" tooltipText={iccToolTipText} />}</div></th>
+                <th><div className='w-fit'>Cost (Applicability){showToolTipForICC.includes(true) && iccPaymentData?.ICCApplicabilityDetail?.ICCApplicability?.includes('CC') && !isPDFShow && <TooltipCustom width="250px" customClass="mt-1 ml-1" id="icc-table" tooltipText={iccToolTipText} />}</div></th>
                 <th>{`Net ICC`}</th>
                 {initialConfiguration.IsShowCRMHead && <th>{`CRM Head`}</th>}
                 <th>{`Remark`}</th>
