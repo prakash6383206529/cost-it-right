@@ -80,6 +80,7 @@ import { apiErrors, encodeQueryParamsAndLog } from '../helper/util';
 import { MESSAGES } from '../config/message';
 import Toaster from '../components/common/Toaster';
 import axiosInstance from '../utils/axiosInstance';
+import { loggedInUserId } from '../helper';
 
 // const config() = config;
 
@@ -1859,7 +1860,7 @@ export function sidebarAndNavbarHide(data) {
   }
 }
 export function getVendorNameByVendorSelectList(vendorTypeId, vendorName, technologyId, plantId = '', checkForVendorClassificationAndLPSRating = false, callback) {
-  return axios.get(`${API.getVendorNameByVendorSelectList}?vendorTypeId=${vendorTypeId}&vendorName=${vendorName}&technologyId=${technologyId}&plantId=${plantId}&checkForVendorClassificationAndLPSRating=${checkForVendorClassificationAndLPSRating}`, config()).catch(error => {
+  return axios.get(`${API.getVendorNameByVendorSelectList}?loggedInUserId=${loggedInUserId()}&vendorTypeId=${vendorTypeId}&vendorName=${vendorName}&technologyId=${technologyId}&plantId=${plantId}&checkForVendorClassificationAndLPSRating=${checkForVendorClassificationAndLPSRating}`, config()).catch(error => {
     apiErrors(error);
     callback(error);
     return Promise.reject(error)
@@ -1925,7 +1926,7 @@ export function getFrequencySettlement(callback) {
 export function getCommodityIndexRateAverage(materialTypeId, indexExchangeId, unitOfMeasurementId, currencyId, exchangeRateSourceName, fromDate, toDate, callback) {
   return (dispatch) => {
     if (materialTypeId || indexExchangeId || exchangeRateSourceName) {
-      axios.get(`${API.getCommodityIndexRateAverage}?materialTypeId=${materialTypeId}&indexExchangeId=${indexExchangeId}&unitOfMeasurementId=${''}&toCurrencyId=${currencyId ?? ''}&exchangeRateSourceName=${exchangeRateSourceName}&fromDate=${fromDate}&toDate=${toDate}`, config())
+      axios.get(`${API.getCommodityIndexRateAverage}?loggedInUserId=${loggedInUserId()}&materialTypeId=${materialTypeId}&indexExchangeId=${indexExchangeId}&unitOfMeasurementId=${''}&toCurrencyId=${currencyId ?? ''}&exchangeRateSourceName=${exchangeRateSourceName}&fromDate=${fromDate}&toDate=${toDate}`, config())
         .then((response) => {
           dispatch({
             type: GET_COMMODITY_INDEX_RATE_AVERAGE,

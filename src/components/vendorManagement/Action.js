@@ -43,7 +43,7 @@ export const fetchApprovalData = () => {
 
 export const getVendorClassificationListing = (callback) => {
     return dispatch => {
-        axios.get(`${API.getVendorClassificationList}`, config())
+        axios.get(`${API.getVendorClassificationList}?loggedInUserId=${loggedInUserId()}`, config())
             .then(response => {
 
                 dispatch({
@@ -64,7 +64,7 @@ export const getVendorClassificationListing = (callback) => {
 export const getLPSRatingListing = (callback) => {
     return async dispatch => {
         try {
-            const response = await axios.get(`${API.getVendorLpsRatingList}`, config());
+            const response = await axios.get(`${API.getVendorLpsRatingList}?loggedInUserId=${loggedInUserId()}`, config());
 
             dispatch({
                 type: LPS_RATING_DATA,
@@ -116,7 +116,7 @@ export function updateLPSRatingStatus(requestData, callback) {
 
 export const fetchVendorData = () => {
     return dispatch => {
-        axios.get(`${API.getVendorData}`, config())
+        axios.get(`${API.getVendorNameByVendorSelectList}?loggedInUserId=${loggedInUserId()}`, config())
             .then(response => {
 
 
@@ -155,7 +155,7 @@ export const fetchVendorDependentPlantData = (data) => {
     };
 };
 export const fetchDeviationApprovalData = (vendorId, plantId, callback) => {
-    const queryString = `vendorId=${vendorId}&plantId=${plantId}`;
+    const queryString = `loggedInUserId=${loggedInUserId()}&vendorId=${vendorId}&plantId=${plantId}`;
     return dispatch => {
         axios.get(`${API.getVendorPlantDetailForDeviation}?${queryString}`, config())
             .then(response => {

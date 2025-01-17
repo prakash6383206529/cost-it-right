@@ -19,7 +19,7 @@ import {
     GET_POWER_VENDOR_DATA_LIST,
     EMPTY_GUID
 } from '../../../config/constants';
-import { userDetails } from '../../../helper';
+import { loggedInUserId, userDetails } from '../../../helper';
 import { apiErrors } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import axiosInstance from '../../../utils/axiosInstance';
@@ -31,8 +31,9 @@ import axiosInstance from '../../../utils/axiosInstance';
  * @description create fuel
  */
 export function createFuel(data, callback) {
+    const requestData = { LoggedInUserId: loggedInUserId(), ...data }
     return (dispatch) => {
-        const request = axiosInstance.post(API.createFuel, data, config());
+        const request = axiosInstance.post(API.createFuel, requestData, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -90,7 +91,7 @@ export function getFuelDetailDataList(isAPICall, data, callback) {
     const { cbc, zbc, vbc } = reactLocalStorage.getObject('CostingTypePermission');
     return (dispatch) => {
         if (isAPICall) {
-            const request = axios.get(`${API.getFuelDetailDataList}?fuelId=${data.fuelName}&stateId=${data.stateName}&IsCustomerDataShow=${cbc}&IsVendorDataShow=${vbc}&IsZeroDataShow=${zbc}`, config());
+            const request = axios.get(`${API.getFuelDetailDataList}?loggedInUserId=${loggedInUserId()}&fuelId=${data.fuelName}&stateId=${data.stateName}&IsCustomerDataShow=${cbc}&IsVendorDataShow=${vbc}&IsZeroDataShow=${zbc}`, config());
             request.then((response) => {
                 if (response && (response.data.Result === true || response.status === 204)) {
                     dispatch({
@@ -139,10 +140,11 @@ export function getAllFuelAPI(callback) {
  * @description get FUEL 
  */
 export function getFuelUnitAPI(fuelId, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
         if (fuelId !== '') {
-            axios.get(`${API.getFuelAPI}/${fuelId}`, config())
+            axios.get(`${API.getFuelAPI}/${fuelId}/${loggedInUser?.loggedInUserId}`, config())
                 .then((response) => {
                     if (response.data.Result === true) {
                         dispatch({
@@ -171,10 +173,11 @@ export function getFuelUnitAPI(fuelId, callback) {
  * @description get Fuel Detail Data
  */
 export function getFuelDetailData(fuelId, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
         if (fuelId !== '') {
-            axios.get(`${API.getFuelDetailData}/${fuelId}`, config())
+            axios.get(`${API.getFuelDetailData}/${fuelId}/${loggedInUser?.loggedInUserId}`, config())
                 .then((response) => {
                     if (response.data.Result === true) {
                         dispatch({
@@ -239,7 +242,7 @@ export function deleteFuelTypeAPI(index, Id, callback) {
 export function getFuelByPlant(obj, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getFuelByPlant}?plantId=${obj.plantId ? obj.plantId : EMPTY_GUID}&vendorId=${obj.vendorId ? obj.vendorId : EMPTY_GUID}&customerId=${obj.customerId ? obj.customerId : EMPTY_GUID}&cityId=${obj.cityId ? obj.cityId : EMPTY_GUID}`, config());
+        const request = axios.get(`${API.getFuelByPlant}?loggedInUserId=${loggedInUserId()}&plantId=${obj.plantId ? obj.plantId : EMPTY_GUID}&vendorId=${obj.vendorId ? obj.vendorId : EMPTY_GUID}&customerId=${obj.customerId ? obj.customerId : EMPTY_GUID}&cityId=${obj.cityId ? obj.cityId : EMPTY_GUID}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -403,7 +406,7 @@ export function getPowerDetailDataList(data, callback) {
     let stateID = data && data.stateID === undefined ? null : data.stateID;
     const { cbc, zbc, vbc } = reactLocalStorage.getObject('CostingTypePermission');
     return (dispatch) => {
-        const request = axios.get(`${API.getPowerDetailDataList}?plantId=${plantID}&stateId=${stateID}&IsCustomerDataShow=${cbc}&IsVendorDataShow=${vbc}&IsZeroDataShow=${zbc}`, config());
+        const request = axios.get(`${API.getPowerDetailDataList}?loggedInUserId=${loggedInUserId()}&plantId=${plantID}&stateId=${stateID}&IsCustomerDataShow=${cbc}&IsVendorDataShow=${vbc}&IsZeroDataShow=${zbc}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
                 dispatch({
@@ -450,10 +453,11 @@ export function getVendorPowerDetailDataList(data, callback) {
  * @description USED TO GET PLANT SELECT LIST BY STATE
  */
 export function getPlantListByState(ID, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
         if (ID !== '') {
             //dispatch({ type: API_REQUEST });
-            const request = axios.get(`${API.getPlantListByState}/${ID}`, config());
+            const request = axios.get(`${API.getPlantListByState}/${ID}/${loggedInUser?.loggedInUserId}`, config());
             request.then((response) => {
                 if (response.data.Result) {
                     dispatch({
@@ -481,7 +485,7 @@ export function getPlantListByState(ID, callback) {
  */
 export function getDieselRateByStateAndUOM(data, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.getDieselRateByStateAndUOM}?stateId=${Number(data.StateID)}&uomId=${data.UOMID}&plantId=${data.plantId ? data.plantId : ''}&vendorId=${data.vendorId ? data.vendorId : null}&customerId=${data.customerId ? data.customerId : null}&effectiveDate=${data.effectiveDate ? data.effectiveDate : ''}&fuelId=${data.fuelId ? data.fuelId : 0}&cityId=${data.cityId ? data.cityId : 0}`, config());
+        const request = axios.get(`${API.getDieselRateByStateAndUOM}?loggedInUserId=${loggedInUserId()}&stateId=${Number(data.StateID)}&uomId=${data.UOMID}&plantId=${data.plantId ? data.plantId : ''}&vendorId=${data.vendorId ? data.vendorId : null}&customerId=${data.customerId ? data.customerId : null}&effectiveDate=${data.effectiveDate ? data.effectiveDate : ''}&fuelId=${data.fuelId ? data.fuelId : 0}&cityId=${data.cityId ? data.cityId : 0}`, config());
         request.then((response) => {
             if (response && response.status === 200) {
                 callback(response);
@@ -547,7 +551,7 @@ export function getStateSelectList(callback) {
 export function getPowerDetailData(data, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        let queryParams = `powerId=${data?.Id}&plantId=${data?.plantId}`
+        let queryParams = `loggedInUserId=${loggedInUserId()}&powerId=${data?.Id}&plantId=${data?.plantId}`
         if (data !== '') {
             axios.get(`${API.getPowerDetailData}?${queryParams}`, config())
                 .then((response) => {
@@ -578,9 +582,10 @@ export function getPowerDetailData(data, callback) {
  * @description GET VENDOR POWER DETAIL DATA
  */
 export function getVendorPowerDetailData(PowerId, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.get(`${API.getVendorPowerDetailData}/${PowerId}`, config())
+        axios.get(`${API.getVendorPowerDetailData}/${PowerId}/${loggedInUser?.loggedInUserId}`, config())
             .then((response) => {
                 if (response.data.Result === true) {
                     callback(response);
@@ -634,7 +639,7 @@ export function deleteVendorPowerDetail(powerId, loggedInUserId, callback) {
  */
 export function getUOMByFuelId(data, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.getUOMByFuelId}?fuelId=${data}`, config());
+        const request = axios.get(`${API.getUOMByFuelId}?loggedInUserId=${loggedInUserId()}&fuelId=${data}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);

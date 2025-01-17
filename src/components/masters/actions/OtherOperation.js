@@ -25,6 +25,7 @@ import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import axiosInstance from '../../../utils/axiosInstance';
+import { loggedInUserId } from '../../../helper';
 
 // const config() = config
 
@@ -254,6 +255,7 @@ export function getOperationsDataList(filterData, skip, take, isPagination, obj,
     return (dispatch) => {
 
         let payload
+        const loggedInUser = { loggedInUserId: loggedInUserId() }
         //dispatch({ type: API_REQUEST });
         // const QueryParams = `operation_for=${filterData.operation_for}&technology_id=${filterData.technology_id}&ListFor=${filterData.ListFor ? filterData.ListFor : ''}&StatusId=${filterData.StatusId ? filterData.StatusId : ''}&OperationType=${obj.ForType}&DepartmentCode=${obj.DepartmentName !== undefined ? obj.DepartmentName : ""}`
         // const queryParamsSecond = `CostingHead=${obj.CostingHead !== undefined ? obj.CostingHead : ""}&Technology=${obj.Technology !== undefined ? obj.Technology : ""}&Vendor=${obj.VendorName !== undefined ? obj.VendorName : ""}&Plant=${obj.Plants !== undefined ? obj.Plants : ""}&OperationName=${obj.OperationName !== undefined ? obj.OperationName : ""}&OperationCode=${obj.OperationCode !== undefined ? obj.OperationCode : ""}&UOM=${obj.UnitOfMeasurement !== undefined ? obj.UnitOfMeasurement : ""}&Rate=${obj.Rate !== undefined ? obj.Rate : ""}&EffectiveDate=${obj.EffectiveDate !== undefined ? (obj.dateArray && obj.dateArray.length > 1 ? "" : obj.EffectiveDate) : ""}&applyPagination=${isPagination}&skip=${skip}&take=${take}&CustomerName=${obj.CustomerName !== undefined ? obj.CustomerName : ''}&IsCustomerDataShow=${cbc}&IsVendorDataShow=${vbc}&IsZeroDataShow=${zbc}&FromDate=${(obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[0] : ""}&ToDate=${(obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[1] : ""}`
@@ -286,7 +288,7 @@ export function getOperationsDataList(filterData, skip, take, isPagination, obj,
             ToDate: (obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[1] : "",
             isRequestForPendingSimulation: obj.isRequestForPendingSimulation ? true : false
         });
-        axios.get(`${API.getOperationsDataList}?${QueryParams}&${queryParamsSecond}`, config())
+        axios.get(`${API.getOperationsDataList}?loggedInUserId=${loggedInUserId()}&${QueryParams}&${queryParamsSecond}`, config())
 
             .then((response) => {
 
@@ -345,10 +347,11 @@ export function createOperationsAPI(data, callback) {
  * @description Get operation unit operation data
  */
 export function getOperationDataAPI(OperationId, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
         if (OperationId !== '') {
-            axios.get(`${API.getOperationDataAPI}/${OperationId}`, config())
+            axios.get(`${API.getOperationDataAPI}/${OperationId}/${loggedInUser?.loggedInUserId}`, config())
                 .then((response) => {
                     if (response.data.Result === true) {
                         dispatch({
@@ -431,6 +434,7 @@ export function fileUploadOperation(data, callback) {
  */export function checkAndGetOperationCode(code, name, callback) {
     return (dispatch) => {
         const requestBody = {
+            LoggedInUserId: loggedInUserId(),
             operationName: name,
             operationCode: code
         };

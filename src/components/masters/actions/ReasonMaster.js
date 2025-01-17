@@ -13,6 +13,7 @@ import {
 import { apiErrors } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
 import axiosInstance from '../../../utils/axiosInstance';
+import { loggedInUserId } from '../../../helper';
 
 // const config() = config;
 
@@ -81,9 +82,10 @@ export function getAllReasonAPI(isAPICall, callback) {
  * @description get one Reason based on reason id
  */
 export function getReasonAPI(ReasonId, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.get(`${API.getReasonAPI}/${ReasonId}`, config())
+        axios.get(`${API.getReasonAPI}/${ReasonId}/${loggedInUser?.loggedInUserId}`, config())
             .then((response) => {
                 if (response.data.Result === true) {
                     dispatch({

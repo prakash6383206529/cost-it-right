@@ -13,7 +13,7 @@ import {
   CHECK_REGULARIZATION_LIMIT,
   EMPTY_GUID
 } from '../../../config/constants'
-import { userDetails } from '../../../helper'
+import { loggedInUserId, userDetails } from '../../../helper'
 import { apiErrors, encodeQueryParamsAndLog } from '../../../helper/util'
 import axiosInstance from '../../../utils/axiosInstance'
 // const config() = config
@@ -65,12 +65,11 @@ export function updateVolume(requestData, callback) {
  * @description Get Volume Data
  */
 export function getVolumeData(VolumeId, callback) {
-
-
+  const loggedInUser = { loggedInUserId: loggedInUserId() }
   return (dispatch) => {
     dispatch({ type: API_REQUEST })
     if (VolumeId !== '') {
-      axios.get(`${API.getVolumeData}/${VolumeId}`, config())
+      axios.get(`${API.getVolumeData}/${VolumeId}/${loggedInUser?.loggedInUserId}`, config())
         .then((response) => {
           if (response.data.Result === true) {
             dispatch({
@@ -102,6 +101,7 @@ export function getVolumeDataList(skip, take, isPagination, obj, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });    
     const queryParams = encodeQueryParamsAndLog({
+      loggedInUserId: loggedInUserId(),
       CostingHead: obj?.CostingHead,
       Year: obj?.Year,
       Month: obj?.Month,
@@ -216,9 +216,10 @@ export function volumeBulkUpload(data, callback) {
  * @description Get Volume Data by part and year
  */
 export function getVolumeDataByPartAndYear(partNumber, financialYear, plantId, vendorId, customerId, costingTypeId, callback) {
+  const loggedInUser = { loggedInUserId: loggedInUserId() }
   return (dispatch) => {
     dispatch({ type: API_REQUEST });
-    axios.get(`${API.getVolumeData}/${partNumber}/${financialYear}/${plantId === '' ? EMPTY_GUID : plantId}/${vendorId === '' ? EMPTY_GUID : vendorId}/${customerId === '' ? EMPTY_GUID : customerId}/${costingTypeId}`, config())
+    axios.get(`${API.getVolumeData}/${partNumber}/${financialYear}/${plantId === '' ? EMPTY_GUID : plantId}/${vendorId === '' ? EMPTY_GUID : vendorId}/${customerId === '' ? EMPTY_GUID : customerId}/${costingTypeId}/${loggedInUser?.loggedInUserId}`, config())
       .then((response) => {
         if (response.data.Result === true || response.status === 202) {
           dispatch({
@@ -278,9 +279,10 @@ export function updateVolumeLimit(data, callback) {
  * @description Get Volume Limit
  */
 export function getVolumeLimit(technologyId, callback) {
+  const loggedInUser = { loggedInUserId: loggedInUserId() }
   return (dispatch) => {
     dispatch({ type: API_REQUEST });
-    axios.get(`${API.getVolumeLimit}/${technologyId}`, config())
+    axios.get(`${API.getVolumeLimit}/${technologyId}/${loggedInUser?.loggedInUserId}`, config())
       .then((response) => {
         if (response.data.Result === true || response.status === 202) {
           dispatch({
@@ -320,7 +322,7 @@ export function checkRegularizationLimit(obj, callback) {
   };
 }
 export function getPartSelectListWtihRevNo(partNumber, technologyId, nfrId, partTypeId, callback) {
-  return axios.get(`${API.getPartSelectListWtihRevNo}?${partNumber ? `&partNumber=${partNumber}` : ''}${technologyId ? `&technologyId=${technologyId}` : ''}${nfrId ? `&nfrId=${nfrId}` : ''}${partTypeId ? `&partTypeId=${partTypeId}` : ''}`, config()).catch(error => {
+  return axios.get(`${API.getPartSelectListWtihRevNo}?loggedInUserId=${loggedInUserId()}${partNumber ? `&partNumber=${partNumber}` : ''}${technologyId ? `&technologyId=${technologyId}` : ''}${nfrId ? `&nfrId=${nfrId}` : ''}${partTypeId ? `&partTypeId=${partTypeId}` : ''}`, config()).catch(error => {
     apiErrors(error);
     callback(error);
     return Promise.reject(error)

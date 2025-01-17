@@ -11,6 +11,7 @@ import {
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import axiosInstance from '../../../utils/axiosInstance';
+import { loggedInUserId } from '../../../helper';
 
 // const config() = config
 
@@ -42,7 +43,7 @@ export function getInterestRateDataList(isAPICall, data, callback) {
     return (dispatch) => {
         if (isAPICall) {
             dispatch({ type: API_REQUEST });
-            let queryParams = `vendor=${data.vendor}&icc_applicability=${data.icc_applicability}&payment_term_applicability=${data.payment_term_applicability}&RawMaterialName=${data.RawMaterialName !== undefined ? data.RawMaterialName : ''}&RawMaterialGrade=${data.RawMaterialGrade !== undefined ? data.RawMaterialGrade : ''}&TechnologyName=${data.TechnologyName !== undefined ? data.TechnologyName : ''}&IsCustomerDataShow=${data?.IsCustomerDataShow !== undefined ? data?.IsCustomerDataShow : ""}&IsVendorDataShow=${data?.IsVendorDataShow}&IsZeroDataShow=${data?.IsZeroDataShow}`
+            let queryParams = `loggedInUserId=${loggedInUserId()}&vendor=${data.vendor}&icc_applicability=${data.icc_applicability}&payment_term_applicability=${data.payment_term_applicability}&RawMaterialName=${data.RawMaterialName !== undefined ? data.RawMaterialName : ''}&RawMaterialGrade=${data.RawMaterialGrade !== undefined ? data.RawMaterialGrade : ''}&TechnologyName=${data.TechnologyName !== undefined ? data.TechnologyName : ''}&IsCustomerDataShow=${data?.IsCustomerDataShow !== undefined ? data?.IsCustomerDataShow : ""}&IsVendorDataShow=${data?.IsVendorDataShow}&IsZeroDataShow=${data?.IsZeroDataShow}`
             axios.get(`${API.getInterestRateDataList}?${queryParams}`, config())
                 .then((response) => {
                     if (response.data.Result || response.status === 204)
@@ -70,10 +71,11 @@ export function getInterestRateDataList(isAPICall, data, callback) {
  * @description GET INTEREST RATE DATA
  */
 export function getInterestRateData(ID, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
         if (ID !== '') {
-            axios.get(`${API.getInterestRateData}/${ID}`, config())
+            axios.get(`${API.getInterestRateData}/${ID}/${loggedInUser?.loggedInUserId}`, config())
                 .then((response) => {
                     if (response.data.Result) {
                         dispatch({
@@ -119,9 +121,10 @@ export function deleteInterestRate(vendorIntrestRateId, loggedInUserId, callback
  * @description UPDATE INTEREST RATE
  */
 export function updateInterestRate(requestData, callback) {
+    const requestedData = { LoggedInUserId: loggedInUserId(), ...requestData }
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axiosInstance.put(`${API.updateInterestRate}`, requestData, config())
+        axiosInstance.put(`${API.updateInterestRate}`, requestedData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {

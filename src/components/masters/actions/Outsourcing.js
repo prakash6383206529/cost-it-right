@@ -11,6 +11,7 @@ import {
 } from '../../../config/constants';
 import { apiErrors, encodeQueryParamsAndLog } from '../../../helper/util';
 import axiosInstance from '../../../utils/axiosInstance';
+import { loggedInUserId } from '../../../helper';
 
 
 /**
@@ -57,9 +58,10 @@ export function updateOutsourcing(requestData, callback) {
  * @description get outsourcing data
  */
 export function getOutsourcing(outSourcingId, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.get(`${API.getOutsourcing}/${outSourcingId}`, config())
+        axios.get(`${API.getOutsourcing}/${outSourcingId}/${loggedInUser?.loggedInUserId}`, config())
             .then((response) => {
                 if (response.data.Result === true) {
                     dispatch({
@@ -80,9 +82,8 @@ export function getOutsourcing(outSourcingId, callback) {
 */
 export function getAllOutsourcing(obj, isPagination, skip, take, callback) {
     return (dispatch) => {
-        // const QueryParams = `outSourcingName=${obj.OutSourcingName !== undefined ? obj.OutSourcingName : ""}&outSourcingShortName=${obj.OutSourcingShortName !== undefined ? obj.OutSourcingShortName : ""}&isApplyPagination=${isPagination !== undefined ? isPagination : ""}&skip=${skip !== undefined ? skip : ""}&take=${take !== undefined ? take : ""}`
         const queryParams = encodeQueryParamsAndLog({
-            outSourcingName: obj.OutSourcingName, outSourcingShortName: obj.OutSourcingShortName, isApplyPagination: isPagination, skip: skip, take: take
+            loggedInUserId: loggedInUserId(), outSourcingName: obj.OutSourcingName, outSourcingShortName: obj.OutSourcingShortName, isApplyPagination: isPagination, skip: skip, take: take
         });
         dispatch({ type: API_REQUEST });
         axios.get(`${API.getAllOutsourcing}?${queryParams}`, config())

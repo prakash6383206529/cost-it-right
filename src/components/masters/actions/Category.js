@@ -18,6 +18,7 @@ import {
 import { apiErrors } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
 import axiosInstance from '../../../utils/axiosInstance';
+import { loggedInUserId } from '../../../helper';
 
 // const config() = config
 
@@ -26,8 +27,9 @@ import axiosInstance from '../../../utils/axiosInstance';
  * @description create category type
  */
 export function createCategoryTypeAPI(data, callback) {
+    const requestData = { LoggedInUserId: loggedInUserId(), ...data }
     return (dispatch) => {
-        const request = axiosInstance.post(API.createcategoryTypeAPI, data, config());
+        const request = axiosInstance.post(API.createcategoryTypeAPI, requestData, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -56,9 +58,10 @@ export function createCategoryTypeAPI(data, callback) {
  * @description get category type data
  */
 export function getCategoryTypeDataAPI(CategoryTypeId, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
         if (CategoryTypeId !== '') {
-            axios.get(`${API.getCategoryTypeDataAPI}/${CategoryTypeId}`, config())
+            axios.get(`${API.getCategoryTypeDataAPI}/${CategoryTypeId}/${loggedInUser?.loggedInUserId}`, config())
                 .then((response) => {
                     dispatch({
                         type: GET_CATEGORY_TYPE_DATA_SUCCESS,
@@ -98,9 +101,10 @@ export function setEmptyCategoryTypeData(callback) {
  * @description update category type details
  */
 export function updateCategoryTypeAPI(requestData, callback) {
+    const requestedData = { LoggedInUserId: loggedInUserId(), ...requestData }
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axiosInstance.put(`${API.updateCategoryTypeAPI}`, requestData, config())
+        axiosInstance.put(`${API.updateCategoryTypeAPI}`, requestedData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -115,9 +119,10 @@ export function updateCategoryTypeAPI(requestData, callback) {
  * @description delete Category type API
  */
 export function deleteCategoryTypeAPI(CategoryTypeId, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deleteCategoryTypeAPI}/${CategoryTypeId}`, config())
+        axios.delete(`${API.deleteCategoryTypeAPI}/${CategoryTypeId}/${loggedInUser?.loggedInUserId}`, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -132,8 +137,9 @@ export function deleteCategoryTypeAPI(CategoryTypeId, callback) {
  * @description create category category
  */
 export function createCategoryAPI(data, callback) {
+    const requestData = { LoggedInUserId: loggedInUserId(), ...data }
     return (dispatch) => {
-        const request = axiosInstance.post(API.createCategoryAPI, data, config());
+        const request = axiosInstance.post(API.createCategoryAPI, requestData, config());
         request.then((response) => {
             if (response && response.data && response.data.Result) {
                 dispatch({
@@ -163,9 +169,10 @@ export function createCategoryAPI(data, callback) {
  * @description get category data
  */
 export function getCategoryData(CategoryId, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
         if (CategoryId !== '') {
-            axios.get(`${API.getCategoryData}/${CategoryId}`, config())
+            axios.get(`${API.getCategoryData}/${CategoryId}/${loggedInUser?.loggedInUserId}`, config())
                 .then((response) => {
                     dispatch({
                         type: GET_CATEGORY_MASTER_DATA_SUCCESS,
@@ -191,9 +198,10 @@ export function getCategoryData(CategoryId, callback) {
  * @description update category details
  */
 export function updateCategoryMasterAPI(requestData, callback) {
+    const requestedData = { LoggedInUserId: loggedInUserId(), ...requestData }
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axiosInstance.put(`${API.updateCategoryMasterAPI}`, requestData, config())
+        axiosInstance.put(`${API.updateCategoryMasterAPI}`, requestedData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -209,9 +217,10 @@ export function updateCategoryMasterAPI(requestData, callback) {
  * @description delete Category API
  */
 export function deleteCategoryMasterAPI(CategoryId, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deleteCategoryMasterAPI}/${CategoryId}`, config())
+        axios.delete(`${API.deleteCategoryMasterAPI}/${CategoryId}/${loggedInUser?.loggedInUserId}`, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {

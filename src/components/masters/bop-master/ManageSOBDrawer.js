@@ -56,7 +56,6 @@ function ManageSOBDrawer(props) {
       // setIsLoader(true)
       if (res && res?.data && res?.data?.Result) {
         let Data = res?.data?.Data;
-        console.log(Data);
         setEffectiveDate(Data?.Effectivedate ? Data?.Effectivedate : '')
 
         if (Data?.BoughtOutPartVendorList?.length === 1) {

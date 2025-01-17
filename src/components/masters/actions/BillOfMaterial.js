@@ -14,6 +14,7 @@ import { apiErrors } from '../../../helper/util';
 
 import Toaster from '../../common/Toaster';
 import axiosInstance from '../../../utils/axiosInstance';
+import { loggedInUserId } from '../../../helper';
 
 // const config() = config;
 
@@ -226,9 +227,10 @@ export function deleteExisCostingByPartID(PartId, callback) {
 
 
 export function createMBOMAssembly(obj, callback) {
+    const requestData = { LoggedInUserId: loggedInUserId(), ...obj }
     return (dispatch) => {
 
-        const request = axiosInstance.post(API.createMBOMAssemblyApi, obj, config());
+        const request = axiosInstance.post(API.createMBOMAssemblyApi, requestData, config());
 
         request.then((response) => {
             callback(response);

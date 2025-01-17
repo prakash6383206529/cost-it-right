@@ -8,6 +8,7 @@ import {
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import axiosInstance from '../../../utils/axiosInstance';
+import { loggedInUserId } from '../../../helper';
 
 // const config() = {
 //     'Content-Type': 'application/json',
@@ -61,10 +62,11 @@ export function getTaxDetailsDataList(callback) {
  * @description GET TAX DETAILS DATA
  */
 export function getTaxDetailsData(taxID, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
         if (taxID !== '') {
-            axios.get(`${API.getTaxDetailsData}/${taxID}`, config())
+            axios.get(`${API.getTaxDetailsData}/${taxID}/${loggedInUser?.loggedInUserId}`, config())
                 .then((response) => {
                     if (response.data.Result === true) {
                         dispatch({
@@ -92,9 +94,10 @@ export function getTaxDetailsData(taxID, callback) {
  * @description TAX DETAILS DELETE
  */
 export function deleteTaxDetails(Id, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deleteTaxDetails}/${Id}`, config())
+        axios.delete(`${API.deleteTaxDetails}/${Id}/${loggedInUser?.loggedInUserId}`, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {

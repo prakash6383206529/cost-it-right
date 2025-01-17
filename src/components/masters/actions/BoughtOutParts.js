@@ -24,6 +24,7 @@ import Toaster from '../../common/Toaster';
 import { bopQueryParms } from '../masterUtil';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import axiosInstance from "../../../utils/axiosInstance";
+import { loggedInUserId } from "../../../helper";
 
 // const config() = config
 
@@ -60,6 +61,7 @@ export function getBOPDataList(data, skip, take, isPagination, obj, isImport, ca
       });
     }
     const queryParams = encodeQueryParamsAndLog({
+      loggedInUserId: loggedInUserId(),
       bop_for: data.bop_for,
       NetCost: obj.NetLandedCost !== undefined ? obj.NetLandedCost : "",
       ListFor: data.ListFor ? data.ListFor : '',
@@ -117,11 +119,12 @@ export function getBOPDataList(data, skip, take, isPagination, obj, isImport, ca
  * @description get one bought out part based on id
  */
 export function getBOPDomesticById(bopId, callback) {
+  const loggedInUser = { loggedInUserId: loggedInUserId() }
   return (dispatch) => {
     dispatch({ type: API_REQUEST });
     if (bopId !== "") {
       axios
-        .get(`${API.getBOPDomesticById}/${bopId}`, config())
+        .get(`${API.getBOPDomesticById}/${bopId}/${loggedInUser?.loggedInUserId}`, config())
         .then((response) => {
           if (response.data.Result) {
             dispatch({
@@ -150,11 +153,12 @@ export function getBOPDomesticById(bopId, callback) {
  * @description get one bought out part based on id
  */
 export function getBOPImportById(bopId, callback) {
+  const loggedInUser = { loggedInUserId: loggedInUserId() }
   return (dispatch) => {
     dispatch({ type: API_REQUEST });
     if (bopId !== "") {
       axios
-        .get(`${API.getBOPImportById}/${bopId}`, config())
+        .get(`${API.getBOPImportById}/${bopId}/${loggedInUser?.loggedInUserId}`, config())
         .then((response) => {
           if (response.data.Result) {
             dispatch({
@@ -262,10 +266,11 @@ export function getBOPCategorySelectList(callback) {
  * @description Used to get select list of Plant by Vendors
  */
 export function getPlantSelectListByVendor(VendorId, callback) {
+  const loggedInUser = { loggedInUserId: loggedInUserId() }
   return (dispatch) => {
     dispatch({ type: API_REQUEST });
     const request = axios.get(
-      `${API.getPlantSelectListByVendor}/${VendorId}`,
+      `${API.getPlantSelectListByVendor}/${VendorId}/${loggedInUser?.loggedInUserId}`,
       config()
     );
     request.then((response) => {
@@ -328,7 +333,7 @@ export function bulkUploadBOP(data, callback) {
 export function getInitialFilterData(boughtOutPartNumber, callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST });
-    const queryParams = `boughtOutPartNumber=${boughtOutPartNumber}`;
+    const queryParams = `loggedInUserId=${loggedInUserId()}&boughtOutPartNumber=${boughtOutPartNumber}`;
     const request = axios.get(`${API.getManageBOPSOBDataList}?${queryParams}`, config());
     request.then((response) => {
       if (response.data.Result) {
@@ -356,6 +361,7 @@ export function getManageBOPSOBDataList(data, callback) {
     dispatch({ type: API_REQUEST });
     // const queryParams = `bought_out_part_id=${data.bought_out_part_id}&plant_id=${data.plant_id}`;
     const queryParams = new URLSearchParams({
+      loggedInUserId: loggedInUserId(),
       boughtOutPartNumber: data.boughtOutPartNumber || '',
       boughtOutPartName: data.boughtOutPartName || '',
       category: data.category || '',
@@ -392,7 +398,7 @@ export function getManageBOPSOBDataList(data, callback) {
 export function getViewBoughtOutPart(data, callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST });
-    const queryParams = `entryType=${data.entryType}&bopCategory=${data.bopCategory}&bopName=${data.bopName}&bopNumber=${data.bopNumber}`;
+    const queryParams = `loggedInUserId=${loggedInUserId()}&entryType=${data.entryType}&bopCategory=${data.bopCategory}&bopName=${data.bopName}&bopNumber=${data.bopNumber}`;
     const request = axios.get(`${API.getViewBoughtOutPart}?${queryParams}`, config());
     request.then((response) => {
       if (response.data.Result || response.status === 204) {
@@ -418,7 +424,7 @@ export function getManageBOPSOBById(boughtOutPartNumber, callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST });
     if (boughtOutPartNumber !== "") {
-      const queryParams = `boughtOutPartNumber=${boughtOutPartNumber}`;
+      const queryParams = `boughtOutPartNumber=${boughtOutPartNumber}&loggedInUserId=${loggedInUserId()}`;
       axios.get(`${API.getManageBOPSOBById}?${queryParams}`, config())
         .then((response) => {
           if (response.data.Result) {
@@ -466,7 +472,7 @@ export function updateBOPSOBVendors(requestData, callback) {
 export function getIncoTermSelectList(callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getIncoTermSelectList}`, config());
+    const request = axios.get(`${API.getIncoTermSelectList}?loggedInUserId=${loggedInUserId()}`, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -512,7 +518,7 @@ export function getPaymentTermSelectList(callback) {
 export function checkAndGetBopPartNo(obj, callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST });
-    const request = axiosInstance.post(`${API.checkAndGetBopPartNo}?bopName=${obj.bopName}&bopCategory=${obj.bopCategory}&bopNumber=${obj.bopNumber}`, "", config());
+    const request = axiosInstance.post(`${API.checkAndGetBopPartNo}?loggedInUserId=${loggedInUserId()}&bopName=${obj.bopName}&bopCategory=${obj.bopCategory}&bopNumber=${obj.bopNumber}`, "", config());
     request.then((response) => {
       if (response && response.status === 200) {
         callback(response);
@@ -533,8 +539,12 @@ export function setBopCostingData(data) {
   }
 };
 export function getViewBOPDetails(data, callback) {
+  const requestData = {
+    loggedInUserId: loggedInUserId(),
+    ...data
+  }
   return (dispatch) => {
-    const request = axiosInstance.post(API.getViewBOPDetails, data, config())
+    const request = axiosInstance.post(API.getViewBOPDetails, requestData, config())
     request
       .then((response) => {
         if (response?.data.Result) {

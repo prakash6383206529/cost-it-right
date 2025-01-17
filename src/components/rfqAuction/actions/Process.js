@@ -63,46 +63,6 @@ export function getProcessCode(obj, callback) {
 
 
 /**
- * @method getProcessDataList
- * @description GET PROCESS DATALIST
- */
-export function getProcessDataList(data, callback) {
-    return (dispatch) => {
-        const request = axios.get(`${API.getProcessDataList}?ProcessName=${data.ProcessName}&ProcessCode=${data.ProcessCode}`, config());
-        request.then((response) => {
-            if (response.data.Result || response.status === 204) {
-                dispatch({
-                    type: GET_PROCESS_LIST_SUCCESS,
-                    payload: response.status === 204 ? [] : response.data.DataList,
-                });
-                callback(response)
-            }
-        }).catch((error) => {
-            dispatch({ type: API_FAILURE });
-            apiErrors(error);
-        });
-    };
-}
-
-/**
- * @method deleteProcess
- * @description DELETE PROCESS
- */
-export function deleteProcess(processId, loggedInUserId, callback) {
-    return (dispatch) => {
-        dispatch({ type: API_REQUEST });
-        const queryParams = `processId=${processId}&loggedInUserId=${loggedInUserId}`
-        axios.delete(`${API.deleteProcess}?${queryParams}`, config())
-            .then((response) => {
-                callback(response);
-            }).catch((error) => {
-                apiErrors(error);
-                dispatch({ type: API_FAILURE });
-            });
-    };
-}
-
-/**
  * @method getProcessData
  * @description GET PROCESS DATA
  */

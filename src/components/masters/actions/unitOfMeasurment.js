@@ -16,6 +16,7 @@ import { apiErrors } from '../../../helper/util';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
 import axiosInstance from '../../../utils/axiosInstance';
+import { loggedInUserId } from '../../../helper';
 
 // const config() = config;
 
@@ -46,10 +47,11 @@ export function getUnitOfMeasurementAPI(callback) {
  * @description get one UOM based on id
  */
 export function getOneUnitOfMeasurementAPI(uomId, isEditFlag, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
         if (isEditFlag) {
-            axios.get(`${API.getUOMAPI}/${uomId}`, config())
+            axios.get(`${API.getUOMAPI}/${uomId}/${loggedInUser?.loggedInUserId}`, config())
                 .then((response) => {
                     if (response.data.Result === true) {
                         dispatch({

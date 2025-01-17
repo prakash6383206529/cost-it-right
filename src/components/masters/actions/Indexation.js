@@ -22,7 +22,7 @@ import {
 }
     from '../../../config/constants';
 import { apiErrors, encodeQueryParamsAndLog } from '../../../helper/util';
-import { userDetails } from '../../../helper';
+import { loggedInUserId, userDetails } from '../../../helper';
 import axiosInstance from '../../../utils/axiosInstance';
 
 /**
@@ -57,7 +57,7 @@ export function getCommodityNameInIndexSelectList(indexExchangeId, callback) {
 
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getCommodityNameInIndexSelectList}?indexExchangeId=${indexExchangeId}`, config());
+        const request = axios.get(`${API.getCommodityNameInIndexSelectList}?indexExchangeId=${indexExchangeId}&loggedInUserId=${loggedInUserId()}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -167,10 +167,12 @@ export function getCommodityIndexDataListAPI(obj, isPagination, skip, take, isAd
         let queryParams
         if (isAddForm) {
             queryParams = encodeQueryParamsAndLog({
+                loggedInUserId: loggedInUserId(),
                 indexExchangeId: obj
             });
         } else {
             queryParams = encodeQueryParamsAndLog({
+                loggedInUserId: loggedInUserId(),
                 IndexExchangeId: "", indexExchangeName: obj.IndexExchangeName, description: "", applyPagination: isPagination, skip: skip, take: take
             });
         }
@@ -206,6 +208,7 @@ export function getCommodityIndexDataListAPI(obj, isPagination, skip, take, isAd
 export function getCommodityInIndexDataListAPI(obj, isPagination, skip, take, callback) {
     return (dispatch) => {
         const queryParams = encodeQueryParamsAndLog({
+            loggedInUserId: loggedInUserId(),
             indexExchangeCommodityLinkingId: "", commodityId: "", commodityName: obj.CommodityName, commodityShortName: "", indexExchangeName: obj.IndexExchangeName, description: "", applyPagination: isPagination, skip: skip, take: take
         });
         dispatch({ type: API_REQUEST });
@@ -242,10 +245,12 @@ export function getStandardizedCommodityListAPI(obj, isPagination, skip, take, i
         let queryParams
         if (isEditMode) {
             queryParams = encodeQueryParamsAndLog({
+                loggedInUserId: loggedInUserId(),
                 commodityStandardizationId: obj
             });
         } else {
             queryParams = encodeQueryParamsAndLog({
+                loggedInUserId: loggedInUserId(),
                 commodityStandardizationId: "", commodityStandardName: obj.CommodityStandardName, commodityName: obj.CommodityName, indexExchangeName: obj.IndexExchangeName, remark: '', applyPagination: isPagination, skip: skip, take: take
             });
         }
@@ -281,6 +286,7 @@ export function getStandardizedCommodityListAPI(obj, isPagination, skip, take, i
 export function getIndexDataListAPI(obj, isPagination, skip, take, callback) {
     return (dispatch) => {
         const queryParams = encodeQueryParamsAndLog({
+            loggedInUserId: loggedInUserId(),
             commodityIndexRateDetailId: obj.CommodityIndexRateDetailId || "",
             ratePerIndexUOM: obj.RatePerIndexUOM || "",
             ratePerConvertedUOM: obj.RatePerConvertedUOM || "",
@@ -453,25 +459,6 @@ export function bulkUploadStandardizedCommodity(data, callback) {
 }
 
 /**
- * @method getAssociatedMaterial
- * @description get Associated Material API
- */
-export function getAssociatedMaterial(rawMaterialId, gradeId, callback) {
-    return (dispatch) => {
-        dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getAssociatedMaterial}?materialTypeId=${rawMaterialId}?rawMaterialGradeId=${gradeId}`, config());
-        request.then((response) => {
-            if (response.data.Result) {
-                callback(response);
-            }
-        }).catch((error) => {
-            dispatch({ type: API_FAILURE, });
-            apiErrors(error);
-        });
-    };
-}
-
-/**
  * @method getAssociatedMaterialDetails
  * @description get Associated Material Details API
  */
@@ -585,6 +572,7 @@ export function updateIndex(requestData, callback) {
 export function getCommodityStandardList(obj, isPagination, skip, take, callback) {
     return (dispatch) => {
         const queryParams = encodeQueryParamsAndLog({
+            loggedInUserId: loggedInUserId(),
             commodityStandardId: "", commodityStandardName: obj.CommodityStandardName, applyPagination: isPagination, skip: skip, take: take
         });
         dispatch({ type: API_REQUEST });
@@ -735,8 +723,9 @@ export function setOtherCostDetails(data) {
  * @description get Last Revision Raw Material
  */
 export function getLastRevisionRawMaterialDetails(data, callback) {
+    const requestData = { LoggedInUserId: loggedInUserId(), ...data }
     return (dispatch) => {
-        const request = axiosInstance.post(API.getLastRevisionRawMaterialDetails, data, config());
+        const request = axiosInstance.post(API.getLastRevisionRawMaterialDetails, requestData, config());
         request.then((response) => {
             if (response) {
                 callback(response);
@@ -754,7 +743,7 @@ export function getLastRevisionRawMaterialDetails(data, callback) {
 export function getRawMaterialDataBySourceVendor(data, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getRawMaterialDataBySourceVendor}?costingHeadId=${ZBCTypeId}&technologyId=${data.technologyId}&rawMaterialSpecificationId=${data.rawMaterialSpecificationId}&isIndexationDetails=${data.isIndexationDetails}&sourceVendorId=${data.sourceVendorId}`, config());
+        const request = axios.get(`${API.getRawMaterialDataBySourceVendor}?loggedInUserId=${loggedInUserId()}&costingHeadId=${ZBCTypeId}&technologyId=${data.technologyId}&rawMaterialSpecificationId=${data.rawMaterialSpecificationId}&isIndexationDetails=${data.isIndexationDetails}&sourceVendorId=${data.sourceVendorId}`, config());
         request.then((response) => {
             if (response) {
                 callback(response);

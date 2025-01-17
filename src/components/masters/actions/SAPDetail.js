@@ -11,6 +11,7 @@ import { apiErrors } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import axiosInstance from '../../../utils/axiosInstance';
+import { loggedInUserId } from '../../../helper';
 
 
 // const config() = config
@@ -175,7 +176,7 @@ export function sapPushBulkUpload(data, callback) {
 }
 
 export function getAllPartBopRmList(partNumber, callback) {
-    return axios.get(`${API.getAllPartBopRmList}?${partNumber ? `&number=${partNumber}` : ''}`, config()).catch(error => {
+    return axios.get(`${API.getAllPartBopRmList}?loggedInUserId=${loggedInUserId()}${partNumber ? `&number=${partNumber}` : ''}`, config()).catch(error => {
         apiErrors(error);
         callback(error);
         return Promise.reject(error)

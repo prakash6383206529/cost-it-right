@@ -9,7 +9,7 @@ import {
 } from '../../../config/constants'
 import { apiErrors, encodeQueryParamsAndLog } from '../../../helper/util'
 import Toaster from '../../common/Toaster'
-import { userDetails } from '../../../helper'
+import { loggedInUserId, userDetails } from '../../../helper'
 import axiosInstance from '../../../utils/axiosInstance'
 
 
@@ -21,6 +21,7 @@ export function getBudgetDataList(skip, take, isPagination, obj, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });  
         const QueryParams = encodeQueryParamsAndLog({
+            loggedInUserId: loggedInUserId(),
             costingHead: obj.CostingHead,
             financialYear: obj.FinancialYear,
             netPoPrice: obj.NetPoPrice,
@@ -143,7 +144,7 @@ export function getPartCostingHead(callback) {
 export function getMasterBudget(Id, callback) {
     return (dispatch) => {
 
-        axios.get(`${API.getMasterBudget}?budgetingId=${Id}`, config())
+        axios.get(`${API.getMasterBudget}?loggedInUserId=${loggedInUserId()}&budgetingId=${Id}`, config())
             .then((response) => {
                 if (response.data.Result || response.status === 204) {
                     callback(response.status === 204 ? [] : response)

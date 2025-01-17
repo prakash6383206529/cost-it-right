@@ -21,6 +21,7 @@ import { apiErrors } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import axiosInstance from '../../../utils/axiosInstance';
+import { loggedInUserId } from '../../../helper';
 
 // const config() = config;
 
@@ -53,7 +54,7 @@ export function createFreight(data, callback) {
  */
 export function getFreightDataList(filterData, callback) {
     return (dispatch) => {
-        const queryParams = `freight_for=${filterData.freight_for}&vendor_id=${filterData.vendor_id}&source_city_id=${filterData.source_city_id}&destination_city_id=${filterData.destination_city_id}&IsCustomerDataShow=${filterData?.IsCustomerDataShow}&IsVendorDataShow=${filterData?.IsVendorDataShow}&IsZeroDataShow=${filterData?.IsZeroDataShow}`
+        const queryParams = `loggedInUserId=${loggedInUserId()}&freight_for=${filterData.freight_for}&vendor_id=${filterData.vendor_id}&source_city_id=${filterData.source_city_id}&destination_city_id=${filterData.destination_city_id}&IsCustomerDataShow=${filterData?.IsCustomerDataShow}&IsVendorDataShow=${filterData?.IsVendorDataShow}&IsZeroDataShow=${filterData?.IsZeroDataShow}`
         const request = axios.get(`${API.getFreightDataList}?${queryParams}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204)
@@ -74,10 +75,11 @@ export function getFreightDataList(filterData, callback) {
  * @description GET FREIGHT DATA
  */
 export function getFreightData(freightId, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
         if (freightId !== '') {
             dispatch({ type: API_REQUEST });
-            axios.get(`${API.getFreightData}/${freightId}`, config())
+            axios.get(`${API.getFreightData}/${freightId}/${loggedInUser?.loggedInUserId}`, config())
                 .then((response) => {
                     if (response.data.Result) {
                         dispatch({
@@ -220,8 +222,9 @@ export function createAdditionalFreightAPI(data, callback) {
  * @description get Additional freight list
  */
 export function getAllAdditionalFreightAPI(callback) {
+    const queryParams = { LoggedInUserId: loggedInUserId() }
     return (dispatch) => {
-        const request = axios.get(API.getAllAdditionalFreightAPI, config());
+        const request = axios.get(`${API.getAllAdditionalFreightAPI}?${queryParams}`, config());
         request.then((response) => {
             dispatch({
                 type: GET_ALL_ADDITIONAL_FREIGHT_SUCCESS,

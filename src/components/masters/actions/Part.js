@@ -73,10 +73,11 @@ export function updatePart(requestData, callback) {
  * @description get Part Data
  */
 export function getPartData(PartId, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
         if (PartId !== '') {
-            axios.get(`${API.getPartData}/${PartId}`, config())
+            axios.get(`${API.getPartData}/${PartId}/${loggedInUser?.loggedInUserId}`, config())
                 .then((response) => {
 
                     if (response.data.Result === true) {
@@ -111,7 +112,7 @@ export function getPartDataList(skip, take, obj, isPagination, callback) {
         var additionalQueryParams = encodeQueryParams({
             effectiveDate: obj?.newDate !== null && obj?.newDate !== undefined ? obj?.newDate : "", partNumber: obj.PartNumber !== null && obj.PartNumber !== "" ? obj.PartNumber : "", partName: obj.PartName !== null && obj.PartName !== "" ? obj.PartName : "", ecnNumber: obj.ECNNumber !== null && obj.ECNNumber !== "" ? obj.ECNNumber : "", revisionNumber: obj.RevisionNumber !== null && obj.RevisionNumber !== "" ? obj.RevisionNumber : "", drawingNumber: obj.DrawingNumber !== null && obj.DrawingNumber !== "" ? obj.DrawingNumber : "", technology: obj.Technology ? obj.Technology : "", sapCode: obj.SAPCode ? obj.SAPCode : ""
         });
-        const queryParams = `${baseQueryParams}&${additionalQueryParams}`;
+        const queryParams = `loggedInUserId=${loggedInUserId()}&${baseQueryParams}&${additionalQueryParams}`;
 
         const request = axios.get(`${API.getPartDataList}?${queryParams}`, config());
         request.then((response) => {
@@ -286,12 +287,13 @@ export function createAssemblyPart(data, callback) {
 */
 
 export function getAssemblyPartDataList(params, callback) {
+    const requestData = { LoggedInUserId: loggedInUserId(), ...params }
     return async (dispatch) => {
         try {
             // Make the API request
             const response = await axios.get(API.getAssemblyPartDataList, {
                 ...config(),
-                params,
+                params: requestData,
             });
 
             // Check if the response is valid
@@ -321,10 +323,10 @@ export function getAssemblyPartDataList(params, callback) {
 * @description GET ASSEMBLY PART DETAIL
 */
 export function getAssemblyPartDetail(PartId, callback) {
-
-    return (dispatch) => {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
+            return (dispatch) => {
         if (PartId !== '') {
-            const request = axios.get(`${API.getAssemblyPartDetail}/${PartId}`, config());
+            const request = axios.get(`${API.getAssemblyPartDetail}/${PartId}/${loggedInUser?.loggedInUserId}`, config());
             request.then((response) => {
                 if (response.data.Result || response.status === 204) {
                     dispatch({
@@ -406,7 +408,7 @@ export function getSelectListPartType(callback) {
 * @description GET ASSEMBLY PART SELECTLIST
 */
 export function getAssemblyPartSelectList(data, callback) {
-    return axios.get(`${API.getAssemblyPartSelectList}?technologyId=${data.technologyId}&effectiveDate=${data.date}&partNumber=${data.partNumber}&isActive=${data.isActive}`, config()).catch(error => {
+    return axios.get(`${API.getAssemblyPartSelectList}?loggedInUserId=${loggedInUserId()}&technologyId=${data.technologyId}&effectiveDate=${data.date}&partNumber=${data.partNumber}&isActive=${data.isActive}`, config()).catch(error => {
         apiErrors(error);
         callback(error);
         return Promise.reject(error)
@@ -418,7 +420,7 @@ export function getAssemblyPartSelectList(data, callback) {
 * @description GET COMPONENT PART SELECTLIST
 */
 export function getComponentPartSelectList(data, callback) {
-    return axios.get(`${API.getComponentPartSelectList}?technologyId=${data.technologyId}&effectiveDate=${data.date}&partNumber=${data.partNumber}&isActive=${data.isActive}`, config()).catch(error => {
+    return axios.get(`${API.getComponentPartSelectList}?loggedInUserId=${loggedInUserId()}&technologyId=${data.technologyId}&effectiveDate=${data.date}&partNumber=${data.partNumber}&isActive=${data.isActive}`, config()).catch(error => {
         apiErrors(error);
         callback(error);
         return Promise.reject(error)
@@ -451,9 +453,10 @@ export function getBoughtOutPartSelectList(date, callback) {
 * @description GET DRAWER ASSEMBLY PART DETAIL
 */
 export function getDrawerAssemblyPartDetail(PartId, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
         if (PartId !== '') {
-            const request = axios.get(`${API.getAssemblyPartDetail}/${PartId}`, config());
+            const request = axios.get(`${API.getAssemblyPartDetail}/${PartId}/${loggedInUser?.loggedInUserId}`, config());
             request.then((response) => {
                 dispatch({
                     type: GET_DRAWER_CHILD_PART_DATA,
@@ -480,10 +483,11 @@ export function getDrawerAssemblyPartDetail(PartId, callback) {
  * @description get Drawer Component Part Data
  */
 export function getDrawerComponentPartData(PartId, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
         if (PartId !== '') {
-            axios.get(`${API.getPartData}/${PartId}`, config())
+            axios.get(`${API.getPartData}/${PartId}/${loggedInUser?.loggedInUserId}`, config())
                 .then((response) => {
                     if (response.data.Result === true) {
                         dispatch({
@@ -511,10 +515,11 @@ export function getDrawerComponentPartData(PartId, callback) {
  * @description get Drawer BOP Data
  */
 export function getDrawerBOPData(PartId, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
         if (PartId !== '') {
-            axios.get(`${API.getChildDrawerBOPData}/${PartId}`, config())
+            axios.get(`${API.getChildDrawerBOPData}/${PartId}/${loggedInUser?.loggedInUserId}`, config())
                 .then((response) => {
                     if (response.data.Result === true) {
                         dispatch({
@@ -542,9 +547,10 @@ export function getDrawerBOPData(PartId, callback) {
  * @description GET BOM VIEWER TREE BY ASSEMBLY PART ID
  */
 export function getBOMViewerTree(PartId, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.get(`${API.getBOMViewerTree}/${PartId}`, config())
+        axios.get(`${API.getBOMViewerTree}/${PartId}/${loggedInUser?.loggedInUserId}`, config())
             .then((response) => {
                 if (response.data.Result === true) {
                     callback(response);
@@ -561,9 +567,10 @@ export function getBOMViewerTree(PartId, callback) {
  * @description GET BOM VIEWER TREE BY ASSEMBLY PART ID AND LEVELID
  */
 export function getBOMViewerTreeDataByPartIdAndLevel(PartId, LevelId, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.get(`${API.getBOMViewerTree}/${PartId}/${LevelId}`, config())
+        axios.get(`${API.getBOMViewerTree}/${PartId}/${LevelId}/${loggedInUser?.loggedInUserId}`, config())
             .then((response) => {
                 if (response.data.Result === true) {
                     callback(response);
@@ -674,7 +681,7 @@ export function getProductData(ProductId, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
         if (ProductId !== '') {
-            axios.get(`${API.getProductById}?productid=${ProductId}`, config())
+            axios.get(`${API.getProductById}?loggedInUserId=${loggedInUserId()}&productid=${ProductId}`, config())
                 .then((response) => {
                     if (response.data.Result === true) {
                         dispatch({
@@ -758,7 +765,7 @@ export function getProductGroupSelectList(callback) {
 
 export function getPartDescription(partNumber, partId, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.getPartDescription}?PartNumber=${partNumber}&PartTypeId=${partId}`, config())
+        const request = axios.get(`${API.getPartDescription}?PartNumber=${partNumber}&PartTypeId=${partId}&loggedInUserId=${loggedInUserId()}`, config())
         request.then((response) => {
             if (response && response.status === 200) {
                 callback(response)
@@ -877,7 +884,7 @@ export function getAllProductLevels(callback) {
 export function getPreFilledProductLevelValues(levelValueId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getPreFilledProductLevelValues}?producthierarchyvaluedetailid=${levelValueId}`, config());
+        const request = axios.get(`${API.getPreFilledProductLevelValues}?loggedInUserId=${loggedInUserId()}&producthierarchyvaluedetailid=${levelValueId}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
                 dispatch({
@@ -912,7 +919,7 @@ export function createProductLevelValues(data, callback) {
 export function getProductLabel(id, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getProductLabel}?producthierarchyid=${id}`, config());
+        const request = axios.get(`${API.getProductLabel}?loggedInUserId=${loggedInUserId()}&producthierarchyid=${id}`, config());
         request.then((response) => {
             if (response && response.status === 200) {
                 callback(response);

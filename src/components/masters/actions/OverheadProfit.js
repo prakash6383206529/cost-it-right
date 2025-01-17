@@ -18,6 +18,7 @@ import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import axiosInstance from '../../../utils/axiosInstance';
+import { loggedInUserId } from '../../../helper';
 // const config() = config
 
 /**
@@ -51,9 +52,10 @@ export function getOverheadProfitComboData(callback) {
  * @description create Overhead
  */
 export function createOverhead(data, callback) {
+    const requestData = { LoggedInUserId: loggedInUserId(), ...data }
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axiosInstance.post(API.createOverhead, data, config());
+        const request = axiosInstance.post(API.createOverhead, requestData, config());
         request.then((response) => {
             if (response.data.Result === true) {
                 callback(response);
@@ -71,9 +73,10 @@ export function createOverhead(data, callback) {
  * @description create Profit
  */
 export function createProfit(data, callback) {
+    const requestData = { LoggedInUserId: loggedInUserId(), ...data }
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axiosInstance.post(API.createProfit, data, config());
+        const request = axiosInstance.post(API.createProfit, requestData, config());
         request.then((response) => {
             if (response.data.Result === true) {
                 callback(response);
@@ -91,9 +94,10 @@ export function createProfit(data, callback) {
  * @description update Overhead details
  */
 export function updateOverhead(requestData, callback) {
+    const requestedData = { LoggedInUserId: loggedInUserId(), ...requestData }
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axiosInstance.put(`${API.updateOverhead}`, requestData, config())
+        axiosInstance.put(`${API.updateOverhead}`, requestedData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -109,9 +113,10 @@ export function updateOverhead(requestData, callback) {
  * @description update Profit details
  */
 export function updateProfit(requestData, callback) {
+    const requestedData = { LoggedInUserId: loggedInUserId(), ...requestData }
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axiosInstance.put(`${API.updateProfit}`, requestData, config())
+        axiosInstance.put(`${API.updateProfit}`, requestedData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -127,10 +132,11 @@ export function updateProfit(requestData, callback) {
  * @description Get Overhead data
  */
 export function getOverheadData(ID, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
         if (ID !== '') {
-            axios.get(`${API.getOverheadData}/${ID}`, config())
+            axios.get(`${API.getOverheadData}/${ID}/${loggedInUser?.loggedInUserId}`, config())
                 .then((response) => {
                     if (response.data.Result === true) {
                         dispatch({
@@ -158,10 +164,11 @@ export function getOverheadData(ID, callback) {
  * @description Get Profit data
  */
 export function getProfitData(ID, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
         if (ID !== '') {
-            axios.get(`${API.getProfitData}/${ID}`, config())
+            axios.get(`${API.getProfitData}/${ID}/${loggedInUser?.loggedInUserId}`, config())
                 .then((response) => {
                     if (response.data.Result === true) {
                         dispatch({
@@ -192,6 +199,7 @@ export function getOverheadDataList(data, skip, take, isPagination, obj, callbac
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
         const queryParams = encodeQueryParamsAndLog({
+            loggedInUserId: loggedInUserId(),
             costing_head: obj.costing_head, vendor_id: obj.vendor_id, overhead_applicability_type_id: obj.overhead_applicability_type_id, model_type_id: obj.model_type_id,
             CostingHead: obj.CostingHead, VendorName: obj.VendorName, ClientName: obj.ClientName, ModelType: obj.ModelType,
             OverheadApplicability: obj.OverheadApplicabilityType, OverheadApplicabilityPercentage: obj.OverheadPercentage, OverheadOnRMPercentage: obj.OverheadRMPercentage, OverheadOnBOPPercentage: obj.OverheadBOPPercentage,
@@ -235,6 +243,7 @@ export function getProfitDataList(data, skip, take, isPagination, obj, callback)
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
         const queryParams = encodeQueryParamsAndLog({
+            loggedInUserId: loggedInUserId(),
             costing_head: obj.costing_head, vendor_id: obj.vendor_id, profit_applicability_type_id: obj.profit_applicability_type_id, model_type_id: obj.model_type_id,
             CostingHead: obj.CostingHead, VendorName: obj.VendorName, ClientName: obj.ClientName, ModelType: obj.ModelType,
             ProfitApplicability: obj.ProfitApplicability, ProfitApplicabilityPercentage: obj.ProfitPercentage, ProfitOnRMPercentage: obj.ProfitRMPercentage, ProfitOnBOPPercentage: obj.ProfitBOPPercentage,
@@ -466,8 +475,9 @@ export function getVendorFilterByModelTypeSelectList(ID, callback) {
  * @description GET MODELTYPE BY VENDOR IN FILTER IN OVERHEAD
  */
 export function getModelTypeFilterByVendorSelectList(ID, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
-        const request = axios.get(`${API.getModelTypeFilterByVendorSelectList}/${ID}`, config());
+        const request = axios.get(`${API.getModelTypeFilterByVendorSelectList}/${ID}/${loggedInUser?.loggedInUserId}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -488,8 +498,9 @@ export function getModelTypeFilterByVendorSelectList(ID, callback) {
  * @description GET VENDOR BY MODELTYPE IN FILTER IN PROFIT
  */
 export function getProfitVendorFilterByModelSelectList(ID, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
-        const request = axios.get(`${API.getProfitVendorFilterByModelSelectList}/${ID}`, config());
+        const request = axios.get(`${API.getProfitVendorFilterByModelSelectList}/${ID}/${loggedInUser?.loggedInUserId}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -510,8 +521,9 @@ export function getProfitVendorFilterByModelSelectList(ID, callback) {
  * @description GET MODELTYPE BY VENDOR IN FILTER IN PROFIT
  */
 export function getProfitModelFilterByVendorSelectList(ID, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
-        const request = axios.get(`${API.getProfitModelFilterByVendorSelectList}/${ID}`, config());
+        const request = axios.get(`${API.getProfitModelFilterByVendorSelectList}/${ID}/${loggedInUser?.loggedInUserId}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({

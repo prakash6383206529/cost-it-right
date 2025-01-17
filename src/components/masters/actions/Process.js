@@ -20,6 +20,7 @@ import {
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import axiosInstance from '../../../utils/axiosInstance';
+import { loggedInUserId } from '../../../helper';
 
 // const config() = config
 
@@ -48,7 +49,7 @@ export function createProcess(data, callback) {
  */
 export function getProcessCode(obj, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.getProcessCode}?processName=${obj?.processName}&processCode=${obj?.processCode}`, config());
+        const request = axios.get(`${API.getProcessCode}?loggedInUserId=${loggedInUserId()}&processName=${obj?.processName}&processCode=${obj?.processCode}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -68,7 +69,7 @@ export function getProcessCode(obj, callback) {
  */
 export function getProcessDataList(data, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.getProcessDataList}?ProcessName=${data.ProcessName}&ProcessCode=${data.ProcessCode}`, config());
+        const request = axios.get(`${API.getProcessDataList}?loggedInUserId=${loggedInUserId()}&ProcessName=${data.ProcessName}&ProcessCode=${data.ProcessCode}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
                 dispatch({
@@ -107,10 +108,11 @@ export function deleteProcess(processId, loggedInUserId, callback) {
  * @description GET PROCESS DATA
  */
 export function getProcessData(processId, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
         if (processId !== '') {
-            axios.get(`${API.getProcessData}/${processId}`, config())
+            axios.get(`${API.getProcessData}/${processId}/${loggedInUser?.loggedInUserId}`, config())
                 .then((response) => {
                     if (response.data.Result === true) {
                         dispatch({

@@ -15,6 +15,7 @@ import {
 import { apiErrors } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
 import axiosInstance from '../../../utils/axiosInstance';
+import { loggedInUserId } from '../../../helper';
 
 // const config() = config;
 
@@ -23,8 +24,9 @@ import axiosInstance from '../../../utils/axiosInstance';
  * @description create plant master
  */
 export function createPlantAPI(data, callback) {
+    const requestData = { LoggedInUserId: loggedInUserId(), ...data }
     return (dispatch) => {
-        const request = axiosInstance.post(API.createPlantAPI, data, config());
+        const request = axiosInstance.post(API.createPlantAPI, requestData, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -54,7 +56,7 @@ export function createPlantAPI(data, callback) {
  */
 export function getPlantDataAPI(isVe, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.getAllPlantAPI}?isVendor=${isVe}`, config());
+        const request = axios.get(`${API.getAllPlantAPI}?loggedInUserId=${loggedInUserId()}&isVendor=${isVe}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
                 dispatch({
@@ -95,10 +97,11 @@ export function deletePlantAPI(plantId, loggedInUserId, callback) {
  * @description get one Plant based on id
  */
 export function getPlantUnitAPI(plantId, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
         if (plantId !== '') {
-            axios.get(`${API.getPlantAPI}/${plantId}`, config())
+            axios.get(`${API.getPlantAPI}/${plantId}/${loggedInUser?.loggedInUserId}`, config())
                 .then((response) => {
                     if (response.data.Result === true) {
                         dispatch({
@@ -126,9 +129,10 @@ export function getPlantUnitAPI(plantId, callback) {
  * @description update UOM
  */
 export function updatePlantAPI(plantId, request, callback) {
+    const requestData = { LoggedInUserId: loggedInUserId(), ...request }
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axiosInstance.put(`${API.updatePlantAPI}`, request, config())
+        axiosInstance.put(`${API.updatePlantAPI}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -163,7 +167,7 @@ export function activeInactiveStatus(requestData, callback) {
  */
 export function getFilteredPlantList(filterData, callback) {
     return (dispatch) => {
-        const qParams = `country_id=${filterData.country}&state_id=${filterData.state}&city_id=${filterData.city}&CostingTypeId=${filterData.CostingTypeId}`
+        const qParams = `loggedInUserId=${loggedInUserId()}&country_id=${filterData.country}&state_id=${filterData.state}&city_id=${filterData.city}&CostingTypeId=${filterData.CostingTypeId}`
         const request = axios.get(`${API.getFilteredPlantList}?${qParams}`, config());
         request.then((response) => {
 
