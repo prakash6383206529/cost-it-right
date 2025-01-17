@@ -492,6 +492,20 @@ function ViewDrawer(props) {
         setValue('Specification', '')
         setValue('Value', '')
         setValue("rmcode", "")
+        if (partTypeInPartList === "Assembly") {
+            if (renderListingRM('childPartName')?.length === 0) {
+                setDisabled(true)
+            } else {
+                setDisabled(false)
+            }
+        } else if (partTypeInPartList === "Component") {
+            if (tableData.length > 0) {
+                setDisabled(true)
+            } else {
+                setDisabled(false)
+            }
+        }
+        setDisabled(false)
         // if (!isViewFlag && !isEditFlag) {
 
         //     setValue('remark', '')
@@ -1180,8 +1194,10 @@ function ViewDrawer(props) {
                                                         options={renderListingRM('rmname')}
                                                         mandatory={RFQ_KEYS?.RM_MANDATORY ? true : false}
                                                         handleChange={(newValue) => handleRMName(newValue)}
-                                                        disabled={disabled || isViewFlag || (type === Component && tableData.length > 0 && !isEdit && props?.dataProp?.isAddFlag) || (!isEdit && renderListingRM('childPartName')?.length === 0) || (isEdit && renderListingRM('childPartName')?.length !== 0)}
+                                                        disabled={disabled || isViewFlag || (editIndex !== null ? false : (partTypeInPartList === 'Assembly' ? renderListingRM('childPartName')?.length === 0 : tableData.length > 0))}
+
                                                     //disabled={disabled || (isViewFlag || (isEditFlag && type === Component && tableData.length > 0 && !isEdit)) ? true : false}
+                                                    // disabled={disabled || isViewFlag || (renderListingRM('childPartName')?.length === 0 && !isEdit) || (renderListingRM('childPartName')?.length !== 0 && isEdit) || (partTypeInPartList === 'Component' && tableData.length > 0 && !isEdit)}
 
                                                     />
                                                 </Col>
@@ -1200,7 +1216,7 @@ function ViewDrawer(props) {
                                                         options={renderListingRM('rmgrade')}
                                                         mandatory={getValues('RMName') ? true : false}
                                                         handleChange={(newValue) => handleRMGrade(newValue)}
-                                                        disabled={disabled || isViewFlag || (renderListingRM('childPartName')?.length === 0 && !isEdit) || (renderListingRM('childPartName')?.length !== 0 && isEdit) || (partTypeInPartList === 'Component' && tableData.length > 0 && !isEdit)}
+                                                        disabled={disabled || isViewFlag || (editIndex !== null ? false : (partTypeInPartList === 'Assembly' ? renderListingRM('childPartName')?.length === 0 : tableData.length > 0))}
                                                     />
                                                 </Col>
 
@@ -1218,7 +1234,7 @@ function ViewDrawer(props) {
                                                         options={renderListingRM('rmspecification')}
                                                         mandatory={getValues('RMName') ? true : false}
                                                         handleChange={(newValue) => handleRMSpecification(newValue)}
-                                                        disabled={disabled || isViewFlag || (renderListingRM('childPartName')?.length === 0 && !isEdit) || (renderListingRM('childPartName')?.length !== 0 && isEdit) || (partTypeInPartList === 'Component' && tableData.length > 0 && !isEdit)}
+                                                        disabled={disabled || isViewFlag || (editIndex !== null ? false : (partTypeInPartList === 'Assembly' ? renderListingRM('childPartName')?.length === 0 : tableData.length > 0))}
                                                     />
                                                 </Col>
 
@@ -1236,7 +1252,7 @@ function ViewDrawer(props) {
                                                         handleChange={handleCode}
                                                         isClearable={true}
                                                         errors={errors.Code}
-                                                        disabled={disabled || isViewFlag || (renderListingRM('childPartName')?.length === 0) || (partTypeInPartList === 'Component' && tableData.length > 0 && !isEdit)}
+                                                        disabled={disabled || isViewFlag || (editIndex !== null ? false : (partTypeInPartList === 'Assembly' ? renderListingRM('childPartName')?.length === 0 : tableData.length > 0))}
                                                     />
                                                 </Col>
                                             </Row>

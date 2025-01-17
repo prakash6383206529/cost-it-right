@@ -210,7 +210,7 @@ const CostingSummaryTable = (props) => {
   const [tcoAndNpvDrawer, setTcoAndNpvDrawer] = useState(false);
   const [costingId, setCostingId] = useState("");
   const { discountLabel, toolMaintenanceCostLabel } = useLabels();
-
+  const { isNetPoPrice, setIsNetPoPrice } = useState(false)
   const [drawerOpen, setDrawerOpen] = useState({
     BOP: false,
     process: false,
@@ -1129,11 +1129,20 @@ const CostingSummaryTable = (props) => {
     let plantArray = []
 
     list && list?.map((item) => {
-      vendorArray.push(item.vendorId)
-      effectiveDateArray.push(item.effectiveDate)
-      plantArray.push(item.PlantCode)
+
+
+      vendorArray?.push(item?.vendorId)
+      effectiveDateArray?.push(item?.effectiveDate)
+      plantArray?.push(item?.plantCode)
       return null
     })
+    const hasZeroPrice = viewCostingData?.some(data =>
+      Number(data?.poPrice) === Number(0))
+
+    if (hasZeroPrice) {
+      Toaster.warning('Net price is 0, cannot proceed with approval.')
+      return false
+    }
     if (effectiveDateArray?.includes('')) {
       Toaster.warning('Please select the effective date.')
       return false
@@ -2112,7 +2121,7 @@ const CostingSummaryTable = (props) => {
               </Col>
             )}
 
-            {<Col md={simulationMode || props.isRfqCosting || isApproval ? "12" : "8"} className="text-right">
+            {<Col md={simulationMode || props.isRfqCosting || isApproval || props?.costVariance ? "12" : "8"} className="text-right">
               <div className='d-flex justify-content-end mb-2'>
                 <div className='d-flex justify-content-end align-items-center'>
                   {showConvertedCurrencyCheckbox && <span className="d-inline-block">
@@ -2306,7 +2315,7 @@ const CostingSummaryTable = (props) => {
                                     {((!viewMode && (!pdfHead && !drawerDetailPDF)) && EditAccessibility) && (data?.status === DRAFT) && <button id="costingSummary_edit" className="Edit mr-1 mb-0 align-middle" type={"button"} title={"Edit Costing"} onClick={() => editCostingDetail(index)} />}
                                     {((!viewMode && (!pdfHead && !drawerDetailPDF)) && ViewAccessibility) && (data?.status === DRAFT) && <button id="costingSummary_view" className="View mr-1 mb-0 align-middle" type={"button"} title={"View Costing"} onClick={() => viewCostingDetail(index)} />}
                                     {((!viewMode && (!pdfHead && !drawerDetailPDF)) && AddAccessibility) && <button id="costingSummary_add" className="Add-file mr-1 mb-0 align-middle" type={"button"} title={"Add Costing"} onClick={() => addNewCosting(index)} />}
-                                    {(!isApproval || (isComparing && index > 1)) && (data?.bestCost === true ? false : ((!viewMode || props?.isRfqCosting || (isComparing && index > 1) || (approvalMode && data?.CostingHeading === '-')) && (!pdfHead && !drawerDetailPDF)) && (viewCostingData?.length > 1) && <button id="costingSummary_discard" type="button" className="CancelIcon mb-0 align-middle" title='Discard 3' onClick={() => deleteCostingFromView(index)}></button>)}
+                                    {(!isApproval || (isComparing && index > 1)) && (data?.bestCost === true ? false : ((!viewMode || props?.isRfqCosting || props?.costVariance || (isComparing && index > 1) || (approvalMode && data?.CostingHeading === '-')) && (!pdfHead && !drawerDetailPDF)) && <button id="costingSummary_discard" type="button" className="CancelIcon mb-0 align-middle" title='Discard' onClick={() => deleteCostingFromView(index)}></button>)}
                                   </div>
                                 </div >
                               </th >
@@ -3562,7 +3571,7 @@ const CostingSummaryTable = (props) => {
                           </tr>
                         </>
                       }
-                      {initialConfiguration?.IsShowTCO && <ViewTcoDetail isApproval={isApproval} viewCostingData={viewCostingData} isRfqCosting={props?.isRfqCosting} highlighter={highlighter} displayValueWithSign={displayValueWithSign} tableDataClass={tableDataClass} loader={loader} setLoader={setLoader} />}
+                      {<ViewTcoDetail isApproval={isApproval} viewCostingData={viewCostingData} isRfqCosting={props?.isRfqCosting} highlighter={highlighter} displayValueWithSign={displayValueWithSign} tableDataClass={tableDataClass} loader={loader} setLoader={setLoader} />}
                       {initialConfiguration?.IsShowTCO && <tr className={highlighter("nPackagingAndFreight", "main-row")}>
 
                         <th>Total TCO Cost <TooltipCustom id="tco_cost" tooltipText="Calculation made upon Payment term, Warranty, Quality PPM, Incoterm and Investment" />

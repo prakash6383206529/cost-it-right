@@ -397,7 +397,7 @@ export function getMachineProcessMovement(data, callback) {
 export function getGotAndGivenDetails(data, callback) {
 
     return (dispatch) => {
-        const request = axios.get(`${API.getGotAndGivenDetails}?plantId=${data.plantId}&partId=${data.partId}&productCategoryId=${data.productCategoryId}&isRequestForSummary=${data.isRequestForSummary}`, config(),)
+        const request = axios.get(`${API.getGotAndGivenDetails}?plantId=${data.plantId}&customerId=${data?.customerId ?? null}&vendorId=${data?.vendorId ?? null}&partId=${data.partId}&productCategoryId=${data.productCategoryId}&isRequestForSummary=${data.isRequestForSummary}`, config(),)
         request.then((response) => {
             if (response) {
                 callback(response)

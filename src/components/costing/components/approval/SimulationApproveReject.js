@@ -18,6 +18,7 @@ import { costingTypeIdToApprovalTypeIdFunction } from '../../../common/CommonFun
 import ApproveRejectUI from './ApproveRejectUI'
 import { checkFinalUser } from '../../actions/Costing'
 import { reactLocalStorage } from 'reactjs-localstorage'
+import { getApprovalTypeSelectList } from '../../../../actions/Common'
 
 function SimulationApproveReject(props) {
   // ********* INITIALIZE REF FOR DROPZONE ********
@@ -63,8 +64,12 @@ function SimulationApproveReject(props) {
   const reasonsList = useSelector((state) => state.approval.reasonsList)
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
   const SAPData = useSelector(state => state.approval.SAPObj)
+  const approvalTypeSelectList = useSelector(state => state.comman.approvalTypeSelectList)
 
   const [approverIdList, setApproverIdList] = useState([])
+  useEffect(() => {
+    dispatch(getApprovalTypeSelectList('', () => { }))
+  }, [])
   useEffect(() => {
     dispatch(getReasonSelectList((res) => { }))
 
@@ -165,13 +170,47 @@ function SimulationApproveReject(props) {
 
     if (levelDetailsTemp?.length !== 0) {
       setLevelDetails(levelDetailsTemp)
+      let departmentAndApproverDetails = {
+        Department: { label: '', value: '' },
+        Approver: { label: '', value: '', levelId: '', levelName: '' }
+      };
 
-      let obj = {
-        ...dataInFields, Department: { label: dataInFields?.Department?.label, value: dataInFields?.Department?.value }
-        , Approver: { label: '', value: '', levelId: '', levelName: '' }
+      if (getConfigurationKey().IsReleaseStrategyConfigured) {
+        let appTypeId = approvalTypeSelectList?.filter(element =>
+          Number(element?.Value) === Number(dataInFields?.ApprovalType?.value)
+        )[0];
+
+        departmentAndApproverDetails = {
+          Department: dataInFields?.Department ? { label: dataInFields.Department.label, value: dataInFields.Department.value } : '', Approver: dataInFields?.Approver || ''
+        };
+        setDataInFields({
+          ...dataInFields,
+          ApprovalType: appTypeId ? { label: appTypeId?.Text, value: appTypeId?.Value } : '',
+          ...departmentAndApproverDetails
+        });
+
+      } else if (!getConfigurationKey().IsDivisionAllowedForDepartment || type === 'Approve') {
+        if (type === 'Approve') {
+          if (isSimulationApprovalListing && selectedRowData?.length > 0) {
+            departmentAndApproverDetails.Department = { label: selectedRowData[0]?.DepartmentName, value: selectedRowData[0]?.DepartmentId };
+          } else if (!isSimulationApprovalListing && approvalData?.length > 0) {
+            departmentAndApproverDetails.Department = { label: approvalData[0]?.DepartmentName || '', value: approvalData[0]?.DepartmentId || '' };
+          } else if (simulationDetail) {
+            departmentAndApproverDetails.Department = { label: simulationDetail.DepartmentName || '', value: simulationDetail.DepartmentId || '' };
+          }
+        } else {
+          departmentAndApproverDetails = { Department: dataInFields?.Department ? { label: dataInFields?.Department?.label, value: dataInFields.Department.value } : '', Approver: dataInFields?.Approver || '' };
+        }
+
+        setDataInFields({ ...dataInFields, ...departmentAndApproverDetails });
+
+      } else if (getConfigurationKey().IsDivisionAllowedForDepartment && type === 'Sender') {
+        departmentAndApproverDetails = { Department: dataInFields?.Department ? { label: dataInFields?.Department?.label, value: dataInFields.Department.value } : '', Approver: dataInFields?.Approver || '' };
+
+        setDataInFields({ ...dataInFields, ...departmentAndApproverDetails });
       }
-      checkFinalUserAndGetApprovers(dataInFields?.Department, levelDetailsTemp, obj)
-      callApproverAPI(dataInFields?.Department)
+      checkFinalUserAndGetApprovers(departmentAndApproverDetails.Department, levelDetailsTemp, departmentAndApproverDetails.Approver);
+      callApproverAPI(departmentAndApproverDetails.Department)
       // getApproversList(dataInFields?.Department?.value, dataInFields?.Department?.label, levelDetailsTemp, dataInFields)
     } else {
       if (getConfigurationKey().IsReleaseStrategyConfigured && props?.showApprovalTypeDropdown) {
@@ -203,7 +242,7 @@ function SimulationApproveReject(props) {
   //     }
   //   }))
   // }, [dataInFields?.Department])
-  
+
 
 
   const setDataFromReleaseStrategy = (releaseStrategyData, dataInFieldTemp) => {
@@ -386,7 +425,7 @@ function SimulationApproveReject(props) {
     } else {
       technologyIdTemp = technologyId
     }
-    
+
     let obj = {
       LoggedInUserId: userData.LoggedInUserId,
       DepartmentId: dept?.value,
@@ -397,7 +436,7 @@ function SimulationApproveReject(props) {
       plantId: selectedRowData && selectedRowData[0]?.PlantId ? selectedRowData[0]?.PlantId : simulationDetail && simulationDetail?.AmendmentDetails ? simulationDetail?.AmendmentDetails?.PlantId : EMPTY_GUID,
       DivisionId: divisionId ?? null
     }
-    
+
     dispatch(getAllSimulationApprovalList(obj, (res) => {
       const Data = res?.data?.DataList;
       const Departments = userDetails().Department?.map(item => item.DepartmentName);
@@ -457,7 +496,7 @@ function SimulationApproveReject(props) {
     const reason = dataInFields?.Reason
     const dept = dataInFields?.Department
     const approver = dataInFields?.Approver
-     setIsDisable(true)
+    setIsDisable(true)
 
     /****************************THIS IS FOR SIMUALTION (SAVE,SEND FOR APPROVAL,APPROVE AND REJECT CONDITION)******************************** */
     // THIS OBJ IS FOR SIMULATION APPROVE/REJECT
@@ -591,7 +630,7 @@ function SimulationApproveReject(props) {
         }
       }))
     } else {
-     //SIMULATION REJECT CONDITION
+      //SIMULATION REJECT CONDITION
       dispatch(simulationRejectRequestByApprove(approverObject, res => {
         setIsDisable(false)
         if (res?.data?.Result) {
@@ -649,7 +688,7 @@ function SimulationApproveReject(props) {
     setEmptyDivision(!emptyDivision)
     setApprovalDropDown([])
     if (getConfigurationKey().IsDivisionAllowedForDepartment) {
-      
+
       let departmentIds = [value.value]
       let obj = {
         DepartmentIdList: departmentIds,
@@ -657,7 +696,7 @@ function SimulationApproveReject(props) {
       }
       dispatch(getAllDivisionListAssociatedWithDepartment(obj, res => {
         if (res && res?.data && res?.data?.Identity === true) {
-          
+
           setIsShowDivision(true)
           let divisionArray = []
           res?.data?.DataList?.map(item => {
@@ -668,20 +707,20 @@ function SimulationApproveReject(props) {
           })
           setDivisionList(divisionArray)
         } else {
-          
+
           setIsShowDivision(false)
 
           checkFinalUserAndGetApprovers(value, levelDetails, obj)
-
+          
           callApproverAPI(value)
         }
       }))
       obj.Division = { label: value?.label, value: value?.value }
     }
     else {
-      
-      checkFinalUserAndGetApprovers(value, levelDetails, obj)
 
+      checkFinalUserAndGetApprovers(value, levelDetails, obj)
+      
       callApproverAPI(value)
     }
     setDataInFields(obj)
@@ -689,8 +728,9 @@ function SimulationApproveReject(props) {
   }
   const handleDivisionChange = (e) => {
     setDivision(e?.value)
-    checkFinalUserAndGetApprovers(dataInFields?.Department, levelDetails, dataInFields, e?.value)
 
+    checkFinalUserAndGetApprovers(dataInFields?.Department, levelDetails, dataInFields, e?.value)
+    
     callApproverAPI(dataInFields?.Department, e?.value)
   }
   const fileDataCallback = (fileList) => {

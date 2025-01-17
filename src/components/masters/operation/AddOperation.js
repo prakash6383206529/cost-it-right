@@ -1711,7 +1711,7 @@ class AddOperation extends Component {
                           label={`Rate (${this.props.fieldsObj?.plantCurrency ?? 'Plant Currency'})`}
                           name={"RateLocalConversion"}
                           type="text"
-                          id="rate-local"
+                          id={this?.state?.isWelding ? "rate" : "rate-local"}
                           placeholder={this.state.isImport ? '' : 'Enter'}
                           validate={this.state.isWelding ? [] : [required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
                           component={renderTextInputField}
