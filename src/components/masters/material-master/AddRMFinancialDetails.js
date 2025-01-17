@@ -170,7 +170,7 @@ function AddRMFinancialDetails(props) {
                 let toCurrency = !states.isImport ? reactLocalStorage.getObject("baseCurrency") : Data?.Currency
                 const costingType = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? VBCTypeId : costingTypeId) : ZBCTypeId
                 const vendorValue = IsFetchExchangeRateVendorWise() ? ((costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? rawMaterailDetails?.Vendor?.value : EMPTY_GUID) : EMPTY_GUID
-                if (getValues('effectiveDate') && Data?.Currency !== INR) {
+                if (getValues('effectiveDate') && Data?.Currency !== INR && Data?.Currency !== reactLocalStorage?.getObject("baseCurrency")) {
                     if (IsFetchExchangeRateVendorWise() && (!rawMaterailDetails?.Vendor && !getValues('clientName'))) {
                         return false;
                     }
@@ -187,7 +187,7 @@ function AddRMFinancialDetails(props) {
                 }
             }));
         }
-    }, [getValues('Plants'), getValues('ExchangeSource'), state.effectiveDate, getValues('effectiveDate'), rawMaterailDetails?.Vendor, getValues('clientName'),state.currency]);
+    }, [getValues('Plants'), getValues('ExchangeSource'), state.effectiveDate, getValues('effectiveDate'), rawMaterailDetails?.Vendor, getValues('clientName'), state.currency]);
     useEffect(() => {
         dispatch(getFrequencySettlement(() => { }))
         dispatch(getCurrencySelectList(() => { }))
@@ -290,7 +290,7 @@ function AddRMFinancialDetails(props) {
         const isBasicRateVisible = getConfigurationKey().IsBasicRateAndCostingConditionVisible &&
             Number(states.costingTypeId) === Number(ZBCTypeId);
         const netCostText = isBasicRateVisible ? `Basic Price + Condition Cost` : `Basic Rate + Other Cost`;
-        const netCostlabel = states.isImport ? `Net Cost (${state?.currency?.label??'Currency'}/${state.UOM?.label === undefined ? 'UOM' : state.UOM?.label})` : `Net Cost (${!getValues('plantCurrency') ? 'Plant Currency' : getValues('plantCurrency')})`
+        const netCostlabel = states.isImport ? `Net Cost (${state?.currency?.label ?? 'Currency'}/${state.UOM?.label === undefined ? 'UOM' : state.UOM?.label})` : `Net Cost (${!getValues('plantCurrency') ? 'Plant Currency' : getValues('plantCurrency')})`
         return {
             toolTipTextNetCostSelectedCurrency: netCostText,
             tooltipTextPlantCurrency: state.hidePlantCurrency
@@ -935,7 +935,7 @@ function AddRMFinancialDetails(props) {
         }
         return true;
     };
- 
+
     const updateTableCost = (isConditionCost = false) => {
         const result = updateCostValue(isConditionCost, state, getValues('BasicRate'));
         // Update state

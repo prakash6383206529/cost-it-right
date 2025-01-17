@@ -358,21 +358,22 @@ class AddOperation extends Component {
   onPressVendor = (costingHeadFlag) => {
     this.props.reset();
     this.setState({ isLoader: true });
-const currentIsImport = this.state.isImport;
-      const finalApprovalLoader = this.state.finalApprovalLoader
-    this.setState({ ...this.initialState, costingTypeId: costingHeadFlag ,
-      isImport: currentIsImport ,
-      finalApprovalLoader:finalApprovalLoader
+    const currentIsImport = this.state.isImport;
+    const finalApprovalLoader = this.state.finalApprovalLoader
+    this.setState({
+      ...this.initialState, costingTypeId: costingHeadFlag,
+      isImport: currentIsImport,
+      finalApprovalLoader: finalApprovalLoader
     }, () => {
       if (costingHeadFlag === CBCTypeId) {
         this.props.getClientSelectList(() => {
           this.setState({ isLoader: false });
         });
       } else {
-        this.setState({ isLoader: false }); 
+        this.setState({ isLoader: false });
       }
     });
-    
+
   };
   /**
   * @method handleTechnology
@@ -1214,7 +1215,7 @@ const currentIsImport = this.state.isImport;
     }
   };
   OperationRateTitle = () => {
-    const rateLabel = this.state.isImport ? `Rate (${this.state.currency?.label ?? 'Currency'})` :`Rate (${this.props.fieldsObj?.plantCurrency ?? 'Plant Currency'})`
+    const rateLabel = this.state.isImport ? `Rate (${this.state.currency?.label ?? 'Currency'})` : `Rate (${this.props.fieldsObj?.plantCurrency ?? 'Plant Currency'})`
     return {
       tooltipTextPlantCurrency: `${rateLabel} * Plant Currency Rate (${this.state?.plantCurrency ?? ''})`,
       toolTipTextNetCostBaseCurrency: `${rateLabel} * Currency Rate (${this.state?.settlementCurrency ?? ''})`,
@@ -1233,7 +1234,7 @@ const currentIsImport = this.state.isImport;
 
     // Generate tooltip text based on the condition
     return <>
-      {!this.state?.hidePlantCurrency               
+      {!this.state?.hidePlantCurrency
         ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrencyLabel}, `
         : ''}<p>Exchange Rate: 1 {currencyLabel} = {settlementCurrencyRate} {baseCurrency}</p>
     </>;
@@ -1710,7 +1711,7 @@ const currentIsImport = this.state.isImport;
                           label={`Rate (${this.props.fieldsObj?.plantCurrency ?? 'Plant Currency'})`}
                           name={"RateLocalConversion"}
                           type="text"
-                          id="rate-local"
+                          id={this?.state?.isWelding ? "rate" : "rate-local"}
                           placeholder={this.state.isImport ? '' : 'Enter'}
                           validate={this.state.isWelding ? [] : [required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
                           component={renderTextInputField}
