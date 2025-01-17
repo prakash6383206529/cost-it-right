@@ -7,7 +7,7 @@ import { getReporterList, getVendorNameByVendorSelectList, getPlantSelectListByT
 import { getCostingSpecificTechnology, getExistingCosting, getPartInfo, } from '../costing/actions/Costing'
 import { IsSendQuotationToPointOfContact, RFQ_KEYS, addDays, checkPermission, getConfigurationKey, getTimeZone, loggedInUserId, parseLinks } from '../.././helper';
 import { checkForNull, checkForDecimalAndNull, validateFileName } from '../.././helper/validation'
-import { ASSEMBLYNAME, ASSEMBLYORCOMPONENTSRFQ, BOUGHTOUTPARTSPACING, BOUGHTOUTPARTSRFQ, BoughtOutPart, COMPONENTASSEMBLY, COMPONENT_PART, DRAFT, EMPTY_DATA, FILE_URL, HAVELLS_DESIGN_PARTS, PREDRAFT, PRODUCT_ID, RAWMATERIALSRFQ, RAW_MATERIAL, RFQ, RFQVendor, TOOLING, TOOLINGPART, ToolingId, VBC_VENDOR_TYPE, ZBC, searchCount } from '../.././config/constants';
+import { ASSEMBLYNAME, ASSEMBLYORCOMPONENTSRFQ, BOUGHTOUTPARTSPACING, BOUGHTOUTPARTSRFQ, BoughtOutPart, COMPONENTASSEMBLY, COMPONENT_PART, DRAFT, EMPTY_DATA, FILE_URL, HAVELLS_DESIGN_PARTS, PREDRAFT, PRODUCT_ID, RAWMATERIALSRFQ, RAW_MATERIAL, RFQ, RFQVendor, SENT, TOOLING, TOOLINGPART, ToolingId, VBC_VENDOR_TYPE, ZBC, searchCount } from '../.././config/constants';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
@@ -216,9 +216,9 @@ function AddRfq(props) {
     const [visualAdId, setVisualAdId] = useState("")
     const [remarkDrawer, setRemarkDrawer] = useState(false)
     const [reviewButtonPermission, setReviewButtonPermission] = useState(false)
-// Add these state variables at the top with other states
-const [n100Date, setN100Date] = useState(null);
-const [sopDate, setSopDate] = useState(null);
+    // Add these state variables at the top with other states
+    const [n100Date, setN100Date] = useState(null);
+    const [sopDate, setSopDate] = useState(null);
     const showOnlyFirstModule = initialConfiguration?.IsManageSeparateUserPermissionForPartAndVendorInRaiseRFQ;
     const { toolingSpecificRowData } = useSelector(state => state?.rfq);
     const isQuotationReceived = () => dataProps?.rowData?.Status === 'Received' || dataProps?.rowData?.Status === 'Sent'
@@ -1071,7 +1071,7 @@ const [sopDate, setSopDate] = useState(null);
                 title = 'BOP'
                 break
             case RAW_MATERIAL:
-                warningMessgae = 'Select a RM, then add attachment doucments'
+                warningMessgae = 'Select a RM, then add attachment documents'
                 title = 'RM'
                 break
             case COMPONENTASSEMBLY:
@@ -1328,7 +1328,8 @@ const [sopDate, setSopDate] = useState(null);
 
         const row = props?.data;
 
-        const isSendButtonVisible = dataProps?.isViewFlag || (dataProps?.isAddFlag ? false : (dataProps?.isEditFlag && showSendButton === PREDRAFT ? false : true))
+        const isSendButtonVisible = dataProps?.isViewFlag || (dataProps?.isAddFlag ? false : (dataProps?.isEditFlag && showOnlyFirstModule ? (showSendButton === PREDRAFT ? false : true) : (showSendButton === SENT ? true : false)))
+
         return (
             <>
                 {show && selectedOption === TOOLINGPART && (<button title="button" className="hirarchy-btn Tour_List_View_BOM" type="button" onClick={() => visualAdDetails(cellValue)} />)}
@@ -1354,7 +1355,7 @@ const [sopDate, setSopDate] = useState(null);
         let isDuplicateEntry = false
         let temp = [];
         let data = {};
-        if(!getValues("vendor")){
+        if (!getValues("vendor")) {
             Toaster.warning("Please select vendor")
             return false
         }
@@ -1674,16 +1675,16 @@ const [sopDate, setSopDate] = useState(null);
 
 
         const rulesForType = validationRules[selectedOption];
-        
+
         if (!rulesForType) return true;
 
 
         rulesForType.forEach(({ key, check, field }) => {
             const isMandatory = key; // Remove extra parenthesis
-           
+
             if (isMandatory && check(data)) {
-                
-                
+
+
                 missingFields.push(field);
             }
         });
@@ -1953,7 +1954,7 @@ const [sopDate, setSopDate] = useState(null);
                     Toaster.warning("ZBC costing approval is required for this plant to raise a quote.");
                     return false;
                 }
-                 // else if(RFQ_KEYS?.ANNUAL_FORECAST_MANDATORY && sopdate&&sopQuantityList?.length === 0) {
+                // else if(RFQ_KEYS?.ANNUAL_FORECAST_MANDATORY && sopdate&&sopQuantityList?.length === 0) {
                 //     Toaster.warning('Please fill the SOP quantity details!');
                 //     return false;
                 // }
@@ -1968,8 +1969,8 @@ const [sopDate, setSopDate] = useState(null);
 
                     Toaster.warning("Please select all the mandatory fields");
                     return false
-                } 
-                 //  else if (selectedOption === "Bought Out Part" && (bopList[0]?.BopReamrk === "" || bopList[0]?.BopAttachments?.length === 0)) {
+                }
+                //  else if (selectedOption === "Bought Out Part" && (bopList[0]?.BopReamrk === "" || bopList[0]?.BopAttachments?.length === 0)) {
                 //     Toaster.warning('Remarks and Attachments are required!');
                 //     return false;
                 // }
@@ -1986,7 +1987,7 @@ const [sopDate, setSopDate] = useState(null);
             }
             if (!validateFormDetails()) {
                 return false;
-            }            if (nfrId && nfrId.value !== null) {//CHECK_NFR
+            } if (nfrId && nfrId.value !== null) {//CHECK_NFR
                 dispatch(getNfrAnnualForecastQuantity(nfrId.value, getValues('partNumber')?.value, sopdate = "", (res) => {
                     Data = res.data.Data
                 }));
@@ -2685,11 +2686,11 @@ const [sopDate, setSopDate] = useState(null);
         setStorePartsDetail([]);
         setIsDisabled(false)
         setResetDrawer(true)
-// Reset both N-100 and SOP dates
-setRequirementDate("")
-setN100Date(null)
-setSopDate(null)
-setSOPDate('')
+        // Reset both N-100 and SOP dates
+        setRequirementDate("")
+        setN100Date(null)
+        setSopDate(null)
+        setSOPDate('')
         // setValue('technology', "")
     }
 
@@ -3103,9 +3104,9 @@ setSOPDate('')
         const formattedDate = DayTime(value).format('YYYY-MM-DD HH:mm:ss');
         setRequirementDate(formattedDate);
         setN100Date(value); // Store N-100 date
-    
+
         if (sopDate && value > sopDate) {
-            
+
             setSOPDate(''); // Reset SOP date if N-100 date is later
             setSopDate(null);
         }
@@ -3497,7 +3498,7 @@ setSOPDate('')
                                 <form>
 
                                     <Row className="part-detail-wrapper">
-                                    <TooltipCustom id="technology" disabledIcon={true} tooltipText={`To initiate ${initialConfiguration?.IsManageSeparateUserPermissionForPartAndVendorInRaiseRFQ ? "RFI" : "RFQ"} creation, select the technology, plant code, part type, and input part number (all three characters are necessary)`} />
+                                        <TooltipCustom id="technology" disabledIcon={true} tooltipText={`To initiate ${initialConfiguration?.IsManageSeparateUserPermissionForPartAndVendorInRaiseRFQ ? "RFI" : "RFQ"} creation, select the technology, plant code, part type, and input part number (all three characters are necessary)`} />
 
                                         {quotationType !== "Bought Out Part" && (
                                             <Col md="3">
@@ -3539,7 +3540,7 @@ setSOPDate('')
                                                 disabled={Object.keys(prNumber).length !== 0 || ((partList?.length !== 0 || rmDataList?.length !== 0 || bopDataList?.length !== 0 || vendorList?.length !== 0) /* || showSendButton === PREDRAFT  */ || (dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll || disabledPartUid)))}
                                             />
                                         </Col>
-                                        {(quotationType === "Bought Out Part" || quotationType === 'Tooling') && <Col md="3" className={isRmSelected ? 'd-none' : ''}>
+                                        {/* {(quotationType === "Bought Out Part" || quotationType === 'Tooling') && <Col md="3" className={isRmSelected ? 'd-none' : ''}>
                                             <SearchableSelectHookForm
                                                 label={(quotationType === "Bought Out Part" || quotationType === 'Tooling') ? "PR No." : "NFR No."}
                                                 name={(quotationType === "Bought Out Part" || quotationType === 'Tooling') ? "prId" : "nfrId"}
@@ -3555,11 +3556,10 @@ setSOPDate('')
 
                                                 handleChange={handleNfrChnage}
                                                 errors={errors.nfrId}
-                                                disabled={Object.keys(prNumber).length !== 0 || ((dataProps?.isViewFlag /* || dataProps?.isEditFlag */ || showSendButton === DRAFT) ? true : false)
+                                                disabled={Object.keys(prNumber).length !== 0 || ((dataProps?.isViewFlag  || showSendButton === DRAFT) ? true : false)
                                                     || (partList?.length !== 0 || bopDataList?.length !== 0 || vendorList?.length !== 0)}
-                                            // isLoading={VendorLoaderObj}
                                             />
-                                        </Col>}
+                                        </Col>} */}
 
 
                                         {ShowQuoteSubmissionDate(quotationType) && <Col md="3">
@@ -3817,43 +3817,43 @@ setSOPDate('')
                                                     </Col>
                                                 }
 
-                                                { RFQ_KEYS?.SHOW_N100_HAVELLS &&
-                                                 <Col md="3">
-                                                    <div className="inputbox date-section h-auto">
-                                                        <div className="form-group">
+                                                {RFQ_KEYS?.SHOW_N100_HAVELLS &&
+                                                    <Col md="3">
+                                                        <div className="inputbox date-section h-auto">
+                                                            <div className="form-group">
 
-                                                            <label>{selectedOption === TOOLING ? 'Delivery Date' : "N-100 Timeline"}<span className="asterisk-required">*</span></label>
-                                                            {selectedOption !== TOOLING && <TooltipCustom id="timeline" tooltipText="Part Rediness timeline for Quality, N-10 & N-100" />}
-                                                            <div id="addRFQDate_container" className="inputbox date-section">
-                                                                <DatePicker
+                                                                <label>{selectedOption === TOOLING ? 'Delivery Date' : "N-100 Timeline"}<span className="asterisk-required">*</span></label>
+                                                                {selectedOption !== TOOLING && <TooltipCustom id="timeline" tooltipText="Part Rediness timeline for Quality, N-10 & N-100" />}
+                                                                <div id="addRFQDate_container" className="inputbox date-section">
+                                                                    <DatePicker
 
-                                                                    name={'RequirementDate'}
-                                                                    placeholder={'Select'}
-                                                                    //selected={submissionDate}
-                                                                    selected={DayTime(requirementDate).isValid() ? new Date(requirementDate) : ''}
-                                                                    onChange={handleRequirementDateChange}
-                                                                    showMonthDropdown
-                                                                    showYearDropdown
-                                                                    dropdownMode='select'
-                                                                    minDate={new Date()}
-                                                                    maxDate={sopDate || undefined} // N-100 date can't be after SOP date
-                                                                    dateFormat="dd/MM/yyyy"
-                                                                    placeholderText="Select date"
-                                                                    className="withBorder"
-                                                                    autoComplete={"off"}
-                                                                    mandatory={true}
-                                                                    disabled={selectedOption === 'Tooling' ? true : Object.keys(prNumber).length !== 0 ? !updateButtonPartNoTable : (dataProps?.isViewFlag) ? true : false || disabledPartUid}
-                                                                    errors={errors.RequirementDate}
-                                                                    disabledKeyboardNavigation
-                                                                    onChangeRaw={(e) => e.preventDefault()}
-                                                                // disabled={dataProps?.isAddFlag ? partNoDisable : (dataProps?.isViewFlag || !isEditAll)}
-                                                                />
-                                                                {isWarningMessageShow && <WarningMessage dClass={"error-message"} textClass={"pt-1"} message={"Please select effective date"} />}
+                                                                        name={'RequirementDate'}
+                                                                        placeholder={'Select'}
+                                                                        //selected={submissionDate}
+                                                                        selected={DayTime(requirementDate).isValid() ? new Date(requirementDate) : ''}
+                                                                        onChange={handleRequirementDateChange}
+                                                                        showMonthDropdown
+                                                                        showYearDropdown
+                                                                        dropdownMode='select'
+                                                                        minDate={new Date()}
+                                                                        maxDate={sopDate || undefined} // N-100 date can't be after SOP date
+                                                                        dateFormat="dd/MM/yyyy"
+                                                                        placeholderText="Select date"
+                                                                        className="withBorder"
+                                                                        autoComplete={"off"}
+                                                                        mandatory={true}
+                                                                        disabled={selectedOption === 'Tooling' ? true : Object.keys(prNumber).length !== 0 ? !updateButtonPartNoTable : (dataProps?.isViewFlag) ? true : false || disabledPartUid}
+                                                                        errors={errors.RequirementDate}
+                                                                        disabledKeyboardNavigation
+                                                                        onChangeRaw={(e) => e.preventDefault()}
+                                                                    // disabled={dataProps?.isAddFlag ? partNoDisable : (dataProps?.isViewFlag || !isEditAll)}
+                                                                    />
+                                                                    {isWarningMessageShow && <WarningMessage dClass={"error-message"} textClass={"pt-1"} message={"Please select effective date"} />}
+                                                                </div>
                                                             </div>
                                                         </div>
-                                                    </div>
 
-                                                </Col>}
+                                                    </Col>}
 
 
 
