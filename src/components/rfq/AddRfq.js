@@ -4512,6 +4512,7 @@ function AddRfq(props) {
                                             setSopDate={setSopDate}
                                             setN100Date={setN100Date}
                                             setRequirementDate={setRequirementDate}
+                                            partTypeInPartList={partType?.label}
                                         />
                                     )
                                 }

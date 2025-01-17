@@ -43,7 +43,7 @@ function ViewDrawer(props) {
         { sop: 'SOP5' },
     ]
 
-    const { isOpen, anchor, isEditFlag, isViewFlag, AssemblyPartNumber, tableData, setTableData, specificationList, setSpecificationList, setRemark, setChildPartFiles, remark, partListData, sopQuantityList, setSopQuantityList, sopdate, n100Date, sopDate, setSopDate, setN100Date, setSOPDate, effectiveMinDate, childPartFiles, rmSpecificRowData, partType, bopNumber, handleDrawer, drawerViewMode, resetDrawer } = props
+    const { isOpen, anchor, isEditFlag, isViewFlag, AssemblyPartNumber, tableData, setTableData, specificationList, setSpecificationList, setRemark, setChildPartFiles, remark, partListData, sopQuantityList, setSopQuantityList, sopdate, n100Date, sopDate, setSopDate, setN100Date, setSOPDate, effectiveMinDate, childPartFiles, rmSpecificRowData, partType, bopNumber, handleDrawer, drawerViewMode, resetDrawer, partTypeInPartList } = props
     const type = String(props?.type)
     const { register, handleSubmit, setValue, getValues, formState: { errors }, control } = useForm({
         mode: 'onChange',
@@ -1180,7 +1180,7 @@ function ViewDrawer(props) {
                                                         options={renderListingRM('rmname')}
                                                         mandatory={RFQ_KEYS?.RM_MANDATORY ? true : false}
                                                         handleChange={(newValue) => handleRMName(newValue)}
-                                                        disabled={disabled || isViewFlag || (type === Component && tableData.length > 0 && !isEdit && props?.dataProp?.isAddFlag)}
+                                                        disabled={disabled || isViewFlag || (type === Component && tableData.length > 0 && !isEdit && props?.dataProp?.isAddFlag) || (!isEdit && renderListingRM('childPartName')?.length === 0) || (isEdit && renderListingRM('childPartName')?.length !== 0)}
                                                     //disabled={disabled || (isViewFlag || (isEditFlag && type === Component && tableData.length > 0 && !isEdit)) ? true : false}
 
                                                     />
@@ -1200,7 +1200,7 @@ function ViewDrawer(props) {
                                                         options={renderListingRM('rmgrade')}
                                                         mandatory={getValues('RMName') ? true : false}
                                                         handleChange={(newValue) => handleRMGrade(newValue)}
-                                                        disabled={disabled || isViewFlag || (partType === 'Component' && tableData.length > 0 && !isEdit)}
+                                                        disabled={disabled || isViewFlag || (renderListingRM('childPartName')?.length === 0 && !isEdit) || (renderListingRM('childPartName')?.length !== 0 && isEdit) || (partTypeInPartList === 'Component' && tableData.length > 0 && !isEdit)}
                                                     />
                                                 </Col>
 
@@ -1218,7 +1218,7 @@ function ViewDrawer(props) {
                                                         options={renderListingRM('rmspecification')}
                                                         mandatory={getValues('RMName') ? true : false}
                                                         handleChange={(newValue) => handleRMSpecification(newValue)}
-                                                        disabled={disabled || isViewFlag || (partType === 'Component' && tableData.length > 0 && !isEdit)}
+                                                        disabled={disabled || isViewFlag || (renderListingRM('childPartName')?.length === 0 && !isEdit) || (renderListingRM('childPartName')?.length !== 0 && isEdit) || (partTypeInPartList === 'Component' && tableData.length > 0 && !isEdit)}
                                                     />
                                                 </Col>
 
@@ -1236,7 +1236,7 @@ function ViewDrawer(props) {
                                                         handleChange={handleCode}
                                                         isClearable={true}
                                                         errors={errors.Code}
-                                                        disabled={disabled || isViewFlag || (partType === 'Component' && tableData.length > 0 && !isEdit)}
+                                                        disabled={disabled || isViewFlag || (renderListingRM('childPartName')?.length === 0) || (partTypeInPartList === 'Component' && tableData.length > 0 && !isEdit)}
                                                     />
                                                 </Col>
                                             </Row>

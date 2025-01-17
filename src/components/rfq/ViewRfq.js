@@ -1212,7 +1212,7 @@ function RfqListing(props) {
 
     const addComparisonDrawerToggle = () => {
         let arr = []
-
+        setMatchedStatus([])
         selectedRows && selectedRows?.map(item => {
             if (item?.CostingId) {
                 arr.push(item?.CostingId)
