@@ -3095,6 +3095,7 @@ export const statusOptionsSimulation = _.sortBy([
   { label: "Approved", value: "3" },
 ], ({ label }) => label.toLowerCase());
 
+export const ApprovedCostingStatus = ['8', '3', '9', '5', '16']
 
 export const statusOptions = _.sortBy([
   { label: "Approved By Assembly", value: "8" },
