@@ -233,8 +233,9 @@ const SendForApproval = (props) => {
       const Data = res?.data?.SelectList
       const Departments = userDetails().Department && userDetails().Department.map(item => item.DepartmentName)
       const updateList = Data && Data.filter(item => Departments.includes(item.Text))
-      if ((updateList && updateList?.length === 1) || !checkMultiDept) {
 
+
+      if ((updateList && updateList?.length === 1) /* || !checkMultiDept */) {
         setDisableDept(true)
         setValue('dept', { label: updateList[0]?.Text, value: updateList[0]?.Value })
         setSelectedDepartment({ label: updateList[0]?.Text, value: updateList[0]?.Value })
@@ -1066,6 +1067,7 @@ const SendForApproval = (props) => {
   }
   const approverMessage = `This user is not in approval cycle for "${getValues('ApprovalType')?.label ? getValues('ApprovalType')?.label : viewApprovalData && viewApprovalData[0]?.CostingHead}" approval type, please contact admin to add approver for "${getValues('ApprovalType')?.label ? getValues('ApprovalType')?.label : viewApprovalData && viewApprovalData[0]?.CostingHead}" approval type and ${getConfigurationKey().IsCompanyConfigureOnPlant ? 'company' : 'department'}.`;
 
+
   return (
     <Fragment>
       <Drawer
@@ -1386,7 +1388,7 @@ const SendForApproval = (props) => {
                       <Col md="6">
                         {initialConfiguration.IsMultipleUserAllowForApproval ? <>
                           <AllApprovalField
-                            label="Approver"
+                            label="Approver1"
                             approverList={approvalDropDown}
                             popupButton="View all"
                           />
