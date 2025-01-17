@@ -286,7 +286,8 @@ function CostMovementGraph(props) {
 
     const POPriceFormatter = (props) => {
         const cellValue = props?.value;
-        const currencySymbol = getCurrencySymbol(getConfigurationKey().BaseCurrency)
+        const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const currencySymbol = getCurrencySymbol(rowData?.Currency ? rowData?.Currency : getConfigurationKey().BaseCurrency)
         return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined && cellValue !== 0) ? currencySymbol + " " + cellValue : '-';
     }
 
