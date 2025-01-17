@@ -414,10 +414,10 @@ export const checkPercentageValue = (value, msg = "Percentage value should not b
 //CHECK IS COSTING EFFECTIVE DATE SELECTED
 export const CheckIsCostingDateSelected = (costingDate, currency) => {
     const IsSelected = DayTime(costingDate).isValid() ? true : false;
-    if (!IsSelected || Object.keys(currency).length === 0) {
-        Toaster.warning('Please select Costing effective date.')
+    if (!IsSelected || currency?.label === null || currency?.label === undefined) {
+        Toaster.warning('Please select Costing effective date and Currency.')
     }
-    return (!IsSelected || Object.keys(currency).length === 0);
+    return (!IsSelected || currency?.label === null || currency?.label === undefined);
 }
 
 export const percentageOfNumber = (num, percentage) => {
@@ -518,3 +518,27 @@ export const integerOnly = value =>
     value && !/^\d*$/.test(value)
         ? 'Only integer values are allowed'
         : undefined;
+        export const validateFileName = (fileName) => {
+            // Check for spaces, special characters, and multiple extensions
+            const hasSpacesOrSpecialChars = /[\s@!#$%^&*(),?":{}|<>]/.test(fileName);
+            const hasMultipleExtensions = /\..*\./.test(fileName);
+            const allowedExtensions = /\.(pdf|doc|docx|xls|xlsx|jpg|jpeg|png|gif)$/i;
+        
+            let validationMessage = '';
+        
+            if (hasSpacesOrSpecialChars) {
+                validationMessage = "File name should not contain spaces or special characters.";
+            } else if (hasMultipleExtensions) {
+                validationMessage = "File name should not contain multiple extensions.";
+            } else if (!allowedExtensions.test(fileName)) {
+                validationMessage = "File format is not supported. Allowed formats: PDF, DOC, DOCX, XLS, XLSX, JPG, JPEG, PNG, GIF.";
+            }
+        
+            if (validationMessage) {
+                Toaster.warning(validationMessage);
+                return false;
+            }
+        
+            return true;
+        };
+        

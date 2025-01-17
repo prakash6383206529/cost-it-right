@@ -159,7 +159,7 @@ function RubberWeightCalculator(props) {
     }
 
     const percentageChange = (e, index) => {
-        calculateNetSCrapRate()
+        calculateNetSCrapRate(e.target.value, index)
         calculateNetRmRate(e.target.value, index)
     }
     const calculateNetRmRate = (percentageValue, indexTemp) => {
@@ -179,11 +179,11 @@ function RubberWeightCalculator(props) {
         setValue('netTotalRmRate', checkForDecimalAndNull(Number(grossRMRate), getConfigurationKey().NoOfDecimalForPrice))
     }
 
-    const calculateNetSCrapRate = () => {
+    const calculateNetSCrapRate = (percentageValue, indexTemp) => {
         let NetScrapRate = 0;
         NetScrapRate = rmData && rmData.reduce((acc, val, index) => {
-            const Percentage = getValues(`${rmGridFields}.${index}.Percentage`)
-            return acc + checkForNull(Percentage * val.ScrapRate / 100)
+            const Percentage = (indexTemp === index) ? percentageValue : getValues(`rmGridFields.${index}.Percentage`)
+            return acc + (checkForNull(Percentage) * checkForNull(val.ScrapRate) / 100)
 
         }, 0)
         let obj = { ...dataToSend }
@@ -387,7 +387,7 @@ function RubberWeightCalculator(props) {
         let value = checkForNull(Number(getValues('rejectionValue')))
         let rmCost = checkForNull(Number(getValues('rmCost')))
         let totalTableCost = checkForNull(getTotal(tableData))
-
+        console.log("totalTableCost", totalTableCost)
         let obj = dataToSend
 
         if (value && rmCost && rejectionCostType) {
@@ -415,7 +415,7 @@ function RubberWeightCalculator(props) {
         } else {
 
             setValue('netRmc', checkForDecimalAndNull(rmCost + totalTableCost, getConfigurationKey().NoOfDecimalForPrice))
-            obj.NetRawMaterialCost = rmCost
+            obj.NetRawMaterialCost = rmCost + totalTableCost
         }
     }
 
@@ -1075,7 +1075,7 @@ function RubberWeightCalculator(props) {
 
 
                                 <Col md="3">
-                                    <TooltipCustom width={"240px"} disabledIcon={true} id={'netRmc'} tooltipText={'Net RMC = RM Cost + Rejection Cost'} />
+                                    <TooltipCustom width={"240px"} disabledIcon={true} id={'netRmc'} tooltipText={'Net RMC = RM Cost + Rejection Cost + Additional RM Cost'} />
                                     <TextFieldHookForm
                                         label={`Net RMC`}
                                         id={'netRmc'}

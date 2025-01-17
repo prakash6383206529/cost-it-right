@@ -15,7 +15,7 @@ import { MESSAGES } from '../../config/message'
 import classnames from 'classnames';
 import redcrossImg from '../../assests/images/red-cross.png'
 
-import { alphaNumeric, checkWhiteSpaces, getFilteredDropdownOptions, required, RFQ_KEYS } from '../../helper'
+import { alphaNumeric, checkWhiteSpaces, getFilteredDropdownOptions, required, RFQ_KEYS, validateFileName } from '../../helper'
 import Button from '../layout/Button'
 import HeaderTitle from '../common/HeaderTitle'
 import { HAVELLSREMARKMAXLENGTH, REMARKMAXLENGTH } from '../../config/masterData'
@@ -43,7 +43,7 @@ function ViewDrawer(props) {
         { sop: 'SOP5' },
     ]
 
-    const { isOpen, anchor, isEditFlag, isViewFlag, AssemblyPartNumber, tableData, setTableData, specificationList, setSpecificationList, setRemark, setChildPartFiles, remark, partListData, sopQuantityList, setSopQuantityList, sopdate, setSOPDate, effectiveMinDate, childPartFiles, rmSpecificRowData, partType, bopNumber, handleDrawer, drawerViewMode, resetDrawer } = props
+    const { isOpen, anchor, isEditFlag, isViewFlag, AssemblyPartNumber, tableData, setTableData, specificationList, setSpecificationList, setRemark, setChildPartFiles, remark, partListData, sopQuantityList, setSopQuantityList, sopdate, n100Date, sopDate, setSopDate, setN100Date, setSOPDate, effectiveMinDate, childPartFiles, rmSpecificRowData, partType, bopNumber, handleDrawer, drawerViewMode, resetDrawer, partTypeInPartList } = props
     const type = String(props?.type)
     const { register, handleSubmit, setValue, getValues, formState: { errors }, control } = useForm({
         mode: 'onChange',
@@ -62,7 +62,7 @@ function ViewDrawer(props) {
     const [rmspecification, setRMSpecification] = useState([])
     const [rmName, setRMName] = useState([])
     const [rmgrade, setRMGrade] = useState([])
-    
+
     const [rmNameSelected, setRmNameSelected] = useState(false)
     const [selectedparts, setSelectedParts] = useState([])
     const [partName, setPartName] = useState('')
@@ -94,7 +94,6 @@ function ViewDrawer(props) {
     const [partRemark, setPartRemark] = useState('')
     const [rmCode, setRMCode] = useState([])
     const [disabled, setDisabled] = useState(false)
-
 
     useEffect(() => {
 
@@ -618,13 +617,12 @@ function ViewDrawer(props) {
 
         if (partType === "Component" || partType === "Tooling" || partType === "Bought Out Part") {
             const hasNonZeroQuantity = sopQuantityList && sopQuantityList.length > 0 && sopQuantityList[0].Quantity !== 0 && sopQuantityList[0].Quantity !== '0';
-
             if (partType === "Component" || partType === "Tooling") {
                 const dropdownTexts = _.map(getChildParts, 'Text');
                 const tableTexts = _.map(tableData, 'PartNumber');
                 const allPresent = _.every(dropdownTexts, text => _.includes(tableTexts, text));
                 if (RFQ_KEYS?.RM_MANDATORY && (type !== Component && partType !== "Tooling")) {
-                    
+
                     if (!allPresent) {
                         Toaster.warning('RM Name, RM Grade, and RM Specification are required for each part.');
                         return false;
@@ -836,12 +834,16 @@ function ViewDrawer(props) {
         }
 
         if (status === 'done') {
-            let data = new FormData();
-            data.append('file', file);
+            let data = new FormData()
+            data.append('file', file)
+            if (!validateFileName(file.name)) {
+                dropzone.current.files.pop()
+                //setDisableFalseFunction()
+                return false;
+            }
             setApiCallCounter(prevCounter => prevCounter + 1);  // Increment the API call counter for loader showing
             setAttachmentLoader(true);
-            setIsDisable(true);
-
+            setIsDisable(true)
             dispatch(fileUploadQuotation(data, (res) => {
 
                 if ('response' in res) {
@@ -1015,11 +1017,24 @@ function ViewDrawer(props) {
         return years;
     }
     const handleSOPDateChange = (value) => {
+        const formattedDate = DayTime(value).format('YYYY-MM-DD HH:mm:ss');
+
+        // Validate that selected date is after N-100 date
+        if (props.n100Date && value < props.n100Date) {
+            Toaster.warning("SOP date must be after N-100 date");
+            return;
+        }
+        // Update both local and parent state
+        setSOPDate(formattedDate);
+        setSopDate(value);
+
+
+
         let year = new Date(value).getFullYear()
         const yearList = getNextFiveYears(year)
         setIsNewDate(true)
         setFiveyearList(yearList)
-        setSOPDate(DayTime(value).format('YYYY-MM-DD HH:mm:ss'))
+        // setSOPDate(DayTime(value).format('YYYY-MM-DD HH:mm:ss'))
     }
     function shouldShowButtons(activeTab, propsPartType) {
         if (propsPartType === 'Tooling') {
@@ -1140,8 +1155,8 @@ function ViewDrawer(props) {
                                                             control={control}
                                                             rules={{ required: RFQ_KEYS?.RM_MANDATORY ? true : false }}
                                                             register={register}
-                                                            mandatory={  RFQ_KEYS?.RM_MANDATORY ? true : false }
-                                                        
+                                                            mandatory={RFQ_KEYS?.RM_MANDATORY ? true : false}
+
                                                             handleChange={(newValue) => handleChildPart(newValue)}
                                                             errors={errors.partNumber}
                                                             disabled={(isViewFlag || type === Component) ? true : false}
@@ -1165,7 +1180,9 @@ function ViewDrawer(props) {
                                                         options={renderListingRM('rmname')}
                                                         mandatory={RFQ_KEYS?.RM_MANDATORY ? true : false}
                                                         handleChange={(newValue) => handleRMName(newValue)}
-                                                        disabled={disabled || (isViewFlag || (isEditFlag && type === Component && tableData.length > 0 && !isEdit)) ? true : false}
+                                                        disabled={disabled || isViewFlag || (type === Component && tableData.length > 0 && !isEdit && props?.dataProp?.isAddFlag) || (!isEdit && renderListingRM('childPartName')?.length === 0) || (isEdit && renderListingRM('childPartName')?.length !== 0)}
+                                                    //disabled={disabled || (isViewFlag || (isEditFlag && type === Component && tableData.length > 0 && !isEdit)) ? true : false}
+
                                                     />
                                                 </Col>
 
@@ -1183,7 +1200,7 @@ function ViewDrawer(props) {
                                                         options={renderListingRM('rmgrade')}
                                                         mandatory={getValues('RMName') ? true : false}
                                                         handleChange={(newValue) => handleRMGrade(newValue)}
-                                                        disabled={disabled || (isViewFlag || (isEditFlag && type === Component && tableData.length > 0 && !isEdit)) ? true : false}
+                                                        disabled={disabled || isViewFlag || (renderListingRM('childPartName')?.length === 0 && !isEdit) || (renderListingRM('childPartName')?.length !== 0 && isEdit) || (partTypeInPartList === 'Component' && tableData.length > 0 && !isEdit)}
                                                     />
                                                 </Col>
 
@@ -1195,13 +1212,13 @@ function ViewDrawer(props) {
                                                         Controller={Controller}
                                                         control={control}
                                                         selected={rmspecification ? rmspecification : ''}
-                                                        rules={{ required:getValues('RMName') ? true : false}}
+                                                        rules={{ required: getValues('RMName') ? true : false }}
                                                         register={register}
                                                         customClassName="costing-version"
                                                         options={renderListingRM('rmspecification')}
                                                         mandatory={getValues('RMName') ? true : false}
                                                         handleChange={(newValue) => handleRMSpecification(newValue)}
-                                                        disabled={disabled || (isViewFlag || (isEditFlag && type === Component && tableData.length > 0 && !isEdit)) ? true : false}
+                                                        disabled={disabled || isViewFlag || (renderListingRM('childPartName')?.length === 0 && !isEdit) || (renderListingRM('childPartName')?.length !== 0 && isEdit) || (partTypeInPartList === 'Component' && tableData.length > 0 && !isEdit)}
                                                     />
                                                 </Col>
 
@@ -1214,12 +1231,12 @@ function ViewDrawer(props) {
                                                         Controller={Controller}
                                                         control={control}
                                                         register={register}
-                                                        rules={{ required: getValues('RMName') ? true : false}}
+                                                        rules={{ required: getValues('RMName') ? true : false }}
                                                         mandatory={getValues('RMName') ? true : false}
                                                         handleChange={handleCode}
                                                         isClearable={true}
                                                         errors={errors.Code}
-                                                        disabled={(isViewFlag || (isEditFlag && type === Component && tableData.length > 0 && !isEdit)) ? true : false}
+                                                        disabled={disabled || isViewFlag || (renderListingRM('childPartName')?.length === 0) || (partTypeInPartList === 'Component' && tableData.length > 0 && !isEdit)}
                                                     />
                                                 </Col>
                                             </Row>
@@ -1560,7 +1577,7 @@ function ViewDrawer(props) {
                                                             showYearDropdown
                                                             dropdownMode='select'
                                                             // minDate={new Date()}
-                                                            minDate={effectiveMinDate || new Date()}
+                                                            minDate={props.n100Date || new Date()} // SOP date must be after N-100 date
                                                             dateFormat="dd/MM/yyyy"
                                                             placeholderText="Select date"
                                                             className="withBorder"

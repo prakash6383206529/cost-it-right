@@ -31,7 +31,7 @@ import { getIndexSelectList, setOtherCostDetails } from "../actions/Indexation"
 import { getPlantUnitAPI } from "../actions/Plant"
 import _ from 'lodash'
 import WarningMessage from "../../common/WarningMessage"
-import { recalculateConditions, updateCostValue } from "../../common/CommonFunctions"
+import { getEffectiveDateMinDate, recalculateConditions, updateCostValue } from "../../common/CommonFunctions"
 function AddRMFinancialDetails(props) {
     const { Controller, control, register, setValue, getValues, errors, reset, useWatch, states, data, isRMAssociated, disableAll } = props
     const { isEditFlag, isViewFlag } = data
@@ -1234,10 +1234,10 @@ function AddRMFinancialDetails(props) {
                                     autoComplete={"off"}
                                     disabledKeyboardNavigation
                                     onChangeRaw={(e) => e.preventDefault()}
-                                    disabled={disableAll || isViewFlag}
+                                    disabled={disableAll || isViewFlag || (state.isShowIndexCheckBox && state.toDate === '')}
                                     mandatory={true}
                                     errors={errors && errors.effectiveDate}
-                                    minDate={state.isShowIndexCheckBox ? addDays(new Date(state.toDate), 1) : isEditFlag ? state.minDate : subDays(new Date(), effectiveDateRangeDays)}
+                                    minDate={state.isShowIndexCheckBox ? addDays(new Date(state?.toDate), 1) : isEditFlag ? state.minDate : getEffectiveDateMinDate()}
                                 />
                             </div>
                         </Col>

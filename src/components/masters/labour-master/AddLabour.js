@@ -844,7 +844,8 @@ class AddLabour extends Component {
   onSubmit = debounce((values) => {
     const { IsEmployeContractual, IsVendor, StateName, selectedPlants, vendorName, LabourId, gridTable, DropdownChanged, product, costingTypeId, client, country, city } = this.state
 
-    if (vendorName.length <= 0 && costingTypeId === VBCTypeId) {
+
+    if (vendorName.length <= 0 && costingTypeId === VBCTypeId&&IsEmployeContractual) {
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
       return false
     }

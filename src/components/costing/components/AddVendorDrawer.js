@@ -71,8 +71,8 @@ function AddVendorDrawer(props) {
         DestinationPlantName: initialConfiguration && initialConfiguration.IsDestinationPlantConfigure ? DestinationPlant.label : '',                 //PlantName
         DestinationPlant: DestinationPlant,
         VendorName: `${data.VendorName} (${data.VendorCode})`,
-        InfoCategory: isInfoCategorySelected === true ? infoCategory[0]?.Text : infoCategory[1]?.Text,
-        InfoCategoryObj: isInfoCategorySelected === true ? infoCategory[0] : infoCategory[1]
+        InfoCategory: isInfoCategorySelected === true ? infoCategory[1]?.Text : infoCategory[0]?.Text,
+        InfoCategoryObj: isInfoCategorySelected === true ? infoCategory[1] : infoCategory[0]
       })
   };
 
@@ -261,7 +261,7 @@ function AddVendorDrawer(props) {
                       selected={isInfoCategorySelected}
                       id={'category'}
                     >
-                      Category
+                      Sub Contracting
                       <input
                         type="checkbox"
                       />
@@ -274,7 +274,7 @@ function AddVendorDrawer(props) {
                     <TooltipCustom
                       disabledIcon={false}
                       id={`category`}
-                      tooltipText={infoCategory && `If checkbox is selected then category will be ${infoCategory[0]?.Text}, otherwise category will be ${infoCategory[1]?.Text}.`}
+                      tooltipText={infoCategory && `If checkbox is selected then category will be ${infoCategory[1]?.Text}, otherwise category will be ${infoCategory[0]?.Text}.`}
                     />
                   </span>
                 </Col>

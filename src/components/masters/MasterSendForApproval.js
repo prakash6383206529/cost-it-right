@@ -617,21 +617,21 @@ function MasterSendForApproval(props) {
                         BoughtOutPartBestCostRequest: null
                     };
                     let tempData = null
-                    
+
                     switch (checkForNull(masterId)) {
                         case 1: // Raw Material
-                         tempData = { ...viewRmDetails[viewRmDetails?.length - 1] }
+                            tempData = { ...viewRmDetails[viewRmDetails?.length - 1] }
 
-data.RawMaterialBestCostRequest = {
-                            "QuotationPartId": selectedRows[0]?.QuotationPartId ?? 0,
-                            "NetRawMaterialsCost": tempData?.NetLandedCostConversion ?? 0,
-                            "OtherCost": tempData?.OtherNetCostConversion ?? 0,
-                            "BasicRate": tempData?.BasicRatePerUOMConversion ?? 0,
-                        };
-                        
+                            data.RawMaterialBestCostRequest = {
+                                "QuotationPartId": selectedRows[0]?.QuotationPartId ?? 0,
+                                "NetRawMaterialsCost": tempData?.NetLandedCostConversion ?? 0,
+                                "OtherCost": tempData?.OtherNetCostConversion ?? 0,
+                                "BasicRate": tempData?.BasicRatePerUOMConversion ?? 0,
+                            };
+
                             break;
                         case 2: // Bought Out Part
-                        tempData = { ...viewBOPDetails[viewBOPDetails?.length - 1] }
+                            tempData = { ...viewBOPDetails[viewBOPDetails?.length - 1] }
                             data.BoughtOutPartBestCostRequest = {
                                 "QuotationPartId": selectedRows[0]?.QuotationPartId ?? 0,
                                 "NetBoughtOutPartCost": tempData?.NetLandedCostConversion ?? 0,
@@ -674,11 +674,10 @@ data.RawMaterialBestCostRequest = {
                 // obj.IsFinalApprovalProcess = false
                 // obj.IsRFQCostingSendForApproval = props.isRFQ ? true : false
                 const approvalObjects = Array.isArray(approvalDetails) ? approvalDetails : [approvalDetails];
-                console.log(levelDetails);
                 const processedApprovalObjects = approvalObjects.map(item => ({
-                    
-                    
-                    ApprovalProcessSummaryId: item?.ApprovalProcessSummaryId !== null ? item?.ApprovalProcessSummaryId : 0,
+
+
+                    ApprovalProcessSummaryId: (item?.MasterApprovalProcessSummaryId ?? item?.ApprovalProcessSummaryId) ?? 0,
                     ApprovalProcessId: item?.ApprovalProcessId !== null ? item?.ApprovalProcessId : 0,
                     ApprovalToken: item?.Token !== null ? item?.Token : 0,
                     LoggedInUserId: loggedInUserId(),
@@ -704,7 +703,6 @@ data.RawMaterialBestCostRequest = {
                 }));
                 setIsLoader(true);
                 const processApproval = (objects) => {
-console.log(objects);
 
                     return new Promise((resolve, reject) => {
                         dispatch(approvalOrRejectRequestByMasterApprove(objects, res => {
@@ -713,6 +711,7 @@ console.log(objects);
                             } else {
                                 reject(res);
                             }
+                            props.closeDrawer('', `${type === 'Reject' ? 'reject' : "submit"}`);
                         }));
                     });
                 };
@@ -1352,3 +1351,4 @@ console.log(objects);
 }
 
 export default MasterSendForApproval;
+// HP3-I1368

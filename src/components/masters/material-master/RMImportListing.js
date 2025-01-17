@@ -95,7 +95,7 @@ function RMImportListing(props) {
   const [render, setRender] = useState(true)
   const [disableEdit, setDisableEdit] = useState(true)
   const [compareDrawer, setCompareDrawer] = useState(false)
-    const [rowDataForCompare, setRowDataForCompare] = useState([])
+  const [rowDataForCompare, setRowDataForCompare] = useState([])
   const { t } = useTranslation("common")
   const netCostHeader = `Net Cost (${reactLocalStorage.getObject("baseCurrency")})`
   const { tokenForSimulation, selectedMasterForSimulation } = useSelector(state => state.simulation)
@@ -112,7 +112,7 @@ function RMImportListing(props) {
   }
   const isRfq = props?.quotationId !== null && props?.quotationId !== '' && props?.quotationId !== undefined
 
-  
+
 
   var filterParams = {
     date: "", inRangeInclusive: true, filterOptions: ['equals', 'inRange'],
@@ -169,7 +169,7 @@ function RMImportListing(props) {
     obj.OtherNetCost = floatingFilterData?.OtherNetCost
 
     return {
-      data: {technologyId: props?.technology??null},
+      data: { technologyId: props?.technology ?? null },
       skip: 0,
       take: globalTakes,
       isPagination: true,
@@ -189,8 +189,9 @@ function RMImportListing(props) {
       setloader(false);
       setTotalRecordCount(rmImportDataList[0].TotalRecordCount)
       setRender(false)
-    }
-    else {
+    } else {
+      setloader(false);
+      setRender(false)
       setNoData(false)
     }
   }, [rmImportDataList])
@@ -493,7 +494,7 @@ function RMImportListing(props) {
   const handleCompareDrawer = (data) => {
     setCompareDrawer(true)
     setRowDataForCompare([data])
-}
+  }
   /**
   * @method buttonFormatter
   * @description Renders buttons
@@ -511,15 +512,15 @@ function RMImportListing(props) {
     } else {
       isEditbale = false
     }
-    
-    if (isRfq && isMasterSummaryDrawer) {
-      
-      return (
-          <button className="Balance mb-0 button-stick" type="button" onClick={() => handleCompareDrawer(rowData)}>
 
-          </button>
+    if (isRfq && isMasterSummaryDrawer) {
+
+      return (
+        <button className="Balance mb-0 button-stick" type="button" onClick={() => handleCompareDrawer(rowData)}>
+
+        </button>
       );
-  }
+    }
     if (showExtraData && props.rowIndex === 0) {
       isDeleteButton = true
     } else {
@@ -689,9 +690,9 @@ function RMImportListing(props) {
   const closeCompareDrawer = (event, type) => {
     setCompareDrawer(false);
     if (type !== 'cancel') {
-        resetState()
+      resetState()
     }
-}
+  }
   /**
   * @method densityAlert
   * @description confirm Redirection to Material tab.
@@ -1207,18 +1208,19 @@ function RMImportListing(props) {
           tokenForMultiSimulation={tokenForSimulation?.length !== 0 ? [{ SimulationId: tokenForSimulation?.value }] : []}
         />
       }
-        {compareDrawer &&
-                <RfqMasterApprovalDrawer
-                    isOpen={compareDrawer}
-                    anchor={'right'}
-                    selectedRows={rowDataForCompare}
-                    type={'Raw Material'}
-                    quotationId={props.quotationId}
-                    closeDrawer={closeCompareDrawer}
-                // selectedRow = {props.bopDataResponse}
-                />
+      {compareDrawer &&
+        <RfqMasterApprovalDrawer
+          isOpen={compareDrawer}
+          anchor={'right'}
+          selectedRows={rowDataForCompare}
+          type={'Raw Material'}
+          quotationId={props.quotationId}
+          closeDrawer={closeCompareDrawer}
+          summaryDrawer={props?.isMasterSummaryDrawer}
+        // selectedRow = {props.bopDataResponse}
+        />
 
-            }
+      }
     </div >
   );
 }

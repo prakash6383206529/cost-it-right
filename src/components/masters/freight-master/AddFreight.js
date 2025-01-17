@@ -206,11 +206,12 @@ class AddFreight extends Component {
   */
   onPressVendor = (costingHeadFlag) => {
     this.props.reset();
-      // Store current isImport value
-      const currentIsImport = this.state.isImport;
-    this.setState({ ...this.initialState, costingTypeId: costingHeadFlag,
+    // Store current isImport value
+    const currentIsImport = this.state.isImport;
+    this.setState({
+      ...this.initialState, costingTypeId: costingHeadFlag,
       isImport: currentIsImport // Preserve isImport value
-       }, () => {
+    }, () => {
       if (costingHeadFlag === CBCTypeId) {
         this.props.getClientSelectList(() => { })
       }
@@ -713,18 +714,17 @@ class AddFreight extends Component {
       EFreightLoadType: Load?.value,
     };
     tempArray = Object.assign([...gridTable], { [gridEditIndex]: tempData });
-    this.setState(
-      {
-        gridTable: tempArray,
-        FullTruckCapacity: [],
-        RateCriteria: [],
-        gridEditIndex: "",
-        isEditIndex: false,
-        Load: []
-      },
-      () => this.props.change("Rate", ''),
-      () => this.props.change("RateConversion", ''),
-      () => this.props.change("RateLocalConversion", '')
+    this.setState({
+      gridTable: tempArray,
+      FullTruckCapacity: [],
+      RateCriteria: [],
+      gridEditIndex: "",
+      isEditIndex: false,
+      Load: []
+    }, () => this.props.change("RateConversion", ''),
+      this.props.change("RateLocalConversion", ''),
+      this.props.change("Rate", '')
+
     );
 
     this.setState({ AddUpdate: false, errorObj: { rate: false } })
@@ -958,7 +958,7 @@ class AddFreight extends Component {
   };
 
   freightRateTitle = () => {
-    const rateLabel = this.state.isImport ? `Rate (${this.state.currency?.label ?? 'Currency'})` :`Rate (${this.props.fieldsObj?.plantCurrency ?? 'Plant Currency'})`
+    const rateLabel = this.state.isImport ? `Rate (${this.state.currency?.label ?? 'Currency'})` : `Rate (${this.props.fieldsObj?.plantCurrency ?? 'Plant Currency'})`
     return {
       tooltipTextPlantCurrency: `${rateLabel} * Plant Currency Rate (${this.state?.plantCurrency ?? ''})`,
       toolTipTextNetCostBaseCurrency: `${rateLabel} * Currency Rate (${this.state?.settlementCurrency ?? ''})`,
@@ -977,7 +977,7 @@ class AddFreight extends Component {
 
     // Generate tooltip text based on the condition
     return <>
-      {!this.state?.hidePlantCurrency               
+      {!this.state?.hidePlantCurrency
         ? `Exchange Rate: 1 ${currencyLabel} = ${plantCurrencyRate} ${plantCurrencyLabel}, `
         : ''}<p>Exchange Rate: 1 {currencyLabel} = {settlementCurrencyRate} {baseCurrency}</p>
     </>;
@@ -1163,7 +1163,7 @@ class AddFreight extends Component {
                                     onChange={(e) => this.handleVendorName(e)}
                                     value={this.state.vendorName}
                                     noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN : "No results found"}
-                                    isDisabled={(isEditFlag) ? true : false}
+                                    isDisabled={(isEditFlag || this.state.gridTable.length > 0) ? true : false}
                                     onKeyDown={(onKeyDown) => {
                                       if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
                                     }}
@@ -1199,7 +1199,7 @@ class AddFreight extends Component {
                                 required={true}
                                 handleChangeDescription={this.handleClient}
                                 valueDescription={this.state.client}
-                                disabled={isEditFlag ? true : false}
+                                disabled={(isEditFlag || this.state.gridTable.length > 0) ? true : false}
                               />
                             </Col>
                           )}
@@ -1221,7 +1221,7 @@ class AddFreight extends Component {
                               required={true}
                               handleChangeDescription={this.handlePlant}
                               valueDescription={this.state.Plant}
-                              disabled={isEditFlag ? true : false}
+                              disabled={(isEditFlag || this.state.gridTable.length > 0) ? true : false}
                             />
                           </Col>
                           {getConfigurationKey().IsSourceExchangeRateNameVisible && (
@@ -1234,13 +1234,13 @@ class AddFreight extends Component {
                                 handleChangeDescription={this.handleExchangeRateSource}
                                 component={searchableSelect}
                                 className="multiselect-with-border"
-                                disabled={isEditFlag}
+                                disabled={(isEditFlag || this.state.gridTable.length > 0) ? true : false}
                                 valueDescription={this.state.ExchangeSource}
                               />
                             </Col>
                           )}
                           <Col md="3">
-                          {!this.state.hidePlantCurrency &&this.props.fieldsObj?.plantCurrency&&!this.state.isImport && <TooltipCustom width="350px" id="plantCurrency" tooltipText={`Exchange Rate: 1 ${this.props.fieldsObj?.plantCurrency } = ${this.state?.plantCurrency ?? '-'} ${reactLocalStorage.getObject("baseCurrency")}`} />}
+                            {!this.state.hidePlantCurrency && this.props.fieldsObj?.plantCurrency && !this.state.isImport && <TooltipCustom width="350px" id="plantCurrency" tooltipText={`Exchange Rate: 1 ${this.props.fieldsObj?.plantCurrency} = ${this.state?.plantCurrency ?? '-'} ${reactLocalStorage.getObject("baseCurrency")}`} />}
                             <Field
                               name="plantCurrency"
                               type="text"
@@ -1297,7 +1297,7 @@ class AddFreight extends Component {
                                   autoComplete={"off"}
                                   disabledKeyboardNavigation
                                   onChangeRaw={(e) => e.preventDefault()}
-                                  disabled={isViewMode || isEditMode}
+                                  disabled={isViewMode || isEditMode || this.state.gridTable.length > 0}
                                   minDate={getEffectiveDateMinDate()}
 
                                 />
@@ -1463,7 +1463,7 @@ class AddFreight extends Component {
                               </div>
                             </div>
                           </Col>}
-                          <Col md="3">
+                          <Col md="3" className="inputwith-icon">
                             <Field
                               name="RateCriteria"
                               type="text"
@@ -1478,7 +1478,7 @@ class AddFreight extends Component {
                               valueDescription={this.state.RateCriteria}
                               required={true}
                             />
-                            {this.state.errorObj?.criteria && this.state?.RateCriteria.length === 0 && <div className='text-help p-absolute'>This field is required.</div>}
+                            {this.state.errorObj?.criteria && this.state?.RateCriteria.length === 0 && <div className='text-help p-absolute bottom-7'>This field is required.</div>}
                           </Col>
                           {this.state.isImport && <Col md="3">
                             <Field
@@ -1497,7 +1497,7 @@ class AddFreight extends Component {
                             {this.state.errorObj.rate && (this.props.fieldsObj === undefined || Number(this.props.fieldsObj) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
                           </Col>}
                           <Col md="3">
-                          {this.state.isImport && <TooltipCustom disabledIcon={true} id="rate-local" tooltipText={hidePlantCurrency ? this.freightRateTitle()?.toolTipTextNetCostBaseCurrency : this.freightRateTitle()?.tooltipTextPlantCurrency} />}
+                            {this.state.isImport && <TooltipCustom disabledIcon={true} id="rate-local" tooltipText={hidePlantCurrency ? this.freightRateTitle()?.toolTipTextNetCostBaseCurrency : this.freightRateTitle()?.tooltipTextPlantCurrency} />}
                             <Field
                               label={`Rate (${this.props.fieldsObj?.plantCurrency ?? 'Currency'})`}
                               name={"RateLocalConversion"}

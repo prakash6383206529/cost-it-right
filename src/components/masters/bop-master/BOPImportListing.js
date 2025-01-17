@@ -110,7 +110,6 @@ const BOPImportListing = (props) => {
     viewAttachment: [],
     editSelectedList: false,
     tempList: [],
-    render: false,
     disableEdit: true,
     compareDrawer: false,
     rowDataForCompare: [],
@@ -130,7 +129,7 @@ const BOPImportListing = (props) => {
 
   useEffect(() => {
     if (bopImportList?.length > 0) {
-      setState((prevState) => ({ ...prevState, totalRecordCount: bopImportList[0].TotalRecordCount, isLoader: false, render: false }));
+      setState((prevState) => ({ ...prevState, totalRecordCount: bopImportList[0].TotalRecordCount, isLoader: false, }));
     }
     else {
       setState((prevState) => ({ ...prevState, noData: false }));
@@ -353,9 +352,9 @@ const BOPImportListing = (props) => {
     dispatch(TourStartAction({
       showExtraData: showTour,
     }));
-    setState((prevState) => ({ ...prevState, render: true }));
+    setState((prevState) => ({ ...prevState, }));
     setTimeout(() => {
-      setState((prevState) => ({ ...prevState, render: false }));
+      setState((prevState) => ({ ...prevState, }));
     }, 100);
 
   }
@@ -547,7 +546,7 @@ const BOPImportListing = (props) => {
    * @method buttonFormatter
    * @description Renders buttons
    */
-  const { benchMark ,isMasterSummaryDrawer} = props
+  const { benchMark, isMasterSummaryDrawer } = props
   const buttonFormatter = (props) => {
     const cellValue = props?.valueFormatted
       ? props.valueFormatted
@@ -617,7 +616,7 @@ const BOPImportListing = (props) => {
       </>
     );
   };
- 
+
   /**
    * @method commonCostFormatter
    * @description Renders buttons
@@ -1109,7 +1108,7 @@ const BOPImportListing = (props) => {
                       {noData && (
                         <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />
                       )}
-                      {(state.render || state.isLoader) ? <LoaderCustom customClass="loader-center" /> : <AgGridReact
+                      {(state.isLoader) ? <LoaderCustom customClass="loader-center" /> : <AgGridReact
 
                         defaultColDef={defaultColDef}
                         floatingFilter={true}
@@ -1218,7 +1217,7 @@ const BOPImportListing = (props) => {
           }
         />
       )}
-       {
+      {
         state.compareDrawer &&
         <RfqMasterApprovalDrawer
           isOpen={state.compareDrawer}
@@ -1227,6 +1226,8 @@ const BOPImportListing = (props) => {
           type={'Bought Out Part'}
           quotationId={props.quotationId}
           closeDrawer={closeCompareDrawer}
+          summaryDrawer={props?.isMasterSummaryDrawer}
+
         // selectedRow = {props.bopDataResponse}
         />
 

@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef, useContext } from 'react';
 import { Row, Col, Tooltip, } from 'reactstrap';
 import DayTime from '../../../common/DayTimeWrapper'
-import { CBCTypeId, defaultPageSize, EMPTY_DATA, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, BOPIMPORT } from '../../../../config/constants';
+import { CBCTypeId, defaultPageSize, EMPTY_DATA, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, BOPIMPORT, ZBCTypeId } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter } from '../../../../helper';
 import Toaster from '../../../common/Toaster';
@@ -1279,7 +1279,7 @@ list && list.map(item => {
                                                     <AgGridColumn width={150} cellRenderer='existingOtherCostFormatter' field={"isImpactedMaster ? OldOtherCost : OtherNetCost"} editable='false' headerName="Existing"  colId={isImpactedMaster ? "OtherNetCost" : "OtherNetCost"} ></AgGridColumn>
                                                     <AgGridColumn width={150} cellRenderer='revisedOtherCostFormatter' editable={false} onCellValueChanged='cellChange' field={isImpactedMaster ? "NewOtherCost" : "NewOtherNetCost"} headerName="Revised"  colId='NewOtherNetCost' ></AgGridColumn>
                                                 </AgGridColumn>
-                                                {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible &&<AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={
+                                                {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible&& list[0]?.CostingTypeId === ZBCTypeId  &&<AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={
                                                     "Basic Price (Currency)"
                                                       
                                                 }>
@@ -1287,7 +1287,7 @@ list && list.map(item => {
                                                     {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible &&<AgGridColumn width={columnWidths.NewNetCostWithoutConditionCost} field={isImpactedMaster ? "NewNetCostWithoutConditionCost" : "NewNetCostWithoutConditionCost"} cellRenderer={'zeroFormatter'} editable='false' headerName="Revised" colId='NewNetCostWithoutConditionCost'></AgGridColumn>}
                                                 </AgGridColumn>}
                                                 
-                                                {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible &&<AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={300} headerName={
+                                                {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible&& list[0]?.CostingTypeId === ZBCTypeId  &&<AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={300} headerName={
                                                     "Condition Cost (Currency)"
                                                       
                                                 } marryChildren={true} >

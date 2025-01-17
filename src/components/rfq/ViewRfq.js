@@ -98,7 +98,7 @@ function RfqListing(props) {
     const agGridRef = useRef(null);
     const [viewRMCompare, setViewRMCompare] = useState(false)
     const [viewBOPCompare, setViewBOPCompare] = useState(false)
-    
+
     const [partType, setPartType] = useState('')
     const [approveDrawer, setApproveDrawer] = useState(false)
     const [quotationId, setQuotationId] = useState('')
@@ -132,7 +132,7 @@ function RfqListing(props) {
     useEffect(() => {
         if (compareButtonPressed && (partType === 'Raw Material' || partType === 'Bought Out Part')) {
             const masterId = partType === 'Raw Material' ? RM_MASTER_ID : BOP_MASTER_ID;
-            
+
             // Wait for userMasterLevelAPI to be available
             if (!userMasterLevelAPI) {
                 dispatch(getUsersMasterLevelAPI(loggedInUserId(), masterId, (res) => {
@@ -434,32 +434,30 @@ function RfqListing(props) {
 
     const commonFunction = (type, plantId = EMPTY_GUID) => {
         const { costingTypeId } = state;
-        
+
         if (type === 'Raw Material' || type === 'Bought Out Part') {
             const masterId = type === 'Raw Material' ? RM_MASTER_ID : BOP_MASTER_ID;
-            
+
             // Add check for userMasterLevelAPI
             if (!userMasterLevelAPI) {
-                console.error('userMasterLevelAPI is not available');
                 return;
             }
-    
+
             const levelDetailsTemp = userTechnologyDetailByMasterId(
-                costingTypeId, 
+                costingTypeId,
                 masterId,
                 userMasterLevelAPI
             );
-    
+
             if (!levelDetailsTemp) {
-                console.error('Could not get level details');
                 return;
             }
-    
-            setState(prevState => ({ 
-                ...prevState, 
-                levelDetails: levelDetailsTemp 
+
+            setState(prevState => ({
+                ...prevState,
+                levelDetails: levelDetailsTemp
             }));
-    
+
             const obj = {
                 DepartmentId: userDetails().DepartmentId,
                 UserId: loggedInUserId(),
@@ -1214,7 +1212,7 @@ function RfqListing(props) {
 
     const addComparisonDrawerToggle = () => {
         let arr = []
-
+        setMatchedStatus([])
         selectedRows && selectedRows?.map(item => {
             if (item?.CostingId) {
                 arr.push(item?.CostingId)
@@ -1315,83 +1313,66 @@ function RfqListing(props) {
 
     }
 
+
     const onRowSelect = (event) => {
-
-        if (event.node.isSelected()) {
-            const selectedRowIndex = event.node.rowIndex;
-
-
-            setSelectedRowIndex(selectedRowIndex)
-        } else {
-            setaddComparisonToggle(false)
-            setSelectedRowIndex('')
-            gridApi?.deselectAll()
+        if (!event.node.isSelected()) {
+            setaddComparisonToggle(false);
+            setSelectedRowIndex('');
+            gridApi?.deselectAll();
+            return;
         }
-
-
-        const selectedRows = gridApi?.getSelectedRows()
-        let partNumber = []
-        let data
-        const partTypes = selectedRows[0]?.PartType.split(',');
-        partTypes?.forEach(type => {
-            switch (type.trim()) {
-                case 'Raw Material':
-                    selectedRows?.map(item => partNumber?.push(item?.RawMaterial))
-                    data = partNumber.map(item => rowData?.filter(el => el.RawMaterial === item))
-                    // SELECTED ALL COSTING ON THE CLICK ON PARTbreak;
-                    break;
-                case 'Bought Out Part':
-                    selectedRows?.map(item => partNumber.push(item?.BoughtOutPart))
-                    data = partNumber.map(item => rowData?.filter(el => el.BoughtOutPart === item))             // SELECTED ALL COSTING ON THE CLICK ON PART
-
-                    break;
-                case 'Component':
-                case 'Assembly':
-                    selectedRows?.map(item => partNumber?.push(item?.PartNo))
-                    data = partNumber.map(item => rowData?.filter(el => el.PartNumber === item))             // SELECTED ALL COSTING ON THE CLICK ON PART
-                    break;
-                case 'Tooling':
-
-
-                    selectedRows?.map(item => partNumber?.push(item?.PartNo))
-
-                    data = partNumber.map(item => rowData?.filter(el => el.PartNumber === item))             // SELECTED ALL COSTING ON THE CLICK ON PART
-                    break;
-                default:
-                    break;
-
-
-
-            }
-
-        })
-
-        let newArray = []
-
-        data?.map((item) => {
-            newArray = [...newArray, ...item]
-            return null
-        })
-
-
-
-        if (selectedRows && selectedRows.length > 0 && selectedRows[0]?.IsVisibiltyConditionMet && selectedRows[0].IsShowNetPoPrice) {
-            setisVisibiltyConditionMet(true)
-        } else {
-            setisVisibiltyConditionMet(false)
+        setSelectedRowIndex(event.node.rowIndex);
+        const selectedRow = event.node.data;
+        if (!selectedRow) return;
+        const matchingRows = getMatchingRows(selectedRow);
+        const visibleRows = matchingRows.filter(row =>
+            row?.IsVisibiltyConditionMet && row.IsShowNetPoPrice
+        );
+        const hasVisibleRow = visibleRows.length > 0;
+        setisVisibiltyConditionMet(hasVisibleRow);
+        const uniqueRows = getUniqueRows(visibleRows);
+        setSelectedRows(uniqueRows);
+        setAddComparisonButton(uniqueRows.length === 0);
+        if (uniqueRows.length > 0) {
+            setTechnologyId(uniqueRows[0]?.TechnologyId);
         }
-
-
-
-        setSelectedRows(newArray)
-
-        if (selectedRows.length === 0) {
-            setAddComparisonButton(true)
-        } else {
-            setAddComparisonButton(false)
-            setTechnologyId(selectedRows[0]?.TechnologyId)
+    };
+    const getIdentifier = (type) => {
+        switch (type.trim()) {
+            case 'Raw Material': return 'RawMaterial';
+            case 'Bought Out Part': return 'BoughtOutPart';
+            case 'Component':
+            case 'Assembly':
+            case 'Tooling': return 'PartNumber';
+            default: return null;
         }
-    }
+    };
+
+    const getMatchingRows = (selectedRow) => {
+        let matchingRows = [];
+        const partTypes = selectedRow?.PartType?.split(',') || [];
+
+        partTypes.forEach(type => {
+            const identifier = getIdentifier(type.trim());
+            if (!identifier) return;
+
+            const identifierValue = selectedRow[identifier];
+            const matches = rowData.filter(row => row[identifier] === identifierValue);
+            matchingRows = [...matchingRows, ...matches];
+        });
+
+        return matchingRows;
+    };
+
+    // Helper function to get unique rows
+    const getUniqueRows = (rows) => {
+        return _.uniqBy(rows, row => {
+            const type = row.PartType.split(',')[0].trim();
+            const identifier = getIdentifier(type);
+            return row[identifier];
+        });
+    };
+
 
     const dateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -1522,7 +1503,12 @@ function RfqListing(props) {
             state: { source: 'rfq', quotationId: quotationId }
         });
     }
-
+    const shouldShowButtons = () => {
+        const hasComparison = Boolean(addComparisonToggle);
+        const hasApproveReject = Boolean(disableApproveRejectButton);
+        const hasData = Boolean(viewCostingData?.length > 0 || viewRmDetails?.length > 0 || viewBOPDetails?.length > 0);
+        return hasComparison && hasApproveReject && hasData;
+    };
     return (
         <>
             <div className={`ag-grid-react rfq-portal ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "" : ""} ${true ? "show-table-btn" : ""} ${false ? 'simulation-height' : props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
@@ -1753,6 +1739,7 @@ function RfqListing(props) {
                                 showEditSOBButton={addComparisonToggle && disableApproveRejectButton && viewCostingData.length > 0}
                                 selectedTechnology={viewCostingData && viewCostingData.length > 0 && viewCostingData[0].technology}
                                 costingsDifferentStatus={costingsDifferentStatus}
+                                showAddToComparison={false}
                             />
 
                         )}
@@ -1801,10 +1788,10 @@ function RfqListing(props) {
                 }
 
             </div >
-            {addComparisonToggle && disableApproveRejectButton && (viewCostingData?.length > 0 || viewRmDetails?.length > 0 || viewBOPDetails?.length > 0) && <Row className="btn-sticky-container sf-btn-footer no-gutters justify-content-between">
+            {shouldShowButtons() && <Row className="btn-sticky-container sf-btn-footer no-gutters justify-content-between">
                 {costingsDifferentStatus && <WarningMessage dClass={"col-md-12 pr-0 justify-content-end"} message={'Actions cannot be performed on costings with different statuses.'} />}
                 <div className="col-sm-12 text-right bluefooter-butn">
-                    {(matchedStatus?.length !== 0 || matchedStatus?.includes(RECEIVED)) && (<button
+                    {(matchedStatus?.length !== 0 || matchedStatus?.includes(RECEIVED)) && localStorage.getItem('showInitiateAuctionButton') === true && (<button
                         type="button"
                         className="submit-button save-btn mr-2"
                         id="addRFQ_save"

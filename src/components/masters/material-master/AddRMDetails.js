@@ -159,7 +159,7 @@ function AddRMDetails(props) {
                 }))
             }
             setTimeout(() => {
-                dispatch(setRawMaterialDetails({ ...rawMaterailDetailsRef.current,Vendor: { label: Data?.VendorName, value: Data?.Vendor }, customer: { label: Data?.CustomerName, value: Data?.CustomerId }, Technology: { label: Data?.TechnologyName, value: Data?.TechnologyId }, SourceVendor: Data?.IsSourceVendor ? { label: Data?.SourceVendorName, value: Data?.SourceVendorId } : [], isShowIndexCheckBox: Data?.IsIndexationDetails }, () => { }))
+                dispatch(setRawMaterialDetails({ ...rawMaterailDetailsRef.current, Vendor: { label: Data?.VendorName, value: Data?.Vendor }, customer: { label: Data?.CustomerName, value: Data?.CustomerId }, Technology: { label: Data?.TechnologyName, value: Data?.TechnologyId }, SourceVendor: Data?.IsSourceVendor ? { label: Data?.SourceVendorName, value: Data?.SourceVendorId } : [], isShowIndexCheckBox: Data?.IsIndexationDetails }, () => { }))
             }, 500);
         }
     }, [props?.DataToChange])
@@ -519,17 +519,20 @@ function AddRMDetails(props) {
                         const specObj = res.data.DataList && res.data.DataList.find((item) => {
                             return item.Text === data.Specification;
                         });
+                        delete errors?.RawMaterialCode
                         setState(prevState => ({
                             ...prevState,
                             RawMaterial: { label: materialNameObj.Text, value: materialNameObj.Value, },
                             RMGrade: gradeObj !== undefined ? { label: gradeObj.Text, value: gradeObj.Value } : [],
                             RMSpec: specObj !== undefined ? { label: specObj.Text, value: specObj.Value, RawMaterialCode: specObj.RawMaterialCode } : [],
                             rmCode: specObj !== undefined ? { label: specObj.RawMaterialCode, value: specObj.Value } : [],
+                            isCodeDisabled: true
                         }))
                         setValue("RawMaterialName", { label: materialNameObj.Text, value: materialNameObj.Value, })
                         setValue("RawMaterialGrade", { label: gradeObj.Text, value: gradeObj.Value, })
                         setValue("RawMaterialSpecification", { label: specObj?.Text, value: specObj?.Value, RawMaterialCode: specObj?.RawMaterialCode })
                         setValue("RawMaterialCode", { label: specObj?.RawMaterialCode, value: specObj?.Value })
+
                     }))
                 }))
             }
