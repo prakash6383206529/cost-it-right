@@ -189,7 +189,7 @@ function RfqListing(props) {
                 case 'Tooling':
                     filteredArr = _.map(viewCostingData, 'costingId');
                     filteredArr.forEach(item => {
-                        selectedRows.filter(el => {
+                        selectedRows?.filter(el => {
                             if (el.CostingId === item) {
                                 arr.push(el);
                             }
@@ -1213,6 +1213,7 @@ function RfqListing(props) {
     const addComparisonDrawerToggle = () => {
         let arr = []
         setMatchedStatus([])
+
         selectedRows && selectedRows?.map(item => {
             if (item?.CostingId) {
                 arr.push(item?.CostingId)
@@ -1230,6 +1231,7 @@ function RfqListing(props) {
 
         setDisableApproveRejectButton(isApproval.length > 0)
         let costingIdList = selectedRows?.length > 0 ? [...selectedRows[0]?.ShouldCostings, ...selectedRows] : selectedRows
+
         setSelectedCostingList([])
         const partTypes = partType?.split(',');
         partTypes?.forEach(type => {
@@ -1315,6 +1317,7 @@ function RfqListing(props) {
 
 
     const onRowSelect = (event) => {
+
         if (!event.node.isSelected()) {
             setaddComparisonToggle(false);
             setSelectedRowIndex('');
@@ -1322,22 +1325,29 @@ function RfqListing(props) {
             return;
         }
         setSelectedRowIndex(event.node.rowIndex);
+
         const selectedRow = event.node.data;
+
         if (!selectedRow) return;
         const matchingRows = getMatchingRows(selectedRow);
+
         const visibleRows = matchingRows.filter(row =>
             row?.IsVisibiltyConditionMet && row.IsShowNetPoPrice
         );
+
         const hasVisibleRow = visibleRows.length > 0;
+
         setisVisibiltyConditionMet(hasVisibleRow);
         const uniqueRows = getUniqueRows(visibleRows);
-        setSelectedRows(uniqueRows);
+
+        setSelectedRows(visibleRows);
         setAddComparisonButton(uniqueRows.length === 0);
         if (uniqueRows.length > 0) {
             setTechnologyId(uniqueRows[0]?.TechnologyId);
         }
     };
     const getIdentifier = (type) => {
+
         switch (type.trim()) {
             case 'Raw Material': return 'RawMaterial';
             case 'Bought Out Part': return 'BoughtOutPart';
@@ -1366,9 +1376,13 @@ function RfqListing(props) {
 
     // Helper function to get unique rows
     const getUniqueRows = (rows) => {
+
         return _.uniqBy(rows, row => {
             const type = row.PartType.split(',')[0].trim();
+
             const identifier = getIdentifier(type);
+
+
             return row[identifier];
         });
     };
