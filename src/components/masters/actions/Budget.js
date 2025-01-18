@@ -72,7 +72,7 @@ export function getBudgetDataList(skip, take, isPagination, obj, callback) {
 export function getApprovedPartCostingPrice(obj, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });    
-        const QueryParams = `costingHeadId=${obj.costingHeadId !== undefined ? obj.costingHeadId : ""}&partId=${obj.partId !== undefined ? obj.partId : ""}&plantId=${obj.plantId !== undefined ? obj.plantId : ""}&vendorId=${obj.vendorId !== undefined ? obj.vendorId : ""}&customerId=${obj.customerId !== undefined ? obj.customerId : ""}`
+        const QueryParams = `loggedInUserId=${loggedInUserId()}&costingHeadId=${obj.costingHeadId !== undefined ? obj.costingHeadId : ""}&partId=${obj.partId !== undefined ? obj.partId : ""}&plantId=${obj.plantId !== undefined ? obj.plantId : ""}&vendorId=${obj.vendorId !== undefined ? obj.vendorId : ""}&customerId=${obj.customerId !== undefined ? obj.customerId : ""}`
         axios.get(`${API.getApprovedPartCostingPrice}?${QueryParams}`, config())
             .then((response) => {
                 if (response.data.Result || response.status === 204) {

@@ -480,10 +480,8 @@ const UsersListing = (props) => {
 		props.getDelegationDetail(data)
 	}
 const onRevokePopupConfirm=()=>{
-	console.log(state?.row,'state')
 	let data = { DelegatorUserId: state?.row, LoggedInUserId: loggedInUserId()}
 	dispatch(revokeDelegation(data,(res)=>{
-		console.log(res,'res')
 		closeRevokePopup()
 	}))
 }

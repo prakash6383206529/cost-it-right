@@ -67,7 +67,6 @@ const AddDelegation = (props) => {
     useEffect(() => {
         if (isView) {
             dispatch(getDelegationHistory(props?.data?.UserId, (res) => {
-                console.log(res)
                 setGridData(res?.data?.Result)
             }));
         }

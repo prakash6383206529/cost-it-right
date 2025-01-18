@@ -135,9 +135,9 @@ export const fetchVendorData = () => {
     };
 };
 export const fetchVendorDependentPlantData = (data) => {
-
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return dispatch => {
-        axios.get(`${API.getPlantData}/${data}`, config())
+        axios.get(`${API.getPlantData}/${data}/${loggedInUser?.loggedInUserId}`, config())
             .then(response => {
 
 
