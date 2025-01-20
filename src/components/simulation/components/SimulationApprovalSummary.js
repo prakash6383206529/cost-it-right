@@ -56,9 +56,10 @@ const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 function SimulationApprovalSummary(props) {
+    console.log(props,'SimulationApprovalSummary')  
     const { vendorLabel } = useLabels()
     const { isbulkUpload } = props;
-    const { approvalNumber, approvalId, SimulationTechnologyId, simulationId } = props?.location?.state
+    const { approvalNumber, approvalId, SimulationTechnologyId, simulationId,receiverId } = props?.location?.state
     const [showImpactedData, setshowImpactedData] = useState(false)
     const [fgWiseDataAcc, setFgWiseDataAcc] = useState(true)
     const [assemblyWiseAcc, setAssemblyWiseAcc] = useState(true)
@@ -159,6 +160,7 @@ function SimulationApprovalSummary(props) {
             approvalTokenNumber: approvalNumber,
             approvalId: approvalId,
             loggedInUserId: loggedInUserId(),
+            receiverId:receiverId
         }
         const params = {
             simulationId: simulationId,
@@ -330,7 +332,8 @@ function SimulationApprovalSummary(props) {
 
                 // approvalTypeId: costingTypeIdToApprovalTypeIdFunction(simulationData.SimulationHeadId),
                 plantId: simulationData?.SimulatedCostingList && simulationData?.SimulatedCostingList[0]?.PlantId ? simulationData?.SimulatedCostingList[0]?.PlantId : null,
-                divisionId: simulationData?.DivisionId ?? null
+                divisionId: simulationData?.DivisionId ?? null,
+                ReceiverId: receiverId
             }
             if (initialConfiguration?.IsMultipleUserAllowForApproval ? simulationData?.SimulatedCostingList && simulationData?.SimulatedCostingList[0]?.PlantId ? simulationData?.SimulatedCostingList[0]?.PlantId : true : true) {
                 dispatch(checkFinalUser(obj, res => {
@@ -1603,7 +1606,9 @@ function SimulationApprovalSummary(props) {
                                             isApproval={true}
                                             costingIdExist={true}
                                             selectedTechnology={technologyName}
-                                            simulationId={simulationDetail?.SimulationId} />}
+                                            simulationId={simulationDetail?.SimulationId} 
+                                            receiverId={simulationDetail?.ReceiverId}
+                                            />}
                                     </Col>
                                 </Row>
                             </>
@@ -1863,6 +1868,7 @@ function SimulationApprovalSummary(props) {
                     approvalTypeIdValue={simulationDetail?.ApprovalTypeId}
                     IsExchangeRateSimulation={keysForDownloadSummary?.IsExchangeRateSimulation}
                     CheckFinalLevel={CheckFinalLevel}
+                    receiverId={receiverId}
                 // IsPushDrawer={showPushDrawer}
                 // dataSend={[approvalDetails, partDetail]}
                 />
@@ -1888,6 +1894,7 @@ function SimulationApprovalSummary(props) {
                     costingTypeId={simulationDetail?.SimulationHeadId}
                     technologyId={SimulationTechnologyId}
                     CheckFinalLevel={CheckFinalLevel}
+                    receiverId={receiverId}
                 />
             }
 

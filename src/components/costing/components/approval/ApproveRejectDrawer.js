@@ -118,7 +118,7 @@ function ApproveRejectDrawer(props) {
       // dispatch(getAllApprovalDepartment((res) => { }))
       /***********************************REMOVE IT AFTER SETTING FROM SIMULATION*******************************/
       if (!isSimulation) {
-        dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), TechnologyId, (res) => {
+        dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), TechnologyId,selectedRowData[0]?.ReceiverId, (res) => {
           levelDetailsTemp = userTechnologyLevelDetails(props?.costingTypeId, res?.data?.Data?.TechnologyLevels)
           setLevelDetails(levelDetailsTemp)
           if (levelDetailsTemp?.length === 0) {
@@ -126,7 +126,7 @@ function ApproveRejectDrawer(props) {
           }
         }))
 
-        dispatch(getAllApprovalDepartment((res) => {
+        dispatch(getAllApprovalDepartment(selectedRowData[0]?.ReceiverId,(res) => {
 
           const Data = res?.data?.SelectList
           const departObj = Data && Data.filter(item => item.Value === userData.DepartmentId)
@@ -226,7 +226,7 @@ function ApproveRejectDrawer(props) {
             TechnologyId: item,
             ReasonId: 0,
             ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(levelDetailsTemp?.ApprovalTypeId),
-            plantId: approvalData.plantId ?? EMPTY_GUID
+            plantId: approvalData.plantId ?? EMPTY_GUID,
           }
           let approverIdListTemp = []
           dispatch(getAllSimulationApprovalList(obj, (res) => {
@@ -485,7 +485,7 @@ function ApproveRejectDrawer(props) {
           IsFinalApprovalProcess: false, //ASK THIS CONDITION WITH KAMAL SIR
           IsRFQCostingSendForApproval: false,
           IsReturn: type === 'Return' ? true : false,
-
+          ReceiverId:selectedRowData[0]?.ReceiverId??null
         })
         return null;
       })

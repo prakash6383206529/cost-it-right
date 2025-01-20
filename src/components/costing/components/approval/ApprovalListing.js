@@ -44,7 +44,7 @@ const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
 function ApprovalListing(props) {
 
-  const { isDashboard } = props
+  const { isDashboard ,delegation} = props
   const loggedUser = loggedInUserId()
   const [loader, setloader] = useState(false);
   const [approvalData, setApprovalData] = useState('')
@@ -268,7 +268,7 @@ function ApprovalListing(props) {
     setloader(true)
     isDashboard && dispatch(dashboardTabLock(true))        // LOCK DASHBOARD TAB WHEN LOADING
     dispatch(
-      getApprovalList(filterData, skip, take, isPagination, dataObj, (res) => {
+      getApprovalList(filterData, skip, take, isPagination, dataObj, delegation, (res) => {
         if (res.status === 204 && res.data === '') {
           setloader(false)
           dispatch(dashboardTabLock(false))      // UNLOCK DASHBOARD TAB AFTER LOADING  
@@ -484,7 +484,7 @@ function ApprovalListing(props) {
     const row = props?.valueFormatted ? props.valueFormatted : props?.data;
     return (
       <Fragment>
-        {(cell === '' || cell === null) ? <div className='ml-4'>-</div> : <div id={`Costing_Approval_No_${props?.rowIndex}`} onClick={() => viewDetails(row.ApprovalNumber, row.ApprovalProcessId)} className={'link'}>{cell}</div>}
+        {(cell === '' || cell === null) ? <div className='ml-4'>-</div> : <div id={`Costing_Approval_No_${props?.rowIndex}`} onClick={() => viewDetails(row.ApprovalNumber, row.ApprovalProcessId,row?.ReceiverId)} className={'link'}>{cell}</div>}
       </Fragment >
     )
   }
@@ -593,8 +593,8 @@ function ApprovalListing(props) {
   }
 
 
-  const viewDetails = (approvalNumber, approvalProcessId) => {
-    setApprovalData({ approvalProcessId: approvalProcessId, approvalNumber: approvalNumber })
+  const viewDetails = (approvalNumber, approvalProcessId,receiverId=null) => {
+    setApprovalData({ approvalProcessId: approvalProcessId, approvalNumber: approvalNumber,receiverId:receiverId})
     setShowApprovalSummary(true)
     // props.closeDashboard()
     return (
@@ -752,7 +752,7 @@ function ApprovalListing(props) {
     let requestObject = {
       LoggedInUserId: loggedInUserId(),
       Mode: 'Costing',
-      ApprovalTokens: selectedDataObj.TokenNo
+      ApprovalTokens: selectedDataObj.TokenNo,
     }
     dispatch(checkFinalLevelApproverForApproval(requestObject, res => {
       let Data = res?.data?.Data
@@ -964,8 +964,10 @@ function ApprovalListing(props) {
         Mode: 'costing',
         approvalTypeId: costingTypeIdToApprovalTypeIdFunction(selectedRowData[0]?.ApprovalTypeId ?? selectedRowData[0]?.CostingTypeId),
         plantId: selectedRowData[0].PlantId ?? EMPTY_GUID,
-        divisionId: divisionId
+        divisionId: divisionId,
+        ReceiverId: selectedRowData[0]?.ReceiverId
       }
+      console.log(obj,'obj')
       dispatch(checkFinalUser(obj, res => {
         if (res && res.data && res.data.Result) {
           if (selectedRowData[0].Status === DRAFT) {
@@ -1145,7 +1147,8 @@ function ApprovalListing(props) {
         pathname: "/approval-summary",
         state: {
           approvalNumber: approvalData.approvalNumber,
-          approvalProcessId: approvalData.approvalProcessId
+          approvalProcessId: approvalData.approvalProcessId,
+          receiverId:approvalData.receiverId
         }
       }}
     />

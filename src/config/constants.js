@@ -750,8 +750,9 @@ export const API = {
   getUserOnboardingLevel: `${BASE_URL}/user-level/get-user-onboarding-levels`,
   getDelegateeUserListAPI: `${BASE_URL}/user-delegation/get-delegatee-users`,
   createDelegation: `${BASE_URL}/user-delegation/create-user-delegations`,
-  getDelegationHistory: `${BASE_URL}/user-delegation/get-user-delegations`,
+  getUserDelegationDetails: `${BASE_URL}/user-delegation/get-user-delegations`,
   revokeDelegation: `${BASE_URL}/user-delegation/revoke-user-delegations`,
+  getDelegationHistory: `${BASE_URL}/user-delegation/get-user-delegations-history`,
 
   //AUDIT API
 
@@ -2320,6 +2321,8 @@ export const COMPANY = 'Company'//MINDA
 export const RFQUSER = 'RFQUser'
 export const DELEGATION = 'Delegation'
 export const DIVISION = 'Division'
+export const SELF_DELEGATION = 'Self Delegation'
+export const ON_BEHALF_DELEGATION = 'On Behalf Delegation'
 
 //DEPRECIATION TYPE ENUMS
 export const SLM = 'SLM'

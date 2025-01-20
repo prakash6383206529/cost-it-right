@@ -85,7 +85,7 @@ function SummaryDrawer(props) {
         let CostingTypeId = ''
         setLoader(true)
 
-        dispatch(getMasterApprovalSummary(approvalData.approvalNumber, approvalData.approvalProcessId, props?.masterId, props?.OnboardingApprovalId, res => {
+        dispatch(getMasterApprovalSummary(approvalData.approvalNumber, approvalData.approvalProcessId, props?.masterId, props?.OnboardingApprovalId,approvalData?.receiverId, res => {
 
             const Data = res.data.Data
             const QuotationId = Data?.QuotationId
@@ -155,7 +155,8 @@ function SummaryDrawer(props) {
                 Mode: (props?.masterId === 0 && props?.OnboardingApprovalId === ONBOARDINGID) ? 'onboarding' : 'master',
                 approvalTypeId: (props?.masterId === 0 && props?.OnboardingApprovalId === ONBOARDINGID) ? Data?.ApprovalTypeId : costingTypeIdToApprovalTypeIdFunction(CostingTypeId),
                 plantId: masterPlantId,
-                divisionId: Data?.DivisionId ?? null
+                divisionId: Data?.DivisionId ?? null,
+                ReceiverId: approvalData?.receiverId
             }
             setDivisionId(Data?.DivisionId ?? null)
             setMastersPlantId(masterPlantId)
@@ -187,7 +188,7 @@ function SummaryDrawer(props) {
             setIsOnboardingApproval(true)
         }
 
-        dispatch(getUsersMasterLevelAPI(loggedInUserId(), props?.masterId, res => {
+        dispatch(getUsersMasterLevelAPI(loggedInUserId(), props?.masterId,approvalData?.receiverId, res => {
             if (res && res.data && res.data.Result) {
                 setFinalLevelUser(res.data.Data?.IsFinalApprover)
                 let levelDetailsTemp = []
@@ -329,6 +330,7 @@ function SummaryDrawer(props) {
                     levelDetails={levelDetails}
                     divisionId={divisionId}
                     masterSummary={true}
+                    receiverId={approvalData?.receiverId}
                 // approvalObj={approvalObj}
                 />
             }

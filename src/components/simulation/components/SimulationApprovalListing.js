@@ -36,7 +36,7 @@ const gridOptions = {};
 function SimulationApprovalListing(props) {
 
     const {vendorLabel, vendorBasedLabel, zeroBasedLabel, customerBasedLabel} = useLabels()
-    const { isDashboard } = props
+    const { isDashboard,delegation } = props
     const [approvalData, setApprovalData] = useState('')
     const [selectedCostingHead, setSelectedCostingHead] = useState(null);
     const [selectedRowData, setSelectedRowData] = useState([]);
@@ -214,7 +214,7 @@ function SimulationApprovalListing(props) {
         setIsLoader(true)
         isDashboard && dispatch(dashboardTabLock(true))
         let obj = { ...dataObj }
-        dispatch(getSimulationApprovalList(filterData, skip, take, isPagination, dataObj, (res) => {
+        dispatch(getSimulationApprovalList(filterData, skip, take, isPagination, dataObj, delegation, (res) => {
             dispatch(dashboardTabLock(false))
             if (res?.data?.DataList?.length === 0) {
                 setTotalRecordCount(0)
@@ -500,7 +500,7 @@ function SimulationApprovalListing(props) {
 
     const viewDetails = (rowObj) => {
         dispatch(setIsMasterAssociatedWithCosting(!rowObj?.IsSimulationWithOutCosting))
-        setApprovalData({ simulationId: rowObj?.SimulationId, approvalProcessId: rowObj?.ApprovalProcessId, approvalNumber: rowObj?.ApprovalNumber, SimulationTechnologyHead: rowObj?.SimulationTechnologyHead, SimulationTechnologyId: rowObj?.SimulationTechnologyId, SimulationHeadId: rowObj?.SimulationHeadId, DepartmentId: rowObj?.DepartmentId })
+        setApprovalData({ simulationId: rowObj?.SimulationId, approvalProcessId: rowObj?.ApprovalProcessId, approvalNumber: rowObj?.ApprovalNumber, SimulationTechnologyHead: rowObj?.SimulationTechnologyHead, SimulationTechnologyId: rowObj?.SimulationTechnologyId, SimulationHeadId: rowObj?.SimulationHeadId, DepartmentId: rowObj?.DepartmentId ,receiverId:rowObj?.ReceiverId})
         dispatch(setMasterForSimulation({ label: rowObj.SimulationTechnologyHead, value: rowObj.SimulationTechnologyId }))
         // dispatch(setTechnologyForSimulation({ label: rowObj.SimulationTechnologyHead, value: rowObj.SimulationTechnologyId }))                //RE
         if (rowObj?.Status === 'Draft' || rowObj.SimulationType === 'Provisional' || rowObj?.Status === 'Linked') {
@@ -623,7 +623,7 @@ const CheckFinalLevel = (value) => {
         let requestObject = {
             LoggedInUserId: loggedInUserId(),
             Mode: 'Simulation',
-            ApprovalTokens: selectedDataObj.TokenNo
+            ApprovalTokens: selectedDataObj.TokenNo,
         }
         dispatch(checkFinalLevelApproverForApproval(requestObject, res => {
             let Data = res?.data?.Data
@@ -699,7 +699,8 @@ const CheckFinalLevel = (value) => {
                                 Mode: 'simulation',
                                 approvalTypeId: costingTypeIdToApprovalTypeIdFunction(res?.data?.Data?.ApprovalTypeId ? res?.data?.Data?.ApprovalTypeId : selectedRowData[0].ApprovalTypeId),
                                 plantId: selectedRowData[0].PlantId ?? EMPTY_GUID,
-                                divisionId: selectedRowData[0].DivisionId ?? EMPTY_GUID
+                                divisionId: selectedRowData[0].DivisionId ?? EMPTY_GUID,
+                                ReceiverId: selectedRowData[0]?.ReceiverId
                             }
                             dispatch(checkFinalUser(obj, res => {
                                 if (res && res.data && res.data.Result) {
@@ -730,7 +731,8 @@ const CheckFinalLevel = (value) => {
                         Mode: 'simulation',
                         approvalTypeId: costingTypeIdToApprovalTypeIdFunction(selectedRowData[0]?.SimulationHeadId),
                         plantId: selectedRowData[0].PlantId,
-                        divisionId: selectedRowData[0].DivisionId ?? null
+                        divisionId: selectedRowData[0].DivisionId ?? null,
+                        ReceiverId: selectedRowData[0]?.ReceiverId
                     }
                     setSimulationDetail({ DepartmentId: selectedRowData[0]?.DepartmentId, TokenNo: selectedRowData[0]?.SimulationTokenNumber, Status: selectedRowData[0]?.SimulationStatus, SimulationId: selectedRowData[0]?.SimulationId, SimulationAppliedOn: selectedRowData[0]?.SimulationAppliedOn, EffectiveDate: selectedRowData[0]?.EffectiveDate, IsExchangeRateSimulation: selectedRowData[0]?.IsExchangeRateSimulation })
                     dispatch(setMasterForSimulation({ label: selectedRowData[0]?.SimulationTechnologyHead, value: selectedRowData[0]?.SimulationTechnologyId }))
@@ -806,7 +808,8 @@ const CheckFinalLevel = (value) => {
                     approvalNumber: approvalData.approvalNumber,
                     approvalId: approvalData.approvalProcessId,
                     SimulationTechnologyId: approvalData.SimulationTechnologyId,
-                    simulationId: approvalData.simulationId
+                    simulationId: approvalData.simulationId,
+                    receiverId:approvalData.receiverId
                 }
             }}
         />

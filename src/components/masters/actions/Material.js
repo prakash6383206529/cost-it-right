@@ -1375,7 +1375,7 @@ export function setFilterForRM(filteredValue) {
  * @method getRMApprovalList
  * @description Used to get RM Approval List
  */
-export function getRMApprovalList(masterId, skip, take, isPagination, obj, onboardingApprovalId = '', callback) {
+export function getRMApprovalList(masterId, skip, take, isPagination, obj, onboardingApprovalId = '', delegation, callback) {
 
 
     return (dispatch) => {
@@ -1386,13 +1386,13 @@ export function getRMApprovalList(masterId, skip, take, isPagination, obj, onboa
             Technology: obj.TechnologyName, UOM: obj.UOM, EffectiveDate: obj.EffectiveDate, InitiatedBy: obj.RequestedBy, CreatedBy: obj.CreatedByName, LastApprovedBy: obj.LastApprovedBy, Status: obj.DisplayStatus, BasicRate: obj.BasicRate, BasicRateConversion: obj.BasicRateConversion, NetCostWithoutConditionCost: obj.NetCostWithoutConditionCost, NetCostWithoutConditionCostConversion: obj.NetCostWithoutConditionCostConversion, NetConditionCostConversion: obj.NetConditionCostConversion, NetLandedCost: obj.NetLandedCost,
             NetLandedCostConversion: obj.NetLandedCostConversion, Plant: obj.Plants, Vendor: obj.VendorName, RMName: obj.RawMaterial, RMGrade: obj.RMGrade, RMSpecification: obj.RMSpec, RMCategory: obj.Category, RMMaterialType: obj.MaterialType, RMScrapRate: obj.ScrapRate, RMFreightCost: obj.RMFreightCost, RMShearingCost: obj.RMShearingCost, BOPPartNumber: obj.BoughtOutPartNumber,
             BOPPartName: obj.BoughtOutPartName, BOPCategory: obj.BoughtOutPartCategory, BOPSpecification: obj.Specification, OperationName: obj.OperationName, OperationCode: obj.OperationCode, MachineNumber: obj.MachineNumber, MachineType: obj.MachineTypeName, MachineTonnage: obj.MachineTonnage,
-            MachineProcessName: obj.ProcessName, IsCustomerDataShow: obj?.IsCustomerDataShow, IsVendorDataShow: obj?.IsVendorDataShow, IsZeroDataShow: obj?.IsZeroDataShow, IncoTerm: obj.IncoTermDescriptionAndInfoTerm, PaymentTerm: obj.PaymentTermDescriptionAndPaymentTerm,
+            MachineProcessName: obj.ProcessName, IsCustomerDataShow: !delegation ? obj?.IsCustomerDataShow : true, IsVendorDataShow: !delegation ? obj?.IsVendorDataShow : true, IsZeroDataShow: !delegation ? obj?.IsZeroDataShow : true, IncoTerm: obj.IncoTermDescriptionAndInfoTerm, PaymentTerm: obj.PaymentTermDescriptionAndPaymentTerm,
             Currency: obj.Currency, partId: obj.partId, FinancialYear: obj.FinancialYear, IsBreakupBoughtOutPart: obj?.IsBreakupBoughtOutPart?.toLowerCase() === "yes" ? true : !obj.IsBreakupBoughtOutPart ? '' : false,
             ScrapUnitOfMeasurement: obj.ScrapUnitOfMeasurement, ScrapRatePerScrapUOM: obj.ScrapRatePerScrapUOM, IsScrapUOMApply: obj.IsScrapUOMApply ? (obj.IsScrapUOMApply?.toLowerCase() === 'yes' ? true : false) : '',
             CalculatedFactor: obj.CalculatedFactor, UOMToScrapUOMRatio: obj.UOMToScrapUOMRatio, EntryType: obj.EntryType
         });
         // const queryParams = `applyPagination=${isPagination}&skip=${skip}&take=${take}&Token=${obj.ApprovalNumber !== undefined ? obj.ApprovalNumber : ""}&CostingHead=${obj.CostingHead !== undefined ? obj.CostingHead : ""}&Technology=${obj.Technology !== undefined ? obj.Technology : ""}&UOM=${obj.UOM !== undefined ? obj.UOM : ""}&EffectiveDate=${obj.EffectiveDate !== undefined ? obj.EffectiveDate : ""}&InitiatedBy=${obj.RequestedBy !== undefined ? obj.RequestedBy : ""}&CreatedBy=${obj.CreatedByName !== undefined ? obj.CreatedByName : ""}&LastApprovedBy=${obj.LastApprovedBy !== undefined ? obj.LastApprovedBy : ""}&Status=${obj.DisplayStatus !== undefined ? obj.DisplayStatus : ""}&BasicRate=${obj.BasicRate !== undefined ? obj.BasicRate : ""}&BasicRateConversion=${obj.BasicRateConversion !== undefined ? obj.BasicRateConversion : ""}&NetCostWithoutConditionCost=${obj.NetCostWithoutConditionCost !== undefined ? obj.NetCostWithoutConditionCost : ""}&NetCostWithoutConditionCostConversion=${obj.NetCostWithoutConditionCostConversion !== undefined ? obj.NetCostWithoutConditionCostConversion : ""}&NetConditionCostConversion=${obj.NetConditionCostConversion !== undefined ? obj.NetConditionCostConversion : ""}&NetLandedCost=${obj.NetLandedCost !== undefined ? obj.NetLandedCost : ""}&NetLandedCostConversion=${obj.NetLandedCostConversion !== undefined ? obj.NetLandedCostConversion : ""}&Plant=${obj.Plants !== undefined ? obj.Plants : ""}&Vendor=${obj.VendorName !== undefined ? obj.VendorName : ""}&RMName=${obj.RawMaterial !== undefined ? obj.RawMaterial : ""}&RMGrade=${obj.RMGrade !== undefined ? obj.RMGrade : ""}&RMSpecification=${obj.RMSpec !== undefined ? obj.RMSpec : ""}&RMCategory=${obj.Category !== undefined ? obj.Category : ""}&RMMaterialType=${obj.MaterialType !== undefined ? obj.MaterialType : ""}&RMScrapRate=${obj.ScrapRate !== undefined ? obj.ScrapRate : ""}&RMFreightCost=${obj.RMFreightCost !== undefined ? obj.RMFreightCost : ""}&RMShearingCost=${obj.RMShearingCost !== undefined ? obj.RMShearingCost : ""}&BOPPartNumber=${obj.BoughtOutPartNumber !== undefined ? obj.BoughtOutPartNumber : ""}&BOPPartName=${obj.BoughtOutPartName !== undefined ? obj.BoughtOutPartName : ""}&BOPCategory=${obj.BoughtOutPartCategory !== undefined ? obj.BoughtOutPartCategory : ""}&BOPSpecification=${obj.Specification !== undefined ? obj.Specification : ""}&OperationName=${obj.OperationName !== undefined ? obj.OperationName : ""}&OperationCode=${obj.OperationCode !== undefined ? obj.OperationCode : ""}&MachineNumber=${obj.MachineNumber !== undefined ? obj.MachineNumber : ""}&MachineType=${obj.MachineTypeName !== undefined ? obj.MachineTypeName : ""}&MachineTonnage=${obj.MachineTonnage !== undefined ? obj.MachineTonnage : ""}&MachineProcessName=${obj.ProcessName !== undefined ? obj.ProcessName : ""}&IsCustomerDataShow=${obj?.IsCustomerDataShow !== undefined ? obj?.IsCustomerDataShow : false}&IsVendorDataShow=${obj?.IsVendorDataShow !== undefined ? obj?.IsVendorDataShow : false}&IsZeroDataShow=${obj?.IsZeroDataShow !== undefined ? obj?.IsZeroDataShow : false}&IncoTerm=${obj.IncoTermDescriptionAndInfoTerm !== undefined ? obj.IncoTermDescriptionAndInfoTerm : ""}&PaymentTerm=${obj.PaymentTermDescriptionAndPaymentTerm !== undefined ? obj.PaymentTermDescriptionAndPaymentTerm : ""}&Currency=${obj.Currency ? obj.Currency : ''}&partId=${obj.partId ? obj.partId : ''}&FinancialYear=${obj.FinancialYear ? obj.FinancialYear : ''}&IsBreakupBoughtOutPart=${obj?.IsBreakupBoughtOutPart?.toLowerCase() === "yes" ? true : !obj.IsBreakupBoughtOutPart ? '' : false}&ScrapUnitOfMeasurement=${obj.ScrapUnitOfMeasurement !== undefined ? obj.ScrapUnitOfMeasurement : ''}&ScrapRatePerScrapUOM=${obj.ScrapRatePerScrapUOM !== undefined ? obj.ScrapRatePerScrapUOM : ''}&IsScrapUOMApply=${obj.IsScrapUOMApply ? (obj.IsScrapUOMApply?.toLowerCase() === 'yes' ? true : false) : ''}&CalculatedFactor=${obj.CalculatedFactor !== undefined ? obj.CalculatedFactor : ''}&ScrapRatePerScrapUOM=${obj.ScrapRatePerScrapUOM !== undefined ? obj.ScrapRatePerScrapUOM : ''}&UOMToScrapUOMRatio=${obj.UOMToScrapUOMRatio !== undefined ? obj.UOMToScrapUOMRatio : ''}&IsBreakupBoughtOutPart=${obj.IsBreakupBoughtOutPart !== undefined ? obj.IsBreakupBoughtOutPart : ""}&CustomerName=${obj.CustomerName !== undefined ? obj.CustomerName : ""}&UnitOfMeasurementName=${obj.UnitOfMeasurementName !== undefined ? obj.UnitOfMeasurementName : ""}&BasicRatePerUOM=${obj.BasicRatePerUOM !== undefined ? obj.BasicRatePerUOM : ""}&NetConditionCost=${obj.NetConditionCost !== undefined ? obj.NetConditionCost : ""}`
-        const request = axios.get(`${API.getRMApprovalList}?logged_in_user_id=${loggedInUserId()}&logged_in_user_level_id=${userDetails().LoggedInMasterLevelId}&masterId=${masterId}&OnboardingApprovalId=${onboardingApprovalId}&${queryParams}`, config());
+        const request = axios.get(`${API.getRMApprovalList}?logged_in_user_id=${loggedInUserId()}&logged_in_user_level_id=${userDetails().LoggedInMasterLevelId}&masterId=${masterId}&OnboardingApprovalId=${onboardingApprovalId}&IsShowDelegationData=${userDetails()?.IsUserDelegatee}&${queryParams}`, config());
         request.then((response) => {
             let data;
 
@@ -1437,10 +1437,10 @@ export function getRMApprovalList(masterId, skip, take, isPagination, obj, onboa
  * @method getAllMasterApprovalDepartment
  * @description get all master approval department
  */
-export function getAllMasterApprovalDepartment(callback) {
+export function getAllMasterApprovalDepartment(receiverId,callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getAllMasterApprovalDepartment}`, config())
+        const request = axios.get(`${API.getAllMasterApprovalDepartment}?receiverId=${receiverId??null}`, config())
         request
             .then((response) => {
                 if (response?.data.Result) {
@@ -1551,7 +1551,7 @@ export function approvalOrRejectRequestByMasterApprove(data, callback) {
  * @description getting summary of approval by approval id
  */
 
-export function getMasterApprovalSummary(tokenNo, approvalProcessId, masterId, OnboardingApprovalId, callback) {
+export function getMasterApprovalSummary(tokenNo, approvalProcessId, masterId, OnboardingApprovalId,receiverId, callback) {
 
 
     return (dispatch) => {
@@ -1598,7 +1598,7 @@ export function getMasterApprovalSummary(tokenNo, approvalProcessId, masterId, O
             })
         }
         const request = axios.get(
-            `${API.getMasterApprovalSummaryByApprovalNo}/${tokenNo}/${approvalProcessId}/${loggedInUserId()}`, config())
+            `${API.getMasterApprovalSummaryByApprovalNo}/${tokenNo}/${approvalProcessId}/${loggedInUserId()}/${receiverId}`, config())
         request
             .then((response) => {
                 if (response?.data.Result) {

@@ -37,8 +37,10 @@ import { fetchDivisionId } from '../../CostingUtil'
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 const SendForApproval = (props) => {
+  console.log(props,'props')
   const dropzone = useRef(null);
   const { isApprovalisting, selectedRows, mandatoryRemark, dataSelected, callSapCheckAPI } = props
+  console.log(selectedRows,'selectedRows')
   const dispatch = useDispatch()
   const { register, handleSubmit, control, setValue, getValues, formState: { errors } } = useForm({
     mode: 'onChange',
@@ -122,7 +124,7 @@ const SendForApproval = (props) => {
       }))
     }
 
-    dispatch(getAllApprovalDepartment((res) => {
+    dispatch(                                                                                                                  ((res) => {
       const Data = res?.data?.SelectList
       const departObj = Data && Data.filter(item => item.Value === depart)
       setSelectedDepartment({ label: departObj[0]?.Text, value: departObj[0]?.Value })
@@ -175,7 +177,7 @@ const SendForApproval = (props) => {
 
   useEffect(() => {
     dispatch(getReasonSelectList((res) => { }))
-    dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), props.technologyId, (res) => {
+    dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), props.technologyId, selectedRows[0]?.ReceiverId,(res) => {
       setTechnologyLevelsList(res?.data?.Data)
       if (initialConfiguration.IsReleaseStrategyConfigured) {
         dispatch(getApprovalTypeSelectList('', (departmentRes) => {
@@ -732,6 +734,7 @@ const SendForApproval = (props) => {
         tempObj.IsRFQCostingSendForApproval = props?.isRfq ? true : false
         tempObj.ApprovalTypeId = approvalType
         tempObj.DivisionId = division ?? null
+        tempObj.ReceiverId=selectedRows[0]?.ReceiverId??null
         temp.push(tempObj)
         return null
       })

@@ -14,13 +14,13 @@ import Toaster from '../../common/Toaster';
 import { loggedInUserId } from "../../../helper/auth";
 import { acceptAllExceptSingleSpecialCharacter, maxLength20, maxLength512 } from "../../../helper";
 import { reactLocalStorage } from "reactjs-localstorage";
-import { createDelegation, getDelegateeUserList, getDelegationHistory } from "../../../actions/auth/AuthActions";
+import { createDelegation, getDelegateeUserList, getDelegationHistory, getUserDelegationDetails } from "../../../actions/auth/AuthActions";
 import DayTime from "../../common/DayTimeWrapper";
 
 const AddDelegation = (props) => {
-    const { isOpen, closeDrawer, anchor,data } = props;
+    const { isOpen, closeDrawer, anchor, data } = props;
     const isView = data?.isView
-    const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
+    const isEditMode = data?.isEdit
     const [isEdit, setIsEdit] = useState(false);
     const [editIndex, setEditIndex] = useState('')
     const [state, setState] = useState({
@@ -35,8 +35,11 @@ const AddDelegation = (props) => {
         allApprovalType: [],
         selectedApprovalType: [],
         selectedUsers: [],
-        disableField: true
+        disableField: true,
+        disableDates: false // This will be set to true when gridData.length > 0
     });
+    const [gridData, setGridData] = useState([]);
+    
     const { register, formState: { errors, isDirty }, control, setValue, handleSubmit, reset } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
@@ -57,23 +60,52 @@ const AddDelegation = (props) => {
     const moduleType = reactLocalStorage.getObject('moduleType')
     const delegateeUserList = useSelector(state => state.auth.delegateeUserList)
     useEffect(() => {
-        const allApprovalType = Object.entries(moduleType).map(([key, value]) => ({
-            label: key,
-            value: value
-        }));
-        setState(prevState => ({ ...prevState, allApprovalType: allApprovalType }));
-    }, [])
+        if (!isView) {
+            const allApprovalType = Object.entries(moduleType).map(([key, value]) => ({
+                label: key,
+                value: value
+            }));
+            setState(prevState => ({ ...prevState, allApprovalType: allApprovalType }));
+        }
+    }, [isView])
 
     useEffect(() => {
-        if (isView) {
-            dispatch(getDelegationHistory(props?.data?.UserId, (res) => {
-                console.log(res)
-                setGridData(res?.data?.Result)
+        if ((isView||isEditMode) && props?.data?.UserId) {
+            dispatch(getUserDelegationDetails(props?.data?.UserId, (res) => {
+                if (res?.data?.DataList?.length) {
+                    const data = res.data.DataList;
+                    const firstRecord = data?.[0];
+
+                    // Update state using functional updates
+                    setValue('Remarks', firstRecord?.Reason || '');
+                    setValue('fromDate', DayTime(firstRecord?.DelegationStartDate).$d || '');
+                    setValue('toDate', DayTime(firstRecord?.DelegationEndDate).$d || '');
+                    setGridData(data.map(item => ({...item, isShowAction: false})))
+                    setState(prevState => ({
+                        ...prevState,
+                        fromDate: firstRecord?.DelegationStartDate || '',
+                        toDate: firstRecord?.DelegationEndDate || '',
+                        remarks: firstRecord?.Reason || ''
+                    }));
+                }
             }));
         }
-    }, [isView,props?.data?.UserId])
+        if (props?.data?.isShowHistory) {
+            dispatch(getDelegationHistory(props?.data?.UserId, (res) => {
+                if (res?.data?.DataList?.length) {
+                    const data = res.data.DataList;
+                    setGridData(data)
+                }
+            }));
+        }
+    }, []);
 
-    const [gridData, setGridData] = useState([]);
+    useEffect(() => {
+        setState(prevState => ({
+            ...prevState,
+            disableDates: gridData.length > 0
+        }));
+    }, [gridData]);
     const renderListing = (label) => {
         const temp = []
         if (label === 'ApprovalType') {
@@ -81,7 +113,9 @@ const AddDelegation = (props) => {
                 label: key,
                 value: value
             }));
-            moduleTypeArray.unshift({ label: 'Select All', value: '0' });
+            if (!isEdit) {
+                moduleTypeArray.unshift({ label: 'Select All', value: '0' });
+            }
             temp.push(...moduleTypeArray)
             const isSelectAllOnly = temp.length === 1 && temp[0]?.label === "Select All" && temp[0]?.value === "0";
 
@@ -101,7 +135,9 @@ const AddDelegation = (props) => {
         }
     };
     useEffect(() => {
-        getDelegateeUsers()
+        if (!isView) {
+            getDelegateeUsers()
+        }
     }, [state?.fromDate, state?.toDate])
 
     const getDelegateeUsers = () => {
@@ -117,12 +153,16 @@ const AddDelegation = (props) => {
     };
 
     const handleApprovalType = (newValue) => {
-        if (newValue?.filter(element => element?.value === '0')?.length > 0) {
+        if(isEdit){
+            setState(prevState => ({ ...prevState, selectedApprovalType: newValue }))
+            setValueTableForm('ApprovalType', newValue)
+        }
+       else if (newValue&&newValue?.filter(element => element?.value === '0')?.length > 0) {
             setState(prevState => ({ ...prevState, selectedApprovalType: state.allApprovalType }))
             setTimeout(() => {
                 setValueTableForm('ApprovalType', state.allApprovalType)
             }, 50);
-        } else {
+        } else{
             setState(prevState => ({ ...prevState, selectedApprovalType: newValue }))
             setValueTableForm('ApprovalType', newValue)
         }
@@ -137,7 +177,7 @@ const AddDelegation = (props) => {
         delete errorsTableForm.Users
         setIsEdit(false)
         setEditIndex('')
-        setState(prevState => ({ ...prevState, selectedApprovalType: [], selectedUsers: [], allApprovalType: [] }));
+        setState(prevState => ({ ...prevState, selectedApprovalType: [], selectedUsers: [] }));
     }
 
 
@@ -164,52 +204,89 @@ const AddDelegation = (props) => {
 
     }, 500);
 
-    const updateRow = () => {
-        const obj = {
+    const addRow = () => {
+        // Create array of objects for approval types
+        let newRows = [];
+        if (isEdit) {
+            // Handle single object case when editing
+            const editedRow = {
+                "DelegateeUserId": state?.selectedUsers?.value,
+                "DelegateeUser": state?.selectedUsers?.label,
+                "DelegationStartDate": DayTime(state?.fromDate).format('YYYY-MM-DD'),
+                "DelegationEndDate": DayTime(state?.toDate).format('YYYY-MM-DD'),
+                "ModuleId": state?.selectedApprovalType?.value,
+                "ModuleName": state?.selectedApprovalType?.label,
+                "isShowAction": true
+            };
+
+            // Check if anything changed
+            const existingRow = gridData[editIndex];
+            if (existingRow.DelegateeUserId === editedRow.DelegateeUserId &&
+                String(existingRow.ModuleId) === String(editedRow.ModuleId) &&
+                existingRow.DelegationStartDate === editedRow.DelegationStartDate &&
+                existingRow.DelegationEndDate === editedRow.DelegationEndDate) {
+                resetData();
+                return;
+            }
+
+            newRows = [editedRow];
+        } else {
+            // Handle array case when adding new
+            newRows = state?.selectedApprovalType?.map(type => ({
+                "DelegateeUserId": state?.selectedUsers?.value,
+                "DelegateeUser": state?.selectedUsers?.label,
+                "DelegationStartDate": DayTime(state?.fromDate).format('YYYY-MM-DD'),
+                "DelegationEndDate": DayTime(state?.toDate).format('YYYY-MM-DD'),
+                "ModuleId": type.value,
+                "ModuleName": type.label,
+                "isShowAction": true
+            }));
         }
 
-        const updatedGridData = gridData.map((item, index) =>
-            index === editIndex ? obj : item
-        );
-        setGridData(updatedGridData);
+        // Check for duplicates
+        let isDuplicate = false;
+        newRows.forEach(newRow => {
+            gridData.forEach((existingRow, index) => {
+                // Skip checking against self when editing
+                if (isEdit && index === editIndex) {
+                    return;
+                }
 
-        setIsEdit(false);
-        resetData();
-    };
+                // Check for duplicates in both edit and normal modes
+                if (String(existingRow.ModuleId) === String(newRow.ModuleId) &&
+                    existingRow.DelegateeUserId === newRow.DelegateeUserId) {
+                    isDuplicate = true;
+                }
+            });
+        });
 
-
-    const addRow = () => {
-        // Create an array of objects, one for each approval type
-        const newRows = state?.selectedApprovalType?.map(type => ({
-            "DelegateeUserId": state?.selectedUsers?.value,
-            "DelegateeUserName": state?.selectedUsers?.label,
-            "DelegationStartDate": state?.fromDate,
-            "DelegationEndDate": state?.toDate,
-            "ModuleId": type.value,
-            "ModuleName": type.label
-        }));
+        if (isDuplicate) {
+            Toaster.warning('Duplicate entry is not allowed.');
+            return false;
+        }
 
         // Add all new rows to grid data
-        const newGridData = [...gridData, ...newRows];
-        setGridData(newGridData);
+        if (isEdit) {
+            const updatedGridData = [...gridData];
+            updatedGridData[editIndex] = newRows[0];
+            setGridData(updatedGridData);
+        } else {
+            setGridData([...gridData, ...newRows]);
+        }
         resetData();
     };
     const editItemDetails = (index) => {
-        const editObj = gridData[index]
         setEditIndex(index)
         setIsEdit(true)
+
+        const editObj = gridData[index]
+        setValueTableForm('ApprovalType', { label: editObj?.ModuleName, value: editObj?.ModuleId });
+        setValueTableForm('Users', { label: editObj?.DelegateeUser, value: editObj?.DelegateeUserId });
+        setState(prevState => ({ ...prevState, selectedApprovalType: { label: editObj?.ModuleName, value: editObj?.ModuleId }, selectedUsers: { label: editObj?.DelegateeUser, value: editObj?.DelegateeUserId } }));
     }
 
-    const toggleDrawer = (event, formData, type) => {
+    const toggleDrawer = (event, type) => {
         props.hideForm(type)
-    };
-    const cancel = (type) => {
-        reset();
-        toggleDrawer('', '', type);
-    };
-
-    const cancelHandler = () => {
-        props.hideForm()
     };
 
     const handleFromEffectiveDateChange = (date) => {
@@ -248,7 +325,7 @@ const AddDelegation = (props) => {
                                         </h3>
                                     </div>
                                     <div
-                                        onClick={e => toggleDrawer(e)}
+                                        onClick={e => toggleDrawer(e, 'Cancel')}
                                         className={"close-button right"}
                                     ></div>
                                 </Col>
@@ -258,6 +335,7 @@ const AddDelegation = (props) => {
                                     <div className="inputbox date-section">
                                         <DatePickerHookForm
                                             name={`fromDate`}
+                                            selected={state?.fromDate !== "" ? DayTime(state?.fromDate).format('DD/MM/YYYY') : ""}
                                             label={'From Date'}
                                             handleChange={(date) => {
                                                 handleFromEffectiveDateChange(date);
@@ -275,9 +353,10 @@ const AddDelegation = (props) => {
                                             autoComplete={"off"}
                                             disabledKeyboardNavigation
                                             onChangeRaw={(e) => e.preventDefault()}
-                                            disabled={isView}
+                                            disabled={isView||state?.disableDates}
                                             mandatory={true}
                                             errors={errors && errors.fromDate}
+                                            minDate={new Date()}
                                         />
                                     </div>
                                 </Col>
@@ -285,6 +364,7 @@ const AddDelegation = (props) => {
                                     <div className="inputbox h-auto date-section">
                                         <DatePickerHookForm
                                             name={`toDate`}
+                                            selected={state?.toDate !== "" ? DayTime(state?.toDate).format('DD/MM/YYYY') : ""}
                                             label={'To Date'}
                                             handleChange={(date) => {
                                                 handleToEffectiveDateChange(date);
@@ -302,7 +382,7 @@ const AddDelegation = (props) => {
                                             autoComplete={"off"}
                                             disabledKeyboardNavigation
                                             onChangeRaw={(e) => e.preventDefault()}
-                                            disabled={isView}
+                                            disabled={isView||state?.disableDates}
                                             mandatory={true}
                                             errors={errors && errors.toDate}
                                             minDate={state.fromDate}
@@ -328,7 +408,7 @@ const AddDelegation = (props) => {
                                                 mandatory={true}
                                                 handleChange={handleApprovalType}
                                                 errors={errorsTableForm.ApprovalType}
-                                                isMulti={true}
+                                                isMulti={isEdit ? false : true}
                                                 selected={state.selectedApprovalType}
                                                 disabled={state.disableField || isView}
                                             />
@@ -360,7 +440,7 @@ const AddDelegation = (props) => {
                                             <button
                                                 type="button"
                                                 className={"btn btn-primary pull-left mr5"}
-                                                onClick={handleSubmitTableForm(isEdit ? updateRow : addRow)}
+                                                onClick={handleSubmitTableForm(addRow)}
                                             >
                                                 {isEdit ? 'Update' : 'Add'}
                                             </button>
@@ -386,7 +466,7 @@ const AddDelegation = (props) => {
                                             <th>{`Approval Type`}</th>
                                             <th>{`Users`}</th>
                                             {props?.data?.isShowHistory && <th>{`Remarks`}</th>}
-                                            {!props?.data?.isShowHistory && <th className='text-right'>{`Action`}</th>}
+                                            {!props?.data?.isShowHistory  && <th className='text-right'>{`Action`}</th>}
                                         </tr>
                                     </thead>
                                     <tbody >
@@ -394,25 +474,25 @@ const AddDelegation = (props) => {
                                             <>
                                                 {gridData.map((item, index) => (
                                                     <tr key={index}>
-                                                        {props?.data?.isShowHistory && <td>{item?.startDate}</td>}
-                                                        {props?.data?.isShowHistory && <td>{item?.endDate}</td>}
+                                                        {props?.data?.isShowHistory && <td>{DayTime(item?.DelegationStartDate).format('DD/MM/YYYY')}</td>}
+                                                        {props?.data?.isShowHistory && <td>{DayTime(item?.DelegationEndDate).format('DD/MM/YYYY')}</td>}
                                                         <td>{item?.ModuleName}</td>
-                                                        <td>{item?.DelegateeUserName}</td>
-                                                        {props?.data?.isShowHistory && <td>{item?.Remarks}</td>}
+                                                        <td>{item?.DelegateeUser}</td>
+                                                        {props?.data?.isShowHistory && <td>{item?.Reason}</td>}
                                                         {!props?.data?.isShowHistory && <td className='text-right'>
                                                             <button
                                                                 className="Edit"
                                                                 title='Edit'
                                                                 type={"button"}
                                                                 onClick={() => editItemDetails(index)}
-                                                                disabled={isView}
+                                                                disabled={!item?.isShowAction || isView}
                                                             />
                                                             <button
                                                                 className="Delete ml-1"
                                                                 title='Delete'
                                                                 type={"button"}
                                                                 onClick={() => deleteItem(index)}
-                                                                disabled={isView}
+                                                                disabled={!item?.isShowAction || isView}
                                                             />
                                                         </td>}
                                                     </tr>
@@ -458,7 +538,7 @@ const AddDelegation = (props) => {
                                         <button
                                             id="AddDelegation_Cancel"
                                             type="button"
-                                            onClick={cancelHandler}
+                                            onClick={(e) => toggleDrawer(e, 'Cancel')}
                                             value="CANCEL"
                                             className="mr15 cancel-btn"
                                         >

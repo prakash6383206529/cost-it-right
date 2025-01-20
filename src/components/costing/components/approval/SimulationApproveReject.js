@@ -33,8 +33,7 @@ function SimulationApproveReject(props) {
   const { formState: { }, handleSubmit, setValue, getValues } = useForm({
     mode: 'onChange', reValidateMode: 'onChange',
   })
-  const { PlantId } = (selectedRowData && selectedRowData[0]) || {}
-  const { DivisionId } = (selectedRowData && selectedRowData[0]) || simulationDetail || {}
+
   const dispatch = useDispatch()
   const [approvalDropDown, setApprovalDropDown] = useState([])
   const [openPushButton, setOpenPushButton] = useState(false)
@@ -44,20 +43,25 @@ function SimulationApproveReject(props) {
   const [IsOpen, setIsOpen] = useState(false);
   const [loader, setLoader] = useState(false)
   const [isDisable, setIsDisable] = useState(false)
+  const [attachmentLoader, setAttachmentLoader] = useState(false)
   const [levelDetails, setLevelDetails] = useState({})
   const [showWarningMessage, setShowWarningMessage] = useState(false)
   const [technologyLevelsList, setTechnologyLevelsList] = useState('')
   const [isResponseTrueObj, setIsResponseTrueObj] = useState({})
   const [dataInFields, setDataInFields] = useState({})
+  const [approvalType, setApprovalType] = useState(technologyId);
   const [finalLevelUser, setFinalLevelUser] = useState(false);
   const [showMessage, setShowMessage] = useState()
   const [disableReleaseStrategy, setDisableReleaseStrategy] = useState(false)
   const [isDisableSubmit, setIsDisableSubmit] = useState(false)
+  const [isSaveSimualtionCalled, setIsSavedSimulationCalled] = useState(false)
   const [isShowDivision, setIsShowDivision] = useState(false)
   const [divisionList, setDivisionList] = useState([])
   const [emptyDivision, setEmptyDivision] = useState(false)
   const [division, setDivision] = useState('')
+  const deptList = useSelector((state) => state.approval.approvalDepartmentList)
   const { selectedMasterForSimulation } = useSelector(state => state.simulation)
+  const reasonsList = useSelector((state) => state.approval.reasonsList)
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
   const SAPData = useSelector(state => state.approval.SAPObj)
   const approvalTypeSelectList = useSelector(state => state.comman.approvalTypeSelectList)
@@ -132,11 +136,11 @@ function SimulationApproveReject(props) {
       //THIS CONDITION IS FOR SAVE SIMULATION
       setLoader(true);
       hasCalledAPI.current = true; //  ref to true to prevent future calls
-      
+
       dispatch(saveSimulationForRawMaterial(simObj, res => {
         if (res?.data?.Result) {
           Toaster.success('Simulation has been saved successfully');
-          
+
           if (initialConfiguration?.IsSAPConfigured) {
             dispatch(checkSAPPoPrice(simulationDetail?.SimulationId, '', res => {
               let status = 200;
@@ -421,6 +425,7 @@ function SimulationApproveReject(props) {
     } else {
       technologyIdTemp = technologyId
     }
+
     let obj = {
       LoggedInUserId: userData.LoggedInUserId,
       DepartmentId: dept?.value,
@@ -428,8 +433,8 @@ function SimulationApproveReject(props) {
       TechnologyId: technologyIdTemp,
       ReasonId: selectedRowData && selectedRowData[0].ReasonId ? selectedRowData[0].ReasonId : 0,
       ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(selectedRowData && selectedRowData[0]?.ApprovalTypeId ? selectedRowData[0]?.ApprovalTypeId : appTypeId),
-      plantId: PlantId ? PlantId : simulationDetail && simulationDetail?.AmendmentDetails ? simulationDetail?.AmendmentDetails?.PlantId : EMPTY_GUID,
-      DivisionId: DivisionId ?? null
+      plantId: selectedRowData && selectedRowData[0]?.PlantId ? selectedRowData[0]?.PlantId : simulationDetail && simulationDetail?.AmendmentDetails ? simulationDetail?.AmendmentDetails?.PlantId : EMPTY_GUID,
+      DivisionId: divisionId ?? null
     }
 
     dispatch(getAllSimulationApprovalList(obj, (res) => {
@@ -520,7 +525,7 @@ function SimulationApproveReject(props) {
           IsFinalApprovalProcess: /* IsFinalLevel ? true :  */false,
           SimulationApprovalProcessSummaryId: item?.SimulationApprovalProcessSummaryId,
           IsMultiSimulation: isSimulationApprovalListing ? true : false,
-          DivisionId: DivisionId ?? null
+          DivisionId: simulationDetail?.DivisionId ?? null
         })
         return null;
       })
@@ -543,7 +548,7 @@ function SimulationApproveReject(props) {
         IsFinalApprovalProcess: false,
         SimulationApprovalProcessSummaryId: simulationDetail?.SimulationApprovalProcessSummaryId,
         IsMultiSimulation: isSimulationApprovalListing ? true : false,
-        DivisionId: DivisionId ?? null
+        DivisionId: simulationDetail?.DivisionId ?? null
       }]
 
       //objs.LinkedTokenNumber = linkingTokenDropDown
@@ -596,7 +601,7 @@ function SimulationApproveReject(props) {
       senderObj.InfoCategeory = SAPData?.infoCategory
       senderObj.ValuationType = SAPData?.evaluationType
       senderObj.PlannedDelTime = SAPData?.leadTime
-      senderObj.DivisionId = DivisionId ?? null
+      senderObj.DivisionId = division ?? null
 
       //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
       dispatch(simulationApprovalRequestBySender(senderObj, res => {
@@ -643,8 +648,8 @@ function SimulationApproveReject(props) {
         TechnologyId: technologyId,
         Mode: 'simulation',
         approvalTypeId: costingTypeIdToApprovalTypeIdFunction(levelDetails?.ApprovalTypeId),
-        plantId: PlantId ? PlantId : simulationDetail && simulationDetail?.AmendmentDetails ? simulationDetail?.AmendmentDetails?.PlantId : EMPTY_GUID,
-        divisionId: DivisionId ?? null
+        plantId: selectedRowData && selectedRowData[0]?.PlantId ? selectedRowData[0]?.PlantId : simulationDetail && simulationDetail?.AmendmentDetails ? simulationDetail?.AmendmentDetails?.PlantId : EMPTY_GUID,
+        divisionId: division
       }
 
       dispatch(checkFinalUser(requestObj, res => {

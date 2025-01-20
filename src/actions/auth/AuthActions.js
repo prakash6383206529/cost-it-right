@@ -301,7 +301,7 @@ export function getAllUserAPI(callback) {
 export function getAllUserDataAPI(data, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.get(`${API.getAllUserDataAPI}?department_id=${data?.DepartmentId}&role_id=${data?.RoleId}&logged_in_user=${data?.logged_in_user}&name=${data?.name}&userType=${data?.userType}&email=${data?.email}&mobileNo=${data?.mobileNo}&phoneNo=${data?.phone}&company=${data?.company}&createdBy=${data?.createdBy}&createdDate=${data?.createdDate}&modifiedDate=${data?.modifiedDate}&userName=${data?.userName}&modifiedBy=${data?.modifiedBy}&role=${data?.role}&isApplyPagination=${data?.isPagination}&skip=${data?.skip}&take=${data?.take}&IsShowDelegation=${data?.isShowDelegation}`, config())
+        axios.get(`${API.getAllUserDataAPI}?department_id=${data?.DepartmentId}&role_id=${data?.RoleId}&logged_in_user=${data?.logged_in_user}&name=${data?.name}&userType=${data?.userType}&email=${data?.email}&mobileNo=${data?.mobileNo}&phoneNo=${data?.phone}&company=${data?.company}&createdBy=${data?.createdBy}&createdDate=${data?.createdDate}&modifiedDate=${data?.modifiedDate}&userName=${data?.userName}&modifiedBy=${data?.modifiedBy}&role=${data?.role}&isApplyPagination=${data?.isPagination}&skip=${data?.skip}&take=${data?.take}&IsShowDelegation=${data?.isShowDelegation}&IsSelfDelegatedOnly=${data?.isSelfDelegatedOnly}`, config())
             .then((response) => {
                 if (data?.userType === 'RFQ') {
                     dispatch({
@@ -447,10 +447,10 @@ export function setEmptyUserDataAPI(UserId, callback) {
 * @method getUsersTechnologyLevelAPI
 * @description get User's technology level
 */
-export function getUsersTechnologyLevelAPI(UserId, technologyId, callback) {
+export function getUsersTechnologyLevelAPI(UserId, technologyId,receiverId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getUserTechnologyLevelForCosting}/${UserId}/${technologyId}`, config());
+        const request = axios.get(`${API.getUserTechnologyLevelForCosting}/${UserId}/${technologyId}/${receiverId}`, config());
         request.then((response) => {
             dispatch({ type: API_SUCCESS });
             callback(response);
@@ -1675,10 +1675,10 @@ export function getSimualationLevelByTechnology(isAPICall, technologyId, approva
 * @method getUsersSimulationTechnologyLevelAPI
 * @description get User's technology level
 */
-export function getUsersSimulationTechnologyLevelAPI(UserId, technologyId, callback) {
+export function getUsersSimulationTechnologyLevelAPI(UserId, technologyId, receiverId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getUserSimulationTechnologyLevel}/${UserId}/${technologyId}`, config());
+        const request = axios.get(`${API.getUserSimulationTechnologyLevel}/${UserId}/${technologyId}/${receiverId}`, config());
         // const request = axios.get(`${API.getUserSimulationTechnologyLevelForCosting}/${UserId}/${technologyId}`, config());          						//RE
         request.then((response) => {
             dispatch({ type: API_SUCCESS });
@@ -1858,10 +1858,10 @@ export function getMasterLevelByMasterId(isAPICall, masterId, approvalId, callba
 * @method getUsersSimulationTechnologyLevelAPI
 * @description get User's technology level
 */
-export function getUsersMasterLevelAPI(UserId, technologyId, callback) {
+export function getUsersMasterLevelAPI(UserId, technologyId,receiverId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getUserMasterLevelForCosting}/${UserId}/${technologyId}`, config());
+        const request = axios.get(`${API.getUserMasterLevelForCosting}/${UserId}/${technologyId}/${receiverId ?? null}`, config());
         request.then((response) => {
             if (response && response.data && response.data.Result) {
                 dispatch({
@@ -2102,10 +2102,10 @@ export function getPlantSelectListForDepartment(data, callback) {
 * @method getUsersOnboardingLevelAPI
 * @description get User's Onboarding level
 */
-export function getUsersOnboardingLevelAPI(UserId, callback) {
+export function getUsersOnboardingLevelAPI(UserId,receiverId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getUserOnboardingLevel}/${UserId}/${ONBOARDINGID}`, config());
+        const request = axios.get(`${API.getUserOnboardingLevel}/${UserId}/${ONBOARDINGID}/${receiverId}`, config());
         request.then((response) => {
             dispatch({ type: API_SUCCESS });
             if (response && response.data && response.data.Result) {
@@ -2344,6 +2344,25 @@ export function createDelegation(data, callback) {
             apiErrors(error);
         });
     };
+}
+
+/**
+ * @method getUserDelegationDetails
+ * @description get user delegation details
+ */
+export function getUserDelegationDetails(delegatorUserId, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getUserDelegationDetails}?delegatorUserId=${delegatorUserId??null}`, config());
+        request.then((response) => {
+            dispatch({ type: API_SUCCESS });
+            callback(response);
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    }
 }
 
 /**
