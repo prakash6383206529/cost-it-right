@@ -331,13 +331,14 @@ export function getAllUserDataAPI(data, callback) {
 * @description get User's data
 */
 export function getUserDataAPI(UserId, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
         dispatch({
             type: GET_USER_UNIT_DATA_SUCCESS,
             payload: [],
         });
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getUserDataAPI}?userId=${UserId}`, config());
+        const request = axios.get(`${API.getUserDataAPI}?userId=${UserId}&loggedInUserId=${loggedInUser?.loggedInUserId}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -926,8 +927,9 @@ export function updateSimulationLevel(requestData, callback) {
  * @description GET SIMULATION LEVEL
  */
 export function getSimulationLevel(LevelId, approvalTypeId, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
-        const request = axios.get(`${API.getSimulationLevel}/${LevelId}/${approvalTypeId}`, config());
+        const request = axios.get(`${API.getSimulationLevel}/${LevelId}/${approvalTypeId}/${loggedInUser?.loggedInUserId}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -985,9 +987,10 @@ export function setApprovalLevelForTechnology(requestData, callback) {
  * @description get Level mapping 
  */
 export function getLevelMappingAPI(LevelId, approvalTypeId, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getLevelMappingAPI}/${LevelId}/${approvalTypeId}`, config());
+        const request = axios.get(`${API.getLevelMappingAPI}/${LevelId}/${approvalTypeId}/${loggedInUser?.loggedInUserId}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -1795,8 +1798,9 @@ export function updateMasterLevel(requestData, callback) {
  * @description GET MASTER LEVEL
  */
 export function getMasterLevel(LevelId, approvalTypeId, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
-        const request = axios.get(`${API.getMasterLevel}/${LevelId}/${approvalTypeId}`, config());
+        const request = axios.get(`${API.getMasterLevel}/${LevelId}/${approvalTypeId}/${loggedInUser?.loggedInUserId}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -2031,8 +2035,9 @@ export function getOnboardingLevelDataList(callback) {
  * @description GET ONBOARDING LEVEL 
  */
 export function getOnboardingLevel(approvalTypeId, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
-        const request = axios.get(`${API.getOnboardingLevel}/${ONBOARDINGID}/${approvalTypeId}`, config());
+        const request = axios.get(`${API.getOnboardingLevel}/${ONBOARDINGID}/${approvalTypeId}/${loggedInUser?.loggedInUserId}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);

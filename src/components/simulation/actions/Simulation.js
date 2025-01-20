@@ -113,9 +113,10 @@ export function runVerifySimulation(data, callback) {
 }
 
 export function getVerifySimulationList(token, plantId, rawMatrialId, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
 
     return (dispatch) => {
-        const request = axios.get(`${API.getVerifySimulationList}?simulationId=${token}&plantId=${plantId}&rawMaterilId=${rawMatrialId}`, config());
+        const request = axios.get(`${API.getVerifySimulationList}?loggedInUserId=${loggedInUser?.loggedInUserId}&simulationId=${token}&plantId=${plantId}&rawMaterilId=${rawMatrialId}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -132,8 +133,9 @@ export function getVerifySimulationList(token, plantId, rawMatrialId, callback) 
 }
 
 export function getCostingSimulationList(token, plantId, rawMatrialId, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
-        const request = axios.get(`${API.getCostingSimulationList}?simulationId=${token}&plantId=${plantId}&rawMaterilId=${rawMatrialId}`, config());
+        const request = axios.get(`${API.getCostingSimulationList}?loggedInUserId=${loggedInUser?.loggedInUserId}&simulationId=${token}&plantId=${plantId}&rawMaterilId=${rawMatrialId}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
                 let tempData = {
@@ -221,7 +223,7 @@ export function getSimulationApprovalList(filterData, skip, take, isPagination, 
             payload: [],
         })
         const { cbc, zbc, vbc } = reactLocalStorage.getObject('CostingTypePermission')
-        const queryParameter = `isDashboard=${filterData.isDashboard}&logged_in_user_id=${filterData.logged_in_user_id}&logged_in_user_level_id=${filterData.logged_in_user_level_id}&token_number=${filterData.token_number}&simulated_by=${filterData.simulated_by}&requested_by=${filterData.requestedBy}&status=${filterData.status}`
+        const queryParameter = `loggedInUserId=${loggedInUserId()}&isDashboard=${filterData.isDashboard}&logged_in_user_id=${filterData.logged_in_user_id}&logged_in_user_level_id=${filterData.logged_in_user_level_id}&token_number=${filterData.token_number}&simulated_by=${filterData.simulated_by}&requested_by=${filterData.requestedBy}&status=${filterData.status}`
 
         const queryParamsSecond = `ApprovalNumber=${obj?.ApprovalNumber !== undefined ? obj?.ApprovalNumber : ""}&CostingHead=${obj?.CostingHead !== undefined ? obj?.CostingHead : ""}&SimulationType=${obj?.SimulationType !== undefined ? obj?.SimulationType : ""}&AmedmentStatus=${obj?.ProvisionalStatus !== undefined ? obj?.ProvisionalStatus : ""}&LinkingTokenNo=${obj?.LinkingTokenNo !== undefined ? obj?.LinkingTokenNo : ""}&SimulationHead=${obj?.SimulationTechnologyHead !== undefined ? obj?.SimulationTechnologyHead : ""}&Technology=${obj?.TechnologyName !== undefined ? obj?.TechnologyName : ""}&Vendor=${obj?.VendorName !== undefined ? obj?.VendorName : ""}&ImpactedCosting=${obj?.ImpactCosting !== undefined ? obj?.ImpactCosting : ""}&ImpactedParts=${obj?.ImpactParts !== undefined ? obj?.ImpactParts : ""}&Reason=${obj?.Reason !== undefined ? obj?.Reason : ""}&InitiatedBy=${obj?.SimulatedByName !== undefined ? obj?.SimulatedByName : ""}&SimulatedOn=${obj?.SimulatedOn !== undefined ? obj?.SimulatedOn : ""}&LastApproval=${obj?.LastApprovedBy !== undefined ? obj?.LastApprovedBy : ""}&RequestedOn=${obj?.RequestedOn !== undefined ? obj?.RequestedOn : ""}&SimulationStatus=${obj?.DisplayStatus !== undefined ? obj?.DisplayStatus : ""}&applyPagination=${isPagination}&skip=${skip}&take=${take}&IsCustomerDataShow=${cbc}&IsVendorDataShow=${vbc}&IsZeroDataShow=${zbc}`
         const request = axios.get(`${API.getSimulationApprovalList}?${queryParameter}&${queryParamsSecond}`, config())
@@ -291,11 +293,12 @@ export function getSelectListOfSimulationApplicability(callback) {
 
 
 export function getSelectListOfSimulationLinkingTokens(vendorId, simulationTechnologyId, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
 
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
         const queryParameter = `vendorId=${vendorId}`
-        const queryParameter1 = `simulationtechnologyId=${simulationTechnologyId}`
+        const queryParameter1 = `simulationtechnologyId=${simulationTechnologyId}&loggedInUserId=${loggedInUser?.loggedInUserId}`
         const request = axios.get(`${API.getSelectListOfSimulationLinkingTokens}?${queryParameter}&${queryParameter1}`, config());
         request.then((response) => {
             if (response.data.Result) {
@@ -576,9 +579,10 @@ export function runVerifyExchangeRateSimulation(data, callback) {
 }
 
 export function getVerifyExchangeSimulationList(token, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
 
     return (dispatch) => {
-        const request = axios.get(`${API.getverifyExchangeSimulationList}?simulationId=${token}`, config());
+        const request = axios.get(`${API.getverifyExchangeSimulationList}?simulationId=${token}&loggedInUserId=${loggedInUser?.loggedInUserId}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -610,8 +614,9 @@ export function runSimulationOnSelectedExchangeCosting(data, callback) {
 }
 
 export function getExchangeCostingSimulationList(token, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
-        const request = axios.get(`${API.getExchangeCostingSimulationList}?simulationId=${token}&plantId=''`, config());
+        const request = axios.get(`${API.getExchangeCostingSimulationList}?loggedInUserId=${loggedInUser?.loggedInUserId}&simulationId=${token}&plantId=''`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
                 let tempData = {
@@ -668,10 +673,11 @@ export function setAttachmentFileData(attachmentsData, callback) {
  * @description GET PROCESS DATALIST
  */
 export function getCombinedProcessList(data, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
 
         dispatch({ type: API_REQUEST });
-        axios.get(`${API.getCombinedProcessList}?technologyId=${data?.technologyId}&vendorId=${data?.vendorId}&customerId=${data?.customerId}`, config())
+        axios.get(`${API.getCombinedProcessList}?technologyId=${data?.technologyId}&vendorId=${data?.vendorId}&customerId=${data?.customerId}&loggedInUserId=${loggedInUser?.loggedInUserId}`, config())
             .then((response) => {
 
                 if (response.data.Result === true || response.status === 204) {
@@ -712,8 +718,9 @@ export function runVerifyCombinedProcessSimulation(data, callback) {
 }
 
 export function getverifyCombinedProcessSimulationList(token, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
-        const request = axios.get(`${API.getverifyCombinedProcessSimulationList}?simulationId=${token}`, config());
+        const request = axios.get(`${API.getverifyCombinedProcessSimulationList}?simulationId=${token}&loggedInUserId=${loggedInUser?.loggedInUserId}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -778,6 +785,7 @@ export function runSimulationOnSelectedCombinedProcessCosting(data, callback) {
 
 
 export function getLastSimulationData(vendorId, effectiveDate, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
         const structureOfData = {
@@ -789,7 +797,7 @@ export function getLastSimulationData(vendorId, effectiveDate, callback) {
             MachineProcessImpactedMasterDataList: [],
             CombinedProcessImpactedMasterDataList: []
         }
-        const queryParams = `vendorId=${vendorId}&effectiveDate=${effectiveDate}`
+        const queryParams = `vendorId=${vendorId}&effectiveDate=${effectiveDate}&loggedInUserId=${loggedInUser?.loggedInUserId}`
 
         const request = axios.get(`${API.getLastSimulationData}?${queryParams}`, config());
         request.then((response) => {
@@ -809,8 +817,9 @@ export function getLastSimulationData(vendorId, effectiveDate, callback) {
 }
 
 export function getCombinedProcessCostingSimulationList(token, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
-        const request = axios.get(`${API.getCombinedProcessCostingSimulationList}?simulationId=${token}&plantId=''`, config());
+        const request = axios.get(`${API.getCombinedProcessCostingSimulationList}?simulationId=${token}&plantId=''&loggedInUserId=${loggedInUser?.loggedInUserId}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -873,9 +882,10 @@ export function runVerifySurfaceTreatmentSimulation(data, callback) {
 }
 
 export function getVerifySurfaceTreatmentSimulationList(token, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
 
     return (dispatch) => {
-        const request = axios.get(`${API.getverifySurfaceTreatmentSimulationList}?simulationId=${token}`, config());
+        const request = axios.get(`${API.getverifySurfaceTreatmentSimulationList}?simulationId=${token}&loggedInUserId=${loggedInUser?.loggedInUserId}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -908,8 +918,9 @@ export function runSimulationOnSelectedSurfaceTreatmentCosting(data, callback) {
 }
 
 export function getCostingSurfaceTreatmentSimulationList(token, plantId, rawMatrialId, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
-        const request = axios.get(`${API.getCostingSurfaceTreatmentSimulationList}?simulationId=${token}`, config());
+        const request = axios.get(`${API.getCostingSurfaceTreatmentSimulationList}?loggedInUserId=${loggedInUser?.loggedInUserId}&simulationId=${token}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
                 let tempData = {
@@ -1002,9 +1013,10 @@ export function runSimulationOnSelectedBoughtOutPartCosting(data, callback) {
 
 
 export function getVerifyMachineRateSimulationList(token, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
 
     return (dispatch) => {
-        const request = axios.get(`${API.getverifyMachineRateSimulationList}?simulationId=${token}`, config());
+        const request = axios.get(`${API.getverifyMachineRateSimulationList}?simulationId=${token}&loggedInUserId=${loggedInUser?.loggedInUserId}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -1021,9 +1033,10 @@ export function getVerifyMachineRateSimulationList(token, callback) {
 }
 
 export function getVerifyBoughtOutPartSimulationList(token, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
 
     return (dispatch) => {
-        const request = axios.get(`${API.getverifyBoughtOutPartSimulationList}?simulationId=${token}`, config());
+        const request = axios.get(`${API.getverifyBoughtOutPartSimulationList}?simulationId=${token}&loggedInUserId=${loggedInUser?.loggedInUserId}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -1480,8 +1493,9 @@ export function setSelectedRowForPagination(value) {
 }
 
 export function getMachineRateCostingSimulationList(token, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
-        const request = axios.get(`${API.getMachineRateCostingSimulationList}?simulationId=${token}`, config());
+        const request = axios.get(`${API.getMachineRateCostingSimulationList}?simulationId=${token}&loggedInUserId=${loggedInUser?.loggedInUserId}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
                 let tempData = {
@@ -1521,10 +1535,11 @@ export function setVendorForSimulation(selectedVendorForSimulation) {
 }
 
 export function getAllMultiTechnologyCostings(obj, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
 
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getAllMultiTechnologyCostings}?technologyId=${obj?.technologyId}&vendorId=${obj?.vendorId ? obj?.vendorId : ''}&costingTypeId=${obj?.costingTypeId ? obj?.costingTypeId : ''}&customerId=${obj?.customerId ? obj?.customerId : ''}&plantId=${obj?.plantId ? obj?.plantId : ''}`, config());
+        const request = axios.get(`${API.getAllMultiTechnologyCostings}?loggedInUserId=${loggedInUser?.loggedInUserId}&technologyId=${obj?.technologyId}&vendorId=${obj?.vendorId ? obj?.vendorId : ''}&costingTypeId=${obj?.costingTypeId ? obj?.costingTypeId : ''}&customerId=${obj?.customerId ? obj?.customerId : ''}&plantId=${obj?.plantId ? obj?.plantId : ''}`, config());
         request.then((response) => {
             dispatch({
                 type: GET_ALL_MULTI_TECHNOLOGY_COSTING,
@@ -1570,10 +1585,11 @@ export function draftSimulationMultiTechnology(data, callback) {
 }
 
 export function getAllMultiTechnologyImpactedSimulationCostings(simulationId, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
 
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getAllMultiTechnologyImpactedSimulationCostings}?simulationId=${simulationId}`, config());
+        const request = axios.get(`${API.getAllMultiTechnologyImpactedSimulationCostings}?loggedInUserId=${loggedInUser?.loggedInUserId}&simulationId=${simulationId}`, config());
         request.then((response) => {
             if (response?.data?.Result) {
                 dispatch({
@@ -1641,9 +1657,9 @@ export function uploadSimulationAttachmentByCategoryAll(selectedFiles, callback)
  * @description GET API FOR SIMULATION BOUGHT OUT PART
  */
 export function getAllSimulationBoughtOutPart(simulationId, callback) {
-
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
-        const request = axios.get(`${API.getAllSimulationBoughtOutPart}?simulationId=${simulationId}`, config());
+        const request = axios.get(`${API.getAllSimulationBoughtOutPart}?simulationId=${simulationId}&loggedInUserId=${loggedInUser?.loggedInUserId}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -1665,8 +1681,9 @@ export function getAllSimulationBoughtOutPart(simulationId, callback) {
  * @description get All Simulated Bought Out Part
  */
 export function getAllSimulatedBoughtOutPart(token, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
-        const request = axios.get(`${API.getAllSimulatedBoughtOutPart}?simulationId=${token}`, config());
+        const request = axios.get(`${API.getAllSimulatedBoughtOutPart}?simulationId=${token}&loggedInUserId=${loggedInUser?.loggedInUserId}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
                 let tempData = {

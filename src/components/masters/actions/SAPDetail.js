@@ -76,10 +76,11 @@ export function updateSAPDetail(data, callback) {
  * @description get Supplier's DataList 
  */
 export function getMaterialGroupByPart(partId, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
 
 
-        const request = axios.get(`${API.getMaterialGroupByPart}?partId=${partId}`, config());
+        const request = axios.get(`${API.getMaterialGroupByPart}?partId=${partId}&loggedInUserId=${loggedInUser?.loggedInUserId}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
 
@@ -114,8 +115,9 @@ export function getPurcahseOrganisationByPlant(plantId, callback) {
     };
 }
 export function getSAPDetailById(id, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
-        const request = axios.get(`${API.getSAPDetailById}?sapPushDetailId=${id}`, config());
+        const request = axios.get(`${API.getSAPDetailById}?sapPushDetailId=${id}&loggedInUserId=${loggedInUser?.loggedInUserId}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
 

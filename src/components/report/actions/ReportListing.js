@@ -98,7 +98,7 @@ export function getCostingReport(skip, take, isPagination, obj, isLastWeek, isCa
     return (dispatch) => {
         if (isCallApi === true) {
 
-            const queryParams = `applyPagination=${isPagination}&skip=${skip}&take=${take}&CostingHead=${obj.CostingHead ? obj.CostingHead : ""}&NCCPartQuantity=${obj.NCCPartQuantity ? obj.NCCPartQuantity : ""}&IsRegularized=${obj.IsRegularized ? obj.IsRegularized : ""}&Plant=${obj.Plant ? obj.Plant : ""}&Vendor=${obj.Vendor ? obj.Vendor : ""}`
+            const queryParams = `loggedInUserId=${loggedInUserId()}&applyPagination=${isPagination}&skip=${skip}&take=${take}&CostingHead=${obj.CostingHead ? obj.CostingHead : ""}&NCCPartQuantity=${obj.NCCPartQuantity ? obj.NCCPartQuantity : ""}&IsRegularized=${obj.IsRegularized ? obj.IsRegularized : ""}&Plant=${obj.Plant ? obj.Plant : ""}&Vendor=${obj.Vendor ? obj.Vendor : ""}`
             const queryParamsSecond = `CostingNumber=${obj.CostingNumber ?? obj.CostingNumber}&Technology=${obj.TechnologyName ?? obj.TechnologyName}&AmorizationQuantity=${obj.AmorizationQuantity ?? obj.AmorizationQuantity}&AnyOtherCost=${obj.AnyOtherCost ?? obj.AnyOtherCost}&CostingVersion=${obj.CostingVersion ?? obj.CostingVersion}&Status=${obj.Status ?? obj.DisplayStatus}&EffectiveDate=${obj.EffectiveDate ?? obj.EffectiveDate}&Currency=${obj.Currency ?? obj.Currency}&DepartmentCode=${obj.DepartmentCode ?? obj.DepartmentCode}&DepartmentName=${obj.DepartmentName ?? obj.DepartmentName}&DiscountCost=${obj.DiscountCost}&ECNNumber=${obj.ECNNumber ?? obj.ECNNumber}&FinalPOPrice=${obj.FinalPOPrice ?? obj.FinalPOPrice}&RawMaterialFinishWeight=${obj.RawMaterialFinishWeight ?? obj.RawMaterialFinishWeight}&FreightCost=${obj.FreightCost ?? obj.FreightCost}&FreightPercentage=${obj.FreightPercentage ?? obj.FreightPercentage}&FreightType=${obj.FreightType ?? obj.FreightType}&GrossWeight=${obj.GrossWeight ?? obj.GrossWeight}&HundiOrDiscountValue=${obj.HundiOrDiscountValue ?? obj.HundiOrDiscountValue}&ICCApplicability=${obj.ICCApplicability ?? obj.ICCApplicability}&ICCCost=${obj.ICCCost ?? obj.ICCCost}&ICCInterestRate=${obj.ICCInterestRate ?? obj.ICCInterestRate}&ICCOn=${obj.ICCOn ?? obj.ICCOn}&MasterBatchTotal=${obj.MasterBatchTotal ?? obj.MasterBatchTotal}&ModelType=${obj.ModelTypeForOverheadAndProfit ?? obj.ModelTypeForOverheadAndProfit}&ModifiedByName=${obj.ModifiedByName ?? obj.ModifiedByName}&ModifiedByUserName=${obj.ModifiedByUserName ?? obj.ModifiedByUserName}&ModifiedDate=${obj.ModifiedDate ?? obj.ModifiedDate}&NetBoughtOutPartCost=${obj.NetBoughtOutPartCost ?? obj.NetBoughtOutPartCost}&NetConversionCost=${obj.NetConversionCost ?? obj.NetConversionCost}&NetConvertedPOPrice=${obj.NetConvertedPOPrice ?? obj.NetConvertedPOPrice}&NetDiscountsCost=${obj.NetDiscountsCost ?? obj.NetDiscountsCost}&NetFreightPackaging=${obj.NetFreightPackaging ?? obj.NetFreightPackaging}&NetFreightPackagingCost=${obj.NetFreightPackagingCost ?? obj.NetFreightPackagingCost}&NetICCCost=${obj.NetICCCost ?? obj.NetICCCost}&NetOperationCost=${obj.NetOperationCost ?? obj.NetOperationCost}&NetOtherCost=${obj.NetOtherCost ?? obj.NetOtherCost}&NetOverheadAndProfitCost=${obj.NetOverheadAndProfitCost ?? obj.NetOverheadAndProfitCost}&NetPOPrice=${obj.NetPOPrice ?? obj.NetPOPrice}&NetPOPriceINR=${obj.NetPOPriceINR ?? obj.NetPOPriceINR}&NetPOPriceInCurrency=${obj.NetPOPriceInCurrency ?? obj.NetPOPriceInCurrency}&NetPOPriceOtherCurrency=${obj.NetPOPriceOtherCurrency ?? obj.NetPOPriceOtherCurrency}&NetProcessCost=${obj.NetProcessCost ?? obj.NetProcessCost}&NetRawMaterialsCost=${obj.NetRawMaterialsCost ?? obj.NetRawMaterialsCost}&NetSurfaceTreatmentCost=${obj.NetSurfaceTreatmentCost ?? obj.NetSurfaceTreatmentCost}&NetToolCost=${obj.NetToolCost ?? obj.NetToolCost}&NetTotalRMBOPCC=${obj.NetTotalRMBOPCC ?? obj.NetTotalRMBOPCC}&OtherCost=${obj.OtherCost ?? obj.OtherCost}&OtherCostPercentage=${obj.OtherCostPercentage ?? obj.OtherCostPercentage}&OverheadApplicability=${obj.OverheadApplicability ?? obj.OverheadApplicability}&OverheadCombinedCost=${obj.OverheadCombinedCost ?? obj.OverheadCombinedCost}&OverheadCost=${obj.OverheadCost ?? obj.OverheadCost}&OverheadOn=${obj.OverheadOn ?? obj.OverheadOn}&OverheadPercentage=${obj.OverheadPercentage ?? obj.OverheadPercentage}&PackagingCost=${obj.PackagingCost ?? obj.PackagingCost}&PackagingCostPercentage=${obj.PackagingCostPercentage ?? obj.PackagingCostPercentage}&PartName=${obj.PartName ?? obj.PartName}&PartNumber=${obj.PartNumber ?? obj.PartNumber}&PartType=${obj.PartType ?? obj.PartType}&PaymentTermCost=${obj.PaymentTermCost ?? obj.PaymentTermCost}&PaymentTermsOn=${obj.PaymentTermsOn ?? obj.PaymentTermsOn}&PlantCode=${obj.PlantCode ?? obj.PlantCode}&PlantName=${obj.PlantName ?? obj.PlantName}&ProfitApplicability=${obj.ProfitApplicability ?? obj.ProfitApplicability}&ProfitCost=${obj.ProfitCost ?? obj.ProfitCost}&ProfitOn=${obj.ProfitOn ?? obj.ProfitOn}&ProfitPercentage=${obj.ProfitPercentage ?? obj.ProfitPercentage}&RMGrade=${obj.RMGrade ?? obj.RMGrade}&RMSpecification=${obj.RMSpecification ?? obj.RMSpecification}&RawMaterialCode=${obj.RawMaterialCode ?? obj.RawMaterialCode}&RawMaterialGrossWeight=${obj.RawMaterialGrossWeight ?? obj.RawMaterialGrossWeight}&RawMaterialName=${obj.RawMaterialName ?? obj.RawMaterialName}&RawMaterialRate=${obj.RawMaterialRate ?? obj.RawMaterialRate}&RawMaterialScrapWeight=${obj.RawMaterialScrapWeight ?? obj.RawMaterialScrapWeight}&RawMaterialSpecification=${obj.RawMaterialSpecification ?? obj.RawMaterialSpecification}&RecordInsertedBy=${obj.RecordInsertedBy ?? obj.RecordInsertedBy}&RejectOn=${obj.RejectOn ?? obj.RejectOn}&RejectionApplicability=${obj.RejectionApplicability ?? obj.RejectionApplicability}&RejectionCost=${obj.RejectionCost ?? obj.RejectionCost}&RejectionPercentage=${obj.RejectionPercentage ?? obj.RejectionPercentage}&Remark=${obj.Remark ?? obj.Remark}&Rev=${obj.Rev ?? obj.Rev}&RevisionNumber=${obj.RevisionNumber ?? obj.RevisionNumber}&ScrapRate=${obj.ScrapRate ?? obj.ScrapRate}&ScrapWeight=${obj.ScrapWeight ?? obj.ScrapWeight}&SurfaceTreatmentCost=${obj.SurfaceTreatmentCost ?? obj.SurfaceTreatmentCost}&ToolCost=${obj.ToolCost ?? obj.ToolCost}&ToolLife=${obj.ToolLife ?? obj.ToolLife}&ToolMaintenanceCost=${obj.ToolMaintenaceCost ?? obj.ToolMaintenaceCost}&ToolPrice=${obj.ToolPrice ?? obj.ToolPrice}&ToolQuantity=${obj.ToolQuantity ?? obj.ToolQuantity}&TotalCost=${obj.TotalCost ?? obj.TotalCost}&TotalOtherCost=${obj.TotalOtherCost ?? obj.TotalOtherCost}&TotalRecordCount=${obj.TotalRecordCount ?? obj.TotalRecordCount}&TransportationCost=${obj.TransportationCost ?? obj.TransportationCost}&VendorCode=${obj.VendorCode ?? obj.VendorCode}&VendorName=${obj.VendorName ?? obj.VendorName}&CustomerName=${obj.CustomerName ?? obj.CustomerName}&CustomerCode=${obj.CustomerCode ?? obj.CustomerCode}&Customer=${obj.Customer ?? obj.Customer}&Version=${obj.Version ?? obj.Version}&RawMaterialGrade=${obj.RawMaterialGrade ?? obj.RawMaterialGrade}&HundiOrDiscountPercentage=${obj.HundiOrDiscountPercentage ?? obj.HundiOrDiscountPercentage}&DateWiseData=${isLastWeek}&FromDate=${obj.FromDate ?? obj.FromDate}&ToDate=${obj.ToDate ?? obj.ToDate}&IsCustomerDataShow=${reactLocalStorage.getObject('CostingTypePermission').cbc !== undefined ? reactLocalStorage.getObject('CostingTypePermission').cbc : false}&SANumber=${obj.SANumber ? obj.SANumber : ""}&LineNumber=${obj.LineNumber ? obj.LineNumber : ""}&IsVendorDataShow=${reactLocalStorage.getObject('CostingTypePermission').vbc}&IsZeroDataShow=${reactLocalStorage.getObject('CostingTypePermission').zbc}`
             const request = axios.get(`${API.getCostingReport}?${queryParams}&${queryParamsSecond} `, config());
             request.then((response) => {
@@ -264,7 +264,7 @@ export function getCostMovementReportByPart(data, callback) {
 export function getSupplierContributionData(data, callback) {
 
     return (dispatch) => {
-        const request = axios.get(`${API.getSupplierContributionData}?fromDate=${data.fromDate}&toDate=${data.toDate}&plantId=${data.plantId}`, config(),)
+        const request = axios.get(`${API.getSupplierContributionData}?loggedInUserId=${loggedInUserId()}&fromDate=${data.fromDate}&toDate=${data.toDate}&plantId=${data.plantId}`, config(),)
         request.then((response) => {
             if (response) {
                 callback(response)
@@ -398,7 +398,7 @@ export function getMachineProcessMovement(data, callback) {
 export function getGotAndGivenDetails(data, callback) {
 
     return (dispatch) => {
-        const request = axios.get(`${API.getGotAndGivenDetails}?plantId=${data.plantId}&partId=${data.partId}&productCategoryId=${data.productCategoryId}&isRequestForSummary=${data.isRequestForSummary}`, config(),)
+        const request = axios.get(`${API.getGotAndGivenDetails}?loggedInUserId=${loggedInUserId()}&plantId=${data.plantId}&partId=${data.partId}&productCategoryId=${data.productCategoryId}&isRequestForSummary=${data.isRequestForSummary}`, config(),)
         request.then((response) => {
             if (response) {
                 callback(response)
@@ -413,7 +413,7 @@ export function getGotAndGivenDetails(data, callback) {
 export function getCostingGotAndGivenDetails(data, callback) {
 
     return (dispatch) => {
-        const request = axios.get(`${API.getCostingGotAndGivenDetails}?plantId=${data.plantId}&partId=${data.partId}&vendorId=${data.vendorId}&customerId=${data.customerId}&effectiveDate=${data.effectiveDate}`, config(),)
+        const request = axios.get(`${API.getCostingGotAndGivenDetails}?loggedInUserId=${loggedInUserId()}&plantId=${data.plantId}&partId=${data.partId}&vendorId=${data.vendorId}&customerId=${data.customerId}&effectiveDate=${data.effectiveDate}`, config(),)
         request.then((response) => {
             if (response) {
                 callback(response)
@@ -428,7 +428,7 @@ export function getCostingGotAndGivenDetails(data, callback) {
 export function getPlantWiseGotAndGivenDetails(data, callback) {
 
     return (dispatch) => {
-        const request = axios.get(`${API.getPlantWiseGotAndGivenDetails}?plantId=${data.plantId}&vendorId=${null}&customerId=${null}&technologyId=${null}&effectiveDate=${data.effectiveDate}`, config(),)
+        const request = axios.get(`${API.getPlantWiseGotAndGivenDetails}?loggedInUserId=${loggedInUserId()}&plantId=${data.plantId}&vendorId=${null}&customerId=${null}&technologyId=${null}&effectiveDate=${data.effectiveDate}`, config(),)
         request.then((response) => {
             if (response) {
                 callback(response)
@@ -472,9 +472,10 @@ export function getProductPartDataList(data, callback) {
     }
 }
 export function getStageOfPartDetails(productId, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
 
     return (dispatch) => {
-        const request = axios.get(`${API.getStageOfPartDetails}?partId=${productId}`, config(),)
+        const request = axios.get(`${API.getStageOfPartDetails}?partId=${productId}&loggedInUserId=${loggedInUser?.loggedInUserId}`, config(),)
         request.then((response) => {
             dispatch({
                 type: GET_STAGE_OF_PART_DETAILS,
@@ -488,9 +489,9 @@ export function getStageOfPartDetails(productId, callback) {
     }
 }
 export function getTotalPartsDetails(productId, callback) {
-
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
-        const request = axios.get(`${API.getTotalPartsDetails}?partId=${productId}`, config(),)
+        const request = axios.get(`${API.getTotalPartsDetails}?partId=${productId}&loggedInUserId=${loggedInUser?.loggedInUserId}`, config(),)
         request.then((response) => {
             callback(response);
         }).catch((error) => {
@@ -503,7 +504,7 @@ export function getTotalPartsDetails(productId, callback) {
 export function getProductRolloutCostMovement(partId, partNumber, partType, callback) {
 
     return (dispatch) => {
-        const request = axios.get(`${API.getProductRolloutCostMovement}?partId=${partId}&partNumber=${partNumber}&partType=${partType}`, config(),)
+        const request = axios.get(`${API.getProductRolloutCostMovement}?loggedInUserId=${loggedInUserId()}&partId=${partId}&partNumber=${partNumber}&partType=${partType}`, config(),)
         request.then((response) => {
             callback(response);
         }).catch((error) => {
@@ -514,9 +515,10 @@ export function getProductRolloutCostMovement(partId, partNumber, partType, call
     }
 }
 export function getProductRolloutCostRatio(productId, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
 
     return (dispatch) => {
-        const request = axios.get(`${API.getProductRolloutCostRatio}?partId=${productId}`, config(),)
+        const request = axios.get(`${API.getProductRolloutCostRatio}?partId=${productId}&loggedInUserId=${loggedInUser?.loggedInUserId}`, config(),)
         request.then((response) => {
             callback(response);
         }).catch((error) => {
@@ -527,9 +529,9 @@ export function getProductRolloutCostRatio(productId, callback) {
     }
 }
 export function getUsageRmDetails(productId, callback) {
-
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
-        const request = axios.get(`${API.getUsageRmDetails}?partId=${productId}`, config(),)
+        const request = axios.get(`${API.getUsageRmDetails}?partId=${productId}&loggedInUserId=${loggedInUser?.loggedInUserId}`, config(),)
         request.then((response) => {
             callback(response);
         }).catch((error) => {
@@ -542,7 +544,7 @@ export function getUsageRmDetails(productId, callback) {
 export function getSupplierContributionDetails(productId, callback) {
 
     return (dispatch) => {
-        const request = axios.get(`${API.getSupplierContributionDetails}?partId=${productId}`, config(),)
+        const request = axios.get(`${API.getSupplierContributionDetails}?partId=${productId}&loggedInUserId=${loggedInUserId()}`, config(),)
         request.then((response) => {
             callback(response);
         }).catch((error) => {
@@ -582,8 +584,9 @@ export function getSimulationInsightReport(skip, take, isPagination, obj, callba
 }
 
 export function getNfrInsightsDetails(callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
-        const request = axios.get(`${API.getNfrInsightsDetails}`, config(),)
+        const request = axios.get(`${API.getNfrInsightsDetails}?loggedInUserId=${loggedInUser?.loggedInUserId}`, config(),)
         request.then((response) => {
             dispatch({
                 type: GET_NFR_INSIGHT_DETAILS,
@@ -599,7 +602,7 @@ export function getNfrInsightsDetails(callback) {
 
 export function getNfrInsightsStatusDetails(data, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.getNfrInsightsStatusDetails}?plantCode=${data?.plantCode}&nfrVersion=${data?.nfrVersion}`, config())
+        const request = axios.get(`${API.getNfrInsightsStatusDetails}?loggedInUserId=${loggedInUserId()}&plantCode=${data?.plantCode}&nfrVersion=${data?.nfrVersion}`, config())
         request.then((response) => {
             dispatch({
                 type: GET_NFR_INSIGHT_STATUS_DETAILS,
