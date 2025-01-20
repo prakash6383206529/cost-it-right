@@ -466,9 +466,10 @@ export function fileUploadOperation(data, callback) {
  * @description get all other operation for cost summary 
  */
 export function getCEDOtherOperationBySupplierID(supplierId, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getCEDOtherOperationBySupplierID}/${supplierId}`, config());
+        const request = axios.get(`${API.getCEDOtherOperationBySupplierID}/${supplierId}/${loggedInUser?.loggedInUserId}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({

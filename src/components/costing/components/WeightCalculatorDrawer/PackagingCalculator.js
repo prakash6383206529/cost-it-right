@@ -11,7 +11,6 @@ import { getPackagingCalculation, getSimulationPackagingCalculation, getVolumePe
 import { Drawer } from '@material-ui/core'
 import { useTranslation } from 'react-i18next'
 import { ViewCostingContext } from '../CostingDetails'
-import { AWAITING_APPROVAL_ID, DRAFT, DRAFTID, PENDING_FOR_APPROVAL_ID, REJECTEDID } from '../../../../config/constants'
 function PackagingCalculator(props) {
 const {rowObjData} = props
     const [state, setState] = useState({

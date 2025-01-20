@@ -307,7 +307,8 @@ export function updateAdditionalFreightByIdAPI(requestData, callback) {
  */
 export function getAdditionalFreightBySupplier(sourceSupplierId, callback) {
     return (dispatch) => {
-        const request = axiosInstance.post(`${API.getAdditionalFreightBySupplier}?sourceSupplierId=${sourceSupplierId}`, config());
+        const loggedInUser = { loggedInUserId: loggedInUserId() }
+        const request = axiosInstance.post(`${API.getAdditionalFreightBySupplier}?sourceSupplierId=${sourceSupplierId}&loggedInUserId=${loggedInUser?.loggedInUserId}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({

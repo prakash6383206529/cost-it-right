@@ -11,6 +11,7 @@ import { apiErrors } from '../../../helper/util';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
 import axiosInstance from '../../../utils/axiosInstance';
+import { loggedInUserId } from '../../../helper';
 
 // const config() = config
 
@@ -19,9 +20,10 @@ import axiosInstance from '../../../utils/axiosInstance';
  * @description Get Weight Calculation Costing details
  */
 export function getWeightCalculationCosting(CostingId = '', callback) {
+  const loggedInUser = { loggedInUserId: loggedInUserId() }
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getWeightCalculationInfo}/${CostingId}`, config());
+    const request = axios.get(`${API.getWeightCalculationInfo}/${CostingId}/${loggedInUser?.loggedInUserId}`, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -71,7 +73,7 @@ export function getWeightCalculationLayoutType(callback) {
 */
 export function getRawMaterialCalculationForSheetMetal(costingId, rawMaterialId, weightCalculationId, callback) {
   return (dispatch) => {
-    const queryParams = `costingId=${costingId}&rawMaterialId=${rawMaterialId}&weightCalculationId=${weightCalculationId ? weightCalculationId : "0"}`
+    const queryParams = `loggedInUserId=${loggedInUserId()}&costingId=${costingId}&rawMaterialId=${rawMaterialId}&weightCalculationId=${weightCalculationId ? weightCalculationId : "0"}`
     const request = axios.get(`${API.getRawMaterialCalculationForSheetMetal}?${queryParams}`, config());
     request.then((response) => {
       if (response.data.Result) {
@@ -112,7 +114,7 @@ export function saveRawMaterialCalculationForSheetMetal(data, callback) {
 */
 export function getRawMaterialCalculationForForging(costingId, rawMaterialId, weightCalculationId, callback) {
   return (dispatch) => {
-    const queryParams = `costingId=${costingId}&rawMaterialId=${rawMaterialId}&weightCalculationId=${weightCalculationId ? weightCalculationId : "0"}`
+    const queryParams = `loggedInUserId=${loggedInUserId()}&costingId=${costingId}&rawMaterialId=${rawMaterialId}&weightCalculationId=${weightCalculationId ? weightCalculationId : "0"}`
     const request = axios.get(`${API.getRawMaterialCalculationForForging}?${queryParams}`, config());
     request.then((response) => {
       if (response.data.Result) {
@@ -153,7 +155,7 @@ export function saveRawMaterialCalculationForForging(data, callback) {
 export function getRawMaterialCalculationForFerrous(costingId, rawMaterialId, weightCalculationId, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const queryParams = `costingId=${costingId}&rawMaterialId=${EMPTY_GUID}&weightCalculationId=${weightCalculationId ? weightCalculationId : "0"}`
+    const queryParams = `loggedInUserId=${loggedInUserId()}&costingId=${costingId}&rawMaterialId=${EMPTY_GUID}&weightCalculationId=${weightCalculationId ? weightCalculationId : "0"}`
     const request = axios.get(`${API.getRawMaterialCalculationForFerrous}?${queryParams}`, config());
     request.then((response) => {
       if (response.data.Result) {
@@ -195,7 +197,7 @@ export function saveRawMaterialCalculationForFerrous(data, callback) {
 export function getRawMaterialCalculationForPlastic(costingId, rawMaterialId, weightCalculationId, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const queryParams = `costingId=${costingId}&rawMaterialId=${rawMaterialId}&weightCalculationId=${weightCalculationId ? weightCalculationId : "0"}`
+    const queryParams = `loggedInUserId=${loggedInUserId()}&costingId=${costingId}&rawMaterialId=${rawMaterialId}&weightCalculationId=${weightCalculationId ? weightCalculationId : "0"}`
     const request = axios.get(`${API.getRawMaterialCalculationForPlastic}?${queryParams}`, config());
     request.then((response) => {
       if (response.data.Result) {
@@ -237,7 +239,7 @@ export function saveRawMaterialCalculationForPlastic(data, callback) {
 export function getRawMaterialCalculationForCorrugatedBox(costingId, rawMaterialId, weightCalculationId, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const queryParams = `costingId=${costingId}&rawMaterialId=${rawMaterialId}&weightCalculationId=${weightCalculationId ? weightCalculationId : "0"}`
+    const queryParams = `loggedInUserId=${loggedInUserId()}&costingId=${costingId}&rawMaterialId=${rawMaterialId}&weightCalculationId=${weightCalculationId ? weightCalculationId : "0"}`
     const request = axios.get(`${API.getRawMaterialCalculationForCorrugatedBox}?${queryParams}`, config());
     request.then((response) => {
       if (response.data.Result) {
@@ -255,7 +257,7 @@ export function getRawMaterialCalculationForCorrugatedBox(costingId, rawMaterial
 export function getRawMaterialCalculationForMonoCartonCorrugatedBox(costingId, rawMaterialId, weightCalculationId, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const queryParams = `costingId=${costingId}&rawMaterialId=${rawMaterialId}&weightCalculationId=${weightCalculationId ? weightCalculationId : "0"}`
+    const queryParams = `loggedInUserId=${loggedInUserId()}&costingId=${costingId}&rawMaterialId=${rawMaterialId}&weightCalculationId=${weightCalculationId ? weightCalculationId : "0"}`
     const request = axios.get(`${API.getRawMaterialCalculationForMonoCartonCorrugatedBox}?${queryParams}`, config());
     request.then((response) => {
       if (response.data.Result) {
@@ -310,7 +312,7 @@ export function saveRawMaterialCalculationForMonoCartonCorrugatedBox(data, callb
 export function getRawMaterialCalculationForDieCasting(costingId, rawMaterialId, weightCalculationId, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const queryParams = `costingId=${costingId}&rawMaterialId=${rawMaterialId}&weightCalculationId=${weightCalculationId ? weightCalculationId : "0"}`
+    const queryParams = `loggedInUserId=${loggedInUserId()}&costingId=${costingId}&rawMaterialId=${rawMaterialId}&weightCalculationId=${weightCalculationId ? weightCalculationId : "0"}`
     const request = axios.get(`${API.getRawMaterialCalculationForDieCasting}?${queryParams}`, config());
     request.then((response) => {
       if (response.data.Result) {
@@ -350,7 +352,7 @@ export function saveRawMaterialCalculationForDieCasting(data, callback) {
 */
 export function getRawMaterialCalculationForRubber(costingId, rawMaterialId, weightCalculationId, callback) {
   return (dispatch) => {
-    const queryParams = `costingId=${costingId}&rawMaterialId=${rawMaterialId}&weightCalculationId=${weightCalculationId ? weightCalculationId : "0"}`
+    const queryParams = `loggedInUserId=${loggedInUserId()}&costingId=${costingId}&rawMaterialId=${rawMaterialId}&weightCalculationId=${weightCalculationId ? weightCalculationId : "0"}`
     const request = axios.get(`${API.getRawMaterialCalculationForRubber}?${queryParams}`, config());
     request.then((response) => {
       if (response.data.Result) {
@@ -466,9 +468,10 @@ export function getCostingBySupplier(reqData, callback) {
  * @description get all bill of material list
  */
 export function getRawMaterialListBySupplierId(supplierId, callback) {
+  const loggedInUser = { loggedInUserId: loggedInUserId() }
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getRawMaterialListBySupplierId}/${supplierId}`, config());
+    const request = axios.get(`${API.getRawMaterialListBySupplierId}/${supplierId}/${loggedInUser?.loggedInUserId}`, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -553,10 +556,11 @@ export function addCostingRawMaterial(data, selectedIndex, callback) {
  * @description get costing details by id
  */
 export function getCostingDetailsById(costingId, isEditFlag, callback) {
+  const loggedInUser = { loggedInUserId: loggedInUserId() }
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
     if (isEditFlag) {
-      axios.get(`${API.getCostingDetailsById}/${costingId}`, config())
+      axios.get(`${API.getCostingDetailsById}/${costingId}/${loggedInUser?.loggedInUserId}`, config())
         .then((response) => {
           if (response.data.Result) {
             dispatch({
@@ -610,9 +614,10 @@ export function updateCostingRawMatrial(requestData, callback) {
  * @description get all BOP list
  */
 export function getBoughtOutPartList(supplierId, PlantId, callback) {
+  const loggedInUser = { loggedInUserId: loggedInUserId() }
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getBoughtOutPartListBySupplierAndPlant}/${supplierId}/${PlantId}`, config());
+    const request = axios.get(`${API.getBoughtOutPartListBySupplierAndPlant}/${supplierId}/${PlantId}/${loggedInUser?.loggedInUserId}`, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -666,9 +671,10 @@ export function addCostingBoughtOutPart(data, callback) {
  * @description get all BOP list
  */
 export function getOtherOperationList(supplierId, callback) {
+  const loggedInUser = { loggedInUserId: loggedInUserId() }
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getOtherOperationList}/${supplierId}`, config());
+    const request = axios.get(`${API.getOtherOperationList}/${supplierId}/${loggedInUser?.loggedInUserId}`, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -690,12 +696,13 @@ export function getOtherOperationList(supplierId, callback) {
  * @method getCostingOtherOperation
  * @description add other operation to costing
  */
-export function getCostingOtherOperation(costingId, callback) {
+export function getCostingOtherOperation(costingId, callback) { 
+  const loggedInUser = { loggedInUserId: loggedInUserId() }
   return (dispatch) => {
     // dispatch({
     //     type:  API_REQUEST,
     // });
-    const request = axios.get(`${API.getCostingOtherOperation}/${costingId}`, config());
+    const request = axios.get(`${API.getCostingOtherOperation}/${costingId}/${loggedInUser?.loggedInUserId}`, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -739,9 +746,10 @@ export function addCostingUnitOtherOperationData(data, selectedIndex, callback) 
  * @description get all BOP list
  */
 export function getMHRCostingList(supplierId, callback) {
+  const loggedInUser = { loggedInUserId: loggedInUserId() }
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getMHRCostingList}/${supplierId}`, config());
+    const request = axios.get(`${API.getMHRCostingList}/${supplierId}/${loggedInUser?.loggedInUserId}`, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -833,11 +841,12 @@ export function saveProcessCosting(data, callback) {
  * @description add process to costing
  */
 export function getCostingProcesses(costingId, callback) {
+  const loggedInUser = { loggedInUserId: loggedInUserId() }
   return (dispatch) => {
     // dispatch({
     //     type:  API_REQUEST,
     // });
-    const request = axios.get(`${API.getCostingProcesses}/${costingId}`, config());
+    const request = axios.get(`${API.getCostingProcesses}/${costingId}/${loggedInUser?.loggedInUserId}`, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -865,8 +874,9 @@ export function getCostingProcesses(costingId, callback) {
  * @description add process to costing
  */
 export function getCostingBOP(costingId, callback) {
+  const loggedInUser = { loggedInUserId: loggedInUserId() }
   return (dispatch) => {
-    const request = axios.get(`${API.getCostingBOP}/${costingId}`, config());
+    const request = axios.get(`${API.getCostingBOP}/${costingId}/${loggedInUser?.loggedInUserId}`, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -1052,7 +1062,7 @@ export function getCostingBulkUploadList(callback) {
 export function generateReport(callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.generateReport}`, config());
+    const request = axios.get(`${API.generateReport}?loggedInUserId=${loggedInUserId()}`, config());
     request.then((response) => {
       if (response.data.Result) {
         callback(response);
@@ -1193,7 +1203,7 @@ export function saveDefaultProcessCostCalculationData(data, callback) {
 export function getProcessMachiningCalculation(processCalculationId, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const queryParams = `&weightCalculationId=${processCalculationId ? processCalculationId : 0}`
+    const queryParams = `loggedInUserId=${loggedInUserId()}&weightCalculationId=${processCalculationId ? processCalculationId : 0}`
     const request = axios.get(`${API.getProcessMachiningCalculation}?${queryParams}`, config());
     request.then((response) => {
       if (response.data.Result || response.status === 204) {
@@ -1217,7 +1227,7 @@ export function getProcessMachiningCalculation(processCalculationId, callback) {
 export function getProcessDefaultCalculation(processCalculationId, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const queryParams = `weightCalculationId=${processCalculationId ? processCalculationId : 0}`
+    const queryParams = `loggedInUserId=${loggedInUserId()}&weightCalculationId=${processCalculationId ? processCalculationId : 0}`
     const request = axios.get(`${API.getProcessDefaultCalculation}?${queryParams}`, config());
     request.then((response) => {
       if (response.data.Result || response.status === 204) {
@@ -1336,9 +1346,10 @@ export function setFerrousCalculatorReset(data) {
 
 
 export function getSimulationRmFerrousCastingCalculation(simulationId, costingId, callback) {
+  const loggedInUser = { loggedInUserId: loggedInUserId() }
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const queryParams = `simulationId=${simulationId}&costingId=${costingId ? costingId : "0"}`
+    const queryParams = `simulationId=${simulationId}&costingId=${costingId ? costingId : "0"}&loggedInUserId=${loggedInUser?.loggedInUserId}`
     const request = axios.get(`${API.getSimulationRmFerrousCastingCalculation}?${queryParams}`, config());
     request.then((response) => {
       if (response.data.Result) {
@@ -1355,9 +1366,10 @@ export function getSimulationRmFerrousCastingCalculation(simulationId, costingId
 }
 
 export function getSimulationRmRubberCalculation(simulationId, costingId, callback) {
+  const loggedInUser = { loggedInUserId: loggedInUserId() }
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const queryParams = `simulationId=${simulationId}&costingId=${costingId ? costingId : "0"}`
+    const queryParams = `simulationId=${simulationId}&costingId=${costingId ? costingId : "0"}&loggedInUserId=${loggedInUser?.loggedInUserId}`
     const request = axios.get(`${API.getSimulationRmRubberCalculation}?${queryParams}`, config());
     request.then((response) => {
       if (response.data.Result) {
@@ -1430,7 +1442,7 @@ export function diecastingBulkUploadCosting(data, callback) {
 export function getRawMaterialCalculationForMachining(costingId, rawMaterialId, weightCalculationId, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const queryParams = `costingId=${costingId}&rawMaterialId=${rawMaterialId}&weightCalculationId=${weightCalculationId ? weightCalculationId : "0"}`
+    const queryParams = `loggedInUserId=${loggedInUserId()}&costingId=${costingId}&rawMaterialId=${rawMaterialId}&weightCalculationId=${weightCalculationId ? weightCalculationId : "0"}`
     const request = axios.get(`${API.getRawMaterialCalculationForMachining}?${queryParams}`, config());
     request.then((response) => {
       if (response.data.Result) {
@@ -1465,9 +1477,10 @@ export function saveRawMaterialCalculationForMachining(data, callback) {
   };
 }
 export function getSimulationRmMachiningCalculation(simulationId, costingId, rawMaterialId, callback) {
+  const loggedInUser = { loggedInUserId: loggedInUserId() }
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const queryParams = `simulationId=${simulationId}&costingId=${costingId ? costingId : "0"}&rawMaterialId=${rawMaterialId}`
+    const queryParams = `simulationId=${simulationId}&costingId=${costingId ? costingId : "0"}&rawMaterialId=${rawMaterialId}&loggedInUserId=${loggedInUser?.loggedInUserId}`
     const request = axios.get(`${API.getSimulationRmMachiningCalculation}?${queryParams}`, config());
     request.then((response) => {
       if (response.data.Result) {
@@ -1483,9 +1496,10 @@ export function getSimulationRmMachiningCalculation(simulationId, costingId, raw
   };
 }
 export function getSimulationCorrugatedAndMonoCartonCalculation(simulationId, costingId, rawMaterialId, callback) {
+  const loggedInUser = { loggedInUserId: loggedInUserId() }
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const queryParams = `simulationId=${simulationId}&costingId=${costingId ? costingId : "0"}&rawMaterialId=${rawMaterialId}`
+    const queryParams = `simulationId=${simulationId}&costingId=${costingId ? costingId : "0"}&rawMaterialId=${rawMaterialId}&loggedInUserId=${loggedInUser?.loggedInUserId}`
     const request = axios.get(`${API.getSimulationCorrugatedAndMonoCartonCalculation}?${queryParams}`, config());
     request.then((response) => {
       if (response.data.Result) {
@@ -1528,7 +1542,7 @@ export function saveRawMaterialCalculationForInsulation(data, callback) {
 export function getRawMaterialCalculationForInsulation(costingId, rawMaterialId, weightCalculationId, callback) {
 
   return (dispatch) => {
-    const queryParams = `costingId=${costingId}&rawMaterialId=${rawMaterialId}&weightCalculationId=${weightCalculationId ? weightCalculationId : "0"}`
+    const queryParams = `loggedInUserId=${loggedInUserId()}&costingId=${costingId}&rawMaterialId=${rawMaterialId}&weightCalculationId=${weightCalculationId ? weightCalculationId : "0"}`
     const request = axios.get(`${API.getRawMaterialCalculationForInsulation}?${queryParams}`, config());
     request.then((response) => {
       if (response.data.Result) {
@@ -1613,7 +1627,8 @@ export function MonocartonBulkUploadCosting(data, callback) {
 export function getPackagingCalculation(costingId, costingPackagingDetailsId, costingPackagingCalculatorDetailsId, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const queryParams = `costingId=${costingId}&costingPackagingDetailsId=${costingPackagingDetailsId}&costingPackagingCalculatorDetailsId=${costingPackagingCalculatorDetailsId}`
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
+    const queryParams = `loggedInUserId=${loggedInUser?.loggedInUserId}&costingId=${costingId}&costingPackagingDetailsId=${costingPackagingDetailsId}&costingPackagingCalculatorDetailsId=${costingPackagingCalculatorDetailsId}`
     const request = axios.get(`${API.getPackagingCalculation}?${queryParams}`, config());
     request.then((response) => {
       if (response.data.Result) {
@@ -1653,7 +1668,8 @@ export function savePackagingCalculation(data, callback) {
 */
 export function getVolumePerDayForPackagingCalculator(partId, plantId, effectiveDate, vendorId, callback) {
   return (dispatch) => {
-    const queryParams = `partId=${partId}&plantId=${plantId}&effectiveDate=${effectiveDate}&vendorId=${vendorId}`
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
+    const queryParams = `loggedInUserId=${loggedInUser?.loggedInUserId}&partId=${partId}&plantId=${plantId}&effectiveDate=${effectiveDate}&vendorId=${vendorId}`
     const request = axios.get(`${API.getVolumePerDayForPackagingCalculator}?${queryParams}`, config());
     request.then((response) => {
       if (response.data.Result) {
@@ -1675,8 +1691,9 @@ export function getVolumePerDayForPackagingCalculator(partId, plantId, effective
  * @description Get simulation packaging calculator data
 */
 export function getSimulationPackagingCalculation(simulationId, costingId, callback) {
+  const loggedInUser = { loggedInUserId: loggedInUserId() }
   return (dispatch) => {
-    const queryParams = `simulationId=${simulationId}&costingId=${costingId}`
+    const queryParams = `simulationId=${simulationId}&costingId=${costingId}&loggedInUserId=${loggedInUser?.loggedInUserId}`
     const request = axios.get(`${API.getSimulationPackagingCalculation}?${queryParams}`, config());
     request.then((response) => {
       if (response.data.Result) {

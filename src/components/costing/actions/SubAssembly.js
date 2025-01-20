@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { API, API_FAILURE, API_REQUEST, config, GET_COSTING_FOR_MULTI_TECHNOLOGY, GET_EDIT_PART_COST_DETAILS, GET_SETTLED_COSTING_DETAILS, GET_SETTLED_COSTING_DETAILS_VIEW, SUB_ASSEMBLY_TECHNOLOGY_ARRAY, } from '../../../config/constants'
-import { apiErrors } from '../../../helper'
+import { apiErrors, loggedInUserId } from '../../../helper'
 import axiosInstance from '../../../utils/axiosInstance'
 
 let headers = config
@@ -98,7 +98,8 @@ export function saveEditPartCostDetails(data, callback) {
 export function getCostingForMultiTechnology(data, callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST });
-    const queryParams = `partId=${data?.partId}&plantId=${data?.plantId}&costingTypeId=${data?.costingTypeId}&isRequestForWAC=${data?.isRequestForWAC}&effectiveDate=${data?.effectiveDate}`
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
+    const queryParams = `loggedInUserId=${loggedInUser?.loggedInUserId}&partId=${data?.partId}&plantId=${data?.plantId}&costingTypeId=${data?.costingTypeId}&isRequestForWAC=${data?.isRequestForWAC}&effectiveDate=${data?.effectiveDate}`
     const request = axios.get(`${API.getCostingForMultiTechnology}?${queryParams}`, config());
     request.then((response) => {
       dispatch({
@@ -151,7 +152,8 @@ export function getSettledCostingDetails(CostingId, isViewMode, callback) {
           payload: [],
         })
       }
-      const request = axios.get(`${API.getSettledCostingDetails}?baseCostingId=${CostingId}`, config());
+      const loggedInUser = { loggedInUserId: loggedInUserId() }
+      const request = axios.get(`${API.getSettledCostingDetails}?loggedInUserId=${loggedInUser?.loggedInUserId}&baseCostingId=${CostingId}`, config());
       request.then((response) => {
         if (response.data.Result) {
           if (isViewMode) {
@@ -206,6 +208,7 @@ export function updateMultiTechnologyTopAndWorkingRowCalculation(data, callback)
  * @description getSettledSimulationCostingDetails
  */
 export function getSettledSimulationCostingDetails(simulationId, baseCostingId, isViewMode, callback) {
+  const loggedInUser = { loggedInUserId: loggedInUserId() }
   return (dispatch) => {
     if (baseCostingId !== '' && simulationId !== '') {
       if (isViewMode) {
@@ -219,7 +222,7 @@ export function getSettledSimulationCostingDetails(simulationId, baseCostingId, 
           payload: [],
         })
       }
-      const request = axios.get(`${API.getSettledSimulationCostingDetails}?simulationId=${simulationId}&baseCostingId=${baseCostingId}`, config())
+      const request = axios.get(`${API.getSettledSimulationCostingDetails}?loggedInUserId=${loggedInUser?.loggedInUserId}&simulationId=${simulationId}&baseCostingId=${baseCostingId}`, config())
       request.then((response) => {
         if (response.data.Result) {
           if (isViewMode) {

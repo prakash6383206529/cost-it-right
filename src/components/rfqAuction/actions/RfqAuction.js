@@ -59,7 +59,7 @@ export function auctionRfqSelectList(callback) {
 }
 export function checkQuatationForAuction(id, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.checkQuatationForAuction}?quotationPartId=${id}`, config());
+        const request = axios.get(`${API.checkQuatationForAuction}?quotationPartId=${id}&loggedInUserId=${loggedInUserId()}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -127,7 +127,7 @@ export function auctionListByStatus(statusId, callback) {
 }
 export function auctionBidDetails(quotationAuctionId, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.auctionBidDetails}?quotationAuctionId=${quotationAuctionId}&vendorId=${''}`, config());
+        const request = axios.get(`${API.auctionBidDetails}?loggedInUserId=${loggedInUserId()}&quotationAuctionId=${quotationAuctionId}&vendorId=${''}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -151,7 +151,7 @@ export function auctionBidDetails(quotationAuctionId, callback) {
 }
 export function auctionHeaderDetails(quotationAuctionId, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.auctionHeaderDetails}?quotationAuctionId=${quotationAuctionId}&vendorId=${''}`, config());
+        const request = axios.get(`${API.auctionHeaderDetails}?loggedInUserId=${loggedInUserId()}&quotationAuctionId=${quotationAuctionId}&vendorId=${''}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
