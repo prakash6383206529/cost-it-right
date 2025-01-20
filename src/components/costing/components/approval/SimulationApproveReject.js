@@ -141,19 +141,19 @@ function SimulationApproveReject(props) {
         if (res?.data?.Result) {
           Toaster.success('Simulation has been saved successfully');
 
-          if (initialConfiguration?.IsSAPConfigured) {
-            dispatch(checkSAPPoPrice(simulationDetail?.SimulationId, '', res => {
-              let status = 200;
-              if ('response' in res) {
-                status = res && res?.response?.status;
-              }
-              if (status !== undefined && status === 200) {
-                setIsDisableSubmit(false)
-              } else {
-                setIsDisableSubmit(true)
-              }
-            }));
-          }
+          // if (initialConfiguration?.IsSAPConfigured) {
+          //   dispatch(checkSAPPoPrice(simulationDetail?.SimulationId, '', res => {
+          //     let status = 200;
+          //     if ('response' in res) {
+          //       status = res && res?.response?.status;
+          //     }
+          //     if (status !== undefined && status === 200) {
+          //       setIsDisableSubmit(false)
+          //     } else {
+          //       setIsDisableSubmit(true)
+          //     }
+          //   }));
+          // }
         }
         setLoader(false);
       }));
@@ -656,19 +656,20 @@ function SimulationApproveReject(props) {
         if (res && res.data && res.data.Result) {
           setFinalLevelUser(res.data.Data.IsFinalApprover)
           if (res.data.Data.IsFinalApprover) {
-          if (props?.CheckFinalLevel!==undefined) {
-              props?.CheckFinalLevel(true)            }
-            if(type=== 'Sender'){
+            if (props?.CheckFinalLevel !== undefined) {
+              props?.CheckFinalLevel(true)
+            }
+            if (type === 'Sender') {
               setIsDisableSubmit(true)
               setShowWarningMessage(true)
               setShowMessage('This is a final level user.')
               Toaster.warning('This is a final level user.')
-            }else{
+            } else {
               setIsDisableSubmit(false)
             }
           } else {
             setIsDisableSubmit(false)
-            if (props?.CheckFinalLevel!==undefined) {
+            if (props?.CheckFinalLevel !== undefined) {
               props?.CheckFinalLevel(false)
             }
 
@@ -711,7 +712,7 @@ function SimulationApproveReject(props) {
           setIsShowDivision(false)
 
           checkFinalUserAndGetApprovers(value, levelDetails, obj)
-          
+
           callApproverAPI(value)
         }
       }))
@@ -720,7 +721,7 @@ function SimulationApproveReject(props) {
     else {
 
       checkFinalUserAndGetApprovers(value, levelDetails, obj)
-      
+
       callApproverAPI(value)
     }
     setDataInFields(obj)
@@ -730,7 +731,7 @@ function SimulationApproveReject(props) {
     setDivision(e?.value)
 
     checkFinalUserAndGetApprovers(dataInFields?.Department, levelDetails, dataInFields, e?.value)
-    
+
     callApproverAPI(dataInFields?.Department, e?.value)
   }
   const fileDataCallback = (fileList) => {

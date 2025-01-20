@@ -354,7 +354,7 @@ function ApproveRejectUI(props) {
               </Row>
 
               <Row className="ml-0">
-                {
+                {/* {
                   type === 'Sender' && getConfigurationKey().IsSAPConfigured &&
 
                   <Col md="12" className="simulation-sap-approval">
@@ -373,7 +373,7 @@ function ApproveRejectUI(props) {
 
                     </Row>
                   </Col>
-                }
+                } */}
 
                 {getConfigurationKey().IsReleaseStrategyConfigured && showApprovalTypeDropdown && <Col md="6">
                   <SearchableSelectHookForm
@@ -431,7 +431,7 @@ function ApproveRejectUI(props) {
                           options={approvalDropDown}
                           mandatory={true}
                           handleChange={handleApproverChange}
-                          disabled={(disableReleaseStrategy || !(userData.Department.length > 1 && reasonId !== REASON_ID))}
+                          disabled={(disableReleaseStrategy)}
                           errors={errors.approver}
                         />}
                       {showWarningMessage && <WarningMessage dClass={"mr-2"} message={showMessage ? showMessage : initialConfiguration.IsMultipleUserAllowForApproval ? "There are no further highest level users associated with this company. Kindly contact the admin team for support." : `This user is not in the approval cycle for the ${getValues('ApprovalType')} approval type. Please contact the admin to add an approver for the ${getValues('ApprovalType')} approval type and ${getConfigurationKey().IsCompanyConfigureOnPlant ? 'company' : 'department'}.`} />}
@@ -498,7 +498,7 @@ function ApproveRejectUI(props) {
                           mandatory={true}
                           handleChange={handleApproverChange}
                           errors={errors.approver}
-                          disabled={(disableReleaseStrategy || !(userData.Department.length > 1 && reasonId !== REASON_ID))}
+                          disabled={(disableReleaseStrategy)}
                         />}
                       {showWarningMessage && <WarningMessage dClass={"mr-2"} message={showMessage ? showMessage : `This user is not in approval cycle for ${getConfigurationKey().IsCompanyConfigureOnPlant ? 'company' : 'department'} approval type, Please contact admin to add approver for ${getConfigurationKey().IsCompanyConfigureOnPlant ? 'company' : 'department'} approval type and ${getConfigurationKey().IsCompanyConfigureOnPlant ? 'company' : 'department'}`} />}
                     </div>
