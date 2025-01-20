@@ -1260,7 +1260,7 @@ const SendForApproval = (props) => {
                         />
                       </div>
                     </Row> */}
-                    {getConfigurationKey().IsSAPConfigured && !props.isRfq && <Row className="px-3">
+                    {false && getConfigurationKey().IsSAPConfigured && !props.isRfq && <Row className="px-3">
                       <Col md="12">
                         <div className="left-border">{"SAP-Push Details"}</div>
                       </Col>
