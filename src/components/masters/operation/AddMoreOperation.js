@@ -1360,7 +1360,7 @@ function AddMoreOperation(props) {
                                 {
                                     <div className={getAccordianClassName(isPowerCostOpen)}>
 
-                                        {other && <><Col md="3">
+                                        {other && <> {initialConfiguration?.IsShowCRMHead &&<Col md="3">
                                             <SearchableSelectHookForm
                                                 name="crmHeadPower"
                                                 type="text"
@@ -1380,7 +1380,7 @@ function AddMoreOperation(props) {
                                                 disabled={isViewMode}
                                             />
 
-                                        </Col>
+                                        </Col>}
                                             <Col md="3">
                                                 <NumberFieldHookForm
                                                     label={`Electricity Cost`}
