@@ -623,7 +623,7 @@ function AddBudget(props) {
         })
 
         if (totalSum <= 0) {
-            Toaster.warning('Please add the budgeting to save the data.')
+            Toaster.warning('Please add the budgeting details to save the data.')
             return false;
         }
 
