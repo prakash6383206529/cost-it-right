@@ -186,8 +186,8 @@ function Ferrous(props) {
 
         setTableRawMaterials(rawMaterials);
         const result = calculateTotalPercentage(0, 0, rawMaterials, getValues,true);
-        setPercentage(result.total);
-        setFieldsEnabled(result.total !== 0)
+        setPercentage(result?.total);
+        setFieldsEnabled(result?.total !== 0)
 
         rawMaterials.forEach((item, index) => {
             setValue(`rmGridFields.${index}.Percentage`, checkForDecimalAndNull(item?.Percentage, getConfigurationKey().NoOfDecimalForInputOutput));
@@ -273,10 +273,10 @@ function Ferrous(props) {
         
         setTimeout(() => {
             const result = calculateTotalPercentage(percentage, index, tableRawMaterials, getValues,false);
-            setPercentage(result.total);
-            setFieldsEnabled(result.total === 100);
-            if (!result.isValid) {
-                Toaster.warning(result.message);
+            setPercentage(result?.total);
+            setFieldsEnabled(result?.total === 100);
+            if (!result?.isValid) {
+                Toaster.warning(result?.message);
                 setFieldsEnabled(false);
                 return false;
             }

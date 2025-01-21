@@ -452,13 +452,13 @@ export const calculateTotalPercentage = (currentValue, index, rawMaterials, getV
   }
   else{
      totalPercentage = rawMaterials?.reduce((total, _, idx) => {
-      return total + (idx === index ? 
+      return checkForNull(total) + (idx === index ? 
         checkForNull(currentValue) || 0 : 
         checkForNull(getValues(`rmGridFields.${idx}.Percentage`)) || 0);
     }, 0);
   }
   return {
-    total: totalPercentage,
+    total: checkForNull(totalPercentage),
     message: totalPercentage > 100 ? 
       `Total percentage is ${totalPercentage}%, must be 100% to save the values` : '',
     isValid: totalPercentage <= 100

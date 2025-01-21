@@ -56,8 +56,8 @@ function RubberWeightCalculator(props) {
             setRejectionCostType({ label: WeightCalculatorRequest.RejectionType, value: 5 })
             const rawMaterials = WeightCalculatorRequest?.CostingRubberCalculationRawMaterials || [];
             const result = calculateTotalPercentage(0, 0, rawMaterials, getValues,true);
-            setFieldsEnabled(result.total !== 0)
-            setPercentage(result.total)
+            setFieldsEnabled(result?.total !== 0)
+            setPercentage(result?.total)
             setTimeout(() => {
                 setValue('grossRMRate', WeightCalculatorRequest.GrossRMRate ? checkForDecimalAndNull(WeightCalculatorRequest.GrossRMRate, getConfigurationKey().NoOfDecimalForPrice) : '')
                 setValue('applicablityAdditional', WeightCalculatorRequest.RawMaterialCost ? checkForDecimalAndNull(WeightCalculatorRequest.RawMaterialCost, getConfigurationKey().NoOfDecimalForPrice) : '')
@@ -157,23 +157,23 @@ function RubberWeightCalculator(props) {
     }
 
 
-    // Inside RubberWeightCalculator component
     const percentageChange = (percentage, index) => {
         
         const result = calculateTotalPercentage(percentage, index, rmData, getValues,false);
-        setPercentage(result.total);
+        setPercentage(result?.total);
         
-        if (!result.isValid) {
-            Toaster.warning(result.message);
+        if (!result?.isValid) {
+            Toaster.warning(result?.message);
             setFieldsEnabled(false);
             setValue(`rmGridFields.${index}.Percentage`, '');
             return false;
         }
         
-        setFieldsEnabled(result.total === 100);
+        setFieldsEnabled(result?.total === 100);
         calculateNetSCrapRate(percentage, index);
         calculateNetRmRate(percentage, index);
     };
+    
     const calculateNetRmRate = (percentageValue, indexTemp) => {
 
         let grossRMRate = 0;
@@ -1083,7 +1083,7 @@ function RubberWeightCalculator(props) {
 
 
                                 <Col md="3">
-                                    <TooltipCustom width={"240px"} disabledIcon={true} id={'netRmc'} tooltipText={'Net RMC = RM Cost + Rejection Cost + Net Cost'} />
+                                    <TooltipCustom width={"240px"} disabledIcon={true} id={'netRmc'} tooltipText={'Net RMC = RM Cost + Rejection Cost + Additional RM Cost'} />
                                     <TextFieldHookForm
                                         label={`Net RMC`}
                                         id={'netRmc'}
