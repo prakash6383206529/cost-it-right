@@ -1995,7 +1995,7 @@ const CostingSummaryTable = (props) => {
   const handleSOBSave = (obj, index) => {
     let totalSObP = [];
     for (let i = 0; i < viewCostingData.length; i++) {
-      if (typeof viewCostingData[i].shareOfBusinessPercent === 'number' && i !== index) {
+      if (typeof viewCostingData[i].shareOfBusinessPercent === 'number' && i !== index && (!props.uniqueShouldCostingId?.includes(viewCostingData[i].costingId))) {
         totalSObP.push(viewCostingData[i].shareOfBusinessPercent)
       }
     }
