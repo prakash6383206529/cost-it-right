@@ -233,7 +233,15 @@ const CostRatioListing = (props) => {
                                             <div className='column-data'>{item.EffectiveDate ? DayTime(item.EffectiveDate).format('DD/MM/YYYY') : '-'} </div>
                                             <div className='column-data'>{item.PartNumber ? item.PartNumber : '-'} </div>
                                             <div className='column-data'>{item.RevisionNumber ? item.RevisionNumber : '-'} </div>
-                                            <div className={`column-data code-container`} ref={divRef} >{(item.VendorName !== '-' || item.VendorCode !== '-') ? <div className={`code-specific ${tableData?.length >= 3 ? 'max-height-reduce' : ''}`} style={{ maxWidth: divRef?.current?.clientWidth }}><span title={item.VendorName + " (" + item.VendorCode + ")"} className='name'>{item.VendorName}</span> <span>({item.VendorCode})</span></div> : '-'}</div>
+                                            <div className={`column-data code-container`} ref={divRef} >{(item?.VendorName && item?.VendorName !== '-' && item?.VendorCode && item?.VendorCode !== '-') ?<div className={`code-specific ${tableData?.length >= 3 ? 'max-height-reduce' : ''}`}
+                                                        style={{ maxWidth: divRef?.current?.clientWidth }}>
+                                                        <span title={item?.VendorName + " (" + item?.VendorCode + ")"} className='name'>
+                                                            {item?.VendorName}
+                                                        </span>
+                                                        <span>({item?.VendorCode})</span>
+                                                    </div>
+                                                    : '-'}
+                                            </div>
                                             <div className='column-data code-container' ref={divRef} >{(item.PlantName || item.PlantCode) ? <div className={`code-specific ${tableData?.length >= 3 ? 'max-height-reduce' : ''}`} style={{ maxWidth: divRef?.current?.clientWidth }}><span className='name' title={item.PlantName + " (" + item.PlantCode + ")"}>{item.PlantName}</span> <span>({item.PlantCode})</span></div> : '-'}</div>
                                             {initialConfiguration?.IsBasicRateAndCostingConditionVisible && <div className='column-data'>{getCurrencySymbol(getConfigurationKey().BaseCurrency)} {checkForDecimalAndNull(item.BasicRate, initialConfiguration.NoOfDecimalForPrice)} </div>}
                                             <div className='column-data'>{getCurrencySymbol(getConfigurationKey().BaseCurrency)} {checkForDecimalAndNull(item.NetPOPriceINR, initialConfiguration.NoOfDecimalForPrice)} </div>
