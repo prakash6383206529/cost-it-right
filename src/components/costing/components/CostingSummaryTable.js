@@ -1995,7 +1995,7 @@ const CostingSummaryTable = (props) => {
   const handleSOBSave = (obj, index) => {
     let totalSObP = [];
     for (let i = 0; i < viewCostingData.length; i++) {
-      if (typeof viewCostingData[i].shareOfBusinessPercent === 'number' && i !== index) {
+      if (typeof viewCostingData[i].shareOfBusinessPercent === 'number' && i !== index && (!props.uniqueShouldCostingId?.includes(viewCostingData[i].costingId))) {
         totalSObP.push(viewCostingData[i].shareOfBusinessPercent)
       }
     }
@@ -2315,7 +2315,7 @@ const CostingSummaryTable = (props) => {
                                     {((!viewMode && (!pdfHead && !drawerDetailPDF)) && EditAccessibility) && (data?.status === DRAFT) && <button id="costingSummary_edit" className="Edit mr-1 mb-0 align-middle" type={"button"} title={"Edit Costing"} onClick={() => editCostingDetail(index)} />}
                                     {((!viewMode && (!pdfHead && !drawerDetailPDF)) && ViewAccessibility) && (data?.status === DRAFT) && <button id="costingSummary_view" className="View mr-1 mb-0 align-middle" type={"button"} title={"View Costing"} onClick={() => viewCostingDetail(index)} />}
                                     {((!viewMode && (!pdfHead && !drawerDetailPDF)) && AddAccessibility) && <button id="costingSummary_add" className="Add-file mr-1 mb-0 align-middle" type={"button"} title={"Add Costing"} onClick={() => addNewCosting(index)} />}
-                                    {(!isApproval || (isComparing && index > 1)) && (data?.bestCost === true ? false : ((!viewMode || props?.isRfqCosting || props?.costVariance || (isComparing && index > 1) || (approvalMode && data?.CostingHeading === '-')) && (!pdfHead && !drawerDetailPDF)) && <button id="costingSummary_discard" type="button" className="CancelIcon mb-0 align-middle" title='Discard' onClick={() => deleteCostingFromView(index)}></button>)}
+                                    {(!isApproval || (isComparing && index > 1)) && (data?.bestCost === true ? false : ((!viewMode || props?.isRfqCosting || props?.costVariance || (isComparing && index > 1) || (approvalMode && data?.CostingHeading === '-')) && (!pdfHead && !drawerDetailPDF)) && (props?.isRfqCosting ? viewCostingData?.length > 2 : viewCostingData?.length > 1) && <button id="costingSummary_discard" type="button" className="CancelIcon mb-0 align-middle" title='Discard' onClick={() => deleteCostingFromView(index)}></button>)}
                                   </div>
                                 </div >
                               </th >
@@ -3571,7 +3571,7 @@ const CostingSummaryTable = (props) => {
                           </tr>
                         </>
                       }
-                      {<ViewTcoDetail isApproval={isApproval} viewCostingData={viewCostingData} isRfqCosting={props?.isRfqCosting} highlighter={highlighter} displayValueWithSign={displayValueWithSign} tableDataClass={tableDataClass} loader={loader} setLoader={setLoader} />}
+                      {props?.isRfqCosting && <ViewTcoDetail isApproval={isApproval} viewCostingData={viewCostingData} isRfqCosting={props?.isRfqCosting} highlighter={highlighter} displayValueWithSign={displayValueWithSign} tableDataClass={tableDataClass} loader={loader} setLoader={setLoader} />}
                       {initialConfiguration?.IsShowTCO && <tr className={highlighter("nPackagingAndFreight", "main-row")}>
 
                         <th>Total TCO Cost <TooltipCustom id="tco_cost" tooltipText="Calculation made upon Payment term, Warranty, Quality PPM, Incoterm and Investment" />
