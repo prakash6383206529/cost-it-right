@@ -622,6 +622,11 @@ function AddBudget(props) {
             temp.push(obj)
         })
 
+        if (totalSum <= 0) {
+            Toaster.warning('Add the Budgeting Details first')
+            return false;
+        }
+
         let formData = {
             LoggedInUserId: loggedInUserId(),
             FinancialYear: values?.FinancialYear?.label,
