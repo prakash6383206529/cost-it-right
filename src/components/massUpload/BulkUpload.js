@@ -489,7 +489,7 @@ class BulkUpload extends Component {
                         case String(LABOURBULKUPLOAD):
                             const localizedLabour = this.localizeHeaders(Labour);
                             masterDataArray = localizedLabour
-                            checkForFileHead = checkForSameFileUpload(localizedLabour, fileHeads)
+                            checkForFileHead = checkForSameFileUpload(checkLabourRateConfigure(localizedLabour), fileHeads)
                             break;
                         case String(OPERAIONBULKUPLOAD):
                             if (this.state.costingTypeId === ZBCTypeId) {
