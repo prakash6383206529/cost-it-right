@@ -1,3 +1,5 @@
+import React from "react";
+import TooltipCustom from "../components/common/Tooltip";
 import { getConfigurationKey, handleDepartmentHeader, showBopLabel } from "../helper";
 
 export const MESSAGES = {
@@ -420,3 +422,17 @@ export const MESSAGES = {
   LPSRATING_UNBLOCKED_SUCCESSFULLY: 'LPS Rating unblocked successfully',
 
 }
+export const AttachmentValidationInfo = (props) => {
+  const { customClass } = props;
+  const message = <div className="text-start">
+    <p><strong>Multiple Extensions or Special Characters</strong></p>
+    <p>File names should not include multiple extensions or special characters or spaces (e.g.: file.tar.gz, my!file.png, my file.png). Use a simple and valid file name.</p>
+
+    <p><strong>Unsupported File Extensions</strong></p>
+    <p>Supported file formats include: PDF, DOC, DOCX, XLS, XLSX, JPG, JPEG, PNG, and GIF. Files in other formats are not allowed.</p>
+  </div>
+  return <>
+    <TooltipCustom id="attachment-tooltip" width="400px" customClass={`${customClass} mt-1`} tooltipText={message} />
+  </>
+}
+
