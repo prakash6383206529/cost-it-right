@@ -836,6 +836,7 @@ export function getCombinedProcessCostingSimulationList(token, callback) {
 }
 
 export function getImpactedMasterData(simulationId, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
         const structureOfData = {
@@ -847,7 +848,7 @@ export function getImpactedMasterData(simulationId, callback) {
             MachineProcessImpactedMasterDataList: [],
             CombinedProcessImpactedMasterDataList: []
         }
-        const queryParams = `simulationId=${simulationId}`
+        const queryParams = `simulationId=${simulationId}&loggedInUserId=${loggedInUser?.loggedInUserId}`
         const request = axios.get(`${API.getImpactedMasterData}?${queryParams}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
@@ -1085,12 +1086,14 @@ export function getCostingBoughtOutPartSimulationList(token, callback) {
 }
 
 export function getSimulatedAssemblyWiseImpactDate(requestData, isAssemblyInDraft, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
+    const requestedData = { LoggedInUserId: loggedInUser?.loggedInUserId, ...requestData }
     return (dispatch) => {
         dispatch({
             type: GET_ASSEMBLY_SIMULATION_LIST,
             payload: [],
         })
-        const request = axiosInstance.post(`${API.getSimulatedAssemblyWiseImpactDate}`, requestData, config());
+        const request = axiosInstance.post(`${API.getSimulatedAssemblyWiseImpactDate}`, requestedData, config());
         request.then((response) => {
             // THIS BLOCK WORKS WHEN THERE IS DATA IN API
             if (response.data.Result) {
