@@ -1085,27 +1085,29 @@ function AddMoreOperation(props) {
                                     <div className={getAccordianClassName(isMaterialCostOpen)}>
 
                                         {other &&
-                                            <><Col md="3" className="mb-3">
-                                                <SearchableSelectHookForm
-                                                    name="crmHeadMaterialCost"
-                                                    type="text"
-                                                    label="CRM Head"
-                                                    errors={errors.crmHeadMaterialCost}
-                                                    Controller={Controller}
-                                                    control={control}
-                                                    register={register}
-                                                    mandatory={false}
-                                                    rules={{
-                                                        required: false,
-                                                    }}
-                                                    placeholder={'Select'}
-                                                    options={searchableSelectType('crmHead')}
-                                                    required={false}
-                                                    handleChange={() => { }}
-                                                    disabled={isViewMode}
-                                                />
+                                            <>
+                                                {initialConfiguration?.IsShowCRMHead &&
+                                                    <Col md="3" className="mb-3">
+                                                        <SearchableSelectHookForm
+                                                            name="crmHeadMaterialCost"
+                                                            type="text"
+                                                            label="CRM Head"
+                                                            errors={errors.crmHeadMaterialCost}
+                                                            Controller={Controller}
+                                                            control={control}
+                                                            register={register}
+                                                            mandatory={false}
+                                                            rules={{
+                                                                required: false,
+                                                            }}
+                                                            placeholder={'Select'}
+                                                            options={searchableSelectType('crmHead')}
+                                                            required={false}
+                                                            handleChange={() => { }}
+                                                            disabled={isViewMode}
+                                                        />
 
-                                            </Col>
+                                                    </Col>}
                                                 <Col md="3">
 
                                                     <NumberFieldHookForm
@@ -1134,7 +1136,7 @@ function AddMoreOperation(props) {
                                             </>}
 
                                         {(isWelding || isPlating) && <>
-                                            <Col md="3" className="mb-3">
+                                            {initialConfiguration?.IsShowCRMHead && <Col md="3" className="mb-3">
                                                 <SearchableSelectHookForm
                                                     name="crmHeadWireRate"
                                                     type="text"
@@ -1154,7 +1156,7 @@ function AddMoreOperation(props) {
                                                     disabled={isViewMode}
                                                 />
 
-                                            </Col>
+                                            </Col>}
                                             <Col md="3">
                                                 <NumberFieldHookForm
                                                     label={getLabel('wireRate')}
@@ -1238,7 +1240,7 @@ function AddMoreOperation(props) {
                                             </Col>
 
 
-                                            <Col md="3" className="mb-3">
+                                            {initialConfiguration?.IsShowCRMHead && <Col md="3" className="mb-3">
                                                 <SearchableSelectHookForm
                                                     name="crmHeadGasRate"
                                                     type="text"
@@ -1257,7 +1259,7 @@ function AddMoreOperation(props) {
                                                     handleChange={() => { }}
                                                     disabled={isViewMode}
                                                 />
-                                            </Col>
+                                            </Col>}
                                             <Col md="3" className="mb-3">
 
                                                 <NumberFieldHookForm
@@ -1358,7 +1360,7 @@ function AddMoreOperation(props) {
                                 {
                                     <div className={getAccordianClassName(isPowerCostOpen)}>
 
-                                        {other && <><Col md="3">
+                                        {other && <> {initialConfiguration?.IsShowCRMHead &&<Col md="3">
                                             <SearchableSelectHookForm
                                                 name="crmHeadPower"
                                                 type="text"
@@ -1378,7 +1380,7 @@ function AddMoreOperation(props) {
                                                 disabled={isViewMode}
                                             />
 
-                                        </Col>
+                                        </Col>}
                                             <Col md="3">
                                                 <NumberFieldHookForm
                                                     label={`Electricity Cost`}
@@ -1407,7 +1409,7 @@ function AddMoreOperation(props) {
 
                                         {(isWelding || isPlating) && <>
 
-                                            <Col md="3">
+                                            {initialConfiguration?.IsShowCRMHead && <Col md="3">
                                                 <SearchableSelectHookForm
                                                     name="crmHeadPowerWelding"
                                                     type="text"
@@ -1427,7 +1429,7 @@ function AddMoreOperation(props) {
                                                     disabled={isViewMode}
                                                 />
 
-                                            </Col>
+                                            </Col>}
                                             <Col md="3">
 
                                                 <NumberFieldHookForm
@@ -1527,7 +1529,7 @@ function AddMoreOperation(props) {
                                     <div className={getAccordianClassName(isLabourCostOpen)}>
 
                                         {(other || isPlating) && <>
-                                            <Col md="3">
+                                            {initialConfiguration?.IsShowCRMHead && <Col md="3">
                                                 <SearchableSelectHookForm
                                                     name="crmHeadLabour"
                                                     type="text"
@@ -1547,7 +1549,7 @@ function AddMoreOperation(props) {
                                                     disabled={isViewMode}
                                                 />
 
-                                            </Col>
+                                            </Col>}
                                             <Col md="3">
 
                                                 <NumberFieldHookForm
@@ -1575,7 +1577,7 @@ function AddMoreOperation(props) {
                                             </Col>
 
 
-                                            <Col md="3">
+                                            {initialConfiguration?.IsShowCRMHead && <Col md="3">
                                                 <SearchableSelectHookForm
                                                     name="crmHeadLabourStaffCost"
                                                     type="text"
@@ -1595,7 +1597,7 @@ function AddMoreOperation(props) {
                                                     disabled={isViewMode}
                                                 />
 
-                                            </Col>
+                                            </Col>}
                                             <Col md="3">
 
                                                 <NumberFieldHookForm
@@ -1624,7 +1626,7 @@ function AddMoreOperation(props) {
 
                                         {isWelding &&
                                             <>
-                                                <Col md="3">
+                                                {initialConfiguration?.IsShowCRMHead && <Col md="3">
                                                     <SearchableSelectHookForm
                                                         name="crmHeadLabourWelding"
                                                         type="text"
@@ -1644,7 +1646,7 @@ function AddMoreOperation(props) {
                                                         disabled={isViewMode}
                                                     />
 
-                                                </Col>
+                                                </Col>}
                                                 <Col md="3">
 
                                                     <NumberFieldHookForm
@@ -1745,7 +1747,7 @@ function AddMoreOperation(props) {
                                 {
                                     <div className={getAccordianClassName(isConsumablesCostOpen)}>
 
-                                        {(other || isPlating) && <><Col md="3" className="mb-4">
+                                        {(other || isPlating) && <>{initialConfiguration?.IsShowCRMHead && <Col md="3" className="mb-4">
                                             <SearchableSelectHookForm
                                                 name="crmHeadConsumableMaintenanceCost"
                                                 type="text"
@@ -1765,7 +1767,7 @@ function AddMoreOperation(props) {
                                                 disabled={isViewMode}
                                             />
 
-                                        </Col>
+                                        </Col>}
                                             <Col md="3">
                                                 <NumberFieldHookForm
                                                     label={`Maintenance Cost`}
@@ -1790,7 +1792,7 @@ function AddMoreOperation(props) {
                                                 />
                                             </Col>
 
-                                            <Col md="3">
+                                            {initialConfiguration?.IsShowCRMHead && <Col md="3">
                                                 <SearchableSelectHookForm
                                                     name="crmHeadConsumableCost"
                                                     type="text"
@@ -1810,7 +1812,7 @@ function AddMoreOperation(props) {
                                                     disabled={isViewMode}
                                                 />
 
-                                            </Col>
+                                            </Col>}
                                             <Col md="3">
 
                                                 <NumberFieldHookForm
@@ -1836,28 +1838,28 @@ function AddMoreOperation(props) {
                                                 />
                                             </Col>
 
+                                            {initialConfiguration?.IsShowCRMHead &&
+                                                <Col md="3">
+                                                    <SearchableSelectHookForm
+                                                        name="crmHeadWaterCost"
+                                                        type="text"
+                                                        label="CRM Head"
+                                                        errors={errors.crmHeadWaterCost}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        mandatory={false}
+                                                        rules={{
+                                                            required: false,
+                                                        }}
+                                                        placeholder={'Select'}
+                                                        options={searchableSelectType('crmHead')}
+                                                        required={false}
+                                                        handleChange={() => { }}
+                                                        disabled={isViewMode}
+                                                    />
 
-                                            <Col md="3">
-                                                <SearchableSelectHookForm
-                                                    name="crmHeadWaterCost"
-                                                    type="text"
-                                                    label="CRM Head"
-                                                    errors={errors.crmHeadWaterCost}
-                                                    Controller={Controller}
-                                                    control={control}
-                                                    register={register}
-                                                    mandatory={false}
-                                                    rules={{
-                                                        required: false,
-                                                    }}
-                                                    placeholder={'Select'}
-                                                    options={searchableSelectType('crmHead')}
-                                                    required={false}
-                                                    handleChange={() => { }}
-                                                    disabled={isViewMode}
-                                                />
-
-                                            </Col>
+                                                </Col>}
                                             <Col md="3">
                                                 <NumberFieldHookForm
                                                     label={getLabel('waterCost')}
@@ -1882,27 +1884,27 @@ function AddMoreOperation(props) {
                                                 />
 
                                             </Col>
-
-                                            <Col md="3">
-                                                <SearchableSelectHookForm
-                                                    name="crmHeadJigStripping"
-                                                    type="text"
-                                                    label="CRM Head"
-                                                    errors={errors.crmHeadJigStripping}
-                                                    Controller={Controller}
-                                                    control={control}
-                                                    register={register}
-                                                    mandatory={false}
-                                                    rules={{
-                                                        required: false,
-                                                    }}
-                                                    placeholder={'Select'}
-                                                    options={searchableSelectType('crmHead')}
-                                                    required={false}
-                                                    handleChange={() => { }}
-                                                    disabled={isViewMode}
-                                                />
-                                            </Col>
+                                            {initialConfiguration?.IsShowCRMHead &&
+                                                <Col md="3">
+                                                    <SearchableSelectHookForm
+                                                        name="crmHeadJigStripping"
+                                                        type="text"
+                                                        label="CRM Head"
+                                                        errors={errors.crmHeadJigStripping}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        mandatory={false}
+                                                        rules={{
+                                                            required: false,
+                                                        }}
+                                                        placeholder={'Select'}
+                                                        options={searchableSelectType('crmHead')}
+                                                        required={false}
+                                                        handleChange={() => { }}
+                                                        disabled={isViewMode}
+                                                    />
+                                                </Col>}
                                             <Col md="3">
 
                                                 <NumberFieldHookForm
@@ -1931,7 +1933,7 @@ function AddMoreOperation(props) {
 
 
                                         {isWelding && <>
-                                            <Col md="3">
+                                            {initialConfiguration?.IsShowCRMHead && <Col md="3">
                                                 <SearchableSelectHookForm
                                                     name="crmHeadConsumableMachineCost"
                                                     type="text"
@@ -1951,7 +1953,7 @@ function AddMoreOperation(props) {
                                                     disabled={isViewMode}
                                                 />
 
-                                            </Col>
+                                            </Col>}
                                             <Col md="3">
 
                                                 <NumberFieldHookForm
@@ -1977,28 +1979,28 @@ function AddMoreOperation(props) {
                                                 />
                                             </Col>
 
+                                            {initialConfiguration?.IsShowCRMHead &&
+                                                <Col md="3">
+                                                    <SearchableSelectHookForm
+                                                        name="crmHeadConsumableWelderCost"
+                                                        type="text"
+                                                        label="CRM Head"
+                                                        errors={errors.crmHeadConsumableWelderCost}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        mandatory={false}
+                                                        rules={{
+                                                            required: false,
+                                                        }}
+                                                        placeholder={'Select'}
+                                                        options={searchableSelectType('crmHead')}
+                                                        required={false}
+                                                        handleChange={() => { }}
+                                                        disabled={isViewMode}
+                                                    />
 
-                                            <Col md="3">
-                                                <SearchableSelectHookForm
-                                                    name="crmHeadConsumableWelderCost"
-                                                    type="text"
-                                                    label="CRM Head"
-                                                    errors={errors.crmHeadConsumableWelderCost}
-                                                    Controller={Controller}
-                                                    control={control}
-                                                    register={register}
-                                                    mandatory={false}
-                                                    rules={{
-                                                        required: false,
-                                                    }}
-                                                    placeholder={'Select'}
-                                                    options={searchableSelectType('crmHead')}
-                                                    required={false}
-                                                    handleChange={() => { }}
-                                                    disabled={isViewMode}
-                                                />
-
-                                            </Col>
+                                                </Col>}
 
                                             <Col md="3">
                                                 <NumberFieldHookForm
@@ -2048,7 +2050,7 @@ function AddMoreOperation(props) {
                                 {true &&
                                     <div className={getAccordianClassName(isInterestCostOpen)}>
 
-                                        {other && <> <Col md="3">
+                                        {other && <>   {initialConfiguration?.IsShowCRMHead && <Col md="3">
                                             <SearchableSelectHookForm
                                                 name="crmHeadInterest"
                                                 type="text"
@@ -2068,7 +2070,7 @@ function AddMoreOperation(props) {
                                                 disabled={isViewMode}
                                             />
 
-                                        </Col>
+                                        </Col>}
                                             <Col md="3">
 
                                                 <NumberFieldHookForm
@@ -2094,28 +2096,28 @@ function AddMoreOperation(props) {
                                                 />
                                             </Col>
 
+                                            {initialConfiguration?.IsShowCRMHead &&
+                                                <Col md="3">
+                                                    <SearchableSelectHookForm
+                                                        name="crmHeadDepriciation"
+                                                        type="text"
+                                                        label="CRM Head"
+                                                        errors={errors.crmHeadDepriciation}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        mandatory={false}
+                                                        rules={{
+                                                            required: false,
+                                                        }}
+                                                        placeholder={'Select'}
+                                                        options={searchableSelectType('crmHead')}
+                                                        required={false}
+                                                        handleChange={() => { }}
+                                                        disabled={isViewMode}
+                                                    />
 
-                                            <Col md="3">
-                                                <SearchableSelectHookForm
-                                                    name="crmHeadDepriciation"
-                                                    type="text"
-                                                    label="CRM Head"
-                                                    errors={errors.crmHeadDepriciation}
-                                                    Controller={Controller}
-                                                    control={control}
-                                                    register={register}
-                                                    mandatory={false}
-                                                    rules={{
-                                                        required: false,
-                                                    }}
-                                                    placeholder={'Select'}
-                                                    options={searchableSelectType('crmHead')}
-                                                    required={false}
-                                                    handleChange={() => { }}
-                                                    disabled={isViewMode}
-                                                />
-
-                                            </Col>
+                                                </Col>}
                                             <Col md="3">
                                                 <NumberFieldHookForm
                                                     label={`Depreciation Cost`}
@@ -2159,7 +2161,7 @@ function AddMoreOperation(props) {
                                             </label>
                                         </>}
 
-                                        {isWelding && <>
+                                        {isWelding && <>  {initialConfiguration?.IsShowCRMHead &&
                                             <Col md="3">
                                                 <SearchableSelectHookForm
                                                     name="crmHeadInterestDepriciationWelding"
@@ -2179,7 +2181,7 @@ function AddMoreOperation(props) {
                                                     handleChange={() => { }}
                                                     disabled={isViewMode}
                                                 />
-                                            </Col>
+                                            </Col>}
 
 
                                             <Col md="3">
@@ -2227,28 +2229,28 @@ function AddMoreOperation(props) {
                                 </Col>
                                 {true &&
                                     <div className={getAccordianClassName(isOtherOperationCostOpen)}>
+                                        {initialConfiguration?.IsShowCRMHead &&
+                                            <Col md="3">
+                                                <SearchableSelectHookForm
+                                                    name="crmHeadOtherOperation"
+                                                    type="text"
+                                                    label="CRM Head"
+                                                    errors={errors.crmHeadOtherOperation}
+                                                    Controller={Controller}
+                                                    control={control}
+                                                    register={register}
+                                                    mandatory={false}
+                                                    rules={{
+                                                        required: false,
+                                                    }}
+                                                    placeholder={'Select'}
+                                                    options={searchableSelectType('crmHead')}
+                                                    required={false}
+                                                    handleChange={() => { }}
+                                                    disabled={isViewMode}
+                                                />
 
-                                        <Col md="3">
-                                            <SearchableSelectHookForm
-                                                name="crmHeadOtherOperation"
-                                                type="text"
-                                                label="CRM Head"
-                                                errors={errors.crmHeadOtherOperation}
-                                                Controller={Controller}
-                                                control={control}
-                                                register={register}
-                                                mandatory={false}
-                                                rules={{
-                                                    required: false,
-                                                }}
-                                                placeholder={'Select'}
-                                                options={searchableSelectType('crmHead')}
-                                                required={false}
-                                                handleChange={() => { }}
-                                                disabled={isViewMode}
-                                            />
-
-                                        </Col>
+                                            </Col>}
 
                                         <Col md="3">
                                             <SearchableSelectHookForm
@@ -2317,7 +2319,7 @@ function AddMoreOperation(props) {
                                     <div className={getAccordianClassName(isOtherCostOpen)}>
 
                                         {(other || isPlating) &&
-                                            <>
+                                            <>  {initialConfiguration?.IsShowCRMHead &&
                                                 <Col md="3" className="mb-4">
                                                     <SearchableSelectHookForm
                                                         name="crmHeadStatuaryLicense"
@@ -2338,7 +2340,7 @@ function AddMoreOperation(props) {
                                                         disabled={isViewMode}
                                                     />
 
-                                                </Col>
+                                                </Col>}
                                                 <Col md="3">
                                                     <NumberFieldHookForm
                                                         label={getLabel(`statuatoryLicense`)}
@@ -2362,29 +2364,28 @@ function AddMoreOperation(props) {
                                                         disabled={isViewMode ? true : false}
                                                     />
                                                 </Col>
+                                                {initialConfiguration?.IsShowCRMHead &&
+                                                    <Col md="3">
+                                                        <SearchableSelectHookForm
+                                                            name="crmHeadRejoinRework"
+                                                            type="text"
+                                                            label="CRM Head"
+                                                            errors={errors.crmHeadRejoinRework}
+                                                            Controller={Controller}
+                                                            control={control}
+                                                            register={register}
+                                                            mandatory={false}
+                                                            rules={{
+                                                                required: false,
+                                                            }}
+                                                            placeholder={'Select'}
+                                                            options={searchableSelectType('crmHead')}
+                                                            required={false}
+                                                            handleChange={() => { }}
+                                                            disabled={isViewMode}
+                                                        />
 
-
-                                                <Col md="3">
-                                                    <SearchableSelectHookForm
-                                                        name="crmHeadRejoinRework"
-                                                        type="text"
-                                                        label="CRM Head"
-                                                        errors={errors.crmHeadRejoinRework}
-                                                        Controller={Controller}
-                                                        control={control}
-                                                        register={register}
-                                                        mandatory={false}
-                                                        rules={{
-                                                            required: false,
-                                                        }}
-                                                        placeholder={'Select'}
-                                                        options={searchableSelectType('crmHead')}
-                                                        required={false}
-                                                        handleChange={() => { }}
-                                                        disabled={isViewMode}
-                                                    />
-
-                                                </Col>
+                                                    </Col>}
                                                 <Col md="3">
 
                                                     <NumberFieldHookForm
@@ -2443,28 +2444,28 @@ function AddMoreOperation(props) {
 
                                                 </Col>
 
+                                                {initialConfiguration?.IsShowCRMHead &&
+                                                    <Col md="3">
+                                                        <SearchableSelectHookForm
+                                                            name="crmHeadProfit"
+                                                            type="text"
+                                                            label="CRM Head"
+                                                            errors={errors.crmHeadProfit}
+                                                            Controller={Controller}
+                                                            control={control}
+                                                            register={register}
+                                                            mandatory={false}
+                                                            rules={{
+                                                                required: false,
+                                                            }}
+                                                            placeholder={'Select'}
+                                                            options={searchableSelectType('crmHead')}
+                                                            required={false}
+                                                            handleChange={() => { }}
+                                                            disabled={isViewMode}
+                                                        />
 
-                                                <Col md="3">
-                                                    <SearchableSelectHookForm
-                                                        name="crmHeadProfit"
-                                                        type="text"
-                                                        label="CRM Head"
-                                                        errors={errors.crmHeadProfit}
-                                                        Controller={Controller}
-                                                        control={control}
-                                                        register={register}
-                                                        mandatory={false}
-                                                        rules={{
-                                                            required: false,
-                                                        }}
-                                                        placeholder={'Select'}
-                                                        options={searchableSelectType('crmHead')}
-                                                        required={false}
-                                                        handleChange={() => { }}
-                                                        disabled={isViewMode}
-                                                    />
-
-                                                </Col>
+                                                    </Col>}
                                                 <Col md="3">
                                                     <NumberFieldHookForm
                                                         label={`Profit %`}
@@ -2520,7 +2521,7 @@ function AddMoreOperation(props) {
                                                     />
                                                 </Col>
 
-                                                {other && <><Col md="3">
+                                                {other && <>  {initialConfiguration?.IsShowCRMHead && <Col md="3">
                                                     <SearchableSelectHookForm
                                                         name="crmHeadOtherCost"
                                                         type="text"
@@ -2540,7 +2541,7 @@ function AddMoreOperation(props) {
                                                         disabled={isViewMode}
                                                     />
 
-                                                </Col>
+                                                </Col>}
 
                                                     <Col md="3">
                                                         <TextFieldHookForm
@@ -2595,7 +2596,7 @@ function AddMoreOperation(props) {
                                             </>}
 
                                         {(isWelding || false) && <>
-                                            <Col md="3">
+                                            {initialConfiguration?.IsShowCRMHead && <Col md="3">
                                                 <SearchableSelectHookForm
                                                     name="crmHeadAdditionalOtherCostWelding"
                                                     type="text"
@@ -2614,7 +2615,7 @@ function AddMoreOperation(props) {
                                                     handleChange={() => { }}
                                                     disabled={isViewMode}
                                                 />
-                                            </Col>
+                                            </Col>}
 
                                             <Col md="3">
                                                 <TextFieldHookForm

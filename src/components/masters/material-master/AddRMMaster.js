@@ -218,6 +218,9 @@ function AddRMMaster(props) {
      * @description Used for Vendor checked
      */
     const onPressVendor = (costingHeadFlag) => {
+        reset({Technology:'',RawMaterialCode:'',RawMaterialName:'',RawMaterialGrade:'',RawMaterialSpecification:'',RawMaterialCategory:'',Plants:'',UnitOfMeasurement:'',cutOffPriceBaseCurrency:'',sourceVendorName:'',
+            BasicRateSelectedCurrency:'',ScrapRateBaseCurrency:'',OtherCostBaseCurrency:'',BasicRateBaseCurrency:'',EffectiveDate:'',
+        });
         setState(prevState => ({
             ...prevState,
             costingTypeId: costingHeadFlag,

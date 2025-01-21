@@ -110,7 +110,7 @@ function CostReportForm(props) {
         obj.TechnologyName = getValues('Technology')?.label
         obj.PartNo = getValues('Part')?.label
         obj.ShowRevisionNumber = getValues('Revision')?.label ? getValues('Revision')?.label : '-'
-        obj.Vendor = getValues('vendor')?.label ? getValues('Vendor')?.label : '-'
+        obj.Vendor = getValues('Vendor')?.label ? getValues('Vendor')?.label : '-'
         obj.Plant = getValues('Plant')?.label ? getValues('Plant')?.label : '-'
         obj.productCategory = getValues('productCategory')?.label ? getValues('productCategory')?.label : '-'
         obj.productCategoryId = getValues('productCategory')?.value ? getValues('productCategory')?.value : '-'

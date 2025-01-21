@@ -38,6 +38,7 @@ function AddRejectionRecovery(props) {
         netRejectionRecovery: rejectionRecovery?.RejectionRecoveryNetCost,
     }
     )
+    const [isReset, setIsReset] = useState(false)
     const CostingViewMode = useContext(ViewCostingContext);
     const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
     const dispatch = useDispatch()
@@ -73,23 +74,22 @@ function AddRejectionRecovery(props) {
                 ...state,
                 rejectionApplicabilityType: e.label,
                 rejectionApplicabilityTypeValue: e.value,
+                netRejectionRecovery: '',
+                rejectionRecoveryPercentage: '',
+                effectiveRecoveryPercentage: '',
+                recoveryCostApplicability: '',
             })
         } else {
             setState({
                 ...state,
                 rejectionApplicabilityTypeValue: '',
                 rejectionApplicabilityType: '',
+                netRejectionRecovery: '',
+                rejectionRecoveryPercentage: '',
+                effectiveRecoveryPercentage: '',
+                recoveryCostApplicability: '',
             })
         }
-        setState({
-            ...state,
-            rejectionApplicabilityType: e.label,
-            rejectionApplicabilityTypeValue: e.value,
-            netRejectionRecovery: '',
-            rejectionRecoveryPercentage: '',
-            effectiveRecoveryPercentage: '',
-            recoveryCostApplicability: '',
-        })
         setValue('NetRejectionRecovery', '');
         setValue('RejectionRecoveryPercentage', '')
         setValue('EffectiveRecoveryPercentage', '')
@@ -103,6 +103,7 @@ function AddRejectionRecovery(props) {
             setValue('EffectiveRecoveryPercentage', checkForDecimalAndNull(rejectionRecovery?.EffectiveRecoveryPercentage, initialConfiguration.NoOfDecimalForPrice))
             setValue('RecoveryCostApplicability', checkForDecimalAndNull(rejectionRecovery?.ApplicabilityCost, initialConfiguration.NoOfDecimalForPrice))
             setValue('NetRejectionRecovery', checkForDecimalAndNull(rejectionRecovery?.RejectionRecoveryNetCost, initialConfiguration.NoOfDecimalForPrice))
+            setIsReset(rejectionRecovery?.RejectionRecoveryNetCost ? true : false)
         }
     }, [rejectionRecovery])
 
@@ -311,7 +312,7 @@ function AddRejectionRecovery(props) {
                                             type={'button'}
                                             className="undo cancel-btn"
                                             onClick={ResetAndSave}
-                                            disabled={CostingViewMode} >
+                                            disabled={CostingViewMode || !isReset} >
                                             <div className={"undo-icon"}></div> {'Reset & Save'}
                                         </button>
 

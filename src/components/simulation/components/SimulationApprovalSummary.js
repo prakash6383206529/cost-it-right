@@ -1600,6 +1600,7 @@ function SimulationApprovalSummary(props) {
                                             isApproval={true}
                                             costingIdExist={true}
                                             selectedTechnology={technologyName}
+                                            showAddToComparison={true}
                                             simulationId={simulationDetail?.SimulationId} />}
                                     </Col>
                                 </Row>

@@ -442,3 +442,25 @@ export const swappingLogicCommon = (givenArray, dragStart, dragEnd, e) => {
 
   return temp;
 };
+
+export const calculateTotalPercentage = (currentValue, index, rawMaterials, getValues,rmExist) => {
+  let totalPercentage = 0
+  if(rmExist){
+    totalPercentage = rawMaterials?.reduce((total, item) => {
+      return total + (checkForNull(item.Percentage) || 0);
+    }, 0);
+  }
+  else{
+     totalPercentage = rawMaterials?.reduce((total, _, idx) => {
+      return checkForNull(total) + (idx === index ? 
+        checkForNull(currentValue) || 0 : 
+        checkForNull(getValues(`rmGridFields.${idx}.Percentage`)) || 0);
+    }, 0);
+  }
+  return {
+    total: checkForNull(totalPercentage),
+    message: totalPercentage > 100 ? 
+      `Total percentage is ${totalPercentage}%, must be 100% to save the values` : '',
+    isValid: totalPercentage <= 100
+  };
+};

@@ -1692,6 +1692,7 @@ function RfqListing(props) {
                                 showEditSOBButton={addComparisonToggle && disableApproveRejectButton && viewCostingData.length > 0}
                                 selectedTechnology={viewCostingData && viewCostingData.length > 0 && viewCostingData[0].technology}
                                 costingsDifferentStatus={costingsDifferentStatus}
+                                showAddToComparison={false}
                             />
 
                         )}

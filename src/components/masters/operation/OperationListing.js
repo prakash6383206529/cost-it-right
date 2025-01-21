@@ -313,13 +313,13 @@ const OperationListing = (props) => {
 
     const onSearch = () => {
         dispatch(updatePageNumber(1));
-        dispatch(updateCurrentRowIndex(0));
+        dispatch(updateCurrentRowIndex(10));
         setState((prevState) => ({
             ...prevState, warningMessage: false,
             //  pageNo: 1, pageNoNew: 1, currentRowIndex: 0, 
             noData: false,
         }));
-        getTableListData(null, null, null, null, 0, defaultPageSize, true, state.floatingFilterData)  // FOR EXCEL DOWNLOAD OF COMPLETE DATA
+        getTableListData(null, null, null, null, pageRecord, globalTakes, true, state.floatingFilterData)  // FOR EXCEL DOWNLOAD OF COMPLETE DATA
     };
 
     const resetState = () => {

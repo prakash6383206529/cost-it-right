@@ -195,6 +195,30 @@ function AddRMFinancialDetails(props) {
 
     useEffect(() => {
         calculateNetCostDomestic();
+        setValue('BasicRateBaseCurrency', '');
+        setValue('BasicPriceBaseCurrency', '');
+        setValue('BasicPriceSelectedCurrency', '');
+        setValue('BasicRateSelectedCurrency', 0);
+        setValue('BasicPriceBaseCurrency', 0);
+        setValue('OtherCostBaseCurrency', 0);
+        setValue('NetLandedCostBaseCurrency', 0);
+        setValue('NetLandedCostSelectedCurrency', 0);
+        setValue('FinalConditionCostBaseCurrency', 0);
+        setValue('FinalConditionCostSelectedCurrency', 0);
+        setState(prevState => ({
+            ...prevState,
+            conditionTableData: [],
+            otherCostTableData: [],
+            UOM: [],
+            totalOtherCost: 0,
+            FinalConditionCostBaseCurrency: 0,
+            FinalConditionCostSelectedCurrency: 0,
+            FinalNetCostBaseCurrency: 0,
+            FinalNetCostSelectedCurrency: 0,
+            NetLandedCostBaseCurrency: 0,
+            NetLandedCostSelectedCurrency: 0,
+            totalBasicRate: 0
+        }));
     }, [states?.costingTypeId])
 
     useEffect(() => {
