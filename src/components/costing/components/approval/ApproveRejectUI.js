@@ -5,7 +5,7 @@ import Drawer from '@material-ui/core/Drawer'
 import { useDispatch, useSelector } from 'react-redux'
 import { getReasonSelectList, setSAPData } from '../../../costing/actions/Approval'
 import { TextAreaHookForm, SearchableSelectHookForm, AllApprovalField } from '../../../layout/HookFormInputs'
-import { getConfigurationKey, handleDepartmentHeader, loggedInUserId, showApprovalDropdown, userDetails } from '../../../../helper'
+import { getConfigurationKey, handleDepartmentHeader, loggedInUserId, showApprovalDropdown, userDetails, validateFileName } from '../../../../helper'
 import PushButtonDrawer from './PushButtonDrawer'
 import { FILE_URL, RAWMATERIALINDEX, REASON_ID, RELEASESTRATEGYTYPEID1, RELEASESTRATEGYTYPEID2, RELEASESTRATEGYTYPEID3, RELEASESTRATEGYTYPEID4, RELEASESTRATEGYTYPEID6 } from '../../../../config/constants'
 import { uploadSimulationAttachment } from '../../../simulation/actions/Simulation'
@@ -230,6 +230,7 @@ function ApproveRejectUI(props) {
 
   // called every time a file's `status` changes
   const handleChangeStatus = ({ meta, file }, status) => {
+    const fileName = file.name;
     setIsDisable(true)
     setAttachmentLoader(true)
     if (status === 'removed') {
@@ -244,21 +245,32 @@ function ApproveRejectUI(props) {
     if (status === 'done') {
       let data = new FormData()
       data.append('file', file)
-      setIsDisable(true)
-      dispatch(uploadSimulationAttachment(data, (res) => {
-        if (res?.includes("Error")) {
-          dropzone.current.files.pop()
-          setAttachmentLoader(false)
-          setDisableFalseFunction()
-          return false
-      }
+      if (!validateFileName(fileName)) {
+        dropzone.current.files.pop()
         setDisableFalseFunction()
-        let Data = res?.data[0]
-        files.push(Data)
-        setFiles(files)
-        setTimeout(() => {
+        return false;
+    }
+      dispatch(uploadSimulationAttachment(data, (res) => {
+        if (res && res?.status !== 200) {
+          setDisableFalseFunction()
+          dropzone.current.files.pop()
+         setAttachmentLoader(false)
+         return false
+      }
+      setDisableFalseFunction()
+      if ('response' in res) {
+          status = res && res?.response?.status
+          dropzone.current.files.pop()
+      }
+      else {
+          let Data = res.data[0]
+          files.push(Data)
+          setAttachmentLoader(false)
+          setFiles(files)
+          setTimeout(() => {
           setIsOpen(!IsOpen)
-        }, 500);
+          }, 500);
+        }
       }))
     }
 
