@@ -37,10 +37,9 @@ import { fetchDivisionId } from '../../CostingUtil'
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 const SendForApproval = (props) => {
-  console.log(props,'props')
   const dropzone = useRef(null);
   const { isApprovalisting, selectedRows, mandatoryRemark, dataSelected, callSapCheckAPI } = props
-  console.log(selectedRows,'selectedRows')
+  const receiverId = isApprovalisting?selectedRows[0]?.ReceiverId:null
   const dispatch = useDispatch()
   const { register, handleSubmit, control, setValue, getValues, formState: { errors } } = useForm({
     mode: 'onChange',
@@ -124,7 +123,8 @@ const SendForApproval = (props) => {
       }))
     }
 
-    dispatch(                                                                                                                  ((res) => {
+
+    dispatch(getAllApprovalDepartment(receiverId,(res) => {
       const Data = res?.data?.SelectList
       const departObj = Data && Data.filter(item => item.Value === depart)
       setSelectedDepartment({ label: departObj[0]?.Text, value: departObj[0]?.Value })
@@ -137,7 +137,8 @@ const SendForApproval = (props) => {
         ReasonId: 0, // key only for minda
         ApprovalTypeId: ApprovalTypeId,
         plantId: (IsApprovalLevelFilterByPlant && viewApprovalData[0]?.destinationPlantId) ? viewApprovalData[0]?.destinationPlantId : null,
-        DivisionId: divisionId ?? null
+        DivisionId: divisionId ?? null,
+        ReceiverId:receiverId
       }
       dispatch(getAllApprovalUserFilterByDepartment(requestObject, (res) => {
         let tempDropdownList = []
@@ -177,7 +178,7 @@ const SendForApproval = (props) => {
 
   useEffect(() => {
     dispatch(getReasonSelectList((res) => { }))
-    dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), props.technologyId, selectedRows[0]?.ReceiverId,(res) => {
+    dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), props.technologyId, receiverId,(res) => {
       setTechnologyLevelsList(res?.data?.Data)
       if (initialConfiguration.IsReleaseStrategyConfigured) {
         dispatch(getApprovalTypeSelectList('', (departmentRes) => {
@@ -231,11 +232,10 @@ const SendForApproval = (props) => {
   }, [])
 
   useEffect(() => {
-    dispatch(getAllApprovalDepartment((res) => {
+    dispatch(getAllApprovalDepartment(receiverId,(res) => {
       const Data = res?.data?.SelectList
       const Departments = userDetails().Department && userDetails().Department.map(item => item.DepartmentName)
       const updateList = Data && Data.filter(item => Departments.includes(item.Text))
-
 
       if ((updateList && updateList?.length === 1) /* || !checkMultiDept */) {
         setDisableDept(true)
@@ -250,7 +250,8 @@ const SendForApproval = (props) => {
         TechnologyId: props.technologyId,
         ReasonId: 0, // key only for minda
         ApprovalTypeId: viewApprovalData[0]?.costingTypeId,
-        plantId: (IsApprovalLevelFilterByPlant && viewApprovalData[0]?.destinationPlantId) ? viewApprovalData[0]?.destinationPlantId : null
+        plantId: (IsApprovalLevelFilterByPlant && viewApprovalData[0]?.destinationPlantId) ? viewApprovalData[0]?.destinationPlantId : null,
+        ReceiverId:receiverId
       }
       if (!initialConfiguration.IsReleaseStrategyConfigured && !getConfigurationKey().IsDivisionAllowedForDepartment) {
         dispatch(getAllApprovalUserFilterByDepartment(requestObject, (res) => {
@@ -397,7 +398,8 @@ const SendForApproval = (props) => {
         TechnologyId: props.technologyId,
         ApprovalTypeId: approvaltypeTest,
         plantId: (IsApprovalLevelFilterByPlant && viewApprovalData[0]?.destinationPlantId) ? viewApprovalData[0]?.destinationPlantId : null,
-        DivisionId: divisionId
+        DivisionId: divisionId,
+        ReceiverId:receiverId
       }
       let Data = []
       let approverIdListTemp = []
@@ -734,7 +736,7 @@ const SendForApproval = (props) => {
         tempObj.IsRFQCostingSendForApproval = props?.isRfq ? true : false
         tempObj.ApprovalTypeId = approvalType
         tempObj.DivisionId = division ?? null
-        tempObj.ReceiverId=selectedRows[0]?.ReceiverId??null
+        tempObj.ReceiverId=receiverId
         temp.push(tempObj)
         return null
       })
@@ -781,7 +783,8 @@ const SendForApproval = (props) => {
         SenderRemark: data.remarks,
         LoggedInUserId: userData.LoggedInUserId,
         ApprovalTypeId: viewApprovalData[0].costingTypeId,
-        IsTentativeSaleRate: tentativeCost
+        IsTentativeSaleRate: tentativeCost,
+        ReceiverId:receiverId
         // Quantity: getValues('Quantity'),
         // Attachment: files,
         // IsLimitCrossed: IsLimitCrossed
@@ -863,7 +866,7 @@ const SendForApproval = (props) => {
       obj.ApprovalTypeId = approvalType
       obj.PlannedDelTime = data?.leadTime
       obj.DivisionId = division ?? null
-
+      obj.ReceiverId=receiverId
       // debounce_fun()
       // 
       // props.closeDrawer()
