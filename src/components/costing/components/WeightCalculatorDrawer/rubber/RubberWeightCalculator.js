@@ -860,7 +860,7 @@ function RubberWeightCalculator(props) {
                                     </Col>
 
                                     <Col md="3">
-                                        <TooltipCustom disabledIcon={true} width={"230px"} id={'applicablityAdditional'} tooltipText={`Applicability Cost = Gross RM Rate`} />
+                                        <TooltipCustom disabledIcon={true} width={"230px"} id={'applicablityAdditional'} tooltipText={`Applicability Cost = Gross RM Cost`} />
                                         <TextFieldHookForm
                                             label={`Applicability Cost`}
                                             id={'applicablityAdditional'}
