@@ -2973,7 +2973,6 @@ const CostingSummaryTable = (props) => {
                                       <div style={pdfHead ? { marginTop: '-3px' } : {}} className={`d-flex ${highlighter(["profitOn", "profitValue"], "multiple-key")}`}>
                                         <span className="d-inline-block w-50 small-grey-text">
                                           {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? ApplicabilityType ?? '-' : '')}
-                                          {(!pdfHead && !drawerDetailPDF && viewCostingData[index]?.isIncludeSurfaceTreatmentWithRejection) && <TooltipCustom customClass="mt-1 ml-1 p-absolute" id="st-rejection-include" tooltipText={"Surface Treatment Included"} />}
                                         </span>{' '}
                                         <span className="d-inline-block w-50 small-grey-text">
                                           {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? EffectiveRecoveryPercentage ?? '-' : '')}
