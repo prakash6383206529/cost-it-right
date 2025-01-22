@@ -1878,7 +1878,7 @@ const CostingSummaryTable = (props) => {
       finalKey = data?.currency?.currencyTitle === "-" ? "nPOPrice" : "nPOPriceWithCurrency"
       value = data[finalKey]
     }
-
+    const formattedValue = checkForDecimalAndNull(Math.abs(value), initialConfiguration.NoOfDecimalForPrice)
     let varianceValues = ''
 
     switch (key) {
@@ -1900,7 +1900,7 @@ const CostingSummaryTable = (props) => {
 
     let valueWithSign = (
       <>
-        {data?.CostingHeading === VARIANCE && isApproval && Number(value) !== 0 ? (
+        {data?.CostingHeading === VARIANCE && isApproval && Number(formattedValue) !== 0 ? (
           // Conditionally display the sign based on specific conditions
           viewCostingData?.length > 0 && viewCostingData[firstIndex]?.[finalKey] > viewCostingData[secondIndex]?.[finalKey] ? (
             <span className='positive-sign'>+</span>
@@ -1929,7 +1929,7 @@ const CostingSummaryTable = (props) => {
     switch (columnName) {
       case 'main-row':
         // Highlight class for main row, conditionally set to green or red based on values
-        highlighClass = `${mainRow} ${activeClass ? viewCostingData?.length > 0 && viewCostingData[firstInd]?.[key] > viewCostingData[secondInd]?.[key] ? 'green-row' : viewCostingData[firstInd]?.[key] < viewCostingData[secondInd]?.[key] ? 'red-row' : '' : '-'}`
+        highlighClass = `${mainRow} ${activeClass ? viewCostingData?.length > 0 && checkForDecimalAndNull((viewCostingData[firstInd]?.[key]), initialConfiguration.NoOfDecimalForPrice) > checkForDecimalAndNull((viewCostingData[secondInd]?.[key]), initialConfiguration.NoOfDecimalForPrice) ? 'green-row' : checkForDecimalAndNull((viewCostingData[firstInd]?.[key]), initialConfiguration.NoOfDecimalForPrice) < checkForDecimalAndNull((viewCostingData[secondInd]?.[key]), initialConfiguration.NoOfDecimalForPrice) ? 'red-row' : '' : '-'}`
         break;
       case 'multiple-key':
         // Highlight class case, if hierarchical key comes from function,  here is getting value like viewCostingData[firstInd]?.[key[0]]?.[key[1]] as viewCostingData[firstInd]?.childObject.childValue
