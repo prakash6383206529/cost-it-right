@@ -22,7 +22,7 @@ const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
 // const BASE_URL = `https://demofst-api.costitright.com/api/v1/`;
 //const BASE_URL = `http://172.16.0.63:8081/api/v1`;
 // const BASE_URL = `http://172.16.0.18:81/api/v1`;
-// const BASE_URL = `http://10.10.8.117:8081/api/v1`;
+// const BASE_URL = `http://10.10.8.109/api/v1`;
 
 export const FILE_URL = `${process.env.REACT_APP_FILE_URL}`;
 

@@ -5,7 +5,7 @@ import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { defaultPageSize, EMPTY_DATA, EXCHNAGERATE } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
-import { getExchangeRateDataList, deleteExchangeRate } from '../actions/ExchangeRateMaster';
+import { getExchangeRateDataList, deleteExchangeRate, getExchangeRateDataListForSimulation } from '../actions/ExchangeRateMaster';
 import AddExchangeRate from './AddExchangeRate';
 import { ADDITIONAL_MASTERS, ExchangeMaster, EXCHANGE_RATE } from '../../../config/constants';
 import { checkPermission, searchNocontentFilter } from '../../../helper/util';
@@ -130,19 +130,27 @@ const ExchangeRateListing = (props) => {
         let filterData = { currencyId: currencyId, costingHeadId: currencyId, vendorId: filteredRMData?.VendorId ? filteredRMData?.VendorId : '', customerId: filteredRMData?.CustomerId ? filteredRMData?.CustomerId : '', isBudgeting: currencyId, currency: '', isRequestForSimulation: props.isSimulation ? true : false, }
         if (props.isSimulation) {
             props?.changeTokenCheckBox(false)
-        }
-        dispatch(getExchangeRateDataList(true, filterData, res => {
-            if (props.isSimulation) {
-                props?.changeTokenCheckBox(true)
-            }
-            if (res.status === 204 && res.data === '') {
-                setState((prevState) => ({ ...prevState, tableData: [], isLoader: false }))
-            } else if (res && res.data && res.data.DataList) {
-                let Data = res.data.DataList;
-                setState((prevState) => ({ ...prevState, tableData: Data, isLoader: false }))
+            dispatch(getExchangeRateDataListForSimulation(true, filterData, res => {
+                if (res.status === 204 && res.data === '') {
+                    setState((prevState) => ({ ...prevState, tableData: [], isLoader: false }))
+                } else if (res && res.data && res.data.DataList) {
+                    let Data = res.data.DataList;
+                    setState((prevState) => ({ ...prevState, tableData: Data, isLoader: false }))
 
-            }
-        }));
+                }
+            }));
+        } else {
+
+            dispatch(getExchangeRateDataList(true, filterData, res => {
+                if (res.status === 204 && res.data === '') {
+                    setState((prevState) => ({ ...prevState, tableData: [], isLoader: false }))
+                } else if (res && res.data && res.data.DataList) {
+                    let Data = res.data.DataList;
+                    setState((prevState) => ({ ...prevState, tableData: Data, isLoader: false }))
+
+                }
+            }));
+        }
     }
 
 
