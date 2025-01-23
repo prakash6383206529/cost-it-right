@@ -614,8 +614,6 @@ class AddMachineRate extends Component {
     // Store current isImport value
     const currentIsImport = this.state.isImport;
     const currentMachineNumber = this?.props?.fieldsObj?.MachineNumber;
-    console.log(this?.props?.fieldsObj, 'this?.props?.fieldsObj')
-    console.log(this?.props?.fieldsObj?.MachineNumber, 'this?.props?.fieldsObj?.MachineNumber')
     this.props.reset();
     this.setState({
       ...this.initialState,
