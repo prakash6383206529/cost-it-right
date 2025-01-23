@@ -236,15 +236,18 @@ function AddRfq(props) {
         setValue('prId', '');
         setPrNumber([])
 
-        // if (type !== selectedOption) {
-        //     setTableData([]);
-        //     setSpecificationList([]);
-        //     setSopQuantityList([]);
-        //     setChildPartFiles([]);
-        //     setRemark('');
-        // }
         onResetPartNoTable(true)
     };
+// Add this helper function to check if any parts exist
+const hasAnyParts = () => {
+    return (
+        partList?.length > 0 || 
+        rmDataList?.length > 0 || 
+        bopDataList?.length > 0 || 
+        toolingList?.length > 0
+    );
+};
+const isVendorSectionDisabled = !hasAnyParts();
 
     useEffect(() => {
         if (selectedOption === "Bought Out Part" || selectedOption === "Tooling") {
@@ -4011,7 +4014,7 @@ function AddRfq(props) {
                                                         // handleChange={handleDestinationPlantChange}
                                                         handleChange={() => { }}
                                                         errors={errors.contactPerson}
-                                                        disabled={disabledVendoUi ? true : dataProps?.isAddFlag ? false : (isViewFlag || !isEditAll)}
+                                                        disabled={isVendorSectionDisabled||disabledVendoUi ? true : dataProps?.isAddFlag ? false : (isViewFlag || !isEditAll)}
                                                         isLoading={plantLoaderObj}
                                                     />
                                                 </Col>
@@ -4075,7 +4078,7 @@ function AddRfq(props) {
                                                             className=""
                                                             customClassName={'withBorder'}
                                                             errors={errors.LDClause}
-                                                            disabled={(dataProps?.isViewFlag) ? true : false || disabledVendoUi}
+                                                            disabled={isVendorSectionDisabled||(dataProps?.isViewFlag) ? true : false || disabledVendoUi}
 
                                                         />
                                                     </Col>
@@ -4088,7 +4091,7 @@ function AddRfq(props) {
                                                     type="button"
                                                     className={'user-btn pull-left'}
                                                     onClick={() => addRowVendorTable()}
-                                                    disabled={disabledVendoUi ? true : dataProps?.isAddFlag ? false : (isViewFlag || !isEditAll)}
+                                                    disabled={isVendorSectionDisabled || disabledVendoUi ? true : dataProps?.isAddFlag ? false : (isViewFlag || !isEditAll)}
                                                 >
                                                     <div className={'plus'}></div>{!updateButtonVendorTable ? "ADD" : "UPDATE"}
                                                 </button>
@@ -4099,7 +4102,7 @@ function AddRfq(props) {
                                                     type="button"
                                                     value="CANCEL"
                                                     className="reset ml-2"
-                                                    disabled={disabledVendoUi ? true : dataProps?.isAddFlag ? false : (isViewFlag || !isEditAll)}
+                                                    disabled={isVendorSectionDisabled||disabledVendoUi ? true : dataProps?.isAddFlag ? false : (isViewFlag || !isEditAll)}
                                                 >
                                                     <div className={''}></div>
                                                     RESET
