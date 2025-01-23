@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { Row, Col, Tooltip, } from 'reactstrap';
 import DayTime from '../../../common/DayTimeWrapper'
-import { APPROVED_STATUS, defaultPageSize, EMPTY_DATA } from '../../../../config/constants';
+import { APPROVED_STATUS, defaultPageSize, EMPTY_DATA, OPERATIONS, SURFACETREATMENT } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter } from '../../../../helper';
 import Toaster from '../../../common/Toaster';
@@ -17,7 +17,7 @@ import VerifySimulation from '../VerifySimulation';
 import _, { debounce } from 'lodash'
 import { PaginationWrapper } from '../../../common/commonPagination';
 import ReactExport from 'react-export-excel';
-import { APPLICABILITY_PART_SIMULATION, APPLICABILITY_RM_SIMULATION, EXCHANGE_IMPACT_DOWNLOAD_EXCEl } from '../../../../config/masterData';
+import { APPLICABILITY_BOP_SIMULATION, APPLICABILITY_MACHINE_RATES_SIMULATION, APPLICABILITY_OPERATIONS_SIMULATION, APPLICABILITY_PART_SIMULATION, APPLICABILITY_RM_SIMULATION, APPLICABILITY_SURFACE_TREATMENT_SIMULATION, EXCHANGE_IMPACT_DOWNLOAD_EXCEl } from '../../../../config/masterData';
 import { getCurrencySelectList } from '../../../../actions/Common';
 import RMImportListing from '../../../masters/material-master/RMImportListing';
 import { setFilterForRM } from '../../../masters/actions/Material';
@@ -29,6 +29,8 @@ import TooltipCustom from '../../../common/Tooltip';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { simulationContext } from '..';
 import LoaderCustom from '../../../common/LoaderCustom';
+import OperationListing from '../../../masters/operation/OperationListing';
+import MachineRateListing from '../../../masters/machine-master/MachineRateListing';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -58,6 +60,10 @@ function ERSimulation(props) {
     const [isWarningMessageShow, setIsWarningMessageShow] = useState(false);
     const [basicRateviewTooltip, setBasicRateViewTooltip] = useState(false)
     const [showTooltip, setShowTooltip] = useState(false)
+    const [showOperationsList, setShowOperationsList] = useState(false);
+    const [showMachineRatesList, setShowMachineRatesList] = useState(false);
+    const [showSurfaceTreatmentList, setShowSurfaceTreatmentList] = useState(false);
+
     const dispatch = useDispatch()
     const columnWidths = {
 
@@ -185,6 +191,8 @@ function ERSimulation(props) {
     const cancelImportList = () => {
         setShowRMMasterList(false)
         setShowBOPMasterList(false)
+        setShowOperationsList(false)
+        setShowMachineRatesList(false)
     }
 
     const closeDrawer = (e = '') => {
@@ -202,7 +210,8 @@ function ERSimulation(props) {
         setGridApi(params.api)
         setGridColumnApi(params.columnApi)
         params.api.paginationGoToPage(0);
-        window.screen.width >= 1366 && params.api.sizeColumnsToFit()
+
+        window.screen.width >= 1260 && params.api.sizeColumnsToFit();
         var allColumnIds = [];
         params.columnApi.getAllColumns().forEach(function (column) {
             allColumnIds.push(column.colId);
@@ -340,10 +349,23 @@ function ERSimulation(props) {
         }
         dispatch(setExchangeRateListBeforeDraft(listData))
         dispatch(setFilterForRM({ costingHeadTemp: '', plantId: '', RMid: '', RMGradeid: '', Vendor: selectedVendorForSimulation?.label, VendorId: selectedVendorForSimulation?.value, CustomerId: selectedCustomerSimulation?.value, Currency: _.map(listData, 'Currency') }))
-        if (simulationApplicability?.value === APPLICABILITY_RM_SIMULATION) {
-            setShowRMMasterList(true)
-        } else {
-            setShowBOPMasterList(true)
+        switch (simulationApplicability?.value) {
+            case APPLICABILITY_RM_SIMULATION:
+                setShowRMMasterList(true);
+                break;
+            case APPLICABILITY_BOP_SIMULATION:  // Add this constant to your constants file
+                setShowBOPMasterList(true);
+                break;
+            case APPLICABILITY_OPERATIONS_SIMULATION:  // Add this constant to your constants file
+                setShowOperationsList(true);
+                break;
+            case APPLICABILITY_MACHINE_RATES_SIMULATION:  // Add this constant to your constants file
+                setShowMachineRatesList(true);
+                break;
+            case APPLICABILITY_SURFACE_TREATMENT_SIMULATION:  // Add this constant to your constants file
+                setShowSurfaceTreatmentList(true);
+                break;
+            default:
         }
     }, 500)
 
@@ -374,7 +396,7 @@ function ERSimulation(props) {
 
     return (
         <div>
-            {!showRMMasterList && !showBOPMasterList && <div className={`ag-grid-react`}>
+            {!showRMMasterList && !showBOPMasterList && !showOperationsList && !showMachineRatesList && !showSurfaceTreatmentList && <div className={`ag-grid-react`}>
 
                 {showTooltip && !isImpactedMaster && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={basicRateviewTooltip} toggle={basicRatetooltipToggle} target={"exchangesdRate-tooltip"} >{"To edit revised exchange rate please double click on the field."}</Tooltip>}
                 {
@@ -552,6 +574,31 @@ function ERSimulation(props) {
                     isFromVerifyPage={true}
                     cancelImportList={cancelImportList}
                 />}
+            {(showOperationsList || showSurfaceTreatmentList) && (
+                <OperationListing
+                    isSimulation={true}
+                    isMasterSummaryDrawer={false}
+                    ListFor={'simulation'}
+                    approvalStatus={APPROVED_STATUS}
+                    isFromVerifyPage={true}
+                    cancelImportList={cancelImportList}
+                    selectionForListingMasterAPI={props?.selectionForListingMasterAPI}
+                    isOperationST={showSurfaceTreatmentList ? SURFACETREATMENT : OPERATIONS}
+                />
+            )}
+
+            {showMachineRatesList && (
+                <MachineRateListing
+                    isSimulation={true}
+                    isMasterSummaryDrawer={false}
+                    ListFor={'simulation'}
+                    approvalStatus={APPROVED_STATUS}
+                    isFromVerifyPage={true}
+                    cancelImportList={cancelImportList}
+                    selectionForListingMasterAPI={props?.selectionForListingMasterAPI}
+
+                />
+            )}
         </div >
     );
 }

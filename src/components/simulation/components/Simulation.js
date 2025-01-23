@@ -238,9 +238,8 @@ function Simulation(props) {
         setType('')
         setValue('Type', '')
         if (value !== '' && (Object.keys(getValues('Technology')).length > 0 || !getTechnologyForSimulation.includes(value.value)) && checkForNull(value.value) !== ASSEMBLY_TECHNOLOGY_MASTER && value.value !== COMBINED_PROCESS) {
-            setSelectionForListingMasterAPI('Master')
+            setSelectionForListingMasterAPI('Master') 
             if (checkForNull(value.value) === Number(EXCHNAGERATE)) {
-                // setShowTokenDropdown(false)
                 setShowApplicabilityDropdown(true)
             } else if (checkForNull(value.value) === Number(RAWMATERIALINDEX)) {
                 setShowMasterList(false)
@@ -1548,7 +1547,7 @@ function Simulation(props) {
             case RMIMPORT:
                 return <RMSimulation isCostingSimulation={true} isDomestic={false} backToSimulation={backToSimulation} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData.length > 0 ? tableData : getFilteredData(rmImportListing, RM_MASTER_ID)} technology={technology.label} technologyId={technology.value} master={master.label} tokenForMultiSimulation={tempObject} />   //IF WE ARE USING BULK UPLOAD THEN ONLY TABLE DATA WILL BE USED OTHERWISE DIRECT LISTING
             case EXCHNAGERATE:
-                return <ERSimulation backToSimulation={backToSimulation} list={tableData.length > 0 ? tableData : getFilteredData(exchangeRateDataList, RM_MASTER_ID)} technology={technology.label} master={master.label} tokenForMultiSimulation={tempObject} technologyId={technology.value} />
+                return <ERSimulation backToSimulation={backToSimulation} list={tableData.length > 0 ? tableData : getFilteredData(exchangeRateDataList, RM_MASTER_ID)} technology={technology.label} master={master.label} tokenForMultiSimulation={tempObject} technologyId={technology.value} selectionForListingMasterAPI={selectionForListingMasterAPI}/>
             case COMBINED_PROCESS:
                 return <CPSimulation cancelEditPage={cancelEditPage} list={tableData} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} tokenForMultiSimulation={tempObject} />
             case SURFACETREATMENT:

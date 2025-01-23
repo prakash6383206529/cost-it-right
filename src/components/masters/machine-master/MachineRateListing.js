@@ -40,6 +40,7 @@ import { useTranslation } from 'react-i18next';
 import { TourStartAction } from '../../../actions/Common';
 import { useLabels, useWithLocalization } from '../../../helper/core';
 import Switch from 'react-switch'
+import MRSimulation from '../../simulation/components/SimulationPages/MRSimulation';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -81,11 +82,13 @@ const MachineRateListing = (props) => {
     attachment: false,
     viewAttachment: [],
     render: false,
-    isImport: false
+    isImport: false,
+    editSelectedList: false,
+
   });
   const [searchText, setSearchText] = useState('');
   const { machineDatalist, allMachineDataList } = useSelector(state => state.machine)
-  const { selectedRowForPagination } = useSelector(state => state.simulation);
+  const { selectedRowForPagination, tokenForSimulation } = useSelector(state => state.simulation);
   const { globalTakes } = useSelector(state => state.pagination);
   const permissions = useContext(ApplyPermission);
   const tourStartData = useSelector(state => state.comman.tourStartData);
@@ -102,8 +105,8 @@ const MachineRateListing = (props) => {
               }));
             }
           }
-          if (props.selectionForListingMasterAPI === 'Master') {
-            getDataList("", 0, "", 0, "", "", 0, defaultPageSize, true, state.floatingFilterData);
+if (props.selectionForListingMasterAPI === 'Master') {
+getDataList("", 0, "", 0, "", "", 0, defaultPageSize, true, state.floatingFilterData);
           }
         }
 
@@ -131,26 +134,26 @@ const MachineRateListing = (props) => {
       }
     }
     let statusString = [props?.approvalStatus].join(",")
-    const filterData = { costing_head: costing_head, technology_id: props.isSimulation ? props.technology.value : technology_id, vendor_id: vendor_id, machine_type_id: machine_type_id, process_id: process_id, plant_id: plant_id, StatusId: statusString, MachineEntryType: MachineEntryType ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC }
+    const filterData = { costing_head: costing_head, technology_id: props?.isSimulation ? props?.technology?.value : technology_id, vendor_id: vendor_id, machine_type_id: machine_type_id, process_id: process_id, plant_id: plant_id, StatusId: statusString, MachineEntryType: MachineEntryType ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC }
     const { zbc, vbc, cbc } = reactLocalStorage.getObject('CostingTypePermission')
     dataObj.IsCustomerDataShow = cbc
     dataObj.IsVendorDataShow = vbc
     dataObj.IsZeroDataShow = zbc
-    if (props.isSimulation) {
-      dataObj.TechnologyId = props.technology.value
-      dataObj.Technologies = props.technology.label
+    if (props?.isSimulation&& !props?.isFromVerifyPage) {
+      dataObj.TechnologyId = props?.technology?.value
+      dataObj.Technologies = props?.technology?.label
     }
 
     if (props.isMasterSummaryDrawer !== undefined && !props.isMasterSummaryDrawer) {
-      if (props.isSimulation) { props?.changeTokenCheckBox(false) }
+      if (props.isSimulation && !props?.isFromVerifyPage) { props?.changeTokenCheckBox(false) }
       setState((prevState) => ({ ...prevState, isLoader: isPagination ? true : false }))
       let FloatingfilterData = state.filterModel
       let obj = { ...state.floatingFilterData }
       dataObj.Currency = state.floatingFilterData?.Currency
       dataObj.ExchangeRateSourceName = state.floatingFilterData?.ExchangeRateSourceName
       dispatch(getMachineDataList(filterData, skip, take, isPagination, dataObj, (res) => {
-        setState((prevState) => ({ ...prevState, noData: false }))
-        if (props.isSimulation) { props?.changeTokenCheckBox(true) }
+setState((prevState) => ({ ...prevState, noData: false }))
+        if (props.isSimulation && !props?.isFromVerifyPage) { props?.changeTokenCheckBox(true) }
         setState((prevState) => ({ ...prevState, isLoader: false }))
         if (res && isPagination === false) {
           setState((prevState) => ({ ...prevState, disableDownload: false }))
@@ -332,7 +335,15 @@ const MachineRateListing = (props) => {
   const deleteItem = (Id) => {
     setState((prevState) => ({ ...prevState, showPopup: true, deletedId: Id }))
   }
-
+  const cancel = () => {
+    props?.cancelImportList();
+  };
+  const editSelectedData = () => {
+    setState((prevState) => ({ ...prevState, editSelectedList: true, tempList: state.gridApi?.getSelectedRows() ? state.gridApi?.getSelectedRows() : [], }));
+  };
+  const backToSimulation = (value) => {
+    setState((prevState) => ({ ...prevState, editSelectedList: false }));
+  };
   /**
   * @method confirmDelete
   * @description confirm delete Raw Material details
@@ -384,7 +395,7 @@ const MachineRateListing = (props) => {
         isDeleteButton = true
       }
     }
-    return (
+return (
       <>
         <button className="cost-movement Tour_List_Cost_Movement" title='Cost Movement' type={'button'} onClick={() => showAnalytics(cellValue, rowData)}> </button>
 
@@ -726,141 +737,178 @@ const MachineRateListing = (props) => {
     return MachineEntryType === ENTRY_TYPE_IMPORT ? MachineRate : MachineRateLocalConversion;
   }
   return (
-    <div className={`ag-grid-react ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${permissions?.Download ? "show-table-btn" : ""} ${props.isSimulation ? 'simulation-height' : ''}`}>
-      {(state.isLoader && !props.isMasterSummaryDrawer) && <LoaderCustom customClass="simulation-Loader" />} {state.disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
-      <form noValidate> {(state.isLoader && !props.isMasterSummaryDrawer) && <LoaderCustom customClass="simulation-Loader" />}
-        {state.disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
-        <Row>
-          <Col md="4" className="switch mt-3 mb-1">
-            <label className="switch-level">
-              <div className="left-title">Domestic</div>
-              <Switch
-                onChange={importToggle}
-                checked={state.isImport}
-                id="normal-switch"
+    <div>
+      {!state?.editSelectedList && (
+        <div className={`ag-grid-react ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${permissions?.Download ? "show-table-btn" : ""} ${props.isSimulation ? 'simulation-height' : ''}`}>
+          {(state.isLoader && !props.isMasterSummaryDrawer) && <LoaderCustom customClass="simulation-Loader" />} {state.disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
+          <form noValidate> {(state.isLoader && !props.isMasterSummaryDrawer) && <LoaderCustom customClass="simulation-Loader" />}
+            {state.disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
+            <Row>
+              <Col md="4" className="switch mt-3 mb-1">
+                <label className="switch-level">
+                  <div className="left-title">Domestic</div>
+                  <Switch
+                    onChange={importToggle}
+                    checked={state.isImport}
+                    id="normal-switch"
 
-                background="#4DC771"
-                onColor="#4DC771"
-                onHandleColor="#ffffff"
-                offColor="#4DC771"
-                uncheckedIcon={false}
-                checkedIcon={false}
-                height={20}
-                width={46}
-              />
-              <div className="right-title">Import</div>
-            </label>
-          </Col>
-        </Row>
-        <Row className={`${props?.isMasterSummaryDrawer ? '' : 'pt-2'} filter-row-large ${(props.isSimulation || props.benchMark) ? 'simulation-filter zindex-0' : ''}`}>
-          <Col md="3" lg="3">
-            <input type="text" className="form-control table-search" value={searchText} id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={onFilterTextBoxChanged} />
-            {(!props.isSimulation && !props.benchMark && !props?.isMasterSummaryDrawer) && (<TourWrapper
-              buttonSpecificProp={{
-                id: "MachineRate_Listing_Tour",
-                onClick: toggleExtraData
-              }} stepsSpecificProp={{
-                steps: Steps(t, { addLimit: false, viewProcessGroup: true, viewBOM: false, status: false, updateAssociatedTechnology: false, addMaterial: false, addAssociation: false, generateReport: false, approve: false, reject: false }).COMMON_LISTING
-              }}
-            />)}
-          </Col>
-          <Col md="9" lg="9" className="pl-0 mb-3">
-            <div className="d-flex justify-content-end bd-highlight w100 p-relative">
+                    background="#4DC771"
+                    onColor="#4DC771"
+                    onHandleColor="#ffffff"
+                    offColor="#4DC771"
+                    uncheckedIcon={false}
+                    checkedIcon={false}
+                    height={20}
+                    width={46}
+                  />
+                  <div className="right-title">Import</div>
+                </label>
+              </Col>
+            </Row>
+            <Row className={`${props?.isMasterSummaryDrawer ? '' : 'pt-2'} filter-row-large ${(props.isSimulation || props.benchMark) ? 'simulation-filter zindex-0' : ''}`}>
+              <Col md="3" lg="3">
+                <input type="text" className="form-control table-search" value={searchText} id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={onFilterTextBoxChanged} />
+                {(!props.isSimulation && !props.benchMark && !props?.isMasterSummaryDrawer) && (<TourWrapper
+                  buttonSpecificProp={{
+                    id: "MachineRate_Listing_Tour",
+                    onClick: toggleExtraData
+                  }} stepsSpecificProp={{
+                    steps: Steps(t, { addLimit: false, viewProcessGroup: true, viewBOM: false, status: false, updateAssociatedTechnology: false, addMaterial: false, addAssociation: false, generateReport: false, approve: false, reject: false }).COMMON_LISTING
+                  }}
+                />)}
+              </Col>
+              <Col md="9" lg="9" className="pl-0 mb-3">
+                <div className="d-flex justify-content-end bd-highlight w100 p-relative">
 
-              {(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) &&
-                <div className="warning-message d-flex align-items-center">
-                  {state.warningMessage && !state.disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
-                </div>
-              }
-              {(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) &&
-                <>
-                  <button disabled={state.disableFilter} title="Filtered data" type="button" class="user-btn mr5 Tour_List_Filter" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
-                  {permissions?.Add && (<button type="button" className={"user-btn mr5 Tour_List_Add"} onClick={displayForm} title="Add">  <div className={"plus mr-0"}></div>{/* ADD */}</button>)}
-                  {permissions?.BulkUpload && (<button type="button" className={"user-btn mr5 Tour_List_BulkUpload"} onClick={bulkToggle} title="Bulk Upload"><div className={"upload mr-0"}></div>{/* Bulk Upload */} </button>)}
-                  {permissions?.Download && <>  <button title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" onClick={onExcelDownload} className={'user-btn mr5 Tour_List_Download'}><div className="download mr-1" title="Download"></div> {/* DOWNLOAD */} {`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} </button>
-
-                    <ExcelFile filename={'Machine Rate'} fileExtension={'.xls'} element={
-                      <button id={'Excel-Downloads-machine'} className="p-absolute " type="button" >
-                      </button>}>
-                      {onBtExport()}
-                    </ExcelFile>
-                  </>
+                  {(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) &&
+                    <div className="warning-message d-flex align-items-center">
+                      {state.warningMessage && !state.disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
+                    </div>
                   }
+                  {(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) &&
+                    <>
+                      <button disabled={state.disableFilter} title="Filtered data" type="button" class="user-btn mr5 Tour_List_Filter" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
+                      {permissions?.Add && (<button type="button" className={"user-btn mr5 Tour_List_Add"} onClick={displayForm} title="Add">  <div className={"plus mr-0"}></div>{/* ADD */}</button>)}
+                      {permissions?.BulkUpload && (<button type="button" className={"user-btn mr5 Tour_List_BulkUpload"} onClick={bulkToggle} title="Bulk Upload"><div className={"upload mr-0"}></div>{/* Bulk Upload */} </button>)}
+                      {permissions?.Download && <>  <button title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" onClick={onExcelDownload} className={'user-btn mr5 Tour_List_Download'}><div className="download mr-1" title="Download"></div> {/* DOWNLOAD */} {`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} </button>
 
-                </>
-              }
-              <Button id='machineRateListing_reset' className="user-btn Tour_List_Reset" onClick={() => resetState()}>  <div className="refresh mr-0"></div></Button>
-            </div>
-          </Col>
-        </Row>
-      </form>
-      <Row>
-        <Col>
+                        <ExcelFile filename={'Machine Rate'} fileExtension={'.xls'} element={
+                          <button id={'Excel-Downloads-machine'} className="p-absolute " type="button" >
+                          </button>}>
+                          {onBtExport()}
+                        </ExcelFile>
+                      </>
+                      }
 
-          <div id="machine-master-grid" className={`ag-grid-wrapper  machine-master-grid height-width-wrapper ${(machineDatalist && machineDatalist?.length <= 0) || noData ? "overlay-contain" : ""}`}>
-            <div className={`ag-theme-material ${state.isLoader && "max-loader-height"}`}>
-              {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
-              {state.render ? <LoaderCustom customClass="loader-center" /> : <AgGridReact
+                    </>
+                  }
+                  <Button id='machineRateListing_reset' className="user-btn Tour_List_Reset" onClick={() => resetState()}>  <div className="refresh mr-0"></div></Button>
 
-                defaultColDef={defaultColDef}
-                floatingFilter={true}
-                domLayout='autoHeight'
-                rowData={tourStartData.showExtraData ? [...setLoremIpsum(machineDatalist[0]), ...machineDatalist] : machineDatalist}
+                </div>
+                {props.isSimulation && props.isFromVerifyPage && (
+                  <button type="button" className={"apply"} onClick={cancel}                        >
+                    <div className={"back-icon"}></div>Back
+                  </button>
+                
+                )}
+              </Col>
+            </Row>
+          </form>
+          <Row>
+            <Col>
 
-                pagination={true}
-                paginationPageSize={globalTakes}
-                onGridReady={onGridReady}
-                gridOptions={gridOptions}
-                noRowsOverlayComponent={'customNoRowsOverlay'}
-                noRowsOverlayComponentParams={{ title: EMPTY_DATA, imagClass: 'imagClass' }}
-                frameworkComponents={frameworkComponents}
-                rowSelection={'multiple'}
-                onRowSelected={onRowSelect}
-                onFilterModified={onFloatingFilterChanged}
-                suppressRowClickSelection={true}
-                enableBrowserTooltips={true}
-              >
-                { }
-                <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
-                {!isSimulation && <AgGridColumn field="Technology" headerName={technologyLabel}></AgGridColumn>}
+              <div id="machine-master-grid" className={`ag-grid-wrapper  machine-master-grid height-width-wrapper ${(machineDatalist && machineDatalist?.length <= 0) || noData ? "overlay-contain" : ""}`}>
+                <div className={`ag-theme-material ${state.isLoader && "max-loader-height"}`}>
+                  {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
+                  {state.render ? <LoaderCustom customClass="loader-center" /> : <AgGridReact
 
-                <AgGridColumn field="MachineName" headerName="Machine Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                <AgGridColumn field="MachineNumber" headerName="Machine Number" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                <AgGridColumn field="MachineTypeName" headerName="Machine Type" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                <AgGridColumn field="TonnageCapacity" cellRenderer={'hyphenFormatter'} headerName="Machine Tonnage"></AgGridColumn>
-                <AgGridColumn field="ProcessName" headerName="Process Name"></AgGridColumn>
-                <AgGridColumn field="UOM" headerName='UOM'></AgGridColumn>
-                <AgGridColumn field="VendorName" headerName={`${vendorLabel} (Code)`} cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
-                <AgGridColumn field="Plant" headerName="Plant (Code)" cellRenderer='hyphenFormatter'></AgGridColumn>
-                {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
-                <AgGridColumn field="Currency" headerName="Currency"></AgGridColumn>
-                <AgGridColumn width={200} field="MachineRate" headerName="Machine Rate" cellRenderer={currencyRateRenderer}></AgGridColumn>
-                {/* <AgGridColumn width={200} field="MachineRate" headerName="Machine Rate (Currency)" cellRenderer={hyphenFormatter}></AgGridColumn> */}
-                <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-                {!isSimulation && !props?.isMasterSummaryDrawer && <AgGridColumn field="MachineId" width={230} cellClass={"actions-wrapper ag-grid-action-container"} pinned="right" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
-                {props.isMasterSummaryDrawer && <AgGridColumn field="Attachements" headerName='Attachments' cellRenderer={'attachmentFormatter'}></AgGridColumn>}
-                {props.isMasterSummaryDrawer && <AgGridColumn field="Remark" tooltipField="Remark" ></AgGridColumn>}
-              </AgGridReact >}
-              <div className='button-wrapper'> {!state.isLoader &&
-                <PaginationWrappers gridApi={state.gridApi} module="Machine" totalRecordCount={state.totalRecordCount} getDataList={getDataList} floatingFilterData={state.floatingFilterData} />
-              }
-                {(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) &&
-                  <PaginationControls totalRecordCount={state.totalRecordCount} getDataList={getDataList} floatingFilterData={state.floatingFilterData} module="Machine"
-                  />}
-              </div>
-            </div >
-          </div >
+                    defaultColDef={defaultColDef}
+                    floatingFilter={true}
+                    domLayout='autoHeight'
+                    rowData={tourStartData.showExtraData ? [...setLoremIpsum(machineDatalist[0]), ...machineDatalist] : machineDatalist}
 
-        </Col >
-      </Row >
-      {isBulkUpload && <BulkUpload isOpen={isBulkUpload} closeDrawer={closeBulkUploadDrawer} isEditFlag={false} fileName={'Machine'} isZBCVBCTemplate={true} isMachineMoreTemplate={true} messageLabel={'Machine'} anchor={'right'} masterId={MACHINE_MASTER_ID} />}
-      {state.analyticsDrawer && <AnalyticsDrawer isOpen={state.analyticsDrawer} ModeId={4} closeDrawer={closeAnalyticsDrawer} anchor={"right"} isReport={state.analyticsDrawer} selectedRowData={state.selectedRowData} isSimulation={true} rowData={state.selectedRowData} />}
-      {state.attachment && (<Attachament isOpen={state.attachment} index={state.viewAttachment} closeDrawer={closeAttachmentDrawer} anchor={'right'} gridListing={true} />)}
-      {state.showPopup && <PopupMsgWrapper isOpen={state.showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.MACHINE_DELETE_ALERT}`} />}
-      {state.showCopyPopup && <PopupMsgWrapper isOpen={state.showCopyPopup} closePopUp={closePopUp} confirmPopup={onCopyPopupConfirm} message={`${MESSAGES.COPY_MACHINE_POPUP}`} />}
-      {state.isOpenProcessGroupDrawer && <ProcessGroupDrawer anchor={'right'} isOpen={state.isOpenProcessGroupDrawer} toggleDrawer={closeProcessGroupDrawer} isViewFlag={true} />}
-    </div >
+                    pagination={true}
+                    paginationPageSize={globalTakes}
+                    onGridReady={onGridReady}
+                    gridOptions={gridOptions}
+                    noRowsOverlayComponent={'customNoRowsOverlay'}
+                    noRowsOverlayComponentParams={{ title: EMPTY_DATA, imagClass: 'imagClass' }}
+                    frameworkComponents={frameworkComponents}
+                    rowSelection={'multiple'}
+                    onRowSelected={onRowSelect}
+                    onFilterModified={onFloatingFilterChanged}
+                    suppressRowClickSelection={true}
+                    enableBrowserTooltips={true}
+                  >
+                    { }
+                    <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
+                    {!isSimulation && <AgGridColumn field="Technology" headerName={technologyLabel}></AgGridColumn>}
+
+                    <AgGridColumn field="MachineName" headerName="Machine Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                    <AgGridColumn field="MachineNumber" headerName="Machine Number" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                    <AgGridColumn field="MachineTypeName" headerName="Machine Type" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                    <AgGridColumn field="TonnageCapacity" cellRenderer={'hyphenFormatter'} headerName="Machine Tonnage"></AgGridColumn>
+                    <AgGridColumn field="ProcessName" headerName="Process Name"></AgGridColumn>
+                    <AgGridColumn field="UOM" headerName='UOM'></AgGridColumn>
+                    <AgGridColumn field="VendorName" headerName={`${vendorLabel} (Code)`} cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                    {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                    <AgGridColumn field="Plant" headerName="Plant (Code)" cellRenderer='hyphenFormatter'></AgGridColumn>
+                    {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn field="ExchangeRateSourceName" headerName="Exchange Rate Source" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                    <AgGridColumn field="Currency" headerName="Currency"></AgGridColumn>
+                    <AgGridColumn width={200} field="MachineRate" headerName="Machine Rate" cellRenderer={currencyRateRenderer}></AgGridColumn>
+                    {/* <AgGridColumn width={200} field="MachineRate" headerName="Machine Rate (Currency)" cellRenderer={hyphenFormatter}></AgGridColumn> */}
+                    <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
+                    {!isSimulation && !props?.isMasterSummaryDrawer && <AgGridColumn field="MachineId" width={230} cellClass={"actions-wrapper ag-grid-action-container"} pinned="right" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                    {props.isMasterSummaryDrawer && <AgGridColumn field="Attachements" headerName='Attachments' cellRenderer={'attachmentFormatter'}></AgGridColumn>}
+                    {props.isMasterSummaryDrawer && <AgGridColumn field="Remark" tooltipField="Remark" ></AgGridColumn>}
+                  </AgGridReact >}
+                  <div className='button-wrapper'> {!state.isLoader &&
+                    <PaginationWrappers gridApi={state.gridApi} module="Machine" totalRecordCount={state.totalRecordCount} getDataList={getDataList} floatingFilterData={state.floatingFilterData} />
+                  }
+                    {(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) &&
+                      <PaginationControls totalRecordCount={state.totalRecordCount} getDataList={getDataList} floatingFilterData={state.floatingFilterData} module="Machine"
+                      />}
+                  </div>
+                </div >
+              </div >
+
+            </Col >
+          </Row >
+          {props.isSimulation && props.isFromVerifyPage && (
+            <Row>
+              <Col md="12" className="d-flex justify-content-end align-items-center">
+                <WarningMessage dClass="mr-5" message={`Please check the Machine Rate that you want to edit.`} />
+                <Button className={"apply"} id={"operationListing_editSelectedData"} disabled={state.gridApi?.getSelectedRows()?.length === 0} onClick={editSelectedData} icon="edit-icon" buttonName="Edit" />
+              </Col>
+            </Row>
+          )}
+          {isBulkUpload && <BulkUpload isOpen={isBulkUpload} closeDrawer={closeBulkUploadDrawer} isEditFlag={false} fileName={'Machine'} isZBCVBCTemplate={true} isMachineMoreTemplate={true} messageLabel={'Machine'} anchor={'right'} masterId={MACHINE_MASTER_ID} />}
+          {state.analyticsDrawer && <AnalyticsDrawer isOpen={state.analyticsDrawer} ModeId={4} closeDrawer={closeAnalyticsDrawer} anchor={"right"} isReport={state.analyticsDrawer} selectedRowData={state.selectedRowData} isSimulation={true} rowData={state.selectedRowData} />}
+          {state.attachment && (<Attachament isOpen={state.attachment} index={state.viewAttachment} closeDrawer={closeAttachmentDrawer} anchor={'right'} gridListing={true} />)}
+          {state.showPopup && <PopupMsgWrapper isOpen={state.showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.MACHINE_DELETE_ALERT}`} />}
+          {state.showCopyPopup && <PopupMsgWrapper isOpen={state.showCopyPopup} closePopUp={closePopUp} confirmPopup={onCopyPopupConfirm} message={`${MESSAGES.COPY_MACHINE_POPUP}`} />}
+          {state.isOpenProcessGroupDrawer && <ProcessGroupDrawer anchor={'right'} isOpen={state.isOpenProcessGroupDrawer} toggleDrawer={closeProcessGroupDrawer} isViewFlag={true} />}
+
+        </div >)}
+      {state?.editSelectedList && (
+        <MRSimulation
+          backToSimulation={backToSimulation}
+          // isbulkUpload={isbulkUpload}
+          // rowCount={rowCount}
+          list={state?.tempList ? state?.tempList : []}
+          // technology={technology.label}
+          // technologyId={technology.value}
+          // master={master.label}
+          tokenForMultiSimulation={
+            tokenForSimulation?.length !== 0
+              ? [{ SimulationId: tokenForSimulation?.value }]
+              : []
+          }
+        />
+      )}
+    </div>
+
+
   );
 }
 
