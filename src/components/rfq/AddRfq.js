@@ -1039,10 +1039,8 @@ function AddRfq(props) {
         }
     }
 
-    const handleSubmitClick = (data, e, isPartDetailSent) => {
-
-        //handleSubmit(() => onSubmit(data, e, isSent))()
-        onSubmit(data, e, isPartDetailSent)
+    const handleSubmitClick = ( e, isPartDetailSent) => {
+        onSubmit( e, isPartDetailSent)
     };
 
     const onRadioSubmit = (data) => {
@@ -1087,8 +1085,7 @@ function AddRfq(props) {
         }
         return <HeaderTitle customClass="d-flex" title={title}><WarningMessage dClass={"mt-1 ml-3"} message={warningMessgae} /></HeaderTitle>
     }
-    const onSubmit = (data, e, isPartDetailsSent) => {
-
+    const onSubmit = (e, isPartDetailsSent) => {
         switch (selectedOption) {
             case BOUGHTOUTPARTSPACING:
                 if (bopDataList?.length === 0) {
@@ -1204,7 +1201,7 @@ function AddRfq(props) {
 
         // const hasBop=bopList && bopList.length>0
         const hasVendors = vendorList && vendorList.length > 0;
-        if (!isShowRfqPartDetail) {
+               if (!isShowRfqPartDetail) {
             IsPartDetailsSent = isPartDetailsSent;
             isSent = isPartDetailsSent;
         } else {
@@ -1214,6 +1211,11 @@ function AddRfq(props) {
 
             isSent = (showSendButton === PREDRAFT || showSendButton === '') ? false : ((hasParts || hasRm || hasBop || hasTooling) && hasVendors && isPartDetailsSent)
         }
+        if(isSent && vendorList?.length === 0){
+            console.log("vendorList?.length === 0");
+            Toaster.warning("Please add at least one vendor before sending RFQ.");
+            return false;
+        }
         // const IsPartDetailsSent = isShowRfqPartDetail ? ((isPartDetailSent && partList && partList.length > 0) ? true : (partList && partList.length > 0 && vendorList && vendorList.length > 0) ? true : false) : false
         // const isSent = isShowRfqPartDetail ? ((partList && vendorList && partList.length > 0 && vendorList.length > 0) ? IsPartDetailsSent : false) : false
 
@@ -1222,42 +1224,7 @@ function AddRfq(props) {
 
 
 
-
         const obj = createQuotationObject(isSent, IsPartDetailsSent);
-
-        // let obj = {}
-        // obj.QuotationId = apiData.QuotationId ? apiData.QuotationId : ""
-        // obj.QuotationNumber = apiData.QuotationNumber ? apiData.QuotationNumber : ""
-        // obj.Remark = getValues('remark')
-        // obj.TechnologyId = getValues('technology').value
-        // obj.PlantId = getValues('plant')?.value
-        // obj.LoggedInUserId = loggedInUserId()
-        // obj.StatusId = ''
-        // obj.IsSent = isSent
-        // obj.IsConditionallyVisible = isConditionalVisible
-        // obj.VisibilityMode = visibilityMode?.label
-        // obj.VisibilityDate = dateAndTime
-        // obj.VisibilityDuration = getValues('Time')
-        // obj.LastSubmissionDate = DayTime(submissionDate).format('YYYY-MM-DD HH:mm:ss')
-        // obj.VendorList = vendorList
-        // obj.Timezone = getTimeZone()
-        // //obj.QuotaionPartIds = quotationPartIds
-        // obj.Attachments = files
-        // obj.IsSent = isSent
-        // obj.NfrId = nfrId?.value
-        // if (dataProps?.isEditFlag) {
-        //     dispatch(updateRfqQuotation(obj, (res) => {
-
-        //         if (res?.data?.Result) {
-        //             setQuotationIdentity(res?.data?.Identity)
-        //             if (isSent) {
-        //                 Toaster.success(MESSAGES.RFQ_SENT_SUCCESS)
-        //             } else {
-        //                 Toaster.success(MESSAGES.RFQ_UPDATE_SUCCESS)
-        //             }
-        //             cancel()
-        //         }
-        //     }))
 
         dispatch(createRfqQuotation(obj, (res) => {
 
@@ -4436,7 +4403,7 @@ function AddRfq(props) {
                                                 <button type="button" className="submit-button save-btn mr-2" value="save"
                                                     // {!dataProps?.rowData?.IsSent && <button type="button" className="submit-button save-btn mr-2" value="save"     //RE
                                                     id="addRFQ_save"
-                                                    onClick={(data, e) => handleSubmitClick(data, e, false)}
+                                                    onClick={(e) => handleSubmitClick( e, false)}
                                                     disabled={isViewFlag || showSendButton === PREDRAFT && disabledPartUid}>
                                                     <div className={"save-icon"}></div>
                                                     {"Save"}
@@ -4445,7 +4412,8 @@ function AddRfq(props) {
 
                                             {!isDropdownDisabled && <button type="button" className="submit-button save-btn" value="send"
                                                 id="addRFQ_send"
-                                                onClick={(data, e) => handleSubmitClick(data, e, true)}
+                                                onClick={(e) => handleSubmitClick(e, true)}
+                                                
                                                 disabled={isViewFlag || (showSendButton === PREDRAFT && disabledPartUid)}>
                                                 <div className="send-for-approval mr-1"></div>
                                                 {"Send"}
