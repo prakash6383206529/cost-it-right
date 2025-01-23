@@ -851,7 +851,7 @@ function VerifySimulation(props) {
                 <>
                     {!assemblyTechnology && <Row>
                         <Col sm="12">
-                            <h3 class="mb-0">Token No:{tokenNo}ll</h3>
+                            <h3 class="mb-0">Token No:{tokenNo}</h3>
                         </Col>
                     </Row>
                     }
