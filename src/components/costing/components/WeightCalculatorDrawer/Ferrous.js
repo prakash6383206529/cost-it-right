@@ -81,7 +81,14 @@ function Ferrous(props) {
             calculateScrapCost();
         }
     }, [watchedValues, finishWeight, tableVal]);
-
+    useEffect(() => {
+        if (tableRawMaterials.length > 0) {
+            calculateNetRmRate();
+            calculateNetScrapRate();
+            calculateRemainingCalculation();
+            calculatetotalCostInputWeight();
+        }
+    }, [tableRawMaterials]);
 
     useEffect(() => {
         if (tableVal && tableVal?.length > 0) {
@@ -887,8 +894,6 @@ function Ferrous(props) {
 
     const deleteMainRawMaterial = (index) => {
         const updatedMaterials = tableRawMaterials.filter((_, idx) => idx !== index);
-        setTableRawMaterials(updatedMaterials);
-
         // Recalculate percentages and update form values
         let totalPercentage = 0;
         const inputWeight = getValues('inputWeight')
@@ -935,11 +940,8 @@ function Ferrous(props) {
             setValue(`rmGridFields.${i}.Percentage`, getValues(`rmGridFields.${i + 1}.Percentage`));
         }
         setValue(`rmGridFields.${updatedMaterials.length}.Percentage`, '');
-        // Recalculate other values
-        calculateNetRmRate();
-        calculateNetScrapRate();
-        calculateRemainingCalculation();
-        calculatetotalCostInputWeight();
+        setTableRawMaterials(updatedMaterials);
+
     };
 
     const resetBinderMaterials = () => {
