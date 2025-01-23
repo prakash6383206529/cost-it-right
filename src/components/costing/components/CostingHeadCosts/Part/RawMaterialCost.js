@@ -195,8 +195,10 @@ function RawMaterialCost(props) {
 
       if (!CostingViewMode && gridData) {
         gridData && gridData.map(item => {
-          if (item.ScrapRecoveryPercentage !== 0) {
+          if (item?.ScrapRecoveryPercentage != null && item?.ScrapRecoveryPercentage !== 0) {
             item.IsScrapRecoveryPercentageApplied = true
+          } else {
+            item.IsScrapRecoveryPercentageApplied = false
           }
         })
       }
