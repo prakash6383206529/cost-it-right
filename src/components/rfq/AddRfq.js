@@ -1215,7 +1215,6 @@ const isVendorSectionDisabled = !hasAnyParts();
             isSent = (showSendButton === PREDRAFT || showSendButton === '') ? false : ((hasParts || hasRm || hasBop || hasTooling) && hasVendors && isPartDetailsSent)
         }
         if(isSent && vendorList?.length === 0){
-            console.log("vendorList?.length === 0");
             Toaster.warning("Please add at least one vendor before sending RFQ.");
             return false;
         }

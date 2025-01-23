@@ -55,6 +55,7 @@ function RfqListing(props) {
     const [totalRecordCount, setTotalRecordCount] = useState(0)
     const [noData, setNoData] = useState(false)
     const [viewRfq, setViewRfq] = useState(false)
+    const [closeViewRfq, setCloseViewRfq] = useState(false)
     const [viewRfqData, setViewRfqData] = useState("")
     const [addAccessibility, setAddAccessibility] = useState(false);
     const [editAccessibility, setEditAccessibility] = useState(false);
@@ -133,12 +134,18 @@ function RfqListing(props) {
 
     useEffect(() => {
 
-        if (statusColumnData && statusColumnData.data) {
+        if (statusColumnData && statusColumnData.data && !closeViewRfq) {
+
             setDisableFilter(false)
             setWarningMessage(true)
             setFloatingFilterData(prevState => ({ ...prevState, Status: removeSpaces(statusColumnData.data) }))
         }
-    }, [statusColumnData])
+        else if (!statusColumnData?.data && closeViewRfq && !effectCompleted.current) {
+            // Effect has run, now we can call getDataList
+            effectCompleted.current = true;
+            getDataList();
+        }
+    }, [statusColumnData, closeViewRfq])
     useEffect(() => {
         const { source, quotationId } = location.state || {};
 
@@ -418,28 +425,24 @@ function RfqListing(props) {
         setFloatingFilterData(floatingFilterData)
         setWarningMessage(false)
         dispatch(updatePageNumber(1))
-        // setPageNoNew(1)
         dispatch(updateCurrentRowIndex(10))
-        getDataList(0, globalTakes, true)
+        getDataList(0, 10, true)
         dispatch(setSelectedRowForPagination([]))
         dispatch(updateGlobalTake(10))
         dispatch(updatePageSize({ pageSize10: true, pageSize50: false, pageSize100: false }))
-        // setDataCount(0)
         reactLocalStorage.setObject('selectedRow', {})
-        // if (isSimulation) {
-        //     props.isReset()
-        // }
+       
     }
 
-    const onSearch = useCallback(() => {
+    const onSearch = () => {
         setNoData(false)
         setWarningMessage(false)
         setIsFilterButtonClicked(true)
         dispatch(updatePageNumber(1))
         dispatch(updateCurrentRowIndex(10))
-        gridOptions?.columnApi?.resetColumnState();
+                gridOptions?.columnApi?.resetColumnState();
         getDataList(0, globalTakes, true)
-    }, [globalTakes, getDataList])
+    }
 
     /**
     * @method hideForm
@@ -459,13 +462,7 @@ function RfqListing(props) {
 
         }
     };
-    // const getFilteredStatusDropdown = useMemo(() => {
-    //     if (initialConfiguration?.IsManageSeparateUserPermissionForPartAndVendorInRaiseRFQ) {
-    //         return statusDropdownforRfq.filter(status => status.value !== "12"); // Filter out PreDraft
-    //     }
-    //     return statusDropdownforRfq;
-    // }, [initialConfiguration?.IsManageSeparateUserPermissionForPartAndVendorInRaiseRFQ]);
-
+  
     const floatingFilterRFQ = {
         maxValue: 11,
         suppressFilterButton: true,
@@ -568,11 +565,18 @@ function RfqListing(props) {
         setIsEdit(false)
 
     }
+    const effectCompleted = useRef(false);
 
     const closeDrawerViewRfq = (value) => {
+
+        effectCompleted.current = true;
         value === true ? setViewRfq(true) : setViewRfq(false)
+        setCloseViewRfq(true);
+
+        // if (effectCompleted.current) {
+            getDataList()
+    
         // setViewRfq(false)
-        getDataList()
 
     }
 
@@ -584,11 +588,6 @@ function RfqListing(props) {
         params.api.paginationGoToPage(0);
     };
 
-
-    const onPageSizeChanged = (newPageSize) => {
-        gridApi.paginationSetPageSize(Number(newPageSize));
-
-    };
 
 
     const onFilterTextBoxChanged = (e) => {
