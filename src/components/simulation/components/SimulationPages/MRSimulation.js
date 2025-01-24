@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { Row, Col, Tooltip, } from 'reactstrap';
 import moment from 'moment';
-import { defaultPageSize, EMPTY_DATA, CBCTypeId } from '../../../../config/constants';
+import { defaultPageSize, EMPTY_DATA, CBCTypeId, EXCHNAGERATE } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter } from '../../../../helper';
 // import { runVerifyCombinedProcessSimulation } from '../../actions/Simulation';
@@ -28,6 +28,7 @@ import ReactExport from 'react-export-excel';
 import { MACHINE_IMPACT_DOWNLOAD_EXCEl } from '../../../../config/masterData';
 import { simulationContext } from '..';
 import { useLabels } from '../../../../helper/core';
+import { createMultipleExchangeRate } from '../../../masters/actions/ExchangeRateMaster';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -63,8 +64,8 @@ const {vendorLabel} = useLabels()
 
     const dispatch = useDispatch()
 
-    const { selectedMasterForSimulation } = useSelector(state => state.simulation)
-    const { selectedTechnologyForSimulation } = useSelector(state => state.simulation)
+    const { selectedMasterForSimulation,selectedTechnologyForSimulation,exchangeRateListBeforeDraft } = useSelector(state => state.simulation)
+    const currencySelectList = useSelector(state => state.comman.currencySelectList)
     const columnWidths = {
         Technology: showCompressedColumns ? 50 : 190,
         CostingNumber: showCompressedColumns ? 100 : 190,
@@ -327,7 +328,16 @@ const {vendorLabel} = useLabels()
         nullHandler: props.nullHandler && props.nullHandler
     };
     const verifySimulation = debounce(() => {
-        /**********CONDITION FOR: IS ANY FIELD EDITED****************/
+        if (selectedMasterForSimulation?.value === EXCHNAGERATE) {
+            dispatch(createMultipleExchangeRate(exchangeRateListBeforeDraft, currencySelectList, effectiveDate, res => {
+                setValueFunction(true, res);
+            }))
+        }else{
+            setValueFunction(false, []);
+        }
+       
+    }, 500);
+    const setValueFunction=(isExchangeRate,res)=>{
         if (!isEffectiveDateSelected) {
             setIsWarningMessageShow(true)
             return false
@@ -352,7 +362,6 @@ const {vendorLabel} = useLabels()
             return false
         }
         setIsDisable(true)
-        /**********POST METHOD TO CALL HERE AND AND SEND TOKEN TO VERIFY PAGE ****************/
         let obj = {}
         obj.SimulationTechnologyId = selectedMasterForSimulation.value
         obj.LoggedInUserId = loggedInUserId()
@@ -375,6 +384,10 @@ const {vendorLabel} = useLabels()
         obj.SimulationIds = tokenForMultiSimulation
 
         obj.SimulationMachineProcessList = tempArr
+        if (isExchangeRate) {
+            obj.SimulationExchangeRates = res
+            obj.IsExchangeRateSimulation = true
+        }
         dispatch(runVerifyMachineRateSimulation(obj, res => {
             setIsDisable(false)
             if (res?.data?.Result) {
@@ -383,7 +396,8 @@ const {vendorLabel} = useLabels()
             }
         }))
         setShowTooltip(false)
-    }, 500);
+
+    }
 
     const basicRatetooltipToggle = () => {
         setBasicRateViewTooltip(!basicRateviewTooltip)
