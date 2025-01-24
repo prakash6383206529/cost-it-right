@@ -58,6 +58,8 @@ function ERSimulation(props) {
     const [isWarningMessageShow, setIsWarningMessageShow] = useState(false);
     const [basicRateviewTooltip, setBasicRateViewTooltip] = useState(false)
     const [showTooltip, setShowTooltip] = useState(false)
+    const [fromListData, setFromListData] = useState('')
+    const [toListData, setToListData] = useState('')
     const dispatch = useDispatch()
     const columnWidths = {
 
@@ -281,13 +283,16 @@ function ERSimulation(props) {
         }
         let count = 0
         let listData = []
+
         list && list?.map((item) => {
             if (checkForNull(item?.NewCurrencyExchangeRate) !== checkForNull(item?.CurrencyExchangeRate)) {
                 count = count + 1
                 listData.push(item)
+
             }
             return null
         })
+
         setShowTooltip(false)
 
         if (count === 0) {
@@ -325,13 +330,20 @@ function ERSimulation(props) {
     const selectRM = debounce(() => {
         let count = 0
         let listData = []
+        let fromListData = ''
+        let toListData = ''
         list && list?.map((item) => {
             if (checkForNull(item?.NewCurrencyExchangeRate) !== checkForNull(item?.CurrencyExchangeRate)) {
                 count = count + 1
                 listData.push(item)
+                fromListData = fromListData ? `${fromListData},${item.FromCurrency}` : item.FromCurrency
+                toListData = toListData ? `${toListData},${item.ToCurrency}` : item.ToCurrency
             }
             return null
         })
+        setFromListData(fromListData)
+        setToListData(toListData)
+        console.log(fromListData, 'fromListData', toListData, 'toListData')
         setShowTooltip(false)
 
         if (count === 0) {
@@ -532,6 +544,8 @@ function ERSimulation(props) {
                 ListFor='simulation'
                 approvalStatus={APPROVED_STATUS}
                 // stopUnrequiredCalls={true}
+                fromListData={fromListData}
+                toListData={toListData}
                 isFromVerifyPage={true}
                 cancelImportList={cancelImportList}
             />}
@@ -549,7 +563,9 @@ function ERSimulation(props) {
                     ListFor={'simulation'}
                     // isBOPAssociated={association?.value === ASSOCIATED ? true : false}
                     approvalStatus={APPROVED_STATUS}
-                    // callBackLoader={callBackLoader}
+                    // callBackLoader={callBackLoader}  
+                    fromListData={fromListData}
+                    toListData={toListData}
                     isFromVerifyPage={true}
                     cancelImportList={cancelImportList}
                 />}
