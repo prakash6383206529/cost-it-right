@@ -13,6 +13,7 @@ import Toaster from "../common/Toaster";
 import { Table } from 'reactstrap';
 import NoContentFound from '../common/NoContentFound';
 import { EMPTY_DATA } from '../../config/constants';
+import { loggedInUserId } from "../../helper";
 
 class PermissionsUserWise extends Component {
     constructor(props) {
@@ -349,8 +350,8 @@ class PermissionsUserWise extends Component {
     };
 
     getRolePermission = () => {
-        const { user } = this.state;
-        this.props.getPermissionByUser(user.value, (res) => {
+        const loggedInUser = { loggedInUserId: loggedInUserId() }
+        this.props.getPermissionByUser(loggedInUser, (res) => {
             if (res && res.data && res.data.Data) {
 
                 let Data = res.data.Data;

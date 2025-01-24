@@ -380,9 +380,13 @@ export function deleteUser(Id, callback) {
  * @description active Inactive User
  */
 export function activeInactiveUser(requestData, callback) {
+    const requestedData = {
+        loggedInUserId: loggedInUserId(),
+        ...requestData
+    }
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axiosInstance.post(`${API.activeInactiveUser}`, requestData, config())
+        axiosInstance.post(`${API.activeInactiveUser}`, requestedData, config())
             .then((response) => {
                 dispatch({ type: API_SUCCESS });
                 callback(response);
@@ -966,9 +970,13 @@ export function assignUserLevelAPI(requestData, callback) {
  * @description add Role API 
  */
 export function setApprovalLevelForTechnology(requestData, callback) {
+    const requestedData = {
+        UserId: loggedInUserId(),
+        ...requestData
+    }
     return (dispatch) => {
         dispatch({ type: AUTH_API_REQUEST });
-        axiosInstance.post(API.setApprovalLevelForTechnology, requestData, config())
+        axiosInstance.post(API.setApprovalLevelForTechnology, requestedData, config())
             .then((response) => {
                 if (response.data.Result) {
                     callback(response);
@@ -1711,8 +1719,9 @@ export function getUsersSimulationTechnologyLevelAPI(UserId, technologyId, callb
  * @description GET ALL MENU DATA AND LEFT MENU DATA
  */
 export function getTopAndLeftMenuData(callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
-        const request = axios.get(`${API.getTopAndLeftMenuData}/${loggedInUserId()}`, config());
+        const request = axios.get(`${API.getTopAndLeftMenuData}/${loggedInUser?.loggedInUserId}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({

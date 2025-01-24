@@ -153,7 +153,6 @@ export function fetchStateDataAPI(countryId, callback) {
  * @description Used to fetch city list
  */
 export function fetchCityDataAPI(stateId, callback) {
-  const loggedInUser = { loggedInUserId: loggedInUserId() }
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
     if (stateId === 0) {
@@ -163,7 +162,7 @@ export function fetchCityDataAPI(stateId, callback) {
       });
       callback([]);
     } else {
-      const request = axios.get(`${API.getCity}/${stateId}/${loggedInUser?.loggedInUserId}`, config());
+      const request = axios.get(`${API.getCity}/${stateId}`, config());
       request.then((response) => {
         if (response.data.Result) {
           dispatch({
@@ -1618,8 +1617,12 @@ export function getPlantSelectListReducer(data) {
 
 
 export function getCostMovementReport(data, callback) {
+  const requestedData = {
+    loggedInUserId: loggedInUserId(),
+    ...data
+  }
   return (dispatch) => {
-    const request = axiosInstance.post(API.getCostMovementReport, data, config())
+    const request = axiosInstance.post(API.getCostMovementReport, requestedData, config())
     request
       .then((response) => {
         if (response.data.Result) {
