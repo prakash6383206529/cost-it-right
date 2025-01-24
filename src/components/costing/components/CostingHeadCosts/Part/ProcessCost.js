@@ -403,13 +403,14 @@ function ProcessCost(props) {
       Toaster.success('Remark saved successfully')
     }
     // setTabData(tempArr)
-    var button = document.getElementById(`popUpTriggers${index}`)
+    var button = document.getElementById(`process_popUpTriggers${index}`)
     button.click()
   }
 
-  const onRemarkPopUpClosee = (index) => {
-    var button = document.getElementById(`popUpTriggers${index}`)
-    if (errors && errors.ProcessGridFields && errors.ProcessGridFields[index].remarkPopUp) {
+  const onRemarkPopUpClose = (index) => {
+    var button = document.getElementById(`process_popUpTriggers${index}`)
+    setValue(`${ProcessGridFields}.${index}.remarkPopUp`, gridData[index]?.Remark)
+    if (errors && errors?.ProcessGridFields && errors.ProcessGridFields[index]?.remarkPopUp) {
       delete errors.ProcessGridFields[index].remarkPopUp;
       setSingleProcessRemark(false)
     }
@@ -1593,7 +1594,7 @@ function ProcessCost(props) {
                                   <Row>
                                     <Col md="12" className='remark-btn-container'>
                                       <button className='submit-button mr-2' disabled={(CostingViewMode || IsLocked) ? true : false} onClick={() => onRemarkPopUpClick(index)} > <div className='save-icon'></div> </button>
-                                      <button className='reset' onClick={() => onRemarkPopUpClosee(index)} > <div className='cancel-icon'></div></button>
+                                      <button className='reset' onClick={() => onRemarkPopUpClose(index)} > <div className='cancel-icon'></div></button>
                                     </Col>
                                   </Row>
                                 </Popup>}
