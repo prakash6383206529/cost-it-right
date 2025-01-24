@@ -9262,7 +9262,8 @@ export const applicabilityList = [
     { label: 'Part', value: 'Part' },
     { label: 'Operations', value: 'Operations' },
     { label: 'Machine Rate', value: 'Machine Rate' },
-    {label:"Surface Treatment",value:"Surface Treatment"}
+    {label:"Surface Treatment",value:"Surface Treatment"},
+    {label:"Raw Materials",value:"Raw Materials"}
 ];
 
 export const APPLICABILITY_RM_SIMULATION = "RM"
@@ -9271,6 +9272,7 @@ export const APPLICABILITY_PART_SIMULATION = "Part"
 export const APPLICABILITY_MACHINE_RATES_SIMULATION="Machine Rate"
 export const APPLICABILITY_OPERATIONS_SIMULATION="Operations"
 export const APPLICABILITY_SURFACE_TREATMENT_SIMULATION="Surface Treatment"
+export const APPLICABILITY_RAWMATERIAL_SIMULATION="Raw Materials"
 
 export const nfrDropdown = [
     { label: "00000563", value: "160e1194-ae06-4ab8-a1ca-98acc064a017" },

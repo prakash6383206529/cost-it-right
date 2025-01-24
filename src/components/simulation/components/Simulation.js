@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import SimulationUploadDrawer from './SimulationUploadDrawer';
 import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, RM_MASTER_ID, searchCount, VBC_VENDOR_TYPE, APPROVED_STATUS, EMPTY_GUID, MACHINE, MASTERS, VBCTypeId, ZBCTypeId, CBCTypeId, ZBC, RAWMATERIALINDEX, NONINDEXED } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
-import { getTechnologyForSimulation, OperationSimulation, RMDomesticSimulation, RMImportSimulation, SurfaceTreatmentSimulation, MachineRateSimulation, BOPDomesticSimulation, BOPImportSimulation, IdForMultiTechnology, ASSEMBLY_TECHNOLOGY_MASTER, ASSEMBLY, associationDropdownList, NON_ASSOCIATED, ASSOCIATED, applicabilityList, APPLICABILITY_RM_SIMULATION, APPLICABILITY_BOP_SIMULATION, indexationDropdown, DUMMYOTHERCOSTDATA, DUMMYCONDITIONCOSTDATA } from '../../../config/masterData';
+import { getTechnologyForSimulation, OperationSimulation, RMDomesticSimulation, RMImportSimulation, SurfaceTreatmentSimulation, MachineRateSimulation, BOPDomesticSimulation, BOPImportSimulation, IdForMultiTechnology, ASSEMBLY_TECHNOLOGY_MASTER, ASSEMBLY, associationDropdownList, NON_ASSOCIATED, ASSOCIATED, applicabilityList, APPLICABILITY_RM_SIMULATION, APPLICABILITY_BOP_SIMULATION, indexationDropdown, DUMMYOTHERCOSTDATA, DUMMYCONDITIONCOSTDATA, APPLICABILITY_RAWMATERIAL_SIMULATION } from '../../../config/masterData';
 import { COMBINED_PROCESS } from '../../../config/constants';
 import { CombinedProcessSimulation } from '../../../config/masterData';
 import RMSimulation from './SimulationPages/RMSimulation';
@@ -1661,7 +1661,12 @@ function Simulation(props) {
         return <RMIndexationSimulation simulationId={simulationId} master={masterId} isFromApprovalListing={props?.isFromApprovalListing} statusForLinkedToken={props?.statusForLinkedToken} isImpactedMaster={false} />
     }
 
-    return (
+
+console.log("String(master?.value)",String(master?.value))
+console.log("String(selectedMasterForSimulation?.value)",String(selectedMasterForSimulation?.value))
+
+
+return (
         <div className="container-fluid simulation-page mt-4">
             {
                 !showEditTable &&
@@ -1712,7 +1717,7 @@ function Simulation(props) {
                                     </div>
                                 }
                                 {
-                                    (String(master?.value) === BOPDOMESTIC || String(master?.value) === BOPIMPORT) &&
+                                    (String(master?.value) === BOPDOMESTIC || String(master?.value) === BOPIMPORT||(String(simulationApplicability?.value) === APPLICABILITY_BOP_SIMULATION)) &&
                                     <div className="d-inline-flex justify-content-start align-items-center mr-2 mb-3 zindex-unset">
                                         <div className="flex-fills label">Association:</div>
                                         <div className="flex-fills hide-label pl-0 d-flex mr-3">
@@ -1760,7 +1765,7 @@ function Simulation(props) {
                                     </div>
                                 }
                                 {
-                                    ((String(master?.value) === RAWMATERIALINDEX && getConfigurationKey()?.IsShowMaterialIndexation) || ((String(master?.value) === RMDOMESTIC || String(master?.value) === RMIMPORT) && getConfigurationKey()?.IsShowMaterialIndexation)) &&
+                                    ((String(master?.value) === RAWMATERIALINDEX && getConfigurationKey()?.IsShowMaterialIndexation) || ((String(master?.value) === RMDOMESTIC || String(master?.value) === RMIMPORT) && getConfigurationKey()?.IsShowMaterialIndexation)||((String(simulationApplicability?.value) === APPLICABILITY_RAWMATERIAL_SIMULATION)&&getConfigurationKey().IsShowMaterialIndexation)) &&
                                     <div className="d-inline-flex justify-content-start align-items-center mr-2 mb-3 zindex-unset">
                                         <div className="flex-fills label">Type:</div>
                                         <div className="flex-fills hide-label pl-0 d-flex mr-3">
@@ -1778,6 +1783,29 @@ function Simulation(props) {
                                                 handleChange={handleType}
                                                 errors={errors.Type}
                                             />
+                                        </div>
+                                    </div>
+                                }
+                                 {
+                                    (String(master?.value) === BOPDOMESTIC || String(master?.value) === BOPIMPORT) &&
+                                    <div className="d-inline-flex justify-content-start align-items-center mr-2 mb-3 zindex-unset">
+                                        <div className="flex-fills label">Association:</div>
+                                        <div className="flex-fills hide-label pl-0 d-flex mr-3">
+                                            <SearchableSelectHookForm
+                                                label={''}
+                                                name={'Association'}
+                                                placeholder={'Select'}
+                                                Controller={Controller}
+                                                control={control}
+                                                rules={{ required: false }}
+                                                register={register}
+                                                defaultValue={association.length !== 0 ? association : ''}
+                                                options={renderListing('association')}
+                                                mandatory={false}
+                                                handleChange={handleAssociationChange}
+                                                errors={errors.Association}
+                                            />
+                                            {!bopLoader && <TooltipCustom id="association-tooltip" width="310px" tooltipText='To run a simulation on BOPs associated with costing, please select "Associate with Costing". Otherwise, select "Not Associate with Costing"' />}
                                         </div>
                                     </div>
                                 }

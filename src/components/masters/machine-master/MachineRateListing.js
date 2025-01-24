@@ -134,7 +134,8 @@ getDataList("", 0, "", 0, "", "", 0, defaultPageSize, true, state.floatingFilter
       }
     }
     let statusString = [props?.approvalStatus].join(",")
-    const filterData = { costing_head: costing_head, technology_id: props?.isSimulation ? props?.technology?.value : technology_id, vendor_id: vendor_id, machine_type_id: machine_type_id, process_id: process_id, plant_id: plant_id, StatusId: statusString, MachineEntryType: MachineEntryType ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC }
+    const filterData = { costing_head: costing_head, technology_id: props?.isSimulation ? props?.technology?.value : technology_id, vendor_id: vendor_id, machine_type_id: machine_type_id, process_id: process_id, plant_id: plant_id, StatusId: statusString, MachineEntryType:!isSimulation ? MachineEntryType ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC : ENTRY_TYPE_IMPORT, Currency: isSimulation && props?.fromListData && props?.fromListData ? props?.fromListData : '',
+        LocalCurrency: isSimulation && props?.toListData && props?.toListData ? props?.toListData : '',}
     const { zbc, vbc, cbc } = reactLocalStorage.getObject('CostingTypePermission')
     dataObj.IsCustomerDataShow = cbc
     dataObj.IsVendorDataShow = vbc
@@ -743,7 +744,7 @@ return (
           {(state.isLoader && !props.isMasterSummaryDrawer) && <LoaderCustom customClass="simulation-Loader" />} {state.disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
           <form noValidate> {(state.isLoader && !props.isMasterSummaryDrawer) && <LoaderCustom customClass="simulation-Loader" />}
             {state.disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
-            <Row>
+            {!isSimulation && <Row>
               <Col md="4" className="switch mt-3 mb-1">
                 <label className="switch-level">
                   <div className="left-title">Domestic</div>
@@ -764,7 +765,7 @@ return (
                   <div className="right-title">Import</div>
                 </label>
               </Col>
-            </Row>
+            </Row>}
             <Row className={`${props?.isMasterSummaryDrawer ? '' : 'pt-2'} filter-row-large ${(props.isSimulation || props.benchMark) ? 'simulation-filter zindex-0' : ''}`}>
               <Col md="3" lg="3">
                 <input type="text" className="form-control table-search" value={searchText} id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={onFilterTextBoxChanged} />

@@ -263,7 +263,9 @@ export function getOperationsDataList(filterData, skip, take, isPagination, obj,
             StatusId: filterData.StatusId ? filterData.StatusId : '',
             OperationType: obj.ForType,
             DepartmentCode: obj.DepartmentName !== undefined ? obj.DepartmentName : "",
-            OperationEntryType: filterData.OperationEntryType
+            OperationEntryType: filterData.OperationEntryType,
+            Currency: filterData.Currency !== undefined ? filterData.Currency : "",
+            LocalCurrency: filterData.LocalCurrency !== undefined ? filterData.LocalCurrency : "",
         });
         const queryParamsSecond = encodeQueryParamsAndLog({
             CostingHead: obj.CostingHead !== undefined ? obj.CostingHead : "",

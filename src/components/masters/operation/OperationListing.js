@@ -182,7 +182,10 @@ const OperationListing = (props) => {
         // TO HANDLE FUTURE CONDITIONS LIKE [APPROVED_STATUS, DRAFT_STATUS] FOR MULTIPLE STATUS
         let statusString = [props?.approvalStatus].join(",")
 
-        let filterData = { operation_for: operation_for, operation_Name_id: operation_Name_id, technology_id: props.isSimulation ? props.technology : technology_id, vendor_id: vendor_id, ListFor: props.ListFor, StatusId: statusString, OperationEntryType: OperationEntryType ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC }        // THIS IS FOR SHOWING LIST IN 1 TAB(OPERATION LISTING) & ALSO FOR SHOWING LIST IN SIMULATION
+        let filterData = {
+            operation_for: operation_for, operation_Name_id: operation_Name_id, technology_id: props.isSimulation ? props.technology : technology_id, vendor_id: vendor_id, ListFor: props.ListFor, StatusId: statusString, OperationEntryType: !isSimulation ? OperationEntryType ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC : ENTRY_TYPE_IMPORT, Currency: isSimulation && props?.fromListData && props?.fromListData ? props?.fromListData : '',
+            LocalCurrency: isSimulation && props?.toListData && props?.toListData ? props?.toListData : '',
+        }        // THIS IS FOR SHOWING LIST IN 1 TAB(OPERATION LISTING) & ALSO FOR SHOWING LIST IN SIMULATION
         if ((isMasterSummaryDrawer !== undefined && !isMasterSummaryDrawer)) {
             if (props.isSimulation && !props?.isFromVerifyPage) {
                 props?.changeTokenCheckBox(false)
@@ -199,15 +202,15 @@ const OperationListing = (props) => {
             dataObj.ExchangeRateSourceName = state.floatingFilterData?.ExchangeRateSourceName
             // dataObj.IsCustomerDataShow = reactLocalStorage.getObject('cbcCostingPermission')
             dispatch(getOperationsDataList(filterData, skip, take, isPagination, dataObj, res => {
-setState(prevState => ({ ...prevState, noData: false }))
+                setState(prevState => ({ ...prevState, noData: false }))
                 if (props.isSimulation && !props?.isFromVerifyPage) {
-props?.changeTokenCheckBox(true)
+                    props?.changeTokenCheckBox(true)
                 }
                 setState(prevState => ({ ...prevState, isLoader: false }))
                 if (res.status === 204 && res.data === '') {
-setState(prevState => ({ ...prevState, tableData: [] }))
+                    setState(prevState => ({ ...prevState, tableData: [] }))
                 } else {
-setState(prevState => ({ ...prevState, tableData: res.data.DataList }))
+                    setState(prevState => ({ ...prevState, tableData: res.data.DataList }))
                     dispatch(setOperationList(res.data.DataList))
                 }
                 // CODE FOR DOWNLOAD BUTTON LOGIC
@@ -584,9 +587,9 @@ setState(prevState => ({ ...prevState, tableData: res.data.DataList }))
 
     const onGridReady = (params) => {
         setState(prevState => ({ ...prevState, gridApi: params.api, gridColumnApi: params.columnApi }))
-        
+
         if (props.isSimulation || props.isMasterSummaryDrawer) {
-            
+
             window.screen.width >= 1600 && params.api.sizeColumnsToFit()
         }
         window.screen.width > 1920 && params.api.sizeColumnsToFit();
@@ -1003,7 +1006,7 @@ setState(prevState => ({ ...prevState, tableData: res.data.DataList }))
                         )
                         }
 
-</div>
+                    </div>
                     {
                         state.showPopup && <PopupMsgWrapper isOpen={state.showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.OPERATION_DELETE_ALERT}`} />
                     }

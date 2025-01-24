@@ -7,7 +7,7 @@ import { MESSAGES } from "../../../config/message";
 import Toaster from "../../common/Toaster";
 import DayTime from "../../common/DayTimeWrapper";
 import BulkUpload from "../../massUpload/BulkUpload";
-import { BOP_IMPORT_DOWNLOAD_EXCEl } from "../../../config/masterData";
+import {  BOP_IMPORT_DOWNLOAD_EXCEl } from "../../../config/masterData";
 import LoaderCustom from "../../common/LoaderCustom";
 import { BopImport, BOP_MASTER_ID } from "../../../config/constants";
 import { getConfigurationKey, loggedInUserId, searchNocontentFilter, setLoremIpsum, showBopLabel, updateBOPValues, userDepartmetList, } from "../../../helper";
@@ -123,7 +123,7 @@ const BOPImportListing = (props) => {
   const { initialConfiguration } = useSelector((state) => state.auth);
   const tourStartData = useSelector(state => state.comman.tourStartData);
   const { technologyLabel, vendorLabel } = useLabels();
-  const { selectedRowForPagination, tokenForSimulation } = useSelector(
+  const { selectedRowForPagination, tokenForSimulation,isMasterAssociatedWithCosting } = useSelector(
     (state) => state.simulation
   );
 
@@ -237,7 +237,7 @@ const BOPImportListing = (props) => {
       plant_id: plantId,
       ListFor: props.ListFor,
       StatusId: statusString,
-      IsBOPAssociated: props?.isBOPAssociated,
+      IsBOPAssociated: !props?.isSimulation ? props?.isBOPAssociated : (isMasterAssociatedWithCosting? true : false)
     };
     if (isPagination === true) {
       setState((prevState) => ({ ...prevState, isLoader: true }));

@@ -17,7 +17,7 @@ import VerifySimulation from '../VerifySimulation';
 import _, { debounce } from 'lodash'
 import { PaginationWrapper } from '../../../common/commonPagination';
 import ReactExport from 'react-export-excel';
-import { APPLICABILITY_BOP_SIMULATION, APPLICABILITY_MACHINE_RATES_SIMULATION, APPLICABILITY_OPERATIONS_SIMULATION, APPLICABILITY_PART_SIMULATION, APPLICABILITY_RM_SIMULATION, APPLICABILITY_SURFACE_TREATMENT_SIMULATION, EXCHANGE_IMPACT_DOWNLOAD_EXCEl } from '../../../../config/masterData';
+import { APPLICABILITY_BOP_SIMULATION, APPLICABILITY_MACHINE_RATES_SIMULATION, APPLICABILITY_OPERATIONS_SIMULATION, APPLICABILITY_PART_SIMULATION, APPLICABILITY_RAWMATERIAL_SIMULATION, APPLICABILITY_RM_SIMULATION, APPLICABILITY_SURFACE_TREATMENT_SIMULATION, EXCHANGE_IMPACT_DOWNLOAD_EXCEl } from '../../../../config/masterData';
 import { getCurrencySelectList } from '../../../../actions/Common';
 import RMImportListing from '../../../masters/material-master/RMImportListing';
 import { setFilterForRM } from '../../../masters/actions/Material';
@@ -31,6 +31,7 @@ import { simulationContext } from '..';
 import LoaderCustom from '../../../common/LoaderCustom';
 import OperationListing from '../../../masters/operation/OperationListing';
 import MachineRateListing from '../../../masters/machine-master/MachineRateListing';
+import RMIndexationSimulationListing from './RMIndexationSimulationListing';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -65,6 +66,7 @@ function ERSimulation(props) {
     const [showOperationsList, setShowOperationsList] = useState(false);
     const [showMachineRatesList, setShowMachineRatesList] = useState(false);
     const [showSurfaceTreatmentList, setShowSurfaceTreatmentList] = useState(false);
+    const [showRawMaterialsList, setShowRawMaterialsList] = useState(false);
 
     const dispatch = useDispatch()
     const columnWidths = {
@@ -352,7 +354,7 @@ function ERSimulation(props) {
         })
         setFromListData(fromListData)
         setToListData(toListData)
-        console.log(fromListData, 'fromListData', toListData, 'toListData')
+
         setShowTooltip(false)
 
         if (count === 0) {
@@ -365,17 +367,20 @@ function ERSimulation(props) {
             case APPLICABILITY_RM_SIMULATION:
                 setShowRMMasterList(true);
                 break;
-            case APPLICABILITY_BOP_SIMULATION:  // Add this constant to your constants file
+            case APPLICABILITY_BOP_SIMULATION:
                 setShowBOPMasterList(true);
                 break;
-            case APPLICABILITY_OPERATIONS_SIMULATION:  // Add this constant to your constants file
+            case APPLICABILITY_OPERATIONS_SIMULATION:
                 setShowOperationsList(true);
                 break;
-            case APPLICABILITY_MACHINE_RATES_SIMULATION:  // Add this constant to your constants file
+            case APPLICABILITY_MACHINE_RATES_SIMULATION:
                 setShowMachineRatesList(true);
                 break;
-            case APPLICABILITY_SURFACE_TREATMENT_SIMULATION:  // Add this constant to your constants file
+            case APPLICABILITY_SURFACE_TREATMENT_SIMULATION:
                 setShowSurfaceTreatmentList(true);
+                break;
+            case APPLICABILITY_RAWMATERIAL_SIMULATION:
+                setShowRawMaterialsList(true);
                 break;
             default:
         }
@@ -408,7 +413,7 @@ function ERSimulation(props) {
 
     return (
         <div>
-            {!showRMMasterList && !showBOPMasterList && !showOperationsList && !showMachineRatesList && !showSurfaceTreatmentList && <div className={`ag-grid-react`}>
+            {!showRMMasterList && !showBOPMasterList && !showOperationsList && !showMachineRatesList && !showSurfaceTreatmentList && !showRawMaterialsList && <div className={`ag-grid-react`}>
 
                 {showTooltip && !isImpactedMaster && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={basicRateviewTooltip} toggle={basicRatetooltipToggle} target={"exchangesdRate-tooltip"} >{"To edit revised exchange rate please double click on the field."}</Tooltip>}
                 {
@@ -459,7 +464,9 @@ function ERSimulation(props) {
                                             enableBrowserTooltips={true}
 
                                         >
-                                            <AgGridColumn field="Currency" editable='false' headerName="Currency" width={columnWidths.Currency}></AgGridColumn>
+                                            <AgGridColumn field="FromCurrency" headerName="From Currency" minWidth={135}></AgGridColumn>
+                                            <AgGridColumn field="ToCurrency" headerName="To Currency" minWidth={135}></AgGridColumn>
+                                            {/* <AgGridColumn field="Currency" editable='false' headerName="Currency" width={columnWidths.Currency}></AgGridColumn> */}
                                             {costingAndPartNo && <AgGridColumn field="CostingNumber" headerName="Costing No" width={columnWidths.CostingNumber}></AgGridColumn>}
                                             {costingAndPartNo && <AgGridColumn field="PartNumber" tooltipField='PartNumber' headerName="Part No" width={columnWidths.PartNumber}></AgGridColumn>}
                                             <AgGridColumn field="BankRate" editable='false' headerName="Bank Rate(INR)" width={columnWidths.BankRate}></AgGridColumn>
@@ -601,6 +608,8 @@ function ERSimulation(props) {
                     cancelImportList={cancelImportList}
                     selectionForListingMasterAPI={props?.selectionForListingMasterAPI}
                     isOperationST={showSurfaceTreatmentList ? SURFACETREATMENT : OPERATIONS}
+                    fromListData={fromListData}
+                    toListData={toListData}
                 />
             )}
 
@@ -613,7 +622,19 @@ function ERSimulation(props) {
                     isFromVerifyPage={true}
                     cancelImportList={cancelImportList}
                     selectionForListingMasterAPI={props?.selectionForListingMasterAPI}
+                    fromListData={fromListData}
+                    toListData={toListData}
 
+                />
+            )}
+            {showRawMaterialsList && (
+                <RMIndexationSimulationListing
+                    isSimulation={true}
+                    isMasterSummaryDrawer={false}
+                    ListFor={'simulation'}
+                    approvalStatus={APPROVED_STATUS}
+                    isFromVerifyPage={true}
+                    cancelImportList={cancelImportList}
                 />
             )}
         </div >

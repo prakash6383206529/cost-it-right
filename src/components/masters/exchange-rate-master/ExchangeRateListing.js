@@ -362,7 +362,7 @@ const ExchangeRateListing = (props) => {
 
     return (
         <>
-            <div className={`ag-grid-react exchange-rate ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`} id='go-to-top'>
+            <div className={`ag-grid-react exchange-rate ${props.isSimulation ? "mt-5" : ""} ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`} id='go-to-top'>
                 <div className="container-fluid">
                     <ScrollToTop pointProp="go-to-top" />
                     {state.isLoader && <LoaderCustom />}
