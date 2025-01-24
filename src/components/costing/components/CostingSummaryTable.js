@@ -2626,7 +2626,7 @@ const CostingSummaryTable = (props) => {
                                 </th></tr>}
 
                               <tr className={highlighter("netRM", "main-row")}>
-                                <th>Net RM Cost {simulationDrawer && (Number(master) === Number(RMDOMESTIC) || Number(master) === Number(RMIMPORT)) && '(Old)'}</th>
+                                <th>Net RM Cost {simulationDrawer && (Number(master) === Number(RMDOMESTIC) || Number(master) === Number(RMIMPORT))}</th>
                                 {viewCostingData &&
                                   viewCostingData?.map((data, index) => {
                                     return (

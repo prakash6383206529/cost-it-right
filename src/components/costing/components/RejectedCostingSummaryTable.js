@@ -1564,7 +1564,7 @@ const RejectedCostingSummaryTable = (props) => {
                             </th></tr>}
 
                             <tr className={`background-light-blue  ${isApproval && !props.isRfqCosting ? viewCostingData?.length > 0 && viewCostingData[0]?.netRM > viewCostingData[1]?.netRM ? 'green-row' : viewCostingData[0]?.netRM < viewCostingData[1]?.netRM ? 'red-row' : '' : '-'}`}>
-                              <th>Net RM Cost {simulationDrawer && (Number(master) === Number(RMDOMESTIC) || Number(master) === Number(RMIMPORT)) && '(Old)'}</th>
+                              <th>Net RM Cost {simulationDrawer && (Number(master) === Number(RMDOMESTIC) || Number(master) === Number(RMIMPORT))}</th>
                               {viewCostingData &&
                                 viewCostingData?.map((data, index) => {
                                   return (
