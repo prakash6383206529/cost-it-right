@@ -88,7 +88,7 @@ function ViewOtherCostDrawer(props) {
         return (<>
             <Col md="12">
                 <HeaderTitle className="border-bottom"
-                    title={'Discount Cost'}
+                    title={'Discount Cost:'}
                     customClass={'underLine-title'}
                 />
             </Col>
@@ -133,7 +133,7 @@ function ViewOtherCostDrawer(props) {
         return (<>
             <Col md="12" className='mt-4'>
                 <HeaderTitle className="border-bottom"
-                    title={'Other Cost'}
+                    title={'Other Cost:'}
                     customClass={'underLine-title'}
                 />
             </Col>
@@ -176,7 +176,7 @@ function ViewOtherCostDrawer(props) {
     }
     const paymentTableData = () => {
         return <>
-            <Row>
+            <Row Col md="12" className='mt-4'>
                 <Col md="12">
                     <div className="left-border">{"Payment Terms:"}</div>
                 </Col>
@@ -222,7 +222,7 @@ function ViewOtherCostDrawer(props) {
     }
     const NpvCost = () => {
         return <>
-            <Row>
+            <Row Col md="12" className='mt-4'>
                 <Col md="12">
                     <div className="left-border">{"NPV Cost:"}</div>
                 </Col>
@@ -267,6 +267,38 @@ function ViewOtherCostDrawer(props) {
                     </Table>
                 </Col>
             </Row></>
+    }
+
+    const yoyCost = () => {
+        return <>
+            {costingSummary && props?.isRfqCosting &&
+                <>
+                    <Row Col md="12" className='mt-4'>
+                        <Col md="12">
+                            <div className="left-border">{"YOY Cost:"}</div>
+                        </Col>
+                    </Row>
+                    <Row Col md="12">
+
+                        <YOYCost
+                            outside={true}
+                            NetPOPrice={props.netPOPrice}
+                            setValue={setValue}
+                            getValues={getValues}
+                            control={control}
+                            register={register}
+                            errors={errors}
+                            activeTab={'6'}
+                            patId={partId}
+                            vendorId={vendorId}
+                            hideAddButton={true}
+                            quotationId={viewCostingData[costingIndex]?.QuotationId}
+                            isRfqCosting={props?.isRfqCosting}
+                        />
+                    </Row>
+                </>
+            }
+        </>
     }
     return (
 
@@ -315,29 +347,8 @@ function ViewOtherCostDrawer(props) {
                                         </Col>
                                         <ConditionCosting hideAction={true} tableData={conditionTableData} isFromImport={true} currency={{ label: showCurrency }} />
                                     </div>}
+                                {costingSummary && yoyCost()}
 
-                                {costingSummary && props?.isRfqCosting &&
-                                    <div className={'mt-4 pb-1'}>
-                                        <Col md="12" className={'mt25 pb-15'}>
-                                            <HeaderTitle className="border-bottom"
-                                                title={'YOY'}
-                                                customClass={'underLine-title'}
-                                            />
-                                        </Col>
-                                        <YOYCost
-                                            outside={true}
-                                            NetPOPrice={props.netPOPrice}
-                                            setValue={setValue}
-                                            getValues={getValues}
-                                            control={control}
-                                            register={register}
-                                            errors={errors}
-                                            activeTab={'6'}
-                                            patId={partId}
-                                            vendorId={vendorId}
-                                            hideAddButton={true}
-                                        />
-                                    </div>}
                             </div>
                         </div>
                     </Container>
