@@ -2174,7 +2174,7 @@ function TabDiscountOther(props) {
                       CostingViewMode={CostingViewMode}
                     />
                     }
-                    {/* {costData?.IsRfqCosting && <Col md="12" className='yoy-cost'>
+                    {costData?.IsRfqCosting && <Col md="12" className='yoy-cost mb-4'>
                       <YOYCost
                         outside={true}
                         NetPOPrice={netPOPrice}
@@ -2187,8 +2187,10 @@ function TabDiscountOther(props) {
                         patId={costData?.PartId}
                         vendorId={costData?.VendorId}
                         viewMode={CostingViewMode}
+                        quotationId={costData?.QuotationId}
+                        isRfqCosting={costData?.IsRfqCosting}
                       />
-                    </Col>} */}
+                    </Col>}
                     <TooltipCustom disabledIcon={true} width="280px" id="net-po-price" tooltipText={`Net Cost (${currencySource?.label ?? initialConfiguration?.BaseCurrency}) = ${initialConfiguration?.IsBasicRateAndCostingConditionVisible ? 'Basic Rate + Total Costing Condition Cost' : `(Total Cost + Total Other Cost - ${discountLabel} Value ${initialConfiguration?.IsAddPaymentTermInNetCost ? " + Payment Terms Cost" : ""})  `}`} />
                     <Col md="3">
                       <TextFieldHookForm

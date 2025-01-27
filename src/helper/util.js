@@ -961,7 +961,8 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
   obj.NetSurfaceTreatmentConversion = dataFromAPI?.NetSurfaceTreatmentConversion
   obj.NetFreightPackagingConversion = dataFromAPI?.NetFreightPackagingConversion
   obj.nTotalRMBOPCCLocalConversion = dataFromAPI?.CostingPartDetails && dataFromAPI.NetTotalRMBOPCCLocalConversion ? dataFromAPI.NetTotalRMBOPCCLocalConversion : 0
-
+  obj.QuotationId = dataFromAPI?.QuotationId ?? null
+  obj.IsRfqCosting = dataFromAPI?.IsRFQCosting ?? false
   temp.push(obj)
   return temp
 }

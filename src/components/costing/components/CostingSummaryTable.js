@@ -3874,7 +3874,7 @@ const CostingSummaryTable = (props) => {
             index={viewAtttachments}
             closeDrawer={closeAttachmentDrawer}
             anchor={'right'}
-            isRfqCosting={props?.isRfqCosting}
+            isRfqCosting={viewCostingData[index]?.IsRfqCosting}
           />
         )
       }
@@ -3904,7 +3904,7 @@ const CostingSummaryTable = (props) => {
           anchor={'right'}
           partId={viewCostingData[npvIndex]?.partId}
           vendorId={viewCostingData[npvIndex]?.vendorId}
-          isRfqCosting={props?.isRfqCosting}
+          isRfqCosting={viewCostingData[npvIndex]?.IsRfqCosting}
           CostingPaymentTermDetails={paymentTermsData}
           npvCostData={npvData}
 
@@ -3922,7 +3922,7 @@ const CostingSummaryTable = (props) => {
           anchor={'right'}
           partId={viewCostingData[npvIndex]?.partId}
           vendorId={viewCostingData[npvIndex]?.vendorId}
-          isRfqCosting={props?.isRfqCosting}
+          isRfqCosting={viewCostingData[index]?.IsRfqCosting}
           costingId={costingId}
           totalCostFromSummary={true}
 
