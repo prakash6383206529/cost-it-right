@@ -429,3 +429,36 @@ export const StatusTooltip = (APIData) => {
     })
     return temp;
 }
+
+export const AgGridCustomDatePicker = ({ props }) => {
+    const formattedDate = props && props?.value ? props?.value?.split('T')[0] : ''; // Extract the date part
+    console.log(formattedDate);
+
+    // Parse the selected date
+    const selectedDate = new Date(formattedDate);
+
+    // Calculate min and max dates based on the selected date
+    const minDate = new Date(selectedDate);
+    minDate.setDate(selectedDate.getDate() - 30);
+    const maxDate = new Date(selectedDate);
+    maxDate.setDate(selectedDate.getDate() + 30);
+
+    // Format dates to YYYY-MM-DD
+    const formatToDateInput = (date) => date.toISOString().split('T')[0];
+
+    return <input
+        className='grid-custom-date-picker'
+        type="date"
+        value={formattedDate} // Use the formatted date
+        // min={formatToDateInput(minDate)} // Set min date
+        // max={formatToDateInput(maxDate)} // Set max date
+        onChange={(e) => {
+            if (props.node && props.node.setDataValue) {
+                props.node.setDataValue(props.column.colId, e.target.value);
+            }
+        }}
+        onKeyDown={(e) => {
+            e.preventDefault()
+        }}
+    />
+}
