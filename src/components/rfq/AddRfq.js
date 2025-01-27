@@ -236,15 +236,18 @@ function AddRfq(props) {
         setValue('prId', '');
         setPrNumber([])
 
-        // if (type !== selectedOption) {
-        //     setTableData([]);
-        //     setSpecificationList([]);
-        //     setSopQuantityList([]);
-        //     setChildPartFiles([]);
-        //     setRemark('');
-        // }
         onResetPartNoTable(true)
     };
+// Add this helper function to check if any parts exist
+const hasAnyParts = () => {
+    return (
+        partList?.length > 0 || 
+        rmDataList?.length > 0 || 
+        bopDataList?.length > 0 || 
+        toolingList?.length > 0
+    );
+};
+const isVendorSectionDisabled = !hasAnyParts();
 
     useEffect(() => {
         if (selectedOption === "Bought Out Part" || selectedOption === "Tooling") {
@@ -1039,10 +1042,8 @@ function AddRfq(props) {
         }
     }
 
-    const handleSubmitClick = (data, e, isPartDetailSent) => {
-
-        //handleSubmit(() => onSubmit(data, e, isSent))()
-        onSubmit(data, e, isPartDetailSent)
+    const handleSubmitClick = ( e, isPartDetailSent) => {
+        onSubmit( e, isPartDetailSent)
     };
 
     const onRadioSubmit = (data) => {
@@ -1087,8 +1088,7 @@ function AddRfq(props) {
         }
         return <HeaderTitle customClass="d-flex" title={title}><WarningMessage dClass={"mt-1 ml-3"} message={warningMessgae} /></HeaderTitle>
     }
-    const onSubmit = (data, e, isPartDetailsSent) => {
-
+    const onSubmit = (e, isPartDetailsSent) => {
         switch (selectedOption) {
             case BOUGHTOUTPARTSPACING:
                 if (bopDataList?.length === 0) {
@@ -1204,7 +1204,7 @@ function AddRfq(props) {
 
         // const hasBop=bopList && bopList.length>0
         const hasVendors = vendorList && vendorList.length > 0;
-        if (!isShowRfqPartDetail) {
+               if (!isShowRfqPartDetail) {
             IsPartDetailsSent = isPartDetailsSent;
             isSent = isPartDetailsSent;
         } else {
@@ -1214,6 +1214,10 @@ function AddRfq(props) {
 
             isSent = (showSendButton === PREDRAFT || showSendButton === '') ? false : ((hasParts || hasRm || hasBop || hasTooling) && hasVendors && isPartDetailsSent)
         }
+        if(isSent && vendorList?.length === 0){
+            Toaster.warning("Please add at least one vendor before sending RFQ.");
+            return false;
+        }
         // const IsPartDetailsSent = isShowRfqPartDetail ? ((isPartDetailSent && partList && partList.length > 0) ? true : (partList && partList.length > 0 && vendorList && vendorList.length > 0) ? true : false) : false
         // const isSent = isShowRfqPartDetail ? ((partList && vendorList && partList.length > 0 && vendorList.length > 0) ? IsPartDetailsSent : false) : false
 
@@ -1222,42 +1226,7 @@ function AddRfq(props) {
 
 
 
-
         const obj = createQuotationObject(isSent, IsPartDetailsSent);
-
-        // let obj = {}
-        // obj.QuotationId = apiData.QuotationId ? apiData.QuotationId : ""
-        // obj.QuotationNumber = apiData.QuotationNumber ? apiData.QuotationNumber : ""
-        // obj.Remark = getValues('remark')
-        // obj.TechnologyId = getValues('technology').value
-        // obj.PlantId = getValues('plant')?.value
-        // obj.LoggedInUserId = loggedInUserId()
-        // obj.StatusId = ''
-        // obj.IsSent = isSent
-        // obj.IsConditionallyVisible = isConditionalVisible
-        // obj.VisibilityMode = visibilityMode?.label
-        // obj.VisibilityDate = dateAndTime
-        // obj.VisibilityDuration = getValues('Time')
-        // obj.LastSubmissionDate = DayTime(submissionDate).format('YYYY-MM-DD HH:mm:ss')
-        // obj.VendorList = vendorList
-        // obj.Timezone = getTimeZone()
-        // //obj.QuotaionPartIds = quotationPartIds
-        // obj.Attachments = files
-        // obj.IsSent = isSent
-        // obj.NfrId = nfrId?.value
-        // if (dataProps?.isEditFlag) {
-        //     dispatch(updateRfqQuotation(obj, (res) => {
-
-        //         if (res?.data?.Result) {
-        //             setQuotationIdentity(res?.data?.Identity)
-        //             if (isSent) {
-        //                 Toaster.success(MESSAGES.RFQ_SENT_SUCCESS)
-        //             } else {
-        //                 Toaster.success(MESSAGES.RFQ_UPDATE_SUCCESS)
-        //             }
-        //             cancel()
-        //         }
-        //     }))
 
         dispatch(createRfqQuotation(obj, (res) => {
 
@@ -4044,7 +4013,7 @@ function AddRfq(props) {
                                                         // handleChange={handleDestinationPlantChange}
                                                         handleChange={() => { }}
                                                         errors={errors.contactPerson}
-                                                        disabled={disabledVendoUi ? true : dataProps?.isAddFlag ? false : (isViewFlag || !isEditAll)}
+                                                        disabled={isVendorSectionDisabled||disabledVendoUi ? true : dataProps?.isAddFlag ? false : (isViewFlag || !isEditAll)}
                                                         isLoading={plantLoaderObj}
                                                     />
                                                 </Col>
@@ -4108,7 +4077,7 @@ function AddRfq(props) {
                                                             className=""
                                                             customClassName={'withBorder'}
                                                             errors={errors.LDClause}
-                                                            disabled={(dataProps?.isViewFlag) ? true : false || disabledVendoUi}
+                                                            disabled={isVendorSectionDisabled||(dataProps?.isViewFlag) ? true : false || disabledVendoUi}
 
                                                         />
                                                     </Col>
@@ -4121,7 +4090,7 @@ function AddRfq(props) {
                                                     type="button"
                                                     className={'user-btn pull-left'}
                                                     onClick={() => addRowVendorTable()}
-                                                    disabled={disabledVendoUi ? true : dataProps?.isAddFlag ? false : (isViewFlag || !isEditAll)}
+                                                    disabled={isVendorSectionDisabled || disabledVendoUi ? true : dataProps?.isAddFlag ? false : (isViewFlag || !isEditAll)}
                                                 >
                                                     <div className={'plus'}></div>{!updateButtonVendorTable ? "ADD" : "UPDATE"}
                                                 </button>
@@ -4132,7 +4101,7 @@ function AddRfq(props) {
                                                     type="button"
                                                     value="CANCEL"
                                                     className="reset ml-2"
-                                                    disabled={disabledVendoUi ? true : dataProps?.isAddFlag ? false : (isViewFlag || !isEditAll)}
+                                                    disabled={isVendorSectionDisabled||disabledVendoUi ? true : dataProps?.isAddFlag ? false : (isViewFlag || !isEditAll)}
                                                 >
                                                     <div className={''}></div>
                                                     RESET
@@ -4436,7 +4405,7 @@ function AddRfq(props) {
                                                 <button type="button" className="submit-button save-btn mr-2" value="save"
                                                     // {!dataProps?.rowData?.IsSent && <button type="button" className="submit-button save-btn mr-2" value="save"     //RE
                                                     id="addRFQ_save"
-                                                    onClick={(data, e) => handleSubmitClick(data, e, false)}
+                                                    onClick={(e) => handleSubmitClick( e, false)}
                                                     disabled={isViewFlag || showSendButton === PREDRAFT && disabledPartUid}>
                                                     <div className={"save-icon"}></div>
                                                     {"Save"}
@@ -4445,7 +4414,8 @@ function AddRfq(props) {
 
                                             {!isDropdownDisabled && <button type="button" className="submit-button save-btn" value="send"
                                                 id="addRFQ_send"
-                                                onClick={(data, e) => handleSubmitClick(data, e, true)}
+                                                onClick={(e) => handleSubmitClick(e, true)}
+                                                
                                                 disabled={isViewFlag || (showSendButton === PREDRAFT && disabledPartUid)}>
                                                 <div className="send-for-approval mr-1"></div>
                                                 {"Send"}

@@ -20,7 +20,7 @@ import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
 import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter, handleDepartmentHeader, showSaLineNumber, showBopLabel } from '../../../helper';
 import LoaderCustom from '../../common/LoaderCustom';
 import VerifyImpactDrawer from './VerifyImpactDrawer';
-import { checkFinalUser, setCostingViewData, storePartNumber } from '../../costing/actions/Costing';
+import { checkFinalUser, resetExchangeRateData, setCostingViewData, storePartNumber } from '../../costing/actions/Costing';
 import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { Redirect } from 'react-router';
@@ -152,6 +152,7 @@ function SimulationApprovalSummary(props) {
 
     const [costingIdArray, setCostingIdArray] = useState({})
 
+    const rmIndexedSimulationSummaryData = useSelector(state => state?.simulation?.simulatedRawMaterialSummary?.SimulationRawMaterialDetailsResponse)
 
     useEffect(() => {
         const reqParams = {
@@ -263,11 +264,11 @@ function SimulationApprovalSummary(props) {
                 }
 
                 // const valueTemp = {
-                //     CostingHead: SimulatedCostingList[0].CostingHead === 'VBC' ? 1 : 0,
-                //     impactPartNumber: SimulatedCostingList[0].PartNo,
-                //     plantCode: SimulatedCostingList[0].PlantCode,
-                //     vendorId: SimulatedCostingList[0].CostingHead === 'VBC' ? SimulatedCostingList[0].VendorId : EMPTY_GUID,
-                //     delta: SimulatedCostingList[0].Variance,
+                //     CostingHead: SimulatedCostingList[0]?.CostingHead === 'VBC' ? 1 : 0,
+                //     impactPartNumber: SimulatedCostingList[0]?.PartNo,
+                //     plantCode: SimulatedCostingList[0]?.PlantCode,
+                //     vendorId: SimulatedCostingList[0]?.CostingHead === 'VBC' ? SimulatedCostingList[0]?.VendorId : EMPTY_GUID,
+                //     delta: SimulatedCostingList[0]?.Variance,
                 //     quantity: 1
                 // }
                 setdataForAssemblyImpactForFg(SimulatedCostingList)
@@ -381,7 +382,7 @@ function SimulationApprovalSummary(props) {
         if (count === 0 && effectiveDate && costingList && simulationDetail?.SimulationId) {
             setCount(1)
             if (costingList && costingList?.length > 0 && effectiveDate && Object.keys('simulationDetail'?.length > 0) && simulationDetail?.SimulationHeadId === VBCTypeId) {
-                dispatch(getLastSimulationData(costingList[0].VendorId, effectiveDate, res => {
+                dispatch(getLastSimulationData(costingList[0]?.VendorId, effectiveDate, res => {
                     const structureOfData = {
                         ExchangeRateImpactedMasterDataList: [],
                         OperationImpactedMasterDataList: [],
@@ -506,7 +507,7 @@ function SimulationApprovalSummary(props) {
             objj3[1].SimulationStatusId = Data?.SimulationStatusId
             dispatch(setCostingViewData(objj3))
             setCompareCosting(true)
-            setTechnologyName(obj1[0].technology)
+            setTechnologyName(obj1[0]?.technology)
         }))
     }
 
@@ -1526,7 +1527,8 @@ function SimulationApprovalSummary(props) {
                             </>
                         }
                         {
-                            Number(SimulationTechnologyId) === Number(RAWMATERIALINDEX) &&
+                          rmIndexedSimulationSummaryData && 
+                          rmIndexedSimulationSummaryData?.length>0 &&  Number(SimulationTechnologyId) === Number(RAWMATERIALINDEX) && 
                             <RMIndexationSimulation isApprovalSummary={true} />
                         }
                         {
