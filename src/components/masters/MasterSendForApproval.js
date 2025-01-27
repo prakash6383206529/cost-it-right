@@ -78,6 +78,57 @@ function MasterSendForApproval(props) {
     useEffect(() => {
         dispatch(getReasonSelectList((res) => { }))
         setValue('ScrapRateUOM', { label: approvalObj?.ScrapUnitOfMeasurement, value: approvalObj?.ScrapUnitOfMeasurementId })
+        if (type === 'Approve') {
+            // Set department directly from approvalDetails
+            const departmentData = {
+                label: approvalDetails?.DepartmentName,
+                value: approvalDetails?.DepartmentId
+            }
+            setValue('dept', departmentData)
+            
+            setDisableDept(true)
+            setDepartment(departmentData)
+            
+            
+            
+            // Handle division setting for 'Approve' type
+            if (getConfigurationKey().IsDivisionAllowedForDepartment) {
+                
+                setIsShowDivision(true)
+                // If division details exist in approvalDetails
+                if (approvalDetails?.DivisionId) {
+                    const divisionData = {
+                        label: approvalDetails?.DivisionName,
+                        value: approvalDetails?.DivisionId,
+                        DivisionCode: approvalDetails?.DivisionCode
+                    }
+                    setDivisionList([divisionData])
+                    setValue('Division', divisionData)
+                    setDivision(divisionData)
+                } else {
+                    
+                    // If no division in approvalDetails, fetch division list
+                    fetchDivisionList(approvalDetails?.DepartmentId, dispatch, (divisionArray, showDivision) => {
+                        setIsShowDivision(showDivision)
+                        setDivisionList(divisionArray)
+                        
+                        // If there's only one division, set it as selected
+                        if (divisionArray.length === 1) {
+                            setValue('Division', divisionArray[0])
+                            setDivision(divisionArray[0])
+                        }
+                    })
+                }
+            }
+    
+            // Fetch approval users with approvalDetails data
+            fetchAndSetApprovalUsers(
+                approvalDetails?.DepartmentId, 
+                reasonId, 
+                approvalDetails?.DivisionId
+            )
+        } 
+        else {
         dispatch(getAllMasterApprovalDepartment((res) => {
             const Data = res?.data?.SelectList
             const Departments = userDetails().Department && userDetails().Department.map(item => item.DepartmentName)
@@ -92,6 +143,7 @@ function MasterSendForApproval(props) {
             setDepartmentDropdown(department)
             if (department?.length === 1 || !checkMultiDept) {
                 setValue('dept', { label: department[0]?.label, value: department[0]?.value })
+                
                 setDisableDept(true)
                 setDepartment(department[0])
                 if (props.approvalListing) {
@@ -109,8 +161,10 @@ function MasterSendForApproval(props) {
                     let departmentId = matchingDepartment?.value ?? department[0]?.value
                     if (getConfigurationKey().IsDivisionAllowedForDepartment && matchingDepartment) {
                         setValue('dept', { label: matchingDepartment?.label, value: matchingDepartment?.value });
+                        
                     } else {
                         setValue('dept', { label: department[0]?.label, value: department[0]?.value });
+                        
                     }
                     setDisableDept(true)
                     fetchAndSetApprovalUsers(departmentId, reasonId, props?.divisionId);
@@ -123,12 +177,13 @@ function MasterSendForApproval(props) {
                 const updateList = Data && Data.filter(item => departmentIds.includes(item.Value));
                 setDepartmentDropdown(updateList)
                 setValue('dept', { label: updateList[0]?.Text, value: updateList[0]?.Value })
+                
                 setDisableDept(true)
                 fetchAndSetApprovalUsers(updateList[0]?.Value, reasonId, approvalData[0]?.DivisionId);
                 setIsShowDivision(false)
             }
 
-        }))
+        }))}
         getLastRevisionData()
     }, [])
 
@@ -140,10 +195,7 @@ function MasterSendForApproval(props) {
             OnboardingMasterId: OnboardingId,
             ApprovalTypeId: masterId !== 0 ? costingTypeIdToApprovalTypeIdFunction(props?.costingTypeId) : approvalDetails?.ApprovalTypeId,
             ReasonId: reasonId,
-            // PlantId: props?.isRFQ ? RFQPlantId : (approvalObj ? approvalObj.Plant[0].PlantId ?? EMPTY_GUID : props.masterPlantId ?? EMPTY_GUID),
-            // DivisionId: divisionId ?? null
-
-            PlantId: props?.isRFQ ? RFQPlantId : (approvalObj ? (Array.isArray(approvalObj?.Plant) ? approvalObj?.Plant[0]?.PlantId : approvalObj?.PlantId) ?? EMPTY_GUID : props?.masterPlantId ?? EMPTY_GUID),
+                       PlantId: props?.isRFQ ? RFQPlantId : (approvalObj ? (Array.isArray(approvalObj?.Plant) ? approvalObj?.Plant[0]?.PlantId : approvalObj?.PlantId) ?? EMPTY_GUID : props?.masterPlantId ?? EMPTY_GUID),
             DivisionId: divisionId ?? null
 
             // ... existing code ...
@@ -177,10 +229,13 @@ function MasterSendForApproval(props) {
                         approverIdListTemp.push(item?.Value);
                     }
                 });
+                
+                
                 const hasFinalApproval = tempDropdownList.some(approver =>
-                    approver.label.toLowerCase().includes("final approval")
+                    approver?.label?.toLowerCase().includes("final approval")
                 );
-                if (hasFinalApproval) {
+                
+                if (hasFinalApproval && type !== 'Approve') {
                     Toaster.warning('User not in approval flow');
                     setDepartment('')
                 }
@@ -258,6 +313,10 @@ function MasterSendForApproval(props) {
         }));
     };
     const handleDepartmentChange = (value) => {
+        
+        if (!value) return;
+        if (type === 'Approve' || !value) return;
+
         setValue('approver', { label: '', value: '', levelId: '', levelName: '' })
         setApprovalDropDown([])
         setDepartment(value)
@@ -270,22 +329,25 @@ function MasterSendForApproval(props) {
                 setDivisionList(divisionArray);
             });
         } else {
+            
+            const {masterPlantId,masterSummary} = props
             let tempDropdownList = []
             let approverIdListTemp = []
             let obj = {
                 LoggedInUserId: loggedInUserId(), // user id
-                DepartmentId: value.value,
+                DepartmentId: value?.value,
                 MasterId: masterId,
                 OnboardingMasterId: OnboardingId,
                 ReasonId: '',
                 ApprovalTypeId: masterId !== 0 ? costingTypeIdToApprovalTypeIdFunction(props?.costingTypeId) : approvalDetails?.ApprovalTypeId,
-                PlantId: props?.isRFQ ? RFQPlantId : (approvalObj?.PlantId ?? approvalData[0].MasterApprovalPlantId ?? EMPTY_GUID)
+                PlantId: props?.isRFQ ? RFQPlantId : (masterSummary ? masterPlantId :approvalObj?.Plant[0]?.PlantId ?? approvalData[0].MasterApprovalPlantId ?? EMPTY_GUID)
 
             }
             dispatch(getAllMasterApprovalUserByDepartment(obj, (res) => {
                 const Data = res.data.DataList[1] ? res.data.DataList[1] : []
                 if (Data?.length !== 0) {
                     setValue('dept', { label: Data.DepartmentName, value: Data.DepartmentId })
+                    
                     setValue('approver', { label: Data.Text ? Data.Text : '', value: Data.Value ? Data.Value : '', levelId: Data.LevelId ? Data.LevelId : '', levelName: Data.LevelName ? Data.LevelName : '' })
                     res.data.DataList &&
                         res.data.DataList.map((item) => {
@@ -564,7 +626,7 @@ function MasterSendForApproval(props) {
                             CostingHeadId: approvalObj?.CostingHeadId,
                             PartId: approvalObj?.PartId,
                             RevisionNumber: approvalObj?.RevisionNumber,
-                            PlantId: approvalObj?.PlantId,
+                            PlantId: approvalObj?.Plant[0]?.PlantId,
                             VendorId: approvalObj?.VendorId,
                             CustomerId: approvalObj?.CustomerId,
                             TotalRecordCount: 0,
@@ -851,7 +913,7 @@ function MasterSendForApproval(props) {
                                                 options={departmentDropdown}
                                                 handleChange={handleDepartmentChange}
                                                 errors={errors.dept}
-                                                disabled={initialConfiguration?.IsMultipleUserAllowForApproval && (!getConfigurationKey().IsDivisionAllowedForDepartment || isDisableDept)}
+                                                disabled={initialConfiguration?.IsMultipleUserAllowForApproval || type === 'Approve' ? true : false && (!getConfigurationKey().IsDivisionAllowedForDepartment || isDisableDept)}
                                                 mandatory={true}
                                                 rules={{ required: true }}
 
@@ -867,7 +929,7 @@ function MasterSendForApproval(props) {
                                                 register={register}
                                                 defaultValue={""}
                                                 options={divisionList}
-                                                disabled={(Object.keys(getValues('dept')).length === 0)}
+                                                disabled={(Object.keys(getValues('dept')).length === 0) || type === 'Approve' ? true : false}
                                                 handleChange={handleDivisionChange}
                                                 errors={errors.Division}
                                                 mandatory={true}
@@ -1093,7 +1155,7 @@ function MasterSendForApproval(props) {
                                                                 required: true,
                                                             }}
                                                             placeholder={'Select'}
-                                                            defaultValue={{ label: approvalObj?.PlantName, value: approvalObj?.PlantId }}
+                                                            defaultValue={{ label: approvalObj?.Plant[0]?.PlantName, value: approvalObj?.Plant[0]?.PlantId }}
                                                             required={true}
                                                             disabled={true}
                                                         />
@@ -1141,7 +1203,7 @@ function MasterSendForApproval(props) {
                                                                 required: true,
                                                             }}
                                                             placeholder={'Select'}
-                                                            defaultValue={{ label: approvalObj?.PlantName, value: approvalObj?.PlantId }}
+                                                            defaultValue={{ label: approvalObj?.Plant[0]?.PlantName, value: approvalObj?.Plant[0]?.PlantId }}
                                                             required={true}
                                                             disabled={true}
                                                         />

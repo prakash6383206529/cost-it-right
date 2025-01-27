@@ -102,7 +102,7 @@ const BOPDomesticListing = (props) => {
   });
 
 
-  console.log(state?.isLoader, "LOADER", props?.isMasterSummaryDrawer, "MASTER SUMMARY DRAWER")
+  
 
 
   useEffect(() => {
@@ -170,7 +170,7 @@ const BOPDomesticListing = (props) => {
         dataObj.ExchangeRateSourceName = floatingFilterData?.ExchangeRateSourceName
         dataObj.OtherNetCost = floatingFilterData?.OtherNetCost
         dispatch(getBOPDataList(filterData, skip, take, isPagination, dataObj, false, (res) => {
-          console.log("res", res)
+          
 
           setState((prevState) => ({ ...prevState, isLoader: false, noData: false }))
           if (props.isSimulation) {
@@ -188,7 +188,7 @@ const BOPDomesticListing = (props) => {
           }
 
           if (res && res.status === 204) {
-            console.log("res in 204", res)
+            
             setState((prevState) => ({
               ...prevState, totalRecordCount: 0, isLoader: false, tableData: []
               // pageNo: 0

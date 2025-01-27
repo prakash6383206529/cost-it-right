@@ -119,7 +119,6 @@ const BOPCompareTable = (props) => {
             }
 
             viewBOPDetails?.map((item, index) => {
-                console.log(item)
                 // Section One Data
                 const formattedDataOne = [
                     item?.BoughtOutPartNumber || '',

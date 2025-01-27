@@ -1742,7 +1742,7 @@ export function checkTechnologyIdAndRfq(viewCostingData = []) {
 }
 // function to remove all spaces from a string
 export const removeSpaces = (str = '') => {
-  return str.replace(/\s+/g, '');
+  return str?.replace(/\s+/g, '');
 };
 export const getChangeHighlightClass = (originalValue, updatedValue) => {
   return updatedValue && updatedValue !== originalValue ? 'red-value' : '';

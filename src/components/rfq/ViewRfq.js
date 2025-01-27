@@ -254,6 +254,7 @@ function RfqListing(props) {
     * @description HIDE DOMESTIC, IMPORT FORMS
     */
     const getDataList = () => {
+
         setloader(true)
         dispatch(getQuotationDetailsList(data?.QuotationId, (res) => {
             if (res === 204) {
@@ -683,6 +684,7 @@ function RfqListing(props) {
     }
 
     const cancel = () => {
+        dispatch(agGridStatus("", ""))
         props.closeDrawer()
     }
 
