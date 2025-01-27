@@ -99,6 +99,7 @@ function RMIndexationSimulation(props) {
     const [conditionCostDetailForRow, setConditionCostDetailForRow] = useState([])
     const [rowIndex, setRowIndex] = useState('')
     const [isSaving, setIsSaving] = useState(false);
+    const [dateState, setDateState] = useState({})
     const { register, control, setValue, formState: { errors }, } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
@@ -1214,15 +1215,28 @@ function RMIndexationSimulation(props) {
         }, 1000);
     }
 
-    console.log(isSaving, "isSaving")
 
     const selectedDateRenderer = (props) => {
         const rowData = props?.data
+        let tempDate = {
+            "NewEffectiveDate": rowData?.NewEffectiveDate,
+            "NewFromDate": rowData?.NewFromDate,
+            "NewToDate": rowData?.NewToDate
+        }
+        tempDate = {
+            ...tempDate, // spread existing tempDate if needed
+            [props?.column?.colId]: rowData[props?.column?.colId]
+        }
+        // tempDate[props?.column?.colId] = rowData[props?.column?.colId]
+        setDateState(prev => ({ ...prev, ...tempDate }))
+
+
         const isEditable = (isImpactedMaster || isRunSimulationClicked || isApprovalSummary) ? false : (isCostingSimulation ? rowData?.NewRawMaterialIndexationDetails?.FrequencyOfSettlement : rowData?.FrequencyOfSettlement) === 'As and When'
-        return isEditable ? <><AgGridCustomDatePicker props={props} />  </> : effectiveDateFormatter(props)
+        return isEditable ? <><AgGridCustomDatePicker dateState={tempDate} props={props} colId={props?.column?.colId} />  </> : effectiveDateFormatter(props)
     }
     const fetchData = (props) => {
         const rowData = props?.data
+        const rowIndex = props?.rowIndex
         let obj = {
             "SimulationId": simulationId,
             "LoggedInUserId": loggedInUserId(),
@@ -1241,7 +1255,13 @@ function RMIndexationSimulation(props) {
                 dispatch(editRMIndexedSimulationData({ SimulationId: simulationId }, (res) => {
                     setIsLoader(!res?.data?.Result);
                     setIsSaving(true);
-                    Toaster.success("Data saved successfully")
+                    if (indexedRMForSimulation && indexedRMForSimulation.length > 0) {
+                        if (indexedRMForSimulation[rowIndex]?.Message) {
+                            Toaster.warning(indexedRMForSimulation[rowIndex]?.Message)
+                        } else {
+                            Toaster.success("Data saved successfully")
+                        }
+                    }
                 }));
             }
         }))
@@ -1358,7 +1378,10 @@ function RMIndexationSimulation(props) {
 
 
 
-
+    const showForAsAndWhen = (props) => {
+        const isEditable = (isImpactedMaster || isRunSimulationClicked || isApprovalSummary) ? false : (isCostingSimulation ? rowData?.NewRawMaterialIndexationDetails?.FrequencyOfSettlement : rowData?.FrequencyOfSettlement) === 'As and When'
+        return !isEditable
+    }
 
     return (
 
@@ -1521,7 +1544,7 @@ function RMIndexationSimulation(props) {
                                                 <AgGridColumn width={columnWidths.OldEffectiveDate} field={isCostingSimulation ? 'OldRawMaterialIndexationDetails.EffectiveDate' : "OldEffectiveDate"} editable='false' cellRenderer={'effectiveDateFormatter'} headerName={isIndexedRM ? props.isImpactedMaster && !props.lastRevision ? "Old Effective date" : "Old Effective Date" : "Effective Date"} ></AgGridColumn>
                                                 <AgGridColumn width={columnWidths.NewEffectiveDate} field={isCostingSimulation ? 'NewRawMaterialIndexationDetails.EffectiveDate' : "NewEffectiveDate"} editable='false' cellRenderer={'effectiveDateFormatter'} headerName={props.isImpactedMaster && !props.lastRevision ? "New Effective date" : "New Effective Date"} ></AgGridColumn>
                                                 {(!isIndexedRM && !isImpactedMaster && !isApprovalSummary && !isRunSimulationClicked) && <AgGridColumn headerName='Action' pinned='right' cellRenderer='actionCellRenderer'></AgGridColumn>}
-                                                <AgGridColumn width={120} pinned='right' field="NewRMNetLandedCostConversion" editable='false' headerName="Action" cellRenderer={'saveButtonRenderer'}></AgGridColumn>
+                                                <AgGridColumn hide={showForAsAndWhen} width={120} pinned='right' field="NewRMNetLandedCostConversion" editable='false' headerName="Action" cellRenderer={'saveButtonRenderer'}></AgGridColumn>
                                                 <AgGridColumn field="RawMaterialId" hide></AgGridColumn>
 
                                             </AgGridReact>))}
