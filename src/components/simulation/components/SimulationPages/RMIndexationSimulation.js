@@ -106,7 +106,7 @@ function RMIndexationSimulation(props) {
     const currencySelectList = useSelector(state => state.comman.currencySelectList)
     const { selectedMasterForSimulation, exchangeRateListBeforeDraft, indexedRMForSimulation } = useSelector(state => state.simulation)
     const simulationApplicability = useSelector(state => state.simulation.simulationApplicability)
-    const rmIndexedSimulationSummaryData = useSelector(state => state.simulation.simulatedRawMaterialSummary?.SimulationRawMaterialDetailsResponse)
+    const rmIndexedSimulationSummaryData = useSelector(state => state?.simulation?.simulatedRawMaterialSummary?.SimulationRawMaterialDetailsResponse)
 
     const { commodityDetailsArray } = useSelector((state) => state.indexation)
     const { filteredRMData } = useSelector(state => state.material)
@@ -1278,7 +1278,7 @@ function RMIndexationSimulation(props) {
                         {showTooltip && !isImpactedMaster && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={basicRateviewTooltip} toggle={basicRatetooltipToggle} target={"basicRate-tooltip"} >{"To edit revised basic rate please double click on the field."}</Tooltip>}
                         {showTooltip && !isImpactedMaster && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={scrapRateviewTooltip} toggle={scrapRatetooltipToggle} target={"scrapRate-tooltip"} >{"To edit revised scrap rate please double click on the field."}</Tooltip>}
                         <Row>
-                            <Col className={`${props.isApprovalSummary ? "" : "add-min-height sm-edit-page"}  mb-3 `}>
+                            <Col className={`${props?.isApprovalSummary ? "" : "add-min-height sm-edit-page"}  mb-3 `}>
                                 <div className={`ag-grid-wrapper height-width-wrapper reset-btn-container ${(list && list?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                                     <div className="ag-grid-header d-flex justify-content-between">
                                         <div className='d-flex align-items-center'>
