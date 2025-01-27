@@ -188,6 +188,7 @@ class AddMachineRate extends Component {
     if (!editDetails.isViewMode) {
       this.props.getUOMSelectList(() => { })
       this.props.getProcessesSelectList(() => { })
+      this.props.getMachineTypeSelectList(() => { })
       if (!getConfigurationKey().IsDivisionAllowedForDepartment && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true) {
         this.finalUserCheckAndMasterLevelCheckFunction(EMPTY_GUID)
       }
@@ -197,7 +198,7 @@ class AddMachineRate extends Component {
     }
 
     if (!(editDetails.isEditFlag || editDetails.isViewMode)) {
-      this.props.getMachineTypeSelectList(() => { })
+
       this.props.getCostingSpecificTechnology(loggedInUserId(), () => { })
       this.props.getPlantSelectListByType(ZBC, "MASTER", '', () => { })
       this.props.getClientSelectList(() => { })

@@ -22,6 +22,7 @@ const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
 // const BASE_URL = `https://demofst-api.costitright.com/api/v1/`;
 //const BASE_URL = `http://172.16.0.63:8081/api/v1`;
 // const BASE_URL = `http://172.16.0.18:81/api/v1`;
+// const BASE_URL = `http://10.10.8.117:8081/api/v1`;
 
 export const FILE_URL = `${process.env.REACT_APP_FILE_URL}`;
 
@@ -1006,6 +1007,7 @@ export const API = {
   //EXCHANGE RATE MASTER
   createExchangeRate: `${BASE_URL}/masters-exchange-rate/create`,
   getExchangeRateDataList: `${BASE_URL}/masters-exchange-rate/get-all-exchange-rate`,
+  getExchangeRateDataListForSimulation: `${BASE_URL}/masters-exchange-rate/get-old-and-new-all-exchange-rate`,
   getExchangeRateData: `${BASE_URL}/masters-exchange-rate/get-exchange-rate-by-id`,
   deleteExchangeRate: `${BASE_URL}/masters-exchange-rate/delete-exchange-rate`,
   updateExchangeRate: `${BASE_URL}/masters-exchange-rate/update-exchange-rate`,
@@ -3293,7 +3295,7 @@ export const COSTINGCONDITIONCOST = 'Costing Condition Cost'
 export const IsSelectSinglePlant = true
 
 //VERSION 
-export const VERSION = "V3.1.66.11";
+export const VERSION = "V3.1.67";
 
 
 
