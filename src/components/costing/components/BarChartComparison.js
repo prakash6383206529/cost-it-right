@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
-import { getCurrencySymbol } from '../../../helper';
+import { checkForDecimalAndNull, getConfigurationKey, getCurrencySymbol } from '../../../helper';
 import { Bar } from 'react-chartjs-2';
 import { colorArray } from '../../dashboard/ChartsDashboard';
 
@@ -30,32 +30,32 @@ export function BarChartComparison({ costingData, currency }) {
       const datasets = [
         {
           label: 'Net RM',
-          data: filteredCostingData?.map(item => item?.netRM),
+          data: filteredCostingData?.map(item => checkForDecimalAndNull(item?.NetRawMaterialsCostConversion, getConfigurationKey()?.NoOfDecimalForPrice)),
           backgroundColor: colorArray[0],
         },
         {
           label: 'Net BOP',
-          data: filteredCostingData?.map(item => item?.netBOP),
+          data: filteredCostingData?.map(item => checkForDecimalAndNull(item?.NetBoughtOutPartCostConversion, getConfigurationKey()?.NoOfDecimalForPrice)),
           backgroundColor: colorArray[1],
         },
         {
           label: 'Net Conversion Cost',
-          data: filteredCostingData?.map(item => item?.nConvCost),
+          data: filteredCostingData?.map(item => checkForDecimalAndNull(item?.NetConversionCostConversion, getConfigurationKey()?.NoOfDecimalForPrice)),
           backgroundColor: colorArray[2],
         },
         {
           label: 'Net Surface Treatment Cost',
-          data: filteredCostingData?.map(item => item?.netSurfaceTreatmentCost),
+          data: filteredCostingData?.map(item => checkForDecimalAndNull(item?.NetSurfaceTreatmentCostConversion, getConfigurationKey()?.NoOfDecimalForPrice)),
           backgroundColor: colorArray[3],
         },
         {
           label: 'Net Overheads & Profits',
-          data: filteredCostingData?.map(item => item?.nOverheadProfit),
+          data: filteredCostingData?.map(item => checkForDecimalAndNull(item?.NetOverheadAndProfitCostConversion, getConfigurationKey()?.NoOfDecimalForPrice)),
           backgroundColor: colorArray[4],
         },
         {
           label: 'Net Packaging & Freight',
-          data: filteredCostingData?.map(item => item?.nPackagingAndFreight),
+          data: filteredCostingData?.map(item => checkForDecimalAndNull(item?.NetFreightPackagingCostConversion, getConfigurationKey()?.NoOfDecimalForPrice)),
           backgroundColor: colorArray[5],
         },
       ];
@@ -92,7 +92,7 @@ export function BarChartComparison({ costingData, currency }) {
         title: { display: true, text: `Cost` },
         ticks: {
           callback: function (value) {
-            return getCurrencySymbol(currency) + value.toFixed(2);
+            return getCurrencySymbol(currency) + checkForDecimalAndNull(value, getConfigurationKey()?.NoOfDecimalForPrice);
           }
         },
         grid: {
@@ -129,7 +129,7 @@ export function BarChartComparison({ costingData, currency }) {
         align: 'center',
         anchor: 'center',
         formatter: (value) => {
-          return getCurrencySymbol(currency) + value.toFixed(2);
+          return getCurrencySymbol(currency) + checkForDecimalAndNull(value, getConfigurationKey()?.NoOfDecimalForPrice);
         },
       }
     }
