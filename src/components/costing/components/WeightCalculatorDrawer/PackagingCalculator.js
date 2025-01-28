@@ -163,7 +163,7 @@ const setFormValues=(data)=>{
     const calculateAllValues = () => {
         const noOfComponentsPerCrate = checkForNull(getValues('NoOfComponentsPerCrate'))
         // Calculate all values
-        const noOfCratesRequiredPerDay = Math.ceil(state.volumePerDay / noOfComponentsPerCrate)
+        const noOfCratesRequiredPerDay = Math.ceil(state?.volumePerDay / noOfComponentsPerCrate)
         const stockNormDays = checkForNull(getValues('StockNormDays'))
         const costOfCrate = checkForNull(getValues('CostOfCrate'))
         const totalCostOfCrate = noOfCratesRequiredPerDay * stockNormDays * costOfCrate
