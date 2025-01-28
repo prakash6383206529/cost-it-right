@@ -162,8 +162,9 @@ export function createMachine(data, callback) {
  * @description Copy Machine
  */
 export function copyMachine(MachineId, callback) {
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
     return (dispatch) => {
-        const queryParams = `machineId=${MachineId}&loggedInUserId=${loggedInUserId()}`
+        const queryParams = `machineId=${MachineId}&loggedInUserId=${loggedInUser?.loggedInUserId}`
         const request = axiosInstance.post(`${API.copyMachine}?${queryParams}`, '', config());
         request.then((response) => {
             if (response.data.Result === true) {

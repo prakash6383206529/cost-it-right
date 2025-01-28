@@ -335,8 +335,12 @@ export function pushNfrRmBopOnSap(requestData, callback) {
  * @description create NFR BOM Details
  */
 export function createNFRBOMDetails(requestData, callback) {
+    const requestedData = {
+        loggedInUserId: loggedInUserId(),
+        ...requestData
+    }
     return (dispatch) => {
-        axiosInstance.post(API.createNFRBOMDetails, requestData, config())
+        axiosInstance.post(API.createNFRBOMDetails, requestedData, config())
             .then((response) => {
                 if (response && response.status === 200) {
                     callback(response);

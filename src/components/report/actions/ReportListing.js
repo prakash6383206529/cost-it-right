@@ -173,9 +173,13 @@ export function getCostingBenchMarkBopReport(data, callback) {
     };
 }
 export function getCostRatioReport(data, callback) {
+    const requestData = {
+        loggedInUserId: loggedInUserId(),
+        ...data
+    }   
 
     return (dispatch) => {
-        const request = axiosInstance.post(`${API.getCostRatioReport}`, data, config());
+        const request = axiosInstance.post(`${API.getCostRatioReport}`, requestData, config());
         request.then((response) => {
             dispatch({
                 type: GET_COST_RATIO_REPORT,
@@ -246,9 +250,13 @@ export function getCostingBenchMarkMachineReport(data, callback) {
 }
 
 export function getCostMovementReportByPart(data, callback) {
+    const requestData = {
+        loggedInUserId: loggedInUserId(),
+        ...data
+    }
 
     return (dispatch) => {
-        const request = axiosInstance.post(`${API.getCostMovementReportByPart}`, data, config());
+        const request = axiosInstance.post(`${API.getCostMovementReportByPart}`, requestData, config());
         request.then((response) => {
             callback(response);
         }).catch((error) => {
