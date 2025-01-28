@@ -297,9 +297,13 @@ export function getFormGridData(data) {
 
 
 export function getSalePurchaseProvisionReport(data, callback) {
+    const requestData = {
+        loggedInUserId: loggedInUserId(),
+        ...data
+    }
 
     return (dispatch) => {
-        const request = axiosInstance.post(`${API.getSalePurchaseProvisionReport}`, data, config());
+        const request = axiosInstance.post(`${API.getSalePurchaseProvisionReport}`, requestData, config());
         request.then((response) => {
             callback(response);
         }).catch((error) => {
@@ -313,9 +317,13 @@ export function getSalePurchaseProvisionReport(data, callback) {
 }
 
 export function getPoamSummaryReport(data, callback) {
+    const requestData = {
+        loggedInUserId: loggedInUserId(),
+        ...data
+    }
 
     return (dispatch) => {
-        const request = axiosInstance.post(`${API.getPoamSummaryReport}`, data, config());
+        const request = axiosInstance.post(`${API.getPoamSummaryReport}`, requestData, config());
         request.then((response) => {
             callback(response);
         }).catch((error) => {
@@ -345,9 +353,13 @@ export function getPoamImpactReport(data, callback) {
 }
 
 export function getRMCostMovement(data, callback) {
+    const requestData = {
+        loggedInUserId: loggedInUserId(),
+        ...data
+    }
 
     return (dispatch) => {
-        const request = axiosInstance.post(`${API.getRMCostMovement}`, data, config());
+        const request = axiosInstance.post(`${API.getRMCostMovement}`, requestData, config());
         request.then((response) => {
             callback(response);
         }).catch((error) => {
@@ -404,9 +416,12 @@ export function getMachineProcessMovement(data, callback) {
 }
 
 export function getGotAndGivenDetails(data, callback) {
+   
+    const loggedInUser = { loggedInUserId: loggedInUserId() }
+    const queryParams = `loggedInUserId=${loggedInUser?.loggedInUserId}&plantId=${data?.plantId}&customerId=${data?.customerId}&vendorId=${data?.vendorId}&partId=${data?.partId}&productCategoryId=${data?.productCategoryId}&isRequestForSummary=${data?.isRequestForSummary}`
 
     return (dispatch) => {
-        const request = axios.get(`${API.getGotAndGivenDetails}?loggedInUserId=${loggedInUserId()}&plantId=${data.plantId}&partId=${data.partId}&productCategoryId=${data.productCategoryId}&isRequestForSummary=${data.isRequestForSummary}`, config(),)
+        const request = axios.get(`${API.getGotAndGivenDetails}?${queryParams}`, config(),)
         request.then((response) => {
             if (response) {
                 callback(response)
