@@ -33,6 +33,7 @@ function Dashboard(props) {
 
   const [hideDash, setShowHideDash] = useState(false)
   const [activeTab, setactiveTab] = useState('1');
+  const [masterActiveTab, setMasterActiveTab] = useState('1');
   const [viewSimulation, setViewSimulation] = useState(true)
   const [viewCosting, setViewCosting] = useState(true)
   const [pageDropDownRef, setPageDropDownRef] = useState('')
@@ -306,7 +307,7 @@ function Dashboard(props) {
                             <div className="master-buttons">
                               {CheckApprovalApplicableMaster(RM_MASTER_ID) && <button
                                 type="button"
-                                className={`master-button ${(activeTab === '3' && delegationMasterTab === RM_MASTER_ID) ? 'active' : ''}`}
+                                className={`master-button ${(masterActiveTab === '1' && delegationMasterTab === RM_MASTER_ID) ? 'active' : ''}`}
                                 onClick={() => masterToggle(RM_MASTER_ID)}
                               >
                                 RM
@@ -314,7 +315,7 @@ function Dashboard(props) {
                               }
                               {CheckApprovalApplicableMaster(BOP_MASTER_ID) && <button
                                 type="button"
-                                className={`master-button ${(activeTab === '3' && delegationMasterTab === BOP_MASTER_ID) ? 'active' : ''}`}
+                                className={`master-button ${(masterActiveTab === '2' && delegationMasterTab === BOP_MASTER_ID) ? 'active' : ''}`}
                                 onClick={() => masterToggle(BOP_MASTER_ID)}
                               >
                                 BOP
@@ -322,14 +323,14 @@ function Dashboard(props) {
                               }
                               {CheckApprovalApplicableMaster(OPERATIONS_ID) && <button
                                 type="button"
-                                className={`master-button ${(activeTab === '3' && delegationMasterTab === OPERATIONS_ID) ? 'active' : ''}`}
+                                className={`master-button ${(masterActiveTab === '3' && delegationMasterTab === OPERATIONS_ID) ? 'active' : ''}`}
                                 onClick={() => masterToggle(OPERATIONS_ID)}
                               >
                                 Operation
                               </button>}
                               {CheckApprovalApplicableMaster(MACHINE_MASTER_ID) && <button
                                 type="button"
-                                className={`master-button ${(activeTab === '3' && delegationMasterTab === MACHINE_MASTER_ID) ? 'active' : ''}`}
+                                className={`master-button ${(masterActiveTab === '4' && delegationMasterTab === MACHINE_MASTER_ID) ? 'active' : ''}`}
                                 onClick={() => masterToggle(MACHINE_MASTER_ID)}
                               >
                                 Machine
@@ -339,29 +340,29 @@ function Dashboard(props) {
                         </NavLink>
                       </NavItem>}
                       {(CheckApprovalApplicableMaster(MACHINE_MASTER_ID) && viewMastersObj.machine) && <NavItem>
-                        <NavLink id={`dashboard_Machine_Masters_Approval`} className={classnames({ active: activeTab === '4' })} onClick={() => { toggle('4'); }}>
+                        <NavLink id={`dashboard_Machine_Masters_Approval`} className={classnames({ active: masterActiveTab === '4' })} onClick={() => { toggle('4'); }}>
                           Onboarding & Management
                         </NavLink>
                       </NavItem>}
                     </Nav></Col>
-                    <Col md="11"><TabContent activeTab={activeTab}>
-                      {(Number(activeTab) === 1) &&
+                    <Col md="11"><TabContent activeTab={masterActiveTab}>
+                      {(Number(masterActiveTab) === 1) &&
                         <TabPane tabId="1">
                           {acc4 && <Row>
                             <Col md="12" className="mt-3">{acc4 && <Tabs isPageNoChange={isPageNoChange} closeDashboard={closeDashboard} costing={true} module={'costing'} accordion={true} delegation={true} />}</Col>
                           </Row>}
                         </TabPane>}
-                      {(Number(activeTab) === 2) &&
+                      {(Number(masterActiveTab) === 2) &&
                         <TabPane tabId="2">
                           {acc4 && <Row>
                             <Col md="12" className="mt-3">{acc4 && <><Tabs isPageNoChange={isPageNoChange} costing={false} accordion={false} module={'simulation'} delegation={true} /></>}</Col>
                           </Row>}
                         </TabPane>}
-                      {(Number(activeTab) === 3) &&
+                      {(Number(masterActiveTab) === 3) &&
                         <TabPane tabId="3">
                           <MasterApprovalTabs isApproval={true} MasterId={delegationMasterTab} isPageNoChange={isPageNoChange} delegation={true} />
                         </TabPane>}
-                      {(Number(activeTab) === 4) &&
+                      {(Number(masterActiveTab) === 4) &&
                         <TabPane tabId="4">
                           <MasterApprovalTabs isApproval={true} MasterId={MACHINE_MASTER_ID} isPageNoChange={isPageNoChange} delegation={true} />
                         </TabPane>}
