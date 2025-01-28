@@ -754,3 +754,17 @@ export function getRawMaterialDataBySourceVendor(data, callback) {
         });
     };
 }
+
+export function calculateAndSaveRMIndexationSimulation(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.calculateAndSaveRMIndexationSimulation, data, config());
+        request.then((response) => {
+            if (response) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}

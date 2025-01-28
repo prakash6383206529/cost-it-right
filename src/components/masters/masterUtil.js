@@ -429,3 +429,48 @@ export const StatusTooltip = (APIData) => {
     })
     return temp;
 }
+
+export const AgGridCustomDatePicker = ({ props, dateState, colId }) => {
+    const formattedDate = props && props?.value ? props?.value?.split('T')[0] : ''; // Extract the date part
+
+    // Parse the selected date
+    const selectedDate = new Date(formattedDate);
+
+    // Calculate min and max dates based on the selected date
+    let minDate = null;
+    let maxDate = null;
+    if (colId === 'NewToDate' && dateState.NewFromDate) {
+        minDate = new Date(dateState.NewFromDate);
+        maxDate = new Date(dateState.NewToDate);
+    } else if (colId === 'NewEffectiveDate' && dateState.NewToDate) {
+        minDate = new Date(dateState.NewToDate);
+    } else if (colId === 'NewFromDate' && dateState.NewToDate) {
+        maxDate = new Date(dateState.NewToDate);
+    } else {
+        minDate = null;
+        maxDate = null;
+    }
+    // Format dates to YYYY-MM-DD
+    const formatToDateInput = (date) => {
+        if (!date || !(date instanceof Date) || isNaN(date)) {
+            return null;
+        }
+        return date.toISOString().split('T')[0];
+    }
+
+    return <input
+        className='grid-custom-date-picker'
+        type="date"
+        value={formattedDate} // Use the formatted date
+        min={minDate ? formatToDateInput(minDate) : null} // Set min date
+        max={maxDate ? formatToDateInput(maxDate) : null} // Set max date
+        onChange={(e) => {
+            if (props.node && props.node.setDataValue) {
+                props.node.setDataValue(props.column.colId, e.target.value);
+            }
+        }}
+        onKeyDown={(e) => {
+            e.preventDefault()
+        }}
+    />
+}

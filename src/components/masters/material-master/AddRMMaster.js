@@ -72,13 +72,13 @@ function AddRMMaster(props) {
     })
     const isViewFlag = data?.isViewFlag === true ? true : false
     const rawMaterailDetails = useSelector((state) => state.material.rawMaterailDetails)
-    
+
     const { commodityDetailsArray } = useSelector((state) => state.indexation)
     const { otherCostDetailsArray } = useSelector((state) => state.indexation)
 
     const avgValues = useWatch({
         control,
-        name: ['Index', 'ExchangeSource', 'fromDate']
+        name: ['Index', 'ExchangeSource', 'fromDate', 'toDate']
     })
     const sourceVendorValues = useWatch({
         control,
@@ -130,7 +130,7 @@ function AddRMMaster(props) {
     }, [sourceVendorValues, rawMaterailDetails?.SourceVendor, rawMaterailDetails?.isShowIndexCheckBox, state.costingTypeId])
 
     useEffect(() => {
-        if (!isViewFlag && state.callAvgApi === true && getValues('Index')?.value !== null && getValues('fromDate') && !state?.isSourceVendorApiCalled) {
+        if (!isViewFlag && state.callAvgApi === true && getValues('Index')?.value !== null && getValues('fromDate') && !state?.isSourceVendorApiCalled && getValues('toDate')) {
             dispatch(getCommodityIndexRateAverage(
                 getValues('Material')?.value,
                 getValues('Index').value,
