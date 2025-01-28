@@ -33,7 +33,7 @@ import { fetchDivisionId } from '../../CostingUtil'
 export const QuotationIdFromSummary = React.createContext();
 
 function ApprovalSummary(props) {
-  const { approvalNumber, approvalProcessId,receiverId } = props.location.state
+  const { approvalNumber, approvalProcessId,receiverId ,fromDashboard} = props.location.state
   const loggedInUser = loggedInUserId()
 
   const dispatch = useDispatch()
@@ -426,7 +426,13 @@ function ApprovalSummary(props) {
   }
 
   if (showListing) {
-    return <Redirect to="/approval-listing" />
+    return <Redirect to={{
+      pathname: fromDashboard ? "/" : "/approval-listing",
+      state: fromDashboard ? {
+        activeTab: '1',  // Or whichever tab the user came from
+        module: 'costing'
+      } : undefined
+    }} />
   }
 
   const callPushAPI = debounce(() => {

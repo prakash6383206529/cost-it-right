@@ -245,7 +245,7 @@ function MasterSendForApproval(props) {
                 callback(divisionArray, true);
             } else {
                 if (!props.approvalListing) {
-                    props.commonFunction(approvalObj && approvalObj?.Plant && approvalObj?.Plant[0]?.PlantId, true)
+                    props?.commonFunction(approvalObj && approvalObj?.Plant && approvalObj?.Plant[0]?.PlantId, true)
                 }
                 checkFinalUserAndSetApprover(departmentId, null);
                 callback([], false);
@@ -276,7 +276,6 @@ function MasterSendForApproval(props) {
                 ApprovalTypeId: masterId !== 0 ? costingTypeIdToApprovalTypeIdFunction(props?.costingTypeId) : approvalDetails?.ApprovalTypeId,
                 PlantId: props?.isRFQ ? RFQPlantId : (approvalObj?.PlantId ?? approvalData[0].MasterApprovalPlantId ?? EMPTY_GUID),
                 ReceiverId:receiverId??null
-
             }
             dispatch(getAllMasterApprovalUserByDepartment(obj, (res) => {
                 const Data = res.data.DataList[1] ? res.data.DataList[1] : []
@@ -349,6 +348,7 @@ function MasterSendForApproval(props) {
         const reason = getValues('reason')
         const dept = getValues('dept')
         const approver = getValues('approver')
+
         if (initialConfiguration?.IsDivisionAllowedForDepartment && isFinalApprover) {
             approvalObj.IsSendForApproval = false;
             approvalObj.ApprovalDepartmentId = userDetails().DepartmentId
@@ -356,7 +356,8 @@ function MasterSendForApproval(props) {
             props.handleOperation(approvalObj, props.isEdit)
         } else {
             setIsDisable(true)
-            if (initialConfiguration?.IsMultipleUserAllowForApproval && (!getValues('dept')?.label) && (!IsFinalLevelButtonShow)) {
+            
+            if (initialConfiguration?.IsMultipleUserAllowForApproval && (initialConfiguration?.IsDivisionAllowedForDepartment ? false: !getValues('dept')?.label) && (!IsFinalLevelButtonShow)) {
                 Toaster.warning('There is no highest approver defined for this user. Please connect with the IT team.')
                 setIsDisable(false)
                 return false

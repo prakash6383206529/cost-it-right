@@ -76,7 +76,7 @@ function SummaryDrawer(props) {
     const [isRfq, setIsRfq] = useState(false)
     const [quotationId, setQuotationId] = useState('')
     const [divisionId, setDivisionId] = useState('')
-
+const [hideApproveReject,setHideApproveReject]=useState(false)
 
 
 
@@ -201,6 +201,9 @@ function SummaryDrawer(props) {
     // const [approvalData, setApprovalData] = useState('')
 
     const closeApproveRejectDrawer = (e, type) => {
+        if(type!=='cancel'){
+            setHideApproveReject(true)
+        }
         setApprovalDrawer(false)
         setRejectDrawer(false)
         if (type === 'submit') {
@@ -293,7 +296,7 @@ function SummaryDrawer(props) {
                         }
 
                         {
-                            !approvalDetails.IsSent &&
+                            !approvalDetails.IsSent && !hideApproveReject &&
                             <Row className="sf-btn-footer no-gutters drawer-sticky-btn justify-content-between">
                                 <div className="col-sm-12 text-right bluefooter-butn ml-0">
                                     <Fragment>

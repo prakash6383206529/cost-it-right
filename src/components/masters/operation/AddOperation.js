@@ -157,7 +157,7 @@ class AddOperation extends Component {
       UserId: loggedInUserId(),
       Mode: 'master',
       approvalTypeId: costingTypeIdToApprovalTypeIdFunction(this.state.costingTypeId),
-      plantId: plantId
+      plantId: plantId,
     }
     if (this.props.initialConfiguration.IsMasterApprovalAppliedConfigure) {
       this.props.checkFinalUser(obj, (res) => {
@@ -1614,6 +1614,7 @@ class AddOperation extends Component {
               IsImportEntry={false}
               costingTypeId={this.state.costingTypeId}
               levelDetails={this.state.levelDetails}
+              commonFunction={this.finalUserCheckAndMasterLevelCheckFunction}
             />
           )
         }

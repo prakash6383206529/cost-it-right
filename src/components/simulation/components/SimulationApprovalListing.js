@@ -435,6 +435,9 @@ function SimulationApprovalListing(props) {
     const linkableFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+        if (rowData?.ReceiverId) {
+            reactLocalStorage.setObject('receiverId', rowData.ReceiverId);
+          }
         return (
             <Fragment>
                 <div
@@ -809,7 +812,8 @@ const CheckFinalLevel = (value) => {
                     approvalId: approvalData.approvalProcessId,
                     SimulationTechnologyId: approvalData.SimulationTechnologyId,
                     simulationId: approvalData.simulationId,
-                    receiverId:approvalData.receiverId
+                    receiverId:approvalData.receiverId,
+                    fromDashboard:isDashboard
                 }
             }}
         />

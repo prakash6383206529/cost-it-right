@@ -259,7 +259,7 @@ function Dashboard(props) {
                   </div>
                 </Row>
               }
-              {userDetails()?.IsUserDelegatee && <Row className="m-0 delegation" id={`${pageDropDownRef === 'delegation' ? 'refresh-to-top' : ''}`}>
+              {userDetails()?.IsUserDelegatee === 'True' && <Row className="m-0 delegation" id={`${pageDropDownRef === 'delegation' ? 'refresh-to-top' : ''}`}>
                 <div className="graph-box w-100">
                   <Row>
                     <Col md="8"><h3 className="mb-0">Delegation Status{acc4 && <TourWrapper
@@ -280,12 +280,12 @@ function Dashboard(props) {
                   {acc4 && <Row className="master-tabs-row mt-3">
                     <Col md="1" className="master-tabs px-0 p-relative"> <Nav tabs className="subtabs">
                       {dashboardTabLock && <div title={MESSAGES.LOADING_MESSAGE} className="disabled-overflow min-width"></div>}
-                      {(CheckApprovalApplicableMaster(RM_MASTER_ID) && viewMastersObj.RM) && <NavItem>
+                      { <NavItem>
                         <NavLink id={`dashboard_RM_Masters_Approval`} className={classnames({ active: activeTab === '1' })} onClick={() => { toggle('1'); }}>
                           Costing
                         </NavLink>
                       </NavItem>}
-                      {(CheckApprovalApplicableMaster(BOP_MASTER_ID) && viewMastersObj.BOP) && <NavItem>
+                      { <NavItem>
                         <NavLink id={`dashboard_BOP_Masters_Approval`} className={classnames({ active: activeTab === '2' })} onClick={() => { toggle('2'); }}>
                           Simulation
                         </NavLink>

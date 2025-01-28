@@ -56,10 +56,9 @@ const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 function SimulationApprovalSummary(props) {
-    console.log(props,'SimulationApprovalSummary')  
     const { vendorLabel } = useLabels()
     const { isbulkUpload } = props;
-    const { approvalNumber, approvalId, SimulationTechnologyId, simulationId,receiverId } = props?.location?.state
+    const { approvalNumber, approvalId, SimulationTechnologyId, simulationId,receiverId,fromDashboard } = props?.location?.state
     const [showImpactedData, setshowImpactedData] = useState(false)
     const [fgWiseDataAcc, setFgWiseDataAcc] = useState(true)
     const [assemblyWiseAcc, setAssemblyWiseAcc] = useState(true)
@@ -1044,7 +1043,13 @@ function SimulationApprovalSummary(props) {
     }
 
     if (showListing === true) {
-        return <Redirect to="/simulation-history" />
+        return <Redirect to={{  
+            pathname: fromDashboard ? "/" : "/simulation-history",
+            state: fromDashboard ? {
+                activeTab: '1',  // Or whichever tab the user came from
+                module: 'simulation'
+            } : undefined
+        }} />
     }
 
     const defaultColDef = {
@@ -1873,7 +1878,6 @@ function SimulationApprovalSummary(props) {
                 // dataSend={[approvalDetails, partDetail]}
                 />
             }
-
             {
                 rejectDrawer && <SimulationApproveReject
                     // rejectDrawer && <ApproveRejectDrawer               //RE

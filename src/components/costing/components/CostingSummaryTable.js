@@ -1233,8 +1233,8 @@ const {isNetPoPrice , setIsNetPoPrice} = useState(false)
                 "PlantId": viewCostingData[0]?.destinationPlantId,
                 "PartId": viewCostingData[0]?.partId
               }
-              const { Department } = userDetails()
-              if (Department.length === 1 || getConfigurationKey()?.IsDivisionAllowedForDepartment) {
+             
+         
                 fetchDivisionId(requestObject, dispatch).then((divisionId) => {
                   dataSelected[0].DivisionId = divisionId
                   let obj = {}
@@ -1260,10 +1260,7 @@ const {isNetPoPrice , setIsNetPoPrice} = useState(false)
                     }
                   }))
                 })
-              } else {
-                sendForApprovalData(multipleCostings)
-                setShowApproval(true)
-              }
+             
 
             }
           }

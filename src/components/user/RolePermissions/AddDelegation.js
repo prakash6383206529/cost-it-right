@@ -293,7 +293,9 @@ const AddDelegation = (props) => {
         setState(prevState => ({
             ...prevState,
             fromDate: date,
+            toDate: ''
         }));
+        setValue('toDate', '')
     };
     const handleToEffectiveDateChange = (date) => {
         setState(prevState => ({
@@ -434,19 +436,19 @@ const AddDelegation = (props) => {
                                             />
                                         </div>
                                     </Col>
-                                    <Col md="4" className="d-flex pb-4 justify-space-between align-items-center inputwith-icon ">
+                                    <Col md="4" className="d-flex mt-3 justify-space-between align-items-center inputwith-icon ">
 
                                         <>
                                             <button
                                                 type="button"
-                                                className={"btn btn-primary pull-left mr5"}
+                                                className={"btn btn-primary pull-left mb-2"}
                                                 onClick={handleSubmitTableForm(addRow)}
                                             >
-                                                {isEdit ? 'Update' : 'Add'}
+                                            <div className={"plus-icon mb-1"}></div>    {isEdit ? 'Update' : 'Add'}
                                             </button>
                                             <button
                                                 type="button"
-                                                className={"mr5 ml-1 mt-0 add-cancel-btn cancel-btn"}
+                                                className={"ml-1 mt-0 add-cancel-btn cancel-btn"}
                                                 onClick={() => resetData()}
                                             >
                                                 <div className={"cancel-icon"}></div>Reset

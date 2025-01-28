@@ -198,6 +198,11 @@ const User = () => {
         ...prevState,
         callDelegationApi:true
       }));
+    }else{
+      setState(prevState => ({
+        ...prevState,
+        callDelegationApi:false
+      }));
     }
   };
 

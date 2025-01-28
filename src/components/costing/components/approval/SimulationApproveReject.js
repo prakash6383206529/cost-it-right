@@ -25,7 +25,8 @@ function SimulationApproveReject(props) {
   const dropzone = useRef(null);
   const hasCalledAPI = useRef(false);
   const { type, technologyId, approvalTypeIdValue, approvalData, IsFinalLevel, IsPushDrawer, dataSend, reasonId, simulationDetail, selectedRowData, costingArr, isSaveDone, Attachements, vendorId, SimulationTechnologyId, SimulationType, isSimulationApprovalListing, apiData, TechnologyId, releaseStrategyDetails, IsExchangeRateSimulation, isRMIndexationSimulation } = props
-
+  const receiverId = isSimulationApprovalListing?selectedRowData[0]?.ReceiverId:props?.receiverId??null;
+  
   const userLoggedIn = loggedInUserId()
   const userData = userDetails()
   const { TokensList } = useSelector(state => state.simulation)
@@ -71,9 +72,10 @@ function SimulationApproveReject(props) {
     dispatch(getApprovalTypeSelectList('', () => { }))
   }, [])
   useEffect(() => {
+    if(type==='Sender'){
     dispatch(getReasonSelectList((res) => { }))
-
-    dispatch(getSimulationApprovalByDepartment(res => {
+    }
+    dispatch(getSimulationApprovalByDepartment(receiverId,res => {
       const Data = res?.data?.SelectList
       const Departments = userDetails().Department && userDetails().Department.map(item => item.DepartmentName)
       const updateList = Data && Data.filter(item => Departments.includes(item.Text))
@@ -97,7 +99,7 @@ function SimulationApproveReject(props) {
     } else {
       technologyId = selectedMasterForSimulation?.value
     }
-    dispatch(getUsersSimulationTechnologyLevelAPI(loggedInUserId(), technologyId, (res) => {
+    dispatch(getUsersSimulationTechnologyLevelAPI(loggedInUserId(), technologyId, receiverId,(res) => {
       if (res?.data?.Data) {
         setTechnologyLevelsList(res?.data?.Data)
       }
@@ -221,7 +223,6 @@ function SimulationApproveReject(props) {
   }
 
   useEffect(() => {
-
     if (isResponseTrueObj?.Department && technologyLevelsList !== '' && type !== 'Reject' && !IsFinalLevel) {
 
       checkPermission(dataInFields?.ApprovalType?.value)
@@ -253,168 +254,6 @@ function SimulationApproveReject(props) {
     })
   }
 
-
-  const getApproversList = (departId, departmentName, levelDetailsTemp, dataInFieldsTemp) => {
-
-
-
-
-    let values = []
-    let approverDropdownValue = []
-    let count = 0
-
-    selectedRowData && selectedRowData.map(item => {
-
-      if (!(values.includes(item.SimulationTechnologyId))) {
-
-        values.push(item.SimulationTechnologyId)
-      }
-
-      return null
-    })
-    if (!IsFinalLevel) {
-
-
-      if (values.length > 1) {
-        values.map((item, index) => {
-          let obj = {
-            LoggedInUserId: userData.LoggedInUserId,
-            DepartmentId: departId,
-            //NEED TO MAKE THIS 2   
-            // TechnologyId: isSimulationApprovalListing ? selectedRowData[0].SimulationTechnologyId : simulationDetail.SimulationTechnologyId ? simulationDetail.SimulationTechnologyId : selectedMasterForSimulation.value,
-            TechnologyId: item,
-            ReasonId: 0,
-            ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(levelDetailsTemp?.ApprovalTypeId),
-            plantId: selectedRowData && selectedRowData[0]?.PlantId ? selectedRowData[0]?.PlantId : simulationDetail && simulationDetail?.AmendmentDetails ? simulationDetail?.AmendmentDetails?.PlantId : EMPTY_GUID,
-            DivisionId: selectedRowData && selectedRowData[0]?.DivisionId ? selectedRowData[0]?.DivisionId : simulationDetail && simulationDetail?.DivisionId ? simulationDetail?.DivisionId : null
-          }
-          let approverIdListTemp = []
-          dispatch(getAllSimulationApprovalList(obj, (res) => {
-            // setValue('dept', { label: Data.DepartmentName, value: Data.DepartmentId })
-            // setValue('approver', { label: Data.Text ? Data.Text : '', value: Data.Value ? Data.Value : '', levelId: Data.LevelId ? Data.LevelId : '', levelName: Data.LevelName ? Data.LevelName : '' })
-            let tempDropdownList = []
-            let listForDropdown = []
-
-            res?.data?.DataList && res?.data?.DataList?.map((item) => {
-              if (item.Value === '0') return false;
-              tempDropdownList.push({
-                label: item.Text,
-                value: item.Value,
-                levelId: item.LevelId,
-                levelName: item.LevelName
-              })
-              approverIdListTemp.push(item.Value)
-              return null
-            })
-            setApproverIdList(approverIdListTemp)
-            approverDropdownValue.push(tempDropdownList)
-
-            let allObjVal = []
-
-            for (let v = 0; v < approverDropdownValue.length; v++) {
-              let valueOfAllArrays = []
-              approverDropdownValue && approverDropdownValue[v].map(itemmmm => {
-                valueOfAllArrays.push(itemmmm?.value)
-                return null
-              })
-              allObjVal.push(valueOfAllArrays)
-            }
-
-            let filteredArray1 = allObjVal.length && allObjVal[0]?.filter(value => allObjVal.length && allObjVal[1]?.includes(value));
-            let filteredArray = filteredArray1
-            for (let v = 2; v < allObjVal.length; v++) {
-              filteredArray = filteredArray && filteredArray?.filter(value => allObjVal && allObjVal[v]?.includes(value));
-
-            }
-
-            tempDropdownList.map(i => {
-              filteredArray.map(item => {
-                if (i.value === item) {
-                  listForDropdown.push(i)
-                }
-                return null
-              })
-              return null
-            })
-            setApprovalDropDown(listForDropdown)
-            count = count + 1;
-            if ((listForDropdown[0]?.value === EMPTY_GUID || listForDropdown.length === 0) && count === values.length) {
-              setShowWarningMessage(true)
-              setApprovalDropDown([])
-              return false
-            } else {
-              setShowWarningMessage(false)
-            }
-          }))
-          return null;
-        })
-
-
-      } else if (!getConfigurationKey().IsDivisionAllowedForDepartment || props.type === 'Approve') {
-        let appTypeId = dataInFieldsTemp?.ApprovalType?.value
-        let technologyIdTemp = technologyId
-        if (IsExchangeRateSimulation) {
-          if (String(technologyId) === String(RMIMPORT) || String(technologyId) === String(BOPIMPORT)) {
-            technologyIdTemp = EXCHNAGERATE
-          }
-        } else {
-          technologyIdTemp = technologyId
-        }
-
-        let obj = {
-          LoggedInUserId: userData.LoggedInUserId,
-          DepartmentId: departId,
-          //NEED TO MAKE THIS 2   
-          TechnologyId: technologyIdTemp,
-          ReasonId: selectedRowData && selectedRowData[0].ReasonId ? selectedRowData[0].ReasonId : 0,
-          ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(selectedRowData && selectedRowData[0]?.ApprovalTypeId ? selectedRowData[0]?.ApprovalTypeId : appTypeId),
-          plantId: selectedRowData && selectedRowData[0]?.PlantId ? selectedRowData[0]?.PlantId : simulationDetail && simulationDetail?.AmendmentDetails ? simulationDetail?.AmendmentDetails?.PlantId : EMPTY_GUID,
-          DivisionId: selectedRowData?.[0]?.DivisionId ?? simulationDetail?.DivisionId ?? null
-        }
-        dispatch(getAllSimulationApprovalList(obj, (res) => {
-          const Data = res?.data?.DataList[1] ? res?.data?.DataList[1] : []
-          if (Object?.keys(Data)?.length > 0 && Data?.Value !== EMPTY_GUID) {
-            setShowWarningMessage(false)
-            setDataInFields({
-              ...dataInFields, Department: { label: Data?.DepartmentName, value: Data?.DepartmentId },
-              Approver: { label: Data?.Text, value: Data?.Value, levelId: Data?.LevelId, levelName: Data?.LevelName }
-            })
-          } else {
-            setShowWarningMessage(true)
-            setDataInFields({
-              ...dataInFields, Department: { label: departmentName, value: departId },
-              Approver: ''
-            })
-          }
-          let tempDropdownList = []
-          let approverIdListTemp = []
-          res?.data?.DataList && res?.data?.DataList?.map((item) => {
-            if (item?.Value === '0') return false;
-            tempDropdownList?.push({
-              label: item?.Text,
-              value: item?.Value,
-              levelId: item?.LevelId,
-              levelName: item?.LevelName
-            })
-            approverIdListTemp.push(item.Value)
-            return null
-          })
-          setApprovalDropDown(tempDropdownList)
-          setApproverIdList(approverIdListTemp)
-          if ((tempDropdownList[0]?.value === EMPTY_GUID || tempDropdownList.length === 0) && type !== 'Reject' && !IsFinalLevel) {
-            setShowWarningMessage(true)
-            setApprovalDropDown([])
-            setValue('dept', { label: departmentName, value: departId })
-            setValue('approver', '')
-            return false
-          } else {
-            setShowWarningMessage(false)
-          }
-        }))
-      }
-    }
-
-  }
   const callApproverAPI = (dept, divisionId) => {
     let appTypeId = dataInFields?.ApprovalType?.value
     let technologyIdTemp = technologyId
@@ -434,15 +273,13 @@ function SimulationApproveReject(props) {
       ReasonId: selectedRowData && selectedRowData[0].ReasonId ? selectedRowData[0].ReasonId : 0,
       ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(selectedRowData && selectedRowData[0]?.ApprovalTypeId ? selectedRowData[0]?.ApprovalTypeId : appTypeId),
       plantId: selectedRowData && selectedRowData[0]?.PlantId ? selectedRowData[0]?.PlantId : simulationDetail && simulationDetail?.AmendmentDetails ? simulationDetail?.AmendmentDetails?.PlantId : EMPTY_GUID,
-      DivisionId: divisionId ?? null
+      DivisionId: divisionId ?? null,
+      ReceiverId: receiverId ?? null
     }
-
     dispatch(getAllSimulationApprovalList(obj, (res) => {
       const Data = res?.data?.DataList;
-      const Departments = userDetails().Department?.map(item => item.DepartmentName);
-      const validApprovers = Data?.filter(item => item.Value !== "0" && item.DepartmentName && Departments.includes(item.DepartmentName));
-      if (validApprovers && validApprovers.length > 0) {
-        const firstApprover = validApprovers[0];
+      if (Data && Data?.length > 0) {
+        const firstApprover = Data[0]?.Value === "0" ? Data[1] : Data[0];
         setShowWarningMessage(false);
         setDataInFields({
           ...dataInFields,
@@ -450,14 +287,15 @@ function SimulationApproveReject(props) {
           Approver: { label: firstApprover.Text, value: firstApprover.Value, levelId: firstApprover.LevelId, levelName: firstApprover.LevelName }
 
         });
-        const tempDropdownList = validApprovers.map(item => ({
+        const tempDropdownList = Data.map(item => ({
           label: item.Text,
           value: item.Value,
           levelId: item.LevelId,
           levelName: item.LevelName
-        }));
-        const approverIdListTemp = validApprovers.map(item => item.Value);
-        setApprovalDropDown(tempDropdownList);
+        })).filter(item => item.value !== "0");
+
+        const approverIdListTemp = Data.map(item => item.Value).filter(value => value !== "0");
+        setApprovalDropDown(tempDropdownList);    
         setApproverIdList(approverIdListTemp);
 
       } else {
@@ -649,7 +487,8 @@ function SimulationApproveReject(props) {
         Mode: 'simulation',
         approvalTypeId: costingTypeIdToApprovalTypeIdFunction(levelDetails?.ApprovalTypeId),
         plantId: selectedRowData && selectedRowData[0]?.PlantId ? selectedRowData[0]?.PlantId : simulationDetail && simulationDetail?.AmendmentDetails ? simulationDetail?.AmendmentDetails?.PlantId : EMPTY_GUID,
-        divisionId: division
+        divisionId: division,
+        ReceiverId: receiverId ?? null
       }
 
       dispatch(checkFinalUser(requestObj, res => {
