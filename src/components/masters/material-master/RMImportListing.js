@@ -503,6 +503,7 @@ function RMImportListing(props) {
   const buttonFormatter = (props) => {
     const cellValue = props?.valueFormatted ? props?.valueFormatted : props?.value;
     const rowData = props?.valueFormatted ? props?.valueFormatted : props?.data;
+    let IsRFQRawMaterial = rowData?.IsRFQRawMaterial !== null && rowData?.IsRFQRawMaterial !== undefined ? true : false
     let isEditbale = false
     let isDeleteButton = false
 
@@ -513,7 +514,7 @@ function RMImportListing(props) {
       isEditbale = false
     }
 
-    if (isRfq && isMasterSummaryDrawer) {
+    if (isRfq && isMasterSummaryDrawer && !IsRFQRawMaterial) {
 
       return (
         <button className="Balance mb-0 button-stick" type="button" onClick={() => handleCompareDrawer(rowData)}>
@@ -548,14 +549,14 @@ function RMImportListing(props) {
               onClick={() => viewOrEditItemDetails(cellValue, rowData, true)}
               title={"View"}
             />}
-            {isEditbale && <Button
+            {isEditbale && !IsRFQRawMaterial && <Button
               id={`rmImportListing_edit${props?.rowIndex}`}
               className={"mr-1 Tour_List_Edit"}
               variant="Edit"
               onClick={() => viewOrEditItemDetails(cellValue, rowData, false)}
               title={"Edit"}
             />}
-            {isDeleteButton && <Button
+            {isDeleteButton && !IsRFQRawMaterial && <Button
               id={`rmImportListing_delete${props?.rowIndex}`}
               className={"mr-1 Tour_List_Delete"}
               variant="Delete"

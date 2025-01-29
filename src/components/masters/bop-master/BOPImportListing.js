@@ -552,6 +552,7 @@ const BOPImportListing = (props) => {
       ? props.valueFormatted
       : props?.value;
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+    let IsRFQBoughtOutPart = rowData?.IsRFQBoughtOutPart !== null && rowData?.IsRFQBoughtOutPart !== undefined ? true : false
     let isEditable = false;
     let isDeleteButton = false;
     if (isRfq && isMasterSummaryDrawer) {
@@ -571,7 +572,7 @@ const BOPImportListing = (props) => {
         isDeleteButton = true
       }
     }
-    if (isRfq && isMasterSummaryDrawer) {
+    if (isRfq && isMasterSummaryDrawer && !IsRFQBoughtOutPart) {
       return (
         <button className="Balance mb-0 button-stick" type="button" onClick={() => handleCompareDrawer(rowData)}>
 
@@ -593,13 +594,13 @@ const BOPImportListing = (props) => {
                 title="View" className="View Tour_List_View" variant="View" onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />
 
             )}
-            {isEditable && (
+            {isEditable && !IsRFQBoughtOutPart && (
 
 
               <Button id={`bopImportingListing_Edit${props.rowIndex}`} title={"Edit"} className={"Edit Tour_List_Edit"} variant={"Edit"} type={"button"} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)}
               />
             )}
-            {isDeleteButton && (
+            {isDeleteButton && !IsRFQBoughtOutPart && (
 
               <Button
                 id={`bopImportingListing_Delete${props.rowIndex}`}
