@@ -127,8 +127,12 @@ function RfqListing(props) {
     const history = useHistory();
     const location = useLocation();
     useEffect(() => {
-        getDataList()
-    }, [])
+        getDataList();
+        // Clear status filter on mount
+        gridApi?.setQuickFilter("");
+        dispatch(agGridStatus("", ""));
+    }, []);
+    
     useEffect(() => {
         if (compareButtonPressed && (partType === 'Raw Material' || partType === 'Bought Out Part')) {
             const masterId = partType === 'Raw Material' ? RM_MASTER_ID : BOP_MASTER_ID;
@@ -382,6 +386,9 @@ function RfqListing(props) {
                 } else {
                     setNoData(false)
                 }
+                // if (!agGridRef.current.isDestroyed) {
+                //     dispatch(agGridStatus("", ""));
+                // }
             }, 100);
 
             const gridApi = agGridRef.current.api;
