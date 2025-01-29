@@ -1725,7 +1725,7 @@ function TabRMCC(props) {
                   </div>
                 }
               </form >
-              {!isAccordionOpen && !CostingViewMode && <WarningMessage dClass={"col-md-12 pr-0 justify-content-end"} message={'Please open the accordion to enter costing data.'} />}
+              {!isAccordionOpen && costData?.IsAssemblyPart!=="Assembly" && !CostingViewMode && <WarningMessage dClass={"col-md-12 pr-0 justify-content-end"} message={'Please open the accordion to enter costing data.'} />}
             </div >
           </Col >
         </Row >
