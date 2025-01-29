@@ -349,9 +349,9 @@ function OperationCostExcludedOverhead(props) {
                     icon={"plus"}
                     buttonName={"OTHER OPER"}
                   />
-                  <TooltipCustom customClass="mt-2 mr-2" id={`other-operation-defination`} width="350px" tooltipText={"'Other operations' are tasks or activities within a business process where the costs associated with overhead and profit are not taken into consideration when determining the financial outcomes or profitability."} />
                 </div>
               }
+              <TooltipCustom customClass="mt-2 mr-2" id={`other-operation-defination`} width="350px" tooltipText={"'Other operations' are tasks or activities within a business process where the costs associated with overhead and profit are not taken into consideration when determining the financial outcomes or profitability."} />
             </Col>
           </Row>
           <Row>

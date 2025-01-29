@@ -2215,6 +2215,9 @@ export const Labour = [
     { label: 'RatePerPersonPerAnnum', value: 'RatePerPersonPerAnnum', }, //*
     { label: 'EffectiveDate', value: 'EffectiveDate', },
     { label: 'ProductNumber', value: 'ProductNumber', },
+    { label: 'Efficiency', value: 'Efficiency', },
+    { label: 'WorkingTime', value: 'WorkingTime', },
+
 ]
 export const LabourTempData = [
     {
@@ -2227,7 +2230,9 @@ export const LabourTempData = [
         'LabourType': 'Skilled',
         'RatePerPersonPerAnnum': 2000000,
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "ProductNumber": 'Silencer'
+        "ProductNumber": 'Silencer',
+        "Efficiency": '89',
+        "WorkingTime": '250'
     },
     {
         "CustomerCode": 'C-10008',
@@ -2239,7 +2244,9 @@ export const LabourTempData = [
         'LabourType': 'Semi-Skilled',
         'RatePerPersonPerAnnum': 300000,
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
-        "ProductNumber": 'Silencer'
+        "ProductNumber": 'Silencer',
+        "Efficiency": '90',
+        "WorkingTime": '240'
     }
 ]
 export const Volume = [

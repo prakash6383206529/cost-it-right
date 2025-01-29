@@ -1627,6 +1627,8 @@ function TabRMCC(props) {
 
   }
 
+  const isAccordionOpen = ComponentItemData && Object.keys(ComponentItemData)?.length > 0 && ComponentItemData?.IsOpen;
+
   return (
     <>
       <div className="login-container signup-form" id="rm-cc-costing-header">
@@ -1723,6 +1725,7 @@ function TabRMCC(props) {
                   </div>
                 }
               </form >
+              {!isAccordionOpen && costData?.IsAssemblyPart!=="Assembly" && !CostingViewMode && <WarningMessage dClass={"col-md-12 pr-0 justify-content-end"} message={'Please open the accordion to enter costing data.'} />}
             </div >
           </Col >
         </Row >

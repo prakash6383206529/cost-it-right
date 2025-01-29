@@ -550,7 +550,7 @@ function MasterSendForApproval(props) {
                         let obj = {
 
                             LoggedInUserId: loggedInUserId(),
-                            BudgetingId: 0,
+                            BudgetingId: approvalObj?.BudgetingId,
                             FinancialYear: approvalObj?.FinancialYear,
                             NetPoPrice: approvalObj?.NetPoPrice,
                             BudgetedPoPrice: approvalObj?.BudgetedPoPrice,

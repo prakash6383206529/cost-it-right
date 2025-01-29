@@ -1824,7 +1824,7 @@ function CostingSimulation(props) {
                                                               {showComponent && <AgGridColumn width={150} field="NewPOPrice" tooltipField="NewPOPrice" headerName="Revised Net Cost"></AgGridColumn>} */}
 
                                                     {isSimulationWithCosting && <AgGridColumn width={140} field="ImpactPerQuarter" tooltipField='ImpactPerQuarter' headerName='Impact/Quarter (w.r.t. Existing)' cellRenderer='impactPerQuarterFormatter'></AgGridColumn>}
-                                                    {isSimulationWithCosting && <AgGridColumn width={140} field="BudgetedPriceImpactPerQuarter" tooltipField='BudgetedPriceImpactPerQuarter' headerName='Impact/Quarter (w.r.t. Budgeted Price)' cellRenderer='impactPerQuarterFormatter'></AgGridColumn>}
+                                                    {isSimulationWithCosting && <AgGridColumn minWidth={140} field="BudgetedPriceImpactPerQuarter" tooltipField='BudgetedPriceImpactPerQuarter' headerName='Impact/Quarter (w.r.t. Budgeted Price)' cellRenderer='impactPerQuarterFormatter'></AgGridColumn>}
 
                                                     {!(isExchangeRate) && isSimulationWithCosting && <AgGridColumn width={140} field="OldOverheadCost" hide={hideDataColumn.hideOverhead} cellRenderer='overheadFormatter' headerName='Existing Overhead'></AgGridColumn>}
                                                     {!(isExchangeRate) && isSimulationWithCosting && <AgGridColumn width={140} field="NewOverheadCost" hide={hideDataColumn.hideOverhead} cellRenderer='overheadFormatter' headerName='Revised Overhead'></AgGridColumn>}

@@ -95,6 +95,7 @@ function AddBudget(props) {
     const userMasterLevelAPI = useSelector((state) => state.auth.userMasterLevelAPI)
     const isViewMode = props.data.isViewMode
     const { vendorLabel } = useLabels()
+    const [budgetingId, setBudgetingId] = useState(0)
     useEffect(() => {
         setCostingTypeId(getCostingTypeIdByCostingPermission())
         dispatch(getPlantSelectListByType(ZBC, "MASTER", '', () => { }))
@@ -499,6 +500,7 @@ function AddBudget(props) {
                     setValue('FinancialYear', { label: Data.FinancialYear, value: 0 })
                     setValue('currency', { label: Data.Currency, value: Data.CurrencyId })
                     setPartType({ label: Data.PartType, value: Data?.PartTypeId })
+                    setBudgetingId(Data?.BudgetingId)
 
                     setTimeout(() => {
                         setTableData(temp)
@@ -645,7 +647,8 @@ function AddBudget(props) {
             BudgetingPartCostingDetails: temp,
             CurrencyId: currency?.value,
             Currency: currency?.label,
-            ConditionsData: conditionTableData
+            ConditionsData: conditionTableData,
+            BudgetingId: budgetingId
         }
         if (isEditFlag) {
             if (isFinalApprover) {

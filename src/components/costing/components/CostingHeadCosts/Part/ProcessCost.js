@@ -403,13 +403,14 @@ function ProcessCost(props) {
       Toaster.success('Remark saved successfully')
     }
     // setTabData(tempArr)
-    var button = document.getElementById(`popUpTriggers${index}`)
+    var button = document.getElementById(`process_popUpTriggers${index}`)
     button.click()
   }
 
-  const onRemarkPopUpClosee = (index) => {
-    var button = document.getElementById(`popUpTriggers${index}`)
-    if (errors && errors.ProcessGridFields && errors.ProcessGridFields[index].remarkPopUp) {
+  const onRemarkPopUpClose = (index) => {
+    var button = document.getElementById(`process_popUpTriggers${index}`)
+    setValue(`${ProcessGridFields}.${index}.remarkPopUp`, gridData[index]?.Remark)
+    if (errors && errors?.ProcessGridFields && errors.ProcessGridFields[index]?.remarkPopUp) {
       delete errors.ProcessGridFields[index].remarkPopUp;
       setSingleProcessRemark(false)
     }
@@ -1421,15 +1422,14 @@ function ProcessCost(props) {
             </Col>
             <Col md={'2'}>
               {(!CostingViewMode && !IsLocked) &&
-                <>
                   <Button
                     id="Costing_addProcess"
                     onClick={DrawerToggle}
                     icon={"plus"}
                     buttonName={"PROCESS"}
                   />
-                  <TooltipCustom tooltipClass="process-defination" customClass="mt-2 mr-2" id={`process-defination`} width="350px" tooltipText={"It's a process where machines do the main work to finish tasks. These tasks can be anything from making products to moving things around in a factory. Basically, machines handle most of the job."} /></>
-              }
+                }
+                <TooltipCustom tooltipClass="process-defination" customClass="mt-2 mr-2" id={`process-defination`} width="350px" tooltipText={"It's a process where machines do the main work to finish tasks. These tasks can be anything from making products to moving things around in a factory. Basically, machines handle most of the job."} />
             </Col>
           </Row>
 
@@ -1594,7 +1594,7 @@ function ProcessCost(props) {
                                   <Row>
                                     <Col md="12" className='remark-btn-container'>
                                       <button className='submit-button mr-2' disabled={(CostingViewMode || IsLocked) ? true : false} onClick={() => onRemarkPopUpClick(index)} > <div className='save-icon'></div> </button>
-                                      <button className='reset' onClick={() => onRemarkPopUpClosee(index)} > <div className='cancel-icon'></div></button>
+                                      <button className='reset' onClick={() => onRemarkPopUpClose(index)} > <div className='cancel-icon'></div></button>
                                     </Col>
                                   </Row>
                                 </Popup>}

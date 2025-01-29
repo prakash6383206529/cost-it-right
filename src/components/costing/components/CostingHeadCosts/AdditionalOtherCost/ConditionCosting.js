@@ -72,7 +72,7 @@ function ConditionCosting(props) {
                             )}
                             {<tr className='table-footer'>
 
-                                <td colSpan={isFromImport ? 6 : 5} className="text-right font-weight-600 fw-bold">{`${isFromMaster ? 'Total Cost:' : `Total Cost (${reactLocalStorage.getObject("baseCurrency")}):`}`}</td>
+                                <td colSpan={isFromImport ? 6 : 5} className="text-right font-weight-600 fw-bold">{`${isFromMaster ? 'Total Condition Cost :' : `Total Condition Cost (${reactLocalStorage.getObject("baseCurrency")}) :`}`}</td>
                                 <td colSpan={isFromImport ? 1 : 3}><div className='d-flex justify-content-between'>{checkForDecimalAndNull(totalCostCurrency, initialConfiguration.NoOfDecimalForPrice)} {isFromMaster ? `(${isFromImport ? currency?.label : reactLocalStorage.getObject("baseCurrency")})` : ''}</div></td>
                                 {isFromImport && <>
                                     <td colSpan={4} className="text-left"> {checkForDecimalAndNull(totalCostBase, initialConfiguration.NoOfDecimalForPrice)} ({reactLocalStorage.getObject("baseCurrency")})</td>

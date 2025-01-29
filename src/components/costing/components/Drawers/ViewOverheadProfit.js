@@ -424,7 +424,7 @@ function ViewOverheadProfit(props) {
                 <th>{`Applicability`}</th>
                 <th>{`Interest Rate ${iccPaymentData.ICCApplicabilityDetail.ICCApplicability === 'Fixed' ? '' : '(%)'}`}</th>
                 <th><div className='w-fit'>Cost (Applicability){showToolTipForICC.includes(true) && iccPaymentData?.ICCApplicabilityDetail?.ICCApplicability?.includes('CC') && !isPDFShow && <TooltipCustom width="250px" customClass="mt-1 ml-1" id="icc-table" tooltipText={iccToolTipText} />}</div></th>
-                <th>{`Net ICC`}</th>
+                <th><div className='w-fit'>Net ICC  {!isPDFShow && getConfigurationKey().IsShowRmcAndNetWeightToggleForIcc && (iccPaymentData?.ICCApplicabilityDetail?.IsICCCalculationOnNetWeight || iccPaymentData?.ICCApplicabilityDetail?.ICCApplicability?.includes('RM')) && <TooltipCustom customClass="mt-1 ml-1" id="icc-rm-applicable" tooltipText={iccPaymentData?.ICCApplicabilityDetail?.IsICCCalculationOnNetWeight ? "ICC Calculation on Net Weight" : "ICC Calculation on RMC"} />}</div></th>
                 {initialConfiguration.IsShowCRMHead && <th>{`CRM Head`}</th>}
                 <th>{`Remark`}</th>
               </tr>
@@ -441,7 +441,7 @@ function ViewOverheadProfit(props) {
                     <td>{iccPaymentData.ICCApplicabilityDetail ? iccPaymentData.ICCApplicabilityDetail.ICCApplicability : '-'}</td>
                     <td>{iccPaymentData.ICCApplicabilityDetail.InterestRate ? checkForDecimalAndNull(iccPaymentData.ICCApplicabilityDetail.InterestRate, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
                     <td>{iccPaymentData.ICCApplicabilityDetail.CostApplicability ? checkForDecimalAndNull(iccPaymentData.ICCApplicabilityDetail.CostApplicability, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
-                    <td><div className='w-fit'>{iccPaymentData.NetICC ? checkForDecimalAndNull(iccPaymentData.NetICC, initialConfiguration.NoOfDecimalForPrice) : '-'}{!isPDFShow && getConfigurationKey().IsShowRmcAndNetWeightToggleForIcc && (iccPaymentData?.ICCApplicabilityDetail?.IsICCCalculationOnNetWeight || iccPaymentData?.ICCApplicabilityDetail?.ICCApplicability?.includes('RM')) && <TooltipCustom customClass="mt-1 ml-1" id="icc-rm-applicable" tooltipText={iccPaymentData?.ICCApplicabilityDetail?.IsICCCalculationOnNetWeight ? "ICC Calculation on Net Weight" : "ICC Calculation on RMC"} />}</div></td>
+                    <td><div className='w-fit'>{iccPaymentData?.NetICC ? checkForDecimalAndNull(iccPaymentData?.NetICC, initialConfiguration?.NoOfDecimalForPrice) : '-'}</div></td>
                     {initialConfiguration.IsShowCRMHead && <td>{iccPaymentData.ICCApplicabilityDetail.ICCCRMHead}</td>}
                     <td>{iccPaymentData.ICCApplicabilityDetail.Remark ? iccPaymentData.ICCApplicabilityDetail.Remark : '-'}</td>
                   </tr>

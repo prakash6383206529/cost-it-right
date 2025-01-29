@@ -1292,8 +1292,7 @@ function SimulationApprovalSummary(props) {
                             </Col >
                         </Row >
                         {/* } */}
-
-                        {Number(SimulationTechnologyId) !== Number(RAWMATERIALINDEX) && < Row className='reset-btn-container' >
+                       {(Number(SimulationTechnologyId) !== Number(RAWMATERIALINDEX) && !isMultiTechnology) && < Row className='reset-btn-container' >
                             <Col md="6"><div className="left-border ">{'Impacted Master Data:'}</div></Col>
                             <Col md="6" className="text-right">
                                 <div className={'right-details'}>
