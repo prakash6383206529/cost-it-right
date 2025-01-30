@@ -365,7 +365,7 @@ class AddVolume extends Component {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     const rowIndex = props?.rowIndex
     const rowData = props?.data;
-    const isDisabled = Number(rowData.BudgetedQuantity) === 0 && Number(rowData.ApprovedQuantity) === 0;
+    const isDisabled = Number(rowData?.BudgetedQuantity) === 0 && Number(rowData?.ApprovedQuantity) === 0;
     return (
       <>
         <button id='AddVolume_Delete' title='Delete' disabled={isDisabled} className="Delete" type={'button'} onClick={() => !isDisabled && this.deleteItem(cellValue, rowIndex)} />
