@@ -25,7 +25,7 @@ import DatePicker from "react-datepicker";
 import { useRef } from 'react';
 import { getMaxDate } from '../../SimulationUtils';
 import ReactExport from 'react-export-excel';
-import { MACHINE_IMPACT_DOWNLOAD_EXCEl } from '../../../../config/masterData';
+import { APPLICABILITY_MACHINE_RATES_SIMULATION, MACHINE_IMPACT_DOWNLOAD_EXCEl } from '../../../../config/masterData';
 import { simulationContext } from '..';
 import { useLabels } from '../../../../helper/core';
 import { createMultipleExchangeRate } from '../../../masters/actions/ExchangeRateMaster';
@@ -66,6 +66,8 @@ const {vendorLabel} = useLabels()
 
     const { selectedMasterForSimulation,selectedTechnologyForSimulation,exchangeRateListBeforeDraft } = useSelector(state => state.simulation)
     const currencySelectList = useSelector(state => state.comman.currencySelectList)
+    const masterList = useSelector(state => state.simulation.masterSelectListSimulation)
+    const simulationApplicability = useSelector(state => state.simulation.simulationApplicability)
     const columnWidths = {
         Technology: showCompressedColumns ? 50 : 190,
         CostingNumber: showCompressedColumns ? 100 : 190,
@@ -330,14 +332,16 @@ const {vendorLabel} = useLabels()
     const verifySimulation = debounce(() => {
         if (selectedMasterForSimulation?.value === EXCHNAGERATE) {
             dispatch(createMultipleExchangeRate(exchangeRateListBeforeDraft, currencySelectList, effectiveDate, res => {
-                setValueFunction(true, res);
-            }))
+                if (!res?.status && !res?.error) {
+                    setValueFunction(true, res);
+                }            }))
         }else{
             setValueFunction(false, []);
         }
        
     }, 500);
     const setValueFunction=(isExchangeRate,res)=>{
+        const filteredMasterId = masterList?.find(item => item?.Text === 'Machine Rate')?.Value;
         if (!isEffectiveDateSelected) {
             setIsWarningMessageShow(true)
             return false
@@ -369,6 +373,7 @@ const {vendorLabel} = useLabels()
         obj.TechnologyId = selectedTechnologyForSimulation.value
         obj.TechnologyName = selectedTechnologyForSimulation.label
         obj.EffectiveDate = DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss')
+        obj.ExchangeRateSimulationTechnologyId = filteredMasterId
 
         let tempArr = []
         arr && arr.map(item => {

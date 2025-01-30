@@ -183,7 +183,7 @@ const OperationListing = (props) => {
         let statusString = [props?.approvalStatus].join(",")
 
         let filterData = {
-            operation_for: operation_for, operation_Name_id: operation_Name_id, technology_id: props.isSimulation ? props.technology : technology_id, vendor_id: vendor_id, ListFor: props.ListFor, StatusId: statusString, OperationEntryType: !isSimulation ? OperationEntryType ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC : ENTRY_TYPE_IMPORT, Currency: isSimulation && props?.fromListData && props?.fromListData ? props?.fromListData : '',
+            operation_for: operation_for, operation_Name_id: operation_Name_id, technology_id: props.isSimulation ? props.technology : technology_id, vendor_id: vendor_id, ListFor: props.ListFor, StatusId: statusString, OperationEntryType: !isSimulation ? OperationEntryType ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC : "", Currency: isSimulation && props?.fromListData && props?.fromListData ? props?.fromListData : '',
             LocalCurrency: isSimulation && props?.toListData && props?.toListData ? props?.toListData : '',
         }        // THIS IS FOR SHOWING LIST IN 1 TAB(OPERATION LISTING) & ALSO FOR SHOWING LIST IN SIMULATION
         if ((isMasterSummaryDrawer !== undefined && !isMasterSummaryDrawer)) {
@@ -826,7 +826,7 @@ const OperationListing = (props) => {
                     {(state.isLoader && !props.isMasterSummaryDrawer) && <LoaderCustom customClass="simulation-Loader" />}            {state.disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
                     <div className={`ag-grid-react ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${permissionData?.Download ? "show-table-btn no-tab-page" : ""}`}>
                         <form>
-                            <Row>
+                          {!props?.isSimulation && <Row>
                                 <Col md="4" className="switch mt-3 mb-1">
                                     <label className="switch-level">
                                         <div className="left-title">Domestic</div>
@@ -847,7 +847,7 @@ const OperationListing = (props) => {
                                         <div className="right-title">Import</div>
                                     </label>
                                 </Col>
-                            </Row>
+                            </Row>}
                             <Row className={`${props?.isMasterSummaryDrawer ? '' : 'pt-2'} filter-row-large blue-before ${isSimulation || props.benchMark ? "zindex-0" : ""}`}>
                                 <Col md="3" lg="3">
                                     <input type="text" value={searchText} className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
@@ -910,7 +910,7 @@ const OperationListing = (props) => {
                                         }
                                     </div>
 
-                                    <Button id={"operationListing_refresh"} className="Tour_List_Reset" onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
+                                    <Button id={"operationListing_refresh"} className="Tour_List_Reset mr-2" onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
                                     {props.isSimulation && props.isFromVerifyPage && (
                                         <button type="button" className={"apply"} onClick={cancel}                        >
                                             <div className={"back-icon"}></div>Back

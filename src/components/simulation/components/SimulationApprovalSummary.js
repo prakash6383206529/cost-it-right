@@ -15,7 +15,7 @@ import { getApprovalSimulatedCostingSummary, getComparisionSimulationData, getIm
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
 import Toaster from '../../common/Toaster';
-import { EXCHNAGERATE, RMDOMESTIC, RMIMPORT, FILE_URL, COMBINED_PROCESS, SURFACETREATMENT, OPERATIONS, BOPDOMESTIC, BOPIMPORT, AssemblyWiseImpactt, ImpactMaster, defaultPageSize, MACHINERATE, VBCTypeId, CBCTypeId, ZBCTypeId, RAWMATERIALINDEX, } from '../../../config/constants';
+import { EXCHNAGERATE, RMDOMESTIC, RMIMPORT, FILE_URL, COMBINED_PROCESS, SURFACETREATMENT, OPERATIONS, BOPDOMESTIC, BOPIMPORT, AssemblyWiseImpactt, ImpactMaster, defaultPageSize, MACHINERATE, VBCTypeId, CBCTypeId, ZBCTypeId, RAWMATERIALINDEX, RAWMATERIALAPPROVALTYPEID, } from '../../../config/constants';
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
 import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter, handleDepartmentHeader, showSaLineNumber, showBopLabel } from '../../../helper';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -57,7 +57,7 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 function SimulationApprovalSummary(props) {
     const { vendorLabel } = useLabels()
     const { isbulkUpload } = props;
-    const { approvalNumber, approvalId, SimulationTechnologyId, simulationId } = props?.location?.state
+    const { approvalNumber, approvalId, SimulationTechnologyId, simulationId,SimulationHeadId } = props?.location?.state
     const [showImpactedData, setshowImpactedData] = useState(false)
     const [fgWiseDataAcc, setFgWiseDataAcc] = useState(true)
     const [assemblyWiseAcc, setAssemblyWiseAcc] = useState(true)
@@ -151,6 +151,7 @@ function SimulationApprovalSummary(props) {
     }
 
     const [costingIdArray, setCostingIdArray] = useState({})
+    const rmIndexedSimulationSummaryData = useSelector(state => state.simulation.simulatedRawMaterialSummary?.SimulationRawMaterialDetailsResponse)
 
 
     useEffect(() => {
@@ -164,7 +165,7 @@ function SimulationApprovalSummary(props) {
             loggedInUserId: loggedInUserId(),
         }
         setLoader(false)
-        if (Number(SimulationTechnologyId) === Number(RAWMATERIALINDEX)) {
+        if (Number(SimulationHeadId) === Number(RAWMATERIALAPPROVALTYPEID)) {
             dispatch(getApprovalSimulatedRawMaterialSummary(params, res => {
                 const { SimulationSteps, SimulatedCostingList, SimulationApprovalProcessId, Token, NumberOfCostings, IsSent, IsFinalLevelButtonShow,
                     IsPushedButtonShow, SimulationTechnologyId, SimulationApprovalProcessSummaryId, DepartmentCode, EffectiveDate, SimulationId, MaterialGroup, PurchasingGroup, DecimalOption,
@@ -314,7 +315,7 @@ function SimulationApprovalSummary(props) {
         if ((simulationData && Object.keys(simulationData)?.length > 0)) {
             let technologyIdTemp = simulationData?.SimulationTechnologyId
             if (simulationData?.IsExchangeRateSimulation) {
-                if (String(simulationData?.SimulationTechnologyId) === String(RMIMPORT) || String(simulationData?.SimulationTechnologyId) === String(BOPIMPORT)) {
+                if (String(simulationData?.SimulationTechnologyId) === String(RMIMPORT) || String(simulationData?.SimulationTechnologyId) === String(BOPIMPORT)||String(simulationData?.SimulationTechnologyId) === String(RAWMATERIALINDEX)||String(simulationData?.SimulationTechnologyId) === String(SURFACETREATMENT)||String(simulationData?.SimulationTechnologyId) === String(MACHINERATE)||String(simulationData?.SimulationTechnologyId) === String(OPERATIONS)) {
                     technologyIdTemp = EXCHNAGERATE
                 }
             } else {
@@ -1526,7 +1527,7 @@ function SimulationApprovalSummary(props) {
                             </>
                         }
                         {
-                            Number(SimulationTechnologyId) === Number(RAWMATERIALINDEX) &&
+                            Number(SimulationHeadId) === Number(RAWMATERIALAPPROVALTYPEID) &&rmIndexedSimulationSummaryData&&
                             <RMIndexationSimulation isApprovalSummary={true} />
                         }
                         {

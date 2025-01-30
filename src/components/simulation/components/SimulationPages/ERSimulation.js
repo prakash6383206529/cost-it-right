@@ -197,6 +197,7 @@ function ERSimulation(props) {
         setShowBOPMasterList(false)
         setShowOperationsList(false)
         setShowMachineRatesList(false)
+        setShowRawMaterialsList(false)
     }
 
     const closeDrawer = (e = '') => {
@@ -358,7 +359,7 @@ function ERSimulation(props) {
         setShowTooltip(false)
 
         if (count === 0) {
-            Toaster.warning(`Please change the basic rate and proceed to the next page to select ${simulationApplicability?.label}`)
+            Toaster.warning(`Please change the Exchange rate and proceed to the next page to select ${simulationApplicability?.label}`)
             return false
         }
         dispatch(setExchangeRateListBeforeDraft(listData))
@@ -635,6 +636,8 @@ function ERSimulation(props) {
                     approvalStatus={APPROVED_STATUS}
                     isFromVerifyPage={true}
                     cancelImportList={cancelImportList}
+                    fromListData={fromListData}
+                    toListData={toListData}
                 />
             )}
         </div >

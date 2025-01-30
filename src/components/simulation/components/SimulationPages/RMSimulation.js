@@ -91,7 +91,8 @@ function RMSimulation(props) {
     const currencySelectList = useSelector(state => state.comman.currencySelectList)
     const { selectedMasterForSimulation, exchangeRateListBeforeDraft } = useSelector(state => state.simulation)
     const simulationApplicability = useSelector(state => state.simulation.simulationApplicability)
-
+    
+    const masterList = useSelector(state => state.simulation.masterSelectListSimulation)
     const { filteredRMData } = useSelector(state => state.material)
     const columnWidths = {
         CostingHead: showCompressedColumns ? 50 : 140,
@@ -209,7 +210,7 @@ function RMSimulation(props) {
 
     const setValueFunction = (check, tempList = []) => {
         /**********POST METHOD TO CALL HERE AND AND SEND TOKEN TO VERIFY PAGE TODO ****************/
-
+        const filteredMasterId = masterList?.find(item => item?.Text === "RM Import")?.Value;
         let obj = {
             IsExchangeRateSimulation: check,
             SimulationRawMaterials: [],
@@ -221,6 +222,7 @@ function RMSimulation(props) {
             LoggedInUserId: loggedInUserId(),
             SimulationHeadId: list[0]?.CostingTypeId,
             IsSimulationWithOutCosting: true,
+            ExchangeRateSimulationTechnologyId: filteredMasterId
         };
 
         if (filteredRMData.plantId && filteredRMData.plantId.value) {
@@ -386,8 +388,9 @@ function RMSimulation(props) {
 
         if (selectedMasterForSimulation?.value === EXCHNAGERATE) {
             dispatch(createMultipleExchangeRate(exchangeRateListBeforeDraft, currencySelectList, effectiveDate, res => {
-                setValueFunction(true, res);
-            }))
+                if (!res?.status && !res?.error) {
+                    setValueFunction(true, res);
+                }            }))
         } else {
             setValueFunction(false, []);
         }

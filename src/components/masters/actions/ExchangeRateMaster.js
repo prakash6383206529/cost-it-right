@@ -207,7 +207,7 @@ export function createMultipleExchangeRate(dataList, currencySelectList, effecti
                 Toaster.error(MESSAGES.SOME_ERROR)
             }
         }).catch((error) => {
-            callback(error)
+            callback({ success: false, error: error })
             dispatch({ type: API_FAILURE })
             apiErrors(error)
         })

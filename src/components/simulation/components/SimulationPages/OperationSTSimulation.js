@@ -22,7 +22,7 @@ import DatePicker from "react-datepicker";
 import WarningMessage from '../../../common/WarningMessage';
 import { getMaxDate } from '../../SimulationUtils';
 import ReactExport from 'react-export-excel';
-import { OPERATION_IMPACT_DOWNLOAD_EXCEl } from '../../../../config/masterData';
+import { APPLICABILITY_OPERATIONS_SIMULATION, APPLICABILITY_SURFACE_TREATMENT_SIMULATION, OPERATION_IMPACT_DOWNLOAD_EXCEl } from '../../../../config/masterData';
 import { simulationContext } from '..';
 import { useLabels } from '../../../../helper/core';
 import { createMultipleExchangeRate } from '../../../masters/actions/ExchangeRateMaster';
@@ -67,7 +67,9 @@ function OperationSTSimulation(props) {
 
     const { selectedMasterForSimulation, selectedTechnologyForSimulation, exchangeRateListBeforeDraft } = useSelector(state => state.simulation)
     const currencySelectList = useSelector(state => state.comman.currencySelectList)
-
+    const masterList = useSelector(state => state.simulation.masterSelectListSimulation)
+    const simulationApplicability = useSelector(state => state.simulation.simulationApplicability)
+    
     const columnWidths = {
         CostingHead: showCompressedColumns ? 50 : 190,
         OperationName: showCompressedColumns ? 100 : 190,
@@ -393,15 +395,18 @@ function OperationSTSimulation(props) {
 
         if (selectedMasterForSimulation?.value === EXCHNAGERATE) {
             dispatch(createMultipleExchangeRate(exchangeRateListBeforeDraft, currencySelectList, effectiveDate, res => {
-                setValueFunction(true, res);
+                if (!res?.status && !res?.error) {
+                    setValueFunction(true, res);
+                }
             }))
         } else {
             setValueFunction(false, []);
         }
-
         setShowTooltip(false)
     }, 500);
     const setValueFunction = (isExchangeRate, res) => {
+        const masterText = simulationApplicability?.label === APPLICABILITY_OPERATIONS_SIMULATION ? APPLICABILITY_OPERATIONS_SIMULATION : APPLICABILITY_SURFACE_TREATMENT_SIMULATION
+        const filteredMasterId = masterList?.find(item => item?.Text === masterText)?.Value;
         if (!isEffectiveDateSelected) {
             setIsWarningMessageShow(true)
             return false
@@ -435,6 +440,7 @@ function OperationSTSimulation(props) {
         obj.TechnologyName = selectedTechnologyForSimulation.label
         obj.SimulationIds = tokenForMultiSimulation
         obj.EffectiveDate = DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss')
+        obj.ExchangeRateSimulationTechnologyId = filteredMasterId
 
         let tempArr = []
         arr && arr.map(item => {

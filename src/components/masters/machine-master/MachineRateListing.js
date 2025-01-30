@@ -134,7 +134,7 @@ getDataList("", 0, "", 0, "", "", 0, defaultPageSize, true, state.floatingFilter
       }
     }
     let statusString = [props?.approvalStatus].join(",")
-    const filterData = { costing_head: costing_head, technology_id: props?.isSimulation ? props?.technology?.value : technology_id, vendor_id: vendor_id, machine_type_id: machine_type_id, process_id: process_id, plant_id: plant_id, StatusId: statusString, MachineEntryType:!isSimulation ? MachineEntryType ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC : ENTRY_TYPE_IMPORT, Currency: isSimulation && props?.fromListData && props?.fromListData ? props?.fromListData : '',
+    const filterData = { costing_head: costing_head, technology_id: props?.isSimulation ? props?.technology?.value : technology_id, vendor_id: vendor_id, machine_type_id: machine_type_id, process_id: process_id, plant_id: plant_id, StatusId: statusString, MachineEntryType:!isSimulation ? MachineEntryType ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC : "", Currency: isSimulation && props?.fromListData && props?.fromListData ? props?.fromListData : '',
         LocalCurrency: isSimulation && props?.toListData && props?.toListData ? props?.toListData : '',}
     const { zbc, vbc, cbc } = reactLocalStorage.getObject('CostingTypePermission')
     dataObj.IsCustomerDataShow = cbc
@@ -778,7 +778,7 @@ return (
                   }}
                 />)}
               </Col>
-              <Col md="9" lg="9" className="pl-0 mb-3">
+              <Col md="9" lg="9" className="pl-0 mb-3 d-flex justify-content-end">
                 <div className="d-flex justify-content-end bd-highlight w100 p-relative">
 
                   {(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) &&
@@ -803,7 +803,7 @@ return (
 
                     </>
                   }
-                  <Button id='machineRateListing_reset' className="user-btn Tour_List_Reset" onClick={() => resetState()}>  <div className="refresh mr-0"></div></Button>
+                  <Button id='machineRateListing_reset' className="user-btn Tour_List_Reset mr-1" onClick={() => resetState()}>  <div className="refresh mr-0"></div></Button>
 
                 </div>
                 {props.isSimulation && props.isFromVerifyPage && (

@@ -19,7 +19,7 @@ import { Fragment } from 'react';
 import { debounce } from 'lodash';
 import WarningMessage from '../../common/WarningMessage';
 import DatePicker from "react-datepicker";
-import { APPLICABILITY_BOP_SIMULATION, APPLICABILITY_PART_SIMULATION, APPLICABILITY_RM_SIMULATION, ASSEMBLY_TECHNOLOGY_MASTER } from '../../../config/masterData';
+import { APPLICABILITY_BOP_SIMULATION, APPLICABILITY_MACHINE_RATES_SIMULATION, APPLICABILITY_OPERATIONS_SIMULATION, APPLICABILITY_PART_SIMULATION, APPLICABILITY_RM_SIMULATION, APPLICABILITY_SURFACE_TREATMENT_SIMULATION, ASSEMBLY_TECHNOLOGY_MASTER } from '../../../config/masterData';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { MESSAGES } from '../../../config/message';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -388,10 +388,39 @@ function RunSimulationDrawer(props) {
             }
             switch (Number(masterTemp)) {
                 case Number(EXCHNAGERATE):
-                    dispatch(runSimulationOnSelectedExchangeCosting({ ...objs, EffectiveDate: DayTime(date !== null ? date : "").format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
-                        checkForResponse(res)
-                    }))
+                    switch (simulationApplicability?.value) {
+                        case APPLICABILITY_RM_SIMULATION:
+
+                            dispatch(runSimulationOnSelectedCosting({ ...objs, EffectiveDate: DayTime(date !== null ? date : "").format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
+                                checkForResponse(res)
+                            }))
+                            break;
+                        case APPLICABILITY_BOP_SIMULATION:
+                            handleBOPCase(temp)
+
+                            break;
+                        case APPLICABILITY_OPERATIONS_SIMULATION:
+                            case APPLICABILITY_SURFACE_TREATMENT_SIMULATION:
+
+                            dispatch(runSimulationOnSelectedSurfaceTreatmentCosting({ ...objs, EffectiveDate: DayTime(date !== null ? date : "").format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
+                                checkForResponse(res)
+                            }))
+                            break;
+                        case APPLICABILITY_MACHINE_RATES_SIMULATION:
+                            dispatch(runSimulationOnSelectedMachineRateCosting({ ...objs, EffectiveDate: DayTime(date !== null ? date : "").format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
+                                checkForResponse(res)
+                            }))
+                            break;
+                        default:
+
+                            dispatch(runSimulationOnSelectedExchangeCosting({ ...objs, EffectiveDate: DayTime(date !== null ? date : "").format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
+                                checkForResponse(res)
+                            }))
+                            break;
+                    }
                     break;
+
+
                 case Number(RMDOMESTIC):
                     dispatch(runSimulationOnSelectedCosting({ ...objs, EffectiveDate: DayTime(date !== null ? date : "").format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
                         checkForResponse(res)
@@ -418,15 +447,7 @@ function RunSimulationDrawer(props) {
                     }))
                     break;
                 case Number(BOPDOMESTIC):
-                    if (isMasterAssociatedWithCosting) {
-                        dispatch(runSimulationOnSelectedBoughtOutPartCosting({ ...objs, EffectiveDate: DayTime(date !== null ? date : "").format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
-                            checkForResponse(res)
-                        }))
-                    } else {
-                        dispatch(runSimulationOnSelectedBoughtOutPart({ ...objs, EffectiveDate: DayTime(date !== null ? date : "").format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
-                            checkForResponse(res)
-                        }))
-                    }
+                    handleBOPCase(temp)
                     break;
                 case Number(BOPIMPORT):
                     dispatch(runSimulationOnSelectedBoughtOutPartCosting({ ...objs, EffectiveDate: DayTime(date !== null ? date : "").format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
@@ -471,7 +492,17 @@ function RunSimulationDrawer(props) {
         //     }))
         // }
     }), 500)
-
+    const handleBOPCase = (temp) => {
+        if (isMasterAssociatedWithCosting) {
+            dispatch(runSimulationOnSelectedBoughtOutPartCosting({ ...objs, EffectiveDate: DayTime(date !== null ? date : "").format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
+                checkForResponse(res)
+            }))
+        } else {
+            dispatch(runSimulationOnSelectedBoughtOutPart({ ...objs, EffectiveDate: DayTime(date !== null ? date : "").format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
+                checkForResponse(res)
+            }))
+        }
+    }
     const onChange = () => {
         setToggleSwitchAdditionalOtherCOst(!toggleSwitchAdditionalOtherCOst)
         setValue('OtherCost', "")

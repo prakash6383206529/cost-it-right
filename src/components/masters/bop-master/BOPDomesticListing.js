@@ -102,7 +102,7 @@ const BOPDomesticListing = (props) => {
   });
 
 
-  console.log(state?.isLoader, "LOADER", props?.isMasterSummaryDrawer, "MASTER SUMMARY DRAWER")
+  
 
 
   useEffect(() => {
@@ -148,7 +148,9 @@ const BOPDomesticListing = (props) => {
     }
     let statusString = [props?.approvalStatus].join(",")
     const filterData = {
-      ...floatingFilterData, bop_for: bopFor, category_id: CategoryId, vendor_id: vendorId, plant_id: plantId, ListFor: props.ListFor, IsBOPAssociated: props?.isBOPAssociated,
+      ...floatingFilterData, bop_for: bopFor, category_id: CategoryId, vendor_id: vendorId, plant_id: plantId, ListFor: props?.isSimulation && !props?.isBOPAssociated ?"" : props.ListFor, IsBOPAssociated: props?.isBOPAssociated,
+      Currency: props?.isSimulation && props?.fromListData && props?.fromListData ? props?.fromListData : '',
+      LocalCurrency: props?.isSimulation && props?.toListData && props?.toListData ? props?.toListData : '',
       StatusId: statusString
     }
     const { isMasterSummaryDrawer } = props
@@ -165,13 +167,12 @@ const BOPDomesticListing = (props) => {
         if (props.isSimulation) {
           props?.changeTokenCheckBox(false)
         }
-        dataObj.EntryType = Number(ENTRY_TYPE_DOMESTIC)
+        dataObj.EntryType =  !props?.isSimulation ? Number(ENTRY_TYPE_DOMESTIC) : null
         dataObj.Currency = floatingFilterData?.Currency
         dataObj.ExchangeRateSourceName = floatingFilterData?.ExchangeRateSourceName
         dataObj.OtherNetCost = floatingFilterData?.OtherNetCost
         dispatch(getBOPDataList(filterData, skip, take, isPagination, dataObj, false, (res) => {
-          console.log("res", res)
-
+         
           setState((prevState) => ({ ...prevState, isLoader: false, noData: false }))
           if (props.isSimulation) {
             props?.changeTokenCheckBox(true)
@@ -188,8 +189,7 @@ const BOPDomesticListing = (props) => {
           }
 
           if (res && res.status === 204) {
-            console.log("res in 204", res)
-            setState((prevState) => ({
+           setState((prevState) => ({
               ...prevState, totalRecordCount: 0, isLoader: false, tableData: []
               // pageNo: 0
             }))

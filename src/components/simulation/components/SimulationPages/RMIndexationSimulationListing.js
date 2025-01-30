@@ -3,7 +3,7 @@ import { useState, useEffect, } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, } from 'reactstrap';
 import { IsShowFreightAndShearingCostFields, loggedInUserId, userDepartmetList } from "../../../../helper/auth"
-import { defaultPageSize, EMPTY_DATA, ENTRY_TYPE_DOMESTIC, FILE_URL, NONINDEXED, ZBCTypeId } from '../../../../config/constants';
+import { defaultPageSize, EMPTY_DATA, ENTRY_TYPE_DOMESTIC, FILE_URL } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
 import { MESSAGES } from '../../../../config/message';
 import Toaster from '../../../common/Toaster';
@@ -765,7 +765,7 @@ function RMIndexationSimulationListing(props) {
         let length = finalArr?.length
         let uniqueArray = _.uniqBy(finalArr, "RawMaterialId")
 
-        if (isSimulation) {
+        if (isSimulation&& !props?.isFromVerifyPage) {
             apply(uniqueArray, length)
         }
 
@@ -1068,7 +1068,7 @@ function RMIndexationSimulationListing(props) {
                             {props.isSimulation && props.isFromVerifyPage && (
                             <Row>
                                 <Col md="12" className="d-flex justify-content-end align-items-center">
-                                    <WarningMessage dClass="mr-5" message={`Please check the Operation that you want to edit.`} />
+                                    <WarningMessage dClass="mr-5" message={`Please check the Raw Material that you want to edit.`} />
                                     <Button className={"apply"} id={"operationListing_editSelectedData"} disabled={gridApi?.getSelectedRows()?.length === 0} onClick={editSelectedData} icon="edit-icon" buttonName="Edit" />
                                 </Col>
                             </Row>
