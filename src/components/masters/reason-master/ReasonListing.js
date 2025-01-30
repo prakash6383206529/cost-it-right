@@ -54,6 +54,7 @@ const ReasonListing = (props) => {
   const [gridLoad, setGridLoad] = useState(false);
   const { reasonDataList } = useSelector(state => state.reason);
   const { topAndLeftMenuData } = useSelector(state => state.auth);
+  const [totalRecordCount, setTotalRecordCount] = useState(0)
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(getAllReasonAPI(false, (res) => { }))
@@ -101,6 +102,7 @@ const ReasonListing = (props) => {
         let Data = res.data.DataList
         setTableData(Data)
         setIsLoader(false)
+        setTotalRecordCount(Data?.length)
         setRenderState(!renderState)
       } else {
         setTableData([])
@@ -174,6 +176,7 @@ const ReasonListing = (props) => {
   const onFloatingFilterChanged = (value) => {
     setTimeout(() => {
       reasonDataList.length !== 0 && setNoData(searchNocontentFilter(value, noData))
+      setTotalRecordCount(gridApi?.getDisplayedRowCount())
     }, 500);
   }
   /**
@@ -346,12 +349,12 @@ const ReasonListing = (props) => {
                   <>
 
                     <ExcelFile filename={'Reason'} fileExtension={'.xls'} element={
-                      <button title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} type="button" className={'user-btn mr5'}><div className="download mr-1" ></div>
+                      <button title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} type="button" disabled={totalRecordCount === 0} className={'user-btn mr5'}><div className="download mr-1" ></div>
                         {/* DOWNLOAD */}
                         {`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
                       </button>}>
 
-                      {onBtExport()}
+                      {totalRecordCount !== 0 ? onBtExport() : null}
                     </ExcelFile>
 
                   </>

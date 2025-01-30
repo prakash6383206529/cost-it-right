@@ -58,6 +58,7 @@ const ZBCPlantListing = (props) => {
         type: '',
         render: false,
         showExtraData: false,
+        totalRecordCount: 0
 
     });
 
@@ -226,7 +227,7 @@ const ZBCPlantListing = (props) => {
             } else if (res && res.data && res.data.DataList) {
                 let Data = res.data.DataList;
 
-                setState(prevState => ({ ...prevState, tableData: Data, isLoader: false }));
+                setState(prevState => ({ ...prevState, tableData: Data, isLoader: false,totalRecordCount: Data?.length }));
             }
         }));
     };
@@ -255,7 +256,7 @@ const ZBCPlantListing = (props) => {
     const onFloatingFilterChanged = (value) => {
         setTimeout(() => {
             if (plantDataList.length !== 0) {
-                setState(prevState => ({ ...prevState, noData: searchNocontentFilter(value, prevState.noData) }));
+                setState(prevState => ({ ...prevState, noData: searchNocontentFilter(value, prevState.noData),totalRecordCount: state?.gridApi?.getDisplayedRowCount() }));
             }
         }, 500);
 
@@ -369,9 +370,9 @@ const ZBCPlantListing = (props) => {
                                 {
                                     DownloadAccessibility &&
                                     <>
-                                        <ExcelFile filename={PlantZbc} fileExtension={'.xls'} element={<button title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5 Tour_List_Download'} ><div className="download mr-1"></div>
+                                        <ExcelFile filename={PlantZbc} fileExtension={'.xls'} element={<button title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" disabled={state?.totalRecordCount === 0} className={'user-btn mr5 Tour_List_Download'} ><div className="download mr-1"></div>
                                             {`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}</button>}>
-                                            {onBtExport()}
+                                            {state?.totalRecordCount !== 0 ? onBtExport() : null}
                                         </ExcelFile>
                                     </>
                                     //   <button type="button" className={"user-btn mr5"} onClick={onBtExport}><div className={"download"} ></div>Download</button>

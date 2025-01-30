@@ -225,6 +225,7 @@ function ProfitListing(props) {
         setTimeout(() => {
             if (overheadProfitList?.length !== 0) {
                 setNoData(searchNocontentFilter(value, noData))
+                setTotalRecordCount(gridApi?.getDisplayedRowCount())
             }
         }, 500);
         setDisableFilter(false)
@@ -684,7 +685,7 @@ function ProfitListing(props) {
                                         {
                                             DownloadAccessibility &&
                                             <>
-                                                <button title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} type="button" onClick={onExcelDownload} className={'user-btn mr5 Tour_List_Download'}><div className="download mr-1" ></div>
+                                                <button title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} type="button" disabled={totalRecordCount === 0} onClick={onExcelDownload} className={'user-btn mr5 Tour_List_Download'}><div className="download mr-1" ></div>
                                                     {/* DOWNLOAD */}
                                                     {`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
                                                 </button>

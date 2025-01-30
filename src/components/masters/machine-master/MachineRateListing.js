@@ -209,7 +209,7 @@ const MachineRateListing = (props) => {
   const onFloatingFilterChanged = (value) => {
     setTimeout(() => {
       if (machineDatalist?.length !== 0) {
-        setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(value, state.noData), }));
+        setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(value, state.noData),totalRecordCount: state?.gridApi?.getDisplayedRowCount() }));
       }
     }, 500);
     setState((prevState) => ({ ...prevState, disableFilter: false }));
@@ -732,7 +732,7 @@ const MachineRateListing = (props) => {
                   <button disabled={state.disableFilter} title="Filtered data" type="button" class="user-btn mr5 Tour_List_Filter" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
                   {permissions?.Add && (<button type="button" className={"user-btn mr5 Tour_List_Add"} onClick={displayForm} title="Add">  <div className={"plus mr-0"}></div>{/* ADD */}</button>)}
                   {permissions?.BulkUpload && (<button type="button" className={"user-btn mr5 Tour_List_BulkUpload"} onClick={bulkToggle} title="Bulk Upload"><div className={"upload mr-0"}></div>{/* Bulk Upload */} </button>)}
-                  {permissions?.Download && <>  <button title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" onClick={onExcelDownload} className={'user-btn mr5 Tour_List_Download'}><div className="download mr-1" title="Download"></div> {/* DOWNLOAD */} {`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} </button>
+                  {permissions?.Download && <>  <button title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" disabled={state?.totalRecordCount === 0} onClick={onExcelDownload} className={'user-btn mr5 Tour_List_Download'}><div className="download mr-1" title="Download"></div> {/* DOWNLOAD */} {`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} </button>
 
                     <ExcelFile filename={'Machine Rate'} fileExtension={'.xls'} element={
                       <button id={'Excel-Downloads-machine'} className="p-absolute " type="button" >

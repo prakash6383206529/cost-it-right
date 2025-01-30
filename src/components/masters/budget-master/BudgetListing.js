@@ -371,6 +371,7 @@ function BudgetListing(props) {
         setTimeout(() => {
             if (volumeDataList?.length !== 0) {
                 setNoData(searchNocontentFilter(value, noData))
+                setTotalRecordCount(gridApi?.getDisplayedRowCount())
             }
         }, 500);
         setDisableFilter(false)
@@ -547,12 +548,13 @@ function BudgetListing(props) {
                                             <>
                                                 <Button className="user-btn mr5 Tour_List_Download" id={"budgetListing_excel_download"} onClick={onExcelDownload} title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
                                                     icon={"download mr-1"}
+                                                    disabled={totalRecordCount === 0}
                                                     buttonName={`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
                                                 />
                                                 <ExcelFile filename={'Budget'} fileExtension={'.xls'} element={
                                                     <Button id={"Excel-Downloads-volume"} className="p-absolute" />
                                                 }>
-                                                    {onBtExport()}
+                                                    {totalRecordCount !== 0 ? onBtExport() : null}
                                                 </ExcelFile>
                                             </>
                                         }

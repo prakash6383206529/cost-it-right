@@ -366,6 +366,7 @@ const AssemblyPartListing = React.memo((props) => {
           ...prevState,
           noData: searchNocontentFilter(value, state?.noData),
         }));
+        setTotalRecordCount(state?.gridApi?.getDisplayedRowCount())      
       }
     }, 500);
     setDisableFilter(false);
@@ -807,7 +808,7 @@ const AssemblyPartListing = React.memo((props) => {
               )}
               {permissions?.Download && (
                 <>
-                  <button title={`Download ${state?.dataCount === 0 ? "All" : "(" + state?.dataCount + ")"}`} type="button" onClick={onExcelDownload} className={'user-btn mr5 Tour_List_Download'}><div className="download mr-1" title="Download"></div>  {`${state?.dataCount === 0 ? "All" : "(" + state?.dataCount + ")"}`} </button>
+                  <button title={`Download ${state?.dataCount === 0 ? "All" : "(" + state?.dataCount + ")"}`} type="button" disabled={totalRecordCount === 0} onClick={onExcelDownload} className={'user-btn mr5 Tour_List_Download'}><div className="download mr-1" title="Download"></div>  {`${state?.dataCount === 0 ? "All" : "(" + state?.dataCount + ")"}`} </button>
                   <ExcelFile
                     filename={'BOM'}
                     fileExtension={'.xls'}
