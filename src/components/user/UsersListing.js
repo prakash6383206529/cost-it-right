@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col } from 'reactstrap';
-import { getAllUserDataAPI, getAllRoleAPI, activeInactiveUser, revokeDelegation } from '../../actions/auth/AuthActions';
+import { getAllUserDataAPI, getAllRoleAPI, activeInactiveUser, revokeDelegation, getAllUserDelegationApi } from '../../actions/auth/AuthActions';
 import $ from 'jquery';
 import Toaster from '../common/Toaster';
 import { MESSAGES } from '../../config/message';
@@ -259,7 +259,8 @@ const UsersListing = (props) => {
 		};
 		setState((prevState) => ({ ...prevState, isLoader: true }));
 
-		dispatch(getAllUserDataAPI(data, (res) => {
+		dispatch(props?.isDelegation ? getAllUserDelegationApi(data, callback) : getAllUserDataAPI(data, callback));
+		function callback(res) {
 			setState((prevState) => ({ ...prevState, isLoader: false }));
 
 			let isReset = true;
@@ -309,7 +310,7 @@ const UsersListing = (props) => {
 					}, 500);
 				}
 			}
-		}));
+		}
 	};
 
 
