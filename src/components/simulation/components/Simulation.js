@@ -64,6 +64,7 @@ function Simulation(props) {
     })
 
     const { selectedMasterForSimulation, selectedTechnologyForSimulation, getTokenSelectList, tokenCheckBoxValue, tokenForSimulation, selectedCustomerSimulation, selectedVendorForSimulation, isMasterAssociatedWithCosting, selectListCostingHead, simulationCostingStatus } = useSelector(state => state.simulation)
+    
     const plantSelectList = useSelector(state => state.comman.plantSelectList);
     const [master, setMaster] = useState([])
 
@@ -1680,7 +1681,7 @@ function Simulation(props) {
                     {isHide &&
                         <Row>
                             <Col md="12" className="filter-block zindex-9 simulation-labels">
-                                {simulationCostingStatus && <Errorbox customClass={'error'} errorText={pendingSimulationAlert(simulationCostingStatus)} />}
+                                {false && <Errorbox customClass={'error'} errorText={pendingSimulationAlert(simulationCostingStatus)} />}
                                 <div className="d-inline-flex justify-content-start align-items-center pr-3 mb-3 zindex-unset ">
                                     <div className="flex-fills label">Masters:</div>
                                     <div className="hide-label flex-fills pl-0">

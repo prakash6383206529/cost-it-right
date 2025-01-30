@@ -25,7 +25,6 @@ export default function AuthMiddleware(ComposedComponent, PAGENAME) {
             }
 
             // CONDITION TO CHECK REQUEST (PAGE OR URL) IS ACCESSIBLE OR NOT
-            console.log(reactLocalStorage.getObject('receiverId'),'reactLocalStorage.getObject')
             if (this.props.authenticated === true) {
                     let reqData = {
                         PageName: PAGENAME,

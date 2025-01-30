@@ -106,7 +106,6 @@ class ViewUserDetails extends Component {
  * @description used to get users technology level listing
  */
   getUsersTechnologyLevelData = (UserId) => {
-    console.log('here')
     this.props.getUsersTechnologyLevelAPI(UserId, 0,null, (res) => {
       if (res && res.data && res.data.Data) {
 

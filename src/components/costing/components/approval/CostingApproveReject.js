@@ -19,12 +19,9 @@
   import { getApprovalTypeSelectList } from '../../../../actions/Common'
 
   function CostingApproveReject(props) {
-    // console.log(props,'props')
     // ********* INITIALIZE REF FOR DROPZONE ********
 
     const { type, technologyId, approvalData, IsNotFinalLevel, IsPushDrawer, dataSend, reasonId, selectedRowData, costingArr, apiData, TechnologyId, releaseStrategyDetails } = props
-    console.log(approvalData,'approvalData')
-    console.log(props,'props')
     const userLoggedIn = loggedInUserId()
     const userData = userDetails()
 

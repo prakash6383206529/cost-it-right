@@ -32,7 +32,6 @@ import { pushNfrOnSap } from '../../../masters/nfr/actions/nfr'
 import { MESSAGES } from '../../../../config/message'
 import { useLabels } from '../../../../helper/core'
 function ApproveRejectDrawer(props) {
-  console.log(props,'approve')
   // ********* INITIALIZE REF FOR DROPZONE ********
   const dropzone = useRef(null);
   
