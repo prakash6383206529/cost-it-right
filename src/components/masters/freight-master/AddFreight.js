@@ -925,7 +925,7 @@ class AddFreight extends Component {
                                 {!isEditFlag && (
                                   <div
                                     onClick={this.vendorToggler}
-                                    className={"plus-icon-square  right"}
+                                    className={"plus-icon-square  right mb-2"}
                                   ></div>
                                 )}
                               </div>

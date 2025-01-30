@@ -556,7 +556,7 @@ class AddSpecification extends Component {
                             <div className='d-flex justify-content-center align-items-center'>
                             <Button
                               id="RawMaterialName-add"
-                              className="mb-2"
+                              className="mb-3"
                               variant="plus-icon-square"
                               onClick={() => this.rawMaterialToggler("")}
                             /></div>
@@ -599,7 +599,7 @@ class AddSpecification extends Component {
                           AddAccessibilityRMANDGRADE &&
                           <Button
                             id="GradeId-add"
-                            className="mt-2"
+                            className="mt-1"
                             variant={`${this.state?.RawMaterial == null || this.state?.RawMaterial?.length === 0 ? "blurPlus-icon-square" : "plus-icon-square"}`}
                             onClick={() => this.gradeToggler("")}
                             disabled={this.state?.RawMaterial == null || this.state?.RawMaterial?.length === 0}
