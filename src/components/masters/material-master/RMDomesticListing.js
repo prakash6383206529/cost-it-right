@@ -244,7 +244,7 @@ function RMDomesticListing(props) {
         if (isPagination === true) {
             setloader(true)
         }
-        dataObj.RawMaterialEntryType = Number(ENTRY_TYPE_DOMESTIC)
+        dataObj.RawMaterialEntryType = !isSimulation ? Number(ENTRY_TYPE_DOMESTIC) : ''
         dataObj.Currency = floatingFilterData?.Currency
         dataObj.ExchangeRateSourceName = floatingFilterData?.ExchangeRateSourceName
         dataObj.OtherNetCost = floatingFilterData?.OtherNetCost

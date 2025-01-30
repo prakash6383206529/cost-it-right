@@ -190,7 +190,9 @@ export function getMachineDataList(data, skip, take, isPagination, obj, callback
             technology_id: data.technology_id,
             StatusId: data.StatusId ? data.StatusId : '',
             DepartmentCode: obj.DepartmentName !== undefined ? obj.DepartmentName : '',
-            MachineEntryType: data.MachineEntryType
+            MachineEntryType: data.MachineEntryType,
+            Currency: data.Currency !== undefined ? data.Currency : "",
+            LocalCurrency: data.LocalCurrency !== undefined ? data.LocalCurrency : "",
         });
         const queryParamsSecond = encodeQueryParamsAndLog({
             CostingHead: obj.CostingHead !== undefined ? obj.CostingHead : '', Technology: obj.Technology !== undefined ? obj.Technology : '', Vendor: obj.VendorName !== undefined ? obj.VendorName : '', Plant: obj.Plant !== undefined ? obj.Plant : '', MachineNumber: obj.MachineNumber !== undefined ? obj.MachineNumber : '', MachineName: obj.MachineName !== undefined ? obj.MachineName : '',

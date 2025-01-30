@@ -3,7 +3,7 @@ import { useState, useEffect, } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, } from 'reactstrap';
 import { IsShowFreightAndShearingCostFields, loggedInUserId, userDepartmetList } from "../../../../helper/auth"
-import { defaultPageSize, EMPTY_DATA, ENTRY_TYPE_DOMESTIC, FILE_URL, ZBCTypeId } from '../../../../config/constants';
+import { defaultPageSize, EMPTY_DATA, ENTRY_TYPE_DOMESTIC, FILE_URL } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
 import { MESSAGES } from '../../../../config/message';
 import Toaster from '../../../common/Toaster';
@@ -37,6 +37,7 @@ import { deleteRawMaterialAPI, getAllrmIndexationSimulationList } from '../../..
 import AnalyticsDrawer from '../../../masters/material-master/AnalyticsDrawer';
 import CustomCellRenderer from '../../../rfq/CommonDropdown';
 import { useLabels, useWithLocalization } from '../../../../helper/core';
+import RMIndexationSimulation from './RMIndexationSimulation';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -53,7 +54,7 @@ function RMIndexationSimulationListing(props) {
     const dispatch = useDispatch();
     const allrmIndexationSimulationList = useSelector((state) => state.material.allrmIndexationSimulationList);
     const filteredRMData = useSelector((state) => state.material.filteredRMData);
-    const { selectedRowForPagination } = useSelector((state => state.simulation))
+    const { selectedRowForPagination ,tokenForSimulation} = useSelector((state => state.simulation))
     const { globalTakes } = useSelector((state) => state.pagination);
     const rmIndexationSimulationList = useSelector((state) => state.simulation.rmIndexationSimulationList);
     const rmIndexationCostingSimulationList = useSelector((state) => state.simulation.rmIndexationCostingSimulationList);
@@ -82,8 +83,10 @@ function RMIndexationSimulationListing(props) {
     const [viewAttachment, setViewAttachment] = useState([])
     const [showExtraData, setShowExtraData] = useState(false)
     const [render, setRender] = useState(false)
+    const[editSelectedList,setEditSelectedList]=useState(false)
+    const[tempList,setTempList]=useState([])
     const { t } = useTranslation("common")
-    const { technologyLabel,vendorLabel } = useLabels();
+    const { technologyLabel, vendorLabel } = useLabels();
 
     var filterParams = {
         date: "", inRangeInclusive: true, filterOptions: ['equals', 'inRange'],
@@ -140,7 +143,7 @@ function RMIndexationSimulationListing(props) {
                     setloader(false)
                 }))
             } else {
-                if (isSimulation) {
+                if (isSimulation && !props?.isFromVerifyPage) {
                     props?.changeTokenCheckBox(false)
                 }
                 getDataList(floatingFilterData, 0, defaultPageSize, true)
@@ -166,7 +169,7 @@ function RMIndexationSimulationListing(props) {
         }
     }, [])
     const apiResponse = (res, isPagination,) => {
-        if (isSimulation) {
+        if (isSimulation && !props?.isFromVerifyPage) {
             props?.changeTokenCheckBox(true)
         }
         if (res && res.status === 200) {
@@ -250,7 +253,10 @@ function RMIndexationSimulationListing(props) {
             // statusId: CheckApprovalApplicableMaster(RM_MASTER_ID) ? APPROVAL_ID : 0,
             // ListFor: ListFor,
             // StatusId: statusString,
-            isIndexationDetails: props?.type?.label === "Indexed" ? true : false
+            isIndexationDetails: props?.type?.label === "Indexed" ? true : false,
+            Currency: isSimulation && props?.fromListData && props?.fromListData ? props?.fromListData : '',
+            LocalCurrency: isSimulation && props?.toListData && props?.toListData ? props?.toListData : '',
+
         }
         //THIS CONDTION IS FOR IF THIS COMPONENT IS RENDER FROM MASTER APPROVAL SUMMARY IN THIS NO GET API
         if (isPagination === true) {
@@ -459,6 +465,16 @@ function RMIndexationSimulationListing(props) {
         setShowPopup(false)
         setShowPopupBulk(false)
     }
+    const cancel = () => {
+        props?.cancelImportList();
+    };
+    const editSelectedData = () => {
+        setTempList(gridApi?.getSelectedRows())
+        setEditSelectedList(true)
+    };
+    const backToSimulation = (value) => {
+        setEditSelectedList(false)
+    };
     /**
     * @method buttonFormatter
     * @description Renders buttons
@@ -749,7 +765,7 @@ function RMIndexationSimulationListing(props) {
         let length = finalArr?.length
         let uniqueArray = _.uniqBy(finalArr, "RawMaterialId")
 
-        if (isSimulation) {
+        if (isSimulation&& !props?.isFromVerifyPage) {
             apply(uniqueArray, length)
         }
 
@@ -852,7 +868,9 @@ function RMIndexationSimulationListing(props) {
         attachmentFormatter: attachmentFormatter,
 
     }
-    return (
+   return (
+        <div>
+            {!editSelectedList && (
         <div className={`ag-grid-react ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${DownloadAccessibility ? "show-table-btn" : ""} ${isSimulation ? 'simulation-height' : props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
             {(loader && !props.isMasterSummaryDrawer) ? <LoaderCustom customClass="simulation-Loader" /> :
                 <>
@@ -963,6 +981,11 @@ function RMIndexationSimulationListing(props) {
                                 title={"Reset Grid"}
                                 icon={"refresh"}
                             />
+                             {props.isSimulation && props.isFromVerifyPage && (
+                                        <button type="button" className={"apply"} onClick={cancel}                        >
+                                            <div className={"back-icon"}></div>Back
+                                        </button>
+                                    )}
                         </Col>
 
                     </Row>
@@ -1010,8 +1033,8 @@ function RMIndexationSimulationListing(props) {
                                         {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
                                         {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field={props.isCostingSimulation ? 'CustomerCode' : "CustomerName"} headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                                         <AgGridColumn field={props.isCostingSimulation ? 'UOM' : "UnitOfMeasurementName"} headerName='UOM'></AgGridColumn>
-                                        {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn width={120}field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>}
-                                        <AgGridColumn field="Currency" width={120}cellRenderer={"currencyFormatter"}></AgGridColumn>
+                                        {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn width={120} field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>}
+                                        <AgGridColumn field="Currency" width={120} cellRenderer={"currencyFormatter"}></AgGridColumn>
                                         {!props.isCostingSimulation && <><AgGridColumn field="BasicRatePerUOM" headerName='Basic Rate' cellRenderer='commonCostFormatter'></AgGridColumn>
                                             <AgGridColumn field="IsScrapUOMApply" headerName="Has different Scrap Rate UOM" cellRenderer='commonCostFormatter'></AgGridColumn>
                                             <AgGridColumn field="ScrapUnitOfMeasurement" headerName='Scrap Rate UOM' cellRenderer='commonCostFormatter'></AgGridColumn>
@@ -1020,10 +1043,10 @@ function RMIndexationSimulationListing(props) {
                                             <AgGridColumn field="ScrapRate" cellRenderer='commonCostFormatter'></AgGridColumn>
                                             {props.isMasterSummaryDrawer && rmIndexationSimulationList[0]?.TechnologyId === FORGING && <AgGridColumn width="140" field="MachiningScrapRate" headerName='Machining Scrap Rate'></AgGridColumn>}
                                             {/* ON RE FREIGHT COST AND SHEARING COST COLUMN IS COMMENTED //RE */}
-                                            <AgGridColumn cellRenderer='costFormatter' field="NetCostWithoutConditionCost"  headerName="Basic Price" ></AgGridColumn>
-                                            <AgGridColumn cellRenderer='costFormatter' field="OtherNetCost"  headerName="Other Net Cost" ></AgGridColumn>
-<AgGridColumn cellRenderer='costFormatter' field="NetConditionCost"  headerName="Net Condition Cost" ></AgGridColumn>
-<AgGridColumn field="NetLandedCost" headerName="Net Cost" cellRenderer='costFormatter'></AgGridColumn>
+                                            <AgGridColumn cellRenderer='costFormatter' field="NetCostWithoutConditionCost" headerName="Basic Price" ></AgGridColumn>
+                                            <AgGridColumn cellRenderer='costFormatter' field="OtherNetCost" headerName="Other Net Cost" ></AgGridColumn>
+                                            <AgGridColumn cellRenderer='costFormatter' field="NetConditionCost" headerName="Net Condition Cost" ></AgGridColumn>
+                                            <AgGridColumn field="NetLandedCost" headerName="Net Cost" cellRenderer='costFormatter'></AgGridColumn>
 
                                             <AgGridColumn field="EffectiveDate" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn></>}
                                         {(!isSimulation && !props.isMasterSummaryDrawer) && <AgGridColumn width={160} field="RawMaterialId" cellClass="ag-grid-action-container" pinned="right" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
@@ -1042,6 +1065,14 @@ function RMIndexationSimulationListing(props) {
                                     </div>
                                 </div>
                             </div>
+                            {props.isSimulation && props.isFromVerifyPage && (
+                            <Row>
+                                <Col md="12" className="d-flex justify-content-end align-items-center">
+                                    <WarningMessage dClass="mr-5" message={`Please check the Raw Material that you want to edit.`} />
+                                    <Button className={"apply"} id={"operationListing_editSelectedData"} disabled={gridApi?.getSelectedRows()?.length === 0} onClick={editSelectedData} icon="edit-icon" buttonName="Edit" />
+                                </Col>
+                            </Row>
+                        )}
                         </Col>
                     </Row>
                 </>
@@ -1087,7 +1118,25 @@ function RMIndexationSimulationListing(props) {
                 showPopupBulk && <PopupMsgWrapper isOpen={showPopupBulk} closePopUp={closePopUp} confirmPopup={onPopupConfirmBulk} message={`Recently Created Material's Density is not created, Do you want to create?`} />
             }
 
-        </div >
+        </div >)}
+        {editSelectedList && (
+                <RMIndexationSimulation isOperation={true}
+                    backToSimulation={backToSimulation}
+                    // isbulkUpload={isbulkUpload}
+                    // rowCount={rowCount}
+                    list={ tempList?tempList: []}
+                    // technology={technology.label}
+                    // technologyId={technology.value}
+                    // master={master.label}
+                    tokenForMultiSimulation={
+                        tokenForSimulation?.length !== 0
+                            ? [{ SimulationId: tokenForSimulation?.value }]
+                            : []
+                    }
+                    isRMNonIndexSimulation={true}
+                />
+            )}
+        </div>
     );
 }
 

@@ -22,7 +22,7 @@ import { PaginationWrapper } from '../../../common/commonPagination';
 import WarningMessage from '../../../common/WarningMessage';
 import { getMaxDate } from '../../SimulationUtils';
 import PopupMsgWrapper from '../../../common/PopupMsgWrapper';
-import { APPLICABILITY_RM_SIMULATION, FORGING, RM_IMPACT_DOWNLOAD_EXCEl, RM_IMPACT_DOWNLOAD_EXCEl_IMPORT } from '../../../../config/masterData';
+import { APPLICABILITY_RAWMATERIAL_SIMULATION, APPLICABILITY_RM_SIMULATION, FORGING, RM_IMPACT_DOWNLOAD_EXCEl, RM_IMPACT_DOWNLOAD_EXCEl_IMPORT } from '../../../../config/masterData';
 import ReactExport from 'react-export-excel';
 import { createMultipleExchangeRate } from '../../../masters/actions/ExchangeRateMaster';
 import LoaderCustom from '../../../common/LoaderCustom';
@@ -111,8 +111,8 @@ function RMIndexationSimulation(props) {
     const { commodityDetailsArray } = useSelector((state) => state.indexation)
     const { filteredRMData } = useSelector(state => state.material)
     const selectedEffectiveDate = useSelector((state) => state.simulation.selectedEffectiveDate);
-    const tableData= isApprovalSummary ? rmIndexedSimulationSummaryData : isCostingSimulation ? list : indexedRMForSimulation
-
+    const tableData = isApprovalSummary ? rmIndexedSimulationSummaryData : isCostingSimulation ? list : indexedRMForSimulation
+    const masterList = useSelector(state => state.simulation.masterSelectListSimulation)
 
     const columnWidths = {
         CostingHead: showCompressedColumns ? 50 : 140,
@@ -183,6 +183,19 @@ function RMIndexationSimulation(props) {
         }
     }, [totalBasicRate, openOtherCostDrawer, openConditionCostDrawer, otherCostDetailForRow, indexedRMForSimulation, isSaving]);
     useEffect(() => {
+        if (selectedMasterForSimulation?.value === EXCHNAGERATE) {
+            dispatch(createMultipleExchangeRate(exchangeRateListBeforeDraft, currencySelectList, effectiveDate, res => {
+                if (!res?.status && !res?.error) {
+                    setValueFunction(true, res);
+                }
+            }))
+        } else {
+            setValueFunction(false, []);
+        }
+    }, [])
+    const setValueFunction = (check, res) => {
+       
+        const filteredMasterId = masterList?.find(item => item?.Text === "Raw Materials")?.Value;
         if ((!props?.isFromApprovalListing && !isApprovalSummary && !isCostingSimulation)) {
             setIsLoader(true)
             let rawMaterialIds = isCostingSimulation ? props?.list && props?.list?.length > 0 && props?.list.map(item => item.NewRawMaterialIndexationDetails.RawMaterialId) : props?.list && props?.list?.length > 0 && props?.list.map(item => item.RawMaterialId)
@@ -194,8 +207,14 @@ function RMIndexationSimulation(props) {
                 "EffectiveDate": null,
                 "LoggedInUserId": loggedInUserId(),
                 "SimulationHeadId": RAWMATERIALAPPROVALTYPEID,
-                "IsSimulationWithOutCosting": true
-
+                "IsSimulationWithOutCosting": true,
+                "IsExchangeRateSimulation": check,
+                "SimulationExchangeRates": [],
+                "ExchangeRateSimulationTechnologyId": filteredMasterId
+            }
+            if (check) {
+                obj.SimulationExchangeRates = res
+                obj.IsExchangeRateSimulation = true
             }
             dispatch(draftSimulationForRMMaster(obj, (res) => {
 
@@ -221,8 +240,7 @@ function RMIndexationSimulation(props) {
 
             }))
         }
-    }, [])
-
+    }
     useEffect(() => {
 
         if (props?.isFromApprovalListing && !isApprovalSummary && !isCostingSimulation) {
@@ -849,14 +867,14 @@ function RMIndexationSimulation(props) {
     const revisedBasicRateHeader = (props) => {
         return (
             <div className='ag-header-cell-label'>
-                <span className='ag-header-cell-text '><span className={`${!isImpactedMaster ? 'mr-1' : ''}`}>Revised</span> {!isImpactedMaster && <i className={`fa fa-info-circle tooltip_custom_right tooltip-icon mb-n3 ml-4 mt2 `} id={"basicRate-tooltip"}></i>} </span>
+                <span className='ag-header-cell-text '><span className={`${!isImpactedMaster ? 'mr-1' : ''}`}>Revised</span> {!isImpactedMaster && !isIndexedRM && <i className={`fa fa-info-circle tooltip_custom_right tooltip-icon mb-n3 ml-4 mt2 `} id={"basicRate-tooltip"}></i>} </span>
             </div>
         );
     };
     const revisedScrapRateHeader = (props) => {
         return (
             <div className='ag-header-cell-label'>
-                <span className='ag-header-cell-text'><span className={`${!isImpactedMaster ? 'mr-1' : ''}`}>Revised</span> {!isImpactedMaster && <i className={`fa fa-info-circle tooltip_custom_right tooltip-icon mb-n3 ml-4 mt2 `} id={"scrapRate-tooltip"}></i>} </span>
+                <span className='ag-header-cell-text'><span className={`${!isImpactedMaster ? 'mr-1' : ''}`}>Revised</span> {!isImpactedMaster && !isIndexedRM && <i className={`fa fa-info-circle tooltip_custom_right tooltip-icon mb-n3 ml-4 mt2 `} id={"scrapRate-tooltip"}></i>} </span>
             </div>
         );
     };
@@ -1150,7 +1168,7 @@ function RMIndexationSimulation(props) {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const currentIndex = props.rowIndex; // Store index in local variable
         setIsLoader(true);
-        if (/* props?.isRMNonIndexSimulation && */ selectedEffectiveDate === null || selectedEffectiveDate === undefined) {
+        if (!isIndexedRM && (selectedEffectiveDate === null || selectedEffectiveDate === undefined)) {
             Toaster.warning("Please select effective date")
             setIsLoader(false);
             return false
@@ -1275,8 +1293,8 @@ function RMIndexationSimulation(props) {
                 {!showverifyPage &&
                     // {(!showverifyPage && !showMainSimulation) &&                    //RE
                     <Fragment>
-                        {showTooltip && !isImpactedMaster && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={basicRateviewTooltip} toggle={basicRatetooltipToggle} target={"basicRate-tooltip"} >{"To edit revised basic rate please double click on the field."}</Tooltip>}
-                        {showTooltip && !isImpactedMaster && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={scrapRateviewTooltip} toggle={scrapRatetooltipToggle} target={"scrapRate-tooltip"} >{"To edit revised scrap rate please double click on the field."}</Tooltip>}
+                        {showTooltip && !isImpactedMaster && !isIndexedRM && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={basicRateviewTooltip} toggle={basicRatetooltipToggle} target={"basicRate-tooltip"} >{"To edit revised basic rate please double click on the field."}</Tooltip>}
+                        {showTooltip && !isImpactedMaster && !isIndexedRM && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={scrapRateviewTooltip} toggle={scrapRatetooltipToggle} target={"scrapRate-tooltip"} >{"To edit revised scrap rate please double click on the field."}</Tooltip>}
                         <Row>
                             <Col className={`${props.isApprovalSummary ? "" : "add-min-height sm-edit-page"}  mb-3 `}>
                                 <div className={`ag-grid-wrapper height-width-wrapper reset-btn-container ${(list && list?.length <= 0) || noData ? "overlay-contain" : ""}`}>
@@ -1392,12 +1410,12 @@ function RMIndexationSimulation(props) {
                                                     <AgGridColumn width={150} cellRenderer='existingOtherCostFormatter' field={isImpactedMaster ? "OldOtherNetCost" : isCostingSimulation ? 'OldRawMaterialIndexationDetails.OtherNetCost' : "OldOtherNetCost"} editable='false' headerName="Existing" colId={isImpactedMaster ? "OldOtherNetCost" : "OldOtherNetCost"} ></AgGridColumn>
                                                     <AgGridColumn width={150} cellRenderer='revisedOtherCostFormatter' editable={false} onCellValueChanged='cellChange' field={isCostingSimulation ? 'NewRawMaterialIndexationDetails.OtherNetCost' : "NewOtherNetCost"} headerName="Revised" colId='NewOtherNetCost'></AgGridColumn>
                                                 </AgGridColumn>
-                                                {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && tableData[0]?.CostingTypeId === ZBCTypeId&& <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={"Basic Price (Currency)"}>
+                                                {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && tableData[0]?.CostingTypeId === ZBCTypeId && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={"Basic Price (Currency)"}>
                                                     <AgGridColumn width={columnWidths.NetCostWithoutConditionCost} field={isImpactedMaster ? 'OldNetCostWithoutConditionCost' : 'OldNetCostWithoutConditionCost'} editable='false' cellRenderer={'costFormatter'} headerName="Existing" colId='NetCostWithoutConditionCost'></AgGridColumn>
                                                     <AgGridColumn width={columnWidths.NewNetCostWithoutConditionCost} field={isImpactedMaster ? "NewNetCostWithoutConditionCost" : "NewNetCostWithoutConditionCost"} editable='false' cellRenderer={'costFormatter'} headerName="Revised" colId='NewNetCostWithoutConditionCost'></AgGridColumn>
                                                 </AgGridColumn>}
 
-                                                {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible&& tableData[0]?.CostingTypeId === ZBCTypeId && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={300} headerName={"Condition Cost (Currency)"} marryChildren={true} >
+                                                {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && tableData[0]?.CostingTypeId === ZBCTypeId && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={300} headerName={"Condition Cost (Currency)"} marryChildren={true} >
 
                                                     <AgGridColumn width={150} cellRenderer='existingConditionCostFormatter' field={isImpactedMaster ? "OldNetConditionCost" : "OldNetConditionCost"} editable='false' headerName="Existing" colId={isImpactedMaster ? "NetConditionCost" : "NetConditionCost"} ></AgGridColumn>
                                                     <AgGridColumn width={150} cellRenderer='revisedConditionCostFormatter' editable={false} onCellValueChanged='cellChange' field={isImpactedMaster ? "NewNetConditionCost" : "NewNetConditionCost"} headerName="Revised" colId='NewNetConditionCost' ></AgGridColumn>
@@ -1543,7 +1561,7 @@ function RMIndexationSimulation(props) {
                         anchor={'right'}
                         approvalData={[]}
                         type={'Sender'}
-                        simulationDetail={{ TokenNo: tokenNumber, Status: '', SimulationId: simulationId, SimulationAppliedOn: simulationTechnologyId, EffectiveDate: '', IsExchangeRateSimulation: false }}
+                        simulationDetail={{ TokenNo: tokenNumber, Status: '', SimulationId: simulationId, SimulationAppliedOn: simulationTechnologyId, EffectiveDate: !isIndexedRM?effectiveDate:'', IsExchangeRateSimulation: false }}
                         selectedRowData={indexedRMForSimulation}
                         costingArr={indexedRMForSimulation}
                         master={selectedMasterForSimulation?.value ? selectedMasterForSimulation?.value : master}
@@ -1555,7 +1573,7 @@ function RMIndexationSimulation(props) {
                         technologyId={simulationTechnologyId}
                         showApprovalTypeDropdown={true}
                         approvalTypeIdValue={simulationHeadId}//CONFIRM FROM ANIKET
-                        IsExchangeRateSimulation={false}
+                        IsExchangeRateSimulation={selectedMasterForSimulation?.value === EXCHNAGERATE ? true : false}
                         isRMIndexationSimulation={true}
                     // isSaveDone={isSaveDone}
                     />

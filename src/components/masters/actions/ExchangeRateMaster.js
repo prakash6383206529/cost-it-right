@@ -11,7 +11,7 @@ import {
 import { apiErrors, getValueFromLabel } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { loggedInUserId } from '../../../helper';
+import { getConfigurationKey, loggedInUserId } from '../../../helper';
 import _ from 'lodash';
 import DayTime from '../../common/DayTimeWrapper';
 import { reactLocalStorage } from 'reactjs-localstorage';
@@ -190,6 +190,11 @@ export function createMultipleExchangeRate(dataList, currencySelectList, effecti
                 "ExchangeRateSourceName": item?.ExchangeRateSourceName,
                 "OldExchangeRateId": item?.ExchangeRateId,
 
+
+            }
+             // Add NewExchangeRateId only if getExchangeRateDataListForSimulation is false
+             if (!getConfigurationKey().IsExchangeRateEditableForSimulation) {
+                data.NewExchangeRateId = item?.NewExchangeRateId;
             }
             const request = axios.post(API.createExchangeRate, data, config());
             temp.push(request)
@@ -202,7 +207,7 @@ export function createMultipleExchangeRate(dataList, currencySelectList, effecti
                 Toaster.error(MESSAGES.SOME_ERROR)
             }
         }).catch((error) => {
-            callback(error)
+            callback({ success: false, error: error })
             dispatch({ type: API_FAILURE })
             apiErrors(error)
         })
