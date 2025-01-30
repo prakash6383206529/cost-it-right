@@ -2441,7 +2441,7 @@ export function saveBOMLevel(data) {
  */
 export function checkFinalUser(data, callback) {
   return (dispatch) => {
-    const queryParams = `DepartmentId=${data.DepartmentId}&UserId=${data.UserId}&TechnologyId=${data.TechnologyId}&Mode=${data.Mode}&approvalTypeId=${data?.approvalTypeId}&plantId=${data?.plantId}&divisionId=${data?.divisionId ?? null}`
+    const queryParams = `DepartmentId=${data.DepartmentId}&UserId=${data.UserId}&TechnologyId=${data.TechnologyId}&Mode=${data.Mode}&approvalTypeId=${data?.approvalTypeId}&plantId=${data?.plantId}&divisionId=${data?.divisionId ?? null}&receiverId=${data?.ReceiverId ?? null}`
 
     const request = axios.get(`${API.checkFinalUser}?${queryParams}`, config())
     request.then((response) => {

@@ -748,6 +748,12 @@ export const API = {
   checkHighestApprovalLevelForHeadsAndApprovalType: `${BASE_URL}/user-level/check-valid-approval-levels`,
   getOnboardingLevelById: `${BASE_URL}/configuration/select-list-get-level-by-onboarding`,
   getUserOnboardingLevel: `${BASE_URL}/user-level/get-user-onboarding-levels`,
+  getDelegateeUserListAPI: `${BASE_URL}/user-delegation/get-delegatee-users`,
+  createDelegation: `${BASE_URL}/user-delegation/create-user-delegations`,
+  getUserDelegationDetails: `${BASE_URL}/user-delegation/get-user-delegations`,
+  revokeDelegation: `${BASE_URL}/user-delegation/revoke-user-delegations`,
+  getDelegationHistory: `${BASE_URL}/user-delegation/get-user-delegations-history`,
+  getAllUserDelegationApi: `${BASE_URL}/user/get-all-users-delegation`,
 
   //AUDIT API
 
@@ -1872,6 +1878,8 @@ export const COSTINGS_APPROVAL_DASHBOARD = 'COSTINGS_APPROVAL_DASHBOARD'
 export const AMENDMENTS_APPROVAL_DASHBOARD = 'AMENDMENTS_APPROVAL_DASHBOARD'
 export const GRANT_USER_WISE_DATA = 'GRANT_USER_WISE_DATA'
 export const GET_ONBOARDING_LEVEL_BY_ID = 'GET_ONBOARDING_LEVEL_BY_ID'
+export const GET_DELEGATEE_USER_LIST_SUCCESS = 'GET_DELEGATEE_USER_LIST_SUCCESS'
+
 //ROLE
 export const GET_ROLE_SUCCESS = 'GET_ROLE_SUCCESS'
 export const GET_UNIT_ROLE_DATA_SUCCESS = 'GET_UNIT_ROLE_DATA_SUCCESS'
@@ -2314,6 +2322,8 @@ export const COMPANY = 'Company'//MINDA
 export const RFQUSER = 'RFQUser'
 export const DELEGATION = 'Delegation'
 export const DIVISION = 'Division'
+export const SELF_DELEGATION = 'Self Delegation'
+export const ON_BEHALF_DELEGATION = 'On Behalf Delegation'
 
 //DEPRECIATION TYPE ENUMS
 export const SLM = 'SLM'

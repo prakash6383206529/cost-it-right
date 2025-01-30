@@ -33,7 +33,7 @@ import { fetchDivisionId } from '../../CostingUtil'
 export const QuotationIdFromSummary = React.createContext();
 
 function ApprovalSummary(props) {
-  const { approvalNumber, approvalProcessId } = props.location.state
+  const { approvalNumber, approvalProcessId,receiverId ,fromDashboard} = props.location.state
   const loggedInUser = loggedInUserId()
 
   const dispatch = useDispatch()
@@ -136,7 +136,7 @@ function ApprovalSummary(props) {
 
   const approvalSummaryHandler = () => {
     setIsLoader(true)
-    dispatch(getApprovalSummary(approvalNumber, approvalProcessId, loggedInUser, (res) => {
+    dispatch(getApprovalSummary(approvalNumber, approvalProcessId, loggedInUser,receiverId, (res) => {
 
       if (res?.data?.Data?.Costings?.length > 0) {
         const { IsRFQCostingApproval, PartDetails, ApprovalDetails, ApprovalLevelStep, DepartmentId, Technology, ApprovalProcessId,
@@ -227,6 +227,7 @@ function ApprovalSummary(props) {
           EffectiveDate: ApprovalDetails[0].EffectiveDate,
           VendorId: VendorId,
           QuotationId: QuotationId,
+          ReceiverId: receiverId
         })
         let requestArray = []
         let requestObject = {}
@@ -266,7 +267,8 @@ function ApprovalSummary(props) {
                   // approvalTypeId: costingTypeIdToApprovalTypeIdFunction(CostingTypeId),
                   approvalTypeId: ApprovalTypeId,
                   plantId: Data.DestinationPlantId ?? EMPTY_GUID,
-                  divisionId: divisionId
+                  divisionId: divisionId,
+                  ReceiverId: receiverId
                 }
                 dispatch(checkFinalUser(obj, res => {
                   if (res && res.data && res.data.Result) {
@@ -300,7 +302,8 @@ function ApprovalSummary(props) {
               approvalTypeId: ApprovalTypeId,
 
               plantId: Data.DestinationPlantId,
-              divisionId: divisionId ?? null
+              divisionId: divisionId ?? null,
+              ReceiverId: receiverId
             }
             dispatch(checkFinalUser(obj, res => {
               if (res && res.data && res.data.Result) {
@@ -423,7 +426,13 @@ function ApprovalSummary(props) {
   }
 
   if (showListing) {
-    return <Redirect to="/approval-listing" />
+    return <Redirect to={{
+      pathname: fromDashboard ? "/" : "/approval-listing",
+      state: fromDashboard ? {
+        activeTab: '1',  // Or whichever tab the user came from
+        module: 'costing'
+      } : undefined
+    }} />
   }
 
   const callPushAPI = debounce(() => {
@@ -840,7 +849,7 @@ function ApprovalSummary(props) {
               <Col md="12" className="costing-summary-row">
                 {/* SEND isApproval FALSE WHEN OPENING FROM FGWISE */}
 
-                {costingSummary && <CostingSummaryTable VendorId={approvalData.VendorId} viewMode={true} costingID={approvalDetails.CostingId} approvalMode={true} isApproval={(approvalData.LastCostingId === EMPTY_GUID || fgWise) ? false : true} simulationMode={false} costingIdExist={true} uniqueShouldCostingId={uniqueShouldCostingId} isRfqCosting={isRFQ} costingIdList={costingIdList} notSelectedCostingId={notSelectedCostingId} selectedTechnology={partDetail.Technology} />}
+                {costingSummary && <CostingSummaryTable VendorId={approvalData.VendorId} viewMode={true} costingID={approvalDetails.CostingId} approvalMode={true} isApproval={(approvalData.LastCostingId === EMPTY_GUID || fgWise) ? false : true} simulationMode={false} costingIdExist={true} uniqueShouldCostingId={uniqueShouldCostingId} isRfqCosting={isRFQ} costingIdList={costingIdList} notSelectedCostingId={notSelectedCostingId} selectedTechnology={partDetail.Technology} receiverId={receiverId} />}
 
               </Col>
             </Row>

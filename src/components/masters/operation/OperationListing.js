@@ -891,15 +891,12 @@ const OperationListing = (props) => {
                 <div className={`ag-grid-wrapper p-relative ${(props?.isDataInMaster && !noData) ? 'master-approval-overlay' : ''} ${(state.tableData && state.tableData.length <= 0) || noData ? 'overlay-contain' : ''}  ${props.isSimulation ? 'min-height' : ''}`}>
                     <div className={`ag-theme-material ${(state.isLoader && !props.isMasterSummaryDrawer) && "max-loader-height"}`}>
                         {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
-                        {(!state.render && !state.isLoader) && Object.keys(permissionData).length > 0 && <AgGridReact
+                        {(!state.render && !state.isLoader) && (props.isMasterSummaryDrawer || Object.keys(permissionData).length > 0) && <AgGridReact
                             defaultColDef={defaultColDef}
                             floatingFilter={true}
                             domLayout='autoHeight'
                             rowData={state.showExtraData ? [...setLoremIpsum(state.tableData[0]), ...state.tableData] : state.tableData}
-
-
                             pagination={true}
-
                             paginationPageSize={globalTakes}
                             onGridReady={onGridReady}
                             gridOptions={gridOptions}

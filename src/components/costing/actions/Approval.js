@@ -7,6 +7,7 @@ import { apiErrors, encodeQueryParamsAndLog } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
 import Toaster from '../../common/Toaster'
 import { reactLocalStorage } from 'reactjs-localstorage'
+import { userDetails } from '../../../helper'
 
 // const config() = config
 // const config() = {
@@ -46,10 +47,10 @@ export function getSendForApprovalByCostingId(CostingId, callback) {
  * @method getSendForApproval
  * @description get SEND FOR APPROVAL DATA BY COSTING ID
  */
-export function getAllApprovalDepartment(callback) {
+export function getAllApprovalDepartment(receiverId,callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getAllApprovalDepartment}`, config())
+    const request = axios.get(`${API.getAllApprovalDepartment}?receiverId=${receiverId??null}`, config())
     request
       .then((response) => {
         if (response.data.Result) {
@@ -267,7 +268,7 @@ export function sendForApprovalBySender(data, callback) {
  * @description for getting list of approval
  */
 
-export function getApprovalList(filterData, skip, take, isPagination, obj, callback) {
+export function getApprovalList(filterData, skip, take, isPagination, obj, delegation, callback) {
   return (dispatch) => {
     dispatch({
       type: GET_APPROVAL_LIST,
@@ -299,13 +300,14 @@ export function getApprovalList(filterData, skip, take, isPagination, obj, callb
       skip: skip,
       take: take,
       CustomerName: obj.Customer,
-      IsCustomerDataShow: reactLocalStorage.getObject('CostingTypePermission').cbc,
-      IsVendorDataShow: reactLocalStorage.getObject('CostingTypePermission').vbc,
-      IsZeroDataShow: reactLocalStorage.getObject('CostingTypePermission').zbc,
+      IsCustomerDataShow: !delegation ? reactLocalStorage.getObject('CostingTypePermission').cbc : true,
+      IsVendorDataShow: !delegation ? reactLocalStorage.getObject('CostingTypePermission').vbc : true,
+      IsZeroDataShow: !delegation ? reactLocalStorage.getObject('CostingTypePermission').zbc : true,
       IsScrapUOMApply: obj.IsScrapUOMApply ? (obj.IsScrapUOMApply.toLowerCase() === 'yes' ? true : false) : '',
       CalculatedFactor: obj.CalculatedFactor,
       ScrapUnitOfMeasurement: obj.ScrapUnitOfMeasurement,
-      UOMToScrapUOMRatio: obj.UOMToScrapUOMRatio
+      UOMToScrapUOMRatio: obj.UOMToScrapUOMRatio,
+      IsShowDelegationData:  userDetails()?.IsUserDelegatee
     });
     const request = axios.get(`${API.getApprovalList}?${queryParameter}&${queryParamsSecond}`, config())
     request
@@ -393,11 +395,12 @@ export function getApprovalSummary(
   approvalNumber,
   approvalProcessId,
   loggedInUserId,
+  receiverId,
   callback,
 ) {
   return (dispatch) => {
     const request = axios.get(
-      `${API.getApprovalSummaryByApprovalNo}/${approvalNumber}/${approvalProcessId}/${loggedInUserId}`, config())
+      `${API.getApprovalSummaryByApprovalNo}/${approvalNumber}/${approvalProcessId}/${loggedInUserId}/${receiverId}`, config())
     request
       .then((response) => {
         if (response?.data?.Result) {

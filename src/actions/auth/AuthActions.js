@@ -8,7 +8,7 @@ import {
     GET_MENU_BY_USER_DATA_SUCCESS, GET_LEFT_MENU_BY_MODULE_ID_AND_USER, LOGIN_PAGE_INIT_CONFIGURATION, config, GET_USERS_BY_TECHNOLOGY_AND_LEVEL,
     GET_LEVEL_BY_TECHNOLOGY, GET_MENU_BY_MODULE_ID_AND_USER, LEVEL_MAPPING_API, GET_SIMULATION_TECHNOLOGY_SELECTLIST_SUCCESS,
     SIMULATION_LEVEL_DATALIST_API, GET_SIMULATION_LEVEL_BY_TECHNOLOGY, GET_TOP_AND_LEFT_MENU_DATA, GET_MASTER_SELECT_LIST, MASTER_LEVEL_DATALIST_API, GET_MASTER_LEVEL_BY_MASTERID, COSTINGS_APPROVAL_DASHBOARD, AMENDMENTS_APPROVAL_DASHBOARD, GET_USERS_MASTER_LEVEL_API, GET_RFQ_USER_DATA_SUCCESS,
-    ONBOARDING_LEVEL_DATALIST_API, GET_ONBOARDING_LEVEL_BY_ID, GET_PLANT_SELECT_LIST_FOR_DEPARTMENT, ONBOARDINGID, MANAGE_LEVEL_TAB_API, GET_DIVISION_SUCCESS, GET_DIVISION_DATA_SUCCESS, GET_DIVISION_LIST_SUCCESS, GET_DIVISION_LIST_FOR_DEPARTMENT
+    ONBOARDING_LEVEL_DATALIST_API, GET_ONBOARDING_LEVEL_BY_ID, GET_PLANT_SELECT_LIST_FOR_DEPARTMENT, ONBOARDINGID, MANAGE_LEVEL_TAB_API, GET_DIVISION_SUCCESS, GET_DIVISION_DATA_SUCCESS, GET_DIVISION_LIST_SUCCESS, GET_DIVISION_LIST_FOR_DEPARTMENT, GET_DELEGATEE_USER_LIST_SUCCESS
 } from '../../config/constants';
 import { formatLoginResult } from '../../helper/ApiResponse';
 import { MESSAGES } from "../../config/message";
@@ -301,7 +301,7 @@ export function getAllUserAPI(callback) {
 export function getAllUserDataAPI(data, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.get(`${API.getAllUserDataAPI}?department_id=${data?.DepartmentId}&role_id=${data?.RoleId}&logged_in_user=${data?.logged_in_user}&name=${data?.name}&userType=${data?.userType}&email=${data?.email}&mobileNo=${data?.mobileNo}&phoneNo=${data?.phone}&company=${data?.company}&createdBy=${data?.createdBy}&createdDate=${data?.createdDate}&modifiedDate=${data?.modifiedDate}&userName=${data?.userName}&modifiedBy=${data?.modifiedBy}&role=${data?.role}&isApplyPagination=${data?.isPagination}&skip=${data?.skip}&take=${data?.take}`, config())
+        axios.get(`${API.getAllUserDataAPI}?department_id=${data?.DepartmentId}&role_id=${data?.RoleId}&logged_in_user=${data?.logged_in_user}&name=${data?.name}&userType=${data?.userType}&email=${data?.email}&mobileNo=${data?.mobileNo}&phoneNo=${data?.phone}&company=${data?.company}&createdBy=${data?.createdBy}&createdDate=${data?.createdDate}&modifiedDate=${data?.modifiedDate}&userName=${data?.userName}&modifiedBy=${data?.modifiedBy}&role=${data?.role}&isApplyPagination=${data?.isPagination}&skip=${data?.skip}&take=${data?.take}&IsShowDelegation=${data?.isShowDelegation}&IsSelfDelegatedOnly=${data?.isSelfDelegatedOnly}`, config())
             .then((response) => {
                 if (data?.userType === 'RFQ') {
                     dispatch({
@@ -322,6 +322,29 @@ export function getAllUserDataAPI(data, callback) {
             });
     };
 }
+/**
+ * @method getAllUserDelegationApi
+ * @description get all user's data list
+ */
+export function getAllUserDelegationApi(data, callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        axios.get(`${API.getAllUserDelegationApi}?department_id=${data?.DepartmentId}&role_id=${data?.RoleId}&logged_in_user=${data?.logged_in_user}&name=${data?.name}&userType=${data?.userType}&email=${data?.email}&mobileNo=${data?.mobileNo}&phoneNo=${data?.phone}&company=${data?.company}&createdBy=${data?.createdBy}&createdDate=${data?.createdDate}&modifiedDate=${data?.modifiedDate}&userName=${data?.userName}&modifiedBy=${data?.modifiedBy}&role=${data?.role}&isApplyPagination=${data?.isPagination}&skip=${data?.skip}&take=${data?.take}&IsShowDelegation=${data?.isShowDelegation}&IsSelfDelegatedOnly=${data?.isSelfDelegatedOnly}`, config())
+            .then((response) => {
+                dispatch({
+                    type: GET_USER_DATA_SUCCESS,
+                    payload: response.status === 200 ? response?.data?.DataList : [],
+                });
+                callback(response);
+            }).catch((error) => {
+                dispatch({ type: API_FAILURE });
+                callback(error);
+                apiErrors(error);
+            });
+    };
+}
+
+
 
 /**
 * @method getUserDataAPI
@@ -447,10 +470,10 @@ export function setEmptyUserDataAPI(UserId, callback) {
 * @method getUsersTechnologyLevelAPI
 * @description get User's technology level
 */
-export function getUsersTechnologyLevelAPI(UserId, technologyId, callback) {
+export function getUsersTechnologyLevelAPI(UserId, technologyId,receiverId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getUserTechnologyLevelForCosting}/${UserId}/${technologyId}`, config());
+        const request = axios.get(`${API.getUserTechnologyLevelForCosting}/${UserId}/${technologyId}/${receiverId}`, config());
         request.then((response) => {
             dispatch({ type: API_SUCCESS });
             callback(response);
@@ -1675,10 +1698,10 @@ export function getSimualationLevelByTechnology(isAPICall, technologyId, approva
 * @method getUsersSimulationTechnologyLevelAPI
 * @description get User's technology level
 */
-export function getUsersSimulationTechnologyLevelAPI(UserId, technologyId, callback) {
+export function getUsersSimulationTechnologyLevelAPI(UserId, technologyId, receiverId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getUserSimulationTechnologyLevel}/${UserId}/${technologyId}`, config());
+        const request = axios.get(`${API.getUserSimulationTechnologyLevel}/${UserId}/${technologyId}/${receiverId}`, config());
         // const request = axios.get(`${API.getUserSimulationTechnologyLevelForCosting}/${UserId}/${technologyId}`, config());          						//RE
         request.then((response) => {
             dispatch({ type: API_SUCCESS });
@@ -1858,10 +1881,10 @@ export function getMasterLevelByMasterId(isAPICall, masterId, approvalId, callba
 * @method getUsersSimulationTechnologyLevelAPI
 * @description get User's technology level
 */
-export function getUsersMasterLevelAPI(UserId, technologyId, callback) {
+export function getUsersMasterLevelAPI(UserId, technologyId,receiverId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getUserMasterLevelForCosting}/${UserId}/${technologyId}`, config());
+        const request = axios.get(`${API.getUserMasterLevelForCosting}/${UserId}/${technologyId}/${receiverId ?? null}`, config());
         request.then((response) => {
             if (response && response.data && response.data.Result) {
                 dispatch({
@@ -2102,10 +2125,10 @@ export function getPlantSelectListForDepartment(data, callback) {
 * @method getUsersOnboardingLevelAPI
 * @description get User's Onboarding level
 */
-export function getUsersOnboardingLevelAPI(UserId, callback) {
+export function getUsersOnboardingLevelAPI(UserId,receiverId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getUserOnboardingLevel}/${UserId}/${ONBOARDINGID}`, config());
+        const request = axios.get(`${API.getUserOnboardingLevel}/${UserId}/${ONBOARDINGID}/${receiverId}`, config());
         request.then((response) => {
             dispatch({ type: API_SUCCESS });
             if (response && response.data && response.data.Result) {
@@ -2293,17 +2316,9 @@ export function getAllDivisionListAssociatedWithDepartment(data, callback) {
             if (response.status === 200) {
                 dispatch({
                     type: GET_DIVISION_LIST_FOR_DEPARTMENT,
-                    payload: response.data.DataList,
+                    payload: response.status === 204 ? [] : response.data.DataList,
                 });
                 callback(response);
-            } else if (response.status === 204) {
-                dispatch({
-                    type: GET_DIVISION_LIST_FOR_DEPARTMENT,
-                    payload: [],
-                });
-                callback(response);
-            } else {
-                Toaster.error(MESSAGES.SOME_ERROR);
             }
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
@@ -2311,4 +2326,98 @@ export function getAllDivisionListAssociatedWithDepartment(data, callback) {
             apiErrors(error);
         });
     };
+}
+/**
+ * @method getDelegateeUserList
+ * @description get delegatee user list for dropdown
+ */
+export function getDelegateeUserList(data, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getDelegateeUserListAPI}?loggedInUserId=${loggedInUserId()}&delegatorUserId=${data?.delegatorUserId}&startDate=${data?.startDate}&endDate=${data?.endDate}`, config());
+        request.then((response) => {
+            if (response.status === 200) {
+                dispatch({
+                    type: GET_DELEGATEE_USER_LIST_SUCCESS,
+                    payload: response.status === 204 ? [] : response?.data?.SelectList,
+                });
+                callback(response);
+            } 
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+/**
+ * @method createDelegation
+ * @description Create delegation for a user
+ */
+export function createDelegation(data, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.post(`${API.createDelegation}`, data, config());
+        request.then((response) => {
+            dispatch({ type: API_SUCCESS });
+            callback(response);
+        }).catch((error) => {
+            callback(error);
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getUserDelegationDetails
+ * @description get user delegation details
+ */
+export function getUserDelegationDetails(delegatorUserId, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getUserDelegationDetails}?delegatorUserId=${delegatorUserId??null}`, config());
+        request.then((response) => {
+            dispatch({ type: API_SUCCESS });
+            callback(response);
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    }
+}
+
+/**
+ * @method getDelegationHistory
+ * @description get delegation history
+ */
+export function getDelegationHistory(delegatorUserId, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getDelegationHistory}?delegatorUserId=${delegatorUserId??null}`, config());
+        request.then((response) => {
+            dispatch({ type: API_SUCCESS });
+            callback(response);
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    }
+}
+
+export function revokeDelegation(data, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.put(API.revokeDelegation, data, config());
+        request.then((response) => {
+            dispatch({ type: API_SUCCESS });
+            callback(response);
+        }).catch((error) => {
+            callback(error);
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    }
 }
