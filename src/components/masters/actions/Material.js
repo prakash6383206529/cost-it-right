@@ -824,7 +824,7 @@ export function getMaterialTypeDataListAPI(callback) {
     return (dispatch) => {
         const request = axios.get(`${API.getMaterialTypeDataList}`, config());
         request.then((response) => {
-            if (response?.data?.Result || response?.status === 204  ) {
+            if (response?.data?.Result || response?.status === 204) {
                 dispatch({
                     type: GET_RM_TYPE_DATALIST_SUCCESS,
                     payload: response?.status === 204 ? [] : response?.data.DataList,
@@ -1010,6 +1010,8 @@ export function getAllRMDataList(data, skip, take, isPagination, obj, isImport, 
             NetCostWithoutConditionCostConversion: obj.NetCostWithoutConditionCostConversion !== undefined ? obj.NetCostWithoutConditionCostConversion : "",
             NetConditionCostConversion: obj.NetConditionCostConversion !== undefined ? obj.NetConditionCostConversion : "",
             NetLandedCostConversionAPI: obj.NetLandedCostConversionAPI !== undefined ? obj.NetLandedCostConversionAPI : "",
+            Currency: obj.Currency !== undefined ? obj.Currency : "",
+            LocalCurrency: obj.LocalCurrency !== undefined ? obj.LocalCurrency : "",
         });
         // const queryParams = `technology_id=${data.technologyId}&net_landed_min_range=${data.net_landed_min_range}&net_landed_max_range=${data.net_landed_max_range}&ListFor=${data.ListFor ? data.ListFor : ''}&StatusId=${data.StatusId ? data.StatusId : ''}&DepartmentCode=${obj.DepartmentName !== undefined ? obj.DepartmentName : ""}&CustomerName=${obj.CustomerName !== undefined ? obj.CustomerName : ''}&FromDate=${(obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[0] : ""}&ToDate=${(obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[1] : ""}&IsCustomerDataShow=${reactLocalStorage.getObject('CostingTypePermission').cbc !== undefined ? reactLocalStorage.getObject('CostingTypePermission').cbc : false}&IsVendorDataShow=${reactLocalStorage.getObject('CostingTypePermission').vbc}&IsZeroDataShow=${reactLocalStorage.getObject('CostingTypePermission').zbc}&ScrapUnitOfMeasurement=${obj.ScrapUnitOfMeasurement !== undefined ? obj.ScrapUnitOfMeasurement : ''}&IsScrapUOMApply=${obj.IsScrapUOMApply ? (obj.IsScrapUOMApply?.toLowerCase() === 'yes' ? true : false) : ''}&CalculatedFactor=${obj.CalculatedFactor !== undefined ? obj.CalculatedFactor : ''}&ScrapRatePerScrapUOM=${obj.ScrapRatePerScrapUOM !== undefined ? obj.ScrapRatePerScrapUOM : ''}&UOMToScrapUOMRatio=${obj.UOMToScrapUOMRatio !== undefined ? obj.UOMToScrapUOMRatio : ''}&NetConditionCost=${obj.NetConditionCost !== undefined ? obj.NetConditionCost : ""}&NetLandedCostConversion=${obj.NetLandedCostConversion !== undefined ? obj.NetLandedCostConversion : ""}&BasicRatePerUOMConversion=${obj.BasicRatePerUOMConversion !== undefined ? obj.BasicRatePerUOMConversion : ""}&ScrapRateInINR=${obj.ScrapRateInINR !== undefined ? obj.ScrapRateInINR : ""}&RawMaterialFreightCostConversion=${obj.RawMaterialFreightCostConversion !== undefined ? obj.RawMaterialFreightCostConversion : ""}&RawMaterialShearingCostConversion=${obj.RawMaterialShearingCostConversion !== undefined ? obj.RawMaterialShearingCostConversion : ""}&NetCostWithoutConditionCostConversion=${obj.NetCostWithoutConditionCostConversion !== undefined ? obj.NetCostWithoutConditionCostConversion : ""}&NetConditionCostConversion=${obj.NetConditionCostConversion !== undefined ? obj.NetConditionCostConversion : ""}&NetLandedCostConversionAPI=${obj.NetLandedCostConversionAPI !== undefined ? obj.NetLandedCostConversionAPI : ""}`
         const queryParamsSecond = rmQueryParms(isPagination, skip, take, obj)
@@ -1601,7 +1603,7 @@ export function getMasterApprovalSummary(tokenNo, approvalProcessId, masterId, O
             `${API.getMasterApprovalSummaryByApprovalNo}/${tokenNo}/${approvalProcessId}/${loggedInUserId()}`, config())
         request
             .then((response) => {
-              if (response?.data.Result) {
+                if (response?.data.Result) {
 
                     if (Number(masterId) === RM_MASTER_ID) {
                         if (response?.data?.Data?.ImpactedMasterDataList.RawMaterialListResponse[0]?.RawMaterialEntryType === ENTRY_TYPE_DOMESTIC) {
@@ -1610,7 +1612,7 @@ export function getMasterApprovalSummary(tokenNo, approvalProcessId, masterId, O
                                 payload: response?.data?.Data?.ImpactedMasterDataList.RawMaterialListResponse,
                             })
                         } else {
-                           dispatch({
+                            dispatch({
                                 type: GET_RM_IMPORT_LIST,
                                 payload: response?.data?.Data?.ImpactedMasterDataList.RawMaterialListResponse,
                             })

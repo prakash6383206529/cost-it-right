@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { handleDepartmentHeader, loggedInUserId, userDetails } from '../../../helper/auth'
 import NoContentFound from '../../common/NoContentFound'
-import { defaultPageSize, EMPTY_DATA, LINKED } from '../../../config/constants'
+import { defaultPageSize, EMPTY_DATA, EXCHNAGERATE, LINKED } from '../../../config/constants'
 import DayTime from '../../common/DayTimeWrapper'
 import { DRAFT, EMPTY_GUID, APPROVED, PUSHED, ERROR, WAITING_FOR_APPROVAL, REJECTED, POUPDATED } from '../../../config/constants'
 import Toaster from '../../common/Toaster'
@@ -646,10 +646,19 @@ const CheckFinalLevel = (value) => {
                     Toaster.warning("This user is not in the approval cycle")
                     return false
                 } else if (res?.data?.Data?.IsPFSOrBudgetingDetailsExist === false) {
+                    let technologyIdTemp = ""
+                    if(approvalData?.IsExchangeRateSimulation){
+                        technologyIdTemp = EXCHNAGERATE
+                    }else if(selectedRowData[0]?.IsExchangeRateSimulation){
+                        technologyIdTemp = EXCHNAGERATE
+                    }else{
+                        technologyIdTemp = approvalData?.SimulationTechnologyId ? approvalData?.SimulationTechnologyId : selectedRowData[0].SimulationTechnologyId
+                    }
+                    
                     let obj = {
                         DepartmentId: res?.data?.Data?.DepartmentId ? res?.data?.Data?.DepartmentId : selectedRowData[0].DepartmentId ?? EMPTY_GUID,
                         UserId: loggedInUserId(),
-                        TechnologyId: approvalData?.SimulationTechnologyId ? approvalData?.SimulationTechnologyId : selectedRowData[0].SimulationTechnologyId,
+                        TechnologyId: technologyIdTemp,
                         Mode: 'simulation',
                         approvalTypeId: costingTypeIdToApprovalTypeIdFunction(res?.data?.Data?.ApprovalTypeId ? res?.data?.Data?.ApprovalTypeId : selectedRowData[0].ApprovalTypeId),
                         plantId: selectedRowData[0].PlantId ?? EMPTY_GUID,
@@ -680,7 +689,7 @@ const CheckFinalLevel = (value) => {
             let obj = {
                 DepartmentId: selectedRowData[0]?.Status === DRAFT ? EMPTY_GUID : selectedRowData[0]?.DepartmentId,
                 UserId: loggedInUserId(),
-                TechnologyId: selectedRowData[0]?.SimulationTechnologyId,
+                TechnologyId: selectedRowData[0]?.IsExchangeRateSimulation                ? EXCHNAGERATE : selectedRowData[0]?.SimulationTechnologyId,
                 Mode: 'simulation',
                 approvalTypeId: costingTypeIdToApprovalTypeIdFunction(selectedRowData[0]?.SimulationHeadId),
                 plantId: selectedRowData[0].PlantId,
@@ -688,7 +697,7 @@ const CheckFinalLevel = (value) => {
             }
             setSimulationDetail({ DepartmentId: selectedRowData[0]?.DepartmentId, TokenNo: selectedRowData[0]?.SimulationTokenNumber, Status: selectedRowData[0]?.SimulationStatus, SimulationId: selectedRowData[0]?.SimulationId, SimulationAppliedOn: selectedRowData[0]?.SimulationAppliedOn, EffectiveDate: selectedRowData[0]?.EffectiveDate, IsExchangeRateSimulation: selectedRowData[0]?.IsExchangeRateSimulation })
             dispatch(setMasterForSimulation({ label: selectedRowData[0]?.SimulationTechnologyHead, value: selectedRowData[0]?.SimulationTechnologyId }))
-
+            
             dispatch(checkFinalUser(obj, res => {
                 if (res && res.data && res.data.Result) {
                     if (selectedRowData[0]?.Status === DRAFT) {
@@ -736,11 +745,11 @@ const CheckFinalLevel = (value) => {
                 pathname: "/simulation",
                 state: {
                     isFromApprovalListing: true,
-                    approvalProcessId: approvalData.approvalProcessId,
-                    master: approvalData.SimulationTechnologyId,
+                    approvalProcessId: approvalData?.approvalProcessId,
+                    master: approvalData?.SimulationTechnologyId,
                     statusForLinkedToken: statusForLinkedToken,
-                    approvalTypeId: costingTypeIdToApprovalTypeIdFunction(approvalData.SimulationHeadId),
-                    DepartmentId: approvalData.DepartmentId,
+                    approvalTypeId: costingTypeIdToApprovalTypeIdFunction(approvalData?.SimulationHeadId),
+                    DepartmentId: approvalData?.DepartmentId,
                     preserveData: true
                 }
 
@@ -753,10 +762,11 @@ const CheckFinalLevel = (value) => {
             to={{
                 pathname: "/simulation-approval-summary",
                 state: {
-                    approvalNumber: approvalData.approvalNumber,
-                    approvalId: approvalData.approvalProcessId,
-                    SimulationTechnologyId: approvalData.SimulationTechnologyId,
-                    simulationId: approvalData.simulationId
+                    approvalNumber: approvalData?.approvalNumber,
+                    approvalId: approvalData?.approvalProcessId,
+                    SimulationTechnologyId: approvalData?.SimulationTechnologyId,
+                    SimulationHeadId:approvalData?.SimulationHeadId,
+                    simulationId: approvalData?.simulationId
                 }
             }}
         />

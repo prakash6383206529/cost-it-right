@@ -21,7 +21,10 @@ import {
     BOPGridForToken,
     CostingSimulationDownloadAssemblyTechnology,
     CostingSimulationDownloadBOP, CostingSimulationDownloadMR, CostingSimulationDownloadOperation, CostingSimulationDownloadRM, CostingSimulationDownloadST
-    , CPGridForToken, ERGridForToken, EXCHANGESIMULATIONDOWNLOAD, IdForMultiTechnology, InitialGridForToken, LastGridForToken, MRGridForToken, OperationGridForToken, RMGridForToken, STGridForToken, SimulationDownloadBOP, COMBINEDPROCESSSIMULATION
+    , CPGridForToken, ERGridForToken, EXCHANGESIMULATIONDOWNLOAD, IdForMultiTechnology, InitialGridForToken, LastGridForToken, MRGridForToken, OperationGridForToken, RMGridForToken, STGridForToken, SimulationDownloadBOP, COMBINEDPROCESSSIMULATION,
+    APPLICABILITY_OPERATIONS_SIMULATION,
+    APPLICABILITY_MACHINE_RATES_SIMULATION,
+    APPLICABILITY_SURFACE_TREATMENT_SIMULATION
 } from '../../../config/masterData'
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -202,7 +205,7 @@ function CostingSimulation(props) {
                         let obj = {
                             DepartmentId: userData.DepartmentId,
                             UserId: loggedInUserId(),
-                            TechnologyId: SimulationTechnologyIdState,
+                            TechnologyId: selectedMasterForSimulation.value === EXCHNAGERATE ? EXCHNAGERATE : SimulationTechnologyIdState,
                             Mode: 'simulation',
                             approvalTypeId: costingTypeIdToApprovalTypeIdFunction(amendmentDetails?.SimulationHeadId)
                         }
@@ -236,7 +239,7 @@ function CostingSimulation(props) {
                 let obj = {
                     DepartmentId: userData.DepartmentId,
                     UserId: loggedInUserId(),
-                    TechnologyId: technologyId,
+                    TechnologyId: selectedMasterForSimulation.value === EXCHNAGERATE ? EXCHNAGERATE : technologyId,
                     Mode: 'simulation',
                     approvalTypeId: costingTypeIdToApprovalTypeIdFunction(amendmentDetails?.SimulationHeadId),
                     plantId: plantId
@@ -465,10 +468,10 @@ function CostingSimulation(props) {
             tempObj.CostingHead = simulationList[0]?.CostingHead
             tempObj.SimulationHeadId = Data.SimulationHeadId
             tempObj.SimulationAppliedOn = Data.SimulationAppliedOn
-            tempObj.Technology = simulationList[0].Technology
-            tempObj.Vendor = simulationList[0].VendorName
+            tempObj.Technology = simulationList[0]?.Technology
+            tempObj.Vendor = simulationList[0]?.VendorName
             tempObj.TotalImpactPerQuarter = Data.TotalImpactPerQuarter
-            tempObj.CustomerName = simulationList[0].CustomerName
+            tempObj.CustomerName = simulationList[0]?.CustomerName
             tempObj.BudgetedPriceImpactPerQuarter = simulationList[0]?.BudgetedPriceImpactPerQuarter
             tempObj.IsExchangeRateSimulation = Data?.IsExchangeRateSimulation
             setAmendmentDetails(tempObj)
@@ -514,74 +517,58 @@ function CostingSimulation(props) {
                 case Number(RMDOMESTIC):
                 case Number(RMIMPORT):
                     setMasterLoader(true)
-                    dispatch(getCostingSimulationList(simulationId, plantId, rawMatrialId, res => {
-                        setMasterLoader(false)
-                        setCommonStateForList(res)
-                        if (res?.data?.Result) {
-                            setPlantId(res?.data?.Data.SimulatedCostingList[0].PlantId)
-                        }
-                    }))
+                    handleRawMaterialCase(plantId, rawMatrialId)
                     break;
                 case Number(SURFACETREATMENT):
                     setMasterLoader(true)
-                    dispatch(getCostingSurfaceTreatmentSimulationList(simulationId, plantId, rawMatrialId, (res) => {
-                        setMasterLoader(false)
-                        setCommonStateForList(res)
-                        if (res?.data?.Result) {
-                            setPlantId(res?.data?.Data.SimulatedCostingList[0].PlantId)
-                        }
-                    }))
+                    handleSurfaceTreatmentCase(rawMatrialId)
                     break;
                 case Number(OPERATIONS):
                     setMasterLoader(true)
-                    dispatch(getCostingSurfaceTreatmentSimulationList(simulationId, plantId, rawMatrialId, (res) => {
-                        setMasterLoader(false)
-                        setCommonStateForList(res)
-                        if (res?.data?.Result) {
-                            setPlantId(res?.data?.Data.SimulatedCostingList[0].PlantId)
-                        }
-                    }))
+                    handleSurfaceTreatmentCase()
                     break;
                 case Number(BOPDOMESTIC):
                 case Number(BOPIMPORT):
                     setMasterLoader(true)
-                    if (isMasterAssociatedWithCosting) {
-                        dispatch(getCostingBoughtOutPartSimulationList(simulationId, (res) => {
-                            setMasterLoader(false)
-                            setCommonStateForList(res)
-                            if (res?.data?.Result) {
-                                setPlantId(res?.data?.Data?.SimulatedCostingList[0]?.PlantId)
-                            }
-                        }))
-                    } else {
-                        dispatch(getAllSimulatedBoughtOutPart(simulationId, (res) => {
-                            setMasterLoader(false)
-                            setCommonStateForList(res)
-                            if (res?.data?.Result) {
-                                setPlantId(res?.data?.Data.SimulationBoughtOutPart[0].PlantId)
-                            }
-                        }))
-                    }
+                    handleBopCase()
                     break;
                 case Number(EXCHNAGERATE):
                     setMasterLoader(true)
-                    dispatch(getExchangeCostingSimulationList(simulationId, (res) => {
-                        setMasterLoader(false)
-                        setCommonStateForList(res)
-                        if (res?.data?.Result) {
-                            setPlantId(res?.data?.Data.SimulatedCostingList[0].PlantId)
-                        }
-                    }))
+                    switch (simulationApplicability?.value) {
+                        case APPLICABILITY_RM_SIMULATION:
+
+                            handleRawMaterialCase(plantId, rawMatrialId);
+                            break;
+                        case APPLICABILITY_BOP_SIMULATION:
+
+                            handleBopCase();
+                            break;
+                        case APPLICABILITY_OPERATIONS_SIMULATION:
+
+                            handleSurfaceTreatmentCase();
+                            break;
+                        case APPLICABILITY_SURFACE_TREATMENT_SIMULATION:
+
+                            handleSurfaceTreatmentCase();
+                            break;
+                        case APPLICABILITY_MACHINE_RATES_SIMULATION:
+
+                            handleMachineRateCase();
+                            break;
+                        default:
+                            dispatch(getExchangeCostingSimulationList(simulationId, (res) => {
+                                setMasterLoader(false)
+                                setCommonStateForList(res)
+                                if (res?.data?.Result) {
+                                    setPlantId(res?.data?.Data.SimulatedCostingList[0].PlantId)
+                                }
+                            }));
+                            break;
+                    }
                     break;
                 case Number(MACHINERATE):
                     setMasterLoader(true)
-                    dispatch(getMachineRateCostingSimulationList(simulationId, (res) => {
-                        setMasterLoader(false)
-                        setCommonStateForList(res)
-                        if (res?.data?.Result) {
-                            setPlantId(res?.data?.Data.SimulatedCostingList[0].PlantId)
-                        }
-                    }))
+                    handleMachineRateCase()
                     break;
                 case Number(COMBINED_PROCESS):                   //RE
                     dispatch(getCombinedProcessCostingSimulationList(simulationId, (res) => {
@@ -593,7 +580,52 @@ function CostingSimulation(props) {
             }
         }
     }
-
+    const handleMachineRateCase = () => {
+        dispatch(getMachineRateCostingSimulationList(simulationId, (res) => {
+            setMasterLoader(false)
+            setCommonStateForList(res)
+            if (res?.data?.Result) {
+                setPlantId(res?.data?.Data.SimulatedCostingList[0].PlantId)
+            }
+        }))
+    }
+    const handleBopCase = () => {
+        if (isMasterAssociatedWithCosting) {
+            dispatch(getCostingBoughtOutPartSimulationList(simulationId, (res) => {
+                setMasterLoader(false)
+                setCommonStateForList(res)
+                if (res?.data?.Result) {
+                    setPlantId(res?.data?.Data?.SimulatedCostingList[0]?.PlantId)
+                }
+            }))
+        } else {
+            dispatch(getAllSimulatedBoughtOutPart(simulationId, (res) => {
+                setMasterLoader(false)
+                setCommonStateForList(res)
+                if (res?.data?.Result) {
+                    setPlantId(res?.data?.Data.SimulationBoughtOutPart[0].PlantId)
+                }
+            }))
+        }
+    }
+    const handleSurfaceTreatmentCase = (rawMatrialId) => {
+        dispatch(getCostingSurfaceTreatmentSimulationList(simulationId, plantId, rawMatrialId, (res) => {
+            setMasterLoader(false)
+            setCommonStateForList(res)
+            if (res?.data?.Result) {
+                setPlantId(res?.data?.Data.SimulatedCostingList[0].PlantId)
+            }
+        }))
+    }
+    const handleRawMaterialCase = (plantId, rawMatrialId) => {
+        dispatch(getCostingSimulationList(simulationId, plantId, rawMatrialId, res => {
+            setMasterLoader(false)
+            setCommonStateForList(res)
+            if (res?.data?.Result) {
+                setPlantId(res?.data?.Data.SimulatedCostingList[0].PlantId)
+            }
+        }))
+    }
     useEffect(() => {
         setLoader(true)
         hideColumn()
@@ -1458,9 +1490,9 @@ function CostingSimulation(props) {
         setGridApi(params.api)
         setGridColumnApi(params.columnApi)
         params.api.paginationGoToPage(0);
-        setTimeout(() => {
-            setShowTooltip(true)
-        }, 100);
+        // setTimeout(() => {
+        //     setShowTooltip(true)
+        // }, 100);
         const checkBoxInstance = document.querySelectorAll('.ag-input-field-input.ag-checkbox-input');
         checkBoxInstance.forEach((checkBox, index) => {
             const specificId = `other_simulation_Checkbox${index}`;

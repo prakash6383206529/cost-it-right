@@ -7,7 +7,7 @@ import { MESSAGES } from "../../../config/message";
 import Toaster from "../../common/Toaster";
 import DayTime from "../../common/DayTimeWrapper";
 import BulkUpload from "../../massUpload/BulkUpload";
-import { BOP_IMPORT_DOWNLOAD_EXCEl } from "../../../config/masterData";
+import {  BOP_IMPORT_DOWNLOAD_EXCEl } from "../../../config/masterData";
 import LoaderCustom from "../../common/LoaderCustom";
 import { BopImport, BOP_MASTER_ID } from "../../../config/constants";
 import { getConfigurationKey, loggedInUserId, searchNocontentFilter, setLoremIpsum, showBopLabel, updateBOPValues, userDepartmetList, } from "../../../helper";
@@ -123,7 +123,7 @@ const BOPImportListing = (props) => {
   const { initialConfiguration } = useSelector((state) => state.auth);
   const tourStartData = useSelector(state => state.comman.tourStartData);
   const { technologyLabel, vendorLabel } = useLabels();
-  const { selectedRowForPagination, tokenForSimulation } = useSelector(
+  const { selectedRowForPagination, tokenForSimulation,isMasterAssociatedWithCosting } = useSelector(
     (state) => state.simulation
   );
 
@@ -235,9 +235,11 @@ const BOPImportListing = (props) => {
       category_id: CategoryId,
       vendor_id: vendorId,
       plant_id: plantId,
-      ListFor: props.ListFor,
+      ListFor: props?.isSimulation && !props?.isBOPAssociated ?"" : props.ListFor,
       StatusId: statusString,
-      IsBOPAssociated: props?.isBOPAssociated,
+      IsBOPAssociated: !props?.isSimulation ? props?.isBOPAssociated : (isMasterAssociatedWithCosting? true : false),
+      Currency: props?.isSimulation && props?.fromListData && props?.fromListData ? props?.fromListData : '',
+      LocalCurrency: props?.isSimulation && props?.toListData && props?.toListData ? props?.toListData : '',
     };
     if (isPagination === true) {
       setState((prevState) => ({ ...prevState, isLoader: true }));
@@ -254,7 +256,7 @@ const BOPImportListing = (props) => {
           : "";
       dataObj.Currency = filteredRMData?.Currency;
     }
-    dataObj.EntryType = Number(ENTRY_TYPE_IMPORT);
+    dataObj.EntryType = !props?.isSimulation  ? Number(ENTRY_TYPE_IMPORT) :  null 
     dataObj.ExchangeRateSourceName = floatingFilterData?.ExchangeRateSourceName
     dataObj.OtherNetCost = floatingFilterData?.OtherNetCost
     if (!props?.isMasterSummaryDrawer) {
@@ -1041,7 +1043,7 @@ const BOPImportListing = (props) => {
                         steps: Steps(t, { addLimit: false, copyButton: false, viewBOM: false, status: false, updateAssociatedTechnology: false, addMaterial: false, addAssociation: false, generateReport: false, approve: false, reject: false }).COMMON_LISTING
                       }} />)}
                   </Col>
-                  <Col md="9" lg="9" className=" mb-3">
+                  <Col md="9" lg="9" className=" mb-3 d-flex justify-content-end">
                     <div className="d-flex justify-content-end bd-highlight w100">
 
                       {!props.isMasterSummaryDrawer && (

@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef, useContext } from 'react';
 import { Row, Col, Tooltip, } from 'reactstrap';
 import DayTime from '../../../common/DayTimeWrapper'
-import { defaultPageSize, EMPTY_DATA, CBCTypeId } from '../../../../config/constants';
+import { defaultPageSize, EMPTY_DATA, CBCTypeId, EXCHNAGERATE } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter, showBopLabel } from '../../../../helper';
 import Toaster from '../../../common/Toaster';
@@ -30,6 +30,7 @@ import { useLabels } from '../../../../helper/core';
 import AddConditionCosting from '../../../costing/components/CostingHeadCosts/AdditionalOtherCost/AddConditionCosting';
 import AddOtherCostDrawer from '../../../masters/material-master/AddOtherCostDrawer';
 import { updateCostValue } from '../../../common/CommonFunctions';
+import { createMultipleExchangeRate } from '../../../masters/actions/ExchangeRateMaster';
 
 const gridOptions = {
 
@@ -78,7 +79,9 @@ const {vendorLabel}= useLabels()
     })
 
     const dispatch = useDispatch()
-    const { selectedMasterForSimulation, selectedTechnologyForSimulation } = useSelector(state => state.simulation)
+    const currencySelectList = useSelector(state => state.comman.currencySelectList)
+const masterList = useSelector(state => state.simulation.masterSelectListSimulation)
+    const { selectedMasterForSimulation, selectedTechnologyForSimulation ,exchangeRateListBeforeDraft} = useSelector(state => state.simulation)
     const columnWidths = {
         BoughtOutPartNumber: showCompressedColumns ? 50 : 140,
         BoughtOutPartName: showCompressedColumns ? 100 : 140,
@@ -178,88 +181,102 @@ const {vendorLabel}= useLabels()
         }
     }, [basicRate, openOtherCostDrawer, openConditionCostDrawer, otherCostDetailForRow, list])
     const verifySimulation = debounce(() => {
-        if (!isEffectiveDateSelected) {
-            setIsWarningMessageShow(true)
-            return false
+        if (selectedMasterForSimulation?.value === EXCHNAGERATE) {
+            dispatch(createMultipleExchangeRate(exchangeRateListBeforeDraft, currencySelectList, effectiveDate, res => {
+                if (!res?.status && !res?.error) {
+                    setValueFunction(true, res);
+                }
+            }))
+        } else {
+            setValueFunction(false, []);
         }
-    
-        let obj = {
-            SimulationTechnologyId: selectedMasterForSimulation?.value,
-            SimulationTypeId: list[0].CostingTypeId,
-            LoggedInUserId: loggedInUserId(),
-            TechnologyId: selectedTechnologyForSimulation?.value ? selectedTechnologyForSimulation?.value : null,
-            TechnologyName: selectedTechnologyForSimulation?.label ? selectedTechnologyForSimulation?.label : null,
-            EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
-            SimulationHeadId: list[0].CostingTypeId,
-            IsSimulationWithOutCosting: true,
-            SimulationIds: tokenForMultiSimulation,
-            IsExchangeRateSimulation: false 
-        }
-    
-        let tempArr = []
-        list && list.map(item => {
-            let tempObj = {
-                BoughtOutPartId: item.BoughtOutPartId,
-                OldBOPRate: item.BasicRate,
-                NewBOPRate: 0,
-                OldNetLandedCost: 0,
-                NewNetLandedCost: 0,
-                PercentageChange: 0,
-                NewOtherNetCost: item.NewOtherNetCost || 0,
-                NewNetConditionCost: item.NewNetConditionCost || 0,
-                NewNetCostWithoutConditionCost: item.NewNetCostWithoutConditionCost || 0,
-                BoughtOutPartConditionsDetails: item.NewBoughtOutPartConditionsDetails || [],
-                BoughtOutPartOtherCostDetailsSchema: item.NewBoughtOutPartOtherCostDetailsSchema || []
-            }
-    
-            if ((item?.Percentage !== '') && (checkForNull(item?.Percentage) !== 0)) {
-                const val = item?.BasicRate + (item?.BasicRate * item?.Percentage / 100)
-                tempObj.NewBOPRate = val
-                tempObj.OldNetLandedCost = ((checkForNull(item.BasicRate)+checkForNull(item?.OtherNetCost)) / (getConfigurationKey().IsMinimumOrderQuantityVisible ? checkForNull(item?.NumberOfPieces) : 1))+checkForNull(item?.NetConditionCost)
-                tempObj.NewNetLandedCost = ((checkForNull(val)+checkForNull(item.NewOtherNetCost)) / (getConfigurationKey().IsMinimumOrderQuantityVisible ? checkForNull(item?.NumberOfPieces) : 1)) + checkForNull(item.NewNetConditionCost)
-                tempObj.PercentageChange = checkForNull(item.Percentage)
-            } else {
-                tempObj.NewBOPRate = item.NewBasicRate
-                tempObj.OldNetLandedCost = ((checkForNull(item.BasicRate)+checkForNull(item?.OtherNetCost)) / (getConfigurationKey().IsMinimumOrderQuantityVisible ? checkForNull(item?.NumberOfPieces) : 1))+checkForNull(item?.NetConditionCost)
-                tempObj.NewNetLandedCost =( (Number(item.NewBasicRate ? item.NewBasicRate : item.BasicRate)  + checkForNull(item.NewOtherNetCost))/ (getConfigurationKey().IsMinimumOrderQuantityVisible ? checkForNull(item?.NumberOfPieces) : 1)) + checkForNull(item.NewNetConditionCost)
-            }
-            if (checkForNull(tempObj.OldNetLandedCost) !== checkForNull(tempObj.NewNetLandedCost)) {
-                tempArr.push(tempObj)
-            }
-            return null;
-        })
-
-    
-        let check = 0
-        let percentageCheck = 0
-        tempArr && tempArr?.map(item => {
-            if (checkForNull(item?.OldNetLandedCost) !== checkForNull(item?.NewNetLandedCost)) {
-                check = check + 1
-            }
-            if (item?.PercentageChange > 100) {
-                percentageCheck = percentageCheck + 1
-            }
-        })
-        if (check === 0) {
-            Toaster.warning("There is no changes in net cost. Please change, then run simulation")
-            return false
-        } else if (percentageCheck !== 0) {
-            Toaster.warning("Percentage should be less than or equal to 100")
-            return false
-        }
-        setIsDisable(true)
-        obj.SimulationBoughtOutPart = tempArr
-        
-        dispatch(runVerifyBoughtOutPartSimulation(obj, res => {
-            setIsDisable(false)
-            if (res?.data?.Result) {
-                setToken(res.data.Identity)
-                setShowVerifyPage(true)
-            }
-        }))
         setShowTooltip(false)
     }, 500)
+const setValueFunction = (isExchangeRate, res) => {
+    const filteredMasterId = masterList?.find(item => item?.Text === "BOP Import")?.Value;
 
+    if (!isEffectiveDateSelected) {
+        setIsWarningMessageShow(true)
+        return false
+    }
+
+    let obj = {
+        SimulationTechnologyId: selectedMasterForSimulation?.value,
+        SimulationTypeId: list[0].CostingTypeId,
+        LoggedInUserId: loggedInUserId(),
+        TechnologyId: selectedTechnologyForSimulation?.value ? selectedTechnologyForSimulation?.value : null,
+        TechnologyName: selectedTechnologyForSimulation?.label ? selectedTechnologyForSimulation?.label : null,
+        EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
+        SimulationHeadId: list[0].CostingTypeId,
+        IsSimulationWithOutCosting: true,
+        SimulationIds: tokenForMultiSimulation,
+        IsExchangeRateSimulation: false ,
+       ExchangeRateSimulationTechnologyId:filteredMasterId
+
+    }
+
+    let tempArr = []
+    list && list.map(item => {
+        let tempObj = {
+            BoughtOutPartId: item.BoughtOutPartId,
+            OldBOPRate: item.BasicRate,
+            NewBOPRate: 0,
+            OldNetLandedCost: 0,
+            NewNetLandedCost: 0,
+            PercentageChange: 0,
+            NewOtherNetCost: item.NewOtherNetCost || 0,
+            NewNetConditionCost: item.NewNetConditionCost || 0,
+            NewNetCostWithoutConditionCost: item.NewNetCostWithoutConditionCost || 0,
+            BoughtOutPartConditionsDetails: item.NewBoughtOutPartConditionsDetails || [],
+            BoughtOutPartOtherCostDetailsSchema: item.NewBoughtOutPartOtherCostDetailsSchema || []
+        }
+
+        if ((item?.Percentage !== '') && (checkForNull(item?.Percentage) !== 0)) {
+            const val = item?.BasicRate + (item?.BasicRate * item?.Percentage / 100)
+            tempObj.NewBOPRate = val
+            tempObj.OldNetLandedCost = ((checkForNull(item.BasicRate)+checkForNull(item?.OtherNetCost)) / (getConfigurationKey().IsMinimumOrderQuantityVisible ? checkForNull(item?.NumberOfPieces) : 1))+checkForNull(item?.NetConditionCost)
+            tempObj.NewNetLandedCost = ((checkForNull(val)+checkForNull(item.NewOtherNetCost)) / (getConfigurationKey().IsMinimumOrderQuantityVisible ? checkForNull(item?.NumberOfPieces) : 1)) + checkForNull(item.NewNetConditionCost)
+            tempObj.PercentageChange = checkForNull(item.Percentage)
+        } else {
+            tempObj.NewBOPRate = item.NewBasicRate
+            tempObj.OldNetLandedCost = ((checkForNull(item.BasicRate)+checkForNull(item?.OtherNetCost)) / (getConfigurationKey().IsMinimumOrderQuantityVisible ? checkForNull(item?.NumberOfPieces) : 1))+checkForNull(item?.NetConditionCost)
+            tempObj.NewNetLandedCost =( (Number(item.NewBasicRate ? item.NewBasicRate : item.BasicRate)  + checkForNull(item.NewOtherNetCost))/ (getConfigurationKey().IsMinimumOrderQuantityVisible ? checkForNull(item?.NumberOfPieces) : 1)) + checkForNull(item.NewNetConditionCost)
+        }
+        if (checkForNull(tempObj.OldNetLandedCost) !== checkForNull(tempObj.NewNetLandedCost)) {
+            tempArr.push(tempObj)
+        }
+        return null;
+    })
+
+
+    let check = 0
+    let percentageCheck = 0
+    tempArr && tempArr?.map(item => {
+        if (checkForNull(item?.OldNetLandedCost) !== checkForNull(item?.NewNetLandedCost)) {
+            check = check + 1
+        }
+        if (item?.PercentageChange > 100) {
+            percentageCheck = percentageCheck + 1
+        }
+    })
+    if (check === 0) {
+        Toaster.warning("There is no changes in net cost. Please change, then run simulation")
+        return false
+    } else if (percentageCheck !== 0) {
+        Toaster.warning("Percentage should be less than or equal to 100")
+        return false
+    }
+    setIsDisable(true)
+    obj.SimulationBoughtOutPart = tempArr
+    
+    dispatch(runVerifyBoughtOutPartSimulation(obj, res => {
+        setIsDisable(false)
+        if (res?.data?.Result) {
+            setToken(res.data.Identity)
+            setShowVerifyPage(true)
+        }
+    }))
+}
     const cancelVerifyPage = () => {
         setShowVerifyPage(false)
     }
