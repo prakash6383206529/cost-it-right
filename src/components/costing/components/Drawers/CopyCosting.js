@@ -45,11 +45,13 @@ function CopyCosting(props) {
   const [nccPlant, setNccPlant] = useState({})
   const [isLoader, setIsLoader] = useState(false)
   const [infoCategory, setInfoCategory] = useState([])
+  const [selectedCosting, setSelectedCosting] = useState("Plant")
   const [isInfoCategorySelected, setIsInfoCategorySelected] = useState(false)
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
 
   useEffect(() => {
     setCostingTypeId(type)
+    setSelectedCosting(type === CBCTypeId ? "Customer" : (type === ZBCTypeId ? "Plant" : "Vendor"))
     const ZbcTemp = []
     const VbcTemp = []
     const CbcTemp = []
@@ -249,6 +251,7 @@ function CopyCosting(props) {
     setValue('toVendor', '')
     setValue('toCustomer', '')
     setValue('toPlant', '')
+    setSelectedCosting(costingType === CBCTypeId ? "Customer" : (costingType === ZBCTypeId ? "Plant" : "Vendor"))
   }
 
   const categoryTypeOnChange = (e) => {
@@ -312,7 +315,7 @@ function CopyCosting(props) {
                     register={register}
                     mandatory={false}
                     handleChange={() => { }}
-                    defaultValue={copyCostingData.Customer}
+                    defaultValue={copyCostingData.Customer ? copyCostingData.Customer : "no other customer"}
                     className=""
                     customClassName={"withBorder mb-0"}
                     errors={errors.customer}
@@ -577,8 +580,9 @@ function CopyCosting(props) {
 
         </Container >
       </Drawer >
+
       {
-        showPopup && <PopupMsgWrapper className={'main-modal-container'} isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} disablePopup={disablePopup} message={`${!msgObj.IsRMExist ? 'Raw Material,' : ''}${!msgObj.IsOperationExist ? 'Operation,' : ''}${!msgObj.IsBOPExist ? 'BOP,' : ''}${!msgObj.IsProcessExist ? 'Process,' : ''}${!msgObj.IsOtherOperationExist ? `Other Operation is not available for the selected ${vendorLabel}. Do you still wish to continue ?` : ` is not available for the selected ${vendorLabel}. Do you still wish to continue ?`}`} />
+        showPopup && <PopupMsgWrapper className={'main-modal-container'} isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} disablePopup={disablePopup} message={`${!msgObj.IsRMExist ? 'Raw Material,' : ''}${!msgObj.IsOperationExist ? 'Operation,' : ''}${!msgObj.IsBOPExist ? 'BOP,' : ''}${!msgObj.IsProcessExist ? 'Process,' : ''}${!msgObj.IsOtherOperationExist ? `Other Operation is not available for the selected ${selectedCosting}. Do you still wish to continue ?` : ` is not available for the selected ${selectedCosting}. Do you still wish to continue ?`}`} />
       }
     </>
   );
