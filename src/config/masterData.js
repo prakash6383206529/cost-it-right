@@ -5655,6 +5655,7 @@ export const BOP_DOMESTIC_DOWNLOAD_EXCEl = [
     { label: "BOP Part No.", value: "BoughtOutPartNumber", },
     { label: "BOP Part Name", value: "BoughtOutPartName", },
     { label: "BOP Part Category", value: "BoughtOutPartCategory", },
+    { label: "Division", value: "Division", },
     { label: "UOM", value: "UOM", },
     { label: "Specification", value: "Specification", },
     { label: "SAP Code", value: "SAPPartNumber", },
@@ -5681,6 +5682,7 @@ export const BOP_IMPORT_DOWNLOAD_EXCEl = [
     { label: "BOP Part No.", value: "BoughtOutPartNumber" },
     { label: "BOP Part Name", value: "BoughtOutPartName" },
     { label: "BOP Category", value: "BoughtOutPartCategory" },
+    { label: "Division", value: "Division", },
     { label: "UOM", value: "UOM" },
     { label: "Currency", value: "Currency" },
     { label: "Specification", value: "Specification" },
@@ -5744,16 +5746,16 @@ export const EXCHANGERATE_DOWNLOAD_EXCEl = [
 
 export const FREIGHT_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead" },
-    { label: "Mode", value: "Mode"},
-    { label: "Vendor (Code)", value: "VendorName"},
-    { label: "Plant (Code)", value: "Plant"},
-    { label: "Customer (Code)", value: "CustomerName"},
+    { label: "Mode", value: "Mode" },
+    { label: "Vendor (Code)", value: "VendorName" },
+    { label: "Plant (Code)", value: "Plant" },
+    { label: "Customer (Code)", value: "CustomerName" },
     // { label: "Source City", value: "SourceCity" },
     // { label: "Destination City", value: "DestinationCity" },
-    { label: "Load", value: "FreightLoadType" }, 
-    { label: "Capacity", value: "Capacity" }, 
-    { label: "Criteria", value: "RateCriteria"}, 
-    { label: "Rate", value: "Rate" }, 
+    { label: "Load", value: "FreightLoadType" },
+    { label: "Capacity", value: "Capacity" },
+    { label: "Criteria", value: "RateCriteria" },
+    { label: "Rate", value: "Rate" },
     { label: "Effective Date", value: "EffectiveDate" }
 ];
 
@@ -6014,6 +6016,7 @@ export const ASSEMBLYPART_DOWNLOAD_EXCEl = [
     { label: "ECN No.", value: "ECNNumber", },
     { label: "Revision No.", value: "RevisionNumber", },
     { label: "Drawing No.", value: "DrawingNumber", },
+    { label: "Division", value: "Division", },
     { label: "Effective Date", value: "EffectiveDate", },
     { label: 'UnitOfMeasurement', value: 'UnitOfMeasurement', }, //*
     { label: "Status", value: "IsActive", },
@@ -6139,6 +6142,7 @@ export const ZBCPLANT_DOWNLOAD_EXCEl = [
     { label: "Country", value: "CountryName", },
     { label: "State", value: "StateName", },
     { label: "City", value: "CityName", },
+    { label: "Division Applicable", value: "IsDivisionApplied", },
     { label: "ZipCode", value: "ZipCode", },
     { label: "Status", value: "status", },
 ]

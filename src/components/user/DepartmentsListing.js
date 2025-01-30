@@ -229,7 +229,7 @@ const DepartmentsListing = (props) => {
   const frameworkComponents = {
     totalValueRenderer: buttonFormatter,
     customNoRowsOverlay: NoContentFound,
-    totalValueRendererDivision: buttonFormatterDivision
+    totalValueRendererDivision: buttonFormatterDivision,
   };
   return (
     <div className={"ag-grid-react"} id="department-go-to-top">
@@ -284,6 +284,7 @@ const DepartmentsListing = (props) => {
                   {/* <AgGridColumn field="DepartmentName" headerName={getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Purchase Group'}></AgGridColumn>   //RE */}
                   <AgGridColumn field={props.isDivision ? "DivisionCode" : "DepartmentCode"} headerName={`${props.isDivision ? "Division" : handleDepartmentHeader()} Code`}></AgGridColumn>
                   {/* <AgGridColumn field="DepartmentCode" headerName={getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company Code' : 'Purchase Group Code'}></AgGridColumn> //RE */}
+                  {getConfigurationKey().IsDivisionAllowedForDepartment && !props.isDivision && <AgGridColumn field="IsDivision" headerName="Division Applicable" cellRenderer={"hyphenFormatter"}  ></AgGridColumn>}
                   {!props.isDivision && <AgGridColumn field="DepartmentId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                   {props.isDivision && <AgGridColumn field="DivisionId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRendererDivision'}></AgGridColumn>}
                 </AgGridReact>}

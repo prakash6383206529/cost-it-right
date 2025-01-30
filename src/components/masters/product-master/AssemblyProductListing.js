@@ -8,7 +8,7 @@ import { MESSAGES } from '../../../config/message';
 import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import Switch from "react-switch";
-import { loggedInUserId } from '../../../helper/auth';
+import { getConfigurationKey, loggedInUserId } from '../../../helper/auth';
 import DayTime from '../../common/DayTimeWrapper'
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import BOMUpload from '../../massUpload/BOMUpload';
