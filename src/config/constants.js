@@ -754,6 +754,7 @@ export const API = {
   getUserDelegationDetails: `${BASE_URL}/user-delegation/get-user-delegations`,
   revokeDelegation: `${BASE_URL}/user-delegation/revoke-user-delegations`,
   getDelegationHistory: `${BASE_URL}/user-delegation/get-user-delegations-history`,
+  getAllUserDelegationApi: `${BASE_URL}/user/get-all-users-delegation`,
 
   //AUDIT API
 
