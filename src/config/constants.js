@@ -2900,7 +2900,7 @@ export const DIE_CASTING = 7
 //changed the sheet metal to 8 bcz the version 3 code is not working or deployed
 export const SHEETMETAL = 8
 export const MONOCARTON = 13
-
+export const PLASTIC_RUBBER_WITH_EXTRUSION = 14
 
 export const REASON_ID = 2
 export const TOFIXEDVALUE = 10
