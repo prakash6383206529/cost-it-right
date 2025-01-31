@@ -193,7 +193,7 @@ function BDSimulation(props) {
         const filteredMasterId = masterList?.find(item => item?.Text === "BOP Import")?.Value;
         const NumberOfPieces = getConfigurationKey().IsMinimumOrderQuantityVisible ? checkForNull(list?.[rowIndex]?.NumberOfPieces) : 1;
         let obj = {};
-        obj.SimulationTechnologyId = check ? BOPIMPORT : selectedMasterForSimulation.value;
+        obj.SimulationTechnologyId = check ? EXCHNAGERATE : selectedMasterForSimulation.value;
         obj.SimulationTypeId = list[0]?.CostingTypeId;
         obj.LoggedInUserId = loggedInUserId();
         obj.TechnologyId = selectedTechnologyForSimulation?.value ? selectedTechnologyForSimulation?.value : null;
@@ -280,11 +280,15 @@ function BDSimulation(props) {
         if (selectedMasterForSimulation?.value === EXCHNAGERATE) {
             dispatch(createMultipleExchangeRate(exchangeRateListBeforeDraft, currencySelectList, effectiveDate, res => {
                 if (!res?.status && !res?.error) {
-                    apiCall(check, res);
+
+                    apiCall(true, res);
+                }else{
+                    setIsDisable(false)
+
                 }
             }))
         } else {
-            apiCall(check);
+            apiCall(false,[]);
         }
         setShowTooltip(false)
     }, 500)
@@ -952,6 +956,7 @@ function BDSimulation(props) {
                                                 onCellValueChanged={onCellValueChanged}
                                             >
                                                 {/* <AgGridColumn field="Technologies" editable='false' headerName="Technology" width={190}></AgGridColumn> */}
+                                                {<AgGridColumn field="EntryType" headerName="Entry Type" cellRenderer={"hyphenFormatter"}></AgGridColumn>}
                                                 <AgGridColumn field="BoughtOutPartNumber" tooltipField='BoughtOutPartNumber' editable='false' headerName="BOP Part No" width={columnWidths.BoughtOutPartNumber}></AgGridColumn>
                                                 <AgGridColumn field="BoughtOutPartName" tooltipField='BoughtOutPartName' editable='false' headerName="BOP Part Name" width={columnWidths.BoughtOutPartName}></AgGridColumn>
                                                 {!isImpactedMaster && <AgGridColumn field="BoughtOutPartCategory" tooltipField='BoughtOutPartCategory' editable='false' headerName="BOP Category" width={columnWidths.BoughtOutPartCategory}></AgGridColumn>}

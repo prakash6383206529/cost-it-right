@@ -217,11 +217,11 @@ function RMSimulation(props) {
             SimulationExchangeRates: [],
             SimulationIds: [],
             TechnologyId: technologyId,
-            SimulationTechnologyId: check ? RMIMPORT : selectedMasterForSimulation.value,
+            SimulationTechnologyId: check ? EXCHNAGERATE : selectedMasterForSimulation.value,
             //EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
             LoggedInUserId: loggedInUserId(),
             SimulationHeadId: list[0]?.CostingTypeId,
-            IsSimulationWithOutCosting: true,
+            IsSimulationWithOutCosting: false,
             ExchangeRateSimulationTechnologyId: filteredMasterId
         };
 
@@ -1235,6 +1235,7 @@ function RMSimulation(props) {
                                                     !isImpactedMaster &&
                                                     <AgGridColumn width={columnWidths.CostingHead} field="CostingHead" tooltipField='CostingHead' headerName="Costing Head" editable='false' cellRenderer={'costingHeadFormatter'}></AgGridColumn>
                                                 }
+                                                {<AgGridColumn width={120} field="EntryType" headerName="Entry Type" cellRenderer={"hyphenFormatter"}></AgGridColumn>}
                                                 <AgGridColumn width={columnWidths.RawMaterialName} field="RawMaterialName" tooltipField='RawMaterialName' editable='false' headerName="Raw Material"></AgGridColumn>
                                                 <AgGridColumn width={columnWidths.RawMaterialGradeName} field="RawMaterialGradeName" tooltipField='RawMaterialGradeName' editable='false' headerName="Grade" ></AgGridColumn>
                                                 <AgGridColumn width={columnWidths.RawMaterialSpecificationName} field="RawMaterialSpecificationName" tooltipField='RawMaterialSpecificationName' editable='false' headerName="Spec"></AgGridColumn>

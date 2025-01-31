@@ -203,7 +203,7 @@ function RMIndexationSimulation(props) {
 
                 "RawMaterialIds": rawMaterialIds,
                 "TechnologyId": null,
-                "SimulationTechnologyId": selectedMasterForSimulation?.value,
+                "SimulationTechnologyId": check ? EXCHNAGERATE : selectedMasterForSimulation?.value,
                 "EffectiveDate": null,
                 "LoggedInUserId": loggedInUserId(),
                 "SimulationHeadId": RAWMATERIALAPPROVALTYPEID,
@@ -1360,6 +1360,7 @@ function RMIndexationSimulation(props) {
                                                     !isImpactedMaster &&
                                                     <AgGridColumn width={columnWidths.CostingHead} field="CostingHead" tooltipField='CostingHead' headerName="Costing Head" editable='false' cellRenderer={'costingHeadFormatter'}></AgGridColumn>
                                                 }
+                                                {<AgGridColumn field="EntryType" headerName="Entry Type" cellRenderer={"hyphenFormatter"}></AgGridColumn>}
                                                 <AgGridColumn width={columnWidths.RawMaterialName} field="RawMaterialName" tooltipField='RawMaterialName' editable='false' headerName="Raw Material"></AgGridColumn>
                                                 <AgGridColumn width={columnWidths.RawMaterialGradeName} field={props.isCostingSimulation ? 'RawMaterialGrade' : "RawMaterialGradeName"} tooltipField='RawMaterialGradeName' editable='false' headerName="Grade" ></AgGridColumn>
                                                 <AgGridColumn width={columnWidths.RawMaterialSpecificationName} field={props.isCostingSimulation ? 'RawMaterialSpecs' : "RawMaterialSpecificationName"} tooltipField='RawMaterialSpecificationName' editable='false' headerName="Spec"></AgGridColumn>

@@ -24,7 +24,8 @@ import {
     , CPGridForToken, ERGridForToken, EXCHANGESIMULATIONDOWNLOAD, IdForMultiTechnology, InitialGridForToken, LastGridForToken, MRGridForToken, OperationGridForToken, RMGridForToken, STGridForToken, SimulationDownloadBOP, COMBINEDPROCESSSIMULATION,
     APPLICABILITY_OPERATIONS_SIMULATION,
     APPLICABILITY_MACHINE_RATES_SIMULATION,
-    APPLICABILITY_SURFACE_TREATMENT_SIMULATION
+    APPLICABILITY_SURFACE_TREATMENT_SIMULATION,
+    APPLICABILITY_BOP_NON_ASSOCIATED_SIMULATION
 } from '../../../config/masterData'
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -122,7 +123,7 @@ function CostingSimulation(props) {
     const isSurfaceTreatment = (Number(master) === Number(SURFACETREATMENT));
     const isOperation = (Number(master) === Number(OPERATIONS));
     const isRMDomesticOrRMImport = ((Number(master) === Number(RMDOMESTIC)) || (Number(master) === Number(RMIMPORT)) || (simulationApplicability?.value === APPLICABILITY_RM_SIMULATION));
-    const isBOPDomesticOrImport = ((Number(master) === Number(BOPDOMESTIC)) || (Number(master) === Number(BOPIMPORT)) || (simulationApplicability?.value === APPLICABILITY_BOP_SIMULATION))
+    const isBOPDomesticOrImport = ((Number(master) === Number(BOPDOMESTIC)) || (Number(master) === Number(BOPIMPORT)) || (simulationApplicability?.value === APPLICABILITY_BOP_SIMULATION)||(simulationApplicability?.value === APPLICABILITY_BOP_NON_ASSOCIATED_SIMULATION));
     const isMachineRate = Number(master) === (Number(MACHINERATE));
     const isExchangeRate = (Number(master) === Number(EXCHNAGERATE) && simulationApplicability?.value === APPLICABILITY_PART_SIMULATION);
     const isCombinedProcess = Number(master) === Number(COMBINED_PROCESS);
@@ -507,7 +508,7 @@ function CostingSimulation(props) {
             let masterTemp = selectedMasterForSimulation?.value
             if (selectedMasterForSimulation?.value === EXCHNAGERATE && simulationApplicability?.value === APPLICABILITY_RM_SIMULATION) {
                 masterTemp = RMIMPORT
-            } else if (selectedMasterForSimulation?.value === EXCHNAGERATE && simulationApplicability?.value === APPLICABILITY_BOP_SIMULATION) {
+            } else if (selectedMasterForSimulation?.value === EXCHNAGERATE && (simulationApplicability?.value === APPLICABILITY_BOP_SIMULATION||simulationApplicability?.value === APPLICABILITY_BOP_NON_ASSOCIATED_SIMULATION)) {
                 masterTemp = BOPIMPORT
             } else {
                 masterTemp = selectedMasterForSimulation?.value
@@ -540,6 +541,7 @@ function CostingSimulation(props) {
                             handleRawMaterialCase(plantId, rawMatrialId);
                             break;
                         case APPLICABILITY_BOP_SIMULATION:
+                        case APPLICABILITY_BOP_NON_ASSOCIATED_SIMULATION:
 
                             handleBopCase();
                             break;
@@ -1423,7 +1425,7 @@ function CostingSimulation(props) {
             let listCP = []
             let listER = []
             if (String(master) === String(EXCHNAGERATE) || amendmentDetails?.IsExchangeRateSimulation) {
-                if (simulationApplicability?.value === APPLICABILITY_BOP_SIMULATION) {
+                if (simulationApplicability?.value === APPLICABILITY_BOP_SIMULATION||simulationApplicability?.value === APPLICABILITY_BOP_NON_ASSOCIATED_SIMULATION) {
                     masterIdTemp = BOPIMPORT
                 } else if (simulationApplicability?.value === APPLICABILITY_RM_SIMULATION) {
                     masterIdTemp = RMIMPORT

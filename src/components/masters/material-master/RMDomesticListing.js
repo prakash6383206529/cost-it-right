@@ -134,7 +134,7 @@ function RMDomesticListing(props) {
             }
         }
 
-        obj.RawMaterialEntryType = Number(ENTRY_TYPE_DOMESTIC)
+        obj.RawMaterialEntryType = !isSimulation ? Number(ENTRY_TYPE_DOMESTIC) : ''
         obj.Currency = floatingFilterData?.Currency
         obj.ExchangeRateSourceName = floatingFilterData?.ExchangeRateSourceName
         obj.OtherNetCost = floatingFilterData?.OtherNetCost
