@@ -1019,6 +1019,7 @@ function RMIndexationSimulationListing(props) {
                                         enableBrowserTooltips={true}
                                     >
                                         <AgGridColumn cellClass="has-checkbox" field="CostingHead" headerName='Costing Head' cellRenderer={checkBoxRenderer}></AgGridColumn>
+                                        <AgGridColumn field="EntryType" headerName="Entry Type" cellRenderer={"hyphenFormatter"}></AgGridColumn>
                                         <AgGridColumn field={props.isCostingSimulation ? 'Technology' : 'TechnologyName'} headerName={technologyLabel}></AgGridColumn>
                                         <AgGridColumn field="RawMaterialName" headerName='Raw Material'></AgGridColumn>
                                         <AgGridColumn field={props.isCostingSimulation ? 'RawMaterialGrade' : "RawMaterialGradeName"} headerName="Grade"></AgGridColumn>

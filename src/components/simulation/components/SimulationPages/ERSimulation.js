@@ -17,7 +17,7 @@ import VerifySimulation from '../VerifySimulation';
 import _, { debounce } from 'lodash'
 import { PaginationWrapper } from '../../../common/commonPagination';
 import ReactExport from 'react-export-excel';
-import { APPLICABILITY_BOP_SIMULATION, APPLICABILITY_MACHINE_RATES_SIMULATION, APPLICABILITY_OPERATIONS_SIMULATION, APPLICABILITY_PART_SIMULATION, APPLICABILITY_RAWMATERIAL_SIMULATION, APPLICABILITY_RM_SIMULATION, APPLICABILITY_SURFACE_TREATMENT_SIMULATION, EXCHANGE_IMPACT_DOWNLOAD_EXCEl } from '../../../../config/masterData';
+import { APPLICABILITY_BOP_NON_ASSOCIATED_SIMULATION, APPLICABILITY_BOP_SIMULATION, APPLICABILITY_MACHINE_RATES_SIMULATION, APPLICABILITY_OPERATIONS_SIMULATION, APPLICABILITY_PART_SIMULATION, APPLICABILITY_RAWMATERIAL_SIMULATION, APPLICABILITY_RM_SIMULATION, APPLICABILITY_SURFACE_TREATMENT_SIMULATION, EXCHANGE_IMPACT_DOWNLOAD_EXCEl } from '../../../../config/masterData';
 import { getCurrencySelectList } from '../../../../actions/Common';
 import RMImportListing from '../../../masters/material-master/RMImportListing';
 import { setFilterForRM } from '../../../masters/actions/Material';
@@ -67,6 +67,7 @@ function ERSimulation(props) {
     const [showMachineRatesList, setShowMachineRatesList] = useState(false);
     const [showSurfaceTreatmentList, setShowSurfaceTreatmentList] = useState(false);
     const [showRawMaterialsList, setShowRawMaterialsList] = useState(false);
+    const {   isMasterAssociatedWithCosting} = useSelector(state => state.simulation)
 
     const dispatch = useDispatch()
     const columnWidths = {
@@ -369,6 +370,7 @@ function ERSimulation(props) {
                 setShowRMMasterList(true);
                 break;
             case APPLICABILITY_BOP_SIMULATION:
+            case APPLICABILITY_BOP_NON_ASSOCIATED_SIMULATION:
                 setShowBOPMasterList(true);
                 break;
             case APPLICABILITY_OPERATIONS_SIMULATION:
@@ -591,7 +593,7 @@ function ERSimulation(props) {
                     // changeTokenCheckBox={changeTokenCheckBox}
                     // isReset={isReset}
                     ListFor={'simulation'}
-                    // isBOPAssociated={association?.value === ASSOCIATED ? true : false}
+                    isBOPAssociated={ isMasterAssociatedWithCosting ? true : false}
                     approvalStatus={APPROVED_STATUS}
                     // callBackLoader={callBackLoader}  
                     fromListData={fromListData}

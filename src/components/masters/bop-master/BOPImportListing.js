@@ -1136,6 +1136,7 @@ const BOPImportListing = (props) => {
                       >
                         {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
                         <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={"costingHeadFormatter"}></AgGridColumn>
+                        {props?.isSimulation&&<AgGridColumn field="EntryType" headerName="Entry Type" cellRenderer={"hyphenFormatter"}></AgGridColumn>}
                         <AgGridColumn field="BoughtOutPartNumber" headerName={`${showBopLabel()} No.`}></AgGridColumn>
                         <AgGridColumn field="BoughtOutPartName" headerName={`${showBopLabel()} Name`}></AgGridColumn>
                         <AgGridColumn field="BoughtOutPartCategory" headerName={`${showBopLabel()} Category`}></AgGridColumn>
