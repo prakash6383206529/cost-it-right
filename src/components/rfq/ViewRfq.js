@@ -44,6 +44,7 @@ import { useHistory, useLocation } from 'react-router-dom/cjs/react-router-dom';
 import { ASSEMBLY } from '../../config/masterData';
 import { customHavellsChanges } from '../.././config/constants';
 import { useLabels } from '../../helper/core';
+import { getAllMasterApprovalDepartment } from '../masters/actions/Material';
 export const QuotationId = React.createContext();
 
 const gridOptions = {};
@@ -62,7 +63,6 @@ function RfqListing(props) {
     const [addRfqData, setAddRfqData] = useState({});
     const [isEdit, setIsEdit] = useState(false);
     const [rowData, setRowData] = useState([])
-
 
     const [noData, setNoData] = useState(false)
     const [sendForApproval, setSendForApproval] = useState(false)
@@ -132,7 +132,8 @@ function RfqListing(props) {
         gridApi?.setQuickFilter("");
         dispatch(agGridStatus("", ""));
     }, []);
-    
+ 
+
     useEffect(() => {
         if (compareButtonPressed && (partType === 'Raw Material' || partType === 'Bought Out Part')) {
             const masterId = partType === 'Raw Material' ? RM_MASTER_ID : BOP_MASTER_ID;
@@ -466,33 +467,36 @@ function RfqListing(props) {
                 levelDetails: levelDetailsTemp
             }));
 
-            const obj = {
-                DepartmentId: userDetails().DepartmentId,
-                UserId: loggedInUserId(),
-                TechnologyId: masterId,
-                Mode: 'master',
-                approvalTypeId: costingTypeIdToApprovalTypeIdFunction(costingTypeId),
-                plantId: plantId
-            };
+            // const obj = {
+            //     DepartmentId: userDetails().DepartmentId,
+            //     UserId: loggedInUserId(),
+            //     TechnologyId: masterId,
+            //     Mode: 'master',
+            //     approvalTypeId: costingTypeIdToApprovalTypeIdFunction(costingTypeId),
+            //     plantId: plantId
+            // };
+console.log(getConfigurationKey().IsMasterApprovalAppliedConfigure);
 
-            if (getConfigurationKey().IsMasterApprovalAppliedConfigure) {
-                dispatch(checkFinalUser(obj, (res) => {
-                    if (res?.data?.Result && res?.data?.Data?.IsFinalApprover) {
-                        setState(prevState => ({
-                            ...prevState,
-                            isFinalApprovar: res?.data?.Data?.IsFinalApprover,
-                            CostingTypePermission: true,
-                            finalApprovalLoader: false
-                        }));
-                    }
-                    if (res?.data?.Data?.IsUserInApprovalFlow === false || res?.data?.Data?.IsNextLevelUserExist === false) {
-                        setState(prevState => ({ ...prevState, disableSendForApproval: true }));
-                    } else {
-                        setState(prevState => ({ ...prevState, disableSendForApproval: false }));
-                    }
-                }));
-            }
-            setState(prevState => ({ ...prevState, CostingTypePermission: false, finalApprovalLoader: false }));
+            // if (getConfigurationKey().IsMasterApprovalAppliedConfigure) {
+            //     dispatch(checkFinalUser(obj, (res) => {
+            //         console.log(res);
+                    
+            //         if (res?.data?.Result && res?.data?.Data?.IsFinalApprover) {
+            //             setState(prevState => ({
+            //                 ...prevState,
+            //                 isFinalApprovar: res?.data?.Data?.IsFinalApprover,
+            //                 CostingTypePermission: true,
+            //                 finalApprovalLoader: false
+            //             }));
+            //         }
+            //         if (res?.data?.Data?.IsUserInApprovalFlow === false || res?.data?.Data?.IsNextLevelUserExist === false) {
+            //             setState(prevState => ({ ...prevState, disableSendForApproval: true }));
+            //         } else {
+            //             setState(prevState => ({ ...prevState, disableSendForApproval: false }));
+            //         }
+            //     }));
+            // }
+            // setState(prevState => ({ ...prevState, CostingTypePermission: false, finalApprovalLoader: false }));
         }
         else {
             const arrayOfObjects = [...viewCostingData]

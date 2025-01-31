@@ -9239,6 +9239,9 @@ export const statusDropdownforRfq = [
     { label: "History", value: "10" },
     { label: "Not Selected", value: "11" },
     { label: "PreDraft", value: "12" },
+    {label: 'Awarded', value: "13" },
+    {label: 'Non Awarded', value: "14" },
+
 ];
 export const statusDropdownforNfr = [
     { label: 'Draft', value: 1 },
