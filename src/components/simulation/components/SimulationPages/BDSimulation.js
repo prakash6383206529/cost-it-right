@@ -88,6 +88,7 @@ function BDSimulation(props) {
     const { selectedMasterForSimulation, selectedTechnologyForSimulation, isMasterAssociatedWithCosting, exchangeRateListBeforeDraft } = useSelector(state => state.simulation)
     const currencySelectList = useSelector(state => state.comman.currencySelectList)
     const simulationApplicability = useSelector(state => state.simulation.simulationApplicability)
+    const masterList = useSelector(state => state.simulation.masterSelectListSimulation)
     const columnWidths = {
         BoughtOutPartNumber: showCompressedColumns ? 50 : 140,
         BoughtOutPartName: showCompressedColumns ? 120 : 140,
@@ -189,6 +190,7 @@ function BDSimulation(props) {
     }, [basicRate, openOtherCostDrawer, openConditionCostDrawer, otherCostDetailForRow, list])
 
     const apiCall = (check, tempList) => {
+        const filteredMasterId = masterList?.find(item => item?.Text === "BOP Import")?.Value;
         const NumberOfPieces = getConfigurationKey().IsMinimumOrderQuantityVisible ? checkForNull(list?.[rowIndex]?.NumberOfPieces) : 1;
         let obj = {};
         obj.SimulationTechnologyId = check ? BOPIMPORT : selectedMasterForSimulation.value;
@@ -198,6 +200,7 @@ function BDSimulation(props) {
         obj.TechnologyName = selectedTechnologyForSimulation?.label ? selectedTechnologyForSimulation?.label : null;
         obj.EffectiveDate = DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss');
         obj.IsSimulationWithOutCosting = !isMasterAssociatedWithCosting;
+        obj.ExchangeRateSimulationTechnologyId = filteredMasterId
 
         let tempArr = [];
         list && list.map(item => {
@@ -276,7 +279,9 @@ function BDSimulation(props) {
         const check = selectedMasterForSimulation.value === EXCHNAGERATE
         if (selectedMasterForSimulation?.value === EXCHNAGERATE) {
             dispatch(createMultipleExchangeRate(exchangeRateListBeforeDraft, currencySelectList, effectiveDate, res => {
-                apiCall(check, res);
+                if (!res?.status && !res?.error) {
+                    apiCall(check, res);
+                }
             }))
         } else {
             apiCall(check);

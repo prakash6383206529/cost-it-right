@@ -15,7 +15,7 @@ import { getApprovalSimulatedCostingSummary, getComparisionSimulationData, getIm
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
 import Toaster from '../../common/Toaster';
-import { EXCHNAGERATE, RMDOMESTIC, RMIMPORT, FILE_URL, COMBINED_PROCESS, SURFACETREATMENT, OPERATIONS, BOPDOMESTIC, BOPIMPORT, AssemblyWiseImpactt, ImpactMaster, defaultPageSize, MACHINERATE, VBCTypeId, CBCTypeId, ZBCTypeId, RAWMATERIALINDEX, } from '../../../config/constants';
+import { EXCHNAGERATE, RMDOMESTIC, RMIMPORT, FILE_URL, COMBINED_PROCESS, SURFACETREATMENT, OPERATIONS, BOPDOMESTIC, BOPIMPORT, AssemblyWiseImpactt, ImpactMaster, defaultPageSize, MACHINERATE, VBCTypeId, CBCTypeId, ZBCTypeId, RAWMATERIALINDEX, RAWMATERIALAPPROVALTYPEID, } from '../../../config/constants';
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
 import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter, handleDepartmentHeader, showSaLineNumber, showBopLabel } from '../../../helper';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -57,7 +57,7 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 function SimulationApprovalSummary(props) {
     const { vendorLabel } = useLabels()
     const { isbulkUpload } = props;
-    const { approvalNumber, approvalId, SimulationTechnologyId, simulationId } = props?.location?.state
+    const { approvalNumber, approvalId, SimulationTechnologyId, simulationId, SimulationHeadId } = props?.location?.state
     const [showImpactedData, setshowImpactedData] = useState(false)
     const [fgWiseDataAcc, setFgWiseDataAcc] = useState(true)
     const [assemblyWiseAcc, setAssemblyWiseAcc] = useState(true)
@@ -152,6 +152,7 @@ function SimulationApprovalSummary(props) {
 
     const [costingIdArray, setCostingIdArray] = useState({})
 
+
     const rmIndexedSimulationSummaryData = useSelector(state => state?.simulation?.simulatedRawMaterialSummary?.SimulationRawMaterialDetailsResponse)
 
     useEffect(() => {
@@ -165,11 +166,11 @@ function SimulationApprovalSummary(props) {
             loggedInUserId: loggedInUserId(),
         }
         setLoader(false)
-        if (Number(SimulationTechnologyId) === Number(RAWMATERIALINDEX)) {
+        if (Number(SimulationHeadId) === Number(RAWMATERIALAPPROVALTYPEID)) {
             dispatch(getApprovalSimulatedRawMaterialSummary(params, res => {
                 const { SimulationSteps, SimulatedCostingList, SimulationApprovalProcessId, Token, NumberOfCostings, IsSent, IsFinalLevelButtonShow,
                     IsPushedButtonShow, SimulationTechnologyId, SimulationApprovalProcessSummaryId, DepartmentCode, EffectiveDate, SimulationId, MaterialGroup, PurchasingGroup, DecimalOption,
-                    SenderReason, ImpactedMasterDataList, AmendmentDetails, Attachements, SenderReasonId, DepartmentId, TotalImpactPerQuarter, SimulationHeadId, TotalBudgetedPriceImpactPerQuarter, PartType, IsSimulationWithOutCosting, ApprovalTypeId,DepartmentName } = res.data.Data
+                    SenderReason, ImpactedMasterDataList, AmendmentDetails, Attachements, SenderReasonId, DepartmentId, TotalImpactPerQuarter, SimulationHeadId, TotalBudgetedPriceImpactPerQuarter, PartType, IsSimulationWithOutCosting, ApprovalTypeId, DepartmentName } = res.data.Data
                 setSimulationData(res?.data?.Data)
                 setApprovalTypeId(ApprovalTypeId)
                 setDataForFetchingAllApprover({
@@ -185,7 +186,7 @@ function SimulationApprovalSummary(props) {
                     ImpactedMasterDataList: ImpactedMasterDataList, AmendmentDetails: AmendmentDetails, MaterialGroup: MaterialGroup,
                     PurchasingGroup: PurchasingGroup, DecimalOption: DecimalOption, Attachements: Attachements, SenderReasonId: SenderReasonId, DepartmentId: DepartmentId
                     , TotalImpactPerQuarter: TotalImpactPerQuarter, SimulationHeadId: SimulationHeadId, TotalBudgetedPriceImpactPerQuarter: TotalBudgetedPriceImpactPerQuarter
-                    , PartType: PartType, ApprovalTypeId: ApprovalTypeId,DepartmentName: DepartmentName
+                    , PartType: PartType, ApprovalTypeId: ApprovalTypeId, DepartmentName: DepartmentName
                 })
                 setIsApprovalDone(IsSent)
                 setShowFinalLevelButton(IsFinalLevelButtonShow)
@@ -228,7 +229,7 @@ function SimulationApprovalSummary(props) {
                     ImpactedMasterDataList: ImpactedMasterDataList, AmendmentDetails: AmendmentDetails, MaterialGroup: MaterialGroup,
                     PurchasingGroup: PurchasingGroup, DecimalOption: DecimalOption, Attachements: Attachements, SenderReasonId: SenderReasonId, DepartmentId: DepartmentId
                     , TotalImpactPerQuarter: TotalImpactPerQuarter, SimulationHeadId: SimulationHeadId, TotalBudgetedPriceImpactPerQuarter: TotalBudgetedPriceImpactPerQuarter
-                    , PartType: PartType, ApprovalTypeId: ApprovalTypeId, DivisionId: DivisionId,DepartmentName: DepartmentName
+                    , PartType: PartType, ApprovalTypeId: ApprovalTypeId, DivisionId: DivisionId, DepartmentName: DepartmentName
                 })
                 let requestObject = {}
 
@@ -315,7 +316,7 @@ function SimulationApprovalSummary(props) {
         if ((simulationData && Object.keys(simulationData)?.length > 0)) {
             let technologyIdTemp = simulationData?.SimulationTechnologyId
             if (simulationData?.IsExchangeRateSimulation) {
-                if (String(simulationData?.SimulationTechnologyId) === String(RMIMPORT) || String(simulationData?.SimulationTechnologyId) === String(BOPIMPORT)) {
+                if (String(simulationData?.SimulationTechnologyId) === String(RMIMPORT) || String(simulationData?.SimulationTechnologyId) === String(BOPIMPORT) || String(simulationData?.SimulationTechnologyId) === String(RAWMATERIALINDEX) || String(simulationData?.SimulationTechnologyId) === String(SURFACETREATMENT) || String(simulationData?.SimulationTechnologyId) === String(MACHINERATE) || String(simulationData?.SimulationTechnologyId) === String(OPERATIONS)) {
                     technologyIdTemp = EXCHNAGERATE
                 }
             } else {
@@ -1444,8 +1445,8 @@ function SimulationApprovalSummary(props) {
                                                                 {isMasterAssociatedWithCosting && showSaLineNumber() && <AgGridColumn width={150} field="LineNumber" headerName="Line Number"></AgGridColumn>}
                                                                 {costingList[0]?.CostingHeadId === CBCTypeId && <AgGridColumn width={150} field="CustomerName" tooltipField='CustomerName' headerName="Customer (Code)"></AgGridColumn>}
                                                                 {String(SimulationTechnologyId) !== EXCHNAGERATE && <AgGridColumn width={150} field="PlantName" headerName='Plant (Code)' cellRenderer={'plantFormatter'} ></AgGridColumn>}
-                                                                {(isRMDomesticOrRMImport || isBOPDomesticOrImport || showRMColumn || showBOPColumn||isExchangeRate||isOperation || showOperationColumn||isMachineRate || showMachineRateColumn) && getConfigurationKey().IsSourceExchangeRateNameVisible&& <AgGridColumn width={100}field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>}
-                                                    {(isRMDomesticOrRMImport || isBOPDomesticOrImport || showRMColumn || showBOPColumn||isExchangeRate||isOperation || showOperationColumn||isMachineRate || showMachineRateColumn) && <AgGridColumn field={isMasterAssociatedWithCosting?"CostingCurrency":"Currency"} headerName='Currency' />}
+                                                                {(isRMDomesticOrRMImport || isBOPDomesticOrImport || showRMColumn || showBOPColumn || isExchangeRate || isOperation || showOperationColumn || isMachineRate || showMachineRateColumn) && getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn width={100} field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>}
+                                                                {(isRMDomesticOrRMImport || isBOPDomesticOrImport || showRMColumn || showBOPColumn || isExchangeRate || isOperation || showOperationColumn || isMachineRate || showMachineRateColumn) && <AgGridColumn field={isMasterAssociatedWithCosting ? "CostingCurrency" : "Currency"} headerName='Currency' />}
 
                                                                 {isMasterAssociatedWithCosting && <AgGridColumn width={140} field="BudgetedPrice" headerName='Budgeted Price' cellRenderer='impactPerQuarterFormatter'></AgGridColumn>}
 
@@ -1527,8 +1528,7 @@ function SimulationApprovalSummary(props) {
                             </>
                         }
                         {
-                          rmIndexedSimulationSummaryData && 
-                          rmIndexedSimulationSummaryData?.length>0 &&  Number(SimulationTechnologyId) === Number(RAWMATERIALINDEX) && 
+                            Number(SimulationHeadId) === Number(RAWMATERIALAPPROVALTYPEID) && rmIndexedSimulationSummaryData &&
                             <RMIndexationSimulation isApprovalSummary={true} />
                         }
                         {
@@ -1585,9 +1585,9 @@ function SimulationApprovalSummary(props) {
                                             isApproval={true}
                                             costingIdExist={true}
                                             selectedTechnology={technologyName}
-                                            simulationId={simulationDetail?.SimulationId} 
+                                            simulationId={simulationDetail?.SimulationId}
                                             showAddToComparison={true}
-                                            />}
+                                        />}
                                     </Col>
                                 </Row>
                             </>

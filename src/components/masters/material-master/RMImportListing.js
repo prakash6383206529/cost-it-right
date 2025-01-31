@@ -82,7 +82,7 @@ function RMImportListing(props) {
   const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false)
   // const [currentRowIndex, setCurrentRowIndex] = useState(0)
   // const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
-  const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: "", TechnologyName: "", RawMaterialName: "", RawMaterialGradeName: "", RawMaterialSpecificationName: "", RawMaterialCode: "", Category: "", MaterialType: "", DestinationPlantName: "", UnitOfMeasurementName: "", VendorName: "", BasicRatePerUOM: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", NetLandedCostConversion: "", EffectiveDate: "", DepartmentName: isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant ? userDepartmetList() : "", CustomerName: "", NetConditionCostConversion: "", NetConditionCost: "", NetCostWithoutConditionCost: "", NetCostWithoutConditionCostConversion: "", RawMaterialShearingCostConversion: "", RawMaterialFreightCostConversion: "", MachiningScrapRateInINR: "", MachiningScrapRate: "", BasicRatePerUOMConversion: "", Currency: "", })
+  const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: "", TechnologyName: "", RawMaterialName: "", RawMaterialGradeName: "", RawMaterialSpecificationName: "", RawMaterialCode: "", Category: "", MaterialType: "", DestinationPlantName: "", UnitOfMeasurementName: "", VendorName: "", BasicRatePerUOM: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", NetLandedCostConversion: "", EffectiveDate: "", DepartmentName: isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant ? userDepartmetList() : "", CustomerName: "", NetConditionCostConversion: "", NetConditionCost: "", NetCostWithoutConditionCost: "", NetCostWithoutConditionCostConversion: "", RawMaterialShearingCostConversion: "", RawMaterialFreightCostConversion: "", MachiningScrapRateInINR: "", MachiningScrapRate: "", BasicRatePerUOMConversion: "", Currency: "", LocalCurrency: "" })
   const [noData, setNoData] = useState(false)
   const [dataCount, setDataCount] = useState(0)
   const [inRangeDate, setinRangeDate] = useState([])
@@ -167,6 +167,8 @@ function RMImportListing(props) {
     obj.Currency = floatingFilterData?.Currency
     obj.ExchangeRateSourceName = floatingFilterData?.ExchangeRateSourceName
     obj.OtherNetCost = floatingFilterData?.OtherNetCost
+    obj.Currency = isSimulation && props?.fromListData && props?.fromListData ? props?.fromListData : floatingFilterData?.Currency
+    obj.LocalCurrency = isSimulation && props?.toListData && props?.toListData ? props?.toListData : floatingFilterData?.LocalCurrency
 
     return {
       data: { technologyId: props?.technology ?? null },
@@ -268,6 +270,8 @@ function RMImportListing(props) {
       ListFor: ListFor,
       StatusId: statusString,
       Vendor: isSimulation && filteredRMData && filteredRMData?.Vendor ? filteredRMData?.Vendor : '',
+      Currency: isSimulation && props?.fromListData && props?.fromListData ? props?.fromListData : '',
+      LocalCurrency: isSimulation && props?.toListData && props?.toListData ? props?.toListData : '',
     }
 
     if (isPagination === true) {
@@ -281,7 +285,7 @@ function RMImportListing(props) {
       dataObj.OtherNetCost = filteredRMData?.OtherNetCost
 
     }
-    dataObj.RawMaterialEntryType = Number(ENTRY_TYPE_IMPORT)
+    dataObj.RawMaterialEntryType = !isSimulation ? Number(ENTRY_TYPE_IMPORT) : ''
     //THIS CONDTION IS FOR IF THIS COMPONENT IS RENDER FROM MASTER APPROVAL SUMMARY IN THIS NO GET API
     if (!props?.isMasterSummaryDrawer) {
       dispatch(getAllRMDataList(filterData, skip, take, isPagination, dataObj, true, (res) => {
@@ -1206,6 +1210,7 @@ function RMImportListing(props) {
           // technology={technology.label}
           // technologyId={technology.value}
           // master={master.label}
+
           tokenForMultiSimulation={tokenForSimulation?.length !== 0 ? [{ SimulationId: tokenForSimulation?.value }] : []}
         />
       }

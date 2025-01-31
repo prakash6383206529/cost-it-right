@@ -15,7 +15,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { debounce } from 'lodash'
 import { PaginationWrapper } from '../../common/commonPagination';
-import { APPLICABILITY_BOP_SIMULATION, APPLICABILITY_RM_SIMULATION, ASSEMBLY_TECHNOLOGY_MASTER } from '../../../config/masterData';
+import { APPLICABILITY_BOP_SIMULATION, APPLICABILITY_MACHINE_RATES_SIMULATION, APPLICABILITY_OPERATIONS_SIMULATION, APPLICABILITY_PART_SIMULATION, APPLICABILITY_RM_SIMULATION, APPLICABILITY_SURFACE_TREATMENT_SIMULATION, ASSEMBLY_TECHNOLOGY_MASTER } from '../../../config/masterData';
 import DayTime from '../../common/DayTimeWrapper';
 import DatePicker from "react-datepicker";
 import { reactLocalStorage } from 'reactjs-localstorage';
@@ -51,11 +51,11 @@ function VerifySimulation(props) {
 
     const simulationApplicability = useSelector(state => state.simulation.simulationApplicability)
     const { selectedMasterForSimulation } = useSelector(state => state.simulation)
-    const isSurfaceTreatmentOrOperation = ((Number(selectedMasterForSimulation.value) === Number(SURFACETREATMENT)) || (Number(selectedMasterForSimulation.value) === Number(OPERATIONS)));
-    const isRMDomesticOrRMImport = ((Number(selectedMasterForSimulation.value) === Number(RMDOMESTIC)) || (Number(selectedMasterForSimulation.value) === Number(RMIMPORT)));
+    const isSurfaceTreatmentOrOperation = ((Number(selectedMasterForSimulation.value) === Number(SURFACETREATMENT)) || (Number(selectedMasterForSimulation.value) === Number(OPERATIONS)) || simulationApplicability?.value === APPLICABILITY_SURFACE_TREATMENT_SIMULATION || simulationApplicability?.value === APPLICABILITY_OPERATIONS_SIMULATION);
+    const isRMDomesticOrRMImport = ((Number(selectedMasterForSimulation.value) === Number(RMDOMESTIC)) || (Number(selectedMasterForSimulation.value) === Number(RMIMPORT)) || simulationApplicability?.value === APPLICABILITY_RM_SIMULATION);
     const isExchangeRate = Number(selectedMasterForSimulation.value) === (Number(EXCHNAGERATE));
-    const isBOPDomesticOrImport = ((Number(selectedMasterForSimulation.value) === Number(BOPDOMESTIC)) || (Number(selectedMasterForSimulation.value) === Number(BOPIMPORT)))
-    const isMachineRate = Number(selectedMasterForSimulation.value) === (Number(MACHINERATE));
+    const isBOPDomesticOrImport = ((Number(selectedMasterForSimulation.value) === Number(BOPDOMESTIC)) || (Number(selectedMasterForSimulation.value) === Number(BOPIMPORT)) || simulationApplicability?.value === APPLICABILITY_BOP_SIMULATION);
+    const isMachineRate = (Number(selectedMasterForSimulation.value) === (Number(MACHINERATE)) || simulationApplicability?.value === APPLICABILITY_MACHINE_RATES_SIMULATION);
     const isOverHeadProfit = Number(selectedMasterForSimulation.value) === (Number(OVERHEAD));
     const isMultiTechnology = (checkForNull(selectedMasterForSimulation.value) === ASSEMBLY_TECHNOLOGY_MASTER) ? true : false;
     const { isMasterAssociatedWithCosting } = useSelector(state => state.simulation)
@@ -137,167 +137,28 @@ function VerifySimulation(props) {
             }
             switch (Number(masterTemp)) {
                 case Number(RMDOMESTIC):
-                    dispatch(getVerifySimulationList(props.token, plant, rawMatrialId, (res) => {
-                        if (res.data.Result) {
-                            const data = res.data.Data
-                            if (data.SimulationImpactedCostings.length === 0) {
-                                Toaster.warning('No approved costing exist for this raw material.')
-                                setHideRunButton(true)
-                                return false
-                            }
-                            setTokenNo(data.TokenNumber)
-                            setSimualtionId(data.SimulationId)
-                            setHideRunButton(false)
-                            setSimulationTechnologyId(data.SimulationtechnologyId)
-                            setVendorId(data.VendorId)
-                            setEffectiveDate(data.EffectiveDate)
-                        }
-                    }))
+                    handleRawMaterialCase(props.token, plant, rawMatrialId)
                     break;
                 case Number(RMIMPORT):
-                    dispatch(getVerifySimulationList(props.token, plant, rawMatrialId, (res) => {
-                        if (res.data.Result) {
-                            const data = res.data.Data
-                            if (data.SimulationImpactedCostings.length === 0) {
-                                Toaster.warning('No approved costing exist for this raw material.')
-                                setHideRunButton(true)
-                                return false
-                            }
-                            setTokenNo(data.TokenNumber)
-                            setSimualtionId(data.SimulationId)
-                            setHideRunButton(false)
-                            setSimulationTechnologyId(data.SimulationtechnologyId)
-                            setVendorId(data.VendorId)
-                            setEffectiveDate(data.EffectiveDate)
-                        }
-                    }))
+                    handleRawMaterialCase(props.token, plant, rawMatrialId)
                     break;
                 case Number(SURFACETREATMENT):
 
-                    dispatch(getVerifySurfaceTreatmentSimulationList(props.token, (res) => {
-                        if (res.data.Result) {
-                            const data = res.data.Data
-                            if (data.SimulationSurfaceTreatmentAndOperationImpactedCosting.length === 0) {           //   for condition
-                                Toaster.warning('No approved costing exist for this surface treatment.')
-                                setHideRunButton(true)
-                                return false
-                            }
-                            setTokenNo(data.TokenNumber)
-                            setSimualtionId(data.SimulationId)
-                            setSimulationTechnologyId(data.SimulationtechnologyId)
-                            setHideRunButton(false)
-                            setEffectiveDate(data.EffectiveDate)
-                        }
-                    }))
+                    handleOperationCase()
                     break;
                 case Number(OPERATIONS):
-
-                    dispatch(getVerifySurfaceTreatmentSimulationList(props.token, (res) => {
-                        if (res.data.Result) {
-                            const data = res.data.Data
-                            if (data.SimulationSurfaceTreatmentAndOperationImpactedCosting.length === 0) {           //   for condition
-                                Toaster.warning('No approved costing exist for this surface treatment.')
-                                setHideRunButton(true)
-                                return false
-                            }
-                            setTokenNo(data.TokenNumber)
-                            setSimualtionId(data.SimulationId)
-                            setSimulationTechnologyId(data.SimulationtechnologyId)
-                            setHideRunButton(false)
-                            setEffectiveDate(data.EffectiveDate)
-                        }
-                    }))
+                    handleOperationCase()
                     break;
                 case Number(MACHINERATE):
-
-                    dispatch(getVerifyMachineRateSimulationList(props.token, (res) => {
-                        if (res.data.Result) {
-                            const data = res.data.Data
-                            if (data.SimulationMachineProcesstImpactedCostings.length === 0) {           //   for condition
-                                Toaster.warning('No approved costing exist for this machine rate.')
-                                setHideRunButton(true)
-                                return false
-                            }
-                            setTokenNo(data.TokenNumber)
-                            setSimualtionId(data.SimulationId)
-                            setSimulationTechnologyId(data.SimulationtechnologyId)
-                            setHideRunButton(false)
-                            setEffectiveDate(data.EffectiveDate)
-                        }
-                    }))
+                    handleMachineRateCase()
                     break;
                 case Number(BOPDOMESTIC):
-                    if (isMasterAssociatedWithCosting) {
-                        dispatch(getVerifyBoughtOutPartSimulationList(props.token, (res) => {
-                            if (res.data.Result) {
-                                const data = res.data.Data
-                                if (data.simulationBoughtOutPartImpactedCostings.length === 0) {
-                                    Toaster.warning('No approved costing exist for this bought out part.')
-                                    setHideRunButton(true)
-                                    return false
-                                }
-                                setTokenNo(data.TokenNumber)
-                                setSimualtionId(data.SimulationId)
-                                setSimulationTechnologyId(data.SimulationtechnologyId)
-                                setHideRunButton(false)
-                                setEffectiveDate(data.EffectiveDate)
-                            }
-                        }))
-                    } else {
-                        dispatch(getAllSimulationBoughtOutPart(props.token, (res) => {
-                            if (res.data.Result) {
-                                const data = res.data.Data
-                                if (data.SimulationBoughtOutPart.length === 0) {
-                                    Toaster.warning('No approved bought out part.')
-                                    setHideRunButton(true)
-                                    return false
-                                }
-                                setTokenNo(data.TokenNumber)
-                                setSimualtionId(data.SimulationId)
-                                setSimulationTechnologyId(data.SimulationTechnologyId)
-                                setHideRunButton(false)
-                                setEffectiveDate(data.EffectiveDate)
-                            }
-
-                        }))
-                    }
+                    handleBOPCase()
                     break;
                 case Number(BOPIMPORT):
 
-                    if (isMasterAssociatedWithCosting) {
-                        dispatch(getVerifyBoughtOutPartSimulationList(props.token, (res) => {
-                            if (res.data.Result) {
-                                const data = res.data.Data
-                                if (data.simulationBoughtOutPartImpactedCostings.length === 0) {
-                                    Toaster.warning('No approved costing exist for this bought out part.')
-                                    setHideRunButton(true)
-                                    return false
-                                }
-                                setTokenNo(data.TokenNumber)
-                                setSimualtionId(data.SimulationId)
-                                setSimulationTechnologyId(data.SimulationtechnologyId)
-                                setHideRunButton(false)
-                                setEffectiveDate(data.EffectiveDate)
-                            }
-                        }))
-                    } else {
-                        dispatch(getAllSimulationBoughtOutPart(props.token, (res) => {
-                            if (res.data.Result) {
-                                const data = res.data.Data
-                                if (data.SimulationBoughtOutPart.length === 0) {
-                                    Toaster.warning('No approved bought out part.')
-                                    setHideRunButton(true)
-                                    return false
-                                }
-                                setTokenNo(data.TokenNumber)
-                                setSimualtionId(data.SimulationId)
-                                setSimulationTechnologyId(data.SimulationTechnologyId)
-                                setHideRunButton(false)
-                                setEffectiveDate(data.EffectiveDate)
-                            }
+                    handleBOPCase()
 
-                        }))
-                    }
                     break;
                 // case Number(BOPIMPORT):
 
@@ -337,23 +198,46 @@ function VerifySimulation(props) {
                 //     break;
 
                 case Number(EXCHNAGERATE):
+                    switch (simulationApplicability?.value) {
+                        case APPLICABILITY_RM_SIMULATION:
 
-                    dispatch(getVerifyExchangeSimulationList(props.token, (res) => {
-                        if (res.data.Result) {
-                            const data = res.data.Data
-                            if (data.SimulationExchangeRateImpactedCostings.length === 0) {
-                                Toaster.warning('No approved costing exist for this exchange rate.')
-                                setHideRunButton(true)
-                                return false
-                            }
-                            setTokenNo(data.TokenNumber)
-                            setSimualtionId(data.SimulationId)
-                            setSimulationTechnologyId(data.SimulationtechnologyId)
-                            // setMasterId(data.SimulationtechnologyId)
-                            setHideRunButton(false)
-                            setEffectiveDate(data.EffectiveDate)
-                        }
-                    }))
+                            handleRawMaterialCase(props.token, plant, rawMatrialId);
+                            break;
+                        case APPLICABILITY_BOP_SIMULATION:
+
+                            handleBOPCase();
+                            break;
+                        case APPLICABILITY_OPERATIONS_SIMULATION:
+
+                            handleOperationCase();
+                            break;
+                            case APPLICABILITY_SURFACE_TREATMENT_SIMULATION:
+
+                            handleOperationCase();
+                            break;
+                        case APPLICABILITY_MACHINE_RATES_SIMULATION:
+
+                            handleMachineRateCase();
+                            break;
+                        default:
+
+                            dispatch(getVerifyExchangeSimulationList(props.token, (res) => {
+                                if (res.data.Result) {
+                                    const data = res.data.Data
+                                    if (data.SimulationExchangeRateImpactedCostings.length === 0) {
+                                        Toaster.warning('No approved costing exist for this exchange rate.')
+                                        setHideRunButton(true)
+                                        return false
+                                    }
+                                    setTokenNo(data.TokenNumber)
+                                    setSimualtionId(data.SimulationId)
+                                    setSimulationTechnologyId(data.SimulationtechnologyId)
+                                    setHideRunButton(false)
+                                    setEffectiveDate(data.EffectiveDate)
+                                }
+                            }));
+                            break;
+                    }
                     break;
                 case Number(COMBINED_PROCESS):          						//RE
 
@@ -378,7 +262,95 @@ function VerifySimulation(props) {
             }
         }
     }
+    const handleOperationCase = () => {
+        dispatch(getVerifySurfaceTreatmentSimulationList(props.token, (res) => {
+            if (res.data.Result) {
+                const data = res.data.Data
+                if (data.SimulationSurfaceTreatmentAndOperationImpactedCosting.length === 0) {           //   for condition
+                    Toaster.warning('No approved costing exist for this surface treatment.')
+                    setHideRunButton(true)
+                    return false
+                }
+                setTokenNo(data.TokenNumber)
+                setSimualtionId(data.SimulationId)
+                setSimulationTechnologyId(data.SimulationtechnologyId)
+                setHideRunButton(false)
+                setEffectiveDate(data.EffectiveDate)
+            }
+        }))
+    }
+    const handleBOPCase = () => {
+        if (isMasterAssociatedWithCosting) {
+            dispatch(getVerifyBoughtOutPartSimulationList(props.token, (res) => {
+                if (res.data.Result) {
+                    const data = res.data.Data
+                    if (data.simulationBoughtOutPartImpactedCostings.length === 0) {
+                        Toaster.warning('No approved costing exist for this bought out part.')
+                        setHideRunButton(true)
+                        return false
+                    }
+                    setTokenNo(data.TokenNumber)
+                    setSimualtionId(data.SimulationId)
+                    setSimulationTechnologyId(data.SimulationtechnologyId)
+                    setHideRunButton(false)
+                    setEffectiveDate(data.EffectiveDate)
+                }
+            }))
+        } else {
+            dispatch(getAllSimulationBoughtOutPart(props.token, (res) => {
+                if (res.data.Result) {
+                    const data = res.data.Data
+                    if (data.SimulationBoughtOutPart.length === 0) {
+                        Toaster.warning('No approved bought out part.')
+                        setHideRunButton(true)
+                        return false
+                    }
+                    setTokenNo(data.TokenNumber)
+                    setSimualtionId(data.SimulationId)
+                    setSimulationTechnologyId(data.SimulationTechnologyId)
+                    setHideRunButton(false)
+                    setEffectiveDate(data.EffectiveDate)
+                }
 
+            }))
+        }
+    }
+    const handleMachineRateCase = () => {
+        dispatch(getVerifyMachineRateSimulationList(props.token, (res) => {
+            if (res.data.Result) {
+                const data = res.data.Data
+                if (data.SimulationMachineProcesstImpactedCostings.length === 0) {           //   for condition
+                    Toaster.warning('No approved costing exist for this machine rate.')
+                    setHideRunButton(true)
+                    return false
+                }
+                setTokenNo(data.TokenNumber)
+                setSimualtionId(data.SimulationId)
+                setSimulationTechnologyId(data.SimulationtechnologyId)
+                setHideRunButton(false)
+                setEffectiveDate(data.EffectiveDate)
+            }
+        }))
+    }
+
+    const handleRawMaterialCase = (token, plant, rawMatrialId) => {
+        dispatch(getVerifySimulationList(token, plant, rawMatrialId, (res) => {
+            if (res.data.Result) {
+                const data = res.data.Data
+                if (data.SimulationImpactedCostings.length === 0) {
+                    Toaster.warning('No approved costing exist for this raw material.')
+                    setHideRunButton(true)
+                    return false
+                }
+                setTokenNo(data.TokenNumber)
+                setSimualtionId(data.SimulationId)
+                setHideRunButton(false)
+                setSimulationTechnologyId(data.SimulationtechnologyId)
+                setVendorId(data.VendorId)
+                setEffectiveDate(data.EffectiveDate)
+            }
+        }))
+    }
     const newBRFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         let data = ''
@@ -591,10 +563,25 @@ function VerifySimulation(props) {
                 })
             } else {
                 let masterTemp = selectedMasterForSimulation.value
-                if (selectedMasterForSimulation?.value === EXCHNAGERATE && simulationApplicability?.value === APPLICABILITY_RM_SIMULATION) {
-                    masterTemp = RMIMPORT
-                } else if (selectedMasterForSimulation?.value === EXCHNAGERATE && simulationApplicability?.value === APPLICABILITY_BOP_SIMULATION) {
-                    masterTemp = BOPIMPORT
+                if (selectedMasterForSimulation?.value === EXCHNAGERATE) {
+                    switch (simulationApplicability?.value) {
+                        case APPLICABILITY_RM_SIMULATION:
+                            masterTemp = RMIMPORT;
+                            break;
+                        case APPLICABILITY_BOP_SIMULATION:
+                            masterTemp = BOPIMPORT;
+                            break;
+                        case APPLICABILITY_MACHINE_RATES_SIMULATION:
+                            masterTemp = MACHINERATE;
+                            break;
+                        case APPLICABILITY_OPERATIONS_SIMULATION:
+                            masterTemp = OPERATIONS;
+                            break;
+                            case APPLICABILITY_SURFACE_TREATMENT_SIMULATION:
+                                masterTemp = SURFACETREATMENT;
+                                break;
+                        default:
+                    }
                 }
                 switch (Number(masterTemp)) {
                     case Number(RMDOMESTIC):
@@ -672,7 +659,18 @@ function VerifySimulation(props) {
                 }
             }
 
+            // if (selectedMasterForSimulation?.value === EXCHNAGERATE) {
+            //     if (simulationApplicability?.value === APPLICABILITY_PART_SIMULATION) {
+            //         obj.RunSimualtionExchangeRateCostingInfos = tempArr;
+            //     } else {
+            //         obj.RunSimualtionCostingInfo = tempArr;
+
+            //     }
+            // } else {
+            //     obj.RunSimualtionCostingInfo = tempArr;
+            // }
             obj.RunSimualtionCostingInfo = tempArr
+
             setObj(obj)
             setSimulationDrawer(true)
         } else {
@@ -942,7 +940,7 @@ function VerifySimulation(props) {
                                             {isSurfaceTreatmentOrOperation === true && operationTypes.includes('Welding') && <AgGridColumn width={185} field="OldOperationConsumption" tooltipField="OldOperationRate" headerName="Consumption"></AgGridColumn>}
                                             {isSurfaceTreatmentOrOperation === true && operationTypes.includes('Welding') && <AgGridColumn width={220} field="OldOperationBasicRate" tooltipField="OldOperationRate" headerName="Existing Welding Material Rate/kg"></AgGridColumn>}
                                             {isSurfaceTreatmentOrOperation === true && operationTypes.includes('Welding') && <AgGridColumn width={220} field="NewOperationBasicRate" tooltipField="NewOperationRate" headerName="Revised Welding Material Rate/kg"></AgGridColumn>}
-                                            {<AgGridColumn field='Currency' headerName='Master Currency' />}
+                                            {/* !isExchangeRate &&  */<AgGridColumn field='Currency' headerName='Master Currency' />}
                                             {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="OldOperationRate" tooltipField="OldOperationRate" headerName="Existing Rate"></AgGridColumn>}
                                             {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="NewOperationRate" tooltipField="NewOperationRate" headerName="Revised Rate"></AgGridColumn>}
 
