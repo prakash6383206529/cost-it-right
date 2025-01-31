@@ -223,7 +223,7 @@ const RaiseRfqBopDetails = (props) => {
                 <Col md="3">
                     <div className='d-flex align-items-center'>
                         <SearchableSelectHookForm
-                            label="Category (Entry Type)"
+                            label="Category"
                             name={"Category"}
                             placeholder={"Select"}
                             Controller={Controller}
