@@ -459,6 +459,7 @@ const BOPDomesticListing = (props) => {
 
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+    let IsRFQBoughtOutPart = rowData?.IsRFQBoughtOutPart !== null && rowData?.IsRFQBoughtOutPart !== undefined ? true : false
     let isEditbale = false
     let isDeleteButton = false
     if (permissions?.Edit) {
@@ -468,7 +469,7 @@ const BOPDomesticListing = (props) => {
     }
 
 
-    if (isRfq && isMasterSummaryDrawer) {
+    if (isRfq && isMasterSummaryDrawer && !IsRFQBoughtOutPart) {
       return (
         <button className="Balance mb-0 button-stick" type="button" onClick={() => handleCompareDrawer(rowData)}>
 
@@ -489,8 +490,8 @@ const BOPDomesticListing = (props) => {
         {(!benchMark) && (
           <>
             {permissions?.View && <Button id={`bopDomesticListing_view${props.rowIndex}`} className={"mr-1 Tour_List_View"} variant="View" onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} title={"View"} />}
-            {isEditbale && <Button id={`bopDomesticListing_edit${props.rowIndex}`} className={"mr-1 Tour_List_Edit"} variant="Edit" onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} title={"Edit"} />}
-            {isDeleteButton && <Button id={`bopDomesticListing_delete${props.rowIndex}`} className={"mr-1 Tour_List_Delete"} variant="Delete" onClick={() => deleteItem(cellValue)} title={"Delete"} />}
+            {isEditbale && !IsRFQBoughtOutPart && <Button id={`bopDomesticListing_edit${props.rowIndex}`} className={"mr-1 Tour_List_Edit"} variant="Edit" onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} title={"Edit"} />}
+            {isDeleteButton && !IsRFQBoughtOutPart && <Button id={`bopDomesticListing_delete${props.rowIndex}`} className={"mr-1 Tour_List_Delete"} variant="Delete" onClick={() => deleteItem(cellValue)} title={"Delete"} />}
           </>
         )}
 
