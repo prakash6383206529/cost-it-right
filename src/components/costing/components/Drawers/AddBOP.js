@@ -136,6 +136,11 @@ function AddBOP(props) {
   }
 
   const isFirstColumn = (params) => {
+    const allBopSelected = bopDrawerList?.every(bop => props?.Ids?.includes(bop.BoughtOutPartId));
+    if (allBopSelected) {
+      return false;
+    }
+
     var displayedColumns = params.columnApi.getAllDisplayedColumns();
     var thisIsFirstColumn = displayedColumns[0] === params.column;
 
