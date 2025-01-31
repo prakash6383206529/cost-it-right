@@ -259,13 +259,30 @@ class UsersTab extends Component {
   */
   actionCheckHandler = (parentIndex, childIndex) => {
     const { Modules } = this.state;
-
+    
     // When On Behalf Delegation action is selected, select same action in Self Delegation
     if (Modules[parentIndex]?.PageName === BEHALF_DELEGATION) {
       let selfDelegationIndex = Modules.findIndex(x => x.PageName === SELF_DELEGATION);
       if (selfDelegationIndex !== -1) {
         let tempModules = [...Modules];
         tempModules[selfDelegationIndex].Actions[childIndex].IsChecked = true;
+
+        // If Add is selected, automatically select Edit for Self Delegation
+        if (tempModules[parentIndex].Actions[childIndex].ActionName === 'Add') {
+          let editActionIndex = tempModules[selfDelegationIndex].Actions.findIndex(x => x.ActionName === 'Edit');
+          if (editActionIndex !== -1) {
+            tempModules[selfDelegationIndex].Actions[editActionIndex].IsChecked = true;
+          }
+        }
+
+        // If Edit is selected, automatically select Add for Self Delegation  
+        if (tempModules[parentIndex].Actions[childIndex].ActionName === 'Edit') {
+          let addActionIndex = tempModules[selfDelegationIndex].Actions.findIndex(x => x.ActionName === 'Add');
+          if (addActionIndex !== -1) {
+            tempModules[selfDelegationIndex].Actions[addActionIndex].IsChecked = true;
+          }
+        }
+
         this.setState({ Modules: tempModules });
       }
     }
@@ -275,7 +292,23 @@ class UsersTab extends Component {
       let behalfDelegationIndex = Modules.findIndex(x => x.PageName === BEHALF_DELEGATION);
       if (behalfDelegationIndex !== -1) {
         let tempModules = [...Modules];
-        tempModules[behalfDelegationIndex].Actions[childIndex].IsChecked = false;
+        
+        // If deselecting Add or Edit in Self Delegation, deselect both Add and Edit in On Behalf
+        if (tempModules[parentIndex].Actions[childIndex].ActionName === 'Add' || 
+            tempModules[parentIndex].Actions[childIndex].ActionName === 'Edit') {
+          let addActionIndex = tempModules[behalfDelegationIndex].Actions.findIndex(x => x.ActionName === 'Add');
+          let editActionIndex = tempModules[behalfDelegationIndex].Actions.findIndex(x => x.ActionName === 'Edit');
+          
+          if (addActionIndex !== -1) {
+            tempModules[behalfDelegationIndex].Actions[addActionIndex].IsChecked = false;
+          }
+          if (editActionIndex !== -1) {
+            tempModules[behalfDelegationIndex].Actions[editActionIndex].IsChecked = false;
+          }
+        } else {
+          tempModules[behalfDelegationIndex].Actions[childIndex].IsChecked = false;
+        }
+        
         this.setState({ Modules: tempModules });
       }
     }
@@ -285,6 +318,22 @@ class UsersTab extends Component {
     let actionArray = actionRow && actionRow.map((el, index) => {
       if (childIndex === index) {
         el.IsChecked = !el.IsChecked;
+
+        // If Add is selected/deselected, automatically select/deselect Edit
+        if (el.ActionName === 'Add') {
+          let editAction = actionRow.find(action => action.ActionName === 'Edit');
+          if (editAction) {
+            editAction.IsChecked = el.IsChecked;
+          }
+        }
+
+        // If Edit is selected/deselected, automatically select/deselect Add
+        if (el.ActionName === 'Edit') {
+          let addAction = actionRow.find(action => action.ActionName === 'Add');
+          if (addAction) {
+            addAction.IsChecked = el.IsChecked;
+          }
+        }
       }
       return el;
     });

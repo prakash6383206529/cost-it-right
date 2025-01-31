@@ -64,6 +64,7 @@ const UsersListing = (props) => {
 		EditAccessibility: false,
 		DeleteAccessibility: false,
 		ActivateAccessibility: false,
+		ViewAccessibility: false,
 		gridApi: null,
 		gridColumnApi: null,
 		rowData: null,
@@ -119,6 +120,7 @@ const UsersListing = (props) => {
 					const access = checkPermission(permissions);
 					setState(prev => ({
 						...prev,
+						ViewAccessibility: access?.View || false,
 						AddAccessibility: access?.Add || false,
 						EditAccessibility: access?.Edit || false,
 						DeleteAccessibility: access?.Delete || false,
@@ -562,10 +564,10 @@ const UsersListing = (props) => {
 		const isEdit = rowData?.IsDelegated === true ? true : false
 		return (
 			<div className="">
-				{<Button id={`userListing_add${props?.rowIndex}`} className={"Add Tour_List_Edit ml-1"} variant={isEdit ? "Edit" : "Add"} onClick={() => editDelegationItemDetails(rowData?.UserId, rowData, false, false, isEdit)} title={isEdit ? "Edit" : "Add"} />}
-				{isEdit && <Button id={`userListing_view${props?.rowIndex}`} className={"View Tour_List_Edit ml-1"} variant="View" onClick={() => editDelegationItemDetails(rowData?.UserId, rowData, false, true, isEdit)} title={"View"} />}
+				{AddAccessibility && <Button id={`userListing_add${props?.rowIndex}`} className={"Add Tour_List_Edit ml-1"} variant={isEdit ? "Edit" : "Add"} onClick={() => editDelegationItemDetails(rowData?.UserId, rowData, false, false, isEdit)} title={isEdit ? "Edit" : "Add"} />}
+				{isEdit && ViewAccessibility && <Button id={`userListing_view${props?.rowIndex}`} className={"View Tour_List_Edit ml-1"} variant="View" onClick={() => editDelegationItemDetails(rowData?.UserId, rowData, false, true, isEdit)} title={"View"} />}
 				{<button title='Remark History' id='ViewRfq_remarkHistory' className="btn-history-remark ml-1" type={'button'} onClick={() => { editDelegationItemDetails(rowData?.UserId, rowData, true, false, isEdit) }}><div className='history-remark'></div></button>}
-				{isEdit && <Button
+				{isEdit && DeleteAccessibility && <Button
 					id={`userListing_delete${props.rowIndex}`}
 					className={"ml-1 Tour_List_Delete"}
 					variant="Delete"
@@ -709,7 +711,7 @@ const UsersListing = (props) => {
 		window.screen.width >= 1920 && params.api.sizeColumnsToFit()
 	};
 
-	const { EditAccessibility, AddAccessibility, noData } = state;
+	const { EditAccessibility, AddAccessibility, noData, ViewAccessibility, DeleteAccessibility } = state;
 	const isFirstColumn = (params) => {
 		var displayedColumns = params?.columnApi.getAllDisplayedColumns();
 		var thisIsFirstColumn = displayedColumns[0] === params?.column;
