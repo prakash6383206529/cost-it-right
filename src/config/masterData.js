@@ -6863,8 +6863,10 @@ export const TechnologyDropdownBulkUploadV4 = [
     { label: 'Die Casting', value: '7' },
     { label: 'Electrical Stamping', value: '12' },
     { label: 'Insulation', value: '11' },
-    { label: 'Monocarton', value: '13' }
+    { label: 'Monocarton', value: '13' },
+    { label: 'Plastic,Rubber (With Extrusion Process)', value: '14' }
 ]
+
 
 
 export const constRMCCTabData = [{
