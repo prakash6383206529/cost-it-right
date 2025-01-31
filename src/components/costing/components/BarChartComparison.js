@@ -7,14 +7,16 @@ import { colorArray } from '../../dashboard/ChartsDashboard';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ChartDataLabels);
 
-export function BarChartComparison({ costingData, currency, graphHeight = 500, graphWidth = 1000 }) {
+export function BarChartComparison({ costingData, currency }) {
   const [graphData, setGraphData] = useState(null);
+  const [graphHeight, setGraphHeight] = useState(240)
 
   useEffect(() => {
     const prepareGraphData = () => {
       const filteredCostingData = costingData.filter(item =>
         item?.CostingHeading !== "Variance" && item?.CostingHeading !== "Old Costing"
       );
+      setGraphHeight(filteredCostingData?.length > 2 ? filteredCostingData?.length * 80 : 240)
       const labels = filteredCostingData?.map(item => {
         if (item?.zbc === 2) {
           return `${item?.plantName} (${item?.vendorName})`;
@@ -134,9 +136,21 @@ export function BarChartComparison({ costingData, currency, graphHeight = 500, g
   };
 
   return (
-    <div className="chart-container" style={{ width: window.screen.width - 100, margin: '0 auto' }}>
-      <div className="graph-container d-flex align-items-center" style={{ height: `${graphHeight}px` }}>
-        {graphData && <Bar data={graphData} options={options} />}
+    <div className="chart-container mt-4 mb-2" style={{ width: window.screen.width - 100, margin: '0 auto' }}>
+      <div style={{ position: 'relative', height: `${graphHeight}px` }}>
+        <div style={{
+          position: 'absolute',
+          top: '-20px',
+          left: '0px',
+          zIndex: 10,
+          fontSize: '12px',
+          fontWeight: 'bold'
+        }}>
+          Plant (Code) - Vendor (Code) / Customer (Code)
+        </div>
+        <div className="graph-container d-flex align-items-center" style={{ height: `${graphHeight}px` }}>
+          {graphData && <Bar data={graphData} options={options} />}
+        </div>
       </div>
     </div>
   );

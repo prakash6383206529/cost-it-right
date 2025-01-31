@@ -149,7 +149,7 @@ const CostingSummaryTable = (props) => {
   const showCheckbox = viewCostingData && viewCostingData.some(item => item.IsShowCheckBoxForApproval === true);
   const [showConvertedCurrency, setShowConvertedCurrency] = useState(false)
   const [showConvertedCurrencyCheckbox, setShowConvertedCurrencyCheckbox] = useState(false)
-useEffect(() => {
+  useEffect(() => {
     if (viewCostingDetailData && viewCostingDetailData?.length > 0 && !props?.isRejectedSummaryTable && !props?.isFromAssemblyTechnology) {
       setViewCostingData(viewCostingDetailData)
     } else if (viewRejectedCostingDetailData && viewRejectedCostingDetailData?.length > 0 && props?.isRejectedSummaryTable && !props?.isFromAssemblyTechnology) {
@@ -210,7 +210,7 @@ useEffect(() => {
   const [tcoAndNpvDrawer, setTcoAndNpvDrawer] = useState(false);
   const [costingId, setCostingId] = useState("");
   const { discountLabel, toolMaintenanceCostLabel } = useLabels();
-
+  const { isNetPoPrice, setIsNetPoPrice } = useState(false)
   const [drawerOpen, setDrawerOpen] = useState({
     BOP: false,
     process: false,
@@ -343,7 +343,9 @@ useEffect(() => {
 
   useEffect(() => {
     let currency = viewCostingData?.length > 0 ? _.map(viewCostingData, 'CostingCurrency') : []
-    currency?.pop()
+    if (props?.isRfqCosting) {
+      currency?.pop()
+    }
     if (props?.isRfqCosting && currency?.every(element => element === getConfigurationKey().BaseCurrency)) {
       setShowConvertedCurrencyCheckbox(false)
     } else {
@@ -351,7 +353,7 @@ useEffect(() => {
       if (props.isRfqCosting) {
         setShowConvertedCurrency(true)
       }
-      if (!props?.isRfqCosting && currency?.every(element => element === null)) {
+      if (!props?.isRfqCosting && currency?.every(element => element === null || element === getConfigurationKey().BaseCurrency)) {
         setShowConvertedCurrencyCheckbox(false)
       }
     }
@@ -1129,11 +1131,20 @@ useEffect(() => {
     let plantArray = []
 
     list && list?.map((item) => {
-      vendorArray.push(item.vendorId)
-      effectiveDateArray.push(item.effectiveDate)
-      plantArray.push(item.PlantCode)
+
+
+      vendorArray?.push(item?.vendorId)
+      effectiveDateArray?.push(item?.effectiveDate)
+      plantArray?.push(item?.plantCode)
       return null
     })
+    const hasZeroPrice = viewCostingData?.some(data =>
+      Number(data?.poPrice) === Number(0))
+
+    if (hasZeroPrice) {
+      Toaster.warning('Net price is 0, cannot proceed with approval.')
+      return false
+    }
     if (effectiveDateArray?.includes('')) {
       Toaster.warning('Please select the effective date.')
       return false
@@ -1984,17 +1995,15 @@ useEffect(() => {
   }
 
   const handleSOBSave = (obj, index) => {
-    const lastvlue = viewCostingData[index]?.shareOfBusinessPercent
     let totalSObP = [];
     for (let i = 0; i < viewCostingData.length; i++) {
-      if (typeof viewCostingData[i].shareOfBusinessPercent === 'number' && i !== index) {
+      if (typeof viewCostingData[i].shareOfBusinessPercent === 'number' && i !== index && (!props.uniqueShouldCostingId?.includes(viewCostingData[i].costingId))) {
         totalSObP.push(viewCostingData[i].shareOfBusinessPercent)
       }
     }
     const sum = totalSObP.reduce((accumulator, currentValue) => accumulator + currentValue, 0) + Number(getValues(`ShareOfBusinessPercent.${index}`));
     if (sum > 100) {
       Toaster.warning("Total SOB percentage cannot be more than 100%")
-      setValue(`ShareOfBusinessPercent.${index}`, lastvlue)
       return false;
     } else if (getValues(`ShareOfBusinessPercent.${index}`) === '') {
       setValue(`ShareOfBusinessPercent.${index}`, 0)
@@ -2114,7 +2123,7 @@ useEffect(() => {
               </Col>
             )}
 
-            {<Col md={simulationMode || props.isRfqCosting || isApproval ? "12" : "8"} className="text-right">
+            {<Col md={simulationMode || props.isRfqCosting || isApproval || props?.costVariance ? "12" : "8"} className="text-right">
               <div className='d-flex justify-content-end mb-2'>
                 <div className='d-flex justify-content-end align-items-center'>
                   {showConvertedCurrencyCheckbox && <span className="d-inline-block">
@@ -2173,7 +2182,7 @@ useEffect(() => {
                         {'Send For Approval'}
                       </button>
                     )}
-                    {props?.showAddToComparison&& <button
+                    {props?.showAddToComparison && <button
                       type="button"
                       id="costingSummary_addtocomparison"
 
@@ -2181,7 +2190,7 @@ useEffect(() => {
                       onClick={addComparisonDrawerToggle}
                     >
                       <div className="compare-arrows"></div>
-                      Add To Comparison1{' '}
+                      Add To Comparison{' '}
                     </button>}
                   </>
                 }
@@ -2308,7 +2317,7 @@ useEffect(() => {
                                     {((!viewMode && (!pdfHead && !drawerDetailPDF)) && EditAccessibility) && (data?.status === DRAFT) && <button id="costingSummary_edit" className="Edit mr-1 mb-0 align-middle" type={"button"} title={"Edit Costing"} onClick={() => editCostingDetail(index)} />}
                                     {((!viewMode && (!pdfHead && !drawerDetailPDF)) && ViewAccessibility) && (data?.status === DRAFT) && <button id="costingSummary_view" className="View mr-1 mb-0 align-middle" type={"button"} title={"View Costing"} onClick={() => viewCostingDetail(index)} />}
                                     {((!viewMode && (!pdfHead && !drawerDetailPDF)) && AddAccessibility) && <button id="costingSummary_add" className="Add-file mr-1 mb-0 align-middle" type={"button"} title={"Add Costing"} onClick={() => addNewCosting(index)} />}
-                                    {(!isApproval || (isComparing && index > 1)) && (data?.bestCost === true ? false : ((!viewMode || props?.isRfqCosting || (isComparing && index > 1) || (approvalMode && data?.CostingHeading === '-')) && (!pdfHead && !drawerDetailPDF)) && <button id="costingSummary_discard" type="button" className="CancelIcon mb-0 align-middle" title='Discard' onClick={() => deleteCostingFromView(index)}></button>)}
+                                    {(!isApproval || (isComparing && index > 1)) && (data?.bestCost === true ? false : ((!viewMode || props?.isRfqCosting || props?.costVariance || (isComparing && index > 1) || (approvalMode && data?.CostingHeading === '-')) && (!pdfHead && !drawerDetailPDF)) && (props?.isRfqCosting ? viewCostingData?.length > 2 : viewCostingData?.length > 1) && <button id="costingSummary_discard" type="button" className="CancelIcon mb-0 align-middle" title='Discard' onClick={() => deleteCostingFromView(index)}></button>)}
                                   </div>
                                 </div >
                               </th >
@@ -2940,6 +2949,7 @@ useEffect(() => {
                                       <div style={pdfHead ? { marginTop: '-4px' } : {}} className={`d-flex ${highlighter(["overheadOn", "overheadValue"], "multiple-key")}`}>
                                         <span className="d-inline-block w-50 small-grey-text">
                                           {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.overheadOn.overheadTitle : '')}
+                                          {(!pdfHead && !drawerDetailPDF && viewCostingData[index]?.isIncludeToolCostWithOverheadAndProfit) && <TooltipCustom customClass="mt-1 ml-1 p-absolute" id="overhead-toolcost-include" tooltipText={"Tool Cost Included"} />}
                                         </span>
                                         <span className="d-inline-block w-50 small-grey-text">
                                           {getOverheadPercentage(data)}
@@ -2951,6 +2961,7 @@ useEffect(() => {
                                       <div style={pdfHead ? { marginTop: '-3px' } : {}} className={`d-flex ${highlighter(["profitOn", "profitValue"], "multiple-key")}`}>
                                         <span className="d-inline-block w-50 small-grey-text">
                                           {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.profitOn.profitTitle : '')}
+                                          {(!pdfHead && !drawerDetailPDF && viewCostingData[index]?.isIncludeToolCostWithOverheadAndProfit) && <TooltipCustom customClass="mt-1 ml-1 p-absolute" id="profit-toolcost-include" tooltipText={"Tool Cost Included"} />}
                                         </span>{' '}
                                         <span className="d-inline-block w-50 small-grey-text">
                                           {getProfitPercentage(data)}
@@ -3519,7 +3530,7 @@ useEffect(() => {
                             viewCostingData?.map((data, index) => {
                               return <td className={tableDataClass(data)}>
 
-                                {displayValueWithSign(data, "nPOPriceWithCurrency")}
+                                {data?.currency.currencyTitle === '-' ? '-' : `${data?.currency.currencyTitle}: `} {displayValueWithSign(data, "nPOPriceWithCurrency")}
                               </td>
                             })}
                         </tr>
@@ -3561,7 +3572,7 @@ useEffect(() => {
                           </tr>
                         </>
                       }
-                      {initialConfiguration?.IsShowTCO && <ViewTcoDetail isApproval={isApproval} viewCostingData={viewCostingData} isRfqCosting={props?.isRfqCosting} highlighter={highlighter} displayValueWithSign={displayValueWithSign} tableDataClass={tableDataClass} loader={loader} setLoader={setLoader} />}
+                      {props?.isRfqCosting && <ViewTcoDetail isApproval={isApproval} viewCostingData={viewCostingData} isRfqCosting={props?.isRfqCosting} highlighter={highlighter} displayValueWithSign={displayValueWithSign} tableDataClass={tableDataClass} loader={loader} setLoader={setLoader} />}
                       {initialConfiguration?.IsShowTCO && <tr className={highlighter("nPackagingAndFreight", "main-row")}>
 
                         <th>Total TCO Cost <TooltipCustom id="tco_cost" tooltipText="Calculation made upon Payment term, Warranty, Quality PPM, Incoterm and Investment" />
@@ -3863,7 +3874,7 @@ useEffect(() => {
             index={viewAtttachments}
             closeDrawer={closeAttachmentDrawer}
             anchor={'right'}
-            isRfqCosting={props?.isRfqCosting}
+            isRfqCosting={viewCostingData[index]?.IsRfqCosting}
           />
         )
       }
@@ -3893,7 +3904,7 @@ useEffect(() => {
           anchor={'right'}
           partId={viewCostingData[npvIndex]?.partId}
           vendorId={viewCostingData[npvIndex]?.vendorId}
-          isRfqCosting={props?.isRfqCosting}
+          isRfqCosting={viewCostingData[npvIndex]?.IsRfqCosting}
           CostingPaymentTermDetails={paymentTermsData}
           npvCostData={npvData}
 
@@ -3911,7 +3922,7 @@ useEffect(() => {
           anchor={'right'}
           partId={viewCostingData[npvIndex]?.partId}
           vendorId={viewCostingData[npvIndex]?.vendorId}
-          isRfqCosting={props?.isRfqCosting}
+          isRfqCosting={viewCostingData[index]?.IsRfqCosting}
           costingId={costingId}
           totalCostFromSummary={true}
 

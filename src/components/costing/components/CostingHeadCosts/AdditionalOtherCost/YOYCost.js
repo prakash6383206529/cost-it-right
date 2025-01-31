@@ -5,12 +5,13 @@ import { EMPTY_DATA } from '../../../../../config/constants'
 // import AddYOYCost from './AddYOYCost'
 import { Controller } from "react-hook-form";
 import { TextFieldHookForm } from '../../../../../components/layout/HookFormInputs'
-import { checkForDecimalAndNull, checkWhiteSpaces, getConfigurationKey, number, percentageOfNumber } from '../../../../../helper'
+import { checkForDecimalAndNull, checkForNull, checkWhiteSpaces, getConfigurationKey, number, percentageOfNumber } from '../../../../../helper'
 import { useDispatch, useSelector } from 'react-redux'
 import { getYOYCostList, setYOYCostGrid } from '../../../actions/Costing'
 import Toaster from '../../../../common/Toaster'
 import _ from 'lodash'
 import LoaderCustom from '../../../../common/LoaderCustom'
+// import AddYOYCost from './AddYOYCost';
 
 function YOYCost(props) {
     const { outside, patId, vendorId, hideAddButton } = props;
@@ -18,15 +19,18 @@ function YOYCost(props) {
     const [oldData, setOldData] = useState([])
     const [yoyDrawerOpen, setYoyDrawerOpen] = useState(false)
     const [loader, setLoader] = useState(outside ? true : false)
+    const [year, setYear] = useState(outside ? {} : props?.year)
     const { setValue, getValues, control, errors, register } = props
     const { yoyCostGrid } = useSelector(state => state.costing)
-    const { quotationIDForRFQ } = useSelector(state => state.rfq)
+    // const { quotationIdForRFQ } = useSelector(state => state?.RFQ)
     const dispatch = useDispatch()
 
     useEffect(() => {
-        if (outside && props.activeTab === '6') {
+
+        if (outside && props?.isRfqCosting) {
+
             let requestObject = {
-                quotationId: quotationIDForRFQ,
+                quotationId: props?.quotationId,
                 partId: patId,
                 vendorId: vendorId
             }
@@ -36,19 +40,29 @@ function YOYCost(props) {
             let tempDataYear1_5_One = {}
             let tempDataYear1_5_Two = {}
             let tempDataYear1_5_Three = {}
+            let tempDataYear1_5_Four = {}
+            let tempDataYear1_5_Five = {}
+            let yearName = {}
+
             dispatch(getYOYCostList(requestObject, (res) => {
                 setLoader(false)
                 _.map(res?.data?.Data?.yoyResponseDetails, (item, index) => {
+                    yearName[`Y${index + 1}`] = item.YearName ? item.YearName : 0
                     tempDataYear1_5_One[`Y${index + 1}`] = item.Quantity ? item.Quantity : 0
                     tempDataYear1_5_Two[`Y${index + 1}`] = item.DiscountPercent ? item.DiscountPercent : 0
-                    tempDataYear1_5_Three[`Y${index + 1}`] = item.NetCostPerPiece ? item.NetCostPerPiece : 0
+                    tempDataYear1_5_Four[`Y${index + 1}`] = item.NetCostPerPiece ? item.NetCostPerPiece : 0
+                    // tempDataYear1_5_Four[`Y${index + 1}`] = item.RemainingCost ? item.RemainingCost : 0
+                    tempDataYear1_5_Five[`Y${index + 1}`] = item.Discount ? item.Discount : 0
+                    tempDataYear1_5_Four[`Y${index + 1}`] = item.NetCostPerPiece ? item.NetCostPerPiece : 0
                 });
 
                 // Define initial array of data objects
                 let tempData = [
                     { Heading: "Forecast Quantity" },
                     { Heading: "YOY Discount(%)" },
-                    { Heading: "Net Cost / Pc" },
+                    { Heading: "Discount" },
+                    { Heading: "Effective Price/Yr" },
+                    // { Heading: "Net Cost / Pc" },
                 ]
 
                 // Map through tempData array and modify each object with the appropriate data
@@ -58,13 +72,19 @@ function YOYCost(props) {
                             return { ...item, ...tempDataYear1_5_One }
                         case 'YOY Discount(%)':
                             return { ...item, ...tempDataYear1_5_Two }
+                        case 'Discount':
+                            return { ...item, ...tempDataYear1_5_Five }
+                        case 'Effective Price/Yr':
                         case 'Net Cost / Pc':
-                            return { ...item, ...tempDataYear1_5_Three }
+                            return { ...item, ...tempDataYear1_5_Four }
+                        // case 'Net Cost / Pc':
+                        //     return { ...item, ...tempDataYear1_5_Three }
                         default:
                             return item
                     }
                 })
                 // Set state variables with modified data
+                setYear(yearName)
                 setTableData(finalList)
                 setOldData(finalList)
                 dispatch(setYOYCostGrid(finalList)) // set data from api
@@ -122,19 +142,37 @@ function YOYCost(props) {
         return getValues(year) ? getValues(year) : 0;
     };
 
+    const removeAllData = () => {
+        if (checkForNull(getValue("Y1")) === 0) {
+            setValue("Y2", 0)
+            setValue("Y3", 0)
+            setValue("Y4", 0)
+            setValue("Y5", 0)
+        } else if (checkForNull(getValue("Y2")) === 0) {
+            setValue("Y3", 0)
+            setValue("Y4", 0)
+            setValue("Y5", 0)
+        } else if (checkForNull(getValue("Y3")) === 0) {
+            setValue("Y4", 0)
+            setValue("Y5", 0)
+        } else if (checkForNull(getValue("Y4")) === 0) {
+            setValue("Y5", 0)
+        }
+    }
+
     const handleChangeYears = (e) => {
         // Delay the execution of the function to allow time for other updates to complete
         setTimeout(() => {
             // Create a copy of the current table data to avoid modifying the original
             const tempList = [...tableData];
             // Get the two objects representing the first two rows of the table
-            const [object1, object2] = tempList.slice(1, 3);
+            const [object1, object3, object2] = tempList.slice(1, 4);
 
             // A helper function to calculate the percentage of the NetPOPrice for a given year
-            const percentOfNetPOPrice = (year) => {
-                return percentageOfNumber(props?.NetPOPrice, getValue(year));
+            const percentOfNetPOPrice = (NetPOPrice, year) => {
+                return percentageOfNumber(NetPOPrice, getValue(year));
             };
-
+            removeAllData()
             // Update the values of object1 based on the form input
             const updatedObject1 = {
                 ...object1, Y1: getValue("Y1"),
@@ -143,19 +181,24 @@ function YOYCost(props) {
                 Y4: getValue("Y4"),
                 Y5: getValue("Y5"),
             };
+            let updatedObject2 = { ...object2 }
+            let updatedObject3 = { ...object3 }
+            let remainingCost = props?.NetPOPrice
+            for (let i = 1; i < Object.keys(updatedObject1)?.length; i++) {
+                updatedObject3[`Y${i}`] = percentOfNetPOPrice(checkForNull(remainingCost), `Y${i}`)
 
-            // Update the values of object2 based on the updated values of object1
-            const updatedObject2 = {
-                ...object2,
-                Y1: percentOfNetPOPrice("Y1"),
-                Y2: percentOfNetPOPrice("Y2"),
-                Y3: percentOfNetPOPrice("Y3"),
-                Y4: percentOfNetPOPrice("Y4"),
-                Y5: percentOfNetPOPrice("Y5"),
-            };
+                if (getValue(`Y${i}`) > 100) {
+                    updatedObject2[`Y${i}`] = percentOfNetPOPrice(0, `Y${i}`)
+                    remainingCost = 0
+                } else {
+                    updatedObject2[`Y${i}`] = checkForNull(remainingCost) - percentOfNetPOPrice(checkForNull(remainingCost), `Y${i}`)
+                    remainingCost = checkForNull(remainingCost) - percentOfNetPOPrice(checkForNull(remainingCost), `Y${i}`)
+                }
+
+            }
 
             // Update the table data with the updated objects
-            const updatedTempList = Object.assign([...tempList], { [1]: updatedObject1 }, { [2]: updatedObject2 });
+            const updatedTempList = Object.assign([...tempList], { [1]: updatedObject1 }, { [2]: updatedObject3 }, { [3]: updatedObject2 });
             // Call a function passed in as a prop to update the parent component's state with the new table data
             props?.getTableData(updatedTempList);
             // Update the local state with the new table data
@@ -168,7 +211,7 @@ function YOYCost(props) {
             {loader && <LoaderCustom customClass="attachment-loader" />}
             <Row className='pr-0'>
                 {/* If outside is true, display the YOY Cost */}
-                {outside && !hideAddButton &&
+                {outside && !hideAddButton && !props.viewMode &&
                     <div className='d-flex align-items-center mb-2'>
                         <Col md="12">
                             <div className="">
@@ -194,11 +237,11 @@ function YOYCost(props) {
                             <thead>
                                 <tr>
                                     {<th style={{ minWidth: '140px' }}>{`Year`}</th>}
-                                    {<th>{`Y1`}</th>}
-                                    {<th>{`Y2`}</th>}
-                                    {<th>{`Y3`}</th>}
-                                    {<th>{`Y4`}</th>}
-                                    {<th>{`Y5`}</th>}
+                                    {<th>{year?.Y1}</th>}
+                                    {<th>{year?.Y2}</th>}
+                                    {<th>{year?.Y3}</th>}
+                                    {<th>{year?.Y4}</th>}
+                                    {<th>{year?.Y5}</th>}
                                 </tr>
                             </thead>
                             <tbody>
@@ -214,6 +257,7 @@ function YOYCost(props) {
                                                         <td>  <TextFieldHookForm
                                                             label={false}
                                                             name={'Y1'}
+                                                            id={props.outside ? "" : "yoyCostInput1"}
                                                             Controller={Controller}
                                                             control={control}
                                                             register={register}
@@ -235,9 +279,10 @@ function YOYCost(props) {
                                                         /></td>
                                                     }
                                                     {index !== 1 ? < td > {checkForDecimalAndNull(item.Y2, getConfigurationKey().NoOfDecimalForPrice)}</td> :
-                                                        <td>  <TextFieldHookForm
+                                                        <td className={getValues("Y2") === 0 ? "error-none" : ""}>  <TextFieldHookForm
                                                             label={false}
                                                             name={'Y2'}
+                                                            id={props.outside ? "" : "yoyCostInput2"}
                                                             Controller={Controller}
                                                             control={control}
                                                             register={register}
@@ -253,15 +298,16 @@ function YOYCost(props) {
                                                             handleChange={(e) => handleChangeYears(e)}
                                                             defaultValue={''}
                                                             className=""
-                                                            customClassName={`withBorder mb-0 ${outside ? 'ml-n2 min-h-auto' : ''}`}
+                                                            customClassName={`withBorder mb-0 ${outside ? 'ml-n2' : ''}`}
                                                             errors={errors.Y2}
-                                                            disabled={outside ? true : false}
+                                                            disabled={outside || Number(getValues("Y1")) === 0 ? true : false}
                                                         /></td>
                                                     }
                                                     {index !== 1 ? < td > {checkForDecimalAndNull(item.Y3, getConfigurationKey().NoOfDecimalForPrice)}</td> :
-                                                        <td>  <TextFieldHookForm
+                                                        <td className={getValues("Y3") === 0 ? "error-none" : ""}>  <TextFieldHookForm
                                                             label={false}
                                                             name={'Y3'}
+                                                            id={props.outside ? "" : "yoyCostInput3"}
                                                             Controller={Controller}
                                                             control={control}
                                                             register={register}
@@ -277,15 +323,16 @@ function YOYCost(props) {
                                                             handleChange={(e) => handleChangeYears(e)}
                                                             defaultValue={''}
                                                             className=""
-                                                            customClassName={`withBorder mb-0 ${outside ? 'ml-n2 min-h-auto' : ''}`}
+                                                            customClassName={`withBorder mb-0 ${outside ? 'ml-n2' : ''}`}
                                                             errors={errors.Y3}
-                                                            disabled={outside ? true : false}
+                                                            disabled={outside || Number(getValues("Y2")) === 0 ? true : false}
                                                         /></td>
                                                     }
                                                     {index !== 1 ? < td > {checkForDecimalAndNull(item.Y4, getConfigurationKey().NoOfDecimalForPrice)}</td> :
-                                                        <td>  <TextFieldHookForm
+                                                        <td className={getValues("Y4") === 0 ? "error-none" : ""}>  <TextFieldHookForm
                                                             label={false}
                                                             name={'Y4'}
+                                                            id={props.outside ? "" : "yoyCostInput4"}
                                                             Controller={Controller}
                                                             control={control}
                                                             register={register}
@@ -301,15 +348,16 @@ function YOYCost(props) {
                                                             handleChange={(e) => handleChangeYears(e)}
                                                             defaultValue={''}
                                                             className=""
-                                                            customClassName={`withBorder mb-0 ${outside ? 'ml-n2 min-h-auto' : ''}`}
+                                                            customClassName={`withBorder mb-0 ${outside ? 'ml-n2' : ''}`}
                                                             errors={errors.Y4}
-                                                            disabled={outside ? true : false}
+                                                            disabled={outside || Number(getValues("Y3")) === 0 ? true : false}
                                                         /></td>
                                                     }
                                                     {index !== 1 ? < td > {checkForDecimalAndNull(item.Y5, getConfigurationKey().NoOfDecimalForPrice)}</td> :
-                                                        <td>  <TextFieldHookForm
+                                                        <td className={getValues("Y5") === 0 ? "error-none" : ""}>  <TextFieldHookForm
                                                             label={false}
                                                             name={'Y5'}
+                                                            id={props.outside ? "" : "yoyCostInput5"}
                                                             Controller={Controller}
                                                             control={control}
                                                             register={register}
@@ -325,9 +373,9 @@ function YOYCost(props) {
                                                             handleChange={(e) => handleChangeYears(e)}
                                                             defaultValue={''}
                                                             className=""
-                                                            customClassName={`withBorder mb-0 ${outside ? 'ml-n2 min-h-auto' : ''}`}
+                                                            customClassName={`withBorder mb-0 ${outside ? 'ml-n2' : ''}`}
                                                             errors={errors.Y5}
-                                                            disabled={outside ? true : false}
+                                                            disabled={outside || Number(getValues("Y4")) === 0 ? true : false}
                                                         /></td>
                                                     }
                                                 </tr>
@@ -358,6 +406,7 @@ function YOYCost(props) {
                 openCloseYOYDrawer={openCloseYOYDrawer}
                 errors={errors}
                 activeTab={props.activeTab}
+                year={year}
             />} */}
         </Fragment >
     )

@@ -31,28 +31,24 @@ const BOPCompareTable = (props) => {
     const showCheckbox = Array.isArray(viewBOPDetails) && viewBOPDetails.some(
         item => item?.IsShowCheckBoxForApproval === true
     );
-
     const bestCostingData = useSelector(state => state?.rfq?.bestCostingData)
-
-
     const [showConvertedCurrency, setShowConvertedCurrency] = useState(true)
     const [showConvertedCurrencyCheckbox, setShowConvertedCurrencyCheckbox] = useState(false)
     // Add handler function
     const handleConvertedCurrencyChange = (value) => {
-
         setShowConvertedCurrency(value);
     }
-
+    useEffect(() => {
+        if (!props?.compare) { props?.checkCostingSelected(selectedItems, selectedIndices) }
+    }, [selectedItems, selectedIndices])
     useEffect(() => {
         setIsLoader(true)
         let temp = []
         const uniqueShouldCostingIdArr = props?.uniqueShouldCostingId || [];
         const idArr = props?.selectedRows.map(item => item?.BoughtOutPartId);
         const combinedArr = Array.from(new Set([...uniqueShouldCostingIdArr, ...idArr]));
-
         dispatch(getViewBOPDetails(combinedArr, res => {
             setIsLoader(false)
-
             if (res) {
                 res?.data?.DataList?.map((item) => {
                     temp.push(item)
@@ -63,23 +59,17 @@ const BOPCompareTable = (props) => {
                 let tempArrToSend = _.uniqBy(dat, 'BoughtOutPartId')
 
                 if (!props?.RfqMasterApprovalDrawer) {
-
-                    // When coming from view RFQ screen
                     let arr = bestCostObjectFunction(tempArrToSend)
                     dispatch(setBopCostingData([...arr]))
                 } else {
                     if (bestCostingData) {
-
-
                         const arr = [...tempArrToSend, bestCostingData]
-
                         dispatch(setBopCostingData([...arr]))
-                        // setShowConvertedCurrency(true)
+                        setShowConvertedCurrency(true)
                     }
                     else {
                         dispatch(setBopCostingData([...tempArrToSend]))
-
-                        // setShowConvertedCurrency(false)
+                        setShowConvertedCurrency(false)
                     }
                 }
 
@@ -128,7 +118,7 @@ const BOPCompareTable = (props) => {
                 sectionOneHeader.push('Other Net Cost');
             }
 
-            viewBOPDetails.map((item, index) => {
+            viewBOPDetails?.map((item, index) => {
                 // Section One Data
                 const formattedDataOne = [
                     item?.BoughtOutPartNumber || '',
@@ -180,8 +170,8 @@ const BOPCompareTable = (props) => {
             ]);
 
             // Main Header Data
-            const mainHeader = viewBOPDetails.map((item, index) => ({
-                vendorName: item.Vendor,
+            const mainHeader = viewBOPDetails?.map((item, index) => ({
+                vendorName: item?.Vendor,
                 onChange: () => checkBoxHandle(item, index),
                 checked: checkBoxCheck[index],
                 isCheckBox: !props?.compare ?
@@ -190,11 +180,11 @@ const BOPCompareTable = (props) => {
                 bestCost: item?.bestCost,
                 shouldCost: props?.uniqueShouldCostingId?.includes(item.BoughtOutPartId) ?
                     "Should Cost" : "",
-                costingType: item.CostingHead === "Zero Based" ?
+                costingType: item?.CostingHead === "Zero Based" ?
                     "ZBC" :
-                    item.CostingHead === "Vendor Based" ? "VBC" : "",
+                    item?.CostingHead === "Vendor Based" ? "VBC" : "",
                 vendorCode: item?.VendorCode || "",
-                showConvertedCurrencyCheckbox: item.bestCost === "" && showConvertedCurrencyCheckbox
+                showConvertedCurrencyCheckbox: item?.bestCost === "" && showConvertedCurrencyCheckbox
 
             }));
 
@@ -326,7 +316,7 @@ const BOPCompareTable = (props) => {
         setSelectedItems(prevItems => {
             let newItems
             if (prevItems.some(i => i.BoughtOutPartId === item?.BoughtOutPartId)) {
-                newItems = prevItems.filter(i => i.BoughtOutPartId !== item?.RawMaterialId)
+                newItems = prevItems.filter(i => i.BoughtOutPartId !== item?.BoughtOutPartId)
             } else {
                 newItems = [...prevItems, item]
             }
@@ -352,24 +342,18 @@ const BOPCompareTable = (props) => {
     }
 
 
-    useEffect(() => {
-        if (!props?.compare) { props?.checkCostingSelected(selectedItems, selectedIndices) }
-    }, [selectedItems, selectedIndices])
-    // const checkBoxHanlde = (item , index) => {
-    //     setCheckBoxCheck(prevState => ({ ...prevState, index: true }))
-    //     props?.checkCostingSelected(item,index)
-    // }
+   
+   
     return (
         <div>
             {showCheckbox && !props?.compare && < WarningMessage dClass={"float-right justify-content-end"} message={'Click the checkbox to approve, reject, or return the quotation'} />}
-
-            <Table headerData={mainHeadingData} sectionData={sectionData} uniqueShouldCostingId={props?.uniqueShouldCostingId}
+            <Table headerData={mainHeadingData} 
+            sectionData={sectionData}
+             uniqueShouldCostingId={props?.uniqueShouldCostingId}
                 showConvertedCurrency={showConvertedCurrency}
                 onConvertedCurrencyChange={handleConvertedCurrencyChange}
                 showConvertedCurrencyCheckbox={showConvertedCurrencyCheckbox}
                 onViewOtherCost={onViewOtherCost}>
-
-
                 {isLoader && <LoaderCustom customClass="" />}
             </Table>
             {

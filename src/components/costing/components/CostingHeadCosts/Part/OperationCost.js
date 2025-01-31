@@ -110,7 +110,7 @@ function OperationCost(props) {
         if (el.UOMType === MASS) {
           finalQuantity = rmFinishWeight ? rmFinishWeight : 1
         } else {
-          finalQuantity = el.Quantity
+          finalQuantity = el?.Quantity
         }
         const WithLaboutCost = checkForNull(el.Rate) * checkForNull(finalQuantity);
         const WithOutLabourCost = el.IsLabourRateExist ? checkForNull(el.LabourRate) * el.LabourQuantity : 0;
@@ -137,7 +137,7 @@ function OperationCost(props) {
       let netCostTotal = 0
       tempArr && tempArr.map((el, index) => {
         netCostTotal = checkForNull(netCostTotal) + checkForNull(el.OperationCost)
-        setValue(`${OperationGridFields}.${index}.Quantity`, checkForDecimalAndNull(el.Quantity, initialConfiguration.NoOfDecimalForInputOutput))
+        setValue(`${OperationGridFields}.${index}.Quantity`, checkForDecimalAndNull(el?.Quantity, initialConfiguration.NoOfDecimalForInputOutput))
         return null
       })
       setOperationCostAssemblyTechnology(netCostTotal)
@@ -170,7 +170,7 @@ function OperationCost(props) {
   }
 
   const onRemarkPopUpClick = (index) => {
-    if (errors.OperationGridFields && errors.OperationGridFields[index]?.remarkPopUp !== undefined) {
+    if (errors?.OperationGridFields && errors?.OperationGridFields?.[index]?.remarkPopUp !== undefined) {
       return false
     }
     let tempArr = []
@@ -204,8 +204,8 @@ function OperationCost(props) {
 
   const onRemarkPopUpClose = (index) => {
     var button = document.getElementById(`operationCost_popUpTriggerss${props.IsAssemblyCalculation}${index}`)
-    if (errors && errors.OperationGridFields && errors.OperationGridFields[index].remarkPopUp) {
-      delete errors.OperationGridFields[index].remarkPopUp;
+    if (errors && errors?.OperationGridFields && errors?.OperationGridFields?.[index].remarkPopUp) {
+      delete errors?.OperationGridFields?.[index].remarkPopUp;
       setOperationRemark(false)
     }
     button.click()
@@ -243,7 +243,7 @@ function OperationCost(props) {
   }
 
   const SaveItem = (index) => {
-    if (errors?.OperationGridFields && (errors?.OperationGridFields[index]?.Quantity !== undefined && Object.keys(errors?.OperationGridFields[index]?.Quantity).length !== 0)) {
+    if (errors?.OperationGridFields && (errors?.OperationGridFields?.[index]?.Quantity !== undefined && Object.keys(errors?.OperationGridFields?.[index]?.Quantity).length !== 0)) {
       return false
     }
     if (getValues(`${OperationGridFields}.${index}.Quantity`) === '') {
@@ -251,7 +251,7 @@ function OperationCost(props) {
     }
     let operationGridData = gridData[index]
     if (operationGridData.UOM === 'Number') {
-      if (operationGridData.Quantity === '0') {
+      if (operationGridData?.Quantity === '0') {
         Toaster.warning('Number should not be zero')
         return false
       }
@@ -297,14 +297,14 @@ function OperationCost(props) {
     let tempArr = [];
     let tempData = gridData[index];
     if (!isNaN(event?.target?.value) && event?.target?.value !== '') {
-      const WithLaboutCost = checkForNull(tempData.Rate) * checkForNull(tempData.Quantity);
+      const WithLaboutCost = checkForNull(tempData.Rate) * checkForNull(tempData?.Quantity);
       const WithOutLabourCost = tempData.IsLabourRateExist ? checkForNull(tempData.LabourRate) * event.target.value : 0;
       const OperationCost = WithLaboutCost + WithOutLabourCost;
       tempData = { ...tempData, LabourQuantity: event.target.value, OperationCost: OperationCost }
       tempArr = Object.assign([...gridData], { [index]: tempData })
       setGridData(tempArr)
     } else {
-      const WithLaboutCost = checkForNull(tempData.Rate) * checkForNull(tempData.Quantity);
+      const WithLaboutCost = checkForNull(tempData.Rate) * checkForNull(tempData?.Quantity);
       const WithOutLabourCost = 0;                                                              // WHEN INVALID INPUT WithOutLabourCost IS 0
       const OperationCost = WithLaboutCost + WithOutLabourCost;
       tempData = { ...tempData, LabourQuantity: 0, OperationCost: OperationCost }
@@ -315,7 +315,7 @@ function OperationCost(props) {
   }
 
   const netCost = (item) => {
-    const cost = checkForNull(item.Rate * item.Quantity) + checkForNull(item.LabourRate * item.LabourQuantity);
+    const cost = checkForNull(item.Rate * item?.Quantity) + checkForNull(item.LabourRate * item.LabourQuantity);
     return checkForDecimalAndNull(cost, initialConfiguration.NoOfDecimalForPrice);
   }
 
@@ -325,7 +325,7 @@ function OperationCost(props) {
   */
   let temp = ErrorObjRMCC ? ErrorObjRMCC : {}
   if (Object.keys(errors).length > 0 && counter < 2) {
-    temp.OperationGridFields = errors.OperationGridFields;
+    temp.OperationGridFields = errors?.OperationGridFields;
     dispatch(setRMCCErrors(temp))
     counter++;
   } else if (Object.keys(errors).length === 0 && counter > 0) {
@@ -440,14 +440,14 @@ function OperationCost(props) {
                                     required: true,
                                     validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
                                   }}
-                                  defaultValue={checkForDecimalAndNull(item.Quantity, initialConfiguration.NoOfDecimalForInputOutput)}
+                                  defaultValue={checkForDecimalAndNull(item?.Quantity, initialConfiguration.NoOfDecimalForInputOutput)}
                                   className=""
                                   customClassName={'withBorder error-label mb-0'}
                                   handleChange={(e) => {
                                     e.preventDefault()
                                     handleQuantityChange(e, index)
                                   }}
-                                  errors={errors && errors.OperationGridFields && errors.OperationGridFields[index] !== undefined ? errors.OperationGridFields[index].Quantity : ''}
+                                  errors={errors && errors?.OperationGridFields && errors?.OperationGridFields?.[index] !== undefined ? errors?.OperationGridFields?.[index]?.Quantity : ''}
                                   disabled={(CostingViewMode || IsLocked) ? true : false}
                                 />
                               }
@@ -477,7 +477,7 @@ function OperationCost(props) {
                                         e.preventDefault()
                                         handleLabourQuantityChange(e, index)
                                       }}
-                                      errors={errors && errors.OperationGridFields && errors.OperationGridFields[index] !== undefined ? errors.OperationGridFields[index].LabourQuantity : ''}
+                                      errors={errors && errors?.OperationGridFields && errors?.OperationGridFields?.[index] !== undefined ? errors?.OperationGridFields?.[index].LabourQuantity : ''}
                                       disabled={(CostingViewMode || IsLocked) ? true : false}
                                     />
                                     :
@@ -520,7 +520,7 @@ function OperationCost(props) {
                             <td>{item.OperationCode}</td>
                             <td>{item.UOM}</td>
                             <td>{item.Rate}</td>
-                            <td style={{ width: 130 }}>{checkForDecimalAndNull(item.Quantity, initialConfiguration.NoOfDecimalForInputOutput)}</td>
+                            <td style={{ width: 130 }}>{checkForDecimalAndNull(item?.Quantity, initialConfiguration.NoOfDecimalForInputOutput)}</td>
                             {initialConfiguration &&
                               initialConfiguration.IsOperationLabourRateConfigure &&
                               <td style={{ width: 130 }}>{item.IsLabourRateExist ? checkForDecimalAndNull(item.LabourRate, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>}
@@ -570,7 +570,7 @@ function OperationCost(props) {
                                     defaultValue={item.Remark ?? item.Remark}
                                     className=""
                                     customClassName={"withBorder"}
-                                    errors={errors && errors.OperationGridFields && errors.OperationGridFields[index] !== undefined ? errors.OperationGridFields[index].remarkPopUp : ''}
+                                    errors={errors && errors?.OperationGridFields && errors?.OperationGridFields?.[index] !== undefined ? errors?.OperationGridFields?.[index].remarkPopUp : ''}
                                     //errors={errors && errors.remarkPopUp && errors.remarkPopUp[index] !== undefined ? errors.remarkPopUp[index] : ''}                        
                                     disabled={(CostingViewMode || IsLocked) ? true : false}
                                     hidden={false}

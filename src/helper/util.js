@@ -961,7 +961,8 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
   obj.NetSurfaceTreatmentConversion = dataFromAPI?.NetSurfaceTreatmentConversion
   obj.NetFreightPackagingConversion = dataFromAPI?.NetFreightPackagingConversion
   obj.nTotalRMBOPCCLocalConversion = dataFromAPI?.CostingPartDetails && dataFromAPI.NetTotalRMBOPCCLocalConversion ? dataFromAPI.NetTotalRMBOPCCLocalConversion : 0
-
+  obj.QuotationId = dataFromAPI?.QuotationId ?? null
+  obj.IsRfqCosting = dataFromAPI?.IsRFQCosting ?? false
   temp.push(obj)
   return temp
 }
@@ -1741,7 +1742,7 @@ export function checkTechnologyIdAndRfq(viewCostingData = []) {
 }
 // function to remove all spaces from a string
 export const removeSpaces = (str = '') => {
-  return str.replace(/\s+/g, '');
+  return str?.replace(/\s+/g, '');
 };
 export const getChangeHighlightClass = (originalValue, updatedValue) => {
   return updatedValue && updatedValue !== originalValue ? 'red-value' : '';

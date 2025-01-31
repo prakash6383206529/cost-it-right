@@ -176,7 +176,7 @@ function CopyCosting(props) {
     copyCostingObj.EffectiveDate = DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss')
     copyCostingObj.LoggedInUserId = loggedInUserId()
     copyCostingObj.IsDuplicate = getConfigurationKey().IsExactCopyCosting
-    copyCostingObj.InfoCategory = isInfoCategorySelected === true ? infoCategory[0]?.Text : infoCategory[1]?.Text
+    copyCostingObj.InfoCategory = isInfoCategorySelected === true ? infoCategory[1]?.Text : infoCategory[0]?.Text
     setIsLoader(true)
     dispatch(checkDataForCopyCosting(checkCostingObj, (res) => {
       setIsLoader(false)
@@ -490,7 +490,7 @@ function CopyCosting(props) {
                   </Row>
                 )
               }
-              <Row className="pl-3">
+              {costingTypeId === VBCTypeId && <Row className="pl-3">
                 <span className="d-inline-block">
                   <label
                     className={`custom-checkbox mb-4`}
@@ -511,10 +511,10 @@ function CopyCosting(props) {
                   <TooltipCustom
                     disabledIcon={false}
                     id={`category`}
-                    tooltipText={infoCategory && `If checkbox is selected then category will be ${infoCategory[0]?.Text}, otherwise category will be ${infoCategory[1]?.Text}.`}
+                    tooltipText={infoCategory && `If checkbox is selected then category will be ${infoCategory[1]?.Text}, otherwise category will be ${infoCategory[0]?.Text}.`}
                   />
                 </span>
-              </Row>
+              </Row>}
               {/* //ss */}
               <div className="form-group mb-0 col-md-12 pl-2 pr-4 ml-1 mr-2">
                 <div className="inputbox date-section">

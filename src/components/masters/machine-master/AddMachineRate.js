@@ -115,7 +115,7 @@ class AddMachineRate extends Component {
         processUOM: false,
         machineRate: false
       },
-      finalApprovalLoader: getConfigurationKey().IsDivisionAllowedForDepartment || !getConfigurationKey().IsMasterApprovalAppliedConfigure ? false : true,
+      finalApprovalLoader: getConfigurationKey().IsDivisionAllowedForDepartment || !(getConfigurationKey().IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true) ? false : true,
       costingTypeId: ZBCTypeId,
       levelDetails: {},
       vendorFilterList: [],
@@ -188,6 +188,7 @@ class AddMachineRate extends Component {
     if (!editDetails.isViewMode) {
       this.props.getUOMSelectList(() => { })
       this.props.getProcessesSelectList(() => { })
+      this.props.getMachineTypeSelectList(() => { })
       if (!getConfigurationKey().IsDivisionAllowedForDepartment && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true) {
         this.finalUserCheckAndMasterLevelCheckFunction(EMPTY_GUID)
       }
@@ -197,7 +198,7 @@ class AddMachineRate extends Component {
     }
 
     if (!(editDetails.isEditFlag || editDetails.isViewMode)) {
-      this.props.getMachineTypeSelectList(() => { })
+
       this.props.getCostingSpecificTechnology(loggedInUserId(), () => { })
       this.props.getPlantSelectListByType(ZBC, "MASTER", '', () => { })
       this.props.getClientSelectList(() => { })
@@ -613,16 +614,18 @@ class AddMachineRate extends Component {
   onPressVendor = (costingHeadFlag) => {
     // Store current isImport value
     const currentIsImport = this.state.isImport;
-    
+    const currentMachineNumber = this?.props?.fieldsObj?.MachineNumber;
     this.props.reset();
-    this.setState({ 
+    this.setState({
       ...this.initialState,
+      // MachineNumber: this?.props?.fieldsObj?.MachineNumber,
       costingTypeId: costingHeadFlag,
       isImport: currentIsImport // Preserve isImport value
     }, () => {
       if (costingHeadFlag === CBCTypeId) {
         this.props.getClientSelectList(() => { })
       }
+      this.props.change('MachineNumber', currentMachineNumber)
     });
   };
   /**
@@ -2544,7 +2547,7 @@ class AddMachineRate extends Component {
                               </button>
                               {!isViewMode && <>
 
-                                {(!userDetails().Role === 'SuperAdmin') && ((!isViewMode && (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure) || (initialConfiguration.IsMasterApprovalAppliedConfigure && !CostingTypePermission)) ?
+                                {(!userDetails().Role === 'SuperAdmin') && ((!isViewMode && (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure) || (initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !CostingTypePermission)) ?
                                   <button id="AddMachineRate_SendForApproval" type="submit"
                                     class="user-btn approval-btn save-btn mr5"
                                     disabled={isViewMode || setDisable || disableSendForApproval || (isEditFlag && IsDetailedEntry)}

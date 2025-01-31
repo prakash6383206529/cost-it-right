@@ -1554,6 +1554,7 @@ export function getPartSelectList(partNumber, callback) {
 
 
 export function agGridStatus(data, id, arr = [], arrReports = []) {
+  
   return (dispatch) => {
     dispatch({
       type: STATUS_COLUMN_DATA,

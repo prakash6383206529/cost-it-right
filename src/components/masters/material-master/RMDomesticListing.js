@@ -68,7 +68,6 @@ function RMDomesticListing(props) {
     // const [globalTake, setGlobalTake] = useState(defaultPageSize)
     const [filterModel, setFilterModel] = useState({});
     // const [pageNo, setPageNo] = useState(1)
-    const [pageNoNew, setPageNoNew] = useState(1)
     const [totalRecordCount, setTotalRecordCount] = useState(0)
     const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false)
     // const [currentRowIndex, setCurrentRowIndex] = useState(defaultPageSize)
@@ -398,11 +397,8 @@ function RMDomesticListing(props) {
         setNoData(false)
         setWarningMessage(false)
         setIsFilterButtonClicked(true)
-        // setPageNo(1)
         dispatch(updatePageNumber(1))
-        setPageNoNew(1)
         dispatch(updateCurrentRowIndex(10))
-        // setCurrentRowIndex(0)
         gridOptions?.columnApi?.resetColumnState();
         getDataList(null, null, null, null, null, 0, 0, globalTakes, true, floatingFilterData)
     }
@@ -430,7 +426,6 @@ function RMDomesticListing(props) {
         setFloatingFilterData(floatingFilterData)
         setWarningMessage(false)
         dispatch(updatePageNumber(1))
-        setPageNoNew(1)
         dispatch(updateCurrentRowIndex(10))
         getDataList(null, null, null, null, null, 0, 0, 10, true, floatingFilterData, true)
         dispatch(setSelectedRowForPagination([]))

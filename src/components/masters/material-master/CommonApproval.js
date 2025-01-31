@@ -515,7 +515,7 @@ function CommonApproval(props) {
     */
     const closeDrawer = (e = '', type) => {
         setShowApprovalSummary(false)
-        if (type === 'submit') {
+        if (type === 'submit' || type === 'reject') {
             setLoader(true)
             getTableData(0, 10, true, floatingFilterData)
         }
@@ -718,7 +718,7 @@ function CommonApproval(props) {
         params.api.paginationGoToPage(0);
         if (props?.OnboardingApprovalId === ONBOARDINGID) {
             //params.api.sizeColumnsToFit();
-            
+
         }
         window.screen.width > 1920 && params.api.sizeColumnsToFit();
     };
@@ -1025,18 +1025,17 @@ function CommonApproval(props) {
                                     {props?.MasterId === BUDGET_ID && <AgGridColumn field="BudgetedPoPrice" headerName="Budgeted Cost" ></AgGridColumn>}
                                     {props?.MasterId === BUDGET_ID && <AgGridColumn width="145" field="NetPoPrice" headerName="Net Cost"></AgGridColumn>}
                                     {/* {props?.OnboardingApprovalId === ONBOARDINGID && <AgGridColumn width="160" cellClass="has-checkbox" field="ApprovalNumber" cellRenderer="linkableFormatter" headerName="Token No."></AgGridColumn>} */}
-                                    {props?.OnboardingApprovalId === ONBOARDINGID && <AgGridColumn width="160" field="ApprovalType" headerName='Type'></AgGridColumn>}
-                                    {props?.OnboardingApprovalId === ONBOARDINGID && <AgGridColumn width="160" field="PlantName" headerName='Plant (Code)'></AgGridColumn>}
-                                    {props?.OnboardingApprovalId === ONBOARDINGID && <AgGridColumn width="160" field="VendorName" headerName={`${vendorLabel} (Code)`} ></AgGridColumn>}
-                                    {props?.OnboardingApprovalId === ONBOARDINGID && <AgGridColumn width="160" field="DeviationDuration" headerName='Deviation Duration' ></AgGridColumn>}
-                                    {/* {props?.OnboardingApprovalId === ONBOARDINGID && <AgGridColumn width="145" field="Department" headerName={`${handleDepartmentHeader()} (Code)`}></AgGridColumn>} */}
+                                    {props?.OnboardingApprovalId && props?.OnboardingApprovalId === ONBOARDINGID && <AgGridColumn width="160" field="ApprovalType" headerName='Type'></AgGridColumn>}
+                                    {props?.OnboardingApprovalId && props?.OnboardingApprovalId === ONBOARDINGID && <AgGridColumn width="160" field="PlantName" headerName='Plant (Code)'></AgGridColumn>}
+                                    {props?.OnboardingApprovalId && props?.OnboardingApprovalId === ONBOARDINGID && <AgGridColumn width="160" field="VendorName" headerName={`${vendorLabel} (Code)`} ></AgGridColumn>}
+                                    {props?.OnboardingApprovalId && props?.OnboardingApprovalId === ONBOARDINGID && <AgGridColumn width="160" field="DeviationDuration" headerName='Deviation Duration' ></AgGridColumn>}
                                     {getConfigurationKey().IsBoughtOutPartCostingConfigured && props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="150" field="IsBreakupBoughtOutPart" cellRenderer='breakupFormatter' headerName={`Breakup ${showBopLabel()} `}></AgGridColumn>}
                                     {getConfigurationKey().IsBoughtOutPartCostingConfigured && props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="150" field="TechnologyName" cellRenderer='technologyFormatter' headerName={technologyLabel}></AgGridColumn>}
                                     <AgGridColumn width="150" field="RequestedBy" cellRenderer='createdOnFormatter' headerName="Initiated By"></AgGridColumn>
                                     {props?.MasterId !== 0 && <AgGridColumn width="150" field="CreatedByName" cellRenderer='createdOnFormatter' headerName="Created By"></AgGridColumn>}
                                     <AgGridColumn width="200" field="LastApprovedBy" cellRenderer='requestedOnFormatter' headerName="Last Approved/Rejected By"></AgGridColumn>
                                     {!props?.MasterId === BUDGET_ID && <AgGridColumn cell width="190" field="EffectiveDate" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>}
-                                    {props?.OnboardingApprovalId !== ONBOARDINGID && <AgGridColumn field={getMasterField(props?.MasterId)} width={170} pinned="right" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer='actionRenderer'></AgGridColumn>}
+                                    {props?.OnboardingApprovalId && props?.OnboardingApprovalId !== ONBOARDINGID && <AgGridColumn field={getMasterField(props?.MasterId)} width={170} pinned="right" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer='actionRenderer'></AgGridColumn>}
                                 </AgGridReact>
                                 <div className='button-wrapper'>
                                     {!loader &&
@@ -1107,3 +1106,4 @@ function CommonApproval(props) {
 }
 
 export default CommonApproval;
+// HP3-I1368

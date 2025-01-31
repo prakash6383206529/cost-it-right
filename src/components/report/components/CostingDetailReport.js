@@ -1117,14 +1117,21 @@ function ReportListing(props) {
                             {showSaLineNumber() && <AgGridColumn field='SANumber' headerName='SA Number' cellRenderer='decimalPriceFormatter'></AgGridColumn>}
                             {showSaLineNumber() && <AgGridColumn field='LineNumber' headerName='Line Number' cellRenderer='decimalPriceFormatter'></AgGridColumn>}
                             <AgGridColumn field='EffectiveDate' headerName='Effective Date' cellRenderer='effectiveDateFormatter' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-                            <AgGridColumn field='Currency' headerName='Currency' cellRenderer='hyphenFormatter'></AgGridColumn>
-                            <AgGridColumn field='NCCPartQuantity' headerName='Quantity' cellRenderer='hyphenFormatter'></AgGridColumn>
+                            {initialConfiguration?.IsSourceExchangeRateNameVisible && <AgGridColumn field='ExchangeRateSourceName' headerName='Exchange Rate Source' cellRenderer='hyphenFormatter'></AgGridColumn>}
+                            {/* <AgGridColumn field='Currency' headerName='Currency' cellRenderer='hyphenFormatter'></AgGridColumn> */}
+                            <AgGridColumn field='LocalCurrency' headerName='Settlement Currency' cellRenderer='hyphenFormatter'></AgGridColumn>
+                            {initialConfiguration?.IsBasicRateAndCostingConditionVisible && <AgGridColumn field='BasicRate' headerName='Basic Price (Settlement Currency)' cellRenderer='decimalPriceFormatter'></AgGridColumn>}
+                            <AgGridColumn field='NetPOPriceINR' headerName={`Net Cost (Settlement Currency)`} cellRenderer='decimalPriceFormatter'></AgGridColumn>
+                            <AgGridColumn field='CostingCurrency' headerName='Plant Currency' cellRenderer='hyphenFormatter'></AgGridColumn>
+                            <AgGridColumn field='BasicRateLocalConversion' headerName='Basic Rate (Plant Currency)' cellRenderer='hyphenFormatter'></AgGridColumn>
+                            <AgGridColumn field='NetPOPriceLocalConversion' headerName='Net Cost (Plant Currency)' cellRenderer='hyphenFormatter'></AgGridColumn>
+                            <AgGridColumn field='BasicRateConversion' headerName='Basic Rate (Base Currency)' cellRenderer='hyphenFormatter'></AgGridColumn>
+                            <AgGridColumn field='NetPOPriceConversion' headerName='Net Cost (Base Currency)' cellRenderer='hyphenFormatter'></AgGridColumn>
                             <AgGridColumn field='IsRegularized' headerName='Is Regularized' cellRenderer='hyphenFormatter'></AgGridColumn>
-                            {initialConfiguration?.IsBasicRateAndCostingConditionVisible && <AgGridColumn field='BasicRate' headerName='Basic Price' cellRenderer='decimalPriceFormatter'></AgGridColumn>}
                             <AgGridColumn field='PaymentTermsOn' headerName='Payment Terms On' cellRenderer='hyphenFormatter'></AgGridColumn>
                             <AgGridColumn field='PaymentTermCost' headerName='Payment Term Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                             <AgGridColumn field='NetPOPriceOtherCurrency' headerName='Net Cost Other Currency' cellRenderer='decimalPriceFormatter'></AgGridColumn>
-                            <AgGridColumn field='NetPOPriceINR' headerName={`Net Cost (${reactLocalStorage.getObject("baseCurrency")})`} cellRenderer='decimalPriceFormatter'></AgGridColumn>
+
                             <AgGridColumn field='Remark' headerName='Remark' cellRenderer='hyphenFormatter'></AgGridColumn>
                             {showSaLineNumber() && <AgGridColumn field="SANumber" headerName="SANumber" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                             {showSaLineNumber() && <AgGridColumn field="LineNumber" headerName="Line Number" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
