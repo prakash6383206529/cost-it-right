@@ -139,7 +139,8 @@ function CostReportForm(props) {
     const handleFromDate = (value) => {
         setEffectiveDate(value)
         setMinDate(value)
-        dispatch(getFormGridData({ ...costReportFormData, fromDate: value }))
+        const obj = {...costReportFormData,fromDate: value}
+        dispatch(getFormGridData(obj))
         // dispatch(getFormGridData({ ...costReportFormData, EffectiveDate: value }))      //RE
 
     }
@@ -152,7 +153,8 @@ function CostReportForm(props) {
 
         setMaxDate(value)
         setToDate(value)
-        dispatch(getFormGridData({ ...costReportFormData, toDate: value }))
+        const obj = {...costReportFormData,toDate: value}
+        dispatch(getFormGridData(obj))
     }
 
     /**
