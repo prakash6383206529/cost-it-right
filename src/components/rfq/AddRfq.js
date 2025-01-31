@@ -1296,27 +1296,28 @@ const isVendorSectionDisabled = !hasAnyParts();
 
 
         const row = props?.data;
-
-        const isSendButtonVisible = dataProps?.isViewFlag || (dataProps?.isAddFlag ? false : (dataProps?.isEditFlag && showOnlyFirstModule ? (showSendButton === PREDRAFT ? false : true) : (showSendButton === SENT ? true : false)))
+        // const isSendButtonVisible = dataProps?.isViewFlag || (dataProps?.isAddFlag ? false : (dataProps?.isEditFlag && showOnlyFirstModule ? (showSendButton === PREDRAFT ? false : true) : (showSendButton === SENT ? true : false)))
+        const disableButton = dataProps?.isAddFlag  ? false :((showSendButton === DRAFT || showSendButton === PREDRAFT )&& dataProps?.isEditFlag) ? false : (dataProps?.isViewFlag || !isEditAll)
 
         return (
             <>
                 {show && selectedOption === TOOLINGPART && (<button title="button" className="hirarchy-btn Tour_List_View_BOM" type="button" onClick={() => visualAdDetails(cellValue)} />)}
-                {show && < button title='Edit' className="Edit mr-2 align-middle" disabled={(dataProps?.isAddFlag || showSendButton === DRAFT) ? false : (dataProps?.isViewFlag || !isEditAll)} type={'button'} onClick={() => editItemPartTable(rowData, props, true)} />}
+                {show && < button title='Edit' className="Edit mr-2 align-middle" disabled={disableButton} type={'button'} onClick={() => editItemPartTable(rowData, props, true)} />}
                 {show && < button title='View' className="View mr-2 align-middle" disabled={false} type={'button'} onClick={() => ViewItemPartTable(rowData, props, false)} />}
 
                 {/*  {<button title='Delete' className="Delete align-middle" disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !dataProps?.isEditFlag)} type={'button'} onClick={() => deleteItemPartTable(final, props)} />} */}
-                {show && <button title='Delete' className="Delete align-middle" disabled={(dataProps?.isAddFlag || showSendButton === DRAFT) ? false : (dataProps?.isViewFlag || !isEditAll)} type={'button'} onClick={() => deleteItemPartTable(row, final)} />}
+                {show && <button title='Delete' className="Delete align-middle" disabled={disableButton} type={'button'} onClick={() => deleteItemPartTable(row, final)} />}
 
             </>
         )
     };
 
     const buttonFormatterVendorTable = (props) => {
+                const disableButton = dataProps?.isAddFlag ?false : ((showSendButton === DRAFT || showSendButton === PREDRAFT )&& dataProps?.isEditFlag) ? false : (dataProps?.isViewFlag || !isEditAll)
         return (
             <>
-                {<button title='Edit' className="Edit mr-2 align-middle" type={'button'} disabled={(dataProps?.isAddFlag || showSendButton === DRAFT) ? false : (dataProps?.isViewFlag || !isEditAll)} onClick={() => editItemVendorTable(props?.agGridReact?.gridOptions.rowData, props)} />}
-                {<button title='Delete' className="Delete align-middle" type={'button'} disabled={(dataProps?.isAddFlag || showSendButton === DRAFT) ? false : (dataProps?.isViewFlag || !isEditAll)} onClick={() => deleteItemVendorTable(props?.agGridReact?.gridOptions.rowData, props)} />}
+                {<button title='Edit' className="Edit mr-2 align-middle" type={'button'} disabled={disableButton} onClick={() => editItemVendorTable(props?.agGridReact?.gridOptions.rowData, props)} />}
+                {<button title='Delete' className="Delete align-middle" type={'button'} disabled={disableButton} onClick={() => deleteItemVendorTable(props?.agGridReact?.gridOptions.rowData, props)} />}
             </>
         )
     };
@@ -3667,7 +3668,7 @@ const isVendorSectionDisabled = !hasAnyParts();
                                         </Row>
                                     </>}
                                     {loader && <LoaderCustom customClass="Rfq-Loader" />}
-                                    {quotationType === 'Raw Material' && <AddRfqRmDetails updateRawMaterialList={updateRawMaterialList} resetRmFields={resetRmFields} rmSpecificRowData={rmSpecificRowData} updateButtonPartNoTable={updateButtonPartNoTable} dataProps={dataProps} isEditFlag={editQuotationPart} isViewFlag={viewQuotationPart} setViewQuotationPart={setViewQuotationPart} disabledPartUid={disabledPartUid} technology={technology} setDisabled={setDisabled} isDisabled={isDisabled} heading={heading} dataProp={dataProps} resetDrawer={resetDrawer} selectedOption={selectedOption} />}
+                                    {quotationType === 'Raw Material' && <AddRfqRmDetails updateRawMaterialList={updateRawMaterialList} resetRmFields={resetRmFields} rmSpecificRowData={rmSpecificRowData} updateButtonPartNoTable={updateButtonPartNoTable} dataProps={dataProps} isEditFlag={editQuotationPart} isViewFlag={viewQuotationPart} setViewQuotationPart={setViewQuotationPart} disabledPartUid={disabledPartUid} technology={technology} setDisabled={setDisabled} isDisabled={isDisabled} heading={heading} resetDrawer={resetDrawer} selectedOption={selectedOption} />}
                                     <Row>
 
                                         {quotationType === "Bought Out Part" && <RaiseRfqBopDetails updateButtonPartNoTable={updateButtonPartNoTable} dataProps={dataProps} isEditFlag={editQuotationPart} isViewFlag={viewQuotationPart} setViewQuotationPart={setViewQuotationPart} updateBopList={updateBopList} resetBopFields={resetBopFields} plant={plant} prNumber={prNumber} disabledPartUid={disabledPartUid} heading={heading} dataProp={dataProps} resetDrawer={resetDrawer} selectedOption={selectedOption} />}

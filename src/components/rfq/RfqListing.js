@@ -131,21 +131,18 @@ function RfqListing(props) {
         getDataList()
         applyPermission(topAndLeftMenuData)
     }, [topAndLeftMenuData])
-
-    useEffect(() => {
-
-        if (statusColumnData && statusColumnData.data && !closeViewRfq) {
-
-            setDisableFilter(false)
-            setWarningMessage(true)
-            setFloatingFilterData(prevState => ({ ...prevState, Status: removeSpaces(statusColumnData.data) }))
-        }
-        else if (!statusColumnData?.data && closeViewRfq && !effectCompleted.current) {
-            // Effect has run, now we can call getDataList
-            effectCompleted.current = true;
-            getDataList();
-        }
-    }, [statusColumnData, closeViewRfq])
+useEffect(() => {
+    // Only set filter if coming from status column and not from ViewRfq close
+    if (statusColumnData?.data && !closeViewRfq && !viewRfq) {
+        console.log("statusColumnData", statusColumnData, closeViewRfq);
+        setDisableFilter(false);
+        setWarningMessage(true);
+        setFloatingFilterData(prevState => ({ 
+            ...prevState, 
+            Status: removeSpaces(statusColumnData.data) 
+        }));
+    }
+}, [statusColumnData, closeViewRfq]);
     useEffect(() => {
         const { source, quotationId } = location.state || {};
 
@@ -565,20 +562,18 @@ function RfqListing(props) {
         setIsEdit(false)
 
     }
-    const effectCompleted = useRef(false);
 
-    const closeDrawerViewRfq = (value) => {
-
-        effectCompleted.current = true;
-        value === true ? setViewRfq(true) : setViewRfq(false)
-        setCloseViewRfq(true);
-
-        // if (effectCompleted.current) {
-            getDataList()
     
-        // setViewRfq(false)
-
-    }
+const closeDrawerViewRfq = () => {
+    dispatch(agGridStatus("", ""));
+    setFloatingFilterData(prev => ({
+        ...prev,
+        Status: ""
+    }));
+    setViewRfq(false);
+    setCloseViewRfq(true);
+    getDataList();
+};
 
 
     const onGridReady = (params) => {
@@ -913,7 +908,7 @@ function RfqListing(props) {
 
                     <AddRfq
                         data={addRfqData}
-                        //hideForm={hideForm}
+                        //hideForm={hideForm}isAddFlag
                         AddAccessibilityRMANDGRADE={true}
                         EditAccessibilityRMANDGRADE={true}
                         isRMAssociated={true}
