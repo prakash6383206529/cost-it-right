@@ -110,10 +110,10 @@ const RMCompareTable = (props) => {
                 //section one data start
                 const RMNameGrade = `${item?.RawMaterialName}-${item?.RawMaterialGradeName}`;
                 const effectiveDate = item?.EffectiveDate ? (item?.EffectiveDate !== "-" ? DayTime(item?.EffectiveDate).format('DD/MM/YYYY') : '-') : '-';
-                // ... existing code ...
-                const formattedDataOne = [
+                const plantCode = item?.Plant && item?.Plant[0] ? 
+                `${item.Plant[0].PlantName}` : '-';                const formattedDataOne = [
                     item?.TechnologyName,
-                    item?.DestinationPlantName,
+                    plantCode, // Updated plant code here
                     item?.RawMaterialCode,
                     RMNameGrade,
                     item?.RawMaterialSpecificationName,
