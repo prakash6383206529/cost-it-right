@@ -1,21 +1,23 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Row, Col, Container } from 'reactstrap';
 import { Controller, useForm } from 'react-hook-form';
 import TooltipCustom from '../common/Tooltip';
 import { TextFieldHookForm } from '../layout/HookFormInputs';
-import { number, checkWhiteSpaces, maxLength7 } from '../../helper';
+import { number, checkWhiteSpaces, maxLength7, loggedInUserId } from '../../helper';
 import { useTranslation } from 'react-i18next';
 import FormFieldsRenderer from './FormFieldsRenderer';
 import { Drawer } from '@material-ui/core';
 import Button from '../layout/Button';
-import { handleTruckDimensions } from '../masters/actions/Freight';
+import { getTruckDimensionsById, handleTruckDimensions, saveAndUpdateTruckDimensions } from '../masters/actions/Freight';
 import { useDispatch } from 'react-redux';
 import { MESSAGES } from '../../config/message';
 import Toaster from './Toaster';
 
-const DimensionsFieldsRenderer = ({ 
+const DimensionsFieldsRenderer = ({
     cancelHandler,
-    isOpen
+    isOpen,
+    truckDimensionId,
+    isEditDimension
 }) => {
     const { register, handleSubmit, formState: { errors }, control, setValue, getValues, reset } = useForm({
         mode: 'onChange',
@@ -23,39 +25,68 @@ const DimensionsFieldsRenderer = ({
     });
     const { t } = useTranslation('MasterLabels');
     const dispatch = useDispatch();
+    const isSubmitting = React.useRef(false);
     const dimensionFields = [
-        { 
-            label: t('LengthLabel', { defaultValue: 'Length' }), 
-            name: 'Length', 
+        {
+            label: t('LengthLabel', { defaultValue: 'Length (mm)' }),
+            name: 'Length',
             mandatory: true,
             disabled: false,
+            handleChange: (e) => {
+                setValue('Length', e.target.value);
+            },
+            defaultValue: 0
         },
-        { 
-            label: t('BreadthLabel', { defaultValue: 'Breadth' }), 
-            name: 'Breadth', 
+        {
+            label: t('BreadthLabel', { defaultValue: 'Breadth (mm)' }),
+            name: 'Breadth',
             mandatory: true,
             disabled: false,
+            handleChange: (e) => {
+                setValue('Breadth', e.target.value);
+            },
+            defaultValue: 0
         },
-        { 
-            label: t('HeightLabel', { defaultValue: 'Height' }), 
-            name: 'Height', 
+        {
+            label: t('HeightLabel', { defaultValue: 'Height (mm)' }),
+            name: 'Height',
             mandatory: true,
             disabled: false,
+            handleChange: (e) => {
+                setValue('Height', e.target.value);
+            },
+            defaultValue: 0
         }
     ];
+    useEffect(() => {
+        if (isEditDimension && truckDimensionId) {
+            dispatch(getTruckDimensionsById(truckDimensionId, (res) => {
+                let data = res?.data?.DataList[0];
+                setValue('Length', data?.Length);
+                setValue('Breadth', data?.Breadth);
+                setValue('Height', data?.Height);
+            }));
+        }
+    }, [isEditDimension, truckDimensionId]);
 
     const onSubmit = (data) => {
+        // Prevent multiple submissions
+        if (isSubmitting.current) return;
+        isSubmitting.current = true;
         let formData = {
             ...data,
-            length: data?.Length,
-            breadth: data?.Breadth,
-            height: data?.Height
+            loggedInUserId: loggedInUserId(),
+            Length: data?.Length,
+            Breadth: data?.Breadth,
+            Height: data?.Height,
+            DimensionsId: isEditDimension ? truckDimensionId : null
         }
-        dispatch(handleTruckDimensions(formData, true, (res) => {
+        dispatch(saveAndUpdateTruckDimensions(formData, (res) => {
             if (res.data.Result) {
-                Toaster.success(MESSAGES.TRUCK_DIMENSIONS_UPDATE_SUCCESS);
-                cancelHandler('Save');
+                Toaster.success(isEditDimension ? MESSAGES.TRUCK_DIMENSIONS_UPDATE_SUCCESS : MESSAGES.TRUCK_DIMENSIONS_ADD_SUCCESS);
+                cancelHandler('Save',formData);
             }
+            isSubmitting.current = false;
         }));
     }
 
@@ -65,7 +96,7 @@ const DimensionsFieldsRenderer = ({
         register: register,
         errors: errors,
     }
-    const buttonProps={
+    const buttonProps = {
 
     }
 
@@ -80,13 +111,12 @@ const DimensionsFieldsRenderer = ({
                         noValidate
                         className="form"
                         onSubmit={handleSubmit(onSubmit)}
-                        onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
                     >
                         <Row className="drawer-heading">
                             <Col>
                                 <div className={"header-wrapper left"}>
-                                    <h3> Add Dimensions</h3>
-                                </div>  
+                                    <h3> {isEditDimension ? 'Edit' : 'Add'} Dimensions</h3>
+                                </div>
                                 <div
                                     onClick={() => cancelHandler('Cancel')}
                                     className={"close-button right"}
@@ -96,8 +126,8 @@ const DimensionsFieldsRenderer = ({
 
                         <Row className={"mb-3"}>
                             <FormFieldsRenderer
-                               fieldProps={fieldProps}
-                               buttonProps={buttonProps}
+                                fieldProps={fieldProps}
+                                buttonProps={buttonProps}
                             />
                         </Row>
 
@@ -115,7 +145,7 @@ const DimensionsFieldsRenderer = ({
                                     type="submit"
                                     className="save-btn"
                                     icon="save-icon"
-                                    buttonName="SAVE"
+                                    buttonName={isEditDimension ? 'UPDATE' : 'SAVE'}
                                 />
                             </div>
                         </Row>

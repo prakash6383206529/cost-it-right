@@ -3,9 +3,9 @@ import { Row, Col } from 'reactstrap';
 import { Controller } from 'react-hook-form';
 import TooltipCustom from '../common/Tooltip';
 import { SearchableSelectHookForm, TextFieldHookForm } from '../layout/HookFormInputs';
-import { number, checkWhiteSpaces, maxLength7 } from '../../helper';
+import { number, checkWhiteSpaces, decimalIntegerNumberLimit, nonZero } from '../../helper';
 
-const FormFieldsRenderer = ({  fieldProps, buttonProps}) => {
+const FormFieldsRenderer = ({ fieldProps, buttonProps }) => {
     const { fields, control, register, errors, containerClassName = "", colSize = "4" } = fieldProps;
     // const { buttonProps } = buttonProps;
     return (
@@ -15,12 +15,12 @@ const FormFieldsRenderer = ({  fieldProps, buttonProps}) => {
                 return (
                     <Col md={colSize} key={name}>
                         {item.tooltip && (
-                            <TooltipCustom 
-                                width={tooltip.width} 
-                                tooltipClass={tooltip.className ?? ''} 
-                                disabledIcon={tooltip?.disabled ?? true} 
-                                id={item.name} 
-                                tooltipText={!tooltip?.disabled ? tooltip.text : `${item.label} = ${tooltip.text ?? ''}`} 
+                            <TooltipCustom
+                                width={tooltip.width}
+                                tooltipClass={tooltip.className ?? ''}
+                                disabledIcon={tooltip?.disabled ?? true}
+                                id={item.name}
+                                tooltipText={!tooltip?.disabled ? tooltip.text : `${item.label} = ${tooltip.text ?? ''}`}
                             />
                         )}
                         {item.searchable ? (
@@ -35,7 +35,7 @@ const FormFieldsRenderer = ({  fieldProps, buttonProps}) => {
                                 rules={{ required: item.mandatory }}
                                 placeholder={'Select'}
                                 options={item.options || []}
-                                handleChange={item.handleChange ? item.handleChange : () => {}}
+                                handleChange={item.handleChange ? item.handleChange : () => { }}
                                 value={item.value}
                                 disabled={item.disabled}
                                 errors={errors[name]}
@@ -48,16 +48,16 @@ const FormFieldsRenderer = ({  fieldProps, buttonProps}) => {
                                 Controller={Controller}
                                 control={control}
                                 register={register}
-                                mandatory={item.mandatory}
+                                mandatory={item.mandatory}  
                                 rules={{
                                     required: item.mandatory,
-                                    validate: { number, checkWhiteSpaces, maxLength7, ...(item.disabled ? {} : {}) },
+                                    validate: { nonZero, number, checkWhiteSpaces, decimalIntegerNumberLimit: decimalIntegerNumberLimit(5,3), ...(item.disabled ? {} : {}) },
                                     max: item.percentageLimit ? {
                                         value: 100,
                                         message: 'Percentage value should be equal to 100'
                                     } : {},
                                 }}
-                                handleChange={item.handleChange ? item.handleChange : () => {}}
+                                handleChange={item.handleChange ? item.handleChange : () => { }}
                                 defaultValue={item.disabled ? 0 : ''}
                                 className=""
                                 customClassName={'withBorder'}

@@ -1692,3 +1692,64 @@ export function getSimulationPackagingCalculation(simulationId, costingId, callb
     });
   };
 }
+/**
+ * @method getFreightCalculation
+ * @description Get freight calculator data
+*/
+export function getFreightCalculation(costingId, costingFreightDetailsId, costingFreightCalculatorDetailsId, callback) {
+  return (dispatch) => {
+    const queryParams = `costingId=${costingId}&costingFreightDetailsId=${costingFreightDetailsId}&costingFreightCalculatorDetailsId=${costingFreightCalculatorDetailsId}`
+    const request = axios.get(`${API.getFreightCalculation}?${queryParams}`, config());
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      } else {
+        Toaster.error(MESSAGES.SOME_ERROR);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+      apiErrors(error);
+    });
+  };
+}
+
+/**
+ * @method saveFreightCalculation  
+ * @description save freight calculator data
+*/
+export function saveFreightCalculation(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.saveFreightCalculation, data, config());
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      apiErrors(error);
+      callback(error);
+    });
+  };
+}
+/**
+ * @method getNoOfComponentsPerCrateFromPackaging
+ * @description Get No of components per crate from packaging
+*/
+export function getNoOfComponentsPerCrateFromPackaging(costingId, callback) {
+  return (dispatch) => {
+    const queryParams = `costingId=${costingId}`
+    const request = axios.get(`${API.getNoOfComponentsPerCrateFromPackaging}?${queryParams}`, config());
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      } else {
+        Toaster.error(MESSAGES.SOME_ERROR);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+      apiErrors(error);
+    });
+    };
+}

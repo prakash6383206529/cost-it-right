@@ -6,7 +6,7 @@
     "VendorLabel": "Vendor",
     "RMVendorLabel": "Vendor",
     "BOPVendorLabel": "Vendor",
-    "LengthLabel": "Length",
-    "BreadthLabel": "Breadth",
-    "HeightLabel": "Height"
+    "LengthLabel": "Length (mm)",
+    "BreadthLabel": "Breadth (mm)",
+    "HeightLabel": "Height (mm)"
 }

@@ -14,7 +14,7 @@ import { number, percentageLimitValidation, checkWhiteSpaces, decimalNumberLimit
 import { fetchCostingHeadsAPI } from '../../../../actions/Common';
 import { IdForMultiTechnology } from '../../../../config/masterData';
 import _ from 'lodash';
-import { getFreigtRateCriteriaSelectList } from '../../../masters/actions/Freight';
+import { getFreigtRateCriteriaSelectList, getTruckDimensionsSelectList } from '../../../masters/actions/Freight';
 
 function AddFreight(props) {
 
@@ -56,10 +56,16 @@ function AddFreight(props) {
   const [fullTruckLoadId, setFullTruckLoadId] = useState('');
 
   const { RMCCTabData, CostingEffectiveDate } = useSelector(state => state.costing)
-
+  const truckDimensionsSelectList = useSelector(state => state.freight.truckDimensionsSelectList);
   const [freightCost, setFreightCost] = useState(rowObjData.Rate ? rowObjData.Rate : '')
   const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId)
   const [totalRMGrossWeight, setTotalRMGrossWeight] = useState('')
+  const [state, setState] = useState({
+    isDetailedBreakup: false,
+    disableAll: false,
+    openCalculator: false,
+    truckDimensions: [],
+  })
 
   useEffect(() => {
     setTimeout(() => {
@@ -70,6 +76,7 @@ function AddFreight(props) {
   useEffect(() => {
     dispatch(getFreigtRateCriteriaSelectList())
     dispatch(getFreigtFullTruckCapacitySelectList())
+    dispatch(getTruckDimensionsSelectList((res) => { }));
   }, []);
 
   useEffect(() => {
@@ -219,6 +226,14 @@ function AddFreight(props) {
       }
       return tempList;
     }
+    if (label === 'TruckDimensions') {
+      truckDimensionsSelectList && truckDimensionsSelectList.map((item) => {
+        if (item?.Value === '--0--') return false
+        temp.push({ label: item?.Text, value: item?.Value, isEditDimension: !item.IsAssociated });
+        return null;
+      });
+      return temp;
+    }
 
   }
 
@@ -253,6 +268,7 @@ function AddFreight(props) {
         EffectiveDate: CostingEffectiveDate ? CostingEffectiveDate : null,
         EFreightLoadType: freightType ? freightType : null,
         CostingTypeId: costData?.CostingTypeId ? costData?.CostingTypeId : null,
+        DimensionId: costData?.DimensionId ? costData?.DimensionId : null,
       }
       dispatch(getRateByCapacityCriteria(data, res => {
         if (res && res?.data && res?.data?.Result) {
@@ -523,7 +539,24 @@ function AddFreight(props) {
     }
     toggleDrawer('', formData)
   }
-
+  const onShowDetailedBreakup = () => {
+    setState({
+      ...state,
+      isShowDetailedBreakup: !state.isShowDetailedBreakup
+    })
+  }
+  const toggleWeightCalculator = (packingCost) => {
+    setState({
+      ...state,
+      openCalculator: true
+    })
+  }
+  const handleTruckDimensions = (e) => {
+    setState({
+      ...state,
+      truckDimensions: e
+    })
+  }
   /**
   * @method render
   * @description Renders the component
@@ -618,6 +651,7 @@ function AddFreight(props) {
                       />{' '}
                       <span>Percentage</span>
                     </Label>
+
                     {/* <Label id="Add_FreightType_Per_Kg_Truck" className={'pl0 w-auto radio-box mb-0 pb-3'} check>
                       <input
                         type="radio"
@@ -630,6 +664,41 @@ function AddFreight(props) {
                       <span>Per Kg</span>
                     </Label> */}
                   </Col>
+                  <Col md='12'>
+                    <label id="AddFreight_TruckDimensions"
+                      className={`custom-checkbox w-auto mb-4 mt-4 `}
+                      onChange={onShowDetailedBreakup}
+                    >
+                      Detailed Breakup
+                      <input
+                        type="checkbox"
+                        checked={state.isShowDetailedBreakup}
+                        disabled={isEditFlag}
+                      />
+                      <span
+                        className=" before-box p-0"
+                        checked={state.isShowDetailedBreakup}
+                        onChange={onShowDetailedBreakup}
+                      />
+                    </label>
+                  </Col>
+                  {state.isShowDetailedBreakup && <Col md="12">
+                    <SearchableSelectHookForm
+                      name="TruckDimensions"
+                      label="Truck Dimensions"
+                      Controller={Controller}
+                      control={control}
+                      register={register}
+                      mandatory={true}
+                      rules={{ required: true }}
+                      placeholder={'Select'}
+                      options={renderListing("TruckDimensions")}
+                      handleChange={handleTruckDimensions}
+                      value={state?.truckDimensions}
+                      disabled={false}
+                      errors={errors?.TruckDimensions}
+                    />
+                  </Col>}
                   {showFields?.Capacity && <Col md="12">
                     <SearchableSelectHookForm
                       label={'Capacity'}
@@ -706,7 +775,7 @@ function AddFreight(props) {
                     // disabled={(freightType !== Percentage  ) ? true : false} OPEN WHEN API INTEGRATED
                     />
                   </Col>}
-                  {showFields?.Quantity && <Col md="12">
+                  {showFields?.Quantity && !state.isShowDetailedBreakup && <Col md="12">
                     <TextFieldHookForm
                       label="Quantity"
                       name={'Quantity'}
@@ -732,6 +801,7 @@ function AddFreight(props) {
                   </Col>}
 
                   <Col md="12">
+                  <div className="packaging-cost-warpper">
                     <TextFieldHookForm
                       label="Cost"
                       name={'FreightCost'}
@@ -749,6 +819,14 @@ function AddFreight(props) {
                       errors={errors.FreightCost}
                       disabled={freightType !== Fixed ? true : false}
                     />
+                     {state.isShowDetailedBreakup && <button
+                    id={`RM_calculator`}
+                    className={`CalculatorIcon mb-0 mt-1 ml-2 cr-cl-icon RM_calculator`}
+                    type={'button'}
+                    onClick={() => toggleWeightCalculator()}
+                    disabled={false}
+                    />}
+                    </div>
                   </Col>
 
                   {initialConfiguration.IsShowCRMHead && <Col md="12">

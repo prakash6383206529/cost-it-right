@@ -421,17 +421,22 @@ const FreightListing = (props) => {
                 <AgGridColumn
                   field="Load"
                   headerName="Load"
-                  valueGetter={(params) => params.data?.FreightLoadType || "N/A"}
+                  valueGetter={(params) => params.data?.FreightLoadType || "-"}
+                ></AgGridColumn>
+                <AgGridColumn
+                  field="DimensionsName"
+                  headerName="Truck Dimensions"
+                  valueGetter={(params) => params.data?.DimensionsName || "-"}
                 ></AgGridColumn>
                 <AgGridColumn
                   field="Capacity"
                   headerName="Capacity"
-                  valueGetter={(params) => params.data?.Capacity || "N/A"}
+                  valueGetter={(params) => params.data?.Capacity || "-"}
                 ></AgGridColumn>
                 <AgGridColumn
                   field="Criteria"
                   headerName="Criteria"
-                  valueGetter={(params) => params.data?.RateCriteria || "N/A"}
+                  valueGetter={(params) => params.data?.RateCriteria || "-"}
                 ></AgGridColumn>
                 <AgGridColumn field="Rate" headerName="Rate"></AgGridColumn>
                 <AgGridColumn
