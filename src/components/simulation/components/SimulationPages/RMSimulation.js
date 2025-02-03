@@ -91,7 +91,7 @@ function RMSimulation(props) {
     const currencySelectList = useSelector(state => state.comman.currencySelectList)
     const { selectedMasterForSimulation, exchangeRateListBeforeDraft } = useSelector(state => state.simulation)
     const simulationApplicability = useSelector(state => state.simulation.simulationApplicability)
-    
+
     const masterList = useSelector(state => state.simulation.masterSelectListSimulation)
     const { filteredRMData } = useSelector(state => state.material)
     const columnWidths = {
@@ -229,8 +229,7 @@ function RMSimulation(props) {
             obj.PlantId = filteredRMData.plantId ? filteredRMData.plantId.value : ''
         }
         let tempArr = []
-        if (String(selectedMasterForSimulation.value) === String(RMDOMESTIC) || String(selectedMasterForSimulation.value) === String(RMIMPORT)) {
-
+        if (String(selectedMasterForSimulation.value) === String(RMDOMESTIC) || String(selectedMasterForSimulation.value) === String(RMIMPORT) || String(selectedMasterForSimulation.value) === String(EXCHNAGERATE)) {
             list && list.map(item => {
                 if ((item.NewBasicRate !== undefined || item.NewScrapRate !== undefined || item.NewBasicrateFromPercentage) && ((item.NewBasicRate !== undefined || item.NewBasicrateFromPercentage) ? Number(item.NewBasicRate) : (Number(item.BasicRate)) !== Number(item.BasicRatePerUOM) || ((item.NewScrapRate !== undefined || item.NewBasicrateFromPercentage) ? Number(item.NewScrapRate) : Number(item.ScrapRate)) !== Number(item.ScrapRate))) {
                     let tempObj = {
@@ -293,8 +292,13 @@ function RMSimulation(props) {
                 tempObj.PlantId = item.PlantId
                 tempObj.VendorId = item.VendorId
                 tempObj.Delta = 0
-                tempObj.OldScrapRatePerScrapUOM = 0
-                tempObj.NewScrapRatePerScrapUOM = 0
+                tempObj.OldScrapRatePerScrapUOM = item.ScrapRatePerScrapUOM
+                tempObj.NewScrapRatePerScrapUOM = item.NewScrapRatePerScrapUOM
+                tempObj.NewNetConditionCost = item.NewNetConditionCost || 0
+                tempObj.NewOtherNetCost = item.NewOtherNetCost || 0
+                tempObj.RawMaterialConditionsDetails = item.NewRawMaterialConditionCostDetails || []
+                tempObj.RawMaterialOtherCostDetails = item.NewRawMaterialOtherCostDetails || []
+
                 tempArr.push(tempObj)
 
                 return null;
@@ -390,7 +394,8 @@ function RMSimulation(props) {
             dispatch(createMultipleExchangeRate(exchangeRateListBeforeDraft, currencySelectList, effectiveDate, res => {
                 if (!res?.status && !res?.error) {
                     setValueFunction(true, res);
-                }            }))
+                }
+            }))
         } else {
             setValueFunction(false, []);
         }

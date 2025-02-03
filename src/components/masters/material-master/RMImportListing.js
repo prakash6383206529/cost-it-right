@@ -285,7 +285,7 @@ function RMImportListing(props) {
       dataObj.OtherNetCost = filteredRMData?.OtherNetCost
 
     }
-    dataObj.RawMaterialEntryType = !isSimulation ? Number(ENTRY_TYPE_IMPORT) : ''
+    dataObj.RawMaterialEntryType =  Number(ENTRY_TYPE_IMPORT) 
     //THIS CONDTION IS FOR IF THIS COMPONENT IS RENDER FROM MASTER APPROVAL SUMMARY IN THIS NO GET API
     if (!props?.isMasterSummaryDrawer) {
       dispatch(getAllRMDataList(filterData, skip, take, isPagination, dataObj, true, (res) => {

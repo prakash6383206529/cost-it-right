@@ -1070,7 +1070,9 @@ class AddBOPDomestic extends Component {
       OtherNetCostLocalConversion: totalOtherCost,
       OtherNetCostConversion: OtherNetCostConversion,
       OtherNetCost: totalOtherCost,
-      BoughtOutPartOtherCostDetailsSchema: otherCostTableData
+      BoughtOutPartOtherCostDetailsSchema: otherCostTableData,
+      LocalCurrencyExchangeRate: null,
+      LocalExchangeRateId: null
     };
 
     formData.BoughtOutPartConditionsDetails = conditionTableData;
