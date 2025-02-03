@@ -98,9 +98,9 @@ function AddOtherCostDrawer(props) {
     useEffect(() => {
         dispatch(getCostingCondition('', conditionTypeId, (res) => {
             if (res?.data?.DataList) {
-                const temp = res.data.DataList.map((item) => ({
-                    label: item.CostingConditionNumber,
-                    value: item.CostingConditionMasterId,
+                const temp = res?.data?.DataList?.map((item) => ({
+                    label: item?.CostingConditionNumber,
+                    value: item?.CostingConditionMasterId,
                 }));
                 setState((prevState) => ({
                     ...prevState,
