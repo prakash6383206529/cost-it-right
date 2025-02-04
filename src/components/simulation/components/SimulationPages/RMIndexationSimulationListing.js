@@ -45,6 +45,7 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
 
 function RMIndexationSimulationListing(props) {
+    
     const { AddAccessibility, BulkUploadAccessibility, ViewRMAccessibility, EditAccessibility, DeleteAccessibility, DownloadAccessibility, isSimulation, apply, selectionForListingMasterAPI, objectForMultipleSimulation, master } = props;
     const [value, setvalue] = useState({ min: 0, max: 0 });
     const [isBulkUpload, setisBulkUpload] = useState(false);
@@ -256,6 +257,10 @@ function RMIndexationSimulationListing(props) {
             isIndexationDetails: props?.type?.label === "Indexed" ? true : false,
             Currency: isSimulation && props?.fromListData && props?.fromListData ? props?.fromListData : '',
             LocalCurrency: isSimulation && props?.toListData && props?.toListData ? props?.toListData : '',
+            EffectiveDate: props?.minDate ? props?.minDate : '',
+            ListFor: props?.ListFor ? props?.ListFor : '',
+            vendorId: props?.vendorLabel?.value,
+
 
         }
         //THIS CONDTION IS FOR IF THIS COMPONENT IS RENDER FROM MASTER APPROVAL SUMMARY IN THIS NO GET API
@@ -976,7 +981,7 @@ function RMIndexationSimulationListing(props) {
                             }
                             <Button
                                 id={"rmDomesticListing_refresh"}
-                                className={"Tour_List_Reset"}
+                                className={"Tour_List_Reset mr-1"}
                                 onClick={() => resetState()}
                                 title={"Reset Grid"}
                                 icon={"refresh"}
@@ -1135,6 +1140,10 @@ function RMIndexationSimulationListing(props) {
                             : []
                     }
                     isRMNonIndexSimulation={true}
+                    ListFor={props?.ListFor}
+                    effectiveDate={props?.effectiveDate}
+                    isEffectiveDateSelected={props?.isEffectiveDateSelected}
+                    minDate={props?.minDate}
                 />
             )}
         </div>
