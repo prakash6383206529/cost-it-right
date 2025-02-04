@@ -509,7 +509,7 @@ function RMDomesticListing(props) {
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
         let isEditbale = false
         let isDeleteButton = false
-        let IsRFQRawMaterial = rowData?.IsRFQRawMaterial !== null && rowData?.IsRFQRawMaterial !== undefined ? true : false
+        const IsRFQRawMaterial = Boolean(rowData?.IsRFQRawMaterial);
         if (EditAccessibility) {
             isEditbale = true
         } else {
@@ -529,6 +529,7 @@ function RMDomesticListing(props) {
                 isDeleteButton = true
             }
         }
+        console.log(isEditbale , isDeleteButton);
 
         return (
             <>

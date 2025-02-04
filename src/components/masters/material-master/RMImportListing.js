@@ -509,7 +509,8 @@ function RMImportListing(props) {
   const buttonFormatter = (props) => {
     const cellValue = props?.valueFormatted ? props?.valueFormatted : props?.value;
     const rowData = props?.valueFormatted ? props?.valueFormatted : props?.data;
-    let IsRFQRawMaterial = rowData?.IsRFQRawMaterial !== null && rowData?.IsRFQRawMaterial !== undefined ? true : false
+    // let IsRFQRawMaterial = rowData?.IsRFQRawMaterial !== null && rowData?.IsRFQRawMaterial !== undefined ? true : false
+    const IsRFQRawMaterial = Boolean(rowData?.IsRFQRawMaterial);
     let isEditbale = false
     let isDeleteButton = false
 
