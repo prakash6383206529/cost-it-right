@@ -5,7 +5,7 @@ import { APPROVED_STATUS, defaultPageSize, EMPTY_DATA, OPERATIONS, SURFACETREATM
 import NoContentFound from '../../../common/NoContentFound';
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter } from '../../../../helper';
 import Toaster from '../../../common/Toaster';
-import { runVerifyExchangeRateSimulation, setExchangeRateListBeforeDraft } from '../../actions/Simulation';
+import { runVerifyExchangeRateSimulation, setExchangeRateListBeforeDraft, setRawmaterialsEffectiveDate } from '../../actions/Simulation';
 import { Fragment } from 'react';
 import RunSimulationDrawer from '../RunSimulationDrawer';
 import { useDispatch, useSelector } from 'react-redux';
@@ -32,6 +32,7 @@ import LoaderCustom from '../../../common/LoaderCustom';
 import OperationListing from '../../../masters/operation/OperationListing';
 import MachineRateListing from '../../../masters/machine-master/MachineRateListing';
 import RMIndexationSimulationListing from './RMIndexationSimulationListing';
+import { getMinDate } from '../../SimulationUtils';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -67,8 +68,9 @@ function ERSimulation(props) {
     const [showMachineRatesList, setShowMachineRatesList] = useState(false);
     const [showSurfaceTreatmentList, setShowSurfaceTreatmentList] = useState(false);
     const [showRawMaterialsList, setShowRawMaterialsList] = useState(false);
-    const {   isMasterAssociatedWithCosting} = useSelector(state => state.simulation)
-
+    const { isMasterAssociatedWithCosting } = useSelector(state => state.simulation)
+    const [minDate, setMinDate] = useState('')
+    
     const dispatch = useDispatch()
     const columnWidths = {
 
@@ -102,7 +104,13 @@ function ERSimulation(props) {
         const entryWithLargestDate = _.maxBy(list, entry => new Date(entry.EffectiveDate));
         setLargestDate(entryWithLargestDate?.EffectiveDate)
     }, [list])
-
+    useEffect(() => {
+        if (props?.list.length > 0) {
+            let tempList = [...list]
+            const minDate = getMinDate(tempList);
+            setMinDate(minDate?.EffectiveDate); // This will update the minDate for the DatePicker
+        }
+    }, [list])
     const { selectedMasterForSimulation } = useSelector(state => state.simulation)
     const { simulationApplicability } = useSelector(state => state.simulation)
     const { selectedVendorForSimulation, selectedCustomerSimulation } = useSelector(state => state.simulation)
@@ -282,7 +290,10 @@ function ERSimulation(props) {
 
     const onRowSelect = () => {
         var selectedRows = gridApi.getSelectedRows();
-        setSelectedRowData(selectedRows)
+        
+        setSelectedRowData(selectedRows);
+        
+        
     }
     const resetState = () => {
         gridOptions.columnApi.resetColumnState();
@@ -410,6 +421,7 @@ function ERSimulation(props) {
 
     const handleEffectiveDateChange = (date) => {
         setEffectiveDate(date)
+        dispatch(setRawmaterialsEffectiveDate(date))
         setIsEffectiveDateSelected(true)
         setIsWarningMessageShow(false)
     }
@@ -501,46 +513,55 @@ function ERSimulation(props) {
                             <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                                 <div className="col-sm-12 text-right bluefooter-butn d-flex justify-content-end align-items-center">
                                     <div className="d-flex align-items-center">
-                                        {simulationApplicability?.value === APPLICABILITY_PART_SIMULATION ?
-                                            <><div className="inputbox date-section mr-3 verfiy-page simulation_effectiveDate">
-                                                <DatePicker
-                                                    name="EffectiveDate"
-                                                    selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
-                                                    id='EffectiveDate'
-                                                    onChange={handleEffectiveDateChange}
-                                                    showMonthDropdown
-                                                    showYearDropdown
-                                                    dropdownMode='select'
-                                                    dateFormat="dd/MM/yyyy"
-                                                    placeholderText="Select effective date"
-                                                    className="withBorder"
-                                                    autoComplete={"off"}
-                                                    disabledKeyboardNavigation
-                                                    onChangeRaw={(e) => e.preventDefault()}
-                                                    minDate={new Date(largestDate)}
-                                                />
-                                            </div>
+                                        {(simulationApplicability?.value === APPLICABILITY_PART_SIMULATION || simulationApplicability?.value === APPLICABILITY_RAWMATERIAL_SIMULATION) ? (
+                                            <>
+                                                <div className="inputbox date-section mr-3 verfiy-page simulation_effectiveDate">
+                                                    <DatePicker
+                                                        name="EffectiveDate"
+                                                        selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
+                                                        id='EffectiveDate'
+                                                        onChange={handleEffectiveDateChange}
+                                                        showMonthDropdown
+                                                        showYearDropdown
+                                                        dropdownMode='select'
+                                                        dateFormat="dd/MM/yyyy"
+                                                        placeholderText="Select effective date"
+                                                        className="withBorder"
+                                                        autoComplete={"off"}
+                                                        disabledKeyboardNavigation
+                                                        onChangeRaw={(e) => e.preventDefault()}
+                                                        minDate={new Date(largestDate)}
+                                                    />
+                                                </div>
                                                 {isWarningMessageShow && <WarningMessage dClass={"error-message"} textClass={"pt-1"} message={"Please select effective date"} />}
-                                                <button onClick={verifySimulation} type="submit" className="user-btn mr5 save-btn verifySimulation" id={"verify-btn"} disabled={isDisable}>
-                                                    <div className={"Run-icon"}>
-                                                    </div>{" "}
-                                                    {"Verify"}
-                                                </button>
-                                            </> :
+                                                {simulationApplicability?.value === APPLICABILITY_PART_SIMULATION ? (
+                                                    <button onClick={verifySimulation} type="submit" className="user-btn mr5 save-btn verifySimulation" id={"verify-btn"} disabled={isDisable}>
+                                                        <div className={"Run-icon"}>
+                                                        </div>{" "}
+                                                        {"Verify"}
+                                                    </button>
+                                                ) : (
+                                                    <>
+                                                        <TooltipCustom id={"next-button"} disabledIcon={true} tooltipText={`Select the ${simulationApplicability?.label} on next page.`} />
+                                                        <button onClick={selectRM} type="button" className="user-btn mr5 next-icon" disabled={isDisable} id={"next-button"}>
+                                                            <div>
+                                                            </div>{" "}
+                                                            Next
+                                                        </button>
+                                                    </>
+                                                )}
+                                            </>
+                                        ) : (
                                             <>
                                                 <TooltipCustom id={"next-button"} disabledIcon={true} tooltipText={`Select the ${simulationApplicability?.label} on next page.`} />
                                                 <button onClick={selectRM} type="button" className="user-btn mr5 next-icon" disabled={isDisable} id={"next-button"}>
                                                     <div>
                                                     </div>{" "}
                                                     Next
-                                                </button></>
-                                        }
+                                                </button>
+                                            </>
+                                        )}
                                     </div>
-                                    {/* <button onClick={runSimulation} type="submit" className="user-btn mr5 save-btn">
-                                <div className={"Run"}>
-                                </div>{" "}
-                                {"RUN SIMULATION"}
-                            </button> */}
                                 </div>
                             </Row>
                         }
@@ -580,6 +601,8 @@ function ERSimulation(props) {
                 toListData={toListData}
                 isFromVerifyPage={true}
                 cancelImportList={cancelImportList}
+                vendorLabel={props?.vendor}
+
             />}
             {showBOPMasterList &&
                 <BOPImportListing
@@ -593,13 +616,15 @@ function ERSimulation(props) {
                     // changeTokenCheckBox={changeTokenCheckBox}
                     // isReset={isReset}
                     ListFor={'simulation'}
-                    isBOPAssociated={ isMasterAssociatedWithCosting ? true : false}
+                    isBOPAssociated={isMasterAssociatedWithCosting ? true : false}
                     approvalStatus={APPROVED_STATUS}
                     // callBackLoader={callBackLoader}  
                     fromListData={fromListData}
                     toListData={toListData}
                     isFromVerifyPage={true}
                     cancelImportList={cancelImportList}
+                    vendorLabel={props?.vendor}
+
                 />}
             {(showOperationsList || showSurfaceTreatmentList) && (
                 <OperationListing
@@ -613,6 +638,8 @@ function ERSimulation(props) {
                     isOperationST={showSurfaceTreatmentList ? SURFACETREATMENT : OPERATIONS}
                     fromListData={fromListData}
                     toListData={toListData}
+                    vendorLabel={props?.vendor}
+
                 />
             )}
 
@@ -627,6 +654,8 @@ function ERSimulation(props) {
                     selectionForListingMasterAPI={props?.selectionForListingMasterAPI}
                     fromListData={fromListData}
                     toListData={toListData}
+                    vendorLabel={props?.vendor}
+
 
                 />
             )}
@@ -640,6 +669,11 @@ function ERSimulation(props) {
                     cancelImportList={cancelImportList}
                     fromListData={fromListData}
                     toListData={toListData}
+                    effectiveDate={effectiveDate}
+                    isEffectiveDateSelected={isEffectiveDateSelected}
+                    minDate={minDate}
+                    vendorLabel={props?.vendor}
+
                 />
             )}
         </div >

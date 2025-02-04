@@ -113,7 +113,9 @@ function RMIndexationSimulation(props) {
     const selectedEffectiveDate = useSelector((state) => state.simulation.selectedEffectiveDate);
     const tableData = isApprovalSummary ? rmIndexedSimulationSummaryData : isCostingSimulation ? list : indexedRMForSimulation
     const masterList = useSelector(state => state.simulation.masterSelectListSimulation)
-
+    const RawMaterialsEffectiveDate = useSelector((state) => state.simulation.rawMaterialsEffectiveDate);
+    
+    
     const columnWidths = {
         CostingHead: showCompressedColumns ? 50 : 140,
         VendorCode: showCompressedColumns ? 50 : 160,
@@ -184,7 +186,7 @@ function RMIndexationSimulation(props) {
     }, [totalBasicRate, openOtherCostDrawer, openConditionCostDrawer, otherCostDetailForRow, indexedRMForSimulation, isSaving]);
     useEffect(() => {
         if (selectedMasterForSimulation?.value === EXCHNAGERATE) {
-            dispatch(createMultipleExchangeRate(exchangeRateListBeforeDraft, currencySelectList, effectiveDate, res => {
+            dispatch(createMultipleExchangeRate(exchangeRateListBeforeDraft, currencySelectList, props?.effectiveDate, res => {
                 if (!res?.status && !res?.error) {
                     setValueFunction(true, res);
                 }
@@ -204,7 +206,7 @@ function RMIndexationSimulation(props) {
                 "RawMaterialIds": rawMaterialIds,
                 "TechnologyId": null,
                 "SimulationTechnologyId": check ? EXCHNAGERATE : selectedMasterForSimulation?.value,
-                "EffectiveDate": null,
+                "EffectiveDate": props?.effectiveDate ? DayTime(props?.effectiveDate).format('YYYY-MM-DD HH:mm:ss') : null,
                 "LoggedInUserId": loggedInUserId(),
                 "SimulationHeadId": RAWMATERIALAPPROVALTYPEID,
                 "IsSimulationWithOutCosting": true,
@@ -328,7 +330,8 @@ function RMIndexationSimulation(props) {
             let obj = {
                 LoggedInUserId: loggedInUserId(),
                 SimulationId: simulationId,
-                IsProvisional: false
+                IsProvisional: false,
+                EffectiveDate: DayTime(selectedEffectiveDate).format('YYYY-MM-DD HH:mm:ss')
             }
             dispatch(runSimulationOnRawMaterial(obj, (res) => {
                 if (res?.data?.Result) {
@@ -1428,6 +1431,9 @@ function RMIndexationSimulation(props) {
                                                     <AgGridColumn width={columnWidths.NewNetLandedCost} field={isCostingSimulation ? 'NewRawMaterialIndexationDetails.NetLandedCost' : "NewNetLandedCost"} editable='false' cellRenderer={'NewcostFormatter'} headerName="Revised" colId='NewNetLandedCost'></AgGridColumn>
                                                 </AgGridColumn>
                                                 }
+                                                 {!isImpactedMaster&&<AgGridColumn suppressSizeToFit="true" field="OldExchangeRate" headerName={`Existing Exchange Rate(Currency)`} minWidth={columnWidths.OldExchangeRate}></AgGridColumn>}
+                                                 {!isImpactedMaster&&<AgGridColumn suppressSizeToFit="true" field="NewExchangeRate" headerName={`Revised Exchange Rate(Currency)`} minWidth={columnWidths.NewExchangeRate}></AgGridColumn>}
+                                               
                                                 {/* THIS COLUMN WILL BE VISIBLE IF WE ARE LOOKING IMPACTED MASTER DATA FOR RMIMPORT */}
                                                 {String(props?.masterId) === String(RMIMPORT) && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={`Net Cost (${reactLocalStorage.getObject("baseCurrency")})`}>
                                                     <AgGridColumn width={120} field="OldRMNetLandedCostConversion" tooltipField='OldRMNetLandedCostConversion' editable='false' headerName="Existing" colId='OldRMNetLandedCostConversion'></AgGridColumn>

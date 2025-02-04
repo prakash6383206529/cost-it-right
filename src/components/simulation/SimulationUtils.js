@@ -45,6 +45,11 @@ export const getMaxDate = (arr) => {
     return maxDate
 
 }
+export const getMinDate = (arr) => {
+    // Get Min date
+    const minDate = _.minBy(arr, entry => new Date(entry.EffectiveDate));
+    return minDate;
+}
 
 export const checkForChangeInOverheadProfit1Values = (item) => {
     if ((item.NewApplicabilityType === item.ApplicabilityType &&
