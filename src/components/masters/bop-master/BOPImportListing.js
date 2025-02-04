@@ -256,7 +256,7 @@ const BOPImportListing = (props) => {
           : "";
       dataObj.Currency = filteredRMData?.Currency;
     }
-    dataObj.EntryType = !props?.isSimulation  ? Number(ENTRY_TYPE_IMPORT) :  null 
+    dataObj.EntryType = Number(ENTRY_TYPE_IMPORT)
     dataObj.ExchangeRateSourceName = floatingFilterData?.ExchangeRateSourceName
     dataObj.OtherNetCost = floatingFilterData?.OtherNetCost
     if (!props?.isMasterSummaryDrawer) {
