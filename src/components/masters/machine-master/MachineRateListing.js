@@ -134,7 +134,7 @@ getDataList("", 0, "", 0, "", "", 0, defaultPageSize, true, state.floatingFilter
       }
     }
     let statusString = [props?.approvalStatus].join(",")
-    const filterData = { costing_head: costing_head, technology_id: props?.isSimulation ? props?.technology?.value : technology_id, vendor_id: vendor_id, machine_type_id: machine_type_id, process_id: process_id, plant_id: plant_id, StatusId: statusString, MachineEntryType:!isSimulation ? MachineEntryType ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC : "", Currency: isSimulation && props?.fromListData && props?.fromListData ? props?.fromListData : '',
+    const filterData = { costing_head: costing_head, technology_id: props?.isSimulation ? props?.technology?.value : technology_id, vendor_id: !isSimulation ? vendor_id : props?.vendorLabel?.value, machine_type_id: machine_type_id, process_id: process_id, plant_id: plant_id, StatusId: statusString, MachineEntryType:!isSimulation ? (MachineEntryType ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC) : ENTRY_TYPE_IMPORT, Currency: isSimulation && props?.fromListData && props?.fromListData ? props?.fromListData : '',
         LocalCurrency: isSimulation && props?.toListData && props?.toListData ? props?.toListData : '',}
     const { zbc, vbc, cbc } = reactLocalStorage.getObject('CostingTypePermission')
     dataObj.IsCustomerDataShow = cbc

@@ -3,7 +3,7 @@ import { useState, useEffect, } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, } from 'reactstrap';
 import { IsShowFreightAndShearingCostFields, loggedInUserId, userDepartmetList } from "../../../../helper/auth"
-import { defaultPageSize, EMPTY_DATA, ENTRY_TYPE_DOMESTIC, FILE_URL } from '../../../../config/constants';
+import { defaultPageSize, EMPTY_DATA, ENTRY_TYPE_DOMESTIC, ENTRY_TYPE_IMPORT, FILE_URL } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
 import { MESSAGES } from '../../../../config/message';
 import Toaster from '../../../common/Toaster';
@@ -273,6 +273,8 @@ function RMIndexationSimulationListing(props) {
                 apiResponse(res, isPagination)
             }))
         } else {
+            
+            filterData.RawMaterialEntryType = Number(ENTRY_TYPE_IMPORT)
             dispatch(getRMIndexationSimulationListing(filterData, skip, take, isPagination, (res) => {
                 // apply(selectedRowForPagination, selectedRowForPagination.length)
                 apiResponse(res, isPagination)

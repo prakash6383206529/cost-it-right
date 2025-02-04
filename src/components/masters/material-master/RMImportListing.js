@@ -278,7 +278,7 @@ function RMImportListing(props) {
       setloader(true)
     }
     if (isFromVerifyPage) {
-      dataObj.VendorId = filteredRMData && filteredRMData?.VendorId ? filteredRMData?.VendorId : vendorId
+      dataObj.VendorId =! isSimulation ? (filteredRMData && filteredRMData?.VendorId ? filteredRMData?.VendorId : vendorId): props?.vendorLabel?.value
       dataObj.CustomerId = filteredRMData && filteredRMData?.CustomerId ? filteredRMData?.CustomerId : ''
       dataObj.Currency = filteredRMData?.Currency
       dataObj.ExchangeRateSourceName = filteredRMData?.ExchangeRateSourceName

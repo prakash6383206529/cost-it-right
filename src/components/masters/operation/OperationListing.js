@@ -183,7 +183,7 @@ const OperationListing = (props) => {
         let statusString = [props?.approvalStatus].join(",")
 
         let filterData = {
-            operation_for: operation_for, operation_Name_id: operation_Name_id, technology_id: props.isSimulation ? props.technology : technology_id, vendor_id: vendor_id, ListFor: props.ListFor, StatusId: statusString, OperationEntryType: !isSimulation ? OperationEntryType ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC : "", Currency: isSimulation && props?.fromListData && props?.fromListData ? props?.fromListData : '',
+            operation_for: operation_for, operation_Name_id: operation_Name_id, technology_id: props.isSimulation ? props.technology : technology_id, vendor_id: !isSimulation ? vendor_id : props?.vendorLabel?.value, ListFor: props.ListFor, StatusId: statusString, OperationEntryType: !isSimulation ? (OperationEntryType ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC) : ENTRY_TYPE_IMPORT, Currency: isSimulation && props?.fromListData && props?.fromListData ? props?.fromListData : '',
             LocalCurrency: isSimulation && props?.toListData && props?.toListData ? props?.toListData : '',
         }        // THIS IS FOR SHOWING LIST IN 1 TAB(OPERATION LISTING) & ALSO FOR SHOWING LIST IN SIMULATION
         if ((isMasterSummaryDrawer !== undefined && !isMasterSummaryDrawer)) {
