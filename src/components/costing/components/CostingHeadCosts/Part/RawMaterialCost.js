@@ -28,6 +28,7 @@ import TourWrapper from '../../../../common/Tour/TourWrapper'
 import { Steps } from '../../TourMessages'
 import { useTranslation } from 'react-i18next'
 import { getRMFromNFR } from '../../../../masters/nfr/actions/nfr'
+import { NetLandedCostToolTip } from '../../../CostingUtil'
 
 let counter = 0;
 let timerId = 0
@@ -733,9 +734,13 @@ function RawMaterialCost(props) {
       if (IsApplyMasterBatch) {
         const scrapWeight = checkForNull(GrossWeight - FinishWeight);
         const RMRate = calculatePercentageValue(tempData.RMRate, (100 - getValues('MBPercentage')));
+
         const RMRatePlusMasterBatch = (RMRate + checkForNull(getValues('RMTotal'))) * GrossWeight;
+
         const ScrapRate = (tempData.ScrapRate * scrapWeight)
+
         const NetLandedCost = isRMDivisorApplicable(costData.TechnologyName) ? checkForDecimalAndNull((RMRatePlusMasterBatch - ScrapRate) / RMDivisor, initialConfiguration.NoOfDecimalForPrice) : (RMRatePlusMasterBatch - ScrapRate);
+
 
         tempData = {
           ...tempData,
@@ -1264,9 +1269,12 @@ function RawMaterialCost(props) {
 
       const RMRatePlusMasterBatch = (RMRate + checkForNull(getValues('RMTotal'))) * checkForNull(tempData.GrossWeight);
 
+
       const ScrapRate = (tempData.ScrapRate * (tempData.GrossWeight - tempData.FinishWeight))
 
+
       const NetLandedCost = RMRatePlusMasterBatch - ScrapRate;
+
 
       tempData = { ...tempData, NetLandedCost: isRMDivisorApplicable(costData.TechnologyName) ? checkForDecimalAndNull(NetLandedCost / RMDivisor, initialConfiguration.NoOfDecimalForPrice) : NetLandedCost, }
       let tempArr = Object.assign([...gridData], { 0: tempData })
@@ -1401,6 +1409,8 @@ function RawMaterialCost(props) {
   }
 
   const disabledForMonoCartonCorrugated = (costData?.TechnologyId === CORRUGATEDBOX && calculatorTypeStore === 'CorrugatedAndMonoCartonBox')
+
+
   /**
    * @method render
    * @description Renders the component
@@ -1633,7 +1643,7 @@ function RawMaterialCost(props) {
                               <div className='d-flex'>
                                 <div className='w-fit' id={`net-rm-cost${index}`}>
                                   {(Number(costData?.TechnologyId) !== INSULATION) &&
-                                    <TooltipCustom disabledIcon={true} tooltipClass="net-rm-cost" id={`net-rm-cost${index}`} tooltipText={(Number(costData?.TechnologyId) === MACHINING && item?.UOM === 'Meter') ? 'Net RM Cost = RM/Pc - ScrapCost' : 'Net RM Cost = (RM Rate * Gross Weight) - (Scrap Weight * Scrap Rate)'} />}{item?.NetLandedCost !== undefined ? checkForDecimalAndNull(item.NetLandedCost, initialConfiguration.NoOfDecimalForPrice) : 0}
+                                    <TooltipCustom disabledIcon={true} tooltipClass="net-rm-cost" id={`net-rm-cost${index}`} tooltipText={NetLandedCostToolTip(item, costData?.TechnologyId, IsApplyMasterBatch)} />}{item?.NetLandedCost !== undefined ? checkForDecimalAndNull(item.NetLandedCost, initialConfiguration.NoOfDecimalForPrice) : 0}
                                 </div>
                                 {forgingInfoIcon[index] && costData?.TechnologyId === FORGING && <TooltipCustom id={`forging-tooltip${index}`} customClass={"mt-1 ml-2"} tooltipText={`RMC is calculated on the basis of Forging Scrap Rate.`} />}
                                 {index === 0 && (item.RawMaterialCalculatorId !== '' && item?.RawMaterialCalculatorId > 0) && costData?.TechnologyId === Ferrous_Casting && <TooltipCustom id={`forging-tooltip${index}`} customClass={"mt-1 ml-2"} tooltipText={`This is RMC of all RM present in alloy.`} />}
