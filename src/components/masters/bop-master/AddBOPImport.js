@@ -265,7 +265,7 @@ class AddBOPImport extends Component {
           const isDataEmpty = Object.keys(res.data.Data).length === 0;
           const showWarningKey = fromCurrency === fieldsObj?.plantCurrency ? 'showPlantWarning' : 'showWarning';
           this.setState({ [showWarningKey]: isDataEmpty });
-
+          
           // Store in different state variables based on fromCurrency
           if (fromCurrency === fieldsObj?.plantCurrency) {
             this.setState({
@@ -277,7 +277,7 @@ class AddBOPImport extends Component {
           } else if (fromCurrency === reactLocalStorage.getObject("baseCurrency")) {
             this.setState({
               currencyValue: checkForNull(res.data.Data.CurrencyExchangeRate),
-              CurrencyExchangeRate: res.data.Data.ExchangeRateId
+              CurrencyExchangeRate: res.data.Data.ExchangeRateId,
             }, () => {
               this.handleCalculation();
             });
@@ -1052,8 +1052,11 @@ class AddBOPImport extends Component {
         this.props.getExchangeRateByCurrency(currency.label, costingType, DayTime(date).format('YYYY-MM-DD'), vendorValue, client.value, false, reactLocalStorage.getObject("baseCurrency"), this.state.ExchangeSource?.label ?? null, res => {
           if (Object.keys(res.data.Data).length === 0) {
             this.setState({ showWarning: true });
-          } else {
+          }else{
             this.setState({ showWarning: false });
+
+          }  if (this.props.fieldsObj?.plantCurrency === reactLocalStorage?.getObject("baseCurrency")) {
+            this.setState({ plantCurrencyValue: checkForNull(res.data.Data.CurrencyExchangeRate), LocalExchangeRateId: res.data.Data.ExchangeRateId })
           }
           this.setState({ currencyValue: checkForNull(res.data.Data.CurrencyExchangeRate), ExchangeRateId: res.data.Data.ExchangeRateId }, () => { this.handleCalculation() });
         });

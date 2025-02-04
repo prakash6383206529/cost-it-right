@@ -19,7 +19,7 @@ import { Fragment } from 'react';
 import { debounce } from 'lodash';
 import WarningMessage from '../../common/WarningMessage';
 import DatePicker from "react-datepicker";
-import { APPLICABILITY_BOP_SIMULATION, APPLICABILITY_MACHINE_RATES_SIMULATION, APPLICABILITY_OPERATIONS_SIMULATION, APPLICABILITY_PART_SIMULATION, APPLICABILITY_RM_SIMULATION, APPLICABILITY_SURFACE_TREATMENT_SIMULATION, ASSEMBLY_TECHNOLOGY_MASTER } from '../../../config/masterData';
+import { APPLICABILITY_BOP_NON_ASSOCIATED_SIMULATION, APPLICABILITY_BOP_SIMULATION, APPLICABILITY_MACHINE_RATES_SIMULATION, APPLICABILITY_OPERATIONS_SIMULATION, APPLICABILITY_PART_SIMULATION, APPLICABILITY_RM_SIMULATION, APPLICABILITY_SURFACE_TREATMENT_SIMULATION, ASSEMBLY_TECHNOLOGY_MASTER } from '../../../config/masterData';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { MESSAGES } from '../../../config/message';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -383,7 +383,7 @@ function RunSimulationDrawer(props) {
             let masterTemp = selectedMasterForSimulation.value
             if (selectedMasterForSimulation?.value === EXCHNAGERATE && simulationApplicability?.value === APPLICABILITY_RM_SIMULATION) {
                 masterTemp = RMIMPORT
-            } else if (selectedMasterForSimulation?.value === EXCHNAGERATE && simulationApplicability?.value === APPLICABILITY_BOP_SIMULATION) {
+            } else if ((selectedMasterForSimulation?.value === EXCHNAGERATE && simulationApplicability?.value === APPLICABILITY_BOP_SIMULATION)||(selectedMasterForSimulation?.value === EXCHNAGERATE && simulationApplicability?.value === APPLICABILITY_BOP_NON_ASSOCIATED_SIMULATION)) {
                 masterTemp = BOPIMPORT
             }
             switch (Number(masterTemp)) {
@@ -396,6 +396,7 @@ function RunSimulationDrawer(props) {
                             }))
                             break;
                         case APPLICABILITY_BOP_SIMULATION:
+                        case APPLICABILITY_BOP_NON_ASSOCIATED_SIMULATION:
                             handleBOPCase(temp)
 
                             break;

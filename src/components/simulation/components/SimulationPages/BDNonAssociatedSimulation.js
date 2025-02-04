@@ -201,7 +201,7 @@ const setValueFunction = (isExchangeRate, res) => {
     }
 
     let obj = {
-        SimulationTechnologyId: selectedMasterForSimulation?.value,
+        SimulationTechnologyId: isExchangeRate ? EXCHNAGERATE : selectedMasterForSimulation?.value,
         SimulationTypeId: list[0].CostingTypeId,
         LoggedInUserId: loggedInUserId(),
         TechnologyId: selectedTechnologyForSimulation?.value ? selectedTechnologyForSimulation?.value : null,
@@ -965,6 +965,7 @@ const basicPriceRevisedFormatter = (props) => {
                                                 onCellValueChanged={onCellValueChanged}
                                             >
                                                 {/* <AgGridColumn field="Technologies" editable='false' headerName="Technology" minWidth={190}></AgGridColumn> */}
+                                                {<AgGridColumn field="EntryType" headerName="Entry Type" cellRenderer={"hyphenFormatter"}></AgGridColumn>}
                                                 <AgGridColumn field="BoughtOutPartNumber" tooltipField='BoughtOutPartNumber' editable='false' headerName={`${showBopLabel()} Part No.`} minWidth={columnWidths.BoughtOutPartNumber}></AgGridColumn>
                                                 <AgGridColumn field="BoughtOutPartName" tooltipField='BoughtOutPartName' editable='false' headerName={`${showBopLabel()} Part Name`} minWidth={columnWidths.BoughtOutPartNumber}></AgGridColumn>
                                                 {<AgGridColumn field="BoughtOutPartCategory" tooltipField='BoughtOutPartCategory' editable='false' headerName={`${showBopLabel()} Category`} minWidth={columnWidths.BoughtOutPartCategory}></AgGridColumn>}

@@ -26,6 +26,7 @@ import DayTime from '../common/DayTimeWrapper';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import InitiateUnblocking from '../vendorManagement/InitiateUnblocking';
 import { ErrorMessage } from '../simulation/SimulationUtils';
+import ViewDrawer from '../costing/components/approval/ViewDrawer';
 
 function SummaryDrawer(props) {
     
@@ -52,7 +53,7 @@ function SummaryDrawer(props) {
     const [approvalDetails, setApprovalDetails] = useState({})
 
 
-
+    const [viewButton, setViewButton] = useState(false)
     const [approvalDrawer, setApprovalDrawer] = useState(false)
     const [rejectDrawer, setRejectDrawer] = useState(false)
     const [loader, setLoader] = useState(true)
@@ -242,7 +243,9 @@ function SummaryDrawer(props) {
     //     }
     // }
 
-
+    const closeViewDrawer = (e = '') => {
+        setViewButton(false)
+    }
 
     return (
         <div>
@@ -257,12 +260,19 @@ function SummaryDrawer(props) {
 
 
                                 </div>
+                                    <button type={'button'} className="apply mr5" onClick={() => setViewButton(true)}>
+                                        View All
+                                    </button>
                                 <div
                                     onClick={(e) => toggleDrawer(e)}
                                     className={'close-button right'}>
                                 </div>
+                               
                             </Col>
+                                   
+                                  
                         </Row>
+
                         {loader ? <LoaderCustom /> :
                             <Row className="mx-0 mb-3">
                                 {getConfigurationKey()?.IsSAPConfigured && <ErrorMessage module={isRMApproval ? 'RM' : isBOPApproval ? 'BOP' : ''} id={approvalData?.id} />}
@@ -351,6 +361,16 @@ function SummaryDrawer(props) {
                 // isRFQ={isRfq}
                 // partType={getPartType(props?.masterId)}
                 //approvalObj={approvalObj}
+                />
+            }
+             {
+                viewButton && <ViewDrawer
+                    approvalLevelStep={approvalLevelStep}
+                    isOpen={viewButton}
+                    closeDrawer={closeViewDrawer}
+                    anchor={'top'}
+                    approvalNo={approvalDetails?.Token}
+                    isSimulation={true}
                 />
             }
         </div >

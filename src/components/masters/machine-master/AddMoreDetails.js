@@ -236,8 +236,8 @@ class AddMoreDetails extends Component {
         stateId: this.state.stateId || null,
         cityId: this.state.cityId || null
       }
-      // this.props.getFuelByPlant(this.state.selectedPlants?.value, () => { })
-      this.props.getFuelList(obj, () => { })
+       this.props.getFuelByPlant(obj, () => { })
+      //this.props.getFuelList(obj, () => { })
     }
     if (!this.props?.editDetails?.isEditFlag) {
       this.props.change('EquityPercentage', 100)
@@ -517,8 +517,8 @@ class AddMoreDetails extends Component {
               stateId: this.state.stateId || null,
               cityId: this.state.cityId || null
             }
-            // this.props.getFuelByPlant(Data?.Plant[0]?.PlantId, () => { })
-            this.props.getFuelList(obj, () => { })
+             this.props.getFuelByPlant(obj, () => { })
+           // this.props.getFuelList(obj, () => { })
 
           }
           setTimeout(() => {
@@ -779,11 +779,7 @@ class AddMoreDetails extends Component {
           })
           const { selectedPlants } = this.state
           this.callLabourTypeApi()
-          // this.props.getFuelByPlant(
-          //   selectedPlants.value,
-          //   (res) => { },
-          // )
-          let obj = {
+         let obj = {
             plantId: newValue?.value,
             vendorId: this.state.selectedVedor?.value ? this.state.selectedVedor?.value : '',
             customerId: this.state.selectedCustomer?.value ? this.state.selectedCustomer?.value : '',
@@ -793,7 +789,8 @@ class AddMoreDetails extends Component {
             stateId: this.state.stateId || null,
             cityId: this.state.cityId || null
           }
-          this.props.getFuelList(obj, (res) => { })
+          //this.props.getFuelList(obj, (res) => { })
+          this.props.getFuelByPlant(obj, (res) => { })
 
         })
         if (effectiveDate) {
@@ -1195,7 +1192,8 @@ class AddMoreDetails extends Component {
           stateId: this.state.stateId || null,
           cityId: this.state.cityId || null
         }
-        this.props.getFuelList(obj, () => { })
+        this.props.getFuelByPlant(obj, () => { })
+        //this.props.getFuelList(obj, () => { })
 
       }
       this.setState({ fuelType: [] })
@@ -2991,8 +2989,8 @@ class AddMoreDetails extends Component {
           stateId: this.state.stateId || null,
           cityId: this.state.cityId || null
         }
-        // this.props.getFuelByPlant(this.state.selectedPlants?.value, () => { })
-        this.props.getFuelList(obj, () => { })
+        this.props.getFuelByPlant(obj, () => { })
+        //this.props.getFuelList(obj, () => { })
       }
       // this.props.change("MachineRate", "")
       // this.props.change("MachineRateLocalConversion", "")

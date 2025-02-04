@@ -134,7 +134,7 @@ function RMDomesticListing(props) {
             }
         }
 
-        obj.RawMaterialEntryType = Number(ENTRY_TYPE_DOMESTIC)
+        obj.RawMaterialEntryType = !isSimulation ? Number(ENTRY_TYPE_DOMESTIC) : ''
         obj.Currency = floatingFilterData?.Currency
         obj.ExchangeRateSourceName = floatingFilterData?.ExchangeRateSourceName
         obj.OtherNetCost = floatingFilterData?.OtherNetCost
@@ -507,13 +507,13 @@ function RMDomesticListing(props) {
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
         let isEditbale = false
         let isDeleteButton = false
-
+        let IsRFQRawMaterial = rowData?.IsRFQRawMaterial !== null && rowData?.IsRFQRawMaterial !== undefined ? true : false
         if (EditAccessibility) {
             isEditbale = true
         } else {
             isEditbale = false
         }
-        if (isRfq && isMasterSummaryDrawer) {
+        if (isRfq && isMasterSummaryDrawer && !IsRFQRawMaterial) {
             return (
                 <button className="Balance mb-0 button-stick" type="button" onClick={() => handleCompareDrawer(rowData)}>
 
@@ -548,14 +548,14 @@ function RMDomesticListing(props) {
                             onClick={() => viewOrEditItemDetails(cellValue, rowData, true)}
                             title={"View"}
                         />}
-                        {isEditbale && <Button
+                        {isEditbale && !IsRFQRawMaterial && <Button
                             id={`rmDomesticListing_edit${props.rowIndex}`}
                             className={"mr-1 Tour_List_Edit"}
                             variant="Edit"
                             onClick={() => viewOrEditItemDetails(cellValue, rowData, false)}
                             title={"Edit"}
                         />}
-                        {isDeleteButton && <Button
+                        {isDeleteButton && !IsRFQRawMaterial && <Button
                             id={`rmDomesticListing_delete${props.rowIndex}`}
                             className={"mr-1 Tour_List_Delete"}
                             variant="Delete"
