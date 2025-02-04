@@ -104,8 +104,8 @@ function Plastic(props) {
   }, [getPlasticData])
 
   useEffect(() => {
-    setValue('grossWeight', WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== undefined ? WeightCalculatorRequest.GrossWeight : '')
-
+    setValue('grossWeight', WeightCalculatorRequest && WeightCalculatorRequest?.GrossWeight !== undefined ? WeightCalculatorRequest?.GrossWeight : '')
+    setValue('scrapRecoveryPercent', WeightCalculatorRequest && WeightCalculatorRequest?.RecoveryPercentage !== undefined ? WeightCalculatorRequest?.RecoveryPercentage : '')
   }, [])
 
   useEffect(() => {
@@ -175,6 +175,8 @@ function Plastic(props) {
     props.toggleDrawer('')
   }
   const onSubmit = debounce(handleSubmit((values) => {
+    if (dataToSend?.materialCost < 0) return Toaster.warning("Net Landed Cost cannot be negative")
+
     !props?.fromPackaging && DisableMasterBatchCheckbox(!item?.CostingPartDetails?.IsApplyMasterBatch ? true : false)
     setIsDisable(true)
     let obj = {}

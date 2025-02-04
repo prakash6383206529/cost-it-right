@@ -25,7 +25,7 @@ import { EMPTY_GUID, LEVEL1 } from '../../../../../config/constants';
 import Toaster from '../../../../common/Toaster';
 import { MESSAGES } from '../../../../../config/message';
 import { IsPartType, IsNFR, ViewCostingContext } from '../../CostingDetails';
-import { createToprowObjAndSave, errorCheck, errorCheckObject, findSurfaceTreatmentData } from '../../../CostingUtil';
+import { checkNegativeValue, createToprowObjAndSave, errorCheck, errorCheckObject, findSurfaceTreatmentData } from '../../../CostingUtil';
 import _ from 'lodash';
 import { PreviousTabData } from '../../CostingHeaderTabs';
 import { TOOLING_ID } from '../../../../../config/masterData';
@@ -54,6 +54,10 @@ function PartCompoment(props) {
   const { currencySource } = useSelector((state) => state?.costing);
 
   const toggle = (BOMLevel, PartNumber, IsOpen, AssemblyPartNumber) => {
+    const hasNegativeValue = checkNegativeValue(ComponentItemData?.CostingPartDetails?.CostingRawMaterialsCost, 'NetLandedCost', 'Net Landed Cost')
+    if (hasNegativeValue) {
+      return false;
+    }
     let isOpen = IsOpen
     if (CheckIsCostingDateSelected(CostingEffectiveDate, currencySource)) return false;
     dispatch(openCloseStatus({ RMC: !IsOpen }))
@@ -154,6 +158,10 @@ function PartCompoment(props) {
   useEffect(() => {
     // OBJECT FOR SENDING OBJECT TO API
     if (!CostingViewMode && item.IsOpen && Object.keys(ComponentItemData).length > 0 && checkIsDataChange === true) {
+      const hasNegativeValue = checkNegativeValue(ComponentItemData?.CostingPartDetails?.CostingRawMaterialsCost, 'NetLandedCost', 'Net Landed Cost')
+      if (hasNegativeValue) {
+        return false;
+      }
       let stCostingData = findSurfaceTreatmentData(ComponentItemData)
 
       let requestData = {

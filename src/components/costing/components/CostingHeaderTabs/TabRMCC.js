@@ -15,7 +15,7 @@ import Toaster from '../../../common/Toaster';
 import { MESSAGES } from '../../../../config/message';
 import { IsPartType, SelectedCostingDetail, ViewCostingContext } from '../CostingDetails';
 import DayTime from '../../../common/DayTimeWrapper'
-import { createToprowObjAndSave, errorCheck, errorCheckObject, findSurfaceTreatmentData } from '../../CostingUtil';
+import { checkNegativeValue, createToprowObjAndSave, errorCheck, errorCheckObject, findSurfaceTreatmentData } from '../../CostingUtil';
 import _, { debounce } from 'lodash'
 import ScrollToTop from '../../../common/ScrollToTop';
 import WarningMessage from '../../../common/WarningMessage';
@@ -1476,7 +1476,10 @@ function TabRMCC(props) {
 
         dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
       }
-
+      const hasNegativeValue = checkNegativeValue(ComponentItemData?.CostingPartDetails?.CostingRawMaterialsCost, 'NetLandedCost', 'Net Landed Cost')
+      if (hasNegativeValue) {
+        return false;
+      }
       dispatch(saveComponentCostingRMCCTab(requestData, res => {
         if (res.data.Result) {
           Toaster.success(isBreakupBoughtOutPartCostingFromAPI ? MESSAGES.RMCC_TAB_COSTING_SAVE_SUCCESS_IS_BOP_BREAKUP : MESSAGES.RMCC_TAB_COSTING_SAVE_SUCCESS);

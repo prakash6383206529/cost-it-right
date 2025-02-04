@@ -26,7 +26,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import DayTime from '../../../common/DayTimeWrapper'
 import TabAssemblyTechnology from './TabAssemblyTechnology';
-import { createToprowObjAndSave, errorCheck, errorCheckObject, findSurfaceTreatmentData } from '../../CostingUtil';
+import { checkNegativeValue, createToprowObjAndSave, errorCheck, errorCheckObject, findSurfaceTreatmentData } from '../../CostingUtil';
 import _ from 'lodash'
 import { ASSEMBLY, IdForMultiTechnology, TOOLING_ID } from '../../../../config/masterData';
 import WarningMessage from '../../../common/WarningMessage';
@@ -190,6 +190,10 @@ function CostingHeaderTabs(props) {
         // "NetOverheadAndProfitCost": CostingDataList[0].NetOverheadAndProfitCost,
         // "NetPackagingAndFreight": CostingDataList[0].NetPackagingAndFreight,
         CostingPartDetails: ComponentItemData?.CostingPartDetails,
+      }
+      const hasNegativeValue = checkNegativeValue(ComponentItemData?.CostingPartDetails?.CostingRawMaterialsCost, 'NetLandedCost', 'Net Landed Cost')
+      if (hasNegativeValue) {
+        return false;
       }
       dispatch(saveComponentCostingRMCCTab(requestData, res => {
         callAssemblyAPi(1)
@@ -394,6 +398,10 @@ function CostingHeaderTabs(props) {
   * @description toggling the tabs
   */
   const toggle = (tab) => {
+    const hasNegativeValue = checkNegativeValue(ComponentItemData?.CostingPartDetails?.CostingRawMaterialsCost, 'NetLandedCost', 'Net Landed Cost')
+    if (hasNegativeValue) {
+      return false;
+    }
     if (isNFR && !CostingViewMode && (CostingDataList[0].NetRMCost === 0 || CostingDataList[0].NetRMCost === null || CostingDataList[0].NetRMCost === undefined) && (tab === '2' || tab === '3' || tab === '4' || tab === '5' || tab === '6')) {
       Toaster.warning("Please add RM detail before adding the data in this tab.")
       return false
