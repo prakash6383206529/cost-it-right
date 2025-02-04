@@ -720,7 +720,7 @@ function MasterSendForApproval(props) {
                
 
                 const approvalObjects = Array.isArray(approvalDetails) ? approvalDetails : [approvalDetails];
-                const processedApprovalObjects = approvalObjects.map(item => ({
+                const processedApprovalObjects = approvalObjects?.map(item => ({
 
 
                     ApprovalProcessSummaryId: (item?.MasterApprovalProcessSummaryId ?? item?.ApprovalProcessSummaryId) ?? 0,
