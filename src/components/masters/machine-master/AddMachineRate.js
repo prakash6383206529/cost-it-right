@@ -2338,10 +2338,9 @@ class AddMachineRate extends Component {
                             id="machine-rate-plant"
                             type="text"
                             placeholder={isViewMode || lockUOMAndRate || (isEditFlag && isMachineAssociated) ? '-' : 'Enter'}
-                            validate={[number, maxLength10, decimalLengthsix, hashValidation]}
+                            validate={[]}
                             component={renderText}
-                            onChange={this.handleMachineRatePlantCurrency}
-                            required={true}
+                            onChange={()=>{}}
                             disabled={true}
                             className=" "
                             customClassName=" withBorder"
@@ -2357,10 +2356,9 @@ class AddMachineRate extends Component {
                             id="machine-rate"
                             type="text"
                             placeholder={isViewMode || lockUOMAndRate || (isEditFlag && isMachineAssociated) ? '-' : 'Enter'}
-                            validate={[number, maxLength10, decimalLengthsix, hashValidation]}
                             component={renderText}
-                            onChange={this.handleMachineRateBasicCurrency}
-                            required={true}
+                            validate={[]}
+                            onChange={()=>{}}
                             disabled={true}
                             className=" "
                             customClassName=" withBorder"
