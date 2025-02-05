@@ -1259,6 +1259,8 @@ function RMSimulation(props) {
                                                 {(isImpactedMaster && String(props?.masterId) === String(RMIMPORT)) && <AgGridColumn field="ExchangeRate" tooltipField='ExchangeRate' editable='false' headerName="Existing Exchange Rate" minWidth={140} ></AgGridColumn>}
                                                 {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn width={120} field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>}
                                                 <AgGridColumn field="Currency" width={120} cellRenderer={"currencyFormatter"}></AgGridColumn>
+                                                {(isImpactedMaster || props?.lastRevision ) && <AgGridColumn field="LocalCurrency" width={120} headerName={"Plant Currency"} cellRenderer={"currencyFormatter"}></AgGridColumn>}
+
                                                 <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={
                                                     "Basic Rate (Currency)"
 
@@ -1321,10 +1323,10 @@ function RMSimulation(props) {
                                                     <AgGridColumn width={columnWidths.NewNetLandedCost} field="NewNetLandedCost" editable='false' valueGetter={ageValueGetterLanded} cellRenderer={'NewcostFormatter'} headerName="Revised" colId='NewNetLandedCost'></AgGridColumn>
                                                 </AgGridColumn>
                                                 }
-                                                {/* THIS COLUMN WILL BE VISIBLE IF WE ARE LOOKING IMPACTED MASTER DATA FOR RMIMPORT */}
-                                                {String(props?.masterId) === String(RMIMPORT) && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={`Net Cost (${reactLocalStorage.getObject("baseCurrency")})`}>
-                                                    <AgGridColumn width={120} field="OldRMNetLandedCostConversion" tooltipField='OldRMNetLandedCostConversion' editable='false' headerName="Existing" colId='OldRMNetLandedCostConversion'></AgGridColumn>
-                                                    <AgGridColumn width={120} field="NewRMNetLandedCostConversion" editable='false' headerName="Revised" colId='NewRMNetLandedCostConversion'></AgGridColumn>
+          {/* THIS COLUMN WILL BE VISIBLE IF WE ARE LOOKING IMPACTED MASTER DATA FOR RMIMPORT */}
+                                                {(isImpactedMaster || props?.lastRevision || (String(props?.masterId) === String(EXCHNAGERATE) ||  String(props?.masterId) === String(RMIMPORT))) && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={`Net Cost (Plant Currency)`}>
+                                                    <AgGridColumn width={120} field="OldNetLandedCostLocalConversion" tooltipField='OldRMNetLandedCostConversion' editable='false' headerName="Existing" colId='OldRMNetLandedCostConversion'></AgGridColumn>
+                                                    <AgGridColumn width={120} field="NewNetLandedCostLocalConversion" editable='false' headerName="Revised" colId='NewRMNetLandedCostConversion'></AgGridColumn>
                                                 </AgGridColumn>
                                                 }
                                                 {props.children}

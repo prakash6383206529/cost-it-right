@@ -82,7 +82,9 @@ function RMImportListing(props) {
   const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false)
   // const [currentRowIndex, setCurrentRowIndex] = useState(0)
   // const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
-  const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: "", TechnologyName: "", RawMaterialName: "", RawMaterialGradeName: "", RawMaterialSpecificationName: "", RawMaterialCode: "", Category: "", MaterialType: "", DestinationPlantName: "", UnitOfMeasurementName: "", VendorName: "", BasicRatePerUOM: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", NetLandedCostConversion: "", EffectiveDate: "", DepartmentName: isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant ? userDepartmetList() : "", CustomerName: "", NetConditionCostConversion: "", NetConditionCost: "", NetCostWithoutConditionCost: "", NetCostWithoutConditionCostConversion: "", RawMaterialShearingCostConversion: "", RawMaterialFreightCostConversion: "", MachiningScrapRateInINR: "", MachiningScrapRate: "", BasicRatePerUOMConversion: "", Currency: "", LocalCurrency: "" })
+  const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: "", TechnologyName: "", RawMaterialName: "", RawMaterialGradeName: "", RawMaterialSpecificationName: "", RawMaterialCode: "", Category: "", MaterialType: "", DestinationPlantName: "", UnitOfMeasurementName: "", VendorName: "", BasicRatePerUOM: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", NetLandedCostConversion: "", EffectiveDate: "", DepartmentName: isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant ? userDepartmetList() : "", CustomerName: "", NetConditionCostConversion: "", NetConditionCost: "", NetCostWithoutConditionCost: "", NetCostWithoutConditionCostConversion: "", RawMaterialShearingCostConversion: "", RawMaterialFreightCostConversion: "", MachiningScrapRateInINR: "", MachiningScrapRate: "", BasicRatePerUOMConversion: "", Currency: "", LocalCurrency: "" ,VendorId:isSimulation ? (props?.FromExchangeRate ? props?.vendorLabel?.value : 
+    (filteredRMData && filteredRMData?.VendorId ? filteredRMData?.VendorId : '')
+  ) : ''})
   const [noData, setNoData] = useState(false)
   const [dataCount, setDataCount] = useState(0)
   const [inRangeDate, setinRangeDate] = useState([])
@@ -256,13 +258,14 @@ function RMImportListing(props) {
 
     // TO HANDLE FUTURE CONDITIONS LIKE [APPROVED_STATUS, DRAFT_STATUS] FOR MULTIPLE STATUS
     let statusString = [props?.approvalStatus].join(",")
-
+   
     const filterData = {
       costingHead: isSimulation && filteredRMData && filteredRMData?.costingHeadTemp ? filteredRMData?.costingHeadTemp.value : costingHead,
       plantId: isSimulation && filteredRMData && filteredRMData?.plantId ? filteredRMData?.plantId.value : plantId,
       material_id: isSimulation && filteredRMData && filteredRMData?.RMid ? filteredRMData?.RMid.value : materialId,
       grade_id: isSimulation && filteredRMData && filteredRMData?.RMGradeid ? filteredRMData?.RMGradeid.value : gradeId,
-      VendorId: isSimulation && filteredRMData && filteredRMData?.VendorId ? filteredRMData?.VendorId : vendorId,
+      VendorId: isSimulation ? (props?.FromExchangeRate ? props?.vendorLabel?.value : (filteredRMData && filteredRMData?.VendorId ? filteredRMData?.VendorId : vendorId)
+      ) : vendorId,
       technologyId: isSimulation ? (props?.technology ? props?.technology : '') : (technologyId ? technologyId : ''),
       net_landed_min_range: value.min,
       net_landed_max_range: value.max,
@@ -273,20 +276,22 @@ function RMImportListing(props) {
       Currency: isSimulation && props?.fromListData && props?.fromListData ? props?.fromListData : '',
       LocalCurrency: isSimulation && props?.toListData && props?.toListData ? props?.toListData : '',
     }
-
+    
     if (isPagination === true) {
       setloader(true)
     }
     if (isFromVerifyPage) {
-      dataObj.VendorId =! isSimulation ? (filteredRMData && filteredRMData?.VendorId ? filteredRMData?.VendorId : vendorId): props?.vendorLabel?.value
+      dataObj.VendorId = isSimulation ? (props?.FromExchangeRate ? props?.vendorLabel?.value :
+        (filteredRMData && filteredRMData?.VendorId ? filteredRMData?.VendorId : vendorId)
+      ) : vendorId
       dataObj.CustomerId = filteredRMData && filteredRMData?.CustomerId ? filteredRMData?.CustomerId : ''
       dataObj.Currency = filteredRMData?.Currency
       dataObj.ExchangeRateSourceName = filteredRMData?.ExchangeRateSourceName
       dataObj.OtherNetCost = filteredRMData?.OtherNetCost
 
     }
-    dataObj.RawMaterialEntryType =  Number(ENTRY_TYPE_IMPORT) 
-    //THIS CONDTION IS FOR IF THIS COMPONENT IS RENDER FROM MASTER APPROVAL SUMMARY IN THIS NO GET API
+    dataObj.RawMaterialEntryType = Number(ENTRY_TYPE_IMPORT)
+   //THIS CONDTION IS FOR IF THIS COMPONENT IS RENDER FROM MASTER APPROVAL SUMMARY IN THIS NO GET API
     if (!props?.isMasterSummaryDrawer) {
       dispatch(getAllRMDataList(filterData, skip, take, isPagination, dataObj, true, (res) => {
 
@@ -1092,7 +1097,7 @@ function RMImportListing(props) {
                   >
                     <AgGridColumn cellClass="has-checkbox" field="CostingHead" headerName='Costing Head' cellRenderer={checkBoxRenderer}></AgGridColumn>
                     <AgGridColumn field="TechnologyName" headerName={technologyLabel}></AgGridColumn>
-                    {props?.isSimulation&&<AgGridColumn field="EntryType" headerName="Entry Type" cellRenderer={"hyphenFormatter"}></AgGridColumn>}
+                    {props?.isSimulation && <AgGridColumn field="EntryType" headerName="Entry Type" cellRenderer={"hyphenFormatter"}></AgGridColumn>}
                     <AgGridColumn field="RawMaterialName" headerName='Raw Material' ></AgGridColumn>
                     <AgGridColumn field="RawMaterialGradeName" headerName='Grade'></AgGridColumn>
                     <AgGridColumn field="RawMaterialSpecificationName" headerName='Spec'></AgGridColumn>

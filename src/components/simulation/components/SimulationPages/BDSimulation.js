@@ -966,6 +966,8 @@ function BDSimulation(props) {
                                                 {getConfigurationKey().IsMinimumOrderQuantityVisible && <AgGridColumn field="Quantity" tooltipField='Quantity' editable='false' headerName="Min Order Quantity" width={columnWidths.Quantity} cellRenderer='quantityFormatter'></AgGridColumn>}
                                                 {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn width={120} field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>}
                                                 {<AgGridColumn field="Currency" width={100} tooltipField='Currency' editable='false' headerName="Currency" minWidth={140} ></AgGridColumn>}
+                                                {(String(props?.masterId) === String(BOPIMPORT) || String(props?.masterId) === String(EXCHNAGERATE))&&(isImpactedMaster || props?.lastRevision)&&<AgGridColumn field="LocalCurrency" width={120}  headerName={"Plant Currency"}cellRenderer={"currencyFormatter"}></AgGridColumn>}
+
                                                 <AgGridColumn headerClass="justify-content-center" cellClass="text-center" headerName={
                                                     "Basic Rate (Currency)"
 
@@ -1000,9 +1002,9 @@ function BDSimulation(props) {
                                                     <AgGridColumn width={200} field="NewNetLandedCost" editable='false' valueGetter='data.NewBasicRate' cellRenderer={'NewcostFormatter'} headerName="Revised" colId='NewNetLandedCost' suppressSizeToFit={true}></AgGridColumn>
                                                 </AgGridColumn>
                                                 {
-                                                    String(props?.masterId) === String(BOPIMPORT) && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" headerName={`Net Cost (${reactLocalStorage.getObject("baseCurrency")})`} marryChildren={true} >
-                                                        <AgGridColumn width={120} field="OldBoughtOutPartNetLandedCostConversion" tooltipField='OldBoughtOutPartNetLandedCostConversion' editable='false' headerName="Existing" colId='OldBoughtOutPartNetLandedCostConversion'></AgGridColumn>
-                                                        <AgGridColumn width={120} field="NewBoughtOutPartNetLandedCostConversion" editable='false' headerName="Revised" colId='NewBoughtOutPartNetLandedCostConversion'></AgGridColumn>
+                                                    (String(props?.masterId) === String(BOPIMPORT) || String(props?.masterId) === String(EXCHNAGERATE))&&(isImpactedMaster || props?.lastRevision)  && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" headerName={`Net Cost (Plant Currency)`} marryChildren={true} >
+                                                        <AgGridColumn width={120} field="OldBoughtOutPartNetLandedCostLocalConversion" tooltipField='OldBoughtOutPartNetLandedCostConversion' editable='false' headerName="Existing" colId='OldBoughtOutPartNetLandedCostConversion'></AgGridColumn>
+                                                        <AgGridColumn width={120} field="NewBoughtOutPartNetLandedCostLocalConversion" editable='false' headerName="Revised" colId='NewBoughtOutPartNetLandedCostConversion'></AgGridColumn>
                                                     </AgGridColumn>
                                                 }
                                                 {props?.children}

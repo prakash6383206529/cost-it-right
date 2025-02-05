@@ -183,7 +183,7 @@ const OperationListing = (props) => {
         let statusString = [props?.approvalStatus].join(",")
 
         let filterData = {
-            operation_for: operation_for, operation_Name_id: operation_Name_id, technology_id: props.isSimulation ? props.technology : technology_id, vendor_id: !isSimulation ? vendor_id : props?.vendorLabel?.value, ListFor: props.ListFor, StatusId: statusString, OperationEntryType: !isSimulation ? (OperationEntryType ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC) : ENTRY_TYPE_IMPORT, Currency: isSimulation && props?.fromListData && props?.fromListData ? props?.fromListData : '',
+            operation_for: operation_for, operation_Name_id: operation_Name_id, technology_id: props.isSimulation ? props.technology : technology_id, vendor_id: !isSimulation ? vendor_id : isSimulation && props?.FromExchangeRate ? props?.vendorLabel?.value : '', ListFor: props.ListFor, StatusId: statusString, OperationEntryType: !isSimulation ? (OperationEntryType ? ENTRY_TYPE_IMPORT : ENTRY_TYPE_DOMESTIC) : ENTRY_TYPE_IMPORT, Currency: isSimulation && props?.fromListData && props?.fromListData ? props?.fromListData : '',
             LocalCurrency: isSimulation && props?.toListData && props?.toListData ? props?.toListData : '',
         }        // THIS IS FOR SHOWING LIST IN 1 TAB(OPERATION LISTING) & ALSO FOR SHOWING LIST IN SIMULATION
         if ((isMasterSummaryDrawer !== undefined && !isMasterSummaryDrawer)) {
@@ -826,7 +826,7 @@ const OperationListing = (props) => {
                     {(state.isLoader && !props.isMasterSummaryDrawer) && <LoaderCustom customClass="simulation-Loader" />}            {state.disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
                     <div className={`ag-grid-react ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${permissionData?.Download ? "show-table-btn no-tab-page" : ""}`}>
                         <form>
-                          {!props?.isSimulation && <Row>
+                            {!props?.isSimulation && <Row>
                                 <Col md="4" className="switch mt-3 mb-1">
                                     <label className="switch-level">
                                         <div className="left-title">Domestic</div>
@@ -952,6 +952,7 @@ const OperationListing = (props) => {
 
                                     <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
                                     {!isSimulation && <AgGridColumn field="Technology" tooltipField='Technology' filter={true} floatingFilter={true} headerName={technologyLabel}></AgGridColumn>}
+                                    {props?.isSimulation && <AgGridColumn field="EntryType" headerName="Entry Type" cellRenderer={"hyphenFormatter"}></AgGridColumn>}
                                     {getConfigurationKey().IsShowDetailedOperationBreakup && <AgGridColumn field="ForType" headerName="Operation Type" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                                     <AgGridColumn field="OperationName" tooltipField="OperationName" headerName="Operation Name"></AgGridColumn>
                                     <AgGridColumn field="OperationCode" headerName="Operation Code" cellRenderer={'hyphenFormatter'}></AgGridColumn>

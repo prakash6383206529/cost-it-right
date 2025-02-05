@@ -924,7 +924,6 @@ function VerifySimulation(props) {
                                             {isMasterAssociatedWithCosting && <AgGridColumn width={120} field="PartType" tooltipField="PartType" cellRenderer='partTypeFormatter' headerName="Part Type"></AgGridColumn>}
                                             {isMasterAssociatedWithCosting && <AgGridColumn width={130} field="RevisionNumber" tooltipField="RevisionNumber" cellRenderer='revisionFormatter' headerName="Revision No."></AgGridColumn>}
                                             {isMasterAssociatedWithCosting && <AgGridColumn width={160} field="InfoCategory" tooltipField="InfoCategory" cellRenderer='hyphenFormatter' headerName="Category"></AgGridColumn>}
-                                            {<AgGridColumn field="EntryType" headerName="Entry Type" cellRenderer={"hyphenFormatter"}></AgGridColumn>}
                                             {isRMDomesticOrRMImport === true && <AgGridColumn width={120} field="RMName" tooltipField="RMName" headerName="RM Name" ></AgGridColumn>}
                                             {isRMDomesticOrRMImport === true && <AgGridColumn width={120} field="RMGrade" tooltipField="RMGrade" headerName="Grade" ></AgGridColumn>}
                                             {isMachineRate && <AgGridColumn width={145} field="ProcessName" tooltipField="ProcessName" headerName="Process Name"></AgGridColumn>}

@@ -70,7 +70,7 @@ function ERSimulation(props) {
     const [showRawMaterialsList, setShowRawMaterialsList] = useState(false);
     const { isMasterAssociatedWithCosting } = useSelector(state => state.simulation)
     const [minDate, setMinDate] = useState('')
-    
+
     const dispatch = useDispatch()
     const columnWidths = {
 
@@ -91,9 +91,11 @@ function ERSimulation(props) {
     useEffect(() => {
         dispatch(getCurrencySelectList(() => { }))
         list && list?.map(item => {
-            item.NewCurrencyExchangeRate = item.CurrencyExchangeRate
-            return null
-        })
+            if (Number(item?.NewCurrencyExchangeRate) === Number(0)) {
+                item.NewCurrencyExchangeRate = item.CurrencyExchangeRate
+                return null
+            }
+})
     }, [])
     useEffect(() => {
         if (handleEditMasterPage) {
@@ -271,7 +273,13 @@ function ERSimulation(props) {
                 {
                     isImpactedMaster ?
                         checkForDecimalAndNull(row.NewCurrencyExchangeRate, getConfigurationKey().NoOfDecimalForPrice) :
-                        <span id={`newCurrencyExchangeRate-${props.rowIndex}`} className={`${!isbulkUpload ? 'form-control' : ''}`} title={cell ? Number(cell) : Number(row.CurrencyExchangeRate)} >{cell ? Number(cell) : Number(row.CurrencyExchangeRate)}</span>
+                        <span
+                            id={`newCurrencyExchangeRate-${props.rowIndex}`}
+                            className={`${!isbulkUpload ? 'form-control' : ''}`}
+                            title={cell ? Number(cell) : Number(row.NewCurrencyExchangeRate)}
+                        >
+                            {cell ? Number(cell) : Number(row.NewCurrencyExchangeRate)}
+                        </span>
                 }
             </>
         )
@@ -290,10 +298,10 @@ function ERSimulation(props) {
 
     const onRowSelect = () => {
         var selectedRows = gridApi.getSelectedRows();
-        
+
         setSelectedRowData(selectedRows);
-        
-        
+
+
     }
     const resetState = () => {
         gridOptions.columnApi.resetColumnState();
@@ -602,6 +610,7 @@ function ERSimulation(props) {
                 isFromVerifyPage={true}
                 cancelImportList={cancelImportList}
                 vendorLabel={props?.vendor}
+                FromExchangeRate={true}
 
             />}
             {showBOPMasterList &&
@@ -624,6 +633,7 @@ function ERSimulation(props) {
                     isFromVerifyPage={true}
                     cancelImportList={cancelImportList}
                     vendorLabel={props?.vendor}
+                    FromExchangeRate={true}
 
                 />}
             {(showOperationsList || showSurfaceTreatmentList) && (
@@ -639,6 +649,8 @@ function ERSimulation(props) {
                     fromListData={fromListData}
                     toListData={toListData}
                     vendorLabel={props?.vendor}
+                    FromExchangeRate={true}
+
 
                 />
             )}
@@ -655,6 +667,8 @@ function ERSimulation(props) {
                     fromListData={fromListData}
                     toListData={toListData}
                     vendorLabel={props?.vendor}
+                    FromExchangeRate={true}
+
 
 
                 />
@@ -673,6 +687,8 @@ function ERSimulation(props) {
                     isEffectiveDateSelected={isEffectiveDateSelected}
                     minDate={minDate}
                     vendorLabel={props?.vendor}
+                    FromExchangeRate={true}
+
 
                 />
             )}

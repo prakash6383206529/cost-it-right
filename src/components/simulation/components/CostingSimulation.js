@@ -245,8 +245,8 @@ function CostingSimulation(props) {
                     approvalTypeId: costingTypeIdToApprovalTypeIdFunction(amendmentDetails?.SimulationHeadId),
                     plantId: plantId
                 }
-                if (initialConfiguration.IsMultipleUserAllowForApproval ? plantId : true) {
-                    if (!getConfigurationKey().IsDivisionAllowedForDepartment) {
+                if (initialConfiguration?.IsMultipleUserAllowForApproval ? plantId : true) {
+                    if (!getConfigurationKey()?.IsDivisionAllowedForDepartment) {
                         dispatch(checkFinalUser(obj, res => {
                             if (res && res.data && res.data.Result) {
                                 setIsFinalLevelApprover(res.data.Data?.IsFinalApprover)

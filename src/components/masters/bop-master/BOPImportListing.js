@@ -233,7 +233,7 @@ const BOPImportListing = (props) => {
       ...floatingFilterData,
       bop_for: bopFor,
       category_id: CategoryId,
-      vendor_id: !props?.isSimulation ? vendorId : props?.vendorLabel?.value,
+      vendor_id: props?.isSimulation && props?.FromExchangeRate ? props?.vendorLabel?.value : vendorId,
       plant_id: plantId,
       ListFor: props?.isSimulation && !props?.isBOPAssociated ?"" : props.ListFor,
       StatusId: statusString,
