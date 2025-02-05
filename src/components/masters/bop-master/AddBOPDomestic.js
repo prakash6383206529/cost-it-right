@@ -1796,6 +1796,7 @@ class AddBOPDomestic extends Component {
                                 customClassName=" withBorder"
                               />
                             </Col></>}
+                          {!isTechnologyVisible &&
                           <Col md="3">
                             <div className='d-flex align-items-center'>
                               <div className="w-100">
@@ -1831,6 +1832,7 @@ class AddBOPDomestic extends Component {
                               </div>
                             </div>
                           </Col>
+                          }
 
                           {initialConfiguration?.IsBasicRateAndCostingConditionVisible && costingTypeId === ZBCTypeId && !isTechnologyVisible && <>
                             <Col md="3">

@@ -1623,7 +1623,8 @@ function AddRMFinancialDetails(props) {
                             {showNetCost() && <Col className="col-md-15">
                                 <TooltipCustom disabledIcon={true} width="350px" id="rm-net-cost-currency" tooltipText={states.isImport ? netCostTitle()?.tooltipTextPlantCurrency : netCostTitle()?.toolTipTextNetCostSelectedCurrency} />
                                 <TextFieldHookForm
-                                    label={`Net Cost (${!getValues('plantCurrency') ? 'Plant Currency' : getValues('plantCurrency')})`}
+                                    // label={`Net Cost (${!getValues('plantCurrency') ? 'Plant Currency' : getValues('plantCurrency')})`}
+                                    label={labelWithUOMAndCurrency("Net Cost ", state.UOM?.label === undefined ? 'UOM' : state.UOM?.label, `${!getValues('plantCurrency') ? 'Plant Currency' : getValues('plantCurrency')}`  )}
                                     name={'NetLandedCostLocalConversion'}
                                     id="rm-net-cost-currency"
                                     placeholder={"-"}
