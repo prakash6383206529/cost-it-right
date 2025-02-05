@@ -696,12 +696,14 @@ function AddRMDetails(props) {
                                     />
                                 </div>
                                 {!(isEditFlag || isViewFlag) && (
+                                    // <div className="mt-3">
                                     <Button
                                         id="addRMDomestic_RMToggle"
                                         onClick={openRMdrawer}
-                                        className={`right`}
+                                        className={`right mt-2`}
                                         variant="plus-icon-square"
                                     />
+                                    // </div>
                                 )}
                             </div>
                         </Col>

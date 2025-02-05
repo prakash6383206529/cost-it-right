@@ -44,6 +44,7 @@ const UOMMaster = (props) => {
   const [selectedRowData, setSelectedRowData] = useState(false);
   const [noData, setNoData] = useState(false);
   const [dataCount, setDataCount] = useState(0);
+  const [totalRecordCount, setTotalRecordCount] = useState(0)
   const dispatch = useDispatch();
   const { topAndLeftMenuData } = useSelector(state => state.auth);
   const unitOfMeasurementList = useSelector(state => state.unitOfMeasrement.unitOfMeasurementList);
@@ -65,6 +66,7 @@ const UOMMaster = (props) => {
       if (response && response.data && response.data.DataList) {
         const data = response.data.DataList;
         setDataList(data);
+        setTotalRecordCount(data?.length)
       }
     }));
   }
@@ -114,6 +116,7 @@ const UOMMaster = (props) => {
   const onFloatingFilterChanged = (value) => {
     setTimeout(() => {
       dataList.length !== 0 && setNoData(searchNocontentFilter(value, noData))
+      setTotalRecordCount(gridApi?.getDisplayedRowCount())
     }, 500);
   }
 
@@ -253,9 +256,9 @@ const UOMMaster = (props) => {
             {
               DownloadAccessibility &&
               <>
-                <ExcelFile filename={UomMaster} fileExtension={'.xls'} element={<Button id={"Excel-Downloads-uomListing"} title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} type="button" className={'user-btn mr5'} icon={"download mr-1"} buttonName={`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} />
+                <ExcelFile filename={UomMaster} fileExtension={'.xls'} element={<Button id={"Excel-Downloads-uomListing"} disabled={totalRecordCount === 0} title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} type="button" className={'user-btn mr5'} icon={"download mr-1"} buttonName={`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} />
                 }>
-                  {onBtExport()}
+                  {totalRecordCount !== 0 ? onBtExport() : null}
                 </ExcelFile>
               </>
               //   <button type="button" className={"user-btn mr5"} onClick={onBtExport}><div className={"download"} ></div>Download</button>

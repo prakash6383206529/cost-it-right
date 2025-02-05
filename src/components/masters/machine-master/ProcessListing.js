@@ -48,6 +48,7 @@ const ProcessListing = (props) => {
     dataCount: 0,
     render: false,
     showExtraData: false,
+    totalRecordCount: 0
   });
   const permissions = useContext(ApplyPermission);
 
@@ -61,7 +62,7 @@ const ProcessListing = (props) => {
 
   useEffect(() => {
     if (processList && processList.length > 0) {
-      setState((prevState) => ({ ...prevState, tableData: processList, }));
+      setState((prevState) => ({ ...prevState, tableData: processList,totalRecordCount: processList?.length }));
     }
   }, [processList]);
 
@@ -121,7 +122,7 @@ const ProcessListing = (props) => {
         setState((prevState) => ({ ...prevState, isLoader: false }));
         if (res && res.status === 200) {
           let Data = res.data.DataList;
-          setState((prevState) => ({ ...prevState, tableData: Data }));
+          setState((prevState) => ({ ...prevState, tableData: Data,totalRecordCount: Data?.length }));
         } else if (res && res.response && res.response.status === 412) {
           setState((prevState) => ({ ...prevState, tableData: [] }));
         } else {
@@ -180,7 +181,7 @@ const ProcessListing = (props) => {
   const onFloatingFilterChanged = (value) => {
     setTimeout(() => {
       processList.length !== 0 &&
-        setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(value, state.noData) }));
+        setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(value, state.noData),totalRecordCount: state.gridApi?.getDisplayedRowCount() }));
     }, 500);
   };
 
@@ -323,6 +324,7 @@ const ProcessListing = (props) => {
                             : "(" + state.dataCount + ")"
                             }`}
                           type="button"
+                          disabled={state?.totalRecordCount === 0}
                           className={"user-btn mr5 Tour_List_Download"}
                         >
                           <div className="download mr-1"></div>
@@ -333,7 +335,7 @@ const ProcessListing = (props) => {
                         </button>
                       }
                     >
-                      {onBtExport()}
+                      {state?.totalRecordCount !== 0 ? onBtExport() : null}
                     </ExcelFile>
                   </>
                 )}

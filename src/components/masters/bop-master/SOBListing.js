@@ -251,6 +251,7 @@ const SOBListing = (props) => {
   const onFloatingFilterChanged = (value) => {
     setTimeout(() => {
       bopSobList.length !== 0 && setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(value, state.noData) }));
+      setTotalRecordCount(gridOptions?.api?.getDisplayedRowCount())
     }, 500);
     setDisableFilter(false)
 
@@ -643,6 +644,7 @@ const SOBListing = (props) => {
                     className="mr5 Tour_List_Download"
                     id={"sobListing_excel_download"}
                     onClick={onExcelDownload}
+                    disabled={totalRecordCount === 0}
                     title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}
                     icon={"download mr-1"}
                     buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}

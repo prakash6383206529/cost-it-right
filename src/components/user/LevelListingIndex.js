@@ -80,7 +80,7 @@ function ManageLevelTabs(props) {
                     </Col> */}
                     <Col md="6 d-flex">
                         <h2 className="manage-level-heading d-flex">{`Highest Level of Approvals`}
-                            <div className="mt-0">
+                            <div className="mt-0 ml-3">
                             <TourWrapper
                                 buttonSpecificProp={{
                                     id: "HightestLevel_Approval_ListingTour"

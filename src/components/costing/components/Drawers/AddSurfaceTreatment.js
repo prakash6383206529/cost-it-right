@@ -26,6 +26,7 @@ function AddSurfaceTreatment(props) {
   const [gridApi, setGridApi] = useState(null);
   const [gridColumnApi, setGridColumnApi] = useState(null);
   const [noData, setNoData] = useState(false);
+  const [render,setRender] = useState(false);
 
   const dispatch = useDispatch()
   const { technologyLabel } = useLabels();
@@ -67,6 +68,7 @@ function AddSurfaceTreatment(props) {
       } else {
         setTableDataList([])
       }
+      setRender(true);
     }))
 
   }, []);
@@ -114,6 +116,11 @@ function AddSurfaceTreatment(props) {
   }
 
   const isFirstColumn = (params) => {
+
+    const allSelectedSurfaceTreatment = tableData?.every(surfaceTreatment => props.Ids?.includes(surfaceTreatment.OperationId));
+    if (allSelectedSurfaceTreatment) {
+      return false; 
+    }
     var displayedColumns = params.columnApi.getAllDisplayedColumns();
     var thisIsFirstColumn = displayedColumns[0] === params.column;
 
@@ -125,8 +132,8 @@ function AddSurfaceTreatment(props) {
     filter: true,
     sortable: false,
     headerCheckboxSelectionFilteredOnly: true,
-    headerCheckboxSelection: isFirstColumn,
-    checkboxSelection: isFirstColumn
+    headerCheckboxSelection: render ? isFirstColumn : false,
+    checkboxSelection: render ? isFirstColumn : false
   };
 
 
@@ -217,7 +224,7 @@ function AddSurfaceTreatment(props) {
                     </div>
                     <div className="ag-theme-material p-relative">
                       {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found drawer" />}
-                      <AgGridReact
+                      {render && <AgGridReact
                         style={{ height: '100%', width: '100%' }}
                         defaultColDef={defaultColDef}
                         floatingFilter={true}
@@ -249,7 +256,7 @@ function AddSurfaceTreatment(props) {
                         {initialConfiguration && initialConfiguration.IsOperationLabourRateConfigure && <AgGridColumn field="LabourRate" headerName='Labour Rate' ></AgGridColumn>}
 
 
-                      </AgGridReact>
+                      </AgGridReact>}
                       {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
                     </div>
                   </div>

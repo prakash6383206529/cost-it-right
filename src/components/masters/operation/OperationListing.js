@@ -262,7 +262,7 @@ const OperationListing = (props) => {
     const onFloatingFilterChanged = (value) => {
         setTimeout(() => {
             if (operationList?.length !== 0) {
-                setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(value, state.noData), }));
+                setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(value, state.noData),totalRecordCount: state?.gridApi?.getDisplayedRowCount() }));
             }
         }, 500);
         setState((prevState) => ({ ...prevState, disableFilter: false }));
@@ -844,7 +844,7 @@ const OperationListing = (props) => {
                                         permissionData?.Download && !props?.isMasterSummaryDrawer &&
                                         <>
 
-                                            <Button className="user-btn mr5 Tour_List_Download" id={"operationListing_excel_download"} onClick={onExcelDownload} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}
+                                            <Button className="user-btn mr5 Tour_List_Download" id={"operationListing_excel_download"} onClick={onExcelDownload} disabled={state?.totalRecordCount === 0} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}
                                                 icon={"download mr-1"}
                                                 buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}
                                             />

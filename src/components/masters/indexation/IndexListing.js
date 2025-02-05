@@ -145,6 +145,7 @@ const IndexListing = () => {
             if (indexCommodityDataList?.length !== 0) {
                 const newNoData = searchNocontentFilter(value, noData);
                 setNoData(newNoData);
+                setTotalRecordCount(gridApi?.getDisplayedRowCount())
             }
         }, 500);
 
@@ -451,6 +452,7 @@ const IndexListing = () => {
                                 className="mr5 Tour_List_Download"
                                 id={"index_excel_download"}
                                 onClick={onExcelDownload}
+                                disabled={totalRecordCount === 0}
                                 title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
                                 icon={"download mr-1"}
                                 buttonName={`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}

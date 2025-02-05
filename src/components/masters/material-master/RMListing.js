@@ -54,7 +54,8 @@ const RMListing = (props) => {
     dataCount: 0,
     render: false,
     showExtraData: false,
-    isViewFlag: false
+    isViewFlag: false,
+    totalRecordCount: 0
   });
   useEffect(() => {
     getListData();
@@ -69,7 +70,7 @@ const RMListing = (props) => {
     setState((prevState) => ({ ...prevState, isLoader: true }));
     dispatch(
       getMaterialTypeDataListAPI((res) =>
-        setState((prevState) => ({ ...prevState, isLoader: false }))
+        setState((prevState) => ({ ...prevState, isLoader: false, totalRecordCount: res?.data?.DataList?.length }))
       )
     );
   };
@@ -93,7 +94,7 @@ const RMListing = (props) => {
     setTimeout(() => {
       rawMaterialTypeDataList.length !== 0 &&
         setState((prevState) => ({
-          ...prevState, noData: searchNocontentFilter(value, prevState.noData),
+          ...prevState, noData: searchNocontentFilter(value, prevState.noData),totalRecordCount: state?.gridApi?.getDisplayedRowCount()
         }));
     }, 500);
   };
@@ -337,19 +338,17 @@ const RMListing = (props) => {
             <Button id="rmSpecification_addMaterial" className="mr5 Tour_List_AddMaterial" onClick={openModel} title="Add Material" icon={"plus mr-0 ml5"} buttonName="M" />
           )}
           {permissions.Download && (
-            <>
               <>
                 <ExcelFile
                   filename={"Rm Material"}
                   fileExtension={".xls"}
                   element={
-                    <Button id={"Excel-Downloads-Rm Material"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5 Tour_List_Download'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
+                    <Button id={"Excel-Downloads-Rm Material"}  disabled={state?.totalRecordCount === 0} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5 Tour_List_Download'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
                   }
                 >
-                  {onBtExport()}
+                 {state?.totalRecordCount !== 0 ? onBtExport() : null}
                 </ExcelFile>
               </>
-            </>
           )}
           <Button id={"rmSpecification_refresh"} className={" Tour_List_Reset"} onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
         </Col>

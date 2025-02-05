@@ -206,6 +206,7 @@ const OutsourcingListing = (props) => {
         setTimeout(() => {
             if (outsourcingDataList?.length !== 0) {
                 setNoData(searchNocontentFilter(value, noData))
+                setTotalRecordCount(gridApi?.getDisplayedRowCount())
             }
         }, 500);
         setDisableFilter(false)
@@ -466,7 +467,7 @@ const OutsourcingListing = (props) => {
                                     {AddAccessibility && (<Button id="outsourcingListing_add" className={"mr5"} onClick={formToggle} title={"Add"} icon={"plus"} />)}
                                     {DownloadAccessibility &&
                                         <>
-                                            <Button className="mr5" id={"outsourceListing_excel_download"} onClick={onExcelDownload} title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} icon={"download mr-1"} buttonName={`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} />
+                                            <Button className="mr5" id={"outsourceListing_excel_download"} disabled={totalRecordCount===0} onClick={onExcelDownload} title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} icon={"download mr-1"} buttonName={`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} />
                                             <ExcelFile filename={'Outsourcing'} fileExtension={'.xls'} element={
                                                 <Button id={"Excel-Downloads-outsourcing"} className="p-absolute" />
 

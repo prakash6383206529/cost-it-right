@@ -311,7 +311,7 @@ function TabDiscountOther(props) {
       <Button
         id="tabDiscount_otherCost"
         onClick={() => handleOtherCostdrawer()}
-        className={"right mt15"}
+        className={"right mt-2"}
         variant={viewAddButtonIcon(otherCostData.gridData, "className")}
         title={viewAddButtonIcon(otherCostData.gridData, "title")}
       />
@@ -377,7 +377,7 @@ function TabDiscountOther(props) {
       <Button
         id="tabDiscount_otherCost"
         onClick={handleOtherDiscountDrawer}
-        className={"right mt15"}
+        className={"right mt-2"}
         variant={viewAddButtonIcon(otherDiscountData.gridData, "className")}
         title={viewAddButtonIcon(otherDiscountData.gridData, "title")}
       />
@@ -417,7 +417,7 @@ function TabDiscountOther(props) {
         <Button
           id="tabDiscount_condition"
           onClick={() => openAndCloseAddConditionCosting('Open')}
-          className={"right mt15"}
+          className={"right mt-2"}
           variant={viewAddButtonIcon(conditionTableData, "className")}
           title={viewAddButtonIcon(conditionTableData, "title")}
         />

@@ -174,6 +174,10 @@ function AddRM(props) {
   const onSubmit = data => { }
 
   const isFirstColumn = (params) => {
+    const allRMsSelected = rmDrawerList?.every(rm => Ids.includes(rm.RawMaterialId));
+    if (allRMsSelected) {
+      return false;
+    }
     var displayedColumns = params.columnApi.getAllDisplayedColumns();
     var thisIsFirstColumn = displayedColumns[0] === params.column;
 
