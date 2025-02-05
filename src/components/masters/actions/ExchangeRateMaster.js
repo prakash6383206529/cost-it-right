@@ -177,7 +177,7 @@ export function createMultipleExchangeRate(dataList, currencySelectList, effecti
                 "BankRate": item?.BankRate,
                 "CustomRate": item?.CustomRate,
                 "BankCommissionPercentage": item?.BankCommissionPercentage,
-                "EffectiveDate": DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
+                "EffectiveDate": DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss') ? DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss') : '',
                 "LoggedInUserId": loggedInUserId(),
                 "CostingHeadId": item?.CostingHeadId ? item?.CostingHeadId : item?.CostingTypeId,
                 "CustomerId": item?.CustomerId,

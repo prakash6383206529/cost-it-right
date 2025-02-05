@@ -279,21 +279,36 @@ class AddMachineRate extends Component {
       };
 
       if (isImport && fromCurrency !== undefined) {
-        callAPI(fromCurrency, plantCurrency)
-          .then(result1 => {
-            callAPI(fromCurrency, toCurrency)
-              .then(result2 => {
-
-                resolve({
-                  plantCurrency: result1.rate,
-                  settlementCurrency: result2.rate,
-                  plantExchangeRateId: result1.exchangeRateId,
-                  settlementExchangeRateId: result2.exchangeRateId,
-                  showPlantWarning: result1.showPlantWarning,
-                  showWarning: result2.showWarning
-                });
+        if (plantCurrency === reactLocalStorage?.getObject("baseCurrency")) {
+          // Make only one API call
+          callAPI(fromCurrency, plantCurrency)
+            .then(result => {
+              resolve({
+                plantCurrency: result.rate,
+                settlementCurrency: result.rate, // Use same rate
+                plantExchangeRateId: result.exchangeRateId,
+                settlementExchangeRateId: result.exchangeRateId, // Use same ID
+                showPlantWarning: result.showPlantWarning,
+                showWarning: result.showWarning
               });
-          });
+            });
+        } else {
+          // Make two API calls as currencies are different
+          callAPI(fromCurrency, plantCurrency)
+            .then(result1 => {
+              callAPI(fromCurrency, toCurrency)
+                .then(result2 => {
+                  resolve({
+                    plantCurrency: result1.rate,
+                    settlementCurrency: result2.rate,
+                    plantExchangeRateId: result1.exchangeRateId,
+                    settlementExchangeRateId: result2.exchangeRateId,
+                    showPlantWarning: result1.showPlantWarning, 
+                    showWarning: result2.showWarning
+                  });
+                });
+            });
+        }
       } else if (!isImport && plantCurrency !== reactLocalStorage?.getObject("baseCurrency")) {
         callAPI(fromCurrency, toCurrency)
           .then(result => {
@@ -2323,10 +2338,9 @@ class AddMachineRate extends Component {
                             id="machine-rate-plant"
                             type="text"
                             placeholder={isViewMode || lockUOMAndRate || (isEditFlag && isMachineAssociated) ? '-' : 'Enter'}
-                            validate={[number, maxLength10, decimalLengthsix, hashValidation]}
+                            validate={[]}
                             component={renderText}
-                            onChange={this.handleMachineRatePlantCurrency}
-                            required={true}
+                            onChange={()=>{}}
                             disabled={true}
                             className=" "
                             customClassName=" withBorder"
@@ -2342,10 +2356,9 @@ class AddMachineRate extends Component {
                             id="machine-rate"
                             type="text"
                             placeholder={isViewMode || lockUOMAndRate || (isEditFlag && isMachineAssociated) ? '-' : 'Enter'}
-                            validate={[number, maxLength10, decimalLengthsix, hashValidation]}
                             component={renderText}
-                            onChange={this.handleMachineRateBasicCurrency}
-                            required={true}
+                            validate={[]}
+                            onChange={()=>{}}
                             disabled={true}
                             className=" "
                             customClassName=" withBorder"

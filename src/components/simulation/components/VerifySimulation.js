@@ -15,7 +15,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { debounce } from 'lodash'
 import { PaginationWrapper } from '../../common/commonPagination';
-import { APPLICABILITY_BOP_SIMULATION, APPLICABILITY_MACHINE_RATES_SIMULATION, APPLICABILITY_OPERATIONS_SIMULATION, APPLICABILITY_PART_SIMULATION, APPLICABILITY_RM_SIMULATION, APPLICABILITY_SURFACE_TREATMENT_SIMULATION, ASSEMBLY_TECHNOLOGY_MASTER } from '../../../config/masterData';
+import { APPLICABILITY_BOP_NON_ASSOCIATED_SIMULATION, APPLICABILITY_BOP_SIMULATION, APPLICABILITY_MACHINE_RATES_SIMULATION, APPLICABILITY_OPERATIONS_SIMULATION, APPLICABILITY_PART_SIMULATION, APPLICABILITY_RM_SIMULATION, APPLICABILITY_SURFACE_TREATMENT_SIMULATION, ASSEMBLY_TECHNOLOGY_MASTER } from '../../../config/masterData';
 import DayTime from '../../common/DayTimeWrapper';
 import DatePicker from "react-datepicker";
 import { reactLocalStorage } from 'reactjs-localstorage';
@@ -54,7 +54,7 @@ function VerifySimulation(props) {
     const isSurfaceTreatmentOrOperation = ((Number(selectedMasterForSimulation.value) === Number(SURFACETREATMENT)) || (Number(selectedMasterForSimulation.value) === Number(OPERATIONS)) || simulationApplicability?.value === APPLICABILITY_SURFACE_TREATMENT_SIMULATION || simulationApplicability?.value === APPLICABILITY_OPERATIONS_SIMULATION);
     const isRMDomesticOrRMImport = ((Number(selectedMasterForSimulation.value) === Number(RMDOMESTIC)) || (Number(selectedMasterForSimulation.value) === Number(RMIMPORT)) || simulationApplicability?.value === APPLICABILITY_RM_SIMULATION);
     const isExchangeRate = Number(selectedMasterForSimulation.value) === (Number(EXCHNAGERATE));
-    const isBOPDomesticOrImport = ((Number(selectedMasterForSimulation.value) === Number(BOPDOMESTIC)) || (Number(selectedMasterForSimulation.value) === Number(BOPIMPORT)) || simulationApplicability?.value === APPLICABILITY_BOP_SIMULATION);
+    const isBOPDomesticOrImport = ((Number(selectedMasterForSimulation.value) === Number(BOPDOMESTIC)) || (Number(selectedMasterForSimulation.value) === Number(BOPIMPORT)) || simulationApplicability?.value === APPLICABILITY_BOP_SIMULATION||simulationApplicability?.value === APPLICABILITY_BOP_NON_ASSOCIATED_SIMULATION);
     const isMachineRate = (Number(selectedMasterForSimulation.value) === (Number(MACHINERATE)) || simulationApplicability?.value === APPLICABILITY_MACHINE_RATES_SIMULATION);
     const isOverHeadProfit = Number(selectedMasterForSimulation.value) === (Number(OVERHEAD));
     const isMultiTechnology = (checkForNull(selectedMasterForSimulation.value) === ASSEMBLY_TECHNOLOGY_MASTER) ? true : false;
@@ -204,6 +204,7 @@ function VerifySimulation(props) {
                             handleRawMaterialCase(props.token, plant, rawMatrialId);
                             break;
                         case APPLICABILITY_BOP_SIMULATION:
+                        case APPLICABILITY_BOP_NON_ASSOCIATED_SIMULATION:
 
                             handleBOPCase();
                             break;
@@ -569,6 +570,7 @@ function VerifySimulation(props) {
                             masterTemp = RMIMPORT;
                             break;
                         case APPLICABILITY_BOP_SIMULATION:
+                        case APPLICABILITY_BOP_NON_ASSOCIATED_SIMULATION:
                             masterTemp = BOPIMPORT;
                             break;
                         case APPLICABILITY_MACHINE_RATES_SIMULATION:

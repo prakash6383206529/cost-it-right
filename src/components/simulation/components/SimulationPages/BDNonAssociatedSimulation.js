@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef, useContext } from 'react';
 import { Row, Col, Tooltip, } from 'reactstrap';
 import DayTime from '../../../common/DayTimeWrapper'
-import { defaultPageSize, EMPTY_DATA, CBCTypeId, EXCHNAGERATE } from '../../../../config/constants';
+import { defaultPageSize, EMPTY_DATA, CBCTypeId, EXCHNAGERATE, RMIMPORT } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter, showBopLabel } from '../../../../helper';
 import Toaster from '../../../common/Toaster';
@@ -201,7 +201,7 @@ const setValueFunction = (isExchangeRate, res) => {
     }
 
     let obj = {
-        SimulationTechnologyId: selectedMasterForSimulation?.value,
+        SimulationTechnologyId: isExchangeRate ? EXCHNAGERATE : selectedMasterForSimulation?.value,
         SimulationTypeId: list[0].CostingTypeId,
         LoggedInUserId: loggedInUserId(),
         TechnologyId: selectedTechnologyForSimulation?.value ? selectedTechnologyForSimulation?.value : null,
@@ -965,6 +965,7 @@ const basicPriceRevisedFormatter = (props) => {
                                                 onCellValueChanged={onCellValueChanged}
                                             >
                                                 {/* <AgGridColumn field="Technologies" editable='false' headerName="Technology" minWidth={190}></AgGridColumn> */}
+                                                {<AgGridColumn field="EntryType" headerName="Entry Type" cellRenderer={"hyphenFormatter"}></AgGridColumn>}
                                                 <AgGridColumn field="BoughtOutPartNumber" tooltipField='BoughtOutPartNumber' editable='false' headerName={`${showBopLabel()} Part No.`} minWidth={columnWidths.BoughtOutPartNumber}></AgGridColumn>
                                                 <AgGridColumn field="BoughtOutPartName" tooltipField='BoughtOutPartName' editable='false' headerName={`${showBopLabel()} Part Name`} minWidth={columnWidths.BoughtOutPartNumber}></AgGridColumn>
                                                 {<AgGridColumn field="BoughtOutPartCategory" tooltipField='BoughtOutPartCategory' editable='false' headerName={`${showBopLabel()} Category`} minWidth={columnWidths.BoughtOutPartCategory}></AgGridColumn>}
@@ -974,6 +975,8 @@ const basicPriceRevisedFormatter = (props) => {
                                                 {getConfigurationKey().IsMinimumOrderQuantityVisible && <AgGridColumn field="NumberOfPieces" tooltipField='NumberOfPieces' editable='false' headerName="Min Order Quantity" minWidth={columnWidths.NumberOfPieces} ></AgGridColumn>}
                                                 {getConfigurationKey().IsSourceExchangeRateNameVisible && <AgGridColumn width={120}field="ExchangeRateSourceName" headerName="Exchange Rate Source"></AgGridColumn>}
                                                 {<AgGridColumn field="Currency"width={120} tooltipField='Currency' editable='false' headerName="Currency" minWidth={140} ></AgGridColumn>}
+                                                
+                                                <AgGridColumn field="LocalCurrency" width={120}  headerName={"Plant Currency"}cellRenderer={"currencyFormatter"}></AgGridColumn>
                                                 <AgGridColumn headerClass="justify-content-center" cellClass="text-center" headerName={`${Number(selectedMasterForSimulation?.value) === 5 ? "Basic Rate (Currency)" : "Basic Rate (" + reactLocalStorage.getObject("baseCurrency") + ")"}`} marryChildren={true} width={240}>
                                                     <AgGridColumn width={140} field="BasicRate" editable='false' cellRenderer='oldBasicRateFormatter' headerName="Existing" colId="BasicRate"></AgGridColumn>
                                                     <AgGridColumn width={140} cellRenderer='newBasicRateFormatter' editable={EditableCallbackForBasicRate} onCellValueChanged='cellChange' field="NewBasicRate" valueGetter={ageValueGetter} headerName="Revised" colId='NewBasicRate' headerComponent={'revisedBasicRateHeader'}></AgGridColumn>
@@ -1005,7 +1008,14 @@ const basicPriceRevisedFormatter = (props) => {
                                                     <AgGridColumn width={120} field="OldNetLandedCost" editable='false' cellRenderer={'OldcostFormatter'} headerName="Existing" colId='NetLandedCost'></AgGridColumn>
                                                     <AgGridColumn width={120} field="NewNetLandedCost" editable='false' cellRenderer={'NewcostFormatter'} headerName="Revised" valueGetter={ageValueGetterLanded} colId='NewNetLandedCost'></AgGridColumn>
                                                 </AgGridColumn>
+                                                {(String(props?.masterId) === String(RMIMPORT) || String(props?.masterId) === String(EXCHNAGERATE)) &&<AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={
+                                                    "Net Cost (Plant Currency)"
 
+                                                }>
+                                                    <AgGridColumn width={columnWidths.NetLandedCost} field="OldNetLandedCostLocalConversion"  editable='false' cellRenderer={'costFormatter'} headerName="Existing" colId='OldNetLandedCostLocalConversion'></AgGridColumn>
+                                                    <AgGridColumn width={columnWidths.NewNetLandedCost} field="NewNetLandedCostLocalConversion" editable='false' valueGetter={ageValueGetterLanded} cellRenderer={'NewcostFormatter'} headerName="Revised" colId='NewNetLandedCostLocalConversion'></AgGridColumn>
+                                                </AgGridColumn>
+                                                }
 
                                                 <AgGridColumn field="EffectiveDate" headerName={props.isImpactedMaster && !props.lastRevision ? "Current Effective date" : "Effective Date"} editable='false' minWidth={columnWidths.EffectiveDate} cellRenderer='effectiveDateRenderer'></AgGridColumn>
                                                 <AgGridColumn field="CostingId" hide={true}></AgGridColumn>

@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import SimulationUploadDrawer from './SimulationUploadDrawer';
 import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, RM_MASTER_ID, searchCount, VBC_VENDOR_TYPE, APPROVED_STATUS, EMPTY_GUID, MACHINE, MASTERS, VBCTypeId, ZBCTypeId, CBCTypeId, ZBC, RAWMATERIALINDEX, NONINDEXED } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
-import { getTechnologyForSimulation, OperationSimulation, RMDomesticSimulation, RMImportSimulation, SurfaceTreatmentSimulation, MachineRateSimulation, BOPDomesticSimulation, BOPImportSimulation, IdForMultiTechnology, ASSEMBLY_TECHNOLOGY_MASTER, ASSEMBLY, associationDropdownList, NON_ASSOCIATED, ASSOCIATED, applicabilityList, APPLICABILITY_RM_SIMULATION, APPLICABILITY_BOP_SIMULATION, indexationDropdown, DUMMYOTHERCOSTDATA, DUMMYCONDITIONCOSTDATA, APPLICABILITY_RAWMATERIAL_SIMULATION } from '../../../config/masterData';
+import { getTechnologyForSimulation, OperationSimulation, RMDomesticSimulation, RMImportSimulation, SurfaceTreatmentSimulation, MachineRateSimulation, BOPDomesticSimulation, BOPImportSimulation, IdForMultiTechnology, ASSEMBLY_TECHNOLOGY_MASTER, ASSEMBLY, associationDropdownList, NON_ASSOCIATED, ASSOCIATED, applicabilityList, APPLICABILITY_RM_SIMULATION, APPLICABILITY_BOP_SIMULATION, indexationDropdown, DUMMYOTHERCOSTDATA, DUMMYCONDITIONCOSTDATA, APPLICABILITY_RAWMATERIAL_SIMULATION, APPLICABILITY_SURFACE_TREATMENT_SIMULATION, APPLICABILITY_OPERATIONS_SIMULATION, APPLICABILITY_MACHINE_RATES_SIMULATION, APPLICABILITY_BOP_NON_ASSOCIATED_SIMULATION } from '../../../config/masterData';
 import { COMBINED_PROCESS } from '../../../config/constants';
 import { CombinedProcessSimulation } from '../../../config/masterData';
 import RMSimulation from './SimulationPages/RMSimulation';
@@ -155,7 +155,7 @@ function Simulation(props) {
     }, [])
 
     const masterList = useSelector(state => state.simulation.masterSelectListSimulation)
-    
+
     const rmDomesticListing = useSelector(state => state.material.rmDataList)
     const rmImportListing = useSelector(state => state.material.rmImportDataList)
     const bopDomesticList = useSelector(state => state.material.bopDomesticList)
@@ -164,8 +164,8 @@ function Simulation(props) {
     const operationList = useSelector(state => state.material.operationList)
     const customerList = useSelector(state => state.client.clientSelectList)
     const simulationApplicability = useSelector(state => state.simulation.simulationApplicability)
-    
-    
+
+
     const technologySelectList = useSelector(state => state.costing.costingSpecifiTechnology)
     useEffect(() => {
         // CHECK FOR ASSEMBLY TECHNOLOGY APPLIED BECAUSE WE DON'T WANT TO DO LINKED TOKEN API FOR IT
@@ -303,11 +303,15 @@ function Simulation(props) {
             setShowTokenDropdown(true)
             setEditWarning(true);
         }, 200);
-        dispatch(setIsMasterAssociatedWithCosting(true))
         if (String(value.value) === APPLICABILITY_RAWMATERIAL_SIMULATION) {
             if (!getConfigurationKey()?.IsShowMaterialIndexation) {
                 handleType(indexationDropdown[1])
             }
+        } if (String(master.value) === EXCHNAGERATE && String(value.value) === APPLICABILITY_BOP_NON_ASSOCIATED_SIMULATION) {
+            dispatch(setIsMasterAssociatedWithCosting(false))
+        } else {
+            dispatch(setIsMasterAssociatedWithCosting(true))
+
         }
     }
 
@@ -431,8 +435,16 @@ function Simulation(props) {
         let simuTechId = technology?.value
         if (master?.value === EXCHNAGERATE && applicability?.value === APPLICABILITY_RM_SIMULATION) {
             simuTechId = RMIMPORT
-        } else if (master?.value === EXCHNAGERATE && applicability?.value === APPLICABILITY_BOP_SIMULATION) {
+        } else if (master?.value === EXCHNAGERATE && (applicability?.value === APPLICABILITY_BOP_SIMULATION || applicability?.value === APPLICABILITY_BOP_NON_ASSOCIATED_SIMULATION)) {
             simuTechId = BOPIMPORT
+        } else if (master?.value === EXCHNAGERATE && applicability?.value === APPLICABILITY_SURFACE_TREATMENT_SIMULATION) {
+            simuTechId = SURFACETREATMENT
+        } else if (master?.value === EXCHNAGERATE && applicability?.value === APPLICABILITY_OPERATIONS_SIMULATION) {
+            simuTechId = OPERATIONS
+        } else if (master?.value === EXCHNAGERATE && applicability?.value === APPLICABILITY_MACHINE_RATES_SIMULATION) {
+            simuTechId = MACHINERATE
+        } else if (master?.value === EXCHNAGERATE && applicability?.value === APPLICABILITY_RAWMATERIAL_SIMULATION) {
+            simuTechId = RAWMATERIALINDEX
         }
         let obj = {
             technologyId: technology?.value ? technology?.value : 0,
@@ -510,6 +522,16 @@ function Simulation(props) {
             simuTechId = RMIMPORT
         } else if (master?.value === EXCHNAGERATE && applicability?.value === APPLICABILITY_BOP_SIMULATION) {
             simuTechId = BOPIMPORT
+        } else if (master?.value === EXCHNAGERATE && (applicability?.value === APPLICABILITY_BOP_SIMULATION || applicability?.value === APPLICABILITY_BOP_NON_ASSOCIATED_SIMULATION)) {
+            simuTechId = BOPIMPORT
+        } else if (master?.value === EXCHNAGERATE && applicability?.value === APPLICABILITY_SURFACE_TREATMENT_SIMULATION) {
+            simuTechId = SURFACETREATMENT
+        } else if (master?.value === EXCHNAGERATE && applicability?.value === APPLICABILITY_OPERATIONS_SIMULATION) {
+            simuTechId = OPERATIONS
+        } else if (master?.value === EXCHNAGERATE && applicability?.value === APPLICABILITY_MACHINE_RATES_SIMULATION) {
+            simuTechId = MACHINERATE
+        } else if (master?.value === EXCHNAGERATE && applicability?.value === APPLICABILITY_RAWMATERIAL_SIMULATION) {
+            simuTechId = RAWMATERIALINDEX
         }
         let obj = {
             technologyId: technology?.value ? technology?.value : 0,
@@ -713,8 +735,16 @@ function Simulation(props) {
         let masterTemp
         if (master?.value === EXCHNAGERATE && simulationApplicability?.value === APPLICABILITY_RM_SIMULATION) {
             masterTemp = RMIMPORT
-        } else if (master?.value === EXCHNAGERATE && simulationApplicability?.value === APPLICABILITY_BOP_SIMULATION) {
+        } else if (master?.value === EXCHNAGERATE && (applicability?.value === APPLICABILITY_BOP_SIMULATION || applicability?.value === APPLICABILITY_BOP_NON_ASSOCIATED_SIMULATION)) {
             masterTemp = BOPIMPORT
+        } else if (master?.value === EXCHNAGERATE && applicability?.value === APPLICABILITY_SURFACE_TREATMENT_SIMULATION) {
+            masterTemp = SURFACETREATMENT
+        } else if (master?.value === EXCHNAGERATE && applicability?.value === APPLICABILITY_OPERATIONS_SIMULATION) {
+            masterTemp = OPERATIONS
+        } else if (master?.value === EXCHNAGERATE && applicability?.value === APPLICABILITY_MACHINE_RATES_SIMULATION) {
+            masterTemp = MACHINERATE
+        } else if (master?.value === EXCHNAGERATE && applicability?.value === APPLICABILITY_RAWMATERIAL_SIMULATION) {
+            masterTemp = RAWMATERIALINDEX
         } else {
             masterTemp = master?.value
         }
@@ -743,11 +773,11 @@ function Simulation(props) {
                 case MACHINERATE:
                     return (<MachineRateListing isSimulation={true} isMasterSummaryDrawer={false} technology={technology} objectForMultipleSimulation={obj} apply={editTable} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} isReset={isReset} ListFor='simulation' approvalStatus={APPROVED_STATUS} />)
                 case BOPDOMESTIC:
-                    return (<BOPDomesticListing isSimulation={true} isMasterSummaryDrawer={false} technology={technology.value} objectForMultipleSimulation={obj} apply={editTable} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} isReset={isReset} ListFor={association?.value === ASSOCIATED ? 'simulation' : 'master'} isBOPAssociated={association?.value === ASSOCIATED ? true : false} approvalStatus={APPROVED_STATUS} callBackLoader={callBackLoader} />)
+                    return (<BOPDomesticListing isSimulation={true} isMasterSummaryDrawer={false} technology={technology.value} objectForMultipleSimulation={obj} apply={editTable} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} isReset={isReset} ListFor={association?.value === ASSOCIATED ? 'simulation' : 'master'} isBOPAssociated={association?.value === ASSOCIATED||isMasterAssociatedWithCosting ? true : false} approvalStatus={APPROVED_STATUS} callBackLoader={callBackLoader} />)
                 case BOPIMPORT:
-                    return (<BOPImportListing isSimulation={true} isMasterSummaryDrawer={false} technology={technology.value} objectForMultipleSimulation={obj} apply={editTable} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} isReset={isReset} ListFor={association?.value === ASSOCIATED ? 'simulation' : 'master'} isBOPAssociated={association?.value === ASSOCIATED ? true : false} approvalStatus={APPROVED_STATUS} callBackLoader={callBackLoader} />)
+                    return (<BOPImportListing isSimulation={true} isMasterSummaryDrawer={false} technology={technology.value} objectForMultipleSimulation={obj} apply={editTable} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} isReset={isReset} ListFor={association?.value === ASSOCIATED ? 'simulation' : 'master'} isBOPAssociated={association?.value === ASSOCIATED||isMasterAssociatedWithCosting ? true : false} approvalStatus={APPROVED_STATUS} callBackLoader={callBackLoader} />)
                 case EXCHNAGERATE:
-                    return (<ExchangeRateListing isSimulation={true} technology={technology.value} apply={editTable} tokenArray={tokenForSimulation} objectForMultipleSimulation={obj} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} approvalStatus={APPROVED_STATUS} getSelectedRows={getSelectedRows} ListFor={association?.value === ASSOCIATED ? 'simulation' : 'master'} isBOPAssociated={association?.value === ASSOCIATED ? true : false} association={association} />)
+                    return (<ExchangeRateListing isSimulation={true} technology={technology.value} apply={editTable} tokenArray={tokenForSimulation} objectForMultipleSimulation={obj} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} approvalStatus={APPROVED_STATUS} getSelectedRows={getSelectedRows} ListFor={association?.value === ASSOCIATED ? 'simulation' : 'master'} isBOPAssociated={association?.value === ASSOCIATED ? true : false} association={association} vendor={vendor} />)
                 case OPERATIONS:
                     return (<OperationListing isSimulation={true} isMasterSummaryDrawer={false} technology={technology?.value} objectForMultipleSimulation={obj} apply={editTable} isOperationST={OPERATIONS} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} isReset={isReset} ListFor='simulation' stopAPICall={false} approvalStatus={APPROVED_STATUS} />)
                 case SURFACETREATMENT:
@@ -1564,7 +1594,7 @@ function Simulation(props) {
             case RMIMPORT:
                 return <RMSimulation isCostingSimulation={true} isDomestic={false} backToSimulation={backToSimulation} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData.length > 0 ? tableData : getFilteredData(rmImportListing, RM_MASTER_ID)} technology={technology.label} technologyId={technology.value} master={master.label} tokenForMultiSimulation={tempObject} />   //IF WE ARE USING BULK UPLOAD THEN ONLY TABLE DATA WILL BE USED OTHERWISE DIRECT LISTING
             case EXCHNAGERATE:
-                return <ERSimulation backToSimulation={backToSimulation} list={tableData.length > 0 ? tableData : getFilteredData(exchangeRateDataList, RM_MASTER_ID)} technology={technology.label} master={master.label} tokenForMultiSimulation={tempObject} technologyId={technology.value} selectionForListingMasterAPI={selectionForListingMasterAPI} />
+                return <ERSimulation backToSimulation={backToSimulation} list={tableData.length > 0 ? tableData : getFilteredData(exchangeRateDataList, RM_MASTER_ID)} technology={technology.label} master={master.label} tokenForMultiSimulation={tempObject} technologyId={technology.value} selectionForListingMasterAPI={selectionForListingMasterAPI} vendor={vendor} />
             case COMBINED_PROCESS:
                 return <CPSimulation cancelEditPage={cancelEditPage} list={tableData} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} tokenForMultiSimulation={tempObject} />
             case SURFACETREATMENT:

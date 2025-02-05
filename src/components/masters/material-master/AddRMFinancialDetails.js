@@ -1188,7 +1188,7 @@ function AddRMFinancialDetails(props) {
                                 disabled={disableAll || isEditFlag || isViewFlag}
                                 customClassName="mb-1"
                             />
-                            {state.showWarning && <WarningMessage dClass="mt-1" message={`${state.currency?.label} rate is not present in the Exchange Master`} />}
+                            {state.showWarning && <WarningMessage dClass="mt-1" message={`${state.currency?.label} to ${reactLocalStorage.getObject("baseCurrency")} rate is not present in the Exchange Master`} />}
                         </Col>}
                         <Col className="col-md-15">
                             {getValues('plantCurrency') && !state.hidePlantCurrency && !states.isImport && <TooltipCustom id="plantCurrency" width="350px" tooltipText={`Exchange Rate: 1 ${getValues('plantCurrency')} = ${CurrencyExchangeRate?.plantCurrencyRate ?? '-'} ${reactLocalStorage.getObject("baseCurrency")}`} />}

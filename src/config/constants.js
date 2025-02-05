@@ -2041,6 +2041,7 @@ export const SET_EXCHANGE_RATE_LIST_BEFORE_DRAFT = 'SET_EXCHANGE_RATE_LIST_BEFOR
 export const SET_SELECTED_CUSTOMER_SIMULATION = 'SET_SELECTED_CUSTOMER_SIMULATION'
 export const GET_SELECTLIST_COSTING_HEADS = 'GET_SELECTLIST_COSTING_HEADS'
 export const SET_EFFECTIVE_DATE = 'SET_EFFECTIVE_DATE';
+export const SET_RAW_MATERIALS_EFFECTIVE_DATE = 'SET_RAW_MATERIALS_EFFECTIVE_DATE';
 
 
 // ASSEMBLY TECHNOLOGY
@@ -3283,7 +3284,7 @@ export const showPaperCorrugatedBox = true
 
 export const showDynamicKeys = false
 export const hideDetailOfRubbercalci = false
-export const customHavellsChanges = true
+export const customHavellsChanges = false
 export const countDownBlinkingTime = 2
 export const clientName = 'Havells'
 export const isShowTaxCode = true
@@ -3295,7 +3296,7 @@ export const COSTINGCONDITIONCOST = 'Costing Condition Cost'
 export const IsSelectSinglePlant = true
 
 //VERSION 
-export const VERSION = "V3.1.69";
+export const VERSION = "V3.1.71";
 
 
 

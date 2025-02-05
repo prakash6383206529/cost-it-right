@@ -5,7 +5,7 @@ import { APPROVED_STATUS, defaultPageSize, EMPTY_DATA, OPERATIONS, SURFACETREATM
 import NoContentFound from '../../../common/NoContentFound';
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter } from '../../../../helper';
 import Toaster from '../../../common/Toaster';
-import { runVerifyExchangeRateSimulation, setExchangeRateListBeforeDraft } from '../../actions/Simulation';
+import { runVerifyExchangeRateSimulation, setExchangeRateListBeforeDraft, setRawmaterialsEffectiveDate } from '../../actions/Simulation';
 import { Fragment } from 'react';
 import RunSimulationDrawer from '../RunSimulationDrawer';
 import { useDispatch, useSelector } from 'react-redux';
@@ -17,7 +17,7 @@ import VerifySimulation from '../VerifySimulation';
 import _, { debounce } from 'lodash'
 import { PaginationWrapper } from '../../../common/commonPagination';
 import ReactExport from 'react-export-excel';
-import { APPLICABILITY_BOP_SIMULATION, APPLICABILITY_MACHINE_RATES_SIMULATION, APPLICABILITY_OPERATIONS_SIMULATION, APPLICABILITY_PART_SIMULATION, APPLICABILITY_RAWMATERIAL_SIMULATION, APPLICABILITY_RM_SIMULATION, APPLICABILITY_SURFACE_TREATMENT_SIMULATION, EXCHANGE_IMPACT_DOWNLOAD_EXCEl } from '../../../../config/masterData';
+import { APPLICABILITY_BOP_NON_ASSOCIATED_SIMULATION, APPLICABILITY_BOP_SIMULATION, APPLICABILITY_MACHINE_RATES_SIMULATION, APPLICABILITY_OPERATIONS_SIMULATION, APPLICABILITY_PART_SIMULATION, APPLICABILITY_RAWMATERIAL_SIMULATION, APPLICABILITY_RM_SIMULATION, APPLICABILITY_SURFACE_TREATMENT_SIMULATION, EXCHANGE_IMPACT_DOWNLOAD_EXCEl } from '../../../../config/masterData';
 import { getCurrencySelectList } from '../../../../actions/Common';
 import RMImportListing from '../../../masters/material-master/RMImportListing';
 import { setFilterForRM } from '../../../masters/actions/Material';
@@ -32,6 +32,7 @@ import LoaderCustom from '../../../common/LoaderCustom';
 import OperationListing from '../../../masters/operation/OperationListing';
 import MachineRateListing from '../../../masters/machine-master/MachineRateListing';
 import RMIndexationSimulationListing from './RMIndexationSimulationListing';
+import { getMinDate } from '../../SimulationUtils';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -67,6 +68,8 @@ function ERSimulation(props) {
     const [showMachineRatesList, setShowMachineRatesList] = useState(false);
     const [showSurfaceTreatmentList, setShowSurfaceTreatmentList] = useState(false);
     const [showRawMaterialsList, setShowRawMaterialsList] = useState(false);
+    const { isMasterAssociatedWithCosting } = useSelector(state => state.simulation)
+    const [minDate, setMinDate] = useState('')
 
     const dispatch = useDispatch()
     const columnWidths = {
@@ -88,9 +91,11 @@ function ERSimulation(props) {
     useEffect(() => {
         dispatch(getCurrencySelectList(() => { }))
         list && list?.map(item => {
-            item.NewCurrencyExchangeRate = item.CurrencyExchangeRate
-            return null
-        })
+            if (Number(item?.NewCurrencyExchangeRate) === Number(0)) {
+                item.NewCurrencyExchangeRate = item.CurrencyExchangeRate
+                return null
+            }
+})
     }, [])
     useEffect(() => {
         if (handleEditMasterPage) {
@@ -101,7 +106,13 @@ function ERSimulation(props) {
         const entryWithLargestDate = _.maxBy(list, entry => new Date(entry.EffectiveDate));
         setLargestDate(entryWithLargestDate?.EffectiveDate)
     }, [list])
-
+    useEffect(() => {
+        if (props?.list.length > 0) {
+            let tempList = [...list]
+            const minDate = getMinDate(tempList);
+            setMinDate(minDate?.EffectiveDate); // This will update the minDate for the DatePicker
+        }
+    }, [list])
     const { selectedMasterForSimulation } = useSelector(state => state.simulation)
     const { simulationApplicability } = useSelector(state => state.simulation)
     const { selectedVendorForSimulation, selectedCustomerSimulation } = useSelector(state => state.simulation)
@@ -262,7 +273,13 @@ function ERSimulation(props) {
                 {
                     isImpactedMaster ?
                         checkForDecimalAndNull(row.NewCurrencyExchangeRate, getConfigurationKey().NoOfDecimalForPrice) :
-                        <span id={`newCurrencyExchangeRate-${props.rowIndex}`} className={`${!isbulkUpload ? 'form-control' : ''}`} title={cell ? Number(cell) : Number(row.CurrencyExchangeRate)} >{cell ? Number(cell) : Number(row.CurrencyExchangeRate)}</span>
+                        <span
+                            id={`newCurrencyExchangeRate-${props.rowIndex}`}
+                            className={`${!isbulkUpload ? 'form-control' : ''}`}
+                            title={cell ? Number(cell) : Number(row.NewCurrencyExchangeRate)}
+                        >
+                            {cell ? Number(cell) : Number(row.NewCurrencyExchangeRate)}
+                        </span>
                 }
             </>
         )
@@ -281,7 +298,10 @@ function ERSimulation(props) {
 
     const onRowSelect = () => {
         var selectedRows = gridApi.getSelectedRows();
-        setSelectedRowData(selectedRows)
+
+        setSelectedRowData(selectedRows);
+
+
     }
     const resetState = () => {
         gridOptions.columnApi.resetColumnState();
@@ -369,6 +389,7 @@ function ERSimulation(props) {
                 setShowRMMasterList(true);
                 break;
             case APPLICABILITY_BOP_SIMULATION:
+            case APPLICABILITY_BOP_NON_ASSOCIATED_SIMULATION:
                 setShowBOPMasterList(true);
                 break;
             case APPLICABILITY_OPERATIONS_SIMULATION:
@@ -408,6 +429,7 @@ function ERSimulation(props) {
 
     const handleEffectiveDateChange = (date) => {
         setEffectiveDate(date)
+        dispatch(setRawmaterialsEffectiveDate(date))
         setIsEffectiveDateSelected(true)
         setIsWarningMessageShow(false)
     }
@@ -499,46 +521,55 @@ function ERSimulation(props) {
                             <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                                 <div className="col-sm-12 text-right bluefooter-butn d-flex justify-content-end align-items-center">
                                     <div className="d-flex align-items-center">
-                                        {simulationApplicability?.value === APPLICABILITY_PART_SIMULATION ?
-                                            <><div className="inputbox date-section mr-3 verfiy-page simulation_effectiveDate">
-                                                <DatePicker
-                                                    name="EffectiveDate"
-                                                    selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
-                                                    id='EffectiveDate'
-                                                    onChange={handleEffectiveDateChange}
-                                                    showMonthDropdown
-                                                    showYearDropdown
-                                                    dropdownMode='select'
-                                                    dateFormat="dd/MM/yyyy"
-                                                    placeholderText="Select effective date"
-                                                    className="withBorder"
-                                                    autoComplete={"off"}
-                                                    disabledKeyboardNavigation
-                                                    onChangeRaw={(e) => e.preventDefault()}
-                                                    minDate={new Date(largestDate)}
-                                                />
-                                            </div>
+                                        {(simulationApplicability?.value === APPLICABILITY_PART_SIMULATION || simulationApplicability?.value === APPLICABILITY_RAWMATERIAL_SIMULATION) ? (
+                                            <>
+                                                <div className="inputbox date-section mr-3 verfiy-page simulation_effectiveDate">
+                                                    <DatePicker
+                                                        name="EffectiveDate"
+                                                        selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
+                                                        id='EffectiveDate'
+                                                        onChange={handleEffectiveDateChange}
+                                                        showMonthDropdown
+                                                        showYearDropdown
+                                                        dropdownMode='select'
+                                                        dateFormat="dd/MM/yyyy"
+                                                        placeholderText="Select effective date"
+                                                        className="withBorder"
+                                                        autoComplete={"off"}
+                                                        disabledKeyboardNavigation
+                                                        onChangeRaw={(e) => e.preventDefault()}
+                                                        minDate={new Date(largestDate)}
+                                                    />
+                                                </div>
                                                 {isWarningMessageShow && <WarningMessage dClass={"error-message"} textClass={"pt-1"} message={"Please select effective date"} />}
-                                                <button onClick={verifySimulation} type="submit" className="user-btn mr5 save-btn verifySimulation" id={"verify-btn"} disabled={isDisable}>
-                                                    <div className={"Run-icon"}>
-                                                    </div>{" "}
-                                                    {"Verify"}
-                                                </button>
-                                            </> :
+                                                {simulationApplicability?.value === APPLICABILITY_PART_SIMULATION ? (
+                                                    <button onClick={verifySimulation} type="submit" className="user-btn mr5 save-btn verifySimulation" id={"verify-btn"} disabled={isDisable}>
+                                                        <div className={"Run-icon"}>
+                                                        </div>{" "}
+                                                        {"Verify"}
+                                                    </button>
+                                                ) : (
+                                                    <>
+                                                        <TooltipCustom id={"next-button"} disabledIcon={true} tooltipText={`Select the ${simulationApplicability?.label} on next page.`} />
+                                                        <button onClick={selectRM} type="button" className="user-btn mr5 next-icon" disabled={isDisable} id={"next-button"}>
+                                                            <div>
+                                                            </div>{" "}
+                                                            Next
+                                                        </button>
+                                                    </>
+                                                )}
+                                            </>
+                                        ) : (
                                             <>
                                                 <TooltipCustom id={"next-button"} disabledIcon={true} tooltipText={`Select the ${simulationApplicability?.label} on next page.`} />
                                                 <button onClick={selectRM} type="button" className="user-btn mr5 next-icon" disabled={isDisable} id={"next-button"}>
                                                     <div>
                                                     </div>{" "}
                                                     Next
-                                                </button></>
-                                        }
+                                                </button>
+                                            </>
+                                        )}
                                     </div>
-                                    {/* <button onClick={runSimulation} type="submit" className="user-btn mr5 save-btn">
-                                <div className={"Run"}>
-                                </div>{" "}
-                                {"RUN SIMULATION"}
-                            </button> */}
                                 </div>
                             </Row>
                         }
@@ -578,6 +609,9 @@ function ERSimulation(props) {
                 toListData={toListData}
                 isFromVerifyPage={true}
                 cancelImportList={cancelImportList}
+                vendorLabel={props?.vendor}
+                FromExchangeRate={true}
+
             />}
             {showBOPMasterList &&
                 <BOPImportListing
@@ -591,13 +625,16 @@ function ERSimulation(props) {
                     // changeTokenCheckBox={changeTokenCheckBox}
                     // isReset={isReset}
                     ListFor={'simulation'}
-                    // isBOPAssociated={association?.value === ASSOCIATED ? true : false}
+                    isBOPAssociated={isMasterAssociatedWithCosting ? true : false}
                     approvalStatus={APPROVED_STATUS}
                     // callBackLoader={callBackLoader}  
                     fromListData={fromListData}
                     toListData={toListData}
                     isFromVerifyPage={true}
                     cancelImportList={cancelImportList}
+                    vendorLabel={props?.vendor}
+                    FromExchangeRate={true}
+
                 />}
             {(showOperationsList || showSurfaceTreatmentList) && (
                 <OperationListing
@@ -611,6 +648,10 @@ function ERSimulation(props) {
                     isOperationST={showSurfaceTreatmentList ? SURFACETREATMENT : OPERATIONS}
                     fromListData={fromListData}
                     toListData={toListData}
+                    vendorLabel={props?.vendor}
+                    FromExchangeRate={true}
+
+
                 />
             )}
 
@@ -625,6 +666,10 @@ function ERSimulation(props) {
                     selectionForListingMasterAPI={props?.selectionForListingMasterAPI}
                     fromListData={fromListData}
                     toListData={toListData}
+                    vendorLabel={props?.vendor}
+                    FromExchangeRate={true}
+
+
 
                 />
             )}
@@ -638,6 +683,13 @@ function ERSimulation(props) {
                     cancelImportList={cancelImportList}
                     fromListData={fromListData}
                     toListData={toListData}
+                    effectiveDate={effectiveDate}
+                    isEffectiveDateSelected={isEffectiveDateSelected}
+                    minDate={minDate}
+                    vendorLabel={props?.vendor}
+                    FromExchangeRate={true}
+
+
                 />
             )}
         </div >

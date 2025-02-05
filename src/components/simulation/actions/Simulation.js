@@ -62,7 +62,8 @@ import {
     GET_INDEXED_RM_FOR_SIMULATION,
     GET_SIMULATED_RAW_MATERIAL_SUMMARY,
     GET_RM_INDEXATION_COSTING_SIMULATION_LIST,
-    SET_EFFECTIVE_DATE
+    SET_EFFECTIVE_DATE,
+    SET_RAW_MATERIALS_EFFECTIVE_DATE
 } from '../../../config/constants';
 import { apiErrors, encodeQueryParamsAndLog } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
@@ -1802,6 +1803,8 @@ export function getRMIndexationSimulationListing(data, skip, take, isPagination,
             RawMaterialEntryType: data.RawMaterialEntryType ? data.RawMaterialEntryType : null,
             Currency: data.Currency !== undefined ? data.Currency : "",
             LocalCurrency: data.LocalCurrency !== undefined ? data.LocalCurrency : "",
+            EffectiveDate: data.EffectiveDate ? data.EffectiveDate : '',
+            ListFor: data.ListFor ? data.ListFor : '',
             // ScrapUnitOfMeasurement: obj.ScrapUnitOfMeasurement !== undefined ? obj.ScrapUnitOfMeasurement : '',
             // IsScrapUOMApply: obj.IsScrapUOMApply ? (obj.IsScrapUOMApply.toLowerCase() === 'yes' ? true : false) : '',
             // CalculatedFactor: obj.CalculatedFactor !== undefined ? obj.CalculatedFactor : '',
@@ -2003,6 +2006,14 @@ export function setEffectiveDateRMNonIndexation(value) {
     return (dispatch) => {
         dispatch({
             type: SET_EFFECTIVE_DATE,
+            payload: value,
+        });
+    }
+}
+export function setRawmaterialsEffectiveDate(value) {
+    return (dispatch) => {
+        dispatch({
+            type: SET_RAW_MATERIALS_EFFECTIVE_DATE,
             payload: value,
         });
     }

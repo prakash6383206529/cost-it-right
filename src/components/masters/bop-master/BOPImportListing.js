@@ -233,7 +233,7 @@ const BOPImportListing = (props) => {
       ...floatingFilterData,
       bop_for: bopFor,
       category_id: CategoryId,
-      vendor_id: vendorId,
+      vendor_id: props?.isSimulation && props?.FromExchangeRate ? props?.vendorLabel?.value : vendorId,
       plant_id: plantId,
       ListFor: props?.isSimulation && !props?.isBOPAssociated ?"" : props.ListFor,
       StatusId: statusString,
@@ -256,7 +256,7 @@ const BOPImportListing = (props) => {
           : "";
       dataObj.Currency = filteredRMData?.Currency;
     }
-    dataObj.EntryType = !props?.isSimulation  ? Number(ENTRY_TYPE_IMPORT) :  null 
+    dataObj.EntryType = Number(ENTRY_TYPE_IMPORT)
     dataObj.ExchangeRateSourceName = floatingFilterData?.ExchangeRateSourceName
     dataObj.OtherNetCost = floatingFilterData?.OtherNetCost
     if (!props?.isMasterSummaryDrawer) {
@@ -1137,6 +1137,7 @@ const BOPImportListing = (props) => {
                       >
                         {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
                         <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={"costingHeadFormatter"}></AgGridColumn>
+                        {props?.isSimulation&&<AgGridColumn field="EntryType" headerName="Entry Type" cellRenderer={"hyphenFormatter"}></AgGridColumn>}
                         <AgGridColumn field="BoughtOutPartNumber" headerName={`${showBopLabel()} No.`}></AgGridColumn>
                         <AgGridColumn field="BoughtOutPartName" headerName={`${showBopLabel()} Name`}></AgGridColumn>
                         <AgGridColumn field="BoughtOutPartCategory" headerName={`${showBopLabel()} Category`}></AgGridColumn>

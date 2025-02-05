@@ -36,7 +36,8 @@ import {
     GET_INDEXED_RM_FOR_SIMULATION,
     GET_SIMULATED_RAW_MATERIAL_SUMMARY,
     GET_RM_INDEXATION_COSTING_SIMULATION_LIST,
-    SET_EFFECTIVE_DATE
+    SET_EFFECTIVE_DATE,
+    SET_RAW_MATERIALS_EFFECTIVE_DATE
 } from '../../../config/constants';
 import { tokenStatus, tokenStatusName } from '../../../config/masterData';
 import { showBopLabel, updateBOPValues } from '../../../helper';
@@ -351,6 +352,11 @@ export default function SimulationReducer(state = initialState, action) {
           ...state,
           selectedEffectiveDate: action.payload
                
+            }
+        case SET_RAW_MATERIALS_EFFECTIVE_DATE:
+            return {
+                ...state,
+                rawMaterialsEffectiveDate: action.payload
             }
         default:
             return state;

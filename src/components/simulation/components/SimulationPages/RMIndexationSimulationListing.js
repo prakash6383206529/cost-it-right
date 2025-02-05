@@ -3,7 +3,7 @@ import { useState, useEffect, } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, } from 'reactstrap';
 import { IsShowFreightAndShearingCostFields, loggedInUserId, userDepartmetList } from "../../../../helper/auth"
-import { defaultPageSize, EMPTY_DATA, ENTRY_TYPE_DOMESTIC, FILE_URL } from '../../../../config/constants';
+import { defaultPageSize, EMPTY_DATA, ENTRY_TYPE_DOMESTIC, ENTRY_TYPE_IMPORT, FILE_URL } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
 import { MESSAGES } from '../../../../config/message';
 import Toaster from '../../../common/Toaster';
@@ -45,6 +45,7 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
 
 function RMIndexationSimulationListing(props) {
+    
     const { AddAccessibility, BulkUploadAccessibility, ViewRMAccessibility, EditAccessibility, DeleteAccessibility, DownloadAccessibility, isSimulation, apply, selectionForListingMasterAPI, objectForMultipleSimulation, master } = props;
     const [value, setvalue] = useState({ min: 0, max: 0 });
     const [isBulkUpload, setisBulkUpload] = useState(false);
@@ -256,6 +257,10 @@ function RMIndexationSimulationListing(props) {
             isIndexationDetails: props?.type?.label === "Indexed" ? true : false,
             Currency: isSimulation && props?.fromListData && props?.fromListData ? props?.fromListData : '',
             LocalCurrency: isSimulation && props?.toListData && props?.toListData ? props?.toListData : '',
+            EffectiveDate: props?.minDate ? props?.minDate : '',
+            ListFor: props?.ListFor ? props?.ListFor : '',
+            vendorId: props?.vendorLabel?.value,
+
 
         }
         //THIS CONDTION IS FOR IF THIS COMPONENT IS RENDER FROM MASTER APPROVAL SUMMARY IN THIS NO GET API
@@ -268,6 +273,8 @@ function RMIndexationSimulationListing(props) {
                 apiResponse(res, isPagination)
             }))
         } else {
+            
+            filterData.RawMaterialEntryType = Number(ENTRY_TYPE_IMPORT)
             dispatch(getRMIndexationSimulationListing(filterData, skip, take, isPagination, (res) => {
                 // apply(selectedRowForPagination, selectedRowForPagination.length)
                 apiResponse(res, isPagination)
@@ -976,7 +983,7 @@ function RMIndexationSimulationListing(props) {
                             }
                             <Button
                                 id={"rmDomesticListing_refresh"}
-                                className={"Tour_List_Reset"}
+                                className={"Tour_List_Reset mr-1"}
                                 onClick={() => resetState()}
                                 title={"Reset Grid"}
                                 icon={"refresh"}
@@ -1019,6 +1026,7 @@ function RMIndexationSimulationListing(props) {
                                         enableBrowserTooltips={true}
                                     >
                                         <AgGridColumn cellClass="has-checkbox" field="CostingHead" headerName='Costing Head' cellRenderer={checkBoxRenderer}></AgGridColumn>
+                                        <AgGridColumn field="EntryType" headerName="Entry Type" cellRenderer={"hyphenFormatter"}></AgGridColumn>
                                         <AgGridColumn field={props.isCostingSimulation ? 'Technology' : 'TechnologyName'} headerName={technologyLabel}></AgGridColumn>
                                         <AgGridColumn field="RawMaterialName" headerName='Raw Material'></AgGridColumn>
                                         <AgGridColumn field={props.isCostingSimulation ? 'RawMaterialGrade' : "RawMaterialGradeName"} headerName="Grade"></AgGridColumn>
@@ -1134,6 +1142,10 @@ function RMIndexationSimulationListing(props) {
                             : []
                     }
                     isRMNonIndexSimulation={true}
+                    ListFor={props?.ListFor}
+                    effectiveDate={props?.effectiveDate}
+                    isEffectiveDateSelected={props?.isEffectiveDateSelected}
+                    minDate={props?.minDate}
                 />
             )}
         </div>
