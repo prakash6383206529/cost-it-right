@@ -134,7 +134,6 @@ function RfqListing(props) {
 useEffect(() => {
     // Only set filter if coming from status column and not from ViewRfq close
     if (statusColumnData?.data && !closeViewRfq && !viewRfq) {
-        console.log("statusColumnData", statusColumnData, closeViewRfq);
         setDisableFilter(false);
         setWarningMessage(true);
         setFloatingFilterData(prevState => ({ 

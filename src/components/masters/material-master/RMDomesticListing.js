@@ -529,7 +529,6 @@ function RMDomesticListing(props) {
                 isDeleteButton = true
             }
         }
-        console.log(isEditbale , isDeleteButton);
 
         return (
             <>
