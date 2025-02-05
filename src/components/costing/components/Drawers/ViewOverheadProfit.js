@@ -46,7 +46,7 @@ function ViewOverheadProfit(props) {
   }
 
   const overheadAndProfitTooltipText = <>
-    {isRmCutOffApplicable && <p>RM Cut Off Price {checkForDecimalAndNull(rawMaterialCostWithCutOff,initialConfiguration.NoOfDecimalForPrice)} is Applied</p>}
+    {isRmCutOffApplicable && <p>RM Cut Off Price {checkForDecimalAndNull(rawMaterialCostWithCutOff,initialConfiguration?.NoOfDecimalForPrice)} is Applied</p>}
     {isIncludeToolCostWithOverheadAndProfit && <p>Tool Cost Included</p>}
     {isIncludeSurfaceTreatmentWithOverheadAndProfit && <p>Surface Treatment Cost Included</p>}
 
