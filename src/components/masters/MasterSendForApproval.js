@@ -871,7 +871,7 @@ function MasterSendForApproval(props) {
                             <Row className="drawer-heading">
                                 <Col>
                                     <div className={'header-wrapper left'}>
-                                        <h3>{type === 'Sender' ? 'Send For Approv1al' : `${type} ${getHeaderNameForApproveReject()}`}</h3>
+                                        <h3>{type === 'Sender' ? 'Send For Approval' : `${type} ${getHeaderNameForApproveReject()}`}</h3>
                                     </div>
 
                                     <div
