@@ -1,18 +1,18 @@
 import React, { Fragment, useEffect, useState } from 'react'
 import { Row, Col, Table, } from 'reactstrap'
-import { SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs'
+import { SearchableSelectHookForm, TextFieldHookForm } from '../../../../../layout/HookFormInputs'
 import { Controller, useForm, useWatch } from 'react-hook-form'
-import { number, checkWhiteSpaces, maxLength7, checkForNull, checkForDecimalAndNull, loggedInUserId, percentageLimitValidation, maxLength200, nonZero, maxPercentageValue } from '../../../../../helper'
-import Button from '../../../../layout/Button'
-import NoContentFound from '../../../../common/NoContentFound'
-import { EMPTY_DATA } from '../../../../../config/constants'
-import Toaster from '../../../../common/Toaster'
+import { number, checkWhiteSpaces, maxLength7, checkForNull, checkForDecimalAndNull, loggedInUserId, percentageLimitValidation, maxLength200, nonZero, maxPercentageValue } from '../../../../../../helper'
+import Button from '../../../../../layout/Button'
+import NoContentFound from '../../../../../common/NoContentFound'
+import { EMPTY_DATA } from '../../../../../../config/constants'
+import Toaster from '../../../../../common/Toaster'
 import { useDispatch, useSelector } from 'react-redux'
-import HeaderTitle from '../../../../common/HeaderTitle'
-import TooltipCustom from '../../../../common/Tooltip'
+import HeaderTitle from '../../../../../common/HeaderTitle'
+import TooltipCustom from '../../../../../common/Tooltip'
 import { debounce } from 'lodash'
-import { saveRawMaterialCalculationForMonoCartonCorrugatedBox } from '../../../actions/CostWorking'
-import PopupMsgWrapper from '../../../../common/PopupMsgWrapper'
+import { saveRawMaterialCalculationForMonoCartonCorrugatedBox } from '../../../../actions/CostWorking'
+import PopupMsgWrapper from '../../../../../common/PopupMsgWrapper'
 import Lamination from './Lamination'
 
 const tableheaders = ['Paper Layer', 'Type of Paper (Raw Material)', 'RM Rate', 'GSM', 'Flute %', 'Flute Value',]
@@ -560,7 +560,6 @@ function PaperCorrugatedBox(props) {
                     </Table>
                 </Col>
             </Row>
-            {/* <Lamination renderListing={renderListing} CostingViewMode={props.CostingViewMode} getRatePerKg={getRatePerKg} /> */}
             <Row>
                 <Col md="12">
                     <HeaderTitle

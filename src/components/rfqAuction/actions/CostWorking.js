@@ -303,6 +303,25 @@ export function saveRawMaterialCalculationForMonoCartonCorrugatedBox(data, callb
 }
 
 /**
+ * @method saveRawMaterialCalculationForLamination
+ * @description save raw materical calculator data for Lamination
+*/
+export function saveRawMaterialCalculationForLamination(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.saveRawMaterialCalculationForLamination, data, config());
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      apiErrors(error);
+      callback(error);
+    });
+  }
+}
+
+/**
  * @method getRawMaterialCalculationForDieCasting
  * @description Get raw materical calculator data for DieCasting
 */
@@ -1498,4 +1517,22 @@ export function getSimulationCorrugatedAndMonoCartonCalculation(simulationId, co
       apiErrors(error);
     });
   };
+}
+
+export function getSimulationLaminationCalculation(simulationId, costingId, rawMaterialId, callback) {
+  return (dispatch) => {
+    const queryParams = `simulationId=${simulationId}&costingId=${costingId ? costingId : "0"}&rawMaterialId=${rawMaterialId}`
+    const request = axios.get(`${API.getSimulationLaminationCalculation}?${queryParams}`, config());
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      } else {
+        Toaster.error(MESSAGES.SOME_ERROR);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+      apiErrors(error);
+    });
+  }
 }
