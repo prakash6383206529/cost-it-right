@@ -684,6 +684,7 @@ class AddPower extends Component {
         this.callExchangeRateAPI();
       });
     } else {
+      this.props.change('plantCurrency', "");
       this.setState({ isDisabled: false });
     }
     // this.props.getPlantUnitAPI(e?.value, (res) => {

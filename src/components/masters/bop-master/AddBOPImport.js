@@ -184,7 +184,7 @@ class AddBOPImport extends Component {
         ? `Basic Price  + Condition Cost `
         : getConfigurationKey().IsMinimumOrderQuantityVisible
           ? `Basic Rate  / Minimum Order Quantity`
-          : `Basic Rate `
+          : `Basic Rate + Other Cost `
     };
     return obj
   }
@@ -2210,7 +2210,7 @@ class AddBOPImport extends Component {
                           {
                             this.state.showCurrency && (!isTechnologyVisible || this.state.IsBreakupBoughtOutPart) && <>
                               <Col md="3">
-                                <TooltipCustom id="bop-net-cost-currency" width="350px" tooltipText={this.toolTipNetCost()?.toolTipTextNetCost} />
+                                <TooltipCustom id="bop-net-cost-currency" width="350px" tooltipText={`Net Cost = ${this.toolTipNetCost()?.toolTipTextNetCost}`} />
                                 <Field
                                   label={`Net Cost/${this.state?.UOM?.label === undefined ? 'UOM' : this.state?.UOM?.label} (${this.state?.currency?.label === undefined ? 'Currency' : this.state?.currency?.label})`}
                                   name={this.state.netLandedConverionCost === 0 ? '' : "NetLandedCost"}
