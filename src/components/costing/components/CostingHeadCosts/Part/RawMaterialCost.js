@@ -108,7 +108,7 @@ function RawMaterialCost(props) {
   const RMDivisor = (item?.CostingPartDetails?.RMDivisor !== null) ? item?.CostingPartDetails?.RMDivisor : 0;
   const isScrapRecoveryPercentageApplied = item?.IsScrapRecoveryPercentageApplied
   const isNFR = useContext(IsNFR);
-  const { nfrDetailsForDiscount, currencySource } = useSelector(state => state.costing)
+  const { nfrDetailsForDiscount, currencySource,exchangeRateData   } = useSelector(state => state.costing)
 
   const dispatch = useDispatch()
 
@@ -246,7 +246,7 @@ function RawMaterialCost(props) {
    * @description TOGGLE DRAWER
    */
   const DrawerToggle = () => {
-    if (CheckIsCostingDateSelected(CostingEffectiveDate, currencySource)) return false;
+    if (CheckIsCostingDateSelected(CostingEffectiveDate, currencySource,exchangeRateData)) return false;
 
     if ((Object.keys(gridData).length > 0 && gridData[0].WeightCalculationId !== null && isMultiCalculatorData && (Number(costData?.TechnologyId) === Number(Ferrous_Casting) || Number(costData?.TechnologyId) === Number(RUBBER) || (Number(costData?.TechnologyId) === Number(CORRUGATEDBOX) && (costData?.TechnologyId === CORRUGATEDBOX && calculatorTypeStore !== 'CorrugatedBox'))))) {
       setShowPopup(true)

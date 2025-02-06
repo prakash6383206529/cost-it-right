@@ -61,7 +61,7 @@ function ProcessCost(props) {
   const dispatch = useDispatch()
   const CostingViewMode = useContext(ViewCostingContext);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const { CostingEffectiveDate, selectedProcessId, selectedProcessGroupId, processGroupGrid, ErrorObjRMCC, currencySource } = useSelector(state => state.costing)
+  const { CostingEffectiveDate, selectedProcessId, selectedProcessGroupId, processGroupGrid, ErrorObjRMCC, currencySource,exchangeRateData } = useSelector(state => state.costing)
   const { rmFinishWeight, rmGrossWeight } = props
   const [openMachineForm, setOpenMachineForm] = useState(false)
 
@@ -473,7 +473,7 @@ function ProcessCost(props) {
    * @description TOGGLE DRAWER
    */
   const DrawerToggle = () => {
-    if (CheckIsCostingDateSelected(CostingEffectiveDate, currencySource)) return false;
+    if (CheckIsCostingDateSelected(CostingEffectiveDate, currencySource,exchangeRateData)) return false;
     setDrawerOpen(true)
   }
 
