@@ -1375,7 +1375,7 @@ function RMSimulation(props) {
                                             dropdownMode='select'
                                             dateFormat="dd/MM/yyyy"
                                             minDate={new Date(maxDate)}
-                                            placeholderText="Select effective date"
+                                            placeholderText={simulationCostingStatus ? 'Select Part Cost Effective Date' : 'Select Effective Date'}
                                             className="withBorder"
                                             autoComplete={"off"}
                                             disabledKeyboardNavigation

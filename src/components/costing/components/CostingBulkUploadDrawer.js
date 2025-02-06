@@ -8,7 +8,7 @@ import Drawer from '@material-ui/core/Drawer';
 import Dropzone from 'react-dropzone-uploader'
 import { bulkUploadCosting, plasticBulkUploadCosting, machiningBulkUploadCosting, corrugatedBoxBulkUploadCosting, assemblyBulkUploadCosting, wiringHarnessBulkUploadCosting, diecastingBulkUploadCosting, InsulationBulkUploadCosting, ElectricalStampingCostingBulkImport, MonocartonBulkUploadCosting } from '../actions/CostWorking'
 import { CostingBulkUploadTechnologyDropdown, TechnologyDropdownBulkUploadV1, TechnologyDropdownBulkUploadV2, TechnologyDropdownBulkUploadV4 } from '../../../config/masterData'
-import { ASSEMBLY, CORRUGATED_BOX, MACHINING_GROUP_BULKUPLOAD, PLASTIC_GROUP_BULKUPLOAD, SHEETMETAL_GROUP_BULKUPLOAD, FILE_URL, WIRINGHARNESS, SHEET_METAL, SHEETMETAL, DIE_CASTING, INSULATION, ELECTRICAL_STAMPING, MONOCARTON } from '../../../config/constants';
+import { ASSEMBLY, CORRUGATED_BOX, MACHINING_GROUP_BULKUPLOAD, PLASTIC_GROUP_BULKUPLOAD, SHEETMETAL_GROUP_BULKUPLOAD, FILE_URL, WIRINGHARNESS, SHEET_METAL, SHEETMETAL, DIE_CASTING, INSULATION, ELECTRICAL_STAMPING, MONOCARTON, PLASTIC_RUBBER_WITH_EXTRUSION } from '../../../config/constants';
 import { getCostingTechnologySelectList, } from '../actions/Costing'
 import { searchableSelect } from '../../layout/FormInputs';
 import { getConfigurationKey, loggedInUserId } from '../../../helper';
@@ -18,14 +18,14 @@ import { reduxForm } from 'redux-form';
 
 
 
-const CostingBulkUploadDrawer = ({ 
-    isOpen, 
-    closeDrawer, 
+const CostingBulkUploadDrawer = ({
+    isOpen,
+    closeDrawer,
     anchor,
     handleSubmit
 }) => {
-    
-    
+
+
     const dropzone = useRef(null);
     const dispatch = useDispatch();
     // const { register, formState: { errors }, control } = useForm();
@@ -134,8 +134,8 @@ const CostingBulkUploadDrawer = ({
         )
     }
 
-   
-   
+
+
     const fileHandler = event => {
 
         let fileObj = event.target.files[0];
@@ -155,7 +155,7 @@ const CostingBulkUploadDrawer = ({
             const fileURL = `${FILE_URL}${withOutTild}`;
             window.open(fileURL, '_blank');
             // Display error message in Toaster
-            Toaster.error(res?.data.Message || "Please upload the file with correct data" );
+            Toaster.error(res?.data.Message || "Please upload the file with correct data");
         } else if (res?.status === 200) {
             let Data = res?.data[0]
             setState((prev) => ({
@@ -164,7 +164,7 @@ const CostingBulkUploadDrawer = ({
             }));
             // Display success message in Toaster
             Toaster.success(res?.data.Message || 'File uploaded successfully');
-        } 
+        }
         // else {
         //     // Display unexpected response message in Toaster
         //     Toaster.error(res?.data.Message || 'Unexpected response from server');
@@ -183,7 +183,9 @@ const CostingBulkUploadDrawer = ({
         [INSULATION]: InsulationBulkUploadCosting,
         [ELECTRICAL_STAMPING]: ElectricalStampingCostingBulkImport,
         [MONOCARTON]: MonocartonBulkUploadCosting,
+        [PLASTIC_RUBBER_WITH_EXTRUSION]: plasticBulkUploadCosting,
     };
+
     const onSubmit = (value) => {
         const { fileData, Technology, costingVersion } = state;
 
@@ -202,11 +204,15 @@ const CostingBulkUploadDrawer = ({
         data.append('loggedInUserId', loggedInUserId())
         data.append('IsShowRawMaterialInOverheadProfitAndICC', getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC)
         data.append('version', costingVersion)
+        if (Number(Technology.value) === PLASTIC_RUBBER_WITH_EXTRUSION) {
+            data.append('processCalculatorType', Number(Technology.value) === PLASTIC_RUBBER_WITH_EXTRUSION ? 'extrusion' : '')
+        }
         setState((prev) => ({ ...prev, isLoader: true }));
         switch (Number(Technology.value)) {
             case SHEETMETAL_GROUP_BULKUPLOAD:
             case SHEETMETAL:
             case PLASTIC_GROUP_BULKUPLOAD:
+            case PLASTIC_RUBBER_WITH_EXTRUSION:
             case MACHINING_GROUP_BULKUPLOAD:
                 dispatch(uploadFunctions[Number(Technology.value)](data, costingVersion, handleApiResponse));
                 break;
@@ -264,7 +270,7 @@ const CostingBulkUploadDrawer = ({
                                 </Col>
                             </Row>
                             <Row className="pl-12">
-                            
+
                                 <Row>
                                     <Col md="12">
                                         <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
@@ -379,9 +385,9 @@ const CostingBulkUploadDrawer = ({
                                             classNames="draper-drop"
                                         />
                                     )}
-                                    {state.attachmentLoader &&  <div className="position-absolute top-0 left-0 w-100 h-100 d-flex justify-content-center align-items-center bg-white bg-opacity-75">
-                    <LoaderCustom customClass="attachment-loader" />
-                </div>}
+                                    {state.attachmentLoader && <div className="position-absolute top-0 left-0 w-100 h-100 d-flex justify-content-center align-items-center bg-white bg-opacity-75">
+                                        <LoaderCustom customClass="attachment-loader" />
+                                    </div>}
                                 </Col>
                             </Row>
                             <Row className="sf-btn-footer no-gutters justify-content-between">

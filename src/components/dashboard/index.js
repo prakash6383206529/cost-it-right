@@ -5,7 +5,7 @@ import { Col, Nav, NavItem, Row, NavLink, TabPane, TabContent } from "reactstrap
 import { reduxForm } from "redux-form";
 import dashboardImg from '../../assests/images/dashboard-img.png';
 import classnames from 'classnames';
-import { CheckApprovalApplicableMaster, getConfigurationKey, showBopLabel } from "../../helper";
+import { CheckApprovalApplicableMaster, getConfigurationKey, showBopLabel, userDetails } from "../../helper";
 import { checkPermission } from "../../helper/util";
 import { ADDITIONAL_MASTERS, BOP, BOP_MASTER_ID, COSTING, MACHINE, MACHINE_MASTER_ID, MASTERS, OPERATION, OPERATIONS_ID, RAW_MATERIAL, RM_MASTER_ID, SIMULATION } from "../../config/constants";
 import CalculatorWrapper from "../common/Calculator/CalculatorWrapper";
@@ -259,7 +259,7 @@ function Dashboard(props) {
                   </div>
                 </Row>
               }
-              {/* <Row className="m-0 delegation" id={`${pageDropDownRef === 'delegation' ? 'refresh-to-top' : ''}`}>
+              {userDetails()?.IsUserDelegatee === 'True' && <Row className="m-0 delegation" id={`${pageDropDownRef === 'delegation' ? 'refresh-to-top' : ''}`}>
                 <div className="graph-box w-100">
                   <Row>
                     <Col md="8"><h3 className="mb-0">Delegation Status{acc4 && <TourWrapper
@@ -280,12 +280,12 @@ function Dashboard(props) {
                   {acc4 && <Row className="master-tabs-row mt-3">
                     <Col md="1" className="master-tabs px-0 p-relative"> <Nav tabs className="subtabs">
                       {dashboardTabLock && <div title={MESSAGES.LOADING_MESSAGE} className="disabled-overflow min-width"></div>}
-                      {(CheckApprovalApplicableMaster(RM_MASTER_ID) && viewMastersObj.RM) && <NavItem>
+                      { <NavItem>
                         <NavLink id={`dashboard_RM_Masters_Approval`} className={classnames({ active: activeTab === '1' })} onClick={() => { toggle('1'); }}>
                           Costing
                         </NavLink>
                       </NavItem>}
-                      {(CheckApprovalApplicableMaster(BOP_MASTER_ID) && viewMastersObj.BOP) && <NavItem>
+                      { <NavItem>
                         <NavLink id={`dashboard_BOP_Masters_Approval`} className={classnames({ active: activeTab === '2' })} onClick={() => { toggle('2'); }}>
                           Simulation
                         </NavLink>
@@ -348,27 +348,27 @@ function Dashboard(props) {
                       {(Number(activeTab) === 1) &&
                         <TabPane tabId="1">
                           {acc4 && <Row>
-                            <Col md="12" className="mt-3">{acc4 && <Tabs isPageNoChange={isPageNoChange} closeDashboard={closeDashboard} costing={true} module={'costing'} accordion={true} />}</Col>
+                            <Col md="12" className="mt-3">{acc4 && <Tabs isPageNoChange={isPageNoChange} closeDashboard={closeDashboard} costing={true} module={'costing'} accordion={true} delegation={true} />}</Col>
                           </Row>}
                         </TabPane>}
                       {(Number(activeTab) === 2) &&
                         <TabPane tabId="2">
                           {acc4 && <Row>
-                            <Col md="12" className="mt-3">{acc4 && <><Tabs isPageNoChange={isPageNoChange} costing={false} accordion={false} module={'simulation'} /></>}</Col>
+                            <Col md="12" className="mt-3">{acc4 && <><Tabs isPageNoChange={isPageNoChange} costing={false} accordion={false} module={'simulation'} delegation={true} /></>}</Col>
                           </Row>}
                         </TabPane>}
                       {(Number(activeTab) === 3) &&
                         <TabPane tabId="3">
-                          <MasterApprovalTabs isApproval={true} MasterId={delegationMasterTab} isPageNoChange={isPageNoChange} />
+                          <MasterApprovalTabs isApproval={true} MasterId={delegationMasterTab} isPageNoChange={isPageNoChange} delegation={true} />
                         </TabPane>}
                       {(Number(activeTab) === 4) &&
                         <TabPane tabId="4">
-                          <MasterApprovalTabs isApproval={true} MasterId={MACHINE_MASTER_ID} isPageNoChange={isPageNoChange} />
+                          <MasterApprovalTabs isApproval={true} MasterId={MACHINE_MASTER_ID} isPageNoChange={isPageNoChange} delegation={true} />
                         </TabPane>}
                     </TabContent></Col>
                   </Row>}
                 </div>
-              </Row> */}
+              </Row>}
             </form>
           </div >
           <Row className="m-0">

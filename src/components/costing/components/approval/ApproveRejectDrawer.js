@@ -34,8 +34,9 @@ import { useLabels } from '../../../../helper/core'
 function ApproveRejectDrawer(props) {
   // ********* INITIALIZE REF FOR DROPZONE ********
   const dropzone = useRef(null);
-
+  
   const { type, approvalData, IsFinalLevel, IsPushDrawer, isSimulation, dataSend, reasonId, simulationDetail, selectedRowData, costingArr, isSaveDone, Attachements, vendorId, SimulationTechnologyId, SimulationType, costingList, isSimulationApprovalListing, attachments, apiData, SimulationHeadId, TechnologyId, releaseStrategyDetails, showFinalLevelButtons } = props
+
   const {vendorLabel} = useLabels()
   const userLoggedIn = loggedInUserId()
   const userData = userDetails()
@@ -118,7 +119,7 @@ function ApproveRejectDrawer(props) {
       // dispatch(getAllApprovalDepartment((res) => { }))
       /***********************************REMOVE IT AFTER SETTING FROM SIMULATION*******************************/
       if (!isSimulation) {
-        dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), TechnologyId, (res) => {
+        dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), TechnologyId,selectedRowData[0]?.ReceiverId, (res) => {
           levelDetailsTemp = userTechnologyLevelDetails(props?.costingTypeId, res?.data?.Data?.TechnologyLevels)
           setLevelDetails(levelDetailsTemp)
           if (levelDetailsTemp?.length === 0) {
@@ -126,7 +127,7 @@ function ApproveRejectDrawer(props) {
           }
         }))
 
-        dispatch(getAllApprovalDepartment((res) => {
+        dispatch(getAllApprovalDepartment(selectedRowData[0]?.ReceiverId,(res) => {
 
           const Data = res?.data?.SelectList
           const departObj = Data && Data.filter(item => item.Value === userData.DepartmentId)
@@ -144,12 +145,12 @@ function ApproveRejectDrawer(props) {
 
 
       } else {
-        dispatch(getUsersSimulationTechnologyLevelAPI(loggedInUserId(), selectedMasterForSimulation?.value, (res) => {
+        dispatch(getUsersSimulationTechnologyLevelAPI(loggedInUserId(), selectedMasterForSimulation?.value, null,(res) => {
           if (res?.data?.Data) {
             levelDetailsTemp = userTechnologyLevelDetails(props?.costingTypeId, res?.data?.Data?.TechnologyLevels)
             setLevelDetails(levelDetailsTemp)
             if (levelDetailsTemp?.length !== 0) {
-              dispatch(getSimulationApprovalByDepartment(res => {
+              dispatch(getSimulationApprovalByDepartment(null,res => {
                 const Data = res.data.SelectList
                 const departObj = Data && Data.filter(item => item.Value === (type === 'Sender' ? userData.DepartmentId : simulationDetail.DepartmentId))
                 setValue('dept', { label: departObj[0].Text, value: departObj[0].Value })
@@ -226,7 +227,8 @@ function ApproveRejectDrawer(props) {
             TechnologyId: item,
             ReasonId: 0,
             ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(levelDetailsTemp?.ApprovalTypeId),
-            plantId: approvalData.plantId ?? EMPTY_GUID
+            plantId: approvalData.plantId ?? EMPTY_GUID,
+            ReceiverId: selectedRowData[0]?.ReceiverId ?? null
           }
           let approverIdListTemp = []
           dispatch(getAllSimulationApprovalList(obj, (res) => {
@@ -299,7 +301,8 @@ function ApproveRejectDrawer(props) {
           TechnologyId: isSimulationApprovalListing ? selectedRowData[0].SimulationTechnologyId : simulationDetail.SimulationTechnologyId ? simulationDetail.SimulationTechnologyId : selectedMasterForSimulation.value,
           ReasonId: 0,
           ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(levelDetailsTemp?.ApprovalTypeId),
-          plantId: approvalData.plantId ?? EMPTY_GUID
+          plantId: approvalData.plantId ?? EMPTY_GUID,
+          ReceiverId: selectedRowData[0]?.ReceiverId ?? null
         }
 
         dispatch(getAllSimulationApprovalList(obj, (res) => {
@@ -485,7 +488,7 @@ function ApproveRejectDrawer(props) {
           IsFinalApprovalProcess: false, //ASK THIS CONDITION WITH KAMAL SIR
           IsRFQCostingSendForApproval: false,
           IsReturn: type === 'Return' ? true : false,
-
+          ReceiverId:selectedRowData[0]?.ReceiverId??null
         })
         return null;
       })

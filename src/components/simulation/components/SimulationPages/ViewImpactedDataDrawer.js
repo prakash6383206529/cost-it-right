@@ -5,9 +5,13 @@ import NoContentFound from "../../../common/NoContentFound"
 import { EMPTY_DATA } from "../../../../config/constants"
 import { AgGridColumn, AgGridReact } from "ag-grid-react"
 import { updateGlobalTake } from "../../../common/Pagination/paginationAction"
+import LoaderCustom from "../../../common/LoaderCustom"
 
 const ViewImpactedDataDrawer = (props) => {
-
+    const frameworkComponents = {
+        customLoadingOverlay: LoaderCustom,
+        customNoRowsOverlay: NoContentFound,
+    }
     return (
         <div>
             <Drawer anchor={props.anchor} open={props.isOpen}>
@@ -17,7 +21,7 @@ const ViewImpactedDataDrawer = (props) => {
                             <Row className="drawer-heading">
                                 <Col className="pl-0">
                                     <div className={'header-wrapper left'}>
-                                        <h3>{'Other Cost:'}</h3>
+                                        <h3>{'Impacted Data:'}</h3>
                                     </div>
                                     <div
                                         onClick={() => props.setIsOpen(false)}
@@ -37,12 +41,17 @@ const ViewImpactedDataDrawer = (props) => {
                                                     onChange={props.onFilterTextBoxChanged}
                                                 />
                                             </div>
-                                            <div className="ag-theme-material">
+                                            <div className={`ag-theme-material ${props.gridProps?.rowData?.length <= 0 ? 'overlay-contain' : ''}`}>
 
                                                 <AgGridReact
                                                     {...props.gridProps}
-                                                    // frameworkComponents={frameworkComponents}
+                                                    frameworkComponents={frameworkComponents}
                                                     domLayout='autoHeight'
+                                                    noRowsOverlayComponent={'customNoRowsOverlay'}
+                                                    noRowsOverlayComponentParams={{
+                                                        title: EMPTY_DATA,
+                                                        imagClass: 'imagClass'
+                                                    }}
                                                     enableBrowserTooltips={true}
                                                     pagination={true}
                                                     paginationPageSize={updateGlobalTake}
@@ -52,12 +61,12 @@ const ViewImpactedDataDrawer = (props) => {
                                                         headerName="Master Name"
                                                     />
                                                     <AgGridColumn
-                                                        field="Technology"
-                                                        headerName="Technology"
-                                                    />
-                                                    <AgGridColumn
                                                         field="Code"
                                                         headerName="Code"
+                                                    />
+                                                    <AgGridColumn
+                                                        field="Technology"
+                                                        headerName="Technology"
                                                     />
                                                     <AgGridColumn
                                                         field="NewRate"
@@ -66,10 +75,6 @@ const ViewImpactedDataDrawer = (props) => {
                                                     <AgGridColumn
                                                         field="OldRate"
                                                         headerName="Old Rate"
-                                                    />
-                                                    <AgGridColumn
-                                                        field="Percentage"
-                                                        headerName="Percentage"
                                                     />
                                                 </AgGridReact>
                                             </div>

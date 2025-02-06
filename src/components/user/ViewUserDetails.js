@@ -106,7 +106,7 @@ class ViewUserDetails extends Component {
  * @description used to get users technology level listing
  */
   getUsersTechnologyLevelData = (UserId) => {
-    this.props.getUsersTechnologyLevelAPI(UserId, 0, (res) => {
+    this.props.getUsersTechnologyLevelAPI(UserId, 0,null, (res) => {
       if (res && res.data && res.data.Data) {
 
         let Data = res.data.Data;
@@ -119,7 +119,7 @@ class ViewUserDetails extends Component {
     })
   }
   getUsersSimulationTechnologyLevelData = (UserId) => {
-    this.props.getUsersSimulationTechnologyLevelAPI(UserId, 0, (res) => {
+    this.props.getUsersSimulationTechnologyLevelAPI(UserId, 0,null, (res) => {
       if (res && res.data && res.data.Data) {
         let Data = res.data.Data;
         let simulationLevel = Data.TechnologyLevels;
@@ -130,7 +130,7 @@ class ViewUserDetails extends Component {
     })
   }
   getUsersMasterLevelData = (UserId) => {
-    this.props.getUsersMasterLevelAPI(UserId, 0, (res) => {
+    this.props.getUsersMasterLevelAPI(UserId, 0, null,(res) => {
       if (res && res.data && res.data.Data) {
         let Data = res.data.Data;
         let masterLevel = Data.MasterLevels;

@@ -16,7 +16,7 @@ import { AgGridColumn, AgGridReact } from "ag-grid-react";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
 import PopupMsgWrapper from "../../common/PopupMsgWrapper";
-import { loggedInUserId, searchNocontentFilter, setLoremIpsum } from "../../../helper";
+import { getConfigurationKey, loggedInUserId, searchNocontentFilter, setLoremIpsum } from "../../../helper";
 import { ApplyPermission } from ".";
 import TourWrapper from "../../common/Tour/TourWrapper";
 import { Steps } from "../../common/Tour/TourMessages";
@@ -33,6 +33,7 @@ import WarningMessage from "../../common/WarningMessage";
 import Button from "../../layout/Button";
 import { reactLocalStorage } from "reactjs-localstorage";
 import _ from "lodash";
+import { blankFormatter, divisionApplicableFilter } from "../masterUtil";
 const ExcelFile = ReactExport?.ExcelFile;
 const ExcelSheet = ReactExport?.ExcelFile?.ExcelSheet;
 const ExcelColumn = ReactExport?.ExcelFile?.ExcelColumn;
@@ -611,7 +612,7 @@ const AssemblyPartListing = React.memo((props) => {
   };
 
 
-  const ASSEMBLYPART_DOWNLOAD_EXCEL_LOCALIZATION = useWithLocalization(ASSEMBLYPART_DOWNLOAD_EXCEl, "MasterLabels")
+  const ASSEMBLYPART_DOWNLOAD_EXCEL_LOCALIZATION = useWithLocalization(divisionApplicableFilter(ASSEMBLYPART_DOWNLOAD_EXCEl, "Division"), "MasterLabels")
 
   const onExcelDownload = () => {
     setDisableDownload(true);
@@ -893,7 +894,7 @@ const AssemblyPartListing = React.memo((props) => {
                 <AgGridColumn field="RevisionNumber" headerName="Revision No." cellRenderer={"hyphenFormatter"} ></AgGridColumn>
                 <AgGridColumn field="DrawingNumber" headerName="Drawing No." cellRenderer={"hyphenFormatter"}></AgGridColumn>
                 {initialConfiguration?.IsShowUnitOfMeasurementInPartMaster && <AgGridColumn field="UnitOfMeasurementSymbol" headerName="UOM" cellRenderer={"hyphenFormatter"}  ></AgGridColumn>}
-
+                {getConfigurationKey().IsDivisionAllowedForDepartment && <AgGridColumn field="Division" headerName="Division" cellRenderer={'hyphenFormatter'}  ></AgGridColumn>}
                 <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={"effectiveDateFormatter"} filter="agDateColumnFilter" filterParams={filterParams}              ></AgGridColumn>
                 <AgGridColumn pinned="right" field="IsActive" headerName="Status" floatingFilter={false} cellRenderer={"statusButtonFormatter"} ></AgGridColumn>
                 <AgGridColumn field="PartId" width={250} cellClass="ag-grid-action-container actions-wrapper" headerName="Action" pinned={window.screen.width < 1920 ? "right" : ""} type="rightAligned" floatingFilter={false} cellRenderer={"buttonFormatter"}              ></AgGridColumn>

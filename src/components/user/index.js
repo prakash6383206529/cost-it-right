@@ -5,7 +5,7 @@ import UserRegistration from './UserRegistration';
 import Role from './RolePermissions/Role';
 import { checkPermission } from '../../helper/util';
 import { getConfigurationKey, handleDepartmentHeader } from '../../helper/auth';
-import { USER, ROLE, DEPARTMENT, LEVELS, COMPANY, RFQUSER, DIVISION } from '../../config/constants';
+import { USER, ROLE, DEPARTMENT, LEVELS, COMPANY, RFQUSER, DIVISION, SELF_DELEGATION, ON_BEHALF_DELEGATION } from '../../config/constants';
 import classnames from 'classnames';
 import DepartmentsListing from './DepartmentsListing';
 import LevelsListing from './LevelsListing';
@@ -40,6 +40,8 @@ const User = () => {
     count: 0,
     RFQUser: false,
     isDelegationForm: false,
+    callDelegationApi:false,
+    ViewDelegationAccessibility:false
   });
 
   useEffect(() => {
@@ -71,6 +73,7 @@ const User = () => {
       const levelsPermissions = leftMenuFromAPI && leftMenuFromAPI.find(el => el.PageName === LEVELS)
       const RfqUserPermissions = leftMenuFromAPI && leftMenuFromAPI.find(el => el.PageName === RFQUSER)
       const divisionPermissions = leftMenuFromAPI && leftMenuFromAPI.find(el => el.PageName === DIVISION)
+      const delegationPermissions = leftMenuFromAPI && leftMenuFromAPI.find(el => el.PageName === SELF_DELEGATION || el.PageName === ON_BEHALF_DELEGATION)
 
       const userData = userPermissions && userPermissions.Actions && checkPermission(userPermissions.Actions)
       const roleData = rolePermissions && rolePermissions.Actions && checkPermission(rolePermissions.Actions)
@@ -78,6 +81,7 @@ const User = () => {
       const levelsData = levelsPermissions && levelsPermissions.Actions && checkPermission(levelsPermissions.Actions)
       const rfqUserData = RfqUserPermissions && RfqUserPermissions.Actions && checkPermission(RfqUserPermissions.Actions)
       const divisionData = divisionPermissions && divisionPermissions.Actions && checkPermission(divisionPermissions.Actions)
+      const delegationData = delegationPermissions && delegationPermissions.Actions && checkPermission(delegationPermissions.Actions)
       // setUserData(userData)
       // setRoleData(roleData)
       // setDepartmentData(departmentData)
@@ -135,6 +139,14 @@ const User = () => {
         }
       }
 
+      if (delegationData !== undefined) {
+        for (var propDelegation in delegationData) {
+          if (delegationData[propDelegation] === true) {
+            setState((prevState) => ({ ...prevState, ViewDelegationAccessibility: true }))
+          }
+        }
+      }
+
     }
   }
 
@@ -173,13 +185,25 @@ const User = () => {
     }));
   };  
 
-  const hideForm = () => {
+  const hideForm = (type) => {
     setState(prevState => ({
       ...prevState,
       isUserForm: false,
       isRolePermissionForm: false,
-      data: {}
+      data: {},
+      isDelegationForm:false
     }));
+    if(type === 'Save'){
+      setState(prevState => ({
+        ...prevState,
+        callDelegationApi:true
+      }));
+    }else{
+      setState(prevState => ({
+        ...prevState,
+        callDelegationApi:false
+      }));
+    }
   };
 
   const getUserDetail = data => {
@@ -211,7 +235,7 @@ const User = () => {
     }));
   };
   const { isUserForm, isRolePermissionForm, data, ViewUserAccessibility,
-    ViewRoleAccessibility, ViewDepartmentAccessibility, ViewLevelAccessibility, ViewRFQUserAccessibility, ViewDivisionAccessibility, isDelegationForm } = state;
+    ViewRoleAccessibility, ViewDepartmentAccessibility, ViewLevelAccessibility, ViewRFQUserAccessibility, ViewDivisionAccessibility, ViewDelegationAccessibility, isDelegationForm } = state;
 
   if (isUserForm === true) {
     return <UserRegistration
@@ -265,7 +289,7 @@ const User = () => {
               Manage RFQ Users
             </NavLink>
           </NavItem>}
-          {false && <NavItem>
+           {ViewDelegationAccessibility && <NavItem>
             <NavLink className={classnames({ active: state.activeTab === '7' })} onClick={() => { toggle('7'); }}>
               Manage Delegation
             </NavLink>
@@ -322,6 +346,7 @@ const User = () => {
                 getDelegationDetail={getDelegationDetail}
                 tabId={state.activeTab}
                 isDelegation={true}
+                callDelegationApi={state.callDelegationApi}
               />
             </TabPane>}
         </TabContent>
@@ -331,6 +356,7 @@ const User = () => {
           anchor={'right'}
           isOpen={isDelegationForm}
           hideForm={hideForm}
+          data={data}
         />
       }
     </Container>

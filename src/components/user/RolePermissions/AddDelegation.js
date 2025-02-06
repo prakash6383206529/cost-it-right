@@ -13,10 +13,14 @@ import { debounce } from 'lodash';
 import Toaster from '../../common/Toaster';
 import { loggedInUserId } from "../../../helper/auth";
 import { acceptAllExceptSingleSpecialCharacter, maxLength20, maxLength512 } from "../../../helper";
+import { reactLocalStorage } from "reactjs-localstorage";
+import { createDelegation, getDelegateeUserList, getDelegationHistory, getUserDelegationDetails } from "../../../actions/auth/AuthActions";
+import DayTime from "../../common/DayTimeWrapper";
 
 const AddDelegation = (props) => {
-    const { isEditFlag, isOpen, closeDrawer, anchor } = props;
-    const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
+    const { isOpen, closeDrawer, anchor, data } = props;
+    const isView = data?.isView
+    const isEditMode = data?.isEdit
     const [isEdit, setIsEdit] = useState(false);
     const [editIndex, setEditIndex] = useState('')
     const [state, setState] = useState({
@@ -28,55 +32,154 @@ const AddDelegation = (props) => {
         fromDate: '',
         toDate: '',
         remarks: '',
-        allApprovalType: [{ label: 'Costing', value: '1' },
-            { label: 'Simulation', value: '2' },
-            { label: 'Master', value: '3' },
-            { label: 'Onboarding & Management', value: '4' }],
-        selectedApprovalType: []    
+        allApprovalType: [],
+        selectedApprovalType: [],
+        selectedUsers: [],
+        disableField: true,
+        disableDates: false // This will be set to true when gridData.length > 0
     });
+    const [gridData, setGridData] = useState([]);
+    
     const { register, formState: { errors, isDirty }, control, setValue, handleSubmit, reset } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
     });
+    const {
+        register: registerTableForm,
+        handleSubmit: handleSubmitTableForm,
+        control: controlTableForm,
+        setValue: setValueTableForm,
+        getValues: getValuesTableForm,
+        formState: { errors: errorsTableForm },
+        reset: resetTableForm,
+    } = useForm({
+        mode: 'onChange',
+        reValidateMode: 'onChange',
+    });
     const dispatch = useDispatch()
+    const moduleType = reactLocalStorage.getObject('moduleType')
+    const delegateeUserList = useSelector(state => state.auth.delegateeUserList)
     useEffect(() => {
-    }, [])
+        if (!isView) {
+            const allApprovalType = Object.entries(moduleType).map(([key, value]) => ({
+                label: key,
+                value: value
+            }));
+            setState(prevState => ({ ...prevState, allApprovalType: allApprovalType }));
+        }
+    }, [isView])
 
-    const [gridData, setGridData] = useState([]);
+    useEffect(() => {
+        if ((isView||isEditMode) && props?.data?.UserId) {
+            dispatch(getUserDelegationDetails(props?.data?.UserId, (res) => {
+                if (res?.data?.DataList?.length) {
+                    const data = res.data.DataList;
+                    const firstRecord = data?.[0];
+
+                    // Update state using functional updates
+                    setValue('Remarks', firstRecord?.Reason || '');
+                    setValue('fromDate', DayTime(firstRecord?.DelegationStartDate).$d || '');
+                    setValue('toDate', DayTime(firstRecord?.DelegationEndDate).$d || '');
+                    setGridData(data.map(item => ({...item, isShowAction: false})))
+                    setState(prevState => ({
+                        ...prevState,
+                        fromDate: firstRecord?.DelegationStartDate || '',
+                        toDate: firstRecord?.DelegationEndDate || '',
+                        remarks: firstRecord?.Reason || ''
+                    }));
+                }
+            }));
+        }
+        if (props?.data?.isShowHistory) {
+            dispatch(getDelegationHistory(props?.data?.UserId, (res) => {
+                if (res?.data?.DataList?.length) {
+                    const data = res.data.DataList;
+                    setGridData(data)
+                }
+            }));
+        }
+    }, []);
+
+    useEffect(() => {
+        setState(prevState => ({
+            ...prevState,
+            disableDates: gridData.length > 0
+        }));
+    }, [gridData]);
     const renderListing = (label) => {
-        const temp = [  { label: 'Select All', value: '0' },
-            { label: 'Costing', value: '1' },
-            { label: 'Simulation', value: '2' },
-            { label: 'Master', value: '3' },
-            { label: 'Onboarding & Management', value: '4' },]
+        const temp = []
         if (label === 'ApprovalType') {
-            // indexCommodityData && indexCommodityData.map((item) => {
-            //     if (item.Value === '--0--') return false
-            //     temp.push({ label: item.Text, value: item.Value })
-            //     return null
-            // })
-            // return temp
-            const isSelectAllOnly = temp.length === 1 && temp[0]?.Text === "Select All" && temp[0]?.Value === "0";
+            const moduleTypeArray = Object.entries(moduleType).map(([key, value]) => ({
+                label: key,
+                value: value
+            }));
+            if (!isEdit) {
+                moduleTypeArray.unshift({ label: 'Select All', value: '0' });
+            }
+            temp.push(...moduleTypeArray)
+            const isSelectAllOnly = temp.length === 1 && temp[0]?.label === "Select All" && temp[0]?.value === "0";
 
-			if (isSelectAllOnly) {
-				return [];
-			} else {
-				return temp;
-			}
+            if (isSelectAllOnly) {
+                return [];
+            } else {
+                return temp;
+            }
+        }
+        if (label === 'Users') {
+            delegateeUserList && delegateeUserList.map((item) => {
+                if (item.Value === '0') return false
+                temp.push({ label: item.Text, value: item.Value })
+                return null
+            })
+            return temp
+        }
+    };
+    useEffect(() => {
+        if (!isView) {
+            getDelegateeUsers()
+        }
+    }, [state?.fromDate, state?.toDate])
+
+    const getDelegateeUsers = () => {
+        if (state?.fromDate && state?.toDate) {
+            setState(prevState => ({ ...prevState, disableField: false }))
+            let data = {
+                delegatorUserId: props?.data?.UserId,
+                startDate: DayTime(state?.fromDate).format('YYYY-MM-DD'),
+                endDate: DayTime(state?.toDate).format('YYYY-MM-DD')
+            }
+            dispatch(getDelegateeUserList(data, () => { }));
         }
     };
 
     const handleApprovalType = (newValue) => {
-		if (newValue?.filter(element => element?.Value === '0')?.length > 0) {
-            setState(prevState => ({ ...prevState, selectedApprovalType: state.allApprovalType }))
-		} else {
+        if(isEdit){
             setState(prevState => ({ ...prevState, selectedApprovalType: newValue }))
-		}
-	}
+            setValueTableForm('ApprovalType', newValue)
+        }
+       else if (newValue&&newValue?.filter(element => element?.value === '0')?.length > 0) {
+            setState(prevState => ({ ...prevState, selectedApprovalType: state.allApprovalType }))
+            setTimeout(() => {
+                setValueTableForm('ApprovalType', state.allApprovalType)
+            }, 50);
+        } else{
+            setState(prevState => ({ ...prevState, selectedApprovalType: newValue }))
+            setValueTableForm('ApprovalType', newValue)
+        }
+    }
+    const handleUsers = (newValue) => {
+        setState(prevState => ({ ...prevState, selectedUsers: newValue }))
+    }
     const resetData = () => {
+        setValueTableForm('ApprovalType', [])
+        setValueTableForm('Users', [])
+        delete errorsTableForm.ApprovalType
+        delete errorsTableForm.Users
         setIsEdit(false)
         setEditIndex('')
+        setState(prevState => ({ ...prevState, selectedApprovalType: [], selectedUsers: [] }));
     }
+
 
     const deleteItem = (index) => {
         const newGridData = [...gridData.slice(0, index), ...gridData.slice(index + 1)];
@@ -86,123 +189,155 @@ const AddDelegation = (props) => {
     };
 
     const onSubmit = debounce(values => {
-        if (isEdit) {
-            setState(prevState => ({ ...prevState, setDisable: true }));
-        
-        } else {
-            setState(prevState => ({ ...prevState, setDisable: true }));
-
+        let formData = {
+            "DelegatorUserId": props?.data?.UserId,
+            "LoggedInUserId": loggedInUserId(),
+            "Reason": values?.Remarks,
+            "DelegationRequestDetails": gridData
         }
+        dispatch(createDelegation(formData, (res) => {
+            if (res.data?.Result) {
+                Toaster.success('Delegation created successfully')
+                props.hideForm('Save')
+            }
+        }));
+
     }, 500);
 
-    const updateRow = () => {
-        const obj = {
+    const addRow = () => {
+        // Create array of objects for approval types
+        let newRows = [];
+        if (isEdit) {
+            // Handle single object case when editing
+            const editedRow = {
+                "DelegateeUserId": state?.selectedUsers?.value,
+                "DelegateeUser": state?.selectedUsers?.label,
+                "DelegationStartDate": DayTime(state?.fromDate).format('YYYY-MM-DD'),
+                "DelegationEndDate": DayTime(state?.toDate).format('YYYY-MM-DD'),
+                "ModuleId": state?.selectedApprovalType?.value,
+                "ModuleName": state?.selectedApprovalType?.label,
+                "isShowAction": true
+            };
+
+            // Check if anything changed
+            const existingRow = gridData[editIndex];
+            if (existingRow.DelegateeUserId === editedRow.DelegateeUserId &&
+                String(existingRow.ModuleId) === String(editedRow.ModuleId) &&
+                existingRow.DelegationStartDate === editedRow.DelegationStartDate &&
+                existingRow.DelegationEndDate === editedRow.DelegationEndDate) {
+                resetData();
+                return;
+            }
+
+            newRows = [editedRow];
+        } else {
+            // Handle array case when adding new
+            newRows = state?.selectedApprovalType?.map(type => ({
+                "DelegateeUserId": state?.selectedUsers?.value,
+                "DelegateeUser": state?.selectedUsers?.label,
+                "DelegationStartDate": DayTime(state?.fromDate).format('YYYY-MM-DD'),
+                "DelegationEndDate": DayTime(state?.toDate).format('YYYY-MM-DD'),
+                "ModuleId": type.value,
+                "ModuleName": type.label,
+                "isShowAction": true
+            }));
         }
 
-        const updatedGridData = gridData.map((item, index) =>
-            index === editIndex ? obj : item
-        );
-        setGridData(updatedGridData);
+        // Check for duplicates
+        let isDuplicate = false;
+        newRows.forEach(newRow => {
+            gridData.forEach((existingRow, index) => {
+                // Skip checking against self when editing
+                if (isEdit && index === editIndex) {
+                    return;
+                }
 
-        setIsEdit(false);
+                // Check for duplicates in both edit and normal modes
+                if (String(existingRow.ModuleId) === String(newRow.ModuleId) &&
+                    existingRow.DelegateeUserId === newRow.DelegateeUserId) {
+                    isDuplicate = true;
+                }
+            });
+        });
+
+        if (isDuplicate) {
+            Toaster.warning('Duplicate entry is not allowed.');
+            return false;
+        }
+
+        // Add all new rows to grid data
+        if (isEdit) {
+            const updatedGridData = [...gridData];
+            updatedGridData[editIndex] = newRows[0];
+            setGridData(updatedGridData);
+        } else {
+            setGridData([...gridData, ...newRows]);
+        }
         resetData();
     };
-
-
-    const addRow = () => {
-
-        const obj = {
-
-        };
-        const newGridData = [...gridData, obj];
-
-        setGridData(newGridData);
-
-        resetData();
-    };
-
     const editItemDetails = (index) => {
-        const editObj = gridData[index]
         setEditIndex(index)
         setIsEdit(true)
+
+        const editObj = gridData[index]
+        setValueTableForm('ApprovalType', { label: editObj?.ModuleName, value: editObj?.ModuleId });
+        setValueTableForm('Users', { label: editObj?.DelegateeUser, value: editObj?.DelegateeUserId });
+        setState(prevState => ({ ...prevState, selectedApprovalType: { label: editObj?.ModuleName, value: editObj?.ModuleId }, selectedUsers: { label: editObj?.DelegateeUser, value: editObj?.DelegateeUserId } }));
     }
 
-    const handleAddUpdateButtonClick = () => {
-        if (isEdit) {
-            updateRow();
-        } else {
-            addRow();
-        }
-        resetData();
-    };
-
-    const toggleDrawer = (event, formData, type) => {
-        props.hideForm()
-    };
-    const cancel = (type) => {
-        reset();
-        toggleDrawer('', '', type);
-    };
-
-    const cancelHandler = () => {
-        props.hideForm()
-    };
-    const onPopupConfirm = () => {
-        cancel('cancel');
-        setState(prevState => ({ ...prevState, showPopup: false }));
-    };
-
-    const closePopUp = () => {
-        props.hideForm()
+    const toggleDrawer = (event, type) => {
+        props.hideForm(type)
     };
 
     const handleFromEffectiveDateChange = (date) => {
         setState(prevState => ({
             ...prevState,
             fromDate: date,
+            toDate: ''
         }));
-
+        setValue('toDate', '')
     };
     const handleToEffectiveDateChange = (date) => {
         setState(prevState => ({
             ...prevState,
             toDate: date,
         }));
-    }; 
-        /**
- * @method handleMessageChange
- * @description used remarks handler
- */
-        const handleMessageChange = (e) => {
-            setState(prevState => ({
-                ...prevState,
-                remarks: e?.target?.value,
-            }))
-        } 
+    };
+    /**
+* @method handleMessageChange
+* @description used remarks handler
+*/
+    const handleMessageChange = (e) => {
+        setState(prevState => ({
+            ...prevState,
+            remarks: e?.target?.value,
+        }))
+    }
     return (
         <div>
             <Drawer anchor={anchor} open={isOpen}>
                 <Container>
-                    <div className={'drawer-wrapper layout-min-width-600px'}>
-                        <form onSubmit={handleSubmit(onSubmit)}>
+                    <div className={'drawer-wrapper layout-min-width-820px'}>
+                        <form>
                             <Row className="drawer-heading">
                                 <Col>
                                     <div className={"header-wrapper left"}>
                                         <h3>
-                                            Add Temporary Delegation
+                                            {props?.data?.isShowHistory ? "Delegation History" : "Add Temporary Delegation"}
                                         </h3>
                                     </div>
                                     <div
-                                        onClick={e => toggleDrawer(e)}
+                                        onClick={e => toggleDrawer(e, 'Cancel')}
                                         className={"close-button right"}
                                     ></div>
                                 </Col>
                             </Row>
-                            <Row className="pl-3">
-                            <Col md="6">
+                            {!props?.data?.isShowHistory && <Row className="pl-3">
+                                <Col md="6">
                                     <div className="inputbox date-section">
                                         <DatePickerHookForm
                                             name={`fromDate`}
+                                            selected={state?.fromDate !== "" ? DayTime(state?.fromDate).format('DD/MM/YYYY') : ""}
                                             label={'From Date'}
                                             handleChange={(date) => {
                                                 handleFromEffectiveDateChange(date);
@@ -220,9 +355,10 @@ const AddDelegation = (props) => {
                                             autoComplete={"off"}
                                             disabledKeyboardNavigation
                                             onChangeRaw={(e) => e.preventDefault()}
-                                            disabled={false}
+                                            disabled={isView||state?.disableDates}
                                             mandatory={true}
                                             errors={errors && errors.fromDate}
+                                            minDate={new Date()}
                                         />
                                     </div>
                                 </Col>
@@ -230,148 +366,143 @@ const AddDelegation = (props) => {
                                     <div className="inputbox h-auto date-section">
                                         <DatePickerHookForm
                                             name={`toDate`}
+                                            selected={state?.toDate !== "" ? DayTime(state?.toDate).format('DD/MM/YYYY') : ""}
                                             label={'To Date'}
                                             handleChange={(date) => {
                                                 handleToEffectiveDateChange(date);
                                             }}
-                                            rules={{ required: false }}
+                                            rules={{ required: true }}
                                             Controller={Controller}
                                             control={control}
                                             register={register}
                                             showMonthDropdown
                                             showYearDropdown
                                             dateFormat="DD/MM/YYYY"
-                                            placeholder={ "Select date" }
+                                            placeholder={"Select date"}
                                             customClassName="withBorder"
                                             className="withBorder"
                                             autoComplete={"off"}
                                             disabledKeyboardNavigation
                                             onChangeRaw={(e) => e.preventDefault()}
-                                            disabled={false}
-                                            mandatory={false}
+                                            disabled={isView||state?.disableDates}
+                                            mandatory={true}
                                             errors={errors && errors.toDate}
                                             minDate={state.fromDate}
                                         />
                                     </div>
                                 </Col>
-                                </Row>
-                                <Row className="pl-3">
-                                 
-                                </Row>
-                                <Row className="pl-3">
-                                <Col md="4" className="d-flex pb-4 justify-space-between align-items-center inputwith-icon ">
-                                    <div className="w-100">
-                                        <SearchableSelectHookForm
-                                            label={'Approval Type'}
-                                            name={'ApprovalType'}
-                                            placeholder={'Select'}
-                                            Controller={Controller}
-                                            control={control}
-                                            rules={{ required: true }}
-                                            register={register}
-                                            defaultValue={''}
-                                            options={renderListing('ApprovalType')}
-                                            mandatory={true}
-                                            handleChange={(option) => handleApprovalType(option)}
-                                            errors={errors.ApprovalType}
-                                            isMulti={true}
-                                        />
-                                    </div>
-                                </Col>
-                                <Col md="4" className="d-flex pb-4 justify-space-between align-items-center inputwith-icon ">
-                                    <div className="w-100">
-                                        <SearchableSelectHookForm
-                                            label={'Users'}
-                                            name={'Users'}
-                                            placeholder={'Select'}
-                                            Controller={Controller}
-                                            control={control}
-                                            rules={{ required: true }}
-                                            register={register}
-                                            defaultValue={''}
-                                            options={renderListing('ApprovalType')}
-                                            mandatory={true}
-                                            handleChange={(option) => handleApprovalType(option)}
-                                            errors={errors.ApprovalType}
-                                        />
-                                    </div>
-                                </Col>
-                                <Col md="4" className="d-flex pb-4 justify-space-between align-items-center inputwith-icon ">
-                                    {isEdit ? (
-                                        <>
-                                            <button
-                                                type="button"
-                                                className={"btn btn-primary pull-left mr5"}
-                                                onClick={handleAddUpdateButtonClick}
-                                            >
-                                                Update
-                                            </button>
-                                            <button
-                                                type="button"
-                                                className={"mr5 ml-1 mt-0 add-cancel-btn cancel-btn"}
-                                                onClick={() => resetData()}
-                                            >
-                                                <div className={"cancel-icon"}></div>Cancel
-                                            </button>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <button
-                                                type="button"
-                                                className={`user-btn ${initialConfiguration.IsShowCRMHead ? '' : ''} pull-left`}
-                                                onClick={handleAddUpdateButtonClick}
-                                            >
-                                                <div className={"plus"}></div>ADD
+                            </Row>}
 
+                            {!props?.data?.isShowHistory && <form>
+                                <Row className="pl-3">
+                                    <Col md="4" className="d-flex pb-4 justify-space-between align-items-center inputwith-icon ">
+                                        <div className="w-100">
+                                            <SearchableSelectHookForm
+                                                label={'Approval Type'}
+                                                name={'ApprovalType'}
+                                                placeholder={'Select'}
+                                                Controller={Controller}
+                                                control={controlTableForm}
+                                                rules={{ required: true }}
+                                                register={registerTableForm}
+                                                defaultValue={state.selectedApprovalType}
+                                                options={renderListing('ApprovalType')}
+                                                mandatory={true}
+                                                handleChange={handleApprovalType}
+                                                errors={errorsTableForm.ApprovalType}
+                                                isMulti={isEdit ? false : true}
+                                                selected={state.selectedApprovalType}
+                                                disabled={state.disableField || isView}
+                                            />
+                                        </div>
+                                    </Col>
+                                    <Col md="4" className="d-flex pb-4 justify-space-between align-items-center inputwith-icon ">
+                                        <div className="w-100">
+                                            <SearchableSelectHookForm
+                                                label={'Users'}
+                                                name={'Users'}
+                                                placeholder={'Select'}
+                                                Controller={Controller}
+                                                control={controlTableForm}
+                                                rules={{ required: true }}
+                                                register={registerTableForm}
+                                                defaultValue={state.selectedUsers}
+                                                options={renderListing('Users')}
+                                                mandatory={true}
+                                                handleChange={handleUsers}
+                                                selected={state.selectedUsers}
+                                                errors={errorsTableForm.Users}
+                                                disabled={state.disableField || isView}
+                                            />
+                                        </div>
+                                    </Col>
+                                    <Col md="4" className="d-flex mt-3 justify-space-between align-items-center inputwith-icon ">
+
+                                        <>
+                                            <button
+                                                type="button"
+                                                className={"btn btn-primary pull-left mb-2"}
+                                                onClick={handleSubmitTableForm(addRow)}
+                                            >
+                                            <div className={"plus-icon mb-1"}></div>    {isEdit ? 'Update' : 'Add'}
                                             </button>
                                             <button
                                                 type="button"
-                                                className={`ml-1 ${initialConfiguration.IsShowCRMHead ? '' : ''} reset-btn`}
+                                                className={"ml-1 mt-0 add-cancel-btn cancel-btn"}
                                                 onClick={() => resetData()}
                                             >
-                                                Reset
+                                                <div className={"cancel-icon"}></div>Reset
                                             </button>
                                         </>
-                                    )}
-                                </Col>
-                            </Row >
+
+                                    </Col>
+                                </Row >
+                            </form>}
                             <br />
                             <Col md="12" className="mb-2 pl-2 pr-3">
                                 <Table className="table mb-0 forging-cal-table" size="sm">
                                     <thead>
                                         <tr>
+                                            {props?.data?.isShowHistory && <th>{`Start Date`}</th>}
+                                            {props?.data?.isShowHistory && <th>{`End Date`}</th>}
                                             <th>{`Approval Type`}</th>
                                             <th>{`Users`}</th>
-                                            <th className='text-right'>{`Action`}</th>
+                                            {props?.data?.isShowHistory && <th>{`Remarks`}</th>}
+                                            {!props?.data?.isShowHistory  && <th className='text-right'>{`Action`}</th>}
                                         </tr>
                                     </thead>
                                     <tbody >
-                                        {gridData.length > 0 ? (
+                                        {gridData && gridData?.length > 0 ? (
                                             <>
                                                 {gridData.map((item, index) => (
                                                     <tr key={index}>
-                                                        <td>{item.ApprovalType}</td>
-                                                        <td>{item.Users}</td>
-                                                        <td className='text-right'>
+                                                        {props?.data?.isShowHistory && <td>{DayTime(item?.DelegationStartDate).format('DD/MM/YYYY')}</td>}
+                                                        {props?.data?.isShowHistory && <td>{DayTime(item?.DelegationEndDate).format('DD/MM/YYYY')}</td>}
+                                                        <td>{item?.ModuleName}</td>
+                                                        <td>{item?.DelegateeUser}</td>
+                                                        {props?.data?.isShowHistory && <td>{item?.Reason}</td>}
+                                                        {!props?.data?.isShowHistory && <td className='text-right'>
                                                             <button
                                                                 className="Edit"
                                                                 title='Edit'
                                                                 type={"button"}
                                                                 onClick={() => editItemDetails(index)}
+                                                                disabled={!item?.isShowAction || isView}
                                                             />
                                                             <button
                                                                 className="Delete ml-1"
                                                                 title='Delete'
                                                                 type={"button"}
                                                                 onClick={() => deleteItem(index)}
+                                                                disabled={!item?.isShowAction || isView}
                                                             />
-                                                        </td>
+                                                        </td>}
                                                     </tr>
                                                 ))}
                                             </>
                                         ) : (
                                             <tr>
-                                                <td colSpan={4}>
+                                                <td colSpan={props?.data?.isShowHistory ? 6 : 5}>
                                                     <NoContentFound title={EMPTY_DATA} />
                                                 </td>
                                             </tr>
@@ -379,52 +510,53 @@ const AddDelegation = (props) => {
                                     </tbody>
                                 </Table>
                             </Col>
-                            <Col md="12" className="mb-2 pl-2 pr-3">
-                <TextAreaHookForm
-                    label={`Remarks`}
-                    name={"Remarks"}
-                    Controller={Controller}
-                    control={control}
-                    register={register}
-                    rowHeight={6}
-                    mandatory={false}
-                    rules={{
-                        validate: { maxLength20, acceptAllExceptSingleSpecialCharacter },
-                        maxLength: {
-                            value: 20,
-                            message: "Remark should be less than 20 words"
-                        },
-                    }}
-                    handleChange={handleMessageChange}
-                    defaultValue={""}
-                    className=""
-                    customClassName={"textAreaWithBorder"}
-                    errors={errors.Remarks}
-                    disabled={false}
-                />
-            </Col>
+                            {!props?.data?.isShowHistory && <Col md="12" className="mb-2 pl-2 pr-3">
+                                <TextAreaHookForm
+                                    label={`Remarks`}
+                                    name={"Remarks"}
+                                    Controller={Controller}
+                                    control={control}
+                                    register={register}
+                                    rowHeight={6}
+                                    mandatory={false}
+                                    rules={{
+                                        validate: { maxLength20, acceptAllExceptSingleSpecialCharacter },
+                                        maxLength: {
+                                            value: 20,
+                                            message: "Remark should be less than 20 words"
+                                        },
+                                    }}
+                                    handleChange={handleMessageChange}
+                                    defaultValue={""}
+                                    className=""
+                                    customClassName={"textAreaWithBorder"}
+                                    errors={errors.Remarks}
+                                    disabled={isView}
+                                />
+                            </Col>}
                             <Row className=" no-gutters justify-content-between">
                                 <div className="col-md-12">
                                     <div className="text-right ">
                                         <button
                                             id="AddDelegation_Cancel"
                                             type="button"
-                                            onClick={cancelHandler}
+                                            onClick={(e) => toggleDrawer(e, 'Cancel')}
                                             value="CANCEL"
                                             className="mr15 cancel-btn"
                                         >
                                             <div className={"cancel-icon"}></div>
                                             CANCEL
                                         </button>
-                                        <button
+                                        {!props?.data?.isShowHistory && <button
                                             id="AddDelegation_Save"
-                                            type="submit"
+                                            type="button"
                                             className="user-btn save-btn"
+                                            onClick={handleSubmit(onSubmit)}
+                                            disabled={isView}
                                         >
-                                            {" "}
                                             <div className={"save-icon"}></div>
-                                            {isEditFlag ? "UPDATE" : "SAVE"}
-                                        </button>
+                                            SAVE
+                                        </button>}
                                     </div>
                                 </div>
                             </Row>
@@ -432,10 +564,7 @@ const AddDelegation = (props) => {
                     </div>
                 </Container>
             </Drawer>
-                  
-            {state.showPopup && (
-                <PopupMsgWrapper isOpen={state.showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
-            )}
+
         </div>
 
     )

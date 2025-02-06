@@ -22,6 +22,7 @@ import { searchNocontentFilter, setLoremIpsum } from '../../../helper';
 import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from '../../common/Tour/TourMessages';
 import { useTranslation } from 'react-i18next';
+import { divisionApplicableFilter } from '../masterUtil';
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -285,7 +286,7 @@ const ZBCPlantListing = (props) => {
     const onBtExport = () => {
         let tempArr = state.gridApi && state.gridApi.getSelectedRows();
         tempArr = (tempArr && tempArr.length > 0) ? tempArr : (plantDataList ? plantDataList : []);
-        return returnExcelColumn(ZBCPLANT_DOWNLOAD_EXCEl, tempArr);
+        return returnExcelColumn(divisionApplicableFilter(ZBCPLANT_DOWNLOAD_EXCEl, "IsDivisionApplied"), tempArr);
     };
 
     const returnExcelColumn = (data = [], TempData) => {
@@ -429,7 +430,7 @@ const ZBCPlantListing = (props) => {
                             <AgGridColumn field="CountryName" headerName="Country"></AgGridColumn>
                             <AgGridColumn field="StateName" headerName="State"></AgGridColumn>
                             <AgGridColumn field="CityName" headerName="City"></AgGridColumn>
-                            <AgGridColumn field="IsDivisionApplied" headerName="Divison Applicable"></AgGridColumn>
+                            {getConfigurationKey().IsDivisionAllowedForDepartment && <AgGridColumn field="IsDivisionApplied" headerName="Divison Applicable" cellRenderer={"ApplicableFormatter"}></AgGridColumn>}
                             <AgGridColumn field="PlantId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                             <AgGridColumn width="130" pinned="right" field="IsActive" headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
                         </AgGridReact>
