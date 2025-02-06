@@ -1796,15 +1796,16 @@ class AddBOPDomestic extends Component {
                                 customClassName=" withBorder"
                               />
                             </Col></>}
-                          <Col md="3">
+                          {!isTechnologyVisible &&(<Col md="3">
                             <div className='d-flex align-items-center'>
-                              <div className="w-100">
-                                <Field
-                                  label={`Other Cost/${this.state?.UOM?.label ? this.state?.UOM?.label : 'UOM'} (${this.props?.fieldsObj?.plantCurrency ?? 'Currency'})`}
-                                  name={"OtherCost"}
-                                  type="text"
-                                  placeholder={"-"}
-                                  validate={[]}
+                              
+                                <div className="w-100">
+                                  <Field
+                                    label={`Other Cost/${this.state?.UOM?.label ? this.state?.UOM?.label : 'UOM'} (${this.props?.fieldsObj?.plantCurrency ?? 'Currency'})`}
+                                    name={"OtherCost"}
+                                    type="text"
+                                    placeholder={"-"}
+                                    validate={[]}
                                   component={renderText}
                                   required={false}
                                   disabled={true}
@@ -1830,7 +1831,7 @@ class AddBOPDomestic extends Component {
                                 />
                               </div>
                             </div>
-                          </Col>
+                          </Col>)}
 
                           {initialConfiguration?.IsBasicRateAndCostingConditionVisible && costingTypeId === ZBCTypeId && !isTechnologyVisible && <>
                             <Col md="3">
