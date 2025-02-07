@@ -1594,7 +1594,7 @@ function Simulation(props) {
             case RMIMPORT:
                 return <RMSimulation isCostingSimulation={true} isDomestic={false} backToSimulation={backToSimulation} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData.length > 0 ? tableData : getFilteredData(rmImportListing, RM_MASTER_ID)} technology={technology.label} technologyId={technology.value} master={master.label} tokenForMultiSimulation={tempObject} />   //IF WE ARE USING BULK UPLOAD THEN ONLY TABLE DATA WILL BE USED OTHERWISE DIRECT LISTING
             case EXCHNAGERATE:
-                return <ERSimulation backToSimulation={backToSimulation} list={tableData.length > 0 ? tableData : getFilteredData(exchangeRateDataList, RM_MASTER_ID)} technology={technology.label} master={master.label} tokenForMultiSimulation={tempObject} technologyId={technology.value} selectionForListingMasterAPI={selectionForListingMasterAPI} vendor={vendor} />
+                return <ERSimulation backToSimulation={backToSimulation} list={tableData.length > 0 ? tableData : getFilteredData(exchangeRateDataList, RM_MASTER_ID)} technology={technology.label} master={master.label}  masterId={master?.value} tokenForMultiSimulation={tempObject} technologyId={technology.value} selectionForListingMasterAPI={selectionForListingMasterAPI} vendor={vendor} />
             case COMBINED_PROCESS:
                 return <CPSimulation cancelEditPage={cancelEditPage} list={tableData} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} tokenForMultiSimulation={tempObject} />
             case SURFACETREATMENT:
@@ -1620,7 +1620,7 @@ function Simulation(props) {
                     return ''
                 }
             case String(RAWMATERIALINDEX):
-                return <RMIndexationSimulation backToSimulation={backToSimulation} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData} master={master.label} tokenForMultiSimulation={tempObject} technology={technology.label} technologyId={technology.value} isRMNonIndexSimulation={type?.value === NONINDEXED ? true : false} />
+                return <RMIndexationSimulation backToSimulation={backToSimulation} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData} master={master.label} masterId={master?.value} tokenForMultiSimulation={tempObject} technology={technology.label} technologyId={technology.value} isRMNonIndexSimulation={type?.value === NONINDEXED ? true : false} />
             default:
                 break;
         }
@@ -1705,7 +1705,7 @@ function Simulation(props) {
         const masterId = props?.master
         // THIS WILL RENDER CONDITIONALLY.(IF BELOW FUNC RETUTM TRUE IT WILL GO TO OTHER COSTING SIMULATION COMPONENT OTHER WISE COSTING SIMULATION)
 
-        return <RMIndexationSimulation simulationId={simulationId} master={masterId} isFromApprovalListing={props?.isFromApprovalListing} statusForLinkedToken={props?.statusForLinkedToken} isImpactedMaster={false} />
+        return <RMIndexationSimulation simulationId={simulationId} master={masterId} masterId={master?.value} isFromApprovalListing={props?.isFromApprovalListing} statusForLinkedToken={props?.statusForLinkedToken} isImpactedMaster={false} />
     }
 
 

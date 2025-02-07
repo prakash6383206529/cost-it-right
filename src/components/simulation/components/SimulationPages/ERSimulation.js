@@ -707,6 +707,7 @@ function ERSimulation(props) {
                     minDate={minDate}
                     vendorLabel={props?.vendor}
                     FromExchangeRate={true}
+                    masterId={props?.masterId}
 
 
                 />
