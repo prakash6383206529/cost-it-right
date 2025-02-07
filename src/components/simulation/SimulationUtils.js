@@ -42,13 +42,15 @@ export const getMaxDate = (arr) => {
 
     // ✅ Get Max date
     const maxDate = _.maxBy(arr, entry => new Date(entry.EffectiveDate));
+
     if (maxDate) {
+        const result = { ...maxDate };
         const date = new Date(maxDate.EffectiveDate);
         date.setDate(date.getDate() + 1);
-        maxDate.EffectiveDate = date;
+        result.EffectiveDate = date;
+        return result;
     }
-    return maxDate
-
+    return maxDate;
 }
 
 export const checkForChangeInOverheadProfit1Values = (item) => {
